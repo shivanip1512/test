@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/06/11 21:14:04 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/06/20 21:00:38 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,12 +91,11 @@ private:
         Uninitialized = 0,
         Output,
         Input,
-        Failed,
-        Complete
+        Complete,
+        Failed
     } _ioState;
 
     unsigned long _outLen, _outSent, _inRecv, _inExpected, _inActual;  //  would be ints, but i have to use inLen with the trx InCountExpected
-    int _bytesIn;
     bool _fcbExpected;
 
     #pragma pack( pop )
@@ -118,6 +117,8 @@ public:
     int getOutLength( void );
     int setToOutput ( unsigned char *buf, unsigned int len, short dstAddr, short srcAddr );
     int setToInput  ( void );
+
+    int calcPacketLength( int headerLen );
 
     int getInPayload( unsigned char *buf );
     int getInLength ( void );

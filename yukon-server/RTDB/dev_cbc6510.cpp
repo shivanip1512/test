@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/06/11 21:15:22 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/06/20 21:00:37 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,7 +38,7 @@
 #include "cparms.h"
 
 
-CtiDeviceCBC6510::CtiDeviceCBC6510() : _dnp(3) {}
+CtiDeviceCBC6510::CtiDeviceCBC6510() {}
 
 CtiDeviceCBC6510::CtiDeviceCBC6510(const CtiDeviceCBC6510 &aRef)
 {
@@ -63,12 +63,7 @@ CtiProtocolDNP &CtiDeviceCBC6510::getProtocol( void )
 }
 
 
-INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg              *pReq,
-                                     CtiCommandParser           &parse,
-                                     OUTMESS                   *&OutMessage,
-                                     RWTPtrSlist< CtiMessage >  &vgList,
-                                     RWTPtrSlist< CtiMessage >  &retList,
-                                     RWTPtrSlist< OUTMESS >     &outList)
+INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT nRet = NoMethod;
 
@@ -92,7 +87,36 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg              *pReq,
 
         case ScanRequest:
             {
-                _dnp.setCommand(CtiProtocolDNP::DNP_Class0Read);
+                switch( parse.getiValue("scantype") )
+                {
+                    case ScanRateStatus:
+                        break;
+
+                    case ScanRateGeneral:
+                        _dnp.setCommand(CtiProtocolDNP::DNP_Class123Read);
+                        break;
+
+                    case ScanRateAccum:
+                        break;
+
+                    case ScanRateIntegrity:
+                        _dnp.setCommand(CtiProtocolDNP::DNP_Class0Read);
+                        break;
+                }
+
+                nRet = NoError;
+
+                break;
+            }
+
+        case PutValueRequest:
+            {
+                CtiProtocolDNP::XferPoint analogout;
+                analogout.type   = AnalogOutputPointType;
+                analogout.offset = parse.getiValue("offset");
+                analogout.value  = parse.getdValue("dial");
+
+                _dnp.setCommand(CtiProtocolDNP::DNP_SetAnalogOut, &analogout, 1);
 
                 nRet = NoError;
 
@@ -100,7 +124,6 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg              *pReq,
             }
 
         case GetValueRequest:
-        case PutValueRequest:
         case GetStatusRequest:
             {
 
@@ -122,12 +145,7 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg              *pReq,
     OutMessage->DeviceID = getID();
     OutMessage->TargetID = getID();
 
-    if( !_dnp.sendAppReqLayer( OutMessage ) &&
-        OutMessage != NULL )
-    {
-        outList.append(OutMessage);
-        OutMessage = NULL;
-    }
+    _dnp.commOut( OutMessage, outList );
 
     return nRet;
 }
@@ -137,7 +155,7 @@ INT CtiDeviceCBC6510::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSli
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
-    _dnp.recvAppRspLayer(InMessage);
+    _dnp.commIn(InMessage, outList);
 
     if( _dnp.hasPoints() )
     {
@@ -212,13 +230,17 @@ RWCString CtiDeviceCBC6510::getDescription(const CtiCommandParser &parse) const
 void CtiDeviceCBC6510::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
    Inherited::getSQL(db, keyTable, selector);
+   CtiTableDeviceIDLC::getSQL(db, keyTable, selector);
 }
 
 void CtiDeviceCBC6510::DecodeDatabaseReader(RWDBReader &rdr)
 {
    Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
+   _address.DecodeDatabaseReader(rdr);
 
    if(getDebugLevel() & 0x0800) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+   _dnp.setSlaveAddress(_address.getAddress());
 }
 
 

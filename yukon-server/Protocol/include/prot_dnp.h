@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/06/11 21:19:14 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/06/20 21:00:38 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,7 +34,7 @@ class IM_EX_PROT CtiProtocolDNP
 private:
 
     CtiDNPApplication _appLayer;
-    int               _address;
+    unsigned short    _masterAddress, _slaveAddress;
     DNPCommand        _currentCommand;
 
 public:
@@ -47,21 +47,24 @@ public:
 
     CtiProtocolDNP &operator=(const CtiProtocolDNP &aRef);
 
+    void setMasterAddress( unsigned short address );
+    void setSlaveAddress( unsigned short address );
+
     void setCommand( DNPCommand command, XferPoint *points = NULL, int numPoints = 0 );
 
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );
-/*
-    void initForOutput( void );
-    void initForInput ( void );
-*/
+
     bool isTransactionComplete( void );
 
-    int sendAppReqLayer( OUTMESS *OutMessage );
-    int recvAppReqLayer( OUTMESS *OutMessage );
+    int commOut( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
+    int commIn ( INMESS *InMessage,   RWTPtrSlist< OUTMESS > &outList );
 
-    int sendAppRspLayer( INMESS *InMessage );
-    int recvAppRspLayer( INMESS *InMessage );
+    int sendOutbound( OUTMESS *&OutMessage );
+    int recvOutbound( OUTMESS  *OutMessage );
+
+    int sendInbound( INMESS *InMessage );
+    int recvInbound( INMESS *InMessage );
 
     bool hasPoints( void );
     void sendPoints( RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList );
@@ -75,18 +78,21 @@ public:
 
     enum DNPCommand
     {
-        DNP_Invalid    = 0,
+        DNP_Invalid = 0,
         DNP_Class0Read,
         DNP_Class1Read,
         DNP_Class2Read,
+        DNP_Class3Read,
+        DNP_Class123Read,
         DNP_SetAnalogOut,
         DNP_SetDigitalOut
     };
 
     enum
     {
-        YukonDNPMasterAddress =    5,
-        MaxAppLayerSize       = 2048
+        DefaultYukonDNPMasterAddress =    5,
+        DefaultSlaveAddress          =    1,
+        MaxAppLayerSize              = 2048
     };
 };
 

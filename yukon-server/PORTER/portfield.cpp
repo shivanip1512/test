@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2002/06/18 16:20:11 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2002/06/20 21:00:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1115,9 +1115,9 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
                     CtiDeviceCBC6510 *cbcdev = (CtiDeviceCBC6510 *)Device;
                     CtiProtocolDNP   &dnp    = cbcdev->getProtocol();
 
-                    dnp.recvAppReqLayer(OutMessage);
+                    dnp.recvOutbound(OutMessage);
 
-                    while(!dnp.isTransactionComplete())
+                    while( !dnp.isTransactionComplete() )
                     {
                         dnp.generate(trx);
 
@@ -1134,7 +1134,7 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
                         DisplayTraceList(Port, traceList, true);
                     }
 
-                    dnp.sendAppRspLayer(InMessage);
+                    dnp.sendInbound(InMessage);
 
                     break;
                 }

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/06/11 21:14:04 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/06/20 21:00:38 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,9 +38,11 @@ private:
         Uninitialized = 0,
         Output,
         Input,
-        Failed,
-        Complete
+        Complete,
+        Failed
     } _ioState;
+
+    bool _complete;
 
     struct _transport_header_t
     {
@@ -64,15 +66,13 @@ public:
 
     CtiDNPTransport &operator=(const CtiDNPTransport &aRef);
 
-    void reset( void );
     int initForOutput(unsigned char *buf, int len, unsigned short dstAddr, unsigned short srcAddr);
     int initForInput(unsigned char *buf);
 
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );
 
-    bool sendComplete( void );
-    bool recvComplete( void );
+    bool isTransactionComplete( void );
 
     int  getInputSize( void );
 };

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/06/11 21:14:03 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/06/20 21:00:37 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,16 +49,10 @@ CtiDNPTransport &CtiDNPTransport::operator=(const CtiDNPTransport &aRef)
     return *this;
 }
 
-void CtiDNPTransport::reset( void )
-{
-}
-
 
 int CtiDNPTransport::initForOutput(unsigned char *buf, int len, unsigned short dstAddr, unsigned short srcAddr)
 {
     int retVal = NoError;
-
-//    reset();
 
     _srcAddr = srcAddr;
     _dstAddr = dstAddr;
@@ -72,8 +66,6 @@ int CtiDNPTransport::initForOutput(unsigned char *buf, int len, unsigned short d
         _seq = 0;
 
         _ioState = Output;
-
-        _datalink.reset();
     }
     else
     {
@@ -97,8 +89,6 @@ int CtiDNPTransport::initForOutput(unsigned char *buf, int len, unsigned short d
 int CtiDNPTransport::initForInput(unsigned char *buf)
 {
     int retVal = NoError;
-
-//    reset();
 
     _inAppLayer     = buf;
     _inAppLayerLen  = 0;
@@ -150,8 +140,6 @@ int CtiDNPTransport::generate( CtiXfer &xfer )
 
                 _datalink.setToOutput((unsigned char *)&_outPacket, packetLen, _dstAddr, _srcAddr);
 
-                retVal = _datalink.generate(xfer);
-
                 //  datalink layer guarantees transmission, so we take it for granted
                 _seq++;
                 _outAppLayerSent += dataLen;
@@ -164,8 +152,6 @@ int CtiDNPTransport::generate( CtiXfer &xfer )
                 //  ACH: generate ACK for previous packet (or does it do that automagically?)
 
                 _datalink.setToInput();
-
-                retVal = _datalink.generate(xfer);
 
                 break;
             }
@@ -180,6 +166,8 @@ int CtiDNPTransport::generate( CtiXfer &xfer )
         }
     }
 
+    retVal = _datalink.generate(xfer);
+
     return retVal;
 }
 
@@ -190,37 +178,56 @@ int CtiDNPTransport::decode( CtiXfer &xfer, int status )
 
     retVal = _datalink.decode(xfer, status);
 
-    if( _datalink.isTransactionComplete() )
+    if( retVal )
     {
-        switch( _ioState )
+        _ioState = Failed;
+    }
+    else
+    {
+        if( _datalink.isTransactionComplete() )
         {
-            case Output:
+            switch( _ioState )
             {
-                //  ACH: verify secondary ACK (or will datalink layer do that?)
-
-                //  ???: do we always expect a response?
-                if( _outAppLayerLen == _outAppLayerSent )
+                case Output:
                 {
-                    _ioState = Input;
+                    if( _outAppLayerLen == _outAppLayerSent )
+                    {
+                        _ioState = Complete;
+                    }
+
+                    break;
                 }
 
-                break;
-            }
-
-            case Input:
-            {
-                if( _datalink.isTransactionComplete() )
+                case Input:
                 {
+                    int inLen, dataLen;
+
                     //  copy out the data
+                    inLen = _datalink.getInLength();
+                    _datalink.getInPayload((unsigned char *)&_inPacket);
+
+                    //  remove the header
+                    dataLen = inLen - sizeof(_inPacket.header);
+
+                    memcpy(&_inAppLayer[_inAppLayerRecv], _inPacket.data, dataLen);
+
+                    _inAppLayerRecv += dataLen;
+
+                    //  ACH: verify incoming sequence numbers
+
+                    if( _inPacket.header.final )
+                    {
+                        _ioState = Complete;
+                    }
+
+                    break;
                 }
 
-                break;
-            }
-
-            default:
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                default:
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
         }
     }
@@ -229,29 +236,14 @@ int CtiDNPTransport::decode( CtiXfer &xfer, int status )
 }
 
 
-bool CtiDNPTransport::sendComplete( void )
+bool CtiDNPTransport::isTransactionComplete( void )
 {
-    bool retVal = false;
-
-    if( _outAppLayerLen == _outAppLayerSent || _ioState != Output /* mildly redundant */ )
-        retVal = true;
-
-    return retVal;
-}
-
-
-bool CtiDNPTransport::recvComplete( void )
-{
-    bool retVal = false;
-
-    if( _ioState == Complete )
-        retVal = true;
-
-    return retVal;
+    return _ioState == Complete;
 }
 
 
 int CtiDNPTransport::getInputSize( void )
 {
-    return _inAppLayerLen;
+    return _inAppLayerRecv;
 }
+

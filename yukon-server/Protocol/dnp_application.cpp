@@ -10,13 +10,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/06/11 21:14:03 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/06/20 21:00:37 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "logger.h"
+#include "numstr.h"
 #include "dnp_application.h"
 
 CtiDNPApplication::CtiDNPApplication()
@@ -41,23 +42,23 @@ void CtiDNPApplication::setCommand( AppFuncCode func, unsigned short dstAddr, un
     _dstAddr = dstAddr;
     _srcAddr = srcAddr;
 
-    _appBufReqBytesUsed = 0;
+    _appReqBytesUsed = 0;
 
-    memset( &_appBufReq, 0, sizeof(_appBufReq) );
+    memset( &_appReq, 0, sizeof(_appReq) );
 
     //  don't set the state here - only matters on the porter side
 
     //  these values aren't necessarially static...  just likely to be so in our infantile requests
     //  ACH: eh
-    _appBufReq.ctrl.first       = 1;
-    _appBufReq.ctrl.final       = 1;
-    _appBufReq.ctrl.app_confirm = 0;
-    _appBufReq.ctrl.unsolicited = 0;
+    _appReq.ctrl.first       = 1;
+    _appReq.ctrl.final       = 1;
+    _appReq.ctrl.app_confirm = 0;
+    _appReq.ctrl.unsolicited = 0;
 
     _seqno = 0;
-    _appBufReq.ctrl.seq = _seqno;
+    _appReq.ctrl.seq = _seqno;
 
-    _appBufReq.func_code = (unsigned char)func;
+    _appReq.func_code = (unsigned char)func;
 }
 
 void CtiDNPApplication::addData( unsigned char *data, int len )
@@ -67,15 +68,15 @@ void CtiDNPApplication::addData( unsigned char *data, int len )
     if( len > 0 )
     {
         //  copy the data in
-        memcpy( &(_appBufReq.buf[_appBufReqBytesUsed]), data, len );
-        _appBufReqBytesUsed += len;
+        memcpy( &(_appReq.buf[_appReqBytesUsed]), data, len );
+        _appReqBytesUsed += len;
     }
 }
 
 
 int CtiDNPApplication::getLengthReq( void )
 {
-    return _appBufReqBytesUsed + ReqHeaderSize;
+    return _appReqBytesUsed + ReqHeaderSize;
 }
 
 void CtiDNPApplication::serializeReq( unsigned char *buf )
@@ -83,135 +84,86 @@ void CtiDNPApplication::serializeReq( unsigned char *buf )
     unsigned char *src;
     int srcLen;
 
-    src    = (unsigned char *)(&_appBufReq);
+    src    = (unsigned char *)(&_appReq);
     srcLen = getLengthReq();
 
-    //  add on the addressing bytes that sit in front of the _appBufReq struct...
+    //  add on the addressing bytes that sit in front of the _appReq struct...
     //    kind of a hack, but it has to be passed layer to layer
     src    -= 2 * (sizeof(short));
     srcLen += 2 * (sizeof(short));
 
     //  copy the packet (and addresses) into the buffer
     memcpy(buf, src, srcLen );
+
+    //  maybe move someday... ?  see comment below in restoreInbound
+    _hasOutput = false;
 }
 
 
 void CtiDNPApplication::restoreRsp( unsigned char *buf, int len )
 {
     //  copy the buffer into the packet
-    memcpy(&_appBufRsp, buf, len);
+    memcpy(&_appRsp, buf, len);
     //  and compute the length
-    _appBufRspBytesUsed = len - RspHeaderSize;
-}
+    _appRspBytesUsed = len - RspHeaderSize;
 
+    _inHasPoints = false;
 
-/*---  Porter-side functions  --*/
+    //  i'm a little bit wary of this...  someday, DNPApplication needs to keep track of a larger
+    //    byte buffer, and do more intelligent splitting and ack-ing.
+    //  someday, this shall be moved, as we will not always have a one-to-one in/out more-to-send relationship.
+    _hasOutput   = false;
 
-void CtiDNPApplication::restoreReq( unsigned char *buf, int len )
-{
-    unsigned char *src;
-    int srcLen;
-
-    //  move the restore point to the address vars that sit in front of the _appBufReq struct...
-    src    = (unsigned char *)(&_appBufReq);
-    src    -= 2 * (sizeof(short));
-
-    srcLen = len;
-
-    //  copy the buffer into the packet
-    memcpy(src, buf, len);
-
-    //  and compute the length
-    //    knock off the address byte length
-    srcLen  -= 2 * (sizeof(short));
-    _appBufReqBytesUsed = srcLen - ReqHeaderSize;
-
-    _ioState = Output;
-
-    //  wipe out the state of the underlying layer - its data has just changed
-    _transport.initForOutput((unsigned char *)&_appBufReq, getLengthReq(), _dstAddr, _srcAddr);
-}
-
-
-int CtiDNPApplication::getLengthRsp( void )
-{
-    return _appBufRspBytesUsed + RspHeaderSize;
-}
-
-
-void CtiDNPApplication::serializeRsp( unsigned char *buf )
-{
-    //  copy the packet into the buffer
-    memcpy(buf, &_appBufRsp, getLengthRsp() );
-}
-
-//  reply is always expected...  this code is deprecated, soon to be removed
-/*
-bool CtiDNPApplication::isReplyExpected( void )
-{
-    bool reply = false;
-
-    if( _appBufReq.func_code == RequestRead ) // || app layer confirm, eventually
-        reply = true;
-
-    return reply;
-}
-*/
-
-bool CtiDNPApplication::isTransactionComplete( void )
-{
-    bool complete;
-
-    //  will always receive Application Layer ack/status (two bytes of indications)
-    complete = _transport.sendComplete() && _transport.recvComplete();
-
-    //  ACH:  add code to allow fragmented application layer packets to be sent and received
-    //    ...will be on Scanner side...
-
-    return complete;
-}
-
-
-int CtiDNPApplication::generate( CtiXfer &xfer )
-{
-    _transport.generate(xfer);
-
-    return 0;
-}
-
-
-int CtiDNPApplication::decode( CtiXfer &xfer, int status )
-{
-    _transport.decode(xfer, status);
-
-    if( _transport.sendComplete() )
-    {
-        _transport.initForInput((unsigned char *)&_appBufRsp);
-    }
-
-    if( _transport.recvComplete() )
-    {
-        _appBufRspBytesUsed = _transport.getInputSize() - RspHeaderSize;
-        processInput();
-    }
-
-    return 0;
+    processInput();
 }
 
 
 void CtiDNPApplication::processInput( void )
 {
-    if( _appBufRsp.func_code == ResponseResponse )
     {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+
+        dout << "_appRsp.ctrl.func_code = " << (unsigned)_appRsp.func_code << endl;
+        dout << endl;
+        dout << "_appRsp.ctrl.first       = " << (unsigned)_appRsp.ctrl.first << endl;
+        dout << "_appRsp.ctrl.final       = " << (unsigned)_appRsp.ctrl.final << endl;
+        dout << "_appRsp.ctrl.app_confirm = " << (unsigned)_appRsp.ctrl.app_confirm << endl;
+        dout << "_appRsp.ctrl.unsolicited = " << (unsigned)_appRsp.ctrl.unsolicited << endl;
+        dout << "_appRsp.ctrl.seq         = " << (unsigned)_appRsp.ctrl.seq << endl;
+        dout << endl;
+        dout << "_appRsp.ind.all_stations = " << _appRsp.ind.all_stations << endl;
+        dout << "_appRsp.ind.already_exec = " << _appRsp.ind.already_exec << endl;
+        dout << "_appRsp.ind.bad_config   = " << _appRsp.ind.bad_config << endl;
+        dout << "_appRsp.ind.bad_function = " << _appRsp.ind.bad_function << endl;
+        dout << "_appRsp.ind.buf_overflow = " << _appRsp.ind.buf_overflow << endl;
+        dout << "_appRsp.ind.class_1      = " << _appRsp.ind.class_1 << endl;
+        dout << "_appRsp.ind.class_2      = " << _appRsp.ind.class_2 << endl;
+        dout << "_appRsp.ind.class_3      = " << _appRsp.ind.class_3 << endl;
+        dout << "_appRsp.ind.dev_trouble  = " << _appRsp.ind.dev_trouble << endl;
+        dout << "_appRsp.ind.need_time    = " << _appRsp.ind.need_time << endl;
+        dout << "_appRsp.ind.obj_unknown  = " << _appRsp.ind.obj_unknown << endl;
+        dout << "_appRsp.ind.out_of_range = " << _appRsp.ind.out_of_range << endl;
+        dout << "_appRsp.ind.reserved     = " << _appRsp.ind.reserved << endl;
+        dout << "_appRsp.ind.restart      = " << _appRsp.ind.restart << endl;
+        dout << endl;
+        dout << "data: " << endl;
+
+        for( int i = 0; i < _appRspBytesUsed; i++ )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWCString(CtiNumStr(_appRsp.buf[i]).hex().zpad(2)) << " ";
 
-            for( int i = 0; i < _appBufRspBytesUsed + RspHeaderSize; i++ )
-            {
-                dout << " " << hex << ((unsigned char *)&_appBufRsp)[i];
-
-            }
+            if( !(i % 20) && i )
+                dout << endl;
         }
+
+        dout << endl << endl;
+    }
+
+    if( _appRsp.ctrl.app_confirm )
+    {
+        setCommand(RequestConfirm, _dstAddr, _srcAddr);
+        _appReq.ctrl.seq = _appRsp.ctrl.seq;
+        _hasOutput = true;
     }
 }
 
@@ -228,28 +180,122 @@ void CtiDNPApplication::sendPoints( RWTPtrSlist< CtiMessage > &vgList, RWTPtrSli
 }
 
 
+bool CtiDNPApplication::hasOutput( void )
+{
+    return _hasOutput;
+}
 
 
-/*
-void CtiDNPApplication::initForOutput( void )
+/*---  Porter-side functions  --*/
+
+void CtiDNPApplication::restoreReq( unsigned char *buf, int len )
 {
     unsigned char *src;
     int srcLen;
 
-    src    = (unsigned char *)(&_appBufReq);
-    srcLen = _appBufReqBytesUsed + ReqHeaderSize;
+    //  move the restore point to the address vars that sit in front of the _appReq struct...
+    src    = (unsigned char *)(&_appReq);
+    src    -= 2 * (sizeof(short));
 
-    //  ACH:  initialization error codes
-    _transport.initForOutput( src, srcLen, _dstAddr, _srcAddr );
+    srcLen = len;
+
+    //  copy the buffer into the packet
+    memcpy(src, buf, len);
+
+    //  and compute the length
+    //    knock off the address byte length
+    srcLen  -= 2 * (sizeof(short));
+    _appReqBytesUsed = srcLen - ReqHeaderSize;
+
+    _ioState = Output;
+
+    //  wipe out the state of the underlying layer - its data has just changed
+    _transport.initForOutput((unsigned char *)&_appReq, getLengthReq(), _dstAddr, _srcAddr);
 }
 
 
-void CtiDNPApplication::initForInput( void )
+int CtiDNPApplication::getLengthRsp( void )
 {
-    _appBufRspBytesUsed = 0;
-    _inHasPoints = false;
-
-    memset( &_appBufRsp, 0, sizeof(_appBufRsp) );
+    return _appRspBytesUsed + RspHeaderSize;
 }
-*/
+
+
+void CtiDNPApplication::serializeRsp( unsigned char *buf )
+{
+    //  copy the packet into the buffer
+    memcpy(buf, &_appRsp, getLengthRsp() );
+}
+
+
+bool CtiDNPApplication::isTransactionComplete( void )
+{
+    bool complete;
+
+    //  ACH:  add code to allow fragmented application layer packets to be sent and received
+    //    ...but will be on Scanner side...
+
+    return _ioState == Complete;
+}
+
+
+int CtiDNPApplication::generate( CtiXfer &xfer )
+{
+    return _transport.generate(xfer);
+}
+
+
+int CtiDNPApplication::decode( CtiXfer &xfer, int status )
+{
+    int retVal;
+
+    retVal = _transport.decode(xfer, status);
+
+    if( _transport.isTransactionComplete() )
+    {
+        switch( _ioState )
+        {
+            case Output:
+            {
+                switch( _appReq.func_code )
+                {
+                    case RequestConfirm:
+                    case RequestDirectOpNoAck:
+                    case RequestFreezeClrNoAck:
+                    case RequestFreezeWTimeNoAck:
+                    case RequestImmedFreezeNoAck:
+                    {
+                        _ioState = Complete;
+                        break;
+                    }
+
+                    default:
+                    {
+                        _transport.initForInput((unsigned char *)&_appRsp);
+                        _ioState = Input;
+                        break;
+                    }
+                }
+
+                break;
+            }
+
+            case Input:
+            {
+                _appRspBytesUsed = _transport.getInputSize() - RspHeaderSize;
+
+                _ioState = Complete;
+
+                break;
+            }
+
+            default:
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+
+    return retVal;
+}
 

@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/06/11 21:14:03 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/06/20 21:00:38 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,10 +36,7 @@ protected:
         ReqHeaderSize = 2,
         RspHeaderSize = 4
     };
-/*
-    void initForOutput( void );
-    void initForInput ( void );
-*/
+
 private:
     void reset( void );
 
@@ -74,34 +71,34 @@ private:
 #pragma pack( push, 1 )
 
     short _dstAddr, _srcAddr;
-    struct appBufReq
+    struct appReq
     {
         _dnp_app_control ctrl;
         unsigned char func_code;
         unsigned char buf[DNP_APP_BUF_SIZE/* - sizeof(_dnp_app_control) - 1*/];
-    } _appBufReq;
+    } _appReq;
 
-    struct appBufRsp
+    struct appRsp
     {
         _dnp_app_control ctrl;
         unsigned char func_code;
         _dnp_app_indications ind;
         unsigned char buf[DNP_APP_BUF_SIZE/* - sizeof(_dnp_app_control) - 1 - sizeof(_dnp_app_indications)*/];
-    } _appBufRsp;
+    } _appRsp;
 
 #pragma pack( pop )
 
     int _seqno, _replyExpected;
-    int _appBufReqBytesUsed, _appBufRspBytesUsed;
-    bool _inHasPoints;
+    int _appReqBytesUsed, _appRspBytesUsed;
+    bool _inHasPoints, _hasOutput;
 
     enum ApplicationIOState
     {
         Uninitialized = 0,
         Output,
         Input,
-        Failed,
-        Complete
+        Complete,
+        Failed
     } _ioState;
 
 public:
@@ -145,6 +142,8 @@ public:
     void processInput( void );
     bool inHasPoints( void );
     void sendPoints( RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList );
+
+    bool hasOutput( void );
 
 
     enum AppFuncCode
