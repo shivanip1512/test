@@ -377,6 +377,19 @@ update YukonListEntry set YukonDefinitionID=1308 where EntryID=1055;
 update yukonuserrole set value = 'true' where userroleid = -107;
 
 
+alter table DynamicLMProgramDirect add StartedRampingOut date;
+update DynamicLMProgramDirect set StartedRampingOut = '01-JAN-1990';
+alter table DynamicLMProgramDirect modify StartedRampingOut date not null;
+
+alter table DynamicLMGroup add NextControlTime date;
+update DynamicLMGroup set NextControlTime = '01-JAN-1990';
+alter table DynamicLMGroup modify NextControlTime date not null;
+
+alter table DynamicLMGroup add InternalState number;
+update DynamicLMGroup set InternalState = 0;
+alter table DynamicLMGroup modify InternalState number not null;
+
+
 
 
 
