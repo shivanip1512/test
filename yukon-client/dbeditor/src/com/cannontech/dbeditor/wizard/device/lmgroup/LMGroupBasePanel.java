@@ -1104,9 +1104,9 @@ public Object getValue(Object val)
 		((com.cannontech.database.data.device.lm.LMGroupRipple) val).getLmGroupRipple().setRouteID( 
 			new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getRouteComboBox().getSelectedItem()).getYukonID()) );
 	}
-	else if(val instanceof com.cannontech.database.data.device.lm.LMGroupExpressComm)
+	else if(val instanceof com.cannontech.database.data.device.lm.LMGroupExpressCom)
 	{
-		((com.cannontech.database.data.device.lm.LMGroupExpressComm) val).getLMGroupExpressComm().setRouteID( 
+		((com.cannontech.database.data.device.lm.LMGroupExpressCom) val).getLMGroupExpressComm().setRouteID( 
 			new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getRouteComboBox().getSelectedItem()).getYukonID()) );
 	}
 
@@ -1343,9 +1343,9 @@ public void setValue(Object val)
       {
 			assignedRouteID = ((com.cannontech.database.data.device.lm.LMGroupRipple)lmGroup).getLmGroupRipple().getRouteID().intValue();
       }
-      else if (lmGroup instanceof com.cannontech.database.data.device.lm.LMGroupExpressComm)
+      else if (lmGroup instanceof com.cannontech.database.data.device.lm.LMGroupExpressCom)
       {
-         assignedRouteID = ((com.cannontech.database.data.device.lm.LMGroupExpressComm)lmGroup).getLMGroupExpressComm().getRouteID().intValue();
+         assignedRouteID = ((com.cannontech.database.data.device.lm.LMGroupExpressCom)lmGroup).getLMGroupExpressComm().getRouteID().intValue();
       }
 
 		for( int i = 0 ; i < routes.size(); i++ )

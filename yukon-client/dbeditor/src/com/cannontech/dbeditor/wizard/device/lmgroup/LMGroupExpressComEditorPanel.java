@@ -1,6 +1,6 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
-import com.cannontech.database.db.device.lm.LMGroupExpressCommAddress;
+import com.cannontech.database.db.device.lm.LMGroupExpressComAddress;
 /**
  * This type was created in VisualAge.
  */
@@ -682,17 +682,17 @@ private void connEtoC9(javax.swing.event.CaretEvent arg1) {
 /**
  * Insert the method's description here.
  * Creation date: (6/5/2002 10:46:06 AM)
- * @return com.cannontech.database.db.device.lm.LMGroupExpressCommAddress
+ * @return com.cannontech.database.db.device.lm.LMGroupExpressComAddress
  * @param combo javax.swing.JComboBox
  * @param textField javax.swing.JTextField
  * @param type java.lang.String
  */
-private com.cannontech.database.db.device.lm.LMGroupExpressCommAddress createAddress(javax.swing.JComboBox combo, javax.swing.JTextField textField, String type) 
+private com.cannontech.database.db.device.lm.LMGroupExpressComAddress createAddress(javax.swing.JComboBox combo, javax.swing.JTextField textField, String type) 
 {
 		
 	if( textField.getText() == null || textField.getText().length() <= 0 )
 	{
-		return com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.NONE_ADDRESS;
+		return com.cannontech.database.db.device.lm.LMGroupExpressComAddress.NONE_ADDRESS;
 	}
 	else
 	{
@@ -700,27 +700,27 @@ private com.cannontech.database.db.device.lm.LMGroupExpressCommAddress createAdd
 		
 		if( item != null )
 		{
-			com.cannontech.database.db.device.lm.LMGroupExpressCommAddress address = null;
+			com.cannontech.database.db.device.lm.LMGroupExpressComAddress address = null;
 			
-			if( item instanceof com.cannontech.database.db.device.lm.LMGroupExpressCommAddress )
+			if( item instanceof com.cannontech.database.db.device.lm.LMGroupExpressComAddress )
 			{
-				address = (com.cannontech.database.db.device.lm.LMGroupExpressCommAddress)item;
+				address = (com.cannontech.database.db.device.lm.LMGroupExpressComAddress)item;
 			}
 			else   //a new address is created				
-				address = new com.cannontech.database.db.device.lm.LMGroupExpressCommAddress(type);
+				address = new com.cannontech.database.db.device.lm.LMGroupExpressComAddress(type);
 			
 			Integer addValue = new Integer(textField.getText());
 			
-			if( address.equals(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.NONE_ADDRESS)
-				 || addValue.equals(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.NONE_ADDRESS.getAddress()) )				
+			if( address.equals(com.cannontech.database.db.device.lm.LMGroupExpressComAddress.NONE_ADDRESS)
+				 || addValue.equals(com.cannontech.database.db.device.lm.LMGroupExpressComAddress.NONE_ADDRESS.getAddress()) )				
 			{
 				
 
-				if( !addValue.equals(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.NONE_ADDRESS.getAddress()) )
+				if( !addValue.equals(com.cannontech.database.db.device.lm.LMGroupExpressComAddress.NONE_ADDRESS.getAddress()) )
 				{
 					//we have a none address selected but have a non zero id typed
-					com.cannontech.database.db.device.lm.LMGroupExpressCommAddress 
-							addressTemp = new com.cannontech.database.db.device.lm.LMGroupExpressCommAddress(type);
+					com.cannontech.database.db.device.lm.LMGroupExpressComAddress 
+							addressTemp = new com.cannontech.database.db.device.lm.LMGroupExpressComAddress(type);
 							
 					addressTemp.setAddress( new Integer(textField.getText()) );
 					addressTemp.setAddressName( textField.getText() ); //just use the address as the name
@@ -728,7 +728,7 @@ private com.cannontech.database.db.device.lm.LMGroupExpressCommAddress createAdd
 					return addressTemp;
 				}
 				else
-					return com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.NONE_ADDRESS;				
+					return com.cannontech.database.db.device.lm.LMGroupExpressComAddress.NONE_ADDRESS;				
 				
 			}
 			else
@@ -746,7 +746,7 @@ private com.cannontech.database.db.device.lm.LMGroupExpressCommAddress createAdd
 		}
 		else
 		{		
-			com.cannontech.database.db.device.lm.LMGroupExpressCommAddress addressTemp = new com.cannontech.database.db.device.lm.LMGroupExpressCommAddress(type);
+			com.cannontech.database.db.device.lm.LMGroupExpressComAddress addressTemp = new com.cannontech.database.db.device.lm.LMGroupExpressComAddress(type);
 			addressTemp.setAddress( new Integer(textField.getText()) );
 			addressTemp.setAddressName( textField.getText() ); //just use the address as the name
 
@@ -1302,7 +1302,7 @@ private javax.swing.JComboBox getJComboBoxFEED() {
 			// user code begin {1}
 
 			ivjJComboBoxFEED.addItem( STRING_NEW );
-			ivjJComboBoxFEED.addItem( com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.NONE_ADDRESS );
+			ivjJComboBoxFEED.addItem( com.cannontech.database.db.device.lm.LMGroupExpressComAddress.NONE_ADDRESS );
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1330,7 +1330,7 @@ private javax.swing.JComboBox getJComboBoxGEO() {
 			// user code begin {1}
 
 			ivjJComboBoxGEO.addItem( STRING_NEW );
-			ivjJComboBoxGEO.addItem( com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.NONE_ADDRESS );
+			ivjJComboBoxGEO.addItem( com.cannontech.database.db.device.lm.LMGroupExpressComAddress.NONE_ADDRESS );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1358,7 +1358,7 @@ private javax.swing.JComboBox getJComboBoxPROG() {
 			// user code begin {1}
 
 			ivjJComboBoxPROG.addItem( STRING_NEW );
-			ivjJComboBoxPROG.addItem( com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.NONE_ADDRESS );
+			ivjJComboBoxPROG.addItem( com.cannontech.database.db.device.lm.LMGroupExpressComAddress.NONE_ADDRESS );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1386,7 +1386,7 @@ private javax.swing.JComboBox getJComboBoxSPID() {
 			// user code begin {1}
 
 			ivjJComboBoxSPID.addItem( STRING_NEW );
-			//ivjJComboBoxSPID.addItem( com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.NONE_ADDRESS );
+			//ivjJComboBoxSPID.addItem( com.cannontech.database.db.device.lm.LMGroupExpressComAddress.NONE_ADDRESS );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1414,7 +1414,7 @@ private javax.swing.JComboBox getJComboBoxSUB() {
 			// user code begin {1}
 
 			ivjJComboBoxSUB.addItem( STRING_NEW );
-			ivjJComboBoxSUB.addItem( com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.NONE_ADDRESS );
+			ivjJComboBoxSUB.addItem( com.cannontech.database.db.device.lm.LMGroupExpressComAddress.NONE_ADDRESS );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -2362,65 +2362,65 @@ private javax.swing.JTextField getJTextFieldZipAddress() {
  */
 public Object getValue(Object o) 
 {
-	com.cannontech.database.data.device.lm.LMGroupExpressComm group = null;
+	com.cannontech.database.data.device.lm.LMGroupExpressCom group = null;
 	
 	if( o instanceof com.cannontech.database.data.multi.MultiDBPersistent )
 	{
-		group = (com.cannontech.database.data.device.lm.LMGroupExpressComm)
+		group = (com.cannontech.database.data.device.lm.LMGroupExpressCom)
 					com.cannontech.database.data.multi.MultiDBPersistent.getFirstObjectOfType(
-								com.cannontech.database.data.device.lm.LMGroupExpressComm.class,
+								com.cannontech.database.data.device.lm.LMGroupExpressCom.class,
 								(com.cannontech.database.data.multi.MultiDBPersistent)o );
 	}
 	else if( o instanceof com.cannontech.database.data.multi.SmartMultiDBPersistent )
-		group = (com.cannontech.database.data.device.lm.LMGroupExpressComm)
+		group = (com.cannontech.database.data.device.lm.LMGroupExpressCom)
 					((com.cannontech.database.data.multi.SmartMultiDBPersistent)o).getOwnerDBPersistent();
 	
 	
-	if( o instanceof com.cannontech.database.data.device.lm.LMGroupExpressComm || group != null )
+	if( o instanceof com.cannontech.database.data.device.lm.LMGroupExpressCom || group != null )
 	{
 		if( group == null )
-			group = (com.cannontech.database.data.device.lm.LMGroupExpressComm) o;
+			group = (com.cannontech.database.data.device.lm.LMGroupExpressCom) o;
 
 		group.setServiceProviderAddress( createAddress(
 				getJComboBoxSPID(), 
 				getJTextFieldSPIDAddress(), 
-				com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.TYPE_SERVICE) );
+				com.cannontech.database.db.device.lm.LMGroupExpressComAddress.TYPE_SERVICE) );
 
 		group.setFeederAddress( createAddress(
 				getJComboBoxFEED(), 
 				getJTextFieldFeedAddress(), 
-				com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.TYPE_FEEDER) );
+				com.cannontech.database.db.device.lm.LMGroupExpressComAddress.TYPE_FEEDER) );
 		
 		group.setSubstationAddress( createAddress(
 				getJComboBoxSUB(), 
 				getJTextFieldSubAddress(), 
-				com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.TYPE_SUBSTATION) );
+				com.cannontech.database.db.device.lm.LMGroupExpressComAddress.TYPE_SUBSTATION) );
 
 		group.setGeoAddress( createAddress(
 				getJComboBoxGEO(), 
 				getJTextFieldGeoAddress(), 
-				com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.TYPE_GEO) );
+				com.cannontech.database.db.device.lm.LMGroupExpressComAddress.TYPE_GEO) );
 
 		group.setProgramAddress( createAddress(
 				getJComboBoxPROG(), 
 				getJTextFieldProgAddress(), 
-				com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.TYPE_PROGRAM) );
+				com.cannontech.database.db.device.lm.LMGroupExpressComAddress.TYPE_PROGRAM) );
 
 
 		if( getJTextFieldSplinter().getText() != null && getJTextFieldSplinter().getText().length() > 0 )
 			group.getLMGroupExpressComm().setSplinterAddress( new Integer(getJTextFieldSplinter().getText()) );
       else
-         group.getLMGroupExpressComm().setSplinterAddress( LMGroupExpressCommAddress.NONE_ADDRESS_ID );
+         group.getLMGroupExpressComm().setSplinterAddress( LMGroupExpressComAddress.NONE_ADDRESS_ID );
 
 		if( getJTextFieldUserAddress().getText() != null && getJTextFieldUserAddress().getText().length() > 0 )			
 			group.getLMGroupExpressComm().setUdAddress( new Integer(getJTextFieldUserAddress().getText()) );
       else
-         group.getLMGroupExpressComm().setUdAddress( LMGroupExpressCommAddress.NONE_ADDRESS_ID );
+         group.getLMGroupExpressComm().setUdAddress( LMGroupExpressComAddress.NONE_ADDRESS_ID );
 
 		if( getJTextFieldZipAddress().getText() != null && getJTextFieldZipAddress().getText().length() > 0 )		
 			group.getLMGroupExpressComm().setZipCodeAddress( new Integer(getJTextFieldZipAddress().getText()) );
       else
-         group.getLMGroupExpressComm().setZipCodeAddress( LMGroupExpressCommAddress.NONE_ADDRESS_ID );
+         group.getLMGroupExpressComm().setZipCodeAddress( LMGroupExpressComAddress.NONE_ADDRESS_ID );
 
 		if( getJCheckBoxSerial().isSelected() 
 			 && getJTextFieldSerialAddress().getText() != null 
@@ -2429,7 +2429,7 @@ public Object getValue(Object o)
 			group.getLMGroupExpressComm().setSerialNumber( getJTextFieldSerialAddress().getText() );
 		}
       else
-         group.getLMGroupExpressComm().setSerialNumber( LMGroupExpressCommAddress.NONE_ADDRESS_ID.toString() );
+         group.getLMGroupExpressComm().setSerialNumber( LMGroupExpressComAddress.NONE_ADDRESS_ID.toString() );
          
 		StringBuffer addressUsage = new StringBuffer();
 		StringBuffer relayUsage = new StringBuffer();
@@ -2513,19 +2513,19 @@ private void handleException(Throwable exception) {
 private void initAddressJComboBoxes() 
 {
 	//init SPIDS
-	com.cannontech.database.db.device.lm.LMGroupExpressCommAddress[] addresses = 
-		com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.getAllExpressCommAddressWithNames();
+	com.cannontech.database.db.device.lm.LMGroupExpressComAddress[] addresses = 
+		com.cannontech.database.db.device.lm.LMGroupExpressComAddress.getAllExpressCommAddressWithNames();
 
 	for( int i = 0; i < addresses.length; i++ )
-		if( addresses[i].getAddressType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.TYPE_SERVICE) )
+		if( addresses[i].getAddressType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMGroupExpressComAddress.TYPE_SERVICE) )
 			getJComboBoxSPID().addItem( addresses[i] );
-		else if( addresses[i].getAddressType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.TYPE_GEO) )
+		else if( addresses[i].getAddressType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMGroupExpressComAddress.TYPE_GEO) )
 			getJComboBoxGEO().addItem( addresses[i] );
-		else if( addresses[i].getAddressType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.TYPE_SUBSTATION) )
+		else if( addresses[i].getAddressType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMGroupExpressComAddress.TYPE_SUBSTATION) )
 			getJComboBoxSUB().addItem( addresses[i] );
-		else if( addresses[i].getAddressType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.TYPE_FEEDER) )
+		else if( addresses[i].getAddressType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMGroupExpressComAddress.TYPE_FEEDER) )
 			getJComboBoxFEED().addItem( addresses[i] );
-		else if( addresses[i].getAddressType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.TYPE_PROGRAM) )
+		else if( addresses[i].getAddressType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMGroupExpressComAddress.TYPE_PROGRAM) )
 			getJComboBoxPROG().addItem( addresses[i] );
 		else
 		{
@@ -2688,10 +2688,10 @@ public void jCheckBoxSerial_ActionPerformed(java.awt.event.ActionEvent actionEve
 public void jComboBoxFEED_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 
-	if( getJComboBoxFEED().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressCommAddress )
+	if( getJComboBoxFEED().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressComAddress )
 	{
-		com.cannontech.database.db.device.lm.LMGroupExpressCommAddress selected =
-				(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress)getJComboBoxFEED().getSelectedItem();
+		com.cannontech.database.db.device.lm.LMGroupExpressComAddress selected =
+				(com.cannontech.database.db.device.lm.LMGroupExpressComAddress)getJComboBoxFEED().getSelectedItem();
 
 		getJTextFieldFeedAddress().setText( selected.getAddress().toString() );
 
@@ -2715,10 +2715,10 @@ public void jComboBoxFEED_ActionPerformed(java.awt.event.ActionEvent actionEvent
 public void jComboBoxGEO_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 
-	if( getJComboBoxGEO().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressCommAddress )
+	if( getJComboBoxGEO().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressComAddress )
 	{
-		com.cannontech.database.db.device.lm.LMGroupExpressCommAddress selected =
-				(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress)getJComboBoxGEO().getSelectedItem();
+		com.cannontech.database.db.device.lm.LMGroupExpressComAddress selected =
+				(com.cannontech.database.db.device.lm.LMGroupExpressComAddress)getJComboBoxGEO().getSelectedItem();
 
 		getJTextFieldGeoAddress().setText( selected.getAddress().toString() );
 		
@@ -2742,10 +2742,10 @@ public void jComboBoxGEO_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 public void jComboBoxPROG_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 
-	if( getJComboBoxPROG().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressCommAddress )
+	if( getJComboBoxPROG().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressComAddress )
 	{
-		com.cannontech.database.db.device.lm.LMGroupExpressCommAddress selected =
-				(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress)getJComboBoxPROG().getSelectedItem();
+		com.cannontech.database.db.device.lm.LMGroupExpressComAddress selected =
+				(com.cannontech.database.db.device.lm.LMGroupExpressComAddress)getJComboBoxPROG().getSelectedItem();
 
 		getJTextFieldProgAddress().setText( selected.getAddress().toString() );
 
@@ -2769,10 +2769,10 @@ public void jComboBoxPROG_ActionPerformed(java.awt.event.ActionEvent actionEvent
 public void jComboBoxSPID_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 
-	if( getJComboBoxSPID().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressCommAddress )
+	if( getJComboBoxSPID().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressComAddress )
 	{
-		com.cannontech.database.db.device.lm.LMGroupExpressCommAddress selected =
-				(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress)getJComboBoxSPID().getSelectedItem();
+		com.cannontech.database.db.device.lm.LMGroupExpressComAddress selected =
+				(com.cannontech.database.db.device.lm.LMGroupExpressComAddress)getJComboBoxSPID().getSelectedItem();
 
 		getJTextFieldSPIDAddress().setText( selected.getAddress().toString() );
 		
@@ -2796,10 +2796,10 @@ public void jComboBoxSPID_ActionPerformed(java.awt.event.ActionEvent actionEvent
 public void jComboBoxSUB_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 
-	if( getJComboBoxSUB().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressCommAddress )
+	if( getJComboBoxSUB().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressComAddress )
 	{
-		com.cannontech.database.db.device.lm.LMGroupExpressCommAddress selected =
-				(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress)getJComboBoxSUB().getSelectedItem();
+		com.cannontech.database.db.device.lm.LMGroupExpressComAddress selected =
+				(com.cannontech.database.db.device.lm.LMGroupExpressComAddress)getJComboBoxSUB().getSelectedItem();
 
 		getJTextFieldSubAddress().setText( selected.getAddress().toString() );
 
@@ -2846,9 +2846,9 @@ public static void main(java.lang.String[] args) {
  */
 public void setValue(Object o) 
 {
-	if( o instanceof com.cannontech.database.data.device.lm.LMGroupExpressComm )
+	if( o instanceof com.cannontech.database.data.device.lm.LMGroupExpressCom )
 	{
-		com.cannontech.database.data.device.lm.LMGroupExpressComm group = (com.cannontech.database.data.device.lm.LMGroupExpressComm) o;
+		com.cannontech.database.data.device.lm.LMGroupExpressCom group = (com.cannontech.database.data.device.lm.LMGroupExpressCom) o;
 
 		getJComboBoxSPID().setSelectedItem( group.getServiceProviderAddress() );
 		getJTextFieldSPIDAddress().setText( group.getServiceProviderAddress().getAddress().toString() );
@@ -2874,7 +2874,7 @@ public void setValue(Object o)
 
 		
 		Integer serial = new Integer(group.getLMGroupExpressComm().getSerialNumber());
-		if( serial.intValue() > LMGroupExpressCommAddress.NONE_ADDRESS_ID.intValue() )
+		if( serial.intValue() > LMGroupExpressComAddress.NONE_ADDRESS_ID.intValue() )
 		{
 			getJCheckBoxSerial().doClick();
 			getJTextFieldSerialAddress().setText( serial.toString() );
