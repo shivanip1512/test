@@ -1426,7 +1426,7 @@ void CtiCCFeeder::fillOutBusOptimizedInfo(BOOL peakTimeFlag)
         _busoptimizedvaroffset = getCurrentVarLoadPointValue() - (setpoint - getLowerBandwidth());
     }
     //if current var load is within the range defined by the set point plus/minus the bandwidth
-    else if( (getCurrentVarLoadPointValue() > (setpoint - getLowerBandwidth())) ||
+    else if( (getCurrentVarLoadPointValue() > (setpoint - getLowerBandwidth())) &&
              (getCurrentVarLoadPointValue() < (setpoint + getUpperBandwidth())) )
     {
         _busoptimizedvarcategory = 1;
