@@ -25,7 +25,9 @@ public interface IAlarmDefs
 		"Non-updated",
 		"Rate Of Change",
 		"Limit Set 1",
-		"Limit Set 2"
+		"Limit Set 2",
+		"High Reasonability",
+		"Low Reasonability"
 	};
 	
 }
