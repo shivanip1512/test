@@ -66,12 +66,12 @@
 <%
 		int selectedItemNo = -1;	// selected thermostat no.
 		
-		if (pageName.indexOf("Inventory.jsp") >= 0) {
+		if (pageName.indexOf("Item=") >= 0) {
 			StringTokenizer st = new StringTokenizer(pageName, "?&");
 			while (st.hasMoreTokens()) {
 				String param = st.nextToken();
-				if (param.startsWith("InvNo=")) {
-					selectedItemNo = Integer.parseInt(param.substring(6));
+				if (param.startsWith("Item=")) {
+					selectedItemNo = Integer.parseInt(param.substring(5));
 					break;
 				}
 			}
@@ -227,22 +227,22 @@ pageLinks = new Array(<%= thermostats.getStarsLMHardwareCount() %>);
 </script>
 
 <div id="thermostatMenu" class="bgMenu" style="width:85px" align="left">
-  <div id="MenuItem" style="width:85px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(0)">
+  <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:85px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(0)">
   &nbsp;&nbsp;&nbsp;Change Label
   </div>
-  <div id="MenuItemSelected" style="width:85px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(0)">
+  <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:85px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(0)">
   &nbsp;&#149;&nbsp;Change Label
   </div>
-  <div id="MenuItem" style="width:85px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(1)">
+  <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:85px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(1)">
   &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule") %>
   </div>
-  <div id="MenuItemSelected" style="width:85px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(1)">
+  <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:85px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(1)">
   &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule") %>
   </div>
-  <div id="MenuItem" style="width:85px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(2)">
+  <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:85px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(2)">
   &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual") %>
   </div>
-  <div id="MenuItemSelected" style="width:85px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(2)">
+  <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:85px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(2)">
   &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual") %>
   </div>
 </div>
