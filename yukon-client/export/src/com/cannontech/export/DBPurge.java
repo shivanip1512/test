@@ -37,7 +37,7 @@ public String appendBatchFileParms(String batchString)
 
 	batchString += "-d" + getExportProperties().getDaysToRetain() + " ";
 
-	batchString += "-h" + getRunTimeHour().intValue() + " ";
+	batchString += "-h" + getExportProperties().getRunTimeHour().intValue() + " ";
 
 	if( !getExportProperties().isPurgeData() )
 		batchString += "-NOPURGE ";
@@ -51,7 +51,7 @@ public String appendBatchFileParms(String batchString)
  */
 public String getFileName()
 {
-	String name = getDirectory();
+	String name = new String();
 	name += filePrefix;
 	name += FILENAME_FORMAT.format(getMaxDateToPurge().getTime());
 	name += fileExtension;
@@ -75,52 +75,6 @@ private java.util.GregorianCalendar getMaxDateToPurge()
  */
 public void initialize()
 {
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 11:53:11 AM)
- * @param args java.lang.String[]
- */
-public static void main(String[] args) 
-{
-	/* Have to wait until here so host/port are initialized first.
-
-	while (true)
-	{
-		java.util.Date now = new java.util.Date();
-		
-		if (dbPurge.getNextRunTime().getTime().compareTo(now) <= 0)
-		{
-			dbPurge.purgeSystemLogDataVector = new java.util.Vector();
-			
-			dbPurge.retrieveSystemLog();
-			dbPurge.writeToFile();
-			
-			if (dbPurge.purgeData)
-				dbPurge.purgeSystemLog();
-			else
-				logger.log("Data was NOT purged from database.  -NOPURGE param was set on startup!", com.cannontech.common.util.LogWriter.DEBUG);
-
-			dbPurge.figureNextRunTime();
-			dbPurge.purgeSystemLogDataVector = null;
-
-		}
-		else
-		{
-			try
-			{
-				Thread.sleep(900000);	//15 minutes
-				System.gc();
-			}
-			catch (InterruptedException ie)
-			{
-				com.cannontech.clientutils.CTILogger.info("Interrupted Exception!!!");
-				return;
-			}
-			
-		}
-	}
-	*/
 }
 /**
  * Insert the method's description here.
@@ -169,9 +123,9 @@ public void parseCommandLineArgs(String[] args)
 	}
 	else
 	{
-		com.cannontech.clientutils.CTILogger.info("Usage:  format=<formatType> -dNumDaysToRetain -fFileDirectory -hrunTimeHour");
-		com.cannontech.clientutils.CTILogger.info("Ex.		format=dbpurge -d90 -fc:/yukon/dbpurge/ -h1 {optional: -NOPURGE}");
-		com.cannontech.clientutils.CTILogger.info("** All parameters will be defaulted to the above if not specified");
+		logEvent("Usage:  format=<formatID> -dNumDaysToRetain -fFileDirectory -hrunTimeHour", com.cannontech.common.util.LogWriter.INFO);
+		logEvent("Ex.		format=1 -d90 -fc:/yukon/dbpurge/ -h1 {optional: -NOPURGE}", com.cannontech.common.util.LogWriter.INFO);
+		logEvent("** All parameters will be defaulted to the above if not specified", com.cannontech.common.util.LogWriter.INFO);
 	}
 
 }
@@ -186,7 +140,6 @@ public void purgeSystemLog()
 	String deleteString = "DELETE FROM SYSTEMLOG WHERE DATETIME < ?";
 
 	logEvent("...Purging database for Max Date = " + getMaxDateToPurge().getTime(), com.cannontech.common.util.LogWriter.INFO);
-	com.cannontech.clientutils.CTILogger.info("...Purging database for Max Date = " + getMaxDateToPurge().getTime());
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.Connection conn = null;
 
@@ -215,8 +168,7 @@ public void purgeSystemLog()
 			e.printStackTrace();
 		}
 	}
-	logEvent("...PURGING SYSTEMLOG DATA: Took " + (System.currentTimeMillis() - timer) + 
-					" millis.", com.cannontech.common.util.LogWriter.INFO);
+	logEvent("...PURGING SYSTEMLOG DATA: Took " + (System.currentTimeMillis() - timer) + " millis.", com.cannontech.common.util.LogWriter.INFO);
 }
 /**
  * Insert the method's description here.
@@ -234,9 +186,7 @@ public void retrieveExportData()
 	java.sql.Connection conn = null;
 	java.sql.ResultSet rset = null;
 
-	logEvent("...Exporting to file for Max Date = " + getMaxDateToPurge().getTime(), com.cannontech.common.util.LogWriter.INFO);
-	com.cannontech.clientutils.CTILogger.info("...Exporting to file for Max Date = " + getMaxDateToPurge().getTime());
-	
+	logEvent("DBPurge for for Max Date = " + getMaxDateToPurge().getTime(), com.cannontech.common.util.LogWriter.INFO);
 	try
 	{
 		
@@ -246,6 +196,7 @@ public void retrieveExportData()
 		pstmt.setTimestamp(1, new java.sql.Timestamp(getMaxDateToPurge().getTime().getTime()));
 		rset = pstmt.executeQuery();
 		
+		logEvent(" *Start looping through return resultset", com.cannontech.common.util.LogWriter.INFO);		
 		while (rset.next())
 		{
 			Integer logid = new Integer(rset.getInt(1));
@@ -330,8 +281,7 @@ public void retrieveExportData()
 			e.printStackTrace();
 		}
 	}
-	logEvent("...SYSTEMLOG DATA COLLECTION: Took " + (System.currentTimeMillis() - timer) + 
-					" millis.", com.cannontech.common.util.LogWriter.INFO);
+	logEvent("@" + this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer) + " millis", com.cannontech.common.util.LogWriter.INFO);
 }
 /**
  * Insert the method's description here.

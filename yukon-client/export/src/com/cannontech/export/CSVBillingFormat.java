@@ -54,7 +54,7 @@ public String appendBatchFileParms(String batchString)
  */
 public String getFileName()
 {
-	String name = getDirectory();
+	String name = new String();
 	name += filePrefix;
 	name += FILENAME_FORMAT.format(getExportProperties().getMaxTimestamp().getTime());
 	name += fileExtension;
@@ -175,9 +175,9 @@ public void parseCommandLineArgs(String[] args)
 	}
 	else
 	{
-		com.cannontech.clientutils.CTILogger.info("Usage:  CSVBilling FILE=FileDirectory START=mmddyyyy STOP=mmddyyyy");
-		com.cannontech.clientutils.CTILogger.info("Ex.		CSVBilling FILE=c:/yukon/export/ START=02/28/2002 STOP=03/01/2002");
-		com.cannontech.clientutils.CTILogger.info("Parameters not specifed will be defaulted to c:/yukon/export and \"yesterday\" run date.");
+		logEvent("Usage:  format=<formatID> FILE=FileDirectory START=mmddyyyy STOP=mmddyyyy", com.cannontech.common.util.LogWriter.INFO);
+		logEvent("Ex.	   format=0 FILE=c:/yukon/export/ START=02/28/2002 STOP=03/01/2002", com.cannontech.common.util.LogWriter.INFO);
+		logEvent("Parameters not specifed will be defaulted to c:/yukon/export and \"yesterday\" run date.", com.cannontech.common.util.LogWriter.INFO);
 	}
 }
 /**
@@ -215,7 +215,7 @@ public void retrieveBaselineData(int baselinePointID)
 
 		if( conn == null )
 		{
-			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
+			logEvent(getClass() + ":  Error getting database connection.", com.cannontech.common.util.LogWriter.INFO);
 			return;
 		}
 		else
@@ -255,8 +255,7 @@ public void retrieveBaselineData(int baselinePointID)
 			e.printStackTrace();
 		}
 	}
-	logEvent("...BASELINE DATA RETRIEVED: Took " + (System.currentTimeMillis() - timer) + 
-					" millis.", com.cannontech.common.util.LogWriter.INFO);
+	logEvent("...BASELINE DATA RETRIEVED: Took " + (System.currentTimeMillis() - timer) + " millis.", com.cannontech.common.util.LogWriter.INFO);
 	return;
 }
 /**
@@ -292,18 +291,15 @@ public void retrieveBillingData(int keyId, com.cannontech.export.record.CSVBilli
 	java.sql.Connection conn = null;
 	java.sql.PreparedStatement stmt = null;
 	java.sql.ResultSet rset = null;
-//	System.out.println("retrieveBillingData: Min = " + getMinTimestamp().getTime() + " Max = " + getMaxTimestamp().getTime());
+
 	retrieveBaselineData(csvBillingCust.getBaselinePointId().intValue());
-
-
-	
 	try
 	{
 		conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
 
 		if( conn == null )
 		{
-			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
+			logEvent(getClass() + ":  Error getting database connection.", com.cannontech.common.util.LogWriter.INFO);
 			return;
 		}
 		else
@@ -426,6 +422,9 @@ public void retrieveCustomerData()
 	java.sql.ResultSet rset = null;
 
 	java.util.Hashtable energyNumbersHashTable = retrieveEnergyNumbers("yukon");
+	if( energyNumbersHashTable == null)
+		return;
+		
 	customerHashtable = new java.util.Hashtable(10);
 	
 	try
@@ -434,7 +433,7 @@ public void retrieveCustomerData()
 
 		if( conn == null )
 		{
-			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
+			logEvent(getClass() + ":  Error getting database connection.", com.cannontech.common.util.LogWriter.INFO);
 			return;
 		}
 		else
@@ -481,8 +480,7 @@ public void retrieveCustomerData()
 			e.printStackTrace();
 		}
 	}
-	logEvent("...CUSOTMER DATA RETRIEVED: Took " + (System.currentTimeMillis() - timer) + 
-					" millis.", com.cannontech.common.util.LogWriter.INFO);
+	logEvent("...CUSOTMER DATA RETRIEVED: Took " + (System.currentTimeMillis() - timer) + " millis.", com.cannontech.common.util.LogWriter.INFO);
 	return;
 }
 	/**
@@ -519,9 +517,9 @@ public java.util.Hashtable retrieveEnergyNumbers(String dbAlias)
 	catch(java.io.FileNotFoundException fnfe)
 	{
 		//fnfe.printStackTrace();
-		com.cannontech.clientutils.CTILogger.info("***********************************************************************************************");
-		com.cannontech.clientutils.CTILogger.info("Cannot find " + getExportProperties().getEnergyFileName().toString() + ", aborting.");
-		com.cannontech.clientutils.CTILogger.info("***********************************************************************************************");
+		logEvent("***********************************************************************************************", com.cannontech.common.util.LogWriter.INFO);
+		logEvent("Cannot find " + getExportProperties().getEnergyFileName().toString() + ", aborting.", com.cannontech.common.util.LogWriter.INFO);
+		logEvent("***********************************************************************************************", com.cannontech.common.util.LogWriter.INFO);
 		return null;	//with null return, meternumbers will be used in place of accountnumbers
 	}
 
@@ -560,6 +558,7 @@ public java.util.Hashtable retrieveEnergyNumbers(String dbAlias)
  */
 public void retrieveExportData()
 {
+	long timer = System.currentTimeMillis();
 	if( getExportProperties().isShowColumnHeadings())
 	{
 		//Add a title record
@@ -574,12 +573,12 @@ public void retrieveExportData()
 
 	logEvent("...Retrieving data for Date > " + getExportProperties().getMinTimestamp().getTime() +
 		" AND <= " + getExportProperties().getMaxTimestamp().getTime(), com.cannontech.common.util.LogWriter.INFO);
-	com.cannontech.clientutils.CTILogger.info("...Retrieving data for Date > " + getExportProperties().getMinTimestamp().getTime() +
-		" AND <= " + getExportProperties().getMaxTimestamp().getTime());
 		
 	//Get a hashtable of records of all curtailment customers
 	retrieveCustomerData();
 
+	if(customerHashtable == null)
+		return;
 	//Loop through all customers and get all curtailment data for the timeframe.
 	java.util.Set keyset = customerHashtable.keySet();
 	java.util.Iterator iter = keyset.iterator();
@@ -599,7 +598,8 @@ public void retrieveExportData()
 	java.util.GregorianCalendar newCal = new java.util.GregorianCalendar();	
 	newCal.setTime(new java.util.Date(getExportProperties().getMaxTimestamp().getTime().getTime() + 86400000));
 	getExportProperties().setMaxTimestamp(newCal);
-	com.cannontech.clientutils.CTILogger.info(" * Next TimePeriod: " + getExportProperties().getMinTimestamp().getTime() + " - " + getExportProperties().getMaxTimestamp().getTime());
+	logEvent(" * Next TimePeriod: " + getExportProperties().getMinTimestamp().getTime() + " - " + getExportProperties().getMaxTimestamp().getTime(), com.cannontech.common.util.LogWriter.INFO);
+	logEvent("@" + this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer) + " millis", com.cannontech.common.util.LogWriter.INFO);	
 	//writeToFile();
 }
 }
