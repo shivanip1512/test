@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/05/30 15:12:21 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/06/11 21:15:22 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,9 +38,7 @@
 #include "cparms.h"
 
 
-int CtiDeviceCBC6510::_cbcTries;
-
-CtiDeviceCBC6510::CtiDeviceCBC6510() {}
+CtiDeviceCBC6510::CtiDeviceCBC6510() : _dnp(3) {}
 
 CtiDeviceCBC6510::CtiDeviceCBC6510(const CtiDeviceCBC6510 &aRef)
 {
@@ -54,40 +52,14 @@ CtiDeviceCBC6510 &CtiDeviceCBC6510::operator=(const CtiDeviceCBC6510 &aRef)
    if(this != &aRef)
    {
       Inherited::operator=(aRef);
-
-      _cbc = aRef.getCBC();
    }
    return *this;
 }
 
 
-int CtiDeviceCBC6510::getCBCRetries( void )
+CtiProtocolDNP &CtiDeviceCBC6510::getProtocol( void )
 {
-    //  check if it's been initialized
-    if( _cbcTries <= 0 )
-    {
-        RWCString retryStr = gConfigParms.getValueAsString("CBC_RETRIES");
-        int            tmp = atol( retryStr.data() );
-
-        if( tmp > 0  )
-        {
-            _cbcTries = tmp + 1;
-        }
-        else
-        {
-            //  default to 3 attempts (2 retries)
-            _cbcTries = 3;
-
-            if( getDebugLevel() & 0x00000001 )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "CBC_RETRIES cparm not found - defaulting CBC retry count to 2 (3 attempts)" << endl;
-            }
-        }
-    }
-
-    return _cbcTries - 1;
+    return _dnp;
 }
 
 
@@ -113,12 +85,16 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg              *pReq,
 
                 _dnp.setCommand(CtiProtocolDNP::DNP_SetDigitalOut, &controlout, 1);
 
+                nRet = NoError;
+
                 break;
             }
 
         case ScanRequest:
             {
                 _dnp.setCommand(CtiProtocolDNP::DNP_Class0Read);
+
+                nRet = NoError;
 
                 break;
             }
@@ -142,7 +118,16 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg              *pReq,
             }
     }
 
-    _dnp.commOut( OutMessage, outList );
+    OutMessage->Port = getPortID();
+    OutMessage->DeviceID = getID();
+    OutMessage->TargetID = getID();
+
+    if( !_dnp.sendAppReqLayer( OutMessage ) &&
+        OutMessage != NULL )
+    {
+        outList.append(OutMessage);
+        OutMessage = NULL;
+    }
 
     return nRet;
 }
@@ -152,7 +137,7 @@ INT CtiDeviceCBC6510::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSli
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
-    _dnp.commIn(InMessage, outList);
+    _dnp.recvAppRspLayer(InMessage);
 
     if( _dnp.hasPoints() )
     {
@@ -218,25 +203,15 @@ RWCString CtiDeviceCBC6510::getDescription(const CtiCommandParser &parse) const
 {
    RWCString tmp;
 
-   tmp = "CBC Device: " + getName() + " SN: " + CtiNumStr(_cbc.getSerial());
+   //tmp = "CBC Device: " + getName() + " SN: " + CtiNumStr(_cbc.getSerial());
 
    return tmp;
 }
 
 
-CtiTableDeviceCBC   CtiDeviceCBC6510::getCBC() const    { return _cbc; }
-CtiTableDeviceCBC  &CtiDeviceCBC6510::getCBC()          { return _cbc; }
-
-CtiDeviceCBC6510   &CtiDeviceCBC6510::setCBC(const CtiTableDeviceCBC &aRef)
-{
-   _cbc = aRef;
-   return *this;
-}
-
 void CtiDeviceCBC6510::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
    Inherited::getSQL(db, keyTable, selector);
-   CtiTableDeviceCBC::getSQL(db, keyTable, selector);
 }
 
 void CtiDeviceCBC6510::DecodeDatabaseReader(RWDBReader &rdr)
@@ -244,8 +219,6 @@ void CtiDeviceCBC6510::DecodeDatabaseReader(RWDBReader &rdr)
    Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
    if(getDebugLevel() & 0x0800) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
-   _cbc.DecodeDatabaseReader(rdr);
 }
 
 

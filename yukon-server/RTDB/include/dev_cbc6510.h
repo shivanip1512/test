@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/05/30 15:12:21 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/06/11 21:15:22 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,9 +29,6 @@ protected:
 
     CtiProtocolDNP    _dnp;
 
-    CtiTableDeviceCBC _cbc;
-    static int        _cbcTries;
-
 private:
 
 public:
@@ -43,15 +40,12 @@ public:
     virtual ~CtiDeviceCBC6510();
 
     CtiDeviceCBC6510& operator=(const CtiDeviceCBC6510& aRef);
-    CtiTableDeviceCBC   getCBC() const;
-    CtiTableDeviceCBC&  getCBC();
-    CtiDeviceCBC6510&   setCBC(const CtiTableDeviceCBC& aRef);
-
-    int getCBCRetries(void);
 
     virtual RWCString getDescription(const CtiCommandParser & parse) const;
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
+
+    CtiProtocolDNP &getProtocol( void );
 
     INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 
