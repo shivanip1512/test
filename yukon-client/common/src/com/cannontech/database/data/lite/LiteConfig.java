@@ -103,7 +103,7 @@ public void retrieve(String databaseAlias)
 
 	  setConfigID( new Integer(s.getRow(0)[0].toString()).intValue() );
 	  setConfigName( s.getRow(0)[1].toString() );
-	  setConfigType( (Integer)s.getRow(0)[2]);
+	  setConfigType( new Integer(s.getRow(0)[2].toString()));
    }
    catch( Exception e )
    {
