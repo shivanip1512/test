@@ -28,6 +28,7 @@ Checking table ...
 		-> FDRTelegyrGroup
 		-> YukonWebConfiguration
 		-> YukonServices
+		-> ActivityLog
 Checking column of table
 -	Column name uniqueness
 -	Column code uniqueness
@@ -70,5 +71,5 @@ Checking domain ...
 Checking user ...
 Checking procedure ...
 
-0 error(s),  13 warning(s).
+0 error(s),  14 warning(s).
 The Physical Data Model is correct, no errors were found.

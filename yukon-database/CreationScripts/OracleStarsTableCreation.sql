@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     2/13/2004 10:17:45 AM                        */
+/* Created on:     2/17/2004 10:05:16 AM                        */
 /*==============================================================*/
 
 
@@ -159,7 +159,7 @@ create table AccountSite  (
    SiteInformationID    NUMBER,
    SiteNumber           VARCHAR2(40)                     not null,
    StreetAddressID      NUMBER,
-   PropertyNotes        VARCHAR2(200)
+   PropertyNotes        VARCHAR2(300)
 )
 /
 
@@ -211,7 +211,7 @@ create table ApplianceBase  (
    LocationID           NUMBER,
    KWCapacity           NUMBER,
    EfficiencyRating     NUMBER,
-   Notes                VARCHAR2(100),
+   Notes                VARCHAR2(500),
    ModelNumber          VARCHAR2(40)                     not null
 )
 /
@@ -329,7 +329,8 @@ create table ApplianceHeatPump  (
    ApplianceID          NUMBER                           not null,
    PumpTypeID           NUMBER                           not null,
    StandbySourceID      NUMBER                           not null,
-   SecondsDelayToRestart NUMBER                           not null
+   SecondsDelayToRestart NUMBER                           not null,
+   PumpSizeID           NUMBER                           not null
 )
 /
 
@@ -432,8 +433,7 @@ create table CustomerAccount  (
    AccountNumber        VARCHAR2(40),
    CustomerID           NUMBER                           not null,
    BillingAddressID     NUMBER,
-   AccountNotes         VARCHAR2(200),
-   LoginID              NUMBER                           not null
+   AccountNotes         VARCHAR2(200)
 )
 /
 
@@ -489,7 +489,7 @@ create table CustomerResidence  (
    NumberOfOccupantsID  NUMBER                           not null,
    OwnershipTypeID      NUMBER                           not null,
    MainFuelTypeID       NUMBER                           not null,
-   Notes                VARCHAR2(200)
+   Notes                VARCHAR2(300)
 )
 /
 
@@ -639,7 +639,7 @@ create table InventoryBase  (
    RemoveDate           DATE,
    AlternateTrackingNumber VARCHAR2(40),
    VoltageID            NUMBER,
-   Notes                VARCHAR2(100),
+   Notes                VARCHAR2(500),
    DeviceID             NUMBER,
    DeviceLabel          VARCHAR2(60)
 )
@@ -985,103 +985,103 @@ alter table AccountSite
 
 alter table ApplianceDualFuel
    add constraint FK_AppDuF_YkLst1 foreign key (SecondaryEnergySourceID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table ApplianceDualFuel
    add constraint FK_AppDuF_YkLst2 foreign key (SwitchOverTypeID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table ApplianceGenerator
    add constraint FK_AppGn_YkLst1 foreign key (TransferSwitchMfgID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table ApplianceGenerator
    add constraint FK_AppGn_YkLst2 foreign key (TransferSwitchTypeID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table ApplianceGrainDryer
    add constraint FK_AppGrDr_YkLst1 foreign key (BinSizeID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table ApplianceGrainDryer
    add constraint FK_AppGrDr_YkLst2 foreign key (BlowerEnergySourceID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table ApplianceGrainDryer
    add constraint FK_AppGrDr_YkLst3 foreign key (DryerTypeID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table ApplianceGrainDryer
    add constraint FK_AppGrDr_YkLst5 foreign key (BlowerHorsePowerID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table ApplianceGrainDryer
    add constraint FK_AppGrDr_YkLst6 foreign key (BlowerHeatSourceID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table ApplianceHeatPump
    add constraint FK_AppHtPm_YkLst1 foreign key (PumpTypeID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table ApplianceHeatPump
    add constraint FK_AppHtPm_YkLst2 foreign key (StandbySourceID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table ApplianceIrrigation
    add constraint FK_AppIrr_YkLst1 foreign key (EnergySourceID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table ApplianceIrrigation
    add constraint FK_AppIrr_YkLst2 foreign key (HorsePowerID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table ApplianceIrrigation
    add constraint FK_AppIrr_YkLst3 foreign key (IrrigationTypeID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table ApplianceIrrigation
    add constraint FK_AppIrr_YkLst6 foreign key (MeterLocationID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table ApplianceIrrigation
    add constraint FK_AppIrr_YkLst5 foreign key (SoilTypeID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table ApplianceWaterHeater
    add constraint FK_AppWtHt_YkLst foreign key (EnergySourceID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
@@ -1099,19 +1099,19 @@ alter table LMHardwareConfiguration
 
 alter table AccountSite
    add constraint FK_AccS_CstAd foreign key (StreetAddressID)
-      references Address (AddressID)
+      references
 /
 
 
 alter table ApplianceWaterHeater
    add constraint FK_ApWtrHt_YkLsE foreign key (NumberOfGallonsID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table ApplianceBase
    add constraint FK_AppBs_LMPr foreign key (LMProgramID)
-      references LMPROGRAM (DEVICEID)
+      references
 /
 
 
@@ -1139,6 +1139,12 @@ alter table ApplianceHeatPump
 /
 
 
+alter table ApplianceHeatPump
+   add constraint FK_AppHtPm_YkLst3 foreign key (PumpSizeID)
+      references YukonListEntry
+/
+
+
 alter table ApplianceIrrigation
    add constraint FK_AppIrr_AppB foreign key (ApplianceID)
       references ApplianceBase (ApplianceID)
@@ -1147,7 +1153,7 @@ alter table ApplianceIrrigation
 
 alter table ApplianceIrrigation
    add constraint FK_AppIrr_YkLst4 foreign key (MeterVoltageID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
@@ -1159,7 +1165,7 @@ alter table ApplianceStorageHeat
 
 alter table ApplianceStorageHeat
    add constraint FK_AppStHt_YkLst foreign key (StorageTypeID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
@@ -1171,79 +1177,79 @@ alter table ApplianceWaterHeater
 
 alter table LMProgramWebPublishing
    add constraint FK_CsLEn_LPWbP foreign key (ChanceOfControlID)
-      references YukonListEntry (EntryID)
-/
-
-
-alter table ApplianceAirConditioner
-   add constraint FK_CsLsE_Ac_ty foreign key (TypeID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table LMCustomerEventBase
    add constraint FK_CsLsE_LCstE foreign key (EventTypeID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
-alter table LMThermostatSeasonEntry
-   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
-      references YukonListEntry (EntryID)
+alter table ApplianceAirConditioner
+   add constraint FK_CsLsE_Ac_ty foreign key (TypeID)
+      references YukonListEntry
 /
 
 
 alter table WorkOrderBase
    add constraint FK_CsLsE_WkB_c foreign key (CurrentStateID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
+/
+
+
+alter table LMThermostatSeasonEntry
+   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
+      references YukonListEntry
 /
 
 
 alter table LMCustomerEventBase
    add constraint FK_CsLsE_LCstE_a foreign key (ActionID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table LMThermostatManualEvent
    add constraint FK_CsLsE_LThMnO2 foreign key (OperationStateID)
-      references YukonListEntry (EntryID)
-/
-
-
-alter table ApplianceAirConditioner
-   add constraint FK_CsLsE_Ac foreign key (TonnageID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table WorkOrderBase
    add constraint FK_CsLsE_WkB foreign key (WorkTypeID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
+/
+
+
+alter table ApplianceAirConditioner
+   add constraint FK_CsLsE_Ac foreign key (TonnageID)
+      references YukonListEntry
 /
 
 
 alter table LMThermostatManualEvent
    add constraint FK_CsLsE_LThMnO1 foreign key (FanOperationID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table CustomerFAQ
    add constraint FK_CsLsEn_CsF foreign key (SubjectID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table ApplianceBase
    add constraint FK_CsLsEn_ApB foreign key (ManufacturerID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table ApplianceBase
    add constraint FK_CsLsEn_ApB2 foreign key (LocationID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
@@ -1261,43 +1267,43 @@ alter table LMProgramEvent
 
 alter table ServiceCompany
    add constraint FK_CstAdd_SrC foreign key (AddressID)
-      references Address (AddressID)
+      references
 /
 
 
 alter table CustomerAccount
    add constraint FK_CstBs_CstAcc foreign key (CustomerID)
-      references Customer (CustomerID)
+      references
 /
 
 
 alter table ServiceCompany
    add constraint FK_CstCnt_SrvC foreign key (PrimaryContactID)
-      references Contact (ContactID)
+      references
 /
 
 
 alter table CallReportBase
    add constraint FK_CstELs_ClRB foreign key (CallTypeID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table ApplianceCategory
    add constraint FK_CstLs_ApCt foreign key (CategoryID)
-      references YukonListEntry (EntryID)
-/
-
-
-alter table LMHardwareBase
-   add constraint FK_LMH_REF__YUK foreign key (LMHardwareTypeID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table InventoryBase
    add constraint FK_INV_REF__YUK foreign key (CategoryID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
+/
+
+
+alter table LMHardwareBase
+   add constraint FK_LMH_REF__YUK foreign key (LMHardwareTypeID)
+      references YukonListEntry
 /
 
 
@@ -1309,73 +1315,73 @@ alter table CustomerResidence
 
 alter table CustomerResidence
    add constraint FK_CstRes_YkLst1 foreign key (ConstructionMaterialID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table CustomerResidence
    add constraint FK_CstRes_YkLst10 foreign key (OwnershipTypeID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table CustomerResidence
    add constraint FK_CstRes_YkLst11 foreign key (ResidenceTypeID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table CustomerResidence
    add constraint FK_CstRes_YkLst2 foreign key (DecadeBuiltID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table CustomerResidence
    add constraint FK_CstRes_YkLst3 foreign key (GeneralConditionID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table CustomerResidence
    add constraint FK_CstRes_YkLst4 foreign key (InsulationDepthID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table CustomerResidence
    add constraint FK_CUS_REF__YUK foreign key (NumberOfOccupantsID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table CustomerResidence
    add constraint FK_CstRes_YkLst6 foreign key (MainHeatingSystemID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table CustomerResidence
    add constraint FK_CstRes_YkLst7 foreign key (SquareFeetID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table CustomerResidence
    add constraint FK_CstRes_YkLst8 foreign key (MainCoolingSystemID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table CustomerResidence
    add constraint FK_CstRes_YkLst9 foreign key (MainFuelTypeID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table InventoryBase
    add constraint FK_Dev_InvB foreign key (DeviceID)
-      references DEVICE (DEVICEID)
+      references
 /
 
 
@@ -1387,25 +1393,25 @@ alter table ECToAccountMapping
 
 alter table ECToAccountMapping
    add constraint FK_ECTAcc_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+      references
 /
 
 
 alter table ECToGenericMapping
    add constraint FK_ECTGn_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+      references
+/
+
+
+alter table ECToInventoryMapping
+   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
+      references
 /
 
 
 alter table ECToInventoryMapping
    add constraint FK_ECTInv_Enc2 foreign key (InventoryID)
       references InventoryBase (InventoryID)
-/
-
-
-alter table ECToInventoryMapping
-   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
 /
 
 
@@ -1417,13 +1423,13 @@ alter table ECToCallReportMapping
 
 alter table ECToCallReportMapping
    add constraint FK_ECTSrv_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+      references
 /
 
 
 alter table ECToWorkOrderMapping
    add constraint FK_ECTWrk_Enc2 foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+      references
 /
 
 
@@ -1435,25 +1441,25 @@ alter table ECToWorkOrderMapping
 
 alter table ECToLMCustomerEventMapping
    add constraint FK_EnCm_ECLmCs foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+      references
 /
 
 
 alter table InterviewQuestion
    add constraint FK_IntQ_CsLsEn foreign key (QuestionType)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table InterviewQuestion
    add constraint FK_IntQ_CsLsEn2 foreign key (AnswerType)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
 alter table InterviewQuestion
    add constraint FK_IntQ_CsLsEn3 foreign key (ExpectedAnswer)
-      references YukonListEntry (EntryID)
+      references YukonListEntry
 /
 
 
@@ -1477,13 +1483,13 @@ alter table ECToLMCustomerEventMapping
 
 alter table LMHardwareConfiguration
    add constraint FK_LMHrd_LMGr foreign key (AddressingGroupID)
-      references LMGroup (DeviceID)
+      references
 /
 
 
 alter table LMProgramEvent
    add constraint FK_LMPrg_LMPrEv foreign key (LMProgramID)
-      references LMPROGRAM (DEVICEID)
+      references
 /
 
 
@@ -1495,7 +1501,7 @@ alter table LMProgramWebPublishing
 
 alter table LMProgramWebPublishing
    add constraint FK_LMprApp_LMPrg foreign key (LMProgramID)
-      references LMPROGRAM (DEVICEID)
+      references
 /
 
 
@@ -1525,7 +1531,7 @@ alter table LMThermostatManualEvent
 
 alter table Substation
    add constraint FK_Sub_Rt foreign key (RouteID)
-      references Route (RouteID)
+      references
 /
 
 
@@ -1535,27 +1541,21 @@ alter table SiteInformation
 /
 
 
-alter table CustomerAccount
-   add constraint FK_YkUs_CstAcc foreign key (LoginID)
-      references YukonUser (UserID)
-/
-
-
 alter table ApplianceCategory
    add constraint FK_YkWC_ApCt foreign key (WebConfigurationID)
-      references YukonWebConfiguration (ConfigurationID)
+      references
 /
 
 
 alter table LMProgramWebPublishing
    add constraint FK_YkWC_LMPrWPb foreign key (WebsettingsID)
-      references YukonWebConfiguration (ConfigurationID)
+      references
 /
 
 
 alter table LMThermostatSeason
    add constraint FK_YkWbC_LThSs foreign key (WebConfigurationID)
-      references YukonWebConfiguration (ConfigurationID)
+      references
 /
 
 

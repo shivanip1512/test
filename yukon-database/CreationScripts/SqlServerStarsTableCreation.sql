@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     2/13/2004 10:16:44 AM                        */
+/* Created on:     2/17/2004 10:07:54 AM                        */
 /*==============================================================*/
 
 
@@ -301,7 +301,7 @@ AccountSiteID        numeric              not null,
 SiteInformationID    numeric              null,
 SiteNumber           varchar(40)          not null,
 StreetAddressID      numeric              null,
-PropertyNotes        varchar(200)         null
+PropertyNotes        varchar(300)         null
 )
 go
 
@@ -349,7 +349,7 @@ ManufacturerID       numeric              null,
 LocationID           numeric              null,
 KWCapacity           numeric              null,
 EfficiencyRating     numeric              null,
-Notes                varchar(100)         null,
+Notes                varchar(500)         null,
 ModelNumber          varchar(40)          not null
 )
 go
@@ -457,7 +457,8 @@ create table ApplianceHeatPump (
 ApplianceID          numeric              not null,
 PumpTypeID           numeric              not null,
 StandbySourceID      numeric              not null,
-SecondsDelayToRestart numeric              not null
+SecondsDelayToRestart numeric              not null,
+PumpSizeID           numeric              not null
 )
 go
 
@@ -550,8 +551,7 @@ AccountSiteID        numeric              null,
 AccountNumber        varchar(40)          null,
 CustomerID           numeric              not null,
 BillingAddressID     numeric              null,
-AccountNotes         varchar(200)         null,
-LoginID              numeric              not null
+AccountNotes         varchar(200)         null
 )
 go
 
@@ -603,7 +603,7 @@ MainHeatingSystemID  numeric              not null,
 NumberOfOccupantsID  numeric              not null,
 OwnershipTypeID      numeric              not null,
 MainFuelTypeID       numeric              not null,
-Notes                varchar(200)         null
+Notes                varchar(300)         null
 )
 go
 
@@ -737,7 +737,7 @@ InstallDate          datetime             null,
 RemoveDate           datetime             null,
 AlternateTrackingNumber varchar(40)          null,
 VoltageID            numeric              null,
-Notes                varchar(100)         null,
+Notes                varchar(500)         null,
 DeviceID             numeric              null,
 DeviceLabel          varchar(60)          null
 )
@@ -1211,6 +1211,12 @@ alter table ApplianceHeatPump
 go
 
 
+alter table ApplianceHeatPump
+   add constraint FK_AppHtPm_YkLst3 foreign key (PumpSizeID)
+      references YukonListEntry (EntryID)
+go
+
+
 alter table ApplianceIrrigation
    add constraint FK_AppIrr_AppB foreign key (ApplianceID)
       references ApplianceBase (ApplianceID)
@@ -1247,26 +1253,26 @@ alter table LMProgramWebPublishing
 go
 
 
-alter table ApplianceAirConditioner
-   add constraint FK_CsLsE_Ac_ty foreign key (TypeID)
-      references YukonListEntry (EntryID)
-go
-
-
 alter table LMCustomerEventBase
    add constraint FK_CsLsE_LCstE foreign key (EventTypeID)
       references YukonListEntry (EntryID)
 go
 
 
-alter table LMThermostatSeasonEntry
-   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
+alter table ApplianceAirConditioner
+   add constraint FK_CsLsE_Ac_ty foreign key (TypeID)
       references YukonListEntry (EntryID)
 go
 
 
 alter table WorkOrderBase
    add constraint FK_CsLsE_WkB_c foreign key (CurrentStateID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table LMThermostatSeasonEntry
+   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
       references YukonListEntry (EntryID)
 go
 
@@ -1283,14 +1289,14 @@ alter table LMThermostatManualEvent
 go
 
 
-alter table ApplianceAirConditioner
-   add constraint FK_CsLsE_Ac foreign key (TonnageID)
+alter table WorkOrderBase
+   add constraint FK_CsLsE_WkB foreign key (WorkTypeID)
       references YukonListEntry (EntryID)
 go
 
 
-alter table WorkOrderBase
-   add constraint FK_CsLsE_WkB foreign key (WorkTypeID)
+alter table ApplianceAirConditioner
+   add constraint FK_CsLsE_Ac foreign key (TonnageID)
       references YukonListEntry (EntryID)
 go
 
@@ -1361,14 +1367,14 @@ alter table ApplianceCategory
 go
 
 
-alter table LMHardwareBase
-   add constraint FK_LMH_REF__YUK foreign key (LMHardwareTypeID)
+alter table InventoryBase
+   add constraint FK_INV_REF__YUK foreign key (CategoryID)
       references YukonListEntry (EntryID)
 go
 
 
-alter table InventoryBase
-   add constraint FK_INV_REF__YUK foreign key (CategoryID)
+alter table LMHardwareBase
+   add constraint FK_LMH_REF__YUK foreign key (LMHardwareTypeID)
       references YukonListEntry (EntryID)
 go
 
@@ -1470,14 +1476,14 @@ go
 
 
 alter table ECToInventoryMapping
-   add constraint FK_ECTInv_Enc2 foreign key (InventoryID)
-      references InventoryBase (InventoryID)
+   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
 alter table ECToInventoryMapping
-   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+   add constraint FK_ECTInv_Enc2 foreign key (InventoryID)
+      references InventoryBase (InventoryID)
 go
 
 
@@ -1604,12 +1610,6 @@ go
 alter table SiteInformation
    add constraint FK_Sub_Si foreign key (SubstationID)
       references Substation (SubstationID)
-go
-
-
-alter table CustomerAccount
-   add constraint FK_YkUs_CstAcc foreign key (LoginID)
-      references YukonUser (UserID)
 go
 
 
