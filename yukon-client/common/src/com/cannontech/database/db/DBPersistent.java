@@ -173,7 +173,7 @@ private static String prepareObjectForSQLStatement( Object o )
 	
 }
 
-private com.cannontech.yukon.IDBPersistent getDB()
+private synchronized com.cannontech.yukon.IDBPersistent getDB()
 {
    if( db == null )
       db = (com.cannontech.yukon.IDBPersistent)ResourceFactory.getIYukon().createIDBPersistent();
