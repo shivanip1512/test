@@ -8,8 +8,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/09/18 21:34:20 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2002/10/18 14:40:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -745,7 +745,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
 
         if(bLastFail)
         {
-            //  This comm status wasn't handled by portfield (didn't talk directly to this device),
+            //  This comm status wasn't handled by portfield (didn't talk directly to this device - targetid != deviceid),
             //    so we have to send it here
             if( InMessage->DeviceID != InMessage->TargetID )
             {
@@ -786,85 +786,85 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             CtiReturnMsg *Ret = new CtiReturnMsg(  getID(), CmdStr, FormatError(nRet), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
 
             retList.insert( Ret );
-        }
 
-        /* see what handshake was */
-        if( useScanFlags() )            // Do we care about any of the scannable flags?
-        {
-            if(isScanFreezePending())
+            /* see what handshake was */
+            if( useScanFlags() )            // Do we care about any of the scannable flags?
             {
-                resetScanPending();
-                resetScanFreezePending();
-                setScanFreezeFailed();
-                setPrevFreezeTime(getLastFreezeTime());
-                setPrevFreezeNumber(getLastFreezeNumber());
-                setLastFreezeNumber(0);
-                setLastFreezeTime(InMessage->Time + rwEpoch);
-
-                if(getNextScan(ScanRateGeneral) - getScanRate(ScanRateGeneral) <= TimeNow)
+                if(isScanFreezePending())
                 {
-                    /* this device was due for regular scan so scan */
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << TimeNow << " Forced Scan sent to Remote: " << getAddress() << endl;
-                    }
-
-                    resetScanException();                  // This is not an exception scan request...
-                    initiateGeneralScan(outList, MAXPRIORITY - 4);
-                }
-            }
-            else if(isScanPending())
-            {
-                resetScanPending();
-                // FIX FIX FIX 090899 CGP ???? DeviceRecord.LastFullScan = InMessage.Time;
-
-                /* Check if we need to plug accumulators */
-                if(isScanFreezeFailed() || isScanFrozen())
-                {
-                    resetScanFreezeFailed();
-                    resetScanFrozen();
+                    resetScanPending();
+                    resetScanFreezePending();
+                    setScanFreezeFailed();
+                    setPrevFreezeTime(getLastFreezeTime());
+                    setPrevFreezeNumber(getLastFreezeNumber());
                     setLastFreezeNumber(0);
-                    DoAccums = TRUE;
-                }
-                else
-                {
-                    DoAccums = FALSE;
-                }
+                    setLastFreezeTime(InMessage->Time + rwEpoch);
 
-                ErrorDecode(InMessage, TimeNow, vgList, retList, outList);
-
-                // Add this to dev_lcu later CGP ..... 090899
-                /* Check if we need to issue a reset */
-                if(DoAccums && isLCU(getType()))
-                {
-#if 1
+                    if(getNextScan(ScanRateGeneral) - getScanRate(ScanRateGeneral) <= TimeNow)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        /* this device was due for regular scan so scan */
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << TimeNow << " Forced Scan sent to Remote: " << getAddress() << endl;
+                        }
+
+                        resetScanException();                  // This is not an exception scan request...
+                        initiateGeneralScan(outList, MAXPRIORITY - 4);
                     }
-#else
-                    if((i = LCUReset (&RemoteRecord, &DeviceRecord, 0, MAXPRIORITY - 4)) != NORMAL)
+                }
+                else if(isScanPending())
+                {
+                    resetScanPending();
+                    // FIX FIX FIX 090899 CGP ???? DeviceRecord.LastFullScan = InMessage.Time;
+
+                    /* Check if we need to plug accumulators */
+                    if(isScanFreezeFailed() || isScanFrozen())
                     {
-                        /* Send Error to logger */
-                        ReportError (&RemoteRecord, (USHORT)i);
+                        resetScanFreezeFailed();
+                        resetScanFrozen();
+                        setLastFreezeNumber(0);
+                        DoAccums = TRUE;
                     }
                     else
                     {
-                        setScanResetting();
+                        DoAccums = FALSE;
                     }
+
+                    ErrorDecode(InMessage, TimeNow, vgList, retList, outList);
+
+                    // Add this to dev_lcu later CGP ..... 090899
+                    /* Check if we need to issue a reset */
+                    if(DoAccums && isLCU(getType()))
+                    {
+#if 1
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+#else
+                        if((i = LCUReset (&RemoteRecord, &DeviceRecord, 0, MAXPRIORITY - 4)) != NORMAL)
+                        {
+                            /* Send Error to logger */
+                            ReportError (&RemoteRecord, (USHORT)i);
+                        }
+                        else
+                        {
+                            setScanResetting();
+                        }
 #endif
+                    }
                 }
-            }
-            else if(isScanResetting())
-            {
-                resetScanResetting();
-                setScanResetFailed();
+                else if(isScanResetting())
+                {
+                    resetScanResetting();
+                    setScanResetFailed();
+                }
             }
         }
     }
     else
     {
-        //  This comm status wasn't handled by portfield (didn't talk directly to this device),
+        //  This comm status wasn't handled by portfield (didn't talk directly to this device - targetid != deviceid),
         //    so we have to send it here
         if( InMessage->DeviceID != InMessage->TargetID )
         {
