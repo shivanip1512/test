@@ -56,14 +56,23 @@ public DeviceTreeModel( boolean showPointNodes, DBTreeNode rootNode_ )
 	super( rootNode_ );
 	showPoints = showPointNodes;
 }
+
+/**
+ * Allows ease of overriding type of node in tree model.
+ * Override this method when entending DeviceTreeModel
+ */
+protected DBTreeNode getNewNode(Object obj)
+{
+	return new DBTreeNode(obj);
+}
 /**
  * Insert the method's description here.
  * Creation date: (2/27/2002 10:17:05 AM)
  * @param lp com.cannontech.database.data.lite.LitePoint
  * @param dTreeNode com.cannontech.database.model.DummyTreeNode
  */
-private DummyTreeNode addDummyTreeNode(com.cannontech.database.data.lite.LitePoint lp, 
-					DummyTreeNode node, String text, DBTreeNode deviceNode ) 
+protected DBTreeNode addDummyTreeNode(com.cannontech.database.data.lite.LitePoint lp, 
+					DBTreeNode node, String text, DBTreeNode deviceNode ) 
 {
 	if( node == null)
 	{
@@ -84,7 +93,7 @@ private DummyTreeNode addDummyTreeNode(com.cannontech.database.data.lite.LitePoi
 	}
 		
 
-	node.add( new DBTreeNode(lp) );
+	node.add( getNewNode(lp) );
 	//updateTreeNodeStructure( node );
 
 	return node;
@@ -97,9 +106,9 @@ private DummyTreeNode addDummyTreeNode(com.cannontech.database.data.lite.LitePoi
 private void addPoints(DBTreeNode deviceNode )
 {
 	//type nodes of point types
-	DummyTreeNode anNode = null, stNode = null;
-	DummyTreeNode accDmndNode = null, accPulsNode = null;
-	DummyTreeNode calcNode = null;
+	DBTreeNode anNode = null, stNode = null;
+	DBTreeNode accDmndNode = null, accPulsNode = null;
+	DBTreeNode calcNode = null;
 
 	
 	//the points in the pointList are added to the device node
@@ -253,7 +262,7 @@ public boolean insertTreeObject( LiteBase lb )
 
 		if( isDeviceValid(liteYuk.getCategory(), liteYuk.getPaoClass(), liteYuk.getType() ) )
 		{
-			DBTreeNode node = new DBTreeNode(lb);
+			DBTreeNode node = getNewNode(lb);
 
 			//add all new tree nodes to the top, for now
 			int[] ind = { 0 };
@@ -325,7 +334,7 @@ protected synchronized void runUpdate()
 					((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getPaoClass(),
 					((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType() ) )
 			{
-				DBTreeNode deviceNode = new DBTreeNode(devices.get(i));
+				DBTreeNode deviceNode = getNewNode(devices.get(i));
 				rootNode.add(deviceNode);
 				
 				if (showPoints)
@@ -381,7 +390,7 @@ public synchronized void sortChildNodes(DBTreeNode parentNode, int sortType)
 
 	parentNode.removeAllChildren();
 	for( int i = 0 ; i < liteObjects.size(); i++ )
-		parentNode.add( new DBTreeNode( liteObjects.get(i) ) );
+		parentNode.add( getNewNode(liteObjects.get(i) ) );
 
 	updateTreeNodeStructure( parentNode );
 }
