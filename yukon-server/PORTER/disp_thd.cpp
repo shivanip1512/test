@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/04/22 20:03:37 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/08/06 18:54:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -79,6 +79,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
     }
 
     VanGoghConnection.doConnect(VANGOGHNEXUS, VanGoghMachine);
+    VanGoghConnection.setName("Dispatch");
     VanGoghConnection.WriteConnQue(new CtiRegistrationMsg("Porter MsgHandler", rwThreadId(), FALSE));
 
     /* perform the wait loop forever */
