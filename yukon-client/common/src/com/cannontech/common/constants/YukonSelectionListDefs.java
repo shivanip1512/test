@@ -68,5 +68,8 @@ public interface YukonSelectionListDefs {
 	public static final String YUK_LIST_NAME_INV_SEARCH_BY = "InvSearchBy";
 	public static final String YUK_LIST_NAME_INV_SORT_BY = "InvSortBy";
 	public static final String YUK_LIST_NAME_INV_FILTER_BY = "InvFilterBy";
+	public static final String YUK_LIST_NAME_SO_SEARCH_BY = "SOSearchBy";
+	public static final String YUK_LIST_NAME_SO_SORT_BY = "SOSortBy";
+	public static final String YUK_LIST_NAME_SO_FILTER_BY = "SOFilterBy";
 	
 }
