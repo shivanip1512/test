@@ -185,7 +185,7 @@ function changeProgSelection(chkBox) {
 %>
                 </table>
                 <br>
-                <table width="350" border="0" cellspacing="0" cellpadding="0">
+                <table width="400" border="0" cellspacing="0" cellpadding="0">
                   <tr>
                     <td align="center"> 
                       <input type="submit" name="Config" value="Config">
