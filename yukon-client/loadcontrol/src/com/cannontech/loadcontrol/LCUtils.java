@@ -262,7 +262,9 @@ public class LCUtils
 		switch( col )
 		{
 			case ProgramTableModel.PROGRAM_NAME:
-				return prg.getYukonName();
+				return prg.getYukonName() +
+                        (prg.isRampingIn() ? " (RI)" : 
+                            (prg.isRampingOut() ? " (RO)" : ""));
 
 			case ProgramTableModel.CURRENT_STATUS:
 				if( prg.getDisableFlag().booleanValue() )				

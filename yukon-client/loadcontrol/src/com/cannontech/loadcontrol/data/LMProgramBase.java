@@ -572,4 +572,38 @@ public void setYukonType(java.lang.Integer newYukonType) {
 public String toString() {
 	return getYukonName();
 }
+
+/**
+ * Returns true if any of the groups in this program are Ramping In
+ * 
+ * @return
+ */
+public boolean isRampingIn()
+{
+    for( int i = 0; i < getLoadControlGroupVector().size(); i++ )
+    {
+        ILMGroup grp = (ILMGroup)getLoadControlGroupVector().get(i);
+        if( grp.isRampingIn() )
+            return true;
+    }
+    
+    return false;
+}
+
+/**
+ * Returns true if any of the groups in this program are Ramping Out
+ * 
+ * @return
+ */
+public boolean isRampingOut()
+{
+    for( int i = 0; i < getLoadControlGroupVector().size(); i++ )
+    {
+        ILMGroup grp = (ILMGroup)getLoadControlGroupVector().get(i);
+        if( grp.isRampingOut() )
+            return true;
+    }
+    
+    return false;
+}
 }
