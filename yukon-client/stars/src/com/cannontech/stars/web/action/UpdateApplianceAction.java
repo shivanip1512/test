@@ -451,16 +451,10 @@ public class UpdateApplianceAction implements ActionBase {
 		
 		if (updateApp.hasYearManufactured())
 			appDB.setYearManufactured( new Integer(updateApp.getYearManufactured()) );
-		else
-			appDB.setYearManufactured( new Integer(-1) );
 		if (updateApp.hasKWCapacity())
 			appDB.setKWCapacity( new Integer(updateApp.getKWCapacity()) );
-		else
-			appDB.setKWCapacity( new Integer(-1) );
 		if (updateApp.hasEfficiencyRating())
 			appDB.setEfficiencyRating( new Integer(updateApp.getEfficiencyRating()) );
-		else
-			appDB.setEfficiencyRating( new Integer(-1) );
     	
 		Transaction.createTransaction(Transaction.UPDATE, appDB).execute();
 		StarsLiteFactory.setLiteStarsAppliance( liteApp, app );
@@ -488,8 +482,6 @@ public class UpdateApplianceAction implements ActionBase {
 			appWH.setEnergySourceID( new Integer(updateApp.getWaterHeater().getEnergySource().getEntryID()) );
 			if (updateApp.getWaterHeater().hasNumberOfElements())
 				appWH.setNumberOfElements( new Integer(updateApp.getWaterHeater().getNumberOfElements()) );
-			else
-				appWH.setNumberOfElements( new Integer(-1) );
 			
 			if (liteApp.getWaterHeater() != null) {
 				appWH = (ApplianceWaterHeater) Transaction.createTransaction(Transaction.UPDATE, appWH).execute();
@@ -508,8 +500,6 @@ public class UpdateApplianceAction implements ActionBase {
 			appDF.setSecondaryEnergySourceID( new Integer(updateApp.getDualFuel().getSecondaryEnergySource().getEntryID()) );
 			if (updateApp.getDualFuel().hasSecondaryKWCapacity())
 				appDF.setSecondaryKWCapacity( new Integer(updateApp.getDualFuel().getSecondaryKWCapacity()) );
-			else
-				appDF.setSecondaryKWCapacity( new Integer(-1) );
 			
 			if (liteApp.getDualFuel() != null) {
 				appDF = (ApplianceDualFuel) Transaction.createTransaction(Transaction.UPDATE, appDF).execute();
@@ -528,16 +518,10 @@ public class UpdateApplianceAction implements ActionBase {
 			appGen.setTransferSwitchMfgID( new Integer(updateApp.getGenerator().getTransferSwitchManufacturer().getEntryID()) );
 			if (updateApp.getGenerator().hasPeakKWCapacity())
 				appGen.setPeakKWCapacity( new Integer(updateApp.getGenerator().getPeakKWCapacity()) );
-			else
-				appGen.setPeakKWCapacity( new Integer(-1) );
 			if (updateApp.getGenerator().hasFuelCapGallons())
 				appGen.setFuelCapGallons( new Integer(updateApp.getGenerator().getFuelCapGallons()) );
-			else
-				appGen.setFuelCapGallons( new Integer(-1) );
 			if (updateApp.getGenerator().hasStartDelaySeconds())
 				appGen.setStartDelaySeconds( new Integer(updateApp.getGenerator().getStartDelaySeconds()) );
-			else
-				appGen.setStartDelaySeconds( new Integer(-1) );
 			
 			if (liteApp.getGenerator() != null) {
 				appGen = (ApplianceGenerator) Transaction.createTransaction(Transaction.UPDATE, appGen).execute();
@@ -574,12 +558,8 @@ public class UpdateApplianceAction implements ActionBase {
 			appSH.setStorageTypeID( new Integer(updateApp.getStorageHeat().getStorageType().getEntryID()) );
 			if (updateApp.getStorageHeat().hasPeakKWCapacity())
 				appSH.setPeakKWCapacity( new Integer(updateApp.getStorageHeat().getPeakKWCapacity()) );
-			else
-				appSH.setPeakKWCapacity( new Integer(-1) );
 			if (updateApp.getStorageHeat().hasHoursToRecharge())
 				appSH.setHoursToRecharge( new Integer(updateApp.getStorageHeat().getHoursToRecharge()) );
-			else
-				appSH.setHoursToRecharge( new Integer(-1) );
 			
 			if (liteApp.getStorageHeat() != null) {
 				appSH = (ApplianceStorageHeat) Transaction.createTransaction(Transaction.UPDATE, appSH).execute();
@@ -599,8 +579,6 @@ public class UpdateApplianceAction implements ActionBase {
 			appHP.setStandbySourceID( new Integer(updateApp.getHeatPump().getStandbySource().getEntryID()) );
 			if (updateApp.getHeatPump().hasRestartDelaySeconds())
 				appHP.setSecondsDelayToRestart( new Integer(updateApp.getHeatPump().getRestartDelaySeconds()) );
-			else
-				appHP.setSecondsDelayToRestart( new Integer(-1) );
 			
 			if (liteApp.getHeatPump() != null) {
 				appHP = (ApplianceHeatPump) Transaction.createTransaction(Transaction.UPDATE, appHP).execute();

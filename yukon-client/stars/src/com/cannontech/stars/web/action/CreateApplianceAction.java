@@ -421,16 +421,10 @@ public class CreateApplianceAction implements ActionBase {
         
 		if (newApp.hasYearManufactured())
 			appDB.setYearManufactured( new Integer(newApp.getYearManufactured()) );
-		else
-			appDB.setYearManufactured( new Integer(-1) );
 		if (newApp.hasKWCapacity())
 			appDB.setKWCapacity( new Integer(newApp.getKWCapacity()) );
-		else
-			appDB.setKWCapacity( new Integer(-1) );
 		if (newApp.hasEfficiencyRating())
 			appDB.setEfficiencyRating( new Integer(newApp.getEfficiencyRating()) );
-		else
-			appDB.setEfficiencyRating( new Integer(-1) );
         
 		app = (com.cannontech.database.data.stars.appliance.ApplianceBase) Transaction.createTransaction(Transaction.INSERT, app).execute();
 		LiteStarsAppliance liteApp = null;
@@ -452,8 +446,6 @@ public class CreateApplianceAction implements ActionBase {
 			appWH.setEnergySourceID( new Integer(newApp.getWaterHeater().getEnergySource().getEntryID()) );
 			if (newApp.getWaterHeater().hasNumberOfElements())
 				appWH.setNumberOfElements( new Integer(newApp.getWaterHeater().getNumberOfElements()) );
-			else
-				appWH.setNumberOfElements( new Integer(-1) );
 			appWH = (ApplianceWaterHeater) Transaction.createTransaction(Transaction.INSERT, appWH).execute();
             
 			liteApp.setWaterHeater( new LiteStarsAppliance.WaterHeater() );
@@ -466,8 +458,6 @@ public class CreateApplianceAction implements ActionBase {
 			appDF.setSecondaryEnergySourceID( new Integer(newApp.getDualFuel().getSecondaryEnergySource().getEntryID()) );
 			if (newApp.getDualFuel().hasSecondaryKWCapacity())
 				appDF.setSecondaryKWCapacity( new Integer(newApp.getDualFuel().getSecondaryKWCapacity()) );
-			else
-				appDF.setSecondaryKWCapacity( new Integer(-1) );
 			appDF = (ApplianceDualFuel) Transaction.createTransaction(Transaction.INSERT, appDF).execute();
             
 			liteApp.setDualFuel( new LiteStarsAppliance.DualFuel() );
@@ -480,16 +470,10 @@ public class CreateApplianceAction implements ActionBase {
 			appGen.setTransferSwitchMfgID( new Integer(newApp.getGenerator().getTransferSwitchManufacturer().getEntryID()) );
 			if (newApp.getGenerator().hasPeakKWCapacity())
 				appGen.setPeakKWCapacity( new Integer(newApp.getGenerator().getPeakKWCapacity()) );
-			else
-				appGen.setPeakKWCapacity( new Integer(-1) );
 			if (newApp.getGenerator().hasFuelCapGallons())
 				appGen.setFuelCapGallons( new Integer(newApp.getGenerator().getFuelCapGallons()) );
-			else
-				appGen.setFuelCapGallons( new Integer(-1) );
 			if (newApp.getGenerator().hasStartDelaySeconds())
 				appGen.setStartDelaySeconds( new Integer(newApp.getGenerator().getStartDelaySeconds()) );
-			else
-				appGen.setStartDelaySeconds( new Integer(-1) );
 			appGen = (ApplianceGenerator) Transaction.createTransaction(Transaction.INSERT, appGen).execute();
             
 			liteApp.setGenerator( new LiteStarsAppliance.Generator() );
@@ -514,12 +498,8 @@ public class CreateApplianceAction implements ActionBase {
 			appSH.setStorageTypeID( new Integer(newApp.getStorageHeat().getStorageType().getEntryID()) );
 			if (newApp.getStorageHeat().hasPeakKWCapacity())
 				appSH.setPeakKWCapacity( new Integer(newApp.getStorageHeat().getPeakKWCapacity()) );
-			else
-				appSH.setPeakKWCapacity( new Integer(-1) );
 			if (newApp.getStorageHeat().hasHoursToRecharge())
 				appSH.setHoursToRecharge( new Integer(newApp.getStorageHeat().getHoursToRecharge()) );
-			else
-				appSH.setHoursToRecharge( new Integer(-1) );
 			appSH = (ApplianceStorageHeat) Transaction.createTransaction(Transaction.INSERT, appSH).execute();
             
 			liteApp.setStorageHeat( new LiteStarsAppliance.StorageHeat() );
@@ -533,8 +513,6 @@ public class CreateApplianceAction implements ActionBase {
 			appHP.setStandbySourceID( new Integer(newApp.getHeatPump().getStandbySource().getEntryID()) );
 			if (newApp.getHeatPump().hasRestartDelaySeconds())
 				appHP.setSecondsDelayToRestart( new Integer(newApp.getHeatPump().getRestartDelaySeconds()) );
-			else
-				appHP.setSecondsDelayToRestart( new Integer(-1) );
 			appHP = (ApplianceHeatPump) Transaction.createTransaction(Transaction.INSERT, appHP).execute();
             	
 			liteApp.setHeatPump( new LiteStarsAppliance.HeatPump() );
