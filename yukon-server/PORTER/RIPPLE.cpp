@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/11/15 14:08:03 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/02/07 14:59:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -385,7 +385,7 @@ LCUResultDecode (OUTMESS *OutMessage, INMESS *InMessage, CtiDeviceBase *Dev, ULO
                 {
                     CTISleep( CtiDeviceLCU::getSlowScanDelay() );
                 }
-                QueueForScan( lcu, mayqueuescans );     // Make porter do a fast scan!
+                QueueForScan( lcu, Result ? true : mayqueuescans );     // Make porter do a fast scan!
                 status = RETRY_SUBMITTED;               // Keep the decode from happening on this stupid thing.
             }
             else if( lcu->getNumberStarted() == 0 )
