@@ -3,10 +3,12 @@ package com.cannontech.common.cache;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiProperties;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /**
  * PointChangeCache provides the current value of all Yukon points.
@@ -28,6 +30,7 @@ import com.cannontech.database.data.lite.LiteState;
  */
 
 public class PointChangeCache  implements Runnable, java.util.Observer {	
+	
 	// Connection to dispatch
 	private com.cannontech.message.dispatch.ClientConnection conn = null;
 
@@ -117,7 +120,7 @@ public synchronized void connect()
 	{
 		runner = new Thread(this);
 		runner.start();
-	}
+	}	
 }
 /**
  * Insert the method's description here.
@@ -250,6 +253,13 @@ private void handleMessage(com.cannontech.message.util.Message msg)
 			CTILogger.debug("Removing signal");
 		
 		}		
+	}
+	else
+	if(msg instanceof DBChangeMsg) {
+		//handle the Cache's DBChangeMessages
+		DefaultDatabaseCache.getInstance().handleDBChangeMessage( 
+				(com.cannontech.message.dispatch.message.DBChangeMsg)msg );
+		CTILogger.debug("Received DBChangeMsg from: " + msg.getSource());
 	}
 	else
 	{
