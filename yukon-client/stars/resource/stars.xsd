@@ -246,6 +246,7 @@
 			<xs:element name="ActionTaken" type="xs:string" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="orderID" type="xs:int"/>
+		<xs:attribute name="accountID" type="xs:int"/>
 	</xs:complexType>
 	<xs:complexType name="stars-LMCustomerEvent">
 		<xs:sequence>
@@ -345,8 +346,7 @@
 				<xs:element ref="stars-CreateServiceRequest" minOccurs="0"/>
 				<xs:element ref="stars-CreateServiceRequestResponse" minOccurs="0"/>
 				<xs:element ref="stars-UpdateServiceRequest" minOccurs="0"/>
-				
-				<xs:element ref="stars-GetServiceRequestHistory" minOccurs="0"/>
+				<xs:element ref="stars-UpdateServiceRequestResponse" minOccurs="0"/><xs:element ref="stars-DeleteServiceRequest" minOccurs="0"/><xs:element ref="stars-GetServiceRequestHistory" minOccurs="0"/>
 				<xs:element ref="stars-GetServiceRequestHistoryResponse" minOccurs="0"/>
 				<xs:element ref="stars-CreateAppliance" minOccurs="0"/>
 				<xs:element ref="stars-CreateApplianceResponse" minOccurs="0"/>
@@ -722,13 +722,10 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="stars-UpdateServiceRequest">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="stars-ServiceRequest" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+	<xs:element name="stars-UpdateServiceRequest" type="stars-SrvReq"/>
+	<xs:element name="stars-UpdateServiceRequestResponse"><xs:complexType><xs:sequence><xs:element ref="stars-ServiceRequest"/></xs:sequence></xs:complexType></xs:element>
+	<xs:element name="stars-DeleteServiceRequest">
+	<xs:complexType><xs:attribute name="orderID" type="xs:int"/></xs:complexType></xs:element>
 	<xs:element name="stars-ServiceRequestHistory"><xs:complexType><xs:sequence><xs:element ref="stars-ServiceRequest" minOccurs="0" maxOccurs="unbounded"/></xs:sequence></xs:complexType></xs:element>
 	<xs:element name="stars-GetServiceRequestHistory">
 		<xs:complexType>
