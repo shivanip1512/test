@@ -54,7 +54,7 @@ alter table GraphDataSeries modify renderer not null;
 
 alter table GraphDataSeries add moreData varchar2(100);
 update GraphDataSeries set moreData = '(none)';
-alter table GraphDataSeries modify moreData not null;
+alter table GraphDataSeries modify moreData varchar2(180) not null;
 
 
 alter table systemlog add millis smallint;
@@ -932,7 +932,7 @@ insert into YukonGroupRole values (-1370,-2,-201,-20870,'(none)');
 
 alter table PAOExclusion add FuncParams varchar2(200);
 update PAOExclusion set FuncParams = '(none)';
-alter table PAOExclusion modify column FuncParams varchar2(200) not null;
+alter table PAOExclusion modify column FuncParams not null;
 
 
 
