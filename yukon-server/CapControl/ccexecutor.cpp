@@ -79,6 +79,10 @@ void CtiCCCommandExecutor::Execute()
         SendAllSubstationBuses();
         break;
 
+    case CtiCCCommand::RETURN_CAP_TO_ORIGINAL_FEEDER:
+        ReturnCapToOriginalFeeder();
+        break;
+
     default:
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1114,6 +1118,305 @@ void CtiCCCommandExecutor::SendAllSubstationBuses()
     delete executor;
 }
 
+/*---------------------------------------------------------------------------
+    ReturnCapToOriginalFeeder
+---------------------------------------------------------------------------*/    
+void CtiCCCommandExecutor::ReturnCapToOriginalFeeder()
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    ULONG bankId = _command->getId();
+    BOOL found = FALSE;
+    LONG tempFeederId = 0;
+    LONG movedCapBankId = 0;
+    LONG originalFeederId = 0;
+    LONG capSwitchingOrder = 0;
+
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+
+    for(ULONG i=0;i<ccSubstationBuses.entries();i++)
+    {
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+
+        for(ULONG j=0;j<ccFeeders.entries();j++)
+        {
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+            RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+
+            for(ULONG k=0;k<ccCapBanks.entries();k++)
+            {
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+                if( bankId == currentCapBank->getPAOId() )
+                {
+                    tempFeederId = currentFeeder->getPAOId();
+                    movedCapBankId = bankId;
+                    originalFeederId = currentCapBank->getOriginalFeederId();
+                    capSwitchingOrder = currentCapBank->getOriginalSwitchingOrder();
+                    found = TRUE;
+                    break;
+                }
+            }
+            if( found )
+            {
+                break;
+            }
+        }
+        if( found )
+        {
+            break;
+        }
+    }
+
+    //moveCapBank(TRUE, oldFeederId, movedCapBankId, newFeederId, capSwitchingOrder);
+    if( tempFeederId > 0 && movedCapBankId > 0 && originalFeederId > 0 )
+    {
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Move Cap Bank to original feeder PAO Id: " << movedCapBankId << endl;
+        }
+        moveCapBank(1, tempFeederId, movedCapBankId, originalFeederId, capSwitchingOrder);
+    }
+    else
+    {
+        if( tempFeederId==0 )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Feeder not found PAO Id: " << tempFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+        }
+        if( originalFeederId==0 )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Feeder not found PAO Id: " << originalFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+        }
+        if( movedCapBankId==0 )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Cap Bank not found PAO Id: " << movedCapBankId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+        }
+    }
+}
+
+
+/*===========================================================================
+    CtiCCCapBankMoveExecutor
+===========================================================================*/
+/*---------------------------------------------------------------------------
+    Execute
+---------------------------------------------------------------------------*/    
+void CtiCCCapBankMoveExecutor::Execute()
+{
+    INT permanentFlag = _capMoveMsg->getPermanentFlag();
+    LONG oldFeederId = _capMoveMsg->getOldFeederId();
+    LONG movedCapBankId = _capMoveMsg->getCapBankId();
+    LONG newFeederId = _capMoveMsg->getNewFeederId();
+    LONG capSwitchingOrder = _capMoveMsg->getCapSwitchingOrder();
+
+    moveCapBank(permanentFlag, oldFeederId, movedCapBankId, newFeederId, capSwitchingOrder);
+}
+
+/*---------------------------------------------------------------------------
+    moveCapBank
+---------------------------------------------------------------------------*/    
+void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedCapBankId, LONG newFeederId, LONG capSwitchingOrder)
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    CtiCCFeeder* oldFeederPtr = NULL;
+    CtiCCFeeder* newFeederPtr = NULL;
+    CtiCCCapBank* movedCapBankPtr = NULL;
+
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+
+    BOOL found = FALSE;
+    for(ULONG i=0;i<ccSubstationBuses.entries();i++)
+    {
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+
+        for(ULONG j=0;j<ccFeeders.entries();j++)
+        {
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+            if( oldFeederPtr==NULL && currentFeeder->getPAOId()==oldFeederId )
+            {
+                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                oldFeederPtr = currentFeeder;
+            }
+            if( newFeederPtr==NULL && currentFeeder->getPAOId()==newFeederId )
+            {
+                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                newFeederPtr = currentFeeder;
+            }
+
+            if( movedCapBankPtr==NULL )
+            {
+                RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+                for(ULONG k=0;k<ccCapBanks.entries();k++)
+                {
+                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+
+                    if( currentCapBank->getPAOId()==movedCapBankId )
+                    {
+                        currentSubstationBus->setBusUpdatedFlag(TRUE);
+                        movedCapBankPtr = currentCapBank;
+                        break;
+                    }
+                }
+            }
+
+            if( oldFeederPtr!=NULL && newFeederPtr!=NULL && movedCapBankPtr!=NULL )
+            {
+                found = TRUE;
+                break;
+            }
+        }
+        if( found )
+        {
+            break;
+        }
+    }
+
+    if( oldFeederPtr!=NULL && newFeederPtr!=NULL && movedCapBankPtr!=NULL )
+    {
+        {
+            RWSortedVector& oldFeederCapBanks = oldFeederPtr->getCCCapBanks();
+
+            oldFeederCapBanks.remove(movedCapBankPtr);
+
+            if( !permanentFlag )
+            {
+                movedCapBankPtr->setOriginalFeederId(oldFeederPtr->getPAOId());
+                movedCapBankPtr->setOriginalSwitchingOrder(movedCapBankPtr->getControlOrder());
+            }
+            else
+            {
+                movedCapBankPtr->setOriginalFeederId(0);
+                movedCapBankPtr->setOriginalSwitchingOrder(0);
+            }
+
+            if( oldFeederCapBanks.entries() > 0 )
+            {
+                //reshuffle the cap bank control orders so they are still in sequence and start at 1
+                UINT shuffledOrder = 1;
+                RWOrdered tempShufflingCapBankList;
+                while(oldFeederCapBanks.entries()>0)
+                {
+                    //have to remove due to change in sorting field in a sorted vector
+                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)oldFeederCapBanks.removeAt(0);
+                    currentCapBank->setControlOrder(shuffledOrder);
+                    tempShufflingCapBankList.insert(currentCapBank);
+                    shuffledOrder++;
+                }
+                while(tempShufflingCapBankList.entries()>0)
+                {
+                    oldFeederCapBanks.insert(tempShufflingCapBankList.removeAt(0));
+                }
+            }
+        }
+
+        {
+            RWSortedVector& newFeederCapBanks = newFeederPtr->getCCCapBanks();
+
+            if( newFeederCapBanks.entries() > 0 )
+            {
+                //search through the list to see if there is a cap bank in the
+                //list that already has the switching order
+                if( capSwitchingOrder >= ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.entries()-1])->getControlOrder() )
+                {
+                    movedCapBankPtr->setControlOrder( ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.entries()-1])->getControlOrder() + 1 );
+                }
+                else
+                {
+                    BOOL shuffling = FALSE;
+                    movedCapBankPtr->setControlOrder(capSwitchingOrder);
+                    for(ULONG k=0;k<newFeederCapBanks.entries();k++)
+                    {
+                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)newFeederCapBanks[k];
+                        if( capSwitchingOrder == currentCapBank->getControlOrder() )
+                        {
+                            //if the new switching order matches a current control
+                            //order, then we need to shuffle all the current cap banks
+                            //up one in order
+                            shuffling = TRUE;
+                            break;
+                        }
+                        else if( currentCapBank->getControlOrder() > capSwitchingOrder )
+                        {
+                            break;
+                        }
+                    }
+                    //reshuffle the cap bank control orders so they are still in sequence and start at 1
+                    UINT shuffledOrder = 1;
+                    RWOrdered tempShufflingCapBankList;
+                    while(newFeederCapBanks.entries()>0)
+                    {
+                        //have to remove due to change in sorting field in a sorted vector
+                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)newFeederCapBanks.removeAt(0);
+                        if( capSwitchingOrder == currentCapBank->getControlOrder() )
+                        {
+                            //have to make room for the movedCapBank
+                            shuffledOrder++;
+                        }
+                        currentCapBank->setControlOrder(shuffledOrder);
+                        tempShufflingCapBankList.insert(currentCapBank);
+                        shuffledOrder++;
+                    }
+                    while(tempShufflingCapBankList.entries()>0)
+                    {
+                        newFeederCapBanks.insert(tempShufflingCapBankList.removeAt(0));
+                    }
+                }
+            }
+            else
+            {
+                movedCapBankPtr->setControlOrder(1);
+            }
+
+            newFeederCapBanks.insert(movedCapBankPtr);
+        }
+
+        store->UpdateFeederBankListInDB(oldFeederPtr);
+        store->UpdateFeederBankListInDB(newFeederPtr);
+
+        {
+            RWCString typeString = (permanentFlag?"Temporary":"Permanent");
+
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Manual "
+                 << typeString
+                 << " Cap Bank with PAO Id: "
+                 << movedCapBankPtr->getPAOId() << ", name: "
+                 << movedCapBankPtr->getPAOName()
+                 << ", was moved from feeder PAO Id: "
+                 << oldFeederPtr->getPAOId() << ", name: "
+                 << oldFeederPtr->getPAOName() << ", to feeder PAO Id: "
+                 << newFeederPtr->getPAOId() << ", name: "
+                 << newFeederPtr->getPAOName() << ", with order: "
+                 << movedCapBankPtr->getControlOrder() << endl;
+        }
+    }
+    else
+    {
+        if( oldFeederPtr==NULL )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Feeder not found PAO Id: " << oldFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+        }
+        if( newFeederPtr==NULL )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Feeder not found PAO Id: " << newFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+        }
+        if( movedCapBankPtr==NULL )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Cap Bank not found PAO Id: " << movedCapBankId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+        }
+    }
+}
+
 
 /*===========================================================================
     CtiCCSubstationBusMsgExecutor
@@ -1424,6 +1727,10 @@ CtiCCExecutor* CtiCCExecutorFactory::createExecutor(const CtiMessage* message)
             ret_val = new CtiCCForwardMsgToDispatchExecutor( (CtiMessage*)message );
             break;
     
+        case CTICCCAPBANKMOVEMSG_ID:
+            ret_val = new CtiCCCapBankMoveExecutor( (CtiCCCapBankMoveMsg*)message );
+            break;
+
         case CTICCSHUTDOWN_ID:
             ret_val = new CtiCCShutdownExecutor();
             break;

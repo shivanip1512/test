@@ -31,6 +31,7 @@ public:
 
 protected:
     CtiCCExecutor() {};
+    void moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedCapBankId, LONG newFeederId, LONG capSwitchingOrder);
 };
 
 class CtiCCSubstationBusMsgExecutor : public CtiCCExecutor
@@ -93,8 +94,22 @@ private:
     void ConfirmClose();
     void doConfirmImmediately(CtiCCSubstationBus* currentSubstationBus, RWOrdered& pointChanges);
     void SendAllSubstationBuses();
+    void ReturnCapToOriginalFeeder();
 
     CtiCCCommand* _command;
+};
+
+class CtiCCCapBankMoveExecutor : public CtiCCExecutor
+{
+public:
+    CtiCCCapBankMoveExecutor(CtiCCCapBankMoveMsg* capMoveMsg) : _capMoveMsg(capMoveMsg) {};
+    virtual ~CtiCCCapBankMoveExecutor() { delete _capMoveMsg;};
+
+    virtual void Execute();
+
+private:
+
+    CtiCCCapBankMoveMsg* _capMoveMsg;
 };
 
 class CtiCCPointDataMsgExecutor : public CtiCCExecutor
