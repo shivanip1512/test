@@ -240,6 +240,12 @@ insert into YukonUserRole values(-170,-1,-103,-10301,'true');
 insert into YukonUserRole values(-170,-1,-103,-10302,'true');
 insert into YukonUserRole values(-170,-1,-103,-10303,'false');
 insert into YukonUserRole values(-170,-1,-103,-10304,'false');
+
+
+sp_rename 'DeviceDNP', 'DeviceAddress';
+
+
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
