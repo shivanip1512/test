@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/10/12 01:13:41 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/10/17 18:39:07 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -371,6 +371,27 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         OutMessage = NULL;
     }
 
+    //  Okay, this is a HACK and needs to be resolved on Porter-side someday soon.
+    //  If the command we just executed is a select, tag the Execute on the end right away
+    if( _dnp.getCommand() == CtiProtocolDNP::DNP_SetDigitalOut_SBO_Select )
+    {
+        RWCString newRequestStr(pReq->CommandString());
+
+        newRequestStr += " sbo_operate";
+
+        //  just to make sure the "sbo_operate" token isn't cropped off
+        CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(*pReq);
+
+        //newReq->setMessagePriority(MAXPRIORITY - 1);
+        newReq->setCommandString(newRequestStr);
+
+        CtiCommandParser parse(newReq->CommandString());
+
+        CtiDeviceBase::ExecuteRequest(newReq, parse, vgList, retList, outList);
+
+        delete newReq;
+    }
+
     return nRet;
 }
 
@@ -416,7 +437,7 @@ INT CtiDeviceDNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
                     resultString = getName() + " / SBO select: " + _dnp.getControlResultString();
 
                     retMsg->setResultString(resultString);
-
+                    /*
                     if( _dnp.getCommand() == CtiProtocolDNP::DNP_SetDigitalOut_SBO_Select &&
                         _dnp.getControlResultSuccess() )
                     {
@@ -466,7 +487,7 @@ INT CtiDeviceDNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
                             dout << RWTime() << " **** Checkpoint - SBO select failed for device " << getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
 
-                    }
+                    }*/
                 }
                 else
                 {
@@ -515,7 +536,7 @@ INT CtiDeviceDNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
                     }
 
                     CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
-                                                                     "scan integrity",
+                                                                     "scan general",
                                                                      InMessage->Return.UserID,
                                                                      InMessage->Return.TrxID,
                                                                      InMessage->Return.RouteID,
@@ -612,49 +633,59 @@ void CtiDeviceDNP::processInboundPoints(INMESS *InMessage, RWTime &TimeNow, RWTP
                             dout << "previous.point_time  = " << previous.point_time << endl;
                         }
 
-                        if( previous.point_value <= current.point_value )
+                        if( previous.point_time + 60 <= current.point_time )
                         {
-                            demandValue = current.point_value - previous.point_value;
-                        }
-                        if( previous.point_value > current.point_value )
-                        {
-                            //  rollover has occurred - figure out how big the accumulator was
-                            if( previous.point_value > 0x0000ffff )
+                            if( previous.point_value <= current.point_value )
                             {
-                                //  it was a 32-bit accumulator
-                                demandValue = (numeric_limits<unsigned long>::max() - previous.point_value) + current.point_value;
+                                demandValue = current.point_value - previous.point_value;
                             }
-                            else
+                            if( previous.point_value > current.point_value )
                             {
-                                //  it was a 16-bit accumulator
-                                demandValue = (numeric_limits<unsigned short>::max() - previous.point_value) + current.point_value;
+                                //  rollover has occurred - figure out how big the accumulator was
+                                if( previous.point_value > 0x0000ffff )
+                                {
+                                    //  it was a 32-bit accumulator
+                                    demandValue = (numeric_limits<unsigned long>::max() - previous.point_value) + current.point_value;
+                                }
+                                else
+                                {
+                                    //  it was a 16-bit accumulator
+                                    demandValue = (numeric_limits<unsigned short>::max() - previous.point_value) + current.point_value;
+                                }
+                            }
+
+                            demandValue *= 3600.0;
+                            demandValue /= (current.point_time - previous.point_time);
+
+                            demandValue = demandPoint->computeValueForUOM(demandValue);
+
+                            resultString = getName() + " / " + demandPoint->getName() + ": " + CtiNumStr(demandValue, ((CtiPointNumeric *)demandPoint)->getPointUnits().getDecimalPlaces());
+
+                            CtiPointDataMsg *demandMsg = new CtiPointDataMsg(demandPoint->getID(), demandValue, NormalQuality, DemandAccumulatorPointType, resultString);
+
+                            if( !useScanFlags() )  //  if we're not Scanner, send it to VG as well (scanner will do this on his own)
+                            {
+                                //  maybe (parse.isKeyValid("flag") && (parse.getFlags( ) & CMD_FLAG_UPDATE)) someday
+                                vgMsg->PointData().append(demandMsg->replicateMessage());
+                            }
+                            retMsg->PointData().append(demandMsg);
+
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint - updating demand accumulator calculation data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << "current.point_value  = " << current.point_value << endl;
+                                dout << "current.point_time   = " << current.point_time << endl;
+                            }
+
+                            itr->second = current;
+                        }
+                        else
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint - demand not calculated; interval < 60 sec **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                         }
-
-                        demandValue *= 3600.0;
-                        demandValue /= (current.point_time - previous.point_time);
-
-                        demandValue = demandPoint->computeValueForUOM(demandValue);
-
-                        resultString = getName() + " / " + demandPoint->getName() + ": " + CtiNumStr(demandValue, ((CtiPointNumeric *)demandPoint)->getPointUnits().getDecimalPlaces());
-
-                        CtiPointDataMsg *demandMsg = new CtiPointDataMsg(demandPoint->getID(), demandValue, NormalQuality, DemandAccumulatorPointType, resultString);
-
-                        if( !useScanFlags() )  //  if we're not Scanner, send it to VG as well (scanner will do this on his own)
-                        {
-                            //  maybe (parse.isKeyValid("flag") && (parse.getFlags( ) & CMD_FLAG_UPDATE)) someday
-                            vgMsg->PointData().append(demandMsg->replicateMessage());
-                        }
-                        retMsg->PointData().append(demandMsg);
-
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - updating demand accumulator calculation data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "current.point_value  = " << current.point_value << endl;
-                            dout << "current.point_time   = " << current.point_time << endl;
-                        }
-
-                        itr->second = current;
                     }
                     else
                     {
