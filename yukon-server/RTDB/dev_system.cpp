@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_system.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/04/29 20:07:00 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/05/24 17:29:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -410,6 +410,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                         case TapRouteType:
                         case WCTPRouteType:
                         case RTCRouteType:
+                        case SeriesVLMIRouteType:
                             {
                                 if( Route->isDefaultRoute() )
                                 {

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2004/05/17 20:46:35 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2004/05/24 17:29:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -596,6 +596,10 @@ RWCString Ret;
     else if(aType == RTCRouteType)
     {
         Ret = "rtc";
+    }
+    else if(aType == SeriesVLMIRouteType)
+    {
+        Ret = "series 5 lmi";
     }
     else
     {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2004/05/14 01:01:55 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2004/05/24 17:29:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -430,6 +430,7 @@ DLLEXPORT CtiRouteBase* RouteFactory(RWDBReader &rdr)
         case TapRouteType:
         case WCTPRouteType:
         case RTCRouteType:
+        case SeriesVLMIRouteType:
             {
                 Route = (CtiRouteBase*) CTIDBG_new CtiRouteXCU;
                 break;
