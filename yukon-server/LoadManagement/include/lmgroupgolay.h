@@ -39,6 +39,9 @@ RWDECLARE_COLLECTABLE( CtiLMGroupGolay )
     virtual CtiRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const;
     virtual CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const;
 
+    int getNominalTimeout() const;
+    CtiLMGroupGolay& setNominalTimeout(int nominal_timeout);
+      
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
     void saveGuts(RWvostream& ) const;
@@ -52,6 +55,8 @@ RWDECLARE_COLLECTABLE( CtiLMGroupGolay )
 
 private:
 
+    int _nominal_timeout;
+    
     void restore(RWDBReader& rdr);
 };
 #endif

@@ -335,6 +335,7 @@ void CtiLMControlAreaStore::reset()
                         RWDBTable lmGroupMacroExpanderView = db.table("lmgroupmacroexpander_view");
                         RWDBTable lmGroupPointTable = db.table("lmgrouppoint");
                         RWDBTable lmGroupRippleTable = db.table("lmgroupripple");
+			RWDBTable lmGroupSASimpleTable = db.table("lmgroupsasimple");
                         RWDBTable dynamicLMGroupTable = db.table("dynamiclmgroup");
                         RWDBTable pointTable = db.table("point");
 
@@ -357,6 +358,7 @@ void CtiLMControlAreaStore::reset()
                                  << rwdbName("pointpointidusage",lmGroupPointTable["pointidusage"])
                                  << rwdbName("pointstartcontrolrawstate",lmGroupPointTable["startcontrolrawstate"])
                                  << rwdbName("rippleshedtime",lmGroupRippleTable["shedtime"])
+				 << rwdbName("sasimplenominaltimeout", lmGroupSASimpleTable["nominaltimeout"])
                                  << dynamicLMGroupTable["groupcontrolstate"]
                                  << dynamicLMGroupTable["currenthoursdaily"]
                                  << dynamicLMGroupTable["currenthoursmonthly"]
@@ -376,6 +378,7 @@ void CtiLMControlAreaStore::reset()
                         selector.from(lmGroupMacroExpanderView);
                         selector.from(lmGroupPointTable);
                         selector.from(lmGroupRippleTable);
+			selector.from(lmGroupSASimpleTable);
                         selector.from(dynamicLMGroupTable);
                         selector.from(pointTable);
 
@@ -385,6 +388,7 @@ void CtiLMControlAreaStore::reset()
                                             lmGroupMacroExpanderView["paobjectid"]==lmGroupMacroExpanderView["childid"] ) ) &&
                                         lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(lmGroupPointTable["deviceid"]) &&
                                         lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(lmGroupRippleTable["deviceid"]) &&
+					lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(lmGroupSASimpleTable["groupid"]) &&
                                         lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(dynamicLMGroupTable["deviceid"]) &&
                                         lmGroupMacroExpanderView["deviceid"].leftOuterJoin(dynamicLMGroupTable["lmprogramid"]) &&
                                         lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(pointTable["paobjectid"]) );

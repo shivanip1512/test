@@ -5122,6 +5122,8 @@ double  CtiLMProgramDirect::StartMasterCycle(ULONG secondsFrom1901, CtiLMProgram
 	long period = lm_gear->getMethodPeriod();
 	long send_rate = period / num_groups;
 	int num_groups_to_take = 1;
+
+
 	if(num_groups >= 8)
 	{ //take 2 at a time - original code also seemed to care about an odd number of groups
 	    //and would take only 1 if the next group to be taken was the last one, but
@@ -5141,6 +5143,13 @@ double  CtiLMProgramDirect::StartMasterCycle(ULONG secondsFrom1901, CtiLMProgram
 	{
 	    RWDBDateTime ctrl_time = RWDBDateTime(RWTime(secondsFrom1901 +(cur_period*send_rate)));
 
+/*	    if(currentLMGroup->getPAOType() == TYPE_LMGROUP_SADIGITAL ||
+	       currentLMGroup->getPAOType() == TYPE_LMGROUP_GOLAY )
+	    {
+		// NOTE: SPECIAL CASE - we are going to use the groups nominal time out instead of what is specified in the gear
+		
+	    }
+*/    
 	    if( _LM_DEBUG & LM_DEBUG_STANDARD )			
 	    {
 		CtiLockGuard<CtiLogger> dout_guard(dout);

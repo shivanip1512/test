@@ -127,6 +127,27 @@ CtiRequestMsg* CtiLMGroupGolay::createMasterCycleRequestMsg(LONG offTime, LONG p
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
+/*----------------------------------------------------------------------------
+  getNominalTimeout
+
+  Returns the groups nominal timeout
+----------------------------------------------------------------------------*/
+int CtiLMGroupGolay::getNominalTimeout() const
+{
+    return _nominal_timeout;
+}
+
+/*----------------------------------------------------------------------------
+  setNominalTimeout
+
+  Sets this groups nominal timeout
+----------------------------------------------------------------------------*/
+CtiLMGroupGolay& CtiLMGroupGolay::setNominalTimeout(int nominal_timeout)
+{
+    _nominal_timeout = nominal_timeout;
+    return *this;
+}
+
 /*-------------------------------------------------------------------------
   restoreGuts
     
@@ -193,5 +214,17 @@ CtiLMGroupBase* CtiLMGroupGolay::replicate() const
 void CtiLMGroupGolay::restore(RWDBReader& rdr)
 {
     CtiLMGroupBase::restore(rdr);
+
+    RWDBNullIndicator isNull;
+    rdr["sasimplenominaltimeout"] >> isNull;
+    if(!isNull)
+    {
+	rdr["sasimplenominaltimeout"] >> _nominal_timeout;
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " **Checkpoint** " << " Golay LMGroup could not find a nominal timeout when restoring from the database" << __FILE__ << "(" << __LINE__ << ")" << endl;
+    }
 }
 

@@ -127,6 +127,28 @@ CtiRequestMsg* CtiLMGroupSADigital::createMasterCycleRequestMsg(LONG offTime, LO
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
+
+/*----------------------------------------------------------------------------
+  getNominalTimeout
+
+  Returns the groups nominal timeout
+----------------------------------------------------------------------------*/
+int CtiLMGroupSADigital::getNominalTimeout() const
+{
+    return _nominal_timeout;
+}
+
+/*----------------------------------------------------------------------------
+  setNominalTimeout
+
+  Sets this groups nominal timeout
+----------------------------------------------------------------------------*/
+CtiLMGroupSADigital& CtiLMGroupSADigital::setNominalTimeout(int nominal_timeout)
+{
+    _nominal_timeout = nominal_timeout;
+    return *this;
+}
+
 /*-------------------------------------------------------------------------
   restoreGuts
     
@@ -193,5 +215,17 @@ CtiLMGroupBase* CtiLMGroupSADigital::replicate() const
 void CtiLMGroupSADigital::restore(RWDBReader& rdr)
 {
     CtiLMGroupBase::restore(rdr);
+    
+    RWDBNullIndicator isNull;
+    rdr["sasimplenominaltimeout"] >> isNull;
+    if(!isNull)
+    {
+	rdr["sasimplenominaltimeout"] >> _nominal_timeout;
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " **Checkpoint** " << " SADigital LMGroup could not find a nominal timeout when restoring from the database" << __FILE__ << "(" << __LINE__ << ")" << endl;
+    }
 }
 
