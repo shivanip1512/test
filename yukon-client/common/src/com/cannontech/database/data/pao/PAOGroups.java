@@ -14,6 +14,7 @@ public final class PAOGroups implements RouteTypes, PortTypes, DeviceTypes, CapC
    public final static int CAT_CUSTOMER = 3;
    public final static int CAT_CAPCONTROL = 4;
    public final static int CAT_LOADCONTROL = 5;
+   public final static int CAT_SCENARIO = 6;
 	  
    public static final String STRING_CAT_DEVICE = "DEVICE";
    public static final String STRING_CAT_ROUTE = "ROUTE";
@@ -21,6 +22,7 @@ public final class PAOGroups implements RouteTypes, PortTypes, DeviceTypes, CapC
    public static final String STRING_CAT_CUSTOMER = "CUSTOMER";
    public static final String STRING_CAT_CAPCONTROL = "CAPCONTROL";
    public static final String STRING_CAT_LOADMANAGEMENT = "LOADMANAGEMENT";
+   public static final String STRING_CAT_LMSCENARIO = "LMSCENARIO";
    public static final String STRING_INVALID = "(invalid)";
 
 
@@ -30,6 +32,7 @@ public final class PAOGroups implements RouteTypes, PortTypes, DeviceTypes, CapC
    public static final int CLASS_CUSTOMER = CAT_CUSTOMER;
    public static final int CLASS_CAPCONTROL = CAT_CAPCONTROL;
    public static final int CLASS_LOADMANAGEMENT = CAT_LOADCONTROL;
+
 /**
  * This method was created in VisualAge.
  * @return int
@@ -70,7 +73,10 @@ public final static String getCategory( int intCategory )
 			
 		case CAT_LOADCONTROL:
 			return STRING_CAT_LOADMANAGEMENT;
-
+			
+		case CAT_SCENARIO:
+			return STRING_CAT_LMSCENARIO;
+		
 		default:
 			return STRING_INVALID;
 	}
@@ -235,7 +241,10 @@ public final static int getDeviceType(String typeString)
 	  return LM_ENERGY_EXCHANGE_PROGRAM;
    else if (isStringDevice(compareString, STRING_LM_CONTROL_AREA))
 	  return LM_CONTROL_AREA;
-   else if (isStringDevice(compareString, STRING_VERSACOM_SERIAL_NUMBER))
+	//not a device, but useful to place it here
+	else if (isStringDevice(compareString, STRING_LM_SCENARIO))
+	  return LM_SCENARIO;
+	else if (isStringDevice(compareString, STRING_VERSACOM_SERIAL_NUMBER))
 	  return EDITABLEVERSACOMSERIAL;
    else if (isStringDevice(compareString, STRING_DR_87))
 	  return DR_87;
@@ -466,8 +475,8 @@ public final static String getPAOTypeString(int type)
 		  return STRING_REPEATER_800[0];
 	  case SIXNET:
 		  return STRING_SIXNET[0];
- 
-	   default:
+ 	  
+ 	  default:
 		  return STRING_INVALID;
 	}
 
@@ -529,7 +538,6 @@ public final static int getPAOType( String category, String paoType )
 	{
 		return getCapControlType( paoType );
 	}
-
 	else
 		return PAOGroups.INVALID;
 }

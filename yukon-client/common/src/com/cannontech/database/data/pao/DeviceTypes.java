@@ -84,6 +84,9 @@ public interface DeviceTypes extends TypeBase
 	
 	public final static int SERIES_5_LMI			= DEVICE_OFFSET + 71;
 	public final static int RTC						= DEVICE_OFFSET + 72;
+	
+	//not actually a device, but useful to throw it in here
+	public final static int LM_SCENARIO				= DEVICE_OFFSET + 73;
 
 
 	//all the possible text representation of each device type.
@@ -142,6 +145,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_LM_DIRECT_PROGRAM = {"LM DIRECT PROGRAM"};
 	public static final String[] STRING_LM_CURTAIL_PROGRAM = {"LM CURTAIL PROGRAM"};
 	public static final String[] STRING_LM_CONTROL_AREA = {"LM CONTROL AREA"};
+	public static final String[] STRING_LM_SCENARIO = {"LMSCENARIO"};
 	public static final String[] STRING_VERSACOM_SERIAL_NUMBER = {"VERSACOM SERIAL #"};
 	public static final String[] STRING_LMT_2 = {"LMT-2", "LMT 2"};
 	public static final String[] STRING_DCT_501 = {"DCT-501"};

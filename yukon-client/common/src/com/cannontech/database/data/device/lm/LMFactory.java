@@ -98,6 +98,10 @@ public final static com.cannontech.database.data.pao.YukonPAObject createLoadMan
 			retLm = new LMControlArea();
 			retLm.setPAOClass(DeviceClasses.STRING_CLASS_LOADMANAGER);
 			break;
+		case PAOGroups.LM_SCENARIO:
+			retLm = new LMScenario();
+			retLm.setPAOClass(DeviceClasses.STRING_CLASS_LOADMANAGER);
+			break;
 	}
 
 	//Set a couple reasonable defaults

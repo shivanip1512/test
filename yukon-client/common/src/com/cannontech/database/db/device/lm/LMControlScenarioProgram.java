@@ -12,7 +12,7 @@ package com.cannontech.database.db.device.lm;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class LMControlScenarioProgram extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange, com.cannontech.common.editor.EditorPanel
+public class LMControlScenarioProgram extends com.cannontech.database.db.NestedDBPersistent
 {
 	
 	private Integer scenarioID;
@@ -73,61 +73,6 @@ public class LMControlScenarioProgram extends com.cannontech.database.db.DBPersi
 
 
 
-	public static synchronized Integer getNextScenarioID( java.sql.Connection conn )
-		{
-			if( conn == null )
-				throw new IllegalStateException("Database connection should not be null.");
-	
-			java.sql.Statement stmt = null;
-			java.sql.ResultSet rset = null;
-		
-			try 
-			{		
-				stmt = conn.createStatement();
-				 rset = stmt.executeQuery( "SELECT Max(ScenarioID)+1 FROM " + TABLE_NAME );	
-				
-				 //get the first returned result
-				 rset.next();
-				return new Integer( rset.getInt(1) );
-			}
-			catch (java.sql.SQLException e) 
-			{
-				e.printStackTrace();
-			}
-			finally 
-			{
-				try 
-				{
-					if ( stmt != null) stmt.close();
-				}
-				catch (java.sql.SQLException e2) 
-				{
-					e2.printStackTrace();
-				}
-			}
-		
-			//strange, should not get here
-			return new Integer(com.cannontech.common.util.CtiUtilities.NONE_ID);
-		}
-
-
-	public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
-	{
-		com.cannontech.message.dispatch.message.DBChangeMsg[] msgs =
-		{
-			new com.cannontech.message.dispatch.message.DBChangeMsg(
-				getScenarioID().intValue(),
-				com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_LMSCENARIO_DB,
-				com.cannontech.message.dispatch.message.DBChangeMsg.CAT_LMSCENARIO,
-				com.cannontech.message.dispatch.message.DBChangeMsg.CAT_LMSCENARIO,
-				typeOfChange)
-		};
-
-
-		return msgs;
-	}
-	
-		
 	public Integer getScenarioID() {
 		return scenarioID;
 	}
