@@ -70,7 +70,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
 		if (status == STATUS_FINISHED && numFailure == 0)
 			return "The serial numbers " + snFrom + " to " + snTo + " have been added successfully.";
 		else
-			return numSuccess + " of " + numTotal + " hardwares have been added.";
+			return numSuccess + " of " + numTotal + " hardware entries have been added.";
 	}
 
 	/* (non-Javadoc)
@@ -152,8 +152,8 @@ public class AddSNRangeTask extends TimeConsumingTask {
 		status = STATUS_FINISHED;
 		
 		if (numFailure > 0) {
-			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardwares added to inventory successfully.</span><br>" +
-					"<span class='ErrorMsg'>" + numFailure + " hardwares failed (listed below).<br>" +
+			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardware entries added to inventory successfully.</span><br>" +
+					"<span class='ErrorMsg'>" + numFailure + " hardware entries failed (listed below).<br>" +
 					"Those serial numbers may already exist in the inventory.</span><br>";
 			if (serialNoSet.size() > 0) {
 				resultDesc += "<br><table width='100' cellspacing='0' cellpadding='0' border='0' align='center' class='TableCell'>";

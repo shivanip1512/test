@@ -65,10 +65,10 @@ public class DeleteSNRangeTask extends TimeConsumingTask {
 				return snRange + " have been deleted successfully.";
 			}
 			else
-				return numSuccess + " of " + numToBeDeleted + " hardwares have been deleted.";
+				return numSuccess + " of " + numToBeDeleted + " hardware entries have been deleted.";
 		}
 		else
-			return "Deleting hardwares from inventory...";
+			return "Deleting hardware entries from inventory...";
 	}
 
 	/* (non-Javadoc)
@@ -185,7 +185,7 @@ public class DeleteSNRangeTask extends TimeConsumingTask {
 		session.removeAttribute( InventoryManagerUtil.INVENTORY_SET );
 		
 		if (numFailure > 0) {
-			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardwares deleted successfully.</span><br>" +
+			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardware entries deleted successfully.</span><br>" +
 					"<span class='ErrorMsg'>" + numFailure + " hardwares failed (listed below).<br>" +
 					"If a hardware is assigned to a customer account, you must remove it from the account before deleting it.</span><br>";
 			

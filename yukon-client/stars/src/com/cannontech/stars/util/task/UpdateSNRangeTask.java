@@ -81,10 +81,10 @@ public class UpdateSNRangeTask extends TimeConsumingTask {
 				return snRange + " have been updated successfully.";
 			}
 			else
-				return numSuccess + " of " + numToBeUpdated + " hardwares have been updated.";
+				return numSuccess + " of " + numToBeUpdated + " hardware entries have been updated.";
 		}
 		else
-			return "Updating hardwares in inventory...";
+			return "Updating hardware entries in inventory...";
 	}
 
 	/* (non-Javadoc)
@@ -209,8 +209,8 @@ public class UpdateSNRangeTask extends TimeConsumingTask {
 		session.removeAttribute( InventoryManagerUtil.INVENTORY_SET );
 		
 		if (numFailure > 0) {
-			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardwares updated successfully.</span><br>" +
-					"<span class='ErrorMsg'>" + numFailure + " hardwares failed (listed below).<br>" +
+			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardware entries updated successfully.</span><br>" +
+					"<span class='ErrorMsg'>" + numFailure + " hardware entries failed (listed below).<br>" +
 					"Those serial numbers may already exist in the new device type.</span><br>";
 			
 			session.setAttribute(InventoryManagerUtil.INVENTORY_SET_DESC, resultDesc);
