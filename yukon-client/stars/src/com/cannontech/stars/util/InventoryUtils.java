@@ -90,6 +90,12 @@ public class InventoryUtils {
 		return 0;
 	}
 	
+	public static boolean supportServiceInOut(int devTypeID) {
+		int hwConfigType = getHardwareConfigType( devTypeID );
+		return hwConfigType == HW_CONFIG_TYPE_EXPRESSCOM
+			|| hwConfigType == HW_CONFIG_TYPE_VERSACOM;
+	}
+	
 	public static boolean isAdditionalProtocol(int devTypeDefID) {
 		return (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA205
 			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA305);

@@ -315,6 +315,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 		else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) {
 			// TODO: reconfig a SA305 switch to enable it
 		}
+		if (cmd == null) return;
 		
 		int rtID = 0;
 		if (routeID != null)
@@ -400,7 +401,8 @@ public class YukonSwitchCommandAction implements ActionBase {
 		if (cfgCmds.length == 0)
 			throw new WebClientException("Failed to build config command for serial #" + liteHw.getManufacturerSerialNumber() + ".");
 		
-		if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL || forceInService)
+		if ((liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL || forceInService)
+			&& InventoryUtils.supportServiceInOut( liteHw.getLmHardwareTypeID() ))
 		{
 			// Send an in service command first
 			sendEnableCommand( energyCompany, liteHw, optRouteID );
