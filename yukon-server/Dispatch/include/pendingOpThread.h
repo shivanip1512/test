@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/11/09 06:12:51 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/11/18 23:56:08 $
 * HISTORY      :
 * $Log: pendingOpThread.h,v $
+* Revision 1.4  2004/11/18 23:56:08  cplender
+* Control History Getting closer.
+*
 * Revision 1.3  2004/11/09 06:12:51  cplender
 * Working to calm dispatch down
 *
@@ -101,8 +104,8 @@ public:
     void doPendingPointData(bool bShutdown = false);
     void updateControlHistory(  CtiPendingPointOperations &ppc, int cause, const RWTime &thetime = RWTime(), RWTime &now = RWTime() );
     // void dumpPendingOps( bool force = false  );
-    void postControlStopPoint( CtiPendingPointOperations &ppc, const RWTime &now);
-    void postControlHistoryPoints( CtiPendingPointOperations &ppc, int line = 0 );
+    void postControlStopPoint( CtiPendingPointOperations &ppc, bool doit = false);
+    void postControlHistoryPoints( CtiPendingPointOperations &ppc, bool doit = false );
     bool isPointInPendingControl(LONG pointid);
 
     void insertControlHistoryRow( CtiPendingPointOperations &ppc, int line);

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/pending_info.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/11/09 06:12:51 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/11/18 23:56:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -337,6 +337,16 @@ void CtiPendingPointOperations::addOffset(int offset, long pid)
     }
 
     return;
+}
+
+void CtiPendingPointOperations::setLastHistoryPost(RWTime rwt)
+{
+    _lastHistoryPost = rwt;
+}
+
+RWTime CtiPendingPointOperations::getLastHistoryPost() const
+{
+    return _lastHistoryPost;
 }
 
 

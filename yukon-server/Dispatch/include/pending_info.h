@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/pending_info.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/11/09 06:12:51 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/11/18 23:56:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,8 +39,7 @@ public:
         intervalcrossing,
         intervalpointpostcrossing,  // Control history points are posted at this interval if there is no other post to be performed!
         stopintervalcrossing,   // This is an interval used to post time remaining in control.
-        delayeddatamessage,     // Expected completion occured.  Requires time of new data
-        datachange,             // Point went to the alter state either by force, or restore.
+        datachange,             // CONTROL Point went to the alter state either by force, or restore.
         newcontrol,             // Any time a control occurs which starts a control.  Requires time.
         control,                // Already controlling. Deal with new input information. Requires time.
         repeatcontrol,          // Already controlling, message has been repeated. Requires time.
@@ -91,6 +90,8 @@ protected:
     INT         _controlState;       // What is this control doing?
     UINT        _controlTimeout;    // Number of seconds from _controlTime that we need to be handled.
     DOUBLE      _controlCompleteValue; // What output value indicates that this control completed successfully?
+
+    RWTime      _lastHistoryPost;       // Time this was last posted.
 
     CtiTableLMControlHistory _control;
 
@@ -150,5 +151,8 @@ private:
 
     LONG getOffsetsPointID(int offset);
     void addOffset(int offset, long pid);
+
+    RWTime getLastHistoryPost() const;       // Time this was last posted.
+    void setLastHistoryPost(RWTime rwt);
 };
 #endif // #ifndef __PENDING_INFO_H__
