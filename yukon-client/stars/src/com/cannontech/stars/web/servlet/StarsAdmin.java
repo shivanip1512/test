@@ -766,6 +766,9 @@ public class StarsAdmin extends HttpServlet {
 			
 			createHw = new StarsCreateLMHardware();
 			StarsLiteFactory.setStarsLMHw( createHw, liteHw, energyCompany );
+			createHw.setInstallDate( new java.util.Date() );
+			createHw.setRemoveDate( null );
+			createHw.setInstallationNotes( "" );
 		}
 		else {
 			createHw = (StarsCreateLMHardware) StarsFactory.newStarsInventory(StarsCreateLMHardware.class);
@@ -810,6 +813,9 @@ public class StarsAdmin extends HttpServlet {
 		if (liteHw != null) {
 			updateHw = new StarsUpdateLMHardware();
 			StarsLiteFactory.setStarsLMHw( updateHw, liteHw, energyCompany );
+			updateHw.setInstallDate( new java.util.Date() );
+			updateHw.setRemoveDate( null );
+			updateHw.setInstallationNotes( "" );
 		}
 		else {
 			updateHw = (StarsUpdateLMHardware) StarsFactory.newStarsInventory(StarsUpdateLMHardware.class);
@@ -870,6 +876,7 @@ public class StarsAdmin extends HttpServlet {
 		
 		StarsDeleteLMHardware deleteHw = new StarsDeleteLMHardware();
 		deleteHw.setInventoryID( liteHw.getInventoryID() );
+		deleteHw.setDeleteFromInventory( false );
 		
 		StarsOperation operation = new StarsOperation();
 		operation.setStarsDeleteLMHardware( deleteHw );
