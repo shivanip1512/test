@@ -19,7 +19,7 @@ public class DeviceScanRate extends com.cannontech.database.db.DBPersistent
 	public static final String TYPE_ACCUMULATOR = "Accumulator";
 	public static final String TYPE_INTEGRITY = "Integrity";
 	
-	private static String tableName = "DeviceScanRate";
+	public static final String TABLE_NAME = "DeviceScanRate";
 /**
  * DeviceScantRateTable constructor comment.
  */
@@ -43,7 +43,7 @@ public void add() throws java.sql.SQLException
 	Object addValues[] = { getDeviceID(), 
 		getScanType(), getIntervalRate(), getScanGroup(), getAlternateRate() };
 
-	add( this.tableName, addValues );
+	add( this.TABLE_NAME, addValues );
 }
 /**
  * delete method comment.
@@ -53,7 +53,7 @@ public void delete() throws java.sql.SQLException {
 	String constraintColumns[] = { "DeviceID", "ScanType", "ScanGroup", "AlternateRate" };
 	Object constraintValues[] = { getDeviceID(), getScanType(), getScanGroup(), getAlternateRate() };
 	
-	delete( this.tableName, constraintColumns, constraintValues  );
+	delete( this.TABLE_NAME, constraintColumns, constraintValues  );
 }
 
 /**
@@ -65,7 +65,7 @@ public static boolean deleteDeviceScanRates(Integer deviceID, java.sql.Connectio
 {
 	com.cannontech.database.SqlStatement stmt =
 		new com.cannontech.database.SqlStatement(
-               "DELETE FROM " + tableName + " WHERE DeviceID=" + deviceID,
+               "DELETE FROM " + TABLE_NAME+ " WHERE DeviceID=" + deviceID,
 					conn );
 	try
 	{
@@ -105,7 +105,7 @@ public static DeviceScanRate[] getDeviceScanRates(Integer deviceID, java.sql.Con
 {
 	com.cannontech.database.SqlStatement stmt = 
 		new com.cannontech.database.SqlStatement(
-            "SELECT IntervalRate, ScanType, ScanGroup, AlternateRate FROM " + tableName + " WHERE DeviceID=" + deviceID,
+            "SELECT IntervalRate, ScanType, ScanGroup, AlternateRate FROM " + TABLE_NAME + " WHERE DeviceID=" + deviceID,
 				conn );
 													
 	try
@@ -178,7 +178,7 @@ public void retrieve() throws java.sql.SQLException
 	String constraintColumns[] = { "DeviceID", "ScanType" };
 	Object constraintValues[] = { getDeviceID(), getScanType()};
 
-	Object results[] = retrieve( selectColumns, this.tableName, constraintColumns, constraintValues );
+	Object results[] = retrieve( selectColumns, this.TABLE_NAME, constraintColumns, constraintValues );
 
 	if( results.length == selectColumns.length )
 	{
@@ -235,7 +235,7 @@ public void update() throws java.sql.SQLException {
 	String constraintColumns[] = { "DeviceID", "ScanType" };
 	Object constraintValues[] = { getDeviceID(), getScanType() };
 
-	update( this.tableName, setColumns, setValues, constraintColumns, constraintValues );
+	update( this.TABLE_NAME, setColumns, setValues, constraintColumns, constraintValues );
 	
 }
 }
