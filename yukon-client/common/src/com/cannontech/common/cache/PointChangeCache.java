@@ -2,6 +2,10 @@ package com.cannontech.common.cache;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.cache.functions.StateFuncs;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteState;
 
 /**
  * PointChangeCache provides the current value of all Yukon points.
@@ -196,13 +200,16 @@ public String getState(long pointId, double value, String dbAlias)
 
 	if( pData != null )
 	{
-		return retrieveState( (int) pData.getId(), pData.getValue(), dbAlias );
+		LitePoint lp = PointFuncs.getLitePoint((int)pointId);
+		LiteState ls = StateFuncs.getLiteState((int) lp.getStateGroupID(), (int) value);
+		return ls.getStateText();
 	}
 	else
-	{
+	{ 
 		return "-";
 	}
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/31/00 1:03:43 PM)
