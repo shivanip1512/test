@@ -27,6 +27,7 @@ public final class LiteTypes
 	public final static int CUSTOMER_CI				= 20;
 	public final static int CONTACT_NOTIFICATION	= 21;
 	public final static int BASELINE				= 22;
+	public final static int TAG 					= 23;
 
 	
 	// Stars lite types

@@ -50,6 +50,7 @@ public interface IDatabaseCache
    public java.util.List getAllPorts();
    public java.util.List getAllRoutes();
    public java.util.List getAllStateGroups();
+   public java.util.List getAllTags();
    public java.util.List getAllUnitMeasures();
 
    public java.util.List getAllYukonUsers();

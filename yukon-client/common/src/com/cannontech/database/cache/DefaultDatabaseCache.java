@@ -285,6 +285,11 @@ public class DefaultDatabaseCache implements IDatabaseCache
       return getDBCache().getAllStateGroups();
    }
 
+	public synchronized List getAllTags() 
+	{
+		return getDBCache().getAllTags();
+	}
+	
    /**
     * @ejb:interface-method
     * tview-type="remote" 

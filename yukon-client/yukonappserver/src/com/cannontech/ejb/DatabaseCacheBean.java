@@ -325,6 +325,14 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    }
 
    /**
+	* @ejb:interface-method
+	* tview-type="remote" 
+   **/
+   public synchronized java.util.List getAllTags() {
+   		return getCache().getAllTags();
+   }
+   
+   /**
     * @ejb:interface-method
     * tview-type="remote" 
    **/

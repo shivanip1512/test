@@ -63,6 +63,8 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
     private ArrayList allYukonImages = null;
 	private ArrayList allCICustomers = null;
 
+	private ArrayList allTags = null;
+	
 	private ArrayList allYukonUsers = null;
 	private ArrayList allYukonRoles = null;
 	private ArrayList allYukonRoleProperties = null;
@@ -776,6 +778,18 @@ public synchronized java.util.List getAllStateGroups(){
 		return allStateGroups;
 	}
 }
+
+public synchronized java.util.List getAllTags() {
+	if(allTags == null)
+	{
+		allTags = new ArrayList();
+		TagLoader tagLoader = new TagLoader(allTags, databaseAlias);
+		tagLoader.run();
+		return allTags;	
+	}
+	return allTags;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
