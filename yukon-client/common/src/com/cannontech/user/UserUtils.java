@@ -17,8 +17,9 @@ public final class UserUtils
 	
 
 	/* Precanned existing users in the system */
-	public static final int USER_YUKON_ID 				= -1;
-	public static final int USER_WEB_USER_ID 			= -2;
+	public static final int USER_NONE_ID			= 0;
+	public static final int USER_YUKON_ID 			= -1;
+	public static final int USER_WEB_USER_ID 		= -2;
 	public static final int USER_WEB_OPERATOR_ID 	= -3;
 	
 	
