@@ -1194,6 +1194,10 @@ public JFreeChart refresh()
 		XYItemRenderer rend = null;
 		plot = new XYPlot(null, (ValueAxis)getDomainAxis(), null, null);
 
+		//Weaken the alpha if this is an area type renderer, so we can see "through" it
+		if ( GraphRenderers.isAreaGraph(getViewType()))
+			plot.setForegroundAlpha(0.75f);
+			
 		///Currently we create (at most 2 renderers), one for each axis (L or R) 
 		for (int a = 0; a < 2; a++)
 		{
@@ -1299,7 +1303,6 @@ public JFreeChart refresh()
 
 	addRangeMarkers(plot);
 
-	plot.setForegroundAlpha(0.6f);
 	JFreeChart fChart = null;
 	fChart = new JFreeChart(plot);
 	fChart.setLegend( getLegend(fChart) );
