@@ -8,6 +8,7 @@
 						  {"Enrollment.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_ENROLLMENT, "Enrollment")},
 						  {"OptOut.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_OPT_OUT, "Opt Out")},
 						  {"Thermostat.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual")},
+						  {"Thermostat2.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual")},
 						  {"ThermSchedule.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule")},
 						  {"Password.jsp", "Change Login"}
 						 };
@@ -44,7 +45,18 @@
       <div align="left"><span class="NavHeader">Thermostat</span><br>
         <cti:checkProperty propertyid="<%=ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT%>">
           <%= links.get("ThermSchedule.jsp") %><br>
+<%
+			if (thermoSettings.getStarsThermostatDynamicData() == null) {
+%>
           <%= links.get("Thermostat.jsp") %><br>
+<%
+			}
+			else {
+%>
+          <%= links.get("Thermostat2.jsp") %><br>
+<%
+			}
+%>
         </cti:checkProperty>
 	  </div>
     </td>

@@ -75,13 +75,17 @@ else if (navigator.appName.indexOf("Microsoft") != -1)
 var lowerLimit = 45;
 var upperLimit = 88;
 
-<%	if (curSettings != null) { %>
-<%		if (curSettings.getLowerCoolSetpointLimit() > 0) { %>
+<%	if (curSettings != null) {
+		if (curSettings.getLowerCoolSetpointLimit() > 0) {
+%>
 	lowerLimit = <%= curSettings.getLowerCoolSetpointLimit() %>;
-<%		} %>
-<%		if (curSettings.getUpperHeatSetpointLimit() > 0) { %>
+<%		}
+		if (curSettings.getUpperHeatSetpointLimit() > 0) {
+%>
 	upperLimit = <%= curSettings.getUpperHeatSetpointLimit() %>;
-<%		} %>
+<%		}
+	}
+%>
 
 var coolSetpoint = <%= coolSetpoint %>;
 var heatSetpoint = <%= heatSetpoint %>;
@@ -111,14 +115,13 @@ function getTemp() {
 
 var timeoutId = -1;
 
-function disableRefresh() {
+function setChanged() {
 	if (timeoutId != -1) {
 		clearTimeout(timeoutId);
 		timeoutId = -1;
 		document.getElementById("PromptMsg").innerText = "Settings changed. Refresh the page to view current settings.";
 	}
 }
-<%	} %>
 
 function init() {
 	modeChange('<%= modeStr %>');
@@ -137,8 +140,8 @@ function incTemp() {
 		document.MForm.tempField.value = curTemp;
 <%	if (curSettings != null) { %>
 		setTemp(curTemp);
-		disableRefresh();
 <%	} %>
+		setChanged();
 	}
 }
 
@@ -148,8 +151,8 @@ function decTemp() {
 		document.MForm.tempField.value = curTemp;
 <%	if (curSettings != null) { %>
 		setTemp(curTemp);
-		disableRefresh();
 <%	} %>
+		setChanged();
 	}
 }
 
@@ -206,7 +209,8 @@ function modeChange(mode) {
 	document.MForm.tempField.readOnly = disableFlag;
 	document.getElementById("IncTemp").disabled = disableFlag;
 	document.getElementById("DecTemp").disabled = disableFlag;
-	disableRefresh();
+
+	setChanged();
 }
 
 function fanChange(fan) {
@@ -223,7 +227,7 @@ function fanChange(fan) {
 		document.MForm.fan.value = "";
 	}
 	
-	disableRefresh();
+	setChanged();
 }
 
 function submitIt() {
@@ -322,7 +326,7 @@ function prepareSubmit() {
                           <table width="18%" border="0" cellspacing = "0" cellpadding ="0" height="60" >
                             <tr> 
                               <td width="52%" height="53"> 
-                                <input type="text" name="tempField" maxlength="2" class="tempText1" value="<%= setpoint %>" onBlur="validateTemp()" onChange="disableRefresh()">
+                                <input type="text" name="tempField" maxlength="2" class="tempText1" value="<%= setpoint %>" onBlur="validateTemp()" onChange="setChanged()">
                               </td>
                               <td width="48%" height="53"> 
                                 <table width="41%" border="0" cellspacing = "0" cellpadding = "0">
@@ -339,7 +343,7 @@ function prepareSubmit() {
                           <table width="79%" border="0" cellpadding = "0" cellspacing = "0">
                             <tr> 
                               <td> 
-                                <input type="checkbox" name="hold" value="true" <%= (hold)? "checked" : "" %> onclick="disableRefresh()">
+                                <input type="checkbox" name="hold" value="true" <%= (hold)? "checked" : "" %> onclick="setChanged()">
                                 <img src="../../Images/ThermImages/Hold.gif" width="34" height="9"></td>
                             </tr>
                           </table>
