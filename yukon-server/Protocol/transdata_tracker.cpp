@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/09/03 18:11:55 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/10/06 15:19:00 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -63,7 +63,6 @@ CtiTransdataTracker::CtiTransdataTracker():
    _get_dial_in_time( "GC\r\n" ),
    _get_program_id( "PI\r\n" ),
    _test( "\r\n" ),
-   _prot_start( "C" ),
    _good_return( "Ok\r\n?" ),
    _prot_message( "ol \r\n" ),
    _retry( "Retry\r\n" )
@@ -72,9 +71,10 @@ CtiTransdataTracker::CtiTransdataTracker():
    _lastState        = 0;
 
    _finished         = true;
-   _didSomeWork      = false;
    _moveAlong        = false;
    _weHaveData       = false;
+   _goodCRC          = false;
+   _ymodemsTurn      = false;
 
    _storage          = new BYTE[5000];    //supposedly, we'd only need 1k, but...
    _lastCommandSent  = new BYTE[30];
@@ -91,7 +91,27 @@ CtiTransdataTracker::CtiTransdataTracker():
 
 CtiTransdataTracker::~CtiTransdataTracker()
 {
+   destroyMe();
+}
 
+//=====================================================================================================================
+//=====================================================================================================================
+
+void CtiTransdataTracker::destroyMe( void )
+{
+   delete [] _storage;
+   delete [] _lastCommandSent;
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+void CtiTransdataTracker::reinitalize( void )
+{
+   _ymodem.reinitalize();
+   _datalink.reinitalize();
+
+   destroyMe();
 }
 
 //=====================================================================================================================
@@ -99,51 +119,62 @@ CtiTransdataTracker::~CtiTransdataTracker()
 
 bool CtiTransdataTracker::decode( CtiXfer &xfer, int status )
 {
-   bool  datalinkDone;
-   BYTE  temp[2000];
+   BYTE  temp[5000];
    int   bytes = 0;
 
-   _datalink.readMsg( xfer, status );
-
-   datalinkDone = _datalink.isTransactionComplete();
-
-   if( datalinkDone )
+   if( _ymodemsTurn )
    {
-      _datalink.retreiveData( temp, &bytes );
+      _ymodem.decode( xfer, status );
 
-      if( bytes != 0 )
+      if( _ymodem.isTransactionComplete() )
       {
-         memcpy( _storage + _bytesReceived, temp, bytes );
-         _bytesReceived += bytes;
+         _goodCRC = _ymodem.isCrcValid();
 
-         processData( _storage );
+         if( _goodCRC )
+         {
+            _ymodem.retreiveData( temp, &bytes );
+            setNextState();
+            _ymodemsTurn = false;
+         }
       }
-      else
-      {
-         setNextState();
-      }
-
-      datalinkDone = false;
    }
    else
    {
-      if( _datalink.getError() == failed )
+      _datalink.readMsg( xfer, status );
+
+      if( _datalink.isTransactionComplete() )
       {
-         setError();
-         _waiting = false;
+         _datalink.retreiveData( temp, &bytes );
+
+         if( bytes != 0 )
+         {
+            memcpy( _storage + _bytesReceived, temp, bytes );
+            _bytesReceived += bytes;
+
+            processData( _storage );
+         }
+         else
+         {
+            setNextState();  //well well... this is some faulty logic... what if we never get data?!
+         }
       }
+   }
+
+   if( _datalink.getError() == failed )
+   {
+      setError();
+      _waiting = false;
    }
 
    return( _finished );
 }
 
 //=====================================================================================================================
-//search for one of our magic conditions that says 'success'
+//search for one of our magic conditions that says 'success' of this layer (not ymodem)
 //=====================================================================================================================
 
 bool CtiTransdataTracker::processData( BYTE *_storage )
 {
-//   bool  result = false;
    int   index;
    char  temp[7];
 
@@ -161,7 +192,6 @@ bool CtiTransdataTracker::processData( BYTE *_storage )
       if( _moveAlong )
       {
          _moveAlong = false;
-         _didSomeWork = true;
          _finished = true;
       }
 
@@ -173,29 +203,9 @@ bool CtiTransdataTracker::processData( BYTE *_storage )
       reset();
    }
 
-   //this will tell the layer above that we're ready with his data
-   if( isCrcValid()  && ( _lastState == doStartProt ))
-   {
-      setNextState();
-      _finished = true;
-   }
-
    return( false );
 }
 
-//=====================================================================================================================
-//=====================================================================================================================
-
-void CtiTransdataTracker::setXfer( CtiXfer &xfer, RWCString dataOut, int bytesIn, bool block, ULONG time )
-{
-   memcpy( xfer.getOutBuffer(), dataOut, strlen( dataOut ) );
-
-   xfer.setMessageStart( true );
-   xfer.setOutCount( strlen( dataOut ) );     //there will be a problem with this using RWCStrings
-   xfer.setInCountExpected( bytesIn );
-   xfer.setInTimeout( time );
-   xfer.setNonBlockingReads( block );
-}
 
 //=====================================================================================================================
 //sequence for the login process
@@ -224,9 +234,16 @@ bool CtiTransdataTracker::logOn( CtiXfer &xfer )
          }
          break;
 
+      case doTest2:
+         {
+            setXfer( xfer, _test, 0, false, 0 );
+            _ignore = true;
+         }
+         break;
+
       case doPassword:
          {
-            setXfer( xfer, "22222222\r\n", strlen( _good_return ), false, 0 );
+            setXfer( xfer, "22222222\r\n", strlen( _good_return ), false, 1 );
          }
          break;
 
@@ -260,33 +277,43 @@ bool CtiTransdataTracker::general( CtiXfer &xfer )
    }
    else
    {
-      _waiting = true;
-
       switch( _lastState )
       {
+/*
+      case doEnabledChannels:
+         {
+            setXfer( xfer, _channels_enabled, 9, false, 0 );
+            _waiting = true;
+            _datalink.buildMsg( xfer );
+         }
+         break;
+*/
       case doScroll:
          {
-//            setXfer( xfer, _search_scrolls, strlen( _search_scrolls ) +  strlen( _good_return ), false, 0 );
-            setXfer( xfer, _search_scrolls, 9, false, 0 );
+            setXfer( xfer, _search_scrolls, 9, true, 1 );
+            _datalink.buildMsg( xfer );
+            _waiting = true;
          }
          break;
 
       case doPullBuffer:
          {
-//            setXfer( xfer, _send_comm_buff, strlen( _send_comm_buff ) + strlen( _good_return ), false, 0 );
-            setXfer( xfer, _send_comm_buff, 9, false, 0 );
+            setXfer( xfer, _send_comm_buff, 9, true, 1 );
+            _datalink.buildMsg( xfer );
+            _waiting = true;
          }
          break;
 
       case doStartProt:
          {
-            setXfer( xfer, _prot_start, 1029, false, 5 );
+            _ymodem.generate( xfer );
+            _ymodemsTurn = true;
             _moveAlong = true;
          }
       }
    }
 
-   _datalink.buildMsg( xfer );
+//   _datalink.buildMsg( xfer );
 
    return( true );
 }
@@ -304,7 +331,7 @@ bool CtiTransdataTracker::logOff( CtiXfer &xfer )
       setXfer( xfer, _hang_up, 0, true, 2 );
       _datalink.buildMsg( xfer );
 
-      _didSomeWork = true;
+      _finished = true;
    }
 
    return( true );
@@ -349,6 +376,7 @@ void CtiTransdataTracker::reset( void )
    _failCount = 0;
    _waiting = false;
    _ignore = false;
+   _ymodemsTurn = false;
    _bytesReceived = 0;
 
    memset( _storage, '\0', 1500 );
@@ -369,33 +397,6 @@ void CtiTransdataTracker::injectData( RWCString str )
 {
 //   _password = str;//we'll come back to this when we figure out the db stuff
 }
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-bool CtiTransdataTracker::isCrcValid( void )
-{
-   BYTEUSHORT  crc;
-   BYTEUSHORT  crc2;
-   bool        isOk = false;
-   BYTE        temp[5000];
-
-   if( _bytesReceived > 1020 )
-   {
-      memcpy( temp, ( void *)_storage, _bytesReceived - 2 );
-
-      crc.ch[0] = _storage[_bytesReceived - 1];
-      crc.ch[1] = _storage[_bytesReceived - 2];
-
-      if( crc.sh == _ymodem.calcCRC( temp + 3, _bytesReceived - 3 ))    //fixme.. should not use hardcoded stuff if pos.
-      {
-         isOk = true;
-      }
-   }
-
-   return( isOk );         //just for now
-}
-
 //=====================================================================================================================
 //=====================================================================================================================
 
@@ -406,6 +407,38 @@ void CtiTransdataTracker::setError( void )
    else
       _error = working;
 }
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+bool CtiTransdataTracker::goodCRC( void )
+{
+   return( _goodCRC );
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+void CtiTransdataTracker::setXfer( CtiXfer &xfer, RWCString dataOut, int bytesIn, bool block, ULONG time )
+{
+   memcpy( xfer.getOutBuffer(), dataOut, strlen( dataOut ) );
+
+   _bytesReceived = 0;
+
+   memset( _storage, '\0', 1500 );
+
+   xfer.setMessageStart( true );
+   xfer.setOutCount( strlen( dataOut ) );     //there will be a problem with this using RWCStrings
+   xfer.setInCountExpected( bytesIn );
+   xfer.setInTimeout( time );
+   xfer.setNonBlockingReads( block );
+}
+
+
+
+
+
+
 
 
 

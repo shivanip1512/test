@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/09/03 18:11:54 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/10/06 15:18:59 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *
@@ -32,6 +32,10 @@
 
 CtiProtocolYmodem::CtiProtocolYmodem()
 {
+   _lastState = doStart;
+   _bytesReceived = 0;
+   _finished = false;
+   _storage = new BYTE[3000];
 }
 
 //=====================================================================================================================
@@ -39,6 +43,23 @@ CtiProtocolYmodem::CtiProtocolYmodem()
 
 CtiProtocolYmodem::~CtiProtocolYmodem()
 {
+   destroyMe();
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+void CtiProtocolYmodem::destroyMe( void )
+{
+   delete [] _storage;
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+void CtiProtocolYmodem::reinitalize( void )
+{
+   destroyMe();
 }
 
 //=====================================================================================================================
@@ -46,6 +67,18 @@ CtiProtocolYmodem::~CtiProtocolYmodem()
 
 bool CtiProtocolYmodem::generate( CtiXfer &xfer )
 {
+   if( _lastState == doAck )
+   {
+      setXfer( xfer, Ack, 0, false, 0 );
+      _lastState = doStart;
+      _finished = true;
+   }
+   else
+   {
+      setXfer( xfer, Crcnak, 1029, false, 5 );
+      _lastState = doAck;
+   }
+
    return( false );
 }
 
@@ -54,6 +87,13 @@ bool CtiProtocolYmodem::generate( CtiXfer &xfer )
 
 bool CtiProtocolYmodem::decode( CtiXfer &xfer, int status )
 {
+   if( xfer.getInCountActual() >= 1000 )
+   {
+      memcpy( _storage, xfer.getInBuffer(), xfer.getInCountActual() );
+
+      _bytesReceived = xfer.getInCountActual();
+   }
+
    return( false );
 }
 
@@ -62,7 +102,23 @@ bool CtiProtocolYmodem::decode( CtiXfer &xfer, int status )
 
 bool CtiProtocolYmodem::isTransactionComplete( void )
 {
-   return( false );
+   return( _finished );
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+void CtiProtocolYmodem::retreiveData( BYTE *data, int *bytes )
+{
+   if( _storage != NULL )
+   {
+      memcpy( data, _storage, _bytesReceived );
+      *bytes = _bytesReceived;
+
+      memset( _storage, '\0', sizeof( _storage ));
+
+      _bytesReceived = 0;
+   }
 }
 
 //=====================================================================================================================
@@ -108,6 +164,46 @@ unsigned short CtiProtocolYmodem::calcCRC( BYTE *ptr, int count )
    }
 
    return( crc );
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+bool CtiProtocolYmodem::isCrcValid( void )
+{
+   BYTEUSHORT  crc;
+   BYTEUSHORT  crc2;
+   bool        isOk = false;
+   BYTE        temp[3000];
+
+   if( _bytesReceived > 1020 )
+   {
+      memcpy( temp, ( void *)_storage, _bytesReceived - 2 );
+
+      crc.ch[0] = _storage[_bytesReceived - 1];
+      crc.ch[1] = _storage[_bytesReceived - 2];
+
+      if( crc.sh == calcCRC( temp + 3, _bytesReceived - 3 ))    //fixme.. should not use hardcoded stuff if pos.
+      {
+         isOk = true;
+      }
+   }
+
+   return( isOk );
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+void CtiProtocolYmodem::setXfer( CtiXfer &xfer, BYTE dataOut, int bytesIn, bool block, ULONG time )
+{
+//   memcpy( xfer.getOutBuffer(), dataOut, sizeof( dataOut ) );
+   xfer.getOutBuffer()[0] = dataOut;
+   xfer.setMessageStart( true );
+   xfer.setOutCount( sizeof( dataOut ) );
+   xfer.setInCountExpected( bytesIn );
+   xfer.setInTimeout( time );
+   xfer.setNonBlockingReads( block );
 }
 
 

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/08/28 21:25:19 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/10/06 15:19:01 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -29,8 +29,10 @@ class IM_EX_PROT CtiTransdataTracker
    enum
    {
       doTest      = 0,
+      doTest2,
       doPassword,
       doIdentify,
+//      doEnabledChannels,
       doScroll,
       doPullBuffer,
       doStartProt,
@@ -57,7 +59,6 @@ class IM_EX_PROT CtiTransdataTracker
       bool decode( CtiXfer &xfer, int status );
       bool processData( BYTE *data );
       bool isTransactionComplete( void );
-      bool isCrcValid( void );
 
       void injectData( RWCString str );
       void setNextState( void );
@@ -66,6 +67,9 @@ class IM_EX_PROT CtiTransdataTracker
       void retreiveData( BYTE *data );
       int getError( void );
       void setError( void );
+      bool goodCRC( void );
+      void reinitalize( void );
+      void destroyMe( void );
 
    protected:
 
@@ -110,19 +114,20 @@ class IM_EX_PROT CtiTransdataTracker
       const char *const    _get_dial_in_time;
       const char *const    _get_program_id;
       const char *const    _test;
-      const char *const    _prot_start;
       const char *const    _good_return;
       const char *const    _prot_message;
       const char *const    _retry;
 
       RWCString            _password;
 
-      bool                 _didSomeWork;
+//      bool                 _didSomeWork;
       bool                 _waiting;
       bool                 _moveAlong;
       bool                 _ignore;
       bool                 _finished;
       bool                 _weHaveData;
+      bool                 _goodCRC;
+      bool                 _ymodemsTurn;
 
       int                  _lastState;
       int                  _bytesReceived;

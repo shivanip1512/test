@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/08/28 14:22:56 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/10/06 15:19:00 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -23,6 +23,7 @@
 #include <windows.h>
 #include <rw\cstring.h>
 #include "transdata_application.h"
+#include "transdata_data.h"
 #include "xfer.h"
 
 class IM_EX_PROT CtiProtocolTransdata
@@ -35,20 +36,31 @@ class IM_EX_PROT CtiProtocolTransdata
       bool generate( CtiXfer &xfer );
       bool decode( CtiXfer &xfer, int status );
 
-      int recvInbound( INMESS *InMessage );
+      int sendCommResult( INMESS *InMessage );
       int recvOutbound( OUTMESS  *OutMessage );
 
       bool isTransactionComplete( void );
       void injectData( RWCString str );
+      void reinitalize( void );
+      void destroyMe( void );
+
+      vector<CtiTransdataData *> resultDecode( INMESS *InMessage );
 
    protected:
 
    private:
 
-      bool                    _finished;
-      bool                    _weHaveData;
+      bool                          _finished;
+      bool                          _weHaveData;
 
-      CtiTransdataApplication _application;
+      BYTE                          *_storage;
 
+      int                           _dataSize;
+      int                           _numBytes;
+      CtiTransdataApplication       _application;
+
+
+      vector<CtiTransdataData *>    _transVector;
+      CtiTransdataData              *_converted;
 };
 #endif // #ifndef __PROT_TRANSDATA_H__
