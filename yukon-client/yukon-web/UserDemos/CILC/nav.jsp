@@ -1,9 +1,9 @@
 <%@ page import="java.util.Hashtable" %>
 <%
 	// Map of page name / link text
-	String linkMap[][] = {{"user_trending.jsp?db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=graph&page=1&model=0", "Line Graph"},
-						  {"user_trending.jsp?db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=graph&page=1&model=1", "Bar Graph"},
-						  {"user_trending.jsp?db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=graph&page=1&model=2", "Load Duration"},
+	String linkMap[][] = {{"user_trending.jsp?model=0", "Line Graph"},
+						  {"user_trending.jsp?model=1", "Bar Graph"},
+						  {"user_trending.jsp?model=2", "Load Duration"},
 						  {"user_ee.jsp", "VBB Offers"},
 						  {"user_curtail.jsp", "Notification"},
 						  {"user_lm_control.jsp", "Auto Control"},
@@ -34,9 +34,21 @@
   <tr> 
     <td height="30" valign="bottom"> 
       <div align="left"><span class="NavHeader">Trending</span><br>
-	    <%= links.get("user_trending.jsp?db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=graph&page=1&model=0") %><br>
-        <%= links.get("user_trending.jsp?db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=graph&page=1&model=1") %><br>
-		<%= links.get("user_trending.jsp?db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=graph&page=1&model=2") %></div>
+	    <%   /* Retrieve all the predefined graphs for this user*/                       
+					if( gData != null )
+					{
+						for( int i = 0; i < gData.length; i++ )                                                          
+						{
+							if( Integer.parseInt(gData[i][0].toString()) == graphBean.getGdefid())
+							{%>
+								<img src="Bullet.gif" width="12" height="12">&nbsp;<span class="NavText2"><%=gData[i][1] %></span><br>
+							<%}
+							else 
+							{%>
+								<img src="Bullet2.gif" width="12" height="12">&nbsp;<a href="/UserDemos/CILC/user_trending.jsp?<%= "gdefid=" + gData[i][0]%>" class = "link2"><span class="NavText"><%=gData[i][1] %></span></a><br>
+							<%}
+						}
+					}%></div>
     </td>
   </tr>
   <tr> 
