@@ -97,6 +97,8 @@ prot_emetcon.obj \
 prot_versacom.obj \
 prot_711.obj \
 prot_fpcbc.obj \
+prot_sa105.obj \
+prot_sa205.obj \
 prot_sa305.obj \
 prot_sixnet.obj \
 prot_base.obj \
