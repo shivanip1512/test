@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/07/28 18:58:05 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/09/20 16:12:44 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,6 +47,8 @@ private:
     bool          _deadbandsSent,
                   _transactionComplete;
 
+    long          _transmitter_id;
+
     int           _transmitter_power;
     unsigned long _transmitter_power_time;
 
@@ -57,6 +59,7 @@ private:
     queue< unsigned int > _returned_codes;
 
     unsigned int  _num_codes_retrieved;
+    bool _verification_pending;
 
     enum LMIOpcode
     {
@@ -137,6 +140,12 @@ private:
         unsigned char data[300];
     } _outbound, _inbound;
 
+    union
+    {
+        lmi_status s;
+        unsigned char c;
+    } _status;
+
 #pragma pack(pop)
 
     unsigned long _in_count,
@@ -159,9 +168,11 @@ public:
 
     CtiProtocolLMI &operator=(const CtiProtocolLMI &aRef);
 
-    enum
+    //  these are tokens to kick the protocol layer into doing something fun
+    enum LMISequences
     {
-        QueuedWorkToken = 4845  //  w00t
+        Sequence_QueuedWork = 4845,  //  w00t
+        Sequence_RetrieveEchoedCodes
     };
 
     enum LMICommand
@@ -199,7 +210,8 @@ public:
     void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);
 
     void   queueCode(CtiOutMessage *om);
-    bool   hasCodes() const;
+    bool   hasQueuedCodes() const;
+    bool   codeVerificationPending() const;
     bool   canTransmit(const RWTime &allowed_time) const;
     int    getNumCodes() const;
     RWTime getTransmittingUntil() const;
