@@ -1,5 +1,6 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.cache.functions.ContactFuncs" %>
+<%@ page import="com.cannontech.database.cache.functions.YukonListFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteAddress" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation" %>
@@ -7,6 +8,11 @@
 <%
 	StarsSearchCustomerAccountResponse resp = (StarsSearchCustomerAccountResponse)
 			session.getAttribute(ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS);
+	
+	Integer lastSearchOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_SEARCH_OPTION);
+	int searchByDefID = YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ACCT_NO;
+	if (lastSearchOption != null)
+		searchByDefID = YukonListFuncs.getYukonListEntry(lastSearchOption.intValue()).getYukonDefID();
 	
 	boolean showEnergyCompany = AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)
 			&& (liteEC.getChildren().size() > 0);
@@ -84,7 +90,13 @@ function selectMemberAccount(accountID, memberID) {
                 <tr> 
                   <td width="15%" class="HeaderCell">Account #</td>
                   <td width="18%" class="HeaderCell">Name</td>
-                  <td width="17%" class="HeaderCell">Phone#</td>
+                  <td width="17%" class="HeaderCell">
+<% if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_MAP_NO) { %>
+                    Map#
+<% } else { %>
+                    Phone#
+<% } %>
+                  </td>
                   <td class="HeaderCell">Address</td>
 <% if (showEnergyCompany) { %>
                   <td width="15%" class="HeaderCell">Energy Company</td>
@@ -101,20 +113,6 @@ function selectMemberAccount(accountID, memberID) {
 				LiteContact contact = ContactFuncs.getContact(liteAcctInfo.getCustomer().getPrimaryContactID());
 				LiteAddress addr = member.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
 				
-				String homePhone = ECUtils.getNotification(
-						ContactFuncs.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
-				String workPhone = ECUtils.getNotification(
-						ContactFuncs.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
-				
-				StringBuffer phoneNo = new StringBuffer();
-				if (homePhone.length() > 0)
-					phoneNo.append( homePhone ).append( "(H)" );
-				if (workPhone.length() > 0) {
-					if (phoneNo.length() > 0) phoneNo.append( ", " );
-					phoneNo.append( workPhone ).append( "(W)" );
-				}
-				if (phoneNo.length() == 0) phoneNo.append( "(none)" );
-				
 				StreetAddress starsAddr = new StreetAddress();
 				StarsLiteFactory.setStarsCustomerAddress(starsAddr, addr);
 				String address = ServletUtils.getOneLineAddress(starsAddr);
@@ -130,7 +128,33 @@ function selectMemberAccount(accountID, memberID) {
                   </td>
                   <td width="18%" class="TableCell"><%= contact.getContLastName() + ", " + contact.getContFirstName() %> 
                   </td>
-                  <td width="17%" class="TableCell"><%= phoneNo.toString() %></td>
+                  <td width="17%" class="TableCell">
+<%
+				if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_MAP_NO) {
+%>
+                    <%= ServerUtils.forceNotNull(liteAcctInfo.getAccountSite().getSiteNumber()) %>
+<%
+				}
+				else {
+					String homePhone = ECUtils.getNotification(
+							ContactFuncs.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
+					String workPhone = ECUtils.getNotification(
+							ContactFuncs.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
+					
+					StringBuffer phoneNo = new StringBuffer();
+					if (homePhone.length() > 0)
+						phoneNo.append( homePhone ).append( "(H)" );
+					if (workPhone.length() > 0) {
+						if (phoneNo.length() > 0) phoneNo.append( ", " );
+						phoneNo.append( workPhone ).append( "(W)" );
+					}
+					if (phoneNo.length() == 0) phoneNo.append( "(none)" );
+%>
+                    <%= phoneNo.toString() %>
+<%
+				}
+%>
+                  </td>
                   <td class="TableCell"><%= address %></td>
 <% if (showEnergyCompany) { %>
                   <td width="15%" class="TableCell"><%= member.getName() %></td>
