@@ -8,24 +8,39 @@ package com.cannontech.database.db.graph;
 public class GraphDataSeries extends com.cannontech.database.db.DBPersistent {
 
 	// GraphDataSeries valid types
-	public static final String GRAPH_SERIES = "graph";
-	public static final String PEAK_SERIES  = "peak";
-	public static final String USAGE_SERIES = "usage";
-	public static final String YESTERDAY_SERIES = "yesterday";
-	public static final String PEAK_VALUE_SERIES = "peakvalue";
+	public static final String GRAPH_TYPE_STRING = "graph";
+	public static final String PEAK_TYPE_STRING  = "peak";
+	public static final String USAGE_TYPE_STRING = "usage";
+	public static final String YESTERDAY_TYPE_STRING = "yesterday";
+	public static final String PEAK_INTERVAL_TYPE_STRING = "peakinterval";
 	
-	public static final int GRAPH_MASK = 0x0001;
-	public static final int PEAK_MASK = 0x0002;
-	public static final int USAGE_MASK = 0x0004;
-	public static final int YESTERDAY_MASK = 0x0008;
-	public static final int PEAK_VALUE_MASK = 0x0010;
-	
-	public static final int NORMAL_QUERY_MASK = 0x0007; // graph, peak, usage
-	public static final int VALID_INTERVAL_MASK = 0x0019;	// graph, yesterday, peakinterval
+	public static final int GRAPH_TYPE= 0x0001;
+	public static final int PEAK_TYPE = 0x0002;
+	public static final int USAGE_TYPE = 0x0004;
+	public static final int YESTERDAY_TYPE = 0x0008;
+	public static final int PEAK_INTERVAL_TYPE = 0x0010;
+	public static String[] validTypeStrings = 
+	{
+		GRAPH_TYPE_STRING,
+		PEAK_TYPE_STRING, 
+		USAGE_TYPE_STRING, 
+		YESTERDAY_TYPE_STRING, 
+		PEAK_INTERVAL_TYPE_STRING
+	};	
+	public static int[] validTypeInts =
+	{
+		GRAPH_TYPE,
+		PEAK_TYPE, 
+		USAGE_TYPE, 
+		YESTERDAY_TYPE, 
+		PEAK_INTERVAL_TYPE
+	}; 	
+	public static final int NORMAL_QUERY_TYPE = 0x0007; // graph, peak, usage
+//	public static final int VALID_INTERVAL_TYPE = 0x0019;	// graph, yesterday, peakinterval
 	
 	
 	private java.lang.Integer graphDataSeriesID = null;
-	private java.lang.String type = GRAPH_SERIES;
+	private java.lang.String type = GRAPH_TYPE_STRING;
 	private java.lang.Integer graphDefinitionID = null;
 	private java.lang.Integer pointID = null;	
 	private java.lang.String label = " ";
@@ -33,15 +48,83 @@ public class GraphDataSeries extends com.cannontech.database.db.DBPersistent {
 	private java.lang.Integer color = null;
 	private Double multiplier = new Double(1.0);
 	
-	private int typeMask = GRAPH_MASK;
-	
 	public static final String tableName = "GraphDataSeries";
 	
 	//These come from the device and point unit tables
 	//respectively..... it saves a database hit in
 	//certain circumstances
 	private java.lang.String deviceName;
-//	private java.lang.Integer uomID;	
+
+public static int getTypeInt(String type)
+{
+	for( int i = 0; i < validTypeStrings.length; i++)
+	{
+		if( validTypeStrings[i].equalsIgnoreCase(type) )
+			return validTypeInts[i];
+	}
+	// TYPE NOT FOUND, default to Graph
+	return GRAPH_TYPE;
+}
+public static String getType(int type)
+{
+	for( int i = 0; i < validTypeInts.length; i++)
+	{
+		if( validTypeInts[i] == type )
+			return validTypeStrings[i];
+	}
+	// TYPE NOT FOUND, default to Graph
+	return GRAPH_TYPE_STRING;
+}
+
+public static boolean isValidIntervalType(int type)
+{
+	if(isGraphType(type) || isYesterdayType(type) || isPeakIntervalType(type))
+		return true;
+
+	return false;
+}
+public static boolean isGraphType(int type)
+{
+	if((type & GRAPH_TYPE) == GRAPH_TYPE)
+		return true;
+
+	return false;
+}
+public static boolean isYesterdayType(int type)
+{
+	if ((type & YESTERDAY_TYPE) == YESTERDAY_TYPE)
+		return true;
+
+	return false;
+}
+public static boolean isPeakIntervalType(int type)
+{
+	if ((type & PEAK_INTERVAL_TYPE) == PEAK_INTERVAL_TYPE)
+		return true;
+
+	return false;
+}
+public static boolean isUsageType(int type)
+{
+	if ((type & USAGE_TYPE) == USAGE_TYPE)
+		return true;
+
+	return false;
+}
+public static boolean isPeakType(int type)
+{
+	if ((type & PEAK_TYPE) == PEAK_TYPE)
+		return true;
+
+	return false;
+}
+public static boolean isBasicQueryType(int type)
+{
+	if( isGraphType(type) || isPeakType(type) || isUsageType(type))
+		return true;
+	
+	return false;
+}
 /**
  * GraphDataSeries constructor comment.
  */
@@ -132,7 +215,9 @@ public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID,
 	
 //	String sqlString = "SELECT gds.GRAPHDATASERIESID, gds.TYPE, gds.POINTID, gds.LABEL, gds.AXIS, gds.COLOR, pao.PAONAME, pu.UOMID FROM GRAPHDATASERIES gds, YUKONPAOBJECT pao, POINT p, POINTUNIT pu WHERE gds.GRAPHDEFINITIONID = " + graphDefinitionID.toString() + " AND p.POINTID = GDS.POINTID AND pao.PAOBJECTID = p.PAOBJECTID AND pu.PointID = p.POINTID ORDER BY p.POINTOFFSET";
 	//Remove PointUnit table in order to get Status points visible.  Status points have no pointunit.
-	String sqlString = "SELECT gds.GRAPHDATASERIESID, gds.TYPE, gds.POINTID, gds.LABEL, gds.AXIS, gds.COLOR, pao.PAONAME, gds.MULTIPLIER FROM GRAPHDATASERIES gds, YUKONPAOBJECT pao, POINT p WHERE gds.GRAPHDEFINITIONID = " + graphDefinitionID.toString() + " AND p.POINTID = GDS.POINTID AND pao.PAOBJECTID = p.PAOBJECTID ORDER BY p.POINTOFFSET";
+
+		String sqlString = "SELECT gds.GRAPHDATASERIESID, gds.TYPE, gds.POINTID, gds.LABEL, gds.AXIS, gds.COLOR, pao.PAONAME, gds.MULTIPLIER FROM GRAPHDATASERIES gds, YUKONPAOBJECT pao, POINT p WHERE gds.GRAPHDEFINITIONID = " + graphDefinitionID.toString() + " AND p.POINTID = GDS.POINTID AND pao.PAOBJECTID = p.PAOBJECTID ORDER BY p.POINTOFFSET";
+//		String sqlString = "SELECT gds.GRAPHDATASERIESID, gds.TYPE, gds.POINTID, gds.LABEL, gds.AXIS, gds.COLOR, pao.PAONAME FROM GRAPHDATASERIES gds, YUKONPAOBJECT pao, POINT p WHERE gds.GRAPHDEFINITIONID = " + graphDefinitionID.toString() + " AND p.POINTID = GDS.POINTID AND pao.PAOBJECTID = p.PAOBJECTID ORDER BY p.POINTOFFSET";		
 
 	com.cannontech.database.SqlStatement sql = new com.cannontech.database.SqlStatement(sqlString, databaseAlias);
 
@@ -171,9 +256,6 @@ public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID,
 		dataSeries.setColor( new Integer( color.intValue() ) );
 		dataSeries.setDeviceName(deviceName);
 		dataSeries.setMultiplier(new Double(mult.doubleValue()));
-		
-		dataSeries.setTypeMask(type);
-		
 //		dataSeries.setUoMId(new Integer (uomid.intValue()) );
 			
 		temp.addElement( dataSeries );
@@ -298,9 +380,10 @@ public java.lang.Integer getPointID() {
 public java.lang.String getType() {
 	return type;
 }
-public int getTypeMask()
+
+public int getTypeInt()
 {
-	return typeMask;
+	return getTypeInt(getType());
 }
 /**
  * Insert the method's description here.
@@ -340,7 +423,6 @@ public void retrieve() throws java.sql.SQLException
 		setColor( (Integer) results[4] );
 		setType( (String) results[5] );
 		setMultiplier((Double)results[6]);
-		setTypeMask(getType());
 	}
 }
 /**
@@ -415,19 +497,7 @@ public void setPointID(java.lang.Integer newPointID) {
 public void setType(java.lang.String newType) {
 	type = newType;
 }
-public void setTypeMask(String newType)
-{
-	if( newType.equalsIgnoreCase(GRAPH_SERIES))
-		typeMask = GRAPH_MASK;
-	else if( newType.equalsIgnoreCase(PEAK_SERIES))
-		typeMask = PEAK_MASK;
-	else if( newType.equalsIgnoreCase(USAGE_SERIES))
-		typeMask = USAGE_MASK;
-	else if( newType.equalsIgnoreCase(YESTERDAY_SERIES))
-		typeMask = YESTERDAY_MASK;
-	else if( newType.equalsIgnoreCase(PEAK_VALUE_SERIES))
-		typeMask = PEAK_VALUE_MASK;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (10/6/00 2:49:54 PM)
@@ -435,7 +505,7 @@ public void setTypeMask(String newType)
  */
 /*public void setUoMId(java.lang.Integer newUOMID) {
 	uomID = newUOMID;
-}
+}*/
 /**
  * Insert the method's description here.
  * Creation date: (12/17/99 9:55:58 AM)
