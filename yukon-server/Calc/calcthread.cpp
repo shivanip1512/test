@@ -147,12 +147,10 @@ void CtiCalculateThread::periodicLoop( void )
 
                 calcPoint->setNextInterval(calcPoint->getUpdateInterval());
 
-                //if( calcPoint->getSendFlag() )
                 {
-                    sprintf( pointDescription, "calc point %ul update", pointId );
+                    sprintf( pointDescription, "calc point %l update", pointId );
 
-                    CtiPointDataMsg *pointData = new CtiPointDataMsg(pointId, newPointValue, calcQuality,
-                                                                     CalculatedPointType, pointDescription);
+                    CtiPointDataMsg *pointData = new CtiPointDataMsg(pointId, newPointValue, calcQuality, InvalidPointType, pointDescription);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
                     pointData->setTime(calcTime);
 
                     periodicMultiMsg->getData( ).insert( pointData );
@@ -308,7 +306,7 @@ void CtiCalculateThread::onUpdateLoop( void )
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << __FILE__ << " (" << __LINE__ << ") RWTime() >= calcPoint->getPointCalcWindowEndTime()" << endl;
                             }*/
-                            pData = new CtiPointDataMsg(recalcPointID, recalcValue, calcQuality, CalculatedPointType, pointDescription);
+                            pData = new CtiPointDataMsg(recalcPointID, recalcValue, calcQuality, InvalidPointType);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
                             pData->setTime(calcPoint->getPointCalcWindowEndTime());
                         }
 
@@ -316,14 +314,15 @@ void CtiCalculateThread::onUpdateLoop( void )
                     }
                     else
                     {//normal calc point
-                        pData = new CtiPointDataMsg(recalcPointID, recalcValue, calcQuality, CalculatedPointType, pointDescription);
+                        pData = new CtiPointDataMsg(recalcPointID, recalcValue, calcQuality, InvalidPointType);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
                         pData->setTime(calcTime);
                     }
 
                     if( pData != NULL )
                     {
                         pointsInMulti = TRUE;
-                        sprintf( pointDescription, "calc point %ul update", recalcPointID );
+                        sprintf( pointDescription, "calc point %l update", recalcPointID );
+                        pData->setString(pointDescription);
                         pChg->getData( ).insert( pData );
                     }
 
@@ -332,7 +331,6 @@ void CtiCalculateThread::onUpdateLoop( void )
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " onUpdateLoop setting Calc Point ID: " << recalcPointID << " to New Value: " << recalcValue << endl;
                     }
-
                 }
             }
 
