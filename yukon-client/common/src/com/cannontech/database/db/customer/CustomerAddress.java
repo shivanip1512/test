@@ -26,6 +26,9 @@ public class CustomerAddress extends com.cannontech.database.db.DBPersistent
 	public static final String CONSTRAINT_COLUMNS[] = { "addressID" };
 
 	public static final String TABLE_NAME = "CustomerAddress";
+	
+	private static final String GET_NEXT_ADDRESS_ID_SQL =
+			"SELECT MAX(AddressID) FROM " + TABLE_NAME;
 
 /**
  * LMGroupVersacomSerial constructor comment.
@@ -122,6 +125,38 @@ public static synchronized Integer getNextAddressID( java.sql.Connection conn )
 
 	return new Integer(value);
 }
+
+/**
+ * Created by yao, get the next address ID as the maximum existing ID + 1
+ */
+public final Integer getNextAddressID2() {
+        java.sql.PreparedStatement pstmt = null;
+        java.sql.ResultSet rset = null;
+
+        int nextAddressID = 1;
+
+        try {
+            pstmt = getDbConnection().prepareStatement( GET_NEXT_ADDRESS_ID_SQL );
+            rset = pstmt.executeQuery();
+
+            if (rset.next())
+                nextAddressID = rset.getInt(1) + 1;
+        }
+        catch (java.sql.SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            try {
+                if (pstmt != null) pstmt.close();
+            }
+            catch (java.sql.SQLException e2) {
+                e2.printStackTrace();
+            }
+        }
+
+        return new Integer( nextAddressID );
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/26/2001 1:44:46 PM)
