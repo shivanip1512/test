@@ -310,7 +310,7 @@ public class ServletUtils {
     		if (i < imgNameList.size())
     			imgNames[i] = (String) imgNameList.get(i);
     		else
-    			imgNames[i] = "";
+    			imgNames[i] = null;
     	}
     	
     	return imgNames;
