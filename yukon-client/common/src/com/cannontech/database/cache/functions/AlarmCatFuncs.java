@@ -1,5 +1,7 @@
 package com.cannontech.database.cache.functions;
 
+import com.cannontech.database.data.lite.LiteAlarmCategory;
+
 /**
  * @author rneuharth
  * Oct 16, 2002 at 2:12:21 PM
@@ -24,6 +26,12 @@ public final class AlarmCatFuncs
     * @param pointID int
     */
    public static String getAlarmCategoryName( int alarmCatID )
+   {   		
+   		LiteAlarmCategory lac = getAlarmCategory(alarmCatID);
+   		return (lac == null ? null : lac.getCategoryName());	
+   }
+   
+   public static LiteAlarmCategory getAlarmCategory(int id)
    {
       com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
       
@@ -33,13 +41,12 @@ public final class AlarmCatFuncs
          
          for( int j = 0; j < categories.size(); j++ )
          {
-            if( alarmCatID == ((com.cannontech.database.data.lite.LiteAlarmCategory)categories.get(j)).getAlarmStateID() )
-               return ((com.cannontech.database.data.lite.LiteAlarmCategory)categories.get(j)).getCategoryName();
+            if( id == ((com.cannontech.database.data.lite.LiteAlarmCategory)categories.get(j)).getAlarmStateID() )
+               return (com.cannontech.database.data.lite.LiteAlarmCategory)categories.get(j);
          }
    
          return null;
-      }
-   
+      }	
    }
 
 }

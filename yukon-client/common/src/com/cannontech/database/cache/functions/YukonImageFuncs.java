@@ -84,6 +84,30 @@ public final class YukonImageFuncs
          
          return null;
       }
+      
+   /**
+	 * Returns the first LiteYukonImage in the cache with the given name
+	 * @param name
+	 * @return LiteYukonImage
+	 */
+   public static LiteYukonImage getLiteYukonImage(String name) {
+   		 com.cannontech.database.cache.DefaultDatabaseCache cache =
+            com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+         synchronized( cache )
+         {
+            Iterator iter = cache.getAllYukonImages().iterator();
+            while( iter.hasNext() ) 
+            {
+               LiteYukonImage img = (LiteYukonImage) iter.next();
+               if( img.getImageName().equalsIgnoreCase(name) ) 
+               {
+                  return img;
+               }
+            }
+         }        
+         
+         return null;
+   }
 
    /** 
     * Returns the StateGroup that uses the YukonImageID,
