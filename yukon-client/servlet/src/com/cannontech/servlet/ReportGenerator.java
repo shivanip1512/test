@@ -8,13 +8,19 @@ package com.cannontech.servlet;
  * reportType - the type of report to create, value int from ReportTypes
  * period	- undefined
  * ext - gif | png | jpg | svg
- * action - the action/function to perform
+ * action - theSaction/function to perform
+ * page - the page number (0 based) of the report to view/return
+ * fileName - the name of the file to download to
+ * action - the action to perform - download | 
+ * REDIRECT - 
+ * REFERRER - 
  * 
  * @author: Stacey Nebben
  */
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
 
@@ -28,6 +34,7 @@ import org.jfree.report.JFreeReport;
 import org.jfree.report.ext.servletdemo.AbstractPageableReportServletWorker;
 import org.jfree.report.ext.servletdemo.AbstractTableReportServletWorker;
 import org.jfree.report.modules.output.pageable.graphics.G2OutputTarget;
+import org.jfree.report.modules.output.pageable.pdf.PDFOutputTarget;
 import org.jfree.report.modules.output.table.xls.ExcelProcessor;
 
 import com.cannontech.analysis.ReportFuncs;
@@ -38,6 +45,7 @@ import com.cannontech.servlet.worker.StaticPageableReportServletWorker;
 import com.cannontech.servlet.worker.StaticTableReportServletWorker;
 import com.cannontech.util.ServletUtil;
 import com.keypoint.PngEncoder;
+import com.klg.jclass.util.swing.encode.page.PDFEncoder;
 
 public class ReportGenerator extends javax.servlet.http.HttpServlet
 {
@@ -74,14 +82,18 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			if( param != null)
 				ext = param.toLowerCase();
 				
-			String fileName = "MINE";
+			String fileName = "Report";
+			param = req.getParameter("fileName");
+			if( param != null)
+				fileName = param.toString();
+
 			fileName += "." + ext;
 
 			param = req.getParameter("action");
 			if( param != null && param.equalsIgnoreCase("download"))
-				resp.setHeader("Content-Disposition","inline;filename=\"report-page-"+page+".png\"");
+				resp.addHeader("Content-Disposition", "attachment; filename=" + fileName);
 			else
-				resp.addHeader("Content-Disposition", "attachment; filename=" + fileName);			
+				resp.setHeader("Content-Disposition", "inline; filename="+fileName);			
 
 
 			//Define start and stop parameters for a default 90 day report.
@@ -120,8 +132,6 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			final Graphics2D g2 = image.createGraphics();
 			g2.setPaint(Color.white);
 			g2.fillRect(0,0, (int) pageFormat.getWidth(), (int) pageFormat.getHeight());
-			final G2OutputTarget target = new G2OutputTarget(g2, pageFormat);
-
 
 			final ServletOutputStream out = resp.getOutputStream();
 			
@@ -129,7 +139,7 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			{
 				try
 				{
-					final AbstractTableReportServletWorker worker = new StaticTableReportServletWorker(report, report.getData()); 
+					final AbstractTableReportServletWorker worker = new StaticTableReportServletWorker(report, report.getData());
 					// this throws an exception if the report could not be parsed
 					final ExcelProcessor processor = new ExcelProcessor(worker.getReport());
 					processor.setOutputStream(out);
@@ -144,7 +154,26 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			}
 			else if (ext.equalsIgnoreCase("pdf"))
 			{
-				resp.setContentType("application/pdf");
+				try{
+					resp.setContentType("application/pdf");
+					resp.setHeader("Content-Type", "application/pdf");
+					final AbstractPageableReportServletWorker worker = new StaticPageableReportServletWorker(session, report, report.getData());
+					worker.getReport();
+					final PDFOutputTarget target = new PDFOutputTarget(out,pageFormat,true);
+					target.setProperty(PDFOutputTarget.TITLE, "Title");
+					target.setProperty(PDFOutputTarget.AUTHOR, "Author");
+					worker.setOutputTarget(target);
+					worker.processReport();
+//					encodePDF(out, image);
+//					out.flush();
+				}
+				catch (Exception e)
+				{
+				  CTILogger.debug("Failed to parse the report");
+				  resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				  return;
+				}							
+				
 			}
 			else if (ext.equalsIgnoreCase("jpeg"))
 			{
@@ -154,7 +183,8 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			{
 				resp.setHeader("Content-Type", "image/png");
 
-				final AbstractPageableReportServletWorker worker = new StaticPageableReportServletWorker(session, report, report.getData()); 
+				final AbstractPageableReportServletWorker worker = new StaticPageableReportServletWorker(session, report, report.getData());
+				final G2OutputTarget target = new G2OutputTarget(g2, pageFormat); 
 				worker.setOutputTarget(target);
 				
 				if (page >= worker.getNumberOfPages() || page < 0)
@@ -170,35 +200,6 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 				out.write(data);
 				out.flush();
 			}
-//			else if (ext.equalsIgnoreCase("html"))
-//			{
-//				resp.setContentType("text/html");
-//			}
-
-//			try
-//			{ 
-//				final PDFOutputTarget target = new PDFOutputTarget(out,
-//												   worker.getReportPageFormat(),true);
-//				  target.setProperty(PDFOutputTarget.TITLE, "Title");
-//				  target.setProperty(PDFOutputTarget.AUTHOR, "Author");
-//				  worker.setOutputTarget(target);
-//				  worker.processReport();
-//				  out.flush();
-
-//			{ 
-//				final PDFOutputTarget target = new PDFOutputTarget(resp.getOutputStream(),pageFormat, true); 
-//				worker.setOutputTarget(target); 
-//				worker.processReport();
-////				resp.getOutputStream().flush(); 
-//			} 
-//			catch (IOException ioe) 
-//			{ 
-//				throw ioe; 
-//			} 
-//			catch (Exception e) 
-//			{ 
-//				throw new ServletException("Failed to create the report", e);
-//			} 
 		}
 		catch( Throwable t )
 		{
@@ -221,14 +222,13 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 	   final BufferedImage bi = new BufferedImage((int) width, (int) height, BufferedImage.TYPE_BYTE_INDEXED);
 	   return bi;
 	 }
-	 
-	/*public void encodePDF(java.io.OutputStream out, Image image) throws java.io.IOException
+	
+	public void encodePDF(java.io.OutputStream out, Image image) throws java.io.IOException
 	{
 		try
 		{
 			PDFEncoder encoder = new PDFEncoder();
 			encoder.encode(image, out);
-			out.flush();	
 		}		
 		catch( java.io.IOException io )
 		{
@@ -238,5 +238,5 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 		{
 			ee.printStackTrace();
 		}
-	}*/
+	}
 }
