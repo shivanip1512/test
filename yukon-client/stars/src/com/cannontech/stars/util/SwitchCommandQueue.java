@@ -6,9 +6,7 @@
  */
 package com.cannontech.stars.util;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -99,7 +97,7 @@ public class SwitchCommandQueue {
 				.append( "," )
 				.append( getCommandType() );
 			if (getInfoString() != null)
-				line.append( "," ).append( getInfoString() );
+				line.append( ",\"" ).append( getInfoString() ).append("\"");
 			
 			return line.toString();
 		}
@@ -140,34 +138,25 @@ public class SwitchCommandQueue {
 		switchCommands.clear();
 		newCommands.clear();
 		reCreateFile = false;
-		BufferedReader fr = null;
 		
-		try {
-			fr = new BufferedReader( new FileReader(diskFile) );
-			String line = null;
-			while ((line = fr.readLine()) != null) {
-				String[] fields = ServerUtils.splitString( line, "," );
+		String[] lines = ServerUtils.readFile( diskFile, false );
+		if (lines != null) {
+			for (int i = 0; i < lines.length; i++) {
+				String[] fields = ServerUtils.splitString( lines[i], "," );
 				
-				SwitchCommand cmd = new SwitchCommand();
-				cmd.setEnergyCompanyID( Integer.parseInt(fields[0]) );
-				cmd.setAccountID( Integer.parseInt(fields[1]) );
-				cmd.setInventoryID( Integer.parseInt(fields[2]) );
-				cmd.setCommandType( fields[3] );
-				if (fields.length > 4)
-					cmd.setInfoString( fields[4] );
-				
-				switchCommands.add( cmd );
-			}
-		}
-		catch (Exception e) {
-			CTILogger.error( e.getMessage(), e );
-		}
-		finally {
-			try {
-				if (fr != null) fr.close();
-			}
-			catch (IOException e) {
-				CTILogger.error( e.getMessage(), e );
+				try {
+					SwitchCommand cmd = new SwitchCommand();
+					cmd.setEnergyCompanyID( Integer.parseInt(fields[0]) );
+					cmd.setAccountID( Integer.parseInt(fields[1]) );
+					cmd.setInventoryID( Integer.parseInt(fields[2]) );
+					cmd.setCommandType( fields[3] );
+					if (fields.length > 4)
+						cmd.setInfoString( fields[4] );
+					switchCommands.add( cmd );
+				}
+				catch (NumberFormatException e) {
+					CTILogger.error( e.getMessage(), e );
+				}
 			}
 		}
 	}
@@ -203,32 +192,43 @@ public class SwitchCommandQueue {
 		newCommands.clear();
 	}
 	
-	public synchronized SwitchCommand getCommand(int invID, String cmdType) {
+	public synchronized SwitchCommand getCommand(int invID, boolean remove) {
 		for (int i = 0; i < switchCommands.size(); i++) {
 			SwitchCommand cmd = (SwitchCommand) switchCommands.get(i);
-			if (cmd.getInventoryID() == invID && cmd.getCommandType().equalsIgnoreCase(cmdType))
+			if (cmd.getInventoryID() == invID) {
+				if (remove) switchCommands.remove(i);
 				return cmd;
+			} 
 		}
 		
 		return null;
 	}
 	
 	public synchronized void addCommand(SwitchCommand cmd, boolean writeThrough) {
-		if (cmd != null && getCommand(cmd.getInventoryID(), cmd.getCommandType()) == null) {
+		if (cmd != null && getCommand(cmd.getInventoryID(), false) == null) {
 			switchCommands.add( cmd );
 			newCommands.add( cmd );
 		}
 		if (writeThrough) syncToFile();
 	}
 	
-	public synchronized SwitchCommand[] getCommands(int energyCompanyID) {
+	public synchronized void removeCommand(int invID) {
+		for (int i = 0; i < switchCommands.size(); i++) {
+			if (((SwitchCommand) switchCommands.get(i)).getInventoryID() == invID) {
+				switchCommands.remove(i);
+				return;
+			}
+		}
+	}
+	
+	public synchronized SwitchCommand[] getCommands(int energyCompanyID, boolean remove) {
 		ArrayList cmdList = new ArrayList();
 		Iterator it = switchCommands.iterator();
 		while (it.hasNext()) {
 			SwitchCommand cmd = (SwitchCommand) it.next();
 			if (cmd.getEnergyCompanyID() == energyCompanyID) {
 				cmdList.add( cmd );
-				it.remove();
+				if (remove) it.remove();
 				reCreateFile = true;
 			}
 		}

@@ -1,8 +1,6 @@
 package com.cannontech.stars.util;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -209,6 +207,19 @@ public class OptOutEventQueue {
 		return null;
 	}
 	
+	public OptOutEvent[] getOptOutEvents(int energyCompanyID) {
+		ArrayList eventList = new ArrayList();
+		for (int i = 0; i < optOutEvents.size(); i++) {
+			OptOutEvent e = (OptOutEvent) optOutEvents.get(i);
+			if (e.getEnergyCompanyID() == energyCompanyID && e.getPeriod() > 0)
+				eventList.add( e );
+		}
+		
+		OptOutEvent[] events = new OptOutEvent[ eventList.size() ];
+		eventList.toArray( events );
+		return events;
+	}
+	
 	private void syncToFile() {
 		PrintWriter fw = null;
 		ArrayList events = null;
@@ -393,32 +404,23 @@ public class OptOutEventQueue {
 		newEvents.clear();
 		reCreateFile = false;
 		
-		BufferedReader fr = null;
-		try {
-			fr = new BufferedReader( new FileReader(diskFile) );
-			String line = null;
-			while ((line = fr.readLine()) != null) {
-				String[] fields = ServerUtils.splitString( line, "," );
+		String[] lines = ServerUtils.readFile( diskFile, false );
+		if (lines != null) {
+			for (int i = 0; i < lines.length; i++) {
+				String[] fields = ServerUtils.splitString( lines[i], "," );
 				
-				OptOutEvent event = new OptOutEvent();
-				event.setEnergyCompanyID( Integer.parseInt(fields[0]) );
-				event.setStartDateTime( Long.parseLong(fields[1]) );
-				event.setPeriod( Integer.parseInt(fields[2]) );
-				event.setAccountID( Integer.parseInt(fields[3]) );
-				event.setInventoryID( Integer.parseInt(fields[4]) );
-				
-				optOutEvents.add( event );
-			}
-		}
-		catch (Exception e) {
-			CTILogger.error( e.getMessage(), e );
-		}
-		finally {
-			try {
-				if (fr != null) fr.close();
-			}
-			catch (IOException e) {
-				CTILogger.error( e.getMessage(), e );
+				try {
+					OptOutEvent event = new OptOutEvent();
+					event.setEnergyCompanyID( Integer.parseInt(fields[0]) );
+					event.setStartDateTime( Long.parseLong(fields[1]) );
+					event.setPeriod( Integer.parseInt(fields[2]) );
+					event.setAccountID( Integer.parseInt(fields[3]) );
+					event.setInventoryID( Integer.parseInt(fields[4]) );
+					optOutEvents.add( event );
+				}
+				catch (NumberFormatException e) {
+					CTILogger.error( e.getMessage(), e );
+				}
 			}
 		}
 	}
