@@ -273,17 +273,8 @@ private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObj
 
 	newCBC.setDeviceID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
 
-   //get the pattern used for auto created CBC's
-   String name = CtiProperties.getReflectiveProperty(
-                     capBank, 
-                     (CtiProperties.getInstance().getProperty(CtiProperties.KEY_CBC_CREATION_NAME, "CBC %PAOName%")),
-                     "CBC " + capBank.getPAOName() );
-      
-   //just in case bankName is too long for our table, use a substring of it
-   newCBC.setPAOName(
-            (name.length() > 50 
-            ? name.substring(0, 50) 
-            : name) );
+   //just use the serial number in the name
+   newCBC.setPAOName( "CBC " + serialNumber );
 
 	
 	//a status point is automatically added to all capbank controllers
