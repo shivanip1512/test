@@ -19,5 +19,6 @@
     <classpathentry kind="lib" path="/third-party/jcommon.jar"/>
     <classpathentry kind="src" path="/esub"/>
     <classpathentry kind="lib" path="/third-party/jloox30.jar"/>
+    <classpathentry kind="lib" path="/third-party/jtds.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

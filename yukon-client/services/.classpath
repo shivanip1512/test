@@ -19,5 +19,6 @@
     <classpathentry kind="lib" path="/third-party/mx4j-jmx.jar"/>
     <classpathentry kind="lib" path="/third-party/mx4j-tools.jar"/>
     <classpathentry kind="src" path="/calchist"/>
+    <classpathentry kind="lib" path="/third-party/jtds.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

@@ -29,5 +29,6 @@
     <classpathentry kind="src" path="/dbeditor"/>
     <classpathentry kind="src" path="/trending"/>
     <classpathentry kind="src" path="/tdc"/>
+    <classpathentry kind="lib" path="/third-party/jtds.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

@@ -4,9 +4,7 @@
     <classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
     <classpathentry kind="src" path="/common"/>
     <classpathentry kind="src" path="/loadcontrol"/>
-    <classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
     <classpathentry kind="lib" path="/third-party/acme.jar"/>
-    <classpathentry kind="lib" path="/third-party/classes12.jar"/>
     <classpathentry kind="lib" path="/third-party/j2ee.jar"/>
     <classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
     <classpathentry kind="lib" path="/third-party/jcchart401K.jar"/>
@@ -27,5 +25,8 @@
     <classpathentry kind="src" path="/cbc"/>
     <classpathentry kind="lib" path="/third-party/jloox30.jar"/>
     <classpathentry kind="src" path="/commander"/>
+    <classpathentry kind="lib" path="/third-party/classes12.jar"/>
+    <classpathentry kind="lib" path="/third-party/jtds.jar"/>
+    <classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
