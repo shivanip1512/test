@@ -872,9 +872,15 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
     {
         switch( getiValue("type") )
         {
+        case ProtocolEnergyProType:
+            {
+                // This will change over time.
+                doParseControlExpresscom(CmdStr);
+                break;
+            }
         case ProtocolExpresscomType:
             {
-                doParseExpresscomControl(CmdStr);
+                doParseControlExpresscom(CmdStr);
                 break;
             }
         case ProtocolVersacomType:
@@ -1243,6 +1249,12 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
                 doParsePutConfigVersacom(CmdStr);
                 break;
             }
+        case ProtocolEnergyProType:
+            {
+                // This will change over time
+                doParsePutConfigExpresscom(CmdStr);
+                break;
+            }
         case ProtocolExpresscomType:
             {
                 doParsePutConfigExpresscom(CmdStr);
@@ -1255,7 +1267,7 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "Putconfig not supported for this device type " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " Putconfig not supported for this device type " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
                 break;
             }
@@ -2720,6 +2732,14 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
             {
                 _cmd["type"] = CtiParseValue( "sa305", ProtocolSA305Type );
             }
+            else if(CmdStr.contains("epro"))
+            {
+                if(CmdStr.contains(" nooverride"))
+                {
+                    _cmd["overridedisable"] = CtiParseValue( TRUE );
+                }
+                _cmd["type"] = CtiParseValue( "energypro", ProtocolEnergyProType );
+            }
             else if(CmdStr.contains("xcom") || CmdStr.contains("expresscom"))
             {
                 _cmd["type"] = CtiParseValue( "expresscom", ProtocolExpresscomType );
@@ -2967,7 +2987,7 @@ CtiCommandParser& CtiCommandParser::setValue(const RWCString key, RWCString val)
     return *this;
 }
 
-void  CtiCommandParser::doParseExpresscomControl(const RWCString &CmdStr)
+void  CtiCommandParser::doParseControlExpresscom(const RWCString &CmdStr)
 {
     INT         _num;
     UINT        flag   = 0;
@@ -3575,7 +3595,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
     else if(CmdStr.contains("schedule"))
     {
         _cmd["xcschedule"] = TRUE;
-        doParsePutConfigExpresscomSchedule(CmdStr);
+        doParsePutConfigThermostatSchedule(CmdStr);
     }
 }
 
@@ -3660,7 +3680,7 @@ void  CtiCommandParser::doParsePutStatusExpresscom(const RWCString &CmdStr)
     }
 }
 
-void CtiCommandParser::doParsePutConfigExpresscomSchedule(const RWCString &CmdStr)
+void CtiCommandParser::doParsePutConfigThermostatSchedule(const RWCString &CmdStr)
 {
     RWCString   str;
     RWCString   temp;
@@ -3677,10 +3697,10 @@ void CtiCommandParser::doParsePutConfigExpresscomSchedule(const RWCString &CmdSt
 
         while(!token.isNull())
         {
-            key = isTokenExpresscomScheduleDOW(token);
+            key = isTokenThermostatScheduleDOW(token);
             while(key >= 0)
             {
-                doParsePutConfigExpresscomScheduleDOW(tok,key);     // This method should finish the rest of this key!
+                doParsePutConfigThermostatScheduleDOW(tok,key);     // This method should finish the rest of this key!
             }
 
             token = tok(" ,"); // Move us forward.
@@ -3688,7 +3708,7 @@ void CtiCommandParser::doParsePutConfigExpresscomSchedule(const RWCString &CmdSt
     }
 }
 
-INT CtiCommandParser::isTokenExpresscomScheduleDOW(RWCString &token)
+INT CtiCommandParser::isTokenThermostatScheduleDOW(RWCString &token)
 {
     INT dow = -1;
 
@@ -3736,7 +3756,7 @@ INT CtiCommandParser::isTokenExpresscomScheduleDOW(RWCString &token)
     return dow;
 }
 
-void CtiCommandParser::doParsePutConfigExpresscomScheduleDOW(RWTokenizer &tok, INT &key)
+void CtiCommandParser::doParsePutConfigThermostatScheduleDOW(RWTokenizer &tok, INT &key)
 {
     RWCString token;
     INT currentkey = key;   // The key which got us here.
@@ -3749,7 +3769,7 @@ void CtiCommandParser::doParsePutConfigExpresscomScheduleDOW(RWTokenizer &tok, I
 
     while( !(token = tok(" :,")).isNull()  )
     {
-        if((key = isTokenExpresscomScheduleDOW(token)) >= 0)
+        if((key = isTokenThermostatScheduleDOW(token)) >= 0)
         {
             // The current token is a NEW key!
             break;

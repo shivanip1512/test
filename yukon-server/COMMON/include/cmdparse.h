@@ -62,15 +62,15 @@ private:
     void     doParsePutStatusEmetcon(const RWCString &CmdStr);
     void     resolveProtocolType(const RWCString &CmdStr);
 
-    void    doParseExpresscomControl(const RWCString &CmdStr);
+    void    doParseControlExpresscom(const RWCString &CmdStr);
     void    doParsePutConfigExpresscom(const RWCString &CmdStr);
     void    doParsePutStatusExpresscom(const RWCString &CmdStr);
 
-    void    doParsePutConfigExpresscomSchedule(const RWCString &CmdStr);
+    void    doParsePutConfigThermostatSchedule(const RWCString &CmdStr);
 
     INT     convertTimeInputToSeconds(const RWCString& inStr) const;
-    INT     isTokenExpresscomScheduleDOW(RWCString &token);
-    void    doParsePutConfigExpresscomScheduleDOW(RWTokenizer &tok, INT &key);
+    INT     isTokenThermostatScheduleDOW(RWCString &token);
+    void    doParsePutConfigThermostatScheduleDOW(RWTokenizer &tok, INT &key);
 
 
 public:
