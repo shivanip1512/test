@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/12/03 17:53:40 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/06/28 18:59:18 $
 *
 *
 * AUTHOR: Matt Fisher
@@ -28,8 +28,8 @@
 //
 //$Archive$
 //
-//$Revision: 1.4 $
-//$Date: 2002/12/03 17:53:40 $
+//$Revision: 1.5 $
+//$Date: 2004/06/28 18:59:18 $
 //
 
 /** include files **/
@@ -69,7 +69,25 @@ int main( int argc, char *argv[] )
 {
     RWWinSockInfo sock_init;        // global declare for winsock
     BOOL consoleRet;
+    HANDLE hExclusion;
 
+    if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, FALSE, "FDR_EXCLUSION_EVENT")) != NULL )
+    {
+	// Oops, fdr is running on this machine already.
+	CloseHandle(hExclusion);
+	cout << "FDR is already running on this machine, exiting." << endl;
+	exit(-1);
+    }
+
+    // Set event so to avoid additional copies of FDR on this machine
+    hExclusion = CreateEvent(NULL, TRUE, FALSE, "FDR_EXCLUSION_EVENT");
+
+    if( hExclusion == (HANDLE)NULL )
+    {
+       cout << "Couldn't create fdr" << endl;
+       exit(-1);
+    }
+    
 //    InitYukonBaseGlobals();
     identifyProject(CompileInfo);
 
