@@ -9,7 +9,7 @@ INSERT INTO Route VALUES (0,0,'N');
 insert into YukonWebConfiguration values (1,'','Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!<br><br>This site is designed to help manage your programs on-line from anywhere with access to a Web browser.','XYZ Utility','/default.config.properties');
 
 /* EnergyCompany */
-INSERT INTO EnergyCompany VALUES (-1,'Default Energy Company',0,0,1);
+INSERT INTO EnergyCompany VALUES (-1,'Default Energy Company',0,0,0);
 
 /* YukonWebConfiguration */
 INSERT INTO YukonWebConfiguration VALUES (-1,'Summer.gif','Default Summer Settings','Cooling','Cool');
@@ -90,7 +90,7 @@ insert into YukonSelectionList values (1045,'N','(none)','Standby source selecti
 insert into YukonSelectionList values (1046,'N','(none)','Irrigation type selection', 'IrrigationType','N');
 insert into YukonSelectionList values (1047,'N','(none)','Soil type selection', 'SoilType','N');
 insert into YukonSelectionList values (1048,'N','(none)','Device location selection', 'DeviceLocation','N');
-insert into YukonSelectionList values (1049,'N','(none)','Opt out period selection','OptOutPeriod','N');
+insert into YukonSelectionList values (1049,'O','(none)','Opt out period selection','OptOutPeriod','N');
 
 /* YukonListEntry */
 insert into YukonListEntry values (1001,1001,0,'Program',1001);
@@ -176,7 +176,7 @@ insert into YukonListEntry values (1080,1023,0,'1970',0);
 insert into YukonListEntry values (1081,1023,0,'1980',0);
 insert into YukonListEntry values (1082,1023,0,'1990',0);
 insert into YukonListEntry values (1083,1023,0,'2000',0);
-insert into YukonListEntry values (1084,1024,0,'&lt; 1000',0);
+insert into YukonListEntry values (1084,1024,0,'0 - 1000',0);
 insert into YukonListEntry values (1085,1024,0,'1000 - 1500',0);
 insert into YukonListEntry values (1086,1024,0,'1500 - 2000',0);
 insert into YukonListEntry values (1087,1024,0,'2000 - 2500',0);
@@ -198,7 +198,8 @@ insert into YukonListEntry values (1102,1029,0,'7 - 8',0);
 insert into YukonListEntry values (1103,1029,0,'9+',0);
 insert into YukonListEntry values (1104,1030,0,'Own',0);
 insert into YukonListEntry values (1105,1030,0,'Rent',0);
-insert into YukonListEntry values (1106,1049,0,'Tomorrow',2601);
+insert into YukonListEntry values (1106,1049,1,'Tomorrow',2601);
+insert into YukonListEntry values (1107,1049,99,'Repeat Last',2699);
 
 /* ECToGenericMapping */
 insert into ectogenericmapping values (-1, 1001, 'YukonSelectionList');
@@ -257,30 +258,30 @@ INSERT INTO LMThermostatSeason VALUES (-1,-1,-1,'01-JUN-00',1);
 INSERT INTO LMThermostatSeason VALUES (-2,-1,-2,'15-OCT-00',2);
 
 /* LMThermostatSeasonEntry */
-INSERT INTO LMThermostatSeasonEntry VALUES (1,-1,1046,21600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (2,-1,1046,30600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (3,-1,1046,61200,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (4,-1,1046,75600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (5,-1,1048,21600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (6,-1,1048,30600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (7,-1,1048,61200,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (8,-1,1048,75600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (9,-1,1049,21600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (10,-1,1049,30600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (11,-1,1049,61200,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (12,-1,1049,75600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (13,-2,1046,21600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (14,-2,1046,30600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (15,-2,1046,61200,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (16,-2,1046,75600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (17,-2,1048,21600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (18,-2,1048,30600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (19,-2,1048,61200,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (20,-2,1048,75600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (21,-2,1049,21600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (22,-2,1049,30600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (23,-2,1049,61200,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (24,-2,1049,75600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-1,-1,1046,21600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-2,-1,1046,30600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-3,-1,1046,61200,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-4,-1,1046,75600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-5,-1,1048,21600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-6,-1,1048,30600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-7,-1,1048,61200,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-8,-1,1048,75600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-9,-1,1049,21600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-10,-1,1049,30600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-11,-1,1049,61200,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-12,-1,1049,75600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-13,-2,1046,21600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-14,-2,1046,30600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-15,-2,1046,61200,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-16,-2,1046,75600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-17,-2,1048,21600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-18,-2,1048,30600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-19,-2,1048,61200,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-20,-2,1048,75600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-21,-2,1049,21600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-22,-2,1049,30600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-23,-2,1049,61200,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-24,-2,1049,75600,72);
 
 /* LMThermostatManualEvent */
 INSERT INTO LMCustomerEventBase VALUES (-1,1064,1066,'01-JAN-70','','');

@@ -990,7 +990,7 @@
 			<xs:sequence>
 				<xs:element ref="stars-LMProgramHistory" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="stars-LMHardwareHistory" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
+			<xs:element name="Description" minOccurs="0" type="xs:string"/></xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-ProgramReenable">
