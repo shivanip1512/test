@@ -36,7 +36,7 @@
 <%@ page import="com.cannontech.stars.xml.serialize.types.*" %>
 <%@ page import="com.cannontech.stars.xml.util.SOAPUtil" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
-
+<%@ page import="com.cannontech.stars.util.ECUtils" %> 
 <cti:checklogin/>
  
 <%
