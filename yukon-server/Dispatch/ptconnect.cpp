@@ -112,7 +112,9 @@ int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgM
    return 0;
 }
 
-CtiPointConnection::CtiPointConnection(){}
+CtiPointConnection::CtiPointConnection()
+{
+}
 
 CtiPointConnection::~CtiPointConnection()
 {
@@ -131,16 +133,22 @@ void CtiPointConnection::RemoveConnectionManager(CtiConnectionManager *cm)
 
    if(ConnectionManagerCollection.contains(cm))
    {
-      ConnectionManagerCollection.remove(cm);
-   }
+        ConnectionManagerCollection.removeAll(cm);
+    }
 }
 
 int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg& Msg);
 
 CtiPointConnection& CtiPointConnection::operator=(const CtiPointConnection &aRef);
 
-RWTPtrSlist<CtiConnectionManager>& CtiPointConnection::getManagerList()         { return ConnectionManagerCollection; }
-RWTPtrSlist<CtiConnectionManager>  CtiPointConnection::getManagerList() const   { return ConnectionManagerCollection; }
+RWTPtrSlist<CtiConnectionManager>& CtiPointConnection::getManagerList()
+{
+    return ConnectionManagerCollection;
+}
+RWTPtrSlist<CtiConnectionManager>  CtiPointConnection::getManagerList() const
+{
+    return ConnectionManagerCollection;
+}
 
 
 
