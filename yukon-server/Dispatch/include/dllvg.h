@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/dllvg.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/05/23 22:16:04 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/10/08 20:26:51 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,6 +29,7 @@
 #define DISPATCH_DEBUG_PENDINGOPS               0x00000020
 #define DISPATCH_DEBUG_REGISTRATION             0x00000040
 #define DISPATCH_DEBUG_CONTROLS                 0x00000080
+#define DISPATCH_DEBUG_DELAYED_UPDATE           0x00000100
 #define DISPATCH_DEBUG_ALARMACK                 0x01000000
 #define DISPATCH_DEBUG_MESSAGES                 0x02000000
 #define DISPATCH_DEBUG_MSGSTOCLIENT             0x04000000
