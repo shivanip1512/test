@@ -71,17 +71,17 @@ public class StarsYukonUser {
 		if (ECUtils.isOperator(this)) {
 			LiteEnergyCompany energyCompany = EnergyCompanyFuncs.getEnergyCompany( getYukonUser() );
 			if (energyCompany == null)
-				throw new InstantiationException( "Cannot find the energy company of this user" );
+				throw new InstantiationException( "Cannot find the energy company for user id = " + getYukonUser().getUserID() );
 			
 			energyCompanyID = energyCompany.getEnergyCompanyID();
 		}
 		else if (ECUtils.isResidentialCustomer(this)) {
 			LiteContact liteContact = YukonUserFuncs.getLiteContact( getUserID() );
 			if (liteContact == null)
-				throw new InstantiationException( "Cannot find contact information of this user" );
+				throw new InstantiationException( "Cannot find contact information for user id = " + getYukonUser().getUserID() );
 			customer = ContactFuncs.getCustomer( liteContact.getContactID() );
 			if (customer == null)
-				throw new InstantiationException( "Cannot find customer information of this user" );
+				throw new InstantiationException( "Cannot find customer information for user id = " + getYukonUser().getUserID() );
 			
 			energyCompanyID = customer.getEnergyCompanyID();
 		}
