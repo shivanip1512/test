@@ -14,6 +14,7 @@ INCLPATHS+= \
 -I$(PROCLOG)\include \
 -I$(RW) \
 -I$(BOOST) \
+-I$(FDR)\Telegyr\inc
 
 
 .PATH.cpp = .;$(R_FDR)
@@ -58,6 +59,12 @@ textfileinterfaceparts.obj \
 fdrtextfilebase.obj \
 fdrsinglesocket.obj
 
+
+FDRTELEGYROBJS=\
+telegyrgroup.obj \
+telegyrcontrolcenter.obj \
+fdrtelegyr.obj
+
 # socketinterface.obj \
 #fdrpointidmap.obj \
 #fdrprotectedmaplist.obj \
@@ -74,6 +81,11 @@ wininet.lib
 
 TESTINTERFACEDLLOBJS=\
 testinterface.obj \
+
+FDRTELEGYRLIBS=\
+$(COMPILEBASE)\lib\apiclilib.lib \
+$(COMPILEBASE)\lib\pllib.lib \
+$(COMPILEBASE)\lib\psapi.lib 
 
 CTIFDRDLLS=\
 cti_fdr.dll \
@@ -271,14 +283,14 @@ fdrlodestarimport_std.dll: fdrlodestarimport_std.obj Makefile
                 @%cd $(CWD)
 
 
-fdrtelegyr.dll: $(FDRINTERFACEOBJS) Makefile
+fdrtelegyr.dll: $(FDRTELEGYROBJS) Makefile
                 @%cd $(OBJ)
                 @echo Building  ..\$@
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                 -if exist ..\telegyr\lib\apiclilib.lib copy ..\telegyr\lib\apiclilib.lib $(COMPILEBASE)\lib
                 -if exist ..\telegyr\lib\pllib.lib copy ..\telegyr\lib\pllib.lib $(COMPILEBASE)\lib
                 -if exist ..\telegyr\lib\psapi.lib copy ..\telegyr\lib\psapi.lib $(COMPILEBASE)\lib
-                $(CC) $(DLLFLAGS) $(FDRINTERFACEOBJS) $(INCLPATHS) $(RWLIBS) $(BOOSTLIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@
+                $(CC) $(DLLFLAGS) $(FDRTELEGYROBJS) $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) $(FDRTELEGYRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -381,16 +393,29 @@ fdrlodestarimport_enh.obj : fdrlodestarimport_enh.cpp
                 @echo:
                 $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_ENH_FDRLODESTARIMPORT -DWINDOWS -Fo$(OBJ)\ -c $<
 fdrlodestarimport_std.obj : fdrlodestarimport_std.cpp
-                @echo:
+		@echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_STD_FDRLODESTARIMPORT -DWINDOWS -Fo$(OBJ)\ -c $<
-fdrtelegyr.obj : fdrtelegyr.cpp
-                @echo:
-                @echo Compiling: $< Output: ..\$@
-                @echo:
-                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRTELEGYRAPI -DWINDOWS -Fo$(OBJ)\ -c $<
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_STD_FDRLODESTARIMPORT -DWINDOWS -Fo$(OBJ)\ -c $<
 
+telegyrgroup.obj : telegyrgroup.cpp
+		@echo:
+                @echo Compiling: $< Output: ..\$@
+                @echo:
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRTELEGYRAPI -DWINDOWS -Fo$(OBJ)\ -c $<
+
+telegyrcontrolcenter.obj : telegyrcontrolcenter.cpp
+		@echo:
+                @echo Compiling: $< Output: ..\$@
+                @echo:
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRTELEGYRAPI -DWINDOWS -Fo$(OBJ)\ -c $<
+
+fdrtelegyr.obj : fdrtelegyr.cpp
+		@echo:
+                @echo Compiling: $< Output: ..\$@
+                @echo:
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRTELEGYRAPI -DWINDOWS -Fo$(OBJ)\ -c $<
+ 
 
 .cpp.obj :
                 @echo:
