@@ -542,13 +542,14 @@ alter table DeviceSeries5RTU modify Retries number not null;
 alter table LMControlScenarioProgram rename column StartDelay to StartOffset;
 
 
-update YukonListEntry set EntryText='LCR-5000(Xcom)' where EntryID=1051;
-update YukonListEntry set YukonDefinitionID=1305 where EntryID=1052;
+update YukonListEntry set EntryText='LCR-5000(EXPRESSCOM)' where EntryID=1051;
+update YukonListEntry set YukonDefinitionID=1305, EntryOrder=-1 where EntryID=1052;
 update YukonListEntry set YukonDefinitionID=1306 where EntryID=1053;
-update YukonListEntry set YukonDefinitionID=1307 where EntryID=1054;
+update YukonListEntry set YukonDefinitionID=1307, EntryOrder=-1 where EntryID=1054;
+update YukonListEntry set YukonDefinitionID=1308, EntryOrder=-1 where EntryID=1055;
 insert into YukonListEntry values (1060,1005,-1,'SA-205',1309);
 insert into YukonListEntry values (1061,1005,-1,'SA-305',1310);
-insert into YukonListEntry values (1062,1005,0,'LCR-5000(Vcom)',1311);
+insert into YukonListEntry values (1062,1005,-1,'LCR-5000(Vcom)',1311);
 
 update yukonuserrole set value = 'true' where userroleid = -107;
 
@@ -833,9 +834,6 @@ delete from yukongrouprole where rolepropertyid = -40101;
 delete from yukonuserrole where rolepropertyid = -40101;
 delete from yukonroleproperty where rolepropertyid = -40101;
 
-
-/* Remove unused yukon list entries */
-delete from yukonlistentry where entrytext = 'LCR-1000';
 
 /* @error ignore */
 insert into YukonListEntry values (1136,1011,0,'Address',1606);
