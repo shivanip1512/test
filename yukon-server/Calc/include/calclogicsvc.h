@@ -34,7 +34,7 @@ protected:
 
     //
     // ecs 1/5/2005
-    //
+    void loadConfigParameters( );
     static void mainComplain( void *la );
     static void outComplain( void *la );
     static void inComplain( void *la );
@@ -45,6 +45,7 @@ private:
     RWThreadFunction _outputFunc;
 
     RWTime _dispatchPingedFailed;
+    bool _lastWasPingNoDataSince;
     bool _ok, _restart;
     RWCString _dispatchMachine;
     INT _dispatchPort;
@@ -52,6 +53,9 @@ private:
     CtiConnection *_conxion;
     void _inputThread( void );
     void _outputThread( void );
+
+    void _registerForPoints();
+
 };
 
 #endif //  __CALC__LOGIC_H__

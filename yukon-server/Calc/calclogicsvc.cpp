@@ -72,7 +72,7 @@ IMPLEMENT_SERVICE(CtiCalcLogicService, CALCLOGIC)
 
 
 CtiCalcLogicService::CtiCalcLogicService(LPCTSTR szName, LPCTSTR szDisplay, DWORD dwType ) :
-CService( szName, szDisplay, dwType ), _ok(TRUE), _restart(FALSE), _dispatchPingedFailed(YUKONEOT)
+CService( szName, szDisplay, dwType ), _ok(TRUE), _restart(FALSE), _dispatchPingedFailed(YUKONEOT), _lastWasPingNoDataSince(false)
 {
     calcThread = 0;
     m_pThis = this;
@@ -108,97 +108,15 @@ void CtiCalcLogicService::Init( )
     {
         //defaults
         RWCString logFile = RWCString("calc");
-        _dispatchMachine = RWCString("127.0.0.1");
-        _dispatchPort = VANGOGHNEXUS;
-        _CALC_DEBUG = CALC_DEBUG_THREAD_REPORTING;
-        //defaults
 
-        RWCString str;
-        char var[128];
-
-        dout.start();     // fire up the logger thread
+        dout.setOutputFile(logFile.data());
         dout.setOutputPath(gLogDirectory.data());
         dout.setToStdOut(true);
         dout.setWriteInterval(1);
+        dout.start();     // fire up the logger thread
 
-        strcpy(var, "CALC_LOGIC_LOG_FILE");
-        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
-        {
-            dout.setOutputFile(str.data());
-            if( _CALC_DEBUG )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << var << ":  " << str << endl;
-            }
-        }
-        else
-        {
-            dout.setOutputFile(logFile.data());
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-        }
+        loadConfigParameters();
 
-        strcpy(var, "DISPATCH_MACHINE");
-        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
-        {
-            _dispatchMachine = str;
-            if( _CALC_DEBUG )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << var << ":  " << str << endl;
-            }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-        }
-
-        strcpy(var, "DISPATCH_PORT");
-        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
-        {
-            _dispatchPort = atoi(str);
-            if( _CALC_DEBUG )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << var << ":  " << str << endl;
-            }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-        }
-
-        strcpy(var, "CALC_LOGIC_DEBUG");
-        if(gConfigParms.isOpt(var,"true"))
-        {
-            _CALC_DEBUG = 0xFFFFFFFF;
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << var << ":  " << (char*)CtiNumStr(_CALC_DEBUG).xhex().zpad(8) << endl;
-            }
-        }
-        else if(gConfigParms.isOpt(var,"false"))
-        {
-            _CALC_DEBUG = 0x00000000;
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << var << ":  " << (char*)CtiNumStr(_CALC_DEBUG).xhex().zpad(8) << endl;
-            }
-        }
-        else if( 0 != (_CALC_DEBUG = gConfigParms.getValueAsULong(var,0,16)) )
-        {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << var << ":  " << (char*)CtiNumStr(_CALC_DEBUG).xhex().zpad(8) << endl;
-            }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-        }
     }
     catch(...)
     {
@@ -223,7 +141,6 @@ void CtiCalcLogicService::OnStop( )
 
 void CtiCalcLogicService::Run( )
 {
-    CtiPointRegistrationMsg *msgPtReg;
     CtiMultiMsg *msgMulti;
 
     time_t   timeNow;
@@ -276,6 +193,8 @@ void CtiCalcLogicService::Run( )
                     if(_conxion) dropDispatchConnection();
 
                     _restart = false;                      // make sure our flag is reset
+
+                    loadConfigParameters();             // Reload the config.
 
                     _inputFunc  = rwMakeThreadFunction( *this, &CtiCalcLogicService::_inputThread );
                     _outputFunc = rwMakeThreadFunction( *this, &CtiCalcLogicService::_outputThread );
@@ -377,40 +296,7 @@ void CtiCalcLogicService::Run( )
                 dout << RWTime() << " " << calcThread->numberOfLoadedCalcPoints() << " Calc Points Loaded" << endl;
             }
 
-            //  iterate through the calc points' dependencies, adding them to the registration message
-            //  XXX:  Possibly add the iterator and accessor functions to the calcThread class itself, rather than
-            //          providing the iterator directly?
-            RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, equal_to<CtiHashKey> > *depIter;
-
-            depIter = calcThread->getPointDependencyIterator( );
-            msgPtReg = new CtiPointRegistrationMsg(0);
-            for( ; (*depIter)( ); )
-            {
-                if( _CALC_DEBUG & CALC_DEBUG_DISPATCH_INIT )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " - Registered for point id: " << ((CtiPointStoreElement *)depIter->value( ))->getPointNum() << endl;
-                }
-                msgPtReg->insert( ((CtiPointStoreElement *)depIter->value( ))->getPointNum( ) );
-            }
-            delete depIter;
-
-            //  now send off the point registration
-            if(_conxion)
-            {
-                if(msgPtReg)
-                {
-                    _conxion->WriteConnQue( msgPtReg );
-                }
-            }
-            else
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-                delete msgPtReg;
-            }
+            _registerForPoints();
 
             //  Up until this point, nothing has needed a mutex.  Now I'm spawning threads, and the
             //    commonly-accessed resources will be the calcThread's pointStore object and message
@@ -467,15 +353,24 @@ void CtiCalcLogicService::Run( )
                             break;
                         }
                         else
-                        {
-                            _dispatchPingedFailed = announceTime - 30;   // This is the future. Dispatch needs to answer us in this amount of time.
+                            {
+                                if(_lastWasPingNoDataSince)
+                                {
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " **** INFO **** No data has been recieved since last ping/verify.  Re-registering points." << endl;
+                                    }
+                                    _registerForPoints();                       // re-register if we haven't seen data since last ping.
+                                }
 
-                            CtiCommandMsg *pCmd = new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
-                            pCmd->setUser(CALCLOGICNAME);
-                            if(_conxion) _conxion->WriteConnQue( pCmd );
+                                _dispatchPingedFailed = announceTime - 30;   // This is the future. Dispatch needs to answer us in this amount of time.
+
+                                CtiCommandMsg *pCmd = new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
+                                pCmd->setUser(CALCLOGICNAME);
+                                if(_conxion) _conxion->WriteConnQue( pCmd );
+                            }
                         }
                     }
-
 
                     rwSleep( 1000 );
 
@@ -796,6 +691,7 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                             dout << RWTime() << " Dispatch connection ping verified." << endl;
                         }
                         _dispatchPingedFailed = RWTime(YUKONEOT);
+                        _lastWasPingNoDataSince = true;
                     }
                     break;
                 }
@@ -813,6 +709,7 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
             {
                 pData = (CtiPointDataMsg *)message;
                 calcThread->pointChange( pData->getId(), pData->getValue(), pData->getTime(), pData->getQuality(), pData->getTags() );
+                _lastWasPingNoDataSince = false;
             }
             break;
 
@@ -1086,3 +983,136 @@ void CtiCalcLogicService::inComplain( void *la )
     }
 }
 
+void CtiCalcLogicService::_registerForPoints()
+{
+
+    //  iterate through the calc points' dependencies, adding them to the registration message
+    //  XXX:  Possibly add the iterator and accessor functions to the calcThread class itself, rather than
+    //          providing the iterator directly?
+    RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, equal_to<CtiHashKey> > *depIter;
+    depIter = calcThread->getPointDependencyIterator( );
+    CtiPointRegistrationMsg *msgPtReg = new CtiPointRegistrationMsg(0);
+    for( ; (*depIter)( ); )
+    {
+        if( _CALC_DEBUG & CALC_DEBUG_DISPATCH_INIT )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - Registered for point id: " << ((CtiPointStoreElement *)depIter->value( ))->getPointNum() << endl;
+        }
+        msgPtReg->insert( ((CtiPointStoreElement *)depIter->value( ))->getPointNum( ) );
+    }
+    delete depIter;
+
+    //  now send off the point registration
+    if(_conxion)
+    {
+        if(msgPtReg)
+        {
+            _conxion->WriteConnQue( msgPtReg );
+        }
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        delete msgPtReg;
+    }
+
+    return;
+}
+
+
+void CtiCalcLogicService::loadConfigParameters()
+{
+
+    RWCString str;
+    char var[256];
+
+    //defaults
+    RWCString logFile = RWCString("calc");
+    _dispatchMachine = RWCString("127.0.0.1");
+    _dispatchPort = VANGOGHNEXUS;
+    _CALC_DEBUG = CALC_DEBUG_THREAD_REPORTING;
+    //defaults
+
+    strcpy(var, "CALC_LOGIC_LOG_FILE");
+    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    {
+        dout.setOutputFile(str.data());
+        if( _CALC_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        dout.setOutputFile(logFile.data());
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    strcpy(var, "DISPATCH_MACHINE");
+    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    {
+        _dispatchMachine = str;
+        if( _CALC_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    strcpy(var, "DISPATCH_PORT");
+    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    {
+        _dispatchPort = atoi(str);
+        if( _CALC_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    strcpy(var, "CALC_LOGIC_DEBUG");
+    if(gConfigParms.isOpt(var,"true"))
+    {
+        _CALC_DEBUG = 0xFFFFFFFF;
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << var << ":  " << (char*)CtiNumStr(_CALC_DEBUG).xhex().zpad(8) << endl;
+        }
+    }
+    else if(gConfigParms.isOpt(var,"false"))
+    {
+        _CALC_DEBUG = 0x00000000;
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << var << ":  " << (char*)CtiNumStr(_CALC_DEBUG).xhex().zpad(8) << endl;
+        }
+    }
+    else if( 0 != (_CALC_DEBUG = gConfigParms.getValueAsULong(var,0,16)) )
+    {
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << var << ":  " << (char*)CtiNumStr(_CALC_DEBUG).xhex().zpad(8) << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+}
