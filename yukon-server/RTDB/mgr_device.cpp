@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2004/06/28 16:41:56 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2004/07/08 21:30:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2442,11 +2442,6 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
                         // Not sure if this case should ever occur.
                         // I would presume this problem becomes vastly more complex if two devS may be time excluded against one another.
                         devA->getExclusion().setEvaluateNextAt( devS->getExclusion().getExecutingUntil() );
-
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
                     }
                 }
                 else
