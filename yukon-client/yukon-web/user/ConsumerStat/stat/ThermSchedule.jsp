@@ -254,7 +254,7 @@ MM_reloadPage(true);
                           </table>
                         </td>
                       </tr>
-                      <tr> 
+                        <tr> 
                           <td width="48%"> 
                             <table width="140" border="0">
                               <tr> 
@@ -288,16 +288,23 @@ MM_reloadPage(true);
                 </tr>
                 <tr> 
                   <td align = "center"> 
-                      <table width="48%" border="0" height="33">
+                      <table width="500" border="0">
                         <tr> 
-                        <td class = "TableCell" width="20%" height="4" align = "right" >Slide 
-                          black arrows and thermometers to change temperatures 
-                          and start times for each interval. </td>
-                      </tr>
-                    </table><br>
-                    
-                    <img src="TempBG.gif" style ="position:relative;">
-                    <div id="MovingLayer1" style="position:absolute; width:25px; height:162px; left:309px; z-index:1; top: 368px">
+                          <td class = "TableCell" width="84%" height="4" align = "right" > 
+                            <div align="center">This page allows you to set your 
+                              ongoing temperature schedule. Simply the slide black 
+                              arrows and thermometers to change temperatures and 
+                              start times for each interval. To make temperary 
+                              changes, click the <b>Manual</b> button to the right.</div>
+                          </td>
+                          <td class = "TableCell" width="16%" height="4" align = "right" valign="top" > 
+                            <input type="submit" name="Manual" value=Manual onclick="Thermostat.jsp">
+                          </td>
+                        </tr>
+                      </table>
+                      <br>
+                      <img src="TempBG.gif" style ="position:relative;">
+<div id="MovingLayer1" style="position:absolute; width:25px; height:162px; left:309px; z-index:1; top: 380px">
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
@@ -309,7 +316,7 @@ MM_reloadPage(true);
                         </tr>
                       </table>
                     </div>
-                    <div id="MovingLayer2" style="position:absolute; width:21px; height:162px; left:354px; z-index:1; top: 368px">
+                    <div id="MovingLayer2" style="position:absolute; width:21px; height:162px; left:354px; z-index:1; top: 380px">
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
@@ -321,7 +328,7 @@ MM_reloadPage(true);
                         </tr>
                       </table>
                     </div>
-                    <div id="MovingLayer3" style="position:absolute;  width:21px; height:162px; left:507px; z-index:1; top: 368px">
+                    <div id="MovingLayer3" style="position:absolute;  width:21px; height:162px; left:507px; z-index:1; top: 380px">
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
@@ -333,7 +340,7 @@ MM_reloadPage(true);
                         </tr>
                       </table>
                     </div>
-                    <div id="MovingLayer4" style="position:absolute;  width:21px; height:162px; left:578px; z-index:1; top: 368px">
+                    <div id="MovingLayer4" style="position:absolute;  width:21px; height:162px; left:578px; z-index:1; top: 380px">
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
