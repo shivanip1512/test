@@ -12,8 +12,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_port.h-arc  $
- * REVISION     :  $Revision: 1.13 $
- * DATE         :  $Date: 2003/05/15 22:36:40 $
+ * REVISION     :  $Revision: 1.14 $
+ * DATE         :  $Date: 2004/11/17 17:30:51 $
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -37,8 +37,6 @@ private:
 
     CTI_PORTTHREAD_FUNC_FACTORY_PTR     _portThreadFuncFactory;
     CtiSmartMap< CtiPort >      _smartMap;
-
-    CtiMutex                    _mux;
 
     void RefreshDialableEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg);
     void RefreshEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*),void *arg);
@@ -78,7 +76,7 @@ public:
 
     CtiMutex & getMux()
     {
-        return _mux;
+        return _smartMap.getMux();
     }
 
     bool mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTablePaoExclusion &portexclusion);

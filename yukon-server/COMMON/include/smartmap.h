@@ -30,21 +30,20 @@
 using namespace std;
 using boost::shared_ptr;
 
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
-#include <rw\thr\mutex.h>
 
 #include "dllbase.h"
 #include "dlldefs.h"
 #include "hashkey.h"
 #include "logger.h"
+#include "mutex.h"
 
 
 template < class T >
-class IM_EX_CTIBASE CtiSmartMap : public RWMonitor< RWRecursiveLock< RWMutexLock > >
+class IM_EX_CTIBASE CtiSmartMap
 {
 protected:
 
+    mutable CtiMutex _mux;
     // This is a keyed Mapping which does not allow duplicates!
     map< long, shared_ptr< T > > _map;
 
@@ -62,13 +61,13 @@ public:
 
     virtual ~CtiSmartMap()
     {
-        LockGuard guard(monitor());
+        CtiLockGuard< CtiMutex > gaurd(_mux);
         _map.clear();                   // The shared_ptrs are deleted when all references are de-scoped.
     }
 
     void apply(void (*applyFun)(const long, ptr_type, void*), void* d)
     {
-        LockGuard  gaurd(monitor());
+        CtiLockGuard< CtiMutex >  gaurd(_mux);
         spiterator itr;
 
         for(itr = _map.begin(); itr != _map.end(); ++itr)
@@ -81,13 +80,13 @@ public:
     insert_pair insert(long key, T* val)
     {
         shared_ptr< T > storeval(val);
-        LockGuard  gaurd(monitor());
+        CtiLockGuard< CtiMutex > gaurd(_mux);
         return _map.insert( val_type(key, storeval) );
     }
 
     insert_pair insert(long key, shared_ptr< T > storeval)
     {
-        LockGuard  gaurd(monitor());
+        CtiLockGuard< CtiMutex > gaurd(_mux);
         return _map.insert( val_type(key, storeval) );
     }
 
@@ -101,7 +100,7 @@ public:
 
     ptr_type find(long key)
     {
-        LockGuard  gaurd(monitor());
+        CtiLockGuard< CtiMutex > gaurd(_mux);
         ptr_type retRef;
         spiterator itr = _map.find( key );
 
@@ -115,7 +114,7 @@ public:
 
     ptr_type find(bool (*testFun)(T&, void*),void* d)
     {
-        LockGuard  gaurd(monitor());
+        CtiLockGuard< CtiMutex > gaurd(_mux);
         ptr_type retRef;
         spiterator itr;
 
@@ -133,7 +132,7 @@ public:
 
     ptr_type remove(bool (*testFun)(ptr_type&, void*), void* d)        // Removes first match which return bool true on testFun
     {
-        LockGuard  gaurd(monitor());
+        CtiLockGuard< CtiMutex > gaurd(_mux);
         ptr_type retRef;
         spiterator itr;
 
@@ -161,14 +160,14 @@ public:
 
     void removeAll(bool (*testFun)(ptr_type&, void*), void* d)        // Removes ALL that match this function
     {
-        LockGuard  gaurd(monitor());
+        CtiLockGuard< CtiMutex > gaurd(_mux);
         while(remove(testFun, d));
         return;
     }
 
     ptr_type remove(long key)
     {
-        LockGuard  gaurd(monitor());
+        CtiLockGuard< CtiMutex > gaurd(_mux);
         ptr_type retRef;
         spiterator itr = _map.find( key );
 
@@ -183,13 +182,13 @@ public:
 
     size_t entries() const
     {
-        LockGuard guard(monitor());
+        CtiLockGuard< CtiMutex > gaurd(_mux);
         return _map.size();
     }
 
     bool empty() const
     {
-        LockGuard guard(monitor());
+        CtiLockGuard< CtiMutex > gaurd(_mux);
         return _map.empty();
     }
 
@@ -210,9 +209,9 @@ public:
         return _map;
     }
 
-    RWRecursiveLock<RWMutexLock> & getMux()
+    CtiMutex & getMux()
     {
-        return mutex();
+        return _mux;
     }
 };
 

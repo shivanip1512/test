@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_route.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/03/13 19:36:15 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/11/17 17:30:51 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -39,7 +39,6 @@ class IM_EX_DEVDB CtiRouteManager
 private:
 
     CtiSmartMap< CtiRouteBase > _smartMap;
-    mutable CtiMutex            _mux;
 
     void RefreshRoutes(bool &rowFound, RWDBReader& rdr, CtiRouteBase* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
     void RefreshRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
@@ -75,7 +74,7 @@ public:
 
     CtiMutex& getMux()
     {
-        return _mux;
+        return _smartMap.getMux();
     }
 
     bool empty() const;

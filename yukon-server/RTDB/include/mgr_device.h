@@ -11,8 +11,8 @@
  *
  *
  * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.19 $
- * DATE         :  $Date: 2004/05/10 21:35:51 $
+ * REVISION     :  $Revision: 1.20 $
+ * DATE         :  $Date: 2004/11/17 17:30:51 $
  *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -54,7 +54,6 @@ private:
 
     coll_type    _smartMap;
     coll_type    _exclusionMap;         // This is a map of the devices which HAVE exclusions.
-    CtiMutex     _mux;
 
 private:
 
@@ -87,7 +86,7 @@ public:
 
     CtiMutex & getMux()
     {
-        return _mux;
+        return _smartMap.getMux();
     }
 
     int getErrorCode() const { return _dberrorcode; };

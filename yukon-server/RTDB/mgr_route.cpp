@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_route.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/06/28 16:41:38 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/11/17 17:30:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -446,7 +446,6 @@ void CtiRouteManager::DumpList(void)
 {
     try
     {
-        LockGuard gaurd(_mux);
         spiterator itr;
 
         for(itr = begin(); itr != end(); itr++)
@@ -467,7 +466,6 @@ void CtiRouteManager::apply(void (*applyFun)(const long, ptr_type, void*), void*
 {
     try
     {
-        LockGuard gaurd(_mux);
         _smartMap.apply(applyFun,d);
     }
     catch(...)
@@ -479,7 +477,6 @@ void CtiRouteManager::apply(void (*applyFun)(const long, ptr_type, void*), void*
 
 bool CtiRouteManager::empty() const
 {
-    LockGuard guard(_mux);
     return _smartMap.empty();
 }
 
@@ -499,7 +496,7 @@ CtiRouteManager::spiterator CtiRouteManager::nextPos(CtiRouteManager::spiterator
 
 bool CtiRouteManager::buildRoleVector( long id, CtiRequestMsg& Req, RWTPtrSlist< CtiMessage > &retList, vector< CtiDeviceRepeaterRole > & roleVector )
 {
-    LockGuard guard(_mux);
+    CtiLockGuard< CtiMutex > guard(_smartMap.getMux());
     spiterator itr_rte;
 
     int rolenum = 1;
