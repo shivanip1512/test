@@ -90,7 +90,7 @@ public void run() {
 	}
 	catch( java.io.IOException e )
 	{
-		com.cannontech.clientutils.CTILogger.info("  IOException in inThread occured : " + e.getMessage());
+		com.cannontech.clientutils.CTILogger.debug("  IOException in inThread occured : " + e.getMessage());
 	}	
 	
 }

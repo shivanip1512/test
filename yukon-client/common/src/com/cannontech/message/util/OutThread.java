@@ -62,13 +62,13 @@ public void run() {
 	}
 	catch( java.io.IOException e )
 	{
-		com.cannontech.clientutils.CTILogger.info("  IOException in outThread : " + e.getMessage());
+		com.cannontech.clientutils.CTILogger.debug("  IOException in outThread : " + e.getMessage());
 	}
 	catch( InterruptedException ie )
 	{
-		com.cannontech.clientutils.CTILogger.info("  InterruptedException in outThread : " + ie.getMessage());
+		com.cannontech.clientutils.CTILogger.debug("  InterruptedException in outThread : " + ie.getMessage());
 	}
 
-	com.cannontech.clientutils.CTILogger.info("exiting OutThread::run");
+	//com.cannontech.clientutils.CTILogger.info("exiting OutThread::run");
 }
 }
