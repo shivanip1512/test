@@ -19,18 +19,21 @@ import com.cannontech.common.gui.util.JTextPanePrintable;
 import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.KeysAndValues;
-import com.cannontech.common.util.KeysAndValuesFile;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.cache.functions.CommandFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
+import com.cannontech.database.data.lite.LiteCommand;
+import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.command.CommandCategory;
 import com.cannontech.database.model.EditableTextModel;
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.roles.application.CommanderRole;
@@ -118,6 +121,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 				attset.addAttribute(javax.swing.text.StyleConstants.Underline, new Boolean(message.isUnderline()));
 //				attset.addAttribute(javax.swing.text.StyleConstants.FontFamily, "rastor fonts");
 				doc.insertString(doc.getLength(), message.getText(), attset);
+				textPane.setCaretPosition(doc.getLength());
 			}
 			catch (javax.swing.text.BadLocationException ble)
 			{
@@ -174,7 +178,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		else if( event.getSource() == getCommandPanel().getExecuteButton() ||
 				event.getSource() == getYCCommandMenu().executeMenuItem )
 		{
-			String commandString = KeysAndValuesFile.loadPromptValue((String) getCommandPanel().getExecuteCommandComboBoxTextField().getText().trim(), this);
+			String commandString = CommandFuncs.loadPromptValue((String) getCommandPanel().getExecuteCommandComboBoxTextField().getText().trim(), this);
 			if( commandString != null)	//null is a cancel from prompt
 			{
 				setCommand(commandString);
@@ -202,7 +206,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		{
 			if( getCommandPanel().getAvailableCommandsComboBox().getSelectedIndex() > 0) //0 is default "select"
 			{
-				String commandString = getYC().substituteCommand(getCommandPanel().getAvailableCommandsComboBox().getSelectedItem().toString() );
+				String commandString = getYC().getCommandFromLabel(getCommandPanel().getAvailableCommandsComboBox().getSelectedItem().toString() );
 				getCommandPanel().getExecuteCommandComboBoxTextField().setText( commandString );
 				getCommandPanel().getExecuteButton().requestFocusInWindow();
 			}
@@ -220,18 +224,13 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			}
 			else
 			{			
-			
-			CustomCommandEditPanel commandEditPanel = new CustomCommandEditPanel();
-			KeysAndValuesFile keysAndValuesFile = new KeysAndValuesFile(getYC().getCustomCommandFileDirectory(), getYC().getCommandFileName());
-			keysAndValuesFile.retrieve();
-			commandEditPanel.setDialogTitle("File: " + keysAndValuesFile.getPath().toString());
-			commandEditPanel.setValue(keysAndValuesFile.getKeysAndValues());
-			Object o = commandEditPanel.showAdvancedOptions(this);
-			if( o instanceof KeysAndValues)
-			{
-				keysAndValuesFile.setKeysAndValues((KeysAndValues)o);
-				keysAndValuesFile.writeToFile();
-			}
+				DeviceTypeCommandSetupPanel commandEditPanel = new DeviceTypeCommandSetupPanel(getYC().getDeviceType());
+				commandEditPanel.setDialogTitle("DeviceType: " + getYC().getDeviceType());
+				commandEditPanel.showCommandSetup(this);
+				//set the deviceType in order to reload the deviceTypeCommands
+				getYC().setDeviceType(getYC().getDeviceType());
+				//update the CommandExecute panel
+				updateCommandSelection();
 			}			
 		}
 		else if( event.getSource() == getYCCommandMenu().installAddressing)
@@ -1373,7 +1372,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		if( event.getKeyCode() == KeyEvent.VK_ENTER && event.getSource() == getCommandPanel().getExecuteCommandComboBoxTextField() ||
 				event.getKeyCode() == KeyEvent.VK_ENTER && event.getSource() == getCommandPanel().getExecuteButton())
 		{
-			String commandString = KeysAndValuesFile.loadPromptValue((String) getCommandPanel().getExecuteCommandComboBoxTextField().getText().trim(), this);
+			String commandString = CommandFuncs.loadPromptValue((String) getCommandPanel().getExecuteCommandComboBoxTextField().getText().trim(), this);
 			if (commandString != null)	//null is a cancel from prompt
 			{
 				setCommand(commandString);			
@@ -1828,7 +1827,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	 */
 	public void valueChanged(TreeSelectionEvent event)
 	{
-		String savedCommandFileName = getYC().getCommandFileName().toString();
+		String savedDevType = getYC().getDeviceType();
 		String displayTitle = YC_TITLE;
 		int index = getTreeViewPanel().getSortByComboBox().getSelectedIndex();
 		if( index < 0 )
@@ -1854,7 +1853,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 
 		if ( selectedItem instanceof LiteBase)
 		{
-			com.cannontech.database.db.DBPersistent dbp = LiteFactory.createDBPersistent( (LiteBase) selectedItem);
+			DBPersistent dbp = LiteFactory.createDBPersistent( (LiteBase) selectedItem);
 					
 			if (dbp == null)
 			{
@@ -1862,7 +1861,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 				return;
 			}
 	
-			getYC().setCommandFileName(dbp);
+			getYC().setDeviceType(dbp);
 	
 			if( selectedItem instanceof LiteYukonPAObject)
 			{
@@ -1876,8 +1875,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 				setTitle(displayTitle + " : " + selectedItem.toString());
 			else
 			{
-				int extIndex = getYC().getCommandFileName().indexOf(getYC().getCommandFileExt());
-				displayTitle += " - " + getYC().getCommandFileName().substring(0, extIndex);
+				displayTitle += " - " + getYC().getDeviceType();
 				setTitle(displayTitle);
 			}
 		}
@@ -1888,60 +1886,70 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			getSerialRoutePanel().setSerialNumberText( getSerialNumber().toString() );
 			
 			if( getModelType() == ModelFactory.EDITABLE_EXPRESSCOM_SERIAL)
-				getYC().setCommandFileName(getYC().EXPRESSCOM_SERIAL_FILENAME);
+				getYC().setDeviceType(CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL);
 			else if( getModelType() == ModelFactory.EDITABLE_VERSACOM_SERIAL)
-				getYC().setCommandFileName(getYC().VERSACOM_SERIAL_FILENAME);
+				getYC().setDeviceType(CommandCategory.STRING_CMD_VERSACOM_SERIAL);
 			else if( getModelType() == ModelFactory.EDITABLE_SA205_SERIAL)
-				getYC().setCommandFileName(getYC().SA205_SERIAL_FILENAME);
+				getYC().setDeviceType(CommandCategory.STRING_CMD_SA205_SERIAL);
 			else if( getModelType() == ModelFactory.EDITABLE_SA305_SERIAL)
-				getYC().setCommandFileName(getYC().SA305_SERIAL_FILENAME);
+				getYC().setDeviceType(CommandCategory.STRING_CMD_SA305_SERIAL);
 			else
-				getYC().setCommandFileName(getYC().SERIALNUMBER_FILENAME);
+				getYC().setDeviceType(CommandCategory.STRING_CMD_SERIALNUMBER);
 			
-			if (!getYC().getKeysAndValuesFile().exists())
+			if( getYC().getLiteDeviceTypeCommandsVector().isEmpty())
 			{
-				getCommandLogPanel().addLogElement(" *** The command file: " + getYC().getCommandFileName() + "     Does not exist.  Trying a backup - " + getYC().VERSACOM_SERIAL_FILENAME + ".txt ***");
+				getCommandLogPanel().addLogElement(" *** No commands were found for the device type: " + getYC().getDeviceType() + "  -  Trying a backup - " + CommandCategory.STRING_CMD_VERSACOM_SERIAL + " ***");
 				//This is only temporary until all files have been changed from ALT_SERIALNUMBER_FILENAME to SERIALNUMBER_FILENAME.
-				getYC().setCommandFileName(getYC().VERSACOM_SERIAL_FILENAME);
+				getYC().setDeviceType(CommandCategory.STRING_CMD_VERSACOM_SERIAL);
 			}
 
-			int extIndex = getYC().getCommandFileName().indexOf(getYC().getCommandFileExt());
-			displayTitle += " - " + getYC().getCommandFileName().substring(0, extIndex) + " # " + getSerialNumber().toString();
+			displayTitle += " - " + getYC().getDeviceType() + " # " + getSerialNumber().toString();
 			setTitle(displayTitle);
 		}
 		else if( getModelType() == ModelFactory.COLLECTIONGROUP ||
 				getModelType() == ModelFactory.TESTCOLLECTIONGROUP )
 		{
-			getYC().setCommandFileName(getYC().COLLECTION_GROUP_FILENAME);
+			getYC().setDeviceType(CommandCategory.STRING_CMD_COLLECTION_GROUP);
 			setTitle(displayTitle + " : " + selectedItem.toString());
 		}
 		else
 		{
-			getYC().setCommandFileName(getYC().DEFAULT_FILENAME);
+			CTILogger.error("No DeviceType found, using empty String");
+			getYC().setDeviceType("");
 			setTitle(displayTitle);
 		}
 		
-		if (!getYC().getKeysAndValuesFile().exists())
+		if( getYC().getLiteDeviceTypeCommandsVector().isEmpty())
 		{
-			getCommandLogPanel().addLogElement(" *** The command file: " + getYC().getCommandFileName() + "     Does not exist. ***");
+			getCommandLogPanel().addLogElement(" *** No commands were found for the device type: " + getYC().getDeviceType()+ " ***");
 			getCommandPanel().getAvailableCommandsComboBox().removeAllItems();
 			getCommandPanel().getExecuteCommandComboBox().setSelectedItem(""); //clear text field
 			return;
 		}
 		
 		// Only update command boxes on a change in device type/ file name.
-		if( !getYC().getCommandFileName().toString().equalsIgnoreCase( savedCommandFileName ) )
+		if( !getYC().getDeviceType().equalsIgnoreCase( savedDevType) )
 		{
-			// Clear out the old, get ready for the new!
-			getCommandPanel().getAvailableCommandsComboBox().removeAllItems();
-			getCommandPanel().getExecuteCommandComboBox().setSelectedItem("");
-				
-			// Add the keys to the availableCommandsComboBox, first one is default ("Select A Command")
-			getCommandPanel().getAvailableCommandsComboBox().addItem(" <Select A Command>" );
-			for (int i = 0; i < getYC().getKeysAndValues().getKeys().length; i++)
-				getCommandPanel().getAvailableCommandsComboBox().addItem(getYC().getKeysAndValues().getKeys()[i]);
+			updateCommandSelection();
 		}
 		return;
+	}
+
+	public void updateCommandSelection()
+	{
+		// Clear out the old, get ready for the new!
+		getCommandPanel().getAvailableCommandsComboBox().removeAllItems();
+		getCommandPanel().getExecuteCommandComboBox().setSelectedItem("");
+				
+		// Add the keys to the availableCommandsComboBox, first one is default ("Select A Command")
+		getCommandPanel().getAvailableCommandsComboBox().addItem(" <Select A Command>" );
+		for (int i = 0; i < getYC().getLiteDeviceTypeCommandsVector().size(); i++)
+		{
+			LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand)getYC().getLiteDeviceTypeCommandsVector().get(i);
+			LiteCommand  lc = CommandFuncs.getCommand(ldtc.getCommandID());
+			if( ldtc.isVisible() )
+				getCommandPanel().getAvailableCommandsComboBox().addItem( lc.getLabel());
+		}
 	}
 	
 	public void mouseExited (java.awt.event.MouseEvent event)
