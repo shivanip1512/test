@@ -314,7 +314,7 @@ public Object getValueAt(int row, int col)
 			{
             if( sub.isPowerFactorControlled() )
             {
-               return getPowerFactorText(sub.getPowerFactorValue().doubleValue()) + " Pk";
+               return getPowerFactorText(sub.getPeakSetPoint().doubleValue());
             }
             else
 				  return(sub.getPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue()) +
@@ -326,7 +326,7 @@ public Object getValueAt(int row, int col)
 			{
             if( sub.isPowerFactorControlled() )
             {
-               return getPowerFactorText(sub.getPowerFactorValue().doubleValue()) + " OffPk";
+               return getPowerFactorText(sub.getPeakSetPoint().doubleValue());
             }
             else
    				return(sub.getOffPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue()) +

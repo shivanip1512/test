@@ -263,7 +263,9 @@ public Object getValueAt(int row, int col)
 				if( getCurrentSubBus().getPeakTimeFlag().booleanValue() )
 				{
                if( getCurrentSubBus().isPowerFactorControlled() )
-                  return getPowerFactorText(feeder.getPowerFactorValue().doubleValue()) + " Pk";
+               {
+                  return getPowerFactorText(feeder.getPeakSetPoint().doubleValue()) + " Pk";
+               }
                else
    					return (feeder.getPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue()) +
    							 " to " + 
@@ -273,7 +275,9 @@ public Object getValueAt(int row, int col)
 				else
 				{
                if( getCurrentSubBus().isPowerFactorControlled() )
-                  return getPowerFactorText(feeder.getPowerFactorValue().doubleValue()) + " OffPk";
+               {
+                  return getPowerFactorText(feeder.getPeakSetPoint().doubleValue()) + " OffPk";
+               }
                else
    					return (feeder.getOffPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue()) +
    							 " to " + 
