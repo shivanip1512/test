@@ -1064,7 +1064,7 @@ private synchronized LiteBase handleAlarmCategoryChange( int changeType, int id 
 
 	switch(changeType)
 	{
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD:
+		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allAlarmCategories.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmCategories.get(i)).getAlarmStateID() == id )
@@ -1083,7 +1083,7 @@ private synchronized LiteBase handleAlarmCategoryChange( int changeType, int id 
 				}				
 				break;
 
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allAlarmCategories.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmCategories.get(i)).getAlarmStateID() == id )
@@ -1094,7 +1094,7 @@ private synchronized LiteBase handleAlarmCategoryChange( int changeType, int id 
 					}
 				}
 				break;
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allAlarmCategories.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmCategories.get(i)).getAlarmStateID() == id )
@@ -1127,7 +1127,7 @@ private synchronized LiteBase handleYukonImageChange( int changeType, int id )
 
    switch(changeType)
    {
-      case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD:
+      case DBChangeMsg.CHANGE_TYPE_ADD:
             for(int i=0;i<allYukonImages.size();i++)
             {
                if( ((com.cannontech.database.data.lite.LiteYukonImage)allYukonImages.get(i)).getImageID() == id )
@@ -1146,7 +1146,7 @@ private synchronized LiteBase handleYukonImageChange( int changeType, int id )
             }           
             break;
 
-      case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE:
+      case DBChangeMsg.CHANGE_TYPE_UPDATE:
             for(int i=0;i<allYukonImages.size();i++)
             {
                if( ((com.cannontech.database.data.lite.LiteYukonImage)allYukonImages.get(i)).getImageID() == id )
@@ -1157,7 +1157,7 @@ private synchronized LiteBase handleYukonImageChange( int changeType, int id )
                }
             }
             break;
-      case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE:
+      case DBChangeMsg.CHANGE_TYPE_DELETE:
             for(int i=0;i<allYukonImages.size();i++)
             {
                if( ((com.cannontech.database.data.lite.LiteYukonImage)allYukonImages.get(i)).getImageID() == id )
@@ -1190,7 +1190,7 @@ private synchronized LiteBase handleCustomerContactChange( int changeType, int i
 
 	switch(changeType)
 	{
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD:
+		case DBChangeMsg.CHANGE_TYPE_ADD:
 		
 				if( id == DBChangeMsg.CHANGE_INVALID_ID )
 					break;
@@ -1212,7 +1212,7 @@ private synchronized LiteBase handleCustomerContactChange( int changeType, int i
 				}
 				break;
 
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 
 				//if( id == DBChangeMsg.CHANGE_INVALID_ID )
 					//break;
@@ -1237,7 +1237,7 @@ private synchronized LiteBase handleCustomerContactChange( int changeType, int i
 				
 				break;
 
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				//special case for this handler!!!!
 				if( id == DBChangeMsg.CHANGE_INVALID_ID )
 				{
@@ -1268,7 +1268,7 @@ private synchronized LiteBase handleCustomerContactChange( int changeType, int i
  *  Returns the LiteBase object that was added,deleted or updated, 
  *		else null is returned.
  */
-public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispatch.message.DBChangeMsg dbChangeMsg)
+public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 {
 	String objectType = dbChangeMsg.getObjectType();
 	String dbCategory = dbChangeMsg.getCategory();
@@ -1278,7 +1278,7 @@ public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispat
 	boolean alreadyAdded = false;
 	LiteBase retLBase = null;
 
-	if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_POINT_DB )
+	if( database == DBChangeMsg.CHANGE_POINT_DB )
 	{
 		allGraphTaggedPoints = null;
 		allPointsUnits = null;
@@ -1287,7 +1287,7 @@ public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispat
 		allPointLimits = null;
 		retLBase = handlePointChange( dbType, id );
 	}
-	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_PAO_DB )
+	else if( database == DBChangeMsg.CHANGE_PAO_DB )
 	{
 		retLBase = handleYukonPAOChange( dbType, id);
 		
@@ -1326,60 +1326,62 @@ public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispat
 		}
 
 	}
-	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_STATE_GROUP_DB )
+	else if( database == DBChangeMsg.CHANGE_STATE_GROUP_DB )
 	{
 		retLBase = handleStateGroupChange( dbType, id );		
 	}
-	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_ALARM_CATEGORY_DB )
+	else if( database == DBChangeMsg.CHANGE_ALARM_CATEGORY_DB )
 	{
 		retLBase = handleAlarmCategoryChange( dbType, id );
 	}
-   else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_STATE_IMAGE_DB )
+   else if( database == DBChangeMsg.CHANGE_STATE_IMAGE_DB )
    {
       retLBase = handleYukonImageChange( dbType, id );
    }
-	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_NOTIFICATION_GROUP_DB )
+	else if( database == DBChangeMsg.CHANGE_NOTIFICATION_GROUP_DB )
 	{
 		retLBase = handleNotificationGroupChange( dbType, id );
 	}
-	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_NOTIFICATION_RECIPIENT_DB )
+	else if( database == DBChangeMsg.CHANGE_NOTIFICATION_RECIPIENT_DB )
 	{
 		retLBase = handleContactNotificationChange( dbType, id );
 	}
-	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_CONTACT_DB )
+	else if( database == DBChangeMsg.CHANGE_CONTACT_DB )
 	{
 		//clear out the CICustomers as they may have changed
 		allCICustomers = null;
 
 		retLBase = handleCustomerContactChange( dbType, id );		
 	}
-	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_GRAPH_DB )
+	else if( database == DBChangeMsg.CHANGE_GRAPH_DB )
 	{
 		retLBase = handleGraphDefinitionChange( dbType, id );
 	}
-	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_HOLIDAY_SCHEDULE_DB )
+	else if( database == DBChangeMsg.CHANGE_HOLIDAY_SCHEDULE_DB )
 	{
 		retLBase = handleHolidayScheduleChange( dbType, id );
 	}
-	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_CUSTOMER_DB )
+	else if( database == DBChangeMsg.CHANGE_CUSTOMER_DB )
 	{
 		retLBase = handleCICustomerChange( dbType, id );
 	}	
-	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_YUKON_USER_DB ) 
+	else if( database == DBChangeMsg.CHANGE_YUKON_USER_DB ) 
 	{
-		// This seems heavy handed!
-		//allYukonUsers = null;
-		retLBase = handleYukonUserChange( dbType, id );
+		if( DBChangeMsg.CAT_YUKON_USER_GROUP.equalsIgnoreCase(dbCategory) )
+			retLBase = handleYukonGroupChange( dbType, id );
+		else
+			retLBase = handleYukonUserChange( dbType, id );
 		
+		// This seems heavy handed!
+		//allYukonGroups = null;
 		allYukonRoles = null;
-		allYukonGroups = null;
 		allYukonUserRoleProperties = null;
 		allYukonGroupRoleProperties = null;
 		allYukonUserGroups = null;
 		allYukonGroupUsers = null;
 		allUserEnergyCompanies = null;
 		allYukonUserLookupRoleIDs = null;
-	    allYukonUserLookupRolePropertyIDs = null;
+	   allYukonUserLookupRolePropertyIDs = null;
 	}
 	else if( database == DBChangeMsg.CHANGE_ENERGY_COMPANY_DB )
 	{
@@ -1413,7 +1415,7 @@ private synchronized LiteBase handleDeviceMeterGroupChange( int changeType, int 
 
 	switch(changeType)
 	{
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD:
+		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allDeviceMeterGroups.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteDeviceMeterNumber )allDeviceMeterGroups.get(i)).getDeviceID() == id )
@@ -1431,7 +1433,7 @@ private synchronized LiteBase handleDeviceMeterGroupChange( int changeType, int 
 					lBase = liteDMG;
 				}
 				break;
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allDeviceMeterGroups.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteDeviceMeterNumber )allDeviceMeterGroups.get(i)).getDeviceID() == id )
@@ -1442,7 +1444,7 @@ private synchronized LiteBase handleDeviceMeterGroupChange( int changeType, int 
 					}
 				}
 				break;
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allDeviceMeterGroups.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteDeviceMeterNumber)allDeviceMeterGroups.get(i)).getDeviceID() == id )
@@ -1474,7 +1476,7 @@ private synchronized LiteBase handleGraphDefinitionChange( int changeType, int i
 
 	switch(changeType)
 	{
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD:
+		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allGraphDefinitions.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteGraphDefinition)allGraphDefinitions.get(i)).getGraphDefinitionID() == id )
@@ -1492,7 +1494,7 @@ private synchronized LiteBase handleGraphDefinitionChange( int changeType, int i
 					lBase = lsg;
 				}
 				break;
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allGraphDefinitions.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteGraphDefinition)allGraphDefinitions.get(i)).getGraphDefinitionID() == id )
@@ -1503,7 +1505,7 @@ private synchronized LiteBase handleGraphDefinitionChange( int changeType, int i
 					}
 				}
 				break;
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allGraphDefinitions.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteGraphDefinition)allGraphDefinitions.get(i)).getGraphDefinitionID() == id )
@@ -1535,7 +1537,7 @@ private synchronized LiteBase handleHolidayScheduleChange( int changeType, int i
 
 	switch(changeType)
 	{
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD:
+		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allHolidaySchedules.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteHolidaySchedule)allHolidaySchedules.get(i)).getHolidayScheduleID() == id )
@@ -1553,7 +1555,7 @@ private synchronized LiteBase handleHolidayScheduleChange( int changeType, int i
 					lBase = lh;
 				}
 				break;
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allHolidaySchedules.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteHolidaySchedule)allHolidaySchedules.get(i)).getHolidayScheduleID() == id )
@@ -1564,7 +1566,7 @@ private synchronized LiteBase handleHolidayScheduleChange( int changeType, int i
 					}
 				}
 				break;
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allHolidaySchedules.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteHolidaySchedule)allHolidaySchedules.get(i)).getHolidayScheduleID() == id )
@@ -1596,7 +1598,7 @@ private synchronized LiteBase handleNotificationGroupChange( int changeType, int
 
 	switch(changeType)
 	{
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD:
+		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allNotificationGroups.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteNotificationGroup)allNotificationGroups.get(i)).getNotificationGroupID() == id )
@@ -1614,7 +1616,7 @@ private synchronized LiteBase handleNotificationGroupChange( int changeType, int
 					lBase = lg;
 				}
 				break;
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allNotificationGroups.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteNotificationGroup)allNotificationGroups.get(i)).getNotificationGroupID() == id )
@@ -1625,7 +1627,7 @@ private synchronized LiteBase handleNotificationGroupChange( int changeType, int
 					}
 				}
 				break;
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allNotificationGroups.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteNotificationGroup)allNotificationGroups.get(i)).getNotificationGroupID() == id )
@@ -1657,7 +1659,7 @@ private synchronized LiteBase handleContactNotificationChange( int changeType, i
 
 	switch(changeType)
 	{
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD:
+		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allContactNotifications.size();i++)
 				{
 					if( ((LiteContactNotification)allContactNotifications.get(i)).getContactID() == id )
@@ -1675,7 +1677,7 @@ private synchronized LiteBase handleContactNotificationChange( int changeType, i
 					lBase = lg;
 				}
 				break;
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allContactNotifications.size();i++)
 				{
 					if( ((LiteContactNotification)allContactNotifications.get(i)).getContactID() == id )
@@ -1686,7 +1688,7 @@ private synchronized LiteBase handleContactNotificationChange( int changeType, i
 					}
 				}
 				break;
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allContactNotifications.size();i++)
 				{
 					if( ((LiteContactNotification)allContactNotifications.get(i)).getContactID() == id )
@@ -1718,7 +1720,7 @@ private synchronized LiteBase handlePointChange( int changeType, int id )
 	
 	switch(changeType)
 	{
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD:
+		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allPoints.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LitePoint)allPoints.get(i)).getPointID() == id )
@@ -1736,7 +1738,7 @@ private synchronized LiteBase handlePointChange( int changeType, int id )
 					lBase = lp;
 				}
 				break;
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allPoints.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LitePoint)allPoints.get(i)).getPointID() == id )
@@ -1747,7 +1749,7 @@ private synchronized LiteBase handlePointChange( int changeType, int id )
 					}
 				}
 				break;
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allPoints.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LitePoint)allPoints.get(i)).getPointID() == id )
@@ -1779,7 +1781,7 @@ private synchronized LiteBase handleStateGroupChange( int changeType, int id )
 
 	switch(changeType)
 	{
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD:
+		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allStateGroups.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStateGroupID() == id )
@@ -1797,7 +1799,7 @@ private synchronized LiteBase handleStateGroupChange( int changeType, int id )
 					lBase = lsg;
 				}
 				break;
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allStateGroups.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStateGroupID() == id )
@@ -1808,7 +1810,7 @@ private synchronized LiteBase handleStateGroupChange( int changeType, int id )
 					}
 				}
 				break;
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allStateGroups.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStateGroupID() == id )
@@ -1843,7 +1845,7 @@ private synchronized LiteBase handleCICustomerChange( int changeType, int id )
 
 	switch(changeType)
 	{
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD:
+		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allCICustomers.size();i++)
 				{
 					if( ((LiteCICustomer)allCICustomers.get(i)).getCustomerID() == id )
@@ -1861,7 +1863,7 @@ private synchronized LiteBase handleCICustomerChange( int changeType, int id )
 					lBase = lcst;
 				}
 				break;
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allCICustomers.size();i++)
 				{
 					if( ((LiteCICustomer)allCICustomers.get(i)).getCustomerID() == id )
@@ -1872,7 +1874,7 @@ private synchronized LiteBase handleCICustomerChange( int changeType, int id )
 					}
 				}
 				break;
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allCICustomers.size();i++)
 				{
 					if( ((LiteCICustomer)allCICustomers.get(i)).getCustomerID() == id )
@@ -1884,6 +1886,68 @@ private synchronized LiteBase handleCICustomerChange( int changeType, int id )
 				break;
 		default:
 				releaseAllCICustomers();
+				break;
+	}
+
+	return lBase;
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (12/7/00 12:34:05 PM)
+ */
+private synchronized LiteBase handleYukonGroupChange( int changeType, int id )
+{
+	boolean alreadyAdded = false;
+	LiteBase lBase = null;
+
+	// if the storage is not already loaded, we must not care about it
+	if( allYukonGroups == null )
+		return lBase;
+
+	switch(changeType)
+	{
+		case DBChangeMsg.CHANGE_TYPE_ADD:
+				for(int i=0;i<allYukonGroups.size();i++)
+				{
+					if( ((LiteYukonGroup)allYukonGroups.get(i)).getGroupID() == id )
+					{
+						alreadyAdded = true;
+						lBase = (LiteBase)allYukonGroups.get(i);
+						break;
+					}
+				}
+				if( !alreadyAdded )
+				{
+					LiteYukonGroup lcst = new LiteYukonGroup(id);
+					lcst.retrieve(databaseAlias);
+					allYukonGroups.add(lcst);
+					lBase = lcst;
+				}
+				break;
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+				for(int i=0;i<allYukonGroups.size();i++)
+				{
+					if( ((LiteYukonGroup)allYukonGroups.get(i)).getGroupID() == id )
+					{
+						((LiteYukonGroup)allYukonGroups.get(i)).retrieve(databaseAlias);
+						lBase = (LiteBase)allYukonGroups.get(i);
+						break;
+					}
+				}
+				break;
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
+				for(int i=0;i<allYukonGroups.size();i++)
+				{
+					if( ((LiteYukonGroup)allYukonGroups.get(i)).getGroupID() == id )
+					{
+						lBase = (LiteBase)allYukonGroups.remove(i);
+						break;
+					}
+				}
+				break;
+		default:
+				releaseAllYukonGroups();
 				break;
 	}
 
@@ -1906,7 +1970,7 @@ private synchronized LiteBase handleYukonUserChange( int changeType, int id )
 
 	switch(changeType)
 	{
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD:
+		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allYukonUsers.size();i++)
 				{
 					if( ((LiteYukonUser)allYukonUsers.get(i)).getUserID() == id )
@@ -1924,7 +1988,7 @@ private synchronized LiteBase handleYukonUserChange( int changeType, int id )
 					lBase = lcst;
 				}
 				break;
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allYukonUsers.size();i++)
 				{
 					if( ((LiteYukonUser)allYukonUsers.get(i)).getUserID() == id )
@@ -1935,7 +1999,7 @@ private synchronized LiteBase handleYukonUserChange( int changeType, int id )
 					}
 				}
 				break;
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allYukonUsers.size();i++)
 				{
 					if( ((LiteYukonUser)allYukonUsers.get(i)).getUserID() == id )
@@ -1968,7 +2032,7 @@ private synchronized LiteBase handleYukonPAOChange( int changeType, int id )
 		
 	switch(changeType)
 	{
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD:
+		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allYukonPAObjects.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteYukonPAObject)allYukonPAObjects.get(i)).getYukonID() == id )
@@ -1986,7 +2050,7 @@ private synchronized LiteBase handleYukonPAOChange( int changeType, int id )
 					lBase = ld;
 				}
 				break;
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allYukonPAObjects.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteYukonPAObject)allYukonPAObjects.get(i)).getYukonID() == id )
@@ -1997,7 +2061,7 @@ private synchronized LiteBase handleYukonPAOChange( int changeType, int id )
 					}
 				}
 				break;
-		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allYukonPAObjects.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteYukonPAObject)allYukonPAObjects.get(i)).getYukonID() == id )
@@ -2154,7 +2218,13 @@ public synchronized void releaseAllPoints(){
 public synchronized void releaseAllYukonUsers(){
 	allYukonUsers = null;
 }
-
+/**
+ * Insert the method's description here.
+ * Creation date: (3/14/00 3:22:47 PM)
+ */
+public synchronized void releaseAllYukonGroups(){
+	allYukonGroups = null;
+}
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)
