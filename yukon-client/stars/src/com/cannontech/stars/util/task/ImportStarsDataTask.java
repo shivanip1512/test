@@ -476,6 +476,12 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			
 			status = STATUS_FINISHED;
 		}
+		catch (OutOfMemoryError me) {
+			// We must catch this error to make sure the mapping and log files are written
+			status = STATUS_ERROR;
+			errorMsg = "Operation caused out of memory error";
+			System.gc();
+		}
 		catch (Exception e) {
 			if (status == STATUS_CANCELED) {
 				errorMsg = "Operation is canceled by user";
