@@ -23,6 +23,7 @@ function dispStatusMsg(msgStr)
 						  {"user_lm_time.jsp", "Time Based", "/user/CILC/"},
 						  {"switch_commands.jsp", "Switch Command", "/user/CILC/"},
 						  {"user_trending.jsp", "Trending", "/user/CILC/"},
+  						  {"user_reporting.jsp", "Reporting", "/user/CILC/"},
   						  {"user_get_data_now.jsp", "Get Data Now", "/user/CILC/"},
 						  {"user_ee_profile.jsp", "Profile", "/user/CILC/"}
 						 };
@@ -110,6 +111,20 @@ function dispStatusMsg(msgStr)
   </cti:checkProperty>
   </cti:checkRole>
 
+  <cti:checkRole roleid="<%=ReportingRole.ROLEID%>">
+  <tr> 
+    <td height="30" valign="bottom">
+      <div align="left"><span class="NavHeader">Reporting</span><br>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr> 
+            <td width="10"><%= ((String[]) links.get("user_reporting.jsp"))[IMG] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("user_reporting.jsp"))[HTML] %></td>
+          </tr>
+        </table>
+	  </div>
+    </td>
+  </tr>
+  </cti:checkRole>
   <cti:checkMultiRole roleid="<%=Integer.toString(EnergyBuybackRole.ROLEID) + ',' + Integer.toString(DirectCurtailmentRole.ROLEID)+ ',' + Integer.toString(DirectLoadcontrolRole.ROLEID)%>">
   <tr>
     <td height="20">
