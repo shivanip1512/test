@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/portdecl.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2004/12/21 21:17:40 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2005/03/17 19:16:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,6 +67,7 @@ VOID RouterThread (PVOID);
 
 VOID PorterInterfaceThread (PVOID);
 VOID PorterGWThread (PVOID);
+VOID DNPUDPInboundThread (PVOID);
 
 /*  */
 VOID PortThread(void *);
