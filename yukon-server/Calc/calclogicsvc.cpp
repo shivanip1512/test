@@ -513,9 +513,9 @@ void CtiCalcLogicService::Run( )
 
 
             //  interrupt the calculation and i/o threads, and tell it to come back home
-            inputFunc.requestInterrupt( );
-            outputFunc.requestInterrupt( );
-            calcThreadFunc.requestInterrupt( );
+            inputFunc.requestInterrupt( 30000 );
+            outputFunc.requestInterrupt( 30000 );
+            calcThreadFunc.requestInterrupt( 30000 );
             inputFunc.releaseInterrupt( );
             outputFunc.releaseInterrupt( );
             calcThreadFunc.releaseInterrupt( );
@@ -569,34 +569,44 @@ void CtiCalcLogicService::_outputThread( void )
     BOOL interrupted = FALSE;
     CtiMultiMsg *toSend;
 
-    while( !interrupted )
+    try
     {
-        //  while there's nothing to send
-        do
+        while( !interrupted )
         {
+            //  while there's nothing to send
+            do
+            {
+                {
+                    RWMutexLock::LockGuard outboxGuard(calcThread->outboxMux);
+                    entries = calcThread->outboxEntries( );
+                }
+                if( _pSelf.serviceInterrupt( ) )
+                    interrupted = TRUE;
+                else if( !entries )
+                    _pSelf.sleep( 200 );
+            } while( !entries && !interrupted );
+
+            if( !interrupted )
             {
                 RWMutexLock::LockGuard outboxGuard(calcThread->outboxMux);
-                entries = calcThread->outboxEntries( );
-            }
-            if( _pSelf.serviceInterrupt( ) )
-                interrupted = TRUE;
-            else if( !entries )
-                _pSelf.sleep( 200 );
-        } while( !entries && !interrupted );
-
-        if( !interrupted )
-        {
-            RWMutexLock::LockGuard outboxGuard(calcThread->outboxMux);
-            for( ; calcThread->outboxEntries( ); )
-            {
-//                RWMutexLock::LockGuard coutGuard(coutMux);
-//                cout << "(_outputThread( ) sending message) ";
-                toSend = calcThread->getOutboxEntry( );
-                _conxion->WriteConnQue( toSend );
+                for( ; calcThread->outboxEntries( ); )
+                {
+                    toSend = calcThread->getOutboxEntry( );
+                    _conxion->WriteConnQue( toSend );
+                }
             }
         }
     }
+    catch(...)
+    {
+        Sleep(1000);            // Keep the kamakazi loop from happening
+        _dbChange = TRUE;       // Kick it so it restarts us in a failure mode
 
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
 }
 
 void CtiCalcLogicService::_inputThread( void )
@@ -611,53 +621,30 @@ void CtiCalcLogicService::_inputThread( void )
 
         while( !interrupted )
         {
-            try
+            //  while i'm not getting anything
+            while( NULL == (incomingMsg = _conxion->ReadConnQue( 200 )) && !interrupted )
             {
-                //  while i'm not getting anything
-                while( NULL == (incomingMsg = _conxion->ReadConnQue( 200 )) && !interrupted )
-                {
-                    if( _pSelf.serviceInterrupt( ) )
-                        interrupted = TRUE;
-                    else
-                        _pSelf.sleep( 200 );
-                }
-
-                //  dump out if we're being called
-                if( !interrupted )
-                {
-                    /*{
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime( ) << " - message received - " << endl;
-                    }*/
-
-                    //time_start = clock( );
-
-                    //  common variable, but this is the only place that writes to it, so i think it's okay.
-                    parseMessage( incomingMsg, calcThread );
-                    //_dbChange = TRUE;
-
-                    //time_finish = clock( );
-
-                    //{
-                    //    RWMutexLock::LockGuard coutGuard(coutMux);
-                    //    cout << endl;
-                    //    cout << "took " << (time_finish - time_start) << " ms to post " << numPDataVals << " messages" << endl;
-                    //}
-
-                    delete incomingMsg;   //  Make sure to delete this - its on the heap
-                }
+                if( _pSelf.serviceInterrupt( ) )
+                    interrupted = TRUE;
+                else
+                    _pSelf.sleep( 200 );
             }
-            catch(...)
+
+            //  dump out if we're being called
+            if( !interrupted )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " - EXCEPTION in: " << __FILE__ << " at:" << __LINE__ << endl;
-                }
+                //  common variable, but this is the only place that writes to it, so i think it's okay.
+                parseMessage( incomingMsg, calcThread );
+
+                delete incomingMsg;   //  Make sure to delete this - its on the heap
             }
         }
     }
     catch(...)
     {
+        Sleep(1000); // Keep the kamakazi loop from happening
+        _dbChange = TRUE;       // Kick it so it restarts us in a failure mode
+
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
@@ -680,7 +667,6 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
             // only reload on if a database change was made to a point
             if( ((CtiDBChangeMsg*)message)->getDatabase() == ChangePointDb)
             {
-                //((CtiDBChangeMsg*)message)->getId()
                 if( ((CtiDBChangeMsg*)message)->getTypeOfChange() != ChangeTypeAdd)
                 {
 
