@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/05/19 16:33:49 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/06/27 21:07:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,37 +59,61 @@ bool CtiDeviceMCT310::initCommandStore( )
     //  300 series common commands
     cs._cmd     = CtiProtocolEmetcon::GetConfig_Time;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_TimeAddr,
+    cs._funcLen = make_pair( (int)MCT3XX_TimePos,
                              (int)MCT3XX_TimeLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_DemandInterval;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_DemandIntervalAddr,
+    cs._funcLen = make_pair( (int)MCT3XX_DemandIntervalPos,
                              (int)MCT3XX_DemandIntervalLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_LoadProfileInterval;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_LPIntervalAddr,
+    cs._funcLen = make_pair( (int)MCT3XX_LPIntervalPos,
                              (int)MCT3XX_LPIntervalLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_Multiplier;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_Mult1Addr,
+    cs._funcLen = make_pair( (int)MCT3XX_Mult1Pos,
                              (int)MCT3XX_MultLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_Options;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_OptionAddr,
+    cs._funcLen = make_pair( (int)MCT3XX_OptionPos,
                              (int)MCT3XX_OptionLen );
+    _commandStore.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::GetConfig_GroupAddress;
+    cs._io      = IO_READ;
+    cs._funcLen = make_pair( (int)MCT3XX_GroupAddrPos,
+                             (int)MCT3XX_GroupAddrLen );
+    _commandStore.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddr_GoldSilver;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair( (int)MCT3XX_GroupAddrGoldSilverPos,
+                             (int)MCT3XX_GroupAddrGoldSilverLen );
+    _commandStore.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddr_Bronze;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair( (int)MCT3XX_GroupAddrBronzePos,
+                             (int)MCT3XX_GroupAddrBronzeLen );
+    _commandStore.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddr_Lead;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair( (int)MCT3XX_GroupAddrLeadPos,
+                             (int)MCT3XX_GroupAddrLeadLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_DemandInterval;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT3XX_DemandIntervalAddr,
+    cs._funcLen = make_pair( (int)MCT3XX_DemandIntervalPos,
                              (int)MCT3XX_DemandIntervalLen );
     _commandStore.insert( cs );
 
@@ -100,55 +124,55 @@ bool CtiDeviceMCT310::initCommandStore( )
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_Multiplier;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT3XX_Mult1Addr,
+    cs._funcLen = make_pair( (int)MCT3XX_Mult1Pos,
                              (int)MCT3XX_MultLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_TSync;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT_TSyncAddr,
+    cs._funcLen = make_pair( (int)MCT_TSyncPos,
                              (int)MCT_TSyncLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::Scan_Accum;
     cs._io      = IO_FCT_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_FuncReadMReadAddr,
+    cs._funcLen = make_pair( (int)MCT3XX_FuncReadMReadPos,
                              (int)MCT3XX_FuncReadMReadLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetValue_Default;
     cs._io      = IO_FCT_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_FuncReadMReadAddr,
+    cs._funcLen = make_pair( (int)MCT3XX_FuncReadMReadPos,
                              (int)MCT3XX_FuncReadMReadLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetValue_Frozen;
     cs._io      = IO_FCT_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_FuncReadFrozenAddr,
+    cs._funcLen = make_pair( (int)MCT3XX_FuncReadFrozenPos,
                              (int)MCT3XX_FuncReadFrozenLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetStatus_Internal;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_GenStatAddr,
+    cs._funcLen = make_pair( (int)MCT3XX_GenStatPos,
                              (int)MCT3XX_GenStatLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutStatus_Reset;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT3XX_ResetAddr,
+    cs._funcLen = make_pair( (int)MCT3XX_ResetPos,
                              (int)MCT3XX_ResetLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetValue_PFCount;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_PFCountAddr,
+    cs._funcLen = make_pair( (int)MCT3XX_PFCountPos,
                              (int)MCT3XX_PFCountLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutValue_ResetPFCount;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT3XX_PFCountAddr,
+    cs._funcLen = make_pair( (int)MCT3XX_PFCountPos,
                              (int)MCT3XX_PFCountLen);
     _commandStore.insert( cs );
 
@@ -156,19 +180,19 @@ bool CtiDeviceMCT310::initCommandStore( )
     //  310 cannot do a FR0x92 (MCT31X_FuncReadDemand) and can only collect 1 demand reading!
     cs._cmd      = CtiProtocolEmetcon::Scan_Integrity;
     cs._io       = IO_READ;
-    cs._funcLen  = make_pair( (int)MCT310_DemandAddr,
+    cs._funcLen  = make_pair( (int)MCT310_DemandPos,
                               (int)MCT310_DemandLen );
     _commandStore.insert( cs );
 
     cs._cmd      = CtiProtocolEmetcon::GetValue_Demand;
     cs._io       = IO_READ;
-    cs._funcLen  = make_pair( (int)MCT310_DemandAddr,
+    cs._funcLen  = make_pair( (int)MCT310_DemandPos,
                               (int)MCT310_DemandLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutValue_KYZ;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT3XX_PutMRead1Addr,
+    cs._funcLen = make_pair( (int)MCT3XX_PutMRead1Pos,
                              (int)MCT3XX_PutMReadLen );
     _commandStore.insert( cs );
 
@@ -180,13 +204,13 @@ bool CtiDeviceMCT310::initCommandStore( )
 
     cs._cmd     = CtiProtocolEmetcon::GetStatus_Disconnect;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT310_StatusAddr,
+    cs._funcLen = make_pair( (int)MCT310_StatusPos,
                              (int)MCT310_StatusLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetStatus_LoadProfile;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_LPStatusAddr,
+    cs._funcLen = make_pair( (int)MCT3XX_LPStatusPos,
                              (int)MCT3XX_LPStatusLen );
     _commandStore.insert( cs );
 
