@@ -3,7 +3,6 @@ package com.cannontech.dbconverter.converter;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -13,49 +12,23 @@ import com.cannontech.database.data.device.CCU711;
 import com.cannontech.database.db.device.DeviceIDLCRemote;
 import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.data.route.CCURoute;
-import com.cannontech.database.data.device.lm.TimeRefreshGear;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.database.data.point.AccumulatorPoint;
-import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.port.LocalDialupPort;
 import com.cannontech.database.data.port.LocalDirectPort;
 import com.cannontech.database.data.port.LocalSharedPort;
 import com.cannontech.database.data.port.PortFactory;
-import com.cannontech.database.data.route.RouteBase;
-import com.cannontech.database.data.route.RouteFactory;
-import com.cannontech.database.db.pao.PAOExclusion;
 import com.cannontech.database.db.point.PointAlarming;
-import com.cannontech.database.db.point.PointLimit;
-import com.cannontech.database.db.port.CommPort;
-import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.dbtools.updater.MessageFrameAdaptor;
 import com.cannontech.tools.gui.*;
-
-import com.cannontech.database.data.capcontrol.CapBankController6510;
-import com.cannontech.database.data.device.CCUBase;
-import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.device.IEDMeter;
-import com.cannontech.database.data.device.LCUBase;
-import com.cannontech.database.data.device.MCTBase;
-import com.cannontech.database.data.device.PagingTapTerminal;
-import com.cannontech.database.data.device.RTUBase;
-import com.cannontech.database.data.device.DNPBase;
-import com.cannontech.database.data.device.RepeaterBase;
-import com.cannontech.database.data.device.TCUBase;
-import com.cannontech.database.data.device.Series5Base;
-import com.cannontech.database.data.device.TwoWayDevice;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceScanRate;
-import com.cannontech.database.db.device.DeviceWindow;
 
 /**
  * A skeleton app that is created from the following files:
