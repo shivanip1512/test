@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsEnableService.java,v 1.80 2004/06/11 18:25:57 zyao Exp $
+ * $Id: StarsEnableService.java,v 1.81 2004/06/15 15:45:54 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Enable programs of a customer account
  * 
- * @version $Revision: 1.80 $ $Date: 2004/06/11 18:25:57 $
+ * @version $Revision: 1.81 $ $Date: 2004/06/15 15:45:54 $
 **/
 public class StarsEnableService implements java.io.Serializable {
 

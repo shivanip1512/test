@@ -10,7 +10,8 @@
 	String periodStr = request.getParameter("Period");
 	if (periodStr != null) period = StarsCtrlHistPeriod.valueOf( periodStr );
 	
-	StarsLMControlHistory ctrlHist = ServletUtils.getControlHistory( program.getStarsLMControlHistory(), period, tz );
+	StarsLMControlHistory allCtrlHist = liteEC.getStarsLMControlHistory( program.getGroupID() );
+	StarsLMControlHistory ctrlHist = ServletUtils.getControlHistory( allCtrlHist, period, program.getDateEnrolled(), tz );
 	
 	StarsApplianceCategory category = null;
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {

@@ -18,7 +18,6 @@ public class LiteLMProgram extends LiteBase {
 	private int webSettingsID = CtiUtilities.NONE_ID;
 	private int chanceOfControlID = CtiUtilities.NONE_ID;
 	private int programOrder = 0;
-	private String programCategory = null;
 	private int[] groupIDs = null;
 	
 	public LiteLMProgram() {
@@ -69,22 +68,6 @@ public class LiteLMProgram extends LiteBase {
 	 */
 	public void setWebSettingsID(int webSettingsID) {
 		this.webSettingsID = webSettingsID;
-	}
-
-	/**
-	 * Returns the programCategory.
-	 * @return String
-	 */
-	public String getProgramCategory() {
-		return programCategory;
-	}
-
-	/**
-	 * Sets the programCategory.
-	 * @param programCategory The programCategory to set
-	 */
-	public void setProgramCategory(String programCategory) {
-		this.programCategory = programCategory;
 	}
 
 	/**

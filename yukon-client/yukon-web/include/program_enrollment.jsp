@@ -161,6 +161,7 @@ function confirmCancel() {
 			categoryName = ServletUtils.getProgramDisplayNames(category.getStarsEnrLMProgram(0))[0];
 			categoryDesc = category.getStarsEnrLMProgram(0).getStarsWebConfig().getDescription();
 		}
+		categoryDesc = ServletUtils.getBriefText(categoryDesc, 150);
 		
 		String checkBoxDisabled = "";
 		String radioBtnDisabled = "";
@@ -209,12 +210,12 @@ function confirmCancel() {
 %>
 <%
 			for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
+				/* Each row is a program in this category */
 				StarsEnrLMProgram prog = category.getStarsEnrLMProgram(j);
 				String checked = "";
 				if (program != null && prog.getProgramID() == program.getProgramID())
 					checked = "checked";
 				String[] progIcons = ServletUtils.getImageNames(prog.getStarsWebConfig().getLogoLocation());
-				/* Each row is a program in this category */
 %>
                                   <tr> 
                                     <td colspan="4" background="<%= request.getContextPath() %>/WebConfig/yukon/Icons/dot.gif" height="8"></td>
@@ -247,7 +248,7 @@ function confirmCancel() {
                                           </td>
                                         </tr>
                                         <tr> 
-                                          <td colspan="2"><%= prog.getStarsWebConfig().getDescription() %></td>
+                                          <td colspan="2"><%= ServletUtils.getBriefText(prog.getStarsWebConfig().getDescription(), 100) %></td>
                                         </tr>
                                       </table>
                                     </td>

@@ -10,6 +10,7 @@ import java.util.TimeZone;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.stars.xml.serialize.ControlHistory;
+import com.cannontech.stars.xml.serialize.ControlSummary;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsCustListEntry;
@@ -178,19 +179,55 @@ public class ServletUtils {
 		return dateCal.getTime();
 	}
     
-	public static StarsLMControlHistory getControlHistory(StarsLMControlHistory ctrlHist, StarsCtrlHistPeriod period, TimeZone tz) {
+	public static StarsLMControlHistory getControlHistory(StarsLMControlHistory ctrlHist,
+		StarsCtrlHistPeriod period, Date dateEnrolled, TimeZone tz)
+	{
 		Date date = LMControlHistoryUtil.getPeriodStartTime( period, tz );
+		if (dateEnrolled != null && dateEnrolled.after( date ))
+			date = dateEnrolled;
     	
-		StarsLMControlHistory ctrlHistToday = new StarsLMControlHistory();
-		ctrlHistToday.setBeingControlled( ctrlHist.getBeingControlled() );
+		StarsLMControlHistory ctrlHistInPrd = new StarsLMControlHistory();
+		ctrlHistInPrd.setBeingControlled( ctrlHist.getBeingControlled() );
         
 		for (int i = ctrlHist.getControlHistoryCount() - 1; i >= 0; i--) {
 			ControlHistory hist = ctrlHist.getControlHistory(i);
 			if ( hist.getStartDateTime().before(date) ) break;
-			ctrlHistToday.addControlHistory( hist );
+			ctrlHistInPrd.addControlHistory( hist );
 		}
         
-		return ctrlHistToday;
+		return ctrlHistInPrd;
+	}
+	
+	public static ControlSummary getControlSummary(StarsLMControlHistory starsCtrlHist, TimeZone tz) {
+		ControlSummary summary = new ControlSummary();
+		int dailyTime = 0;
+		int monthlyTime = 0;
+		int seasonalTime = 0;
+		int annualTime = 0;
+		
+		Date pastDay = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTDAY, tz );
+		Date pastMonth = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTMONTH, tz );
+		Date pastYear = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTYEAR, tz );
+		
+		for (int i = 0; i < starsCtrlHist.getControlHistoryCount(); i++) {
+			ControlHistory ctrlHist = starsCtrlHist.getControlHistory(i);
+			seasonalTime += ctrlHist.getControlDuration();
+			if (ctrlHist.getStartDateTime().after( pastYear )) {
+				annualTime += ctrlHist.getControlDuration();
+				if (ctrlHist.getStartDateTime().after( pastMonth )) {
+					monthlyTime += ctrlHist.getControlDuration();
+					if (ctrlHist.getStartDateTime().after( pastDay ))
+						dailyTime += ctrlHist.getControlDuration();
+				}
+			}
+		}
+		
+		summary.setDailyTime( dailyTime );
+		summary.setMonthlyTime( monthlyTime );
+		summary.setSeasonalTime( seasonalTime );
+		summary.setAnnualTime( annualTime );
+		
+		return summary;
 	}
     
 	/**
@@ -477,6 +514,15 @@ public class ServletUtils {
 	public static boolean isGatewayTimeout(Date lastUpdatedTime) {
 		if (lastUpdatedTime == null) return true;
 		return (new Date().getTime() - lastUpdatedTime.getTime() > GATEWAY_TIMEOUT_HOURS * 3600 * 1000);
+	}
+	
+	public static String getBriefText(String fullText, int limit) {
+		if (limit <= 0 || fullText.length() <= limit)
+			return fullText;
+		
+		int len = fullText.lastIndexOf( ' ', limit );
+		if (len < 0) len = limit;
+		return fullText.substring( 0, len ) + " ...";
 	}
 
 }

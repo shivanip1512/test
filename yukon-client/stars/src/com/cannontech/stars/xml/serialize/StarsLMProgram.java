@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMProgram.java,v 1.80 2004/06/11 18:25:53 zyao Exp $
+ * $Id: StarsLMProgram.java,v 1.81 2004/06/15 15:45:49 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
+import java.util.Date;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -23,7 +24,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.80 $ $Date: 2004/06/11 18:25:53 $
+ * @version $Revision: 1.81 $ $Date: 2004/06/15 15:45:49 $
 **/
 public class StarsLMProgram implements java.io.Serializable {
 
@@ -56,6 +57,8 @@ public class StarsLMProgram implements java.io.Serializable {
     private java.lang.String _programName;
 
     private java.lang.String _status;
+
+    private java.util.Date _dateEnrolled;
 
     private StarsLMControlHistory _starsLMControlHistory;
 
@@ -96,6 +99,16 @@ public class StarsLMProgram implements java.io.Serializable {
     {
         return this._applianceCategoryID;
     } //-- int getApplianceCategoryID() 
+
+    /**
+     * Returns the value of field 'dateEnrolled'.
+     * 
+     * @return the value of field 'dateEnrolled'.
+    **/
+    public java.util.Date getDateEnrolled()
+    {
+        return this._dateEnrolled;
+    } //-- java.util.Date getDateEnrolled() 
 
     /**
      * Returns the value of field 'groupID'.
@@ -216,6 +229,16 @@ public class StarsLMProgram implements java.io.Serializable {
         this._applianceCategoryID = applianceCategoryID;
         this._has_applianceCategoryID = true;
     } //-- void setApplianceCategoryID(int) 
+
+    /**
+     * Sets the value of field 'dateEnrolled'.
+     * 
+     * @param dateEnrolled the value of field 'dateEnrolled'.
+    **/
+    public void setDateEnrolled(java.util.Date dateEnrolled)
+    {
+        this._dateEnrolled = dateEnrolled;
+    } //-- void setDateEnrolled(java.util.Date) 
 
     /**
      * Sets the value of field 'groupID'.

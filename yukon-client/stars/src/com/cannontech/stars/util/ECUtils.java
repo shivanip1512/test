@@ -12,10 +12,12 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.database.data.lite.stars.LiteLMProgram;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.xml.serialize.StarsWebConfig;
 import com.cannontech.stars.xml.serialize.types.StarsLoginStatus;
 import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
 import com.cannontech.stars.xml.serialize.types.StarsThermoFanSettings;
@@ -273,6 +275,19 @@ public class ECUtils {
 	
 	public static boolean isDefaultEnergyCompany(LiteStarsEnergyCompany company) {
 		return company.getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID;
+	}
+	
+	public static String getPublishedProgramName(LiteLMProgram liteProg, LiteStarsEnergyCompany energyCompany) {
+		String progName = liteProg.getProgramName();
+		
+		StarsWebConfig config = energyCompany.getStarsWebConfig( liteProg.getWebSettingsID() );
+		if (config != null) {
+			String[] dispNames = ServerUtils.splitString( config.getAlternateDisplayName(), "," );
+			if (dispNames.length > 0 && dispNames[0].length() > 0)
+				progName = dispNames[0];
+		}
+		
+		return progName;
 	}
 
 }

@@ -24,6 +24,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -219,7 +220,9 @@ public class SendOptOutNotificationAction implements ActionBase {
 				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
 				if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getLmProgramID() > 0) {
 					LiteStarsLMProgram liteProg = ProgramSignUpAction.getLMProgram( liteAcctInfo, liteApp.getLmProgramID() );
-					text.append("    Program: ").append(liteProg.getLmProgram().getProgramName());
+					
+					String progName = ECUtils.getPublishedProgramName( liteProg.getLmProgram(), energyCompany );
+					text.append("    Program: ").append( progName );
 					
 					String groupName = "(none)";
 					if (liteApp.getAddressingGroupID() > 0)

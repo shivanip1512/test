@@ -14,9 +14,10 @@ import com.cannontech.database.data.lite.stars.LiteLMProgram;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
-import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
+import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
-import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.tools.email.EmailMessage;
 
@@ -29,17 +30,6 @@ import com.cannontech.tools.email.EmailMessage;
  * Window>Preferences>Java>Code Generation.
  */
 public class SendControlOddsTask implements Runnable {
-	
-	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-	
-	private static final String subject = "Today's Odds For Control";
-	private static final String header =
-			"Program Enrollment              Odds for Control" + LINE_SEPARATOR +
-			"================================================================" + LINE_SEPARATOR;
-	private static final String blanks = "                                ";
-	private static final String footer = "To unsubscribe from the notification list, " +
-			"please go to http://www.wisewatts.com and login with your username and password. " +
-			"On the first page (or the \"General\" link), uncheck the notification box and click \"Submit\".";
 	
 	private int energyCompanyID = 0;
 	
@@ -54,6 +44,19 @@ public class SendControlOddsTask implements Runnable {
 		CTILogger.info( "*** Start SendControlOdds task ***" );
 		
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+		
+		String LINE_SEPARATOR = System.getProperty("line.separator");
+		String blanks = "                                ";
+		String ctrlOddsText = energyCompany.getEnergyCompanySetting( ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL );
+		
+		String subject = "Today's " + ServletUtils.capitalize2( ctrlOddsText );
+		
+		String header = "Program Enrollment              " + ServletUtils.capitalize2( ctrlOddsText ) + LINE_SEPARATOR
+					  + "================================================================" + LINE_SEPARATOR;
+		
+		String footer = "To unsubscribe from the notification list, please go to "
+					  + "http://www.wisewatts.com and login with your username and password. "
+					  + "On the first page (or the \"General\" link), uncheck the notification box and click \"Submit\".";
 		
 		String from = null;
 		if (energyCompany.getPrimaryContactID() > 0) {
@@ -121,13 +124,7 @@ public class SendControlOddsTask implements Runnable {
 					StringBuffer text = new StringBuffer( header );
 					for (int j = 0; j < activeProgs.size(); j++) {
 						LiteStarsLMProgram program = (LiteStarsLMProgram) activeProgs.get(j);
-						String progName = program.getLmProgram().getProgramName();
-						
-						// Temporarily use the "URL" field in YukonWebConfiguration table for program alias
-						LiteWebConfiguration liteConfig = SOAPServer.getWebConfiguration( program.getLmProgram().getWebSettingsID() );
-						String progAlias = ServerUtils.forceNotNone( liteConfig.getUrl() );
-						if (progAlias.length() > 0) progName = progAlias;
-						
+						String progName = ECUtils.getPublishedProgramName( program.getLmProgram(), energyCompany );
 						String ctrlOdds = YukonListFuncs.getYukonListEntry( program.getLmProgram().getChanceOfControlID() ).getEntryText();
 						
 						text.append( progName );

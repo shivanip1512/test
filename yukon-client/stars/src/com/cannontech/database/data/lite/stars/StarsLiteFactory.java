@@ -576,7 +576,6 @@ public class StarsLiteFactory {
 		liteProg.setWebSettingsID( pubProg.getWebSettingsID().intValue() );
 		liteProg.setChanceOfControlID( pubProg.getChanceOfControlID().intValue() );
 		liteProg.setProgramOrder( pubProg.getProgramOrder().intValue() );
-		liteProg.setProgramCategory( "LMPrograms" );
 		
 		com.cannontech.database.data.lite.LiteYukonPAObject progPao =
 				com.cannontech.database.cache.functions.PAOFuncs.getLiteYukonPAO( pubProg.getLMProgramID().intValue() );
@@ -1271,7 +1270,7 @@ public class StarsLiteFactory {
 		
 		for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
 			LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
-			starsProgs.addStarsLMProgram( createStarsLMProgram(liteProg, energyCompany) );
+			starsProgs.addStarsLMProgram( createStarsLMProgram(liteProg, liteAcctInfo, energyCompany) );
 		}
 		
 		starsProgs.setStarsLMProgramHistory( createStarsLMProgramHistory(liteAcctInfo, energyCompany) );
@@ -1746,11 +1745,13 @@ public class StarsLiteFactory {
 		return starsCtrlHist;
 	}
 	
-	public static StarsLMProgram createStarsLMProgram(LiteStarsLMProgram liteProg, LiteStarsEnergyCompany energyCompany) {
+	public static StarsLMProgram createStarsLMProgram(LiteStarsLMProgram liteProg,
+		LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
+	{
 		StarsLMProgram starsProg = new StarsLMProgram();
 		starsProg.setProgramID( liteProg.getLmProgram().getProgramID() );
 		starsProg.setGroupID( liteProg.getGroupID() );
-		starsProg.setProgramName( ServerUtils.forceNotNull(liteProg.getLmProgram().getProgramName()) );
+		starsProg.setProgramName( ECUtils.getPublishedProgramName(liteProg.getLmProgram(), energyCompany) );
 		
 		ArrayList appCats = energyCompany.getAllApplianceCategories();
 		for (int i = 0; i < appCats.size(); i++) {
@@ -1761,22 +1762,21 @@ public class StarsLiteFactory {
 			}
 		}
 		
-		// AlternativeDisplayName field: (program alias),(short name used in enrollment page)
-		StarsWebConfig starsConfig = energyCompany.getStarsWebConfig( liteProg.getLmProgram().getWebSettingsID() );
-		String[] dispNames = ServerUtils.splitString( starsConfig.getAlternateDisplayName(), "," );
-		if (dispNames.length > 0 && dispNames[0].length() > 0)
-			starsProg.setProgramName( dispNames[0] );
-		
-		LiteStarsLMControlHistory liteCtrlHist = energyCompany.getLMControlHistory( liteProg.getGroupID() );
-		if (liteCtrlHist != null)
-			starsProg.setStarsLMControlHistory( energyCompany.getStarsLMControlHistory(liteCtrlHist) );
-		else
-			starsProg.setStarsLMControlHistory( new StarsLMControlHistory() );
-		
 		if (liteProg.isInService())
 			starsProg.setStatus( ServletUtils.IN_SERVICE );
 		else
 			starsProg.setStatus( ServletUtils.OUT_OF_SERVICE );
+		
+		for (int i = liteAcctInfo.getProgramHistory().size() - 1; i >= 0; i--) {
+			LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) liteAcctInfo.getProgramHistory().get(i);
+			if (liteEvent.getProgramID() == liteProg.getLmProgram().getProgramID()) {
+				YukonListEntry entry = YukonListFuncs.getYukonListEntry( liteEvent.getEventTypeID() );
+				if (entry != null && entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP) {
+					starsProg.setDateEnrolled( new Date(liteEvent.getEventDateTime()) );
+					break;
+				}
+			}
+		}
 		
 		return starsProg;
 	}

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMProgramDescriptor.java,v 1.80 2004/06/11 18:25:56 zyao Exp $
+ * $Id: StarsLMProgramDescriptor.java,v 1.81 2004/06/15 15:45:52 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.80 $ $Date: 2004/06/11 18:25:56 $
+ * @version $Revision: 1.81 $ $Date: 2004/06/15 15:45:52 $
 **/
 public class StarsLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -262,6 +262,39 @@ public class StarsLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClas
             sv.setWhiteSpace("preserve");
             fieldValidator.setValidator(sv);
         }
+        desc.setValidator(fieldValidator);
+        
+        //-- _dateEnrolled
+        desc = new XMLFieldDescriptorImpl(java.util.Date.class, "_dateEnrolled", "DateEnrolled", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsLMProgram target = (StarsLMProgram) object;
+                return target.getDateEnrolled();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsLMProgram target = (StarsLMProgram) object;
+                    target.setDateEnrolled( (java.util.Date) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new java.util.Date();
+            }
+        } );
+        desc.setHandler( new DateFieldHandler(handler));
+        desc.setImmutable(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _dateEnrolled
+        fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
         //-- _starsLMControlHistory

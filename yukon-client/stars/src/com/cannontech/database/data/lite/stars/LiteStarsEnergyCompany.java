@@ -45,7 +45,6 @@ import com.cannontech.roles.operator.OddsForControlRole;
 import com.cannontech.roles.operator.WorkOrderRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ECUtils;
-import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.SwitchCommandQueue;
@@ -55,8 +54,6 @@ import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
-import com.cannontech.stars.xml.serialize.ControlHistory;
-import com.cannontech.stars.xml.serialize.ControlSummary;
 import com.cannontech.stars.xml.serialize.StarsCallReport;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
@@ -70,7 +67,6 @@ import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
-import com.cannontech.stars.xml.serialize.StarsLMProgram;
 import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsThermostatProgram;
@@ -176,6 +172,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	private int nextCallNo = 0;
 	private int nextOrderNo = 0;
+	private boolean initiated = false;
 	private boolean inventoryLoaded = false;
 	private boolean workOrdersLoaded = false;
 	private boolean hierarchyLoaded = false;
@@ -413,7 +410,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	
+	public synchronized boolean isInitiated() {
+		return initiated;
+	}
+	
 	public synchronized void init() {
+		if (initiated) return;
+		
 		getAllSelectionLists();
 		
 		if (!ECUtils.isDefaultEnergyCompany( this )) {
@@ -428,14 +431,18 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				new Thread( loadInvTask ).start();
 			}
 		}
+		
+		initiated = true;
 	}
 	
 	public void clear() {
-		// If load inventory task is present, cancel it first
+		// If inventory loading task is present, cancel it first
 		if (loadInvTask != null) {
 			loadInvTask.cancel();
+			loadInvTask = null;
 			
-			while (true) {
+			// Wait up to 3 seconds for it to stop
+			for (int i = 0; i < 30; i++) {
 				if (loadInvTask.getStatus() == LoadInventoryTask.STATUS_FINISHED ||
 					loadInvTask.getStatus() == LoadInventoryTask.STATUS_CANCELED ||
 					loadInvTask.getStatus() == LoadInventoryTask.STATUS_ERROR)
@@ -446,7 +453,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				}
 				catch (InterruptedException e) {}
 			}
-		} 
+		}
 		
 		custAccountInfos = null;
 		addresses = null;
@@ -3036,15 +3043,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			if (!activeAccounts.contains( starsAcctInfo ))
 				activeAccounts.add( starsAcctInfo );
 		}
-		
-		// Also register all the control groups
-		for (int i = 0; i < starsAcctInfo.getStarsLMPrograms().getStarsLMProgramCount(); i++) {
-			StarsLMProgram starsProg = starsAcctInfo.getStarsLMPrograms().getStarsLMProgram(i);
-			if (starsProg.getGroupID() > 0) {
-				LiteStarsLMControlHistory liteCtrlHist = getLMControlHistory( starsProg.getGroupID() );
-				starsProg.setStarsLMControlHistory( getStarsLMControlHistory(liteCtrlHist) );
-			}
-		}
 	}
 	
 	public void unregisterActiveAccount(StarsCustAccountInformation starsAcctInfo) {
@@ -3064,47 +3062,20 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return starsLMCtrlHists;
 	}
 	
-	private void setControlSummary(StarsLMControlHistory starsCtrlHist) {
-		ControlSummary summary = new ControlSummary();
-		int dailyTime = 0;
-		int monthlyTime = 0;
-		int seasonalTime = 0;
-		int annualTime = 0;
-		
-		Date pastDay = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTDAY, getDefaultTimeZone() );
-		Date pastMonth = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTMONTH, getDefaultTimeZone() );
-		Date pastYear = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTYEAR, getDefaultTimeZone() );
-		
-		for (int i = 0; i < starsCtrlHist.getControlHistoryCount(); i++) {
-			ControlHistory ctrlHist = starsCtrlHist.getControlHistory(i);
-			seasonalTime += ctrlHist.getControlDuration();
-			if (ctrlHist.getStartDateTime().after( pastYear )) {
-				annualTime += ctrlHist.getControlDuration();
-				if (ctrlHist.getStartDateTime().after( pastMonth )) {
-					monthlyTime += ctrlHist.getControlDuration();
-					if (ctrlHist.getStartDateTime().after( pastDay ))
-						dailyTime += ctrlHist.getControlDuration();
-				}
-			}
-		}
-		
-		summary.setDailyTime( dailyTime );
-		summary.setMonthlyTime( monthlyTime );
-		summary.setSeasonalTime( seasonalTime );
-		summary.setAnnualTime( annualTime );
-		starsCtrlHist.setControlSummary( summary );
-	}
-	
-	public StarsLMControlHistory getStarsLMControlHistory(LiteStarsLMControlHistory liteCtrlHist) {
+	public StarsLMControlHistory getStarsLMControlHistory(int groupID) {
 		Hashtable starsLMCtrlHists = getStarsLMCtrlHists();
 		synchronized (starsLMCtrlHists) {
-			Integer groupID = new Integer(liteCtrlHist.getGroupID());
-			StarsLMControlHistory starsCtrlHist = (StarsLMControlHistory) starsLMCtrlHists.get( groupID );
+			StarsLMControlHistory starsCtrlHist = (StarsLMControlHistory) starsLMCtrlHists.get( new Integer(groupID) );
+			
 			if (starsCtrlHist == null) {
-				starsCtrlHist = StarsLiteFactory.createStarsLMControlHistory(
-						liteCtrlHist, StarsCtrlHistPeriod.ALL, false );
-				setControlSummary( starsCtrlHist );
-				starsLMCtrlHists.put( groupID, starsCtrlHist );
+				LiteStarsLMControlHistory liteCtrlHist = getLMControlHistory( groupID );
+				if (liteCtrlHist != null) {
+					starsCtrlHist = StarsLiteFactory.createStarsLMControlHistory(
+							liteCtrlHist, StarsCtrlHistPeriod.ALL, false );
+					starsLMCtrlHists.put( new Integer(groupID), starsCtrlHist );
+				}
+				else
+					starsCtrlHist = new StarsLMControlHistory();
 			}
 			
 			return starsCtrlHist;
@@ -3127,12 +3098,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		
 		Hashtable starsLMCtrlHists = getStarsLMCtrlHists();
 		synchronized (starsLMCtrlHists) {
-			Integer groupID = new Integer(liteCtrlHist.getGroupID());
-			StarsLMControlHistory starsCtrlHist = (StarsLMControlHistory) starsLMCtrlHists.get( groupID );
-			if (starsCtrlHist != null) {
+			StarsLMControlHistory starsCtrlHist = (StarsLMControlHistory)
+					starsLMCtrlHists.get( new Integer(liteCtrlHist.getGroupID()) );
+			if (starsCtrlHist != null)
 				StarsLiteFactory.setStarsLMControlHistory( starsCtrlHist, liteCtrlHist, StarsCtrlHistPeriod.ALL, false );
-				setControlSummary( starsCtrlHist );
-			}
 			
 			return starsCtrlHist;
 		}
@@ -3166,6 +3135,20 @@ public class LiteStarsEnergyCompany extends LiteBase {
 					
 					break;
 				}
+			}
+		}
+	}
+	
+	public void resetOddsForControl() {
+		YukonSelectionList ctrlOddsList = getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL );
+		YukonListEntry dftEntry = null;
+		if (ctrlOddsList.getYukonListEntries().size() > 0)
+			dftEntry = (YukonListEntry) ctrlOddsList.getYukonListEntries().get(0);
+		
+		ArrayList programs = getAllLMPrograms();
+		synchronized (programs) {
+			for (int i = 0; i < programs.size(); i++) {
+				//TODO: Change LiteLMProgram to LiteProgramWebPublishing
 			}
 		}
 	}

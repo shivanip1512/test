@@ -14,7 +14,8 @@
 	int progNo = 0;
 	if (progNoStr != null) progNo = Integer.parseInt(progNoStr);
 	
-	StarsEnrLMProgram program = categories.getStarsApplianceCategory(catNo).getStarsEnrLMProgram(progNo);
+	StarsApplianceCategory category = categories.getStarsApplianceCategory(catNo);
+	StarsEnrLMProgram program = category.getStarsEnrLMProgram(progNo);
 %>
 <html>
 <head>
@@ -57,26 +58,49 @@
 <% } else { %>
               <%@ include file="include/InfoSearchBar2.jsp" %>
 <% } %>
-<% if (program.getStarsWebConfig().getURL().length() > 0) { %>
+<%
+	if (program.getStarsWebConfig().getURL().length() > 0) {
+%>
               <table width="600" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td class="TableCell"><jsp:include page='<%= "../../WebConfig/" + program.getStarsWebConfig().getURL() %>'/></td>
                 </tr>
               </table>
-<% } else { %>
-              <table width="280" border="0" align="center">
+<%
+	} else {
+%>
+              <table width="60%" border="0"  cellspacing="0" cellpadding="5" class="TableCell">
+<%
+		String categoryName = category.getStarsWebConfig().getAlternateDisplayName();
+		String categoryDesc = category.getStarsWebConfig().getDescription();
+		if (category.getStarsEnrLMProgramCount() == 1) {	// Use the program display name and description instead
+			categoryName = ServletUtils.getProgramDisplayNames(category.getStarsEnrLMProgram(0))[0];
+			categoryDesc = category.getStarsEnrLMProgram(0).getStarsWebConfig().getDescription();
+		}
+%>
                 <tr> 
-                  <td class="TitleHeader" align="center"> <%= ServletUtils.getProgramDisplayNames(program)[0] %> 
+                  <td class="TitleHeader"><%= categoryName %></td>
+                </tr>
+                <tr> 
+                  <td><%= categoryDesc %></td>
+                </tr>
+<%
+		for (int i = 0; i < category.getStarsEnrLMProgramCount(); i++) {
+			StarsEnrLMProgram enrProg = category.getStarsEnrLMProgram(i);
+%>
+                <tr> 
+                  <td>
+                    <span class="TitleHeader"><%= ServletUtils.getProgramDisplayNames(enrProg)[1] %></span> -
+                    <%= enrProg.getStarsWebConfig().getDescription() %>
                   </td>
                 </tr>
+<%
+		}
+%>
               </table>
-              <br>
-              <table width="60%" border="0" cellspacing="0" cellpadding="0">
-                <tr> 
-                  <td class="TableCell" align="center"><%= program.getStarsWebConfig().getDescription() %></td>
-                </tr>
-              </table>
-<% } %>
+<%
+	}
+%>
               <br>
               <input type="button" name="Back" value="Back" onclick="history.back()">
               <p>&nbsp;</p>

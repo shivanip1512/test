@@ -70,7 +70,9 @@
 		StarsLMProgram program = programs.getStarsLMProgram(i);
 		StarsApplianceCategory category = null;
 		String ctrlOdds = null;
-		StarsLMControlHistory todayCtrlHist = ServletUtils.getControlHistory( program.getStarsLMControlHistory(), StarsCtrlHistPeriod.PASTDAY, tz );
+		
+		StarsLMControlHistory allCtrlHist = liteEC.getStarsLMControlHistory( program.getGroupID() );
+		StarsLMControlHistory todayCtrlHist = ServletUtils.getControlHistory( allCtrlHist, StarsCtrlHistPeriod.PASTDAY, program.getDateEnrolled(), tz );
 		
 		for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
 			StarsApplianceCategory appCat = categories.getStarsApplianceCategory(j);

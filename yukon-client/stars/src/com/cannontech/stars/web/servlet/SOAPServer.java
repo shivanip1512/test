@@ -30,6 +30,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.servlet.PILConnectionServlet;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
@@ -39,6 +40,7 @@ import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsInventory;
+import com.cannontech.stars.xml.serialize.StarsLMProgram;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
@@ -307,7 +309,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     		for (int i = 0; i < companies.size(); i++) {
 	    		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
     			if (company.getEnergyCompanyID().intValue() == energyCompanyID) {
-    				company.init();
+    				if (!company.isInitiated()) company.init();
 					return company;
     			}
     		}
@@ -550,7 +552,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 						StarsServiceCompany starsSC = energyCompany.getStarsServiceCompanies().getStarsServiceCompany(i);
 						if (starsSC.getPrimaryContact().getContactID() == liteContact.getContactID()) {
 							StarsLiteFactory.setStarsCustomerContact( starsSC.getPrimaryContact(), liteContact );
-							return;
+							break;
 						}
 					}
 				}
@@ -630,11 +632,30 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				StarsEnrollmentPrograms programs = energyCompany.getStarsEnrollmentPrograms();
 				for (int i = 0; i < programs.getStarsApplianceCategoryCount(); i++) {
 					StarsApplianceCategory appCat = programs.getStarsApplianceCategory(i);
+					boolean programFound = false;
+					
 					for (int j = 0; j < appCat.getStarsEnrLMProgramCount(); j++) {
 						StarsEnrLMProgram program = appCat.getStarsEnrLMProgram(j);
 						if (program.getProgramID() == liteProg.getProgramID()) {
 							program.setProgramName( liteProg.getProgramName() );
-							return;
+							programFound = true;
+							break;
+						}
+					}
+					
+					if (programFound) break;
+				}
+				
+				ArrayList accounts = energyCompany.getActiveAccounts();
+				synchronized (accounts) {
+					for (int i = 0; i < accounts.size(); i++) {
+						StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation) accounts.get(i);
+						for (int j = 0; j < starsAcctInfo.getStarsLMPrograms().getStarsLMProgramCount(); j++) {
+							StarsLMProgram program = starsAcctInfo.getStarsLMPrograms().getStarsLMProgram(j);
+							if (program.getProgramID() == liteProg.getProgramID()) {
+								program.setProgramName( ECUtils.getPublishedProgramName(liteProg, energyCompany) );
+								break;
+							}
 						}
 					}
 				}

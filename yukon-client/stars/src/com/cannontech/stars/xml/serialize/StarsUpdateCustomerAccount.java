@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsUpdateCustomerAccount.java,v 1.80 2004/06/11 18:25:54 zyao Exp $
+ * $Id: StarsUpdateCustomerAccount.java,v 1.81 2004/06/15 15:45:49 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Update a customer account
  * 
- * @version $Revision: 1.80 $ $Date: 2004/06/11 18:25:54 $
+ * @version $Revision: 1.81 $ $Date: 2004/06/15 15:45:49 $
 **/
 public class StarsUpdateCustomerAccount extends StarsCustAccount 
 implements java.io.Serializable

@@ -128,9 +128,6 @@ public class SendOddsForControlAction implements ActionBase {
 						for (int k = 0; k < liteAppCat.getPublishedPrograms().size(); k++) {
 							LiteLMProgram liteProg = (LiteLMProgram) liteAppCat.getPublishedPrograms().get(k);
 							if (liteProg.getProgramID() == enrProg.getProgramID()) {
-								liteProg.setChanceOfControlID( enrProg.getChanceOfControl().getEntryID() );
-								enrProgFound = true;
-            					
 								com.cannontech.database.db.stars.LMProgramWebPublishing pubProg =
 										new com.cannontech.database.db.stars.LMProgramWebPublishing();
 								pubProg.setApplianceCategoryID( new Integer(liteAppCat.getApplianceCategoryID()) );
@@ -139,6 +136,9 @@ public class SendOddsForControlAction implements ActionBase {
 								pubProg.setChanceOfControlID( new Integer(liteProg.getChanceOfControlID()) );
 								Transaction.createTransaction(Transaction.UPDATE, pubProg).execute();
 			        			
+								liteProg.setChanceOfControlID( enrProg.getChanceOfControl().getEntryID() );
+								enrProgFound = true;
+            					
 								break;
 							}
 						}
