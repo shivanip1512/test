@@ -1685,7 +1685,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					}
 					catch (NumberFormatException e) {}
 					
-					if (loadType == null) {
+					if (loadTypeInfo == null) {
 						String msg = "unknown load type \"" + fields[1].trim() + "\" under receiver \"" + fields[0].trim() + "\"";
 						if (receiverInfo != null)
 							msg += ", code \"" + receiverInfo[1] + "\"";
