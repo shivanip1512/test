@@ -15,6 +15,8 @@ import com.cannontech.database.db.point.Point;
 	private javax.swing.JComboBox ivjDeviceComboBox = null;
 	private javax.swing.JLabel ivjDeviceLabel = null;
 	private javax.swing.JPanel ivjPointCopyNameDevicePanel = null;
+	private boolean copiedToSameDevice = false;
+	public int originalDeviceID;
 /**
  * Constructor
  */
@@ -237,8 +239,7 @@ public Object getValue(Object val)
 	point.setPointID( Point.getNextCachedPointID() );
 	point.getPoint().setPointName(nameString);
 	point.getPoint().setPaoID(new Integer(liteDevice.getYukonID()));
-
-
+	
 	return val;
 
 }
@@ -349,8 +350,10 @@ public void setSelectedDeviceIndex(int deviceID)
 public void setValue(Object val)
 {
 	//Sets point name field
-
-	getNameTextField().setText(((com.cannontech.database.data.point.PointBase) val).getPoint().getPointName());
+	com.cannontech.database.data.point.PointBase point = (com.cannontech.database.data.point.PointBase) val;
+	
+	getNameTextField().setText(point.getPoint().getPointName());
+	originalDeviceID = point.getPoint().getPaoID().intValue();
 
 }
 /**
