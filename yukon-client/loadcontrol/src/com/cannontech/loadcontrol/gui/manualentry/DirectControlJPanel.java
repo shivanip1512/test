@@ -1,6 +1,7 @@
 package com.cannontech.loadcontrol.gui.manualentry;
 
 import java.util.Arrays;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.swing.DefaultCellEditor;
@@ -10,7 +11,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
-import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.messages.LMManualControlMsg;
 
 /**
@@ -872,18 +872,18 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 					ivjJTextFieldStopTime.setTimeText( new java.util.Date() );
 				else
 				{
-					java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
+					GregorianCalendar cal = new GregorianCalendar();
 					cal.setTime( new java.util.Date() );
 	
-					StringBuffer hour = new StringBuffer( String.valueOf(cal.get( java.util.GregorianCalendar.HOUR_OF_DAY)+4) );
+					StringBuffer hour = new StringBuffer( String.valueOf(cal.get( GregorianCalendar.HOUR_OF_DAY)+4) );
 					if( hour.length() < 2 )
 						hour.insert(0, "0" );
 						
-					StringBuffer minute = new StringBuffer( String.valueOf(cal.get(java.util.GregorianCalendar.MINUTE)) );
+					StringBuffer minute = new StringBuffer( String.valueOf(cal.get(GregorianCalendar.MINUTE)) );
 					if( minute.length() < 2 )
 						minute.insert(0, "0" );
 						
-					if( cal.get( java.util.GregorianCalendar.HOUR_OF_DAY) > 20 )
+					if( cal.get( GregorianCalendar.HOUR_OF_DAY) > 20 )
 						hour = new StringBuffer("23");
 						
 					ivjJTextFieldStopTime.setText( hour + ":" + minute );
@@ -980,26 +980,36 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 		if( getJTextFieldStartTime().getText() == null
 			 || getJTextFieldStartTime().getText().length() <= 0 )
 		{
-			return com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime();
+			//assume they want to start using the time of now
+			// and the Date in the JComboBox
+			GregorianCalendar c = new GregorianCalendar();
+			c.setTime( getDateComboStart().getSelectedDate() );
+			
+			GregorianCalendar tCal = new GregorianCalendar();
+			c.set(GregorianCalendar.HOUR_OF_DAY, tCal.get(tCal.HOUR_OF_DAY) );
+			c.set(GregorianCalendar.MINUTE, tCal.get(tCal.MINUTE) );
+			c.set(GregorianCalendar.SECOND, tCal.get(tCal.SECOND) );
+
+			return c.getTime();
 		}
 		else
 		{
-			java.util.GregorianCalendar c = new java.util.GregorianCalendar();
+			GregorianCalendar c = new GregorianCalendar();
 			c.setTime( getDateComboStart().getSelectedDate() );
 			
 			String start = getJTextFieldStartTime().getTimeText();
 			
 			try
 			{
-				c.set(java.util.GregorianCalendar.HOUR_OF_DAY, Integer.parseInt( start.substring(0,2) ) );
-				c.set(java.util.GregorianCalendar.MINUTE, Integer.parseInt( start.substring(3,5) ) );
-				c.set(java.util.GregorianCalendar.SECOND, 0 );
+				c.set(GregorianCalendar.HOUR_OF_DAY, Integer.parseInt( start.substring(0,2) ) );
+				c.set(GregorianCalendar.MINUTE, Integer.parseInt( start.substring(3,5) ) );
+				c.set(GregorianCalendar.SECOND, 0 );
 				return c.getTime();
 			}
 			catch( Exception e )
 			{
 				com.cannontech.clientutils.CTILogger.info("*** Received a bad value in getStartTime() of " + this.getClass().getName() + " : " + e.getMessage() );
-				return com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime();
+				return CtiUtilities.get1990GregCalendar().getTime();
 			}
 			
 		}
@@ -1016,33 +1026,36 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 	{
 		if( getJCheckBoxNeverStop().isSelected() )
 		{
-			java.util.GregorianCalendar c = new java.util.GregorianCalendar();
-			c.set( c.YEAR, c.get(c.YEAR) + 1 ); //set the stop time to 1 year from now
+			GregorianCalendar c = new GregorianCalendar();
+			c.add( c.YEAR, 1 ); //set the stop time to 1 year from now
 			return c.getTime();
 		}
-		else if(	 getJTextFieldStopTime().getText() == null
+		else if( getJTextFieldStopTime().getText() == null
 					 || getJTextFieldStopTime().getText().length() <= 0 )
 		{
-			return com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime();
+			//default the stop to 1 day from now
+			GregorianCalendar c = new GregorianCalendar();
+			c.add( c.DATE, 1 );
+			return c.getTime();
 		}
 		else
 		{
-			java.util.GregorianCalendar c = new java.util.GregorianCalendar();
+			GregorianCalendar c = new GregorianCalendar();
 			c.setTime( getDateComboStop().getSelectedDate() );
 	
 			String stop = getJTextFieldStopTime().getTimeText();
 	
 			try
 			{
-				c.set(java.util.GregorianCalendar.HOUR_OF_DAY, Integer.parseInt( stop.substring(0,2) ) );
-				c.set(java.util.GregorianCalendar.MINUTE, Integer.parseInt( stop.substring(3,5) ) );
-				c.set(java.util.GregorianCalendar.SECOND, 0 );
+				c.set(GregorianCalendar.HOUR_OF_DAY, Integer.parseInt( stop.substring(0,2) ) );
+				c.set(GregorianCalendar.MINUTE, Integer.parseInt( stop.substring(3,5) ) );
+				c.set(GregorianCalendar.SECOND, 0 );
 				return c.getTime();
 			}
 			catch( Exception e )
 			{
 				com.cannontech.clientutils.CTILogger.info("*** Received a bad value in getStopTime() of " + this.getClass().getName() + " : " + e.getMessage() );
-				return com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime();
+				return CtiUtilities.get1990GregCalendar().getTime();
 			}
 			
 		}
@@ -1195,8 +1208,8 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 		 	 && getStartTime() != null
 		 	 && getStopTime() != null )
 		{
-			if( getStartTime().after(com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime())
-				 && getStopTime().after(com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime()) )
+			if( getStartTime().after(CtiUtilities.get1990GregCalendar().getTime())
+				 && getStopTime().after(CtiUtilities.get1990GregCalendar().getTime()) )
 			{
 				if( getStartTime().getTime() >= getStopTime().getTime() )
 				{
@@ -1212,8 +1225,8 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 		else if( getMode() == MODE_STOP
 					 && getStopTime() != null )
 		{
-			if( getStartTime().after(com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime())
-				 && getStopTime().after(com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime()) )
+			if( getStartTime().after(CtiUtilities.get1990GregCalendar().getTime())
+				 && getStopTime().after(CtiUtilities.get1990GregCalendar().getTime()) )
 			{
 				java.util.Date cDate = new java.util.Date();
 				
