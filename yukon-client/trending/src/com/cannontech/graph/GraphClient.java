@@ -47,7 +47,7 @@ public class GraphClient extends javax.swing.JPanel implements com.cannontech.da
 					return;
 				}
 				
-				if( GraphClient.this.connToDispatch.isValid() )
+				if( GraphClient.this.getClientConnection().isValid() )
 				{
 					synchronized (com.cannontech.graph.GraphClient.class)
 					{
@@ -120,7 +120,7 @@ public class GraphClient extends javax.swing.JPanel implements com.cannontech.da
 	private ViewMenu viewMenu = null;
 	private OptionsMenu optionsMenu = null;
 	private HelpMenu helpMenu = null;
-	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
+//	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
 	private com.cannontech.common.gui.util.TreeViewPanel ivjTreeViewPanel = null;
 	private com.cannontech.common.gui.util.DateComboBox ivjStartDateComboBox = null;
 	private com.cannontech.jfreechart.chart.YukonChartPanel freeChartPanel = null;
@@ -365,11 +365,17 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	{
 		exit();
 	}
+	
+	else if( event.getSource() == getTrendMenu().getGetDataNowMenuItem())
+	{
+		getGraph().getDataNow();
+	}
 	else
 	{
 		com.cannontech.clientutils.CTILogger.info(" other action");
 	}
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (6/22/00 2:07:26 PM)
@@ -395,7 +401,7 @@ public void actionPerformed_CreateMenuItem( )
 	
 	if( gDef != null )
 	{
-		DBPersistentFuncs.add(gDef, connToDispatch);
+		DBPersistentFuncs.add(gDef, (com.cannontech.message.dispatch.ClientConnection)getClientConnection());
 		getTreeViewPanel().refresh();
 		getTreeViewPanel().selectObject(gDef);
 	}
@@ -417,7 +423,7 @@ public void actionPerformed_DeleteMenuItem( )
 	        		"Confirm Delete", javax.swing.JOptionPane.YES_NO_OPTION);
 		if (option == javax.swing.JOptionPane.YES_OPTION)
 		{
-			com.cannontech.database.cache.functions.DBPersistentFuncs.delete((com.cannontech.database.data.lite.LiteBase)selected, connToDispatch);
+			com.cannontech.database.cache.functions.DBPersistentFuncs.delete((com.cannontech.database.data.lite.LiteBase)selected, (com.cannontech.message.dispatch.ClientConnection)getClientConnection());
 			getTreeViewPanel().refresh();
 			getFreeChart().getPlot().setDataset(null);
 		}
@@ -452,7 +458,7 @@ public void actionPerformed_EditMenuItem( )
 			
 			if (gDef != null)	// 'OK' out of dialog to continue on.
 			{
-				DBPersistentFuncs.update(gDef, connToDispatch);
+				DBPersistentFuncs.update(gDef, (com.cannontech.message.dispatch.ClientConnection)getClientConnection());
 				getGraph().setGraphDefinition(gDef);
 			
 				getTreeViewPanel().refresh();
@@ -481,16 +487,16 @@ public void actionPerformed_ExitMenuItem()
 {
 	try
 	{
-		if ( connToDispatch!= null && connToDispatch.isValid() )  // free up Dispatchs resources
+		if ( getClientConnection()!= null && getClientConnection().isValid() )  // free up Dispatchs resources
 		{
 			com.cannontech.message.dispatch.message.Command command = new com.cannontech.message.dispatch.message.Command();
 			command.setPriority(15);
 			
 			command.setOperation( com.cannontech.message.dispatch.message.Command.CLIENT_APP_SHUTDOWN );
 
-			connToDispatch.write( command );
+			getClientConnection().write( command );
 
-			connToDispatch.disconnect();
+			getClientConnection().disconnect();
 		}
 	}
 	catch ( java.io.IOException e )
@@ -776,16 +782,16 @@ public void exit()
 {
 	try
 	{
-		if ( connToDispatch!= null && connToDispatch.isValid() )  // free up Dispatchs resources
+		if ( getClientConnection() != null && getClientConnection().isValid() )  // free up Dispatchs resources
 		{
 			com.cannontech.message.dispatch.message.Command command = new com.cannontech.message.dispatch.message.Command();
 			command.setPriority(15);
 			
 			command.setOperation( com.cannontech.message.dispatch.message.Command.CLIENT_APP_SHUTDOWN );
 
-			connToDispatch.write( command );
+			getClientConnection().write( command );
 
-			connToDispatch.disconnect();
+			getClientConnection().disconnect();
 		}
 	}
 	catch ( java.io.IOException e )
@@ -939,7 +945,7 @@ public JCChart getChart()
  * @return com.cannontech.message.util.ClientConnection
  */
 public com.cannontech.message.util.ClientConnection getClientConnection() {
-	return connToDispatch;
+	return getGraph().getClientConnection();
 }
 /**
  * Return the CurrentRadioButton property value.
@@ -1788,7 +1794,7 @@ private void handleException(java.lang.Throwable exception) {
  * update a graph.
  * Creation date: (10/31/00 12:18:31 PM)
  */
-private void initDispatchConnection() 
+/*private void initDispatchConnection() 
 {
 	String host = null;
 	int port;
@@ -1838,7 +1844,7 @@ private void initDispatchConnection()
 	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeListener(this);	
 	//dbChangeListener = new DBChangeMessageListener();
 	//dbChangeListener.start();
-}
+}*/
 /**
  * Insert the method's description here.
  * Creation date: (5/17/2001 11:51:33 AM)
@@ -1918,7 +1924,14 @@ private void initializeSwingComponents()
 	editorKit.setStyleSheet(styleSheet);
 	//tabularPanel.setEditorKit(editorKit);
 
-	initDispatchConnection();
+	//Force the connection to init
+	getGraph().getClientConnection();
+
+	trendDataAutoUpdater = new TrendDataAutoUpdater();
+	trendDataAutoUpdater.start();
+
+	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeListener(this);	
+
 	getDirectory();	//setup the directory for the exports
 }
 /**
