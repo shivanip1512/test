@@ -53,6 +53,13 @@ public class TextFieldDocument extends javax.swing.text.PlainDocument
 		'|',
 		'"'	
 	};
+	
+	public static final char[] INVALID_CHARS_LMCONSTRAINTS =
+	{
+		'\'',
+		',',
+		'|'
+	};
 
 
 	
