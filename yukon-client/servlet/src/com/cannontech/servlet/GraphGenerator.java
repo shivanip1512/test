@@ -30,7 +30,6 @@ import com.cannontech.graph.GraphDefines;
 
 public class GraphGenerator extends javax.servlet.http.HttpServlet {
 	
-	private static final String dateFormatStr = "MM:dd:yyyy:HH:mm:ss";
 	
 /**
  * 
@@ -53,9 +52,6 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 			localBean = (com.cannontech.graph.GraphBean)session.getAttribute("graphBean");
 		}
 
-		localBean.setTab(GraphDefines.GRAPH_PANE_STRING);
-		localBean.setBeanDateFormat(dateFormatStr);	
-		
 		{			
 			String param;
 			String param2;
@@ -66,7 +62,7 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 				
 			param = req.getParameter("start");
 			if( param != null) 								
-				localBean.setStartStr(param);
+				localBean.setStart(param);
 			
 			param = req.getParameter("tab");
 			if( param != null)
@@ -87,10 +83,6 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 			param = req.getParameter("format");
 			if( param != null)
 				localBean.setFormat(param);
-
-			param = req.getParameter("dtFormat");
-			if( param != null)
-				localBean.setBeanDateFormat(param);
 
 			param = req.getParameter("width");
 			param2 = req.getParameter("height");
