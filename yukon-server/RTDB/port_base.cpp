@@ -8,11 +8,16 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2004/11/17 17:51:25 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2004/11/18 23:45:35 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.44  2004/11/18 23:45:35  mfisher
+* changed shouldProcessQueuedDevices to disregard waiting port entries...
+* will definitely need to be tuned, but this allows at least some processing
+* while PIL is dumping a large number of entries onto the ports
+*
 * Revision 1.43  2004/11/17 17:51:25  mfisher
 * changed text to reflect RTM/RTC parity instead of just RTM
 *
@@ -1533,7 +1538,7 @@ void CtiPort::setLastOMComplete(RWTime &atime)
 
 bool CtiPort::shouldProcessQueuedDevices() const
 {
-    bool doit = (getDeviceQueued() && (queueCount() == 0));
+    bool doit = (getDeviceQueued()); // && (queueCount() == 0));  <--  this could be something like "queueCount < 10"...  interesting
 
     return doit;
 }
