@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/06/26 18:12:04 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/08/06 19:02:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -135,6 +135,12 @@ INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
             dout << RWTime() << " ERROR: Route " << getName() << " has no associated transmitter device" << endl;
         }
         status = -1;
+    }
+
+    if(OutMessage != NULL)
+    {
+        delete OutMessage;
+        OutMessage = NULL;
     }
 
     return status;
@@ -330,7 +336,8 @@ INT CtiRouteXCU::assembleRippleRequest(CtiRequestMsg               *pReq,
 
     if(OutMessage)
     {
-        outList.insert( new OUTMESS(*OutMessage) );         // Insert a copy someone else can clean up.
+        outList.insert( OutMessage );         // Insert a copy someone else can clean up.
+        OutMessage = NULL;
     }
 
     if( bookkeeping & 0x00000001 && bookkeeping & 0x00000002 )
