@@ -116,7 +116,7 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
       {
          TransactionException t = new TransactionException( e.getMessage() );
          /*Only in JRE 1.4 or greater */
-         /*t.setStackTrace( e.getStackTrace() );*/
+         t.setStackTrace( e.getStackTrace() );
          
          if( conn == null )
          {
@@ -129,7 +129,7 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
             {
                t = new TransactionException( e.getMessage() );
                /* Only in JRE 1.4 or greater */
-               /*t.setStackTrace( e2.getStackTrace() );*/
+               t.setStackTrace( e2.getStackTrace() );
                throw t;
             }
             
