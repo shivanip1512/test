@@ -228,7 +228,10 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener
 			getAlarmHandler().getAlarmClient().stop();
 
 			if( e.getSource() == getMenuItemLogout() )
-			{}//TODO:do the logout action here like writting to the registry
+			{
+				if( ClientSession.getInstance().establishSession() )
+					ClientSession.getInstance().closeSession();
+			}
 
 
 			exitApp();
