@@ -162,11 +162,13 @@
                           { %>
                           <tr>
                             <td width="50%" class="TableCell" align = "right">
+							  <select name="program">
                             <%
                               for (int i = 0; i < entryIDs.length; i++)
    	                       	  {
 								out.println("<OPTION VALUE=" + entryIDs[i] + ">" + entryTexts[i]);
 							  }%>
+							  </select>
 							</td>
 	                        <td width="50%" align="left" class="TableCell">
                               <input type="text" name="textfield3">
@@ -192,9 +194,9 @@
 //                  IF THEY HAVE ADDITIONAL CONTACTS
                     com.cannontech.database.data.lite.LiteCICustomer liteCICust =  com.cannontech.database.cache.functions.ContactFuncs.getCICustomer(liteContact.getContactID());
                     java.util.Vector addtlConts = liteCICust.getAdditionalContacts();
-                    for( int i = 0; i < addtlConts.size(); i++)
+                    for( int x = 0; x < addtlConts.size(); x++)
                     {
-                      com.cannontech.database.data.lite.LiteContact liteAddtlCont = (com.cannontech.database.data.lite.LiteContact)addtlConts.get(i);
+                      com.cannontech.database.data.lite.LiteContact liteAddtlCont = (com.cannontech.database.data.lite.LiteContact)addtlConts.get(x);
                       LiteYukonUser addtlLiteYukonUser = YukonUserFuncs.getLiteYukonUser(liteAddtlCont.getLoginID());                      
                   %>
                   <table width="590" border="0" cellspacing="0" cellpadding="0">	              
