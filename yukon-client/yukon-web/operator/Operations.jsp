@@ -353,7 +353,8 @@ function confirmDelete() {
             </cti:checkProperty> </td>
 		  <form name="DeleteForm" method="post" action="<%= request.getContextPath() %>/servlet/StarsAdmin">
 		    <input type="hidden" name="action" value="DeleteEnergyCompany">
-            <td align = "center" class="MainText" width="20%"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY %>"> 
+		    <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/login.jsp">
+            <td align = "center" class="MainText" width="25%"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY %>"> 
               <div align = "center" style = "border:solid 1px #666999;"><span class="Clickable" style="text-decoration:none;" onclick="confirmDelete()">Delete 
                 Energy Company</span></div>
               </cti:checkProperty> </td>
