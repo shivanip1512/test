@@ -1,0 +1,208 @@
+/*-----------------------------------------------------------------------------*
+*
+* File:   verification
+*
+* Date:   4/9/2004
+*
+* Author: Eric Schmit
+*
+* PVCS KEYWORDS:
+* ARCHIVE      :  $Archive$
+* REVISION     :  $Revision: 1.1 $
+* DATE         :  $Date: 2004/07/27 15:46:07 $
+*
+* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
+*-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
+
+#include "verification_objects.h"
+#include "ctidbgmem.h"
+
+#include <rw/rwtime.h>  //  ONLY for rwEpoch, use ptime/date for everything else
+
+const string CtiVerificationBase::String_CodeStatus_Success    = "success";
+const string CtiVerificationBase::String_CodeStatus_Retry      = "retry";
+const string CtiVerificationBase::String_CodeStatus_Fail       = "fail";
+const string CtiVerificationBase::String_CodeStatus_Unexpected = "unexpected";
+const string CtiVerificationBase::String_CodeStatus_Invalid    = "(invalid status)";
+
+CtiVerificationBase::CtiVerificationBase(Type t, Protocol p, const string &code) :
+    _type(t),
+    _protocol(p),
+    _code(code),
+    _birth(second_clock::universal_time())
+{
+}
+
+
+CtiVerificationBase::~CtiVerificationBase()
+{
+}
+
+
+bool CtiVerificationBase::operator<(const CtiVerificationBase &rhs) const
+{
+    return _birth < rhs._birth;
+}
+
+
+//  this is a static in the base class so that Report can call it without actually owning a "code status" proper
+const string &CtiVerificationBase::getCodeStatusName(CodeStatus cs)
+{
+    //  this seems to be the only way to reassign to a string...
+    const string *s;
+
+    switch( cs )
+    {
+        case CodeStatus_Fail:       s = &String_CodeStatus_Fail;        break;
+        case CodeStatus_Retry:      s = &String_CodeStatus_Retry;       break;
+        case CodeStatus_Success:    s = &String_CodeStatus_Success;     break;
+        case CodeStatus_Unexpected: s = &String_CodeStatus_Unexpected;  break;
+        default:                    s = &String_CodeStatus_Invalid;     break;
+    }
+
+    return *s;
+}
+
+CtiVerificationWork::CtiVerificationWork(Protocol p, const CtiOutMessage &om, const string &code, ptime::time_duration_type patience) :
+    CtiVerificationBase(Type_Work, p, code),
+    _retry_om(om),
+    _expiration(second_clock::universal_time() + patience),
+    _codeDisposition(CodeStatus_Uninitialized)
+{
+    _transmitter_id = om.DeviceID;
+    _retry          = (om.Retry > 0)?true:false;
+    _sequence       = om.VerificationSequence;
+}
+
+
+CtiVerificationWork::~CtiVerificationWork()
+{
+}
+
+
+CtiOutMessage *CtiVerificationWork::getRetryOM() const
+{
+    CtiOutMessage *retval = CTIDBG_new CtiOutMessage(_retry_om);
+
+    ptime::time_duration_type expiration = (second_clock::universal_time() - ptime(date(1970, 1, 1))) + _patience;
+
+    retval->Retry = 0;
+    retval->ExpirationTime = expiration.total_seconds() + rwEpoch;  //  ExpirationTime is an RWTime.seconds()
+
+    return retval;
+}
+
+
+string CtiVerificationWork::getCommand() const
+{
+    string s(_retry_om.Request.CommandStr);
+
+    return s;
+}
+
+
+void CtiVerificationWork::addExpectation(long receiver_id, bool retransmit)
+{
+    _expectations.insert(make_pair(receiver_id, retransmit));
+}
+
+
+bool CtiVerificationWork::checkReceipt(const CtiVerificationReport &report)
+{
+    bool retval = false;
+
+    //  make sure we match on protocol and code...
+    if( (report.getProtocol() == this->getProtocol()) &&
+        (report.getCode()     == this->getCode()) )
+    {
+        expectation_map::iterator itr = _expectations.find(report.getReceiverID());
+
+        //  and make sure we're still expecting to hear from this receiver
+        if( itr != _expectations.end() )
+        {
+            _receipts.insert(make_pair(report.getReceiverID(), report.getReceiptTime()));
+
+            _expectations.erase(itr);
+
+            retval = true;
+        }
+    }
+
+    return retval;
+}
+
+
+CtiVerificationWork::CodeStatus CtiVerificationWork::processResult()
+{
+    //  assume success, look for failure
+    _codeDisposition = CodeStatus_Success;
+
+    //  walk through the list of verification devices we never heard from...
+    for( expectation_map::iterator itr = _expectations.begin(); (itr != _expectations.end()) && (_codeDisposition == CodeStatus_Success); itr++ )
+    {
+        //  looking for receivers that are marked as "retransmit"
+        if( (*itr).second )
+        {
+            //  if we didn't receive a confirmation, send the retry
+            //    (or if we've already retried, we've failed)
+            if( _receipts.find((*itr).first) == _receipts.end() )
+            {
+                if( _retry )
+                {
+                    _codeDisposition = CodeStatus_Retry;
+                }
+                else
+                {
+                    _codeDisposition = CodeStatus_Fail;
+                }
+            }
+        }
+    }
+
+    return _codeDisposition;
+}
+
+
+vector< long > CtiVerificationWork::getExpectations() const
+{
+    vector< long > e;
+    expectation_map::const_iterator itr;
+
+    for( itr = _expectations.begin(); itr != _expectations.end(); itr++ )
+    {
+        long tmp = itr->first;
+
+        e.push_back(tmp);
+    }
+
+    return e;
+}
+
+
+vector< pair< long, ptime > > CtiVerificationWork::getReceipts() const
+{
+    vector< pair< long, ptime > > r;
+    receipt_map::const_iterator itr;
+
+    for( itr = _receipts.begin(); itr != _receipts.end(); itr++ )
+    {
+        r.push_back(*itr);
+    }
+
+    return r;
+}
+
+
+CtiVerificationReport::CtiVerificationReport(Protocol p, long id, const string &code, ptime time) :
+    CtiVerificationBase(Type_Report, p, code),
+    _receiver_id(id),
+    _receipt_time(time)
+{
+}
+
+
+CtiVerificationReport::~CtiVerificationReport()
+{
+}
+
