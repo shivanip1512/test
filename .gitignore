@@ -62,6 +62,7 @@ yukon-client/webgraph/bin
 yukon-client/webgraph/build
 yukon-client/yukon-web/WEB-INF/classes
 yukon-client/yukon-web/_notes
+yukon-client/yukon-web/capcontrol/temp
 yukon-client/yukon-web/user/CILC/_notes
 yukon-client/yukon-web/work
 yukon-client/yukonappclient/bin

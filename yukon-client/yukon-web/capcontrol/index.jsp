@@ -1,10 +1,12 @@
 <!-- Copyright (c) 2002 by ObjectLearn. All Rights Reserved. -->
 
+<% response.sendRedirect(request.getContextPath() + "/login.jsp"); %>
+
 <html>
 	<head>
-		<title>Welcome</title>
+		<title>Redirect here</title>
 	</head>
 	<body>
-		<center>Welcome</center>
+		<center>see ya at the login</center>		
 	</body>
 </html>
