@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct210.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/02/25 21:56:32 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -168,44 +168,43 @@ INT CtiDeviceMCT210::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
     switch(InMessage->Sequence)
     {
         case (CtiProtocolEmetcon::GetStatus_Disconnect):
-            {
-                status = decodeGetStatusDisconnect(InMessage, TimeNow, vgList, retList, outList);
-                break;
-            }
+        {
+            status = decodeGetStatusDisconnect(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
 
         case (CtiProtocolEmetcon::Control_Conn):
         case (CtiProtocolEmetcon::Control_Disc):
-            {
-                CtiRequestMsg newReq(getID(),
-                                     "getstatus disconnect noqueue",
-                                     InMessage->Return.UserID,
-                                     InMessage->Return.TrxID,
-                                     InMessage->Return.RouteID,
-                                     InMessage->Return.MacroOffset,
-                                     InMessage->Return.Attempt);
+        {
+            CtiRequestMsg newReq(getID(),
+                                 "getstatus disconnect noqueue",
+                                 InMessage->Return.UserID,
+                                 InMessage->Return.TrxID,
+                                 InMessage->Return.RouteID,
+                                 InMessage->Return.MacroOffset,
+                                 InMessage->Return.Attempt);
 
-                newReq.setConnectionHandle((void *)InMessage->Return.Connection);
+            newReq.setConnectionHandle((void *)InMessage->Return.Connection);
 
-                CtiCommandParser parse(newReq.CommandString());
+            CtiCommandParser parse(newReq.CommandString());
 
-                CtiDeviceBase::ExecuteRequest(&newReq, parse, vgList, retList, outList);
+            CtiDeviceBase::ExecuteRequest(&newReq, parse, vgList, retList, outList);
 
-                break;
-            }
+            break;
+        }
 
-        case (CtiProtocolEmetcon::GetValue_Frozen):
         default:
-            {
-                status = Inherited::ResultDecode(InMessage, TimeNow, vgList, retList, outList);
+        {
+            status = Inherited::ResultDecode(InMessage, TimeNow, vgList, retList, outList);
 
-                if(status != NORMAL)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
-                }
-                break;
+            if(status != NORMAL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
             }
+            break;
+        }
     }
 
     return status;
