@@ -79,6 +79,8 @@ public WPSCMain(String dispatchHost, int dispatchPort, String porterHost, int po
 	porterConn = new com.cannontech.message.porter.ClientConnection( porterHost, porterPort );
 
 	dispatchConn.setAutoReconnect(true);
+	dispatchConn.setQueueMessages( true );
+
 	porterConn.setAutoReconnect(true);
 	
 	CFDATAInstance = new CFDATA( porterConn, CFDATADir, CFDATAFileExt );

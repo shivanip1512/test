@@ -225,6 +225,7 @@ private boolean executeCheckDispatchConnection()
 		connection.setPort(DISPATCH_PORT);
 		
 		connection.setAutoReconnect( false );
+		connection.setQueueMessages( true );
 		connection.setRegistrationMsg( reg );
 		connection.connectWithoutWait();
 
@@ -294,6 +295,7 @@ private boolean executeCheckPorterConnection()
 		connection.setPort(PORTER_PORT);
 		
 		connection.setAutoReconnect( false );
+		connection.setQueueMessages( true );
 		connection.connectWithoutWait();
 
 		//wait for our connection to connnect
