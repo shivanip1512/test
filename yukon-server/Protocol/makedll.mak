@@ -36,7 +36,16 @@ ion_net_network.obj \
 ion_net_datalink.obj \
 ion_rootclasses.obj \
 ion_valuearraytypes.obj \
-ion_valuebasictypes.obj \
+ion_value_basic_array.obj \
+ion_value_basic_boolean.obj \
+ion_value_basic_char.obj \
+ion_value_basic_float.obj \
+ion_value_basic_intsigned.obj \
+ion_value_basic_intunsigned.obj \
+ion_value_basic_program.obj \
+ion_value_basic_time.obj \
+ion_value_datastream.obj \
+ion_value_statement.obj \
 ion_valuestructtypes.obj \
 
 DNPOBJS=\
@@ -227,27 +236,74 @@ id_ctiprot.obj: utility.h dsm2.h mutex.h dlldefs.h guard.h \
 ion_net_application.obj:        ctitypes.h guard.h dlldefs.h logger.h \
                 thread.h mutex.h ion_net_application.h xfer.h dsm2.h dialup.h \
                 yukon.h ctidbgmem.h dllbase.h os2_2w32.h types.h cticalls.h \
-                ion_rootclasses.h ion_valuebasictypes.h ion_net_network.h \
-                ion_net_datalink.h
+                ion_net_network.h ion_net_datalink.h ion_rootclasses.h
 ion_net_datalink.obj:   ctitypes.h guard.h dlldefs.h logger.h thread.h \
                 mutex.h ion_net_datalink.h xfer.h dsm2.h dialup.h yukon.h \
                 ctidbgmem.h dllbase.h os2_2w32.h types.h cticalls.h \
-                ion_rootclasses.h ion_valuebasictypes.h
+                ion_rootclasses.h numstr.h
 ion_net_network.obj:    ctitypes.h guard.h dlldefs.h logger.h thread.h \
                 mutex.h ion_net_network.h xfer.h dsm2.h dialup.h yukon.h \
                 ctidbgmem.h dllbase.h os2_2w32.h types.h cticalls.h \
-                ion_rootclasses.h ion_valuebasictypes.h ion_net_datalink.h
-ion_rootclasses.obj:    ctidbgmem.h ion_rootclasses.h dlldefs.h \
-                ion_valuebasictypes.h ctitypes.h guard.h logger.h thread.h \
-                mutex.h
+                ion_net_datalink.h ion_rootclasses.h
+ion_rootclasses.obj:    ctidbgmem.h guard.h dlldefs.h logger.h thread.h \
+                mutex.h ion_rootclasses.h ion_value_basic_array.h ctitypes.h \
+                ion_value_basic_boolean.h ion_value_basic_numeric.h \
+                ion_value_basic_char.h ion_value_basic_float.h \
+                ion_value_basic_intsigned.h ion_value_basic_intunsigned.h \
+                ion_value_basic_program.h ion_value_statement.h \
+                ion_value_basic_time.h
 ion_valuearraytypes.obj:        ctidbgmem.h ion_valuearraytypes.h \
-                ion_valuebasictypes.h ion_rootclasses.h dlldefs.h ctitypes.h \
-                ion_valuestructtypes.h
+                ion_value_basic_array.h ion_rootclasses.h dlldefs.h \
+                ctitypes.h ion_value_basic_char.h ion_value_basic_boolean.h \
+                ion_value_basic_numeric.h ion_value_basic_float.h \
+                ion_value_basic_intsigned.h ion_value_basic_intunsigned.h \
+                ion_valuestructtypes.h ion_value_basic_time.h logger.h \
+                thread.h mutex.h guard.h
 ion_valuebasictypes.obj:        ctidbgmem.h ion_valuebasictypes.h \
                 ion_rootclasses.h dlldefs.h ctitypes.h ion_valuestructtypes.h \
-                ion_valuearraytypes.h
+                ion_valuearraytypes.h ion_value_basic_array.h \
+                ion_value_basic_char.h ion_value_basic_boolean.h \
+                ion_value_basic_numeric.h ion_value_basic_float.h \
+                ion_value_basic_intsigned.h ion_value_basic_intunsigned.h \
+                ion_value_basic_time.h
 ion_valuestructtypes.obj:       ion_valuestructtypes.h ion_valuearraytypes.h \
-                ion_valuebasictypes.h ion_rootclasses.h dlldefs.h ctitypes.h
+                ion_value_basic_array.h ion_rootclasses.h dlldefs.h \
+                ctitypes.h ion_value_basic_char.h ion_value_basic_boolean.h \
+                ion_value_basic_numeric.h ion_value_basic_float.h \
+                ion_value_basic_intsigned.h ion_value_basic_intunsigned.h \
+                ion_value_basic_time.h
+ion_value_basic_array.obj:      ctidbgmem.h ion_value_basic_array.h \
+                ion_rootclasses.h dlldefs.h ctitypes.h ion_valuestructtypes.h \
+                ion_valuearraytypes.h ion_value_basic_char.h \
+                ion_value_basic_boolean.h ion_value_basic_numeric.h \
+                ion_value_basic_float.h ion_value_basic_intsigned.h \
+                ion_value_basic_intunsigned.h ion_value_basic_time.h logger.h \
+                thread.h mutex.h guard.h
+ion_value_basic_boolean.obj:    ctidbgmem.h ion_value_basic_boolean.h \
+                ion_value_basic_numeric.h ion_rootclasses.h dlldefs.h \
+                ctitypes.h logger.h thread.h mutex.h guard.h
+ion_value_basic_char.obj:       ctidbgmem.h ion_value_basic_char.h \
+                ion_rootclasses.h dlldefs.h logger.h thread.h mutex.h guard.h
+ion_value_basic_float.obj:      ion_value_basic_float.h \
+                ion_value_basic_numeric.h ion_rootclasses.h dlldefs.h \
+                ctitypes.h logger.h thread.h mutex.h guard.h
+ion_value_basic_intsigned.obj:  ctidbgmem.h logger.h thread.h mutex.h \
+                dlldefs.h guard.h ion_value_basic_intsigned.h \
+                ion_value_basic_numeric.h ion_rootclasses.h ctitypes.h
+ion_value_basic_intunsigned.obj:        ctidbgmem.h \
+                ion_value_basic_intunsigned.h ion_value_basic_numeric.h \
+                ion_rootclasses.h dlldefs.h ctitypes.h logger.h thread.h \
+                mutex.h guard.h
+ion_value_basic_program.obj:    ctidbgmem.h ion_value_basic_program.h \
+                ion_rootclasses.h dlldefs.h ion_value_statement.h logger.h \
+                thread.h mutex.h guard.h
+ion_value_basic_time.obj:       ctidbgmem.h ion_value_basic_time.h \
+                ion_rootclasses.h dlldefs.h ctitypes.h logger.h thread.h \
+                mutex.h guard.h
+ion_value_statement.obj:        ctidbgmem.h guard.h dlldefs.h logger.h \
+                thread.h mutex.h ion_rootclasses.h ion_value_statement.h \
+                ion_value_basic_array.h ctitypes.h ion_value_basic_boolean.h \
+                ion_value_basic_numeric.h
 prot_711.obj:   cticalls.h os2_2w32.h dlldefs.h types.h prot_711.h \
                 porter.h dsm2.h mutex.h guard.h dsm2err.h devicetypes.h \
                 queues.h logger.h thread.h dllbase.h
@@ -287,9 +343,9 @@ prot_ion.obj:   logger.h thread.h mutex.h dlldefs.h guard.h utility.h \
                 prot_ion.h pointtypes.h prot_base.h msg_pdata.h pointdefs.h \
                 message.h ctidbgmem.h collectable.h msg_signal.h yukon.h \
                 dllbase.h os2_2w32.h cticalls.h xfer.h dialup.h \
-                ion_rootclasses.h ion_valuebasictypes.h ctitypes.h \
-                ion_classtypes.h ion_net_application.h ion_net_network.h \
-                ion_net_datalink.h
+                ion_rootclasses.h ion_classtypes.h ion_net_application.h \
+                ctitypes.h ion_net_network.h ion_net_datalink.h \
+                ion_value_basic_program.h ion_value_statement.h
 prot_sixnet.obj:        guard.h dlldefs.h logger.h thread.h mutex.h \
                 prot_sixnet.h cmdparse.h parsevalue.h dllbase.h os2_2w32.h \
                 types.h cticalls.h dsm2.h
