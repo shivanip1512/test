@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_unit.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:08 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/30 16:32:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,7 +23,6 @@
 
 CtiTablePointUnit::CtiTablePointUnit() :
 _pointID(-1),
-_calcType(-1),
 _defaultValue(0.0),
 _logFrequency(INT_MAX),
 _unitID(0),
@@ -34,7 +33,6 @@ _lowReasonablityLimit(-DBL_MAX)
 
 CtiTablePointUnit::CtiTablePointUnit(const CtiTablePointUnit& aRef) :
 _pointID(-1),
-_calcType(-1),
 _defaultValue(0.0),
 _logFrequency(INT_MAX),
 _unitID(0),
@@ -54,10 +52,10 @@ CtiTablePointUnit& CtiTablePointUnit::operator=(const CtiTablePointUnit& aRef)
         _decimalPlaces          = aRef.getDecimalPlaces();
         _highReasonablityLimit  = aRef.getHighReasonabilityLimit();
         _lowReasonablityLimit   = aRef.getLowReasonabilityLimit();
-        _calcType               = aRef.getCalcType();
         _logFrequency           = aRef.getLogFrequency();
         _defaultValue           = aRef.getDefaultValue();
 
+        _unitMeasure            = aRef.getUnitMeasure();
     }
     return *this;
 }
@@ -80,79 +78,50 @@ void CtiTablePointUnit::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["decimalplaces"]            >> _decimalPlaces;
     rdr["highreasonabilitylimit"]   >> _highReasonablityLimit;
     rdr["lowreasonabilitylimit"]    >> _lowReasonablityLimit;
+
+    _unitMeasure.DecodeDatabaseReader(rdr);
 }
 
 INT CtiTablePointUnit::getUnitID() const
 {
-
-
     return _unitID;
 }
 
 INT CtiTablePointUnit::getLogFrequency() const
 {
-
-
     return _logFrequency;
-}
-
-INT CtiTablePointUnit::getCalcType() const
-{
-
-
-    return _calcType;
 }
 
 DOUBLE CtiTablePointUnit::getDefaultValue() const
 {
-
-
     return _defaultValue;
 }
 
 LONG CtiTablePointUnit::getPointID() const
 {
-
-
     return _pointID;
 }
 
 CtiTablePointUnit& CtiTablePointUnit::setPointID( const LONG pointID )
 {
-
-
     _pointID = pointID;
     return *this;
 }
 
 CtiTablePointUnit& CtiTablePointUnit::setUnitID(const INT &id)
 {
-
-
     _unitID = id;
     return *this;
 }
 
 CtiTablePointUnit& CtiTablePointUnit::setLogFrequency(INT i)
 {
-
-
     _logFrequency = i;
-    return *this;
-}
-
-CtiTablePointUnit& CtiTablePointUnit::setCalcType(INT i)
-{
-
-
-    _calcType = i;
     return *this;
 }
 
 CtiTablePointUnit& CtiTablePointUnit::setDefaultValue(DOUBLE d)
 {
-
-
     _defaultValue = d;
     return *this;
 }
@@ -180,13 +149,27 @@ void CtiTablePointUnit::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelec
 
     selector.from(tbl);
 
-    selector.where( selector.where() && keyTable["pointid"].leftOuterJoin(tbl["pointid"]));
+    selector.where( selector.where() &&
+                    (keyTable["pointid"] == tbl["pointid"]));
+
+    CtiTableUnitMeasure::getSQL(db, tbl, selector);
 }
 
 RWCString CtiTablePointUnit::getTableName()
 {
     return "PointUnit";
 }
+
+CtiTableUnitMeasure &CtiTablePointUnit::getUnitMeasure()
+{
+    return _unitMeasure;
+}
+
+CtiTableUnitMeasure CtiTablePointUnit::getUnitMeasure() const
+{
+    return _unitMeasure;
+}
+
 
 INT CtiTablePointUnit::getDecimalPlaces() const
 {
