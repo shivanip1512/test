@@ -14,7 +14,6 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
@@ -255,8 +254,7 @@ public class InventoryManager extends HttpServlet {
 			// Save the search values
 			StarsInventory starsInv = (StarsInventory) StarsFactory.newStarsInv(StarsInventory.class);
 			starsInv.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
-					energyCompany.getYukonListEntry(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, devTypeID),
-					DeviceType.class) );
+					YukonListFuncs.getYukonListEntry(devTypeID), DeviceType.class) );
 			
 			LMHardware hw = new LMHardware();
 			hw.setManufacturerSerialNumber( searchVal );
