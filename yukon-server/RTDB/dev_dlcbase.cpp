@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/02/10 23:23:59 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2005/02/17 23:23:36 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -250,6 +250,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
         {
             //  Address did not match, so it's a comm error
             ErrReturn = WRONGADDRESS;
+            InMessage->EventCode = WRONGADDRESS;
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);

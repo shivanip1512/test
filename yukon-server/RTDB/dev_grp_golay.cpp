@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/02/17 19:02:58 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/02/17 23:22:31 $
 *
 * HISTORY      :
 * $Log: dev_grp_golay.cpp,v $
+* Revision 1.11  2005/02/17 23:22:31  cplender
+* Removed deletes of OutMessage that are unnecessary
+*
 * Revision 1.10  2005/02/17 19:02:58  mfisher
 * Removed space before CVS comment header, moved #include "yukon.h" after CVS header
 *
@@ -193,12 +196,6 @@ INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
         retList.insert( pRet );
 
-        if(OutMessage)
-        {
-            delete OutMessage;
-            OutMessage = NULL;
-        }
-
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << resultString << endl;
@@ -226,8 +223,7 @@ INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
             reportActionItemsToDispatch(pReq, parse, vgList);
 
             //
-            //  Form up the reply here since the ExecuteRequest function will consume the
-            //  OutMessage.
+            //  Form up the reply here since the ExecuteRequest function might consume the OutMessage.
             //
             CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
@@ -254,12 +250,6 @@ INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
             resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
             CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
             retList.insert( pRet );
-
-            if(OutMessage)
-            {
-                delete OutMessage;
-                OutMessage = NULL;
-            }
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);

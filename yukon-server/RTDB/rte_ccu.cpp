@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/02/10 23:24:02 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/02/17 23:17:15 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -80,12 +80,6 @@ INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " ERROR: Route " << getName() << " has no  associated transmitter device" << endl;
         status = -1;
-    }
-
-    if(OutMessage != NULL)
-    {
-        delete OutMessage;       // Get rid of the memory which got us here.
-        OutMessage = NULL;
     }
 
     return status;
