@@ -175,7 +175,7 @@ function prepareSubmit(form) {
                 <tr> 
                   <td height="67"> 
                     <table width="100%" border="0" cellspacing="0" cellpadding="5">
-                      <input type="hidden" name="action" value="UpdateCustomerFAQs">
+                      <input type="hidden" name="action" value="UpdateFAQSubject">
                       <input type="hidden" name="SubjectID" value="<%= group.getSubjectID() %>">
                       <tr> 
                         <td width="15%" align="right" class="TableCell">Subject:</td>

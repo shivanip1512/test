@@ -215,8 +215,8 @@
 		  </cti:checkProperty>
 		  <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ %>"> 
 <%
-	String faqLink = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LINK_FAQ);
-	if (StarsUtils.forceNotNone(faqLink).length() > 0) {
+	String faqLink = ServletUtils.getCustomerFAQLink(user, liteEC);
+	if (faqLink != null) {
 %>
           <tr> 
             <td width="10">&nbsp;</td>

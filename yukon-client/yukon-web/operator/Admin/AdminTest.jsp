@@ -519,36 +519,20 @@ function removeAllMembers(form) {
                               <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                 <tr> 
                                   <td class="TableCell" width="5%">&nbsp;</td>
-                                  <%
-		String faqLink = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_FAQ);
-		boolean customizedFAQ = StarsUtils.forceNotNone(faqLink).length() > 0;
-%>
-                                  <td class="TableCell" width="15%"> 
-                                    <%
-		if (customizedFAQ) {
-%>
-                                    FAQ Link: 
-                                    <%
-		} else {
-%>
-                                    FAQ Subjects: 
-                                    <%		}
-%>
+<% String faqLink = ServletUtils.getCustomerFAQLink(liteEC); %>
+                                  <td class="TableCell" width="15%"><%= (faqLink != null)? "FAQ Link:" : "FAQ Subjects:" %>
                                   </td>
                                   <td class="TableCell" width="55%"> 
-                                    <%
-		if (customizedFAQ) {
-%>
-                                    <%= faqLink %> 
-                                    <%
+<%
+		if (faqLink != null) {
+			out.print(faqLink);
+		}
+		else if (liteEC.getCustomerFAQs() == null) {
+			out.print("(Inherited)");
 		}
 		else {
-			for (int i = 0; i < customerFAQs.getStarsCustomerFAQGroupCount(); i++) {
-				StarsCustomerFAQGroup faqGroup = customerFAQs.getStarsCustomerFAQGroup(i);
-%>
-                                    <%= faqGroup.getSubject() %><br>
-                                    <%
-			}
+			for (int i = 0; i < customerFAQs.getStarsCustomerFAQGroupCount(); i++)
+				out.print(customerFAQs.getStarsCustomerFAQGroup(i).getSubject() + "<br>");
 		}
 %>
                                   </td>

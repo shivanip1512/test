@@ -1,4 +1,9 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%
+	String faqLink = ServletUtils.getCustomerFAQLink(liteEC);
+	boolean inherited = (faqLink == null) && (liteEC.getCustomerFAQs() == null);
+	boolean customized = (faqLink == null) && (liteEC.getCustomerFAQs() != null);
+%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -6,7 +11,6 @@
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <script language="JavaScript">
-
 var subjectIDs = new Array();
 <%
 	for (int i = 0; i < customerFAQs.getStarsCustomerFAQGroupCount(); i++) {
@@ -22,10 +26,31 @@ function setButtonStatus(form) {
 	form.Delete.disabled = disabled;
 }
 
+function changeSource(form, source) {
+	form.FAQLink.disabled = (source != "Link");
+	var customized = <%= customized %> && (source == "Customized");
+	form.FAQSubjects.disabled = !customized;
+	form.MoveUp.disabled = !customized;
+	form.MoveDown.disabled = !customized;
+	form.Save.disabled = !customized;
+	form.Edit.disabled = !customized;
+	form.New.disabled = !customized;
+	form.Delete.disabled = !customized;
+	form.DeleteAll.disabled = !customized || form.FAQSubjects.options[0].value < 0;
+	if (customized) setButtonStatus(form);
+}
+
 function init() {
-	var form = document.form1;
-	setButtonStatus(form);
-	form.DeleteAll.disabled = form.FAQSubjects.options[0].value < 0;
+<%
+	String source = null;
+	if (faqLink != null)
+		source = "Link";
+	else if (inherited)
+		source = "Inherited";
+	else
+		source = "Customized";
+%>
+	changeSource(document.form1, "<%= source %>");
 }
 
 function moveUp(form) {
@@ -53,7 +78,7 @@ function moveDown(form) {
 function submitFAQSubjects(form) {
 	var subjects = form.FAQSubjects;
 	if (subjects.options[0].value >= 0) {
-		form.action.value = "UpdateFAQSubjects";
+		form.action.value = "UpdateFAQSubjectList";
 		for (i = 0; i < subjects.options.length; i++) {
 			var html = '<input type="hidden" name="SubjectIDs" value="' + subjectIDs[subjects.options[i].value] + '">';
 			form.insertAdjacentHTML("beforeEnd", html);
@@ -128,22 +153,20 @@ function newFAQSubject(form) {
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                           <td>
-                            <table width="100%" border="0" cellspacing="0" cellpadding="3" align="center" class="TableCell">
-                              <input type="hidden" name="action" value="UpdateFAQLink">
-<%
-	String faqLink = StarsUtils.forceNotNone(AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_FAQ));
-	boolean customizedFAQ = faqLink.length() > 0;
-	String checkedStr = (customizedFAQ) ? "checked" : "";
-	String disabledStr = (customizedFAQ) ? "" : "disabled";
-%>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="3" align="center" class="MainText">
+                              <input type="hidden" name="action" value="UpdateFAQSource">
                               <tr> 
                                 <td width="75%"> 
-                                  <input type="checkbox" name="CustomizedFAQ" value="true" onclick="this.form.FAQLink.disabled = !this.checked;setContentChanged(true);" <%= checkedStr %>>
+                                  <input type="radio" name="Source" value="Inherited" onclick="changeSource(this.form, this.value); setContentChanged(true);" <% if (inherited) out.print("checked"); %>>
+                                  Inherited<br>
+                                  <input type="radio" name="Source" value="Link" onclick="changeSource(this.form, this.value); setContentChanged(true);" <% if (faqLink != null) out.print("checked"); %>>
                                   Use a link to your company's website: 
-                                  <input type="text" name="FAQLink" size="30" value="<%= faqLink %>" <%= disabledStr %> onchange="setContentChanged(true)">
-                                </td>
+                                  <input type="text" name="FAQLink" size="30" value="<%= StarsUtils.forceNotNone(faqLink) %>" onchange="setContentChanged(true)">
+                                  <br>
+                                  <input type="radio" name="Source" value="Customized" onclick="changeSource(this.form, this.value); setContentChanged(true);" <% if (customized) out.print("checked"); %>>
+                                  Define the FAQ subjects below:</td>
                                 <td width="25%"> 
-                                  <input type="submit" name="SubmitFAQLink" value="Submit">
+                                  <input type="submit" name="Submit" value="Submit">
                                 </td>
                               </tr>
                             </table>
@@ -179,11 +202,11 @@ function newFAQSubject(form) {
                                         </select>
                                       </td>
                                       <td class="TableCell" width="25%"> 
-                                        <input type="button" name="MoveUp" value="Move Up" onClick="moveUp(this.form)">
+                                        <input type="button" name="MoveUp" value="Move Up" onclick="moveUp(this.form)">
                                         <br>
-                                        <input type="button" name="MoveDown" value="Move Down" onClick="moveDown(this.form)">
+                                        <input type="button" name="MoveDown" value="Move Down" onclick="moveDown(this.form)">
                                         <br>
-                                        <input type="button" name="Save" value="Save" onClick="submitFAQSubjects(this.form)">
+                                        <input type="button" name="Save" value="Save" onclick="submitFAQSubjects(this.form)">
                                       </td>
                                     </tr>
                                   </table>
