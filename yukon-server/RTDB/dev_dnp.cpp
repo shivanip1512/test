@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2005/02/10 23:23:59 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2005/03/10 21:00:32 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,19 +46,22 @@ using namespace std;
 #include "cparms.h"
 
 
-CtiDeviceDNP::CtiDeviceDNP()
+namespace Cti       {
+namespace Device    {
+
+DNP::DNP()
 {
     resetDNPScansPending();
 }
 
-CtiDeviceDNP::CtiDeviceDNP(const CtiDeviceDNP &aRef)
+DNP::DNP(const DNP &aRef)
 {
    *this = aRef;
 }
 
-CtiDeviceDNP::~CtiDeviceDNP() {}
+DNP::~DNP() {}
 
-CtiDeviceDNP &CtiDeviceDNP::operator=(const CtiDeviceDNP &aRef)
+DNP &DNP::operator=(const DNP &aRef)
 {
    if(this != &aRef)
    {
@@ -68,13 +71,7 @@ CtiDeviceDNP &CtiDeviceDNP::operator=(const CtiDeviceDNP &aRef)
 }
 
 
-CtiProtocolBase *CtiDeviceDNP::getProtocol() const
-{
-    return (CtiProtocolBase *)&_dnp;
-}
-
-
-void CtiDeviceDNP::resetDNPScansPending( void )
+void DNP::resetDNPScansPending( void )
 {
     _scanGeneralPending     = false;
     _scanIntegrityPending   = false;
@@ -82,7 +79,7 @@ void CtiDeviceDNP::resetDNPScansPending( void )
 }
 
 
-void CtiDeviceDNP::setDNPScanPending(int scantype, bool pending)
+void DNP::setDNPScanPending(int scantype, bool pending)
 {
     switch(scantype)
     {
@@ -101,7 +98,7 @@ void CtiDeviceDNP::setDNPScanPending(int scantype, bool pending)
 }
 
 
-bool CtiDeviceDNP::clearedForScan(int scantype)
+bool DNP::clearedForScan(int scantype)
 {
     bool status = false;
 
@@ -142,7 +139,7 @@ bool CtiDeviceDNP::clearedForScan(int scantype)
 }
 
 
-void CtiDeviceDNP::resetForScan(int scantype)
+void DNP::resetForScan(int scantype)
 {
     // OK, it is five minutes past the time I expected to have scanned this bad boy..
     switch(scantype)
@@ -176,7 +173,7 @@ void CtiDeviceDNP::resetForScan(int scantype)
 
 
 
-INT CtiDeviceDNP::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+INT DNP::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan general");
@@ -192,7 +189,7 @@ INT CtiDeviceDNP::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
     pReq->setCommandString("scan general");
     pReq->setMessagePriority(ScanPriority);
 
-    status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
+    status = ExecuteRequest(pReq, newParse, OutMessage, vgList, retList, outList);
 
     if(OutMessage)
     {
@@ -204,7 +201,7 @@ INT CtiDeviceDNP::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 }
 
 
-INT CtiDeviceDNP::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+INT DNP::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan integrity");
@@ -220,7 +217,7 @@ INT CtiDeviceDNP::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
     pReq->setCommandString("scan integrity");
     pReq->setMessagePriority(ScanPriority);
 
-    status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
+    status = ExecuteRequest(pReq, newParse, OutMessage, vgList, retList, outList);
 
     if(OutMessage)
     {
@@ -232,22 +229,29 @@ INT CtiDeviceDNP::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 }
 
 
-INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT nRet = NoMethod;
+
+    Protocol::DNPInterface::Command command = Protocol::DNPInterface::Command_Invalid;
+    Protocol::DNPInterface::output_point controlout;
+    pseudo_info p_i = {false, -1, -1};
 
     switch( parse.getCommand() )
     {
         case ControlRequest:
         {
-            int offset, on_time, off_time;
             CtiPointBase   *point   = NULL;
             CtiPointStatus *control = NULL;
-            CtiDNPBinaryOutputControl::ControlCode controltype;
-            CtiDNPBinaryOutputControl::TripClose   trip_close;
+
+            Protocol::DNP::BinaryOutputControl::ControlCode controltype;
+            Protocol::DNP::BinaryOutputControl::TripClose   trip_close;
+            int offset, on_time, off_time;
+            bool valid_control = true;
 
             if( parse.getiValue("point") > 0 )
             {
+                //  select by raw pointid
                 if( (point = getDevicePointEqual(parse.getiValue("point"))) != NULL )
                 {
                     if( point->isStatus() )
@@ -258,6 +262,7 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
             }
             else if( parse.getFlags() & CMD_FLAG_OFFSET )
             {
+                //  select by a control point on the device
                 offset = parse.getiValue("offset");
 
                 control = (CtiPointStatus*)getDeviceControlPointOffsetEqual(offset);
@@ -270,6 +275,7 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                 {
                     //  NOTE - the control duration is completely arbitrary here.  Fix sometime if necessary
                     //           (i.e. customer doing sheds/restores that need to be accurately LMHist'd)
+                    //  ugh - does this need to be sent from Porter as well?  do we send it if the control fails?
                     CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg(getID(), control->getPointID(), 0, RWTime(), 86400, 100);
 
                     //  if the control is latched
@@ -287,15 +293,15 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
                         if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
                         {
-                            controltype = CtiDNPBinaryOutputControl::LatchOff;
+                            controltype = Protocol::DNP::BinaryOutputControl::LatchOff;
                         }
                         else if( parse.getFlags() & CMD_FLAG_CTL_CLOSE )
                         {
-                            controltype = CtiDNPBinaryOutputControl::LatchOn;
+                            controltype = Protocol::DNP::BinaryOutputControl::LatchOn;
                         }
 
                         offset      = control->getPointStatus().getControlOffset();
-                        trip_close  = CtiDNPBinaryOutputControl::NUL;
+                        trip_close  = Protocol::DNP::BinaryOutputControl::NUL;
                         on_time     = 0;
                         off_time    = 0;
                     }
@@ -316,72 +322,58 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
                         if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
                         {
-                            trip_close  = CtiDNPBinaryOutputControl::Trip;
+                            trip_close  = Protocol::DNP::BinaryOutputControl::Trip;
                         }
                         else if( parse.getFlags() & CMD_FLAG_CTL_CLOSE )
                         {
-                            trip_close  = CtiDNPBinaryOutputControl::Close;
+                            trip_close  = Protocol::DNP::BinaryOutputControl::Close;
                         }
 
-                        controltype = CtiDNPBinaryOutputControl::PulseOn;
+                        controltype = Protocol::DNP::BinaryOutputControl::PulseOn;
                         offset      = control->getPointStatus().getControlOffset();
                         off_time    = 0;
                     }
 
+                    //  set up the pseudo data to be sent from Porter-side
+                    p_i.is_pseudo = control->isPseudoPoint();
+                    p_i.pointid   = control->getPointID();
+                    p_i.state     = hist->getRawState();
 
                     hist->setMessagePriority(MAXPRIORITY - 1);
+                    hist->setUser(pReq->getUser());
                     vgList.insert(hist);
-
-                    if(control->isPseudoPoint() )
-                    {
-                        if( (control->getPointStatus().getControlType() == SBOPulseControlType ||
-                             control->getPointStatus().getControlType() == SBOLatchControlType) && !parse.isKeyValid("sbo_operate") )
-                        {
-                            //  we have to wait until we're sending the operate to send the pseudo data
-                        }
-                        else
-                        {
-                            // There is no physical point to observe and respect.  We lie to the control point.
-                            CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(control->getID(),
-                                                                                (DOUBLE)hist->getRawState(),
-                                                                                NormalQuality,
-                                                                                StatusPointType,
-                                                                                RWCString("This point has been controlled"));
-                            pData->setUser(pReq->getUser());
-                            vgList.insert(pData);
-                        }
-
-                    }
                 }
                 else
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << RWTime() << " **** Checkpoint - invalid control type \"" << control->getPointStatus().getControlType() << "\" specified in DNP::ExecuteRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
-                }
 
-                OutMessage->ExpirationTime = RWTime().seconds() + control->getControlExpirationTime();
+                    //  i don't like this, but i don't see a better way yet
+                    valid_control = false;
+                }
             }
             else
             {
                 if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
                 {
-                    controltype = CtiDNPBinaryOutputControl::PulseOff;
+                    controltype = Protocol::DNP::BinaryOutputControl::PulseOff;
                 }
                 else if( parse.getFlags() & CMD_FLAG_CTL_CLOSE )
                 {
-                    controltype = CtiDNPBinaryOutputControl::PulseOn;
+                    controltype = Protocol::DNP::BinaryOutputControl::PulseOn;
                 }
 
                 on_time  = 0;
                 off_time = 0;
+
+                p_i.is_pseudo = false;
             }
 
-            CtiProtocolDNP::dnp_output_point controlout;
 
-            controlout.type   = CtiProtocolDNP::DigitalOutput;
-            controlout.offset = offset;
+            controlout.type            = Protocol::DNPInterface::DigitalOutput;
+            controlout.control_offset  = offset;
 
             controlout.dout.control    = controltype;
             controlout.dout.trip_close = trip_close;
@@ -391,34 +383,41 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
             controlout.dout.queue      = false;
             controlout.dout.clear      = false;
 
-            if( (control != NULL) && control->getPointStatus().getControlInhibit() )
+            if( control )
             {
-                nRet = NoMethod;
+                OutMessage->ExpirationTime = RWTime().seconds() + control->getControlExpirationTime();
             }
-            else
+
+            if( control && control->getPointStatus().getControlInhibit() )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint - control inhibited for device \"" << getName() << "\" point \"" << control->getName() << "\" in DNP::ExecuteRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+            else if( valid_control )
             {
                 if( parse.isKeyValid("sbo_selectonly") )
                 {
-                    _dnp.setCommand(CtiProtocolDNP::DNP_SetDigitalOut_SBO_SelectOnly, &controlout, 1);
+                    //  for diagnostics - used for verifying SBO timeouts
+                    command = Protocol::DNPInterface::Command_SetDigitalOut_SBO_SelectOnly;
                 }
                 else if( parse.isKeyValid("sbo_operate") )
                 {
-                    _dnp.setCommand(CtiProtocolDNP::DNP_SetDigitalOut_SBO_Operate, &controlout, 1);
+                    //  the other half of SBO_SelectOnly
+                    command = Protocol::DNPInterface::Command_SetDigitalOut_SBO_Operate;
                 }
-                else if( control != NULL &&
-                         (control->getPointStatus().getControlType() == SBOPulseControlType ||
-                          control->getPointStatus().getControlType() == SBOLatchControlType) )
+                else if( (control && control->getPointStatus().getControlType() == SBOPulseControlType) ||
+                         (control && control->getPointStatus().getControlType() == SBOLatchControlType) )
                 {
-                    //  This command will send a DNP_SetDigitalOut_SBO_Operate to finish the command
-                    //    when it gets to ResultDecode
-                    _dnp.setCommand(CtiProtocolDNP::DNP_SetDigitalOut_SBO_Select, &controlout, 1);
+                    //  if successful, this will transition to SBO_Operate in DNPInterface on Porter-side
+                    command = Protocol::DNPInterface::Command_SetDigitalOut_SBO_Select;
                 }
                 else
                 {
-                    _dnp.setCommand(CtiProtocolDNP::DNP_SetDigitalOut_Direct, &controlout, 1);
+                    //  boring old direct control
+                    command = Protocol::DNPInterface::Command_SetDigitalOut_Direct;
                 }
-
-                nRet = NoError;
             }
 
             break;
@@ -428,33 +427,30 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         {
             switch( parse.getiValue("scantype") )
             {
-                case ScanRateStatus:
-                {
-                    nRet = NoMethod;
-                    break;
-                }
-
                 case ScanRateGeneral:
                 {
-                    _dnp.setCommand(CtiProtocolDNP::DNP_Class123Read);
-                    nRet = NoError;
+                    command = Protocol::DNPInterface::Command_Class123Read;
+
                     break;
                 }
 
                 case ScanRateAccum:
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "Accumulator scanrates not defined for DNP devices - check the DeviceScanRate table" << endl;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - Accumulator scanrates not defined for DNP device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    break;
                 }
+
                 case ScanRateIntegrity:
                 {
-                    _dnp.setCommand(CtiProtocolDNP::DNP_Class1230Read);
-                    nRet = NoError;
+                    command = Protocol::DNPInterface::Command_Class1230Read;
+
                     break;
                 }
             }
-
 
             break;
         }
@@ -465,16 +461,12 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
             if( parse.getFlags() & CMD_FLAG_PV_ANALOG )
             {
-                CtiProtocolDNP::dnp_output_point controlout;
+                controlout.type = Protocol::DNPInterface::AnalogOutput;
+                controlout.control_offset = parse.getiValue("analogoffset");
 
-                controlout.type = CtiProtocolDNP::AnalogOutput;
+                controlout.aout.value     = parse.getiValue("analogvalue");
 
-                controlout.aout.value = parse.getiValue("analogvalue");
-                controlout.offset     = parse.getiValue("analogoffset");
-
-                _dnp.setCommand(CtiProtocolDNP::DNP_SetAnalogOut, &controlout, 1);
-
-                nRet = NoError;
+                command = Protocol::DNPInterface::Command_SetAnalogOut, controlout;
             }
 
             break;
@@ -484,9 +476,7 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         {
             if(parse.isKeyValid("timesync"))
             {
-                _dnp.setCommand(CtiProtocolDNP::DNP_WriteTime);
-
-                nRet = NoError;
+                command = Protocol::DNPInterface::Command_WriteTime;
             }
 
             break;
@@ -496,9 +486,7 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         {
             if(parse.isKeyValid("time"))
             {
-                _dnp.setCommand(CtiProtocolDNP::DNP_ReadTime);
-
-                nRet = NoError;
+                command = Protocol::DNPInterface::Command_ReadTime;
             }
 
             break;
@@ -506,28 +494,32 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
         case GetValueRequest:
         case GetStatusRequest:
-        {
-
-        }
         case PutStatusRequest:
         case LoopbackRequest:
         default:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " **** Checkpoint - command type \"" << parse.getCommand() << "\" not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
 
-    OutMessage->Port     = getPortID();
-    OutMessage->DeviceID = getID();
-    OutMessage->TargetID = getID();
-    EstablishOutMessagePriority(OutMessage, pReq->getMessagePriority());
-
-    if( nRet == NoError )
+    if( command != Protocol::DNPInterface::Command_Invalid )
     {
-        _dnp.sendCommRequest(OutMessage, outList);
+        _pil_info.protocol_command   = command;
+        _pil_info.protocol_parameter = controlout;
+        _pil_info.pseudo_info        = p_i;
+        _pil_info.user               = pReq->getUser();
+
+        OutMessage->Port     = getPortID();
+        OutMessage->DeviceID = getID();
+        OutMessage->TargetID = getID();
+        EstablishOutMessagePriority(OutMessage, pReq->getMessagePriority());
+
+        sendCommRequest(OutMessage, outList);
+
+        nRet = NoError;
     }
     else
     {
@@ -535,280 +527,192 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         OutMessage = NULL;
     }
 
-    //  Okay, this is a HACK and needs to be resolved on Porter-side someday soon.
-    //  If the command we just executed is a select, tag the Execute on the end right away
-    if( _dnp.getCommand() == CtiProtocolDNP::DNP_SetDigitalOut_SBO_Select )
-    {
-        RWCString newRequestStr(pReq->CommandString());
-
-        newRequestStr += " sbo_operate";
-
-        //  just to make sure the "sbo_operate" token isn't cropped off
-        CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(*pReq);
-
-        newReq->setMessagePriority(MAXPRIORITY - 1);
-        newReq->setCommandString(newRequestStr);
-
-        CtiCommandParser parse(newReq->CommandString());
-
-        CtiDeviceBase::ExecuteRequest(newReq, parse, vgList, retList, outList);
-
-        delete newReq;
-    }
-
     return nRet;
 }
 
 
-INT CtiDeviceDNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+Protocol::Interface *DNP::getProtocol()
 {
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
-    RWTPtrSlist<CtiPointDataMsg> dnpPoints;
-
-    RWCString resultString;
-    CtiReturnMsg *retMsg;
-
-    if( !ErrReturn && !_dnp.recvCommResult(InMessage, outList) )
-    {
-        if( _dnp.hasInboundPoints() )
-        {
-            _dnp.getInboundPoints(dnpPoints);
-
-            processInboundPoints(InMessage, TimeNow, vgList, retList, outList, dnpPoints);
-        }
-
-        switch( _dnp.getCommand() )
-        {
-            case CtiProtocolDNP::DNP_Class0Read:
-            case CtiProtocolDNP::DNP_Class1230Read:
-            {
-                setDNPScanPending(ScanRateIntegrity, false);
-                break;
-            }
-            case CtiProtocolDNP::DNP_Class123Read:
-            case CtiProtocolDNP::DNP_Class1Read:
-            case CtiProtocolDNP::DNP_Class2Read:
-            case CtiProtocolDNP::DNP_Class3Read:
-            {
-                setDNPScanPending(ScanRateGeneral, false);
-                break;
-            }
-            case CtiProtocolDNP::DNP_SetDigitalOut_SBO_SelectOnly:
-            case CtiProtocolDNP::DNP_SetDigitalOut_SBO_Select:
-            {
-                retMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
-
-                retMsg->setUserMessageId(InMessage->Return.UserID);
-
-                if( _dnp.hasControlResult() )
-                {
-                    resultString = getName() + " / SBO select: " + _dnp.getControlResultString();
-
-                    retMsg->setResultString(resultString);
-                    /*
-                    if( _dnp.getCommand() == CtiProtocolDNP::DNP_SetDigitalOut_SBO_Select &&
-                        _dnp.getControlResultSuccess() )
-                    {
-                        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - sending SBO operate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-
-                        if( InMessage->Return.Attempt >= 0 )
-                        {
-                            RWCString newRequest(InMessage->Return.CommandStr);
-
-                            newRequest += " sbo_operate";
-
-                            //  just to make sure the "sbo_operate" token isn't cropped off
-                            CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
-                                                                             newRequest,
-                                                                             InMessage->Return.UserID,
-                                                                             InMessage->Return.TrxID,
-                                                                             InMessage->Return.RouteID,
-                                                                             InMessage->Return.MacroOffset,
-                                                                             -1);
-
-                            newReq->setMessagePriority(MAXPRIORITY - 1);
-
-                            newReq->setConnectionHandle((void *)InMessage->Return.Connection);
-
-                            CtiCommandParser parse(newReq->CommandString());
-
-                            CtiDeviceBase::ExecuteRequest(newReq, parse, vgList, retList, outList);
-
-                            delete newReq;
-                        }
-                        else
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - averted SBO select loop for device " << getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - SBO select failed for device " << getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-
-                    }*/
-                }
-                else
-                {
-                    retMsg->setResultString("Incorrect control response from DNP device");
-                }
-
-                retList.append(retMsg);
-
-                break;
-            }
-            case CtiProtocolDNP::DNP_SetDigitalOut_Direct:
-            case CtiProtocolDNP::DNP_SetDigitalOut_SBO_Operate:
-            {
-                //  check the return from the control
-
-                retMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
-
-                retMsg->setUserMessageId(InMessage->Return.UserID);
-
-                if( _dnp.hasControlResult() )
-                {
-                    resultString = getName() + " / control result: " + _dnp.getControlResultString();
-
-                    retMsg->setResultString(resultString);
-
-                    if( !_dnp.getControlResultSuccess() )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - control failed for device " << getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-                else
-                {
-                    retMsg->setResultString("Incorrect control response from DNP device");
-                }
-
-                retList.append(retMsg);
-
-                //  scan the statuses to verify control, but only if we were successful
-                if( _dnp.hasControlResult() && _dnp.getControlResultSuccess() )
-                {
-                    //  we're going to be doing a scan, wait for it
-                    retMsg->setExpectMore();
-
-                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
-                    CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
-                                                                     "scan general",
-                                                                     InMessage->Return.UserID,
-                                                                     InMessage->Return.TrxID,
-                                                                     InMessage->Return.RouteID,
-                                                                     InMessage->Return.MacroOffset,
-                                                                     InMessage->Return.Attempt);
-
-                    newReq->setMessagePriority(MAXPRIORITY - 1);
-
-                    newReq->setConnectionHandle((void *)InMessage->Return.Connection);
-
-                    CtiCommandParser parse(newReq->CommandString());
-
-                    CtiDeviceBase::ExecuteRequest(newReq, parse, vgList, retList, outList);
-
-                    delete newReq;
-                }
-
-                break;
-            }
-            case CtiProtocolDNP::DNP_ReadTime:
-            {
-                retMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
-
-                retMsg->setUserMessageId(InMessage->Return.UserID);
-
-                if( _dnp.hasTimeResult() )
-                {
-                    RWTime deviceTime(_dnp.getTimeResult() + rwEpoch);
-
-                    resultString = getName() + " / current time: " + deviceTime.asString();
-
-                    retMsg->setResultString(resultString);
-                }
-                else
-                {
-                    retMsg->setResultString("No time response from DNP device");
-                }
-
-                retList.append(retMsg);
-
-                break;
-            }
-
-            default:
-            {
-                break;
-            }
-        }
-    }
-    else
-    {
-        char error_str[80];
-        RWCString resultString;
-
-        if( !ErrReturn )
-        {
-            ErrReturn = NOTNORMAL;
-        }
-
-        GetErrorString(ErrReturn, error_str);
-
-        resultString = getName() + " / operation failed \"" + error_str + "\" (" + RWCString(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
-
-        CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                       RWCString(InMessage->Return.CommandStr),
-                                                       resultString,
-                                                       ErrReturn,
-                                                       InMessage->Return.RouteID,
-                                                       InMessage->Return.MacroOffset,
-                                                       InMessage->Return.Attempt,
-                                                       InMessage->Return.TrxID,
-                                                       InMessage->Return.UserID);
-
-        retList.append(retMsg);
-    }
-
-    return ErrReturn;
+    return &_dnp;
 }
 
 
-void CtiDeviceDNP::processInboundPoints(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, RWTPtrSlist<CtiPointDataMsg> &points )
+int DNP::generate(CtiXfer &xfer)
 {
-    CtiReturnMsg    *retMsg,
-                    *vgMsg;
-    CtiPointDataMsg *tmpMsg;
-    CtiPointBase    *point;
-    CtiPointNumeric *pNumeric;
-    RWCString        resultString;
-    RWTime           Now;
+    return _dnp.generate(xfer);
+}
 
-    retMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
-    vgMsg  = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
-    retMsg->setUserMessageId(InMessage->Return.UserID);
-    vgMsg->setUserMessageId (InMessage->Return.UserID);
+int DNP::decode(CtiXfer &xfer, int status)
+{
+    int retval = NoError;
+
+    retval = _dnp.decode(xfer, status);
+
+    if( _dnp.isTransactionComplete() )
+    {
+        const Protocol::DNPInterface::output_point &op = _porter_info.protocol_parameter;
+    }
+
+    return retval;
+}
+
+
+int DNP::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList )
+{
+    int retVal = NoError;
+
+    //  write the outmess_header
+    outmess_header *om_buf = reinterpret_cast<outmess_header *>(OutMessage->Buffer.OutMessage);
+    om_buf->command     = _pil_info.protocol_command;
+    om_buf->parameter   = _pil_info.protocol_parameter;
+    om_buf->pseudo_info = _pil_info.pseudo_info;
+
+    char *buf = reinterpret_cast<char *>(OutMessage->Buffer.OutMessage) + sizeof(outmess_header);
+    strncpy(buf, _pil_info.user.data(), 127);
+    buf[127] = 0;  //  max of 128, just because i feel like it
+
+    if( OutMessage )
+    {
+        //  assign all of the standard OM bits
+        OutMessage->OutLength    = sizeof(om_buf) + strlen(buf) + 1;  //  plus null
+        OutMessage->Source       = _dnp_address.getMasterAddress();
+        OutMessage->Destination  = _dnp_address.getSlaveAddress();
+        OutMessage->EventCode    = RESULT;
+        OutMessage->MessageFlags = _dnp.commandRequiresRequeueOnFail() ? MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL : 0;
+        OutMessage->Retry        = _dnp.commandRetries();
+
+        //  give it a higher priority if it's a time sync or a control command
+        switch( _pil_info.protocol_command )
+        {
+            case Protocol::DNPInterface::Command_WriteTime:
+                OutMessage->Priority = MAXPRIORITY - 1;
+                break;
+
+            case Protocol::DNPInterface::Command_SetDigitalOut_Direct:
+            case Protocol::DNPInterface::Command_SetDigitalOut_SBO_Operate:
+            case Protocol::DNPInterface::Command_SetDigitalOut_SBO_Select:
+            case Protocol::DNPInterface::Command_SetDigitalOut_SBO_SelectOnly:
+                OutMessage->Priority = MAXPRIORITY - 2;
+                break;
+        }
+
+        outList.append(OutMessage);
+        OutMessage = 0;
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint - invalid OutMessage in DNPInterface::sendCommRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        retVal = MemoryError;
+    }
+
+    return retVal;
+}
+
+
+int DNP::recvCommRequest( OUTMESS *OutMessage )
+{
+    int retVal = NoError;
+
+    if( OutMessage )
+    {
+        outmess_header *om_buf = reinterpret_cast<outmess_header *>(OutMessage->Buffer.OutMessage);
+
+        //  we keep a copy for the decode later on
+        _porter_info.protocol_command   = om_buf->command;
+        _porter_info.protocol_parameter = om_buf->parameter;
+        _porter_info.pseudo_info        = om_buf->pseudo_info;
+
+        char *buf = reinterpret_cast<char *>(OutMessage->Buffer.OutMessage) + sizeof(outmess_header);
+        buf[127] = 0;           //  make sure it's null-terminated somewhere before we do this:
+        _porter_info.user = buf;   //  ooo, how daring
+
+        _dnp.setCommand(_porter_info.protocol_command, _porter_info.protocol_parameter);
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint - invalid OutMessage in DNPInterface::recvCommResult() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        retVal = MemoryError;
+    }
+
+    return retVal;
+}
+
+
+int DNP::sendCommResult(INMESS *InMessage)
+{
+    int retval = NoError;
+
+    char *buf;
+    inmess_header *ih;
+    int offset;
+    string result_string;
+    queue<string *> strings;
+
+    buf = reinterpret_cast<char *>(InMessage->Buffer.InMessage);
+    offset = 0;
+
+    //  we're just going to send a single string across
+
+    _dnp.getInboundStrings(strings);
+
+    while( !strings.empty() )
+    {
+        result_string += getName().data();
+        result_string += " / ";
+        result_string += *(strings.front());
+        result_string += "\n";
+
+        delete strings.front();
+        strings.pop();
+    }
+
+    while( !_results.empty() )
+    {
+        result_string += *(_results.front());
+        result_string += "\n";
+
+        delete _results.front();
+        _results.pop();
+    }
+
+    strncpy(buf, result_string.c_str(), sizeof(InMessage->Buffer.InMessage) - 1);
+    InMessage->Buffer.InMessage[sizeof(InMessage->Buffer.InMessage) - 1] = 0;
+
+    InMessage->InLength = result_string.size() + 1;
+
+    return retval;
+}
+
+
+void DNP::sendDispatchResults(CtiConnection &vg_connection)
+{
+    CtiReturnMsg                *vgMsg;
+    CtiPointDataMsg             *tmpMsg;
+    CtiPointBase                *point;
+    CtiPointNumeric             *pNumeric;
+    RWCString                    resultString;
+    RWTime                       Now;
+    queue<CtiPointDataMsg *>     points;
+
+    vgMsg  = CTIDBG_new CtiReturnMsg(getID());  //  , InMessage->Return.CommandStr
 
     double tmpValue;
 
-    while( !points.isEmpty() )
+    _dnp.getInboundPoints(points);
+
+    while( !points.empty() )
     {
-        tmpMsg = points.removeFirst();
+        tmpMsg = points.front();
+        points.pop();
 
         //  !!! tmpMsg->getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
         if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId(), tmpMsg->getType())) != NULL )
@@ -874,12 +778,7 @@ void CtiDeviceDNP::processInboundPoints(INMESS *InMessage, RWTime &TimeNow, RWTP
 
                             CtiPointDataMsg *demandMsg = new CtiPointDataMsg(demandPoint->getID(), demandValue, NormalQuality, DemandAccumulatorPointType, resultString);
 
-                            if( !useScanFlags() )  //  if we're not Scanner, send it to VG as well (scanner will do this on his own)
-                            {
-                                //  maybe (parse.isKeyValid("flag") && (parse.getFlags( ) & CMD_FLAG_UPDATE)) someday
-                                vgMsg->PointData().append(demandMsg->replicateMessage());
-                            }
-                            retMsg->PointData().append(demandMsg);
+                            vgMsg->PointData().append(demandMsg->replicateMessage());
 
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -922,25 +821,23 @@ void CtiDeviceDNP::processInboundPoints(INMESS *InMessage, RWTime &TimeNow, RWTP
 
                 tmpMsg->setValue(tmpValue);
 
-                resultString = getName() + " / " + point->getName() + ": " + CtiNumStr(tmpMsg->getValue(), ((CtiPointNumeric *)point)->getPointUnits().getDecimalPlaces());
+                resultString  = getName() + " / " + point->getName() + ": " + CtiNumStr(tmpMsg->getValue(), ((CtiPointNumeric *)point)->getPointUnits().getDecimalPlaces());
+                resultString += " @ " + tmpMsg->getTime().asString();
             }
             else if( point->isStatus() )
             {
-                resultString = getName() + " / " + point->getName() + ": " + ResolveStateName(((CtiPointStatus *)point)->getStateGroupID(), tmpMsg->getValue());
+                resultString  = getName() + " / " + point->getName() + ": " + ResolveStateName(((CtiPointStatus *)point)->getStateGroupID(), tmpMsg->getValue());
+                resultString += " @ " + tmpMsg->getTime().asString();
             }
             else
             {
                 resultString = "";
             }
 
+            _results.push(CTIDBG_new string(resultString.data()));
             tmpMsg->setString(resultString);
 
-            if( !useScanFlags() )  //  if we're not Scanner, send it to VG as well (scanner will do this on his own)
-            {
-                //  maybe (parse.isKeyValid("flag") && (parse.getFlags( ) & CMD_FLAG_UPDATE)) someday
-                vgMsg->PointData().append(tmpMsg->replicateMessage());
-            }
-            retMsg->PointData().append(tmpMsg);
+            vgMsg->PointData().append(tmpMsg->replicateMessage());
         }
         else
         {
@@ -948,12 +845,105 @@ void CtiDeviceDNP::processInboundPoints(INMESS *InMessage, RWTime &TimeNow, RWTP
         }
     }
 
-    retList.append(retMsg);
-    vgList.append(vgMsg);
+    //  now send the pseudos related to the control point
+    //    note:  points are the domain of the device, not the protocol,
+    //           so i have to handle pseudo points here, in the device code
+    switch( _porter_info.protocol_command )
+    {
+        case Protocol::DNPInterface::Command_SetDigitalOut_Direct:
+        case Protocol::DNPInterface::Command_SetDigitalOut_SBO_Operate:
+        {
+            if( _porter_info.pseudo_info.is_pseudo /*&& !_dnp.errorCondition()*/ )  //  if the control was successful
+            {
+                CtiPointDataMsg *msg = CTIDBG_new CtiPointDataMsg(_porter_info.pseudo_info.pointid,
+                                                                  _porter_info.pseudo_info.state,
+                                                                  NormalQuality,
+                                                                  StatusPointType,
+                                                                  "This point has been controlled");
+                msg->setUser(_porter_info.user.data());
+                vgMsg->PointData().append(msg);
+            }
+
+            break;
+        }
+    }
+
+    vg_connection.WriteConnQue(vgMsg);
 }
 
 
-INT CtiDeviceDNP::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
+INT DNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+{
+    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    RWTPtrSlist<CtiPointDataMsg> dnpPoints;
+
+    CtiReturnMsg *retMsg;
+
+    if( !ErrReturn )
+    {
+        string result_string;
+
+        InMessage->Buffer.InMessage[InMessage->InLength - 1] = 0;
+
+        result_string.assign(reinterpret_cast<char *>(InMessage->Buffer.InMessage), InMessage->InLength);
+
+        switch( _pil_info.protocol_command )
+        {
+            case Protocol::DNPInterface::Command_Class0Read:
+            case Protocol::DNPInterface::Command_Class1230Read:
+            {
+                setDNPScanPending(ScanRateIntegrity, false);
+                break;
+            }
+            case Protocol::DNPInterface::Command_Class123Read:
+            case Protocol::DNPInterface::Command_Class1Read:
+            case Protocol::DNPInterface::Command_Class2Read:
+            case Protocol::DNPInterface::Command_Class3Read:
+            {
+                setDNPScanPending(ScanRateGeneral, false);
+                break;
+            }
+        }
+
+        retMsg = CTIDBG_new CtiReturnMsg(getID(),
+                                         RWCString(InMessage->Return.CommandStr),
+                                         result_string.data(),
+                                         InMessage->EventCode & 0x7fff,
+                                         InMessage->Return.RouteID,
+                                         InMessage->Return.MacroOffset,
+                                         InMessage->Return.Attempt,
+                                         InMessage->Return.TrxID,
+                                         InMessage->Return.UserID);
+
+        retList.append(retMsg);
+    }
+    else
+    {
+        char error_str[80];
+        RWCString resultString;
+
+        GetErrorString(ErrReturn, error_str);
+
+        resultString = getName() + " / operation failed \"" + error_str + "\" (" + RWCString(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
+
+        retMsg = CTIDBG_new CtiReturnMsg(getID(),
+                                         RWCString(InMessage->Return.CommandStr),
+                                         resultString,
+                                         InMessage->EventCode & 0x7fff,
+                                         InMessage->Return.RouteID,
+                                         InMessage->Return.MacroOffset,
+                                         InMessage->Return.Attempt,
+                                         InMessage->Return.TrxID,
+                                         InMessage->Return.UserID);
+
+        retList.append(retMsg);
+    }
+
+    return ErrReturn;
+}
+
+
+INT DNP::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
     INT retCode = NORMAL;
 
@@ -1013,22 +1003,22 @@ INT CtiDeviceDNP::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< C
  * This method determines what should be displayed in the "Description" column
  * of the systemlog table when something happens to this device
  *****************************************************************************/
-RWCString CtiDeviceDNP::getDescription(const CtiCommandParser &parse) const
+RWCString DNP::getDescription(const CtiCommandParser &parse) const
 {
    return getName();
 }
 
 
-void CtiDeviceDNP::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+void DNP::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
    Inherited::getSQL(db, keyTable, selector);
    CtiTableDeviceAddress::getSQL(db, keyTable, selector);
 }
 
-void CtiDeviceDNP::DecodeDatabaseReader(RWDBReader &rdr)
+void DNP::DecodeDatabaseReader(RWDBReader &rdr)
 {
    Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
-   _dnpAddress.DecodeDatabaseReader(rdr);
+   _dnp_address.DecodeDatabaseReader(rdr);
 
    if( getDebugLevel() & 0x0800 )
    {
@@ -1036,12 +1026,13 @@ void CtiDeviceDNP::DecodeDatabaseReader(RWDBReader &rdr)
        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
    }
 
-   _dnp.setAddresses(_dnpAddress.getSlaveAddress(), _dnpAddress.getMasterAddress());
+   _dnp.setAddresses(_dnp_address.getSlaveAddress(), _dnp_address.getMasterAddress());
 
    if( getType() == TYPE_DARTRTU )
    {
-       _dnp.setOptions(CtiProtocolDNP::DatalinkConfirm);
+       _dnp.setOptions(Protocol::DNPInterface::Options_DatalinkConfirm);
    }
 }
 
-
+}
+}
