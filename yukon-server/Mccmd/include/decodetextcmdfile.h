@@ -31,9 +31,15 @@ using namespace std;
 #define TEXT_CMD_FILE_ERROR 4
 #define TEXT_CMD_FILE_UNABLE_TO_EDIT_ORIGINAL 5
 
-int decodeTextCommandFile(const RWCString& fileName, int aCommandLimit, RWOrdered* commandList);
+#define TEXT_CMD_FILE_SPECIFY_VERSACOM      0
+#define TEXT_CMD_FILE_SPECIFY_EXPRESSCOM    1
+#define TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL   2
+
+
+
+int decodeTextCommandFile(const RWCString& fileName, int aCommandLimit, int aProtocolFlag, RWOrdered* commandList);
 int decodeDSM2VconfigFile(const RWCString& fileName,RWOrdered* commandList);
-static bool validateAndDecodeLine( RWCString & line, RWCollectableString* programming);
+static bool validateAndDecodeLine( RWCString & line, int aProtocolFlag, RWCollectableString* programming);
 static bool getToken (char** InBuffer, RWCString &OutBuffer);
 static bool outputLogFile (vector<RWCString> &aLog);
 static bool outputCommandFile (const RWCString &aFileName, int aLineCnt, vector<RWCString> &aCmdVector);
