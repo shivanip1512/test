@@ -108,6 +108,16 @@ private void initialize(EditorActions actions) {
 	JMenu editMenu = new JMenu("Edit");
 	popupMenu = new JPopupMenu("Edit");
 	
+	action = actions.getAction(EditorActions.UNDO_OPERATION);
+	JMenuItem undoItem = createMenuItem(action.getLabel(), action);
+	JMenuItem undoPopupItem = createMenuItem(action.getLabel(),action);
+	undoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK));
+	
+	action = actions.getAction(EditorActions.REDO_OPERATION);
+	JMenuItem redoItem = createMenuItem(action.getLabel(), action);
+	JMenuItem redoPopupItem = createMenuItem(action.getLabel(), action);
+	redoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_DOWN_MASK));
+	
 	action = actions.getAction(EditorActions.CUT_ELEMENT);
 	JMenuItem cutItem = createMenuItem(action.getLabel(), action);
 	JMenuItem cutPopupItem = createMenuItem(action.getLabel(), action);	
@@ -191,6 +201,9 @@ private void initialize(EditorActions actions) {
 	rotateSubMenu.add(rotateOneEightyItem);
 	rotateSubMenu.add(rotateTwoSeventyItem);	
 		
+	editMenu.add(undoItem);
+	editMenu.add(redoItem);
+	editMenu.add(new JSeparator());
 	editMenu.add(cutItem);
 	editMenu.add(copyItem);
 	editMenu.add(pasteItem);	
@@ -204,6 +217,9 @@ private void initialize(EditorActions actions) {
 	editMenu.add(toFrontItem);
 	editMenu.add(toBackItem);
 	
+	popupMenu.add(undoPopupItem);
+	popupMenu.add(redoPopupItem);
+	popupMenu.add(new JSeparator());
 	popupMenu.add(cutPopupItem);
 	popupMenu.add(copyPopupItem);
 	popupMenu.add(pastePopupItem);	

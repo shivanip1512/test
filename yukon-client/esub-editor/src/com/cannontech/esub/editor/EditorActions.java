@@ -12,6 +12,8 @@ import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.esub.element.AlarmTextElement;
@@ -62,6 +64,9 @@ class EditorActions {
 	public static final String ROTATE_ELEMENT_90 = "ROTATE 90";
 	public static final String ROTATE_ELEMENT_180 = "ROTATE 180";
 	public static final String ROTATE_ELEMENT_270 = "ROTATE 270";
+	
+	public static final String UNDO_OPERATION = "UNDO";
+	public static final String REDO_OPERATION = "REDO";
 	
 	public static final String CUT_ELEMENT = "CUT ELEMENT";
 	public static final String COPY_ELEMENT = "COPY ELEMENT";
@@ -193,12 +198,14 @@ class EditorActions {
 		new LxAbstractAction(DELETE_ELEMENT, "Delete", "Delete", null, true) {
 		public void processAction(ActionEvent e) {
 			LxGraph graph = editor.getDrawing().getLxGraph();
+			graph.startUndoEdit("delete elements");
 			Object[] allSelected = graph.getSelectedObjects();
 			for(int i = 0; i < allSelected.length; i++) {
 			 	if(allSelected[i] instanceof com.loox.jloox.LxComponent) {
 			 		graph.remove((com.loox.jloox.LxComponent) allSelected[i]);
 			 	}
 			}
+			graph.finishUndoEdit();
 		}
 	};
 
@@ -222,12 +229,15 @@ class EditorActions {
 					}
 				}
 			}
+			
+			graph.startUndoEdit("align left");
 			for(int i = 0; i < allSelected.length; i++) {
 				if(allSelected[i] instanceof LxComponent) {
 					LxComponent comp = (LxComponent) allSelected[i];
 					comp.setX(minX);
 				}
 			}
+			graph.finishUndoEdit();
 		}
 	};
 	
@@ -251,12 +261,14 @@ class EditorActions {
 					}
 				}
 			}
+			graph.startUndoEdit("align right");
 			for(int i = 0; i < allSelected.length; i++) {
 				if(allSelected[i] instanceof LxComponent) {
 					LxComponent comp = (LxComponent) allSelected[i];
 					comp.setX(maxX-comp.getWidth());
 				}
 			}
+			graph.finishUndoEdit();
 		}
 	};
 	
@@ -280,12 +292,14 @@ class EditorActions {
 					}
 				}
 			}
+			graph.startUndoEdit("align top");
 			for(int i = 0; i < allSelected.length; i++) {
 				if(allSelected[i] instanceof LxComponent) {
 					LxComponent comp = (LxComponent) allSelected[i];
 					comp.setY(minY);
 				}
 			}
+			graph.finishUndoEdit();
 		}
 	};
 	
@@ -309,14 +323,14 @@ class EditorActions {
 					}
 				}
 			}
+			graph.startUndoEdit("align bottom");
 			for(int i = 0; i < allSelected.length; i++) {
 				if(allSelected[i] instanceof LxComponent) {
 					LxComponent comp = (LxComponent) allSelected[i];
 					comp.setY(maxY-comp.getHeight());
 				}
 			}
-		
-		
+			graph.finishUndoEdit();
 		}
 	};
 		
@@ -341,13 +355,14 @@ class EditorActions {
 				}
 			}
 			avgX /= selComp;
-			
+			graph.startUndoEdit("align vertical");
 			for(int i = 0; i < allSelected.length; i++) {
 				if(allSelected[i] instanceof LxComponent) {
 					LxComponent comp = (LxComponent) allSelected[i];
 					comp.setCenterX(avgX);
 				}
 			}		
+			graph.finishUndoEdit();
 		}
 	};
 		
@@ -359,7 +374,27 @@ class EditorActions {
 			null,
 			true) {
 		public void processAction(ActionEvent e) {
-		
+			LxGraph graph = editor.getDrawing().getLxGraph();
+			Object[] allSelected = graph.getSelectedObjects();
+			
+			int selComp = 0;
+			double avgY = 0.0;
+			for(int i = 0; i < allSelected.length; i++) {
+				if(allSelected[i] instanceof LxComponent) {
+					LxComponent comp = (LxComponent) allSelected[i];
+					avgY += comp.getCenterY();
+					selComp++;
+				}
+			}
+			avgY /= selComp;
+			graph.startUndoEdit("align horizontal");
+			for(int i = 0; i < allSelected.length; i++) {
+				if(allSelected[i] instanceof LxComponent) {
+					LxComponent comp = (LxComponent) allSelected[i];
+					comp.setCenterY(avgY);
+				}
+			}		
+			graph.finishUndoEdit();			
 		}
 	};
 	
@@ -371,7 +406,6 @@ class EditorActions {
 			null,
 			true) {
 		public void processAction(ActionEvent e) {
-			System.out.println("rotate 90");
 			Util.rotateSelected(editor.getDrawing().getLxGraph(), Math.PI/2.0);
 		}
 	};
@@ -384,7 +418,6 @@ class EditorActions {
 			null,
 			true) {
 		public void processAction(ActionEvent e) {
-			System.out.println("rotate 180");
 			/* WORKAROUND FOR JLOOX BUG */
 			/* ROTATE FAILS FOR 180 DEGREE ROTATION!! */
 			Util.rotateSelected(editor.getDrawing().getLxGraph(), Math.PI/2.0);
@@ -400,12 +433,45 @@ class EditorActions {
 			null,
 			true) {
 		public void processAction(ActionEvent e) {
-			System.out.println("rotate 270");
 			Util.rotateSelected(editor.getDrawing().getLxGraph(), 3.0*Math.PI/2.0);
 		}
 	};
 		
 			
+	private final LxAbstractAction undoOperationAction =
+		new LxAbstractAction(
+			UNDO_OPERATION,
+			"Undo",
+			"Undo",
+			null,
+			true) {
+		public void processAction(ActionEvent e) {
+			try {			
+				editor.getUndoManager().undo();
+			}
+			catch(CannotUndoException cue) {
+				CTILogger.debug("Cannot undo");
+			}
+		}
+	};
+	
+	private final LxAbstractAction redoOperationAction =
+		new LxAbstractAction(
+			REDO_OPERATION,
+			"Redo",
+			"Redo",
+			null,
+			true) {
+		public void processAction(ActionEvent e) {
+			try {
+				editor.getUndoManager().redo();
+			}
+			catch(CannotRedoException cre) {
+				CTILogger.debug("Cannot redo");
+			}
+		}
+	};
+				
 	private final LxAbstractAction cutElementAction =
 		new LxAbstractAction(
 			CUT_ELEMENT,
@@ -414,7 +480,6 @@ class EditorActions {
 			null,
 			true) {
 		public void processAction(ActionEvent e) {
-			System.out.println("cut");
 			editor.cutSelection();
 		}
 	};
@@ -789,6 +854,9 @@ class EditorActions {
 		actionMap.put(ROTATE_ELEMENT_90, rotateElement90Action);
 		actionMap.put(ROTATE_ELEMENT_180, rotateElement180Action);
 		actionMap.put(ROTATE_ELEMENT_270, rotateElement270Action);
+		
+		actionMap.put(UNDO_OPERATION, undoOperationAction);
+		actionMap.put(REDO_OPERATION, redoOperationAction);
 		
 		actionMap.put(CUT_ELEMENT, cutElementAction);
 		actionMap.put(COPY_ELEMENT, copyElementAction);

@@ -53,7 +53,7 @@ public class DrawingUpdater extends TimerTask {
 				DefaultDatabaseCache.getInstance().getAllDevices();
 				DefaultDatabaseCache.getInstance().getAllPoints();
 				DefaultDatabaseCache.getInstance().getAllStateGroups();
-				
+drawing.getLxGraph().startUndoEdit("update");				
 				// keep track if we changed anything
 				boolean change = false; 
 								
@@ -140,7 +140,7 @@ public class DrawingUpdater extends TimerTask {
 						view.repaint();
 					}
 				}
-
+drawing.getLxGraph().cancelUndoEdit();
 			} catch (Throwable t) {
 				t.printStackTrace();
 			}			

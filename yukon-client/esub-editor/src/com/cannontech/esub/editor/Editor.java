@@ -22,6 +22,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
+import javax.swing.undo.UndoManager;
+import javax.swing.undo.UndoableEdit;
 
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.editor.PropertyPanelListener;
@@ -53,6 +55,8 @@ public class Editor extends JPanel {
 	// Synchronize on the drawing to stop any updates
 	// from happening 
 	private Drawing drawing;
+	
+	private UndoManager undoManager;
 	
 	// timer to update the drawing
 	private Timer drawingUpdateTimer;
@@ -170,14 +174,16 @@ public class Editor extends JPanel {
 					propertyDialog.setVisible(false);								
 				}
 			});
-	
+			
+			getDrawing().getLxGraph().startUndoEdit("edit object");
 			editor.getPropertyButtonPanel().getApplyJButton().setVisible(false);
 			editor.setValue(elem);
 			propertyDialog.setContentPane(editor);		
 			propertyDialog.pack();
 			propertyDialog.setLocationRelativeTo(CtiUtilities.getParentFrame(getDrawing().getLxView()));
 			propertyDialog.show();
-
+			getDrawing().getLxGraph().cancelUndoEdit();
+			
 			// start the updates again
 			startUpdating();
 			
@@ -203,12 +209,19 @@ public class Editor extends JPanel {
 		final EditorPrefs prefs = EditorPrefs.getPreferences();
 		
 		drawing = new Drawing();
-
 		elementPlacer = new ElementPlacer();
-
+		undoManager = new UndoManager() {
+			public boolean addEdit(UndoableEdit e) {
+// uncomment for debugging	System.out.println(e.getPresentationName());
+				return super.addEdit(e);
+			}			
+		};
+		
 		final LxGraph lxGraph = getDrawing().getLxGraph();
 		final LxView lxView = getDrawing().getLxView();
-				
+		
+		lxGraph.addUndoableEditListener(undoManager);
+
 		final JPanel viewPanel = new JPanel();
 		viewPanel.setLayout(new FlowLayout());		
 		viewPanel.add(lxView);
@@ -286,6 +299,7 @@ public class Editor extends JPanel {
 	}
 	public void newDrawing() {
 		getDrawing().clear();	
+		getUndoManager().discardAllEdits();
 		setFrameTitle("Untitled");
 	}
 
@@ -315,6 +329,7 @@ public class Editor extends JPanel {
 		
 		} 
 		finally {
+			getUndoManager().discardAllEdits();
 			setCursor(Util.DEFAULT_CURSOR);
 		}
 	}
@@ -411,7 +426,7 @@ public class Editor extends JPanel {
 		if (getDrawing().isModified()) {
 			JOptionPane option = new JOptionPane();
 			result =
-				option.showConfirmDialog(
+				JOptionPane.showConfirmDialog(
 					null,
 					" Save changes ",
 					" Save changes ",
@@ -544,4 +559,11 @@ public class Editor extends JPanel {
 	private void stopUpdating() {
 		drawingUpdateTimer.cancel();
 	}		
+	/**
+	 * @return
+	 */
+	public UndoManager getUndoManager() {
+		return undoManager;
+	}
+
 }
