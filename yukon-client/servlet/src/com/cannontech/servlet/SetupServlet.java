@@ -328,16 +328,10 @@ public class SetupServlet extends HttpServlet
 	{
 		//TODO: We Should at some point create a DispatchServlet that we could use
 		String host =
-			RoleFuncs.getRolePropertyValue( 
-					UserUtils.USER_YUKON_ID,
-					SystemRole.DISPATCH_MACHINE,
-					"127.0.0.1");
+			RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
 
 		String port =
-			RoleFuncs.getRolePropertyValue( 
-					UserUtils.USER_YUKON_ID,
-					SystemRole.DISPATCH_PORT,
-					"1510");
+			RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT );
 		
 		ClientConnection connToDispatch = new ClientConnection();
 		Registration reg = new Registration();
