@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/11/24 17:11:17 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/12/01 20:12:50 $
 *
 * HISTORY      :
 * $Log: dev_grp_sa305.cpp,v $
+* Revision 1.9  2004/12/01 20:12:50  cplender
+* Default "control_reduction" is 100, not -1.
+*
 * Revision 1.8  2004/11/24 17:11:17  cplender
 * Working on the configuration of SA receivers.
 *
@@ -253,7 +256,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         else
         {
             if(parse.getCommand() == ControlRequest)
-                reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction"), vgList, getLastCommand() );
+                reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, getLastCommand() );
 
             delete pRet;
         }

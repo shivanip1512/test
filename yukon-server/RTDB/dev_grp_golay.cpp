@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/06/28 16:40:40 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/12/01 20:12:49 $
 *
 * HISTORY      :
 * $Log: dev_grp_golay.cpp,v $
+* Revision 1.6  2004/12/01 20:12:49  cplender
+* Default "control_reduction" is 100, not -1.
+*
 * Revision 1.5  2004/06/28 16:40:40  cplender
 * Added toUpper on the string responses to FORCE case insensitivity.
 *
@@ -246,7 +249,7 @@ INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
             else
             {
                 if(parse.getCommand() == ControlRequest)
-                    reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction"), vgList, getLastCommand() );
+                    reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, getLastCommand() );
 
                 delete pRet;
             }
