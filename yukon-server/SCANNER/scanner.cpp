@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2004/07/02 16:30:30 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2004/07/08 15:31:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1081,12 +1081,6 @@ RWTime TimeOfNextRemoteScan()
 
     CtiDeviceManager::LockGuard  dev_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
     ScannerDeviceManager.apply(applyAnalyzeNextRemoteScan, (void*)&nextRemoteScanTime);
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << " Next Remote " << nextRemoteScanTime << endl;
-    }
 
     /* Do not let this get out of hand, check once a minute if nothing else is looking */
     if(nextRemoteScanTime == MAXTime || (nextRemoteScanTime.seconds() - TimeNow.seconds()) > 60L)
