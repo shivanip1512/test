@@ -11,9 +11,12 @@
     <target name="targets">
     	<echo message="${yukon.client.home}"/>
         <echo message="The following targets are available"/>
-        <echo message=" build - perform incremental build"/>
-        <echo message=" clean - clean the slate"/>
-        <echo message=" all - do a clean then a build"/>
+        <echo message=" build      - perform incremental build"/>
+        <echo message=" clean      - clean the slate"/>
+        <echo message=" all        - do a clean then a build"/>
+        <echo message=" install    - installs a build to your YUKON_HOME directory"/>
+        <echo message=" uninstall  - clean the install at YUKON_HOME"/>
+        <echo message=" [jar name] - builds only the specified jar"/>
     </target>
             
     <target name="all">
@@ -59,6 +62,7 @@
     <target name="callall">
         <ant dir="${third-party}" target="${dotarget}" />
         <ant dir="${common}" target="${dotarget}" />
+                
         <ant dir="${billing}" target="${dotarget}" />
         <ant dir="${export}" target="${dotarget}" />
         <ant dir="${tdc}" target="${dotarget}" />
@@ -81,4 +85,48 @@
         <ant dir="${esub-editor}" target="${dotarget}"/>
         <ant dir="${resource}" target="${dotarget}"/>
     </target>
+
+    
+    <target name="tools">
+    	<antcall target="singlebuild" inheritAll="true">
+    		<param name="dotarget" value="build"/>
+    		<param name="filename" value="${tools}"/>
+    	</antcall>
+    </target>
+
+    <target name="dbeditor">
+    	<antcall target="singlebuild" inheritAll="true">
+    		<param name="dotarget" value="build"/>
+    		<param name="filename" value="${dbeditor}"/>
+    	</antcall>
+    </target>
+
+    <target name="billing">
+    	<antcall target="singlebuild" inheritAll="true">
+    		<param name="dotarget" value="build"/>
+    		<param name="filename" value="${billing}"/>
+    	</antcall>
+    </target>
+
+    <target name="tdc">
+    	<antcall target="singlebuild" inheritAll="true">
+    		<param name="dotarget" value="build"/>
+    		<param name="filename" value="${tdc}"/>
+    	</antcall>
+    </target>
+
+    <target name="cbc">
+    	<antcall target="singlebuild" inheritAll="true">
+    		<param name="dotarget" value="build"/>
+    		<param name="filename" value="${cbc}"/>
+    	</antcall>
+    </target>
+
+    <target name="singlebuild" if="filename">
+	   	<ant dir="${third-party}" target="${dotarget}" />
+	   	<ant dir="${common}" target="${dotarget}" />
+        <ant dir="${filename}" target="${dotarget}"/>
+    </target>
+
+    
 </project>
