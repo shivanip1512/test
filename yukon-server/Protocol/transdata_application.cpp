@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/12/29 21:00:40 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/12/30 19:29:31 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -221,6 +221,14 @@ void CtiTransdataApplication::setCommand( int cmd, bool getAll )
 {
    _command = cmd;
    _getLoadProfile = getAll;
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+int CtiTransdataApplication::getCommand( void )
+{
+   return( _command );
 }
 
 //=====================================================================================================================

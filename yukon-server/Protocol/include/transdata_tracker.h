@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/12/29 21:00:41 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/12/30 19:29:31 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -43,7 +43,6 @@ class IM_EX_PROT CtiTransdataTracker
          int      lpFormat[3];
          int      numLpRecs;
          ULONG    meterTime;
-//         lpRecord lpData[1000];
          lpRecord lpData[9999];
       };
 

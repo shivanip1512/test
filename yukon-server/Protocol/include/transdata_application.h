@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/12/29 21:00:40 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/12/30 19:29:31 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -49,6 +49,7 @@ class IM_EX_PROT CtiTransdataApplication
       void reinitalize( void );
       int retreiveData( BYTE *data );
       void setCommand( int cmd, bool lp );
+      int getCommand( void );
       void setLastLPTime( ULONG lpTime );
       void checkRecs( void );
       bool doLoadProfile( void );
@@ -72,13 +73,7 @@ class IM_EX_PROT CtiTransdataApplication
          DoTalk,
          DoLogOff
       };
-                  /*
-      enum Commands
-      {
-         DoBilling = 0,
-         DoLoadProfile
-      };            */
-
+      
       enum Sizes
       {
          Storage_size      = 30000

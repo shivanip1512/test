@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/12/29 21:00:40 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/12/30 19:29:31 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -884,9 +884,15 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
 
    _storage = new BYTE[30000];
    _transdataProtocol.retreiveData( _storage );
+
    lp = ( CtiTransdataTracker::mark_v_lp *)_storage;
    _llp.lastLP = lp->meterTime;
    RWTime mTime( lp->meterTime );
+   
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " --------" << mTime << "*****" << lp->meterTime << endl;
+   }
    
    for( index = 0; index < lp->numLpRecs; )
    {

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/12/29 21:00:40 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/12/30 19:29:31 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,7 +70,9 @@ bool CtiProtocolTransdata::decode( CtiXfer &xfer, int status )
          if(( _lpDone ) && ( _billingDone ))
          {
             if( _application.loggedOff() )
+            {
                _finished = true;
+            }
          }
          else
          {
@@ -83,7 +85,7 @@ bool CtiProtocolTransdata::decode( CtiXfer &xfer, int status )
                processBillingData( _storage );
 
 //               if( _application.doLoadProfile() )
-               if( _collectLP )
+               if( _application.getCommand() == CtiTransdataApplication::LoadProfile )
                {
                   _command = CtiTransdataApplication::LoadProfile;             ////just temp until I get smart
                }
@@ -217,7 +219,7 @@ void CtiProtocolTransdata::reinitalize( void )
 
    _application.reinitalize();
    
-//   _collectLP = false;
+   _collectLP = true;//false;
    _finished = false;
    _billingDone = false;
    _lpDone = false;
