@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/08/08 17:13:29 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/08/19 20:02:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1047,11 +1047,6 @@ int            IM_EX_CTIBASE DecodeDialupData(INMESS *InMessage, DIALUPSTRUCT *D
 int            IM_EX_CTIBASE Float2CharFormat (FLOAT, PCHAR, USHORT, USHORT);
 int            IM_EX_CTIBASE Long2CharFormat (LONG, PCHAR, USHORT);
 int            IM_EX_CTIBASE Short2CharFormat (SHORT, PCHAR, USHORT);
-
-/* Prototypes from SPARKINT.C */
-int            IM_EX_CTIBASE SparkRegister (VOID);
-int            IM_EX_CTIBASE ImOkay (VOID);
-int            IM_EX_CTIBASE StartSparkThread (VOID);
 
 /* Prototypes for WORDS.C */
 int            IM_EX_CTIBASE A_Word (PBYTE, const ASTRUCT &, BOOL Double = FALSE);

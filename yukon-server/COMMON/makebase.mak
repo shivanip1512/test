@@ -65,7 +65,6 @@ rtdb.obj \
 sema.obj \
 statistics.obj \
 stdexcepthdlr.obj \
-sparkint.obj \
 thread.obj \
 ucttime.obj \
 utility.obj \
@@ -242,8 +241,6 @@ rtdb.obj:       dlldefs.h rtdb.h hashkey.h dllbase.h os2_2w32.h types.h \
 scupdate.obj:   os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h mutex.h \
                 guard.h dsm2err.h device.h devicetypes.h lm_auto.h
 sema.obj:       sema.h dlldefs.h
-sparkint.obj:   os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h mutex.h \
-                guard.h
 statistics.obj: dsm2.h mutex.h dlldefs.h guard.h dsm2err.h logger.h \
                 thread.h statistics.h counter.h yukon.h dllbase.h os2_2w32.h \
                 types.h cticalls.h

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2002/08/16 13:07:01 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2002/08/19 20:03:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -404,8 +404,6 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     /* Misc Definitions */
     INT    i, j;
     extern USHORT PrintLogEvent;
-    USHORT Spark;
-    ULONG  SparkCount;
 
     BYTE RefKey[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
     BYTE VerKey[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
@@ -535,9 +533,6 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         }
     }
 
-    /* Initialize the Spark interface */
-    Spark = SparkRegister ();
-
     /* Allow a shitload of files to be open */
     CTISetMaxFH (200);
 
@@ -658,13 +653,6 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         }
     }
 
-
-    /* Let Spark know we are ready */
-    if(Spark)
-    {
-        ImOkay ();
-    }
-
     if(gLogPorts)
     {
         {
@@ -710,15 +698,6 @@ INT PorterMainFunction (INT argc, CHAR **argv)
                  (inRecord.Event.KeyEvent.bKeyDown != TRUE)           &&
                  (inRecord.EventType != KEY_EVENT))
             {
-                if(Spark)
-                {
-                    if(++SparkCount >= 20)
-                    {
-                        SparkCount = 0;
-                        ImOkay ();
-                    }
-                }
-
 #ifdef HARDLOCK
                 /* HARDLOCK check once every 5 minutes */
                 time (&timeStop);
