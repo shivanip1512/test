@@ -11,16 +11,18 @@ import java.util.*;
  */
 class ConnectionWrapper implements java.sql.Connection
 {
+   /* Blank interface to supply upperwards compatibility to */
+   /* Uncomment for jkd 1.3, comment out for 1.4 */
+   //private interface Savepoint
+   //{};
+   
+   
    // realConn should be private but we use package scope to
    // be able to test removal of bad connections
    Connection realConn;
    private ConnectionPool pool;
    private boolean isClosed = false;
 
-	/* Blank interface to supply upperwards compatibility to */
-	/* Uncomment for jkd 1.3, comment out for 1.4 */
-   //private interface Savepoint
-   //{}
    public ConnectionWrapper(Connection realConn, ConnectionPool pool)
    {
 	  this.realConn = realConn;
