@@ -464,8 +464,8 @@ public static void main(String[] args)
 		{
 			Thread.sleep(5000);
 			System.gc();
-			com.cannontech.clientutils.CTILogger.info(" $Free/ " +Runtime.getRuntime().freeMemory());
-			com.cannontech.clientutils.CTILogger.info(" $Total/ "+ Runtime.getRuntime().totalMemory());
+//			com.cannontech.clientutils.CTILogger.info(" $Free/ " +Runtime.getRuntime().freeMemory());
+//			com.cannontech.clientutils.CTILogger.info(" $Total/ "+ Runtime.getRuntime().totalMemory());
 			//com.cannontech.clientutils.CTILogger.info("Sleeping!!!");
 		}
 		catch (InterruptedException ie)
