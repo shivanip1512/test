@@ -12,7 +12,8 @@ public class LiteYukonPAObject extends LiteBase
 		com.cannontech.common.util.CtiUtilities.STRING_NONE,
 		com.cannontech.database.data.pao.PAOGroups.INVALID,
 		com.cannontech.database.data.pao.PAOGroups.INVALID,
-		com.cannontech.database.data.pao.PAOGroups.INVALID 
+		com.cannontech.database.data.pao.PAOGroups.INVALID,
+		com.cannontech.common.util.CtiUtilities.STRING_NONE
 	);
 
 	//private int yukonID = com.cannontech.database.data.pao.PAOGroups.INVALID;
@@ -20,7 +21,8 @@ public class LiteYukonPAObject extends LiteBase
 	private String paoName = null;
 	private int type = com.cannontech.database.data.pao.PAOGroups.INVALID;
 	private int paoClass = com.cannontech.database.data.pao.PAOGroups.INVALID;
-
+	private String paoDescription = null;
+	
 	//portID is only for devices that belong to a port
 	private int portID = com.cannontech.database.data.pao.PAOGroups.INVALID;
 
@@ -39,7 +41,7 @@ public LiteYukonPAObject( int paoID)
 /**
  * LiteDevice
  */
-public LiteYukonPAObject( int paoID, String name, int paoCategory, int paoType, int pClass ) 
+public LiteYukonPAObject( int paoID, String name, int paoCategory, int paoType, int pClass, String desc ) 
 {
 	super();
 	setLiteType( LiteTypes.YUKON_PAOBJECT );
@@ -49,6 +51,7 @@ public LiteYukonPAObject( int paoID, String name, int paoCategory, int paoType, 
 	setCategory( paoCategory );
 	setType( paoType );
 	setPaoClass( pClass );
+	setPaoDescription( desc );
 }
 /**
  * Insert the method's description here.
@@ -135,7 +138,7 @@ public void retrieve(String dbalias)
 	{
       com.cannontech.database.SqlStatement stat = 
             new com.cannontech.database.SqlStatement(
-             "select Category, PAOName, Type, PAOClass " +
+             "select Category, PAOName, Type, PAOClass, Description " +
              "from YukonPAObject where PAObjectID = " + getLiteID(),
              dbalias );
 
@@ -157,6 +160,8 @@ public void retrieve(String dbalias)
 		setPaoClass( 
          com.cannontech.database.data.pao.PAOGroups.getPAOClass(
                category, objs[3].toString()) );
+
+		setPaoDescription( objs[4].toString() );
 	}
 	catch( Exception e )
 	{
@@ -250,4 +255,20 @@ public String toString()
 {
 	return getPaoName();
 }
+	/**
+	 * Returns the paoDescription.
+	 * @return String
+	 */
+	public String getPaoDescription() {
+		return paoDescription;
+	}
+
+	/**
+	 * Sets the paoDescription.
+	 * @param paoDescription The paoDescription to set
+	 */
+	public void setPaoDescription(String paoDescription) {
+		this.paoDescription = paoDescription;
+	}
+
 }
