@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2002/09/03 14:33:52 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2002/09/06 19:03:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -127,15 +127,14 @@ int CtiPILServer::execute()
             MainThread_ = rwMakeThreadFunction(*this, &CtiPILServer::mainThread);
             MainThread_.start();
 
-            // rwSleep(500);
-
             ConnThread_ = rwMakeThreadFunction(*this, &CtiPILServer::connectionThread);
             ConnThread_.start();
 
-            // rwSleep(500);
-
             ResultThread_ = rwMakeThreadFunction(*this, &CtiPILServer::resultThread);
             ResultThread_.start();
+
+            _nexusThread = rwMakeThreadFunction(*this, &CtiPILServer::nexusThread);
+            _nexusThread.start();
 
             _vgConnThread = rwMakeThreadFunction(*this, &CtiPILServer::vgConnThread);
             _vgConnThread.start();
@@ -317,6 +316,26 @@ void CtiPILServer::mainThread()
                 }
             }
 
+            _nexusThread.requestCancellation(750);
+
+            if(_nexusThread.join(10000) == RW_THR_TIMEOUT)                     // Wait for the closure
+            {
+                if(_nexusThread.requestCancellation(150) == RW_THR_TIMEOUT)   // Mark it for destruction...
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " PIL Server shutting down the _nexusThread: TIMEOUT " << endl;
+                    }
+                    if(_nexusThread.join(500) == RW_THR_TIMEOUT)                     // Wait for the closure
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " PIL Server shutting down the _nexusThread: FAILED " << endl;
+
+                        _nexusThread.terminate();
+                    }
+                }
+            }
+
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " PIL Server shut down complete " << endl;
@@ -464,7 +483,7 @@ void CtiPILServer::resultThread()
     RWTime      TimeNow;
 
     ULONG       BytesRead;
-    INMESS      InMessage;
+    INMESS      *InMessage = 0;
 
     RWTPtrSlist< OUTMESS    > outList;
     RWTPtrSlist< CtiMessage > retList;
@@ -487,21 +506,10 @@ void CtiPILServer::resultThread()
         /* Release the Lock Semaphore */
         CTIReleaseMutexSem (LockSem);
 
-        /* Wait for the next result to come back from the RTU */
-
-        while(!PorterNexus.CTINexusValid() && !bServerClosing)
+        // Let's go look at the inbound sList, if we can!
+        while( _inList.isEmpty() && !bServerClosing)
         {
-            if(!(++x % 60))
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " PIL connection to Port Control is inactive" << endl;
-                }
-
-                PortPipeInit(NOWAIT);       // This is a last ditch attempt.
-            }
-
-            CTISleep (500L);
+            Sleep( 500 );
 
             try
             {
@@ -512,54 +520,38 @@ void CtiPILServer::resultThread()
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " ResThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
                 bServerClosing = TRUE;
-                //throw;
+                break;  // the while!
             }
         }
 
-        if(bServerClosing)
+        if( !bServerClosing && !_inList.isEmpty() )
         {
-            continue;
-        }
+            CtiLockGuard< CtiMutex > ilguard( _inMux, 15000 );
 
-        /* get a result off the port pipe */
-        if(PorterNexus.CTINexusRead ( &InMessage, sizeof(InMessage), &BytesRead, CTINEXUS_INFINITE_TIMEOUT) || BytesRead < sizeof(InMessage))
-        {
+            if(ilguard.isAcquired())
+            {
+                InMessage = _inList.get();
+            }
+            else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " ResThread : " << rwThreadId() << " just got KICKED!" << endl;
+                dout << RWTime() << " Unable to lock PIL's INMESS list. You should not see this much." << endl;
             }
-
-            if(PorterNexus.NexusState != CTINEXUS_STATE_NULL)
-            {
-                PortPipeCleanup(0);
-            }
-
-            Sleep(500); // No runnaway loops allowed.
-            continue;
         }
 
-        try
+        if(bServerClosing || InMessage == 0)
         {
-            rwServiceCancellation();
-        }
-        catch(const RWCancellation& cMsg)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " ResThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
-            bServerClosing = TRUE;
-
             continue;
-            // throw;
         }
 
         /* Wait on the request thread if neccessary */
         CTIRequestMutexSem (LockSem, SEM_INDEFINITE_WAIT);
 
-        LONG id = InMessage.TargetID;
+        LONG id = InMessage->TargetID;
 
         if(id == 0)
         {
-            id = InMessage.DeviceID;
+            id = InMessage->DeviceID;
         }
 
         // Find the device..
@@ -571,14 +563,14 @@ void CtiPILServer::resultThread()
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Pilserver resultThread received an InMessage for " << DeviceRecord->getName();
-                dout << " at priority " << InMessage.Priority << endl;
+                dout << " at priority " << InMessage->Priority << endl;
             }
 
             /* get the time for use in the decodes */
             TimeNow = RWTime();
 
             // Do some device dependant work on this Inbound message!
-            DeviceRecord->ProcessResult( &InMessage, TimeNow, vgList, retList, outList);
+            DeviceRecord->ProcessResult( InMessage, TimeNow, vgList, retList, outList);
 
             if(outList.entries())
             {
@@ -632,7 +624,7 @@ void CtiPILServer::resultThread()
             {
                 CtiMessage *pRet = retList.get();
 
-                if((Conn = ((CtiConnection*)InMessage.Return.Connection)) != NULL)
+                if((Conn = ((CtiConnection*)InMessage->Return.Connection)) != NULL)
                 {
                     Conn->WriteConnQue(pRet);
                 }
@@ -655,9 +647,124 @@ void CtiPILServer::resultThread()
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "InMessage received from unknown device.  Device ID: " << InMessage.DeviceID << endl;
-            dout << " Port listed as                                   : " << InMessage.Port     << endl;
-            dout << " Remote listed as                                 : " << InMessage.Remote   << endl;
+            dout << "InMessage received from unknown device.  Device ID: " << InMessage->DeviceID << endl;
+            dout << " Port listed as                                   : " << InMessage->Port     << endl;
+            dout << " Remote listed as                                 : " << InMessage->Remote   << endl;
+        }
+
+        if(InMessage)
+        {
+            delete InMessage;
+            InMessage = 0;
+        }
+
+    } /* End of for */
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " ResThread : " << rwThreadId() << " terminating " << endl;
+    }
+
+}
+
+void CtiPILServer::nexusThread()
+{
+    INT i = 0;
+    INT status = NORMAL;
+    /* Time variable for decode */
+    RWTime      TimeNow;
+
+    ULONG       BytesRead;
+    INMESS      *InMessage = 0;
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " NexusThread    : Started as TID " << rwThreadId() << endl;
+    }
+
+    /* Give us a tiny attitude */
+    CTISetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
+
+    /* perform the wait loop forever */
+    for( ; !bServerClosing ; )
+    {
+        /* Wait for the next result to come back from the RTU */
+        while(!PorterNexus.CTINexusValid() && !bServerClosing)
+        {
+            if(!(++i % 60))
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " PIL connection to Port Control is inactive" << endl;
+                }
+
+                PortPipeInit(NOWAIT); // defibrillate
+            }
+
+            CTISleep (500L);
+
+            try
+            {
+                rwServiceCancellation();
+            }
+            catch(const RWCancellation& cMsg)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " NexusThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
+                bServerClosing = TRUE;
+                //throw;
+            }
+        }
+
+        if(bServerClosing)
+        {
+            continue;
+        }
+
+        InMessage = new INMESS;
+        memset(InMessage, sizeof(*InMessage), 0);
+
+        /* get a result off the port pipe */
+        if(PorterNexus.CTINexusRead ( InMessage, sizeof(*InMessage), &BytesRead, CTINEXUS_INFINITE_TIMEOUT) || BytesRead < sizeof(*InMessage))
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " NexusThread : " << rwThreadId() << " just failed to read a full InMessage." << endl;
+            }
+
+            if(PorterNexus.NexusState != CTINEXUS_STATE_NULL)
+            {
+                PortPipeCleanup(0);
+            }
+
+            Sleep(500); // No runnaway loops allowed.
+
+            delete InMessage;
+            InMessage = 0;
+            continue;
+        }
+
+        try
+        {
+            rwServiceCancellation();
+        }
+        catch(const RWCancellation& cMsg)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " NexusThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
+            bServerClosing = TRUE;
+
+            continue;
+            // throw;
+        }
+
+        // Enqueue the INMESS into the appropriate list
+
+        if(InMessage)
+        {
+            CtiLockGuard< CtiMutex > inguard( _inMux );
+            _inList.append( InMessage );
+            InMessage = 0;
         }
     } /* End of for */
 

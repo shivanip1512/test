@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/09/04 14:08:10 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/09/06 19:03:44 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -577,7 +577,21 @@ RWDBStatus::ErrorCode  CtiStatistics::Update(RWDBConnection &conn)
         table["statistictype"].assign(getCounterName( i )) <<
         table["requests"].assign(_counter[i].get( Requests )) <<
         table["completions"].assign(_counter[i].get( Completions )) <<
-        table["attempts"].assign(_counter[i].get( Attempts )) <<
+        table["attempts"].assign(_counter[i].get( Attempts ));
+
+        updater.where( table["paobjectid"] == getID() && table["statistictype"] == getCounterName( i ));
+
+        stat = updater.execute(conn).status();
+
+        if( stat.errorCode() != RWDBStatus::ok )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << "Error Code = " << stat.errorCode() << endl;
+        }
+
+        updater.clear();
+
+        updater <<
         table["commerrors"].assign(_counter[i].get( CommErrors )) <<
         table["protocolerrors"].assign(_counter[i].get( ProtocolErrors )) <<
         table["systemerrors"].assign(_counter[i].get( SystemErrors )) <<

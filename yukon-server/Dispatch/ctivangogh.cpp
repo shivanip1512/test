@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2002/08/28 16:15:40 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2002/09/06 19:03:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -415,7 +415,7 @@ void CtiVanGogh::VGConnectionHandlerThread()
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Dispatch Connection Handler Thread Active " << endl;
+                    dout << RWTime() << " Dispatch Connection Handler Thread. New connect. " << endl;
                 }
             }
             else
@@ -4285,7 +4285,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                 dout << RWTime() << " Done loading RTDB... " << endl;
             }
 
-            Refresh = Now.seconds() - (Now.seconds() % 60) + gDispatchReloadRate;
+            Refresh = nextScheduledTimeAlignedOnRate( Now, gDispatchReloadRate );
         }
     }
     catch( ... )

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dialup.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/02 17:02:31 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/09/06 19:03:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -123,7 +123,7 @@ void CtiTableDeviceDialup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSe
     selector.from(devTbl);
 
     // selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
-    selector.where( keyTable["paobjectid"].leftOuterJoin(devTbl["deviceid"]) && selector.where() );
+    selector.where( selector.where() && keyTable["paobjectid"].leftOuterJoin(devTbl["deviceid"]) );
 }
 
 void CtiTableDeviceDialup::DecodeDatabaseReader(RWDBReader &rdr)

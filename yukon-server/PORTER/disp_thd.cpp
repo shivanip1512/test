@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/08/20 22:46:09 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/09/06 19:03:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,6 +58,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include "logger.h"
 #include "guard.h"
+#include "utility.h"
 
 CtiConnection  VanGoghConnection;
 
@@ -68,7 +69,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
     BOOL           bServerClosing = FALSE;
 
     RWTime         TimeNow;
-    RWTime         RefreshTime          = TimeNow - (TimeNow.seconds() % PorterRefreshRate) + PorterRefreshRate;
+    RWTime         RefreshTime          = nextScheduledTimeAlignedOnRate( TimeNow, PorterRefreshRate );
     CtiMessage     *MsgPtr              = NULL;
     UINT           changeCnt = 0;
     CtiDBChangeMsg *pChg = NULL;
@@ -82,9 +83,23 @@ void DispatchMsgHandlerThread(VOID *Arg)
     VanGoghConnection.setName("Dispatch");
     VanGoghConnection.WriteConnQue(new CtiRegistrationMsg("Porter MsgHandler", rwThreadId(), FALSE));
 
+    RWTime nowTime;
+    RWTime nextTime = nowTime + 30;
+    ULONG omc;
     /* perform the wait loop forever */
     for( ; !bServerClosing ; )
     {
+        omc = OutMessageCount();
+        nowTime = nowTime.now();
+
+        if(omc > 10 && nowTime > nextTime)
+        {
+            nextTime = nowTime.seconds() - (nowTime.seconds() % 300) + 300;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Porter's OM Count = " << omc << endl;
+        }
+
+
         MsgPtr = VanGoghConnection.ReadConnQue(2000L);
 
         TimeNow = TimeNow.now();
@@ -169,7 +184,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
             // Refresh the porter in memory database once every 5 minutes.
             ResetEvent(hPorterEvents[P_REFRESH_EVENT]);
             RefreshPorterRTDB((void*)pChg);                 // Deletes the message!
-            RefreshTime = TimeNow - (TimeNow.seconds() % PorterRefreshRate) + PorterRefreshRate;
+            RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, PorterRefreshRate );
 
             changeCnt = 0;
             pChg = NULL;

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_route.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:08 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/09/06 19:03:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -62,17 +62,11 @@ CtiTableDeviceRoute& CtiTableDeviceRoute::setRouteID( const LONG aRouteID )
 
 void CtiTableDeviceRoute::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-   keyTable = db.table("Device");
    RWDBTable devTbl = db.table(getTableName() );
 
-   selector <<
-      keyTable["deviceid"] <<
-      devTbl["routeid"];
-
-   selector.from(keyTable);
+   selector << devTbl["routeid"];
    selector.from(devTbl);
-
-   selector.where( selector.where() && keyTable["deviceid"] == devTbl["deviceid"] );
+   selector.where( selector.where() && keyTable["paobjectid"].leftOuterJoin(devTbl["deviceid"]) );
 }
 
 void CtiTableDeviceRoute::DecodeDatabaseReader(RWDBReader &rdr)

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:35 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/09/06 19:03:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,7 +43,7 @@ int main(int argc, char* argv[] )
    dout.setOutputPath(gLogDirectory.data());
    dout.setOutputFile("scanner");
    dout.setToStdOut(true);
-   dout.setWriteInterval(1000);
+   dout.setWriteInterval(5000);
 
 
    if( SetConsoleTitle("Scanner") )

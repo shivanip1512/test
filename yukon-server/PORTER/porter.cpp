@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2002/09/03 20:56:57 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2002/09/06 19:03:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -680,22 +680,9 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         dout << RWTime() << " Trace is now off for all messages" << endl;
     }
 
-    RWTime nowTime;
-    RWTime nextTime = nowTime + 30;
-    ULONG omc;
     /* Startup is done so main process becomes input thread */
     for(;!PorterQuit;)
     {
-        omc = OutMessageCount();
-        nowTime = nowTime.now();
-
-        if(omc > 10 && nowTime > nextTime)
-        {
-            nextTime = nowTime.seconds() - (nowTime.seconds() % 30) + 30;
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Porter's OM Count = " << omc << endl;
-        }
-
         if(RunningInConsole == FALSE)
         {
             CTISleep (1000L);
@@ -1267,7 +1254,6 @@ INT RefreshPorterRTDB(void *ptr)
         {
             DeviceManager.RefreshList();
         }
-        DeviceManager.RefreshRoutes();          // This should load on
     }
 
     if(!PorterQuit)

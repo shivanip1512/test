@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/09/03 14:33:48 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/09/06 19:03:40 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,6 +87,7 @@ void CtiDeviceDLCBase::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelect
 {
     Inherited::getSQL(db, keyTable, selector);
     CtiTableDeviceCarrier::getSQL(db, keyTable, selector);
+    CtiTableDeviceRoute::getSQL(db, keyTable, selector);        // leftOuter'd.
 }
 
 
@@ -105,18 +106,6 @@ void CtiDeviceDLCBase::DecodeDatabaseReader(RWDBReader &rdr)
 
     LockGuard guard(monitor());
     CarrierSettings.DecodeDatabaseReader(rdr);
-}
-
-void CtiDeviceDLCBase::DecodeRoutesDatabaseReader(RWDBReader &rdr)
-{
-    INT iTemp;
-
-    if( getDebugLevel() & 0x0800 )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
     DeviceRoutes.DecodeDatabaseReader(rdr);
 }
 
@@ -195,7 +184,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
     INT ErrReturn = InMessage->EventCode & 0x3fff,
         sendMsg   = TRUE;
 
-    CtiCommandMsg   *pMsg;
+    CtiCommandMsg   *pMsg = 0;
     CtiReturnMsg    *retMsg;
 
     CtiPointDataMsg *commStatus;
@@ -371,15 +360,9 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
                     commStatus = NULL;
                 }
 
-                RWCString resultString;
-
-                if(pMsg != NULL)
-                    retMsg->insert(pMsg);
-
-                resultString = getName() + " / operation succeeded";
+                RWCString resultString = getName() + " / operation succeeded";
 
                 retMsg->setResultString(resultString);
-
                 retList.append(retMsg);
             }
         }

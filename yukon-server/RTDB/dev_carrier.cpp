@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/05/20 15:08:20 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/09/06 19:03:40 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -93,16 +93,13 @@ void CtiDeviceCarrier::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelect
 void CtiDeviceCarrier::DecodeDatabaseReader(RWDBReader &rdr)
 {
     INT iTemp;
-    RWDBNullIndicator isNull;
 
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
-
     if(getDebugLevel() & 0x0800)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-
     LoadProfile.DecodeDatabaseReader(rdr);
     MeterGroup.DecodeDatabaseReader(rdr);
 }

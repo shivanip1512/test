@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2002/08/28 16:19:06 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2002/09/06 19:03:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -111,6 +111,9 @@ static INT     SCANNER_RELOAD_RATE = 900;
 static RWTime  LastPorterOutTime;
 static RWTime  LastPorterInTime;
 
+static CtiMutex inmessMux;
+static RWTPtrSlist< INMESS > inmessList;
+
 const RWTime   MAXTime(YUKONEOT);
 
 void  LoadScannableDevices(void *ptr = NULL);
@@ -122,7 +125,8 @@ void  DatabaseHandlerThread(VOID *Arg);
 RWTime  TimeOfNextRemoteScan(void);
 RWTime  TimeOfNextLPScan(void);
 
-INT RecordDynamicData();
+VOID    NexusThread(VOID *Arg);
+INT     RecordDynamicData();
 void    InitScannerGlobals(void);
 void    DumpRevision(void);
 INT     MakePorterRequests(RWTPtrSlist< OUTMESS > &outList);
@@ -152,14 +156,6 @@ void barkAboutCurrentTime(CtiDevice *Device, RWTime &rt, INT line)
     }
 }
 
-void applyUseScanFlags(const CtiHashKey *unusedKey, CtiDevice *&DeviceRecord, void *unusedPtr)
-{
-    if(DeviceRecord->isSingle())
-    {
-        ((CtiDeviceSingle*)DeviceRecord)->setUseScanFlags();                      // Mark them as being scanned by this application.
-    }
-}
-
 INT ScannerMainFunction (INT argc, CHAR **argv)
 {
     char  tstr[256];
@@ -181,9 +177,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
     /* Define for the porter interface */
     IM_EX_CTIBASE extern USHORT   PrintLogEvent;
-
     RWTPtrSlist< OUTMESS >         outList;         // Nice little collection of OUTMESS's
-
 
     int Op, k;
 
@@ -298,6 +292,12 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
         VanGoghConnection.doConnect(VANGOGHNEXUS, VanGoghMachine);
         VanGoghConnection.setName("Dispatch");
         VanGoghConnection.WriteConnQue(new CtiRegistrationMsg(SCANNER_REGISTRATION_NAME, rwThreadId(), TRUE));
+
+        if(_beginthread (NexusThread, RESULT_THREAD_STK_SIZE, (VOID *)SCANNER_REGISTRATION_NAME) == -1)
+        {
+            dout << "Error starting Nexus Thread" << endl;
+            return -1;
+        }
 
         if(_beginthread (ResultThread, RESULT_THREAD_STK_SIZE, (VOID *)SCANNER_REGISTRATION_NAME) == -1)
         {
@@ -442,7 +442,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                     dout << TimeNow.now() << " Port Control connection is not valid " << endl;
                 }
 
-                if(!(PortPipeInit (NOWAIT)))
+                if(!(PortPipeInit(NOWAIT)))
                 {
                     // Make sure we don't hang up on him again.
                     LastPorterOutTime = rwEpoch;
@@ -716,7 +716,7 @@ VOID ResultThread (VOID *Arg)
 
     /* Define the pipe variables */
     ULONG       BytesRead;
-    INMESS      InMessage;
+    INMESS      *InMessage = 0;
 
     HANDLE      evShutdown;
 
@@ -729,8 +729,6 @@ VOID ResultThread (VOID *Arg)
     CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 30, 0);
 
     int TracePrint (PBYTE, INT);
-
-    InMessage.DeviceID = SCANNER_DEVID;
 
     if(NULL == (evShutdown = CreateEvent(NULL, TRUE, FALSE, SCANNER_SHUTDOWN_EVENT)))
     {
@@ -761,42 +759,34 @@ VOID ResultThread (VOID *Arg)
     {
         /* Release the Lock Semaphore */
         if(dwWait == 1) ReleaseMutex(hScannerSyncs[S_LOCK_MUTEX]);
-
-        /* Wait for the Nexus to come (?back?) up */
-        while(PorterNexus.NexusState == CTINEXUS_STATE_NULL && !ScannerQuit)
-        {
-            if(!(i++ % 30))
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " ResultThread: Waiting for reconnection to Port Control" << endl;
-            }
-            CTISleep (1000L);
-        }
-
-        if(ScannerQuit)
-        {
-            continue; // get us out of here!
-        }
-
-        BytesRead = 0;
-        memset(&InMessage, 0, sizeof(InMessage));
-
         dwWait = 0;
 
-        /* get a result off the port pipe */
-        if(PorterNexus.CTINexusRead (&InMessage, sizeof(InMessage), &BytesRead, CTINEXUS_INFINITE_TIMEOUT) || BytesRead < sizeof(InMessage))     // Make sure we have an InMessage worth!
+        do
         {
-            if(PorterNexus.NexusState != CTINEXUS_STATE_NULL)
+            // Let's go look at the inbound sList, if we can!
+            while( inmessList.isEmpty() && !ScannerQuit)
             {
-                PorterNexus.CTINexusClose();
+                Sleep( 500 );
             }
 
+            if( !ScannerQuit && !inmessList.isEmpty() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CtiLockGuard< CtiMutex > ilguard( inmessMux, 15000 );
+                if(ilguard.isAcquired())
+                {
+                    InMessage = inmessList.get();
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Unable to lock SCANNERS's INMESS list. You should not see this much." << endl;
+                }
             }
+        }
+        while (InMessage == 0 && !ScannerQuit);
 
-            Sleep(500);
+        if(ScannerQuit || InMessage == 0)
+        {
             continue;
         }
 
@@ -825,22 +815,19 @@ VOID ResultThread (VOID *Arg)
             RWRecursiveLock<RWMutexLock>::LockGuard guard(ScannerDeviceManager.getMux());
 
             // Find the device..
-
-            // DeviceRecord = (CtiDeviceSingle*)ScannerDeviceManager.RemoteGetEqual(InMessage.DeviceID);
-
-            LONG id = InMessage.TargetID;
+            LONG id = InMessage->TargetID;
 
             if(id == 0)
             {
-                id = InMessage.DeviceID;
+                id = InMessage->DeviceID;
             }
 
-            pBase = (CtiDevice*)ScannerDeviceManager.RemoteGetEqual(id);
+            pBase = (CtiDevice*)ScannerDeviceManager.getEqual(id);
 
             if(ScannerDebugLevel & SCANNER_DEBUG_INREPLYS)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " InMessage from " << pBase->getName() << " " << FormatError(InMessage.EventCode & 0x3fff) << endl;
+                dout << RWTime() << " InMessage from " << pBase->getName() << " " << FormatError(InMessage->EventCode & 0x3fff) << endl;
             }
 
             if(pBase != NULL && pBase->isSingle())
@@ -851,7 +838,7 @@ VOID ResultThread (VOID *Arg)
                 TimeNow = RWTime();
 
                 // Do some device dependent work on this Inbound message!
-                DeviceRecord->ProcessResult(&InMessage, TimeNow, vgList, retList, outList);
+                DeviceRecord->ProcessResult(InMessage, TimeNow, vgList, retList, outList);
 
                 // Send any new porter requests to porter
                 if((ScannerDebugLevel & 0x00000080) && outList.entries() > 0)
@@ -892,11 +879,93 @@ VOID ResultThread (VOID *Arg)
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Unknown device scanned.  Device ID: " << InMessage.DeviceID << endl;
-                dout << " Port listed as                   : " << InMessage.Port     << endl;
-                dout << " Remote listed as                 : " << InMessage.Remote   << endl;
-                dout << " Target Remote                    : " << InMessage.TargetID   << endl;
-                dout << " We just read " << BytesRead << " bytes from the scanner/porter nexus" << endl;
+                dout << "Unknown device scanned.  Device ID: " << InMessage->DeviceID << endl;
+                dout << " Port listed as                   : " << InMessage->Port     << endl;
+                dout << " Remote listed as                 : " << InMessage->Remote   << endl;
+                dout << " Target Remote                    : " << InMessage->TargetID   << endl;
+            }
+        }
+
+        if(InMessage)
+        {
+            delete InMessage;
+            InMessage = 0;
+        }
+
+    } /* End of for */
+}
+
+VOID NexusThread (VOID *Arg)
+{
+    DWORD       dwWait;
+    /* Define the return Pipe handle */
+    IM_EX_CTIBASE extern CTINEXUS PorterNexus;
+
+    /* Misc. definitions */
+    ULONG       i;
+    /* Define the various time variable */
+    RWTime      TimeNow;
+
+    /* Define the pipe variables */
+    ULONG       BytesRead;
+    INMESS      *InMessage;
+
+    // I want an attitude!
+    CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
+
+    /* perform the wait loop forever */
+    for(;!ScannerQuit;)
+    {
+        /* Wait for the Nexus to come (?back?) up */
+        while(PorterNexus.NexusState == CTINEXUS_STATE_NULL && !ScannerQuit)
+        {
+            if(!(i++ % 30))
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " NexusThread: Waiting for reconnection to Port Control" << endl;
+            }
+
+            CTISleep (1000L);
+        }
+
+        if(ScannerQuit)
+        {
+            continue; // get us out of here!
+        }
+
+        BytesRead = 0;
+        InMessage = new INMESS;
+        memset(InMessage, 0, sizeof(*InMessage));
+
+        /* get a result off the port pipe */
+        if(PorterNexus.CTINexusRead(InMessage, sizeof(*InMessage), &BytesRead, CTINEXUS_INFINITE_TIMEOUT) || BytesRead < sizeof(*InMessage))     // Make sure we have an InMessage worth!
+        {
+            if(PorterNexus.NexusState != CTINEXUS_STATE_NULL)
+            {
+                PorterNexus.CTINexusClose();
+            }
+
+            Sleep(500);
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            delete InMessage;
+            InMessage = 0;
+            continue;
+        }
+
+        if(!ScannerQuit)
+        {
+            LastPorterInTime = LastPorterInTime.now();
+
+            if(InMessage != 0)
+            {
+                CtiLockGuard< CtiMutex > inguard( inmessMux );
+                inmessList.append( InMessage );
+                InMessage = 0;
             }
         }
     } /* End of for */
@@ -1127,12 +1196,14 @@ void LoadScannableDevices(void *ptr)
     InitScannerGlobals();      // Go fetch from the environmant
 
     RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(ScannerDeviceManager.getMux());
+    ScannerDeviceManager.setIncludeScanInfo();
 
     if(pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_ROUTE) )
     {
         try
         {
-            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD) start = start.now();
+            start = start.now();
+
             if(pChg && (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE))
             {
                 DeviceRecord = ScannerDeviceManager.getEqual(pChg->getId());
@@ -1147,148 +1218,17 @@ void LoadScannableDevices(void *ptr)
             }
             else
             {
-                ScannerDeviceManager.RefreshList();
+                ScannerDeviceManager.RefreshList(DeviceFactory, isAScannableDevice);
             }
 
-            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
+            stop = stop.now();
+
+            if(stop.seconds() - start.seconds() > 5 || ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
             {
-                stop = stop.now();
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << RWTime() << " RefreshList took " << stop.seconds() - start.seconds() << endl;
                 }
-            }
-
-            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD) start = start.now();
-
-            if(pChg && (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE))
-            {
-                ScannerDeviceManager.RefreshScanRates(pChg->getId());
-            }
-            else
-            {
-                ScannerDeviceManager.RefreshScanRates();
-            }
-
-            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
-            {
-                stop = stop.now();
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << RWTime() << " RefreshScanRates took " << stop.seconds() - start.seconds() << endl;
-                }
-            }
-
-            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD) start = start.now();
-            // Limit this list to just scannable devices!
-            // Only do this if we DID NOT have a DBCHANGE message!
-            // We will break out of the while at the correct point!
-            while(pChg == NULL)
-            {
-                CtiDeviceManager::val_pair vt = ScannerDeviceManager.getMap().find(isNotScannable, NULL);
-
-                if(vt.first == NULL)
-                {
-                    break;
-                }
-
-                hKey = vt.first;
-                DeviceRecord = vt.second;
-
-                try
-                {
-                    ScannerDeviceManager.getMap().remove( hKey );
-                }
-                catch( ... )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    break;
-                }
-
-                try
-                {
-                    if(hKey != NULL)
-                    {
-                        delete hKey;
-                        hKey = NULL;
-                    }
-
-                    if(DeviceRecord != NULL)
-                    {
-                        delete DeviceRecord;
-                        DeviceRecord = NULL;
-                    }
-                }
-                catch( ... )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    break;
-                }
-            }
-            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
-            {
-                stop = stop.now();
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << RWTime() << " Removing NONSCANABLES took " << stop.seconds() - start.seconds() << endl;
-                }
-            }
-
-            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD) start = start.now();
-            if(pChg && (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE))
-            {
-                ScannerDeviceManager.RefreshRoutes(pChg->getId());  // Get the devices which have routes into memory?
-            }
-            else
-            {
-                ScannerDeviceManager.RefreshRoutes();  // Get the devices which have routes into memory?
-            }
-
-            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
-            {
-                stop = stop.now();
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << RWTime() << " RefreshRoutes took " << stop.seconds() - start.seconds() << endl;
-                }
-            }
-
-            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD) start = start.now();
-            ScannerDeviceManager.apply( applyUseScanFlags, NULL );
-            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
-            {
-                stop = stop.now();
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << RWTime() << " apply( applyUseScanFlags, NULL ) took " << stop.seconds() - start.seconds() << endl;
-                }
-            }
-
-            // load the scan window list if there is one
-            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD) start = start.now();
-            if(pChg && (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE))
-            {
-                ScannerDeviceManager.RefreshDeviceWindows(pChg->getId());
-            }
-            else
-            {
-                ScannerDeviceManager.RefreshDeviceWindows();
-            }
-            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
-            {
-               stop = stop.now();
-               {
-                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                  dout << RWTime() << " RefreshDeviceWindows took " << stop.seconds() - start.seconds() << endl;
-               }
             }
         }
         catch( ... )
@@ -1299,7 +1239,7 @@ void LoadScannableDevices(void *ptr)
     }
 
     // Do this if there is no DBChange, or the change was a DEVICE change!
-    if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD) start = start.now();
+    start = start.now();
     if(pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) )
     {
         if(pChg)
@@ -1308,8 +1248,6 @@ void LoadScannableDevices(void *ptr)
 
             if(pBase)
             {
-                RWRecursiveLock<RWMutexLock>::LockGuard devguard(pBase->getMux());
-
                 if(pBase->isSingle())
                 {
                     CtiDeviceSingle* DeviceRecord = (CtiDeviceSingle*)pBase;
@@ -1323,7 +1261,6 @@ void LoadScannableDevices(void *ptr)
             for(; ++itr_dev ;)
             {
                 CtiDeviceBase *pBase = (CtiDeviceBase *)itr_dev.value();
-                RWRecursiveLock<RWMutexLock>::LockGuard devguard(pBase->getMux());
 
                 if(pBase->isSingle())
                 {
@@ -1334,12 +1271,11 @@ void LoadScannableDevices(void *ptr)
         }
     }
 
-    if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
+    stop = stop.now();
+    if(stop.seconds() - start.seconds() > 5 || ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
     {
-        stop = stop.now();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << RWTime() << " validateScanTimes took " << stop.seconds() - start.seconds() << endl;
         }
     }
@@ -1527,7 +1463,7 @@ void DatabaseHandlerThread(VOID *Arg)
     BOOL           bServerClosing = FALSE;
 
     RWTime         TimeNow;
-    RWTime         RefreshTime = TimeNow - (TimeNow.seconds() % SCANNER_RELOAD_RATE) + SCANNER_RELOAD_RATE;
+    RWTime         RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, SCANNER_RELOAD_RATE );
     ULONG          delta;
 
     {
@@ -1569,7 +1505,7 @@ void DatabaseHandlerThread(VOID *Arg)
                 // Post the wakup to ensure that the main loop re-examines the devices.
                 SetEvent(hScannerSyncs[ S_SCAN_EVENT ]);
 
-                RefreshTime = TimeNow - (TimeNow.seconds() % SCANNER_RELOAD_RATE) + SCANNER_RELOAD_RATE;
+                RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, SCANNER_RELOAD_RATE );
             }
         }
     } /* End of for */
@@ -1577,7 +1513,7 @@ void DatabaseHandlerThread(VOID *Arg)
 
 INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
 {
-    INT   i;
+    INT   i, j = 0;
     INT   status = NORMAL;
     ULONG BytesWritten;
 
@@ -1594,6 +1530,27 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
     for( i = outList.entries() ; status == NORMAL && i > 0; i-- )
     {
         OutMessage = outList.get();
+
+        while(PorterNexus.NexusState == CTINEXUS_STATE_NULL && !ScannerQuit)
+        {
+            if(!(j++ % 30))
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " MakePorterRequests: Waiting for reconnection to Port Control" << endl;
+            }
+
+            CTISleep (1000L);
+
+            if(j > 900)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                status = PIPEWASBROKEN;
+                break;              // Did not connect after 15 minutes!
+            }
+        }
 
         /* And send them to porter */
         if(PorterNexus.NexusState != CTINEXUS_STATE_NULL)
@@ -1625,7 +1582,6 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
                 PorterNexus.CTINexusClose();
-                status = PIPEWASBROKEN;
             }
             else
             {

@@ -32,9 +32,12 @@ private:
    CtiDeviceManager              *DeviceManager;
    CtiRouteManager               *RouteManager;
 
-   RWThreadFunction              ResultThread_;      // Thread which translates INMESS to CtiReturnMsg
-   RWThreadFunction              _vgConnThread;    // Thread which manages VanGogh requests!
+   RWThreadFunction              ResultThread_;     // Thread which translates INMESS to CtiReturnMsg
+   RWThreadFunction              _vgConnThread;     // Thread which manages VanGogh requests!
+   RWThreadFunction              _nexusThread;
 
+   CtiMutex                      _inMux;            // Protects the _inList.
+   RWTPtrSlist< INMESS    >      _inList;           // Nexus dumps out into this list!
 
 public:
 
@@ -49,6 +52,7 @@ public:
 
    virtual ~CtiPILServer()
    {
+       _inList.clearAndDestroy();
    }
 
    virtual void  clientShutdown(CtiConnectionManager *&CM);
@@ -60,6 +64,7 @@ public:
    void  mainThread();
    void  connectionThread();
    void  resultThread();
+   void  nexusThread();
    void  vgConnThread();
 
    INT analyzeWhiteRabbits(CtiRequestMsg& pReq, CtiCommandParser &parse, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > retList);

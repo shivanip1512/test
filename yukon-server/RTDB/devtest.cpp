@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/devtest.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:11 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/09/06 19:03:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,68 +45,29 @@ void main(int argc, char** argv)
     dout.setToStdOut(true);
     dout.setWriteInterval(0);
 
-    dout << "Device Tester is starting up now" << endl;
+    INT origDBL = getDebugLevel();
+    DebugLevel = 0x80000000;            // OK, trick it!
+
+    Manager.setIncludeScanInfo();       // Do the scanner stuff.
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Device Tester is starting up now" << endl;
+    }
 
     for(int i = 0 ; i < cnt; i++)
     {
         Manager.RefreshList();
-        Manager.RefreshScanRates();
-        Manager.DumpList();
 
-        while( 1 )
-        {
-            CtiDeviceManager::val_pair vt = Manager.getMap().find(isNotScannable, NULL);
+        DebugLevel = origDBL;
 
-            if(vt.first == NULL)
-            {
-                break;
-            }
-
-            hKey = vt.first;
-            DeviceRecord = vt.second;
-
-            try
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Deleting Key **** " << hKey->getID() << " for device " << DeviceRecord->getName() << endl;
-                }
-                Manager.getMap().remove( hKey );
-            }
-            catch( ... )
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-                break;
-            }
-
-            try
-            {
-                if(hKey != NULL)
-                {
-                    delete hKey;
-                    hKey = NULL;
-                }
-
-                if(DeviceRecord != NULL)
-                {
-                    delete DeviceRecord;
-                    DeviceRecord = NULL;
-                }
-            }
-            catch( ... )
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-                break;
-            }
-        }
+        // Manager.DumpList();
 
         Sleep(500);
+    }
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     Manager.DeleteList();

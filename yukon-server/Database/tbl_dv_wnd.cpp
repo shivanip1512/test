@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_wnd.cpp-arc  $
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2002/05/02 17:02:34 $
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2002/09/06 19:03:44 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,12 @@
 *    ---------------------------------------------------
 *    History:
       $Log: tbl_dv_wnd.cpp,v $
+      Revision 1.5  2002/09/06 19:03:44  cplender
+      Added smart ptr's to routes.
+      Improved reload times.
+      Added DLC devices to left outer joins
+      pil and scanner have a dedicated thread for the nexus reads back from porter.
+
       Revision 1.4  2002/05/02 17:02:34  cplender
       DBAccess no longer uses connection Lockguard to limit the number of connections
       It uses the new CtiSemaphore object to limit them to 5 (default)
@@ -198,68 +204,72 @@ LONG CtiTableDeviceWindow::calculateClose(LONG aOpen, LONG aDuration) const
 
 void CtiTableDeviceWindow::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    keyTable = db.table("Device");
     RWDBTable devTbl = db.table(getTableName());
 
     selector <<
-    keyTable["deviceid"] <<
-    devTbl["type"] <<
-    devTbl["winopen"] <<
-    devTbl["winclose"] <<
-    devTbl["alternateopen"] <<
-    devTbl["alternateclose"];
+        rwdbName("windowtype", devTbl["type"]) <<
+        devTbl["winopen"] <<
+        devTbl["winclose"] <<
+        devTbl["alternateopen"] <<
+        devTbl["alternateclose"];
 
-    selector.from(keyTable);
     selector.from(devTbl);
 
-//   selector.where( selector.where() && keyTable["deviceid"] == getDeviceID() );
-
-    selector.where( selector.where() && keyTable["deviceid"] == devTbl["deviceid"] ); //should I change this to getDeviceID() ??
+    selector.where( selector.where() && keyTable["paobjectid"].leftOuterJoin(devTbl["deviceid"]) );
 }
 
 void CtiTableDeviceWindow::DecodeDatabaseReader(RWDBReader &aRdr)
 {
-    LONG close,alternateClose;
-
-    if(getDebugLevel() & 0x0800)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
+    RWDBNullIndicator isNull;
     RWCString rwstemp;
 
-    aRdr["type"]  >> rwstemp;
+    aRdr["windowtype"]  >> isNull;
+    aRdr["windowtype"]  >> rwstemp;
 
-    _type = resolveDeviceWindowType( rwstemp );
-    aRdr["winopen"] >> _open;
-    aRdr["winclose"] >> close;
-    aRdr["alternateopen"] >> _alternateOpen;
-    aRdr["alternateclose"] >> alternateClose;
+    if(!isNull && !rwstemp.isNull())
+    {
+        LONG close,alternateClose;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
 
-    // see if we pass over midnight
-    if(close < _open)
-    {
-        // we are seconds in a day minus open + seconds into the day
-        _duration = 86400 - _open + close;
-    }
-    else
-    {
-        _duration = close - _open;
-    }
+        if(getDebugLevel() & 0x0800)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
 
-    // see if we pass over midnight
-    if(close < _open)
-    {
-        // we are seconds in a day minus open + seconds into the day
-        _alternateDuration = 86400 - _alternateOpen + alternateClose;
-    }
-    else
-    {
-        _alternateDuration = alternateClose - _alternateOpen;
-    }
+        _type = resolveDeviceWindowType( rwstemp );
+        aRdr["winopen"] >> _open;
+        aRdr["winclose"] >> close;
+        aRdr["alternateopen"] >> _alternateOpen;
+        aRdr["alternateclose"] >> alternateClose;
 
-    _updated = TRUE;                    // _ONLY_ _ONLY_ place this is set.
+        // see if we pass over midnight
+        if(close < _open)
+        {
+            // we are seconds in a day minus open + seconds into the day
+            _duration = 86400 - _open + close;
+        }
+        else
+        {
+            _duration = close - _open;
+        }
+
+        // see if we pass over midnight
+        if(close < _open)
+        {
+            // we are seconds in a day minus open + seconds into the day
+            _alternateDuration = 86400 - _alternateOpen + alternateClose;
+        }
+        else
+        {
+            _alternateDuration = alternateClose - _alternateOpen;
+        }
+
+        _updated = TRUE;                    // _ONLY_ _ONLY_ place this is set.
+    }
 }
 
 void CtiTableDeviceWindow::DumpData()
@@ -288,7 +298,7 @@ RWDBStatus CtiTableDeviceWindow::Restore()
 
     selector <<
     table["deviceid"] <<
-    table["type"] <<
+    rwdbName("windowtype", table["type"]) <<
     table["winopen"] <<
     table["winclose"] <<
     table["alternateopen"] <<

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/02 17:02:33 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/09/06 19:03:44 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -194,7 +194,7 @@ void CtiTableDeviceMCTIEDPort::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RW
     selector.from(devTbl);
 
     //  this select will be tacked on to the Carrier device
-    selector.where( keyTable["paobjectid"].leftOuterJoin(devTbl["deviceid"]) && selector.where() );  //later: == getDeviceID());
+    selector.where( selector.where() && keyTable["paobjectid"].leftOuterJoin(devTbl["deviceid"]) );  //later: == getDeviceID());
 }
 
 void CtiTableDeviceMCTIEDPort::DecodeDatabaseReader(RWDBReader &rdr)

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/09/04 13:12:54 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/09/06 19:03:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -371,6 +371,40 @@ DLLEXPORT BOOL isADevice(CtiDeviceBase* pSp, void *arg)
     return bRet;
 }
 
+DLLEXPORT BOOL isAScannableDevice(CtiDeviceBase *pDevice, void* d)
+{
+    RWBoolean bRet = FALSE;
+
+    if(pDevice->isSingle())
+    {
+        CtiDeviceSingle* pUnique = (CtiDeviceSingle*)pDevice;
+
+        // Return TRUE if it is NOT SET
+        for(INT i = 0; i  < ScanRateInvalid; i++ )
+        {
+            if(pUnique->getScanRate(i) != -1)
+            {
+                bRet = TRUE;              // I found a scan rate...
+                break;
+            }
+        }
+
+        if(!bRet && isCarrierLPDevice(pUnique))
+        {
+            for(int i = 0; i < MAX_COLLECTED_CHANNEL; i++)
+            {
+                if(((CtiDeviceMCT *)pUnique)->getLoadProfile().isChannelValid(i))
+                {
+                    bRet = TRUE;
+                    break;
+                }
+            }
+        }
+    }
+
+    return(bRet);
+}
+
 DLLEXPORT BOOL isARoute(CtiRouteBase* pSp, void *arg)
 {
     BOOL bRet = TRUE;
@@ -405,7 +439,6 @@ DLLEXPORT RWBoolean isCarrierLPDevice(CtiDeviceBase *pDevice)
     return result;
 }
 
-
 /*
  *Function Name:isNotScannable
  *
@@ -438,47 +471,13 @@ DLLEXPORT RWBoolean isNotScannable( CtiRTDB< CtiDeviceBase >::val_pair vp, void*
             }
         }
 
-        if(isCarrierLPDevice(pUnique))
+        if(bRet && isCarrierLPDevice(pUnique))
         {
             for(int i = 0; i < MAX_COLLECTED_CHANNEL; i++)
             {
                 if(((CtiDeviceMCT *)pUnique)->getLoadProfile().isChannelValid(i))
                 {
                     bRet = FALSE;
-                    break;
-                }
-            }
-        }
-    }
-
-    return(bRet);
-}
-
-DLLEXPORT RWBoolean isScannable(CtiDeviceBase *pDevice, void* d)
-{
-    RWBoolean bRet = FALSE;
-
-    if(pDevice->isSingle())
-    {
-        CtiDeviceSingle* pUnique = (CtiDeviceSingle*)pDevice;
-
-        // Return TRUE if it is NOT SET
-        for(INT i = 0; i  < ScanRateInvalid; i++ )
-        {
-            if(pUnique->getScanRate(i) != -1)
-            {
-                bRet = TRUE;              // I found a scan rate...
-                break;
-            }
-        }
-
-        if(isCarrierLPDevice(pUnique))
-        {
-            for(int i = 0; i < MAX_COLLECTED_CHANNEL; i++)
-            {
-                if(((CtiDeviceMCT *)pUnique)->getLoadProfile().isChannelValid(i))
-                {
-                    bRet = TRUE;
                     break;
                 }
             }

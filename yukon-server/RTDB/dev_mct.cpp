@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2002/09/03 14:33:49 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2002/09/06 19:03:40 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -875,7 +875,7 @@ INT CtiDeviceMCT::LoadProfileScan(CtiRequestMsg *pReq,
             EstablishOutMessagePriority( OutMessage, ScanPriority );
             OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = CtiProtocolEmetcon::Scan_LoadProfile;
-            OutMessage->Retry     = 2;
+            OutMessage->Retry     = 0;  // 20020906 CGP
             OutMessage->Request.RouteID   = getRouteID();
             OutMessage->Request.MacroOffset = 0; // 20020730 CGP // selectInitialMacroRouteOffset(getRouteID());
 

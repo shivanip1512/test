@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dlcbase.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/08/05 20:42:07 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/09/06 19:03:42 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -96,7 +96,7 @@ public:
    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
-   virtual void DecodeRoutesDatabaseReader(RWDBReader &rdr);
+   // virtual void DecodeRoutesDatabaseReader(RWDBReader &rdr);
 
    virtual LONG getAddress() const;
    virtual LONG getRouteID() const;

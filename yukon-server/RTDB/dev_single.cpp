@@ -8,8 +8,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/07/30 21:16:48 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/09/06 19:03:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1822,18 +1822,25 @@ void CtiDeviceSingle::DecodeScanRateDatabaseReader(RWDBReader &rdr)
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    rdr["scantype"] >> rwsTemp;
-    INT i = resolveScanType(rwsTemp);
+    RWDBNullIndicator isNull;
 
-    if(i < ScanRateInvalid)
+    rdr["scantype"] >> isNull;
+
+    if(!isNull)
     {
-        if(_scanRateTbl[i] == NULL)
-        {
-            _scanRateTbl[i] = new CtiTableDeviceScanRate;
-        }
+        rdr["scantype"] >> rwsTemp;
+        INT i = resolveScanType(rwsTemp);
 
-        if(_scanRateTbl[i])
-            _scanRateTbl[i]->DecodeDatabaseReader(rdr);
+        if(i < ScanRateInvalid)
+        {
+            if(_scanRateTbl[i] == NULL)
+            {
+                _scanRateTbl[i] = new CtiTableDeviceScanRate;
+            }
+
+            if(_scanRateTbl[i])
+                _scanRateTbl[i]->DecodeDatabaseReader(rdr);
+        }
     }
 }
 void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(RWDBReader &rdr)
@@ -1846,25 +1853,31 @@ void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(RWDBReader &rdr)
         dout << RWTime() << " Decoding device windows " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    CtiTableDeviceWindow newWindow;
-    newWindow.DecodeDatabaseReader(rdr);
+    RWDBNullIndicator isNull;
+    rdr["windowtype"] >> isNull;        // 'windowtype' is the alias used for devicewindow.type to avoid a collision with yukonpaobject.type.
 
-    /*************************
-    * if open and close were equal, duration of the window will be 0
-    *
-    * sounds like a config problem to me, make the window always open
-    **************************
-    */
-    if(newWindow.getDuration() == 0)
+    if(!isNull)
     {
+        CtiTableDeviceWindow newWindow;
+        newWindow.DecodeDatabaseReader(rdr);
+
+        /*************************
+        * if open and close were equal, duration of the window will be 0
+        *
+        * sounds like a config problem to me, make the window always open
+        **************************
+        */
+        if(newWindow.getDuration() == 0)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << getName() << "'s device window is invalid, open and close times are equal " << endl;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << getName() << "'s device window is invalid, open and close times are equal " << endl;
+            }
         }
-    }
-    else
-    {
-        _windowVector.push_back (newWindow);
+        else
+        {
+            _windowVector.push_back (newWindow);
+        }
     }
 }
 
