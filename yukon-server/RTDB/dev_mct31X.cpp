@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2002/12/12 17:02:47 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2002/12/12 17:38:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -605,8 +605,9 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
     DOUBLE Value;
 
-    CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-    CtiPointDataMsg      *pData = NULL;
+    CtiPointBase    *pPoint;
+    CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    CtiPointDataMsg *pData = NULL;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -618,6 +619,7 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
+
         // No error occured, we must do a real decode!
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
@@ -634,66 +636,32 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
         extractStatusData(InMessage, getType(), StatusData);
 
-        //  Now sweep the points on this device looking for any status points!  Each gets updated to dispatch via retList.
-
-        if(_pointMgr == NULL)      // Attached via the dev_base object.
+        //  the only status points we really care about - comm status is handled higher up by porter
+        for( int i = 1; i <= 16; i++ )
         {
-            RefreshDevicePoints(  );
-        }
-
-        if(_pointMgr != NULL)      // Attached via the dev_base object.
-        {
-            LockGuard guard(monitor());               // Lock the MCT device!
-            CtiPointBase *pPoint;
-
-            CtiPointManager::CtiRTDBIterator itr( _pointMgr->getMap() );
-
-            for(;itr();)
+            if( (pPoint = getDevicePointOffsetTypeEqual(i, StatusPointType)) != NULL )
             {
-                pPoint = itr.value();
+                Value = translateStatusValue(pPoint->getPointOffset(), pPoint->getType(), getType(), StatusData);
+
+                resultString = ResolveStateName(pPoint->getStateGroupID(), Value);
+
+                if( resultString != "" )
                 {
-                    RWRecursiveLock<RWMutexLock>::LockGuard pGuard( pPoint->getMux() );
-                    switch( pPoint->getType() )
-                    {
-                        case StatusPointType:
-                        {
-                            //  good data must translate it
-                            Value = translateStatusValue(pPoint->getPointOffset(), pPoint->getType(), getType(), StatusData);
+                    resultString = getName() + " / " + pPoint->getName() + ":" + resultString;
+                }
+                else
+                {
+                    resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value);
+                }
 
-                            resultString = ResolveStateName(pPoint->getStateGroupID(), Value);
+                pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, resultString);
 
-                            if( resultString != "" )
-                            {
-                                resultString = getName() + " / " + pPoint->getName() + ":" + resultString;
-                            }
-                            else
-                            {
-                                resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value);
-                            }
-
-                            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, resultString);
-
-                            if(pData != NULL)
-                            {
-                                ReturnMsg->PointData().insert(pData);
-                                pData = NULL;  // We just put it on the list...
-                            }
-
-                            break;
-                        }
-
-                        default:
-                        {
-                            break;
-                        }
-                    }
+                if(pData != NULL)
+                {
+                    ReturnMsg->PointData().insert(pData);
+                    pData = NULL;  // We just put it on the list...
                 }
             }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
