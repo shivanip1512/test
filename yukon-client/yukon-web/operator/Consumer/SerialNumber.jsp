@@ -82,12 +82,12 @@ function validate(form) {
 }
 
 function selectInventory(form) {
-	form.attributes["action"].value = "../Hardware/SelectInv.jsp";
+	form.attributes["action"].value = "SelectInv.jsp";
 	form.submit();
 }
 
 function selectMeter(form) {
-	form.attributes["action"].value = "../Hardware/SelectMeter.jsp";
+	form.attributes["action"].value = "SelectMeter.jsp";
 	form.submit();
 }
 
@@ -116,7 +116,6 @@ function changeDeviceType() {
               <tr> 
                   <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
                     Account Information&nbsp;&nbsp;</td>
-                  
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
                     <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -158,37 +157,62 @@ function changeDeviceType() {
 			  <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager">
 			    <input type="hidden" name="action" value="CheckInventory">
 				<input type="hidden" name="REDIRECT" value="<%= redirect %>">
-                <table width="480" border="0" cellspacing="0" cellpadding="3" class="MainText">
+                Please select a device from the current inventory (Select Inventory),<br>
+<% if (devTypeMCT != null) { %>
+                select a meter from the list of all MCTs (Select Meter),<br>
+<% } %>
+                or check the inventory for a specific device type and serial number 
+                (Check Inventory).<br>
+                <br>
+                <table width="300" border="0" cellspacing="0" cellpadding="2">
                   <tr> 
-                    <td width="322">Please select from the inventory:</td>
-                    <td width="146"> 
-                      <input type="button" name="SelectInv" value="Select Inventory" onclick="selectInventory(this.form)">
+                    <td> 
+                      <table width="300" border="1" cellspacing="0" cellpadding="2" bgcolor="#CCCCCC" height="40">
+                        <tr> 
+                          <td height="30"> 
+                            <div align="center"> 
+                              <input type="button" name="SelectInv" value="Select Inventory" onClick="selectInventory(this.form)">
+                            </div>
+                          </td>
+                        </tr>
+                      </table>
                     </td>
                   </tr>
 <% if (devTypeMCT != null) { %>
                   <tr> 
-                    <td width="322">Or select from the list of all meters:</td>
-                    <td width="146"> 
-                      <input type="button" name="SelectMCT" value="Select Meter" onclick="selectMeter(this.form)">
+                    <td> 
+                      <div align="center" class="TableCell">or</div>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <table width="300" border="1" cellspacing="0" cellpadding="2" bgcolor="#CCCCCC" height="40">
+                        <tr> 
+                          <td height="30"> 
+                            <div align="center">
+                              <input type="button" name="SelectMCT" value="Select Meter" onClick="selectMeter(this.form)">
+                            </div>
+                          </td>
+                        </tr>
+                      </table>
                     </td>
                   </tr>
 <% } %>
                   <tr> 
-                    <td colspan="2">
-                      <p>&nbsp;</p>
+                    <td> 
+                      <div align="center" class="TableCell">or</div>
                     </td>
                   </tr>
                   <tr> 
-                    <td width="322"> 
-                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <td> 
+                      <table width="300" border="1" cellspacing="0" cellpadding="2" bgcolor="#CCCCCC" height="100">
                         <tr> 
-                          <td width="15%" class="MainText">Or enter</td>
-                          <td width="85%"> 
-                            <table width="100%" border="0" cellspacing="0" cellpadding="3" class="MainText">
+                          <td> 
+                            <table width="100%" border="0" cellspacing="0" cellpadding="3" class="MainText" bgcolor="#CCCCCC">
                               <tr> 
-                                <td align="right" width="35%">Device type: </td>
-                                <td width="65%"> 
-                                  <select name="DeviceType" onchange="changeDeviceType()">
+                                <td align="right" width="30%">Device type: </td>
+                                <td width="70%"> 
+                                  <select name="DeviceType">
                                     <%
 	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
@@ -205,20 +229,20 @@ function changeDeviceType() {
                               <tr> 
                                 <td align="right" width="30%"><span id="NameLabel">Serial #</span>: </td>
                                 <td width="70%"> 
-                                  <input type="text" name="SerialNo" maxlength="30" size="20" value="<%= devName %>">
+                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= devName %>">
                                 </td>
                               </tr>
                             </table>
+                            <div align="center"> 
+                              <input type="submit" name="CheckInv" value="Check Inventory" onClick="return validate(this.form)">
+                            </div>
                           </td>
                         </tr>
                       </table>
                     </td>
-                    <td width="146"> 
-                      <input type="submit" name="CheckInv" value="Check Inventory" onclick="return validate(this.form)">
-                    </td>
                   </tr>
                 </table>
-              </form>
+                </form>
 			  <% if (!inWizard) { %>
                 <input type="button" name="Cancel" value="Cancel" onclick="location.href = '<%= referer %>'">
 			  <% } else { %>
