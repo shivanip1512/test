@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/03/01 16:04:20 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2005/03/01 21:42:35 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2637,9 +2637,9 @@ INT CtiDeviceMCT410::decodeGetConfigIntervals(INMESS *InMessage, RWTime &TimeNow
         CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
         RWCString resultString;
 
-        resultString = getName() + " / Demand Interval:       " + CtiNumStr(DSt->Message[0]) + " minutes\n";
-        resultString = getName() + " / Load Profile Interval: " + CtiNumStr(DSt->Message[1]) + " minutes\n";
-        resultString = getName() + " / Voltage Demand Interval:       ";
+        resultString  = getName() + " / Demand Interval:       " + CtiNumStr(DSt->Message[0]) + " minutes\n";
+        resultString += getName() + " / Load Profile Interval: " + CtiNumStr(DSt->Message[1]) + " minutes\n";
+        resultString += getName() + " / Voltage Demand Interval:       ";
         if( DSt->Message[2] / 4 > 0 )
         {
             resultString += CtiNumStr(DSt->Message[2] / 4) + " minutes";
@@ -2650,7 +2650,7 @@ INT CtiDeviceMCT410::decodeGetConfigIntervals(INMESS *InMessage, RWTime &TimeNow
         }
         resultString += "\n";
 
-        resultString = getName() + " / Voltage Load Profile Interval: " + CtiNumStr(DSt->Message[3]) + " minutes\n";
+        resultString += getName() + " / Voltage Load Profile Interval: " + CtiNumStr(DSt->Message[3]) + " minutes\n";
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
