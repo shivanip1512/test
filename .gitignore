@@ -10,7 +10,9 @@ yukon-client/common/.cvsignore
 yukon-client/common/bin
 yukon-client/custom/.cvsignore
 yukon-client/custom/bin
+yukon-client/dbeditor/.classpath
 yukon-client/dbeditor/.cvsignore
+yukon-client/dbeditor/.project
 yukon-client/dbeditor/bin
 yukon-client/dbeditor/build
 yukon-client/export/.cvsignore
