@@ -224,7 +224,7 @@ public class ReportFactory
 		factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 		factory.setNullString("  ---  ");
-		factory.setName(name + NAME_GROUP);
+		factory.setName(name + NAME_ELEMENT);
 		factory.setFieldname(name);
 
 		return factory;
