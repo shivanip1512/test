@@ -17,7 +17,6 @@ public abstract class FileFormatBase
 	public static BillingFileDefaults billingDefaults = null;
 	public java.util.Hashtable pointIDMultiplierHashTable = null;
 	
-	
 	public static final int validAnalogPtOffsets[] =
 	{
 		2, 3, 4, 5, 6, 7, 8, 9, 22, 24, 26, 28
@@ -287,6 +286,15 @@ public java.util.Hashtable retrieveAccountNumbers(String dbAlias)
 //returns true if the data retrieval was successfull
 abstract public boolean retrieveBillingData(String dbAlias);
 
+//returns the number of valid readings gathered during retrieveBillingData(String dbAlias)
+public int getRecordCount()
+{
+	if( getRecordVector() != null)
+	{
+		return getRecordVector().size();
+	}
+	return 0;
+}
 public java.util.Hashtable retrievePointIDMultiplierHashTable()
 {
 //	java.util.Vector returnMultipliers = new java.util.Vector();
@@ -374,4 +382,9 @@ public void writeToFile() throws java.io.IOException
 	outputFileWriter.flush();
 	outputFileWriter.close();
 }
+public void writeToFile(java.io.OutputStream out) throws java.io.IOException
+{
+	out.write(getOutputAsStringBuffer().toString().getBytes());
+}
+
 }
