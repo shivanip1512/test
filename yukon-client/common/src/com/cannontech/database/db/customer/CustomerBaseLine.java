@@ -34,8 +34,9 @@ public void add() throws java.sql.SQLException
 {
 	Object[] addValues = 
 	{ 
-		getCustomerID(), getPercentWindow(),
+		getCustomerID(),
 		getDaysUsed(),
+		getPercentWindow(),
 		getCalcDays(), getExcludedWeekDays(),
 		getHolidaysUsed()
 	};
