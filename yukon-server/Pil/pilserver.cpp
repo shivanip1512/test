@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/06/18 16:18:11 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/06/21 15:41:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -195,7 +195,7 @@ void CtiPILServer::mainThread()
     }
 
     /* Give us a tiny attitude */
-    CTISetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 24, 0);
+    CTISetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 30, 0);
 
     /* Create the event semaphore */
     if(CTICreateEventSem (PILSEM, &PilSem, 0, 0))
@@ -227,6 +227,20 @@ void CtiPILServer::mainThread()
         {
             /* Wait/Block on the return thread if neccessary */
             CTIRequestMutexSem (LockSem, SEM_INDEFINITE_WAIT);
+
+            if(DebugLevel & DEBUGLEVEL_PIL_MAINTHREAD)
+            {
+                if(MsgPtr->isA() == MSG_PCREQUEST)
+                {
+                    CtiDevice *DeviceRecord = DeviceManager->RemoteGetEqual(((CtiRequestMsg*)MsgPtr)->DeviceId());
+                    if(DeviceRecord)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Pilserver mainThread received a CtiRequestMsg for " << DeviceRecord->getName();
+                        dout << " at priority " << MsgPtr->getMessagePriority() << endl;
+                    }
+                }
+            }
 
             /* Check if we need to reopen the port pipe */
             if(PorterNexus.NexusState == CTINEXUS_STATE_NULL)
@@ -468,7 +482,7 @@ void CtiPILServer::resultThread()
     }
 
     /* Give us a tiny attitude */
-    CTISetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 25, 0);
+    CTISetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
 
     /* Block here until main program is in loop */
     CTIRequestMutexSem (LockSem, SEM_INDEFINITE_WAIT);
