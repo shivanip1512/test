@@ -755,9 +755,9 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 	private void initConnections() throws java.lang.Exception {
 		// user code begin {1}
 		// user code end
-		getPointCopyCheckBox().addItemListener(this);
-		getNameTextField().addCaretListener(this);
-		getAddressTextField().addCaretListener(this);
+		getPointCopyCheckBox().addItemListener(ivjEventHandler);
+		getNameTextField().addCaretListener(ivjEventHandler);
+		getAddressTextField().addCaretListener(ivjEventHandler);
 		getJTextFieldMeterNumber().addCaretListener(ivjEventHandler);
 		getJTextFieldPhoneNumber().addCaretListener(ivjEventHandler);
 	}
