@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/05/08 15:51:03 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/05/08 16:04:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2308,7 +2308,7 @@ INT CtiVanGogh::loadPendingSignals()
 
             if( pDyn != NULL )
             {
-                if( (pDyn->getDispatch().getTags() & MASK_ANY_ALARM) )
+                if( (pDyn->getDispatch().getTags() & MASK_ANY_ALARM) )      // This point seems to have an alarm indication on it.
                 {
                     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                     RWDBConnection conn = getConnection();
@@ -2367,8 +2367,7 @@ INT CtiVanGogh::loadPendingSignals()
                         CtiHashKey key(lTemp);
 
 
-                        if( _signalsPending.entries() > 0 &&
-                            ((pSig = _signalsPending.getMap().findValue(&key)) != NULL) )
+                        if( _signalsPending.entries() > 0 && ((pSig = _signalsPending.getMap().findValue(&key)) != NULL) )
                         {
                             /*
                              *  The point just returned from the rdr already was in my list.  We need to
@@ -2432,57 +2431,67 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
                 CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                 RWDBConnection conn = getConnection();
 
-                conn.beginTransaction(signals);
-
-                do
+                if(conn.isValid())
                 {
-                    Msg = _signalMsgQueue.getQueue(0);
+                    conn.beginTransaction(signals);
 
-                    if(Msg != NULL)
+                    do
                     {
-                        CtiTableSignal sig(Msg->getId(), Msg->getMessageTime(), Msg->getText(), Msg->getAdditionalInfo(), Msg->getSignalGroup(), Msg->getLogType(), Msg->getSOE(), Msg->getUser());
+                        Msg = _signalMsgQueue.getQueue(0);
 
-                        if(!Msg->getText().isNull() || !Msg->getAdditionalInfo().isNull())
+                        if(Msg != NULL)
                         {
-                            // No text, no point then is there now?
-                            sig.Insert(conn);
+                            CtiTableSignal sig(Msg->getId(), Msg->getMessageTime(), Msg->getText(), Msg->getAdditionalInfo(), Msg->getSignalGroup(), Msg->getLogType(), Msg->getSOE(), Msg->getUser());
 
-                            /*
-                             *  Last thing we do is add this signal to the pending signal list iff it is an alarm
-                             *  AND it is not a cleared alarm....  This second condition prevents clear reports
-                             *  from being kept on the pending list.
-                             */
-
-                            if( Msg->getSignalGroup() > SignalEvent && !(Msg->getTags() & TAG_REPORT_MSG_TO_ALARM_CLIENTS) )
+                            if(!Msg->getText().isNull() || !Msg->getAdditionalInfo().isNull())
                             {
-                                CtiHashKey *pKey = new CtiHashKey(sig.getPointID());
-                                CtiTableSignal *pNewSig = sig.replicate();
+                                // No text, no point then is there now?
+                                sig.Insert(conn);
 
-                                if(pKey != NULL && pNewSig != NULL)
+                                /*
+                                 *  Last thing we do is add this signal to the pending signal list iff it is an alarm
+                                 *  AND it is not a cleared alarm....  This second condition prevents clear reports
+                                 *  from being kept on the pending list.
+                                 */
+
+                                if( Msg->getSignalGroup() > SignalEvent && !(Msg->getTags() & TAG_REPORT_MSG_TO_ALARM_CLIENTS) )
                                 {
-                                    if(!_signalsPending.getMap().insert( pKey , pNewSig ))
+                                    CtiHashKey *pKey = new CtiHashKey(sig.getPointID());
+                                    CtiTableSignal *pNewSig = sig.replicate();
+
+                                    if(pKey != NULL && pNewSig != NULL)
                                     {
-                                        CtiTableSignal *pOldSig = _signalsPending.getMap().findValue(&CtiHashKey(Msg->getId()));
-
-                                        if(pOldSig != NULL)
+                                        if(!_signalsPending.getMap().insert( pKey , pNewSig ))
                                         {
-                                            *pOldSig = *pNewSig;
-                                        }
+                                            CtiTableSignal *pOldSig = _signalsPending.getMap().findValue(&CtiHashKey(Msg->getId()));
 
-                                        // And don't let the memory escape from us..
-                                        delete pKey;
-                                        delete pNewSig;
+                                            if(pOldSig != NULL)
+                                            {
+                                                *pOldSig = *pNewSig;
+                                            }
+
+                                            // And don't let the memory escape from us..
+                                            delete pKey;
+                                            delete pNewSig;
+                                        }
                                     }
                                 }
                             }
+
+                            postList.insert(Msg);
                         }
 
-                        postList.insert(Msg);
+                    } while( conn.isValid() && Msg != NULL && (justdoit || (panicCounter++ < 500)));
+
+                    conn.commitTransaction(signals);
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Unable to acquire a valid conneciton to the database" << endl;
                     }
-
-                } while( conn.isValid() && Msg != NULL && (justdoit || (panicCounter++ < 500)));
-
-                conn.commitTransaction(signals);
+                }
             }
 
             {
@@ -2509,6 +2518,11 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
                 }
             }
         }
+    }
+    catch(RWxmsg &msg)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** RW EXCEPTION **** " << msg.why() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     catch(...)
     {
@@ -4184,7 +4198,7 @@ INT CtiVanGogh::sendMail(const CtiEmailMsg &aMail, const CtiTableGroupRecipient 
     SENDMAIL sm;
 
     RWCString mailstr = "\r" + aMail.getText() + resolveEmailMsgDescription( aMail );
-    
+
     sm.lpszHost          = gSMTPServer;                   // Global loaded by ctibase.dll.
     sm.lpszSender        = aMail.getSender();
     sm.lpszSenderName    = NULL;
@@ -5212,7 +5226,7 @@ void CtiVanGogh::sendSignalToGroup(LONG ngid, CtiSignalMsg sig)
 
         if(theGroup.isDirty())
         {
-            
+
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
