@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrrdex.cpp-arc  $
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2003/10/31 21:15:41 $
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2004/06/08 19:22:07 $
 *
 *
 *    AUTHOR: David Sutton
@@ -24,6 +24,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrrdex.cpp,v $
+      Revision 1.5  2004/06/08 19:22:07  dsutton
+      The timestamp being sent wasn't setting the daylight savings flag correctly
+
       Revision 1.4  2003/10/31 21:15:41  dsutton
       Updated to allow us to send and receive accumlator points to other systems.
       Oversite from the original implementation
@@ -1055,7 +1058,7 @@ RWCString CtiFDR_Rdex::YukonToForeignTime (RWTime aTimeStamp)
    // Place it into the Valmet structure */
    _snprintf (tmp,
              30,
-          "%4ld%02ld%02ld%02ld%02ld%02ldCST",
+          "%4ld%02ld%02ld%02ld%02ld%02ldS",
              tmpDate.year(),
              tmpDate.month(),
              tmpDate.dayOfMonth(),
@@ -1065,7 +1068,7 @@ RWCString CtiFDR_Rdex::YukonToForeignTime (RWTime aTimeStamp)
 
    if (aTimeStamp.isDST())
    {
-      tmp[15] = 'D';
+      tmp[14] = 'D';
    }
 
    return(RWCString (tmp));
