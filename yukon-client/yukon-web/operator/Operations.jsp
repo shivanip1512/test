@@ -71,14 +71,14 @@ function confirmDelete() {
           <td width="45">&nbsp;</td>
         </tr>
         <tr> 
+          <td width="97" class="MainText">
+            <div align = "center" style = "border:solid 1px #666999;">
+              <a href = 'Consumer/New.jsp<cti:checkProperty propertyid="<%= ConsumerInfoRole.NEW_ACCOUNT_WIZARD %>">?Wizard=true</cti:checkProperty>' class = "Link1" style = "text-decoration:none;">New Account</a>
+            </div>
+          </td>
+          <td  class = "MainText" width="109" >&nbsp;</td>
           <form name = "custSearchForm" method="POST" action="/servlet/SOAPClient">
             <input type="hidden" name="action" value="SearchCustAccount">
-            <td width="97" class="MainText">
-              <div align = "center" style = "border:solid 1px #666999;">
-                <a href = 'Consumer/New.jsp<cti:checkProperty propertyid="<%= ConsumerInfoRole.NEW_ACCOUNT_WIZARD %>">?Wizard=true</cti:checkProperty>' class = "Link1" style = "text-decoration:none;">New Account</a>
-              </div>
-            </td>
-            <td  class = "MainText" width="109" >&nbsp;</td>
             <td  class = "MainText" width="250" align = "right"> 
               <select name="SearchBy">
 <%
@@ -98,8 +98,6 @@ function confirmDelete() {
               &nbsp; </td>
             <td class = "MainText" width="45" valign = "top"><img class="Clickable" src="GoButton.gif" width="23" height="20" onClick = "Javascript:document.custSearchForm.submit();"> 
             </td>
-          </form>
-          <form method="get" action="Consumer/New.jsp"> 
           </form>
         </tr>
       </table>
@@ -228,11 +226,25 @@ function confirmDelete() {
             <div align = "center" style = "border:solid 1px #666999;"><a href = "Hardware/Inventory.jsp" class = "Link1" style = "text-decoration:none;">Inventory</a></div>
             </cti:checkProperty></td>
           <td width="109" class="MainText">&nbsp;</td>
-          <form name = "serialSearchForm" method="post" action="Hardware/InventoryDetail.jsp">
-            <td width="250" class="MainText"> 
-              <input type="text" name="textfield22">
+          <form name = "invSearchForm" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager">
+		    <input type="hidden" name="action" value="SearchInventory">
+			<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Hardware/ResultSet.jsp">
+            <td width="250" class="MainText" align="right"> 
+              <select name="SearchBy">
+<%
+	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY);
+	for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
+%>
+			    <option value="<%= entry.getYukonDefID() %>"><span class="MainText"><b><%= entry.getContent() %></b></span></option>
+<%
+	}
+%>
+			  </select>
+			  &nbsp; 
+              <input type="text" name="SearchValue" size="14">
               &nbsp; </td>
-            <td valign = "top" class="MainText" width="45"> <img src="GoButton.gif" width="23" height="20" onclick = "Javascript:document.serialSearchForm.submit();" > 
+            <td valign = "top" class="MainText" width="45"> <img src="GoButton.gif" width="23" height="20" onclick = "Javascript:document.invSearchForm.submit();" > 
             </td>
           </form>
         </tr>
