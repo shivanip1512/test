@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/02/17 23:11:19 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/03/14 01:27:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -649,7 +649,7 @@ extern void cleanupDB();
 
 CtiPointManager::~CtiPointManager()
 {
-    cleanupDB();  // Deallocate all the DB stuff.
+    // cleanupDB();  // Deallocate all the DB stuff.
 }
 
 

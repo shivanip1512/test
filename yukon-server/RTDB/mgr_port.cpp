@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/02/17 23:11:19 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/03/14 01:27:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -168,7 +168,7 @@ extern void cleanupDB();
 
 CtiPortManager::~CtiPortManager()
 {
-    cleanupDB();  // Deallocate all the DB stuff.
+    // cleanupDB();  // Deallocate all the DB stuff.
 }
 
 void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg)
@@ -401,10 +401,9 @@ void CtiPortManager::apply(void (*applyFun)(const long, ptr_type, void*), void* 
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  CtiPortManager::apply " << endl;
+                    dout << RWTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << " CtiPortManager::apply " << endl;
                 }
-                return;
+                break;
             }
         }
 
