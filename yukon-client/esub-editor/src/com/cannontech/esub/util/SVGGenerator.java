@@ -222,8 +222,8 @@ public class SVGGenerator {
 		int x = (int) r.getMinX() + 5; // fudge factor !
 		int y = (int) r.getMinY() + 5;
 		
-		int width = (int) r.getMaxX() - x - 10;
-		int height = (int) r.getMaxY() - y - 10;
+		int width = (int) r.getMaxX() - x - 5;
+		int height = (int) r.getMaxY() - y - 5;
 			
 		String fillStr = "none";
 		if( fillColor != null ) {
