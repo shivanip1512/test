@@ -65,6 +65,14 @@ public class LGAccounting implements Reportable
 	private static String title = "LOAD GROUP ACCOUNTING";
 		
 	/**
+	 * 
+	 */
+	public LGAccounting()
+	{
+		super();
+	}
+
+	/**
 	 * @param paoName_
 	 * @param startDate_
 	 * @param stopDate_

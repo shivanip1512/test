@@ -48,6 +48,22 @@ public class SystemLog extends com.cannontech.database.db.point.SystemLog implem
 	/** A string for the title of the data */
 	private static String title = "SYSTEM LOG";
 	
+	/**
+	 * 
+	 */
+	public SystemLog()
+	{
+		this(null);
+	}
+
+	/**
+	 * @param pointID
+	 */
+	public SystemLog(Integer pointID)
+	{
+		super(pointID);
+	}
+
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnNames()
 	 */

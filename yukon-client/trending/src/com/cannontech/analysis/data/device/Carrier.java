@@ -53,6 +53,16 @@ public class Carrier implements Reportable
 	public String routeName = null;
 	public String collGroup = null;
 	public String testCollGroup = null;
+	
+	
+	/**
+	 * 
+	 */
+	public Carrier()
+	{
+		super();
+	}
+
 	/**
 	 * @param paoName_
 	 * @param paoType_

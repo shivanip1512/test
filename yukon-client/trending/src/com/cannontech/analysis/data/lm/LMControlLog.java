@@ -39,6 +39,23 @@ public class LMControlLog extends SystemLog
 	/** A string for the title of the data */
 	private static String title = "LOAD MANAGEMENT CONTROL LOG";
 
+
+	/**
+	 * 
+	 */
+	public LMControlLog()
+	{
+		this(null);
+	}
+
+	/**
+	 * @param pointID
+	 */
+	public LMControlLog(Integer pointID)
+	{
+		super(pointID);
+	}
+
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnNames()
 	 */

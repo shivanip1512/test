@@ -47,6 +47,15 @@ public class MissedMeter implements Reportable
 	/** A string for the title of the data */
 	private static String title = "Missed Meter Reads By Collection Group";
 
+
+	/**
+	 * 
+	 */
+	public MissedMeter()
+	{
+		super();
+	}
+
 	/**
 	 * @param collGroup_
 	 * @param deviceName_
