@@ -50,8 +50,7 @@ public class CustomerAccount extends DBPersistent {
 		java.sql.ResultSet rset = null;
 		
 		try {
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-					com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
     		
 	        String sql = "SELECT acct.AccountID FROM ECToAccountMapping map, " + TABLE_NAME + " acct "
 	                   + "WHERE map.EnergyCompanyID = ? AND map.AccountID = acct.AccountID"

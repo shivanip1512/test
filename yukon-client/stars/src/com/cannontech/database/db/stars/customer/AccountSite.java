@@ -112,6 +112,9 @@ public class AccountSite extends DBPersistent {
     
     public static Integer getAccountIDBySiteNo(String siteNo, int energyCompanyID) {
     	java.sql.Connection conn = null;
+		java.sql.PreparedStatement stmt = null;
+		java.sql.ResultSet rset = null;
+		
     	String sql = "SELECT acct.AccountID FROM " +
     			"AccountSite site, CustomerAccount acct, ECToAccountMapping map " +
     			"WHERE UPPER(site.SiteNumber) LIKE UPPER(?) " +
@@ -121,11 +124,11 @@ public class AccountSite extends DBPersistent {
     	try {
     		conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
     		
-    		java.sql.PreparedStatement stmt = conn.prepareStatement( sql );
+    		stmt = conn.prepareStatement( sql );
     		stmt.setString( 1, siteNo );
     		stmt.setInt( 2, energyCompanyID );
     		
-    		java.sql.ResultSet rset = stmt.executeQuery();
+    		rset = stmt.executeQuery();
     		if (rset.next())
     			return new Integer( rset.getInt(1) );
     	}
@@ -134,6 +137,8 @@ public class AccountSite extends DBPersistent {
     	}
     	finally {
     		try {
+    			if (rset != null) rset.close();
+    			if (stmt != null) stmt.close();
     			if (conn != null) conn.close();
     		}
     		catch (java.sql.SQLException e) {}
