@@ -3,12 +3,14 @@ package com.cannontech.dbeditor.editor.user;
 /**
  * This type was created in VisualAge.
  */
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.border.BevelBorder;
 
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.user.YukonGroup;
 
@@ -588,10 +590,12 @@ public void setValue(Object o)
 	synchronized( cache )
 	{
 		List grpMembers = (List)cache.getYukonGroupUserMap().get( LiteFactory.createLite(group.getYukonGroup()) ) ;
-		java.util.Collections.sort(grpMembers, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
-		
-		if( grpMembers != null )
+        
+        if( grpMembers != null )
+        {
+            Collections.sort( grpMembers, LiteComparators.liteStringComparator );
 			getJListMembers().setListData( grpMembers.toArray() );
+        }
 	}
 	
 }
