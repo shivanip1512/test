@@ -17,7 +17,10 @@
     <classpathentry kind="lib" path="/third-party/jcommon.jar"/>
     <classpathentry kind="src" path="/yukonappserver"/>
     <classpathentry kind="lib" path="/third-party/jtds.jar"/>
-    <classpathentry kind="lib" path="/third-party/jfreereport.jar"/>
+    <classpathentry kind="lib" path="/third-party/jfreereport.jar" sourcepath="C:/unzipped/jfreereport-0.8.4_11/source"/>
     <classpathentry kind="src" path="/stars"/>
+    <classpathentry kind="src" path="/resource"/>
+    <classpathentry kind="lib" path="/third-party/itext.jar"/>
+    <classpathentry kind="lib" path="/third-party/poi.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
