@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2004/04/12 21:09:44 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2004/04/29 20:11:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,6 +18,10 @@
 #include <iomanip>
 #include <iostream>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
+
+
+#include <rw/re.h>
+#undef mask_
 
 #include "ctidbgmem.h" // defines CTIDBG_new
 #include "cparms.h"
@@ -2041,11 +2045,47 @@ bool CtiProtocolVersacom::isConfigFullAddressValid(LONG sn) const
 {
     bool bstatus = false;
 
+    if( sn != 0 )
+    {
+        RWCString vcrangestr = gConfigParms.getValueAsString("VERSACOM_FULL_ADDRESS_SERIAL_RANGES");
 
-    if(sn > gConfigParms.getValueAsULong("VERSACOM_FULL_ADDRESS_SERIAL_BASE", 600000000))
+        if(!vcrangestr.isNull())
+        {
+            while(!vcrangestr.isNull())
+            {
+                RWCString rstr = vcrangestr.match("[0-9]*-[0-9]*,?");
+
+                if(!rstr.isNull())
+                {
+                    char *chptr;
+                    RWCString startstr = rstr.match("[0-9]*");
+                    RWCString stopstr = rstr.match(" *- *[0-9]* *,? *");
+                    stopstr = stopstr.strip(RWCString::both, ' ');
+                    stopstr = stopstr.strip(RWCString::leading, '-');
+                    stopstr = stopstr.strip(RWCString::trailing, ',');
+                    stopstr = stopstr.strip(RWCString::both, ' ');
+
+                    UINT startaddr = strtoul( startstr.data(), &chptr, 10 );
+                    UINT stopaddr = strtoul( stopstr.data(), &chptr, 10 );
+
+                    if(startaddr <= sn && sn <= stopaddr)
+                    {
+                        // This is a supported versacom switch and we can continue!
+                        bstatus = true;
+                        break;
+                    }
+                }
+
+                vcrangestr.replace("[0-9]*-[0-9]*,?", "");
+            }
+        }
+    }
+
+    if(bstatus != true && sn > gConfigParms.getValueAsULong("VERSACOM_FULL_ADDRESS_SERIAL_BASE", 600000000))
     {
         bstatus = true;
     }
+
 
     return bstatus;
 }
