@@ -915,6 +915,8 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
     LONG newlyActivePrograms = 0;
     LONG fullyActivePrograms = 0;
 
+    setControlAreaState(CtiLMControlArea::AttemptingControlState);//if none the the programs are available then we can't control, but we want to
+
     for(LONG i=0;i<_lmprograms.entries();i++)
     {
         CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
@@ -1022,6 +1024,10 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                     }
                 }
             }
+            else
+            {
+                //possibly attemping control state?
+            }
         }
         else if( currentLMProgram->getControlType() != CtiLMProgramBase::ManualOnlyType &&
                  currentLMProgram->getControlType() != CtiLMProgramBase::AutomaticType )
@@ -1062,6 +1068,9 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
 DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
     DOUBLE expectedLoadReduced = 0.0;
+    LONG fullyActivePrograms = 0;
+
+    setControlAreaState(CtiLMControlArea::AttemptingControlState);//if none the the programs are available then we can't control, but we want to
 
     for(LONG i=0;i<_lmprograms.entries();i++)
     {
@@ -1162,6 +1171,10 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
                     }
                 }
             }
+            else
+            {
+                //possibly attemping control state?
+            }
         }
         else if( currentLMProgram->getControlType() != CtiLMProgramBase::ManualOnlyType )
         {
@@ -1170,7 +1183,24 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
         }
     }
 
-    setControlAreaState(CtiLMControlArea::FullyActiveState);
+    for(LONG j=0;j<_lmprograms.entries();j++)
+    {
+        if( ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::FullyActiveState ||
+            ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::ManualActiveState )
+        {
+            fullyActivePrograms++;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    if( fullyActivePrograms > 0 &&
+        fullyActivePrograms >= _lmprograms.entries() )
+    {
+        setControlAreaState(CtiLMControlArea::FullyActiveState);
+    }
 
     return expectedLoadReduced;
 }
