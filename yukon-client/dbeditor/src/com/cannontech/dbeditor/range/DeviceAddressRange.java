@@ -16,6 +16,9 @@ public class DeviceAddressRange
    private static final RangeBase RANGE_MCT = 
          new RangeBase( 0, 2796201, "Valid range for MCT addresses is 0 to 2796201 and can not be 1398101" );
 
+   private static final RangeBase RANGE_MCT_BROADCAST = 
+         new RangeBase( 1, 4096, "Valid range for MCT Broadcast addresses is 1 to 4096" );
+
    private static final RangeBase RANGE_REPEATER900 = 
          new RangeBase( 464, 4302, "Valid range for " + DeviceTypes.STRING_REPEATER[0] + " addresses is 464 to 4302" );
 
@@ -24,6 +27,7 @@ public class DeviceAddressRange
 
    private static final RangeBase RANGE_RTU_WELCO = 
          new RangeBase( 0, 127, "Valid range for " + DeviceTypes.STRING_RTU_WELCO[0] + " addresses is 0 to 127" );
+
 
    //build any extra params into the RangeBase appropriate intsances
    static
@@ -55,6 +59,10 @@ public class DeviceAddressRange
       else if( DeviceTypes.CCU711 == deviceType_ )
       {
          return RANGE_CCU711;
+      }
+      else if( DeviceTypes.MCTBROADCAST == deviceType_ )
+      {
+         return RANGE_MCT_BROADCAST;
       }
       else if( DeviceTypes.RTUWELCO == deviceType_ )
       {

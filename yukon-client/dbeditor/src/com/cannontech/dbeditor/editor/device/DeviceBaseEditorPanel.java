@@ -1606,6 +1606,9 @@ private void setCarrierBaseValue( CarrierBase cBase )
 
 	if( cBase instanceof Repeater900 )
 		address = new Integer( address.intValue() - 4190000 );
+      
+   if( cBase instanceof com.cannontech.database.data.device.MCT_Broadcast )
+      getPhysicalAddressLabel().setText("Lead Address:");
 		
 	getPhysicalAddressLabel().setVisible(true);
 	getPhysicalAddressTextField().setVisible(true);

@@ -1777,28 +1777,59 @@ private void setAccumulatorObjectsVisible(boolean value)
 	getJLabelIntervalAcc().setVisible(value);
 	getJLabelGroupAcc().setVisible(value);
 }
+
+private void initComboBoxValues( int type )
+{
+   
+   if( DeviceTypesFuncs.isCCU(type) )
+   {
+      getPeriodicHealthIntervalComboBox().removeAllItems();
+
+      getPeriodicHealthIntervalComboBox().addItem("5 minute");
+      getPeriodicHealthIntervalComboBox().addItem("10 minute");
+      getPeriodicHealthIntervalComboBox().addItem("15 minute");
+      getPeriodicHealthIntervalComboBox().addItem("30 minute");
+      getPeriodicHealthIntervalComboBox().addItem("1 hour");
+      getPeriodicHealthIntervalComboBox().addItem("2 hour");
+      getPeriodicHealthIntervalComboBox().addItem("6 hour");
+      getPeriodicHealthIntervalComboBox().addItem("12 hour");
+      getPeriodicHealthIntervalComboBox().addItem("1 day");    
+      
+      //default value
+      getPeriodicHealthIntervalComboBox().setSelectedItem("5 minute");
+   }
+   else if( DeviceTypesFuncs.isMCT(type) || DeviceTypesFuncs.isRepeater(type) )
+   {
+      getPeriodicHealthIntervalComboBox().removeAllItems();
+   
+      getPeriodicHealthIntervalComboBox().addItem("1 minute");
+      getPeriodicHealthIntervalComboBox().addItem("3 minute");
+      getPeriodicHealthIntervalComboBox().addItem("5 minute");
+      getPeriodicHealthIntervalComboBox().addItem("10 minute");
+      getPeriodicHealthIntervalComboBox().addItem("15 minute");
+      getPeriodicHealthIntervalComboBox().addItem("30 minute");
+      getPeriodicHealthIntervalComboBox().addItem("1 hour");
+      getPeriodicHealthIntervalComboBox().addItem("2 hour");
+      getPeriodicHealthIntervalComboBox().addItem("6 hour");
+      getPeriodicHealthIntervalComboBox().addItem("12 hour");
+      getPeriodicHealthIntervalComboBox().addItem("1 day");    
+      
+      //default value
+      getPeriodicHealthIntervalComboBox().setSelectedItem("5 minute");
+   }
+
+   
+}
+
+
 /**
  * This method was created in VisualAge.
  * @param type java.lang.Object
  */
 public void setDeviceType(int type)
 {
-
-	if( DeviceTypesFuncs.isCCU(type) )
-	{
-		if (getPeriodicHealthIntervalComboBox().getModel().getSize() > 0)
-			getPeriodicHealthIntervalComboBox().removeAllItems();
-
-		getPeriodicHealthIntervalComboBox().addItem("5 minute");
-		getPeriodicHealthIntervalComboBox().addItem("10 minute");
-		getPeriodicHealthIntervalComboBox().addItem("15 minute");
-		getPeriodicHealthIntervalComboBox().addItem("30 minute");
-		getPeriodicHealthIntervalComboBox().addItem("1 hour");
-		getPeriodicHealthIntervalComboBox().addItem("2 hour");
-		getPeriodicHealthIntervalComboBox().addItem("6 hour");
-		getPeriodicHealthIntervalComboBox().addItem("12 hour");
-		getPeriodicHealthIntervalComboBox().addItem("1 day");		
-	}
+   //set some devices domain of possible values to a more limited approach
+   initComboBoxValues( type );
 
 	setAccumulatorObjectsVisible( false );
 	setIntegrityObjectsVisible( false );
@@ -1850,6 +1881,11 @@ public void setDeviceType(int type)
 			getPeriodicHealthIntervalComboBox().setSelectedItem("15 second");
 			getAccumulatorRateComboBox().setSelectedItem("15 minute");
 		}		
+      else if( type == PAOGroups.LCU415 )
+      {
+         getPeriodicHealthCheckBox().setText("Status & Analog");
+         getAccumulatorRateCheckBox().setText("Accumulator Rate");         
+      }
 		else
 		{
 			//LCU's and RTU's			
@@ -1859,21 +1895,22 @@ public void setDeviceType(int type)
 			getIntegrityRateComboBox().setSelectedItem("3 minute");
 		}
 
-
-		setHealthObjectsVisible( 
-				!(type == PAOGroups.LMT_2 
-              || type == PAOGroups.DCT_501) );
+      setIntegrityObjectsVisible(
+         !(type == PAOGroups.LMT_2
+          || type == PAOGroups.RTUILEX
+          || type == PAOGroups.RTU_DNP
+          || type == PAOGroups.DNP_CBC_6510
+          || type == PAOGroups.LCU415) );
 		
+      setHealthObjectsVisible( 
+            !(type == PAOGroups.LMT_2 
+              || type == PAOGroups.DCT_501) );     
+      
 		setAccumulatorObjectsVisible( 
 				!(type == PAOGroups.DCT_501 
 					|| type == PAOGroups.LCU_T3026) );
 		
-		setIntegrityObjectsVisible(
-			!(type == PAOGroups.LMT_2
-			 || type == PAOGroups.RTUILEX
-          || type == PAOGroups.RTU_DNP
-          || type == PAOGroups.DNP_CBC_6510) );
-		
+
 		getAccumulatorRateCheckBox().setSelected(false);
 		getAccumulatorRateComboBox().setEnabled(false);
 		getAccumulatorGroupComboBox().setEnabled(false);

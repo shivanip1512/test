@@ -470,14 +470,9 @@ public Object getValue(Object val)
 		if( val instanceof Repeater900 )
 		{
 			//special case, we must add 4190000 to every address for Repeater900
-			((CarrierBase)device).getDeviceCarrierSettings().setAddress( new Integer(address.intValue() + 4190000) );
-		}
-		
-		else if( val instanceof MCT_Broadcast )
-		{
-			((MCT_Broadcast)device).getDeviceCarrierSettings().setAddress( address );
-		}
-	
+			((CarrierBase)device).getDeviceCarrierSettings().setAddress( 
+                  new Integer(address.intValue() + 4190000) );
+		}		
 		else
 			((CarrierBase)device).getDeviceCarrierSettings().setAddress( address );
 	}
@@ -629,6 +624,8 @@ public void setDeviceType(int newDeviceType)
    
    if( deviceType == com.cannontech.database.data.pao.DeviceTypes.RTU_DNP )
       getPhysicalAddressLabel().setText("Master Address:");
+   else if( deviceType == com.cannontech.database.data.pao.DeviceTypes.MCTBROADCAST )
+      getPhysicalAddressLabel().setText("Lead Meter Address:");
    else
       getPhysicalAddressLabel().setText("Physical Address:");
 }

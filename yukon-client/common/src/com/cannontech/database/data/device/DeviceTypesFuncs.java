@@ -169,6 +169,7 @@ public final static boolean isLCU(int deviceType)
 		case LCULG:
 		case LCU_ER:
 		case LCU_T3026:
+      case LCU415:
 			return true;
 	
 		default:
