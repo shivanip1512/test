@@ -257,10 +257,10 @@ document.writeln('</FORM>');
              }
              else
              if( tab.equalsIgnoreCase("tab") )
-             {out.println(" HERE  1");
+             {
               %>
             <%@ include file="../../trendingtabular.jsp" %>
-            <%out.println(" HERE  2");
+            <%
              }
              else // "graph" is default
              {
