@@ -468,7 +468,7 @@ CtiLMGroupBase& CtiLMGroupBase::setLastControlSent(const RWDBDateTime& controlse
 
     .
 --------------------------------------------------------------------------*/
-CtiCommandMsg* CtiLMGroupBase::createLatchingRequestMsg(ULONG rawState) const
+CtiCommandMsg* CtiLMGroupBase::createLatchingRequestMsg(ULONG rawState, int priority) const
 {
     CtiCommandMsg* returnCommandMsg = new CtiCommandMsg();
     returnCommandMsg->setOperation(CtiCommandMsg::ControlRequest);
@@ -481,6 +481,8 @@ CtiCommandMsg* CtiLMGroupBase::createLatchingRequestMsg(ULONG rawState) const
     opArgList.insert(RWInteger(1));//this simulates a boolean to use the third integer as a control offset rather than a point id
 
     returnCommandMsg->setOpArgList(opArgList);
+
+    returnCommandMsg->setMessagePriority(priority);
 
     return returnCommandMsg;
 }
@@ -602,6 +604,54 @@ int CtiLMGroupBase::operator!=(const CtiLMGroupBase& right) const
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     return !operator==(right);
+}
+
+/*---------------------------------------------------------------------------
+    convertSecondsToEvenTimeString
+
+    
+---------------------------------------------------------------------------*/
+RWCString CtiLMGroupBase::convertSecondsToEvenTimeString(ULONG shedTime) const
+{
+    char tempchar[64];
+    RWCString retStr;
+
+    if( (shedTime % 3600) == 0 )
+    {
+        ULONG hourShedTime = shedTime/3600;
+        _ultoa(hourShedTime,tempchar,10);
+        retStr += tempchar;
+        retStr += "h";
+    }
+    else if( (shedTime % 60) == 0 )
+    {
+        ULONG minuteShedTime = shedTime/60;
+        _ultoa(minuteShedTime,tempchar,10);
+        retStr += tempchar;
+        retStr += "m";
+    }
+    else
+    {
+        _ultoa(shedTime,tempchar,10);
+        retStr += tempchar;
+        retStr += "s";
+    }
+
+    return retStr;
+}
+
+/*---------------------------------------------------------------------------
+    convertSecondsToEvenTimeString
+
+    doesMasterCycleNeedToBeUpdated
+---------------------------------------------------------------------------*/
+BOOL CtiLMGroupBase::doesMasterCycleNeedToBeUpdated(ULONG nowInSeconds, ULONG groupControlDone, ULONG offTime)
+{
+    /*{
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - PAOId: " << getPAOId() << " Group Type: " << getPAOType() << " does not need to be Master Cycle refreshed." << endl;
+    }*/
+    return FALSE;
 }
 
 /*---------------------------------------------------------------------------
