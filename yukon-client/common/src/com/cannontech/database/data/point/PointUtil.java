@@ -36,6 +36,13 @@ public class PointUtil {
 			 || val instanceof MCT470
 			 || val instanceof MCT410_KWH_Only )
 		{
+			if(val instanceof MCT410IL)
+			{
+				//sloppy way of setting a 410 load profile default...
+				//improve this later
+				((MCT410IL)val).getDeviceLoadProfile().setLoadProfileDemandRate(new Integer(3600));	
+			}
+			
 			com.cannontech.database.data.multi.MultiDBPersistent newVal = new com.cannontech.database.data.multi.MultiDBPersistent();
 			((DeviceBase) val).setDeviceID(com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID());
 
