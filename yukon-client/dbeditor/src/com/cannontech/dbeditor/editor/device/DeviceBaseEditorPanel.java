@@ -1749,21 +1749,31 @@ public Object getValue(Object val)
 	{
 		if( val instanceof CarrierBase )
 			((CarrierBase) val).getDeviceRoutes().setRouteID( new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getRouteComboBox().getSelectedItem()).getYukonID()) );
-			
 	}
 	
 	if( val instanceof MCTBase )
 	{
-		 if(getConfigComboBox().getSelectedItem().equals("(none)"))
-		 {
+		if(getConfigComboBox().getSelectedItem().equals(CtiUtilities.STRING_NONE))
+		{
 			((MCTBase)val).getConfigMapping().deleteAMapping((((MCTBase)val).getDevice().getDeviceID()));
 			((MCTBase)val).setHasConfig(false);
-		 }
-		 else
-		 {
-		 	((MCTBase)val).setConfigMapping(new Integer(((com.cannontech.database.data.lite.LiteConfig)getConfigComboBox().getSelectedItem()).getConfigID()),(((MCTBase)val).getDevice().getDeviceID()));
+		}
+		else
+		{
+			((MCTBase)val).setConfigMapping(new Integer(((com.cannontech.database.data.lite.LiteConfig)getConfigComboBox().getSelectedItem()).getConfigID()),(((MCTBase)val).getDevice().getDeviceID()));
 			((MCTBase)val).setHasConfig(true);
-		 }
+		}
+		 
+		if(getTOUComboBox().getSelectedItem().equals(CtiUtilities.STRING_NONE))
+		{
+		   ((MCTBase)val).getTOUDeviceMapping().deleteAMapping((((MCTBase)val).getDevice().getDeviceID()));
+		   ((MCTBase)val).setHasTOUSchedule(false);
+		}
+		else
+		{
+		   ((MCTBase)val).setTOUDeviceMapping(new Integer(((com.cannontech.database.data.lite.LiteTOUSchedule)getTOUComboBox().getSelectedItem()).getScheduleID()),(((MCTBase)val).getDevice().getDeviceID()));
+		   ((MCTBase)val).setHasTOUSchedule(true);
+		}
 	}
 
 	return val;
@@ -2024,8 +2034,8 @@ private void setNonRemBaseValue( Object base )
 	if( getConfigComboBox().getModel().getSize() > 0)
 		getConfigComboBox().removeAllItems();
 		
-	String noConfig = "(none)";
-	getConfigComboBox().addItem( noConfig );
+	getConfigComboBox().addItem( CtiUtilities.STRING_NONE );
+	getTOUComboBox().addItem(CtiUtilities.STRING_NONE );
 	
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
@@ -2056,12 +2066,11 @@ private void setNonRemBaseValue( Object base )
 					assignedConfigID = ((MCTBase) base).getConfigID().intValue();
 					if( ((com.cannontech.database.data.lite.LiteConfig)configs.get(j)).getConfigID() == assignedConfigID )
 						getConfigComboBox().setSelectedItem((com.cannontech.database.data.lite.LiteConfig)configs.get(j));
-
 				}
 			}
 			if(! ((MCTBase) base).hasMappedConfig())
 			{
-				getConfigComboBox().setSelectedItem(noConfig);
+				getConfigComboBox().setSelectedItem(CtiUtilities.STRING_NONE);
 			}
 			
 			if(base instanceof MCT410IL)
@@ -2069,9 +2078,13 @@ private void setNonRemBaseValue( Object base )
 				for(int x = 0; x < tous.size(); x++)
 				{
 					getTOUComboBox().addItem( tous.get(x) );
+					if(((MCTBase) base).hasTOUSchedule())
+					{
+						if(((MCTBase) base).getTOUScheduleID().intValue() == ((com.cannontech.database.data.lite.LiteTOUSchedule)tous.get(x)).getLiteID())
+							getTOUComboBox().setSelectedItem(tous.get(x));
+					}
 				}
 			}
-			
 		}
 		if( base instanceof CarrierBase )
 		{

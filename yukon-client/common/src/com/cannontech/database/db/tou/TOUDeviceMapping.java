@@ -36,7 +36,7 @@ public TOUDeviceMapping() {
  */
 public void add() throws java.sql.SQLException 
 {
-	Object addValues[] = { getDeviceID(), getScheduleID() };
+	Object addValues[] = { getScheduleID(), getDeviceID() };
 	deleteAMapping(getDeviceID(), getDbConnection());
 	add( TABLE_NAME, addValues );
 }
@@ -93,8 +93,7 @@ public static boolean deleteAMapping(Integer deviceID, java.sql.Connection conn)
 	return true;
 }
 
-/*
-public void deleteAMapping(Integer deviceID)
+public void deleteAMapping(Integer mctID)
 {
 	try
 	{
@@ -102,15 +101,16 @@ public void deleteAMapping(Integer deviceID)
 	
 		conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
 	
-		deleteAMapping(deviceID, conn);
-			
+		deleteAMapping(mctID, conn);
+
 		conn.close();
 	}
 	catch( java.sql.SQLException e2 )
 	{
 		com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
 	}	
-}*/
+}
+
 /**
  * This method was created by Cannon Technologies Inc.
  * @return boolean
@@ -200,7 +200,7 @@ public void retrieve() throws java.sql.SQLException {
  * @param newdeviceID java.lang.Integer
  */
 
-public void setdeviceID(java.lang.Integer newdeviceID) {
+public void setDeviceID(java.lang.Integer newdeviceID) {
 	deviceID = newdeviceID;
 }
 
@@ -209,7 +209,7 @@ public void setdeviceID(java.lang.Integer newdeviceID) {
  * Creation date: (9/22/2004 1:49:55 PM)
  * @param newscheduleID java.lang.Integer
  */
-public void setscheduleID(java.lang.Integer newscheduleID) {
+public void setScheduleID(java.lang.Integer newscheduleID) {
 	scheduleID = newscheduleID;
 }
 
@@ -238,7 +238,7 @@ public static final Integer getTheScheduleID(Integer deviceID, java.sql.Connecti
 	java.sql.ResultSet rset = null;
 	Integer returnedID = new Integer(0);
 
-	String sql = "SELECT scheduleID FROM " + TABLE_NAME + " WHERE deviceID= ?";
+	String sql = "SELECT TOUScheduleID FROM " + TABLE_NAME + " WHERE deviceID= ?";
 
 	try
 	{		
@@ -287,7 +287,7 @@ public final static boolean hasSchedule(Integer deviceID) throws java.sql.SQLExc
 public final static boolean hasSchedule(Integer deviceID, String databaseAlias) throws java.sql.SQLException 
 {
 	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("SELECT ScheduleID FROM " + TABLE_NAME + " WHERE DeviceID=" + deviceID,
+		new com.cannontech.database.SqlStatement("SELECT TOUScheduleID FROM " + TABLE_NAME + " WHERE DeviceID=" + deviceID,
 													databaseAlias );
 	try
 	{
