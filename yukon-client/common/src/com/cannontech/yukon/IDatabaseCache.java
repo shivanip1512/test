@@ -41,6 +41,27 @@ public interface IDatabaseCache {
    public java.util.List getAllStateGroups();
    public java.util.List getAllUnitMeasures();
 
+   public java.util.List getAllYukonUsers();
+   public java.util.List getAllYukonGroups();
+   public java.util.List getAllYukonRoles();
+   
+   //Map<LiteYukonUser,List<LiteYukonGroup>> 
+   public java.util.Map getAllYukonUserGroupMap();
+   
+   //Map<LiteYukonGroup,List<LiteYukonUser>>
+   public java.util.Map getAllYukonGroupUserMap();
+      
+   //Map<LiteYukonUser,List<Pair<LiteYukonRole,String(value>>> 
+   public java.util.Map getAllYukonUserRoleMap();
+   
+   //Map<LiteYukonUser,List<Pair<LiteYukonRole,String(value)>>>
+   public java.util.Map getAllYukonGroupRoleMap();	
+   
+   //Map<LiteYukonUser,Map<String(rolename),Pair<LiteYukonRole,String(value)>>
+   //Provided as a means to efficiently obtain a role and its value
+   public java.util.Map getAllYukonUserRoleLookupMap();
+   
+   
    // This cache is derive from the Device cache
    public java.util.List getAllUnusedCCDevices();
 

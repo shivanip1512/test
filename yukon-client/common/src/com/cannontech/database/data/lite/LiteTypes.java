@@ -21,4 +21,7 @@ public final class LiteTypes
 	public final static int POINT_UNIT = 17;
 	public final static int POINT_LIMIT = 18;
     public final static int STATE_IMAGE = 19;
+    public final static int YUKON_USER = 20;
+    public final static int YUKON_ROLE = 21;
+    public final static int YUKON_GROUP = 22;
 }

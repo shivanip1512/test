@@ -1,11 +1,10 @@
 package com.cannontech.yukon.client;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -506,6 +505,126 @@ public class ClientCache implements IDatabaseCache
          return new java.util.ArrayList();
       }
    }
+
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroupRoleMap()
+	 */
+	public Map getAllYukonGroupRoleMap() {
+	  try
+      {
+         return getCache().getAllYukonGroupRoleMap();
+      }
+      catch( java.rmi.RemoteException e )
+      {
+         com.cannontech.clientutils.CTILogger.info( e );
+         return new java.util.HashMap();
+      }
+	}
+
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroups()
+	 */
+	public List getAllYukonGroups() {
+	  try
+      {
+         return getCache().getAllYukonGroups();
+      }
+      catch( java.rmi.RemoteException e )
+      {
+         com.cannontech.clientutils.CTILogger.info( e );
+         return new java.util.ArrayList();
+      }
+	}
+
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroupUserMap()
+	 */
+	public Map getAllYukonGroupUserMap() {
+	  try
+      {
+         return getCache().getAllYukonGroupUserMap();
+      }
+      catch( java.rmi.RemoteException e )
+      {
+         com.cannontech.clientutils.CTILogger.info( e );
+         return new java.util.HashMap();
+      }
+	}
+
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonRoles()
+	 */
+	public List getAllYukonRoles() {
+	  try
+      {
+         return getCache().getAllYukonRoles();
+      }
+      catch( java.rmi.RemoteException e )
+      {
+         com.cannontech.clientutils.CTILogger.info( e );
+         return new java.util.ArrayList();
+      }
+	}
+
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserGroupMap()
+	 */
+	public Map getAllYukonUserGroupMap() {
+	  try
+      {
+         return getCache().getAllYukonUserGroupMap();
+      }
+      catch( java.rmi.RemoteException e )
+      {
+         com.cannontech.clientutils.CTILogger.info( e );
+         return new java.util.HashMap();
+      }
+	}
+
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRoleLookupMap()
+	 */
+	public Map getAllYukonUserRoleLookupMap() {
+	  try
+      {
+         return getCache().getAllYukonUserRoleLookupMap();
+      }
+      catch( java.rmi.RemoteException e )
+      {
+         com.cannontech.clientutils.CTILogger.info( e );
+         return new java.util.HashMap();
+      }
+	}
+
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRoleMap()
+	 */
+	public Map getAllYukonUserRoleMap() {
+	  try
+      {
+         return getCache().getAllYukonUserRoleMap();
+      }
+      catch( java.rmi.RemoteException e )
+      {
+         com.cannontech.clientutils.CTILogger.info( e );
+         return new java.util.HashMap();
+      }
+	}
+
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUsers()
+	 */
+	public List getAllYukonUsers() {
+	  try
+      {
+         return getCache().getAllYukonUsers();
+      }
+      catch( java.rmi.RemoteException e )
+      {
+         com.cannontech.clientutils.CTILogger.info( e );
+         return new java.util.ArrayList();
+      }
+	}
 
 
 //   /**

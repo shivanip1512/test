@@ -18,6 +18,7 @@ import com.cannontech.database.data.lite.LiteBase;
 // ---------------------------------------------------------------------------------   
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 // ---------------------------------------------------------------------------------
 //  Imports for ISQLStatement implementation
@@ -241,7 +242,10 @@ public abstract class YukonResourceBase implements IYukon
       return getDBCache();
    }
 
-
+    public Map getAllYukonUserRoleMap() {
+		return null;
+	}
+	
    /**
     *  Returns the LiteBase object that was added,deleted or updated, 
     *    else null is returned.
@@ -360,6 +364,53 @@ public abstract class YukonResourceBase implements IYukon
 	{
 		return getSQLStatement().getRowCount();
 	}
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroupRoleMap()
+	 */
+	public Map getAllYukonGroupRoleMap() {
+		return getDBCache().getAllYukonGroupRoleMap();
+	}
 
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroups()
+	 */
+	public List getAllYukonGroups() {
+		return getDBCache().getAllYukonGroups();
+	}
+
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroupUserMap()
+	 */
+	public Map getAllYukonGroupUserMap() {
+		return getDBCache().getAllYukonGroupUserMap();
+	}
+
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonRoles()
+	 */
+	public List getAllYukonRoles() {
+		return getDBCache().getAllYukonRoles();
+	}
+
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserGroupMap()
+	 */
+	public Map getAllYukonUserGroupMap() {
+		return getDBCache().getAllYukonUserGroupMap();
+	}
+
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRoleLookupMap()
+	 */
+	public Map getAllYukonUserRoleLookupMap() {
+		return getDBCache().getAllYukonUserRoleLookupMap();
+	}
+
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUsers()
+	 */
+	public List getAllYukonUsers() {
+		return getDBCache().getAllYukonUsers();
+	}
 
 }

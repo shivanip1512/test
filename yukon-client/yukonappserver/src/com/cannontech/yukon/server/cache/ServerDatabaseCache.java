@@ -1,14 +1,24 @@
 package com.cannontech.yukon.server.cache;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import com.cannontech.common.util.Pair;
+import com.cannontech.database.cache.CacheDBChangeListener;
+import com.cannontech.database.cache.DBChangeListener;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonRole;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+
 /**
  * Insert the type's description here.
  * Creation date: (3/14/00 3:20:44 PM)
  * @author: 
- */
-import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.database.cache.DBChangeListener;
-import com.cannontech.database.cache.CacheDBChangeListener;
+ */ 
 
 public class ServerDatabaseCache implements com.cannontech.yukon.IDatabaseCache
 {
@@ -33,9 +43,21 @@ public class ServerDatabaseCache implements com.cannontech.yukon.IDatabaseCache
 	private java.util.ArrayList allDeviceMeterGroups = null;
 	private java.util.ArrayList allPointsUnits = null;
 	private java.util.ArrayList allPointLimits = null;
-   private java.util.ArrayList allYukonImages = null;
+    private java.util.ArrayList allYukonImages = null;
 
-
+	private java.util.ArrayList allYukonUsers = null;
+	private java.util.ArrayList allYukonRoles = null;
+	private java.util.ArrayList allYukonGroups = null;
+	
+	private java.util.Map allYukonUserRoles = null;
+	private java.util.Map allYukonGroupRoles = null;
+	private java.util.Map allYukonUserGroups = null;
+	private java.util.Map allYukonGroupUsers = null;
+		
+	//derived from allYukonUsers,allYukonRoles,allYukonGroups
+	//see type info in IDatabaseCache
+	private java.util.Map allYukonUserLookupRoles = null;
+	 
 	//lists that are created by the joining/parsing of existing lists
 	private java.util.ArrayList allGraphTaggedPoints = null; //Points
 	private java.util.ArrayList allUnusedCCDevices = null; //PAO
@@ -745,6 +767,150 @@ public synchronized java.util.List getAllYukonPAObjects()
 		return allYukonPAObjects;
 	}
 }
+
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroups()
+	 */
+	public List getAllYukonGroups() {		
+		if(allYukonGroups == null) {
+			allYukonGroups = new java.util.ArrayList();
+			YukonGroupLoader l = new YukonGroupLoader(allYukonGroups, databaseAlias);
+			l.run();
+		}
+		return allYukonGroups;				
+	}
+
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonRoles()
+	 */
+	public List getAllYukonRoles() {		
+		if( allYukonRoles == null) {
+			allYukonRoles = new java.util.ArrayList();
+			YukonRoleLoader l = new YukonRoleLoader(allYukonRoles, databaseAlias);
+			l.run();
+		}
+		return allYukonRoles;				
+	}
+		
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUsers()
+	 */
+	public List getAllYukonUsers() {		
+		if(allYukonUsers == null) {
+			allYukonUsers = new java.util.ArrayList();
+			YukonUserLoader l = new YukonUserLoader(allYukonUsers, databaseAlias);
+			l.run();
+		}
+		return allYukonUsers;		
+	}
+	
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonRoleMap()
+	 */
+	public Map getAllYukonUserRoleMap() {
+		
+		if(allYukonUserRoles == null) {
+			allYukonUserRoles = new java.util.HashMap();
+		    YukonUserRoleLoader l = 
+		    	new YukonUserRoleLoader(allYukonUserRoles, getAllYukonUsers(), getAllYukonRoles(), databaseAlias);
+		    l.run();
+		}									
+		return allYukonUserRoles;		
+	}
+	
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroupRoleMap()
+	 */
+	public Map getAllYukonGroupRoleMap() {
+		if(allYukonGroupRoles == null) {
+			allYukonGroupRoles = new java.util.HashMap();
+			YukonGroupRoleLoader l = 
+				new YukonGroupRoleLoader(allYukonGroupRoles, getAllYukonGroups(), getAllYukonRoles(), databaseAlias);
+			l.run();
+		}		
+		return allYukonGroupRoles;		
+	}
+
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserGroupMap()
+	 */
+	public Map getAllYukonUserGroupMap() {
+		if(allYukonUserGroups == null) {
+			loadUsersAndGroups();
+		}
+		return allYukonUserGroups;
+	}
+		
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroupUserMap()
+	 */
+	public Map getAllYukonGroupUserMap() {
+		if(allYukonUserGroups == null) {
+			loadUsersAndGroups();
+		}
+		return allYukonGroupUsers;				
+	}
+
+	private void loadUsersAndGroups() {
+		allYukonUserGroups = new HashMap();
+		allYukonGroupUsers = new HashMap();
+		YukonUserGroupLoader l = 
+				new YukonUserGroupLoader(allYukonUserGroups, allYukonGroupUsers, getAllYukonUsers(), getAllYukonGroups(), databaseAlias);
+		l.run();
+	}
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRoleLookupMap()
+	 */
+	public Map getAllYukonUserRoleLookupMap() {
+	
+		if(allYukonUserLookupRoles == null) {
+			allYukonUserLookupRoles = new HashMap();
+			
+			Iterator iter = getAllYukonUsers().iterator();			
+			Map userRoles = getAllYukonUserRoleMap();
+			Map userGroups =  getAllYukonUserGroupMap();
+			Map groupRoles = getAllYukonGroupRoleMap();
+			
+			while(iter.hasNext()) {
+				LiteYukonUser user = (LiteYukonUser) iter.next();
+				HashMap roleMap = new HashMap();
+				
+				List roles = (List) userRoles.get(user);
+				addRolesToMap(roles, roleMap);
+				
+				List groups = (List) userGroups.get(user);
+				if(groups != null) {
+					Iterator groupIter = groups.iterator();
+					while(groupIter.hasNext()) {
+						LiteYukonGroup group = (LiteYukonGroup) groupIter.next();
+						roles = (List) groupRoles.get(group);
+						addRolesToMap(roles, roleMap);
+					}				
+				}
+				
+				allYukonUserLookupRoles.put(user, roleMap);						
+			}	
+		}
+		
+		return allYukonUserLookupRoles;			
+	}
+	
+	/**
+	 * Convenience method for getAllYukonUserRoleLookupMap
+	 * @param roles
+	 * @param roleMap
+	 */
+	private void addRolesToMap(List roleValuePairs, Map roleMap) {
+		if(roleValuePairs != null) {
+			Iterator i = roleValuePairs.iterator();
+			while(i.hasNext()) {
+				Pair p = (Pair) i.next();
+				LiteYukonRole r = (LiteYukonRole) p.first;
+				roleMap.put(r.getRoleName(), p);
+			}
+		}
+	}
+		
 /**
  * Insert the method's description here.
  * Creation date: (12/20/2001 2:01:01 PM)
@@ -1857,4 +2023,5 @@ public void setDatabaseAlias(String newAlias){
 protected void setDbChangeListener(CacheDBChangeListener newDbChangeListener) {
 	dbChangeListener = newDbChangeListener;
 }
+
 }

@@ -4,18 +4,6 @@
 package com.cannontech.ejb;
 
 import java.lang.*;
-import com.cannontech.database.TransactionException;
-import java.util.List;
-import javax.ejb.SessionBean;
-import javax.ejb.EJBException;
-import javax.ejb.SessionContext;
-import javax.ejb.RemoveException;
-import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.yukon.IDatabaseCache;
-import com.cannontech.database.cache.DBChangeListener;
-import com.cannontech.database.cache.CacheDBChangeListener;
-import com.cannontech.yukon.server.cache.ServerDatabaseCache;
 
 /**
  * Remote interface for DatabaseCache.
@@ -76,7 +64,23 @@ public interface DatabaseCache
    public java.util.List getAllYukonImages(  ) throws java.rmi.RemoteException;
 
    public java.util.List getAllYukonPAObjects(  ) throws java.rmi.RemoteException;
-
+   
+   public java.util.List getAllYukonUsers() throws java.rmi.RemoteException;;
+   
+   public java.util.List getAllYukonGroups() throws java.rmi.RemoteException;;
+   
+   public java.util.List getAllYukonRoles() throws java.rmi.RemoteException;;
+    
+   public java.util.Map getAllYukonUserGroupMap() throws java.rmi.RemoteException;;
+   
+   public java.util.Map getAllYukonGroupUserMap() throws java.rmi.RemoteException;;
+       
+   public java.util.Map getAllYukonUserRoleMap() throws java.rmi.RemoteException;;
+   
+   public java.util.Map getAllYukonGroupRoleMap() throws java.rmi.RemoteException;;	
+ 
+   public java.util.Map getAllYukonUserRoleLookupMap() throws java.rmi.RemoteException;;
+   
    public com.cannontech.database.data.lite.LiteBase handleDBChangeMessage( com.cannontech.message.dispatch.message.DBChangeMsg dbChangeMsg ) throws java.rmi.RemoteException;
 
    public void loadAllCache(  ) throws java.rmi.RemoteException;

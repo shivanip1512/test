@@ -104,7 +104,7 @@ public final class LiteComparators
 			return false;
 		}
 	};
-
+	
 	// this method is used to compare Strings found in ANY lite class
 	//   ADD ALL LIGHT CLASSES YOU WANT TO COMPARE BELOW!!!!!!!!!!!!!
 	public static java.util.Comparator liteStringComparator = new java.util.Comparator()

@@ -1,18 +1,16 @@
 package com.cannontech.ejb;
 
-import com.cannontech.database.TransactionException;
-
 import java.util.List;
+import java.util.Map;
+
 import javax.ejb.SessionBean;
 import javax.ejb.EJBException;
 import javax.ejb.SessionContext;
-import javax.ejb.RemoveException;
 
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.database.cache.DBChangeListener;
-import com.cannontech.database.cache.CacheDBChangeListener;
 import com.cannontech.yukon.server.cache.ServerDatabaseCache;
 
 /* Add this to DatabaseCacheHome class */
@@ -294,6 +292,68 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
       return getCache().getAllYukonPAObjects();
    }
 
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroupRoleMap()
+	 */
+	public Map getAllYukonGroupRoleMap() {
+		return getCache().getAllYukonGroupRoleMap();
+	}
+
+	/**
+    * @ejb:interface-method
+    * tview-type="remote" 
+   **/
+	public List getAllYukonGroups() {
+		return getCache().getAllYukonGroups();
+	}
+
+	/**
+    * @ejb:interface-method
+    * tview-type="remote" 
+   **/
+	public Map getAllYukonGroupUserMap() {
+		return getCache().getAllYukonGroupUserMap();
+	}
+
+	/**
+    * @ejb:interface-method
+    * tview-type="remote" 
+   **/
+	public List getAllYukonRoles() {
+		return getCache().getAllYukonRoles();
+	}
+
+	/**
+    * @ejb:interface-method
+    * tview-type="remote" 
+   **/
+	public Map getAllYukonUserGroupMap() {
+		return getCache().getAllYukonUserGroupMap();
+	}
+
+	/**
+    * @ejb:interface-method
+    * tview-type="remote" 
+   **/
+	public Map getAllYukonUserRoleLookupMap() {
+		return getCache().getAllYukonUserRoleLookupMap();
+	}
+
+	/**
+    * @ejb:interface-method
+    * tview-type="remote" 
+   **/
+	public Map getAllYukonUserRoleMap() {
+		return getCache().getAllYukonUserRoleMap();
+	}
+
+	/**
+    * @ejb:interface-method
+    * tview-type="remote" 
+   **/
+	public List getAllYukonUsers() {
+		return getCache().getAllYukonUsers();
+	}
 
 //   /**
 //    * @ejb:interface-method

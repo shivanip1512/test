@@ -5,7 +5,6 @@ import javax.naming.InitialContext;
 
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.ejb.SqlStatement;
-import com.cannontech.ejb.SqlStatementBean;
 import com.cannontech.ejb.SqlStatementHome;
 import com.cannontech.yukon.ISQLStatement;
 

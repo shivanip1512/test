@@ -2,8 +2,6 @@ package com.cannontech.yukon.client;
 
 import java.sql.SQLException;
 
-import com.cannontech.database.TransactionException;
-import com.cannontech.database.db.DBPersistent;
 import com.cannontech.yukon.IDBPersistent;
 
 /**
