@@ -64,14 +64,26 @@
           </tr>
           </cti:checkProperty>
 <%
+		int selectedItemNo = -1;	// selected thermostat no.
+		
+		if (pageName.indexOf("Inventory.jsp") >= 0) {
+			StringTokenizer st = new StringTokenizer(pageName, "?&");
+			while (st.hasMoreTokens()) {
+				String param = st.nextToken();
+				if (param.startsWith("InvNo=")) {
+					selectedItemNo = Integer.parseInt(param.substring(6));
+					break;
+				}
+			}
+		}
+		
 		for (int i = 0; i < thermostats.getStarsLMHardwareCount(); i++) {
 			StarsLMHardware hw = thermostats.getStarsLMHardware(i);
 			String linkLabel = hw.getDeviceLabel();
 			
 			String linkHtml = null;
 			String linkImgExp = null;
-			int pos = pageName.lastIndexOf("Item=");
-			if (pos >= 0 && pageName.substring(pos).equals("Item=" + i)) {
+			if (i == selectedItemNo) {
 				linkHtml = "<span class='Nav' style='cursor:default'>" + linkLabel + "</span>";
 				linkImgExp = bulletImg;
 			}

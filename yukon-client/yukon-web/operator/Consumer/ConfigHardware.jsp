@@ -91,8 +91,8 @@ function changeAppSelection(chkBox) {
 			  <form name="invForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
                 <input type="hidden" name="action" value="UpdateLMHardwareConfig">
                 <input type="hidden" name="InvID" value="<%= hardware.getInventoryID() %>">
-				<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/ConfigHardware.jsp?InvNo=<%= invNo %>">
-				<input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/ConfigHardware.jsp?InvNo=<%= invNo %>">
+				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
+				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
                 <table width="350" border="1" cellspacing="0" cellpadding="3">
                   <tr> 
                     <td width="5%" class="HeaderCell">&nbsp; </td>
@@ -208,33 +208,18 @@ function changeAppSelection(chkBox) {
                   <tr>
                     <td align="center"> 
                       <input type="submit" name="UpdateLMHardwareConfig" value="Config">
+                      <input type="button" name="SaveConfig" value="Save Config Only" onClick="sendCommand('SaveLMHardwareConfig')">
                     </td>
                   </tr>
                 </table>
-                <!--
-                      <table width="300" border="0" cellspacing="0" cellpadding="0">
-                        <tr> 
-                          <td valign="top" align = "center" height="33"> <br>
-                            <table width="46%" border="0" height="26" cellpadding = "3" cellspacing = "0">
-                              <tr> 
-                                <td> 
-                                  <table width="150" border="0" cellpadding = "3" cellspacing = "0" height="39" align = "center">
-                                    <tr> 
-                                      <td width="35%" align = "center"> 
-                                        <input type="button" name="EnableService" value="In Service" onClick="sendCommand(this.name)">
-                                      </td>
-                                      <td width="35%" align = "center"> 
-                                        <input type="button" name="DisableService" value="Out of Service" onClick="sendCommand(this.name)">
-                                      </td>
-                                      </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                      </table>
--->
+                <br>
+                <table width="300" border="0" cellspacing="0" cellpadding="0">
+                  <tr> 
+                    <td align="center"> 
+                      <input type="button" name="Enable" value="Reenable" onClick="sendCommand('EnableLMHardware')">
+                    </td>
+                  </tr>
+                </table>
               </form>
             </div>
             <hr>

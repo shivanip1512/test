@@ -1,22 +1,43 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.stars.web.bean.InventoryBean" %>
+<%@ page import="com.cannontech.stars.web.bean.DeviceBean" %>
 <%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
 
-<jsp:useBean id="resultSetBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session">
-	<%-- this body is executed only if the bean is created --%>
-	<jsp:setProperty name="resultSetBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
-	<jsp:setProperty name="resultSetBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>"/>
-	<jsp:setProperty name="resultSetBean" property="htmlStyle" value="<%= InventoryBean.HTML_STYLE_HARDWARE_SET %>"/>
-</jsp:useBean>
-	
-<% if (request.getParameter("page") == null) { %>
-	<%-- intialize bean properties --%>
-	<jsp:setProperty name="resultSetBean" property="page" value="1"/>
-	<jsp:setProperty name="resultSetBean" property="referer" value="<%= session.getAttribute(ServletUtils.ATT_REFERRER) %>"/>
-<% } %>
+<%
+	int mctCatID = SOAPServer.getEnergyCompany(user.getEnergyCompanyID()).getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT).getEntryID();
+%>
 
-<%-- Grab the search criteria --%>
-<jsp:setProperty name="resultSetBean" property="page" param="page"/>
+<jsp:useBean id="mctBean" class="com.cannontech.stars.web.bean.DeviceBean" scope="session">
+	<%-- this body is executed only if the bean is created --%>
+	<jsp:setProperty name="mctBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
+	<jsp:setProperty name="mctBean" property="categoryID" value="<%= mctCatID %>"/>
+</jsp:useBean>
+
+<%
+	if (request.getParameter("SerialNo") != null) {
+		// Submitted from SerialNumber.jsp
+		session.setAttribute(ServletUtils.ATT_REFERRER2, request.getHeader("referer"));
+		session.setAttribute(ServletUtils.ATT_REDIRECT, request.getParameter(ServletUtils.ATT_REDIRECT));
+	}
+	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER2);
+	
+	String deviceName = request.getParameter("DeviceName");
+	if (deviceName == null) deviceName = "";
+%>
+
+<%
+	if (request.getParameter("page") == null) {
+		ArrayList devList = InventoryManager.searchDevice(mctCatID, deviceName);
+		mctBean.setDeviceList(devList);
+%>
+	<%-- intialize bean properties --%>
+	<jsp:setProperty name="mctBean" property="page" value="1"/>
+	<jsp:setProperty name="mctBean" property="referer" value="<%= referer %>"/>
+<%
+	}
+%>
+
+<%-- Grab the bean properties --%>
+<jsp:setProperty name="mctBean" property="page" param="page"/>
 
 <html>
 <head>
@@ -71,40 +92,27 @@
           <td  valign="top" width="101">&nbsp;</td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center"> 
-              <% String header = "OPERATION RESULT"; %>
+            <div align="center">
+              <% String header = "SELECT METER"; %>
               <%@ include file="include/SearchBar.jsp" %>
-              <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-
-<%
-	if (errorMsg == null) {
-		String resultDesc = (String) session.getAttribute(InventoryManager.INVENTORY_SET_DESC);
-%>
-              <table width="80%" border="0" cellspacing="0" cellpadding="0">
-                <tr> 
-                  <td class="MainText"><%= resultDesc %></td>
-                </tr>
-              </table>
-              <br>
-<%
-		ArrayList hardwareSet = (ArrayList) session.getAttribute(InventoryManager.INVENTORY_SET);
-		if (hardwareSet != null) {
-			resultSetBean.setHardwareSet(hardwareSet);
-%>
-              <%= resultSetBean.getHTML(request) %> 
-<%
-		}
-		else {
-%>
-              <table width="200" border="0" cellspacing="0" cellpadding="0">
-                <tr> 
-                  <td align='center'><input type="button" name="Back" value="Back" onclick="history.back()"></td>
-                </tr>
-              </table>
-<%
-		}
-	}
-%>
+			  <form name="MForm" method="post" action="SelectMeter.jsp">
+                <table width="80%" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td>
+                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr> 
+                          <td class="MainText" align="center">Device Name: 
+                            <input type="text" name="DeviceName" value="<%= deviceName %>">
+                            &nbsp;&nbsp;&nbsp;&nbsp; 
+                            <input type="submit" name="Search" value="Search">
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </form>
+              <%= mctBean.getHTML(request) %> 
               <p>&nbsp; </p>
             </div>
           </td>

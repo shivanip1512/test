@@ -1,8 +1,8 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.stars.web.InventoryBean" %>
+<%@ page import="com.cannontech.stars.web.bean.InventoryBean" %>
 <%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
 
-<jsp:useBean id="selectInvBean" class="com.cannontech.stars.web.InventoryBean" scope="session">
+<jsp:useBean id="selectInvBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session">
 	<%-- this body is executed only if the bean is created --%>
 	<jsp:setProperty name="selectInvBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
 	<jsp:setProperty name="selectInvBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>"/>
@@ -11,10 +11,10 @@
 
 <%
 	if (request.getParameter("SerialNo") != null) {
-		session.setAttribute(ServletUtils.ATT_REFERRER, request.getHeader("referer"));
+		session.setAttribute(ServletUtils.ATT_REFERRER2, request.getHeader("referer"));
 		session.setAttribute(ServletUtils.ATT_REDIRECT, request.getParameter(ServletUtils.ATT_REDIRECT));
 	}
-	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
+	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER2);
 %>
 	
 <% if (request.getParameter("page") == null) { %>
@@ -103,7 +103,7 @@ function submitIt(filterBy) {
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr> 
                           <td class="MainText" width="80%">Check the radio button 
-                            of the hardware you want to select, then click Submit.</td>
+                            of the hardware you want to select, then click Select.</td>
                           <td class="MainText" align="right" width="20%"> 
                             <% if (selectInvBean.getFilterBy() != 0) { %>
                             <span class="Clickable" style="color:blue" onClick="submitIt(0)">Show 

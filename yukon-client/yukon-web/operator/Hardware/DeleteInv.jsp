@@ -1,13 +1,14 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteAddress" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteCustomerContact" %>
+<%@ page import="com.cannontech.database.data.lite.stars.LiteInventoryBase" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
 <%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
 
 <%
-	LiteStarsLMHardware liteHw = (LiteStarsLMHardware) session.getAttribute(InventoryManager.LM_HARDWARE_TO_DELETE);
+	LiteInventoryBase liteInv = (LiteInventoryBase) session.getAttribute(InventoryManager.INVENTORY_TO_DELETE);
 	
 	Integer navBackStep = (Integer) session.getAttribute(InventoryManager.NAV_BACK_STEP);
 	session.removeAttribute(InventoryManager.NAV_BACK_STEP);
@@ -71,9 +72,8 @@
 			  <%@ include file="include/SearchBar.jsp" %>
               <form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/InventoryManager">
 			    <input type="hidden" name="action" value="ConfirmDelete">
-                <p class="MainText">The hardware with serial number <%= liteHw.getManufactureSerialNumber() %> 
-                  will be removed from the account. What would you like to do 
-                  with it?</p>
+                <p class="MainText">The hardware will be removed from the 
+                  account. What would you like to do with it?</p>
                 <table width="250" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                   <tr>
                     <td width="25">

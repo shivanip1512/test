@@ -1,6 +1,7 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteAddress" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteCustomerContact" %>
+<%@ page import="com.cannontech.database.data.lite.stars.LiteInventoryBase" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
@@ -8,20 +9,7 @@
 
 <%
 	LiteStarsEnergyCompany ec = com.cannontech.stars.web.servlet.SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
-	LiteStarsLMHardware liteHw = (LiteStarsLMHardware) session.getAttribute(InventoryManager.LM_HARDWARE_TO_CHECK);
-/*	
-	String action = request.getParameter("action");
-	if (action != null && action.equalsIgnoreCase("CheckInventory")) {
-		StarsLMHardware hardware = new StarsLMHardware();
-		InventoryManager.setStarsLMHardware(hardware, request);
-		session.setAttribute(InventoryManager.STARS_LM_HARDWARE_TEMP, hardware);
-		
-		liteHw = ec.searchBySerialNumber(hardware.getManufactureSerialNumber());
-		session.setAttribute(InventoryManager.LM_HARDWARE_TO_CHECK, liteHw);
-		
-		referer = request.getHeader("referer");
-		session.setAttribute(ServletUtils.ATT_REFERRER, referer);
-	}*/
+	LiteInventoryBase liteInv = (LiteInventoryBase) session.getAttribute(InventoryManager.INVENTORY_TO_CHECK);
 %>
 <html>
 <head>
@@ -82,7 +70,7 @@
               <form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/InventoryManager">
 			    <input type="hidden" name="action" value="ConfirmCheck">
 <%
-	if (liteHw == null) {
+	if (liteInv == null) {
 %>
                 <p class="MainText">This serial number is not found in inventory. 
                   Would you like to add it now?</p>
@@ -96,12 +84,33 @@
                     </td>
                   </tr>
                 </table>
-<%
-	}
-	else if (liteHw.getAccountID() == com.cannontech.common.util.CtiUtilities.NONE_ID) {
+<%	}
+	else if (liteInv.getInventoryID() < 0) {
+%>
+                <p class="MainText">The device for this device name is currently 
+                  not in the inventory. Would you like to add it?</p>
+                <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
+                  <tr> 
+                    <td width="100" align="right"> 
+                      <input type="submit" name="NewDevice" value="Yes">
+                    </td>
+                    <td width="100"> 
+                      <input type="button" name="No" value="No" onclick="history.back()">
+                    </td>
+                  </tr>
+                </table>
+<%	}
+	else if (liteInv.getAccountID() == com.cannontech.common.util.CtiUtilities.NONE_ID) {
+		if (liteInv instanceof LiteStarsLMHardware) {
 %>
                 <p class="MainText">The hardware for this serial number is currently 
                   in the warehouse. Would you like to select it?</p>
+<%		}
+		else {
+%>
+                <p class="MainText">The device for this device name is currently 
+                  in the warehouse. Would you like to select it?</p>
+<%		} %>
                 <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
                   <tr> 
                     <td width="100" align="right"> 
@@ -112,15 +121,22 @@
                     </td>
                   </tr>
                 </table>
-<%
-	}
-	else if (liteHw.getAccountID() != account.getAccountID()) {
-		LiteStarsCustAccountInformation liteAcctInfo = ec.getBriefCustAccountInfo(liteHw.getAccountID(), true);
+<%	}
+	else if (liteInv.getAccountID() != account.getAccountID()) {
+		LiteStarsCustAccountInformation liteAcctInfo = ec.getBriefCustAccountInfo(liteInv.getAccountID(), true);
 		LiteCustomerContact liteContact = ec.getCustomerContact(liteAcctInfo.getCustomer().getPrimaryContactID());
 		LiteAddress liteAddr = ec.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
+		
+		if (liteInv instanceof LiteStarsLMHardware) {
 %>
 			    <p class="MainText">The hardware for this serial number is currently 
                   assigned to the following account:</p>
+<%		}
+		else {
+%>
+			    <p class="MainText">The device for this device name is currently 
+                  assigned to the following account:</p>
+<%		} %>
                 <table width="450" border="0" cellspacing="0" cellpadding="0">
                   <tr> 
                     <td width="100" class="HeaderCell">Account #</td>
@@ -133,7 +149,7 @@
                     <td width="230" class="TableCell"><%= ServerUtils.getOneLineAddress(liteAddr) %></td>
                   </tr>
                 </table>
-                <p class="MainText">Would you like to move the hardware to the new account? 
+                <p class="MainText">Would you like to move it to the new account? 
                 </p>
                 <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
                   <tr> 
@@ -145,12 +161,18 @@
                     </td>
                   </tr>
                 </table>
-<%
-	}
+<%	}
 	else {
+		if (liteInv instanceof LiteStarsLMHardware) {
 %>
                 <p class="MainText">The hardware for this serial number is already 
                   assigned to this account.</p>
+<%		}
+		else {
+%>
+                <p class="MainText">The device for this device name is already 
+                  assigned to this account.</p>
+<%		} %>
                 <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
                   <tr> 
                     <td align="center"> 
@@ -162,7 +184,7 @@
 	}
 %>
 				<p>&nbsp;</p>
-                <p>&nbsp;</p><p class="MainText">&nbsp;</p>
+                <p>&nbsp;</p>
                 <p>&nbsp;</p>
               </form>
             </div>

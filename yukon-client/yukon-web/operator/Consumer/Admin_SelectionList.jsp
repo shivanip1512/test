@@ -42,6 +42,7 @@ var dftEntryYukDefIDs = new Array();
 	dftEntryYukDefIDs[<%= i %>] = <%= entry.getYukonDefID() %>;
 <%	} %>
 
+var entryIDs = new Array();
 var entryTexts = new Array();
 var entryYukDefIDs = new Array();
 var dftListIndices = new Array();
@@ -49,6 +50,7 @@ var dftListIndices = new Array();
 	for (int i = 0; i < list.getYukonListEntries().size(); i++) {
 		YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(i);
 %>
+	entryIDs[<%= i %>] = <%= entry.getEntryID() %>;
 	entryTexts[<%= i %>] = "<%= entry.getEntryText() %>";
 	entryYukDefIDs[<%= i %>] = <%= entry.getYukonDefID() %>;
 	dftListIndices[<%= i %>] = getDefaultListIndex(entryTexts[<%= i %>], entryYukDefIDs[<%= i %>]);
@@ -77,6 +79,7 @@ function showEntry(form) {
 	var entries = form.ListEntries;
 	if (entries.selectedIndex < 0 || entries.value == -1) {
 		curIdx = entryTexts.length;
+		form.EntryID.value = 0;
 		form.EntryText.value = "";
 		form.YukonDefID.value = "";
 		form.DefaultListEntries.selectedIndex = -1;
@@ -84,6 +87,7 @@ function showEntry(form) {
 	}
 	else {
 		curIdx = entries.selectedIndex;
+		form.EntryID.value = entryIDs[curIdx];
 		form.EntryText.value = entryTexts[curIdx];
 		form.YukonDefID.value = entryYukDefIDs[curIdx];
 		form.DefaultListEntries.selectedIndex = dftListIndices[curIdx];
@@ -99,6 +103,7 @@ function showDefaultEntry(form) {
 }
 
 function saveEntry(form) {
+	entryIDs[curIdx] = form.EntryID.value;
 	entryTexts[curIdx] = form.EntryText.value;
 	var yukonDefID = parseInt(form.YukonDefID.value, 10);
 	if (isNaN(yukonDefID)) yukonDefID = 0;
@@ -122,7 +127,10 @@ function moveUp(form) {
 		var oOption = entries.options[idx];
 		entries.options.remove(idx);
 		entries.options.add(oOption, idx-1);
-		var value = entryTexts[idx];
+		var value = entryIDs[idx];
+		entryIDs[idx] = entryIDs[idx-1];
+		entryIDs[idx-1] = value;
+		value = entryTexts[idx];
 		entryTexts[idx] = entryTexts[idx-1];
 		entryTexts[idx-1] = value;
 		value = entryYukDefIDs[idx];
@@ -142,7 +150,10 @@ function moveDown(form) {
 		var oOption = entries.options[idx];
 		entries.options.remove(idx);
 		entries.options.add(oOption, idx+1);
-		var value = entryTexts[idx];
+		var value = entryIDs[idx];
+		entryIDs[idx] = entryIDs[idx+1];
+		entryIDs[idx+1] = value;
+		value = entryTexts[idx];
 		entryTexts[idx] = entryTexts[idx+1];
 		entryTexts[idx+1] = value;
 		value = entryYukDefIDs[idx];
@@ -161,6 +172,7 @@ function deleteEntry(form) {
 	if (idx >= 0 && idx < entries.options.length - 1) {
 		if (!confirm("Are you sure you want to delete this item?")) return;
 		entries.options.remove(idx);
+		entryIDs.splice(idx, 1);
 		entryTexts.splice(idx, 1);
 		entryYukDefIDs.splice(idx, 1);
 		dftListIndices.splice(idx, 1);
@@ -175,6 +187,7 @@ function setAsDefault(form) {
 	var entries = form.ListEntries;
 	for (idx = entries.options.length - 2; idx >= 0; idx--)
 		entries.options.remove(idx);
+	entryIDs.splice(0, entryIDs.length);
 	entryTexts.splice(0, entryTexts.length);
 	entryYukDefIDs.splice(0, entryYukDefIDs.length);
 	dftListIndices.splice(0, dftListIndices.length);
@@ -183,6 +196,7 @@ function setAsDefault(form) {
 		var oOption = document.createElement("OPTION");
 		entries.options.add(oOption, idx);
 		oOption.innerText = dftEntryTexts[idx];
+		entryIDs[idx] = 0;
 		entryTexts[idx] = dftEntryTexts[idx];
 		entryYukDefIDs[idx] = dftEntryYukDefIDs[idx];
 		dftListIndices[idx] = idx;
@@ -194,7 +208,9 @@ function setAsDefault(form) {
 
 function prepareSubmit(form) {
 	for (idx = 0; idx < entryTexts.length; idx++) {
-		var html = "<input type='hidden' name='EntryTexts' value='" + entryTexts[idx] + "'>";
+		var html = "<input type='hidden' name='EntryIDs' value='" + entryIDs[idx] + "'>";
+		form.insertAdjacentHTML("beforeEnd", html);
+		html = "<input type='hidden' name='EntryTexts' value='" + entryTexts[idx] + "'>";
 		form.insertAdjacentHTML("beforeEnd", html);
 		html = "<input type='hidden' name='YukonDefIDs' value='" + entryYukDefIDs[idx] + "'>";
 		form.insertAdjacentHTML("beforeEnd", html);
@@ -322,6 +338,7 @@ function init() {
                         </td>
                       </tr>
 <%	} %>
+<%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
 					  <tr> 
                         <td width="15%" align="right" class="TableCell">Description:</td>
                         <td width="85%" class="TableCell"> 
@@ -344,6 +361,7 @@ function init() {
                           <input type="text" name="Label" size="30" value="<%= list.getSelectionLabel() %>">
                         </td>
                       </tr>
+<%	} %>
                       <tr> 
                         <td width="15%" align="right" class="TableCell"> Entries:</td>
                         <td width="85%" class="TableCell"> 
@@ -363,13 +381,19 @@ function init() {
                                 <span class="ConfirmMsg">Click on an entry to 
                                 view or edit it.</span></td>
                               <td width="50%"> 
+<%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
                                 <input type="button" name="MoveUp" value="Move Up" onclick="moveUp(this.form)">
                                 <br>
+<%	} %>
+<%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
                                 <input type="button" name="MoveDown" value="Move Down" onclick="moveDown(this.form)">
                                 <br>
+<%	} %>
                                 <input type="button" name="Delete" value="Delete" onclick="deleteEntry(this.form)">
                                 <br>
+<%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
                                 <input type="button" name="Default" value="Set As Default" onclick="setAsDefault(this.form)">
+<%	} %>
                               </td>
                             </tr>
                           </table>
@@ -403,6 +427,7 @@ function init() {
                                   <tr> 
                                     <td width="75%"> 
                                       <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
+                                        <input type="hidden" name="EntryID" value="0">
                                         <tr> 
                                           <td width="25%" align="right">Text: 
                                           </td>

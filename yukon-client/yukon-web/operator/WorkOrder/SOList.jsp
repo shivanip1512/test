@@ -1,6 +1,6 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.stars.web.WorkOrderBean" %>
-<jsp:useBean id="soBean" class="com.cannontech.stars.web.WorkOrderBean" scope="session">
+<%@ page import="com.cannontech.stars.web.bean.WorkOrderBean" %>
+<jsp:useBean id="soBean" class="com.cannontech.stars.web.bean.WorkOrderBean" scope="session">
 	<%-- this body is executed only if the bean is created --%>
 	<jsp:setProperty name="soBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
 	<jsp:setProperty name="soBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_ORDER_NO %>"/>

@@ -1,15 +1,25 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
+	boolean inWizard = request.getParameter("Wizard") != null;
+	
 	boolean invCheckEarly = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING_TIME).equalsIgnoreCase(InventoryManager.INVENTORY_CHECKING_TIME_EARLY);
 	if (!invCheckEarly)
-		session.removeAttribute(InventoryManager.STARS_LM_HARDWARE_TEMP);
+		session.removeAttribute(InventoryManager.STARS_INVENTORY_TEMP);
 	
-	StarsLMHardware hardware = (StarsLMHardware) session.getAttribute(InventoryManager.STARS_LM_HARDWARE_TEMP);
-	if (hardware == null)
-		hardware = (StarsLMHardware) StarsFactory.newStarsLMHw(StarsLMHardware.class);
+	StarsInventory inventory = (StarsInventory) session.getAttribute(InventoryManager.STARS_INVENTORY_TEMP);
+	if (inventory == null) {
+		if (invCheckEarly) {
+			String redirect = request.getContextPath() + "/operator/Consumer/SerialNumber.jsp?action=New";
+			if (inWizard) redirect += "&Wizard=true";
+			response.sendRedirect(redirect);
+			return;
+		}
+		
+		inventory = (StarsLMHardware) StarsFactory.newStarsInventory(StarsLMHardware.class);
+	}
 	
-	boolean inWizard = request.getParameter("Wizard") != null;
+	StarsCustListEntry devTypeMCT = ServletUtils.getStarsCustListEntry(selectionListTable, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_METER);
 %>
 <html>
 <head>
@@ -24,9 +34,18 @@ function changeAppSelection(chkBox) {
 	grpList.disabled = !chkBox.checked;
 }
 
+function changeDeviceType() {
+<% if (devTypeMCT != null) { %>
+	if (document.MForm.DeviceType.value == <%= devTypeMCT.getEntryID() %>)
+		document.getElementById("NameLabel").innerText = "Device Name";
+	else
+<% } %>
+		document.getElementById("NameLabel").innerText = "Serial #";
+}
+
 function validate(form) {
 	if (form.SerialNo.value == "") {
-		alert("Serial # cannot be empty");
+		alert(document.getElementById("NameLabel").innerText + " cannot be empty");
 		return false;
 	}
 <% if (!invCheckEarly) { %>
@@ -35,12 +54,12 @@ function validate(form) {
 	return true;
 }
 
-function changeSerialNo(form) {
-	form.attributes["action"].value = "SerialNumber.jsp";
+function changeSerialNo() {
+	document.snForm.submit();
 }
 </script>
 </head>
-<body class="Background" leftmargin="0" topmargin="0" >
+<body class="Background" leftmargin="0" topmargin="0" onload="changeDeviceType()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td> 
@@ -96,9 +115,10 @@ function changeSerialNo(form) {
               <%@ include file="include/InfoSearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
-              <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)">
+              <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 			    <input type="hidden" name="action" value="CreateLMHardware">
-				<input type="hidden" name="InvID" value="<%= hardware.getInventoryID() %>">
+				<input type="hidden" name="InvID" value="<%= inventory.getInventoryID() %>">
+				<input type="hidden" name="DeviceID" value="<%= inventory.getDeviceID() %>">
 				<% if (inWizard) { %><input type="hidden" name="Wizard" value="true"><% } %>
                 <table width="610" border="0" cellspacing="0" cellpadding="0" align="center">
                   <tr> 
@@ -107,33 +127,51 @@ function changeSerialNo(form) {
                         <tr> 
                           <td valign="top"><span class="SubtitleHeader">DEVICE</span> 
                             <hr>
-                            <% if (invCheckEarly) { %>
-							<input type="hidden" name="DeviceType" value="<%= hardware.getLMDeviceType().getEntryID() %>">
-							<input type="hidden" name="SerialNo" value="<%= hardware.getManufactureSerialNumber() %>">
+<%
+	if (invCheckEarly) {
+		int devTypeID = 0;
+		String devTypeStr = null;
+		String valStr = null;
+		
+		if (inventory instanceof StarsLMHardware) {
+			devTypeID = ((StarsLMHardware) inventory).getLMDeviceType().getEntryID();
+			devTypeStr = ((StarsLMHardware) inventory).getLMDeviceType().getContent();
+			valStr = ((StarsLMHardware) inventory).getManufactureSerialNumber();
+		}
+		else if (inventory instanceof StarsMCT) {
+			devTypeID = devTypeMCT.getEntryID();
+			devTypeStr = devTypeMCT.getContent();
+			valStr = ((StarsMCT) inventory).getDeviceName();
+		}
+%>
+							<input type="hidden" name="DeviceType" value="<%= devTypeID %>">
+							<input type="hidden" name="SerialNo" value="<%= valStr %>">
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr> 
                                 <td width="100" class="TableCell" align="right">Type: 
                                 </td>
-                                <td width="120" class="MainText"><%= hardware.getLMDeviceType().getContent() %></td>
+                                <td width="120" class="MainText"><%= devTypeStr %></td>
                                 <td width="80" rowspan="2">
-                                  <input type="submit" name="Change" value="Change" onclick="changeSerialNo(this.form)">
+                                  <input type="button" name="Change" value="Change" onclick="changeSerialNo()">
                                 </td>
                               </tr>
                               <tr> 
-                                <td width="100" class="TableCell" align="right">Serial 
-                                  #: </td>
-                                <td width="120" class="MainText"><%= hardware.getManufactureSerialNumber() %></td>
+                                <td width="100" class="TableCell" align="right"><span id="NameLabel"></span>: </td>
+                                <td width="120" class="MainText"><%= valStr %></td>
                               </tr>
                             </table>
-                            <% } %>
+<%	} %>
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                            <% if (!invCheckEarly) { %> 
+<%
+	if (!invCheckEarly) {
+		StarsLMHardware hardware = (StarsLMHardware) inventory;
+%> 
                               <tr> 
                                 <td width="100" class="TableCell"> 
                                   <div align="right">Type: </div>
                                 </td>
                                 <td width="200"> 
-                                  <select name="DeviceType">
+                                  <select name="DeviceType" onchange="changeDeviceType()">
                                     <%
 	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
@@ -148,20 +186,19 @@ function changeSerialNo(form) {
                                 </td>
                               </tr>
                               <tr> 
-                                <td width="100" class="TableCell"> 
-                                  <div align="right">Serial #: </div>
-                                </td>
+                                <td width="100" class="TableCell" align="right"><span id="Label1">Serial 
+                                  #: </span></td>
                                 <td width="200"> 
                                   <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= hardware.getManufactureSerialNumber() %>">
                                 </td>
                               </tr>
-                            <% } %> 
+<%	} %> 
                               <tr> 
                                 <td width="100" class="TableCell"> 
                                   <div align="right">Label: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="DeviceLabel" maxlength="30" size="24" value="<%= hardware.getDeviceLabel() %>">
+                                  <input type="text" name="DeviceLabel" maxlength="30" size="24" value="<%= inventory.getDeviceLabel() %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -169,7 +206,7 @@ function changeSerialNo(form) {
                                   <div align="right">Alt Tracking #: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="AltTrackNo" maxlength="30" size="24" value="<%= hardware.getAltTrackingNumber() %>">
+                                  <input type="text" name="AltTrackNo" maxlength="30" size="24" value="<%= inventory.getAltTrackingNumber() %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -177,7 +214,7 @@ function changeSerialNo(form) {
                                   <div align="right">Receive Date: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(hardware.getReceiveDate(), datePart) %>">
+                                  <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(inventory.getReceiveDate(), datePart) %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -185,7 +222,7 @@ function changeSerialNo(form) {
                                   <div align="right">Remove Date: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(hardware.getRemoveDate(), datePart) %>">
+                                  <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(inventory.getRemoveDate(), datePart) %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -198,27 +235,9 @@ function changeSerialNo(form) {
 	StarsCustSelectionList voltageList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE );
 	for (int i = 0; i < voltageList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = voltageList.getStarsSelectionListEntry(i);
-		String selected = (entry.getEntryID() == hardware.getVoltage().getEntryID())? "selected" : "";
+		String selected = (entry.getEntryID() == inventory.getVoltage().getEntryID())? "selected" : "";
 %>
                                     <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
-                                    <%
-	}
-%>
-                                  </select>
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="100" class="TableCell"> 
-                                  <div align="right">Status: </div>
-                                </td>
-                                <td width="200"> 
-                                  <select name="Status">
-                                    <%
-	StarsCustSelectionList statusList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS );
-	for (int i = 0; i < statusList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = statusList.getStarsSelectionListEntry(i);
-%>
-                                    <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
                                     <%
 	}
 %>
@@ -230,7 +249,7 @@ function changeSerialNo(form) {
                                   <div align="right">Notes: </div>
                                 </td>
                                 <td width="200"> 
-                                  <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= hardware.getNotes() %></textarea>
+                                  <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= inventory.getNotes() %></textarea>
                                 </td>
                               </tr>
                             </table>
@@ -249,7 +268,7 @@ function changeSerialNo(form) {
                                   <div align="right">Date Installed: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(hardware.getInstallDate(), datePart) %>">
+                                  <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(inventory.getInstallDate(), datePart) %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -261,7 +280,7 @@ function changeSerialNo(form) {
 <%
 	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
 		StarsServiceCompany company = companies.getStarsServiceCompany(i);
-		String selected = (company.getCompanyID() == hardware.getInstallationCompany().getEntryID())? "selected" : "";
+		String selected = (company.getCompanyID() == inventory.getInstallationCompany().getEntryID())? "selected" : "";
 %>
                               		<option value="<%= company.getCompanyID() %>" <%= selected %>><%= company.getCompanyName() %></option>
 <%
@@ -275,13 +294,16 @@ function changeSerialNo(form) {
                                   <div align="right">Notes: </div>
                                 </td>
                                 <td width="200"> 
-                                  <textarea name="InstallNotes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= hardware.getInstallationNotes() %></textarea>
+                                  <textarea name="InstallNotes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= inventory.getInstallationNotes() %></textarea>
                                 </td>
                               </tr>
                             </table>
                           </td>
                         </tr>
                       </table>
+<%
+	if (inventory instanceof StarsLMHardware) {
+%>
                       <br>
                       <span class="Subtext">Select all programs controlled by this 
                       hardware, and assign groups to them:</span><br>
@@ -341,6 +363,7 @@ function changeSerialNo(form) {
 	}
 %>
                       </table>
+<%	} %>
                     </td>
                   </tr>
                 </table>
@@ -349,20 +372,23 @@ function changeSerialNo(form) {
                 <tr>
                   <td align ="right" width = "50%"> 
 <% if (!inWizard) { %>
-                    <input type="submit" name="Submit" value="Save">
+                    <input type="submit" name="Submit" value="Save" onclick="return validate(this.form)">
 <% } else { %>
-                    <input type="submit" name="Next" value="Next">
+                    <input type="submit" name="Next" value="Next" onclick="return validate(this.form)">
 <% } %>
                   </td>
                   <td> 
 <% if (!inWizard) { %>
-                    <input type="reset" name="Cancel" value="Cancel">
+                    <input type="reset" name="Cancel" value="Reset">
 <% } else { %>
                     <input type="button" name="Cancel" value="Cancel" onclick="location.href = '../Operations.jsp'">
 <% } %>
                   </td>
                 </tr>
               </table><br>
+              </form>
+              <form name="snForm" method="post" action="SerialNumber.jsp">
+                <input type="hidden" name="action" value="Change">
               </form>
             </div>
           

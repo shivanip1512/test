@@ -1,21 +1,12 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
-	if (inventories.getStarsLMHardwareCount() == 0) {
-		response.sendRedirect("CreateHardware.jsp"); return;
-	}
-	
-	String invNoStr = request.getParameter("InvNo");
-	int invNo = 0;
-	if (invNoStr != null)
-		try {
-			invNo = Integer.parseInt(invNoStr);
-		}
-		catch (NumberFormatException e) {}
-	if (invNo < 0 || invNo >= inventories.getStarsLMHardwareCount())
-		invNo = 0;
-
-	StarsLMHardware hardware = inventories.getStarsLMHardware(invNo);
+	int invNo = Integer.parseInt(request.getParameter("InvNo"));
+	StarsInventory inventory = null;
+	if (invNo < inventories.getStarsLMHardwareCount())
+		inventory = inventories.getStarsLMHardware(invNo);
+	else
+		inventory = inventories.getStarsMCT(invNo - inventories.getStarsLMHardwareCount());
 %>
 
 <html>
@@ -88,7 +79,7 @@
                           <td width="100" class="HeaderCell">Action</td>
                         </tr>
                         <%
-	StarsLMHardwareHistory hwHist = hardware.getStarsLMHardwareHistory();
+	StarsLMHardwareHistory hwHist = inventory.getStarsLMHardwareHistory();
 	for (int i = hwHist.getStarsLMHardwareEventCount() - 1; i >= 0; i--) {
 		StarsLMHardwareEvent event = hwHist.getStarsLMHardwareEvent(i);
 %>
@@ -110,7 +101,7 @@
               <tr> 
                 <td width="43%"> 
                   <div align="center">
-                    <input type="button" name="Back" value="Back" onclick="location='Inventory.jsp?InvNo=<%= invNoStr %>'">
+                    <input type="button" name="Back" value="Back" onclick="location='Inventory.jsp?InvNo=<%= invNo %>'">
                   </div>
                 </td>
               </tr>

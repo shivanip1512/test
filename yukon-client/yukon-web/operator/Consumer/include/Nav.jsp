@@ -18,7 +18,7 @@
 						  {"FAQ.jsp", "FAQ"},
 						  {"CreateAppliances.jsp", "New"},
 						  {(AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING_TIME).equalsIgnoreCase(InventoryManager.INVENTORY_CHECKING_TIME_EARLY))?
-						  	"SerialNumber.jsp" : "CreateHardware.jsp", "New", "CreateHardware.jsp"},
+						  	"SerialNumber.jsp?action=New" : "CreateHardware.jsp", "New", "CreateHardware.jsp"},
 						 };
 
 	String bulletImg = "<img src='../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif") + "' width='9' height='9'>";
@@ -225,15 +225,28 @@
       <div align="left"><span class="NavHeader">Hardware</span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES %>"> 
-          <%
+<%
+	int selectedInvNo = -1;	// selected inventory no.
+	
+	if (pageName.indexOf("Inventory.jsp") >= 0) {
+		StringTokenizer st = new StringTokenizer(pageName, "?&");
+		while (st.hasMoreTokens()) {
+			String param = st.nextToken();
+			if (param.startsWith("InvNo=")) {
+				selectedInvNo = Integer.parseInt(param.substring(6));
+				break;
+			}
+		}
+	}
+	
 	for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
 		StarsLMHardware hw = inventories.getStarsLMHardware(i);
 		String linkLabel = hw.getDeviceLabel();
 		
 		String linkHtml = null;
 		String linkImgExp = null;
-		int pos = pageName.lastIndexOf("InvNo=");
-		if (pos >= 0 && pageName.substring(pos).equals("InvNo=" + i)) {
+		
+		if (i == selectedInvNo) {
 			linkHtml = "<span class='Nav' style='cursor:default'>" + linkLabel + "</span>";
 			linkImgExp = bulletImg;
 		}
@@ -249,7 +262,28 @@
 			switches.add( linkFields );
 	}
 	
-	if (inventories.getStarsLMHardwareCount() > 0) {
+	for (int i = 0; i < inventories.getStarsMCTCount(); i++) {
+		StarsMCT mct = inventories.getStarsMCT(i);
+		String linkLabel = mct.getDeviceLabel();
+		
+		String linkHtml = null;
+		String linkImgExp = null;
+		
+		int invNo2 = i + inventories.getStarsLMHardwareCount();
+		if (invNo2 == selectedInvNo) {
+			linkHtml = "<span class='Nav' style='cursor:default'>" + linkLabel + "</span>";
+			linkImgExp = bulletImg;
+		}
+		else {
+			linkHtml = "<span class='NavTextNoLink' style='cursor:default'>" + linkLabel + "</span>";
+			linkImgExp = bulletImgExp;
+		}
+		
+		String[] linkFields = new String[] {String.valueOf(invNo2), linkHtml, linkImgExp};
+		meters.add( linkFields );
+	}
+	
+	if (inventories.getStarsLMHardwareCount() + inventories.getStarsMCTCount() > 0) {
 %>
           <tr>
             <td width="10">&nbsp;</td>
@@ -319,7 +353,7 @@
             </td>
           </tr>
 <%
-	}	// if (inventories.getStarsLMHardware() > 0)
+	}
 %>
 		  </cti:checkProperty>
 		  <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE %>"> 
@@ -433,6 +467,8 @@ pageLinks = new Array(<%= inventories.getStarsLMHardwareCount() %>);
 %>
 	pageLinks[<%= num %>] = new Array(1);
 	pageLinks[<%= num %>][0] = "Inventory.jsp?InvNo=<%= num %>";
+	pageLinks[<%= num %>][1] = "ConfigMeter.jsp?InvNo=<%= num %>";
+	pageLinks[<%= num %>][2] = "CommandMeter.jsp?InvNo=<%= num %>";
 <%
 	}
 %>
@@ -484,8 +520,20 @@ pageLinks = new Array(<%= inventories.getStarsLMHardwareCount() %>);
   <div id="MenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(0)">
   &nbsp;&nbsp;&nbsp;Hardware Info
   </div>
-  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "location.href=showPage(0)">
+  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(0)">
   &nbsp;&#149;&nbsp;Hardware Info
+  </div>
+  <div id="MenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(1)">
+  &nbsp;&nbsp;&nbsp;Configuration
+  </div>
+  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(1)">
+  &nbsp;&#149;&nbsp;Configuration
+  </div>
+  <div id="MenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(2)">
+  &nbsp;&nbsp;&nbsp;Command
+  </div>
+  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(2)">
+  &nbsp;&#149;&nbsp;Command
   </div>
 </div>
 
