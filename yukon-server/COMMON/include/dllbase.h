@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/dllbase.h-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2004/10/22 20:58:54 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2004/11/18 23:37:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,6 +49,7 @@ using namespace std;
 #define DEBUGLEVEL_PIL_MAINTHREAD   0x00400000
 #define DEBUGLEVEL_RIPPLE           0x01000000
 #define DEBUGLEVEL_ILEX_PROTOCOL    0x02000000
+#define DEBUGLEVEL_SA3RDPARTY       0x08000000
 #define DEBUGLEVEL_SIXNET_DEVICE    0x10000000
 #define DEBUGLEVEL_SIXNET_PROTOCOL  0x20000000
 #define DEBUGLEVEL_WELCO_PROTOCOL   0x40000000
