@@ -228,10 +228,3 @@ go
 
 alter table EnergyCompany add WebConfigID numeric not null DEFAULT 0
 go
-
-alter table EnergyCompany add PrimaryContactID numeric not null DEFAULT 0
-go
-alter table EnergyCompany
-   add constraint FK_EngCmp_Cnt foreign key (PrimaryContactID)
-      references Contact (ContactID)
-go

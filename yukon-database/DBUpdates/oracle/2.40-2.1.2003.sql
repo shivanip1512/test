@@ -251,12 +251,3 @@ where type like '%ION%';
 alter table EnergyCompany ADD WebConfigID NUMBER;
 UPDATE EnergyCompany SET WebConfigID = 0;
 alter TABLE EnergyCompany MODIFY WebConfigID NOT NULL;
-
-
-alter table EnergyCompany ADD PrimaryContactID NUMBER;
-UPDATE EnergyCompany SET PrimaryContactID = 0;
-alter TABLE EnergyCompany MODIFY PrimaryContactID NOT NULL;
-
-alter table EnergyCompany
-   add constraint FK_EngCmp_Cnt foreign key (PrimaryContactID)
-      references Contact (ContactID);
