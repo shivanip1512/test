@@ -50,6 +50,7 @@ public final class LiteTypes
 	public final static int STARS_SERVICE_COMPANY = 118;
 	public final static int STARS_THERMOSTAT_SEASON = 119;
 	public final static int STARS_THERMOSTAT_SEASON_ENTRY = 120;
+	public final static int STARS_GATEWAY_END_DEVICE = 121;
 	public final static int STARS_INTERVIEW_QUESTION = 122;
 	public final static int STARS_APPLIANCE = 123;
 	public final static int STARS_CUSTOMER_FAQ = 124;
