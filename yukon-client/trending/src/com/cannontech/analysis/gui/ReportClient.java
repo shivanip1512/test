@@ -33,7 +33,7 @@ public class ReportClient extends javax.swing.JPanel implements java.awt.event.A
 	private javax.swing.JTabbedPane ivjTabbedPane = null;
 	private static javax.swing.JFrame reportClientFrame = null;
 	private javax.swing.JMenuBar menuBar = null;
-	private Reportingmenu reportingMenu = null;
+	private ReportsMenu reportsMenu = null;
 	private String reportType = null;
 	private static final int[] statisticModels =
 		{
@@ -180,7 +180,7 @@ public class ReportClient extends javax.swing.JPanel implements java.awt.event.A
 				model = new StatisticModel("Monthly");
 			}
 			
-		else if (event.getSource() == getReportingMenu().getPreviousMonthMenuItem())
+		else if (event.getSource() == getReportingMenu().getPrevMonthMenuItem())
 		{
 			com.cannontech.database.model.LiteBaseTreeModel[] models = 	
 							new com.cannontech.database.model.LiteBaseTreeModel[statisticModels.length];
@@ -213,7 +213,7 @@ public class ReportClient extends javax.swing.JPanel implements java.awt.event.A
 			}
 			model = new StatisticModel("LastMonth");
 		}
-		else if (event.getSource() == getReportingMenu().getLoadGroupAcctngMenuItem())
+		else if (event.getSource() == getReportingMenu().getLoadGroupAcctMenuItem())
 		{
 			com.cannontech.database.model.LiteBaseTreeModel[] models =
 				new com.cannontech.database.model.LiteBaseTreeModel[loadGroupModels.length];
@@ -346,7 +346,7 @@ public class ReportClient extends javax.swing.JPanel implements java.awt.event.A
 			model = new MissedMeterModel();
 		}
 
-		else if (event.getSource() == getReportingMenu().getMCTMenuItem())
+		else if (event.getSource() == getReportingMenu().getCarrierMenuItem())
 		{
 			
 			com.cannontech.database.model.LiteBaseTreeModel[] models =
@@ -778,25 +778,25 @@ private CheckBoxTreeViewPanel getCheckBoxTreeViewPanel() {
 	}
 	return ivjReportDisplayPanel;
 }
-	private Reportingmenu getReportingMenu()
+	private ReportsMenu getReportingMenu()
 	{
-		if (reportingMenu == null)
+		if (reportsMenu == null)
 		{
-			reportingMenu = new Reportingmenu();
+			reportsMenu = new ReportsMenu();
 
 			javax.swing.JMenuItem item;
-			for (int i = 0; i < reportingMenu.getItemCount(); i++)
+			for (int i = 0; i < reportsMenu.getItemCount(); i++)
 			{
-				item = reportingMenu.getItem(i);
+				item = reportsMenu.getItem(i);
 
 				if (item != null)
-					reportingMenu.getItem(i).addActionListener(this);
-				addMenuItemActionListeners(reportingMenu);
+					reportsMenu.getItem(i).addActionListener(this);
+				addMenuItemActionListeners(reportsMenu);
 			}
 			//reportMenu.getItem(1).addActionListener(this);
 
 		}
-		return reportingMenu;
+		return reportsMenu;
 	}
 	/**
 	 * Called whenever the part throws an exception.
