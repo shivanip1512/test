@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_macro.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/03/13 19:36:17 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/08/27 14:54:20 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,7 @@ using boost::shared_ptr;
 #include "tbl_rtmacro.h"
 #include "rte_base.h"
 #include "cmdparse.h"
+#include "mutex.h"
 #include "yukon.h"
 
 class IM_EX_DEVDB CtiRouteMacro : public CtiRouteBase
@@ -40,6 +41,8 @@ protected:
    // All I really do is hint at REAL Routes.... Which had better exist somewhere else.. I think.
    RWTValOrderedVector< CtiTableMacroRoute >  RouteList;
    RWTValOrderedVector< shared_ptr< CtiRoute > >  RoutePtrList;    // Not responsible for these route pointer's memory...
+
+   mutable CtiMutex _routeListMux;
 
 private:
 
@@ -56,6 +59,8 @@ public:
 
    CtiRouteMacro& operator=(const CtiRouteMacro& aRef);
    virtual void DumpData();
+
+   CtiMutex& getRouteListMux();
 
    CtiRouteList_t& CtiRouteMacro::getRouteList();
    CtiRouteList_t   CtiRouteMacro::getRouteList() const;

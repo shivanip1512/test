@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dlldev.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/03/13 19:36:02 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/08/27 14:54:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -131,13 +131,27 @@ void IM_EX_DEVDB attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteM
                 }
             case MacroRouteType:
                 {
-                    CtiRouteMacro *pMac = (CtiRouteMacro*)itr->second.get();         // Wild man, wild!  I guess that holding pRte lets this be ok...
-                    pMac->getRoutePtrList().clear();
 
-                    for(int i = 0; i < pMac->getRouteList().length(); i++)
+                    CtiRouteMacro *pMac = (CtiRouteMacro*)itr->second.get();         // Wild man, wild!  I guess that holding pRte lets this be ok...
+
+                    try
                     {
-                        CtiRouteSPtr pSingleRoute = RM->getEqual(pMac->getRouteList()[i].getSingleRouteID());
-                        pMac->getRoutePtrList().insert( pSingleRoute );
+                        CtiLockGuard< CtiMutex > listguard(pMac->getRouteListMux());    // Lock it so that it cannot conflict with an ExecuteRequest() on the route!!
+
+                        pMac->getRoutePtrList().clear();
+
+                        for(int i = 0; i < pMac->getRouteList().length(); i++)
+                        {
+                            CtiRouteSPtr pSingleRoute = RM->getEqual(pMac->getRouteList()[i].getSingleRouteID());
+                            pMac->getRoutePtrList().insert( pSingleRoute );
+                        }
+                    }
+                    catch(...)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
                     }
                 }
             default:

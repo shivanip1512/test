@@ -1,3 +1,4 @@
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   rte_macro
@@ -6,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_macro.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/05/09 15:59:02 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/08/27 14:54:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,15 +23,20 @@
 #include "dllbase.h"
 #include "rte_macro.h"
 #include "logger.h"
+#include "guard.h"
 
-CtiRouteMacro::CtiRouteMacro() {}
+CtiRouteMacro::CtiRouteMacro()
+{
+}
 
 CtiRouteMacro::CtiRouteMacro(const CtiRouteMacro& aRef)
 {
     *this = aRef;
 }
 
-CtiRouteMacro::~CtiRouteMacro() {}
+CtiRouteMacro::~CtiRouteMacro()
+{
+}
 
 CtiRouteMacro& CtiRouteMacro::operator=(const CtiRouteMacro& aRef)
 {
@@ -50,11 +56,23 @@ void CtiRouteMacro::DumpData()
         RouteList[i].DumpData();
 }
 
-CtiRouteMacro::CtiRouteList_t & CtiRouteMacro::getRouteList()         { return RouteList;}
-CtiRouteMacro::CtiRouteList_t   CtiRouteMacro::getRouteList() const   { return RouteList;}
+CtiRouteMacro::CtiRouteList_t & CtiRouteMacro::getRouteList()
+{
+    return RouteList;
+}
+CtiRouteMacro::CtiRouteList_t   CtiRouteMacro::getRouteList() const
+{
+    return RouteList;
+}
 
-CtiRouteMacro::CtiRoutePtrList_t & CtiRouteMacro::getRoutePtrList()         { return RoutePtrList;}
-CtiRouteMacro::CtiRoutePtrList_t   CtiRouteMacro::getRoutePtrList() const   { return RoutePtrList;}
+CtiRouteMacro::CtiRoutePtrList_t & CtiRouteMacro::getRoutePtrList()
+{
+    return RoutePtrList;
+}
+CtiRouteMacro::CtiRoutePtrList_t   CtiRouteMacro::getRoutePtrList() const
+{
+    return RoutePtrList;
+}
 
 
 void CtiRouteMacro::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
@@ -76,137 +94,146 @@ void CtiRouteMacro::DecodeDatabaseReader(RWDBReader &rdr)
     }
 }
 
-
-
 INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT nRet = NORMAL;
     int onebasedoffset = (OutMessage->Request.MacroOffset) > 0 ? OutMessage->Request.MacroOffset : pReq->MacroOffset();
     int offset = onebasedoffset - 1; // This is a targeted request..  Incomming offset is ONE based.
 
-    if( onebasedoffset > 0 )
+    try
     {
-        if( offset < RoutePtrList.length())
+        CtiLockGuard< CtiMutex > listguard(getRouteListMux());
+        if( onebasedoffset > 0 )
         {
-            CtiRouteSPtr pRoute = RoutePtrList[offset];
-
-            if(pRoute && pRoute.get() != this)  // No jerking around here thank you.
+            if( offset < RoutePtrList.length())
             {
-                if(pRoute->getType() != MacroRouteType)
+                CtiRouteSPtr pRoute = RoutePtrList[offset];
+
+                if(pRoute && pRoute.get() != this)  // No jerking around here thank you.
+                {
+                    if(pRoute->getType() != MacroRouteType)
+                    {
+                        OUTMESS *NewOMess = CTIDBG_new OUTMESS(*OutMessage); // Construct and copy.
+
+                        if(NewOMess)
+                        {
+                            if(onebasedoffset < RoutePtrList.length())
+                            {
+                                NewOMess->Request.MacroOffset = onebasedoffset + 1;    // Ask for this next (if needed) please.
+                            }
+                            else
+                            {
+                                NewOMess->Request.MacroOffset = 0;    // None left MAKE IT STOP!.
+                            }
+
+
+                            if(getDebugLevel() & DEBUGLEVEL_MGR_ROUTE)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " Execute Macro Route Target \"" << pRoute->getName() << "\" " << pRoute->getRouteID()<< endl;
+                            }
+
+                            pRoute->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
+
+                            if(NewOMess)
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << "  Route " << pRoute->getName() << " did not clean up his mess." << endl;
+                                }
+                                delete NewOMess;
+                                NewOMess = 0;
+                            }
+                        }
+                        else
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " ERROR!!!! CTIDBG_new memory failure " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
+                    else
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << "  SKIPPING MACRO ROUTE IN MACRO ROUTE " << endl;
+                        }
+                        nRet = SubRouteIsMacro;
+                    }
+                }
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "   NO MORE ROUTES IN THIS MACRO." << endl;
+                }
+                nRet = RouteOffsetOutOfRange;
+            }
+        }
+        else if(RoutePtrList.length() > 0)
+        {
+            for(int i = 0; i < RoutePtrList.length(); i++)
+            {
+                CtiRouteSPtr pRoute = RoutePtrList[i];
+
+                if(pRoute && pRoute.get() != this)  // No jerking around here thank you.
                 {
                     OUTMESS *NewOMess = CTIDBG_new OUTMESS(*OutMessage); // Construct and copy.
 
                     if(NewOMess)
                     {
-                        if(onebasedoffset < RoutePtrList.length())
-                        {
-                            NewOMess->Request.MacroOffset = onebasedoffset + 1;    // Ask for this next (if needed) please.
-                        }
-                        else
-                        {
-                            NewOMess->Request.MacroOffset = 0;    // None left MAKE IT STOP!.
-                        }
-
+                        NewOMess->Request.RouteID     = pRoute->getRouteID();
+                        NewOMess->Request.MacroOffset = 0; // 20020523 CGP  Oh golly. We say zero since we already will be hitting them on the way by. // i+1;
 
                         if(getDebugLevel() & DEBUGLEVEL_MGR_ROUTE)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Execute Macro Route Target \"" << pRoute->getName() << "\" " << pRoute->getRouteID()<< endl;
+                            dout << RWTime() << " Execute Macro Route Target \"" << RoutePtrList[i]->getName() << "\" " << RoutePtrList[i]->getRouteID()<< endl;
                         }
 
                         pRoute->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
-
-                        if(NewOMess)
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << "  Route " << pRoute->getName() << " did not clean up his mess." << endl;
-                            }
-                            delete NewOMess;
-                            NewOMess = 0;
-                        }
                     }
                     else
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " ERROR!!!! CTIDBG_new memory failure " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
-                }
-                else
-                {
+
+                    if(NewOMess)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  SKIPPING MACRO ROUTE IN MACRO ROUTE " << endl;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << "  Route " << pRoute->getName() << " did not clean up his mess." << endl;
+                        }
+                        delete NewOMess;
+                        NewOMess = 0;
                     }
-                    nRet = SubRouteIsMacro;
                 }
             }
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "   NO MORE ROUTES IN THIS MACRO." << endl;
-            }
-            nRet = RouteOffsetOutOfRange;
+            nRet = NoRoutesInMacro;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " ERROR: Macro Route " << getName() << " has not resolved any sub-routes. " << endl;
         }
-    }
-    else if(RoutePtrList.length() > 0)
-    {
-        for(int i = 0; i < RoutePtrList.length(); i++)
+
+        if(OutMessage)
         {
-            CtiRouteSPtr pRoute = RoutePtrList[i];
-
-            if(pRoute && pRoute.get() != this)  // No jerking around here thank you.
-            {
-                OUTMESS *NewOMess = CTIDBG_new OUTMESS(*OutMessage); // Construct and copy.
-
-                if(NewOMess)
-                {
-                    NewOMess->Request.RouteID     = pRoute->getRouteID();
-                    NewOMess->Request.MacroOffset = 0; // 20020523 CGP  Oh golly. We say zero since we already will be hitting them on the way by. // i+1;
-
-                    if(getDebugLevel() & DEBUGLEVEL_MGR_ROUTE)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Execute Macro Route Target \"" << RoutePtrList[i]->getName() << "\" " << RoutePtrList[i]->getRouteID()<< endl;
-                    }
-
-                    pRoute->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " ERROR!!!! CTIDBG_new memory failure " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
-                if(NewOMess)
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  Route " << pRoute->getName() << " did not clean up his mess." << endl;
-                    }
-                    delete NewOMess;
-                    NewOMess = 0;
-                }
-            }
+            delete OutMessage;
+            OutMessage = 0;
         }
     }
-    else
+    catch(...)
     {
-        nRet = NoRoutesInMacro;
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " ERROR: Macro Route " << getName() << " has not resolved any sub-routes. " << endl;
-    }
-
-    if(OutMessage)
-    {
-        delete OutMessage;
-        OutMessage = 0;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 
     return nRet;
@@ -237,3 +264,7 @@ bool CtiRouteMacro::processAdditionalRoutes( INMESS *InMessage ) const
     return bret;
 }
 
+CtiMutex& CtiRouteMacro::getRouteListMux()
+{
+    return _routeListMux;
+}
