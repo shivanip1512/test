@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/05/20 21:25:17 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/05/28 17:30:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1527,7 +1527,7 @@ INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
         decodeAccumulators(accums, 3, InMessage->Buffer.DSt.Message);
 
         RWTime pointTime;
-        pointTime = pointTime.seconds() % 300;
+        pointTime -= pointTime.seconds() % 300;
 
         for(pid = 1; pid <= 3; pid++)
         {
