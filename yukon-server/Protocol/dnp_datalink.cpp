@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/06/12 21:33:59 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/02/04 20:26:35 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -233,6 +233,8 @@ int CtiDNPDatalink::decode( CtiXfer &xfer, int status )
                 {
                     //  ACH:  this is dumb...  i don't like this variable floating around...
                     //          we should only be dealing with whole packets
+
+                    //  THIS IS PATENTLY FALSE - THIS CANNOT BE SET UNTIL WE HAVE VERIFIED THE INPUT
                     _in_recv += _in_actual;
 
                     if( isEntirePacket(_packet, _in_recv) )
@@ -286,6 +288,7 @@ int CtiDNPDatalink::decode( CtiXfer &xfer, int status )
 
                 case State_IO_OutputRecvAck:
                 {
+                    //  THIS IS PATENTLY FALSE - THIS CANNOT BE SET UNTIL WE HAVE VERIFIED THE INPUT
                     _in_recv += _in_actual;
 
                     if( isEntirePacket(_packet, _in_recv) )
