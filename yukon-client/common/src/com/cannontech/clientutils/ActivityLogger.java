@@ -120,6 +120,7 @@ public class ActivityLogger {
 		actLog.setEnergyCompanyID( energyCompanyID );
 		actLog.setCustomerID( customerID );
 		actLog.setAction( action );
+		actLog.setPaoID(paoID);
 		actLog.setDescription( description );
 		
 		try {
