@@ -7,16 +7,10 @@ package com.cannontech.servlet;
  * Creation date: (12/7/99 9:46:12 AM)
  * @author:	Aaron Lauinger 
  */
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.PoolManager;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
