@@ -220,6 +220,11 @@ LONG VerificationSequenceGen(bool force)
         int trycnt = 0;
         while(!guard.isAcquired() && trycnt++ < 20)
         {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << " **** Checkpoint: unable to acquire mux in verificationsequencegen, trycnt = " << trycnt << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
             Sleep(500);
             guard.tryAcquire();
         }
