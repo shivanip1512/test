@@ -912,6 +912,45 @@ insert into YukonUserRole values (-1013, -100, -200, -20003, '(none)');
 INSERT INTO YukonWebConfiguration VALUES (-1,'Summer.gif','Default Summer Settings','Cooling','Cool');
 INSERT INTO YukonWebConfiguration VALUES (-2,'Winter.gif','Default Winter Settings','Heating','Heat');
 
+/* @error ignore */
+insert into YukonSelectionList values (1001,'A','(none)','Not visible, list defines the event ids','LMCustomerEvent','N');
+/* @error ignore */
+insert into YukonSelectionList values (1002,'A','(none)','Not visible, defines possible event actions','LMCustomerAction','N');
+/* @error ignore */
+insert into YukonSelectionList values (1003,'A','(none)','Not visible, defines inventory device category','InventoryCategory','N');
+/* @error ignore */
+insert into YukonSelectionList values (1004,'A','(none)','Device voltage selection','DeviceVoltage','Y');
+/* @error ignore */
+insert into YukonSelectionList values (1005,'A','(none)','Device type selection','DeviceType','Y');
+/* @error ignore */
+insert into YukonSelectionList values (1006,'N','(none)','Hardware status selection','DeviceStatus','N');
+/* @error ignore */
+insert into YukonSelectionList values (1007,'A','(none)','Appliance category','ApplianceCategory','N');
+/* @error ignore */
+insert into YukonSelectionList values (1008,'A','(none)','Call type selection','CallType','Y');
+/* @error ignore */
+insert into YukonSelectionList values (1009,'A','(none)','Service type selection','ServiceType','Y');
+/* @error ignore */
+insert into YukonSelectionList values (1010,'N','(none)','Service request status','ServiceStatus','N');
+/* @error ignore */
+insert into YukonSelectionList values (1011,'N','(none)','Search by selection','SearchBy','N');
+/* @error ignore */
+insert into YukonSelectionList values (1012,'A','(none)','Appliance manufacturer selection','Manufacturer','Y');
+/* @error ignore */
+insert into YukonSelectionList values (1013,'A','(none)','Appliance location selection','ApplianceLocation','Y');
+/* @error ignore */
+insert into YukonSelectionList values (1014,'N','(none)','Chance of control selection','ChanceOfControl','Y');
+/* @error ignore */
+insert into YukonSelectionList values (1015,'N','(none)','Thermostat settings time of week selection','TimeOfWeek','N');
+/* @error ignore */
+insert into YukonSelectionList values (1016,'N','(none)','Question type selection','QuestionType','N');
+/* @error ignore */
+insert into YukonSelectionList values (1017,'N','(none)','Answer type selection','AnswerType','N');
+/* @error ignore */
+insert into YukonSelectionList values (1018,'N','(none)','Thermostat mode selection','ThermostatMode','N');
+/* @error ignore */
+insert into YukonSelectionList values (1019,'N','(none)','Thermostat fan state selection','ThermostatFanState','N');
+
 insert into YukonSelectionList values (1020,'O','(none)','Customer FAQ groups','CustomerFAQGroup','N');
 insert into YukonSelectionList values (1021,'N','(none)','Residence type selection','ResidenceType','Y');
 insert into YukonSelectionList values (1022,'N','(none)','Construction material selection','ConstructionMaterial','Y');
