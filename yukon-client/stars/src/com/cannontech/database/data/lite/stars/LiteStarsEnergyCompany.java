@@ -498,13 +498,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		memberLoginIDs = null;
 	}
 	
-	public String getEnergyCompanySetting(int rolePropertyID, String defaultValue) {
-		return AuthFuncs.getRolePropertyValue(
-				YukonUserFuncs.getLiteYukonUser(getUserID()), rolePropertyID, defaultValue);
-	}
-	
 	public String getEnergyCompanySetting(int rolePropertyID) {
-		return getEnergyCompanySetting(rolePropertyID, null);
+		return ServerUtils.forceNotNone(
+				AuthFuncs.getRolePropertyValue(
+					YukonUserFuncs.getLiteYukonUser(getUserID()), rolePropertyID) );
 	}
 	
 	public LiteYukonGroup[] getResidentialCustomerGroups() {
