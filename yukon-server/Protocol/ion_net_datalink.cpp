@@ -254,6 +254,8 @@ int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
+            _ioState = Failed;
+
             break;
         }
     }
@@ -627,6 +629,7 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                         }
                         else
                         {
+                            _currentOutputFrame--;
                             _ioState = Output;
                         }
                     }
@@ -646,6 +649,8 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
+
+                _ioState = Failed;
 
                 break;
             }

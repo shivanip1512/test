@@ -112,6 +112,26 @@ CtiIONDataStream &CtiIONDataStream::appendItem( CtiIONValue *toInsert )
 }
 
 
+CtiIONDataStream &CtiIONDataStream::removeItem( int index )
+{
+    DSVector::difference_type idx;
+
+    if( index >= 0 && index < _streamValues.size() )
+    {
+        idx = index;
+
+        //  NOTE:  this is O(n), so if this gets hit a lot, DSVector needs to be changed to a linked list or something.
+        _streamValues.erase(_streamValues.begin() + idx, _streamValues.begin() + idx);
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return *this;
+}
+
 int CtiIONDataStream::getItemCount( void ) const
 {
     return _streamValues.size();
@@ -127,7 +147,7 @@ bool CtiIONDataStream::empty( void ) const
 bool CtiIONDataStream::contains( CtiIONValue::IONValueTypes type )
 {
     bool result = false;
-    streamIterator itr;
+    DSIterator itr;
 
     for( itr = _streamValues.begin(); (itr != _streamValues.end()) && !result; itr++ )
     {
@@ -141,7 +161,7 @@ bool CtiIONDataStream::contains( CtiIONValue::IONValueTypes type )
 bool CtiIONDataStream::contains( CtiIONArray::IONArrayTypes type )
 {
     bool result = false;
-    streamIterator itr;
+    DSIterator itr;
 
     for( itr = _streamValues.begin(); (itr != _streamValues.end()) && !result; itr++ )
     {
@@ -155,7 +175,7 @@ bool CtiIONDataStream::contains( CtiIONArray::IONArrayTypes type )
 bool CtiIONDataStream::contains( CtiIONStruct::IONStructTypes type )
 {
     bool result = false;
-    streamIterator itr;
+    DSIterator itr;
 
     for( itr = _streamValues.begin(); (itr != _streamValues.end()) && !result; itr++ )
     {

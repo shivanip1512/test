@@ -56,7 +56,13 @@ CtiIONCharArray::CtiIONCharArray( unsigned char *buf, unsigned long len, unsigne
 
 CtiIONChar *CtiIONCharArray::operator[]( unsigned long index )
 {
-    return (CtiIONChar *)getArrayElement( index );
+    return getElement(index);
+}
+
+
+CtiIONChar *CtiIONCharArray::getElement( unsigned long index )
+{
+    return (CtiIONChar *)getArrayElement(index);
 }
 
 
@@ -95,9 +101,15 @@ CtiIONBooleanArray::CtiIONBooleanArray( unsigned char *buf, unsigned long len, u
 }
 
 
-CtiIONUnsignedInt *CtiIONUnsignedIntArray::operator[]( unsigned long index )
+CtiIONBoolean *CtiIONBooleanArray::operator[]( unsigned long index )
 {
-    return (CtiIONUnsignedInt *)getArrayElement( index );
+    return getElement(index);
+}
+
+
+CtiIONBoolean *CtiIONBooleanArray::getElement( unsigned long index )
+{
+    return (CtiIONBoolean *)getArrayElement(index);
 }
 
 
@@ -137,9 +149,15 @@ CtiIONFloatArray::CtiIONFloatArray( unsigned char *buf, unsigned long len, unsig
 }
 
 
-CtiIONFloat *CtiIONFloatArray::operator[]( unsigned long index )
+CtiIONFloat *CtiIONFloatArray::getElement( unsigned long index )
 {
     return (CtiIONFloat *)getArrayElement( index );
+}
+
+
+CtiIONFloat *CtiIONFloatArray::operator[]( unsigned long index )
+{
+    return getElement( index );
 }
 
 
@@ -178,6 +196,18 @@ CtiIONSignedIntArray::CtiIONSignedIntArray( unsigned char *buf, unsigned long le
 }
 
 
+CtiIONSignedInt *CtiIONSignedIntArray::getElement( unsigned long index )
+{
+    return (CtiIONSignedInt *)getArrayElement( index );
+}
+
+
+CtiIONSignedInt *CtiIONSignedIntArray::operator[]( unsigned long index )
+{
+    return getElement( index );
+}
+
+
 
 CtiIONUnsignedIntArray::CtiIONUnsignedIntArray( ) :
     CtiIONArray(IONUnsignedIntArray)
@@ -210,6 +240,18 @@ CtiIONUnsignedIntArray::CtiIONUnsignedIntArray( unsigned char *buf, unsigned lon
     }
 
     *bytesUsed = pos;
+}
+
+
+CtiIONUnsignedInt *CtiIONUnsignedIntArray::getElement( unsigned long index )
+{
+    return (CtiIONUnsignedInt *)getArrayElement(index);
+}
+
+
+CtiIONUnsignedInt *CtiIONUnsignedIntArray::operator[]( unsigned long index )
+{
+    return getElement(index);
 }
 
 

@@ -30,7 +30,15 @@ CtiIONUnsignedInt::CtiIONUnsignedInt( unsigned char *byteStream, unsigned long s
         for( int i = 0; i < streamLength; i++ )
         {
             //  doggoned MSB ordering
-            ((unsigned char *)&_unsignedInt)[i] = byteStream[streamLength - i - 1];
+            //  streamlength 4 -
+            //  i = 0,  ui[4-0-1=3] = bs[0];
+            //  i = 1,  ui[4-1-1=2] = bs[1];
+            //  i = 2,  ui[4-2-1=1] = bs[2];
+            //  i = 3,  ui[4-3-1=0] = bs[3];
+
+            //  i = 0, ui[2-0-1=1] = bs[0];
+            //  i = 1, ui[2-1-1=0] = bs[1];
+            ((unsigned char *)&_unsignedInt)[streamLength - i - 1] = byteStream[i];
         }
 
         setValid( TRUE );

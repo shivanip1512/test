@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/12/21 02:38:58 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/12/27 02:51:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,7 +26,7 @@
 
 CtiProtocolION::CtiProtocolION()
 {
-    //  setAddresses(DefaultYukonIONMasterAddress, DefaultSlaveAddress);
+    setAddresses(DefaultYukonIONMasterAddress, DefaultSlaveAddress);
 }
 
 
@@ -54,8 +54,6 @@ CtiProtocolION &CtiProtocolION::operator=(const CtiProtocolION &aRef)
 
 void CtiProtocolION::setAddresses( unsigned short srcID, unsigned short dstID )
 {
-//    _srcID = 10000;
-//    _dstID =   100;
     _srcID = srcID;
     _dstID = dstID;
 
@@ -194,19 +192,49 @@ int CtiProtocolION::generate( CtiXfer &xfer )
             case IONStateInit:
             case IONStateRequestFeatureManagerInfo:
             {
-                tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadModuleSetupHandles);   //  ReadManagedClass
-                tmpStatement = CTIDBG_new CtiIONStatement(IONFeatureManagerHandle, tmpMethod);     //  ustabeed 132
+                tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadModuleSetupHandles);
+                tmpStatement = CTIDBG_new CtiIONStatement(IONFeatureManagerHandle, tmpMethod);
                 tmpProgram   = CTIDBG_new CtiIONProgram  (tmpStatement);
 
-                _dsBuf.clear();
-                _dsBuf.appendItem(tmpProgram);
+                _dsOut.clear();
+                _dsOut.appendItem(tmpProgram);
 
-                _appLayer.setToOutput(_dsBuf);
+                _appLayer.setToOutput(_dsOut);
+
+                _dsOut.clear();
 
                 break;
             }
 
             case IONStateReceiveFeatureManagerInfo:
+            {
+                _appLayer.setToInput();
+
+                break;
+            }
+
+            case IONStateRequestManagerInfo:
+            {
+                int i;
+
+                _dsOut.clear();
+
+                for( i = 0; i < _setup_handles->getSize(); i++ )
+                {
+                    tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadManagedClass);
+                    tmpStatement = CTIDBG_new CtiIONStatement(_setup_handles->getElement(i)->getValue(), tmpMethod);
+                    tmpProgram   = CTIDBG_new CtiIONProgram  (tmpStatement);
+
+                    _dsOut.appendItem(tmpProgram);
+                }
+
+                _appLayer.setToOutput(_dsOut);
+
+                break;
+
+            }
+
+            case IONStateReceiveManagerInfo:
             {
                 _appLayer.setToInput();
 
@@ -242,6 +270,8 @@ int CtiProtocolION::decode( CtiXfer &xfer, int status )
             case IONStateInit:
             case IONStateRequestFeatureManagerInfo:
             {
+                //  ACH:  check for errors before i just switch to listening mode
+
                 _ionState = IONStateReceiveFeatureManagerInfo;
 
                 break;
@@ -259,23 +289,31 @@ int CtiProtocolION::decode( CtiXfer &xfer, int status )
                     {
                         _appLayer.putPayload(buf);
 
-                        _dsBuf.initialize(buf, _appLayer.getPayloadLength());
+                        _dsIn.initialize(buf, _appLayer.getPayloadLength());
 
-                        if( CtiIONDataStream::itemIs(_dsBuf[0], CtiIONArray::IONUnsignedIntArray) )
+                        if( CtiIONDataStream::itemIs(_dsIn[0], CtiIONArray::IONUnsignedIntArray) )
                         {
-                            CtiIONUnsignedIntArray *setup_handles;
+                            _setup_handles = (CtiIONUnsignedIntArray *)_dsIn[0];
 
-                            setup_handles = (CtiIONUnsignedIntArray *)_dsBuf[0];
+                            //  remove it so it doesn't get erased when dsIn is wiped
+                            _dsIn.removeItem(0);
 
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
-                                for( int i = 0; i < setup_handles->getSize(); i++ )
+                                dout << endl;
+                                dout << "Setup handles: " << endl;
+
+                                for( int i = 0; i < _setup_handles->getSize(); i++ )
                                 {
-                                    dout << (*setup_handles)[i]->getValue() << endl;
+                                    dout << _setup_handles->getElement(i)->getValue() << "\t";
                                 }
+
+                                dout << endl << endl;
                             }
+
+                            _ionState = IONStateRequestManagerInfo;
                         }
                         else
                         {
@@ -314,6 +352,19 @@ int CtiProtocolION::decode( CtiXfer &xfer, int status )
 
                 break;
             }
+            case IONStateRequestManagerInfo:
+            {
+                //  ACH:  check for errors before i just switch to listening mode
+
+                _ionState = IONStateReceiveManagerInfo;
+
+                break;
+            }
+
+            case IONStateReceiveManagerInfo:
+            {
+                break;
+            }
 
             default:
             {
@@ -326,6 +377,15 @@ int CtiProtocolION::decode( CtiXfer &xfer, int status )
                 break;
             }
         }
+    }
+    else if( _appLayer.errorCondition() )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        _ionState = IONStateAbort;
     }
 
     return alStatus;
@@ -428,7 +488,7 @@ int CtiProtocolION::recvCommRequest( OUTMESS *OutMessage )
 bool CtiProtocolION::isTransactionComplete( void )
 {
     //  ACH: factor in application layer retries... ?
-    return _ionState == IONStateComplete;  //  _appLayer.isTransactionComplete() | _appLayer.errorCondition();
+    return _ionState == IONStateComplete || _ionState == IONStateAbort;
 }
 
 

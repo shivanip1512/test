@@ -222,6 +222,15 @@ int CtiIONNetworkLayer::decode( CtiXfer &xfer, int status )
                     _ioState = Failed;
                 }
             }
+            else if( _datalinkLayer.errorCondition() )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                _ioState = Failed;
+            }
 
             break;
         }
@@ -231,6 +240,15 @@ int CtiIONNetworkLayer::decode( CtiXfer &xfer, int status )
             if( _datalinkLayer.isTransactionComplete() )
             {
                 _ioState = Complete;
+            }
+            else if( _datalinkLayer.errorCondition() )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                _ioState = Failed;
             }
 
             break;

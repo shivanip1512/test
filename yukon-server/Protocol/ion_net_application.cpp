@@ -215,6 +215,11 @@ int CtiIONApplicationLayer::decode( CtiXfer &xfer, int status )
             }
             else if( _networkLayer.errorCondition() )
             {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
                 _ioState = Failed;
             }
 
@@ -231,6 +236,11 @@ int CtiIONApplicationLayer::decode( CtiXfer &xfer, int status )
             }
             else if( _networkLayer.errorCondition() )
             {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
                 _ioState = Failed;
             }
 

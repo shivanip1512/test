@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/12/21 02:38:57 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/12/27 02:51:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,7 +39,7 @@ private:
 
     CtiIONApplicationLayer _appLayer;
 
-    CtiIONDataStream       _dsBuf;
+    CtiIONDataStream       _dsOut, _dsIn;
 
     unsigned short _srcID, _dstID;
 
@@ -47,6 +47,8 @@ private:
     {
         IONCommand command;
     } _currentCommand;
+
+    CtiIONUnsignedIntArray *_setup_handles;
 
 protected:
 
@@ -75,6 +77,59 @@ protected:
         IONStateComplete,
         IONStateAbort
     } _ionState;
+
+    enum IONClasses
+    {
+        Class_Alert             = 558,
+        Class_AnalogIn          = 502,
+        Class_AnalogOut         = 503,
+        Class_AND_OR            = 521,
+        Class_Arithmetic        = 541,
+        Class_Clock             = 526,
+        Class_Comm              = 524,
+        Class_Convert           = 559,
+        Class_Counter           = 520,
+        Class_DataAcqn          = 523,
+        Class_DataRec           = 537,
+        Class_Diagnostics       = 525,
+        Class_DigitalIn         = 504,
+        Class_DigitalOut        = 505,
+        Class_Display           = 569,
+        Class_DisplayOptions    = 570,
+        Class_DNPSlaveExport    = 561,
+        Class_DNPSlaveImport    = 562,
+        Class_DNPSlaveOptions   = 563,
+        Class_EventLogCtl       = 522,
+        Class_ExtBool           = 545,
+        Class_ExtNum            = 546,
+        Class_ExtPulse          = 544,
+        Class_Factory           = 527,
+        Class_Feedback          = 567,
+        Class_FFT               = 514,
+        Class_Harmonics         = 515,
+        Class_Integrator        = 510,
+        Class_LONExport         = 551,
+        Class_LONImport         = 550,
+        Class_Maximum           = 512,
+        Class_Minimum           = 511,
+        Class_ModbusSlave       = 553,
+        Class_OneShotTmr        = 519,
+        Class_PeriodicTmr       = 518,
+        Class_PowerHarmonics    = 566,
+        Class_PowerMeter        = 501,
+        Class_Profibus          = 568,
+        Class_PulseMerge        = 542,
+        Class_Pulser            = 506,
+        Class_RelativeSetpoint  = 564,
+        Class_SagSwell          = 540,
+        Class_Scheduler         = 539,
+        Class_Setpoint          = 513,
+        Class_SWinDemand        = 508,
+        Class_SymmComp          = 531,
+        Class_ThrmDemand        = 509,
+        Class_Transient         = 565,
+        Class_WformRec          = 536
+    };
 
 public:
 

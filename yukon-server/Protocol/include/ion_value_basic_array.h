@@ -38,6 +38,7 @@ public:
     int isNumericArray( void );
 
     virtual int getSize( void );
+    //  i wish, but the template typing was awful.
     //T *operator[]( unsigned int index );
 
 protected:

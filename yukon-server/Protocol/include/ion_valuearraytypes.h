@@ -39,6 +39,7 @@ protected:
     CtiIONCharArray( unsigned char *buf, unsigned long len, unsigned long itemCount, unsigned long itemLength, unsigned long *bytesUsed );
     ~CtiIONCharArray( ) { };
 
+    CtiIONChar *getElement( unsigned long index );
     CtiIONChar *operator[]( unsigned long index );
 };
 
@@ -51,6 +52,7 @@ public:
     CtiIONBooleanArray( unsigned char *buf, unsigned long len, unsigned long itemCount, unsigned long itemLength, unsigned long *bytesUsed );
     ~CtiIONBooleanArray( );
 
+    CtiIONBoolean *getElement( unsigned long index );
     CtiIONBoolean *operator[]( unsigned long index );
 };
 
@@ -63,6 +65,7 @@ public:
     CtiIONFloatArray( unsigned char *buf, unsigned long len, unsigned long itemCount, unsigned long itemLength, unsigned long *bytesUsed );
     ~CtiIONFloatArray( ) { };
 
+    CtiIONFloat *getElement( unsigned long index );
     CtiIONFloat *operator[]( unsigned long index );
 };
 
@@ -75,6 +78,7 @@ public:
     CtiIONSignedIntArray( unsigned char *buf, unsigned long len, unsigned long itemCount, unsigned long itemLength, unsigned long *bytesUsed );
     ~CtiIONSignedIntArray( ) { };
 
+    CtiIONSignedInt *getElement( unsigned long index );
     CtiIONSignedInt *operator[]( unsigned long index );
 };
 
@@ -87,6 +91,7 @@ public:
     CtiIONUnsignedIntArray( unsigned char *buf, unsigned long len, unsigned long itemCount, unsigned long itemLength, unsigned long *bytesUsed );
     ~CtiIONUnsignedIntArray( ) { };
 
+    CtiIONUnsignedInt *getElement( unsigned long index );
     CtiIONUnsignedInt *operator[]( unsigned long index );
 };
 

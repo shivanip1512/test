@@ -27,8 +27,10 @@ private:
 
     void parseByteStream( unsigned char *buf, unsigned long len );
 
-    vector<CtiIONValue *> _streamValues;
-    typedef vector<CtiIONValue *>::iterator streamIterator;
+    typedef vector<CtiIONValue *> DSVector;
+    typedef DSVector::iterator DSIterator;
+
+    DSVector _streamValues;
 
 public:
 
@@ -40,6 +42,7 @@ public:
     void clear( void );
 
     CtiIONDataStream  &appendItem( CtiIONValue *toInsert );
+    CtiIONDataStream  &removeItem( int index );
     CtiIONValue *getItem( int index ) const;
     CtiIONValue *operator[]( int index ) const;
     int  getItemCount( void ) const;
@@ -52,6 +55,8 @@ public:
     static bool itemIs( CtiIONValue *toCheck, CtiIONValue::IONValueTypes type );
     static bool itemIs( CtiIONValue *toCheck, CtiIONArray::IONArrayTypes type );
     static bool itemIs( CtiIONValue *toCheck, CtiIONStruct::IONStructTypes type );
+
+
 
     virtual void putSerialized( unsigned char *buf ) const;
     virtual unsigned int getSerializedLength( void ) const;
