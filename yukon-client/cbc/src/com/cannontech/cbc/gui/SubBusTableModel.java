@@ -389,7 +389,7 @@ private String getPowerFactorText( double value, boolean compute )
       return "  NA";
    else
       return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces(
-            value * (compute ? 100 : 1), 1 ) + "%"; //get percent   
+            value * (compute ? 100 : 1), 3 ) + "%"; //get percent   
 }
 
 /**
