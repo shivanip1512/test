@@ -16,8 +16,9 @@
 *				  design document for more information
 *    History: 
       $Log: fdracs.h,v $
-      Revision 1.1.1.1  2002/04/12 13:59:40  cplender
-      Imported sources 4/12/01
+      Revision 1.2  2002/04/15 15:19:00  cplender
+
+      This is an update due to the freezing of PVCS on 4/13/2002
 
  * 
  *    Rev 2.6   08 Apr 2002 14:41:20   dsutton

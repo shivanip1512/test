@@ -205,7 +205,7 @@ void ProcessFile(CTIFILEVECTOR &vect, RWCString &filename)
 
             if(!str.match("Revision").isNull())
             {
-               if( !(tstr = str.match("\\$Revision: 1.1.1.1 $")).isNull() )
+               if( !(tstr = str.match("\\$Revision: 1.2 $")).isNull() )
                {
                   finfo.rev = tstr.strip(RWCString::both, '$');
                   //cout << filename << " : " << finfo.rev << endl;
@@ -214,7 +214,7 @@ void ProcessFile(CTIFILEVECTOR &vect, RWCString &filename)
 
             if(!str.match("Date").isNull())
             {
-               if( !(tstr = str.match("\\$Date: 2002/04/12 13:59:49 $")).isNull() )
+               if( !(tstr = str.match("\\$Date: 2002/04/15 15:20:07 $")).isNull() )
                {
                   tstr = tstr.strip(RWCString::both, '$');
                   tstr.replace("Date:","");

@@ -16,8 +16,9 @@
 *             design document for more information
 *    History: 
       $Log: fdrrdex.h,v $
-      Revision 1.1.1.1  2002/04/12 13:59:40  cplender
-      Imported sources 4/12/01
+      Revision 1.2  2002/04/15 15:19:01  cplender
+
+      This is an update due to the freezing of PVCS on 4/13/2002
 
  * 
  *    Rev 2.1   15 Feb 2002 11:11:30   dsutton

@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrrdex.cpp-arc  $
-*    REVISION     :  $Revision: 1.1.1.1 $
-*    DATE         :  $Date: 2002/04/12 13:59:40 $
+*    REVISION     :  $Revision: 1.2 $
+*    DATE         :  $Date: 2002/04/15 15:18:57 $
 *
 *
 *    AUTHOR: David Sutton
@@ -24,8 +24,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrrdex.cpp,v $
-      Revision 1.1.1.1  2002/04/12 13:59:40  cplender
-      Imported sources 4/12/01
+      Revision 1.2  2002/04/15 15:18:57  cplender
+
+      This is an update due to the freezing of PVCS on 4/13/2002
 
    
       Rev 2.4   06 Mar 2002 11:26:22   dsutton

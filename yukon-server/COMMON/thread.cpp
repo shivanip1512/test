@@ -12,8 +12,8 @@
 
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/thread.cpp-arc  $
-* REVISION     :  $Revision: 1.1.1.1 $
-* DATE         :  $Date: 2002/04/12 13:59:37 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/04/15 15:18:21 $
 *
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2000

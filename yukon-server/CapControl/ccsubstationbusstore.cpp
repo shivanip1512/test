@@ -377,8 +377,6 @@ void CtiCCSubstationBusStore::reset()
     
                     RWDBReader rdr = selector.reader(conn);
 
-                    LONG substationOffset = 0;
-                    CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)((*_ccSubstationBuses)[substationOffset]);
                     CtiCCFeeder* currentCCFeeder = NULL;
                     RWDBNullIndicator isNull;
                     while ( rdr() )
@@ -419,27 +417,13 @@ void CtiCCSubstationBusStore::reset()
                             ************************************************************/
                             LONG tempSubstationBusId = 0;
                             rdr["substationbusid"] >> tempSubstationBusId;
-                            if( currentCCSubstationBus->getPAOId() == tempSubstationBusId )
+                            for(ULONG i=0;i<_ccSubstationBuses->entries();i++)
                             {
-                                currentCCSubstationBus->getCCFeeders().insert( currentCCFeeder );
-                            }
-                            else
-                            {
-                                while( substationOffset+1 < _ccSubstationBuses->entries() )
+                                CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)((*_ccSubstationBuses)[i]);
+                                if( currentCCSubstationBus->getPAOId() == tempSubstationBusId )
                                 {
-                                    substationOffset++;
-                                    currentCCSubstationBus = (CtiCCSubstationBus*)((*_ccSubstationBuses)[substationOffset]);
-                                    if( currentCCSubstationBus->getPAOId() == tempSubstationBusId )
-                                    {
-                                        currentCCSubstationBus->getCCFeeders().insert( currentCCFeeder );
-                                        break;
-                                    }
-                                    if( currentCCSubstationBus->getPAOId() > tempSubstationBusId )
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << RWTime() << " - Dangling Feeder, Name: " << currentCCFeeder->getPAOName() << " Id: " << currentCCFeeder->getPAOId() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-                                        break;
-                                    }
+                                    currentCCSubstationBus->getCCFeeders().insert( currentCCFeeder );
+                                    break;
                                 }
                             }
                         }
@@ -510,92 +494,65 @@ void CtiCCSubstationBusStore::reset()
                                 dout << RWTime() << " - " << selector.asString().data() << endl;
                             }*/
 
-                            LONG substationOffset = 0;
-                            LONG feederOffset = 0;
-                            CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)((*_ccSubstationBuses)[substationOffset]);
-                            if( currentCCSubstationBus->getCCFeeders().entries() > 0 )
-                            {
-                                CtiCCFeeder* currentCCFeeder = (CtiCCFeeder*)((currentCCSubstationBus->getCCFeeders())[feederOffset]);
-                                CtiCCCapBank* currentCCCapBank = NULL;
-                                RWDBNullIndicator isNull;
-                                RWDBReader rdr = selector.reader(conn);
-                                while ( rdr() )
-                                {
-                                    ULONG tempPAObjectId = 0;
-                                    rdr["paobjectid"] >> tempPAObjectId;
-                                    if( currentCCCapBank != NULL &&
-                                        tempPAObjectId == currentCCCapBank->getPAOId() )
-                                    {
-                                        rdr["pointid"] >> isNull;
-                                        if( !isNull )
-                                        {
-                                            LONG tempPointId = 0;
-                                            RWCString tempPointType = "none";
-                                            rdr["pointid"] >> tempPointId;
-                                            rdr["pointtype"] >> tempPointType;
-                                            if( tempPointType == "Status" )
-                                            {//control status point
-                                                currentCCCapBank->setStatusPointId(tempPointId);
-                                            }
-                                            else if( tempPointType == "Analog" )
-                                            {//daily operations point
-                                                currentCCCapBank->setOperationAnalogPointId(tempPointId);
-                                            }
-                                            else
-                                            {//undefined cap bank point
-                                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                dout << RWTime() << " - Undefined Cap Bank point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        currentCCCapBank = new CtiCCCapBank(rdr);
+                            RWDBReader rdr = selector.reader(conn);
 
-                                        /************************************************************
-                                        *******  Inserting Cap Bank into the correct Feeder   *******
-                                        ************************************************************/
-                                        LONG tempFeederId = 0;
-                                        rdr["feederid"] >> tempFeederId;
-                                        if( currentCCFeeder->getPAOId() == tempFeederId )
-                                        {
-                                            currentCCFeeder->getCCCapBanks().insert( currentCCCapBank );
+                            CtiCCCapBank* currentCCCapBank = NULL;
+                            RWDBNullIndicator isNull;
+                            while ( rdr() )
+                            {
+                                ULONG tempPAObjectId = 0;
+                                rdr["paobjectid"] >> tempPAObjectId;
+                                if( currentCCCapBank != NULL &&
+                                    tempPAObjectId == currentCCCapBank->getPAOId() )
+                                {
+                                    rdr["pointid"] >> isNull;
+                                    if( !isNull )
+                                    {
+                                        LONG tempPointId = 0;
+                                        RWCString tempPointType = "none";
+                                        rdr["pointid"] >> tempPointId;
+                                        rdr["pointtype"] >> tempPointType;
+                                        if( tempPointType == "Status" )
+                                        {//control status point
+                                            currentCCCapBank->setStatusPointId(tempPointId);
+                                        }
+                                        else if( tempPointType == "Analog" )
+                                        {//daily operations point
+                                            currentCCCapBank->setOperationAnalogPointId(tempPointId);
                                         }
                                         else
+                                        {//undefined cap bank point
+                                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                                            dout << RWTime() << " - Undefined Cap Bank point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    currentCCCapBank = new CtiCCCapBank(rdr);
+
+                                    /************************************************************
+                                    *******  Inserting Cap Bank into the correct Feeder   *******
+                                    ************************************************************/
+                                    LONG tempFeederId = 0;
+                                    rdr["feederid"] >> tempFeederId;
+                                    BOOL found = FALSE;
+                                    for(ULONG j=0;j<_ccSubstationBuses->entries();j++)
+                                    {
+                                        CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)((*_ccSubstationBuses)[j]);
+                                        for(ULONG k=0;k<currentCCSubstationBus->getCCFeeders().entries();k++)
                                         {
-                                            BOOL found = FALSE;
-                                            feederOffset++;
-                                            while( substationOffset < _ccSubstationBuses->entries() )
+                                            CtiCCFeeder* currentCCFeeder = (CtiCCFeeder*)((currentCCSubstationBus->getCCFeeders())[k]);
+                                            if( currentCCFeeder->getPAOId() == tempFeederId )
                                             {
-                                                currentCCSubstationBus = (CtiCCSubstationBus*)((*_ccSubstationBuses)[substationOffset]);
-                                                while( feederOffset < currentCCSubstationBus->getCCFeeders().entries() )
-                                                {
-                                                    currentCCFeeder = (CtiCCFeeder*)(currentCCSubstationBus->getCCFeeders()[feederOffset]);
-                                                    if( currentCCFeeder->getPAOId() == tempFeederId )
-                                                    {
-                                                        currentCCFeeder->getCCCapBanks().insert( currentCCCapBank );
-                                                        found = TRUE;
-                                                        break;
-                                                    }
-                                                    if( currentCCFeeder->getPAOId() > tempFeederId )
-                                                    {
-                                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                        dout << RWTime() << " - Dangling Cap Bank, Name: " << currentCCCapBank->getPAOName() << " Id: " << currentCCCapBank->getPAOId() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-                                                        found = TRUE;
-                                                        break;
-                                                    }
-                                                    feederOffset++;
-                                                }
-                                                if( found )
-                                                {
-                                                    break;
-                                                }
-                                                else
-                                                {
-                                                    substationOffset++;
-                                                    feederOffset = 0;
-                                                }
+                                                currentCCFeeder->getCCCapBanks().insert( currentCCCapBank );
+                                                found = TRUE;
+                                                break;
                                             }
+                                        }
+                                        if( found )
+                                        {
+                                            break;
                                         }
                                     }
                                 }

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1.1.1 $
-* DATE         :  $Date: 2002/04/12 13:59:40 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/04/15 15:19:00 $
 *    DESCRIPTION: This class implements an interface that retrieves point data
 *                 from a Foreign System.  The data is status and Analog data.
 *                 This interface only receives at this time.  It links with

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/exe_cmd.h-arc  $
-* REVISION     :  $Revision: 1.1.1.1 $
-* DATE         :  $Date: 2002/04/12 13:59:48 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/04/15 15:20:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/

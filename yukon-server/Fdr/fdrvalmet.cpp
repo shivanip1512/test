@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrvalmet.cpp-arc  $
-*    REVISION     :  $Revision: 1.1.1.1 $
-*    DATE         :  $Date: 2002/04/12 13:59:40 $
+*    REVISION     :  $Revision: 1.2 $
+*    DATE         :  $Date: 2002/04/15 15:18:59 $
 *
 *
 *    AUTHOR: David Sutton
@@ -24,8 +24,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrvalmet.cpp,v $
-      Revision 1.1.1.1  2002/04/12 13:59:40  cplender
-      Imported sources 4/12/01
+      Revision 1.2  2002/04/15 15:18:59  cplender
+
+      This is an update due to the freezing of PVCS on 4/13/2002
 
    
       Rev 2.8   08 Apr 2002 14:41:36   dsutton

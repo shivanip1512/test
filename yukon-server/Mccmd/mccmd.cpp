@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.1.1.1 $
-* DATE         :  $Date: 2002/04/12 13:59:42 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/04/15 15:19:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1039,7 +1039,7 @@ int Wait(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
         //Check for cancellation
         if ( Tcl_DoOneEvent( TCL_ALL_EVENTS | TCL_DONT_WAIT) == 1 )
         {
-            dout << "found cancellation return error" << endl;
+            WriteOutput("interrupted");            
             Tcl_SetResult( interp, "interrupted", NULL );
             return TCL_ERROR;
         }

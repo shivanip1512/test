@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive$
-*    REVISION     :  $Revision: 1.1.1.1 $
-*    DATE         :  $Date: 2002/04/12 13:59:39 $
+*    REVISION     :  $Revision: 1.2 $
+*    DATE         :  $Date: 2002/04/15 15:18:54 $
 *
 *
 *    AUTHOR: Ben Wallace
@@ -24,8 +24,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrcygnet.cpp,v $
-      Revision 1.1.1.1  2002/04/12 13:59:39  cplender
-      Imported sources 4/12/01
+      Revision 1.2  2002/04/15 15:18:54  cplender
+
+      This is an update due to the freezing of PVCS on 4/13/2002
 
 *
 *

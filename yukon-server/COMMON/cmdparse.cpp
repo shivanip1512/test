@@ -114,11 +114,11 @@ void  CtiCommandParser::doParse(RWCString Cmd)
                 _cmd["group"] = CtiParseValue( token, -1 );
             }
         }
-        else if(!(token = CmdStr.match("select[ \t]+alt[ \t]+group[ \t]+((\"|')[^\"']+(\"|'))")).isNull())
+        else if(!(token = CmdStr.match("select[ \t]+altgroup[ \t]+((\"|')[^\"']+(\"|'))")).isNull())
         {
             size_t nstart;
             size_t nstop;
-            nstart = token.index("group[ \t]+", &nstop);
+            nstart = token.index("altgroup[ \t]+", &nstop);
 
             nstop += nstart;
 
