@@ -97,26 +97,22 @@ public class SOAPClient extends HttpServlet {
 		super.init();
 		
 		// If "stars_soap_server" is not (none), it means SOAPServer is running remotely
-		// For now, always consider SOAPServer is running locally
-		SOAP_SERVER_URL =
-			RoleFuncs.getGlobalPropertyValue( SystemRole.STARS_SOAP_SERVER );
+		SOAP_SERVER_URL = RoleFuncs.getGlobalPropertyValue( SystemRole.STARS_SOAP_SERVER );
 		
 		//keep the URL string null if it is not set
 		if( SOAP_SERVER_URL.equals(CtiUtilities.STRING_NONE) )
 			SOAP_SERVER_URL = null;
-
-
+		
 		if (SOAP_SERVER_URL != null) {
 			CTILogger.info( "SOAP Server resides remotely at " + SOAP_SERVER_URL );
-
+			
+			// Try to connect to SOAPServer
 			StarsOperation respOper = sendRecvOperation( new StarsOperation() );
 			if (respOper == null)	// This is not good!
 				CTILogger.error( "Cannot connect to SOAPServer, following operations may not function properly!" );
 			
-			//setServerLocal( false );
-			//SOAPServer.setClientLocal( false );
-			setServerLocal( true );
-			SOAPServer.setClientLocal( true );
+			setServerLocal( false );
+			SOAPServer.setClientLocal( false );
 			
 			soapMsgr = new SOAPMessenger( SOAP_SERVER_URL );
 		}
@@ -151,21 +147,6 @@ public class SOAPClient extends HttpServlet {
 
 		return null;
 	}
-    
-	public static void initSOAPServer(HttpServletRequest req) {
-		if (isServerLocal() && SOAPServer.getInstance() == null) {
-			// SOAPServer not initiated yet, let's wake it up!
-			if (SOAP_SERVER_URL == null) {
-				String reqURL = req.getRequestURL().toString();
-				SOAP_SERVER_URL = reqURL.substring( 0, reqURL.lastIndexOf("/servlet") ) + "/servlet/SOAPServer";
-				CTILogger.info( "SOAP Server resides locally at " + SOAP_SERVER_URL );
-			}
-        	
-			StarsOperation respOper = sendRecvOperation( new StarsOperation() );
-			if (respOper == null)	// This is not good!
-				CTILogger.error( "Cannot initiate SOAPServer, following operations may not function properly!" );
-		}
-	}
 
 	public void service(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException {
 		String referer = req.getHeader( "referer" );
@@ -188,8 +169,6 @@ public class SOAPClient extends HttpServlet {
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		session.removeAttribute( ServletUtils.ATT_ERROR_MESSAGE );
 		session.removeAttribute( ServletUtils.ATT_CONFIRM_MESSAGE );
-        
-		initSOAPServer( req );
     	
 		SOAPMessage reqMsg = null;
 		SOAPMessage respMsg = null;

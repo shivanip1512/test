@@ -1,7 +1,6 @@
 package com.cannontech.stars.web.servlet;
 
 import java.util.ArrayList;
-import java.util.Timer;
 import java.util.Vector;
 
 import javax.xml.messaging.JAXMServlet;
@@ -29,9 +28,6 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.servlet.PILConnectionServlet;
-import com.cannontech.stars.util.task.HourlyTimerTask;
-import com.cannontech.stars.util.task.RefreshTimerTask;
-import com.cannontech.stars.util.task.StarsTimerTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -61,20 +57,9 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     
     // Instance of the SOAPServer object
     private static SOAPServer instance = null;
-    
-    // Timer object for periodical tasks
-    private static Timer timer = new Timer();
-    
-    private StarsTimerTask[] timerTasks = {
-    	new HourlyTimerTask(),
-    	new RefreshTimerTask()
-    };
 	
 	// YC object used for sending command to porter
 	private static com.cannontech.yc.gui.YC yc = null;
-	
-    private PILConnectionServlet connToPIL = null;
-	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
 	
 	// Array of all the energy companies (LiteStarsEnergyCompany)
 	private static ArrayList energyCompanies = null;
@@ -84,66 +69,58 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	
     // List of stars yukon users
     private static ArrayList starsUserList = null;
+	
+	private PILConnectionServlet connToPIL = null;
+	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
     
-    
-    public static void refreshCache() {
-    	if (energyCompanies != null) {
-    		for (int i = 0; i < energyCompanies.size(); i++)
-    			((LiteStarsEnergyCompany) energyCompanies.get(i)).clear();
-    	}
-    	energyCompanies = null;
-		webConfigList = null;
-    	starsUserList = null;
-    	
-    	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
-    	com.cannontech.database.cache.functions.YukonListFuncs.releaseAllConstants();
-    }
 
-    public SOAPServer() {
-        super();
-    }
-
-	public static boolean isClientLocal() {
-		return clientLocal;
+	public SOAPServer() {
+		super();
 	}
 
-	public static void setClientLocal(boolean clientLocal) {
-		SOAPServer.clientLocal = clientLocal;
-	}
-    
-    public static SOAPServer getInstance() {
-    	return instance;
-    }
-    
-	public static YC getYC() {
-		if (yc == null) {
-			yc = new YC();
-			yc.addObserver( new java.util.Observer() {
-				public void update(java.util.Observable o, Object arg) {
-					if (arg instanceof String) {
-						CTILogger.info( (String)arg );
-					}
-					else {
-						CTILogger.info( ((YC)o).getResultText() );
-						((YC)o).clearResultText();
-					}
-				}
-			});
-		}
+	/*
+	 * Implementation of ReqRespListener interface
+	 */
+	public void init() throws javax.servlet.ServletException {
+		instance = this;
+		initSOAPServer( instance );
 		
-		return yc;
+//		connToPIL = (com.cannontech.servlet.PILConnectionServlet)
+//				getServletContext().getAttribute(com.cannontech.servlet.PILConnectionServlet.SERVLET_CONTEXT_ID);
 	}
-    
-    public com.cannontech.message.util.ClientConnection getClientConnection() {
-		return connToDispatch;
+
+	public SOAPMessage onMessage(SOAPMessage message) {
+		StarsOperation respOper = new StarsOperation();
+
+		try {
+			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( message );
+			if (reqOper == null) {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_NODE_NOT_FOUND, "Invalid request format") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
+        	
+			StarsSuccess success = new StarsSuccess();
+			success.setDescription( "Thanks for waking me up :)" );
+			respOper.setStarsSuccess( success );
+            
+			return SOAPUtil.buildSOAPMessage( respOper );
+		}
+		catch (Exception e) {
+			try {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_RUNTIME_ERROR, "Server error: cannot process request") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
+			catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
+
+		return null;
 	}
 	
-	public com.cannontech.message.porter.ClientConnection getPILConnection() {
-		if (connToPIL == null) return null;
-		return connToPIL.getConnection();
-	}
-	
-	void initDispatchConnection() {
+	private void initDispatchConnection() {
 		String host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
 
 		int port = Integer.parseInt(
@@ -172,84 +149,70 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeListener(this);	
 	}
     
-	public static void runTimerTask(StarsTimerTask timerTask) {
-		if (timerTask.isFixedRate()) {
-			/* Run the first time after the initial delay,
-			 * then run periodically at a fixed rate, e.g. at every midnight
-			 */
-    		timer.scheduleAtFixedRate( timerTask, timerTask.getNextScheduledTime(), timerTask.getTimerPeriod() );
+	public com.cannontech.message.util.ClientConnection getClientConnection() {
+		return connToDispatch;
+	}
+	
+	public com.cannontech.message.porter.ClientConnection getPILConnection() {
+		if (connToPIL == null) return null;
+		return connToPIL.getConnection();
+	}
+	
+	private static void initSOAPServer(SOAPServer instance) {
+		instance.initDispatchConnection();
+		
+		getAllEnergyCompanies();
+		getAllWebConfigurations();
+	}
+    
+	public static SOAPServer getInstance() {
+		if (instance == null) {
+			instance = new SOAPServer();
+			initSOAPServer(instance);
 		}
-		else if (timerTask.getTimerPeriod() == 0) {
-			/* Run just once after the initial delay,
-			 * If initial delay set to 0, has the same effect as creating a new thread
-			 */
-			timer.schedule( timerTask, timerTask.getInitialDelay() );
-		}
-		else {
-			/* Run the first time after the initial delay,
-			 * then run periodically at a fixed delay, e.g. every 5 minutes
-			 */
-			timer.schedule( timerTask, timerTask.getInitialDelay(), timerTask.getTimerPeriod() );
-		}
+		
+		return instance;
+	}
+    
+    public static void refreshCache() {
+    	if (energyCompanies != null) {
+    		for (int i = 0; i < energyCompanies.size(); i++)
+    			((LiteStarsEnergyCompany) energyCompanies.get(i)).clear();
+    	}
+    	energyCompanies = null;
+		webConfigList = null;
+    	starsUserList = null;
+    	
+    	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
+    	com.cannontech.database.cache.functions.YukonListFuncs.releaseAllConstants();
+    }
+
+	public static boolean isClientLocal() {
+		return clientLocal;
 	}
 
-    /*
-     * Start implementation of ReqRespListener
-     */
-    public void init() throws javax.servlet.ServletException {
-    	if (instance != null) return;
-    	
-		getAllWebConfigurations();
-/*		
-    	ArrayList companies = getAllEnergyCompanies();
-    	for (int i = 0; i < companies.size(); i++) {
-    		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
-    		if (company.getLiteID() == DEFAULT_ENERGY_COMPANY_ID
-    			|| company.getUserID() != com.cannontech.user.UserUtils.USER_YUKON_ID)
-	    		company.init();
-    	}
-    	
-    	connToPIL = (com.cannontech.servlet.PILConnectionServlet)
-    			getServletContext().getAttribute(com.cannontech.servlet.PILConnectionServlet.SERVLET_CONTEXT_ID);
-*/    			
-    	initDispatchConnection();
-    	
-    	for (int i = 0; i < timerTasks.length; i++)
-    		runTimerTask( timerTasks[i] );
-    	
-    	instance = this;
-    }
-
-    public SOAPMessage onMessage(SOAPMessage message) {
-        StarsOperation respOper = new StarsOperation();
-
-        try {
-        	StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( message );
-        	if (reqOper == null) {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_NODE_NOT_FOUND, "Invalid request format") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-        	}
-        	
-            StarsSuccess success = new StarsSuccess();
-            success.setDescription( "Thanks for waking me up :)" );
-            respOper.setStarsSuccess( success );
-            
-            return SOAPUtil.buildSOAPMessage( respOper );
-        }
-        catch (Exception e) {
-        	try {
-	        	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	        			StarsConstants.FAILURE_CODE_RUNTIME_ERROR, "Server error: cannot process request") );
-	        	return SOAPUtil.buildSOAPMessage( respOper );
-        	}
-        	catch (Exception e2) {
-        		e2.printStackTrace();
-        	}
-        }
-
-        return null;
-    }
+	public static void setClientLocal(boolean clientLocal) {
+		SOAPServer.clientLocal = clientLocal;
+	}
+    
+	public static YC getYC() {
+		if (yc == null) {
+			yc = new YC();
+			yc.addObserver( new java.util.Observer() {
+				public void update(java.util.Observable o, Object arg) {
+					if (arg instanceof String) {
+						CTILogger.info( (String)arg );
+					}
+					else {
+						CTILogger.info( ((YC)o).getResultText() );
+						((YC)o).clearResultText();
+					}
+				}
+			});
+		}
+		
+		return yc;
+	}
     
     /*
      * Start implementation of class functions

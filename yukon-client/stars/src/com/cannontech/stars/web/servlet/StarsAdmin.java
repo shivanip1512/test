@@ -1880,8 +1880,6 @@ public class StarsAdmin extends HttpServlet {
         	return;
         }
         
-        SOAPClient.initSOAPServer( req );
-        
         StarsYukonUser user = (StarsYukonUser)
         		session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
         

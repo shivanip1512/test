@@ -69,8 +69,6 @@ public class WorkOrderManager extends HttpServlet {
 			return;
 		}
     	
-		SOAPClient.initSOAPServer( req );
-    	
 		referer = req.getHeader( "referer" );
 		redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
 		if (redirect == null) redirect = referer;
