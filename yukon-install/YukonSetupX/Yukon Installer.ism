@@ -533,6 +533,7 @@
 		<row><td>export.jar</td><td>Common Bin</td><td>export.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\export.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>fdr.exe</td><td>Foreign Data Router</td><td>fdr.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdr.exe</td><td>1</td><td>NewSubFolder79</td></row>
 		<row><td>fdracs.dll</td><td>Foreign Data Router</td><td>fdracs.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdracs.dll</td><td>1</td><td>NewSubFolder79</td></row>
+		<row><td>fdrbepc.dll</td><td>Foreign Data Router</td><td>fdrbepc.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\fdrbepc.dll</td><td>1</td><td>NewSubFolder79</td></row>
 		<row><td>fdrcygnet.dll</td><td>Foreign Data Router</td><td>fdrcygnet.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdrcygnet.dll</td><td>1</td><td>NewSubFolder79</td></row>
 		<row><td>fdrdsm2filein.dll</td><td>Foreign Data Router</td><td>fdrdsm2filein.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdrdsm2filein.dll</td><td>1</td><td>NewSubFolder79</td></row>
 		<row><td>fdrdsm2import.dll</td><td>Foreign Data Router</td><td>fdrdsm2import.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdrdsm2import.dll</td><td>1</td><td>NewSubFolder79</td></row>
