@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2002/09/24 18:43:33 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2002/10/01 18:38:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1531,6 +1531,7 @@ long GetNotificationGroupID( const RWCString& name)
     }
     catch( RWExternalErr err )
     {
+        CtiLockGuard< CtiLogger > guard(dout);
         dout << RWTime() << " Error retrieving notification group id." << err.why() << endl;
         return -1;
     }
@@ -1555,11 +1556,15 @@ static void GetDeviceName(long deviceID, RWCString& name)
             {
                 rdr >> name;
             }
+            else
+            {
+                WriteOutput("Unable to retrive device name __LINE__ __FILE__");
+            }
         }
     }
     catch( RWExternalErr err )
     {
-        dout << "Error retreive device name __LINE__ __FILE__" << endl;
+        WriteOutput("Error retreive device name __LINE__ __FILE__");
     }
 }
 
