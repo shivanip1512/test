@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/06/24 14:59:09 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/07/01 17:51:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -975,6 +975,7 @@ VOID KickerThread (VOID *Arg)
 
                      CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
 
+#if 0
                      /* see if anything is in the ccu queues */
                      if(pInfo->FreeSlots != MAXQUEENTRIES || pInfo->PortQueueEnts > 1 || pInfo->NCOcts != 0)
                      {
@@ -986,7 +987,7 @@ VOID KickerThread (VOID *Arg)
                         "  PortQueEnts: " << pInfo->PortQueueEnts <<
                         "  NCOcts: " << pInfo->PortQueueConts << endl;
                      }
-
+#endif
                      if(pInfo->FreeSlots < MAXQUEENTRIES)
                      {
                         /* Check if we have anything done yet */

@@ -203,7 +203,10 @@ INT CtiPort::logBytes(BYTE *Message, ULONG Length) const
 
 INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority, void (*func)(void *), HANDLE hQuit)
 {
+    #define DEFAULT_QUEUE_GRIPE_POINT 10
     int status = NORMAL;
+    ULONG QueEntries;
+    static ULONG QueueGripe = DEFAULT_QUEUE_GRIPE_POINT;
 
 #ifdef DEBUG
     OUTMESS *OutMessage = (OUTMESS*)Data;
@@ -222,7 +225,23 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
     {
         if(_portQueue != NULL)
         {
-            status = WriteQueue(_portQueue, Request, DataSize, Data, Priority);
+            status = WriteQueue(_portQueue, Request, DataSize, Data, Priority, &QueEntries);
+
+            if(QueEntries > QueueGripe)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " " << getName() << " has just received a new port queue entry.  There are " << QueEntries << " pending." << endl;
+                }
+
+                ULONG gripemore = QueueGripe * 2;
+
+                QueueGripe = QueueGripe + ( gripemore < 1000 ? gripemore : 1000);
+            }
+            else if(QueEntries < DEFAULT_QUEUE_GRIPE_POINT)
+            {
+                QueueGripe = DEFAULT_QUEUE_GRIPE_POINT;
+            }
         }
         else
         {

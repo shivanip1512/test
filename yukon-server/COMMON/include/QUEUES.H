@@ -81,7 +81,7 @@ IM_EX_CTIBASE INT CreateQueue (PHCTIQUEUE QueueHandle, ULONG Type, HANDLE QuitHa
 
 IM_EX_CTIBASE INT CloseQueue (HCTIQUEUE QueueHandle);
 
-IM_EX_CTIBASE INT WriteQueue (HCTIQUEUE QueueHandle, ULONG Request, ULONG DataSize, PVOID Data, ULONG Priority);
+IM_EX_CTIBASE INT WriteQueue (HCTIQUEUE QueueHandle, ULONG Request, ULONG DataSize, PVOID Data, ULONG Priority, ULONG *pElementCount = NULL);
 
 IM_EX_CTIBASE INT QueryQueue (HCTIQUEUE QueueHandle, PULONG Elements);
 
@@ -99,7 +99,8 @@ IM_EX_CTIBASE INT ReadQueue (HCTIQUEUE QueueHandle,
                              PPVOID Data,
                              ULONG Element,
                              BOOL32 WaitFlag,
-                             PBYTE Priority);
+                             PBYTE Priority,
+                             ULONG *pElementCount = NULL);
 
 IM_EX_CTIBASE INT PurgeQueue (HCTIQUEUE QueueHandle);
 
