@@ -92,7 +92,7 @@ function saveChanges() {
           <td width="657" valign="top" bgcolor="#FFFFFF">
             <div align="center"><% String header = "ACCOUNT - CONTACTS"; %><%@ include file="InfoSearchBar.jsp" %> 
               
-              <form name="form1" method="POST" action="/scripts/jrun.dll/servlet/UpdateContacts">
+              <form name="form1" method="POST" action="/servlet/UpdateContacts">
               <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                 <tr> 
                     <td width="300" valign="top" bgcolor="#FFFFFF"><span class="MainHeader"><b>CONTACT 

@@ -154,7 +154,7 @@
 <%
 	if (program != null) {
 %>
-				    <form name="form7" method="POST" action="/scripts/jrun.dll/servlet/SOAPClient">
+				    <form name="form7" method="POST" action="/servlet/SOAPClient">
 					  <input type="hidden" name="action" value="GetLMCtrlHist">
 					  <%-- Group ID is used for finding control history --%>
 					  <input type="hidden" name="Group" value="<%= program.getGroupID() %>">
