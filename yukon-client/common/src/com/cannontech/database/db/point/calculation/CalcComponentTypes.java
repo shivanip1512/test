@@ -49,6 +49,8 @@ public class CalcComponentTypes
 	public static final String SQUARED_FUNCTION = "Squared";
 	public static final String SQUARE_ROOT_FUNCTION = "Square Root";
 	public static final String ARCTAN_FUNCTION = "ArcTan";
+	public static final String MAX_DIFFERENCE = "Max Difference";
+	public static final String ABS_VALUE = "Absolute Value";
    
    public static final String KW_FROM_KVAKVAR_FUNCTION = "kW from kVA/kVAr";
 
@@ -56,12 +58,14 @@ public class CalcComponentTypes
 	//our operation function strings
 	public static String[] CALC_FUNCTIONS =
 	{
+		ABS_VALUE,
 		ADDITION_FUNCTION,
 		SUBTRACTION_FUNCTION,
 		MULTIPLICATION_FUNCTION,
 		DIVISION_FUNCTION,
 		MIN_FUNCTION,
 		MAX_FUNCTION,
+		MAX_DIFFERENCE,
 		AND_FUNCTION,
 		OR_FUNCTION,
 		NOT_FUNCTION,
