@@ -1,4 +1,4 @@
-<%@ include file="include/StarsHeader.jsp" %>
+<%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%
 	int delay = 10;
 	if (request.getParameter("delay") != null)
