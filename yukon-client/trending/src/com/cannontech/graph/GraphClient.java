@@ -829,8 +829,7 @@ private String buildHTMLBuffer( HTMLBuffer htmlBuffer)
 
 	try
 	{
-		returnBuffer = new StringBuffer("<HTML><CENTER>");
-
+		returnBuffer = new StringBuffer("<html><center>");
 		TrendModel tModel = getGraph().getTrendModel();
 		{
 			htmlBuffer.setModel( tModel);
@@ -884,7 +883,6 @@ public void exit()
  * Creation date: (11/15/00 4:11:14 PM)
  * Modified: (7/18/01 by SN) - eliminated a second call to hitDatabase()
  */
-//private int formatDateRangeSlider()
 private int formatDateRangeSlider(TrendModel model, TabularHtml htmlData)
 {
 	String timePeriod = getGraph().getPeriod();
@@ -896,9 +894,14 @@ private int formatDateRangeSlider(TrendModel model, TabularHtml htmlData)
 	setSliderKeysAndValues(model.getStartDate(), model.getStopDate());
 	int valuesCount = sliderValuesArray.length;	//number of days in time period
 
-	
-	if( ! (timePeriod.equalsIgnoreCase(ServletUtil.ONEDAY) || 
-			timePeriod.equalsIgnoreCase(ServletUtil.TODAY) ))  //1 day
+	if( timePeriod.equalsIgnoreCase( ServletUtil.ONEDAY) ||
+		timePeriod.equalsIgnoreCase(ServletUtil.TODAY) || 
+		(getGraph().getOptionsMaskHolder() & TrendModelType.LOAD_DURATION_MASK) == TrendModelType.LOAD_DURATION_MASK)  //1 day
+	{
+		//With load duration, we show all values at the same time.
+		getSliderPanel().setVisible(false);
+	}
+	else
 	{
 		if(timeToUpdate == true)	//update button pushed ("new start date selected")
 		{
@@ -937,16 +940,9 @@ private int formatDateRangeSlider(TrendModel model, TabularHtml htmlData)
 			htmlData.setTabularStartDate(cal.getTime());
 
 		}
-		
-	}
 
-	if( timePeriod.equalsIgnoreCase( ServletUtil.ONEDAY) ||
-		timePeriod.equalsIgnoreCase(ServletUtil.TODAY) )  //1 day
-	{
-		getSliderPanel().setVisible(false);
+		getSliderPanel().setVisible(true);	
 	}
-	else
-		getSliderPanel().setVisible(true);
 
 	return valueSelected;
 }
@@ -1504,6 +1500,7 @@ private javax.swing.JEditorPane getTabularEditorPane() {
 		try {
 			ivjTabularEditorPane = new javax.swing.JEditorPane();
 			ivjTabularEditorPane.setName("TabularEditorPane");
+			ivjTabularEditorPane.setEditable(false);
 			ivjTabularEditorPane.setContentType("text/html");
 			// user code begin {1}
 			// user code end
@@ -1982,14 +1979,16 @@ private void initializeSwingComponents()
 		}	
 	});
 
-	javax.swing.text.html.HTMLEditorKit editorKit = new javax.swing.text.html.HTMLEditorKit();
-	//javax.swing.text.html.HTMLDocument doc = (javax.swing.text.html.HTMLDocument) (editorKit.createDefaultDocument());
-	javax.swing.text.html.StyleSheet styleSheet = editorKit.getStyleSheet();
-	
+	javax.swing.text.html.StyleSheet styleSheet = new javax.swing.text.html.StyleSheet();
+	javax.swing.text.html.HTMLEditorKit kit = new javax.swing.text.html.HTMLEditorKit();
+	javax.swing.text.html.HTMLDocument doc = (javax.swing.text.html.HTMLDocument)(kit.createDefaultDocument());
+
+	getTabularEditorPane().setEditorKit(kit);
+	getTabularEditorPane().setDocument(doc);
 	try
 	{
-		java.io.FileReader reader = new java.io.FileReader("c:/yukon/client/bin/CannonStyle.css");
-		styleSheet.loadRules(reader, new java.net.URL("file:c:/yukon/client/bin/CannonStyle.css"));
+		java.io.FileReader reader = new java.io.FileReader("c:/yukon/client/config/CannonStyle.css");
+		styleSheet.loadRules(reader, new java.net.URL("file:c:/yukon/client/config/CannonStyle.css"));
 		//styleSheet.addRule("Main {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #000000; background-color: #FFFFCC; font-weight: bold}");
 		//styleSheet.addRule("LeftCell {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FFFFFF; background-color: #666699}");
 		//styleSheet.addRule("HeaderCell {  font-family: Arial, Helvetica, sans-serif; font-size: 9pt; font-weight: bold; background-color: blue; color: blue}");
@@ -1998,8 +1997,10 @@ private void initializeSwingComponents()
 	}
 	catch(java.io.IOException e){com.cannontech.clientutils.CTILogger.info(e);}
 
-	editorKit.setStyleSheet(styleSheet);
-	//tabularPanel.setEditorKit(editorKit);
+	kit.setStyleSheet(styleSheet);
+//		java.util.Enumeration enum = ((javax.swing.text.html.HTMLEditorKit)getTabularEditorPane().getEditorKit()).getStyleSheet().getStyleNames();
+//	while(enum.hasMoreElements())
+//		System.out.println(enum.nextElement());
 
 	//Force the connection to init
 	getGraph().getClientConnection();
@@ -2205,7 +2206,10 @@ public void setSliderLabels(int minIndex, int maxIndex)
 				getGraph().getPeriod().equalsIgnoreCase(ServletUtil.FOURWEEKS ) )
 			|| currentWeek == FIFTH_WEEK)	//farthest we can go on slider, No next
 	{
-		maxIndex = minIndex + 6;
+		if( (minIndex + 6 ) < sliderValuesArray.length)
+			maxIndex = minIndex + 6;
+		else
+			maxIndex = sliderValuesArray.length -1;
 		setSliderSize( minIndex - 1, maxIndex, weekPrevOrNext);
 		sliderLabelTable.put( new Integer( minIndex -1 ), new javax.swing.JLabel("Prev"));
 	}
