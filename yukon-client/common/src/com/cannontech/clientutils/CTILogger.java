@@ -69,7 +69,7 @@ public class CTILogger
 
    public static void error( Object msg )
    {      
-      logger.error( msg );
+      logger.error( msg ); 
    }
 
    public static void error( Object msg, Throwable t )
@@ -87,6 +87,16 @@ public class CTILogger
       logger.fatal( msg, t );
    }
 
+   public static void warn(Object msg) 
+   {
+   	  logger.warn(msg);
+   }
+   
+   public static void warn(Object msg, Throwable t) 
+   {
+   	  logger.warn(msg,t);
+   }
+   
    public static void main(String[] ar)
    {  
       com.cannontech.clientutils.CTILogger.info( "HAHA");
