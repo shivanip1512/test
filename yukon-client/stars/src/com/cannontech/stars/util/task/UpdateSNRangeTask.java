@@ -236,7 +236,8 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 		
 		if (numFailure > 0) {
 			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardwares updated successfully.</span><br>" +
-					"<span class='ErrorMsg'>" + numFailure + " hardwares failed (listed below).<br>Those serial numbers may already exist in the new device type.</span><br>";
+					"<span class='ErrorMsg'>" + numFailure + " hardwares failed (listed below).<br>" +
+					"Those serial numbers may already exist in the new device type.</span><br>";
 			
 			session.setAttribute(InventoryManager.INVENTORY_SET_DESC, resultDesc);
 			session.setAttribute(InventoryManager.INVENTORY_SET, hardwareSet);
