@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2003/10/06 16:29:55 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2003/12/11 22:21:31 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -816,13 +816,14 @@ void CtiProtocolION::decodeConfigRead( void )
         {
             if( inputIsValid( _appLayer, _dsIn ) )
             {
+                //  it looks like this is superfluous - it should always come back as an array (and elsewhere, too)
                 if( _dsIn.itemIsType(0, CtiIONValueFixed::Fixed_UnsignedInt) )
                 {
                     CtiIONUnsignedInt *tmpHandle = (CtiIONUnsignedInt *)_dsIn.at(0);
 
                     _digitalOutModules.push_back(tmpHandle->getValue());
 
-                    _ionState = State_Init;
+                    _ionState   = State_Init;
                     _retryState = _ionState;
                     setConfigRead(true);
                 }
@@ -843,12 +844,12 @@ void CtiProtocolION::decodeConfigRead( void )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "Digital output handles not returned, aborting" << endl;
+                        dout << RWTime() << " **** Checkpoint - Digital output handles not returned ****" << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
-                    _ionState   = State_Abort;
+                    _ionState   = State_Init;
                     _retryState = _ionState;
+                    setConfigRead(true);
                 }
             }
             else
