@@ -64,16 +64,6 @@ public class UpdateDB
 	}
 
 
-
-	/**
-	 * Check to see if a common STARS table is in the DB
-	 * @return boolean
-	 */
-	public static boolean starsExists()
-	{
-		return VersionTools.tableExists("CustomerAccount");
-	}
-
 	public static boolean isValidString( String str_ )
 	{
 		if( str_ == null || str_.length() <= 0 )
@@ -239,7 +229,7 @@ public class UpdateDB
 		UpdateLine[] starsLines = null;
 
 		if( token.indexOf(DBMSDefines.STARS_INC) > 0 
-			 && starsExists() )
+			 && VersionTools.starsExists() )
 		{
 			try
 			{
