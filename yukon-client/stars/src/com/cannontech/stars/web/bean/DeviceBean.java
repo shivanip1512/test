@@ -12,7 +12,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -182,7 +181,7 @@ public class DeviceBean {
 			htmlBuf.append("          <td class='TableCell' width='10%'>");
 			htmlBuf.append("<input type='radio' name='DeviceID' value='").append(litePao.getYukonID()).append("'>");
 			htmlBuf.append("</td>").append(LINE_SEPARATOR);
-			htmlBuf.append("          <td class='TableCell' width='50%'>").append( PAOFuncs.getYukonPAOName(litePao.getYukonID()) ).append("</td>").append(LINE_SEPARATOR);
+			htmlBuf.append("          <td class='TableCell' width='50%'>").append( litePao.getPaoName() ).append("</td>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='40%'>").append( PAOGroups.getPAOTypeString(litePao.getType()) ).append("</td>").append(LINE_SEPARATOR);
 			htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
 		}
