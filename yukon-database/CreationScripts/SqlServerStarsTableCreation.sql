@@ -1,7 +1,7 @@
 /*==============================================================*/
-/* Database name:  YUKON2                                       */
+/* Database name:  STARS                                        */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     4/5/2002 2:52:46 PM                          */
+/* Created on:     8/12/2002 9:06:58 AM                         */
 /*==============================================================*/
 
 
@@ -63,9 +63,49 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('AccountSite')
+            and   type = 'U')
+   drop table AccountSite
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('AirConditioner')
+            and   type = 'U')
+   drop table AirConditioner
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('AlarmCategory')
             and   type = 'U')
    drop table AlarmCategory
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ApplianceBase')
+            and   type = 'U')
+   drop table ApplianceBase
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ApplianceCategory')
+            and   type = 'U')
+   drop table ApplianceCategory
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('BillingFileFormats')
+            and   type = 'U')
+   drop table BillingFileFormats
 go
 
 
@@ -187,6 +227,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('CallReportBase')
+            and   type = 'U')
+   drop table CallReportBase
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('CapControlFeeder')
             and   type = 'U')
    drop table CapControlFeeder
@@ -203,9 +251,33 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('CstBaseCstContactMap')
+            and   type = 'U')
+   drop table CstBaseCstContactMap
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CustomerAccount')
+            and   type = 'U')
+   drop table CustomerAccount
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('CustomerAddress')
             and   type = 'U')
    drop table CustomerAddress
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CustomerBase')
+            and   type = 'U')
+   drop table CustomerBase
 go
 
 
@@ -234,6 +306,14 @@ go
 
 
 if exists (select 1
+            from  sysobjects
+           where  id = object_id('CustomerListEntry')
+            and   type = 'U')
+   drop table CustomerListEntry
+go
+
+
+if exists (select 1
             from  sysindexes
            where  id    = object_id('CustomerLogin')
             and   name  = 'Indx_CstLogUsIDNm'
@@ -258,6 +338,22 @@ if exists (select 1
            where  id = object_id('CustomerLogin')
             and   type = 'U')
    drop table CustomerLogin
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CustomerSelectionList')
+            and   type = 'U')
+   drop table CustomerSelectionList
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CustomerWebConfiguration')
+            and   type = 'U')
+   drop table CustomerWebConfiguration
 go
 
 
@@ -546,6 +642,62 @@ go
 
 
 if exists (select 1
+            from  sysobjects
+           where  id = object_id('ECToAccountMapping')
+            and   type = 'U')
+   drop table ECToAccountMapping
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ECToCallReportMapping')
+            and   type = 'U')
+   drop table ECToCallReportMapping
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ECToCustomerBaseMapping')
+            and   type = 'U')
+   drop table ECToCustomerBaseMapping
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ECToGenericMapping')
+            and   type = 'U')
+   drop table ECToGenericMapping
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ECToInventoryMapping')
+            and   type = 'U')
+   drop table ECToInventoryMapping
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ECToLMCustomerEventMapping')
+            and   type = 'U')
+   drop table ECToLMCustomerEventMapping
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ECToWorkOrderMapping')
+            and   type = 'U')
+   drop table ECToWorkOrderMapping
+go
+
+
+if exists (select 1
             from  sysindexes
            where  id    = object_id('EnergyCompany')
             and   name  = 'Indx_EnCmpName'
@@ -695,6 +847,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('InventoryBase')
+            and   type = 'U')
+   drop table InventoryBase
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('LMCONTROLAREA')
             and   type = 'U')
    drop table LMCONTROLAREA
@@ -783,9 +943,25 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('LMCustomerEventBase')
+            and   type = 'U')
+   drop table LMCustomerEventBase
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('LMDirectCustomerList')
             and   type = 'U')
    drop table LMDirectCustomerList
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMDirectOperatorList')
+            and   type = 'U')
+   drop table LMDirectOperatorList
 go
 
 
@@ -879,6 +1055,38 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('LMHardwareActivity')
+            and   type = 'U')
+   drop table LMHardwareActivity
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMHardwareBase')
+            and   type = 'U')
+   drop table LMHardwareBase
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMHardwareConfiguration')
+            and   type = 'U')
+   drop table LMHardwareConfiguration
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMHardwareEvent')
+            and   type = 'U')
+   drop table LMHardwareEvent
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('LMMACSScheduleOperatorList')
             and   type = 'U')
    drop table LMMACSScheduleOperatorList
@@ -954,6 +1162,22 @@ if exists (select 1
            where  id = object_id('LMProgramEnergyExchange')
             and   type = 'U')
    drop table LMProgramEnergyExchange
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMProgramEvent')
+            and   type = 'U')
+   drop table LMProgramEvent
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMProgramWebPublishing')
+            and   type = 'U')
+   drop table LMProgramWebPublishing
 go
 
 
@@ -1317,6 +1541,30 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('ServiceCompany')
+            and   type = 'U')
+   drop table ServiceCompany
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('SiteInformation')
+            and   type = 'U')
+   drop table SiteInformation
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('Substation')
+            and   type = 'U')
+   drop table Substation
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('TEMPLATE')
             and   type = 'U')
    drop table TEMPLATE
@@ -1348,6 +1596,14 @@ go
 
 
 if exists (select 1
+            from  sysobjects
+           where  id = object_id('WorkOrderBase')
+            and   type = 'U')
+   drop table WorkOrderBase
+go
+
+
+if exists (select 1
             from  sysindexes
            where  id    = object_id('YukonPAObject')
             and   name  = 'Indx_PAO'
@@ -1362,6 +1618,32 @@ if exists (select 1
            where  id = object_id('YukonPAObject')
             and   type = 'U')
    drop table YukonPAObject
+go
+
+
+/*==============================================================*/
+/* Table : AccountSite                                          */
+/*==============================================================*/
+create table AccountSite (
+AccountSiteID        numeric              not null,
+SiteInformationID    numeric              null,
+SiteNumber           varchar(40)          not null,
+StreetAddressID      numeric              not null,
+PropertyNotes        varchar(200)         null,
+constraint PK_ACCOUNTSITE primary key  (AccountSiteID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : AirConditioner                                       */
+/*==============================================================*/
+create table AirConditioner (
+ApplianceID          numeric              not null,
+TonageID             numeric              null,
+TypeID               numeric              null,
+constraint PK_AIRCONDITIONER primary key  (ApplianceID)
+)
 go
 
 
@@ -1411,6 +1693,42 @@ insert into AlarmCategory values(29,'Category 28',1);
 insert into AlarmCategory values(30,'Category 29',1);
 insert into AlarmCategory values(31,'Category 30',1);
 insert into AlarmCategory values(32,'Category 31',1);
+
+/*==============================================================*/
+/* Table : ApplianceBase                                        */
+/*==============================================================*/
+create table ApplianceBase (
+ApplianceID          numeric              not null,
+AccountID            numeric              not null,
+ApplianceCategoryID  numeric              not null,
+LMProgramID          numeric              null,
+Notes                varchar(100)         null,
+constraint PK_APPLIANCEBASE primary key  (ApplianceID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : ApplianceCategory                                    */
+/*==============================================================*/
+create table ApplianceCategory (
+ApplianceCategoryID  numeric              not null,
+CategoryID           numeric              null,
+WebConfigurationID   numeric              null,
+constraint PK_APPLIANCECATEGORY primary key  (ApplianceCategoryID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : BillingFileFormats                                   */
+/*==============================================================*/
+create table BillingFileFormats (
+FormatID             numeric              not null,
+FormatType           varchar(30)          not null
+)
+go
+
 
 /*==============================================================*/
 /* Table : CALCBASE                                             */
@@ -1654,6 +1972,28 @@ insert into CTIDatabase values('2.08', 'Ryan', '14-MAR-2002', 'Added a LMGroupPo
 
 insert into CTIDatabase values('2.09', 'Ryan', '22-MAR-2002', 'Added a column to the LMControlHistory table');
 
+insert into CTIDatabase values('2.10', 'Ryan', '05-APR-2002', 'Added 2 columns to the LMProgramDirectGear table');
+
+insert into CTIDatabase values('2.11', 'Ryan', '12-APR-2002', 'Added the LMDirectOperatorList table');
+insert into CTIDatabase values('2.12', 'Ryan', '15-MAY-2002', 'Added some new UOM, modified DyanmicLMControlArea and added BillingsFormat table');
+
+
+/*==============================================================*/
+/* Table : CallReportBase                                       */
+/*==============================================================*/
+create table CallReportBase (
+CallID               numeric              not null,
+CallNumber           varchar(20)          null,
+CallTypeID           numeric              null,
+DateTaken            datetime             null,
+Description          varchar(300)         null,
+AccountID            numeric              null,
+CustomerID           numeric              null,
+constraint PK_CALLREPORTBASE primary key  (CallID)
+)
+go
+
+
 /*==============================================================*/
 /* Table : CapControlFeeder                                     */
 /*==============================================================*/
@@ -1689,6 +2029,32 @@ go
 
 
 /*==============================================================*/
+/* Table : CstBaseCstContactMap                                 */
+/*==============================================================*/
+create table CstBaseCstContactMap (
+CustomerID           numeric              not null,
+CustomerContactID    numeric              not null,
+constraint PK_CSTBASECSTCONTACTMAP primary key  (CustomerID, CustomerContactID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : CustomerAccount                                      */
+/*==============================================================*/
+create table CustomerAccount (
+AccountID            numeric              not null,
+AccountSiteID        numeric              null,
+AccountNumber        varchar(40)          null,
+CustomerID           numeric              not null,
+BillingAddressID     numeric              null,
+AccountNotes         varchar(200)         null,
+constraint PK_CUSTOMERACCOUNT primary key  (AccountID)
+)
+go
+
+
+/*==============================================================*/
 /* Table : CustomerAddress                                      */
 /*==============================================================*/
 create table CustomerAddress (
@@ -1699,6 +2065,20 @@ CityName             varchar(32)          not null,
 StateCode            char(2)              not null,
 ZipCode              varchar(12)          not null,
 constraint PK_CUSTOMERADDRESS primary key  (AddressID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : CustomerBase                                         */
+/*==============================================================*/
+create table CustomerBase (
+CustomerID           numeric              not null,
+PrimaryContactID     numeric              not null,
+CustomerType         varchar(30)          not null,
+TimeZone             varchar(30)          null,
+PAObjectID           numeric              null,
+constraint PK_CUSTOMERBASE primary key  (CustomerID)
 )
 go
 
@@ -1749,6 +2129,20 @@ insert into CustomerContact(contactID, contFirstName, contLastName, contPhone1, 
 values (-1,'(none)','(none)','(none)','(none)',0,-1)
 
 /*==============================================================*/
+/* Table : CustomerListEntry                                    */
+/*==============================================================*/
+create table CustomerListEntry (
+EntryID              numeric              not null,
+ListID               numeric              not null,
+EntryOrder           numeric              null,
+EntryText            varchar(50)          null,
+YukonDefinition      varchar(20)          null,
+constraint PK_CUSTOMERLISTENTRY primary key  (EntryID)
+)
+go
+
+
+/*==============================================================*/
 /* Table : CustomerLogin                                        */
 /*==============================================================*/
 create table CustomerLogin (
@@ -1781,6 +2175,35 @@ go
 /*==============================================================*/
 create   index Indx_CstLogPassword on CustomerLogin (
 Password
+)
+go
+
+
+/*==============================================================*/
+/* Table : CustomerSelectionList                                */
+/*==============================================================*/
+create table CustomerSelectionList (
+ListID               numeric              not null,
+Ordering             varchar(1)           null,
+SelectionLabel       varchar(30)          null,
+WhereIsList          varchar(100)         null,
+ListName             varchar(40)          null,
+UserUpdateAvailable  varchar(1)           null,
+constraint PK_CUSTOMERSELECTIONLIST primary key  (ListID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : CustomerWebConfiguration                             */
+/*==============================================================*/
+create table CustomerWebConfiguration (
+ConfigurationID      numeric              not null,
+LogoLocation         varchar(100)         null,
+Description          varchar(200)         null,
+AlternateDisplayName varchar(50)          null,
+URL                  varchar(100)         null,
+constraint PK_CUSTOMERWEBCONFIGURATION primary key  (ConfigurationID)
 )
 go
 
@@ -2310,6 +2733,8 @@ UpdatedFlag          char(1)              not null,
 ControlAreaState     numeric              not null,
 CurrentPriority      numeric              not null,
 TimeStamp            datetime             not null,
+CurrentDailyStartTime numeric              not null,
+CurrentDailyStopTime numeric              not null,
 constraint PK_DYNAMICLMCONTROLAREA primary key  (DeviceID)
 )
 go
@@ -2374,6 +2799,84 @@ StartTime            datetime             not null,
 StopTime             datetime             not null,
 TimeStamp            datetime             not null,
 constraint PK_DYNAMICLMPROGRAMDIRECT primary key  (DeviceID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : ECToAccountMapping                                   */
+/*==============================================================*/
+create table ECToAccountMapping (
+EnergyCompanyID      numeric              not null,
+AccountID            numeric              not null,
+constraint PK_ECTOACCOUNTMAPPING primary key  (EnergyCompanyID, AccountID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : ECToCallReportMapping                                */
+/*==============================================================*/
+create table ECToCallReportMapping (
+EnergyCompanyID      numeric              not null,
+CallReportID         numeric              not null,
+constraint PK_ECTOCALLREPORTMAPPING primary key  (EnergyCompanyID, CallReportID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : ECToCustomerBaseMapping                              */
+/*==============================================================*/
+create table ECToCustomerBaseMapping (
+EnergyCompanyID      numeric              not null,
+CustomerID           numeric              not null,
+constraint PK_ECTOCUSTOMERBASEMAPPING primary key  (EnergyCompanyID, CustomerID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : ECToGenericMapping                                   */
+/*==============================================================*/
+create table ECToGenericMapping (
+EnergyCompanyID      numeric              not null,
+ItemID               numeric              not null,
+MappingCategory      varchar(40)          not null,
+constraint PK_ECTOGENERICMAPPING primary key  (EnergyCompanyID, ItemID, MappingCategory)
+)
+go
+
+
+/*==============================================================*/
+/* Table : ECToInventoryMapping                                 */
+/*==============================================================*/
+create table ECToInventoryMapping (
+EnergyCompanyID      numeric              not null,
+InventoryID          numeric              not null,
+constraint PK_ECTOINVENTORYMAPPING primary key  (EnergyCompanyID, InventoryID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : ECToLMCustomerEventMapping                           */
+/*==============================================================*/
+create table ECToLMCustomerEventMapping (
+EnergyCompanyID      numeric              not null,
+EventID              numeric              not null,
+constraint PK_ECTOLMCUSTOMEREVENTMAPPING primary key  (EnergyCompanyID, EventID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : ECToWorkOrderMapping                                 */
+/*==============================================================*/
+create table ECToWorkOrderMapping (
+EnergyCompanyID      numeric              not null,
+WorkOrderID          numeric              not null,
+constraint PK_ECTOWORKORDERMAPPING primary key  (EnergyCompanyID, WorkOrderID)
 )
 go
 
@@ -2611,6 +3114,26 @@ go
 
 
 /*==============================================================*/
+/* Table : InventoryBase                                        */
+/*==============================================================*/
+create table InventoryBase (
+InventoryID          numeric              not null,
+AccountID            numeric              null,
+InstallationCompanyID numeric              null,
+CategoryID           numeric              not null,
+ReceiveDate          datetime             null,
+InstallDate          datetime             null,
+RemoveDate           datetime             null,
+AlternateTrackingNumber varchar(40)          null,
+VoltageID            numeric              null,
+Notes                varchar(100)         null,
+DeviceID             numeric              null,
+constraint PK_INVENTORYBASE primary key  (InventoryID)
+)
+go
+
+
+/*==============================================================*/
 /* Table : LMCONTROLAREA                                        */
 /*==============================================================*/
 create table LMCONTROLAREA (
@@ -2754,12 +3277,38 @@ go
 
 
 /*==============================================================*/
+/* Table : LMCustomerEventBase                                  */
+/*==============================================================*/
+create table LMCustomerEventBase (
+EventID              numeric              not null,
+EventTypeID          numeric              not null,
+ActionID             numeric              not null,
+EventDateTime        datetime             null,
+Notes                varchar(100)         null,
+AuthorizedBy         varchar(40)          null,
+constraint PK_LMCUSTOMEREVENTBASE primary key  (EventID)
+)
+go
+
+
+/*==============================================================*/
 /* Table : LMDirectCustomerList                                 */
 /*==============================================================*/
 create table LMDirectCustomerList (
 ProgramID            numeric              not null,
 CustomerID           numeric              not null,
 constraint PK_LMDIRECTCUSTOMERLIST primary key  (ProgramID, CustomerID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : LMDirectOperatorList                                 */
+/*==============================================================*/
+create table LMDirectOperatorList (
+ProgramID            numeric              not null,
+OperatorLoginID      numeric              not null,
+constraint PK_LMDIRECTOPERATORLIST primary key  (ProgramID, OperatorLoginID)
 )
 go
 
@@ -2920,6 +3469,55 @@ go
 
 
 /*==============================================================*/
+/* Table : LMHardwareActivity                                   */
+/*==============================================================*/
+create table LMHardwareActivity (
+EventID              numeric              not null,
+InventoryID          numeric              null,
+EventDateTime        datetime             null,
+Notes                varchar(100)         null,
+ActionID             numeric              null,
+constraint PK_LMHARDWAREACTIVITY primary key  (EventID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : LMHardwareBase                                       */
+/*==============================================================*/
+create table LMHardwareBase (
+InventoryID          numeric              not null,
+ManufacturerSerialNumber varchar(30)          null,
+LMHardwareTypeID     numeric              not null,
+constraint PK_LMHARDWAREBASE primary key  (InventoryID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : LMHardwareConfiguration                              */
+/*==============================================================*/
+create table LMHardwareConfiguration (
+InventoryID          numeric              not null,
+ApplianceID          numeric              not null,
+AddressingGroupID    numeric              null,
+constraint PK_LMHARDWARECONFIGURATION primary key  (InventoryID, ApplianceID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : LMHardwareEvent                                      */
+/*==============================================================*/
+create table LMHardwareEvent (
+EventID              numeric              not null,
+InventoryID          numeric              not null,
+constraint PK_LMHARDWAREEVENT primary key  (EventID)
+)
+go
+
+
+/*==============================================================*/
 /* Table : LMMACSScheduleOperatorList                           */
 /*==============================================================*/
 create table LMMACSScheduleOperatorList (
@@ -3062,6 +3660,30 @@ MessageFooter        varchar(160)         not null,
 CanceledMsg          varchar(80)          not null,
 StoppedEarlyMsg      varchar(80)          not null,
 constraint PK_LMPROGRAMENERGYEXCHANGE primary key  (DeviceID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : LMProgramEvent                                       */
+/*==============================================================*/
+create table LMProgramEvent (
+EventID              numeric              not null,
+AccountID            numeric              not null,
+LMProgramID          numeric              not null,
+constraint PK_LMPROGRAMEVENT primary key  (EventID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : LMProgramWebPublishing                               */
+/*==============================================================*/
+create table LMProgramWebPublishing (
+ApplianceCategoryID  numeric              not null,
+LMProgramID          numeric              not null,
+WebsettingsID        numeric              null,
+constraint PK_LMPROGRAMWEBPUBLISHING primary key  (ApplianceCategoryID, LMProgramID)
 )
 go
 
@@ -3665,6 +4287,49 @@ go
 
 
 /*==============================================================*/
+/* Table : ServiceCompany                                       */
+/*==============================================================*/
+create table ServiceCompany (
+CompanyID            numeric              not null,
+CompanyName          varchar(40)          null,
+AddressID            numeric              null,
+MainPhoneNumber      varchar(14)          null,
+MainFaxNumber        varchar(14)          null,
+PrimaryContactID     numeric              null,
+HIType               varchar(40)          null,
+constraint PK_SERVICECOMPANY primary key  (CompanyID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : SiteInformation                                      */
+/*==============================================================*/
+create table SiteInformation (
+SiteID               numeric              not null,
+Feeder               varchar(20)          null,
+Pole                 varchar(20)          null,
+TransformerSize      varchar(20)          null,
+ServiceVoltage       varchar(20)          null,
+SubstationID         numeric              null,
+constraint PK_SITEINFORMATION primary key  (SiteID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : Substation                                           */
+/*==============================================================*/
+create table Substation (
+SubstationID         numeric              not null,
+SubstationName       varchar(50)          null,
+RouteID              numeric              null,
+constraint PK_SUBSTATION primary key  (SubstationID)
+)
+go
+
+
+/*==============================================================*/
 /* Table : TEMPLATE                                             */
 /*==============================================================*/
 create table TEMPLATE (
@@ -3716,7 +4381,7 @@ create table UNITMEASURE (
 UOMID                numeric              not null,
 UOMName              varchar(8)           not null,
 CalcType             numeric              not null,
-LongName             varchar(20)          not null,
+LongName             varchar(40)          not null,
 Formula              varchar(80)          not null,
 constraint SYS_C0013344 primary key  (UOMID)
 )
@@ -3764,6 +4429,8 @@ INSERT INTO UnitMeasure VALUES ( 37,'VA', 0,'VA','(none)' );
 INSERT INTO UnitMeasure VALUES ( 38,'Watr-CFT', 0,'Watr-CFT','(none)' );
 INSERT INTO UnitMeasure VALUES ( 39,'Watts', 0,'Watts','(none)' );
 INSERT INTO UnitMeasure VALUES ( 40,'Hz', 0,'Hertz','(none)' );
+INSERT INTO UnitMeasure VALUES ( 41,'Volts', 1,'Volts from V2H','(none)' );
+INSERT INTO UnitMeasure VALUES ( 42,'Amps', 1,'Amps from A2H','(none)' );
 
 /*==============================================================*/
 /* Table : VERSACOMROUTE                                        */
@@ -3776,6 +4443,27 @@ CLASSADDRESS         numeric              not null,
 DIVISIONADDRESS      numeric              not null,
 BUSNUMBER            numeric              not null,
 AMPCARDSET           numeric              not null
+)
+go
+
+
+/*==============================================================*/
+/* Table : WorkOrderBase                                        */
+/*==============================================================*/
+create table WorkOrderBase (
+OrderID              numeric              not null,
+OrderNumber          varchar(20)          null,
+WorkTypeID           numeric              not null,
+CurrentStateID       numeric              not null,
+CustomerID           numeric              not null,
+SiteID               numeric              not null,
+ServiceCompanyID     numeric              null,
+DateReported         datetime             null,
+Description          varchar(200)         null,
+DateScheduled        datetime             null,
+DateCompleted        datetime             null,
+ActionTaken          varchar(200)         null,
+constraint PK_WORKORDERBASE primary key  (OrderID)
 )
 go
 
@@ -3891,9 +4579,51 @@ alter table AlarmCategory
 go
 
 
+alter table InventoryBase
+   add constraint FK_CUS_CSTA_CUS3 foreign key (AccountID)
+      references CustomerAccount (AccountID)
+go
+
+
+alter table CustomerAccount
+   add constraint FK_CUS_CSTA_CUS2 foreign key (AccountSiteID)
+      references AccountSite (AccountSiteID)
+go
+
+
+alter table ApplianceBase
+   add constraint FK_CUS_CSTA_CUS4 foreign key (AccountID)
+      references CustomerAccount (AccountID)
+go
+
+
+alter table LMHardwareConfiguration
+   add constraint FK_LMH_CSTL_CUS2 foreign key (ApplianceID)
+      references ApplianceBase (ApplianceID)
+go
+
+
+alter table ApplianceBase
+   add constraint FK_APP_CSTL_APP foreign key (ApplianceCategoryID)
+      references ApplianceCategory (ApplianceCategoryID)
+go
+
+
+alter table AccountSite
+   add constraint FK_CUS_CSTS_CUS2 foreign key (SiteInformationID)
+      references SiteInformation (SiteID)
+go
+
+
 alter table NotificationDestination
    add constraint FK_DESTID_RECID foreign key (RecipientID)
       references NotificationRecipient (RecipientID)
+go
+
+
+alter table InventoryBase
+   add constraint FK_CUS_HRDI_HAR2 foreign key (InstallationCompanyID)
+      references ServiceCompany (CompanyID)
 go
 
 
@@ -3912,6 +4642,12 @@ go
 alter table DynamicLMProgramDirect
    add constraint FK_DYN_LMPR_LMP foreign key (DeviceID)
       references LMProgramDirect (DeviceID)
+go
+
+
+alter table LMHardwareConfiguration
+   add constraint FK_LMH_LMHR_LMH foreign key (InventoryID)
+      references LMHardwareBase (InventoryID)
 go
 
 
@@ -4215,6 +4951,24 @@ alter table LMCONTROLAREATRIGGER
 go
 
 
+alter table AccountSite
+   add constraint FK_AccS_CstAd foreign key (StreetAddressID)
+      references CustomerAddress (AddressID)
+go
+
+
+alter table WorkOrderBase
+   add constraint FK_AccS_WkB foreign key (SiteID)
+      references AccountSite (AccountSiteID)
+go
+
+
+alter table ApplianceBase
+   add constraint FK_AppBs_LMPr foreign key (LMProgramID)
+      references LMPROGRAM (DEVICEID)
+go
+
+
 alter table CCFeederBankList
    add constraint FK_CB_CCFeedLst foreign key (DeviceID)
       references CAPBANK (DEVICEID)
@@ -4287,6 +5041,102 @@ alter table CAPCONTROLSUBSTATIONBUS
 go
 
 
+alter table AirConditioner
+   add constraint FK_CsLsE_Ac foreign key (TonageID)
+      references CustomerListEntry (EntryID)
+go
+
+
+alter table AirConditioner
+   add constraint FK_CsLsE_Ac_ty foreign key (TypeID)
+      references CustomerListEntry (EntryID)
+go
+
+
+alter table LMCustomerEventBase
+   add constraint FK_CsLsE_LCstE foreign key (EventTypeID)
+      references CustomerListEntry (EntryID)
+go
+
+
+alter table LMCustomerEventBase
+   add constraint FK_CsLsE_LCstE_a foreign key (ActionID)
+      references CustomerListEntry (EntryID)
+go
+
+
+alter table WorkOrderBase
+   add constraint FK_CsLsE_WkB foreign key (WorkTypeID)
+      references CustomerListEntry (EntryID)
+go
+
+
+alter table WorkOrderBase
+   add constraint FK_CsLsE_WkB_c foreign key (CurrentStateID)
+      references CustomerListEntry (EntryID)
+go
+
+
+alter table ApplianceCategory
+   add constraint FK_CsWC_ApCt foreign key (WebConfigurationID)
+      references CustomerWebConfiguration (ConfigurationID)
+go
+
+
+alter table CallReportBase
+   add constraint FK_CstAc_ClRpB foreign key (AccountID)
+      references CustomerAccount (AccountID)
+go
+
+
+alter table LMProgramEvent
+   add constraint FK_CstAc_LMPrEv foreign key (AccountID)
+      references CustomerAccount (AccountID)
+go
+
+
+alter table ServiceCompany
+   add constraint FK_CstAdd_SrC foreign key (AddressID)
+      references CustomerAddress (AddressID)
+go
+
+
+alter table CallReportBase
+   add constraint FK_CstB_CllR foreign key (CustomerID)
+      references CustomerBase (CustomerID)
+go
+
+
+alter table WorkOrderBase
+   add constraint FK_CstB_WkB foreign key (CustomerID)
+      references CustomerBase (CustomerID)
+go
+
+
+alter table CustomerAccount
+   add constraint FK_CstBs_CstAcc foreign key (CustomerID)
+      references CustomerBase (CustomerID)
+go
+
+
+alter table CustomerBase
+   add constraint FK_CstBs_CstCnt foreign key (PrimaryContactID)
+      references CustomerContact (ContactID)
+go
+
+
+alter table CstBaseCstContactMap
+   add constraint FK_CstBs_CstMp foreign key (CustomerID)
+      references CustomerBase (CustomerID)
+go
+
+
+alter table ECToCustomerBaseMapping
+   add constraint FK_CstBs_ECstM foreign key (CustomerID)
+      references CustomerBase (CustomerID)
+go
+
+
 alter table CustomerBaseLinePoint
    add constraint FK_CstBseLn_CICust foreign key (CustomerID)
       references CICustomerBase (DeviceID)
@@ -4299,8 +5149,50 @@ alter table CustomerBaseLinePoint
 go
 
 
+alter table CstBaseCstContactMap
+   add constraint FK_CstCnt_Csmap foreign key (CustomerContactID)
+      references CustomerContact (ContactID)
+go
+
+
+alter table ServiceCompany
+   add constraint FK_CstCnt_SrvC foreign key (PrimaryContactID)
+      references CustomerContact (ContactID)
+go
+
+
+alter table CallReportBase
+   add constraint FK_CstELs_ClRB foreign key (CallTypeID)
+      references CustomerListEntry (EntryID)
+go
+
+
+alter table ApplianceCategory
+   add constraint FK_CstLs_ApCt foreign key (CategoryID)
+      references CustomerListEntry (EntryID)
+go
+
+
+alter table InventoryBase
+   add constraint FK_INV_REF__CUS foreign key (CategoryID)
+      references CustomerListEntry (EntryID)
+go
+
+
+alter table LMHardwareBase
+   add constraint FK_LMH_REF__CUS foreign key (LMHardwareTypeID)
+      references CustomerListEntry (EntryID)
+go
+
+
 alter table DeviceWindow
    add constraint FK_DevScWin_Dev foreign key (DeviceID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table InventoryBase
+   add constraint FK_Dev_InvB foreign key (DeviceID)
       references DEVICE (DEVICEID)
 go
 
@@ -4314,6 +5206,72 @@ go
 alter table DynamicCalcHistorical
    add constraint FK_DynClc_ClcB foreign key (PointID)
       references CALCBASE (POINTID)
+go
+
+
+alter table ECToAccountMapping
+   add constraint FK_ECTAcc_CstAcc foreign key (AccountID)
+      references CustomerAccount (AccountID)
+go
+
+
+alter table ECToAccountMapping
+   add constraint FK_ECTAcc_Enc foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
+go
+
+
+alter table ECToGenericMapping
+   add constraint FK_ECTGn_Enc foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
+go
+
+
+alter table ECToInventoryMapping
+   add constraint FK_ECTInv_Enc2 foreign key (InventoryID)
+      references InventoryBase (InventoryID)
+go
+
+
+alter table ECToInventoryMapping
+   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
+go
+
+
+alter table ECToCallReportMapping
+   add constraint FK_ECTSrv_Call foreign key (CallReportID)
+      references CallReportBase (CallID)
+go
+
+
+alter table ECToCallReportMapping
+   add constraint FK_ECTSrv_Enc foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
+go
+
+
+alter table ECToWorkOrderMapping
+   add constraint FK_ECTWrk_Enc2 foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
+go
+
+
+alter table ECToWorkOrderMapping
+   add constraint FK_ECTWrk_Enc foreign key (WorkOrderID)
+      references WorkOrderBase (OrderID)
+go
+
+
+alter table ECToCustomerBaseMapping
+   add constraint FK_ECmp_ECstM foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
+go
+
+
+alter table ECToLMCustomerEventMapping
+   add constraint FK_EnCm_ECLmCs foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
@@ -4347,6 +5305,30 @@ alter table DateOfHoliday
 go
 
 
+alter table LMHardwareActivity
+   add constraint FK_Inv_LMHrdAc foreign key (InventoryID)
+      references InventoryBase (InventoryID)
+go
+
+
+alter table LMHardwareEvent
+   add constraint FK_IvB_LMHrEv foreign key (InventoryID)
+      references InventoryBase (InventoryID)
+go
+
+
+alter table ECToLMCustomerEventMapping
+   add constraint FK_LCsEv_ECLmCs foreign key (EventID)
+      references LMCustomerEventBase (EventID)
+go
+
+
+alter table LMDirectOperatorList
+   add constraint FK_LMDirOpLs_LMPrD foreign key (ProgramID)
+      references LMProgramDirect (DeviceID)
+go
+
+
 alter table LMGroupPoint
    add constraint FK_LMGrpPt_Dev foreign key (DeviceIDUsage)
       references DEVICE (DEVICEID)
@@ -4362,6 +5344,36 @@ go
 alter table LMGroupPoint
    add constraint FK_LMGrpPt_Pt foreign key (PointIDUsage)
       references POINT (POINTID)
+go
+
+
+alter table LMHardwareConfiguration
+   add constraint FK_LMHrd_LMGr foreign key (AddressingGroupID)
+      references LMGroup (DeviceID)
+go
+
+
+alter table LMProgramWebPublishing
+   add constraint FK_LMPrWPb_CsWC foreign key (WebsettingsID)
+      references CustomerWebConfiguration (ConfigurationID)
+go
+
+
+alter table LMProgramEvent
+   add constraint FK_LMPrg_LMPrEv foreign key (LMProgramID)
+      references LMPROGRAM (DEVICEID)
+go
+
+
+alter table LMProgramWebPublishing
+   add constraint FK_LMprApp_App foreign key (ApplianceCategoryID)
+      references ApplianceCategory (ApplianceCategoryID)
+go
+
+
+alter table LMProgramWebPublishing
+   add constraint FK_LMprApp_LMPrg foreign key (LMProgramID)
+      references LMPROGRAM (DEVICEID)
 go
 
 
@@ -4409,6 +5421,12 @@ go
 
 alter table OperatorLoginGraphList
    add constraint FK_OpLgOpLgGrLs2 foreign key (OperatorLoginID)
+      references OperatorLogin (LoginID)
+go
+
+
+alter table LMDirectOperatorList
+   add constraint FK_OpLg_LMDOpLs foreign key (OperatorLoginID)
       references OperatorLogin (LoginID)
 go
 
@@ -4470,6 +5488,12 @@ go
 alter table MACSchedule
    add constraint FK_SchdID_PAOID foreign key (ScheduleID)
       references YukonPAObject (PAObjectID)
+go
+
+
+alter table SiteInformation
+   add constraint FK_Sub_Si foreign key (SubstationID)
+      references Substation (SubstationID)
 go
 
 
@@ -4830,6 +5854,18 @@ go
 alter table VERSACOMROUTE
    add constraint FK_VER_ROUT_ROU foreign key (ROUTEID)
       references ROUTE (ROUTEID)
+go
+
+
+alter table LMHardwareBase
+   add constraint FK_LMH_ISA__INV foreign key (InventoryID)
+      references InventoryBase (InventoryID)
+go
+
+
+alter table AirConditioner
+   add constraint FK_AIR_ISA__APP foreign key (ApplianceID)
+      references ApplianceBase (ApplianceID)
 go
 
 
