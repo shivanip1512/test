@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -83,6 +84,12 @@ public class YukonGroupRoleLoader implements Runnable
       			}
             	
             	LiteYukonRole role = (LiteYukonRole) roleMap.get(roleID);
+            	
+            	// If (none) appears in the yukongrouprole.value column then use the default value for the role
+            	if(value.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
+            		value = role.getDefaultValue();
+            	}
+            	
             	Pair roleValuePair = new Pair(role,value);
             	roleList.add(roleValuePair);            		
          	}
