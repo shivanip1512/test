@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/12/10 21:58:44 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/03/10 19:30:14 $
 *
 
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
@@ -45,12 +45,12 @@ public:
                            RWTPtrSlist< CtiMessage >  &retList,
                            RWTPtrSlist< OUTMESS >     &outList,
                            INT                        ScanPriority=MAXPRIORITY-4);
-   virtual INT DemandReset( CtiRequestMsg *pReq, 
-                    CtiCommandParser &parse, 
-                    OUTMESS *&OutMessage, 
+   virtual INT DemandReset( CtiRequestMsg *pReq,
+                    CtiCommandParser &parse,
+                    OUTMESS *&OutMessage,
                     RWTPtrSlist< CtiMessage > &vgList,
-                    RWTPtrSlist< CtiMessage > &retList, 
-                    RWTPtrSlist< OUTMESS > &outList, 
+                    RWTPtrSlist< CtiMessage > &retList,
+                    RWTPtrSlist< OUTMESS > &outList,
                     INT ScanPriority = MAXPRIORITY-4);
 
 
@@ -72,8 +72,8 @@ public:
                        RWTPtrSlist< CtiMessage >  &vgList,
                        RWTPtrSlist< CtiMessage >  &retList,
                        RWTPtrSlist< OUTMESS >     &outList );
-   
-   CtiProtocolANSI & getProtocol( void );
+
+   CtiProtocolANSI & getSentinelProtocol( void );
    void processDispatchReturnMessage( CtiReturnMsg *msgPtr );
    int buildScannerTableRequest (BYTE *ptr);
    INT sendCommResult( INMESS *InMessage);
