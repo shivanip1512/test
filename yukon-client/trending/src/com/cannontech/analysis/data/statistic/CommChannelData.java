@@ -63,7 +63,7 @@ public class CommChannelData extends StatisticData
 		super();
 	}
 	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#getAttribute(int, java.lang.Object)
+	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
 	public Object getAttribute(int columnIndex, Object o)
 	{
