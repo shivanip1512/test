@@ -183,7 +183,6 @@ private boolean createDevicePointList(java.util.List points, java.util.List dest
 		}
 
 	}
-	
 	return destList.size() > 0;
 }
 /**
@@ -439,14 +438,6 @@ public synchronized void treePathWillExpand(javax.swing.tree.TreePath path)
 				
 				//makes a list of points associated with the current deviceNode
 				createDevicePointList( points, pointTempList, deviceDevID );
-
-				//sorts and searches our point list
-				com.cannontech.common.util.CtiUtilities.binarySearchRepetition(
-					points,
-					DUMMY_LITE_POINT, //must have the needed DeviceID set!!
-					com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator,
-					pointTempList );	
-
 
 				//sorts the pointList according to name or offset, (default is set to sort by name)
 				java.util.Collections.sort(pointTempList, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
