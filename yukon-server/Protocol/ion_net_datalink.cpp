@@ -425,7 +425,7 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
 
         #if 0
         //  this is a dangerous block of code, as of 2003-apr-04.  it was left only because it was useful when threads were
-        //    dying before trace was printed.  the repetetive dout is sufficiently slow to destroy out/in communication timings.
+        //    dying before trace was printed.  the repetitive dout is sufficiently slow to destroy out/in communication timings.
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
 
@@ -484,6 +484,12 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
 
                     if( _inTotal >= (EmptyPacketLength + UncountedHeaderBytes) )
                     {
+                        if( _inFrame.header.len > 0xf7 )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint - _inFrame.header.len(" << _inFrame.header.len << ") > 0xf7 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
                         _ioState = InputPacket;
                     }
                 }
@@ -645,45 +651,67 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                         //  make sure it was addressed to us
                         if( _inFrame.header.dstid == _masterAddress && _inFrame.header.srcid == _slaveAddress )
                         {
-                    if( _inFrame.header.cntlframetype == AcknakACK &&   //  make sure it's an ACK frame
-                        _inFrame.header.trancounter == _currentOutputFrame )  //  make sure they're ACKing the frame we just sent
-                    {
-                        _dataSent += _bytesInLastFrame;
+                            if( _inFrame.header.cntlframetype == AcknakACK &&   //  make sure it's an ACK frame
+                                _inFrame.header.trancounter == _currentOutputFrame )  //  make sure they're ACKing the frame we just sent
+                            {
+                                _dataSent += _bytesInLastFrame;
 
-                        if( _currentOutputFrame == 0 )
-                        {
-                            _ioState = Complete;
+                                if( _currentOutputFrame == 0 )
+                                {
+                                    _ioState = Complete;
+                                }
+                                else
+                                {
+                                    _currentOutputFrame--;
+                                    _ioState = Output;
+                                }
+                            }
+                            else if( _inFrame.header.cntlframetype == AcknakNAK )
+                            {
+                                //  we were NACK'd, so fail to the upper levels - maybe regenerating the packet will help
+                                _packetErrorCount = PacketRetries + 1;
+                                possibleError     = NACK1;  //  not quite what it originally meant, but close enough...
+
+                                _ioState = Output;
+                            }
+                            else  //  not an ACK or a NACK - re-read or re-sed
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint - loop averted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+
+                                _packetErrorCount++;
+                                possibleError = ADDRESSERROR;
+
+                                //  try reading again
+                                _inTotal = 0;
+                                _ioState = OutputRecvAckNack;
+                            }
                         }
                         else
                         {
-                            _currentOutputFrame--;
-                            _ioState = Output;
-                        }
-                    }
-                            else if( _inFrame.header.cntlframetype == AcknakNAK )
-                            {
-                        //  we were NACK'd, so fail to the upper levels - maybe regenerating the packet will help
-                                _packetErrorCount = PacketRetries + 1;
-                                possibleError     = NACK1;  //  not quite what it originally meant, but close enough...
-                            }
-                        }
-                    else
-                    {
                             //  they sent the wrong packet
-                        ++_packetErrorCount;
+                            ++_packetErrorCount;
 
                             possibleError = ADDRESSERROR;  //  ...  not quite, but close
 
-                            if( _inFrame.header.cntlframetype == DataAcknakEnbl )
+/*                            if( _inFrame.header.cntlframetype == DataAcknakEnbl )
                             {
                                 //  send a NACK
                                 _ioState = InputSendNack;
                             }
-                            else
+                            else*/
                             {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint - bad state assignment averted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+
                                 //  try reading again
                                 _inTotal = 0;
-                                _ioState = InputHeader;
+
+                                _ioState = OutputRecvAckNack;
                             }
                         }
                     }

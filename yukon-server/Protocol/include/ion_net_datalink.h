@@ -60,7 +60,7 @@ private:
     {
         ion_frame_header header;
 
-        unsigned char data[240];  //  238 + 2 byte CRC
+        unsigned char data[260];  //  ideally 238 + 2 byte CRC, but we have to allow for len = 255 (the device doesn't obey <= 0xF5)
     };
 
     //  necessary because of the padding bytes
@@ -70,7 +70,7 @@ private:
 
         ion_frame_header header;
 
-        unsigned char data[240];  //  238 + 2 byte CRC
+        unsigned char data[260];  //  238 + 2 byte CRC...  and a little more
     };
 
     enum
