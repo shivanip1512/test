@@ -102,22 +102,6 @@ void CtiLoadManager::start()
 ---------------------------------------------------------------------------*/
 void CtiLoadManager::stop()
 {
-    {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        if( _dispatchConnection!=NULL && _dispatchConnection->valid() )
-        {
-            _dispatchConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
-            _dispatchConnection->ShutdownConnection();
-        }
-        if( _pilConnection!=NULL && _pilConnection->valid() )
-        {
-            _pilConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
-            _pilConnection->ShutdownConnection();
-        }
-        dout.interrupt(CtiThread::SHUTDOWN);
-        dout.join();
-    }
-
     if ( _loadManagerThread.isValid() && _loadManagerThread.requestCancellation() == RW_THR_ABORTED )
     {
         _loadManagerThread.terminate();
@@ -130,7 +114,22 @@ void CtiLoadManager::stop()
     }
     else
     {
+        _loadManagerThread.requestCancellation();
         _loadManagerThread.join();
+    }
+
+    {
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+        if( _dispatchConnection!=NULL && _dispatchConnection->valid() )
+        {
+            _dispatchConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+            _dispatchConnection->ShutdownConnection();
+        }
+        if( _pilConnection!=NULL && _pilConnection->valid() )
+        {
+            _pilConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+            _pilConnection->ShutdownConnection();
+        }
     }
 }
 
@@ -239,7 +238,7 @@ void CtiLoadManager::controlLoop()
                                         }
                                         currentControlArea->setUpdatedFlag(TRUE);
                                     }
-                                    else
+                                    else if( currentControlArea->isThresholdTriggerTripped() )
                                     {
                                         //all load reducing programs are currently running
                                         //can not reduce any more demand
@@ -277,7 +276,7 @@ void CtiLoadManager::controlLoop()
                                     if( currentControlArea->stopAllControl(multiPilMsg,multiDispatchMsg) )
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << RWTime() << " - Load reduction no longer needed at this time, stopping all control in control area: " << currentControlArea->getPAOName() << "." << endl;
+                                        dout << RWTime() << " - Load reduction no longer needed at this time, stopped all control in control area: " << currentControlArea->getPAOName() << "." << endl;
                                         currentControlArea->setUpdatedFlag(TRUE);
                                     }
                                 }
