@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2004/07/21 19:48:57 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2004/07/30 21:34:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -599,6 +599,10 @@ INT resolveDeviceType(RWCString rwsTemp)
     else if(rwsTemp == "rtm")
     {
         nRet = TYPE_RTM;
+    }
+    else if(rwsTemp == "energypro")
+    {
+       nRet = TYPE_ENERGYPRO;
     }
     else
     {
