@@ -16,8 +16,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/08/05 20:42:57 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/09/30 14:52:44 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -54,7 +54,16 @@ public:
 
 
     virtual void RefreshList(BOOL (*fn)(CtiPointBase*,void*) = isAPoint, void *d = NULL);
-    virtual void RefreshList( LONG );
+
+    /*
+     *  Reloads point with this pointid.
+     */
+    void RefreshPoint(LONG pointID);
+
+    /*
+     *  Reloads all points with this paoid as their owning object.
+     */
+    void RefreshListByPaoID( LONG paoID );
 
     virtual void DumpList(void);
     virtual void DeleteList(void);

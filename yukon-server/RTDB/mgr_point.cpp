@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/08/05 20:42:56 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/09/30 14:52:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -107,6 +107,8 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
     CtiPoint *pTempCtiPoint = NULL;
     bool     rowFound = false;
 
+    RWTime start, stop;
+
     try
     {
         LockGuard  guard(monitor());
@@ -117,14 +119,22 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             // are out of scope when the release is called
 
 
+            start = start.now();
             // Reset everyone's Updated flag.
             Map.apply(ApplyPointResetUpdated, NULL);
+
+            if((stop = stop.now()).seconds() - start.seconds() > 5 )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds for ApplyPointResetUpdated" << endl;
+            }
 
             RWDBDatabase   db       = conn.database();
             RWDBSelector   selector = conn.database().selector();
             RWDBTable      keyTable;
             RWDBReader     rdr;
 
+            start = start.now();
             if(DebugLevel & 0x00010000)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for System Points" << endl;
@@ -144,7 +154,12 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done Looking for System Points" << endl;
             }
-
+            if((stop = stop.now()).seconds() - start.seconds() > 5 )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds for System Devices " << endl;
+            }
+            start = start.now();
             selector = conn.database().selector();    // Clear the selector.
 
             if(DebugLevel & 0x00010000)
@@ -164,6 +179,12 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done Looking for Status/Control" << endl;
             }
 
+            if((stop = stop.now()).seconds() - start.seconds() > 5 )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds for Status/Control " << endl;
+            }
+            start = start.now();
             selector = conn.database().selector();    // Clear the selector.
 
             if(DebugLevel & 0x00010000)
@@ -183,6 +204,12 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for Analogs" << endl;
             }
 
+            if((stop = stop.now()).seconds() - start.seconds() > 5 )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds for Analogs " << endl;
+            }
+            start = start.now();
             selector = conn.database().selector();    // Clear the selector.
 
             if(DebugLevel & 0x00010000)
@@ -201,7 +228,12 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for Accum" << endl;
             }
-
+            if((stop = stop.now()).seconds() - start.seconds() > 5 )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds for Accumulators " << endl;
+            }
+            start = start.now();
             selector = conn.database().selector();    // Clear the selector.
 
             if(DebugLevel & 0x00010000)
@@ -223,8 +255,12 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for CALC" << endl;
             }
-
-
+            if((stop = stop.now()).seconds() - start.seconds() > 5 )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds for Calc points " << endl;
+            }
+            start = start.now();
             selector = conn.database().selector();    // Clear the selector.
 
             if(DebugLevel & 0x00010000)
@@ -282,7 +318,116 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
     }
 }
 
-void CtiPointManager::RefreshList(LONG paoID)
+void CtiPointManager::RefreshPoint(LONG pointID)
+{
+    CtiPoint *pTemp = NULL;
+    bool rowFound = false;
+
+    try
+    {
+        LockGuard  guard(monitor());
+
+        if(pointID >= 0)
+        {
+            {   // Make sure all objects that that store results
+                CtiLockGuard<CtiSemaphore> conn_guard(gDBAccessSema);
+                // are out of scope when the release is called
+                RWDBConnection conn = getConnection();
+
+                resetErrorCode();
+
+                RWDBDatabase   db       = conn.database();
+                RWDBSelector   selector = conn.database().selector();
+                RWDBTable      keyTable;
+                RWDBReader     rdr;
+
+                selector = conn.database().selector();    // Clear the selector.
+
+                if(DebugLevel & 0x00010000)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Status/Control" << endl;
+                }
+                /* Go after the status points! */
+                CtiPointStatus().getSQL( db, keyTable, selector );
+                selector.where( keyTable["pointid"] == RWDBExpr( pointID ) && selector.where() );
+
+                rdr = selector.reader(conn);
+                if(DebugLevel & 0x00010000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                }
+                RefreshPoints(rowFound, rdr, isAPoint, NULL);
+                if(DebugLevel & 0x00010000)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done Looking for Status/Control" << endl;
+                }
+                selector = conn.database().selector();    // Clear the selector.
+
+                if(DebugLevel & 0x00010000)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Analogs" << endl;
+                }
+                /* Go after the analog points! */
+                CtiPointAnalog().getSQL( db, keyTable, selector );
+                selector.where( keyTable["pointid"] == RWDBExpr( pointID ) && selector.where());
+                rdr = selector.reader(conn);
+                if(DebugLevel & 0x00010000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                }
+                RefreshPoints(rowFound, rdr, isAPoint, NULL);
+                if(DebugLevel & 0x00010000)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for Analogs" << endl;
+                }
+                selector = conn.database().selector();    // Clear the selector.
+
+                if(DebugLevel & 0x00010000)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Accum" << endl;
+                }
+                /* Go after the accumulator points! */
+                CtiPointAccumulator().getSQL( db, keyTable, selector );
+                selector.where( keyTable["pointid"] == RWDBExpr( pointID ) && selector.where());
+                rdr = selector.reader(conn);
+                if(DebugLevel & 0x00010000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                }
+                RefreshPoints(rowFound, rdr, isAPoint, NULL);
+                if(DebugLevel & 0x00010000)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for Accum" << endl;
+                }
+                selector = conn.database().selector();    // Clear the selector.
+
+                if(getErrorCode() != RWDBStatus::ok)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << " database had a return code of " << getErrorCode() << endl;
+                    }
+                }
+            }   // Temporary results are destroyed to free the connection
+        }
+    }
+    catch(RWExternalErr e )
+    {
+        //Make sure the list is cleared
+        { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Attempting to clear point list..." << endl;}
+        Map.clearAndDestroy();
+
+        { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "getMemoryPoints:  " << e.why() << endl;}
+        RWTHROW(e);
+    }
+    catch(...)
+    {
+        { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;}
+    }
+}
+
+void CtiPointManager::RefreshListByPaoID(LONG paoID)
 {
     CtiPoint *pTemp = NULL;
     bool rowFound = false;
@@ -298,8 +443,6 @@ void CtiPointManager::RefreshList(LONG paoID)
                 // are out of scope when the release is called
                 RWDBConnection conn = getConnection();
 
-                // Reset everyone's Updated flag.
-                Map.apply(ApplyPointResetUpdated, NULL);
                 resetErrorCode();
 
                 RWDBDatabase   db       = conn.database();
@@ -327,7 +470,6 @@ void CtiPointManager::RefreshList(LONG paoID)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done Looking for Status/Control" << endl;
                 }
-
                 selector = conn.database().selector();    // Clear the selector.
 
                 if(DebugLevel & 0x00010000)
@@ -347,7 +489,6 @@ void CtiPointManager::RefreshList(LONG paoID)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for Analogs" << endl;
                 }
-
                 selector = conn.database().selector();    // Clear the selector.
 
                 if(DebugLevel & 0x00010000)
@@ -368,36 +509,12 @@ void CtiPointManager::RefreshList(LONG paoID)
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for Accum" << endl;
                 }
 
-                selector = conn.database().selector();    // Clear the selector.
-
                 if(getErrorCode() != RWDBStatus::ok)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << " database had a return code of " << getErrorCode() << endl;
-                    }
-                }
-                else
-                {
-                    if(rowFound)
-                    {
-                        Map.apply(ApplyInvalidateNotUpdated, NULL);
-
-                        do
-                        {
-                            pTemp = remove(isPointNotUpdated, NULL);
-                            if(pTemp != NULL)
-                            {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << "  Evicting " << pTemp->getName() << " from list" << endl;
-                                }
-                                delete pTemp;
-                            }
-
-                        } while(pTemp != NULL);
                     }
                 }
             }   // Temporary results are destroyed to free the connection
@@ -411,7 +528,6 @@ void CtiPointManager::RefreshList(LONG paoID)
 
         { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "getMemoryPoints:  " << e.why() << endl;}
         RWTHROW(e);
-
     }
     catch(...)
     {
@@ -542,7 +658,6 @@ void CtiPointManager::RefreshPoints(bool &rowFound, RWDBReader& rdr, BOOL (*test
              *  The point just returned from the rdr already was in my list.  We need to
              *  update my list entry to the new settings!
              */
-
             pTempCtiPoint->DecodeDatabaseReader(rdr);        // Fills himself in from the reader
             pTempCtiPoint->setUpdatedFlag();       // Mark it updated
         }
@@ -556,19 +671,9 @@ void CtiPointManager::RefreshPoints(bool &rowFound, RWDBReader& rdr, BOOL (*test
                 // Add it to my list....
                 pTempCtiPoint->setUpdatedFlag();               // Mark it updated
                 Map.insert( new CtiHashKey(pTempCtiPoint->getID()), pTempCtiPoint ); // Stuff it in the list
-
-#if DEBUG10
-                { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << endl << endl << "Creating a NEW POINT" << endl << endl;}
-
-                Sleep(3000L);
-#endif
             }
             else
             {
-#if DEBUG10
-                { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << endl << endl << "DELETEing an unwanted POINT" << endl << endl;}
-                Sleep(3000L);
-#endif
                 delete pTempCtiPoint;                         // I don't want it!
             }
         }
