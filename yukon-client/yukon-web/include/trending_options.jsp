@@ -1,4 +1,4 @@
-GraphRenderers<!--TRENDING OPTIONS-->
+<!--TRENDING OPTIONS-->
 <table width="575" border="0" align="center" cellpadding="4" cellspacing="0">
   <tr>
     <td width="303" valign="top">
@@ -50,7 +50,7 @@ GraphRenderers<!--TRENDING OPTIONS-->
           </td>
           <td width="12%">
             <div align="right" class="Subtext">
-			  <a href="JavaScript:" class="Link4" name="optionPopup" onClick="window.open('<%=request.getContextPath()%>/options_popup.jsp','optionPopup','width=200,height=160,top=250,left=520');">Options</a>            	                            
+			  <a href="JavaScript:" class="Link4" name="optionPopup" onClick="window.open('<%=request.getContextPath()%>/include/options_popup.jsp','optionPopup','width=200,height=160,top=250,left=520');">Options</a>
             </div>
           </td>
         </tr>
