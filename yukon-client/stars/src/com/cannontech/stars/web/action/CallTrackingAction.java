@@ -99,7 +99,7 @@ public class CallTrackingAction implements ActionBase {
             		}
             	}
             	
-            	callHist.setTakenBy( "" );
+            	callHist.setTakenBy( calls[i].getTakenBy() );
             	callHist.setDescription( calls[i].getDescription() );
             	
             	callTrackingResp.addStarsCallReportHistory( callHist );
