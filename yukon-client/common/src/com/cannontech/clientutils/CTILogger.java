@@ -27,7 +27,7 @@ public class CTILogger
 		super();
 	}
 
-   private static Logger getLogger()
+   private static synchronized Logger getLogger()
    {
       if( logger == null )
       {
