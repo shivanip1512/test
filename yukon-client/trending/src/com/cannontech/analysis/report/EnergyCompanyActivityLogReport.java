@@ -128,10 +128,33 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 	protected ExpressionCollection getExpressions() throws FunctionInitializeException
 	{
 		super.getExpressions();
-		expressions.add(getDateExpression(getModel().getColumnProperties(5).getValueFormat(), getModel().getColumnName(5)));
+//		expressions.add(getDateExpression(getModel().getColumnProperties(5).getValueFormat(), getModel().getColumnName(5)));
 		return expressions;
 	}
-	
+	/**
+	 * Creates the function collection. The xml definition for this construct:
+	 * @return the functions.
+	 * @throws FunctionInitializeException if there is a problem initialising the functions.
+	 */
+	protected ExpressionCollection getFunctions() throws FunctionInitializeException
+	{
+		super.getFunctions();
+		
+		org.jfree.report.function.ItemHideFunction hideItem = new org.jfree.report.function.ItemHideFunction();
+		hideItem.setName(ActivityLog.CONTACT_STRING + "Hidden");
+		hideItem.setProperty("field", ActivityLog.CONTACT_STRING);
+		hideItem.setProperty("element", ActivityLog.CONTACT_STRING+" Element");
+		functions.add(hideItem);
+		
+		hideItem = new org.jfree.report.function.ItemHideFunction();
+		hideItem.setName(ActivityLog.ACCOUNT_NUMBER_STRING + " Hidden");
+		hideItem.setProperty("field", ActivityLog.ACCOUNT_NUMBER_STRING);
+		hideItem.setProperty("element", ActivityLog.ACCOUNT_NUMBER_STRING+" Element");
+		functions.add(hideItem);
+		
+		return functions;
+	}
+
 	/**
 	 * Create a Group for LMControlLogData.Date column.  
 	 * @return
@@ -139,7 +162,7 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 	private Group createECGroup()
 	{
 		final Group ecGroup = new Group();
-		ecGroup.setName("Energy Company Group");
+		ecGroup.setName(ActivityLog.ENERGY_COMPANY_STRING +" Group");
 		ecGroup.addField(getModel().getColumnName(ActivityLog.ENERGY_COMPANY_COLUMN));
 
 		final GroupHeader header = new GroupHeader();
@@ -147,7 +170,7 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 		header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
 
 		final TextFieldElementFactory tfactory = new TextFieldElementFactory();
-		tfactory.setName("EC Group Element");
+		tfactory.setName(ActivityLog.ENERGY_COMPANY_COLUMN + " Group Element");
 		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(ActivityLog.ENERGY_COMPANY_COLUMN).getPositionX(), getModel().getColumnProperties(ActivityLog.ENERGY_COMPANY_COLUMN).getPositionY()));
 		tfactory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(ActivityLog.ENERGY_COMPANY_COLUMN).getWidth(), getModel().getColumnProperties(ActivityLog.ENERGY_COMPANY_COLUMN).getHeight()));
 		tfactory.setHorizontalAlignment(ElementAlignment.LEFT);
@@ -162,6 +185,7 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 		for (int i = 1; i < getModel().getColumnNames().length; i++)
 		{
 			LabelElementFactory factory = new LabelElementFactory();
+			factory.setName(getModel().getColumnName(i)+" Group Element");
 			factory.setHorizontalAlignment(ElementAlignment.LEFT);
 			factory.setVerticalAlignment(ElementAlignment.BOTTOM);
 			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 18));
@@ -179,6 +203,27 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 		return ecGroup;
 	}
 
+
+	/**
+	 * Create a Group for LMControlLogData.Date column.  
+	 * @return
+	 */
+	private Group createContactGroup()
+	{
+		final Group contGroup = new Group();
+		contGroup.setName(ActivityLog.CONTACT_STRING +" Group");
+		contGroup.addField(getModel().getColumnName(ActivityLog.ENERGY_COMPANY_COLUMN));
+		contGroup.addField(getModel().getColumnName(ActivityLog.CONTACT_COLUMN));
+
+		final GroupHeader header = new GroupHeader();
+		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 5));
+		contGroup.setHeader(header);
+		final GroupFooter footer = new GroupFooter();
+		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 5));
+		contGroup.setFooter(footer);
+
+		return contGroup;
+	}
 	/**
 	 * Create a GroupList and all Group(s) to it.
 	 * @return the groupList.
@@ -188,6 +233,7 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 		final GroupList list = new GroupList();
 		//Add a Grouping for Date column.
 		list.add(createECGroup());
+		list.add(createContactGroup());
 		return list;
 	}
 
@@ -231,9 +277,13 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 			
 			if( factory != null)
 			{
+				factory.setName(getModel().getColumnNames()[i]+ " Element");
 				factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(i).getPositionX(),getModel().getColumnProperties(i).getPositionY()));
 				factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), 10));
-				factory.setHorizontalAlignment(ElementAlignment.LEFT);
+				if( i == ActivityLog.ACTION_COUNT_COLUMN )
+					factory.setHorizontalAlignment(ElementAlignment.RIGHT);
+				else 
+					factory.setHorizontalAlignment(ElementAlignment.LEFT);
 				factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 				factory.setNullString("<null>");
 				factory.setFieldname(getModel().getColumnNames()[i]);
