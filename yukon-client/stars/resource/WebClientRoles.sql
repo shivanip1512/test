@@ -15,12 +15,19 @@ insert into YukonRoleProperty values(-20002,-200,'Delete Energy Company','false'
 /* Inventory Role */
 insert into YukonRole values (-209,'Inventory','Operator','Operator Access to hardware inventory');
 
+/* Work Order Role */
+insert into YukonRole values (-210,'Work Order','Operator','Operator Access to work order management');
+
 /* Inventory Role Properties */
 insert into YukonRoleProperty values(-20900,-209,'Show All Inventory','true','Controls whether to allow showing all inventory');
 insert into YukonRoleProperty values(-20901,-209,'Add SN Range','true','Controls whether to allow adding hardwares by serial number range');
 insert into YukonRoleProperty values(-20902,-209,'Update SN Range','true','Controls whether to allow updating hardwares by serial number range');
 insert into YukonRoleProperty values(-20903,-209,'Config SN Range','true','Controls whether to allow configuring hardwares by serial number range');
 insert into YukonRoleProperty values(-20904,-209,'Delete SN Range','true','Controls whether to allow deleting hardwares by serial number range');
+
+/* Work Order Role Properties */
+insert into YukonRoleProperty values(-21000,-210,'Show All Work Orders','true','Controls whether to allow showing all work orders');
+insert into YukonRoleProperty values(-21001,-210,'Create Work Order','true','Controls whether to allow creating new work orders');
 
 /* Operator Consumer Info Role Properties */
 insert into YukonRoleProperty values(-20100,-201,'Not Implemented','false','Controls whether to show the features not implemented yet (not recommended)');
@@ -46,6 +53,8 @@ insert into YukonRoleProperty values(-20151,-201,'New Account Wizard','true','Co
 insert into YukonRoleProperty values(-20152,-201,'Import Customer Account','false','Controls whether to enable the customer account importing feature');
 insert into YukonRoleProperty values(-20153,-201,'Inventory Checking Time','EARLY','Controls when to perform inventory checking while creating or updating hardware information. Possible values are EARLY, LATE, and NONE');
 insert into YukonRoleProperty values(-20154,-201,'Automatic Configuration','false','Controls whether to automatically send out config command when creating hardware or changing program enrollment');
+insert into YukonRoleProperty values(-20155,-201,'Order Number Auto Generation','false','Controls whether the order number is automatically generated or entered by user');
+insert into YukonRoleProperty values(-20156,-201,'Call Number Auto Generation','false','Controls whether the call number is automatically generated or entered by user');
 insert into YukonRoleProperty values(-20800,-201,'Link FAQ','(none)','The customized FAQ link');
 insert into YukonRoleProperty values(-20801,-201,'Link Thermostat Instructions','(none)','The customized thermostat instructions link');
 insert into YukonRoleProperty values(-20810,-201,'Text Control','control','Term for control');
@@ -207,6 +216,10 @@ insert into yukongrouprole values (751,-301,-201,-20151,'true');
 insert into yukongrouprole values (752,-301,-201,-20152,'false');
 insert into yukongrouprole values (753,-301,-201,-20153,'(none)');
 insert into yukongrouprole values (754,-301,-201,-20154,'false');
+insert into yukongrouprole values (755,-301,-201,-20155,'true');
+insert into yukongrouprole values (756,-301,-201,-20156,'true');
+insert into yukongrouprole values (765,-301,-210,-21000,'(none)');
+insert into yukongrouprole values (766,-301,-210,-21001,'(none)');
 insert into yukongrouprole values (770,-301,-202,-20200,'(none)');
 insert into yukongrouprole values (775,-301,-203,-20300,'(none)');
 insert into yukongrouprole values (776,-301,-203,-20301,'(none)');
