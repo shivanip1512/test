@@ -98,11 +98,11 @@ public Object getValueAt(int row, int col)
 			return getRowAt(row).getSeasonName();
 
 		case COLUMN_START_DATE:
-			String startDate = DATE_SYMBOLS.getMonths()[getRowAt(row).getSeasonStartMonth().intValue()] + " " + getRowAt(row).getSeasonStartDay().toString();
+			String startDate = DATE_SYMBOLS.getMonths()[getRowAt(row).getSeasonStartMonth().intValue() - 1] + " " + getRowAt(row).getSeasonStartDay().toString();
 			return startDate;
 				
 		case COLUMN_END_DATE:
-			String endDate = DATE_SYMBOLS.getMonths()[getRowAt(row).getSeasonEndMonth().intValue()] + " " + getRowAt(row).getSeasonEndDay().toString();
+			String endDate = DATE_SYMBOLS.getMonths()[getRowAt(row).getSeasonEndMonth().intValue() - 1] + " " + getRowAt(row).getSeasonEndDay().toString();
 			return endDate;	
 		
 	}
