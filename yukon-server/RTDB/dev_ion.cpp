@@ -281,7 +281,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
         OutMessage->TargetID     = getID();
         OutMessage->Retry        = IONRetries;
         OutMessage->Sequence     = _ion.getCommand();
-        OutMessage->MessageFlags = _ion.commandRequiresRequeueOnFail() ? MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL : 0;
+        OutMessage->MessageFlags = _ion.commandRequiresRequeueOnFail(_ion.getCommand()) ? MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL : 0;
 
         retList.insert(CTIDBG_new CtiReturnMsg(getID(),
                                                RWCString(OutMessage->Request.CommandStr),
@@ -569,17 +569,14 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
     if( !ErrReturn && !_ion.recvCommResult(InMessage, outList) )
     {
-        if( _ion.hasInboundData() )
-        {
-            _ion.getInboundData(pointData, eventData, returnInfo);
-        }
+        _ion.getInboundData(pointData, eventData, returnInfo);
 
         processInboundData(InMessage, TimeNow, vgList, retList, outList, pointData, eventData, returnInfo);
 
         pointData.clear();
         eventData.clear();
 
-        switch( _ion.getCommand() )
+        switch( InMessage->Sequence )
         {
             case CtiProtocolION::Command_ExternalPulseTrigger:
             {
