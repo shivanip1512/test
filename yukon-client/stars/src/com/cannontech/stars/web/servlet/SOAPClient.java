@@ -51,7 +51,7 @@ import com.cannontech.stars.web.action.UpdateThermostatManualOptionAction;
 import com.cannontech.stars.web.action.UpdateThermostatScheduleAction;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
-import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.util.SOAPMessenger;
 import com.cannontech.stars.xml.util.SOAPUtil;
@@ -155,16 +155,31 @@ public class SOAPClient extends HttpServlet {
 		if (action == null) action = "";
 
 		HttpSession session = req.getSession(false);
-        
-		if (action.equalsIgnoreCase("RefreshCache")) {
-			if (isServerLocal()) SOAPServer.refreshCache();
-			if (session != null) session.invalidate();
+		if (session == null) {
 			resp.sendRedirect( req.getContextPath() + LOGIN_URL );
 			return;
 		}
 		
-		if (session == null) {
+		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+		if (user == null) {
 			resp.sendRedirect( req.getContextPath() + LOGIN_URL );
+			return;
+		}
+		
+		if (req.getParameter("SwitchContext") != null) {
+			try{
+				int contextID = Integer.parseInt( req.getParameter("SwitchContext") );
+				StarsAdmin.doSwitchContext( user, contextID, referer );
+			}
+			catch (com.cannontech.stars.util.WebClientException e) {
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
+				resp.sendRedirect( referer );
+				return;
+			}
+		}
+		else if (user.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) != null) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Operation not allowed because you are currently checking information of a member. To make any changes, you must first log into the member energy company through \"Member Management\"." );
+			resp.sendRedirect( referer );
 			return;
 		}
     	
@@ -257,10 +272,9 @@ public class SOAPClient extends HttpServlet {
 				return;
 			}
         	
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			StarsExitInterviewQuestions questions = null;
 			if (user != null) {
-				StarsGetEnergyCompanySettingsResponse ecSettings = (StarsGetEnergyCompanySettingsResponse)
+				StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
 						user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 				if (ecSettings != null)
 					questions = ecSettings.getStarsExitInterviewQuestions();
