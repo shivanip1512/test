@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/07/01 16:31:32 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/09/24 14:59:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,8 +44,9 @@ extern void freeUCTMemory(void);
 extern void cleanupDB();
 
 // Global Exports....
-IM_EX_CTIBASE CTINEXUS        PorterNexus;
-IM_EX_CTIBASE RWMutexLock     coutMux;
+IM_EX_CTIBASE CTINEXUS           PorterNexus;
+IM_EX_CTIBASE RWMutexLock        coutMux;
+IM_EX_CTIBASE CtiThreadMonitor   ThreadMonitor;
 
 RWDBDatabase *sqlDatabase = NULL;
 
