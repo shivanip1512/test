@@ -24,6 +24,7 @@ public class CalcComponentTypes
 	public static final String MIN_FUNCTION= "Min";
 	public static final String MAX_FUNCTION = "Max";
 	public static final String BASELINE_FUNCTION = "Baseline";
+	public static final String BASELINE_PERCENT_FUNCTION = "Baseline Percent";
 	
 	public static final String DEMAND_AVG15_FUNCTION = "DemandAvg15";
 	public static final String DEMAND_AVG30_FUNCTION = "DemandAvg30";
