@@ -19,6 +19,7 @@
      <!-- <property name="web"          value="${yukon.base}/web" /> -->
      <property name="calchist"     value="${yukon.base}/calchist" />
      <property name="logger"     value="${yukon.base}/logger" />
+     <property name="custom"          value="${yukon.base}/custom" />
 
      <property name="esub-editor"   value="${yukon.base}/esub-editor" />
      <property name="esub-web"      value="${yukon.base}/esub-web" />
@@ -68,6 +69,7 @@
         <ant dir="${dbeditor}" target="${dotarget}" />
         <ant dir="${calchist}" target="${dotarget}" />
         <ant dir="${logger}" target="${dotarget}"/>
+        <ant dir="${custom}" target="${dotarget}" />
         <ant dir="${palm}" target="${dotarget}" />
         <ant dir="${tools}" target="${dotarget}" />
         <ant dir="${servlet}" target="${dotarget}"/>
