@@ -19,9 +19,36 @@ public class SystemLog extends com.cannontech.database.db.DBPersistent
 	public static final int TYPE_GENERAL = 1;
 	public static final int TYPE_POINT_CHANGE = 2; //May not be used
 	public static final int TYPE_LOADMANAGEMENT = 3;
-	public static final int TYPE_USER = 4; 
+	public static final int TYPE_USER = 4;
+	public static final int TYPE_MACS = 7; 
 	public static final int TYPE_ALARM = 8;
 
+	public static final String TYPE_GENERAL_STRING = "General";
+	public static final String TYPE_POINT_CHANGE_STRING = "Point Change"; //May not be used
+	public static final String TYPE_LOADMANAGEMENT_STRING = "Load Management";
+	public static final String TYPE_USER_STRING = "Yukon User";
+	public static final String TYPE_MACS_STRING = "MACS"; 
+	public static final String TYPE_ALARM_STRING = "Alarming";
+	
+	//THE TYPE id VALUE IS NOT REPRESENTATIVE OF THE INDEX OF THE ITEMS!!!
+	public static final int[] LOG_TYPES = {
+		
+		TYPE_GENERAL,
+		TYPE_POINT_CHANGE,
+		TYPE_LOADMANAGEMENT,
+		TYPE_USER,
+		TYPE_MACS,	
+		TYPE_ALARM
+	};
+	public static final String[] LOG_TYPE_STRINGS = {
+		"General",
+		"Point Change",
+		"Load Management",
+		"Yukon User",
+		"MACS",
+		"Alarming"
+	};	
+	
 	public static final String CONSTRAINT_COLUMNS[] = { "LogID" };
 	public static final String COLUMNS[] = { "PointID", 
 		"DateTime", "SOE_Tag", "Type",
@@ -29,17 +56,54 @@ public class SystemLog extends com.cannontech.database.db.DBPersistent
 
 	public final static String TABLE_NAME = "SystemLog";
 /**
- * PointUnit constructor comment.
+ * SystemLog constructor comment.
  */
 public SystemLog() {
 	super();
 }
 /**
- * PointUnit constructor comment.
+ * SystemLog constructor comment.
  */
 public SystemLog(Integer pointID) {
 	super();
 }
+/**
+ * @param id_
+ * @return
+ */
+public static String getLogTypeStringFromID(int id_)
+{
+	switch (id_)
+	{
+		case TYPE_GENERAL:
+			return TYPE_GENERAL_STRING;
+		case TYPE_POINT_CHANGE:
+			return TYPE_POINT_CHANGE_STRING;
+		case TYPE_LOADMANAGEMENT:
+			return TYPE_LOADMANAGEMENT_STRING;
+		case TYPE_USER:
+			return TYPE_USER_STRING;
+		case TYPE_MACS:
+			return TYPE_MACS_STRING;
+		case TYPE_ALARM:
+			return TYPE_ALARM_STRING;
+		default :
+			return "Invalid";
+	}
+}
+/**
+ * @param logType_
+ * @return
+ */
+public static int getLogTypeIDFromString(String logType_)
+{
+	for (int i = 0; i < LOG_TYPE_STRINGS.length; i++)
+	{
+		if( LOG_TYPE_STRINGS[i].equalsIgnoreCase(logType_))
+			return LOG_TYPES[i];
+	}
+	return -1;	//not found
+} 
 /**
  * add method comment.
  */
