@@ -346,6 +346,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 		final ReportHeader header = new ReportHeader();
 		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 58));
 		header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 20, true, false, false, false));
+		header.setPagebreakAfterPrint(true);
 	
 		LabelElementFactory factory = new LabelElementFactory();
 		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(0, 0));
