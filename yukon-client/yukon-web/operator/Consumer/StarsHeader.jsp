@@ -8,6 +8,7 @@
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
 <%@ page import="com.cannontech.roles.operator.ConsumerInfoRole" %>
+<%@ page import="com.cannontech.roles.operator.InventoryRole" %>
 
 <%@ page import="com.cannontech.stars.xml.StarsFactory" %>
 <%@ page import="com.cannontech.stars.xml.serialize.*" %>
