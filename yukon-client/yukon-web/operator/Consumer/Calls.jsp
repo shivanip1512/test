@@ -26,6 +26,7 @@ function validate(form) {
 
 function deleteCall(form) {
 	if (!validate(form)) return;
+	if (!confirm("Are you sure you want to delete this call?")) return;
 	form.action.value = "DeleteCall";
 	form.submit();
 }
@@ -131,7 +132,7 @@ function init() {
                       </select>
                     </td>
                     <td class="TableCell" width="40%"> 
-                      <textarea name="Description_" rows="3" wrap="soft" cols="35" class="TableCell"><%= call.getDescription().replaceAll("<br>", "\r\n") %></textarea>
+                      <textarea name="Description_" rows="3" wrap="soft" cols="35" class="TableCell"><%= call.getDescription().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                     </td>
                     <td class="TableCell" width="10%"><%= call.getTakenBy() %></td>
                   </tr>

@@ -53,7 +53,7 @@ public class CreateCallAction implements ActionBase {
 			if (req.getParameter("CallNo") != null)
 				createCall.setCallNumber( req.getParameter("CallNo") );
 			createCall.setTakenBy( req.getParameter("TakenBy") );
-			createCall.setDescription( req.getParameter("Description").replaceAll("\r\n", "<br>") );
+			createCall.setDescription( req.getParameter("Description").replaceAll(System.getProperty("line.separator"), "<br>") );
 			
 			java.util.Date callDate = ServletUtils.parseDateTime(
 					req.getParameter("CallDate"), req.getParameter("CallTime"), tz );

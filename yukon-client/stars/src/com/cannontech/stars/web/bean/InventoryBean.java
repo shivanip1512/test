@@ -45,8 +45,11 @@ public class InventoryBean {
 	public static final int DEVICE_TYPE_METER = -1;
 	
 	private static final int DEFAULT_PAGE_SIZE = 20;
+	
 	private static final java.text.SimpleDateFormat dateFormat =
 			new java.text.SimpleDateFormat("MM/dd/yyyy");
+	
+	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	
 	private static final Comparator INV_ID_CMPTOR = new Comparator() {
 		public int compare(Object o1, Object o2) {
@@ -253,13 +256,13 @@ public class InventoryBean {
 		
 		ArrayList hwList = getHardwareList();
 		if (hwList == null || hwList.size() == 0) {
-			htmlBuf.append("<p class='ErrorMsg'>No hardware found.</p>").append("\r\n");
+			htmlBuf.append("<p class='ErrorMsg'>No hardware found.</p>").append(LINE_SEPARATOR);
 			if (getHtmlStyle() != HTML_STYLE_LIST_INVENTORY) {
-				htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='0'>").append("\r\n");
-				htmlBuf.append("  <tr>").append("\r\n");
-				htmlBuf.append("    <td align='center'><input type='button' name='Back' value='Back' onclick='history.back()'></td>").append("\r\n");
-				htmlBuf.append("  </tr>").append("\r\n");
-				htmlBuf.append("</table>").append("\r\n");
+				htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='0'>").append(LINE_SEPARATOR);
+				htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
+				htmlBuf.append("    <td align='center'><input type='button' name='Back' value='Back' onclick='history.back()'></td>").append(LINE_SEPARATOR);
+				htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
+				htmlBuf.append("</table>").append(LINE_SEPARATOR);
 			}
 			return htmlBuf.toString();
 		}
@@ -301,26 +304,26 @@ public class InventoryBean {
         	navBuf.append("<a class='Link1' href='").append(pageName).append("?page=").append(maxPageNo).append("'>Last</a>");
 		
 		if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
-			htmlBuf.append("<form name='InventoryBeanForm' method='post' action='").append(req.getContextPath()).append("/servlet/InventoryManager'>").append("\r\n");
-			htmlBuf.append("<input type='hidden' name='action' value='SelectInventory'>").append("\r\n");
+			htmlBuf.append("<form name='InventoryBeanForm' method='post' action='").append(req.getContextPath()).append("/servlet/InventoryManager'>").append(LINE_SEPARATOR);
+			htmlBuf.append("<input type='hidden' name='action' value='SelectInventory'>").append(LINE_SEPARATOR);
 		}
 		
-		htmlBuf.append("<table width='80%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>").append("\r\n");
-		htmlBuf.append("  <tr>").append("\r\n");
-        htmlBuf.append("    <td>").append(navBuf).append("</td>").append("\r\n");
-        htmlBuf.append("  </tr>").append("\r\n");
-        htmlBuf.append("  <tr>").append("\r\n");
-        htmlBuf.append("    <td>").append("\r\n");
-        htmlBuf.append("      <table width='100%' border='1' cellspacing='0' cellpadding='3'>").append("\r\n");
-        htmlBuf.append("        <tr>").append("\r\n");
+		htmlBuf.append("<table width='80%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>").append(LINE_SEPARATOR);
+		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
+        htmlBuf.append("    <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
+        htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
+        htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
+        htmlBuf.append("    <td>").append(LINE_SEPARATOR);
+        htmlBuf.append("      <table width='100%' border='1' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
+        htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
         if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
-	        htmlBuf.append("          <td class='HeaderCell' width='5%'>&nbsp;</td>").append("\r\n");
+	        htmlBuf.append("          <td class='HeaderCell' width='5%'>&nbsp;</td>").append(LINE_SEPARATOR);
         }
-        htmlBuf.append("          <td class='HeaderCell' width='17%'>Serial # / DeviceName</td>").append("\r\n");
-        htmlBuf.append("          <td class='HeaderCell' width='17%'>Device Type</td>").append("\r\n");
-        htmlBuf.append("          <td class='HeaderCell' width='17%'>Install Date</td>").append("\r\n");
-        htmlBuf.append("          <td class='HeaderCell' width='49%'>Location</td>").append("\r\n");
-        htmlBuf.append("        </tr>").append("\r\n");
+        htmlBuf.append("          <td class='HeaderCell' width='17%'>Serial # / DeviceName</td>").append(LINE_SEPARATOR);
+        htmlBuf.append("          <td class='HeaderCell' width='17%'>Device Type</td>").append(LINE_SEPARATOR);
+        htmlBuf.append("          <td class='HeaderCell' width='17%'>Install Date</td>").append(LINE_SEPARATOR);
+        htmlBuf.append("          <td class='HeaderCell' width='49%'>Location</td>").append(LINE_SEPARATOR);
+        htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
         
         for (int i = minInvNo; i <= maxInvNo; i++) {
         	LiteInventoryBase liteInv = (LiteInventoryBase) hwList.get(i-1);
@@ -342,11 +345,11 @@ public class InventoryBean {
         	dateFormat.setTimeZone( getEnergyCompany().getDefaultTimeZone() );
         	String instDate = (installDate != null)? dateFormat.format(installDate) : "----";
         	
-            htmlBuf.append("        <tr>").append("\r\n");
+            htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
 	        if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
 	        	htmlBuf.append("          <td class='TableCell' width='5%'>");
 	        	htmlBuf.append("<input type='radio' name='InvID' value='").append(liteInv.getInventoryID()).append("'>");
-	        	htmlBuf.append("</td>").append("\r\n");
+	        	htmlBuf.append("</td>").append(LINE_SEPARATOR);
 	        }
             htmlBuf.append("          <td class='TableCell' width='17%'>");
 			htmlBuf.append("<a href='../Hardware/InventoryDetail.jsp?InvId=").append(liteInv.getInventoryID());
@@ -357,9 +360,9 @@ public class InventoryBean {
 			else if (getHtmlStyle() == HTML_STYLE_INVENTORY_SET)
 				htmlBuf.append("&src=ResultSet");
 			htmlBuf.append("'>").append(deviceName).append("</a>");
-            htmlBuf.append("</td>").append("\r\n");
-            htmlBuf.append("          <td class='TableCell' width='17%'>").append(deviceType).append("</td>").append("\r\n");
-            htmlBuf.append("          <td class='TableCell' width='17%'>").append(instDate).append("</td>").append("\r\n");
+            htmlBuf.append("</td>").append(LINE_SEPARATOR);
+            htmlBuf.append("          <td class='TableCell' width='17%'>").append(deviceType).append("</td>").append(LINE_SEPARATOR);
+            htmlBuf.append("          <td class='TableCell' width='17%'>").append(instDate).append("</td>").append(LINE_SEPARATOR);
             htmlBuf.append("          <td class='TableCell' width='49%'>");
             if (liteInv.getAccountID() == 0)
             	htmlBuf.append("Warehouse");
@@ -373,72 +376,72 @@ public class InventoryBean {
             	htmlBuf.append(" ").append(ServerUtils.getFormattedName(liteCont));
             	htmlBuf.append(", ").append(ServerUtils.getOneLineAddress(liteAddr));
             }
-            htmlBuf.append("</td>").append("\r\n");
-            htmlBuf.append("        </tr>").append("\r\n");
+            htmlBuf.append("</td>").append(LINE_SEPARATOR);
+            htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
         }
         
-        htmlBuf.append("      </table>").append("\r\n");
-        htmlBuf.append("    </td>").append("\r\n");
-        htmlBuf.append("  </tr>").append("\r\n");
-        htmlBuf.append("  <tr>").append("\r\n");
-        htmlBuf.append("    <td>").append(navBuf).append("</td>").append("\r\n");
-        htmlBuf.append("  </tr>").append("\r\n");
-        htmlBuf.append("</table>").append("\r\n");
+        htmlBuf.append("      </table>").append(LINE_SEPARATOR);
+        htmlBuf.append("    </td>").append(LINE_SEPARATOR);
+        htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
+        htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
+        htmlBuf.append("    <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
+        htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
+        htmlBuf.append("</table>").append(LINE_SEPARATOR);
         
         if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
-        	htmlBuf.append("<br>").append("\r\n");
-			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append("\r\n");
-			htmlBuf.append("  <tr>").append("\r\n");
-			htmlBuf.append("    <td align='right'>").append("\r\n");
-			htmlBuf.append("      <input type='submit' name='Submit' value='Select' onclick='return validate(this.form)'>").append("\r\n");
-			htmlBuf.append("    </td>").append("\r\n");
-			htmlBuf.append("    <td>").append("\r\n");
+        	htmlBuf.append("<br>").append(LINE_SEPARATOR);
+			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
+			htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
+			htmlBuf.append("    <td align='right'>").append(LINE_SEPARATOR);
+			htmlBuf.append("      <input type='submit' name='Submit' value='Select' onclick='return validate(this.form)'>").append(LINE_SEPARATOR);
+			htmlBuf.append("    </td>").append(LINE_SEPARATOR);
+			htmlBuf.append("    <td>").append(LINE_SEPARATOR);
 			if (referer != null)
-				htmlBuf.append("      <input type='button' name='Cancel' value='Cancel' onclick='location.href=\"").append(referer).append("\"'>").append("\r\n");
+				htmlBuf.append("      <input type='button' name='Cancel' value='Cancel' onclick='location.href=\"").append(referer).append("\"'>").append(LINE_SEPARATOR);
 			else
-				htmlBuf.append("      <input type='button' name='Cancel' value='Cancel' onclick='history.back()'>").append("\r\n");
-			htmlBuf.append("    </td>").append("\r\n");
-			htmlBuf.append("  </tr>").append("\r\n");
-			htmlBuf.append("</table>").append("\r\n");
-			htmlBuf.append("</form>").append("\r\n");
+				htmlBuf.append("      <input type='button' name='Cancel' value='Cancel' onclick='history.back()'>").append(LINE_SEPARATOR);
+			htmlBuf.append("    </td>").append(LINE_SEPARATOR);
+			htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
+			htmlBuf.append("</table>").append(LINE_SEPARATOR);
+			htmlBuf.append("</form>").append(LINE_SEPARATOR);
         }
         
         if (getHtmlStyle() == HTML_STYLE_INVENTORY_SET) {
-			htmlBuf.append("<br>").append("\r\n");
-			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append("\r\n");
-			htmlBuf.append("  <tr>").append("\r\n");
-			htmlBuf.append("    <td align='center'>").append("\r\n");
+			htmlBuf.append("<br>").append(LINE_SEPARATOR);
+			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
+			htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
+			htmlBuf.append("    <td align='center'>").append(LINE_SEPARATOR);
 			if (referer != null)
-				htmlBuf.append("      <input type='button' name='Back' value='Back' onclick='location.href=\"").append(referer).append("\"'>").append("\r\n");
+				htmlBuf.append("      <input type='button' name='Back' value='Back' onclick='location.href=\"").append(referer).append("\"'>").append(LINE_SEPARATOR);
 			else
-				htmlBuf.append("      <input type='button' name='Back' value='Back' onclick='history.back()'>").append("\r\n");
-			htmlBuf.append("    </td>").append("\r\n");
-			htmlBuf.append("  </tr>").append("\r\n");
-			htmlBuf.append("</table>").append("\r\n");
+				htmlBuf.append("      <input type='button' name='Back' value='Back' onclick='history.back()'>").append(LINE_SEPARATOR);
+			htmlBuf.append("    </td>").append(LINE_SEPARATOR);
+			htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
+			htmlBuf.append("</table>").append(LINE_SEPARATOR);
         }
                 
-        htmlBuf.append("<form name='cusForm' method='post' action='").append(req.getContextPath()).append("/servlet/SOAPClient'>").append("\r\n");
-        htmlBuf.append("  <input type='hidden' name='action' value='GetCustAccount'>").append("\r\n");
-        htmlBuf.append("  <input type='hidden' name='AccountID' value=''>").append("\r\n");
-        htmlBuf.append("  <input type='hidden' name='REDIRECT' value='").append(req.getContextPath()).append("/operator/Consumer/Update.jsp'>").append("\r\n");
-        htmlBuf.append("  <input type='hidden' name='REFERRER' value='").append(req.getRequestURI()).append("'>").append("\r\n");
-        htmlBuf.append("</form>").append("\r\n");
+        htmlBuf.append("<form name='cusForm' method='post' action='").append(req.getContextPath()).append("/servlet/SOAPClient'>").append(LINE_SEPARATOR);
+        htmlBuf.append("  <input type='hidden' name='action' value='GetCustAccount'>").append(LINE_SEPARATOR);
+        htmlBuf.append("  <input type='hidden' name='AccountID' value=''>").append(LINE_SEPARATOR);
+        htmlBuf.append("  <input type='hidden' name='REDIRECT' value='").append(req.getContextPath()).append("/operator/Consumer/Update.jsp'>").append(LINE_SEPARATOR);
+        htmlBuf.append("  <input type='hidden' name='REFERRER' value='").append(req.getRequestURI()).append("'>").append(LINE_SEPARATOR);
+        htmlBuf.append("</form>").append(LINE_SEPARATOR);
         
-        htmlBuf.append("<script language='JavaScript'>").append("\r\n");
-		htmlBuf.append("function validate(form) {").append("\r\n");
-		htmlBuf.append("  var radioBtns = document.getElementsByName('InvID');").append("\r\n");
-		htmlBuf.append("  if (radioBtns != null) {").append("\r\n");
-		htmlBuf.append("    for (i = 0; i < radioBtns.length; i++)").append("\r\n");
-		htmlBuf.append("      if (radioBtns[i].checked) return true;").append("\r\n");
-		htmlBuf.append("  }").append("\r\n");
-		htmlBuf.append("  return false;").append("\r\n");
-		htmlBuf.append("}").append("\r\n");
-        htmlBuf.append("function selectAccount(accountID) {").append("\r\n");
-        htmlBuf.append("  var form = document.cusForm;").append("\r\n");
-        htmlBuf.append("  form.AccountID.value = accountID;").append("\r\n");
-        htmlBuf.append("  form.submit();").append("\r\n");
-        htmlBuf.append("}").append("\r\n");
-        htmlBuf.append("</script>").append("\r\n");
+        htmlBuf.append("<script language='JavaScript'>").append(LINE_SEPARATOR);
+		htmlBuf.append("function validate(form) {").append(LINE_SEPARATOR);
+		htmlBuf.append("  var radioBtns = document.getElementsByName('InvID');").append(LINE_SEPARATOR);
+		htmlBuf.append("  if (radioBtns != null) {").append(LINE_SEPARATOR);
+		htmlBuf.append("    for (i = 0; i < radioBtns.length; i++)").append(LINE_SEPARATOR);
+		htmlBuf.append("      if (radioBtns[i].checked) return true;").append(LINE_SEPARATOR);
+		htmlBuf.append("  }").append(LINE_SEPARATOR);
+		htmlBuf.append("  return false;").append(LINE_SEPARATOR);
+		htmlBuf.append("}").append(LINE_SEPARATOR);
+        htmlBuf.append("function selectAccount(accountID) {").append(LINE_SEPARATOR);
+        htmlBuf.append("  var form = document.cusForm;").append(LINE_SEPARATOR);
+        htmlBuf.append("  form.AccountID.value = accountID;").append(LINE_SEPARATOR);
+        htmlBuf.append("  form.submit();").append(LINE_SEPARATOR);
+        htmlBuf.append("}").append(LINE_SEPARATOR);
+        htmlBuf.append("</script>").append(LINE_SEPARATOR);
         
 		return htmlBuf.toString();
 	}

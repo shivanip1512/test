@@ -68,9 +68,9 @@ public class NewCustAccountAction implements ActionBase {
             account.setAccountNumber( req.getParameter("AcctNo") );
             account.setIsCommercial( Boolean.valueOf(req.getParameter("Commercial")).booleanValue() );
             account.setCompany( req.getParameter("Company") );
-            account.setAccountNotes( req.getParameter("AcctNotes") );
+            account.setAccountNotes( req.getParameter("AcctNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
             account.setPropertyNumber( req.getParameter("PropNo") );
-            account.setPropertyNotes( req.getParameter("PropNotes") );
+            account.setPropertyNotes( req.getParameter("PropNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
 
             StreetAddress propAddr = new StreetAddress();
             propAddr.setStreetAddr1( req.getParameter("SAddr1") );

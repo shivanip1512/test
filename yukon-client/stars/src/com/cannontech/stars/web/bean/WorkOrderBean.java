@@ -36,6 +36,8 @@ public class WorkOrderBean {
 	
 	private static final int DEFAULT_PAGE_SIZE = 20;
 	
+	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+	
 	private static final Comparator ORDER_ID_CMPTOR = new Comparator() {
 		public int compare(Object o1, Object o2) {
 			LiteWorkOrderBase so1 = (LiteWorkOrderBase) o1;
@@ -212,22 +214,22 @@ public class WorkOrderBean {
 			navBuf.append("<a class='Link1' href='").append(pageName).append("?page=").append(maxPageNo).append("'>Last</a>");
 		
 		StringBuffer htmlBuf = new StringBuffer();
-		htmlBuf.append("<table width='95%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>").append("\r\n");
-		htmlBuf.append("  <tr>").append("\r\n");
-		htmlBuf.append("    <td>").append(navBuf).append("</td>").append("\r\n");
-		htmlBuf.append("  </tr>").append("\r\n");
-		htmlBuf.append("  <tr>").append("\r\n");
-		htmlBuf.append("    <td>").append("\r\n");
-		htmlBuf.append("      <table width='100%' border='1' cellspacing='0' cellpadding='3'>").append("\r\n");
-		htmlBuf.append("        <tr>").append("\r\n");
-		htmlBuf.append("          <td  class='HeaderCell' width='13%' >Order #</td>").append("\r\n");
-		htmlBuf.append("          <td  class='HeaderCell' width='13%' >Date/Time</td>").append("\r\n");
-		htmlBuf.append("          <td  class='HeaderCell' width='10%' >Type</td>").append("\r\n");
-		htmlBuf.append("          <td  class='HeaderCell' width='10%' >Status</td>").append("\r\n");
-		htmlBuf.append("          <td  class='HeaderCell' width='8%' >By Who</td>").append("\r\n");
-		htmlBuf.append("          <td  class='HeaderCell' width='12%' >Assigned</td>").append("\r\n");
-		htmlBuf.append("          <td  class='HeaderCell' width='34%' >Description</td>").append("\r\n");
-		htmlBuf.append("        </tr>").append("\r\n");
+		htmlBuf.append("<table width='95%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>").append(LINE_SEPARATOR);
+		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("    <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
+		htmlBuf.append("      <table width='100%' border='1' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
+		htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td  class='HeaderCell' width='13%' >Order #</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td  class='HeaderCell' width='13%' >Date/Time</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td  class='HeaderCell' width='10%' >Type</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td  class='HeaderCell' width='10%' >Status</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td  class='HeaderCell' width='8%' >By Who</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td  class='HeaderCell' width='12%' >Assigned</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td  class='HeaderCell' width='34%' >Description</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
 		
 		for (int i = minOrderNo; i <= maxOrderNo; i++) {
 			LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) soList.get(i-1);
@@ -237,42 +239,42 @@ public class WorkOrderBean {
 			if (starsOrder.getOrderedBy().equals(""))
 				starsOrder.setOrderedBy( "&nbsp;" );
 			
-			htmlBuf.append("        <tr>").append("\r\n");
+			htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='13%' >")
 					.append("<a href='WorkOrder.jsp?OrderId=").append(liteOrder.getOrderID()).append("' class='Link1'>")
-					.append(starsOrder.getOrderNumber()).append("</a></td>").append("\r\n");
-			htmlBuf.append("          <td class='TableCell' width='13%' >").append(dateStr).append("</td>").append("\r\n");
-			htmlBuf.append("          <td class='TableCell' width='10%' >").append(starsOrder.getServiceType().getContent()).append("</td>").append("\r\n");
-			htmlBuf.append("          <td class='TableCell' width='10%' >").append(starsOrder.getCurrentState().getContent()).append("</td>").append("\r\n");
-			htmlBuf.append("          <td class='TableCell' width='8%' >").append(starsOrder.getOrderedBy()).append("</td>").append("\r\n");
-			htmlBuf.append("          <td class='TableCell' width='12%' >").append(starsOrder.getServiceCompany().getContent()).append("</td>").append("\r\n");
-			htmlBuf.append("          <td class='TableCell' width='34%'>").append("\r\n");
+					.append(starsOrder.getOrderNumber()).append("</a></td>").append(LINE_SEPARATOR);
+			htmlBuf.append("          <td class='TableCell' width='13%' >").append(dateStr).append("</td>").append(LINE_SEPARATOR);
+			htmlBuf.append("          <td class='TableCell' width='10%' >").append(starsOrder.getServiceType().getContent()).append("</td>").append(LINE_SEPARATOR);
+			htmlBuf.append("          <td class='TableCell' width='10%' >").append(starsOrder.getCurrentState().getContent()).append("</td>").append(LINE_SEPARATOR);
+			htmlBuf.append("          <td class='TableCell' width='8%' >").append(starsOrder.getOrderedBy()).append("</td>").append(LINE_SEPARATOR);
+			htmlBuf.append("          <td class='TableCell' width='12%' >").append(starsOrder.getServiceCompany().getContent()).append("</td>").append(LINE_SEPARATOR);
+			htmlBuf.append("          <td class='TableCell' width='34%'>").append(LINE_SEPARATOR);
 			htmlBuf.append("            <textarea name='textarea' rows='2' wrap='soft' cols='35' class='TableCell' readonly>")
-					.append(starsOrder.getDescription().replaceAll("<br>", "\r\n")).append("</textarea>").append("\r\n");
-			htmlBuf.append("          </td>").append("\r\n");
-			htmlBuf.append("        </tr>").append("\r\n");
+					.append(starsOrder.getDescription().replaceAll("<br>", LINE_SEPARATOR)).append("</textarea>").append(LINE_SEPARATOR);
+			htmlBuf.append("          </td>").append(LINE_SEPARATOR);
+			htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
 		}
 		
-		htmlBuf.append("      </table>").append("\r\n");
-		htmlBuf.append("    </td>").append("\r\n");
-		htmlBuf.append("  </tr>").append("\r\n");
-		htmlBuf.append("  <tr>").append("\r\n");
-		htmlBuf.append("    <td>").append(navBuf).append("</td>").append("\r\n");
-		htmlBuf.append("  </tr>").append("\r\n");
-		htmlBuf.append("</table>").append("\r\n");
+		htmlBuf.append("      </table>").append(LINE_SEPARATOR);
+		htmlBuf.append("    </td>").append(LINE_SEPARATOR);
+		htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("    <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("</table>").append(LINE_SEPARATOR);
         
 		if (getHtmlStyle() == HTML_STYLE_SEARCH_RESULTS) {
-			htmlBuf.append("<br>").append("\r\n");
-			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append("\r\n");
-			htmlBuf.append("  <tr>").append("\r\n");
-			htmlBuf.append("    <td align='center'>").append("\r\n");
+			htmlBuf.append("<br>").append(LINE_SEPARATOR);
+			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
+			htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
+			htmlBuf.append("    <td align='center'>").append(LINE_SEPARATOR);
 			if (referer != null)
-				htmlBuf.append("      <input type='button' name='Back' value='Back' onclick='location.href=\"").append(referer).append("\"'>").append("\r\n");
+				htmlBuf.append("      <input type='button' name='Back' value='Back' onclick='location.href=\"").append(referer).append("\"'>").append(LINE_SEPARATOR);
 			else
-				htmlBuf.append("      <input type='button' name='Back' value='Back' onclick='history.back()'>").append("\r\n");
-			htmlBuf.append("    </td>").append("\r\n");
-			htmlBuf.append("  </tr>").append("\r\n");
-			htmlBuf.append("</table>").append("\r\n");
+				htmlBuf.append("      <input type='button' name='Back' value='Back' onclick='history.back()'>").append(LINE_SEPARATOR);
+			htmlBuf.append("    </td>").append(LINE_SEPARATOR);
+			htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
+			htmlBuf.append("</table>").append(LINE_SEPARATOR);
 		}
 		
 		return htmlBuf.toString();

@@ -113,7 +113,7 @@ function checkOrderNo(form) {
                 <td width="8%" class="TableCell"><%= orderedBy %></td>
                 <td width="12%" class="TableCell"><%= order.getServiceCompany().getContent() %></td>
                 <td width="34%"> 
-                  <textarea name="Description" rows="3" wrap="soft" cols="35" class="TableCell" readonly><%= order.getDescription().replaceAll("<br>", "\r\n") %></textarea>
+                  <textarea name="Description" rows="3" wrap="soft" cols="35" class="TableCell" readonly><%= order.getDescription().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                 </td>
               </tr>
               <%

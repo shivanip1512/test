@@ -170,7 +170,7 @@ var idx = 0;
 	progName[idx] = "<%= program.getProgramName() %>";
 	dispName[idx] = "<%= (dispNames.length > 0)? dispNames[0] : "" %>";
 	shortName[idx] = "<%= (dispNames.length > 1)? dispNames[1] : "" %>";
-	description[idx] = "<%= cfg.getDescription().replaceAll("\"", "&quot;") %>".replace(/&quot;/g, '"').replace(/<br>/g, '\r\n');
+	description[idx] = "<%= cfg.getDescription().replaceAll("\"", "&quot;") %>".replace(/&quot;/g, '"').replace(/<br>/g, '<%= System.getProperty("line.separator") %>');
 	ctrlOdds[idx] = <%= (program.getChanceOfControl() == null) ? 0 : program.getChanceOfControl().getEntryID() %>;
 	iconNameSmall[idx] = "<%= imgNames[1] %>";
 	iconNameSavings[idx] = "<%= imgNames[2] %>";
@@ -406,7 +406,7 @@ function prepareSubmit(form) {
                       <tr> 
                         <td width="18%" align="right" class="TableCell">Description:</td>
                         <td width="82%" class="TableCell"> 
-                          <textarea name="Description" rows="4" cols="50" wrap="soft"><%= category.getStarsWebConfig().getDescription().replaceAll("<br>", "\r\n") %></textarea>
+                          <textarea name="Description" rows="4" cols="50" wrap="soft"><%= category.getStarsWebConfig().getDescription().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                         </td>
                       </tr>
                       <tr> 

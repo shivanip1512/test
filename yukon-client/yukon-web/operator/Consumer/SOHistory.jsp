@@ -272,7 +272,7 @@ function init() {
                                 <div align="right">Description:</div>
                               </td>
                               <td width="70%"> 
-                                <textarea name="Description" rows="3" wrap="soft" cols="35" class = "TableCell"><%= order.getDescription().replaceAll("<br>", "\r\n") %></textarea>
+                                <textarea name="Description" rows="3" wrap="soft" cols="35" class = "TableCell"><%= order.getDescription().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                               </td>
                             </tr>
                           </table>
@@ -337,7 +337,7 @@ function init() {
                           <div align="right">Action Taken:</div>
                         </td>
                         <td width="70%"> 
-                          <textarea name="ActionTaken" rows="3" wrap="soft" cols="35" class = "TableCell"><%= order.getActionTaken().replaceAll("<br>", "\r\n") %></textarea>
+                          <textarea name="ActionTaken" rows="3" wrap="soft" cols="35" class = "TableCell"><%= order.getActionTaken().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                         </td>
                       </tr>
                     </table>

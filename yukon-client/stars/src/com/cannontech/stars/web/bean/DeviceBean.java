@@ -23,6 +23,8 @@ import com.cannontech.stars.web.servlet.SOAPServer;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class DeviceBean {
+	
+	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
 	private static final int DEFAULT_PAGE_SIZE = 20;
 	
@@ -47,19 +49,19 @@ public class DeviceBean {
 	public String getHTML(HttpServletRequest req) {
 		if (deviceList == null || deviceList.size() == 0) {
 			StringBuffer htmlBuf = new StringBuffer();
-			htmlBuf.append("<p class='MainText'>No device found.</p>").append("\r\n");
+			htmlBuf.append("<p class='MainText'>No device found.</p>").append(LINE_SEPARATOR);
 			
-			htmlBuf.append("<br>").append("\r\n");
-			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append("\r\n");
-			htmlBuf.append("  <tr>").append("\r\n");
-			htmlBuf.append("    <td align='center'>").append("\r\n");
+			htmlBuf.append("<br>").append(LINE_SEPARATOR);
+			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
+			htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
+			htmlBuf.append("    <td align='center'>").append(LINE_SEPARATOR);
 			if (referer != null)
-				htmlBuf.append("      <input type='button' name='Back' value='Back' onclick='location.href=\"").append(referer).append("\"'>").append("\r\n");
+				htmlBuf.append("      <input type='button' name='Back' value='Back' onclick='location.href=\"").append(referer).append("\"'>").append(LINE_SEPARATOR);
 			else
-				htmlBuf.append("      <input type='button' name='Back' value='Back' onclick='history.back()'>").append("\r\n");
-			htmlBuf.append("    </td>").append("\r\n");
-			htmlBuf.append("  </tr>").append("\r\n");
-			htmlBuf.append("</table>").append("\r\n");
+				htmlBuf.append("      <input type='button' name='Back' value='Back' onclick='history.back()'>").append(LINE_SEPARATOR);
+			htmlBuf.append("    </td>").append(LINE_SEPARATOR);
+			htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
+			htmlBuf.append("</table>").append(LINE_SEPARATOR);
 			
 			return htmlBuf.toString();
 		}
@@ -101,58 +103,58 @@ public class DeviceBean {
 			navBuf.append("<a class='Link1' href='").append(pageName).append("?page=").append(maxPageNo).append("'>Last</a>");
 		
 		StringBuffer htmlBuf = new StringBuffer();
-		htmlBuf.append("<form name='DeviceBeanForm' method='post' action='").append(req.getContextPath()).append("/servlet/InventoryManager'>").append("\r\n");
-		htmlBuf.append("<input type='hidden' name='action' value='SelectDevice'>").append("\r\n");
-		htmlBuf.append("<input type='hidden' name='CategoryID' value='").append(categoryID).append("'>").append("\r\n");
+		htmlBuf.append("<form name='DeviceBeanForm' method='post' action='").append(req.getContextPath()).append("/servlet/InventoryManager'>").append(LINE_SEPARATOR);
+		htmlBuf.append("<input type='hidden' name='action' value='SelectDevice'>").append(LINE_SEPARATOR);
+		htmlBuf.append("<input type='hidden' name='CategoryID' value='").append(categoryID).append("'>").append(LINE_SEPARATOR);
 		
-		htmlBuf.append("<table width='50%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>").append("\r\n");
-		htmlBuf.append("  <tr>").append("\r\n");
-		htmlBuf.append("    <td>").append(navBuf).append("</td>").append("\r\n");
-		htmlBuf.append("  </tr>").append("\r\n");
-		htmlBuf.append("  <tr>").append("\r\n");
-		htmlBuf.append("    <td>").append("\r\n");
-		htmlBuf.append("      <table width='100%' border='1' cellspacing='0' cellpadding='3'>").append("\r\n");
-		htmlBuf.append("        <tr>").append("\r\n");
-		htmlBuf.append("          <td class='HeaderCell' width='10%'>&nbsp;</td>").append("\r\n");
-		htmlBuf.append("          <td class='HeaderCell' width='50%'>Device Name</td>").append("\r\n");
-		htmlBuf.append("          <td class='HeaderCell' width='40%'>Device Type</td>").append("\r\n");
-		htmlBuf.append("        </tr>").append("\r\n");
+		htmlBuf.append("<table width='50%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>").append(LINE_SEPARATOR);
+		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("    <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
+		htmlBuf.append("      <table width='100%' border='1' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
+		htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td class='HeaderCell' width='10%'>&nbsp;</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td class='HeaderCell' width='50%'>Device Name</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td class='HeaderCell' width='40%'>Device Type</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
         
 		for (int i = minInvNo; i <= maxInvNo; i++) {
 			LiteYukonPAObject litePao = (LiteYukonPAObject) deviceList.get(i-1);
         	
-			htmlBuf.append("        <tr>").append("\r\n");
+			htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='10%'>");
 			htmlBuf.append("<input type='radio' name='DeviceID' value='").append(litePao.getYukonID()).append("'>");
-			htmlBuf.append("</td>").append("\r\n");
-			htmlBuf.append("          <td class='TableCell' width='50%'>").append( PAOFuncs.getYukonPAOName(litePao.getYukonID()) ).append("</td>").append("\r\n");
-			htmlBuf.append("          <td class='TableCell' width='40%'>").append( PAOGroups.getPAOTypeString(litePao.getType()) ).append("</td>").append("\r\n");
-			htmlBuf.append("        </tr>").append("\r\n");
+			htmlBuf.append("</td>").append(LINE_SEPARATOR);
+			htmlBuf.append("          <td class='TableCell' width='50%'>").append( PAOFuncs.getYukonPAOName(litePao.getYukonID()) ).append("</td>").append(LINE_SEPARATOR);
+			htmlBuf.append("          <td class='TableCell' width='40%'>").append( PAOGroups.getPAOTypeString(litePao.getType()) ).append("</td>").append(LINE_SEPARATOR);
+			htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
 		}
         
-		htmlBuf.append("      </table>").append("\r\n");
-		htmlBuf.append("    </td>").append("\r\n");
-		htmlBuf.append("  </tr>").append("\r\n");
-		htmlBuf.append("  <tr>").append("\r\n");
-		htmlBuf.append("    <td>").append(navBuf).append("</td>").append("\r\n");
-		htmlBuf.append("  </tr>").append("\r\n");
-		htmlBuf.append("</table>").append("\r\n");
+		htmlBuf.append("      </table>").append(LINE_SEPARATOR);
+		htmlBuf.append("    </td>").append(LINE_SEPARATOR);
+		htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("    <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("</table>").append(LINE_SEPARATOR);
         
-		htmlBuf.append("<br>").append("\r\n");
-		htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append("\r\n");
-		htmlBuf.append("  <tr>").append("\r\n");
-		htmlBuf.append("    <td align='right'>").append("\r\n");
-		htmlBuf.append("      <input type='submit' name='Submit' value='Select'>").append("\r\n");
-		htmlBuf.append("    </td>").append("\r\n");
-		htmlBuf.append("    <td>").append("\r\n");
+		htmlBuf.append("<br>").append(LINE_SEPARATOR);
+		htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
+		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("    <td align='right'>").append(LINE_SEPARATOR);
+		htmlBuf.append("      <input type='submit' name='Submit' value='Select'>").append(LINE_SEPARATOR);
+		htmlBuf.append("    </td>").append(LINE_SEPARATOR);
+		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
 		if (referer != null)
-			htmlBuf.append("      <input type='button' name='Cancel' value='Cancel' onclick='location.href=\"").append(referer).append("\"'>").append("\r\n");
+			htmlBuf.append("      <input type='button' name='Cancel' value='Cancel' onclick='location.href=\"").append(referer).append("\"'>").append(LINE_SEPARATOR);
 		else
-			htmlBuf.append("      <input type='button' name='Cancel' value='Cancel' onclick='history.back()'>").append("\r\n");
-		htmlBuf.append("    </td>").append("\r\n");
-		htmlBuf.append("  </tr>").append("\r\n");
-		htmlBuf.append("</table>").append("\r\n");
-		htmlBuf.append("</form>").append("\r\n");
+			htmlBuf.append("      <input type='button' name='Cancel' value='Cancel' onclick='history.back()'>").append(LINE_SEPARATOR);
+		htmlBuf.append("    </td>").append(LINE_SEPARATOR);
+		htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("</table>").append(LINE_SEPARATOR);
+		htmlBuf.append("</form>").append(LINE_SEPARATOR);
         
 		return htmlBuf.toString();
 	}

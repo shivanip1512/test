@@ -246,9 +246,9 @@ public class WorkOrderManager extends HttpServlet {
 		if (req.getParameter("OrderNo") != null)
 			starsOrder.setOrderNumber( req.getParameter("OrderNo") );
 		if (req.getParameter("ActionTaken") != null)
-			starsOrder.setActionTaken( req.getParameter("ActionTaken").replaceAll("\r\n", "<br>") );
+			starsOrder.setActionTaken( req.getParameter("ActionTaken").replaceAll(System.getProperty("line.separator"), "<br>") );
 		starsOrder.setOrderedBy( req.getParameter("OrderedBy") );
-		starsOrder.setDescription( req.getParameter("Description").replaceAll("\r\n", "<br>") );
+		starsOrder.setDescription( req.getParameter("Description").replaceAll(System.getProperty("line.separator"), "<br>") );
 			
 		ServiceType servType = new ServiceType();
 		servType.setEntryID( Integer.parseInt(req.getParameter("ServiceType")) );

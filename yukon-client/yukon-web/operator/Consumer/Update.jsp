@@ -189,7 +189,7 @@ function deleteAccount(form) {
                           <div align="right">Notes:</div>
                         </td>
                         <td width="210"> 
-                          <textarea name="AcctNotes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= account.getAccountNotes() %></textarea>
+                          <textarea name="AcctNotes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= account.getAccountNotes().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                         </td>
                       </tr>
                     </table>
@@ -320,7 +320,7 @@ function deleteAccount(form) {
                           <div align="right">Notes:</div>
                         </td>
                         <td width="210"> 
-                          <textarea name="PropNotes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= account.getPropertyNotes() %></textarea>
+                          <textarea name="PropNotes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= account.getPropertyNotes().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                         </td>
                       </tr>
                     </table>

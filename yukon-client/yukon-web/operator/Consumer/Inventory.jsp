@@ -260,7 +260,7 @@ function changeSerialNo() {
                                   <div align="right">Notes: </div>
                                 </td>
                                 <td width="200"> 
-                                  <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= newInv.getNotes() %></textarea>
+                                  <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= newInv.getNotes().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                                 </td>
                               </tr>
                             </table>
@@ -306,7 +306,7 @@ function changeSerialNo() {
                                     <div align="right">Notes: </div>
                                   </td>
                                   <td width="200"> 
-                                    <textarea name="InstallNotes" rows="3 wrap="soft" cols="28" class = "TableCell"><%= newInv.getInstallationNotes() %></textarea>
+                                    <textarea name="InstallNotes" rows="3 wrap="soft" cols="28" class = "TableCell"><%= newInv.getInstallationNotes().replaceAll(System.getProperty("line.separator"), "<br>") %></textarea>
                                   </td>
                                 </tr>
                               </table>

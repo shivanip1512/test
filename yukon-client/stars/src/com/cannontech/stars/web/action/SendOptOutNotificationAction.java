@@ -49,6 +49,8 @@ import com.cannontech.tools.email.EmailMessage;
  * Window>Preferences>Java>Code Generation.
  */
 public class SendOptOutNotificationAction implements ActionBase {
+	
+	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
@@ -162,24 +164,24 @@ public class SendOptOutNotificationAction implements ActionBase {
 	
 	private static String getAccountInformation(LiteStarsEnergyCompany energyCompany, LiteStarsCustAccountInformation liteAcctInfo) {
 		StringBuffer text = new StringBuffer();
-        text.append("Account #").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append("\r\n");
+        text.append("Account #").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append(LINE_SEPARATOR);
         
         LiteContact cont = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
-        text.append( ServerUtils.getFormattedName(cont) ).append("\r\n");
+        text.append( ServerUtils.getFormattedName(cont) ).append(LINE_SEPARATOR);
         
         LiteAddress addr = energyCompany.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
         if (addr.getLocationAddress1().trim().length() > 0) {
             text.append(addr.getLocationAddress1());
             if (addr.getLocationAddress2().trim().length() > 0)
             	text.append(", ").append(addr.getLocationAddress2());
-            text.append("\r\n");
+            text.append(LINE_SEPARATOR);
             if (addr.getCityName().trim().length() > 0)
             	text.append(addr.getCityName()).append(", ");
             if (addr.getStateCode().trim().length() > 0)
             	text.append(addr.getStateCode()).append(" ");
             if (addr.getZipCode().trim().length() > 0)
             	text.append(addr.getZipCode());
-            text.append("\r\n");
+            text.append(LINE_SEPARATOR);
         }
 		
 		String homePhone = ServerUtils.getNotification(
@@ -190,17 +192,18 @@ public class SendOptOutNotificationAction implements ActionBase {
 				ContactFuncs.getContactNotification(cont, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
         
         if (homePhone.length() > 0)
-            text.append(homePhone).append("\r\n");
+            text.append(homePhone).append(LINE_SEPARATOR);
         else if (workPhone.length() > 0)
-            text.append(workPhone).append("\r\n");
+            text.append(workPhone).append(LINE_SEPARATOR);
         else if (email.length() > 0)
-        	text.append(email).append("\r\n");
+        	text.append(email).append(LINE_SEPARATOR);
         
         return text.toString();
 	}
 	
 	private static String getProgramInformation(LiteStarsEnergyCompany energyCompany, LiteStarsCustAccountInformation liteAcctInfo) {
-        StringBuffer text = new StringBuffer("Program/Group/Serial #: \r\n");
+        StringBuffer text = new StringBuffer();
+		text.append("Program/Group/Serial #:").append(LINE_SEPARATOR);
         
         for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
         	LiteStarsLMProgram program = (LiteStarsLMProgram)liteAcctInfo.getLmPrograms().get(i);
@@ -231,7 +234,7 @@ public class SendOptOutNotificationAction implements ActionBase {
         			break;
         		}
         	}
-        	text.append(serialNo).append("\r\n");
+        	text.append(serialNo).append(LINE_SEPARATOR);
         }
         
         return text.toString();
@@ -281,23 +284,23 @@ public class SendOptOutNotificationAction implements ActionBase {
         	reenableDate = com.cannontech.util.ServletUtil.getTomorrow( energyCompany.getDefaultTimeZone() );
         
         StringBuffer text = new StringBuffer();
-        text.append("======================================================\r\n");
-        text.append("\r\n");
+        text.append("======================================================").append(LINE_SEPARATOR);
+        text.append(LINE_SEPARATOR);
         text.append( getAccountInformation(energyCompany, liteAcctInfo) );
-        text.append("\r\n");
-        text.append("======================================================\r\n");
-        text.append("\r\n");
+        text.append(LINE_SEPARATOR);
+        text.append("======================================================").append(LINE_SEPARATOR);
+        text.append(LINE_SEPARATOR);
         
         text.append(ServletUtils.capitalize2( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
-        	.append(" Time: ").append(ServerUtils.formatDate( optOutDate, energyCompany.getDefaultTimeZone() )).append("\r\n");
+        	.append(" Time: ").append(ServerUtils.formatDate( optOutDate, energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
         text.append(ServletUtils.capitalize( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) ))
-        	.append(" Time: ").append(ServerUtils.formatDate( reenableDate, energyCompany.getDefaultTimeZone() )).append("\r\n");
-        text.append("\r\n");
+        	.append(" Time: ").append(ServerUtils.formatDate( reenableDate, energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
+        text.append(LINE_SEPARATOR);
         text.append( getProgramInformation(energyCompany, liteAcctInfo) );
-        text.append("\r\n");
-        text.append("======================================================\r\n");
-        text.append("\r\n");
-        text.append("\r\n");
+        text.append(LINE_SEPARATOR);
+        text.append("======================================================").append(LINE_SEPARATOR);
+        text.append(LINE_SEPARATOR);
+        text.append(LINE_SEPARATOR);
 
         int exitQType = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_QUE_TYPE_EXIT).getEntryID();
         LiteInterviewQuestion[] liteQuestions = energyCompany.getInterviewQuestions( exitQType );
@@ -314,9 +317,9 @@ public class SendOptOutNotificationAction implements ActionBase {
         	if (liteQuestion == null)
         		throw new Exception("Cannot find exit interview question with id = " + answer.getQuestionID());
     		
-        	text.append("Q: ").append(liteQuestion.getQuestion()).append("\r\n");
-        	text.append("A: ").append(answer.getAnswer()).append("\r\n");
-        	text.append("\r\n");
+        	text.append("Q: ").append(liteQuestion.getQuestion()).append(LINE_SEPARATOR);
+        	text.append("A: ").append(answer.getAnswer()).append(LINE_SEPARATOR);
+        	text.append(LINE_SEPARATOR);
         }
 		
         String toStr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS );
@@ -344,12 +347,12 @@ public class SendOptOutNotificationAction implements ActionBase {
 			StarsOperation operation) throws Exception
 	{
         StringBuffer text = new StringBuffer();
-        text.append("======================================================\r\n");
-        text.append("\r\n");
+        text.append("======================================================").append(LINE_SEPARATOR);
+        text.append(LINE_SEPARATOR);
         text.append( getAccountInformation(energyCompany, liteAcctInfo) );
-        text.append("\r\n");
-        text.append("======================================================\r\n");
-        text.append("\r\n");
+        text.append(LINE_SEPARATOR);
+        text.append("======================================================").append(LINE_SEPARATOR);
+        text.append(LINE_SEPARATOR);
         
         OptOutEventQueue queue = energyCompany.getOptOutEventQueue();
 		OptOutEventQueue.OptOutEvent e1 = queue.findOptOutEvent( liteAcctInfo.getCustomerAccount().getAccountID() );
@@ -357,7 +360,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 		
 		if (e1 != null)
 			text.append("Scheduled ").append(ServletUtils.capitalize2( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
-				.append(" Time: ").append(ServerUtils.formatDate( new Date(e1.getStartDateTime()), energyCompany.getDefaultTimeZone() )).append("\t(Canceled)\r\n");
+				.append(" Time: ").append(ServerUtils.formatDate( new Date(e1.getStartDateTime()), energyCompany.getDefaultTimeZone() )).append("\t(Canceled)").append(LINE_SEPARATOR);
 
 		boolean foundLastOptOutEvent = false;
 		for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
@@ -367,21 +370,21 @@ public class SendOptOutNotificationAction implements ActionBase {
 			
 			if (event != null) {
 				text.append("Last ").append(ServletUtils.capitalize2(energyCompany.getEnergyCompanySetting( ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
-					.append(" Time: ").append(ServerUtils.formatDate( new Date(event.getEventDateTime()), energyCompany.getDefaultTimeZone() )).append("\r\n");
+					.append(" Time: ").append(ServerUtils.formatDate( new Date(event.getEventDateTime()), energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
 				foundLastOptOutEvent = true;
 				break;
 			}
 		}
 		
 		if (!foundLastOptOutEvent)
-			text.append("Last ").append(ServletUtils.capitalize2( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) )).append(" Time: (none)\r\n");
+			text.append("Last ").append(ServletUtils.capitalize2( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) )).append(" Time: (none)").append(LINE_SEPARATOR);
 		
         text.append(ServletUtils.capitalize( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) ))
-        	.append(" Time: ").append(ServerUtils.formatDate( new Date(), energyCompany.getDefaultTimeZone() )).append("\r\n");
-        text.append("\r\n");
+        	.append(" Time: ").append(ServerUtils.formatDate( new Date(), energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
+        text.append(LINE_SEPARATOR);
         text.append( getProgramInformation(energyCompany, liteAcctInfo) );
-        text.append("\r\n");
-        text.append("======================================================\r\n");
+        text.append(LINE_SEPARATOR);
+        text.append("======================================================").append(LINE_SEPARATOR);
 		
         String toStr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS );
         if (toStr == null)

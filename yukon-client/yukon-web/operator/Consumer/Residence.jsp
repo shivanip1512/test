@@ -285,7 +285,9 @@
                           <div align="right">Notes:</div>
                         </td>
                         <td width="184"> 
-                          <textarea name="Notes" rows="6" wrap="soft" cols="26" class = "TableCell"><% if (residence != null) out.write(residence.getNotes()); %></textarea>
+                          <textarea name="Notes" rows="6" wrap="soft" cols="26" class = "TableCell"><%
+						  	if (residence != null) out.write(residence.getNotes().replaceAll("<br>", System.getProperty("line.separator")));
+						  %></textarea>
                         </td>
                       </tr>
                     </table>

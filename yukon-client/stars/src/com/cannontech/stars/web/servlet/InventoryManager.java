@@ -1115,9 +1115,9 @@ public class InventoryManager extends HttpServlet {
 		if (req.getParameter("RemoveDate") != null && req.getParameter("RemoveDate").length() > 0)
 			starsInv.setRemoveDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("RemoveDate"), tz) );
 		if (req.getParameter("Notes") != null)
-			starsInv.setNotes( req.getParameter("Notes") );
+			starsInv.setNotes( req.getParameter("Notes").replaceAll(System.getProperty("line.separator"), "<br>") );
 		if (req.getParameter("InstallNotes") != null)
-			starsInv.setInstallationNotes( req.getParameter("InstallNotes") );
+			starsInv.setInstallationNotes( req.getParameter("InstallNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
 		
 		if (req.getParameter("Voltage") != null) {
 			Voltage volt = new Voltage();

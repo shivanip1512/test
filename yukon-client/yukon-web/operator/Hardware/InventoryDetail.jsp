@@ -245,7 +245,7 @@ function validate(form) {
                                   <div align="right">Notes:</div>
                                 </td>
                                 <td width="210"> 
-                                  <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= inventory.getNotes().replaceAll("<br>", "\r\n") %></textarea>
+                                  <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= inventory.getNotes().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                                 </td>
                               </tr>
                             </table>
@@ -290,7 +290,7 @@ function validate(form) {
                                   <div align="right">Notes:</div>
                                 </td>
                                 <td width="210"> 
-                                  <textarea name="InstallNotes" rows="3 wrap="soft" cols="28" class = "TableCell"><%= inventory.getInstallationNotes().replaceAll("<br>", "\r\n") %></textarea>
+                                  <textarea name="InstallNotes" rows="3 wrap="soft" cols="28" class = "TableCell"><%= inventory.getInstallationNotes().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                                 </td>
                               </tr>
                             </table>

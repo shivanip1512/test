@@ -65,10 +65,10 @@ public class UpdateCustAccountAction implements ActionBase {
 	        	updateAccount.setCompany( req.getParameter("Company") );
 	        else
 	        	updateAccount.setCompany( "" );
-            updateAccount.setAccountNotes( req.getParameter("AcctNotes") );
+            updateAccount.setAccountNotes( req.getParameter("AcctNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
 
             updateAccount.setPropertyNumber( req.getParameter("PropNo") );
-            updateAccount.setPropertyNotes( req.getParameter("PropNotes") );
+            updateAccount.setPropertyNotes( req.getParameter("PropNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
 
             StreetAddress propAddr = new StreetAddress();
             propAddr.setStreetAddr1( req.getParameter("SAddr1") );

@@ -28,10 +28,12 @@ import com.cannontech.tools.email.EmailMessage;
  */
 public class SendControlOddsTask implements Runnable {
 	
+	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+	
 	private static final String subject = "Today's Odds For Control";
 	private static final String header =
-			"Program Enrollment              Odds for Control\r\n" +
-			"================================================================\r\n";
+			"Program Enrollment              Odds for Control" + LINE_SEPARATOR +
+			"================================================================" + LINE_SEPARATOR;
 	private static final String blanks = "                                ";
 	private static final String footer = "To unsubscribe from the notification list, " +
 			"please go to http://www.wisewatts.com and login with your username and password. " +
@@ -122,9 +124,12 @@ public class SendControlOddsTask implements Runnable {
 						text.append( progName );
 						text.append( blanks.substring(progName.length()) );
 						text.append( ctrlOdds );
-						text.append( "\r\n" );
+						text.append( LINE_SEPARATOR );
 					}
-					text.append( "\r\n\r\n\r\n" ).append( footer );
+					text.append( LINE_SEPARATOR );
+					text.append( LINE_SEPARATOR );
+					text.append( LINE_SEPARATOR );
+					text.append( footer );
 					
 					try {
 						EmailMessage emailMsg = new EmailMessage( to, subject, text.toString() );
