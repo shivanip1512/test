@@ -121,13 +121,13 @@ public class SendOptOutNotificationAction implements ActionBase {
             
 			LiteStarsCustAccountInformation  liteAcctInfo =
 					(LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+			energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
             
-			int energyCompanyID = user.getEnergyCompanyID();
-			energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
-            
-			String notifMsg = getOptOutNotifMessage( energyCompany, liteAcctInfo, reqOper );
-			if (notifMsg != null)
-				sendNotification( notifMsg, energyCompany );
+			String notifRecip = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS );
+			if (notifRecip != null && notifRecip.trim().length() > 0) {
+				String notifMsg = getOptOutNotifMessage( energyCompany, liteAcctInfo, reqOper );
+				if (notifMsg != null) sendNotification( notifMsg, energyCompany );
+			}
             
 			StarsSuccess success = new StarsSuccess();
 			success.setDescription( ServletUtil.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " notification has been sent successfully." );

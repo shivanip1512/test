@@ -13,7 +13,6 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.RoleFuncs;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -56,8 +55,6 @@ import com.cannontech.stars.web.action.UpdateServiceRequestAction;
 import com.cannontech.stars.web.action.UpdateThermostatManualOptionAction;
 import com.cannontech.stars.web.action.UpdateThermostatScheduleAction;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
-import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
-import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.util.SOAPMessenger;
 import com.cannontech.stars.xml.util.SOAPUtil;
@@ -191,16 +188,22 @@ public class SOAPClient extends HttpServlet {
     	
 		SOAPMessage reqMsg = null;
 		SOAPMessage respMsg = null;
+		ActionBase clientAction = null;
 
 		String nextURL = req.getContextPath() + LOGIN_URL;	// The next URL we're going to, operation succeed -> destURL, operation failed -> errorURL
 		String destURL = req.getParameter( ServletUtils.ATT_REDIRECT );	// URL we should go to if action succeed
 		String errorURL = req.getParameter( ServletUtils.ATT_REFERRER );	// URL we should go to if action failed
-		ActionBase clientAction = null;
+		
+		// If parameter "ConfirmOnMessagePage" specified, the confirm/error message will be displayed on Message.jsp
+		if (req.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null) {
+			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
+			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
+			destURL = errorURL = req.getContextPath() +
+					(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
+		}
 		
 		if (action.equalsIgnoreCase("NewCustAccount")) {
 			clientAction = new NewCustAccountAction();
-			if (destURL == null) destURL = req.getContextPath() + "/operator/Consumer/NewFinal.jsp";
-			if (errorURL == null) errorURL = req.getContextPath() + "/operator/Consumer/New.jsp";
 			
 			if (req.getParameter("Wizard") != null) {
 				SOAPMessage msg = clientAction.build( req, session );
@@ -239,8 +242,8 @@ public class SOAPClient extends HttpServlet {
 				MultiAction actions = (MultiAction) session.getAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD );
 				actions.addAction( clientAction, msg );
 				
-				if (Boolean.valueOf(req.getParameter("NeedMoreInfo")).booleanValue()) {
-					resp.sendRedirect( req.getContextPath() + "/operator/Consumer/Programs2.jsp?Wizard=true" );
+				if (req.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null) {
+					resp.sendRedirect( req.getParameter(ServletUtils.ATT_REDIRECT2) + "?Wizard=true" );
 					return;
 				}
 				else {
@@ -249,27 +252,19 @@ public class SOAPClient extends HttpServlet {
 					clientAction = actions;
 				}
 			}
-			else {
-				if (Boolean.valueOf(req.getParameter("NeedMoreInfo")).booleanValue()) {
-					SOAPMessage msg = clientAction.build( req, session );
-					if (msg == null) {
-						resp.sendRedirect( errorURL );
-						return;
-					}
-					
-					MultiAction actions = new MultiAction();
-					actions.addAction( clientAction, msg );
-					session.setAttribute( ServletUtils.ATT_MULTI_ACTIONS, actions );
-					
-					resp.sendRedirect( req.getContextPath() + "/operator/Consumer/Programs2.jsp" );
+			else if (req.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null) {
+				SOAPMessage msg = clientAction.build( req, session );
+				if (msg == null) {
+					resp.sendRedirect( errorURL );
 					return;
 				}
-				else {
-					session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
-					session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
-					destURL = errorURL = req.getContextPath() +
-							(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
-				}
+				
+				MultiAction actions = new MultiAction();
+				actions.addAction( clientAction, msg );
+				session.setAttribute( ServletUtils.ATT_MULTI_ACTIONS, actions );
+				
+				resp.sendRedirect( req.getParameter(ServletUtils.ATT_REDIRECT2) );
+				return;
 			}
 		}
 		else if (action.equalsIgnoreCase("SetAddtEnrollInfo")) {
@@ -299,11 +294,6 @@ public class SOAPClient extends HttpServlet {
 			}
 			else {
 				session.removeAttribute( ServletUtils.ATT_MULTI_ACTIONS );
-				
-				session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
-				session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
-				destURL = errorURL = req.getContextPath() +
-						(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 			}
 		}
 		else if (action.equalsIgnoreCase("SearchCustAccount")) {
@@ -326,8 +316,6 @@ public class SOAPClient extends HttpServlet {
 		}
 		else if (action.equalsIgnoreCase("ReloadCustAccount")) {
 			clientAction = new ReloadCustAccountAction();
-			if (destURL == null) destURL = referer;
-			if (errorURL == null) errorURL = referer;
 		}
 		else if (action.equalsIgnoreCase("DeleteCustAccount")) {
 			clientAction = new DeleteCustAccountAction();
@@ -339,48 +327,30 @@ public class SOAPClient extends HttpServlet {
 			|| action.equalsIgnoreCase("OverrideLMHardware"))
 		{
 			clientAction = new ProgramOptOutAction();
-			
-			String recip = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() ).getEnergyCompanySetting( EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS );
-			if (recip != null && recip.trim().length() > 0) {
-				SOAPMessage msg = clientAction.build( req, session );
-				if (msg == null) {
-					resp.sendRedirect( errorURL );
-					return;
-				}
-				
-				MultiAction actions = new MultiAction();
-				actions.addAction( clientAction, msg );
-	        	
-				StarsExitInterviewQuestions questions = null;
-				StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
-						session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
-				if (ecSettings != null)
-					questions = ecSettings.getStarsExitInterviewQuestions();
-	            
-				if (questions != null && questions.getStarsExitInterviewQuestionCount() > 0
-					&& action.equalsIgnoreCase("OptOutProgram"))
-				{
-					session.setAttribute( ServletUtils.ATT_MULTI_ACTIONS, actions );
-					resp.sendRedirect( req.getParameter(ServletUtils.ATT_REDIRECT2) );
-					return;
-				}
-				else {	// if no exit interview questions, then skip the next page and send out the command immediately
-					SendOptOutNotificationAction action2 = new SendOptOutNotificationAction();
-					SOAPMessage msg2 = action2.build( req, session );
-					if (msg2 == null) {
-						resp.sendRedirect( errorURL );
-						return;
-					}
-					
-					actions.addAction( action2, msg2 );
-					clientAction = actions;
-				}
+			SOAPMessage msg = clientAction.build( req, session );
+			if (msg == null) {
+				resp.sendRedirect( errorURL );
+				return;
 			}
 			
-			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
-			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
-			destURL = errorURL = req.getContextPath() +
-					(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
+			MultiAction actions = new MultiAction();
+			actions.addAction( clientAction, msg );
+        	
+			if (req.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null) {
+				session.setAttribute( ServletUtils.ATT_MULTI_ACTIONS, actions );
+				resp.sendRedirect( req.getParameter(ServletUtils.ATT_REDIRECT2) );
+				return;
+			}
+			
+			SendOptOutNotificationAction action2 = new SendOptOutNotificationAction();
+			SOAPMessage msg2 = action2.build( req, session );
+			if (msg2 == null) {
+				resp.sendRedirect( errorURL );
+				return;
+			}
+			
+			actions.addAction( action2, msg2 );
+			clientAction = actions;
 		}
 		else if (action.equalsIgnoreCase("SendOptOutNotification")) {
 			clientAction = new SendOptOutNotificationAction();
@@ -395,40 +365,19 @@ public class SOAPClient extends HttpServlet {
 			session.removeAttribute( ServletUtils.ATT_MULTI_ACTIONS );
         	
 			clientAction = actions;
-			
-			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
-			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
-			destURL = errorURL = req.getContextPath() +
-					(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		}
 		else if (action.equalsIgnoreCase("ReenableProgram") || action.equalsIgnoreCase("CancelScheduledOptOut")) {
 			clientAction = new ProgramReenableAction();
-			
-			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
-			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
-			destURL = errorURL = req.getContextPath() +
-					(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		}
 		else if (action.equalsIgnoreCase("DisableLMHardware") || action.equalsIgnoreCase("EnableLMHardware")) {
 			clientAction = new YukonSwitchCommandAction();
-			
-			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
-			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
-			destURL = errorURL = req.getContextPath() +
-					(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		}
 		else if (action.equalsIgnoreCase("UpdateLMHardwareConfig")) {
 			clientAction = new UpdateLMHardwareConfigAction();
-			
-			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
-			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
-			destURL = errorURL = req.getContextPath() +
-					(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		}
 		else if (action.equalsIgnoreCase("GetLMCtrlHist")) {
 			clientAction = new GetLMCtrlHistAction();
 			session.setAttribute( ServletUtils.ATT_REFERRER, referer );
-			if (errorURL == null) errorURL = referer;
 		}
 		else if (action.equalsIgnoreCase("CreateCall")) {
 			clientAction = new CreateCallAction();
@@ -462,18 +411,13 @@ public class SOAPClient extends HttpServlet {
 		}
 		else if (action.equalsIgnoreCase("UpdateAppliance")) {
 			clientAction = new UpdateApplianceAction();
-			if (destURL == null) destURL = referer;
-			if (errorURL == null) errorURL = referer;
 		}
 		else if (action.equalsIgnoreCase("DeleteAppliance")) {
 			clientAction = new DeleteApplianceAction();
 			if (destURL == null) destURL = req.getContextPath() + "/operator/Consumer/Update.jsp";
-			if (errorURL == null) errorURL = referer;
 		}
 		else if (action.equalsIgnoreCase("CreateLMHardware")) {
 			clientAction = new CreateLMHardwareAction();
-			if (destURL == null) destURL = req.getContextPath() + "/operator/Consumer/Inventory.jsp";
-			if (errorURL == null) errorURL = req.getContextPath() + "/operator/Consumer/CreateHardware.jsp";
 			
 			if (req.getParameter("Wizard") != null) {
 				SOAPMessage msg = clientAction.build( req, session );
@@ -508,19 +452,9 @@ public class SOAPClient extends HttpServlet {
 		}
 		else if (action.equalsIgnoreCase("UpdateThermostatSchedule")) {
 			clientAction = new UpdateThermostatScheduleAction();
-			
-			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
-			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
-			destURL = errorURL = req.getContextPath() +
-					(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		}
 		else if (action.equalsIgnoreCase("UpdateThermostatOption")) {
 			clientAction = new UpdateThermostatManualOptionAction();
-			
-			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
-			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
-			destURL = errorURL = req.getContextPath() +
-					(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		}
 		else if (action.equalsIgnoreCase("SaveThermostatSchedule")) {
 			clientAction = new SaveThermostatScheduleAction();
@@ -551,6 +485,9 @@ public class SOAPClient extends HttpServlet {
 			resp.sendRedirect( referer );
 			return;
 		}
+		
+		if (destURL == null) destURL = referer;
+		if (errorURL == null) errorURL = referer;
 
 		if (clientAction != null) {
 			nextURL = errorURL;
