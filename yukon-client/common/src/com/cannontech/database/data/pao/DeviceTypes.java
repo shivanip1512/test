@@ -90,6 +90,8 @@ public interface DeviceTypes extends TypeBase
 	
 	public final static int KV 						= DEVICE_OFFSET + 74;
 	public final static int KVII					= DEVICE_OFFSET + 75;
+	
+	public final static int RTM						= DEVICE_OFFSET + 76;
 
 
 	//all the possible text representation of each device type.
@@ -169,6 +171,8 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_GOLAY_GROUP = {"Golay Group"};
 	public static final String[] STRING_SERIES_5_LMI = {"RTU-LMI", "RTU LMI"};
 	public static final String[] STRING_RTC = {"RTC"};
+	public static final String[] STRING_RTM = {"RTM"};
+	
 	
 	
 	
