@@ -64,6 +64,17 @@ CtiDeviceWctpTerminal::~CtiDeviceWctpTerminal()
     }
 }
 
+CtiDeviceWctpTerminal& CtiDeviceWctpTerminal::setSendFiller(bool yesno)
+{
+    _sendFiller = yesno;
+    return *this;
+}
+
+bool CtiDeviceWctpTerminal::getSendFiller() const
+{
+    return _sendFiller;
+}
+
 INT CtiDeviceWctpTerminal::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                CtiCommandParser               &parse,
                                                OUTMESS                        *&OutMessage,
@@ -1011,6 +1022,7 @@ CHAR CtiDeviceWctpTerminal::incrementPagePrefix()
 }
 
 CtiDeviceWctpTerminal::CtiDeviceWctpTerminal() :
+_sendFiller(true),
 _pageCount(0),
 _pagePrefix('a'),
 _pageLength(0),
@@ -1417,4 +1429,5 @@ void  SAXWctpHandler::warning (const SAXParseException &exception)
 {
     throw exception;
 }
+
 

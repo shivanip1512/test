@@ -56,6 +56,8 @@ private:
     BOOL            headerParsed;       // Whether the HTTP response headers has been parsed
     INT             timeEllapsed;       // Time ellapsed before WCTP response message has been completely received
 
+    bool _sendFiller;
+
 public:
 
    typedef CtiDeviceIED Inherited;
@@ -118,6 +120,9 @@ public:
 
    INT traceOut(PCHAR Message, ULONG Count, RWTPtrSlist< CtiMessage > &traceList);
    INT traceIn(PCHAR Message, ULONG Count, RWTPtrSlist< CtiMessage > &traceList, BOOL CompletedMessage = FALSE);
+
+   CtiDeviceWctpTerminal& setSendFiller(bool yesno);
+   bool getSendFiller() const;
 
 private:
 
