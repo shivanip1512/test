@@ -85,12 +85,13 @@
         <ant dir="${palm}" target="${dotarget}" />
         <ant dir="${tools}" target="${dotarget}" />
 		<ant dir="${servlet}" target="${dotarget}"/>
-                <ant dir="${stars}" target="${dotarget}"/>
+        <ant dir="${stars}" target="${dotarget}"/>
 		<ant dir="${report}" target="${dotarget}"/>
 
         <ant dir="${resource}" target="${dotarget}"/>
         <ant dir="${yukonappserver}" target="${dotarget}"/>
         <ant dir="${yukonappclient}" target="${dotarget}"/>
+        <ant dir="${cttp}" target="${dotarget}"/>
         <ant dir="${yukon-web}" target="${dotarget}"/> 
     </target>
 
@@ -161,15 +162,13 @@
     		<param name="filename" value="${loadcontrol}"/>
     	</antcall>
     </target>
-
+    
     <target name="yukon-web">
     	<antcall target="singlebuild" inheritAll="true">
 	   		<param name="dotarget" value="build"/>
     		<param name="filename" value="${yukon-web}"/>
     	</antcall>
     </target>
-
-
 
 
 	<!-- Special build function that can build one module with its dependencies -->
