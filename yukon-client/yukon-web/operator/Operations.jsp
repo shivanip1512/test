@@ -183,7 +183,8 @@ function confirmDelete() {
           <td width="25%">&nbsp;</td>
           </tr>
         <tr> 
-          <form method="post" action="LoadControl/oper_direct.jsp">
+          <!-- Changed direct control pages to use the 3 tier display instead of the 1tier (LoadControl/oper_direct.jsp) display-->
+          <form method="post" action="../loadmgmt/controlareas.jsp">
             <td width="25%" class = "MainText"> <cti:checkRole roleid="<%= DirectLoadcontrolRole.ROLEID %>"> 
               <div align = "center" style = "border:solid 1px #666999;"> <a href = "LoadControl/oper_direct.jsp" class = "Link1" style = "text-decoration:none;">Direct</a></div>
 </cti:checkRole>
