@@ -1,3 +1,3 @@
 @include /custom/CCU-711.txt
 @include CCU-BASE.txt
-CCU reset = reset
+CCU reset = putstatus reset
