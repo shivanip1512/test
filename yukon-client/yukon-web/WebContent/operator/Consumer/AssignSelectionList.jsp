@@ -77,7 +77,7 @@ function setListEntry(form, value, idx) {
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
             <div align="center"> 
-              <% String header = "IMPORT ACCOUNTS - ASSIGN SELECTION LIST"; %>
+              <% String header = "IMPORT STARS - ASSIGN SELECTION LIST"; %>
               <%@ include file="include/InfoSearchBar2.jsp" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <table width="600" border="0" cellspacing="0" cellpadding="0">
