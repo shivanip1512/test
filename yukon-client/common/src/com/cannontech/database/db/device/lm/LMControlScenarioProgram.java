@@ -93,6 +93,9 @@ public class LMControlScenarioProgram extends com.cannontech.database.db.NestedD
 		return startGear;
 	}
 
+	
+	
+	
 	public void retrieve() 
 	{
 		Integer constraintValues[] = { getScenarioID(), getProgramID() };	
@@ -103,9 +106,10 @@ public class LMControlScenarioProgram extends com.cannontech.database.db.NestedD
 	
 			if( results.length == SETTER_COLUMNS.length )
 			{
-				setStartDelay( (Integer) results[1] );
-				setDuration( (Integer) results[2] );
-				setStartGear( (Integer) results[3] );
+				setProgramID((Integer) results[1] );
+				setStartDelay( (Integer) results[2] );
+				setDuration( (Integer) results[3] );
+				setStartGear( (Integer) results[4] );
 							
 			}
 		else
@@ -159,4 +163,61 @@ public class LMControlScenarioProgram extends com.cannontech.database.db.NestedD
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 	}
+	
+	public static final java.util.Vector getAllProgramsForAScenario( Integer scenarioID, java.sql.Connection conn)
+			throws java.sql.SQLException
+		{
+			java.util.Vector progList = new java.util.Vector();
+			java.sql.PreparedStatement pstmt = null;
+			java.sql.ResultSet rset = null;
+
+			//get all the programs that are associated with the passed ScenarioID
+			String sql = "select " + CONSTRAINT_COLUMNS[0] + ", " + CONSTRAINT_COLUMNS[1]
+						+ ", STARTDELAY, DURATION, STARTGEAR" 
+						+ " from " + TABLE_NAME +
+					" where scenarioid=? order by programID";
+			try
+			{
+				if (conn == null)
+					throw new IllegalArgumentException("Received a (null) database connection");
+
+				pstmt = conn.prepareStatement(sql.toString());
+				pstmt.setInt(1, scenarioID.intValue());
+
+				rset = pstmt.executeQuery();
+
+				while (rset.next())
+				{
+
+					Integer pID = new Integer(rset.getInt(2)); //"ProgramID"));;
+
+					LMControlScenarioProgram prog = new LMControlScenarioProgram();
+	
+					prog.setScenarioID(scenarioID);
+					prog.setProgramID(pID);
+					prog.setDbConnection(conn);
+					prog.retrieve();
+					progList.add(prog);
+				}
+
+			}
+			catch (java.sql.SQLException e)
+			{
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			}
+			finally
+			{
+				try
+				{
+					if (pstmt != null)
+						pstmt.close();
+				}
+				catch (java.sql.SQLException e2)
+				{
+					com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); //something is up
+				}
+			}
+
+			return progList;
+		}
 }
