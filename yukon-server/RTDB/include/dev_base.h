@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2003/11/06 21:15:56 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2004/02/16 21:01:11 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,7 +60,7 @@ public:
 
     typedef CtiTblPAO Inherited;
     typedef vector< CtiTablePaoExclusion > exclusions;
-    typedef vector< unsigned long > prohibitions;
+    typedef vector< pair< unsigned long, RWTime > > prohibitions;
 
     CtiDeviceBase();
     CtiDeviceBase(const CtiDeviceBase& aRef);
@@ -212,8 +212,8 @@ public:
     bool isDeviceExcluded(long id) const;
     bool isExecuting() const;
     void setExecuting(bool set);
-    bool isExecutionProhibited() const;
-    size_t setExecutionProhibited(unsigned long id);
+    bool isExecutionProhibited(const RWTime &now = RWTime());
+    size_t setExecutionProhibited(unsigned long id, RWTime& releaseTime = RWTime(YUKONEOT));
     bool removeExecutionProhibited(unsigned long id);
 
 protected:

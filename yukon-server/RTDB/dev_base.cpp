@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2003/11/06 21:15:54 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2004/02/16 21:01:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -956,12 +956,52 @@ void CtiDeviceBase::setExecuting(bool set)
     return;
 }
 
-bool CtiDeviceBase::isExecutionProhibited() const
+bool CtiDeviceBase::isExecutionProhibited(const RWTime &now)
 {
-    return(_executionProhibited.size() != 0);
+    bool prohibited = false;
+
+    if(_executionProhibited.size() != 0)
+    {
+        try
+        {
+            CtiDeviceBase::prohibitions::iterator itr;
+            CtiLockGuard<CtiMutex> guard(_exclusionMux, 5000);
+            if(guard.isAcquired())
+            {
+                for(itr = _executionProhibited.begin(); itr != _executionProhibited.end(); )
+                {
+                    if((*itr).second > now)
+                    {
+                        prohibited = true;
+                    }
+                    else
+                    {
+                        itr = _executionProhibited.erase(itr);      // Removes any time exclusions which have expired.
+                        itr++;
+                    }
+                }
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " " << getName() << " unable to acquire exclusion mutex: isExecutionProhibited()" << endl;
+                }
+                prohibited = true;
+            }
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+    return prohibited;
 }
 
-size_t CtiDeviceBase::setExecutionProhibited(unsigned long id)
+size_t CtiDeviceBase::setExecutionProhibited(unsigned long id, RWTime& releaseTime)
 {
     size_t cnt = 0;
 
@@ -970,7 +1010,7 @@ size_t CtiDeviceBase::setExecutionProhibited(unsigned long id)
         CtiLockGuard<CtiMutex> guard(_exclusionMux, 5000);
         if(guard.isAcquired())
         {
-            _executionProhibited.push_back( id );
+            _executionProhibited.push_back( make_pair(id, releaseTime) );
             cnt = _executionProhibited.size();
         }
         else
@@ -1002,7 +1042,7 @@ bool CtiDeviceBase::removeExecutionProhibited(unsigned long id)
         {
             for(itr = _executionProhibited.begin(); itr != _executionProhibited.end(); )
             {
-                if(*itr == id)
+                if((*itr).first == id)
                 {
                     itr = _executionProhibited.erase(itr);
                     removed = true;
