@@ -62,7 +62,7 @@ private void initialize() {
 	//areYouSureItem.setText("Confirm Execute");
 	//areYouSureItem.setMnemonic('c');
 
-	advancedOptionsMenuItem = new javax.swing.JMenuItem();
+	advancedOptionsMenuItem = new JMenuItem();
 	advancedOptionsMenuItem.setFont( f );
 	advancedOptionsMenuItem.setText("Options...");
 	advancedOptionsMenuItem.setMnemonic('o');
