@@ -1,29 +1,20 @@
 package com.cannontech.stars.web.action;
 
-import java.util.ArrayList;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.database.db.stars.customer.CustomerAccount;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPClient;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.SearchBy;
-import com.cannontech.stars.xml.serialize.StarsCustAccountBrief;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
@@ -54,6 +45,9 @@ public class SearchCustAccountAction implements ActionBase {
             
             // Remove the "transient"(account-related) attributes
             ServletUtils.removeTransientAttributes( user );
+            
+            // Remove the previous search result
+            user.removeAttribute( ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS );
 
             StarsSearchCustomerAccount searchAccount = new StarsSearchCustomerAccount();
             SearchBy searchBy = new SearchBy();
@@ -90,9 +84,8 @@ public class SearchCustAccountAction implements ActionBase {
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            int energyCompanyID = user.getEnergyCompanyID();
-        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
-
+        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+        	
             StarsSearchCustomerAccount searchAccount = reqOper.getStarsSearchCustomerAccount();
             if (searchAccount.getSearchValue().trim().length() == 0) {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -100,167 +93,75 @@ public class SearchCustAccountAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            LiteStarsCustAccountInformation liteAcctInfo = null;
-            int[] accountIDs = null;
-            		
+			boolean searchMembers = energyCompany.getChildren().size() > 0;
+			LiteStarsCustAccountInformation[] accounts = null;
+            
             if (searchAccount.getSearchBy().getEntryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ACCT_NO).getEntryID()) {
             	/* Search by account number */
-            	if (searchAccount.getSearchValue().indexOf( '*' ) == -1) {
-	            	liteAcctInfo = energyCompany.searchByAccountNumber( searchAccount.getSearchValue() );
-            	}
-	            else {
-	            	accountIDs = CustomerAccount.searchByAccountNumber( new Integer(energyCompanyID), searchAccount.getSearchValue().replace('*','%') );
-	            	if (accountIDs != null && accountIDs.length == 1)
-	            		liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[0], true );
-	            }
+            	accounts = energyCompany.searchAccountByAccountNo( searchAccount.getSearchValue(), searchMembers );
             }
             else if (searchAccount.getSearchBy().getEntryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_PHONE_NO).getEntryID()) {
             	/* Search by phone number */
-            	String phoneNo = null;
             	try {
-            		phoneNo = ServletUtils.formatPhoneNumber( searchAccount.getSearchValue() );
+            		String phoneNo = ServletUtils.formatPhoneNumber( searchAccount.getSearchValue() );
+            		accounts = energyCompany.searchAccountByPhoneNo( phoneNo, searchMembers );
             	}
-            	catch (ServletException se) {
+            	catch (WebClientException e) {
 					respOper.setStarsFailure( StarsFactory.newStarsFailure(
-							StarsConstants.FAILURE_CODE_OPERATION_FAILED, se.getMessage()) );
+							StarsConstants.FAILURE_CODE_OPERATION_FAILED, e.getMessage()) );
 					return SOAPUtil.buildSOAPMessage( respOper );
             	}
-            	
-            	ArrayList contactList = new ArrayList();
-            	
-            	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-            	synchronized (cache) {
-					for (int i = 0; i < cache.getAllContacts().size(); i++) {
-						LiteContact liteContact = (LiteContact) cache.getAllContacts().get(i);
-						for (int j = 0; j < liteContact.getLiteContactNotifications().size(); j++) {
-							LiteContactNotification liteNotif = (LiteContactNotification) liteContact.getLiteContactNotifications().get(j);
-							if ((liteNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE ||
-								liteNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) &&
-								liteNotif.getNotification().equals( phoneNo ))
-							{
-								contactList.add( liteContact );
-								break;
-							}
-						}
-					}
-            	}
-            	
-            	int[] contactIDs = new int[ contactList.size() ];
-            	for (int i = 0; i < contactList.size(); i++)
-            		contactIDs[i] = ((LiteContact) contactList.get(i)).getContactID();
-            	
-				accountIDs = CustomerAccount.searchByPrimaryContactIDs( contactIDs, energyCompanyID );
-            	if (accountIDs != null && accountIDs.length == 1)
-            		liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[0], true );
             }
             else if (searchAccount.getSearchBy().getEntryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_LAST_NAME).getEntryID()) {
             	/* Search by last name */
-				ArrayList contactList = new ArrayList();
-            	
-				DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-				synchronized (cache) {
-					for (int i = 0; i < cache.getAllContacts().size(); i++) {
-						LiteContact liteContact = (LiteContact) cache.getAllContacts().get(i);
-						if (liteContact.getContLastName().toUpperCase().startsWith( searchAccount.getSearchValue().toUpperCase() ))
-							contactList.add( liteContact );
-					}
-				}
-            	
-				int[] contactIDs = new int[ contactList.size() ];
-				for (int i = 0; i < contactList.size(); i++)
-					contactIDs[i] = ((LiteContact) contactList.get(i)).getContactID();
-            	
-				accountIDs = CustomerAccount.searchByPrimaryContactIDs( contactIDs, energyCompanyID );
-            	if (accountIDs != null && accountIDs.length == 1)
-            		liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[0], true );
+            	accounts = energyCompany.searchAccountByLastName( searchAccount.getSearchValue(), searchMembers );
             }
             else if (searchAccount.getSearchBy().getEntryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_SERIAL_NO).getEntryID()) {
             	/* Search by hardware serial number */
-            	accountIDs = energyCompany.searchBySerialNumber( searchAccount.getSearchValue() );
-            	if (accountIDs != null && accountIDs.length == 1)
-            		liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[0], true );
+            	accounts = energyCompany.searchAccountBySerialNo( searchAccount.getSearchValue(), searchMembers );
             }
             
 			StarsSearchCustomerAccountResponse resp = new StarsSearchCustomerAccountResponse();
 			
-            if (liteAcctInfo != null) {
-	            liteAcctInfo.setLastLoginTime( System.currentTimeMillis() );	// Update the last login time
-	            
-	            if (liteAcctInfo.hasTwoWayThermostat(energyCompany)) {
-					// Get up-to-date thermostat settings and register the account
-					energyCompany.updateThermostatSettings( liteAcctInfo );
-					
-		            java.util.ArrayList accountList = energyCompany.getAccountsWithGatewayEndDevice();
-		            synchronized (accountList) {
-		            	if (!accountList.contains( liteAcctInfo )) accountList.add( liteAcctInfo );
-		            }
-	            }
-	            
-	            user.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
-	            
-	            StarsCustAccountInformation starsAcctInfo = null;
-	            if (SOAPServer.isClientLocal()) {
-	            	starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
-					ServletUtils.removeTransientAttributes( user );
-	            	user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
-	            }
-	            else	
-	            	starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompany, true );
-				resp.setStarsCustAccountInformation( starsAcctInfo );
-            }
-            else if (accountIDs != null && accountIDs.length > 0) {
-				for (int i = 0; i < accountIDs.length; i++) {
-					LiteStarsCustAccountInformation acctInfo = energyCompany.getBriefCustAccountInfo( accountIDs[i], true );
-					if (acctInfo != null) {
-						LiteContact contact = energyCompany.getContact( acctInfo.getCustomer().getPrimaryContactID(), acctInfo );
-						LiteAddress addr = energyCompany.getAddress( acctInfo.getAccountSite().getStreetAddressID() );
-						
-						StarsCustAccountBrief acctBrief = new StarsCustAccountBrief();
-						acctBrief.setAccountID( accountIDs[i] );
-						acctBrief.setAccountNumber( acctInfo.getCustomerAccount().getAccountNumber() );
-						acctBrief.setContactName( contact.getContLastName() + ", " + contact.getContFirstName() );
-						
-						String homePhone = ServerUtils.getNotification(
-								ContactFuncs.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
-						String workPhone = ServerUtils.getNotification(
-								ContactFuncs.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
-						
-						StringBuffer phoneNo = new StringBuffer();
-						if (homePhone.length() > 0)
-							phoneNo.append( homePhone ).append( "(H)" );
-						if (workPhone.length() > 0) {
-							if (phoneNo.length() > 0) phoneNo.append( ", " );
-							phoneNo.append( workPhone ).append( "(W)" );
-						}
-						if (phoneNo.length() == 0) phoneNo.append( "(none)" );
-						acctBrief.setContPhoneNumber( phoneNo.toString() );
-						
-						StringBuffer address = new StringBuffer();
-						if (addr.getLocationAddress1().trim().length() > 0)
-							address.append( addr.getLocationAddress1() );
-						if (addr.getLocationAddress2().trim().length() > 0) {
-							if (address.length() > 0) address.append( ", " );
-							address.append( addr.getLocationAddress2() );
-						}
-						if (addr.getCityName().trim().length() > 0) {
-							if (address.length() > 0) address.append( ", " );
-							address.append( addr.getCityName() );
-						}
-						if (addr.getStateCode().trim().length() > 0) {
-							if (address.length() > 0) address.append( ", " );
-							address.append( addr.getStateCode() ).append( " " ).append( addr.getZipCode() );
-						}
-						if (address.length() == 0) address.append( "(none)" );
-						acctBrief.setStreetAddress( address.toString() );
-						
-						resp.addStarsCustAccountBrief( acctBrief );
-					}
-				}
+            if (accounts.length == 0) {
+				StarsFailure failure = StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "No customer account matching the search criteria" );
+				resp.setStarsFailure( failure );
             }
             else {
-            	StarsFailure failure = StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "No customer account matching the search criteria" );
-            	resp.setStarsFailure( failure );
+				LiteStarsCustAccountInformation liteAcctInfo = null;
+            	if (accounts.length == 1)
+            		liteAcctInfo = energyCompany.getCustAccountInformation( accounts[0].getAccountID(), false );
+            	
+            	if (liteAcctInfo != null) {
+					liteAcctInfo.setLastLoginTime( System.currentTimeMillis() );	// Update the last login time
+		            
+					if (liteAcctInfo.hasTwoWayThermostat(energyCompany)) {
+						// Get up-to-date thermostat settings and register the account
+						energyCompany.updateThermostatSettings( liteAcctInfo );
+						
+						java.util.ArrayList accountList = energyCompany.getAccountsWithGatewayEndDevice();
+						synchronized (accountList) {
+							if (!accountList.contains( liteAcctInfo )) accountList.add( liteAcctInfo );
+						}
+					}
+		            
+					user.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
+		            
+					StarsCustAccountInformation starsAcctInfo = null;
+					if (SOAPServer.isClientLocal()) {
+						starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
+						ServletUtils.removeTransientAttributes( user );
+						user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
+					}
+					else	
+						starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompany, true );
+					resp.setStarsCustAccountInformation( starsAcctInfo );
+            	}
+				else {
+					for (int i = 0; i < accounts.length; i++)
+						resp.addAccountID( accounts[i].getAccountID() );
+				}
             }
             
             respOper.setStarsSearchCustomerAccountResponse( resp );
@@ -272,7 +173,7 @@ public class SearchCustAccountAction implements ActionBase {
             
             try {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot complete the search for customer account") );
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to search for customer account") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             catch (Exception e2) {
