@@ -5,7 +5,6 @@ package com.cannontech.tdc;
  * 
  */
 import java.sql.Date;
-import java.sql.ResultSetMetaData;
 import java.sql.Timestamp;
 import java.util.Vector;
 

@@ -141,7 +141,8 @@ public void receivedNullMsg()
 {
 	if( lastReceptionValid )
 	{
-		callerModel.forcePaintTableDataChanged();
+		//callerModel.forcePaintTableDataChanged();
+		callerModel.fireTableRowsUpdated( 0, callerModel.getRowCount() );
 	}
 
 	lastReceptionValid = false;	
