@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/08/07 15:42:18 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/08/19 20:52:46 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -370,6 +370,7 @@ private:
     void generateReplyVector(OpCol_t::value_type &valtype, UINT operation = 0);
     bool generateTidbitToDatabase( USHORT Type, int day, int period );
     RWCString generateTidbitScheduleToDatabase(int day, int period);
+    int processSchedulePeriod(SOCKET msgsock, CtiCommandParser &parse, CtiOutMessage *&OutMessage, int dow, int pod, BYTE per);
 
 };
 #endif // #ifndef __DEV_GWSTAT_H__

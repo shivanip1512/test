@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/08/19 20:52:46 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/08/19 20:55:33 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4308,7 +4308,7 @@ int CtiDeviceGatewayStat::processSchedulePeriod(SOCKET msgsock, CtiCommandParser
 
             if(heat == 0xff)
             {
-                if(_schedule[dow][pod]._heatSetpoint ?= 0x7f00)
+                if(_schedule[dow][pod]._heatSetpoint >= 0x7f00)
                 {
                     heat = convertFromStatTemp(_schedule[dow][pod]._heatSetpoint, scaleFahrenheit);
                     {
