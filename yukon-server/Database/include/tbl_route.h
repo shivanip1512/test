@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_route.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:18 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/08/05 20:43:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,7 +48,7 @@ public:
 
    CtiTableDeviceRoute(const CtiTableDeviceRoute& aRef);
 
-   ~CtiTableDeviceRoute();
+   virtual ~CtiTableDeviceRoute();
 
    CtiTableDeviceRoute& operator=(const CtiTableDeviceRoute& aRef);
 
