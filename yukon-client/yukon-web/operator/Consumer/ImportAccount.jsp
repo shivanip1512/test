@@ -66,7 +66,8 @@
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
-			  <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/ImportManager" enctype="multipart/form-data">
+			  <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/ImportManager"
+			  	<% if (!isStars) { %>enctype="multipart/form-data"<% } %>>
                 <input type="hidden" name="action" value="<%= (isStars)?"PreprocessStarsData":"PreprocessImportData" %>">
                 <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/<%= (isStars)?"ImportAccount2.jsp":"ImportAccount1.jsp" %>">
 <%	if (!isStars) { %>
