@@ -14,7 +14,7 @@ public class LoginEditorPanel extends com.cannontech.common.editor.PropertyPanel
 {
 	private DataInputPanel[] inputPanels;
 	private String[] inputPanelTabNames;
-	public static final int PANEL_COUNT = 4;
+	public static final int PANEL_COUNT = 3;
 
 
 	public LoginEditorPanel() {
