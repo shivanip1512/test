@@ -42,10 +42,10 @@
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
-			  <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/ImportManager" <% if (!isStars) { %>enctype="multipart/form-data"<% } %>>
-                <input type="hidden" name="action" value="<%= (isStars)?"PreprocessStarsData":"ImportCustAccounts" %>">
-                <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/<%= (isStars)?"ImportAccount2.jsp":"ImportAccount.jsp" %>">
 <%	if (!isStars) { %>
+			  <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/ImportManager" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="ImportCustAccounts">
+                <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportAccount.jsp">
                 <table width="500" border="0" cellspacing="0" cellpadding="0">
                   <tr> 
                     <td class="MainText"> 
@@ -80,12 +80,16 @@
                     </td>
                   </tr>
                 </table>
+              </form>
 <%	} else { // importID="STARS" %>
+			  <form name="form2" method="post" action="<%=request.getContextPath()%>/servlet/ImportManager">
+                <input type="hidden" name="action" value="ImportINIData">
+                <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportAccount.jsp">
                 <table width="500" border="0" cellspacing="0" cellpadding="0">
                   <tr> 
                     <td class="MainText"> 
-                      <div align="center">If you want to import the selection 
-                        lists, please do so before importing any other file:</div>
+                      <div align="center">If you want to import any INI file, 
+                        please do so before importing any other file:</div>
                     </td>
                   </tr>
                 </table>
@@ -98,6 +102,14 @@
                       <input type="file" name="SelListFile" size="35">
                     </td>
                   </tr>
+                  <tr> 
+                    <td width="150"> 
+                      <div align="right">User Label File: </div>
+                    </td>
+                    <td width="250"> 
+                      <input type="file" name="UsrLabelFile" size="35">
+                    </td>
+                  </tr>
                 </table>
                 <table width="400" border="0" cellspacing="0" cellpadding="5">
                   <tr> 
@@ -106,6 +118,10 @@
                     </td>
                   </tr>
                 </table>
+			  </form>
+			  <form name="form3" method="post" action="<%=request.getContextPath()%>/servlet/ImportManager">
+                <input type="hidden" name="action" value="PreprocessStarsData">
+                <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportAccount2.jsp">
                 <table width="400" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                   <tr> 
                     <td width="150"> 
@@ -254,8 +270,8 @@
                     </td>
                   </tr>
                 </table>
+			  </form>
 <%	} %>
-              </form>
             </div>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>

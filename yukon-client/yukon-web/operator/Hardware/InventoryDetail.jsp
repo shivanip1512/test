@@ -8,7 +8,7 @@
 	LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany(ecSettings.getEnergyCompanyID());
 	
 	int invID = Integer.parseInt(request.getParameter("InvId"));
-	LiteInventoryBase liteInv = liteEC.getInventoryBrief(invID, true);
+	LiteInventoryBase liteInv = liteEC.getInventoryBrief(invID, false);
 	StarsInventory inventory = StarsLiteFactory.createStarsInventory(liteInv, liteEC);
 	
 	String devTypeStr = inventory.getDeviceType().getContent();

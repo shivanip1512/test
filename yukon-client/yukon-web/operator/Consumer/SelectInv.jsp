@@ -77,33 +77,23 @@ function submitIt(filterBy) {
               <%@ include file="include/InfoSearchBar2.jsp" %>
 <% } %>
 
-			  <form name="MForm" method="post" action="" onsubmit="setFilterValue(this)">
+			  <form name="MForm" method="post" action="">
 			    <input type="hidden" name="FilterBy" value="<%= selectInvBean.getFilterBy() %>">
 				<input type="hidden" name="Location" value="<%= InventoryBean.INV_LOCATION_WAREHOUSE %>">
 				<input type="hidden" name="page" value="1">
-                <table width="80%" border="0" cellspacing="0" cellpadding="3">
-                  <tr>
-                    <td width="85%">
-                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                        <tr> 
-                          <td class="MainText" align="center">Check the radio 
-                            button of the hardware you want to select, then click 
-                            Select.</td>
-                        </tr>
-                        <tr> 
-                          <td class="MainText" align="center"> 
-                            <% if (selectInvBean.getFilterBy() != 0) { %>
-                            <a href="" class="Link1" onclick="submitIt(0); return false;">Show 
-                            All</a> 
-                            <%	} else { %>
-                            <a href="" class="Link1" onclick="submitIt(<%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION %>); return false;">Show 
-                            Warehouse</a> 
-                            <%	} %>
-                          </td>
-                        </tr>
-                      </table>
+                <table width="80%" border="0" cellspacing="0" cellpadding="1">
+                  <tr> 
+                    <td class="MainText" align="center">Check the radio button 
+                      of the hardware you want to select, then click Select.</td>
+                  </tr>
+                  <tr> 
+                    <td class="MainText" align="center"> 
+                      <input type="button" name="ShowAll" value="Show All" onclick="submitIt(0)"
+                      <% if (selectInvBean.getFilterBy() == 0) { %>disabled<% } %>>
+                      <input type="button" name="ShowWarehouse" value="Show Warehouse" onclick="submitIt(<%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION %>)"
+                      <% if (selectInvBean.getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION && selectInvBean.getLocation() == InventoryBean.INV_LOCATION_WAREHOUSE) { %>disabled<% } %>>
                     </td>
-                    </tr>
+                  </tr>
                 </table>
               </form>
               <%= selectInvBean.getHTML(request) %> 
