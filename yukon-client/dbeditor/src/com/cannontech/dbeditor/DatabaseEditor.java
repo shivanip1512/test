@@ -31,6 +31,7 @@ import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
@@ -966,6 +967,8 @@ private void executeCopyButton_ActionPerformed(ActionEvent event)
 			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.device.DeviceCopyWizardPanel((com.cannontech.database.data.device.DeviceBase)toCopy) );
 		else if(toCopy instanceof com.cannontech.database.data.device.lm.LMProgramDirect)
 			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMProgramCopyWizardPanel((com.cannontech.database.data.device.lm.LMProgramBase)toCopy) );
+		else if(toCopy instanceof LMScenario)
+			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMScenarioCopyWizardPanel((LMScenario)toCopy) );
 		else if( toCopy instanceof com.cannontech.database.data.point.PointBase )
 		{
 			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.point.PointCopyWizardPanel((com.cannontech.database.data.point.PointBase)toCopy) );
