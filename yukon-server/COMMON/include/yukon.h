@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2003/08/19 22:05:11 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2003/09/02 18:43:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,8 +25,9 @@
 // YUKONEOT is needed to make ALL timezones operate correctly wrt the "end-of-time"
 #define YUKONEOT (ULONG_MAX - 86400 * 2)
 
-#define PIL_REGISTRATION_NAME    "PIL"
+#define PIL_REGISTRATION_NAME        "PIL"
 #define SCANNER_REGISTRATION_NAME    "SCANNER"
+#define PORTER_REGISTRATION_NAME     "PORTER"
 
 // Load Management Active Restore Value
 #if 0
