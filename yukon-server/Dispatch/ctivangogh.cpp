@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.67 $
-* DATE         :  $Date: 2004/06/01 18:14:31 $
+* REVISION     :  $Revision: 1.68 $
+* DATE         :  $Date: 2004/06/11 19:57:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -145,6 +145,34 @@ bool NonViableConnection(const CtiConnectionManager *CM, void* d)
 CtiVanGogh::~CtiVanGogh()
 {
     PointMgr.storeDirtyRecords();
+
+    #if 0 // 060904 CGP: Should add code to write out any controls as in progress ... ACH - this is close.
+    {
+        // There are pending operations for points out there in the world!
+        CtiPendingOpSet_t::iterator it = _pendingPointInfo.begin();
+
+        while( it != _pendingPointInfo.end() )
+        {
+            RWTime now;
+
+            CtiPendingPointOperations &ppo = *it;
+
+            if(ppo.getType() == CtiPendingPointOperations::pendingPointData)
+            {
+                CtiPointDataMsg *pOrig = ppo.getPointData();
+
+                if(pOrig)
+                {
+                    updateControlHistory( pOrig->getId(), CtiPendingPointOperations::delayeddatamessage, pOrig->getTime() );
+                    // Should cause a completion write even if pOrig->getTime() occurs in the future!
+                    // Control status points may be left in an inteterminate state!
+                }
+            }
+
+            it++;
+        }
+    }
+    #endif
 }
 
 int CtiVanGogh::execute()
@@ -3984,7 +4012,7 @@ void CtiVanGogh::doPendingOperations()
                              *  Order is important here.  Please do not rearrange the else if conditionals.
                              */
                             if( ppo.getControl().getControlDuration() >= 0 &&
-                                now.seconds() == ppo.getControl().getStartTime().seconds() + ppo.getControl().getControlDuration())
+                                now.seconds() >= ppo.getControl().getStartTime().seconds() + ppo.getControl().getControlDuration())
                             {
                                 /*
                                  *  Do NOTHING.  CONTROL IS COMPLETE!
