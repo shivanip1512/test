@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/09/23 15:27:00 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/09/23 15:45:45 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -106,17 +106,11 @@ void CtiThreadMonitor::processQueue( void )
       //we try to put the element from the queue into the map
       insertpair = _threadData.insert( ThreadData::value_type( tempId, temp ) );
 
-      //if we succeed, that element did not exist in the map before
-      //if we fail, we've heard from a thread we already knew about, 
-      //so update the time and reported
-      if( !insertpair.second )
-      {
-         //note that we heard from a particular thread
-         (*insertpair.first).second.setReported( true );
+      //note that we heard from a particular thread
+      (*insertpair.first).second.setReported( true );
 
-         //update the time so we know when we heard last
-         (*insertpair.first).second.setTickledTime( second_clock::local_time() );
-      }
+      //update the time so we know when we heard last
+      (*insertpair.first).second.setTickledTime( second_clock::local_time() );
    }
 }
 
