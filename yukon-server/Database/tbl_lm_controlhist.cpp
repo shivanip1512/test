@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2004/07/08 19:47:07 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2004/08/18 22:04:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -322,6 +322,76 @@ void CtiTableLMControlHistory::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RW
     selector.where( selector.where() && keyTable["paobjectid"] == devTbl["paobjectid"] );
 }
 
+void CtiTableLMControlHistory::getSQLForOutstandingControls(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+{
+    keyTable = db.table(getTableName());
+
+    selector <<
+    keyTable["paobjectid"] <<
+    keyTable["lmctrlhistid"] <<
+    keyTable["startdatetime"] <<
+    keyTable["stopdatetime"] <<
+    keyTable["soe_tag"] <<
+    keyTable["controlduration"] <<
+    keyTable["controltype"] <<
+    keyTable["currentdailytime"] <<
+    keyTable["currentmonthlytime"] <<
+    keyTable["currentseasonaltime"] <<
+    keyTable["currentannualtime"] <<
+    keyTable["activerestore"] <<
+    keyTable["reductionvalue"];
+
+    selector.from(keyTable);
+
+    selector.where( selector.where() && keyTable["activerestore"] == LMAR_DISPATCH_SHUTDOWN );
+}
+
+RWDBStatus CtiTableLMControlHistory::deleteOutstandingControls()
+{
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBDeleter deleter = table.deleter();
+
+    deleter.where( table["activerestore"] == LMAR_DISPATCH_SHUTDOWN );
+    deleter.execute( conn );
+    return deleter.status();
+}
+
+/*
+ *  This method will update any outstanding controls which have completed prior to dispatch having restarted.
+ */
+RWDBStatus CtiTableLMControlHistory::updateCompletedOutstandingControls()
+{
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBUpdater updater = table.updater();
+
+    updater.where( table["activerestore"] == LMAR_DISPATCH_SHUTDOWN && table["stopdatetime"] <= RWDBDateTime() );
+    updater << table["activerestore"].assign( LMAR_DISPATCH_MISSED_COMPLETION );
+
+    if( updater.execute( conn ).status().errorCode() != RWDBStatus::ok)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** CtiTableLMControlHistory::updateCompletedOutstandingControls update not ok **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    return updater.status();
+}
+
+
+
+
+/*
+select * from lmcontrolhistory where activerestore='N' and
+soe_tag not in (select soe_tag from lmcontrolhistory where activerestore='M' or activerestore='T')
+*/
+
 void CtiTableLMControlHistory::DecodeDatabaseReader(RWDBReader &rdr)
 {
     {
@@ -477,12 +547,6 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
 
     if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
     {
-#if 0
-        if(getActiveRestore() != RWCString(LMAR_NEWCONTROL))
-            setPreviousLogTime( getStopTime() );
-        else
-            setPreviousLogTime( getStartTime() );
-#else
         if(isNewControl())
         {
             setPreviousLogTime( getStartTime() );
@@ -495,69 +559,16 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
         {
             setPreviousLogTime( getStopTime() );
         }
-#endif
 
         setDirty(false);
         setNotNewControl();
     }
-#if 1
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Unable to insert LM Control History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "   " << inserter.asString() << endl;
     }
-#else
-    else
-    {
-        LONG newcid = LMControlHistoryIdGen(true);
-
-        if(newcid != getLMControlHistoryID())
-        {
-            RWTime Now;
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << Now << " Insert collision occurred in table " << getTableName() << "." << endl;
-                dout << Now << "   LMCtrlHistId has been re-initialized.  There may be two copies of dispatch inserting into this DB" << endl;
-            }
-
-            setLMControlHistoryID( newcid );
-
-            if( inserter.execute( conn ).status().errorCode() != RWDBStatus::ok )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Unable to insert LM Control History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "   " << inserter.asString() << endl;
-            }
-            else
-            {
-#if 0
-                if(getActiveRestore() != RWCString(LMAR_NEWCONTROL))
-                    setPreviousLogTime( getStopTime() );
-                else
-                    setPreviousLogTime( getStartTime() );
-#else
-                if(isNewControl())
-                {
-                    setPreviousLogTime( getStartTime() );
-                }
-                else if(getActiveRestore() == RWCString(LMAR_NEWCONTROL))
-                {
-                    setPreviousLogTime(RWTime());
-                }
-                else
-                {
-                    setPreviousLogTime( getStopTime() );
-                }
-#endif
-
-                setDirty(false);
-                setNotNewControl();
-            }
-        }
-    }
-#endif
 
     return inserter.status();
 }
@@ -623,23 +634,10 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const RWTime 
 
     if(today.day() != prevdate.day())
     {
-        if( isNewControl() /* &&
-            ( !_loadedActiveRestore.compareTo(LMAR_TIMED_RESTORE, RWCString::ignoreCase) ||
-              !_loadedActiveRestore.compareTo(LMAR_MANUAL_RESTORE, RWCString::ignoreCase))*/ )
+        if( isNewControl() )
         {
             // These controls did not continue into the next day.
             partialIncrement = 0;
-            #if 0
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " PreviousLogTime()  = " << getPreviousLogTime() << endl;
-                dout << " partialIncrement   = " << partialIncrement << endl;
-                dout << " Increment          = " << increment << endl;
-                dout << " dar                = " << _loadedActiveRestore << endl;
-            }
-            #endif
-
             _loadedActiveRestore = "N";
         }
         else
@@ -648,20 +646,6 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const RWTime 
             RWTime lastTimePrevious(prevdate, 23,59,59);
             ULONG todaysSeconds = now.seconds() - lastTimePrevious.seconds() - 1;
             partialIncrement = lastTimePrevious.seconds() - getPreviousLogTime().seconds();
-
-            #if 0
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " PreviousLogTime()  = " << getPreviousLogTime() << endl;
-                dout << " lastTimePrevious() = " << lastTimePrevious << endl;
-                dout << " now()              = " << now << endl;
-                dout << " todaysSeconds      = " << todaysSeconds << endl;
-                dout << " partialIncrement   = " << partialIncrement << endl;
-                dout << " Increment          = " << increment << endl;
-                dout << " dar                = " << _loadedActiveRestore << endl;
-            }
-            #endif
 
             if(partialIncrement <= increment )    // Be cautious since the last log may be many days ago.. We only want continuous controls to be recorded.
             {
@@ -707,7 +691,45 @@ LONG CtiTableLMControlHistory::getNextSOE()
 {
     static LONG nextsoe = 0;
     CtiLockGuard< CtiMutex > gd(_soeMux);
-    return ++nextsoe;
+
+    static BOOL init_id = FALSE;
+    static LONG id = 0;
+    static const CHAR sql[] = "SELECT MAX(SOE_TAG) FROM LMCONTROLHISTORY";
+
+    if(gd.isAcquired())
+    {
+        if(!init_id)
+        {   // Make sure all objects that that store results
+            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+            RWDBConnection conn = getConnection();
+            // are out of scope when the release is called
+            RWDBReader  rdr = ExecuteQuery( conn, sql );
+
+            if(rdr() && rdr.isValid())
+            {
+                rdr >> nextsoe;
+            }
+            else
+            {
+                RWMutexLock::LockGuard  guard(coutMux);
+                cout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            init_id = TRUE;
+        }   // Temporary results are destroyed to free the connection
+
+        ++nextsoe;
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "Unable to acquire mutex for LMControlHistoryGen" << endl;
+        }
+    }
+
+    return nextsoe;
 }
 
 int CtiTableLMControlHistory::getReductionRatio() const
@@ -729,5 +751,103 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::setNotNewControl()
 bool CtiTableLMControlHistory::isNewControl() const
 {
     return _isNewControl;
+}
+
+void CtiTableLMControlHistory::dump() const
+{
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << " paobjectid            " << getPAOID() << endl;
+        dout << " lmctrlhistid          " << getLMControlHistoryID() << endl;
+        dout << " startdatetime         " << getStartTime() << endl;
+        dout << " stopdatetime          " << getStopTime() << endl;
+        dout << " controlcompletetime   " << getControlCompleteTime() << endl;
+        dout << " previouslogtime       " << getPreviousLogTime() << endl;
+        dout << " soe_tag               " << getSoeTag() << endl;
+        dout << " controlduration       " << (getControlCompleteTime().seconds() - getStartTime().seconds()) << endl;
+        dout << " controltype           " << getControlType() << endl;
+        dout << " currentdailytime      " << getCurrentDailyTime() << endl;
+        dout << " currentmonthlytime    " << getCurrentMonthlyTime() << endl;
+        dout << " currentseasonaltime   " << getCurrentSeasonalTime() << endl;
+        dout << " currentannualtime     " << getCurrentAnnualTime() << endl;
+        dout << " activerestore         " << getActiveRestore() << endl;
+        dout << " reductionvalue        " << getReductionValue() << endl;
+    }
+
+    return;
+}
+
+void CtiTableLMControlHistory::DecodeOutstandingControls(RWDBReader &rdr)
+{
+    RWTime now;
+
+    setUpdatedFlag();
+    _isNewControl        = false;
+
+    rdr["paobjectid"]           >> _paoID;
+    rdr["lmctrlhistid"]         >> _lmControlHistID;
+    rdr["startdatetime"]        >> _startDateTime;
+    rdr["stopdatetime"]         >> _stopDateTime;
+    rdr["soe_tag"]              >> _soeTag;
+    rdr["controlduration"]      >> _controlDuration;
+    rdr["controltype"]          >> _controlType;
+    rdr["currentdailytime"]     >> _currentDailyTime;
+    rdr["currentmonthlytime"]   >> _currentMonthlyTime;
+    rdr["currentseasonaltime"]  >> _currentSeasonalTime;
+    rdr["currentannualtime"]    >> _currentAnnualTime;
+    rdr["activerestore"]        >> _loadedActiveRestore;
+    rdr["reductionvalue"]       >> _reductionValue;
+
+    if(_loadedActiveRestore == LMAR_DISPATCH_SHUTDOWN && now < _stopDateTime)
+    {
+        ULONG secToStop = _stopDateTime.seconds() - now.seconds();  // This is the number of mis allocated seconds...
+
+        _currentDailyTime -= secToStop;
+        _currentMonthlyTime -= secToStop;
+        _currentSeasonalTime -= secToStop;
+        _currentAnnualTime -= secToStop;
+    }
+
+    _controlCompleteTime    = _stopDateTime;
+    _activeRestore          = RWCString(LMAR_LOGTIMER);
+    _defaultActiveRestore   = RWCString(LMAR_TIMED_RESTORE);        // Assume this is a timed in control since it had a stop time in the log???
+    _prevLogTime            = RWTime();
+    _prevStopReportTime     = RWTime();
+
+    // dump();
+
+    return;
+}
+
+void CtiTableLMControlHistory::getSQLForIncompleteControls(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+{
+    keyTable = db.table(getTableName());
+
+    selector <<
+    keyTable["paobjectid"] <<
+    keyTable["lmctrlhistid"] <<
+    keyTable["startdatetime"] <<
+    keyTable["stopdatetime"] <<
+    keyTable["soe_tag"] <<
+    keyTable["controlduration"] <<
+    keyTable["controltype"] <<
+    keyTable["currentdailytime"] <<
+    keyTable["currentmonthlytime"] <<
+    keyTable["currentseasonaltime"] <<
+    keyTable["currentannualtime"] <<
+    keyTable["activerestore"] <<
+    keyTable["reductionvalue"];
+
+    selector.from(keyTable);
+
+    RWDBExpr stdtXpr("startdatetime", FALSE);
+    RWDBExpr anXpr("soe_tag", FALSE);
+    // activerestore='N' and soe_tag not in (select soe_tag from lmcontrolhistory where activerestore='M' or activerestore='T')
+    selector.where( selector.where() &&
+                    keyTable["activerestore"] == LMAR_NEWCONTROL &&
+                    !anXpr.in(RWDBExpr("(select soe_tag from lmcontrolhistory where activerestore='M' or activerestore='T' or activerestore='S')", FALSE)) &&
+                    stdtXpr.in(RWDBExpr("(select max(startdatetime) from lmcontrolhistory group by paobjectid)", FALSE)) );
+
 }
 

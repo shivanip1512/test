@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2004/05/19 14:59:52 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2004/08/18 22:04:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -244,7 +244,7 @@ public:
     virtual int   clientRegistration(CtiConnectionManager *CM);
     virtual int   clientArbitrationWinner(CtiConnectionManager *CM);
     void messageDump(CtiMessage *pMsg);
-     void doPendingOperations();
+     void doPendingOperations(bool bShutdown = false);
     void loadRTDB(bool force = false, CtiMessage *pMsg = NULL);     // Loads all relevant RTDB elements
     void loadDeviceNames();
     void loadCICustomers(LONG id = 0);
@@ -272,7 +272,7 @@ public:
     int processControlMessage(CtiLMControlHistoryMsg *pMsg);
     int processCommErrorMessage(CtiCommErrorHistoryMsg *pMsg);
     void updateControlHistory(  long pendid, int cause, const RWTime &thetime = RWTime(), RWTime &now = RWTime() );
-    void dumpPendingOps();
+    void dumpPendingOps(bool force = false);
 
     INT updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &sigList);
     INT updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &sigList);
@@ -283,6 +283,10 @@ public:
     void reactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *&pDyn);
 
     int processTagMessage(CtiTagMsg &tagMsg);
+    int loadPendingControls();
+    bool isPointInPendingControl(LONG pointid);
+    void updateGroupPseduoControlPoint(CtiPointBase *&pPt, const RWTime &delaytime);
+
 
 };
 

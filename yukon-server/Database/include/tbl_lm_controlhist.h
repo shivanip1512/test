@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_lm_controlhist.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/06/08 16:42:11 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/08/18 22:04:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,6 +35,21 @@
 #include "yukon.h"
 #include "dbmemobject.h"
 #include "utility.h"
+
+/*
+    #define LMAR_NEWCONTROL         "N"             // This is the first entry for any new control.
+    #define LMAR_LOGTIMER           "L"             // This is a timed log entry.  Nothing exciting happened in this interval.
+    #define LMAR_CONT_CONTROL       "C"             // Previous command was repeated extending the current control interval.
+
+    #define LMAR_TIMED_RESTORE      "T"             // Control terminated based on time set in load group.
+    #define LMAR_MANUAL_RESTORE     "M"             // Control terminated because of an active restore or terminate command being sent.
+    #define LMAR_OVERRIDE_CONTROL   "O"             // Control terminated because a new command of a different nature was sent to this group.
+    #define LMAR_CONTROLACCT_ADJUST "A"             // Control accounting was adjusted by user.
+    #define LMAR_PERIOD_TRANSITION  "P"             // Control was active as we crossed a control history boundary.  This log denotes the last log in the previos interval.
+    #define LMAR_DISPATCH_SHUTDOWN  "S"             // Control was active as dispatch shutdown.  This entry will be used to resume control.
+ */
+
+#define LMAR_DISPATCH_MISSED_COMPLETION  LMAR_TIMED_RESTORE        // Control was active as dispatch shutdown.  It completed before restart.
 
 class IM_EX_CTIYUKONDB CtiTableLMControlHistory: public CtiMemDBObject
 {
@@ -166,6 +181,15 @@ public:
    virtual RWDBStatus Insert(RWDBConnection &conn);
    virtual RWDBStatus Update();
    virtual RWDBStatus Delete();
+
+   void dump() const;
+   static void getSQLForOutstandingControls(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+   void DecodeOutstandingControls(RWDBReader &rdr);
+
+   static RWDBStatus deleteOutstandingControls();
+   static RWDBStatus updateCompletedOutstandingControls();
+   static void getSQLForIncompleteControls(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+
 
 };
 #endif // #ifndef __TBL_LM_CONTROLHIST_H__
