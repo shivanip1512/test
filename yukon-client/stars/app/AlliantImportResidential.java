@@ -44,13 +44,27 @@ public class AlliantImportResidential {
 				
 				String groupName = "";
 				if (columns[2].equalsIgnoreCase("Beaver Dam")
+					|| columns[2].equalsIgnoreCase("Fall River")
 					|| columns[2].equalsIgnoreCase("Randolph")
+					|| columns[2].equalsIgnoreCase("Fox Lake")
 					|| columns[2].equalsIgnoreCase("Horicon"))
+				{
 					groupName = "AE Residential Beaver Dam";
-				else if (columns[2].equalsIgnoreCase("Baraboo"))
+				}
+				else if (columns[2].equalsIgnoreCase("Baraboo")
+					|| columns[2].equalsIgnoreCase("Sauk City")
+					|| columns[2].equalsIgnoreCase("West Baraboo")
+					|| columns[2].equalsIgnoreCase("Prarie Du Sac"))
+				{
 					groupName = "AE Residential Baraboo";
-				else if (columns[2].equalsIgnoreCase("Portage"))
+				}
+				else if (columns[2].equalsIgnoreCase("Portage")
+					|| columns[2].equalsIgnoreCase("Rio")
+					|| columns[2].equalsIgnoreCase("Pardeeville")
+					|| columns[2].equalsIgnoreCase("Poynette"))
+				{
 					groupName = "AE Residential Portage";
+				}
 				
 				output[i] = lines[i] + "," +
 						"ExpressStat," +
