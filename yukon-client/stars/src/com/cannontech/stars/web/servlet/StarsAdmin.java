@@ -138,7 +138,7 @@ public class StarsAdmin extends HttpServlet {
 			}
 			else if (req.getParameter("Range").equalsIgnoreCase("EnergyCompany")) {
 				LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-				energyCompany.clear();
+				SOAPServer.refreshCache( energyCompany );
 			}
 		 	
 			if (session != null) session.invalidate();
@@ -569,6 +569,7 @@ public class StarsAdmin extends HttpServlet {
 			String[] progDispNames = req.getParameterValues( "ProgDispNames" );
 			String[] progShortNames = req.getParameterValues( "ProgShortNames" );
 			String[] progDescriptions = req.getParameterValues( "ProgDescriptions" );
+			String[] progDescFiles = req.getParameterValues( "ProgDescFiles" );
 			String[] progCtrlOdds = req.getParameterValues( "ProgChanceOfCtrls" );
 			String[] progIconNames = req.getParameterValues( "ProgIconNames" );
 			
@@ -595,9 +596,16 @@ public class StarsAdmin extends HttpServlet {
 					
 					com.cannontech.database.db.web.YukonWebConfiguration cfg =
 							new com.cannontech.database.db.web.YukonWebConfiguration();
-					cfg.setLogoLocation( config.getLogoLocation() + "," + progIconNames[i] );
+					cfg.setLogoLocation( progIconNames[i] );
 					cfg.setAlternateDisplayName( progDispNames[i] + "," + progShortNames[i] );
-					cfg.setDescription( progDescriptions[i].replaceAll(LINE_SEPARATOR, "<br>") );
+					if (progDescFiles[i].length() == 0) {
+						cfg.setDescription( progDescriptions[i].replaceAll(LINE_SEPARATOR, "<br>") );
+						cfg.setURL( "" );
+					}
+					else {
+						cfg.setDescription( "" );
+						cfg.setURL( progDescFiles[i] );
+					}
 					pubProg.setWebConfiguration( cfg );
 					
 					if (pubPrograms[i] != null) {

@@ -170,6 +170,7 @@ update YukonRoleProperty set DefaultValue='(none)', Description='(Deprecated) Us
 insert into YukonRoleProperty values(-40102,-400,'Link Thermostat Instructions','(none)','The customized thermostat instructions link');
 update YukonRoleProperty set DefaultValue='THERMOSTAT - SCHEDULE' where RolePropertyID=-40157;
 update YukonRoleProperty set DefaultValue='THERMOSTAT - MANUAL' where RolePropertyID=-40158;
+update YukonRoleProperty set KeyName='Description Enrollment', DefaultValue='Select the check boxes and corresponding radio button of the programs you would like to be enrolled in.', Description='Description on the program enrollment page' where RolePropertyId=-40172;
 update YukonRoleProperty set Description='Description on the contact us page. The special fields will be replaced by real information when displayed on the web.' where RolePropertyID=-40173;
 update YukonRoleProperty set DefaultValue='yukon/Mom.jpg' where RolePropertyId=-40180 and DefaultValue='Mom.jpg';
 update YukonRoleProperty set DefaultValue='yukon/Family.jpg' where RolePropertyId=-40181 and DefaultValue='Family.jpg';

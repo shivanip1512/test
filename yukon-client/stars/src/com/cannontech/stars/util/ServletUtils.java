@@ -66,7 +66,7 @@ public class ServletUtils {
 	public static final String IN_SERVICE = "In Service";
 	public static final String OUT_OF_SERVICE = "Out of Service";
 	
-	public static final int MAX_NUM_IMAGES = 5;
+	public static final int MAX_NUM_IMAGES = 3;
 	public static final int GATEWAY_TIMEOUT_HOURS = 24;
 	
 	public static final String UTIL_COMPANY_ADDRESS = "<<COMPANY_ADDRESS>>";

@@ -58,7 +58,7 @@ public interface ResidentialCustomerRole {
 	public static final int WEB_TITLE_THERM_MANUAL = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 158;
 	public static final int WEB_DESC_GENERAL = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 170;
 	public static final int WEB_DESC_OPT_OUT = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 171;
-	public static final int WEB_DESC_PROGRAM = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 172;
+	public static final int WEB_DESC_ENROLLMENT = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 172;
 	public static final int WEB_DESC_UTILITY = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 173;
 	public static final int WEB_IMG_CORNER = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 180;
 	public static final int WEB_IMG_GENERAL = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 181;

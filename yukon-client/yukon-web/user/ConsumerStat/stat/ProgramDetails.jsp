@@ -1,4 +1,15 @@
 <%@ include file="include/StarsHeader.jsp" %>
+<%
+	String catNoStr = request.getParameter("Cat");
+	String progNoStr = request.getParameter("Prog");
+	
+	int catNo = 0;
+	if (catNoStr != null) catNo = Integer.parseInt(catNoStr);
+	int progNo = 0;
+	if (progNoStr != null) progNo = Integer.parseInt(progNoStr);
+	
+	StarsEnrLMProgram program = categories.getStarsApplianceCategory(catNo).getStarsEnrLMProgram(progNo);
+%>
 <html>
 <head>
 <title>Consumer Energy Services</title>
@@ -42,93 +53,64 @@
                 </tr>
               </table>
             </div>
-<%
-	String desc = ServerUtils.forceNotNone(AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_DESC_PROGRAM));
-	if (desc.length() > 0) {
-%>
             <div align="center">
-              <table width="600" border="0" cellspacing="0" cellpadding="0">
-                <tr>
-                  <td class="TableCell"><%= desc %></td>
+              <table width="280" border="0" align="center">
+                <tr> 
+                  <td class="TitleHeader" align="center"> <%= ServletUtils.getProgramDisplayNames(program)[0] %> 
+                  </td>
                 </tr>
               </table>
-            </div>
-<%	}
-	else { %>
-            <table width="95%" border="1" class = "TableCell" align = "center" height="28" cellspacing = "0" cellpadding = "4">
-              <tr> 
-                <td width="17%"><b>The following symbols represent:</b></td>
-                <td width="8%"><img src="../../../Images/Icons/$$Sm.gif" ></td>
-                <td width="21%">Savings: More dollar signs means more savings!</td>
-                <td width="8%"><img src="../../../Images/Icons/ThirdSm.gif"></td>
-                <td width="13%" valign="top">Percent of Control</td>
-                <td width="8%"><img src="../../../Images/Icons/Tree2Sm.gif"></td>
-                <td width="25%" valign="top">Environment: More trees means mean 
-                  a healthier environment.</td>
-              </tr>
-            </table>
-            <table width="100%" border="0" cellspacing="20" >
-              <%
-	int numProgs = 0;
-	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
-		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
-		for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
-			StarsEnrLMProgram program = category.getStarsEnrLMProgram(j);
-			
-			String[] imgNames = ServletUtils.getImageNames( program.getStarsWebConfig().getLogoLocation() );
-			if (numProgs % 2 == 0) {	// Two programs in a row
-%>
-              <tr> 
+              <br>
 <%
-			}
-			/* Table of program */
+	if (program.getStarsWebConfig().getURL().length() > 0) {
 %>
-                <td width="50%" valign="top"> 
-                  <table width="280" border="0">
-                    <tr> 
-                      <td class = "TableCell"><b><%= category.getStarsWebConfig().getAlternateDisplayName() %> 
-                        - <%= program.getStarsWebConfig().getAlternateDisplayName() %></b></td>
-                    </tr>
-                    <tr> 
-                      <td class = "TableCell" valign = "top"><%= program.getStarsWebConfig().getDescription() %><br>
-                        <table width="210" border="0" cellspacing="0" cellpadding="0">
-                          <tr> 
-                            <td><% if (!imgNames[1].equals("")) { %><img src="../../../Images/Icons/<%= imgNames[1] %>"><% } %></td>
-                            <td><% if (!imgNames[2].equals("")) { %><img src="../../../Images/Icons/<%= imgNames[2] %>"><% } %></td>
-                            <td><% if (!imgNames[3].equals("")) { %><img src="../../../Images/Icons/<%= imgNames[3] %>"><% } %></td>
-                            <td><% if (!imgNames[4].equals("")) { %><img src="../../../Images/Icons/<%= imgNames[4] %>"><% } %></td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
+              <table width="600" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td class="TableCell"><jsp:include page='<%= "../../../WebConfig/" + program.getStarsWebConfig().getURL() %>'/></td>
+                </tr>
+              </table>
 <%
-			if (numProgs % 2 == 1) {
+	} else {
+		String[] progIcons = ServletUtils.getImageNames(program.getStarsWebConfig().getLogoLocation());
+		if (progIcons[0].length() > 0 || progIcons[1].length() > 0 || progIcons[2].length() > 0) {
 %>
-              </tr>
+              <table width="80%" border="1" class = "TableCell" align = "center" height="28" cellspacing = "0" cellpadding = "4">
+                <tr valign="middle"> 
+                  <td width="27%">Savings: More dollar signs means more savings!</td>
+                  <td width="8%">
+				    <% if (progIcons[0].length() > 0) { %>
+				    <img src="../../../Images/Icons/<%= progIcons[0] %>" >
+				    <% } else { %>N/A<% } %>
+				  </td>
+                  <td width="19%">Percent of Control</td>
+                  <td width="8%">
+				    <% if (progIcons[1].length() > 0) { %>
+				    <img src="../../../Images/Icons/<%= progIcons[1] %>" >
+				    <% } else { %>N/A<% } %>
+				  </td>
+                  <td width="30%">Environment: More trees means healthier environment.</td>
+                  <td width="8%">
+				    <% if (progIcons[2].length() > 0) { %>
+				    <img src="../../../Images/Icons/<%= progIcons[2] %>" >
+				    <% } else { %>N/A<% } %>
+				  </td>
+                </tr>
+              </table>
+              <br>
 <%
-			}
-			numProgs++;
 		}
-	}	// Enf of all programs
-	
-	if (numProgs % 2 == 1) {
-		/* If number of programs is odd, fill in the last table cell */
 %>
-              <td width="50%">&nbsp;</td>
-              </tr>
+              <table width="60%" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td class="TableCell" align="center"><%= program.getStarsWebConfig().getDescription() %></td>
+                </tr>
+              </table>
 <%
 	}
 %>
-            </table>
-<%	} %>
-            <div align="center"> 
-              <form method="post" action="Enrollment.jsp">
-                <input type="submit" name="Back" value="Back">
-                <br>
-                <br>
-              </form>
+              <br>
+              <input type="button" name="Back" value="Back" onclick="history.back()">
+              <p></p>
             </div>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>

@@ -97,23 +97,22 @@ function confirmSubmit(form) {
               </div>
             <table width="90%" border="0" align = "center">
               <tr>
-                <td align = "center"><span class="MainText"> </span><span class="TableCell"> 
-                  Select the check boxes and corresponding radio button of the 
-                  programs you would like to be enrolled in.<br> <br></span><span class="TitleHeader"></span>
-                  <input type="button" value="Program Details" onclick="location='ProgramDetails.jsp'">
-                
-				<form method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient" onsubmit="return confirmSubmit(this)">
+                <td align = "center"><span class="TableCell"><cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_DESC_ENROLLMENT %>"/> 
+                  <br>
+                  <br>
+                  </span> 
+                  <form method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient" onsubmit="return confirmSubmit(this)">
 				  <input type="hidden" name="action" value="ProgramSignUp">
 				  <input type="hidden" name="SignUpChanged" value="false">
 				  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Enrollment.jsp">
 				  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Enrollment.jsp">
-                  <table border="1" cellspacing="0" cellpadding="3">
-                    <tr align = "center"> 
-                      <td width="175" class="HeaderCell"> 
-                        <div align="center">Program Enrollment</div>
+                    <table border="1" cellspacing="0" cellpadding="3" width="95%">
+                      <tr align = "center"> 
+                        <td width="90%" class="HeaderCell"> 
+                          <div align="center">Program Enrollment</div>
                       </td>
-                      <td width="100" class="HeaderCell"> 
-                        <div align="center">Status</div>
+                        <td width="10%" class="HeaderCell"> 
+                          <div align="center">Status</div>
                       </td>
                     </tr>
 <%
@@ -145,80 +144,109 @@ function confirmSubmit(form) {
 		}
 %>
                         <tr> 
-                        <td width="175">
-						  <table width="185" border="0" cellspacing="0" cellpadding="0">
-                            <tr>
-                              <td><img src="../../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"></td>
-                              <td>
-                                <table width="110" border="0" cellspacing="0" cellpadding="1" align="center">
+                        <td width="90%"> 
+                          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr> 
+                              <td width="10%" valign="top"> <img src="../../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"
+								<% if (category.getStarsWebConfig().getLogoLocation().equals("")) { %>style="display:none"<% } %>> 
+                              </td>
+                              <td width="85%"> 
+                                <table width="100%" border="0" cellspacing="0" cellpadding="1">
                                   <input type="hidden" name="CatID" value="<% if (program != null) out.print(category.getApplianceCategoryID()); %>">
                                   <input type="hidden" name="ProgID" value="<% if (program != null) out.print(program.getProgramID()); %>">
                                   <input type="hidden" name="DefProgID" value="<%= category.getStarsEnrLMProgram(0).getProgramID() %>">
                                   <tr> 
-                                    <td width="23"> 
+                                    <td width="5%"> 
                                       <input type="checkbox" name="AppCat" value="<%= category.getApplianceCategoryID() %>" <%= checkBoxDisabled %>
-								      onclick="changeCategory(this, <%= idx %>)" <% if (program != null) out.print("checked"); %>>
+									  onclick="changeCategory(this, <%= idx %>)" <% if (program != null) { %>checked<% } %>>
                                     </td>
-                                    <td class="TableCell" nowrap><%= categoryName %></td>
+                                    <td width="95%"><span class="SubtitleHeader"><%= categoryName %></span></td>
+                                  </tr>
+                                  <tr> 
+                                    <td width="5%">&nbsp;</td>
+                                    <td width="95%"><span class="TableCell"><%= category.getStarsWebConfig().getDescription() %></span></td>
                                   </tr>
                                 </table>
-<%
-		if (category.getStarsEnrLMProgramCount() > 1) {
+                                <table width="100%" border="0" cellspacing="0" cellpadding="1">
+                                  <%
+		if (category.getStarsEnrLMProgramCount() == 1) {
+			/* If only one program under this category, only show the description button */
+%>
+                                  <tr> 
+                                    <td width="9%">&nbsp;</td>
+                                    <td class="TableCell" width="49%">&nbsp;</td>
+                                    <td class="TableCell" width="22%">&nbsp;</td>
+                                    <td class="TableCell" width="20%" align="right"> 
+                                      <input type="button" name="Details" value="Details" onclick="location.href='ProgramDetails.jsp?Cat=<%= i %>'">
+                                    </td>
+                                  </tr>
+                                  <%
+		} else {
 			/* If more than one program under this category, show the program list */
 %>
-                                <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
-<%
+                                  <tr> 
+                                    <td colspan="4" background="../../../Images/Icons/dot.gif" height="8"></td>
+                                  </tr>
+                                  <%
 			for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
 				StarsEnrLMProgram prog = category.getStarsEnrLMProgram(j);
-				String checkStr = "";
+				String checked = "";
 				if (program != null && prog.getProgramID() == program.getProgramID())
-					checkStr = "checked";
+					checked = "checked";
+				String[] progIcons = ServletUtils.getImageNames(prog.getStarsWebConfig().getLogoLocation());
 				/* Each row is a program in this category */
 %>
                                   <tr> 
-                                    <td width="37">
-									  <div align="right">
-                                        <input type="radio" name="Program<%= idx %>" value="<%= prog.getProgramID() %>" <%= radioBtnDisabled %>
-									    onclick="changeProgram(this, <%= idx %>)" <%= checkStr %>>
-									  </div>
+                                    <td width="9%" align="right"> 
+                                      <input type="radio" name="Program<%= idx %>" value="<%= prog.getProgramID() %>" <%= radioBtnDisabled %>
+									  onclick="changeProgram(this, <%= idx %>)" <%= checked %>>
                                     </td>
-                                    <td class="TableCell" nowrap><%= ServletUtils.getProgramDisplayNames(prog)[1] %></td>
+                                    <td class="TableCell" width="49%" nowrap><%= ServletUtils.getProgramDisplayNames(prog)[1] %> 
+                                    </td>
+                                    <td class="TableCell" width="22%" align="right"> 
+                                      <% if (!progIcons[0].equals("")) { %>
+                                      <img src="../../../Images/Icons/<%= progIcons[0] %>"> 
+                                      <% } %>
+                                      <% if (!progIcons[1].equals("")) { %>
+                                      <img src="../../../Images/Icons/<%= progIcons[1] %>"> 
+                                      <% } %>
+                                      <% if (!progIcons[2].equals("")) { %>
+                                      <img src="../../../Images/Icons/<%= progIcons[2] %>"> 
+                                      <% } %>
+                                    </td>
+                                    <td class="TableCell" width="20%" align="right"> 
+                                      <input type="button" name="Details" value="Details" onclick="location.href='ProgramDetails.jsp?Cat=<%= i %>&Prog=<%= j %>'">
+                                    </td>
                                   </tr>
-<%
+                                  <%
 			}	// End of program
-%>
-                                </table>
-<%
 		}	// End of program list
 %>
-                              </td>
+                                </table>
                             </tr>
-                          </table> 
-                          
+                          </table>
                         </td>
-                          <td width="100" valign="middle" class="TableCell"> 
-                            <div align="center"><%= programStatus %></div>
-                          </td>
-                        </tr>
+                        <td width="10%" valign="middle" class="TableCell"> 
+                          <div align="center"><%= programStatus %></div>
+                        </td>
+                      </tr>
 <%
 		idx++;
 	}
 %>
-                  </table>
-                    <p></p>
+                    </table>
+                    <br>
                     <table width="50%" border="0">
-                      <tr>
+                      <tr> 
                         <td align = "right"> 
                           <input type="submit" name="Submit" value="Submit">
                         </td>
-                        <td>
+                        <td> 
                           <input type="reset" name="Reset" value="Reset">
                         </td>
                       </tr>
                     </table>
                   </form>
-				  <p></p>
-				  <p>
                 </td>
               </tr>
             </table>

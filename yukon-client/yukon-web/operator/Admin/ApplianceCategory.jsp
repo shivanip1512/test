@@ -70,8 +70,6 @@ function changeIcon(form) {
 }
 
 function changeProgramIcons(form) {
-	form.IconSmall.style.visibility = (form.IconNameSmall.value == "") ? "hidden" : "visible";
-	form.IconSmall.src = "../../Images/Icons/" + form.IconNameSmall.value;
 	form.IconSavings.style.visibility = (form.IconNameSavings.value == "") ? "hidden" : "visible";
 	form.IconSavings.src = "../../Images/Icons/" + form.IconNameSavings.value;
 	form.IconControl.style.visibility = (form.IconNameControl.value == "") ? "hidden" : "visible";
@@ -140,6 +138,12 @@ function sameAsDispName(form, checked) {
 	form.ProgShortName.disabled = checked;
 }
 
+function useDescFile(form, checked) {
+	form.UseDescFile.checked = checked;
+	form.ProgDescFile.disabled = !checked;
+	form.ProgDescription.disabled = checked;
+}
+
 function init() {
 	sameAsName(document.form1, <%= category.getStarsWebConfig().getAlternateDisplayName().equals(category.getDescription()) %>);
 	changeIcon(document.form1);
@@ -153,8 +157,8 @@ var progName = new Array();
 var dispName = new Array();
 var shortName = new Array();
 var description = new Array();
+var descFile = new Array();
 var ctrlOdds = new Array();
-var iconNameSmall = new Array();
 var iconNameSavings = new Array();
 var iconNameControl = new Array();
 var iconNameEnvrn = new Array();
@@ -172,11 +176,11 @@ var idx = 0;
 	dispName[idx] = "<%= (dispNames.length > 0)? dispNames[0] : "" %>";
 	shortName[idx] = "<%= (dispNames.length > 1)? dispNames[1] : "" %>";
 	description[idx] = "<%= cfg.getDescription().replaceAll("\"", "&quot;") %>".replace(/&quot;/g, '"').replace(/<br>/g, '\r\n');
+	descFile[idx] = "<%= cfg.getURL() %>";
 	ctrlOdds[idx] = <%= (program.getChanceOfControl() == null) ? 0 : program.getChanceOfControl().getEntryID() %>;
-	iconNameSmall[idx] = "<%= imgNames[1] %>";
-	iconNameSavings[idx] = "<%= imgNames[2] %>";
-	iconNameControl[idx] = "<%= imgNames[3] %>";
-	iconNameEnvrn[idx] = "<%= imgNames[4] %>";
+	iconNameSavings[idx] = "<%= imgNames[0] %>";
+	iconNameControl[idx] = "<%= imgNames[1] %>";
+	iconNameEnvrn[idx] = "<%= imgNames[2] %>";
 	idx++;
 <%
 	}
@@ -188,8 +192,8 @@ var idx = 0;
 	dispName[idx] = "";
 	shortName[idx] = "";
 	description[idx] = "<%= ServerUtils.forceNotNone(program.getYukonDescription()).replaceAll("\"", "&quot;") %>".replace(/&quot;/g, '"');
+	descFile[idx] = "";
 	ctrlOdds[idx] = 0;
-	iconNameSmall[idx] = "";
 	iconNameSavings[idx] = "";
 	iconNameControl[idx] = "";
 	iconNameEnvrn[idx] = "";
@@ -212,9 +216,17 @@ function saveProgramConfig(form) {
 			shortName[idx] = "";
 		else
 			shortName[idx] = form.ProgShortName.value;
-		description[idx] = form.ProgDescription.value;
+		
+		if (form.UseDescFile.checked) {
+			description[idx] = "";
+			descFile[idx] = form.ProgDescFile.value;
+		}
+		else {
+			description[idx] = form.ProgDescription.value;
+			descFile[idx] = "";
+		}
+		
 		ctrlOdds[idx] = form.ProgCtrlOdds.value;
-		iconNameSmall[idx] = form.IconNameSmall.value;
 		iconNameSavings[idx] = form.IconNameSavings.value;
 		iconNameControl[idx] = form.IconNameControl.value;
 		iconNameEnvrn[idx] = form.IconNameEnvrn.value;
@@ -223,17 +235,18 @@ function saveProgramConfig(form) {
 
 function clearProgramConfig(form) {
 	document.getElementById("ProgName").innerText = "";
-	form.ProgDispName.value = "";
 	sameAsProgName(form, false);
 	sameAsDispName(form, false);
+	useDescFile(form, false);
+	
+	form.ProgDispName.value = "";
 	form.ProgShortName.value = "";
 	form.ProgDescription.value = "";
+	form.ProgDescFile.value = "";
 	form.ProgCtrlOdds.selectedIndex = 0;
-	form.IconNameSmall.value = "";
 	form.IconNameSavings.value = "";
 	form.IconNameControl.value = "";
 	form.IconNameEnvrn.value = "";
-	form.IconSmall.style.visibility = "hidden";
 	form.IconSavings.style.visibility = "hidden";
 	form.IconControl.style.visibility = "hidden";
 	form.IconEnvrn.style.visibility = "hidden";
@@ -256,8 +269,9 @@ function showProgramConfig(form) {
 			form.ProgShortName.value = shortName[idx];
 			sameAsDispName(form, shortName[idx] == "");
 			form.ProgDescription.value = description[idx];
+			form.ProgDescFile.value = descFile[idx];
+			useDescFile(form, descFile[idx] != "");
 			form.ProgCtrlOdds.value = ctrlOdds[idx];
-			form.IconNameSmall.value = iconNameSmall[idx];
 			form.IconNameSavings.value = iconNameSavings[idx];
 			form.IconNameControl.value = iconNameControl[idx];
 			form.IconNameEnvrn.value = iconNameEnvrn[idx];
@@ -290,9 +304,11 @@ function prepareSubmit(form) {
 			form.insertAdjacentHTML("beforeEnd", html);
 			html = '<input type="hidden" name="ProgDescriptions" value="' + description[idx].replace(/"/g, "&quot;") + '">';
 			form.insertAdjacentHTML("beforeEnd", html);
+			html = '<input type="hidden" name="ProgDescFiles" value="' + descFile[idx] + '">';
+			form.insertAdjacentHTML("beforeEnd", html);
 			html = '<input type="hidden" name="ProgChanceOfCtrls" value="' + ctrlOdds[idx] + '">';
 			form.insertAdjacentHTML("beforeEnd", html);
-			var iconNames = iconNameSmall[idx] + "," + iconNameSavings[idx] + "," + iconNameControl[idx] + "," + iconNameEnvrn[idx];
+			var iconNames = iconNameSavings[idx] + "," + iconNameControl[idx] + "," + iconNameEnvrn[idx];
 			html = '<input type="hidden" name="ProgIconNames" value="' + iconNames + '">';
 			form.insertAdjacentHTML("beforeEnd", html);
 		}
@@ -458,12 +474,15 @@ function prepareSubmit(form) {
                               <td width="16%">Short Name:</td>
                               <td width="84%"> 
                                 <input type="text" name="ProgShortName" size="20">
-                                <input type="checkbox" name="SameAsDispName" value="true" onClick="sameAsDispName(this.form, this.checked)">
+                                <input type="checkbox" name="SameAsDispName" value="true" onclick="sameAsDispName(this.form, this.checked)">
                                 Same as display name </td>
                             </tr>
                             <tr> 
                               <td width="16%">Description:</td>
                               <td width="84%"> 
+                                <input type="text" name="ProgDescFile" size="40">
+                                <input type="checkbox" name="UseDescFile" value="true" onclick="useDescFile(this.form, this.checked)">
+                                Use a description file<br>
                                 <textarea name="ProgDescription" rows="4" wrap="soft" cols="40"></textarea>
                               </td>
                             </tr>
@@ -497,48 +516,45 @@ function prepareSubmit(form) {
                                     <td width="60%"> 
                                       <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                                         <tr> 
-                                          <td width="30%" height="40">Small: </td>
-                                          <td width="70%" height="40"> 
-                                            <input type="text" name="IconNameSmall" size="20">
+                                          <td width="30%" height="25">Savings: 
                                           </td>
-                                        </tr>
-                                        <tr> 
-                                          <td width="30%" height="40">Savings: 
-                                          </td>
-                                          <td width="70%" height="40"> 
+                                          <td width="70%" height="25"> 
                                             <input type="text" name="IconNameSavings" size="20">
                                           </td>
                                         </tr>
                                         <tr> 
-                                          <td width="30%" height="40">Control%:</td>
-                                          <td width="70%" height="40"> 
+                                          <td width="30%" height="25">Control%:</td>
+                                          <td width="70%" height="25"> 
                                             <input type="text" name="IconNameControl" size="20">
                                           </td>
                                         </tr>
                                         <tr> 
-                                          <td width="30%" height="40">Environment:</td>
-                                          <td width="70%" height="40"> 
+                                          <td width="30%" height="25">Environment:</td>
+                                          <td width="70%" height="25"> 
                                             <input type="text" name="IconNameEnvrn" size="20">
                                           </td>
                                         </tr>
                                       </table>
-</td>
-                                    <td width="40%"> 
+									</td>
+                                    <td width="20%"> 
                                       <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                                         <tr> 
-                                          <td width="40%" rowspan="4" height="40"> 
+                                          <td> 
                                             <input type="button" name="Preview2" value="Preview" onClick="changeProgramIcons(this.form)">
                                           </td>
-                                          <td width="60%" height="40"><img id="IconSmall" src="../../../Images/Icons/ACSm.gif" style="visibility:hidden"></td>
+                                        </tr>
+                                      </table>
+                                    </td>
+                                    <td width="20%"> 
+                                      <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
+                                        <tr> 
+                                          <td height="25"><img id="IconSavings" src="../../../Images/Icons/$$Sm.gif" style="visibility:hidden"></td>
                                         </tr>
                                         <tr> 
-                                          <td width="60%" height="40"><img id="IconSavings" src="../../../Images/Icons/$$Sm.gif" style="visibility:hidden"></td>
+                                          <td height="25"><img id="IconControl" src="../../../Images/Icons/HalfSm.gif" style="visibility:hidden"></td>
                                         </tr>
                                         <tr> 
-                                          <td width="60%" height="40"><img id="IconControl" src="../../../Images/Icons/HalfSm.gif" style="visibility:hidden"></td>
-                                        </tr>
-                                        <tr> 
-                                          <td width="60%" height="40"><img id="IconEnvrn" src="../../../Images/Icons/Tree2Sm.gif" style="visibility:hidden"></td>
+                                          <td height="25"><img id="IconEnvrn" src="../../../Images/Icons/Tree2Sm.gif" style="visibility:hidden"></td>
                                         </tr>
                                       </table>
                                     </td>
