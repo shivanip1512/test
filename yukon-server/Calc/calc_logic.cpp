@@ -24,9 +24,25 @@ LPTSTR szDisplayName = "Yukon Calc-Logic Service";
 int main( int argc, char *argv[] )
 {
     RWWinSockInfo sock_init;        // global declare for winsock
-    
-    
+
+    HANDLE hExclusion;
     // If set console does not fail then we are running as a console application
+    if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, FALSE, "CalcLogic")) != NULL )
+    {
+       // Oh no, calc_logic is running on this machine already.
+       CloseHandle(hExclusion);
+       cout << "Calc Logic is already running!!!" << endl;
+       exit(-1);
+    }
+
+    hExclusion = CreateEvent(NULL, TRUE, FALSE, "CalcLogic");
+
+    if( hExclusion == (HANDLE)NULL )
+    {
+       cout << "Couldn't create CalcLogic!!!" << endl;
+       exit(-1);
+    }
+
     if( SetConsoleTitle(szDisplayName) )
     {
         //  Process command line
