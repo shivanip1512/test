@@ -18,6 +18,7 @@ public interface YukonListEntryTypes
 	// Used by STARS
 	public static final int YUK_DEF_ID_CUST_EVENT_LMPROGRAM		= 1001;
 	public static final int YUK_DEF_ID_CUST_EVENT_LMHARDWARE		= 1002;
+	public static final int YUK_DEF_ID_CUST_EVENT_LMTHERMOSTAT_MANUAL	= 1003;
 	public static final int YUK_DEF_ID_CUST_ACT_SIGNUP			= 1101;
 	public static final int YUK_DEF_ID_CUST_ACT_PENDING			= 1102;
 	public static final int YUK_DEF_ID_CUST_ACT_COMPLETED		= 1103;
