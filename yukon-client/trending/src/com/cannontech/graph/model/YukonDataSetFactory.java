@@ -17,7 +17,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
     private static java.text.SimpleDateFormat LEGEND_FORMAT = new java.text.SimpleDateFormat("MMM dd");
     private static java.text.SimpleDateFormat CATEGORY_FORMAT = new java.text.SimpleDateFormat(" MMM dd, HH:mm ");
     
-
+	private int validSeriesLength = -1;
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (8/2/2001 10:46:02 AM)
@@ -91,7 +91,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 							}
 							catch(com.jrefinery.data.SeriesException se)
 							{
-								com.cannontech.clientutils.CTILogger.info("Series Exception:  PERIOD = " + new java.util.Date(dp.getPeriod().getStart()));
+								com.cannontech.clientutils.CTILogger.info("Series ["+i+"] Exception:  PERIOD = " + new java.util.Date(dp.getPeriod().getStart()) + " VALUE = " + dp.getValue().doubleValue());
 							}
 						}
 					}
@@ -183,9 +183,9 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 
 		//Valid series are those that have type = graph.  tSeries has all types of series,
 		//  therefore we need to weed out those we don't want in the graph.
-		int peakPtIndex = -1;
+		int peakPtIndex = -1;//getPeakPointIndex(tSeries, peakPointId);
 			
-		int validSeriesLength = 0;
+		int validSeriesLength = 0;//getValidSeriesLength(tSeries);
 		for( int i = 0; i < tSeries.length; i++)
 		{
 			if(( tSeries[i].getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK) == tSeries[i].getTypeMask())			
@@ -233,7 +233,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 		com.jrefinery.data.XYSeriesCollection collection = new com.jrefinery.data.XYSeriesCollection();
 		for ( int i = 0; i < datasetValues.length; i++)
 		{
-			com.jrefinery.data.XYSeries xySeries = new com.jrefinery.data.XYSeries(tSeries[i].getLabel());
+			com.jrefinery.data.XYSeries xySeries = new com.jrefinery.data.XYSeries(tSeries[i].getLabel());			
 			for (int j = 0; j < datasetValues[i].length; j++)
 			{
 				if( datasetValues[i][j] != null)
@@ -245,7 +245,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 	}
 
 
-
+/*
 	public static com.jrefinery.data.TimeSeriesCollection createMultipleDaysDataSet(TrendSerie[] tSeries,  java.util.Date startDate, java.util.Date compareStart)
 	{
 		if( tSeries == null)
@@ -331,7 +331,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 		}
 		return dSet;
 	}
-
+*/
 	
 	/**
 	 * Insert the method's description here.
@@ -346,6 +346,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 
 		java.util.Vector tNamesVector = new java.util.Vector(tSeries.length);//capacity is best guess right now.
 		int validSeriesLength = 0;
+		
 		for( int i = 0; i < tSeries.length; i++)
 		{
 			if(( tSeries[i].getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK) == tSeries[i].getTypeMask())
@@ -388,9 +389,72 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 			}
 		}
 
+	
 		return (new com.jrefinery.data.DefaultCategoryDataset(seriesNames, categoryList, datasetValues));
 	}
 
+
+	public static com.jrefinery.data.DefaultCategoryDataset createVerticalCategoryDataSet_LD(TrendSerie[] tSeries, Integer peakPointId)
+	{
+		if( tSeries == null)
+			return null;
+
+		java.util.Vector tNamesVector = new java.util.Vector(tSeries.length);//capacity is best guess right now.
+		int validSeriesLength = 0;
+		int peakPtIndex = -1;
+		
+		for( int i = 0; i < tSeries.length; i++)
+		{
+			if(( tSeries[i].getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK) == tSeries[i].getTypeMask())
+			{
+				if( tSeries[i].getPointId().equals(peakPointId))
+				{	//find the 'graph' point representing the peak point, if it exists!
+					peakPtIndex = validSeriesLength;
+				}
+
+				tNamesVector.add(tSeries[i].getLabel().toString());
+				validSeriesLength++;
+			}
+		}
+
+		//set the series names up, excluding any not included in the buildTreeMap return.		
+		String[] seriesNames = new String[tNamesVector.size()];		
+		tNamesVector.toArray(seriesNames);
+	
+		java.util.TreeMap tree = buildTreeMap(tSeries, validSeriesLength);
+		if( tree == null)
+			return null;
+
+		// Get the keySet (timestamps) in a useable array structure.
+		java.util.Set keySet = tree.keySet();
+		Long[] keyArray = new Long[keySet.size()];
+		keySet.toArray(keyArray);
+		
+		// Create the category list (of timestamps).
+		String[] categoryList = new String[keyArray.length];
+		for (int i = 0; i < keyArray.length; i++)
+		{
+			Long ts = keyArray[i];
+			categoryList[i] = CATEGORY_FORMAT.format(new java.util.Date(ts.longValue()));
+		}
+		
+		// Set series names for each point.
+		Double[][] datasetValues = new Double[validSeriesLength ][];
+		for (int i = 0; i < validSeriesLength; i++)
+		{
+			datasetValues[i] = new Double[keyArray.length];
+			for (int j = 0; j < keyArray.length; j++)
+			{
+				Double[] values = (Double[])tree.get(keyArray[j]);
+				datasetValues[i][j] = values[i];
+			}
+		}
+
+		sortValuesDescending(datasetValues, peakPtIndex);
+		
+		return (new com.jrefinery.data.DefaultCategoryDataset(seriesNames, categoryList, datasetValues));
+	}
+		
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (6/22/2001 4:25:53 PM)
@@ -474,4 +538,34 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 		}
 		return dataSetValues;
 	}
+	/*
+	private static int getPeakPointIndex(TrendSerie [] tSeries, Integer peakPointId)
+	{
+		int peakPointIndex = -1;
+		for( int i = 0; i < tSeries.length; i++)
+		{
+			if(( tSeries[i].getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK) == tSeries[i].getTypeMask())			
+			{
+				if( tSeries[i].getPointId().equals(peakPointId))
+				{	//find the 'graph' point representing the peak point, if it exists!
+					peakPointIndex = validSeriesLength;
+				}
+			}
+		}
+		return peakPointIndex;
 	}
+	private static int getValidSeriesLength(TrendSerie [] tSeries)
+	{
+		int length = 0;
+		for( int i = 0; i < tSeries.length; i++)
+		{
+			if(( tSeries[i].getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK) == tSeries[i].getTypeMask())			
+			{
+				length++;
+			}
+		}
+		return length;
+	}*/
+
+	
+}
