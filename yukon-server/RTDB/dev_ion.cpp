@@ -496,6 +496,8 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                  InMessage->Return.MacroOffset,
                                  InMessage->Return.Attempt);
 
+            newReq.setMessagePriority(15);
+
             newReq.setConnectionHandle((void *)InMessage->Return.Connection);
 
             CtiCommandParser parse(newReq.CommandString());
