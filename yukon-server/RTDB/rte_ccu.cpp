@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/04/01 16:00:15 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/05/23 22:11:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,6 +56,7 @@ INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
         {
             // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
             OutMessage->Request.CheckSum = Device->getUniqueIdentifier();
+            OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;           // 051903 CGP.  Are all these OMs excludable (ie susceptible to crosstalk)??
 
             if(OutMessage->EventCode & VERSACOM)
             {
