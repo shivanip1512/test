@@ -9,6 +9,7 @@ INCLPATHS+= \
 -I$(DATABASE)\include \
 -I$(PROCLOG)\include \
 -I$(MSG)\include \
+-I$(RTDB)\include \
 -I$(SERVICE)\include \
 -I$(CPARMS)\include \
 -I$(SERVER)\include \
@@ -23,6 +24,7 @@ INCLPATHS+= \
 ;$(CPARMS)\include \
 ;$(DATABASE)\include \
 ;$(SERVICE)\include \
+;$(RTDB)\include \
 ;$(SERVER)\include \
 ;$(PROCLOG)\include \
 ;$(MSG)\include \
@@ -36,6 +38,7 @@ $(COMPILEBASE)\lib\service.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
+$(COMPILEBASE)\lib\ctiholidaydb.lib
 
 BASEOBJS= \
 capcontroller.obj \
