@@ -17,7 +17,7 @@ self.name = "mainWin";
 </SCRIPT>
 </head>
 
-<body class="Background" text="#000000" leftmargin="0" topmargin="0">
+<body class="Background" text="#000000" leftmargin="0" topmargin="0" onLoad="document.forms.form1.USERNAME.focus()">
 <br>
 <table width="450" border="1" align="center" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF">
   <tr> 
