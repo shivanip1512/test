@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_email.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:25 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/30 16:26:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,7 +44,7 @@ public:
 
 protected:
 
-   LONG        _id;
+   LONG        _id;                 // This is an id based upon the EmailType.
    INT         _idType;
    RWCString   _sender;
    RWCString   _subject;
