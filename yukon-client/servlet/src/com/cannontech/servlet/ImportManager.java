@@ -267,8 +267,6 @@ public class ImportManager extends HttpServlet {
 			if (!importDir.exists() || !importDir.isDirectory())
 				throw new WebClientException("The specified directory doesn't exist");
 			
-			session.setAttribute(ImportManagerUtil.CUSTOMER_FILE_PATH, importDir);
-			
 			ImportStarsDataTask.preProcessStarsData( importDir, session, energyCompany );
 		}
 		catch (WebClientException e) {
@@ -293,9 +291,9 @@ public class ImportManager extends HttpServlet {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		Hashtable preprocessedData = (Hashtable) session.getAttribute(ImportManagerUtil.PREPROCESSED_DATA);
-		Hashtable processedData = ImportStarsDataTask.postProcessStarsData( preprocessedData, energyCompany );
-		
 		File importDir = (File) session.getAttribute(ImportManagerUtil.CUSTOMER_FILE_PATH);
+		
+		Hashtable processedData = ImportStarsDataTask.postProcessStarsData( preprocessedData, importDir, energyCompany );
 		
 		ImportStarsDataTask task = new ImportStarsDataTask( energyCompany, processedData, importDir );
 		long id = ProgressChecker.addTask( task );

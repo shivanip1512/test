@@ -1770,7 +1770,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 		return fields;
 	}
 	
-	private static void dumpSelectionLists(Hashtable preprocessedData, LiteStarsEnergyCompany energyCompany) {
+	private static void dumpSelectionLists(Hashtable preprocessedData, File importDir, LiteStarsEnergyCompany energyCompany) {
 		ArrayList lines = new ArrayList();
 		
 		for (int i = 0; i < ImportManagerUtil.LIST_NAMES.length; i++) {
@@ -1838,8 +1838,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 		String[] lns = new String[ lines.size() ];
 		lines.toArray( lns );
 		
-		String path = (String) preprocessedData.get( ImportManagerUtil.CUSTOMER_FILE_PATH );
-		File custListFile = new File( path, "custlist.map" );
+		File custListFile = new File( importDir, "_custlist.map" );
 		try {
 			StarsUtils.writeFile( custListFile, lns );
 		}
@@ -2697,6 +2696,8 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 				}
 			}
 			
+			session.setAttribute( ImportManagerUtil.CUSTOMER_FILE_PATH, importDir );
+			
 			preprocessedData.put( "CustomerAccount", acctFieldsList );
 			preprocessedData.put( "Inventory", invFieldsList );
 			preprocessedData.put( "Appliance", appFieldsList );
@@ -2717,7 +2718,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 					unassignedLists.put( ImportManagerUtil.LIST_NAMES[i][0], new Boolean(true) );
 			}
 			
-			dumpSelectionLists( preprocessedData, energyCompany );
+			dumpSelectionLists( preprocessedData, importDir, energyCompany );
 		}
 		catch (Exception e) {
 			if (e instanceof WebClientException)
@@ -2813,8 +2814,8 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 		unassignedLists.put(listName, new Boolean(false));
 	}
 	
-	public static Hashtable postProcessStarsData(Hashtable preprocessedData, LiteStarsEnergyCompany energyCompany) {
-		dumpSelectionLists( preprocessedData, energyCompany );
+	public static Hashtable postProcessStarsData(Hashtable preprocessedData, File importDir, LiteStarsEnergyCompany energyCompany) {
+		dumpSelectionLists( preprocessedData, importDir, energyCompany );
 		
 		ArrayList acctFieldsList = (ArrayList) preprocessedData.get("CustomerAccount");
 		ArrayList invFieldsList = (ArrayList) preprocessedData.get("Inventory");
