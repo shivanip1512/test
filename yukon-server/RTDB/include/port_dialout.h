@@ -13,8 +13,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/12/12 17:06:42 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/12/19 20:30:14 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,19 +27,18 @@ using namespace std;
 
 #include "dsm2.h"
 #include "port_base.h"
-#include "tbl_port_dialup.h"
+#include "port_dialable.h"
 
-class CtiPortDialout
+class CtiPortDialout : public CtiPortDialable
 {
 protected:
 
-    CtiPort             *_superPort;           // This is how we know who owns us...
-
-    BOOL                _shouldDisconnect;
-    RWCString           _dialedUpNumber;
-    CtiTablePortDialup  _tblPortDialup;
-
 private:
+
+    INT modemReset(USHORT Trace, BOOL dcdTest = TRUE);
+    INT modemSetup(USHORT Trace, BOOL dcdTest = TRUE);
+    INT modemHangup(USHORT Trace, BOOL dcdTest = TRUE);
+    INT modemConnect(PCHAR Message, USHORT Trace, BOOL dcdTest = TRUE);
 
 public:
 
@@ -49,44 +48,12 @@ public:
 
     CtiPortDialout& operator=(const CtiPortDialout& aRef);
 
-    CtiPortDialout& setSuperPort(CtiPort *port);
-
-    RWCString            getDialedUpNumber() const;
-    RWCString&           getDialedUpNumber();
-    CtiPortDialout&      setDialedUpNumber(const RWCString &str);
-
-    /*-----------------------------------------------------*
-     * Used to establish a connection to the remote Device
-     *-----------------------------------------------------*/
-
-    INT modemReset(USHORT Trace, BOOL dcdTest = TRUE);
-    INT modemSetup(USHORT Trace, BOOL dcdTest = TRUE);
-    INT modemHangup(USHORT Trace, BOOL dcdTest = TRUE);
-    INT modemConnect(PCHAR Message, USHORT Trace, BOOL dcdTest = TRUE);
-
-    CtiTablePortDialup         getTablePortDialup() const;
-    CtiTablePortDialup&        getTablePortDialup();
-    CtiPortDialout&            setTablePortDialup(const CtiTablePortDialup& aRef);
-
-    void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-    void DecodeDatabaseReader(RWDBReader &rdr);
-
-    RWCString  getModemInit() const;
-    RWCString& getModemInit();
-
-    BOOL shouldDisconnect() const;
-    void setShouldDisconnect(BOOL b = TRUE);
-
     INT  connectToDevice(CtiDevice *Device, INT trace);
     INT  disconnect(CtiDevice *Device, INT trace);
 
     INT reset(INT trace);
     INT setup(INT trace);
     INT close(INT trace);
-
-    INT waitForResponse(PULONG ResponseSize, PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse);
-    static BOOL validModemResponse(PCHAR Response);
-
 
 };
 #endif // #ifndef __PORT_DIALOUT_H__

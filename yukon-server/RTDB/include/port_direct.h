@@ -14,15 +14,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_direct.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/12/13 15:25:09 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/12/19 20:30:14 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "port_base.h"
-#include "port_dialout.h"
-#include "port_dialin.h"
+#include "port_dialable.h"
 #include "tbl_port_serial.h"
 
 class IM_EX_PRTDB CtiPortDirect : public CtiPort
@@ -32,8 +31,7 @@ protected:
    HANDLE                     _portHandle;
    CtiTablePortLocalSerial    _localSerial;
 
-   CtiPortDialout             *_dialout;
-   CtiPortDialin              *_dialin;
+   CtiPortDialable            *_dialable;
 
 private:
 
@@ -51,8 +49,7 @@ public:
    typedef CtiPort  Inherited;
 
    CtiPortDirect();
-   CtiPortDirect(CtiPortDialout *dial);
-   CtiPortDirect(CtiPortDialin *dialin);
+   CtiPortDirect(CtiPortDialable *dial);
    CtiPortDirect(const CtiPortDirect& aRef);
 
    virtual ~CtiPortDirect();
@@ -74,10 +71,9 @@ public:
 
    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
-   virtual void DecodeDialoutDatabaseReader(RWDBReader &rdr);
-   virtual void DecodeDialinDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDialableDatabaseReader(RWDBReader &rdr);
 
-   virtual INT openPort();
+   virtual INT openPort(INT rate = 0, INT bits = 8, INT parity = NOPARITY, INT stopbits = ONESTOPBIT);
    virtual INT reset(INT trace);
    virtual INT setup(INT trace);
    virtual INT close(INT trace);

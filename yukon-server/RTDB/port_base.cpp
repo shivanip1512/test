@@ -34,7 +34,7 @@ INT CtiPort::traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDev
 
     if(Xfer.doTrace(ErrorCode) &&  !(*Xfer.getInCountActual() == 0 && !ErrorCode) )
     {
-        if(!isTAP())
+        if(!isTAP() || (Dev && !Dev->isTAP()))
         {
             {
                 CtiTraceMsg trace;
@@ -99,7 +99,7 @@ INT CtiPort::traceXfer(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiD
 {
     INT status = NORMAL;
 
-    if(!isTAP())
+    if(!isTAP() || (Dev && !Dev->isTAP()))
     {
         if(Xfer.traceError() && ErrorCode != NORMAL)      // if Error is set, it happened on the InMessage, and we didn't print the outmessage before
         {
@@ -121,7 +121,7 @@ INT CtiPort::traceOut(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDe
     INT status = NORMAL;
     RWCString msg;
 
-    if(!isTAP())
+    if(!isTAP() || (Dev && !Dev->isTAP()))
     {
         if(Xfer.doTrace(ErrorCode))
         {
@@ -355,21 +355,11 @@ INT CtiPort::verifyPortIsRunnable( HANDLE hQuit )
     return status;
 }
 
-void CtiPort::DecodeDialoutDatabaseReader(RWDBReader &rdr)
+void CtiPort::DecodeDialableDatabaseReader(RWDBReader &rdr)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** DecodeDialoutDatabaseReader not defined for " << getName() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return;
-}
-
-void CtiPort::DecodeDialinDatabaseReader(RWDBReader &rdr)
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** DecodeDialinDatabaseReader not defined for " << getName() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << RWTime() << " **** DecodeDialableDatabaseReader not defined for " << getName() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return;
@@ -444,7 +434,6 @@ _portFunc(0),
 _portQueue(NULL),
 _connectedDevice(0L),
 _connectedDeviceUID(-1),
-_lastBaudRate(0),
 _tapPort(FALSE)
 {
 }
@@ -481,13 +470,6 @@ CtiPort& CtiPort::setConnectedDevice(const LONG d)
     return *this;
 }
 
-INT CtiPort::getLastBaudRate() const             { return _lastBaudRate;}
-CtiPort& CtiPort::setLastBaudRate(const INT r)
-{
-    _lastBaudRate = r;
-    return *this;
-}
-
 CtiPort &CtiPort::setBaudRate(INT baudRate)
 {
     if(baudRate)
@@ -498,14 +480,10 @@ CtiPort &CtiPort::setBaudRate(INT baudRate)
 
 
 
-RWCString& CtiPort::getPortNameWas()                    { return _portNameWas;}
-CtiPort& CtiPort::setPortNameWas(const RWCString str)
+BOOL CtiPort::isTAP() const
 {
-    _portNameWas = str;
-    return *this;
+    return _tapPort;
 }
-
-BOOL CtiPort::isTAP() const                       { return _tapPort;}
 CtiPort& CtiPort::setTAP(BOOL b)
 {
     _tapPort = b;
@@ -691,23 +669,42 @@ CtiPort& CtiPort::setConnectedDeviceUID(const ULONG &i)
 }
 
 
-INT CtiPort::verifyPortStatus()
+pair< bool, INT > CtiPort::verifyPortStatus(CtiDevice *Device, INT trace)
 {
-    INT         status   = NORMAL;
+    pair< bool, INT > rpair = make_pair( false, NORMAL );
 
-    if(needsReinit() && !isDialup())
+    if( !isDialup() )
     {
-        if( NORMAL != (status = openPort()) )
+        rpair = checkCommStatus(Device, trace);
+    }
+
+    return rpair;
+}
+
+pair< bool, INT > CtiPort::checkCommStatus(CtiDevice *Device, INT trace)
+{
+    INT status = NORMAL;
+    pair< bool, INT > rpair = make_pair( false, NORMAL );
+
+    if(needsReinit())
+    {
+        /* set up the port */
+        if( (status = openPort()) != NORMAL )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Error initializing Virtual Port " << getPortID() << ": \"" << getName() << "\"" << endl;
             }
         }
+
+        setPortForDevice(Device);
+
+        rpair = make_pair( true, status );
     }
 
-    return status;
+    return rpair;
 }
+
 
 CTI_PORTTHREAD_FUNC_PTR CtiPort::setPortThreadFunc(CTI_PORTTHREAD_FUNC_PTR aFn)
 {
@@ -717,31 +714,6 @@ CTI_PORTTHREAD_FUNC_PTR CtiPort::setPortThreadFunc(CTI_PORTTHREAD_FUNC_PTR aFn)
 }
 
 
-INT CtiPort::checkCommStatus(INT trace)
-{
-    INT status = NORMAL;
-
-    if(getLastBaudRate() == 0 || needsReinit())
-    {
-        /* set up the port */
-        if( (status = openPort()) != NORMAL )
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Error initializing Virtual Port " << getPortID() <<" on " << getName() << endl;
-            }
-
-            return status;
-        }
-        else
-        {
-            setPortNameWas( getName() );
-            setLastBaudRate( getTablePortSettings().getBaudRate() );
-        }
-    }
-
-    return status;
-}
 
 /* Routine to check DCD on a Port */
 INT CtiPort::isDCD() const
@@ -815,3 +787,51 @@ bool CtiPort::isViable() const
 }
 
 
+bool CtiPort::setPortForDevice(CtiDevice* Device)
+{
+    bool bret = false;
+
+    if(Device)
+    {
+        if(Device->getType() == TYPE_TAPTERM)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Port is about to communicate with a TAP dialup device. " << Device->getName() << endl;
+            }
+
+            setLine(1200, 7, EVENPARITY, ONESTOPBIT);
+            enableXONXOFF();
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Port is about to communicate with a NON - TAP dialup device. " << Device->getName() << endl;
+            }
+
+
+            if(Device->getBaudRate() != getBaudRate())
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Device: " << Device->getName() << " linesettings are overriding port " << getName() << " settings!" << endl;
+                }
+                setLine(Device->getBaudRate(), Device->getBits(), Device->getParity(), Device->getStopBits());
+            }
+            else
+            {
+                setLine(getBaudRate(), getBits(), getParity(), getStopBits());
+            }
+            disableXONXOFF();
+        }
+    }
+    else
+    {
+        // Ok, some default from the port!
+        setLine( getBaudRate(), getBits(), getParity(), getStopBits() );
+        disableXONXOFF();
+    }
+
+    return bret;
+}

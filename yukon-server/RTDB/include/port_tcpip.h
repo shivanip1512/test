@@ -14,15 +14,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_tcpip.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/12/13 15:25:09 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/12/19 20:30:14 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "port_base.h"
-#include "port_dialin.h"
-#include "port_dialout.h"
+#include "port_dialable.h"
 #include "tbl_port_tcpip.h"
 #include "tcpsup.h"
 
@@ -44,16 +43,14 @@ private:
    bool                 _busy;
    INT                  _baud;
 
-   CtiPortDialout       *_dialout;
-   CtiPortDialin        *_dialin;
+   CtiPortDialable      *_dialable;
 
 public:
 
    typedef CtiPort  Inherited;
 
    CtiPortTCPIPDirect();
-   CtiPortTCPIPDirect(CtiPortDialout *dial);
-   CtiPortTCPIPDirect(CtiPortDialin *dial);
+   CtiPortTCPIPDirect(CtiPortDialable *dial);
 
    CtiPortTCPIPDirect(const CtiPortTCPIPDirect& aRef);
    virtual ~CtiPortTCPIPDirect();
@@ -74,11 +71,10 @@ public:
 
    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
-   virtual void DecodeDialoutDatabaseReader(RWDBReader &rdr);
-   virtual void DecodeDialinDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDialableDatabaseReader(RWDBReader &rdr);
 
    virtual bool isViable() const;
-   virtual INT openPort();
+   virtual INT openPort(INT rate = 0, INT bits = 8, INT parity = NOPARITY, INT stopbits = ONESTOPBIT);
    virtual INT reset(INT trace);
    virtual INT setup(INT trace);
    virtual INT close(INT trace);

@@ -11,8 +11,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/12/13 15:25:08 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/12/19 20:30:12 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,45 +21,27 @@
 #include "logger.h"
 #include "port_dialout.h"
 
-CtiPortDialout& CtiPortDialout::setSuperPort(CtiPort *port)
+CtiPortDialout::CtiPortDialout()
+{}
+
+CtiPortDialout::CtiPortDialout(const CtiPortDialout& aRef)
 {
-    _superPort = port;
-    return *this;
+    *this = aRef;
 }
 
-RWCString CtiPortDialout::getDialedUpNumber() const
+CtiPortDialout::~CtiPortDialout()
 {
-    return _dialedUpNumber;
-}
-RWCString& CtiPortDialout::getDialedUpNumber()
-{
-    return _dialedUpNumber;
 }
 
-RWCString  CtiPortDialout::getModemInit() const
+CtiPortDialout& CtiPortDialout::operator=(const CtiPortDialout& aRef)
 {
-    return _tblPortDialup.getModemInitString();
-}
-
-RWCString& CtiPortDialout::getModemInit()
-{
-    return _tblPortDialup.getModemInitString();
-}
-
-
-CtiTablePortDialup CtiPortDialout::getTablePortDialup() const
-{
-    return _tblPortDialup;
-}
-
-CtiTablePortDialup& CtiPortDialout::getTablePortDialup()
-{
-    return _tblPortDialup;
-}
-
-CtiPortDialout& CtiPortDialout::setTablePortDialup(const CtiTablePortDialup& aRef)
-{
-    _tblPortDialup = aRef;
+    if(this != &aRef)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
     return *this;
 }
 
@@ -102,7 +84,11 @@ INT CtiPortDialout::connectToDevice(CtiDevice *Device, INT trace)
 
     if( !_superPort->connectedTo(DeviceCRC) )
     {
-        if( (status = _superPort->checkCommStatus(trace)) == NORMAL)
+        pair< bool, INT > portpair = _superPort->checkCommStatus(Device, trace);
+
+        status = portpair.second;
+
+        if( status == NORMAL )
         {
             RWCString number = getTablePortDialup().getPrefixString() + Device->getPhoneNumber();
             /*  Now Dial */
@@ -158,41 +144,15 @@ INT CtiPortDialout::setup(INT trace)
     return modemSetup(trace, (_superPort->getTablePortSettings().getCDWait() != 0));
 }
 
-CtiPortDialout::CtiPortDialout() :
-_shouldDisconnect(FALSE)
-{}
-
-CtiPortDialout::CtiPortDialout(const CtiPortDialout& aRef)
+INT CtiPortDialout::close(INT trace)
 {
-    *this = aRef;
-}
-
-CtiPortDialout::~CtiPortDialout()
-{
-}
-
-CtiPortDialout& CtiPortDialout::operator=(const CtiPortDialout& aRef)
-{
-    if(this != &aRef)
     {
-        _tblPortDialup = aRef.getTablePortDialup();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-    return *this;
+    return NORMAL;
 }
 
-void CtiPortDialout::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    CtiTablePortDialup::getSQL(db, keyTable, selector);
-}
-
-void CtiPortDialout::DecodeDatabaseReader(RWDBReader &rdr)
-{
-    _tblPortDialup.DecodeDatabaseReader(rdr);       // get the base class handled
-}
 
 /* Routine to force the reset of modem */
 INT CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
@@ -352,7 +312,10 @@ INT CtiPortDialout::modemSetup(USHORT Trace, BOOL dcdTest)
         /* Flush the input buffer */
         _superPort->inClear();
 
-        if(_superPort->writePort((PVOID)(getModemInit().data()), strlen((char*)getModemInit().data()), 1, &BytesWritten) || BytesWritten != strlen ((char*)getModemInit().data()))
+        size_t initlen = getTablePortDialup().getModemInitString().length();
+
+        if(_superPort->writePort((PVOID)(getTablePortDialup().getModemInitString().data()),
+                                 initlen, 1, &BytesWritten) || BytesWritten != initlen)
         {
             return(!NORMAL);
         }
@@ -363,7 +326,7 @@ INT CtiPortDialout::modemSetup(USHORT Trace, BOOL dcdTest)
         if(Trace)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Port " << _superPort->getName() << " Sent to Modem:  " << getModemInit() << endl;
+            dout << RWTime() << " Port " << _superPort->getName() << " Sent to Modem:  " << getTablePortDialup().getModemInitString() << endl;
         }
 
         ResponseSize = sizeof (Response);
@@ -395,7 +358,7 @@ INT CtiPortDialout::modemSetup(USHORT Trace, BOOL dcdTest)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Port " << _superPort->getName() << " Received from Modem:  " << Response << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  The modem init string \"" << getModemInit() << "\" was rejected." << endl;
+                dout << "  The modem init string \"" << getTablePortDialup().getModemInitString() << "\" was rejected." << endl;
             }
             return(DIALUPERROR);
         }
@@ -770,146 +733,6 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
     setDialedUpNumber(RWCString());
 
     return status;
-}
-
-CtiPortDialout& CtiPortDialout::setDialedUpNumber(const RWCString &str)
-{
-    _dialedUpNumber = str;
-    return *this;
-}
-
-BOOL CtiPortDialout::shouldDisconnect() const
-{
-    return _shouldDisconnect;
-}
-
-void CtiPortDialout::setShouldDisconnect(BOOL b)
-{
-    _shouldDisconnect = b;
-}
-
-
-/* Routine to wait for a response or a timeout */
-INT CtiPortDialout::waitForResponse(PULONG ResponseSize, PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
-{
-    ULONG   i , j;
-    ULONG   BytesRead;
-    INT     status = READTIMEOUT;
-
-    i = 0;        // i represents the count of bytes in response.
-    j = 0;
-
-    if(!_superPort->isViable())
-    {
-        return(NOTNORMAL);
-    }
-
-    /* Set the timeout on read to 1 second */
-    // 012201 CGP This clears the buffer on WIN32.//  SetReadTimeOut (PortHandle, 1);
-
-    while(j <= Timeout)
-    {
-        if(_superPort->readPort(&Response[i], 1, 1, &BytesRead) || BytesRead == 0) // Reads one byte into the buffer
-        {
-            j++;        // Fails once per second if no bytes read
-            continue;
-        }
-
-        if(i == 0)                                            // Special case for the zeroeth byte
-        {
-            if(Response[i] == 0x0a || Response[i] == 0x0d || Response[i] == 0x00)    // Make sure it is not a CR or LF or null
-            {
-                continue;
-            }
-        }
-
-        /* Check what this is */
-        if(Response[i] == '\r')
-        {
-            // null out any CR LF
-            Response[i] = '\0';
-
-            // handle non-verbal OK
-            if(!(strcmp(ExpectedResponse, "OK")) && !(strcmp(Response, "0")))
-            {
-                // 0 is the same as OK for none verbal
-                strcpy(Response,"OK");
-            }
-
-            // check for expected return
-            if(ExpectedResponse == NULL || strstr(Response, ExpectedResponse) != NULL)
-            {
-                // it was the command we wanted or we did not want a specific response
-                *ResponseSize = i;
-                status = NORMAL;
-                break; // the while
-            }
-            else if(validModemResponse(Response))
-            {
-                // this is valid (unexpected response), or we did not specify.
-                *ResponseSize = strlen(Response);
-                status = NORMAL;
-                break; // the while
-            }
-
-            // look for CTIDBG_new message
-            Response[0] = '\0';
-            i = 0;
-        }
-        else
-        {
-            i++;
-
-            if(i + 2 > *ResponseSize)     // are we still within the size limit.
-            {
-                status = NOTNORMAL;
-                break; // the while
-            }
-        }
-    }
-
-    return status;
-}
-
-// known valid modem returns -- Note 0 is the same as OK when not in verbal mode
-/* returns TRUE if a valid modem return is found */
-BOOL CtiPortDialout::validModemResponse (PCHAR Response)
-{
-    static PCHAR responseText[] = {
-        "OK",
-        "ERROR",
-        "BUSY",
-        "NO CARRIER",
-        "NO DIALTONE",
-        "NO ANSWER",
-        "NO DIAL TONE",
-        NULL};
-
-   BOOL isValid = FALSE;
-   int count;
-
-   for(count = 0; responseText[count] != NULL; count++)
-   {
-      if( strstr(Response, responseText[count]) != NULL )
-      {
-         // Valid modem return
-         strcpy(Response, responseText[count]);
-         isValid = TRUE;
-         break;
-      }
-   }
-
-   if( isValid != TRUE )
-   {
-      if(!strcmp(Response, "0"))      // Zero is a special case of OK
-      {
-         // Valid modem return
-         strcpy(Response, "OK");
-         isValid = TRUE;
-      }
-   }
-
-   return(isValid);
 }
 
 

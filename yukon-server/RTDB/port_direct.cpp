@@ -39,7 +39,7 @@ CtiPortDirect& CtiPortDirect::setLocalSerial(const CtiTablePortLocalSerial& aRef
     return *this;
 }
 
-INT CtiPortDirect::openPort()
+INT CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
 {
     INT      status = NORMAL;
     ULONG    Result, i;
@@ -113,20 +113,12 @@ INT CtiPortDirect::openPort()
             return(i);
         }
 
-        /* See if we need to use 7E1 */
-        if(isTAP())
-        {
-            setLine(0, 7, EVENPARITY, ONESTOPBIT);
-            enableXONXOFF();
-        }
-
         /* Lower RTS */
         lowerRTS();
 
         /* Raise DTR */
         raiseDTR();
 
-        #if 1
         if((status = reset(true)) != NORMAL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -139,33 +131,6 @@ INT CtiPortDirect::openPort()
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Error setting port on " << getName() << endl;
         }
-
-        #else
-        if(_dialout && isViable())
-        {
-            if((status = reset(true)) != NORMAL)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Error resetting port for dialup on " << getName() << endl;
-            }
-
-            /* set the modem parameters */
-            if((status = setup(true)) != NORMAL)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Error setting port for dialup modem on " << getName() << endl;
-            }
-        }
-        else if(_dialin)
-        {
-            enableRTSCTS();
-            _dialin->getModem().setPort(this);
-            _dialin->getModem().waitForOK(500, "OK" );
-            _dialin->getModem().reset();
-            _dialin->getModem().sendString("AT&F&K0&M0&N6\r");
-            _dialin->getModem().setAutoAnswerRingCount(3);
-        }
-        #endif
     }
 
     return status;
@@ -722,13 +687,9 @@ INT CtiPortDirect::close(INT trace)
     {
         if(getHandle() != NULL)
         {
-            if(_dialout)
+            if(_dialable)
             {
-                _dialout->disconnect(NULL, trace);
-            }
-            else if(_dialin)
-            {
-                _dialin->disconnect(NULL, trace);
+                _dialable->disconnect(NULL, trace);
             }
 
             {
@@ -744,44 +705,28 @@ INT CtiPortDirect::close(INT trace)
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    _lastBaudRate = 0;
-
 
     return status;
 }
 
 CtiPortDirect::CtiPortDirect() :
-_dialin(0),
-_dialout(0),
+_dialable(0),
 _portHandle(0)
 {
 }
 
-CtiPortDirect::CtiPortDirect(CtiPortDialout *dial) :
-_dialin(0),
-_dialout(dial),
+CtiPortDirect::CtiPortDirect(CtiPortDialable *dial) :
+_dialable(dial),
 _portHandle(0)
 {
-    if(_dialout != 0)
+    if(_dialable != 0)
     {
-        _dialout->setSuperPort(this);
-    }
-}
-
-CtiPortDirect::CtiPortDirect(CtiPortDialin *dial) :
-_dialin(dial),
-_dialout(0),
-_portHandle(0)
-{
-    if(_dialin != 0)
-    {
-        _dialin->setSuperPort(this);
+        _dialable->setSuperPort(this);
     }
 }
 
 CtiPortDirect::CtiPortDirect(const CtiPortDirect& aRef) :
-_dialin(0),
-_dialout(0),
+_dialable(0),
 _portHandle(0)
 {
     *this = aRef;
@@ -790,15 +735,10 @@ _portHandle(0)
 CtiPortDirect::~CtiPortDirect()
 {
     close(false);
-    if(_dialout)
+    if(_dialable)
     {
-        delete _dialout;
-        _dialout = 0;
-    }
-    if(_dialin)
-    {
-        delete _dialin;
-        _dialin = 0;
+        delete _dialable;
+        _dialable = 0;
     }
 }
 
@@ -831,19 +771,11 @@ void CtiPortDirect::DecodeDatabaseReader(RWDBReader &rdr)
     _localSerial.DecodeDatabaseReader(rdr);       // get the base class handled
 }
 
-void CtiPortDirect::DecodeDialoutDatabaseReader(RWDBReader &rdr)
+void CtiPortDirect::DecodeDialableDatabaseReader(RWDBReader &rdr)
 {
-    if(_dialout)
+    if(_dialable)
     {
-        _dialout->DecodeDatabaseReader(rdr);
-    }
-}
-
-void CtiPortDirect::DecodeDialinDatabaseReader(RWDBReader &rdr)
-{
-    if(_dialin)
-    {
-        _dialin->DecodeDatabaseReader(rdr);
+        _dialable->DecodeDatabaseReader(rdr);
     }
 }
 
@@ -870,13 +802,9 @@ INT CtiPortDirect::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULO
 {
     INT status = BADPORT;
 
-    if(_dialout)
+    if(_dialable)
     {
-        status = _dialout->waitForResponse(ResponseSize,Response,Timeout,ExpectedResponse);
-    }
-    else if(_dialin)
-    {
-        status = _dialin->waitForResponse(ResponseSize,Response,Timeout,ExpectedResponse);
+        status = _dialable->waitForResponse(ResponseSize,Response,Timeout,ExpectedResponse);
     }
     else
     {
@@ -905,17 +833,12 @@ bool CtiPortDirect::isViable() const
 
 INT CtiPortDirect::reset(INT trace)
 {
-    setLastBaudRate(0);
     setConnectedDevice(0);
     setConnectedDeviceUID(-1);
 
-    if(_dialout)
+    if(_dialable)
     {
-        _dialout->reset(trace);
-    }
-    else if(_dialin)
-    {
-        _dialin->reset(trace);
+        _dialable->reset(trace);
     }
 
     return NORMAL;
@@ -926,13 +849,9 @@ INT CtiPortDirect::setup(INT trace)
     setConnectedDevice(0);
     setConnectedDeviceUID(-1);
 
-    if(_dialout)
+    if(_dialable)
     {
-        _dialout->setup(trace);
-    }
-    else if(_dialin)
-    {
-        _dialin->setup(trace);
+        _dialable->setup(trace);
     }
 
     return NORMAL;
@@ -942,13 +861,9 @@ INT  CtiPortDirect::connectToDevice(CtiDevice *Device, INT trace)
 {
     INT status = NORMAL;
 
-    if(_dialout)
+    if(_dialable)
     {
-        status = _dialout->connectToDevice(Device,trace);
-    }
-    else if(_dialin)
-    {
-        status = _dialin->connectToDevice(Device,trace);
+        status = _dialable->connectToDevice(Device,trace);
     }
     else
     {
@@ -960,7 +875,7 @@ INT  CtiPortDirect::connectToDevice(CtiDevice *Device, INT trace)
 INT  CtiPortDirect::disconnect(CtiDevice *Device, INT trace)
 {
     Inherited::disconnect(Device,trace);
-    if(_dialout || _dialin)
+    if(_dialable)
     {
         close(trace);                           // Release the port handle
     }
@@ -970,11 +885,14 @@ INT  CtiPortDirect::disconnect(CtiDevice *Device, INT trace)
 
 BOOL CtiPortDirect::connected()
 {
-    if(_dialout && getTablePortSettings().getCDWait() != 0 && getConnectedDevice() > 0)
+    if(_dialable)
     {
-        if(!dcdTest())    // No DCD and we think we are connected!  This is BAD.
+        if(getTablePortSettings().getCDWait() != 0 && getConnectedDevice() > 0)
         {
-            disconnect(NULL, FALSE);
+            if(!dcdTest())    // No DCD and we think we are connected!  This is BAD.
+            {
+                disconnect(NULL, FALSE);
+            }
         }
     }
 
@@ -985,13 +903,9 @@ BOOL CtiPortDirect::shouldDisconnect() const
 {
     BOOL bRet = Inherited::shouldDisconnect();
 
-    if(_dialout)
+    if(_dialable)
     {
-        bRet = _dialout->shouldDisconnect();
-    }
-    else if(_dialin)
-    {
-        bRet = _dialin->shouldDisconnect();
+        bRet = _dialable->shouldDisconnect();
     }
 
     return bRet;
@@ -999,13 +913,9 @@ BOOL CtiPortDirect::shouldDisconnect() const
 
 CtiPort& CtiPortDirect::setShouldDisconnect(BOOL b)
 {
-    if(_dialout)
+    if(_dialable)
     {
-        _dialout->setShouldDisconnect(b);
-    }
-    else if(_dialin)
-    {
-        _dialin->setShouldDisconnect(b);
+        _dialable->setShouldDisconnect(b);
     }
 
     return *this;

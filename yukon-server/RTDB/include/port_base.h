@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/12/13 15:25:09 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/12/19 20:30:13 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,8 +59,6 @@ protected:
     HCTIQUEUE         _portQueue;
     LONG              _connectedDevice;       // this is NON-ZERO if we are currently connected/communicating.
     ULONG             _connectedDeviceUID;    // A unique reproducable indicator for this device/connection etc.
-    RWCString         _portNameWas;
-    INT               _lastBaudRate;
     BOOL              _tapPort;               // This port has a TAP terminal connected to it!
 
 
@@ -87,11 +85,6 @@ public:
 
     LONG getConnectedDevice() const;
     CtiPort& setConnectedDevice(const LONG d);
-    INT getLastBaudRate() const;
-    CtiPort& setLastBaudRate(const INT r);
-
-    RWCString& getPortNameWas();
-    CtiPort& setPortNameWas(const RWCString str);
 
     BOOL isTAP() const;
     CtiPort& setTAP(BOOL b = TRUE);
@@ -146,7 +139,7 @@ public:
     virtual ULONG     getDelay(int Offset) const;
     virtual CtiPort&  setDelay(int Offset, int D);
 
-    virtual INT openPort() = 0;
+    virtual INT openPort(INT rate = 0, INT bits = 8, INT parity = NOPARITY, INT stopbits = ONESTOPBIT) = 0;
     virtual INT reset(INT trace);
     virtual INT setup(INT trace);
     virtual INT close(INT trace);
@@ -161,8 +154,7 @@ public:
 
     void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
-    virtual void DecodeDialoutDatabaseReader(RWDBReader &rdr);
-    virtual void DecodeDialinDatabaseReader(RWDBReader &rdr);
+    virtual void DecodeDialableDatabaseReader(RWDBReader &rdr);
     virtual void Dump() const;
 
     HCTIQUEUE&  getPortQueueHandle();
@@ -190,7 +182,13 @@ public:
     bool isDialin() const;
     RWCString getName() const;
     bool isInhibited() const;
-    INT getBaudRate() const;
+    virtual INT getBaudRate() const;
+    virtual INT getBits() const;
+    virtual INT getStopBits() const;
+    virtual INT getParity() const;
+
+
+
     bool isTCPIPPort() const;
     INT getProtocol() const;
 
@@ -198,11 +196,11 @@ public:
 
     ULONG getConnectedDeviceUID() const;
     CtiPort& setConnectedDeviceUID(const ULONG &i);
-    INT verifyPortStatus();
+    pair< bool, INT > verifyPortStatus(CtiDevice *Device, INT trace = 0);
+    pair< bool, INT > checkCommStatus(CtiDevice *Device, INT trace = 0);
 
     CTI_PORTTHREAD_FUNC_PTR  setPortThreadFunc(CTI_PORTTHREAD_FUNC_PTR aFn);
 
-    INT checkCommStatus(INT trace);
     INT isCTS() const;
     INT isDCD() const;
     INT isDSR() const;
@@ -212,6 +210,8 @@ public:
     virtual int disableRTSCTS();
 
     virtual INT setLine(INT rate = 0, INT bits = 8, INT parity = NOPARITY, INT stopbits = ONESTOPBIT );     // Set/reset the port's linesettings.
+    virtual bool setPortForDevice(CtiDevice* Device);
+
 };
 
 inline INT CtiPort::getType() const   { return _tblPAO.getType();}
@@ -235,6 +235,10 @@ inline int CtiPort::enableXONXOFF()    { return NORMAL; }
 inline int CtiPort::disableXONXOFF()   { return NORMAL; }
 inline int CtiPort::enableRTSCTS()     { return NORMAL; }
 inline int CtiPort::disableRTSCTS()    { return NORMAL; }
+
+inline INT CtiPort::getBits() const { return getTablePortSettings().getBits(); }
+inline INT CtiPort::getStopBits() const { return getTablePortSettings().getStopBits(); }
+inline INT CtiPort::getParity() const { return getTablePortSettings().getParity(); }
 
 
 #endif // #ifndef __PORT_BASE_H__

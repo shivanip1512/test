@@ -11,8 +11,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/12/11 23:37:32 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/12/19 20:30:13 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,50 +20,6 @@
 #include "numstr.h"
 #include "port_modem.h"
 
-
-#define ASGENERALERROR          -1
-#define ASINVPORT               -2
-#define ASINUSE                 -3
-#define ASINVBUFSIZE            -4
-#define ASNOMEMORY              -5
-#define ASNOTSETUP              -6
-#define ASINVPAR                -7
-#define ASBUFREMPTY             -8
-#define ASBUFRFULL              -9
-#define ASTIMEOUT               -10
-#define ASNOCTS                 -11
-#define ASNOCD                  -12
-#define ASNODSR                 -13
-#define ASNO8250                -14
-#define ASXMSTATUS              -15
-#define ASUSERABORT             -16
-#define ASFILERR                -17
-#define ASXMERROR               -18
-#define ASNOWIDERX              -19
-#define ASCONFLICT              -20
-#define ASCRCMODE               -21
-#define ASNOHAYESOK             -22
-#define ASNOHAYESRESPONSE       -23
-#define ASNOTSUPPORTED          -24
-#define ASILLEGALBAUDRATE       -25
-#define ASILLEGALPARITY         -26
-#define ASILLEGALWORDLENGTH     -27
-#define ASILLEGALSTOPBITS       -28
-#define ASNOCOPYRIGHTNOTICE     -29
-#define ASDRIVERNOTINSTALLED    -30
-#define ASOVERFLOW              -31
-#define ASCONNECTFAILURE        -32
-#define ASDOSEXTENDERERROR      -33
-#define ASILLEGALBOARDNUMBER    -34
-#define ASBOARDINUSE            -35
-#define ASHANDSHAKEBLOCK        -36
-#define ASMAXPORTSEXCEEDED      -37
-#define ASILLEGALIRQ            -38
-#define ASIRQINUSE              -39
-#define AS_THUNK_SETUP_FAILED   -40
-#define AS_NASI_ERROR           -41
-#define AS_PACKING_ERROR        -42
-#define ASUSERDEFINEDERROR      -75
 
 static int abortFunction( CtiPort *port )
 {
@@ -1932,15 +1888,13 @@ long  CtiHayesModem::inputLine(  long milliseconds, char *buffer, int length )  
     for( ; ; )
     {
         return_status = abortFunction( _port );
+
         if( return_status < NORMAL )
             break;
-        #if 1
         ULONG bytesRead = 0;
         c = 0;
         _port->readPort(&c, 1, 1, &bytesRead);
-        #else
-        c = ReadChar( _port );
-        #endif
+
         if( c >= 0 )
         {
             if( _character_printer != NULL )
@@ -2038,4 +1992,47 @@ int CtiHayesModem::writeString(  const char *string, char termination_sequence )
         _port->writePort( (void*)"\r\n", 2, 1, &bcount );
     }
     return( _status );
+}
+
+
+// known valid modem returns -- Note 0 is the same as OK when not in verbal mode
+/* returns TRUE if a valid modem return is found */
+bool CtiHayesModem::validModemResponse (PCHAR Response)
+{
+    int count;
+    bool isValid = false;
+
+    static PCHAR responseText[] = {
+        "OK",
+        "ERROR",
+        "BUSY",
+        "NO CARRIER",
+        "NO DIALTONE",
+        "NO ANSWER",
+        "NO DIAL TONE",
+        NULL};
+
+
+   for(count = 0; responseText[count] != NULL; count++)
+   {
+      if( strstr(Response, responseText[count]) != NULL )
+      {
+         // Valid modem return
+         strcpy(Response, responseText[count]);
+         isValid = true;
+         break;
+      }
+   }
+
+   if( isValid != true )
+   {
+      if(!strcmp(Response, "0"))      // Zero is a special case of OK
+      {
+         // Valid modem return
+         strcpy(Response, "OK");
+         isValid = true;
+      }
+   }
+
+   return(isValid);
 }

@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/12/13 15:25:09 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2002/12/19 20:30:13 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,8 +29,7 @@ using namespace std;
 #include "yukon.h"
 
 CtiPortTCPIPDirect::CtiPortTCPIPDirect() :
-_dialin(0),
-_dialout(0),
+_dialable(0),
 _socket(INVALID_SOCKET),
 _open(false),
 _connected(false),
@@ -38,15 +37,14 @@ _failed(false),
 _busy(false),
 _baud(0)
 {
-    if(_dialout != 0)
+    if(_dialable != 0)
     {
-        _dialout->setSuperPort(this);
+        _dialable->setSuperPort(this);
     }
 }
 
-CtiPortTCPIPDirect::CtiPortTCPIPDirect(CtiPortDialin *dial) :
-_dialin(dial),
-_dialout(0),
+CtiPortTCPIPDirect::CtiPortTCPIPDirect(CtiPortDialable *dial) :
+_dialable(dial),
 _socket(INVALID_SOCKET),
 _open(false),
 _connected(false),
@@ -54,28 +52,11 @@ _failed(false),
 _busy(false),
 _baud(0)
 {
-    if(_dialin != 0)
+    if(_dialable != 0)
     {
-        _dialin->setSuperPort(this);
+        _dialable->setSuperPort(this);
     }
 }
-
-CtiPortTCPIPDirect::CtiPortTCPIPDirect(CtiPortDialout *dial) :
-_dialin(0),
-_dialout(dial),
-_socket(INVALID_SOCKET),
-_open(false),
-_connected(false),
-_failed(false),
-_busy(false),
-_baud(0)
-{
-    if(_dialout != 0)
-    {
-        _dialout->setSuperPort(this);
-    }
-}
-
 
 CtiPortTCPIPDirect::CtiPortTCPIPDirect(const CtiPortTCPIPDirect& aRef)
 {
@@ -85,10 +66,10 @@ CtiPortTCPIPDirect::CtiPortTCPIPDirect(const CtiPortTCPIPDirect& aRef)
 CtiPortTCPIPDirect::~CtiPortTCPIPDirect()
 {
     close(false);
-    if(_dialout)
+    if(_dialable)
     {
-        delete _dialout;
-        _dialout = 0;
+        delete _dialable;
+        _dialable = 0;
     }
 }
 
@@ -141,7 +122,7 @@ RWCString& CtiPortTCPIPDirect::getIPAddress()
     return _tcpIpInfo.getIPAddress();
 }
 
-INT CtiPortTCPIPDirect::openPort()
+INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
 {
     INT      status = NORMAL;
 
@@ -236,20 +217,17 @@ INT CtiPortTCPIPDirect::openPort()
             _baud        = getTablePortSettings().getBaudRate();
         }
 
-        if(_dialout && isViable())
+        if((status = reset(true)) != NORMAL)
         {
-            if((status = reset(true)) != NORMAL)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Error resetting port for dialup on " << getName() << endl;
-            }
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Error resetting port for dialup on " << getName() << endl;
+        }
 
-            /* set the modem parameters */
-            if((status = setup(true)) != NORMAL)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Error setting port for dialup modem on " << getName() << endl;
-            }
+        /* set the modem parameters */
+        if((status = setup(true)) != NORMAL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Error setting port for dialup modem on " << getName() << endl;
         }
     }
 
@@ -635,7 +613,6 @@ INT CtiPortTCPIPDirect::shutdownClose(PCHAR Label, ULONG Line)
     }
 
     _socket = INVALID_SOCKET;
-    _lastBaudRate = 0;
 
     if(isDialup() && gConfigParms.isOpt("PORTER_TCPIP_DIALOUT_MS_CLOSE_DELAY"))
     {
@@ -775,7 +752,7 @@ INT CtiPortTCPIPDirect::sendData(PBYTE Message, ULONG Length, PULONG Written)
 
     if(_socket == INVALID_SOCKET)
     {
-        openPort    ();
+        openPort();
     }
 
     if( (retval = send (_socket, (CHAR*)Message, Length, 0)) == SOCKET_ERROR )
@@ -813,18 +790,11 @@ void CtiPortTCPIPDirect::DecodeDatabaseReader(RWDBReader &rdr)
     _tcpIpInfo.DecodeDatabaseReader(rdr);       // get the base class handled
 }
 
-void CtiPortTCPIPDirect::DecodeDialoutDatabaseReader(RWDBReader &rdr)
+void CtiPortTCPIPDirect::DecodeDialableDatabaseReader(RWDBReader &rdr)
 {
-    if(_dialout)
+    if(_dialable)
     {
-        _dialout->DecodeDatabaseReader(rdr);
-    }
-}
-void CtiPortTCPIPDirect::DecodeDialinDatabaseReader(RWDBReader &rdr)
-{
-    if(_dialin)
-    {
-        _dialin->DecodeDatabaseReader(rdr);
+        _dialable->DecodeDatabaseReader(rdr);
     }
 }
 
@@ -844,9 +814,9 @@ INT CtiPortTCPIPDirect::waitForPortResponse(PULONG ResponseSize,  PCHAR Response
 {
     INT status = BADPORT;
 
-    if(_dialout)
+    if(_dialable)
     {
-        status = _dialout->waitForResponse(ResponseSize,Response,Timeout,ExpectedResponse);
+        status = _dialable->waitForResponse(ResponseSize,Response,Timeout,ExpectedResponse);
     }
     else
     {
@@ -880,13 +850,12 @@ bool CtiPortTCPIPDirect::isViable() const
 
 INT CtiPortTCPIPDirect::reset(INT trace)
 {
-    setLastBaudRate(0);
     setConnectedDevice(0);
     setConnectedDeviceUID(-1);
 
-    if(_dialout)
+    if(_dialable)
     {
-        _dialout->reset(trace);
+        _dialable->reset(trace);
     }
 
     return NORMAL;
@@ -897,9 +866,9 @@ INT CtiPortTCPIPDirect::setup(INT trace)
     setConnectedDevice(0);
     setConnectedDeviceUID(-1);
 
-    if(_dialout)
+    if(_dialable)
     {
-        _dialout->setup(trace);
+        _dialable->setup(trace);
     }
 
     return NORMAL;
@@ -909,9 +878,9 @@ INT  CtiPortTCPIPDirect::connectToDevice(CtiDevice *Device, INT trace)
 {
     INT status = NORMAL;
 
-    if(_dialout)
+    if(_dialable)
     {
-        status = _dialout->connectToDevice(Device,trace);
+        status = _dialable->connectToDevice(Device,trace);
     }
     else
     {
@@ -924,9 +893,9 @@ INT  CtiPortTCPIPDirect::disconnect(CtiDevice *Device, INT trace)
 {
     Inherited::disconnect(Device,trace);
 
-    if(_dialout)
+    if(_dialable)
     {
-        _dialout->disconnect(Device,trace);
+        _dialable->disconnect(Device,trace);
         close(trace);                           // Release the port handle
     }
 
@@ -935,7 +904,7 @@ INT  CtiPortTCPIPDirect::disconnect(CtiDevice *Device, INT trace)
 
 BOOL CtiPortTCPIPDirect::connected()
 {
-    if(_dialout && getTablePortSettings().getCDWait() != 0 && getConnectedDevice() > 0)
+    if(_dialable && getTablePortSettings().getCDWait() != 0 && getConnectedDevice() > 0)
     {
         if(!dcdTest())    // No DCD and we think we are connected!  This is BAD.
         {
@@ -950,9 +919,9 @@ BOOL CtiPortTCPIPDirect::shouldDisconnect() const
 {
     BOOL bRet = Inherited::shouldDisconnect();
 
-    if(_dialout)
+    if(_dialable)
     {
-        bRet = _dialout->shouldDisconnect();
+        bRet = _dialable->shouldDisconnect();
     }
 
     return bRet;
@@ -960,9 +929,9 @@ BOOL CtiPortTCPIPDirect::shouldDisconnect() const
 
 CtiPort& CtiPortTCPIPDirect::setShouldDisconnect(BOOL b)
 {
-    if(_dialout)
+    if(_dialable)
     {
-        _dialout->setShouldDisconnect(b);
+        _dialable->setShouldDisconnect(b);
     }
 
     return *this;
