@@ -1,0 +1,40 @@
+MainClass:  com.cannontech.billing.mainprograms.BillingFile
+
+CommandLineParameters:
+
+*-- Billing file format - default: CTICSV --*
+format|type=<formatID|formatType>  where formatID|formatType are int|string values from yukon.billingfileformats db table.
+
+
+*-- billGroup type - required --*
+*-- one and only one of the billgroup parameters must be specified --*
+coll[ectiongroup]=<billgroup>  where yukon.devicemetergroup.COLLECTIONGROUP is the database query column
+                               and billgroup is the group(s) to query, (may be a comma separated list of groups).
+
+test[collectiongroup]=<billgroup>  where yukon.devicemetergroup.TESTCOLLECTIONGROUP is the database query column
+                                   and billgroup is the group(s) to query, (may be a comma separated list of groups).
+
+bill[inggroup]=<billgroup>  where yukon.devicemetergroup.BILLINGGROUP is the database query column
+                            and billgroup is the group(s) to query, (may be a comma separated list of groups).
+
+
+*-- Maximum query date - default: today --*
+end[date]=<mm/dd/yyyy>  where mm/dd/yyyy is the maximum date used for validating meter data.
+
+
+*-- Valid demand reading period - default: 30 --*
+dem[and]=<##>  where ## is the number of days before enddate for validating meter demand data.
+
+
+*-- Valid energy reading period - defulat: 7 --*
+ene[rgy]=<##>  where ## is the number of days before enddate for validating meter energy data.
+
+
+*-- Export filename and directory - default: <yukonhome>\client\export\outfile.txt --*
+file=<filename>  where filename is the the fully qualified directory and filename to export data to.
+
+*-- Remove multiplier from data - defaults: false --*
+mult[iplier]=true|false  when true, the selection is to remove the multiplier from the meter data.
+
+*-- Append data to output file, if file exists - defaults: false --*
+app[end]=true|false  when true, if the outputfile already exists, new data will be append to the existing file
