@@ -701,12 +701,10 @@ alter table UserPAOowner
    add constraint FK_UsPow_YkP foreign key (PaoID)
       references YukonPAObject (PAObjectID);
 
-update lmcontrolareaprogram set userorder=defaultpriority
+update lmcontrolareaprogram set userorder=defaultpriority;
 
-alter table lmcontrolareaprogram rename column UserOrder to
-StartPriority;
-alter table lmcontrolareaprogram rename column StopOrder to
-StopPriority;
+alter table lmcontrolareaprogram rename column UserOrder to StartPriority;
+alter table lmcontrolareaprogram rename column StopOrder to StopPriority;
 alter table lmcontrolareaprogram drop column defaultpriority;
 
 /******************************************************************************/
