@@ -2070,13 +2070,11 @@ private Vector setRowForEventViewer( Signal signal )
 	{
 		lPoint = LitePoint.NONE_LITE_PT;		
 	}
-	else
+
+	lDevice = PAOFuncs.getLiteYukonPAO( lPoint.getPaobjectID() );
+	if( lDevice == null )
 	{
-		lDevice = PAOFuncs.getLiteYukonPAO( lPoint.getPaobjectID() );
-		if( lDevice == null )
-		{
-			lDevice = LiteYukonPAObject.LITEPAOBJECT_NONE;
-		}
+		lDevice = LiteYukonPAObject.LITEPAOBJECT_NONE;
 	}
 
 
