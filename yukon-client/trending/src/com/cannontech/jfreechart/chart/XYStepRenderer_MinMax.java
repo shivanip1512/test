@@ -9,16 +9,18 @@
 package com.cannontech.jfreechart.chart;
 
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CrosshairState;
+import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.XYItemRendererState;
-import org.jfree.chart.renderer.XYStepRenderer;
-import org.jfree.data.XYDataset;
-import org.jfree.ui.RectangleEdge;
+import org.jfree.chart.renderer.xy.XYItemRendererState;
+import org.jfree.chart.renderer.xy.XYStepRenderer;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.util.ShapeUtilities;
 
 /**
  * Shapes rendered for MIN/MAX valuse on a Line/Step item renderer for an XYPlot.
@@ -30,24 +32,27 @@ public class XYStepRenderer_MinMax extends XYStepRenderer
 {
 	public Dataset_MinMaxValues[] minMaxValues = null;
 	private boolean plotMinMaxValues = false;
-	private int prevSeries = 0;
-	private int prevItem = 0;
-	private int index = 0;
+	private boolean plotAllValues = false;
+	public static final int NONE = 0;
+	public static final int SHAPES = 1;
+	public static final int MIN_MAX = 2;
+	public static final int MIN_MAX_WITH_SHAPES = 3;
     /**
      * Constructs a new renderer.
      */
     public XYStepRenderer_MinMax() {
 
-        super();
+        this(NONE);
     }
 
     /**
      * Constructs a new renderer.
      */
-    public XYStepRenderer_MinMax(boolean plotMinMax)
+    public XYStepRenderer_MinMax(int type)
     {
         super();
-        this.plotMinMaxValues = plotMinMax;
+        plotAllValues = (type == SHAPES || type == MIN_MAX_WITH_SHAPES);
+        plotMinMaxValues = (type == MIN_MAX || type == MIN_MAX_WITH_SHAPES);
     }
 
     /**
@@ -78,30 +83,50 @@ public class XYStepRenderer_MinMax extends XYStepRenderer
                          CrosshairState crosshairState,
                          int pass) {
 		super.drawItem(g2, state, dataArea, info, plot, domainAxis, rangeAxis, dataset, series, item, crosshairState, pass);
-
-        // get the data point...
-        Number x1 = dataset.getXValue(series, item);
-        Number y1 = dataset.getYValue(series, item);
-        if (y1==null)
-			return;
-
-		final RectangleEdge xAxisLocation = plot.getDomainAxisEdge();
-		final RectangleEdge yAxisLocation = plot.getRangeAxisEdge();
-
-		double transX1 = domainAxis.java2DToValue(x1.doubleValue(), dataArea, xAxisLocation);
-		double transY1 = rangeAxis.java2DToValue(y1.doubleValue(), dataArea, yAxisLocation);
-
-        if( this.plotMinMaxValues)
-		{
-			if (minMaxValues != null && (y1.doubleValue() == minMaxValues[series].getMaximumValue() || 
-            	y1.doubleValue() == minMaxValues[series].getMinimumValue()))
-            {
-            	java.awt.Shape shape = getItemShape(series, 0);
-                shape = createTransformedShape(shape, transX1, transY1);
-            	g2.fill(shape);
-            }
+		if (!getItemVisible(series, item)) {
+			return;   
 		}
-		prevSeries = series;
-		prevItem = item;
+		
+        // get the data point...
+        Number x1 = dataset.getX(series, item);
+        Number y1 = dataset.getY(series, item);
+        if (y1 == null) {
+            return;
+        }
+
+        double transX1 = domainAxis.valueToJava2D(x1.doubleValue(), dataArea, plot.getDomainAxisEdge());
+        double transY1 = rangeAxis.valueToJava2D(y1.doubleValue(), dataArea, plot.getRangeAxisEdge());
+		
+		PlotOrientation orientation = plot.getOrientation();
+		
+		boolean drawShape = false;
+		if( this.plotAllValues || isPlotMinOrMaxValue(y1.doubleValue(), series))
+		{
+			Shape shape = getItemShape(series, item);
+			if (orientation == PlotOrientation.HORIZONTAL) {
+				shape = ShapeUtilities.createTranslatedShape(shape, transY1, transX1);
+			}
+			else if (orientation == PlotOrientation.VERTICAL) {
+				shape = ShapeUtilities.createTranslatedShape(shape, transX1, transY1);
+			}
+			if (shape.intersects(dataArea)) {
+				//draw with opposite fill, so if all shapes is selected, we can see a difference
+				if (plotAllValues && isPlotMinOrMaxValue(y1.doubleValue(), series)){
+					g2.fill(shape);
+				}
+				else {
+					g2.draw(shape);
+				}
+			}
+		}
 	}
+    
+    private boolean isPlotMinOrMaxValue(double yVal, int series)
+    {
+        if( minMaxValues != null && plotMinMaxValues)
+        {
+            return (yVal == minMaxValues[series].getMaximumValue() || yVal == minMaxValues[series].getMinimumValue());
+        }
+        return false;
+    }
 }

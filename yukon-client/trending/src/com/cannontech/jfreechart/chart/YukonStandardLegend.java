@@ -63,7 +63,6 @@ import java.io.Serializable;
 
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.DrawableLegendItem;
-import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.LegendItemCollection;
 import org.jfree.chart.StandardLegend;
@@ -83,9 +82,9 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
      *
      * @param chart  the chart that the legend belongs to.
      */
-    public YukonStandardLegend(JFreeChart chart) {
+    public YukonStandardLegend() {
 
-        super(chart);
+        super();
     }
 
     /**
@@ -162,8 +161,8 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
                                                           getTitle(),
                                                           null,
                                                           Color.black,
-                                                          DEFAULT_OUTLINE_PAINT,
-                                                          DEFAULT_OUTLINE_STROKE);
+                                                          DEFAULT_OUTLINE_STROKE,
+                                                          DEFAULT_OUTLINE_PAINT);
 
                     legendTitle = createDrawableLegendItem(g2, titleItem,
                                                            xoffset,
@@ -226,8 +225,8 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
                                                           getTitle(),
                                                           null,
                                                           Color.black,
-                                                          DEFAULT_OUTLINE_PAINT,
-                                                          DEFAULT_OUTLINE_STROKE);
+                                                          DEFAULT_OUTLINE_STROKE,
+                                                          DEFAULT_OUTLINE_PAINT);
 
                     legendTitle = createDrawableLegendItem(g2, titleItem, 0,
                                                            totalHeight);
@@ -278,7 +277,7 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
             // draw legend title
             if (legendTitle != null) {
                 // XXX dsm - make title bold?
-                g2.setPaint(legendTitle.getItem().getPaint());
+                g2.setPaint(legendTitle.getItem().getFillPaint());
                 g2.setPaint(getItemPaint());
                 g2.setFont(getTitleFont());
                 g2.drawString(legendTitle.getItem().getLabel(),
@@ -292,7 +291,7 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 			}
             // Draw individual series elements
             for (int i = 0; i < items.length; i++) {
-                g2.setPaint(items[i].getItem().getPaint());
+                g2.setPaint(items[i].getItem().getFillPaint());
                 Shape keyBox = items[i].getMarker();
                 g2.fill(keyBox);
                 if (getOutlineShapes()) {
@@ -313,7 +312,7 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
                 	                                          items[i].getHeight());
                 	LegendItemEntity entity = new LegendItemEntity(area);
                 	entity.setSeriesIndex(i);
-                	entities.addEntity(entity);
+                	entities.add(entity);
                 }
             }
 
