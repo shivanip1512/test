@@ -24,6 +24,13 @@ insert into billingfileformats values(13, 'NISC-Turtle');
 insert into billingfileformats values(14, 'NISC-NCDC');
 
 
+
+/******************* New YukonListEntries *******************/
+insert into YukonListEntry values( 5, 1, 0, 'Home Phone', 2 );
+insert into YukonListEntry values( 6, 1, 0, 'Work Phone', 2 );
+
+
+
 /******************* START YUKONLISTENTRY CHANGES *******************/
 create table YukonSelectionList  (
    ListID               NUMBER                           not null,

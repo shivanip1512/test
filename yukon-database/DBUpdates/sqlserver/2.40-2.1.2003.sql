@@ -16,6 +16,15 @@ go
 insert into billingfileformats values(14, 'NISC-NCDC')
 go
 
+
+/******************* New YukonListEntries *******************/
+insert into YukonListEntry values( 5, 1, 0, 'Home Phone', 2 )
+go
+insert into YukonListEntry values( 6, 1, 0, 'Work Phone', 2 )
+go
+
+
+
 /******************* START YUKONLISTENTRY CHANGES *******************/
 create table YukonSelectionList (
 ListID               numeric              not null,
