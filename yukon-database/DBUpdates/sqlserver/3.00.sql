@@ -22,18 +22,24 @@ insert into billingFileformats values (9, 'CTI2');
 
 
 alter table GraphDataSeries add moreData varchar(100);
+go
 update GraphDataSeries set moreData = '(none)';
+go
 alter table GraphDataSeries alter column moreData varchar(100) not null;
 go
 
 
 alter table systemlog add millis smallint;
+go
 update systemlog set millis = 0;
+go
 alter table systemlog alter column millis smallint not null;
 go
 
 alter table rawpointhistory add millis smallint;
+go
 update rawpointhistory set millis = 0;
+go
 alter table rawpointhistory alter column millis smallint not null;
 go
 
