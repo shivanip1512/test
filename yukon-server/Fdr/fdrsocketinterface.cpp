@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsocketinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2003/04/22 20:50:52 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2003/04/24 19:41:06 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrsocketinterface.cpp,v $
+      Revision 1.6  2003/04/24 19:41:06  dsutton
+      Changed a dispatch connection check from isValid to verify per Corey's request
+
       Revision 1.5  2003/04/22 20:50:52  dsutton
       Added a null check in the sendall points on the dispatch connection
 
@@ -263,7 +266,7 @@ int CtiFDRSocketInterface::sendAllPoints()
     else
     {
         // just stay here until the link to dispatch becomes valid
-        if (!iDispatchConn->valid())
+        if ( (iDispatchConn->verifyConnection()) != NORMAL )
         {
             Sleep (250);
             retVal = FDR_NOT_CONNECTED_TO_DISPATCH;
