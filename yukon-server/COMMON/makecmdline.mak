@@ -172,6 +172,16 @@ statistics.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 stdexcepthdlr.obj:	stdexcepthdlr.h dlldefs.h
 tfexec.obj:	tfexec.h
 thread.obj:	thread.h mutex.h dlldefs.h guard.h
+thread_listener.obj:	thread_listener.h thread.h mutex.h dlldefs.h \
+		guard.h
+thread_monitor.obj:	thread_monitor.h queue.h dlldefs.h logger.h \
+		thread.h mutex.h guard.h thread_register_data.h boost_time.h \
+		cticalls.h os2_2w32.h types.h
+thread_register_data.obj:	thread_register_data.h boost_time.h \
+		cticalls.h os2_2w32.h dlldefs.h types.h
+thread_timer.obj:	thread_timer.h thread.h mutex.h dlldefs.h guard.h \
+		thread_register_data.h boost_time.h cticalls.h os2_2w32.h \
+		types.h
 ucttime.obj:	dllbase.h os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h elogger.h logger.h thread.h
 utility.obj:	ctinexus.h dlldefs.h dbaccess.h dllbase.h os2_2w32.h \
