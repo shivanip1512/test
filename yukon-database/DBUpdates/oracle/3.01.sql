@@ -247,4 +247,4 @@ alter table DeviceSeries5RTU
 /******************************************************************************/
 /* VERSION INFO                                                               */
 /******************************************************************************/
-insert into CTIDatabase values('3.00', 'Ryan', '5-MAR-2004', 'Many changes to a major version jump');
+insert into CTIDatabase values('3.00', 'Ryan', '5-MAR-2004', 'Many changes to a major version jump', 0);

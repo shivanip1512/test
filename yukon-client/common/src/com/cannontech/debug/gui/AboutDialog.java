@@ -130,8 +130,7 @@ private void init() {
 
 		/* ALWAYS leave this as the last thing */
 		com.cannontech.database.db.version.CTIDatabase db = com.cannontech.common.version.VersionTools.getDatabaseVersion();
-		com.cannontech.clientutils.commonutils.ModifiedDate md = new com.cannontech.clientutils.commonutils.ModifiedDate( db.getDateApplied().getTime() );		
-		_listData.addElement("DB Version   : " + db.getVersion() + "  on  " + md.getDateString() );
+		_listData.addElement("DB Version   : " + db.getVersion() + "  Build:  " + db.getBuild() );
 		_listData.addElement("DB Alias     : " + CtiUtilities.getDatabaseAlias() );
 
 	}

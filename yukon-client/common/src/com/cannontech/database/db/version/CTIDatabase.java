@@ -9,10 +9,11 @@ public class CTIDatabase extends com.cannontech.database.db.DBPersistent
 	private String ctiEmployeeName = null;
 	private java.util.Date dateApplied = null;
 	private String notes = null;
+	private Integer build = null;
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"CTIEmployeeName", "DateApplied", "Notes"
+		"CTIEmployeeName", "DateApplied", "Notes", "Build"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "version" };
@@ -30,7 +31,7 @@ public CTIDatabase() {
 public void add() throws java.sql.SQLException 
 {
 	Object setValues[] = { getVersion(), getCtiEmployeeName(), 
-		getDateApplied(), getNotes() };
+		getDateApplied(), getNotes(), getBuild() };
 
 	add( TABLE_NAME, setValues );
 }
@@ -131,10 +132,26 @@ public void setVersion(java.lang.String newVersion) {
 public void update() throws java.sql.SQLException 
 {
 	Object setValues[] = { getCtiEmployeeName(), 
-		getDateApplied(), getNotes() };
+		getDateApplied(), getNotes(), getBuild() };
 	
 	Object constraintValues[] = { getVersion() };
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
+	/**
+	 * @return
+	 */
+	public Integer getBuild()
+	{
+		return build;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setBuild(Integer integer)
+	{
+		build = integer;
+	}
+
 }

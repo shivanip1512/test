@@ -300,5 +300,5 @@ go
 /******************************************************************************/
 /* VERSION INFO                                                               */
 /******************************************************************************/
-insert into CTIDatabase values('3.01', 'Ryan', '5-MAR-2004', 'Many changes to a major version jump');
+insert into CTIDatabase values('3.01', 'Ryan', '5-MAR-2004', 'Many changes to a major version jump', 0);
 go

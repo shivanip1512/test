@@ -98,8 +98,7 @@ public void setValue(Object o)
 		data.addElement("Version          : " + com.cannontech.graph.GraphClient.getVersion() );
 
 		com.cannontech.database.db.version.CTIDatabase db = com.cannontech.common.version.VersionTools.getDatabaseVersion();
-		com.cannontech.clientutils.commonutils.ModifiedDate md = new com.cannontech.clientutils.commonutils.ModifiedDate( db.getDateApplied().getTime() );
-		data.addElement("DB Version       : " + db.getVersion() + "  on  " + md.getDateString());
+		data.addElement("DB Version   : " + db.getVersion() + "  Build:  " + db.getBuild() );
 	}
 	catch(Throwable t)  // Catch ALL things and just print them out
 	{

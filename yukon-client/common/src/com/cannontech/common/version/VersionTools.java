@@ -37,7 +37,7 @@ public final static com.cannontech.database.db.version.CTIDatabase getDatabaseVe
 	{
 		//get the latest version
 		stat = conn.prepareStatement( "select Version, " +
-					"CTIEmployeeName, DateApplied, Notes from " + 
+					"CTIEmployeeName, DateApplied, Notes, Build from " + 
 					com.cannontech.database.db.version.CTIDatabase.TABLE_NAME + " where DateApplied is not null " + 
 					"order by Version desc" );
 
@@ -48,6 +48,7 @@ public final static com.cannontech.database.db.version.CTIDatabase getDatabaseVe
 		db.setCtiEmployeeName( rs.getString("CTIEmployeeName") );
 		db.setDateApplied( new java.util.Date( rs.getTimestamp("DateApplied").getTime() ) );
 		db.setNotes( rs.getString("Notes") );
+		db.setBuild( new Integer(rs.getInt("Build")) );
 	}
 	catch( java.sql.SQLException e )
 	{
