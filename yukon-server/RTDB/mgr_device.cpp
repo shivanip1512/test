@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2004/12/07 18:07:29 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2005/01/18 19:11:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2436,6 +2436,33 @@ void CtiDeviceManager::apply(void (*applyFun)(const long, ptr_type, void*), void
     }
 }
 
+int CtiDeviceManager::select(bool (*selectFun)(const long, ptr_type, void*), void* d, vector< CtiDeviceManager::ptr_type > &coll)
+{
+    ptr_type p;
+    spiterator itr;
+
+    LockGuard gaurd(getMux(), 30000);
+
+    while(!gaurd.isAcquired())
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint: Unable to lock device manager mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        gaurd.tryAcquire(30000);
+    }
+
+    for(itr = begin(); itr != end(); itr++)
+    {
+        if( selectFun(itr->first, itr->second, d) )
+        {
+            coll.push_back(itr->second);
+        }
+    }
+
+    return coll.size();
+}
+
 CtiDeviceManager::ptr_type CtiDeviceManager::find(bool (*findFun)(const long, ptr_type, void*), void* d)
 {
     ptr_type p;
@@ -2453,16 +2480,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::find(bool (*findFun)(const long, pt
             gaurd.tryAcquire(30000);
         }
 
-        spiterator itr;
-
-        for(itr = begin(); itr != end(); itr++)
-        {
-            if( findFun( itr->first, itr->second, d ) )
-            {
-                p = itr->second;
-                break;
-            }
-        }
+        p = _smartMap.find(findFun, d);
     }
     catch(...)
     {

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/05/23 22:23:45 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/01/18 19:11:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,16 +32,20 @@
 #include "cmdparse.h"
 #include "device.h"
 
-CtiDeviceGroupRipple::CtiDeviceGroupRipple(){
+CtiDeviceGroupRipple::CtiDeviceGroupRipple() :
+_rsvp(0)
+{
 }
 
-CtiDeviceGroupRipple::CtiDeviceGroupRipple(const CtiDeviceGroupRipple& aRef)
+CtiDeviceGroupRipple::CtiDeviceGroupRipple(const CtiDeviceGroupRipple& aRef) :
+_rsvp(0)
 {
     *this = aRef;
 }
 
 CtiDeviceGroupRipple::~CtiDeviceGroupRipple()
 {
+    if(_rsvp) delete _rsvp;
 }
 
 CtiDeviceGroupRipple& CtiDeviceGroupRipple::operator=(const CtiDeviceGroupRipple& aRef)
@@ -290,4 +294,155 @@ INT CtiDeviceGroupRipple::initTrxID( int trx, CtiCommandParser &parse, RWTPtrSli
     return NORMAL;
 }
 
+bool CtiDeviceGroupRipple::isShedProtocolParent(CtiDeviceBase *otherdev)
+{
+    bool bstatus = false;
 
+    CtiDeviceGroupRipple *otherGroup = (CtiDeviceGroupRipple *)otherdev;
+
+    // The only ripple groups that can support any type of heirarchy are Minnkota Landis & Gyr LCRs.  The have a universal group which can control area codes.
+
+    RWCString mybits = getRippleTable().getControlBits();
+    RWCString otherbits = otherGroup->getRippleTable().getControlBits();
+
+    RWCString thegroup = mybits((size_t)0, (size_t)10);
+    RWCString agroup = otherbits((size_t)0, (size_t)10);
+
+    RWCString thearea = mybits((size_t)10, (size_t)6);
+    RWCString aarea = otherbits((size_t)10, (size_t)6);
+
+    RWCString parentDO = mybits((size_t)16, (size_t)(mybits.length()-16));
+    RWCString childDO = otherbits((size_t)16, (size_t)(otherbits.length()-16));
+
+    // First 10 bits are the group!  They must match.
+    if(thegroup == agroup)
+    {
+        if( !thearea.compareTo("000000") || thearea == aarea)  // This is a universal group or a match on the area.
+        {
+            bstatus = matchRippleDoubleOrders(parentDO, childDO);
+            if(bstatus)
+            {
+                RWTPtrSlist< CtiMessage > vgList;
+                otherGroup->reportControlStart( true, otherGroup->getRippleTable().getShedTime(), 100, vgList, "control shed" );
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << vgList.entries() << endl;
+                }
+                if(vgList.entries())
+                {
+                    CtiMessage *pMsg = vgList.removeLast();
+                    otherGroup->setRsvpToDispatch(pMsg);   // Removes and returns the first list item...
+                }
+                vgList.clearAndDestroy();
+            }
+        }
+    }
+
+    return bstatus;
+}
+
+bool CtiDeviceGroupRipple::isRestoreProtocolParent(CtiDeviceBase *otherdev)
+{
+    bool bstatus = false;
+
+    CtiDeviceGroupRipple *otherGroup = (CtiDeviceGroupRipple *)otherdev;
+
+    // The only ripple groups that can support any type of heirarchy are Minnkota Landis & Gyr LCRs.  The have a universal group which can control area codes.
+
+    RWCString mybits = getRippleTable().getRestoreBits();
+    RWCString otherbits = otherGroup->getRippleTable().getRestoreBits();
+
+    RWCString thegroup = mybits((size_t)0, (size_t)10);
+    RWCString agroup = otherbits((size_t)0, (size_t)10);
+
+    RWCString thearea = mybits((size_t)10, (size_t)6);
+    RWCString aarea = otherbits((size_t)10, (size_t)6);
+
+    RWCString parentDO = mybits((size_t)16, (size_t)(mybits.length()-16));
+    RWCString childDO = otherbits((size_t)16, (size_t)(otherbits.length()-16));
+
+
+    // First 10 bits are the group!  They must match.
+    if(thegroup == agroup)
+    {
+        if( !thearea.compareTo("000000") || thearea == aarea)  // This is a universal group or a match on the area.
+        {
+            bstatus = matchRippleDoubleOrders(parentDO, childDO);
+            if(bstatus)
+            {
+                RWTPtrSlist< CtiMessage > vgList;
+                otherGroup->reportControlStart( false, 0, 100, vgList, "control restore" );
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << vgList.entries() << endl;
+                }
+                if(vgList.entries())
+                {
+                    CtiMessage *pMsg = vgList.removeLast();
+                    otherGroup->setRsvpToDispatch(pMsg);   // Removes and returns the first list item...
+                }
+                vgList.clearAndDestroy();
+            }
+        }
+    }
+
+    return bstatus;
+}
+
+void CtiDeviceGroupRipple::setRsvpToDispatch(CtiMessage *&rsvp)
+{
+    if(_rsvp) delete _rsvp;
+    _rsvp = rsvp;
+    rsvp = 0;
+    return;
+}
+
+
+CtiMessage* CtiDeviceGroupRipple::rsvpToDispatch( bool clearMessage )
+{
+    CtiMessage *tMsg = 0;
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    if(_rsvp)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        if(clearMessage) {
+            tMsg = _rsvp;
+            _rsvp = 0;
+        } else {
+            tMsg = _rsvp->replicateMessage();
+        }
+
+        if(tMsg)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    return tMsg;
+}
+
+bool CtiDeviceGroupRipple::matchRippleDoubleOrders(RWCString parentDO, RWCString childDO) const
+{
+    bool match = true;
+
+    for(size_t i = 0; i < childDO.length(); i++)
+    {
+        if( (char)childDO[i] == '1' && (char)parentDO[i] != (char)childDO[i] )
+        {
+            match = false;   // The child has bits set that the "parent" does not.  That's not my parent then...
+            break;
+        }
+    }
+
+    return match;
+}

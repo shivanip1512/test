@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/06/27 20:10:55 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/01/18 19:11:03 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,7 @@
 
 #include "msg_lmcontrolhistory.h"
 #include "msg_pdata.h"
+#include "msg_multi.h"
 #include "pt_status.h"
 #include "pt_analog.h"
 
@@ -81,6 +82,7 @@ public:
          *  This is the CONTROL STATUS point (offset) for the group.
          */
         CtiPointStatus *pControlStatus = (CtiPointStatus*)getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS );
+        CtiMultiMsg *pMulti = new CtiMultiMsg;
 
         if(pControlStatus != 0)
         {
@@ -89,14 +91,16 @@ public:
             hist->setControlType( cmd );      // Could be the state group name ????
             hist->setActiveRestore( shedtime > 0 ? LMAR_TIMED_RESTORE : LMAR_MANUAL_RESTORE);
             hist->setMessagePriority( hist->getMessagePriority() + 1 );
-            vgList.insert( hist );
+            // vgList.insert( hist );
+            pMulti->insert(hist);
 
             if(pControlStatus->isPseudoPoint())
             {
                 // There is no physical point to observe and respect.  We lie to the control point.
                 CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pControlStatus->getPointID(), (DOUBLE)(isshed), NormalQuality, StatusPointType, (isshed == CONTROLLED ? RWCString(getName() + " controlling") : RWCString(getName() + " restoring")));
                 pData->setMessagePriority( pData->getMessagePriority() + 1 );
-                vgList.insert(pData);
+                //vgList.insert(pData);
+                pMulti->insert(pData);
             }
 
             if(isshed == CONTROLLED && shedtime > 0)
@@ -105,7 +109,8 @@ public:
                 CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pControlStatus->getPointID(), (DOUBLE)UNCONTROLLED, NormalQuality, StatusPointType, RWCString(getName() + " restoring (delayed)"), TAG_POINT_DELAYED_UPDATE);
                 pData->setTime( RWTime() + shedtime );
                 pData->setMessagePriority( pData->getMessagePriority() - 1 );
-                vgList.insert(pData);
+                //vgList.insert(pData);
+                pMulti->insert(pData);
             }
         }
 
@@ -114,8 +119,11 @@ public:
         {
             CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pAnalog->getPointID(), pAnalog->computeValueForUOM((isshed == CONTROLLED ? (DOUBLE)(shedtime) : (DOUBLE)(0.0))) , NormalQuality, AnalogPointType, (isshed == CONTROLLED ? RWCString(getName() + " controlling") : RWCString(getName() + " restoring")));
             pData->setMessagePriority( pData->getMessagePriority() + 1 );
-            vgList.insert(pData);
+            //vgList.insert(pData);
+            pMulti->insert(pData);
         }
+
+        vgList.insert(pMulti);
     }
 
     RWCString getLastCommand() const

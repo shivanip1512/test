@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2005/01/03 23:07:15 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2005/01/18 19:11:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -789,6 +789,18 @@ INT CtiDeviceBase::checkForInhibitedDevice(RWTPtrSlist< CtiMessage > &retList, c
     }
 
     return status;
+}
+
+bool CtiDeviceBase::isGroup() const
+{
+    bool bstatus = false;
+
+    if(getClass() == PAOClassGroup)
+    {
+        bstatus = true;
+    }
+
+    return bstatus;
 }
 
 bool CtiDeviceBase::isTAP() const

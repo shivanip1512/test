@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2004/12/14 22:27:18 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2005/01/18 19:11:03 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -190,6 +190,7 @@ public:
     CtiDeviceBase& CtiDeviceBase::setControlInhibit(const bool b);
 
     bool isSingle() const;
+    bool isGroup() const;
 
     int getCurrentTrxID() const;
     int getResponsesOnTrxID() const;
@@ -249,6 +250,9 @@ public:
      *  hould be relayed to dispatch
      */
     virtual CtiMessage* rsvpToDispatch(bool clearMessage = true);
+
+    virtual bool isShedProtocolParent(CtiDeviceBase *otherdev)  { return false; }
+    virtual bool isRestoreProtocolParent(CtiDeviceBase *otherdev)  { return false; }
 
 protected:
 
