@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/logger.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2004/10/22 20:58:53 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2004/12/14 22:23:16 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,6 +25,7 @@
 
 IM_EX_CTIBASE CtiLogger   dout;           // Global log
 IM_EX_CTIBASE CtiLogger   slog;           // Global instance. Simulator log
+IM_EX_CTIBASE CtiLogger   blog;           // Global instance. Statistics
 
 
 CtiLogger::CtiLogger(const string& file, bool to_stdout)
