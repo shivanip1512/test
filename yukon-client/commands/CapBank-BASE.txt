@@ -1,3 +1,0 @@
-@include /custom/CapBank-BASE.txt
-OPEN  Cap Bank=control open
-CLOSE Cap Bank=control close
