@@ -3,23 +3,23 @@ package com.cannontech.loadcontrol.data;
 import com.roguewave.vsj.DefineCollectable;
 
 /**
- * Collectable class for LMGroupSADigitalOrGolay
+ * Collectable class for LMGroupSA105
  * @author aaron
  */
-public class DefColl_LMGroupSADigitalOrGolay extends DefColl_LMDirectGroupBase {
-	//The roguewave class id
-	private static int CTILMGROUPSADIGITALORGOLAY_ID = 631;
+public class DefColl_LMGroupSA105 extends DefColl_LMDirectGroupBase {
+	//The roguewa class id
+	private static int CTILMGROUPSA105_ID = 629;
 
-	public DefColl_LMGroupSADigitalOrGolay() {
+	public DefColl_LMGroupSA105() {
 		super();
 	}
 
 	public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-		return new LMGroupSA205Or105();
+		return new LMGroupSA105();
 	}
 
 	public int getCxxClassId() {
-		return CTILMGROUPSADIGITALORGOLAY_ID;
+		return CTILMGROUPSA105_ID;
 	}
 
 	public String getCxxStringId() {
@@ -27,7 +27,7 @@ public class DefColl_LMGroupSADigitalOrGolay extends DefColl_LMDirectGroupBase {
 	}
 
 	public Class getJavaClass() {
-		return LMGroupSADigitalOrGolay.class;
+		return LMGroupSA105.class;
 	}
 
 	public void restoreGuts(

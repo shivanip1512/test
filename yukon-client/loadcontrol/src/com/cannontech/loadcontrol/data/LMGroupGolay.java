@@ -4,9 +4,9 @@
 package com.cannontech.loadcontrol.data;
 
 /**
- *  Placeholder for SA205or105 lm group
+ * Placeholder for Golay lm group
  * @author aaron
  */
-public class LMGroupSA205Or105 extends LMDirectGroupBase {
-
+public class LMGroupGolay extends LMDirectGroupBase {
+	
 }

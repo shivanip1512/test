@@ -44,9 +44,11 @@ public class CollectableMappings
 	  	new com.cannontech.loadcontrol.data.DefColl_LMGroupMCT(),
 	  	new com.cannontech.loadcontrol.data.DefColl_LMGroupPoint(),
 	  	new com.cannontech.loadcontrol.data.DefColl_LMGroupRipple(),
-	  	new com.cannontech.loadcontrol.data.DefColl_LMGroupSADigitalOrGolay(),
-	  	new com.cannontech.loadcontrol.data.DefColl_LMGroupSA205Or105(),
-	  	new com.cannontech.loadcontrol.data.DefColl_LMGroupSA305(),
+		new com.cannontech.loadcontrol.data.DefColl_LMGroupSA105(),
+		new com.cannontech.loadcontrol.data.DefColl_LMGroupSA205(),
+		new com.cannontech.loadcontrol.data.DefColl_LMGroupSA305(),
+		new com.cannontech.loadcontrol.data.DefColl_LMGroupSADigital(),
+		new com.cannontech.loadcontrol.data.DefColl_LMGroupGolay(),
 	    new com.cannontech.loadcontrol.data.DefColl_LMGroupVersacom()
 	};
    
