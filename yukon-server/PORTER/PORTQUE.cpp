@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2002/09/09 14:55:09 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2002/09/12 21:32:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,6 +81,7 @@ USHORT QueSequence = {0x8000};
 
 static CHAR tempstr[100];
 
+bool findAllQueueEntries(void *unused, void* d);
 bool findReturnNexusMatch(void *nid, void* d);
 void cleanupOrphanOutMessages(void *unusedptr, void* d);
 
@@ -1778,6 +1779,12 @@ bool findReturnNexusMatch(void *nid, void* d)
     OUTMESS *OutMessage = (OUTMESS *)d;
 
     return(OutMessage->ReturnNexus == rnid);
+}
+
+bool findAllQueueEntries(void *unused, void* d)
+{
+    OUTMESS *OutMessage = (OUTMESS *)d;
+    return true;
 }
 
 void cleanupOrphanOutMessages(void *unusedptr, void* d)
