@@ -48,8 +48,6 @@
 
 <script language="JavaScript">
 function init() {
-	if (document.getElementById("Override") != null)
-		document.getElementById("Override").value = '<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_OVERRIDE %>" format="all_capital"/>';
 	document.getElementById("Reenable").value = '<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_REENABLE %>" format="all_capital"/>';
 }
 
@@ -249,9 +247,7 @@ function changeProgSelection(chkBox) {
                 <table width="300" border="0" cellspacing="0" cellpadding="0">
                   <tr> 
                     <td align="center"> 
-<cti:checkProperty propertyid="<%= ConsumerInfoRole.OVERRIDE_HARDWARE %>">
-                      <input type="button" id="Override" value="Override" onclick="location.href='OverrideHardware.jsp?InvNo=<%= invNo %>'">
-</cti:checkProperty>
+                      <input type="button" id="Disable" value="Disable" onclick="sendCommand('DisableLMHardware')">
                       <input type="button" id="Reenable" value="Reenable" onclick="sendCommand('EnableLMHardware')">
                     </td>
                   </tr>
