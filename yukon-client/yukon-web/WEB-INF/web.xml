@@ -15,6 +15,13 @@
         <servlet-class>com.cannontech.servlet.LoginController</servlet-class>
     </servlet>
 
+	<servlet>
+        <servlet-name>DBPropertiesServlet</servlet-name>
+        <display-name>DBPropertiesServlet</display-name>
+        <description>Returns a set of db.properties to clients</description>
+        <servlet-class>com.cannontech.servlet.DBPropertiesServlet</servlet-class>
+    </servlet>
+    
     <servlet>
         <servlet-name>MACSConnectionServlet</servlet-name>
         <display-name>MACSConnectionServlet</display-name>
