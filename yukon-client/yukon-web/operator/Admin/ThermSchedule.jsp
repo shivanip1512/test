@@ -1,4 +1,4 @@
-<%@ include file="include/StarsHeader.jsp" %>
+<%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%
 	StarsDefaultThermostatSettings thermoSettings = dftThermoSettings;
 	dftThermoSettings = SOAPServer.getDefaultEnergyCompany().getStarsDefaultThermostatSettings();
@@ -125,7 +125,7 @@ function prepareSubmit(form) {
 
 function switchSettings(day, mode) {
 	var form = document.form1;
-	form.REDIRECT.value = "<%=request.getContextPath()%>/operator/Consumer/Admin_ThermSchedule.jsp?day=" + day + "&mode=" + mode;
+	form.REDIRECT.value = "<%=request.getContextPath()%>/operator/Consumer/ThermSchedule.jsp?day=" + day + "&mode=" + mode;
 	location.href = form.REDIRECT.value;
 }
 
@@ -199,7 +199,7 @@ MM_reloadPage(true);
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="ConsumerImage.jpg">&nbsp;</td>
+          <td width="102" height="102" background="AdminImage.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
@@ -207,8 +207,7 @@ MM_reloadPage(true);
               </tr>
               <tr> 
 				  
-                <td width="265" height="28" valign="middle" class="PageHeader">&nbsp;&nbsp;&nbsp;Customer 
-                  Account Information&nbsp;&nbsp;</td>
+                <td width="265" height="28" valign="middle" class="PageHeader">&nbsp;&nbsp;&nbsp;Administration</td>
                   <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">
 				  	<div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -238,10 +237,8 @@ MM_reloadPage(true);
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
-              
-            <div align="center">
-              <% String header = "ADMINISTRATION - DEFAULT THERMOSTAT SCHEDULE"; %>
-              <%@ include file="include/InfoSearchBar2.jsp" %>
+            <div align="center"> <br>
+              <span class="TitleHeader">ADMINISTRATION - DEFAULT THERMOSTAT SCHEDULE</span>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			  
@@ -250,8 +247,8 @@ MM_reloadPage(true);
 			  <input type="hidden" name="InvID" value="<%= thermoSettings.getInventoryID() %>">
 			  <input type="hidden" name="day" value="<%= dayStr %>">
 			  <input type="hidden" name="mode" value="<%= modeStr %>">
-			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Admin_ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStr %>">
-			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/Admin_ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?day=<%= dayStr %>&mode=<%= modeStr %>">
 			  <input type="hidden" name="tempval1">
 			  <input type="hidden" name="tempval2">
 			  <input type="hidden" name="tempval3">

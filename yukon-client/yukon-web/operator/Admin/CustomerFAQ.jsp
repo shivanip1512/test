@@ -1,4 +1,4 @@
-<%@ include file="include/StarsHeader.jsp" %>
+<%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -63,7 +63,7 @@ function submitFAQSubjects(form) {
 function editFAQSubject(form) {
 	var subjects = form.FAQSubjects;
 	if (subjects.selectedIndex >= 0)
-		location.href = "Admin_FAQSubject.jsp?Subject=" + subjects.value;
+		location.href = "FAQSubject.jsp?Subject=" + subjects.value;
 }
 
 function deleteFAQSubject(form) {
@@ -89,7 +89,7 @@ function deleteAllFAQSubjects(form) {
 function newFAQSubject(form) {
 	var subjects = form.FAQSubjects;
 	var idx = (subjects.options[0].value < 0)? 0 : subjects.options.length;
-	location.href = "Admin_FAQSubject.jsp?Subject=" + idx;
+	location.href = "FAQSubject.jsp?Subject=" + idx;
 }
 </script>
 </head>
@@ -100,15 +100,14 @@ function newFAQSubject(form) {
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="ConsumerImage.jpg">&nbsp;</td>
+          <td width="102" height="102" background="AdminImage.jpg">&nbsp;</td>
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
-                  <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
-                    Account Information&nbsp;&nbsp;</td>
+                  <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Administration</td>
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
@@ -138,12 +137,11 @@ function newFAQSubject(form) {
           <td  valign="top" width="101">&nbsp;</td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
-              
-            <div align="center"> 
-              <% String header = "ADMINISTRATION - CUSTOMER FAQS"; %>
-              <%@ include file="include/InfoSearchBar2.jsp" %>
+            <div align="center"> <br>
+              <span class="TitleHeader">ADMINISTRATION - CUSTOMER FAQS</span>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
+              
               <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
                 <table width="600" border="1" cellspacing="0" cellpadding="0">
                   <tr>

@@ -1,4 +1,4 @@
-<%@ include file="include/StarsHeader.jsp" %>
+<%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionList" %>
 <%@ page import="com.cannontech.common.constants.YukonListEntry" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
@@ -246,15 +246,14 @@ function init() {
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="ConsumerImage.jpg">&nbsp;</td>
+          <td width="102" height="102" background="AdminImage.jpg">&nbsp;</td>
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
-                  <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
-                    Account Information&nbsp;&nbsp;</td>
+                  <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Administration</td>
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
@@ -284,10 +283,8 @@ function init() {
           <td  valign="top" width="101">&nbsp;</td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
-              
-            <div align="center">
-              <% String header = "ADMINISTRATION - CUSTOMER SELECTION LIST"; %>
-              <%@ include file="include/InfoSearchBar2.jsp" %>
+            <div align="center"> <br>
+              <span class="TitleHeader">ADMINISTRATION - CUSTOMER SELECTION LIST</span>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
             </div>
@@ -324,10 +321,10 @@ function init() {
                         <td width="15%" align="right" class="TableCell">&nbsp;</td>
                         <td width="85%" class="TableCell"> 
                           <% if (isOptOutPeriod) { %>
-                          <a href="Admin_SelectionList.jsp?List=OptOutPeriodCustomer">View 
+                          <a href="SelectionList.jsp?List=OptOutPeriodCustomer">View 
                           Customer Side List</a> 
                           <% } else { %>
-                          <a href="Admin_SelectionList.jsp?List=OptOutPeriod">View 
+                          <a href="SelectionList.jsp?List=OptOutPeriod">View 
                           Operator Side List</a> 
                           <% } %>
                         </td>

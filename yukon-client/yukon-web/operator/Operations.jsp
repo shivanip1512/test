@@ -326,7 +326,7 @@ function confirmDelete() {
         </tr>
         <tr> 
           <td align = "center" class = "MainText" width="25%"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY %>"> 
-            <div align = "center" style = "border:solid 1px #666999;"><a href = "Consumer/AdminTest.jsp" class = "Link1" style = "text-decoration:none;">Config 
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "Admin/AdminTest.jsp" class = "Link1" style = "text-decoration:none;">Config 
               Energy Company</a></div>
             </cti:checkProperty> </td>
 		  <form name="DeleteForm" method="post" action="<%= request.getContextPath() %>/servlet/StarsAdmin">
@@ -337,7 +337,7 @@ function confirmDelete() {
               </cti:checkProperty> </td>
 		  </form>
           <td align = "center" class = "MainText" width="25%"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY %>"> 
-            <div align = "center" style = "border:solid 1px #666999;"><a href = "Consumer/Admin_NewEnergyCompany.jsp" class = "Link1" style = "text-decoration:none;">New 
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "Consumer/NewEnergyCompany.jsp" class = "Link1" style = "text-decoration:none;">New 
               Energy Company</a></div>
             </cti:checkProperty> </td>
           <td align = "center" class = "MainText" width="25%">&nbsp;</td>

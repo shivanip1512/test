@@ -1883,11 +1883,11 @@ public class StarsAdmin extends HttpServlet {
 			boolean newAddress = (addressID <= 0);
 			String referer = req.getParameter( "REFERER" );
 			
-			if (referer.equalsIgnoreCase("Admin_EnergyCompany.jsp")) {
+			if (referer.equalsIgnoreCase("EnergyCompany.jsp")) {
 				StarsEnergyCompany ecTemp = (StarsEnergyCompany) session.getAttribute( ENERGY_COMPANY_TEMP );
 				starsAddr = ecTemp.getCompanyAddress();
 			}
-			else if (referer.startsWith("Admin_ServiceCompany.jsp")) {
+			else if (referer.startsWith("ServiceCompany.jsp")) {
 				StarsServiceCompany scTemp = (StarsServiceCompany) session.getAttribute( SERVICE_COMPANY_TEMP );
 				starsAddr = scTemp.getCompanyAddress();
 			}

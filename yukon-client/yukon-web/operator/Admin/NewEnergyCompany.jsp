@@ -1,4 +1,4 @@
-<%@ include file="include/StarsHeader.jsp" %>
+<%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
 <% if (!AuthFuncs.checkRoleProperty(lYukonUser, com.cannontech.roles.operator.AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY)) { response.sendRedirect("../Operations.jsp"); return; } %>
 <html>
@@ -28,15 +28,14 @@ function checkPassword(form) {
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="ConsumerImage.jpg">&nbsp;</td>
+          <td width="102" height="102" background="AdminImage.jpg">&nbsp;</td>
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
-                  <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
-                    Account Information&nbsp;&nbsp;</td>
+                  <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Administration</td>
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
@@ -66,13 +65,8 @@ function checkPassword(form) {
           <td  valign="top" width="101">&nbsp;</td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
-              
-            <div align="center"> 
-              <table width="100%" border="0" cellspacing="0" cellpadding="5" height="69">
-                <tr>
-                  <td valign="bottom" align="center" class="TitleHeader">ADMINISTRATION - CREATE ENERGY COMPANY</td>
-                </tr>
-              </table>
+            <div align="center"> <br>
+              <span class="TitleHeader">ADMINISTRATION - CREATE ENERGY COMPANY</span>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
             </div>
