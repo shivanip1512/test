@@ -11,14 +11,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/07/30 21:16:47 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/08/29 16:30:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "devicetypes.h"
 #include "dev_dlcbase.h"
+#include "pt_base.h"
 #include "dsm2.h"
 #include "utility.h"
 
@@ -96,7 +97,11 @@ void CtiDeviceDLCBase::DecodeDatabaseReader(RWDBReader &rdr)
 
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
-    if(getDebugLevel() & 0x0800) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    if( getDebugLevel() & 0x0800 )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
     LockGuard guard(monitor());
     CarrierSettings.DecodeDatabaseReader(rdr);
@@ -106,7 +111,12 @@ void CtiDeviceDLCBase::DecodeRoutesDatabaseReader(RWDBReader &rdr)
 {
     INT iTemp;
 
-    if(getDebugLevel() & 0x0800) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    if( getDebugLevel() & 0x0800 )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     DeviceRoutes.DecodeDatabaseReader(rdr);
 }
 
@@ -185,8 +195,11 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
     INT ErrReturn = InMessage->EventCode & 0x3fff,
         sendMsg   = TRUE;
 
-    CtiCommandMsg *pMsg;
-    CtiReturnMsg  *retMsg;
+    CtiCommandMsg   *pMsg;
+    CtiReturnMsg    *retMsg;
+
+    CtiPointDataMsg *commStatus;
+    CtiPointBase    *commPoint;
 
     if(!(ErrReturn))
     {
@@ -213,29 +226,37 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
         }
     }
 
-    /*
-     * update performace stats for device and route
-     */
+    retMsg = new CtiReturnMsg(getID(),
+                              RWCString(InMessage->Return.CommandStr),
+                              RWCString(),
+                              InMessage->EventCode & 0x7fff,
+                              InMessage->Return.RouteID,
+                              InMessage->Return.MacroOffset,
+                              InMessage->Return.Attempt,
+                              InMessage->Return.TrxID,
+                              InMessage->Return.UserID);
 
-    /* check for communication failure */
+
+    //  update performace stats for device and route
+
+    //  check for communication failure
     if(ErrReturn)
     {
-        retMsg = new CtiReturnMsg(getID(),
-                                  RWCString(InMessage->Return.CommandStr),
-                                  RWCString(),
-                                  InMessage->EventCode & 0x7fff,
-                                  InMessage->Return.RouteID,
-                                  InMessage->Return.MacroOffset,
-                                  InMessage->Return.Attempt,
-                                  InMessage->Return.TrxID,
-                                  InMessage->Return.UserID);
+        //  Log the communication failure on this route.
+        if( commPoint = getDevicePointOffsetTypeEqual(2000, StatusPointType) )
+        {
+            commStatus = new CtiPointDataMsg(commPoint->getPointID(), 0.0, NormalQuality, StatusPointType);
 
-        /*
-         *  ACH: Log the communication failure on this route.
-         */
+            if( commStatus != NULL )
+            {
+                retMsg->PointData().insert(commStatus);
+                commStatus = NULL;
+            }
+        }
 
         //  send a Device Failed/Point Failed message to dispatch, if applicable
         pMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
+
         if( pMsg != NULL )
         {
             switch( InMessage->Sequence )
@@ -334,9 +355,34 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "  We should be filling out an OutMessage here if there is a MacroOffset > 0 specified! " << endl;
         }
+    }
+    else
+    {
+        //  Log the communication success on this route.
+        if( commPoint = getDevicePointOffsetTypeEqual(2000, StatusPointType) )
+        {
+            if( retMsg != NULL )
+            {
+                commStatus = new CtiPointDataMsg(commPoint->getPointID(), 1.0, NormalQuality, StatusPointType);
 
+                if( commStatus != NULL )
+                {
+                    retMsg->PointData().insert(commStatus);
+                    commStatus = NULL;
+                }
 
+                RWCString resultString;
 
+                if(pMsg != NULL)
+                    retMsg->insert(pMsg);
+
+                resultString = getName() + " / operation succeeded";
+
+                retMsg->setResultString(resultString);
+
+                retList.append(retMsg);
+            }
+        }
     }
 
     return ErrReturn;
