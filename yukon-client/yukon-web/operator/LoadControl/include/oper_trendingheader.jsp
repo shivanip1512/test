@@ -2,7 +2,7 @@
 
 // Grab their graphdefinitions
    Class[] types = { Integer.class,String.class };
-   Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "select graphdefinition.graphdefinitionid,graphdefinition.name from graphdefinition,OperatorLoginGraphList where graphdefinition.graphdefinitionid=OperatorLoginGraphList.graphdefinitionid and OperatorLoginGraphList.OperatorLoginID=" + user.getUserID() + " order by graphdefinition.graphdefinitionid", types );
+   Object[][] opGraphs = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "select graphdefinition.graphdefinitionid,graphdefinition.name from graphdefinition,OperatorLoginGraphList where graphdefinition.graphdefinitionid=OperatorLoginGraphList.graphdefinitionid and OperatorLoginGraphList.OperatorLoginID=" + user.getUserID() + " order by graphdefinition.graphdefinitionid", types );
                     
    //out.println("select graphdefinition.graphdefinitionid,graphdefinition.name from graphdefinition,GraphCustomerList where graphdefinition.graphdefinitionid=GraphCustomerList.graphdefinitionid and GraphCustomerList.LMCustomerDeviceID=" + user.getCustomerId() + " order by GraphCustomerList.CustomerOrder");
    String referrer;
@@ -41,10 +41,10 @@
    if( gDefIDStr != null )                           
       graphDefinitionId = Integer.parseInt(gDefIDStr);
    else
-   if( gData != null && gData.length > 0 && gData[0] != null &&
-       gData[0].length > 0 && gData[0][0] != null )
+   if( opGraphs != null && opGraphs.length > 0 && opGraphs[0] != null &&
+       opGraphs[0].length > 0 && opGraphs[0][0] != null )
    {   
-      graphDefinitionId = Integer.parseInt(gData[0][0].toString());
+      graphDefinitionId = Integer.parseInt(opGraphs[0][0].toString());
    }
 
    String startStr = request.getParameter("start");
