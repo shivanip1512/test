@@ -3,6 +3,8 @@ package com.cannontech.loadcontrol.data;
 /**
  * This type was created in VisualAge.
  */
+import java.util.Date;
+
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -86,6 +88,10 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	java.util.GregorianCalendar lastControlSent = new java.util.GregorianCalendar();
 	lastControlSent.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
 	lmDirectGroup.setLastControlSent( lastControlSent );
+	
+	lmDirectGroup.setControlStartTime( (Date)vstr.restoreObject( SimpleMappings.Time ) );
+	lmDirectGroup.setControlCompleteTime( (Date)vstr.restoreObject( SimpleMappings.Time ) );
+	
 
 }
 /**

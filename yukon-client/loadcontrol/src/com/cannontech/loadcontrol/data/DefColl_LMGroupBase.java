@@ -82,10 +82,6 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	lmGroupBase.setDisableFlag( new Boolean((int)vstr.extractUnsignedInt() > 0) );
 	lmGroupBase.setGroupOrder( new Integer((int)vstr.extractUnsignedInt()) );	
 	lmGroupBase.setKwCapacity( new Double(vstr.extractDouble()) );
-	
-	lmGroupBase.setControlStartTime( (Date)vstr.restoreObject( SimpleMappings.Time ) );
-	lmGroupBase.setControlCompleteTime( (Date)vstr.restoreObject( SimpleMappings.Time ) );
-	
 }
 /**
  * saveGuts method comment.

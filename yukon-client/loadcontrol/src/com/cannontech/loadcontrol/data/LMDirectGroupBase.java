@@ -1,5 +1,7 @@
 package com.cannontech.loadcontrol.data;
 
+import java.util.Date;
+
 import com.cannontech.common.util.CtiUtilities;
 
 /**
@@ -19,6 +21,8 @@ public abstract class LMDirectGroupBase extends LMGroupBase implements ILMGroup
 	private Integer currentHoursAnnually = null;
 	private java.util.GregorianCalendar lastControlSent = null;
 
+	private Date controlStartTime = null;
+	private Date controlCompleteTime = null;
 
 	/**
 	 * Insert the method's description here.
@@ -210,5 +214,42 @@ public abstract class LMDirectGroupBase extends LMGroupBase implements ILMGroup
 	public Integer getOrder() {
 		return getChildOrder();
 	}
-	
+
+
+	/**
+	 * Returns the controlCompleteTime.
+	 * @return Date
+	 */
+	public Date getControlCompleteTime()
+	{
+		return controlCompleteTime;
+	}
+
+	/**
+	 * Returns the controlStartTime.
+	 * @return Date
+	 */
+	public Date getControlStartTime()
+	{
+		return controlStartTime;
+	}
+
+	/**
+	 * Sets the controlCompleteTime.
+	 * @param controlCompleteTime The controlCompleteTime to set
+	 */
+	public void setControlCompleteTime(Date controlCompleteTime)
+	{
+		this.controlCompleteTime = controlCompleteTime;
+	}
+
+	/**
+	 * Sets the controlStartTime.
+	 * @param controlStartTime The controlStartTime to set
+	 */
+	public void setControlStartTime(Date controlStartTime)
+	{
+		this.controlStartTime = controlStartTime;
+	}
+
 }

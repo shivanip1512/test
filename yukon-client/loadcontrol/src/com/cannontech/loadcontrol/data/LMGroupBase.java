@@ -34,8 +34,6 @@ public abstract class LMGroupBase
 	private Boolean disableFlag = null;
 	private Double kwCapacity = null;
 	private Integer groupOrder = null;
-	private Date controlStartTime = null;
-	private Date controlCompleteTime = null;
 
 
 	/**
@@ -246,41 +244,6 @@ public abstract class LMGroupBase
 	 */
 	public void setYukonType(java.lang.Integer newYukonType) {
 		yukonType = newYukonType;
-	}
-	/**
-	 * Returns the controlCompleteTime.
-	 * @return Date
-	 */
-	public Date getControlCompleteTime()
-	{
-		return controlCompleteTime;
-	}
-
-	/**
-	 * Returns the controlStartTime.
-	 * @return Date
-	 */
-	public Date getControlStartTime()
-	{
-		return controlStartTime;
-	}
-
-	/**
-	 * Sets the controlCompleteTime.
-	 * @param controlCompleteTime The controlCompleteTime to set
-	 */
-	public void setControlCompleteTime(Date controlCompleteTime)
-	{
-		this.controlCompleteTime = controlCompleteTime;
-	}
-
-	/**
-	 * Sets the controlStartTime.
-	 * @param controlStartTime The controlStartTime to set
-	 */
-	public void setControlStartTime(Date controlStartTime)
-	{
-		this.controlStartTime = controlStartTime;
 	}
 
 }
