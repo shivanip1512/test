@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.72 $
-* DATE         :  $Date: 2003/09/12 02:37:33 $
+* REVISION     :  $Revision: 1.73 $
+* DATE         :  $Date: 2003/09/22 15:39:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -261,10 +261,10 @@ VOID PortThread(void *pid)
             return;  // We've been nixed!
         }
 
+        Port->postEvent();
+
         if( Port->getParentPort() )
         {
-            Port->getParentPort()->postParent();
-
             // Make sure the parent port can assign new work onto this port.
             if(Port->queueCount() == 0 && Port->getPoolAssignedGUID() != 0)
             {
@@ -286,7 +286,6 @@ VOID PortThread(void *pid)
                 Port->setPoolAssignedGUID(0);
             }
         }
-
 
         if(gQueSlot == 0)       // This keeps us locked on if we have other work out there which we should pop off the queue next!
         {
@@ -332,6 +331,8 @@ VOID PortThread(void *pid)
             }
         }
 
+        Port->setLastOMRead();
+
         if(QueEntries > 5000 && RWTime() > lastQueueReportTime)  // Ok, we may have an issue here....
         {
             {
@@ -346,8 +347,7 @@ VOID PortThread(void *pid)
         if(PorterDebugLevel & PORTER_DEBUG_VERBOSE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << Port->getName() << endl;
-            dout << RWTime() << " Portfield read: OutMessage->DeviceID / Remote / Port / Priority = " << OutMessage->DeviceID << " / " << OutMessage->Remote << " / " << OutMessage->Port << " / " << OutMessage->Priority << endl;
+            dout << RWTime() << " " << Port->getName() << " PortThread read: OutMessage->DeviceID / Remote / Port / Priority = " << OutMessage->DeviceID << " / " << OutMessage->Remote << " / " << OutMessage->Port << " / " << OutMessage->Priority << endl;
         }
 
         if(OutMessage->DeviceID == 0 && OutMessage->Remote != 0 && OutMessage->Port != 0)

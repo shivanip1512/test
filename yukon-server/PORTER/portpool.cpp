@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/09/12 21:42:42 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/09/22 15:39:03 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,7 +51,6 @@ VOID PortPoolDialoutThread(void *pid)
 
     /* make it clear who is the boss */
     CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
-
 
     if(!ParentPort)
     {
@@ -143,7 +142,7 @@ VOID PortPoolDialoutThread(void *pid)
         if(PorterDebugLevel & PORTER_DEBUG_VERBOSE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Portpool read: OutMessage->DeviceID / Remote / Port / Priority = " << OutMessage->DeviceID << " / " << OutMessage->Remote << " / " << OutMessage->Port << " / " << OutMessage->Priority << endl;
+            dout << RWTime() << " " << ParentPort->getName() << " Portpool read: OutMessage->DeviceID / Remote / Port / Priority = " << OutMessage->DeviceID << " / " << OutMessage->Remote << " / " << OutMessage->Port << " / " << OutMessage->Priority << endl;
         }
 
         if(OutMessage->DeviceID == 0 && OutMessage->Remote != 0 && OutMessage->Port != 0)
@@ -205,7 +204,18 @@ VOID PortPoolDialoutThread(void *pid)
             }
         }
 
+        RWTime starttime;
         CtiPortManager::ptr_type childport = ((CtiPortPoolDialout*)ParentPort.get())->getAvailableChildPort(Device);
+        RWTime stoptime;
+
+        if(stoptime.seconds() - starttime.seconds() > 2)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << " Way too slow!" << endl;
+            }
+        }
 
         if(childport)
         {
@@ -220,7 +230,18 @@ VOID PortPoolDialoutThread(void *pid)
         OutMessage = 0; // It is not ours anymore to touch!
 
         // Now we need to do a pool-port-queue-sweep looking for OutMessages which can be allocated onto any child port.
+        starttime = starttime.now();
         status = AllocateOutMessagesToChildPorts(ParentPort);
+        stoptime = stoptime.now();
+
+        if(stoptime.seconds() - starttime.seconds() > 2)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << " Way too slow!" << endl;
+            }
+        }
 
         if(status == CtiPortPoolDialout::PPSC_AllChildrenBusy)
         {
@@ -246,8 +267,6 @@ VOID PortPoolDialoutThread(void *pid)
                     dout << RWTime() << " " << ParentPort->getName() << " awakened by a postParent() " << endl;
                 }
 
-                // Now we need to do a pool-port-queue-sweep looking for OutMessages which can be allocated onto any child port.
-                status = AllocateOutMessagesToChildPorts(ParentPort);
             }
         }
         else if(status == CtiPortPoolDialout::PPSC_ChildReady)
