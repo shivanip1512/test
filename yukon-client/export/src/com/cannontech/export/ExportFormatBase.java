@@ -368,7 +368,7 @@ public void writeToFile()
 		{
 			//DISCARD ALL RECORD DATA SO WE CAN START OVER AGAIN.
 			logEvent("...Exported * "+ recordVector.size() + " * Records to file " + getDirectory() + getFileName(), com.cannontech.common.util.LogWriter.INFO);			
-			recordVector.clear();
+			recordVector = null;
 		}
 	}
 	else
