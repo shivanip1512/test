@@ -26,12 +26,11 @@ public interface ConsumerInfoRole {
 	public static final int CONSUMER_INFO_ADMIN_CHANGE_LOGIN = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 15;
 	public static final int CONSUMER_INFO_ADMIN_FAQ = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 16;
 	public static final int CONSUMER_INFO_THERMOSTATS_ALL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 17;
-	public static final int CONSUMER_INFO_HARDWARES_METER = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 18;
 	
 	public static final int SUPER_OPERATOR = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 50;
 	public static final int NEW_ACCOUNT_WIZARD = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 51;
 	public static final int IMPORT_CUSTOMER_ACCOUNT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 52;
-	public static final int INVENTORY_CHECKING_TIME = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 53;
+	public static final int INVENTORY_CHECKING = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 53;
 	public static final int AUTOMATIC_CONFIGURATION = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 54;
 	public static final int ORDER_NUMBER_AUTO_GEN = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 55;
 	public static final int CALL_NUMBER_AUTO_GEN = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 56;
