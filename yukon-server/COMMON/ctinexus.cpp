@@ -426,7 +426,7 @@ INT CTINEXUS::CTINexusWrite(VOID *buf, ULONG len, PULONG BytesWritten, LONG Time
                     }
                     else
                     {
-                        if( !(++wbLoops % 60) )  //  gripe every 30 seconds
+                        if( !(++wbLoops % 20) )  //  gripe every 10 seconds
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " Outbound socket full, will wait and retry. " << endl;
