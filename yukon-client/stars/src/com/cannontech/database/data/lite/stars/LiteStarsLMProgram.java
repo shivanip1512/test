@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.constants.YukonListFuncs;
+import com.cannontech.database.cache.functions.YukonListFuncs;
 
 /**
  * @author yao

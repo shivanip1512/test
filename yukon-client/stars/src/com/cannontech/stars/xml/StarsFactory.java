@@ -3,8 +3,8 @@ package com.cannontech.stars.xml;
 import java.util.Vector;
 
 import com.cannontech.common.constants.YukonListEntry;
-import com.cannontech.common.constants.YukonListFuncs;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.contact.ContactNotification;

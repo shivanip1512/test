@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListFuncs;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteCustomerContact;
 import com.cannontech.database.data.lite.stars.LiteLMProgram;

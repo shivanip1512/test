@@ -88,7 +88,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	starsUserList = null;
     	
     	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
-    	com.cannontech.common.constants.YukonListFuncs.releaseAllConstants();
+    	com.cannontech.database.cache.functions.YukonListFuncs.releaseAllConstants();
     }
 
     public SOAPServer() {
