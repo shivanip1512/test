@@ -12,7 +12,9 @@
 	boolean inOther = (obj instanceof ObjectInOtherEnergyCompanyException);
 	LiteInventoryBase liteInv = (LiteInventoryBase) (inOther? ((ObjectInOtherEnergyCompanyException)obj).getObject() : obj);
 	
-	boolean inWizard = ((String) session.getAttribute(ServletUtils.ATT_REFERRER)).indexOf("Wizard=true") >= 0;
+	StarsInventory starsInv = (StarsInventory) session.getAttribute(InventoryManagerUtil.STARS_INVENTORY_TEMP);
+	
+	boolean inWizard = ((String) session.getAttribute(ServletUtils.ATT_REFERRER)).indexOf("Wizard") >= 0;
 	if (!inWizard && accountInfo == null) {
 		response.sendRedirect("../Operations.jsp");
 		return;
@@ -67,15 +69,16 @@
                 <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
                   <tr> 
                     <td align="center"> 
-                      <input type="button" name="OK2" value="OK" onClick="history.back()">
+                      <input type="button" name="OK2" value="OK" onclick="history.back()">
                     </td>
                   </tr>
                 </table>
 <%
 	}
 	else if (liteInv == null) {
+		if (starsInv.getLMHardware() != null) {
 %>
-                <p class="MainText">This serial number is not found in inventory. 
+                <p class="MainText">The serial number is not found in inventory. 
                   Would you like to add it now?</p>
                 <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
                   <tr> 
@@ -88,6 +91,23 @@
                   </tr>
                 </table>
 <%
+		}
+		else {
+%>
+                <p class="MainText">The device name is not found in Yukon. Would 
+                  you like to create a new device?</p>
+                <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
+                  <tr> 
+                    <td width="100" align="right">
+                      <input type="submit" name="NewHardware" value="Yes">
+                    </td>
+                    <td width="100"> 
+                      <input type="button" name="No" value="No" onclick="history.back()">
+                    </td>
+                  </tr>
+                </table>
+<%
+		}
 	}
 	else if (liteInv.getInventoryID() < 0) {
 %>

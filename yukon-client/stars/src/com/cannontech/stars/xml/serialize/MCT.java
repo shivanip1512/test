@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: MCT.java,v 1.28 2004/11/24 23:22:01 zyao Exp $
+ * $Id: MCT.java,v 1.29 2004/12/09 16:25:44 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.28 $ $Date: 2004/11/24 23:22:01 $
+ * @version $Revision: 1.29 $ $Date: 2004/12/09 16:25:44 $
 **/
 public class MCT implements java.io.Serializable {
 
@@ -32,7 +32,30 @@ public class MCT implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
+    private int _mctType;
+
+    /**
+     * keeps track of state for field: _mctType
+    **/
+    private boolean _has_mctType;
+
+    private int _routeID;
+
+    /**
+     * keeps track of state for field: _routeID
+    **/
+    private boolean _has_routeID;
+
     private java.lang.String _deviceName;
+
+    private int _physicalAddress;
+
+    /**
+     * keeps track of state for field: _physicalAddress
+    **/
+    private boolean _has_physicalAddress;
+
+    private java.lang.String _meterNumber;
 
 
       //----------------/
@@ -49,6 +72,27 @@ public class MCT implements java.io.Serializable {
     //-----------/
 
     /**
+    **/
+    public void deleteMctType()
+    {
+        this._has_mctType= false;
+    } //-- void deleteMctType() 
+
+    /**
+    **/
+    public void deletePhysicalAddress()
+    {
+        this._has_physicalAddress= false;
+    } //-- void deletePhysicalAddress() 
+
+    /**
+    **/
+    public void deleteRouteID()
+    {
+        this._has_routeID= false;
+    } //-- void deleteRouteID() 
+
+    /**
      * Returns the value of field 'deviceName'.
      * 
      * @return the value of field 'deviceName'.
@@ -57,6 +101,67 @@ public class MCT implements java.io.Serializable {
     {
         return this._deviceName;
     } //-- java.lang.String getDeviceName() 
+
+    /**
+     * Returns the value of field 'mctType'.
+     * 
+     * @return the value of field 'mctType'.
+    **/
+    public int getMctType()
+    {
+        return this._mctType;
+    } //-- int getMctType() 
+
+    /**
+     * Returns the value of field 'meterNumber'.
+     * 
+     * @return the value of field 'meterNumber'.
+    **/
+    public java.lang.String getMeterNumber()
+    {
+        return this._meterNumber;
+    } //-- java.lang.String getMeterNumber() 
+
+    /**
+     * Returns the value of field 'physicalAddress'.
+     * 
+     * @return the value of field 'physicalAddress'.
+    **/
+    public int getPhysicalAddress()
+    {
+        return this._physicalAddress;
+    } //-- int getPhysicalAddress() 
+
+    /**
+     * Returns the value of field 'routeID'.
+     * 
+     * @return the value of field 'routeID'.
+    **/
+    public int getRouteID()
+    {
+        return this._routeID;
+    } //-- int getRouteID() 
+
+    /**
+    **/
+    public boolean hasMctType()
+    {
+        return this._has_mctType;
+    } //-- boolean hasMctType() 
+
+    /**
+    **/
+    public boolean hasPhysicalAddress()
+    {
+        return this._has_physicalAddress;
+    } //-- boolean hasPhysicalAddress() 
+
+    /**
+    **/
+    public boolean hasRouteID()
+    {
+        return this._has_routeID;
+    } //-- boolean hasRouteID() 
 
     /**
     **/
@@ -104,6 +209,49 @@ public class MCT implements java.io.Serializable {
     {
         this._deviceName = deviceName;
     } //-- void setDeviceName(java.lang.String) 
+
+    /**
+     * Sets the value of field 'mctType'.
+     * 
+     * @param mctType the value of field 'mctType'.
+    **/
+    public void setMctType(int mctType)
+    {
+        this._mctType = mctType;
+        this._has_mctType = true;
+    } //-- void setMctType(int) 
+
+    /**
+     * Sets the value of field 'meterNumber'.
+     * 
+     * @param meterNumber the value of field 'meterNumber'.
+    **/
+    public void setMeterNumber(java.lang.String meterNumber)
+    {
+        this._meterNumber = meterNumber;
+    } //-- void setMeterNumber(java.lang.String) 
+
+    /**
+     * Sets the value of field 'physicalAddress'.
+     * 
+     * @param physicalAddress the value of field 'physicalAddress'.
+    **/
+    public void setPhysicalAddress(int physicalAddress)
+    {
+        this._physicalAddress = physicalAddress;
+        this._has_physicalAddress = true;
+    } //-- void setPhysicalAddress(int) 
+
+    /**
+     * Sets the value of field 'routeID'.
+     * 
+     * @param routeID the value of field 'routeID'.
+    **/
+    public void setRouteID(int routeID)
+    {
+        this._routeID = routeID;
+        this._has_routeID = true;
+    } //-- void setRouteID(int) 
 
     /**
      * 

@@ -4,33 +4,43 @@
 	String action = request.getParameter("action");
 	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
 	
-	String invNo = request.getParameter("InvNo");
-	if (invNo == null) invNo = "_NEW";
+	Integer invNo = null;
+	if (request.getParameter("InvNo") != null)
+		invNo = Integer.valueOf( request.getParameter("InvNo") );
 	session.setAttribute(InventoryManagerUtil.STARS_INVENTORY_NO, invNo);
 	
 	int deviceType = 0;
 	String serialNo = "";
+	String deviceName = "";
 	
 	if (action != null) {
 		if (action.equalsIgnoreCase("New")) {
-			// Came from the nav link, next page is CreateHardware.jsp
-			session.removeAttribute(InventoryManagerUtil.STARS_INVENTORY_TEMP + "_NEW");
-			
+			// Came from the nav link
+			session.removeAttribute(InventoryManagerUtil.STARS_INVENTORY_TEMP);
 			referer = request.getContextPath() + "/operator/Consumer/CreateHardware.jsp";
 			if (request.getParameter("Wizard") != null) referer += "?Wizard=true";
 		}
-		else if (action.equalsIgnoreCase("Change")) {
-			// Came from CreateHardware.jsp or Inventory.jsp
-			StarsInventory inventory = (StarsInventory) session.getAttribute(InventoryManagerUtil.STARS_INVENTORY_TEMP + invNo);
+		else if (action != null && action.equalsIgnoreCase("Change")) {
+			StarsInventory inventory = null;
+			if (invNo != null) {
+				// Came from Inventory.jsp when change button is clicked
+				inventory = inventories.getStarsInventory(invNo.intValue());
+				session.setAttribute(InventoryManagerUtil.STARS_INVENTORY_TEMP, inventory);
+			}
+			else {
+				// Came from CreateHardware.jsp when change button is clicked
+				inventory = (StarsInventory) session.getAttribute(InventoryManagerUtil.STARS_INVENTORY_TEMP);
+				session.removeAttribute(InventoryManagerUtil.STARS_INVENTORY_TEMP);
+			}
 			
 			if (inventory != null) {
 				deviceType = inventory.getDeviceType().getEntryID();
 				if (inventory.getLMHardware() != null)
 					serialNo = inventory.getLMHardware().getManufacturerSerialNumber();
 				else if (inventory.getDeviceID() > 0)
-					serialNo = PAOFuncs.getYukonPAOName(inventory.getDeviceID());
+					deviceName = PAOFuncs.getYukonPAOName(inventory.getDeviceID());
 				else if (inventory.getMCT() != null)
-					serialNo = inventory.getMCT().getDeviceName();
+					deviceName = inventory.getMCT().getDeviceName();
 			}
 			
 			referer = request.getHeader("referer");
@@ -40,16 +50,23 @@
 		session.setAttribute(ServletUtils.ATT_REDIRECT, referer);
 	}
 	else {
-		// From SelectInv.jsp when cancel button is clicked
-		StarsInventory inventory = (StarsInventory) session.getAttribute(InventoryManagerUtil.STARS_INVENTORY_TEMP + invNo);
+		// Came from SelectInv.jsp or CreateHardware.jsp when cancel button is clicked
+		StarsInventory inventory = (StarsInventory) session.getAttribute(InventoryManagerUtil.STARS_INVENTORY_TEMP);
+		if (inventory == null && invNo != null)
+			inventory = inventories.getStarsInventory(invNo.intValue());
 		
-		if (inventory != null && inventory.getLMHardware() != null) {
+		if (inventory != null) {
 			deviceType = inventory.getDeviceType().getEntryID();
-			serialNo = inventory.getLMHardware().getManufacturerSerialNumber();
+			if (inventory.getLMHardware() != null)
+				serialNo = inventory.getLMHardware().getManufacturerSerialNumber();
+			else if (inventory.getDeviceID() > 0)
+				deviceName = PAOFuncs.getYukonPAOName(inventory.getDeviceID());
+			else if (inventory.getMCT() != null)
+				deviceName = inventory.getMCT().getDeviceName();
 		}
 	}
 	
-	boolean inWizard = referer.indexOf("Wizard=true") >= 0;
+	boolean inWizard = referer.indexOf("Wizard") >= 0;
 	if (!inWizard && accountInfo == null) {
 		response.sendRedirect("../Operations.jsp");
 		return;
@@ -66,10 +83,19 @@
 
 <script language="JavaScript">
 function validate(form) {
-	if (form.SerialNo.value == "") {
-		alert("Serial # cannot be empty!");
-		return false;
+	if (document.getElementById("HardwareDiv").style.display == "") {
+		if (form.SerialNo.value == "") {
+			alert("Serial # cannot be empty!");
+			return false;
+		}
 	}
+	else {
+		if (form.DeviceName.value == "") {
+			alert("Device name cannot be empty!");
+			return false;
+		}
+	}
+	
 	return true;
 }
 
@@ -83,13 +109,30 @@ function selectMCT(form) {
 	form.submit();
 }
 
+function changeDeviceType(type) {
+<% if (hasMCT) { %>
+	if (type == <%= liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT).getEntryID() %>) {
+		document.getElementById("HardwareDiv").style.display = "none";
+		document.getElementById("DeviceDiv").style.display = "";
+	}
+	else {
+		document.getElementById("DeviceDiv").style.display = "none";
+		document.getElementById("HardwareDiv").style.display = "";
+	}
+<% } %>
+}
+
+function init() {
+	changeDeviceType(document.MForm.DeviceType.value);
+}
+
 function confirmCancel() {
 	if (confirm("Are you sure you want to quit from this wizard and discard all changes you've been made?"))
 		location.href = "../Operations.jsp";
 }
 </script>
 </head>
-<body class="Background" leftmargin="0" topmargin="0">
+<body class="Background" leftmargin="0" topmargin="0" onload="init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td> 
@@ -180,9 +223,9 @@ function confirmCancel() {
                           <td> 
                             <table width="100%" border="0" cellspacing="0" cellpadding="3" class="MainText" bgcolor="#CCCCCC">
                               <tr> 
-                                <td align="right" width="30%">Device type: </td>
+                                <td align="right" width="30%">Device Type: </td>
                                 <td width="70%"> 
-                                  <select name="DeviceType">
+                                  <select name="DeviceType" onchange="changeDeviceType(this.value)">
                                     <%
 	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
@@ -196,6 +239,9 @@ function confirmCancel() {
                                   </select>
                                 </td>
                               </tr>
+                            </table>
+							<div id="HardwareDiv">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="3" class="MainText" bgcolor="#CCCCCC">
                               <tr> 
                                 <td align="right" width="30%">Serial #: </td>
                                 <td width="70%"> 
@@ -203,6 +249,17 @@ function confirmCancel() {
                                 </td>
                               </tr>
                             </table>
+							</div>
+							<div id="DeviceDiv" style="display:none">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="3" class="MainText" bgcolor="#CCCCCC">
+                              <tr> 
+                                <td align="right" width="30%">Device Name: </td>
+                                <td width="70%"> 
+                                  <input type="text" name="DeviceName" maxlength="30" size="24" value="<%= deviceName %>">
+                                </td>
+                              </tr>
+                            </table>
+							</div>
                             <div align="center"> 
                               <input type="submit" name="CheckInv" value="Check Inventory" onClick="return validate(this.form)">
                             </div>
@@ -213,10 +270,10 @@ function confirmCancel() {
                   </tr>
                 </table>
                 </form>
-			  <% if (!inWizard || session.getAttribute(InventoryManagerUtil.STARS_INVENTORY_TEMP) != null) { %>
-                <input type="button" name="Cancel" value="Cancel" onclick="location.href = '<%= referer %>'">
-			  <% } else { %>
+			  <% if (inWizard) { %>
                 <input type="button" name="Back" value="Back" onclick="location.href = 'New.jsp?Wizard=true'">
+			  <% } else if (invNo != null) { %>
+                <input type="button" name="Cancel" value="Cancel" onclick="location.href = '<%= referer %>'">
 			  <% } %>
               <p>&nbsp;</p>
               <p>&nbsp;</p>

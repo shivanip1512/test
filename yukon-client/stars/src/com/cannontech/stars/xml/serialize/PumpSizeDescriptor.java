@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: PumpSizeDescriptor.java,v 1.27 2004/11/24 23:21:47 zyao Exp $
+ * $Id: PumpSizeDescriptor.java,v 1.28 2004/12/09 16:25:30 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.27 $ $Date: 2004/11/24 23:21:47 $
+ * @version $Revision: 1.28 $ $Date: 2004/12/09 16:25:30 $
 **/
 public class PumpSizeDescriptor extends StarsCustListEntryDescriptor {
 

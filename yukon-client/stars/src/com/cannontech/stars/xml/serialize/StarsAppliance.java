@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsAppliance.java,v 1.89 2004/11/24 23:21:47 zyao Exp $
+ * $Id: StarsAppliance.java,v 1.90 2004/12/09 16:25:29 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.89 $ $Date: 2004/11/24 23:21:47 $
+ * @version $Revision: 1.90 $ $Date: 2004/12/09 16:25:29 $
 **/
 public class StarsAppliance extends StarsApp 
 implements java.io.Serializable

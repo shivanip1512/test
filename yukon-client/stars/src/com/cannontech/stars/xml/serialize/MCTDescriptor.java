@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: MCTDescriptor.java,v 1.28 2004/11/24 23:21:59 zyao Exp $
+ * $Id: MCTDescriptor.java,v 1.29 2004/12/09 16:25:42 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.28 $ $Date: 2004/11/24 23:21:59 $
+ * @version $Revision: 1.29 $ $Date: 2004/12/09 16:25:42 $
 **/
 public class MCTDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -57,6 +57,90 @@ public class MCTDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptor
         //-- set grouping compositor
         setCompositorAsSequence();
         //-- initialize attribute descriptors
+        
+        //-- _mctType
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_mctType", "mctType", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                MCT target = (MCT) object;
+                if(!target.hasMctType())
+                    return null;
+                return new Integer(target.getMctType());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    MCT target = (MCT) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteMctType();
+                        return;
+                    }
+                    target.setMctType( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _mctType
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _routeID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_routeID", "routeID", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                MCT target = (MCT) object;
+                if(!target.hasRouteID())
+                    return null;
+                return new Integer(target.getRouteID());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    MCT target = (MCT) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteRouteID();
+                        return;
+                    }
+                    target.setRouteID( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _routeID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
         
         //-- initialize element descriptors
         
@@ -93,6 +177,87 @@ public class MCTDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptor
         //-- validation code for: _deviceName
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _physicalAddress
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_physicalAddress", "PhysicalAddress", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                MCT target = (MCT) object;
+                if(!target.hasPhysicalAddress())
+                    return null;
+                return new Integer(target.getPhysicalAddress());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    MCT target = (MCT) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deletePhysicalAddress();
+                        return;
+                    }
+                    target.setPhysicalAddress( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _physicalAddress
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _meterNumber
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_meterNumber", "MeterNumber", NodeType.Element);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                MCT target = (MCT) object;
+                return target.getMeterNumber();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    MCT target = (MCT) object;
+                    target.setMeterNumber( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _meterNumber
+        fieldValidator = new FieldValidator();
         { //-- local scope
             StringValidator sv = new StringValidator();
             sv.setWhiteSpace("preserve");

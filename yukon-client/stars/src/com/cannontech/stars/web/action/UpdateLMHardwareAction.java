@@ -111,45 +111,14 @@ public class UpdateLMHardwareAction implements ActionBase {
 			int origInvID = -1;
             
 			if (deleteHw != null) {
-				// Build up request message for adding new hardware and preserving old hardware configuration
-				StarsCreateLMHardware createHw = (StarsCreateLMHardware)
-						StarsFactory.newStarsInv( updateHw, StarsCreateLMHardware.class );
-            	
-				if (createHw.getLMHardware() != null) {
-					for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
-						LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
-						if (liteApp.getInventoryID() == deleteHw.getInventoryID()) {
-							StarsLMHardwareConfig starsConfig = new StarsLMHardwareConfig();
-							starsConfig.setApplianceID( liteApp.getApplianceID() );
-							starsConfig.setGroupID( liteApp.getAddressingGroupID() );
-							starsConfig.setLoadNumber( liteApp.getLoadNumber() );
-							createHw.getLMHardware().addStarsLMHardwareConfig( starsConfig );
-						}
-					}
-				}
-            	
 				try {
-					DeleteLMHardwareAction.removeInventory( deleteHw, liteAcctInfo, energyCompany );
+					liteInv = updateInventory( updateHw, deleteHw, liteAcctInfo, user );
+					origInvID = deleteHw.getInventoryID();
 				}
 				catch (WebClientException e) {
 					respOper.setStarsFailure( StarsFactory.newStarsFailure(
 							StarsConstants.FAILURE_CODE_OPERATION_FAILED, e.getMessage()) );
 					return SOAPUtil.buildSOAPMessage( respOper );
-				}
-            	
-				liteInv = CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany );
-				origInvID = deleteHw.getInventoryID();
-				
-				// Send out the configuration command if necessary
-				String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
-				boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
-				
-				if (!useHardwareAddressing &&
-					createHw.getLMHardware() != null &&
-					createHw.getLMHardware().getStarsLMHardwareConfigCount() > 0 &&
-					AuthFuncs.checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION))
-				{
-					YukonSwitchCommandAction.sendConfigCommand( energyCompany, (LiteStarsLMHardware)liteInv, false, null );
 				}
 			}
 			else {
@@ -336,6 +305,47 @@ public class UpdateLMHardwareAction implements ActionBase {
 		}
 	}
 	
+	public static LiteInventoryBase updateInventory(StarsUpdateLMHardware updateHw, StarsDeleteLMHardware deleteHw,
+		LiteStarsCustAccountInformation liteAcctInfo, StarsYukonUser user) throws WebClientException
+	{
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+		
+		// Build up request message for adding new hardware and preserving old hardware configuration
+		StarsCreateLMHardware createHw = (StarsCreateLMHardware)
+				StarsFactory.newStarsInv( updateHw, StarsCreateLMHardware.class );
+        
+		if (createHw.getLMHardware() != null) {
+			for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
+				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
+				if (liteApp.getInventoryID() == deleteHw.getInventoryID()) {
+					StarsLMHardwareConfig starsConfig = new StarsLMHardwareConfig();
+					starsConfig.setApplianceID( liteApp.getApplianceID() );
+					starsConfig.setGroupID( liteApp.getAddressingGroupID() );
+					starsConfig.setLoadNumber( liteApp.getLoadNumber() );
+					createHw.getLMHardware().addStarsLMHardwareConfig( starsConfig );
+				}
+			}
+		}
+        	
+		DeleteLMHardwareAction.removeInventory( deleteHw, liteAcctInfo, energyCompany );
+        
+		LiteInventoryBase liteInv = CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany );
+		
+		// Send out the configuration command if necessary
+		String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
+		boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
+		
+		if (!useHardwareAddressing &&
+			createHw.getLMHardware() != null &&
+			createHw.getLMHardware().getStarsLMHardwareConfigCount() > 0 &&
+			AuthFuncs.checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION))
+		{
+			YukonSwitchCommandAction.sendConfigCommand( energyCompany, (LiteStarsLMHardware)liteInv, false, null );
+		}
+		
+		return liteInv;
+	}
+	
 	public static void parseResponse(int origInvID, StarsInventory starsInv, StarsCustAccountInformation starsAcctInfo, HttpSession session) {
 		StarsInventories starsInvs = starsAcctInfo.getStarsInventories();
 		
@@ -344,7 +354,6 @@ public class UpdateLMHardwareAction implements ActionBase {
 				starsInvs.removeStarsInventory(i);
 				break;
 			}
-			
 		}
 		
 		StarsAppliances starsApps = starsAcctInfo.getStarsAppliances();

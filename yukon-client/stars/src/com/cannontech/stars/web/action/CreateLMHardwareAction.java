@@ -293,15 +293,8 @@ public class CreateLMHardwareAction implements ActionBase {
 		
 		try {
 			com.cannontech.database.db.stars.hardware.InventoryBase invDB = new com.cannontech.database.db.stars.hardware.InventoryBase();
-			StarsFactory.setInventoryBase( invDB, createHw );
-			
-			int categoryID = ECUtils.getInventoryCategoryID(createHw.getDeviceType().getEntryID(), energyCompany);
-			invDB.setCategoryID( new Integer(categoryID) );
-			
-			if (liteAcctInfo != null)
-				invDB.setAccountID( new Integer(liteAcctInfo.getAccountID()) );
-			
 			com.cannontech.database.data.stars.hardware.LMHardwareBase hw = null;
+			
 			if (createHw.getLMHardware() != null) {
 				hw = new com.cannontech.database.data.stars.hardware.LMHardwareBase();
 				hw.setInventoryBase( invDB );
@@ -311,6 +304,23 @@ public class CreateLMHardwareAction implements ActionBase {
 				hwDB.setLMHardwareTypeID( new Integer(createHw.getDeviceType().getEntryID()) );
 				hwDB.setRouteID( new Integer(createHw.getLMHardware().getRouteID()) );
 			}
+			else if (createHw.getDeviceID() == 0 && createHw.getMCT() != null) {
+				int deviceID = InventoryManagerUtil.createMCT(
+						createHw.getMCT().getMctType(),
+						createHw.getMCT().getDeviceName(),
+						new Integer(createHw.getMCT().getPhysicalAddress()),
+						createHw.getMCT().getMeterNumber(),
+						new Integer(createHw.getMCT().getRouteID()) );
+				createHw.setDeviceID( deviceID );
+			}
+			
+			StarsFactory.setInventoryBase( invDB, createHw );
+			
+			int categoryID = ECUtils.getInventoryCategoryID(createHw.getDeviceType().getEntryID(), energyCompany);
+			invDB.setCategoryID( new Integer(categoryID) );
+			
+			if (liteAcctInfo != null)
+				invDB.setAccountID( new Integer(liteAcctInfo.getAccountID()) );
 			
 			LiteInventoryBase liteInv = null;
 			int invID = createHw.getInventoryID();
@@ -520,7 +530,10 @@ public class CreateLMHardwareAction implements ActionBase {
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
-			throw new WebClientException( "Failed to create the hardware", e );
+			if (e instanceof WebClientException)
+				throw (WebClientException)e;
+			else
+				throw new WebClientException( "Failed to create the hardware", e );
 		}
 	}
 	

@@ -148,7 +148,11 @@
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="DeviceName" type="xs:string"/>
+						<xs:element name="PhysicalAddress" type="xs:int" minOccurs="0"/>
+						<xs:element name="MeterNumber" type="xs:string" minOccurs="0"/>
 					</xs:sequence>
+					<xs:attribute name="mctType" type="xs:int"/>
+					<xs:attribute name="routeID" type="xs:int"/>
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>

@@ -12,12 +12,24 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.device.CarrierBase;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.IDeviceMeterGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.point.PointUtil;
+import com.cannontech.database.db.CTIDbChange;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.pao.YukonPAObject;
+import com.cannontech.device.range.DeviceAddressRange;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
@@ -26,6 +38,7 @@ import com.cannontech.stars.xml.serialize.DeviceType;
 import com.cannontech.stars.xml.serialize.ExpressCom;
 import com.cannontech.stars.xml.serialize.InstallationCompany;
 import com.cannontech.stars.xml.serialize.LMHardware;
+import com.cannontech.stars.xml.serialize.MCT;
 import com.cannontech.stars.xml.serialize.SA205;
 import com.cannontech.stars.xml.serialize.SA305;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -53,6 +66,25 @@ public class InventoryManagerUtil {
 	public static final String INVENTORY_SET = "INVENTORY_SET";
 	public static final String INVENTORY_SET_DESC = "INVENTORY_SET_DESCRIPTION";
 	public static final String SN_RANGE_TO_CONFIG = "SN_RANGE_TO_CONFIG";
+	
+	public static final String[] MCT_TYPES = {
+		PAOGroups.STRING_MCT_410IL[0],
+		PAOGroups.STRING_MCT_370[0],
+		PAOGroups.STRING_MCT_360[0],
+		PAOGroups.STRING_MCT_318L[0],
+		PAOGroups.STRING_MCT_318[0],
+		PAOGroups.STRING_MCT_310CT[0],
+		PAOGroups.STRING_MCT_310ID[0],
+		PAOGroups.STRING_MCT_310IDL[0],
+		PAOGroups.STRING_MCT_310IL[0],
+		PAOGroups.STRING_MCT_310IM[0],
+		PAOGroups.STRING_MCT_310[0],
+		PAOGroups.STRING_MCT_250[0],
+		PAOGroups.STRING_MCT_248[0],
+		PAOGroups.STRING_MCT_240[0],
+		PAOGroups.STRING_MCT_213[0],
+		PAOGroups.STRING_MCT_210[0],
+	};
 	
 	/**
 	 * Store hardware information entered by user into a StarsLMHw object 
@@ -124,6 +156,28 @@ public class InventoryManagerUtil {
 				if (req.getParameter("Route") != null)
 					hw.setRouteID( Integer.parseInt(req.getParameter("Route")) );
 				starsInv.setLMHardware( hw );
+			}
+			else if (ECUtils.isMCT(categoryID)) {
+				MCT mct = new MCT();
+				mct.setDeviceName( req.getParameter("DeviceName") );
+				if (req.getParameter("CreateMCT") != null) {
+					if (req.getParameter("MCTType") != null)
+						mct.setMctType( Integer.parseInt(req.getParameter("MCTType")) );
+					
+					try {
+						if (req.getParameter("PhysicalAddr") != null)
+							mct.setPhysicalAddress( Integer.parseInt(req.getParameter("PhysicalAddr")) );
+					}
+					catch (NumberFormatException e) {
+						throw new WebClientException("Invalid number format in the \"Physical Address\" field.");
+					}
+					
+					if (req.getParameter("MeterNumber") != null)
+						mct.setMeterNumber( req.getParameter("MeterNumber") );
+					if (req.getParameter("MCTRoute") != null)
+						mct.setRouteID( Integer.parseInt(req.getParameter("MCTRoute")) );
+				}
+				starsInv.setMCT( mct );
 			}
 		}
 	}
@@ -321,5 +375,36 @@ public class InventoryManagerUtil {
 			return snFrom.toString() + " and above";
 		else
 			return snFrom.toString() + " to " + snTo.toString();
+	}
+	
+	public static int createMCT(int mctType, String deviceName, Integer physicalAddr, String meterNumber, Integer routeID)
+		throws com.cannontech.database.TransactionException, WebClientException
+	{
+		if (!DeviceAddressRange.isValidRange( mctType, physicalAddr.intValue() ))
+			throw new WebClientException( "Invalid physical address: " + DeviceAddressRange.getRangeMessage(mctType) );
+		
+		DeviceBase device = com.cannontech.database.data.device.DeviceFactory.createDevice( mctType );
+		
+		device.setDeviceID( YukonPAObject.getNextYukonPAObjectID() );
+		device.setPAOName( deviceName );
+		
+		((CarrierBase)device).getDeviceCarrierSettings().setAddress( physicalAddr );
+		
+		((IDeviceMeterGroup)device).getDeviceMeterGroup().setMeterNumber( meterNumber );
+		
+		((CarrierBase)device).getDeviceRoutes().setRouteID( routeID );
+		
+		// Automatically generate points for some MCTs
+		DBPersistent val = PointUtil.generatePointsForMCT( device );
+		if (val == null) val = (DBPersistent) device;
+		
+		val = (DBPersistent) Transaction.createTransaction( Transaction.INSERT, val ).execute();
+		
+		DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages(
+				(CTIDbChange)val, DBChangeMsg.CHANGE_TYPE_ADD );
+		for (int i = 0; i < dbChange.length; i++)
+			ServerUtils.handleDBChangeMsg( dbChange[i] );
+		
+		return device.getDevice().getDeviceID().intValue();
 	}
 }

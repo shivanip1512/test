@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsSendOptOutNotification.java,v 1.3 2004/11/24 23:21:57 zyao Exp $
+ * $Id: StarsSendOptOutNotification.java,v 1.4 2004/12/09 16:25:40 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.3 $ $Date: 2004/11/24 23:21:57 $
+ * @version $Revision: 1.4 $ $Date: 2004/12/09 16:25:40 $
 **/
 public class StarsSendOptOutNotification implements java.io.Serializable {
 
