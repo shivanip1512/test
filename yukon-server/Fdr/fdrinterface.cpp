@@ -17,10 +17,14 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.9 $
-*    DATE         :  $Date: 2002/10/11 14:12:49 $
+*    REVISION     :  $Revision: 1.10 $
+*    DATE         :  $Date: 2002/10/11 14:24:50 $
 *    History:
       $Log: fdrinterface.cpp,v $
+      Revision 1.10  2002/10/11 14:24:50  dsutton
+      Whoops, new calculation should only be done when the rate is 3600
+      or higher
+
       Revision 1.9  2002/10/11 14:12:49  dsutton
       Updated the db reload methods to handle reload rates
       that are over 3600 seconds.  Anything bigger than 3600 was
@@ -1134,12 +1138,17 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
     RWRunnableSelf  pSelf = rwRunnable( );
     INT retVal=0;
     RWTime timeNow;
-    RWTime hourstart = RWTime(timeNow.seconds() - (timeNow.seconds() % 3600)); // align to the hour.
-    RWTime refreshTime = RWTime(hourstart.seconds() - ((hourstart.hour()* 3600) % getReloadRate()) + getReloadRate());
+    RWTime hourstart;
+    RWTime refreshTime; 
 
+    if (getReloadRate() > 3600)
     {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << RWTime() << " Now " << timeNow.seconds() << " reload " << getReloadRate() << " refresh " << refreshTime << " sec " << refreshTime.seconds() << endl;
+        hourstart = RWTime(timeNow.seconds() - (timeNow.seconds() % 3600)); // align to the hour.     
+        refreshTime=RWTime(hourstart.seconds() - ((hourstart.hour()* 3600) % getReloadRate()) + getReloadRate());
+    }
+    else
+    {
+        refreshTime = RWTime (timeNow.seconds() - (timeNow.seconds() % getReloadRate()) + getReloadRate());
     }
 
     try
@@ -1194,8 +1203,15 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
                     setDbReloadReason(NotReloaded);
 
                     // reset refresh time
-                    hourstart = RWTime(timeNow.seconds() - (timeNow.seconds() % 3600)); // align to the hour.
-                    refreshTime = RWTime(hourstart.seconds() - ((hourstart.hour()* 3600) % getReloadRate()) + getReloadRate());
+                    if (getReloadRate() > 3600)
+                    {
+                        hourstart = RWTime(timeNow.seconds() - (timeNow.seconds() % 3600)); // align to the hour.     
+                        refreshTime=RWTime(hourstart.seconds() - ((hourstart.hour()* 3600) % getReloadRate()) + getReloadRate());
+                    }
+                    else
+                    {
+                        refreshTime = RWTime (timeNow.seconds() - (timeNow.seconds() % getReloadRate()) + getReloadRate());
+                    }
                 }
                 else
                 {
