@@ -5,10 +5,15 @@
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
 <%@ page import="com.cannontech.database.data.lite.stars.StarsLiteFactory" %>
+<%@ page import="com.cannontech.stars.util.ECUtils" %>
+<%@ page import="com.cannontech.stars.util.ObjectInOtherEnergyCompanyException" %>
 <%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
 <%
-	LiteStarsEnergyCompany ec = com.cannontech.stars.web.servlet.SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
-	LiteInventoryBase liteInv = (LiteInventoryBase) session.getAttribute(InventoryManager.INVENTORY_TO_CHECK);
+	LiteStarsEnergyCompany liteEC = com.cannontech.stars.web.servlet.SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
+	
+	Object obj = session.getAttribute(InventoryManager.INVENTORY_TO_CHECK);
+	boolean inOther = (obj instanceof ObjectInOtherEnergyCompanyException);
+	LiteInventoryBase liteInv = (LiteInventoryBase) (inOther? ((ObjectInOtherEnergyCompanyException)obj).getObject() : obj);
 	
 	boolean inWizard = ((String) session.getAttribute(ServletUtils.ATT_REFERRER)).indexOf("Wizard=true") >= 0;
 	if (!inWizard && accountInfo == null) {
@@ -56,10 +61,23 @@
 
               <form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/InventoryManager">
 			    <input type="hidden" name="action" value="ConfirmCheck">
-<%	if (request.getParameter("InOther") != null) { %>
+<%
+	if (inOther) {
+		LiteStarsEnergyCompany member = ((ObjectInOtherEnergyCompanyException)obj).getEnergyCompany();
+		if (ECUtils.getAllDescendants(liteEC).contains(member)) {
+%>
+                <p class="ErrorMsg">The hardware or device is found in the inventory 
+                  of <i><%= member.getName() %></i>.</p>
+<%
+		}
+		else {
+%>
                 <p class="ErrorMsg">The hardware or device is found in another 
-                  energy company. Please contact <%= ec.getParent().getName() %> 
+                  energy company. Please contact <i><%= liteEC.getParent().getName() %></i> 
                   for more information.</p>
+<%
+		}
+%>
                 <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
                   <tr> 
                     <td align="center"> 
@@ -67,7 +85,8 @@
                     </td>
                   </tr>
                 </table>
-<%	}
+<%
+	}
 	else if (liteInv == null) {
 %>
                 <p class="MainText">This serial number is not found in inventory. 
@@ -82,7 +101,8 @@
                     </td>
                   </tr>
                 </table>
-<%	}
+<%
+	}
 	else if (liteInv.getInventoryID() < 0) {
 %>
                 <p class="MainText">The device name is found but it's not in inventory 
@@ -97,7 +117,8 @@
                     </td>
                   </tr>
                 </table>
-<%	}
+<%
+	}
 	else if (liteInv.getAccountID() == com.cannontech.common.util.CtiUtilities.NONE_ID) {
 %>
                 <p class="MainText">The hardware or device is currently in the 
@@ -112,7 +133,8 @@
                     </td>
                   </tr>
                 </table>
-<%	}
+<%
+	}
 	else if (account != null && liteInv.getAccountID() == account.getAccountID()) {
 %>
                 <p class="ErrorMsg">The hardware or device is already assigned 
@@ -124,11 +146,12 @@
                     </td>
                   </tr>
                 </table>
-<%	}
+<%
+	}
 	else {
-		LiteStarsCustAccountInformation liteAcctInfo = ec.getBriefCustAccountInfo(liteInv.getAccountID(), true);
-		LiteContact liteContact = ec.getContact(liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo);
-		LiteAddress liteAddr = ec.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
+		LiteStarsCustAccountInformation liteAcctInfo = liteEC.getBriefCustAccountInfo(liteInv.getAccountID(), true);
+		LiteContact liteContact = liteEC.getContact(liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo);
+		LiteAddress liteAddr = liteEC.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
 		
 		String name = ServerUtils.formatName(liteContact);
 		if (name.length() == 0) name = "(none)";
