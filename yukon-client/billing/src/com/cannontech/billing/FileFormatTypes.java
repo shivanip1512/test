@@ -20,57 +20,54 @@ public final class FileFormatTypes {
 	public static final int OPU = 5;
 	public static final int DAFFRON = 6;
 	public static final int NCDC = 7;
-	public static final int CADPXL1 = 8;
-	public static final int CTIStandard2 = 9;
-	public static final int MVRS = 10;
+//	public static final int CADPXL1 = 8;
+//	public static final int CTIStandard2 = 9;
+//	public static final int MVRS = 10;
 	public static final int MV_90 = 11;
 	public static final int SEDC_5_4 = 12;
+	public static final int NISC = 13;
 	
-	//Used to represent what version of SEDC is being used.
-	//'Old' SEDC5.4 version doesn't accept the extra commas and semicolon.
-	//Default is 'new' version.
-	public static int NEW_VERSION = 0;
-	public static int OLD_VERSION = 1;
-/*
 
-	
-	public static final String FORMAT_MVRS = "MVRS";
-	public static final String FORMAT_SEDC = "SEDC";
-	public static final String FORMAT_CAPD = "CAPD";
-	public static final String FORMAT_CAPDXL2 = "CAPDXL2";
-	public static final String FORMAT_NCDC = "NCDC";
-	public static final String FORMAT_CTISTANDARD2 = "CTIStandard2";
-	public static final String FORMAT_CTICSV = "CTI-CSV";
-	public static final String FORMAT_OPU = "OPU";
-	public static final String FORMAT_WLT_40 = "WLT-40";
-*/
+	public static final String SEDC_STRING = "SEDC";
+	public static final String CADP_STRING = "CADP";
+	public static final String CADPXL2_STRING = "CADPXL2";
+	public static final String WLT_40_STRING = "WLT-40";
+	public static final String CTICSV_STRING = "CTI-CSV";
+	public static final String OPU_STRING = "OPU";
+	public static final String DAFFRON_STRING = "DAFFRON";
+	public static final String NCDC_STRING = "NCDC";
+	public static final String SEDC_5_4_STRING = "SEDC 5.4";
+	public static final String NISC_STRING = "NISC-Turtle";
+
 	//Set DEFAULT array values in case the table doesn't exist.
 	private static int[] validFormatIds =
 	{
-		SEDC, CADP, CADPXL2, WLT_40, CTICSV, OPU, DAFFRON, NCDC, MV_90
+		SEDC, 
+		CADP,
+		CADPXL2, 
+		WLT_40, 
+		CTICSV, 
+		OPU, 
+		DAFFRON, 
+		NCDC, 
+		SEDC_5_4,
+		NISC
 	};
 	
 	private static String[] validFormatTypes =
 	{
-		"SEDC", "CADP", "CADPXL2", "WLT-40", "CTI-CSV", "OPU", "DAFFRON", "NCDC", "MV-90 DATA Import"
+		SEDC_STRING, 
+		CADP_STRING, 
+		CADPXL2_STRING, 
+		WLT_40_STRING, 
+		CTICSV_STRING, 
+		OPU_STRING, 
+		DAFFRON_STRING, 
+		NCDC_STRING, 
+		SEDC_5_4_STRING,
+		NISC_STRING
 	};
-/*
-	//***  IF CHANGEING THESE, MUST DOUBLE CHECK THE QUERY THEY USE ***
-	//ONLY THE FIRST 4 WERE PAO'D QUERIES, THE OTHERS HAVE BEEN LEFT BEHIND
-	public static final String[] SUPPORTED_FORMATS =
-	{
-		FORMAT_SEDC,
-		FORMAT_CAPD,
-		FORMAT_CAPDXL2,
-		FORMAT_WLT_40,
-		FORMAT_CTICSV,
-		FORMAT_OPU
-		//FORMAT_MVRS,
-		//FORMAT_NCDC,
-		//FORMAT_CTISTANDARD2,
-	};
-	*/
-	
+
 
 /**
  * This method was created in VisualAge.
