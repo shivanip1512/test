@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.116 $
-* DATE         :  $Date: 2004/07/30 21:36:20 $
+* REVISION     :  $Revision: 1.117 $
+* DATE         :  $Date: 2004/08/11 19:53:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3300,7 +3300,11 @@ bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &devi
         if(QueueCount)      // There are queue entries.
         {
             // We cannot be executed, we should look for another CONTROL queue entry.. We are still protected by mux...
-            INT qEnt = SearchQueue( Port->getPortQueueHandle(), NULL, findExclusionFreeOutMessage );
+            INT qEnt = 0;
+            {
+                CtiLockGuard< CtiMutex >  find_dev_guard(DeviceManager.getMux());
+                qEnt = SearchQueue( Port->getPortQueueHandle(), NULL, findExclusionFreeOutMessage );
+            }
 
             if(qEnt > 0)
             {
@@ -3376,7 +3380,6 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
         if(OutMessage->MessageFlags & MSGFLG_APPLY_EXCLUSION_LOGIC  ||
            !gConfigParms.getValueAsString("PORTER_EXCLUSION_TEST").compareTo("true", RWCString::ignoreCase) )     // Indicates an excludable message!
         {
-            CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());
             CtiDeviceSPtr Device = DeviceManager.getEqual( OutMessage->DeviceID );
 
             if(Device)
@@ -3680,7 +3683,10 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries)
      *  Search for the first queue entry which is ok to send.  In the general case, this should be the zeroeth entry and
      *  this call is relatively inexpensive.
      */
-    Port->setQueueSlot( Port->searchQueue( NULL, findExclusionFreeOutMessage ) );
+    {
+        CtiLockGuard< CtiMutex >  find_dev_guard(DeviceManager.getMux());
+        Port->setQueueSlot( Port->searchQueue( NULL, findExclusionFreeOutMessage ) );
+    }
 
     /*
      *  This is a Read from the CTI queueing structures which will originate from
