@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2005/03/01 22:32:34 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2005/03/24 20:48:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2900,6 +2900,12 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
     {
         function = CtiProtocolEmetcon::Control_Disc;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+        //  do not allow the disconnect command to be sent to a meter that has no disconnect address
+        if( getType() == TYPEMCT410 && !_disconnectAddress )
+        {
+            found = false;
+        }
     }
 
     if(!found)
