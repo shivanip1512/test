@@ -131,7 +131,7 @@ public class MeterReadReport extends YukonReportBase
 			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), getModel().getColumnProperties(i).getPositionY() + 18));
 		    header.addElement(factory.createElement());
 		}
-	    header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new Line2D.Float(0, 38, 0, 38)));
+	    header.addElement(StaticShapeElementFactory.createLineShapeElement("line2 ", null, new BasicStroke(0.5f), new Line2D.Float(0, 38, 0, 38)));
 	    collGrpGroup.setHeader(header);
 
 
