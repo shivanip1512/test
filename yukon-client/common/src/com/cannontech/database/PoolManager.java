@@ -275,8 +275,8 @@ public String[] getAllPoolsStrings()
    }      
    
    public static final URL getPropertyURL()
-   {
-   	return Object.class.getResource( DB_PROPERTIES_FILE );
+   {   	
+   	return PoolManager.class.getResource( DB_PROPERTIES_FILE );
    }
 
 
