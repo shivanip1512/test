@@ -12,6 +12,7 @@
                <include name="**/*.jar"/>
                <include name="**/*.zip"/>
                <include name="**/*.exe"/>
+               <include name="**/*.dll"/>
            </fileset>
        </copy>
    </target>
@@ -22,6 +23,7 @@
                <include name="**/*.jar"/>
                <include name="**/*.zip"/>
                <include name="**/*.exe"/>
+               <include name="**/*.dll"/>
            </fileset>
        </copy>
    </target>
