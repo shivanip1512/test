@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/message.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:19 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/22 17:46:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -237,4 +237,8 @@ CtiMessage& CtiMessage::setSource(const RWCString& src)
     return *this;
 }
 
+bool CtiMessage::isValid()
+{
+    return true;
+}
 
