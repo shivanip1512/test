@@ -79,7 +79,7 @@ function confirmDelete() {
             </div>
           </td>
           <td  class = "MainText" width="25%" >&nbsp;</td>
-          <form name = "custSearchForm" method="POST" action="/servlet/SOAPClient">
+          <form name = "custSearchForm" method="POST" action="<%=request.getContextPath()%>/servlet/SOAPClient">
             <input type="hidden" name="action" value="SearchCustAccount">
             <td  class = "MainText" width="43%" align = "right" nowrap> 
               <select name="SearchBy">
