@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/10/19 20:26:46 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/10/29 20:00:00 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.13  2004/10/29 20:00:00  mfisher
+* copied comments for Slick's parameter completion info
+*
 * Revision 1.12  2004/10/19 20:26:46  cplender
 * Extended the control shed functionality for all combos of stime/ctime.
 *
@@ -1748,16 +1751,65 @@ INT CtiProtocolSA3rdParty::formRTMRequest(USHORT command)
 }
 */
 
+/*----------------------------------------------------------------------------*
+ * Function:formatTMScmd
+ *
+ * abuf      - output buffer. A fully formed TMS command in ASCII is built and placed
+ *              in this buffer on successful completion of the function.
+ *
+ * buflen   - input/output.  On entry buflen indicates the allowed size of buf.
+ *              On successful exit, buflen indicates the length of the completed
+ *              message stored in buf.
+ *
+ * TMS_cmd_type - Input: TMS command type as defined above.
+ *
+ * xmitter  - input: transmitter address
+ *
+ * Returns:
+ *          - A valid return code.
+ *
+ * Note:  This function is a proxy for the third-party library, so we can limit
+ *          its linkage to the protocol DLL alone.
+ *----------------------------------------------------------------------------*/
 INT CtiProtocolSA3rdParty::formatTMScmd (UCHAR *abuf, INT *buflen, USHORT TMS_cmd_type, USHORT xmitter)
 {
     return ::formatTMScmd(abuf, buflen, TMS_cmd_type, xmitter);
 }
 
+/*----------------------------------------------------------------------------*
+ * Function:TMSlen
+ *
+ * abuf  - input: first 8 bytes of TMS response in ASCII.
+ *
+ * len   - output:  additional bytes to receive
+ *
+ * Returns:
+ *          - A valid return code.
+ *
+ * Note:  This function is a proxy for the third-party library, so we can limit
+ *          its linkage to the protocol DLL alone.
+ *----------------------------------------------------------------------------*/
 INT CtiProtocolSA3rdParty::TMSlen (UCHAR *abuf, INT *len)
 {
     return ::TMSlen(abuf, len);
 }
 
+/*----------------------------------------------------------------------------*
+ * Function:procTMSmsg
+ *
+ * abuf     - input ASCII buffer received from TMS.
+ * len      - input: reference length when convert ASCII to binary
+ * scode    - output if buf contains control code.
+ * x205cmd  - output if buf contains SA205 config command.
+ * Returns:
+ *          - TMS_EMPTY,
+ *            TMS_205CMD if abuf contains SA205 config command,
+ *            TMS_CODE abuf contains control code,
+ *            TMS_UNKNOWN.
+ *
+ * Note:  This function is a proxy for the third-party library, so we can limit
+ *          its linkage to the protocol DLL alone.
+ *----------------------------------------------------------------------------*/
 INT CtiProtocolSA3rdParty::procTMSmsg(UCHAR *abuf, INT len, SA_CODE *scode, X205CMD *x205cmd)
 {
     return ::procTMSmsg(abuf, len, scode, x205cmd);
