@@ -108,10 +108,10 @@ function switchSettings(day, mode) {
 
 function setToDefault() {
 	var form = document.form1;
-	form.time1.value = "<%= timePart.format(dftSchedule.getTime1().toDate()) %>";
-	form.time2.value = "<%= timePart.format(dftSchedule.getTime2().toDate()) %>";
-	form.time3.value = "<%= timePart.format(dftSchedule.getTime3().toDate()) %>";
-	form.time4.value = "<%= timePart.format(dftSchedule.getTime4().toDate()) %>";
+	form.time1.value = "<%= ampmTimeFormat.format(dftSchedule.getTime1().toDate()) %>";
+	form.time2.value = "<%= ampmTimeFormat.format(dftSchedule.getTime2().toDate()) %>";
+	form.time3.value = "<%= ampmTimeFormat.format(dftSchedule.getTime3().toDate()) %>";
+	form.time4.value = "<%= ampmTimeFormat.format(dftSchedule.getTime4().toDate()) %>";
 	updateLayout(
 		<%= dftSchedule.getTime1().getHour() %>,<%= dftSchedule.getTime1().getMinute() %>,<%= dftSchedule.getTemperature1() %>,
 		<%= dftSchedule.getTime2().getHour() %>,<%= dftSchedule.getTime2().getMinute() %>,<%= dftSchedule.getTemperature2() %>,
