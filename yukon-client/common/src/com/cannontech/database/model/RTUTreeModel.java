@@ -32,6 +32,7 @@ public boolean isDeviceValid( int category_, int class_, int type_ )
 			 &&
 			 (type_ == PAOGroups.RTUILEX 
             || type_ == PAOGroups.RTU_DNP
+            || type_ == PAOGroups.ION_7700
 				|| type_ == PAOGroups.RTUWELCO 
 				|| type_ == PAOGroups.DAVISWEATHER)
 			 && category_ == PAOGroups.CAT_DEVICE;

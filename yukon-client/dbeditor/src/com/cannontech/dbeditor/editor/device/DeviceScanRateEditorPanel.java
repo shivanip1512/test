@@ -16,7 +16,7 @@ import com.cannontech.database.data.device.LCUBase;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.device.PagingTapTerminal;
 import com.cannontech.database.data.device.RTUBase;
-import com.cannontech.database.data.device.RTUDNP;
+import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.RepeaterBase;
 import com.cannontech.database.data.device.TCUBase;
 import com.cannontech.database.data.device.TwoWayDevice;
@@ -1530,7 +1530,7 @@ public Object getValue(Object device)
 				|| (val instanceof MCTBase) 
 				|| (val instanceof LCUBase)
             || (val instanceof CapBankController6510)
-            || (val instanceof RTUDNP) )
+            || (val instanceof DNPBase) )
 	{
 		if( getPeriodicHealthCheckBox().isSelected() && getPeriodicHealthCheckBox().isVisible() )
 		{
@@ -1875,7 +1875,8 @@ public void setDeviceType(int type)
 		}
 		else if( type == PAOGroups.RTUILEX 
                 || type == PAOGroups.RTU_DNP
-                || type == PAOGroups.DNP_CBC_6510 )
+                || type == PAOGroups.DNP_CBC_6510
+                || type == PAOGroups.ION_7700 )
 		{
 			getPeriodicHealthCheckBox().setText("General Scan");
 			getPeriodicHealthIntervalComboBox().setSelectedItem("15 second");
@@ -1899,6 +1900,7 @@ public void setDeviceType(int type)
          !(type == PAOGroups.LMT_2
           || type == PAOGroups.RTUILEX
           || type == PAOGroups.RTU_DNP
+          || type == PAOGroups.ION_7700
           || type == PAOGroups.LCU415) );
 		
       setHealthObjectsVisible( 
@@ -2010,7 +2012,7 @@ public void setValue(Object val)
 				|| (val instanceof MCTBase) 
 				|| (val instanceof LCUBase)
             || (val instanceof CapBankController6510)
-            || (val instanceof RTUDNP) )
+            || (val instanceof DNPBase) )
 	{
 
 		for (int i = 0; i < dScanRate.length; i++)

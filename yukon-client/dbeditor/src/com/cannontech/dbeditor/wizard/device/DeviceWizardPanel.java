@@ -327,7 +327,10 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
             || (currentPanel == getDeviceCommChannelPanel() && !getDeviceCommChannelPanel().isDialupPort())
             || currentPanel == getDeviceRoutePanel() 
             || currentPanel == getDeviceVirtualNamePanel()
-            || (currentPanel == getDeviceCommChannelPanel() && getDeviceTypePanel().getDeviceType() == com.cannontech.database.data.pao.PAOGroups.RTU_DNP) );
+            || (currentPanel == getDeviceCommChannelPanel() 
+                && 
+                (getDeviceTypePanel().getDeviceType() == com.cannontech.database.data.pao.PAOGroups.RTU_DNP
+                 || getDeviceTypePanel().getDeviceType() == com.cannontech.database.data.pao.PAOGroups.ION_7700)) );
 }
 
 

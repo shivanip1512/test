@@ -23,7 +23,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.MCT248, PAOGroups.MCT250, PAOGroups.MCT210, PAOGroups.MCT213,
 			PAOGroups.REPEATER, PAOGroups.REPEATER_800, PAOGroups.RTUILEX, PAOGroups.RTUWELCO, 
 			PAOGroups.DR_87, PAOGroups.TAPTERMINAL, PAOGroups.WCTP_TERMINAL,
-			PAOGroups.VIRTUAL_SYSTEM, PAOGroups.DCT_501, PAOGroups.RTU_DNP,
+			PAOGroups.VIRTUAL_SYSTEM, PAOGroups.DCT_501, PAOGroups.RTU_DNP, PAOGroups.ION_7700,
 			PAOGroups.MCTBROADCAST, PAOGroups.MCT310CT, PAOGroups.MCT310IM
 		},
 		{ 	//1 - DeviceMeterGroupEditorPanel
@@ -46,7 +46,8 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.MCT210, PAOGroups.MCT213, PAOGroups.REPEATER, PAOGroups.REPEATER_800, 
 			PAOGroups.RTUILEX, PAOGroups.RTUWELCO, PAOGroups.DR_87, PAOGroups.SIXNET, 
 			PAOGroups.MCT310ID, PAOGroups.MCT310IL, PAOGroups.MCT318L, PAOGroups.DCT_501,
-         PAOGroups.DNP_CBC_6510, PAOGroups.RTU_DNP, PAOGroups.MCT310CT, PAOGroups.MCT310IM
+         PAOGroups.DNP_CBC_6510, PAOGroups.RTU_DNP, PAOGroups.MCT310CT, PAOGroups.MCT310IM,
+         PAOGroups.ION_7700
 		},
 
 		{   //4 - TapTerminalPanel
@@ -66,7 +67,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.RTUWELCO, PAOGroups.TAPTERMINAL, PAOGroups.WCTP_TERMINAL, 
 			PAOGroups.MCT213, PAOGroups.SIXNET, PAOGroups.MCT310CT, PAOGroups.MCT310IM,
 			PAOGroups.DR_87, PAOGroups.MCT310ID, PAOGroups.MCT310IL, PAOGroups.MCT318L,
-			PAOGroups.DCT_501, PAOGroups.DNP_CBC_6510, PAOGroups.RTU_DNP
+			PAOGroups.DCT_501, PAOGroups.DNP_CBC_6510, PAOGroups.RTU_DNP, PAOGroups.ION_7700
 		},
 		{   //7 - CapBank
 			PAOGroups.CAPBANK

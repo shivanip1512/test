@@ -39,6 +39,25 @@ public final static boolean allowRebroadcast(String type)
 			return false;
 	}
 }
+
+/**
+ * This method was created in VisualAge.
+ * @return boolean
+ * @param type java.lang.String
+ */
+public final static boolean hasMasterAddress(int intType) 
+{
+
+   switch( intType )
+   {
+      case RTU_DNP:
+      case ION_7700:
+         return true;
+      default:
+         return false;
+   }
+}
+
 /**
  * This method was created in VisualAge.
  * @return int
@@ -411,6 +430,7 @@ public final static boolean isRTU(int deviceType)
 {
 	switch(deviceType)
 	{	
+      case ION_7700:
       case RTU_DNP:
 		case RTUILEX:
 		case RTUWELCO:

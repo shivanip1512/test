@@ -6,10 +6,11 @@ import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.MCT_Broadcast;
-import com.cannontech.database.data.device.RTUDNP;
+import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
+import com.cannontech.database.data.device.Ion7700;
 
 /**
  * This type was created in VisualAge.
@@ -459,11 +460,13 @@ public Object getValue(Object val)
    {
 		((IDLCBase)device).getDeviceIDLCRemote().setAddress( address );	
    }
-   else if( val instanceof RTUDNP )
+   else if( val instanceof DNPBase )
    {
-      ((RTUDNP)val).getDeviceDNP().setMasterAddress( address );
-      //postcommwait
-      //slaveaddress
+      ((DNPBase)val).getDeviceDNP().setMasterAddress( address );
+   }
+   else if( val instanceof Ion7700 )
+   {
+      ((Ion7700)val).getDeviceDNP().setMasterAddress( address );
    }
    else if( val instanceof CarrierBase )
 	{
@@ -621,8 +624,8 @@ public static void main(java.lang.String[] args) {
 public void setDeviceType(int newDeviceType) 
 {
 	deviceType = newDeviceType;
-   
-   if( deviceType == com.cannontech.database.data.pao.DeviceTypes.RTU_DNP )
+
+   if( DeviceTypesFuncs.hasMasterAddress(deviceType) )
       getPhysicalAddressLabel().setText("Master Address:");
    else if( deviceType == com.cannontech.database.data.pao.DeviceTypes.MCTBROADCAST )
       getPhysicalAddressLabel().setText("Lead Meter Address:");

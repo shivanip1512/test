@@ -8,7 +8,7 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.IEDBase;
 import com.cannontech.database.data.device.PagingTapTerminal;
-import com.cannontech.database.data.device.RTUDNP;
+import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.data.device.Schlumberger;
@@ -1255,6 +1255,7 @@ public Object getValue(Object val)
 	com.cannontech.database.data.device.DeviceBase d = (com.cannontech.database.data.device.DeviceBase)val;
 
 	d.setPAOName( getNameTextField().getText() );
+   int devType = PAOGroups.getDeviceType( d.getPAOType() );
 
 	if( getDisableFlagCheckBox().isSelected() )
 		d.setDisableFlag( new Character('Y') );
@@ -1279,7 +1280,7 @@ public Object getValue(Object val)
 			if( val instanceof com.cannontech.database.data.device.CarrierBase )
 			{
 
-				if( val instanceof Repeater900 )
+				if( devType == PAOGroups.REPEATER ) //val instanceof Repeater900
 				{
 					//special case, we must add 4190000 to every address
 					if( address.intValue() >= 464  && address.intValue() <= 4302 )
@@ -1289,7 +1290,7 @@ public Object getValue(Object val)
 					else
 						throw new com.cannontech.common.gui.unchanging.InvalidRangeException("Valid range for Repeater900 addresses are from 464 to 4302");
 				}
-				else if( DeviceTypesFuncs.isMCT( com.cannontech.database.data.pao.PAOGroups.getDeviceType( ((CarrierBase)val).getPAOType() ) ) )
+				else if( DeviceTypesFuncs.isMCT(devType) )
 				{
 					//check the range for the MCT's
 					if( address.intValue() >= 0  
@@ -1339,7 +1340,7 @@ public Object getValue(Object val)
 			((IDLCBase)val).getDeviceIDLCRemote().setCcuAmpUseType( getJComboBoxAmpUseType().getSelectedItem().toString() );
 		}
 		
-		if( com.cannontech.database.data.pao.PAOGroups.isDialupPort(port.getType()) )
+		if( PAOGroups.isDialupPort(devType) )
 		{
 			DeviceDialupSettings dDialup = ((RemoteBase) val).getDeviceDialupSettings();
 
@@ -1354,9 +1355,9 @@ public Object getValue(Object val)
 		else
 			((RemoteBase)val).getDeviceDialupSettings().setPhoneNumber(null);
 
-      if( val instanceof RTUDNP )
+      if( DeviceTypesFuncs.hasMasterAddress(devType) ) //val instanceof DNPBase 
       {
-         RTUDNP dnp = (RTUDNP)val;
+         DNPBase dnp = (DNPBase)val;
          try
          {
             dnp.getDeviceDNP().setMasterAddress( new Integer(getPhysicalAddressTextField().getText()) );
@@ -1845,12 +1846,12 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
 			getSlaveAddressComboBox().setVisible(false);
 		}
 	}
-   else if( rBase instanceof RTUDNP )
+   else if( rBase instanceof DNPBase )
    {
       getPhysicalAddressLabel().setVisible(true);
       getPhysicalAddressLabel().setText("Master Address:");
       getPhysicalAddressTextField().setVisible(true);
-      getPhysicalAddressTextField().setText( ((RTUDNP)rBase).getDeviceDNP().getMasterAddress().toString() );
+      getPhysicalAddressTextField().setText( ((DNPBase)rBase).getDeviceDNP().getMasterAddress().toString() );
       
       getSlaveAddressLabel().setVisible(true);
       getSlaveAddressComboBox().setVisible(true);
@@ -1862,10 +1863,10 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
       editor.addCaretListener(this);  //be sure to fireInputUpdate() messages!
       getSlaveAddressComboBox().setEditor( editor );
       getSlaveAddressComboBox().removeAllItems();
-      getSlaveAddressComboBox().addItem( ((RTUDNP)rBase).getDeviceDNP().getSlaveAddress() );
+      getSlaveAddressComboBox().addItem( ((DNPBase)rBase).getDeviceDNP().getSlaveAddress() );
 
       
-      getPostCommWaitSpinner().setValue( ((RTUDNP)rBase).getDeviceDNP().getPostCommWait() );
+      getPostCommWaitSpinner().setValue( ((DNPBase)rBase).getDeviceDNP().getPostCommWait() );
       
       getPasswordLabel().setVisible(false);
       getPasswordTextField().setVisible(false);

@@ -6,13 +6,13 @@ package com.cannontech.database.data.device;
  * 
  * A undefined generated comment
  */
-public class RTUDNP extends DNPBase
-//RemoteBase implements com.cannontech.database.db.DBCopiable
+public class Ion7700 extends DNPBase
+// implements com.cannontech.database.db.DBCopiable
 {
 	/**
-	 * Constructor for RTUDNP.
+	 * Constructor for Ion7700.
 	 */
-	public RTUDNP()
+	public Ion7700()
 	{
 		super();
 	}

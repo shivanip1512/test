@@ -48,7 +48,11 @@ public final static DeviceBase createDevice(int deviceType) {
 			returnDevice = new LCUER();
 			break;
       case PAOGroups.RTU_DNP:
-         returnDevice = new RTUDNP();
+         returnDevice = new DNPBase();
+         returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RTU);
+         break;
+      case PAOGroups.ION_7700:
+         returnDevice = new Ion7700();
          returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RTU);
          break;
 		case PAOGroups.RTUILEX:
