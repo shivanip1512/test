@@ -24,8 +24,8 @@ import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.util.ServletUtil;
-
-public class GraphClient extends javax.swing.JPanel implements com.cannontech.database.cache.DBChangeListener, GraphDataFormats, GraphDefines, com.cannontech.graph.model.TrendModelType, java.awt.event.ActionListener, java.awt.event.WindowListener, javax.swing.event.ChangeListener, javax.swing.event.TreeSelectionListener {
+import com.cannontech.graph.model.TrendModelType;
+public class GraphClient extends javax.swing.JPanel implements com.cannontech.database.cache.DBChangeListener, GraphDataFormats, GraphDefines, java.awt.event.ActionListener, java.awt.event.WindowListener, javax.swing.event.ChangeListener, javax.swing.event.TreeSelectionListener {
 
 private class TrendDataAutoUpdater extends Thread
 {
@@ -184,7 +184,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		getGraph().setUpdateTrend(true);	
 		
 		com.cannontech.clientutils.CTILogger.info(" don't change model");
-		actionPerformed_GetRefreshButton(DONT_CHANGE_VIEW);		
+		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);		
 	}
 	else if (event.getSource() == getStartDateComboBox())
 	{
@@ -192,38 +192,38 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		if( currentStartDate.compareTo((Object)ivjStartDateComboBox.getSelectedDate()) != 0 )
 		{
 			com.cannontech.clientutils.CTILogger.info("Changing Date!");
-			actionPerformed_GetRefreshButton(DONT_CHANGE_VIEW);
+			actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
 			currentStartDate = ivjStartDateComboBox.getSelectedDate();
 		}
 	}
 	else if( event.getSource() == getViewMenu().getLineGraphRadioButtonItem() )
 	{
-		actionPerformed_GetRefreshButton(LINE_VIEW);
+		actionPerformed_GetRefreshButton(TrendModelType.LINE_VIEW);
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}
 	else if( event.getSource() == getViewMenu().getStepGraphRadioButtonItem() )
 	{
-		actionPerformed_GetRefreshButton(STEP_VIEW);
+		actionPerformed_GetRefreshButton(TrendModelType.STEP_VIEW);
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}
 	else if( event.getSource() == getViewMenu().getShapeLineGraphRadioButtonItem() )
 	{
-		actionPerformed_GetRefreshButton(SHAPES_LINE_VIEW);
+		actionPerformed_GetRefreshButton(TrendModelType.SHAPES_LINE_VIEW);
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}
 	else if( event.getSource() == getViewMenu().getBarGraphRadioButtonItem())
 	{
-		actionPerformed_GetRefreshButton(BAR_VIEW);
+		actionPerformed_GetRefreshButton(TrendModelType.BAR_VIEW);
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(false);
 		getOptionsMenu().getPlotYesterdayMenuItem().setSelected(false);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}
 	else if ( event.getSource() == getViewMenu().getBarGraph3DRadioButtonItem())
 	{
-		actionPerformed_GetRefreshButton(BAR_3D_VIEW);
+		actionPerformed_GetRefreshButton(TrendModelType.BAR_3D_VIEW);
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(false);
 		getOptionsMenu().getPlotYesterdayMenuItem().setSelected(false);
 		getFileMenu().getExportMenuitem().setEnabled(true);
@@ -232,7 +232,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	{
 		boolean isMasked = getOptionsMenu().getLoadDurationMenuItem().isSelected();
 		getGraph().setOptionsMaskHolder(TrendModelType.LOAD_DURATION_MASK, isMasked);
-		actionPerformed_GetRefreshButton(DONT_CHANGE_VIEW);
+		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
 	}
 	/*
 	else if ( event.getSource() == getViewMenu().getLoadDurationRadioButtonItem())
@@ -254,7 +254,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		com.cannontech.clientutils.CTILogger.info("yesterday change");
 		boolean isMasked = getOptionsMenu().getPlotYesterdayMenuItem().isSelected();
 		getGraph().setUpdateTrend(true);
-		actionPerformed_GetRefreshButton(DONT_CHANGE_VIEW);
+		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
 	}
 	/*
 	else if( event.getSource() == getOptionsMenu().getSetupMultipleDaysMenuItem())
@@ -268,7 +268,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	{
 		boolean isMasked = getOptionsMenu().getMultiplierMenuItem().isSelected();
 		getGraph().setOptionsMaskHolder(TrendModelType.GRAPH_MULTIPLIER, isMasked);
-		actionPerformed_GetRefreshButton(DONT_CHANGE_VIEW);
+		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
 	}
 	/*
 	else if( event.getSource() == getOptionsMenu().getDwellMenuItem())
@@ -281,27 +281,27 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	{
 		boolean isMasked = getOptionsMenu().getPlotMinMaxValuesMenuItem().isSelected();
 		getGraph().setOptionsMaskHolder(TrendModelType.PLOT_MIN_MAX_MASK, isMasked);
-		actionPerformed_GetRefreshButton(DONT_CHANGE_VIEW);
+		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
 	}
 
 	else if( event.getSource() == getOptionsMenu().getShowLoadFactorMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getShowLoadFactorMenuItem().isSelected();
 		getGraph().setOptionsMaskHolder(TrendModelType.LEGEND_LOAD_FACTOR_MASK, isMasked);
-		actionPerformed_GetRefreshButton(DONT_CHANGE_VIEW);
+		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
 	}
 	else if( event.getSource() == getOptionsMenu().getShowMinMaxMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getShowMinMaxMenuItem().isSelected();
 		getGraph().setOptionsMaskHolder(TrendModelType.LEGEND_MIN_MAX_MASK, isMasked);
-		actionPerformed_GetRefreshButton(DONT_CHANGE_VIEW);
+		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
 	}
 
 	
 	else if( event.getSource() == getTimePeriodComboBox())
 	{
 		actionPerformed_GetTimePeriodComboBox( );
-		actionPerformed_GetRefreshButton(DONT_CHANGE_VIEW);
+		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
 	}
 	else if( event.getSource() == getTrendMenu().getCreateMenuItem())
 	{		
@@ -1817,7 +1817,7 @@ private void initializeSwingComponents()
 		{
 			if( event.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER )
 			{
-				actionPerformed_GetRefreshButton(DONT_CHANGE_VIEW);
+				actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
 			}
 		}
 	});
