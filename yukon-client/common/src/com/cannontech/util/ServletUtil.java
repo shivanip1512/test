@@ -12,11 +12,26 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * The junk drawer for servlets.
+ * Added static Attribute values from stars for reference in all web applications. (04/15/2004 SN)
  * Creation date: (3/28/00 11:19:23 AM)
  * @author: 
  */
 
 public class ServletUtil {
+	
+	//Session attributes.
+	public static final String ATT_ERROR_MESSAGE = "ERROR_MESSAGE";
+	public static final String ATT_CONFIRM_MESSAGE = "CONFIRM_MESSAGE";
+	public static final String ATT_YUKON_USER = "YUKON_USER";
+	
+	public static final String ATT_REDIRECT = "REDIRECT";
+	public static final String ATT_REDIRECT2 = "REDIRECT2";
+	public static final String ATT_REFERRER = "REFERRER";
+	public static final String ATT_REFERRER2 = "REFERRER2";
+
+
+	public static final String ATT_GRAPH_BEAN = "GRAPH_BEAN";	
+	
 	// Valid periods
 	public static final String ONEDAY = "1 Day";
 	public static final String THREEDAYS = "3 Days";
