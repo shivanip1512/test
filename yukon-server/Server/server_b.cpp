@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/12/12 17:35:32 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/09/02 18:45:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,6 +41,7 @@ void  CtiServer::shutdown()
 {
     CtiLockGuard<CtiMutex> guard(server_mux);
 
+    _listenerAvailable = FALSE;
     if(Listener) delete Listener;
     Listener = NULL;
 
