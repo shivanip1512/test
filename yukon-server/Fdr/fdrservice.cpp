@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/02/10 23:23:51 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/03/29 21:40:27 $
 *
 * AUTHOR: Ben Wallace
 *
@@ -184,8 +184,9 @@ void CtiFDRService::Init( )
             //  load DLL
             if( !(hInterfaceLib = LoadLibrary( myInterfaceName )) )
             {
+                DWORD errCode = GetLastError();
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Unable to locate: " << myInterfaceName << endl;
+                dout << "Unable to locate: \"" << myInterfaceName << "\" error code " << errCode << endl;
             }
             else
             {
