@@ -51,8 +51,8 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     const RWCString& getDefOperationalState() const;
     ULONG getControlInterval() const;
     ULONG getMinResponseTime() const;
-    ULONG getDefDailyStartTime() const;
-    ULONG getDefDailyStopTime() const;
+    LONG getDefDailyStartTime() const;
+    LONG getDefDailyStopTime() const;
     BOOL getRequireAllTriggersActiveFlag() const;
     const RWDBDateTime& getNextCheckTime() const;
     BOOL getNewPointDataReceivedFlag() const;
@@ -60,6 +60,8 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     ULONG getControlAreaStatusPointId() const;
     ULONG getControlAreaState() const;
     LONG getCurrentPriority() const;
+    LONG getCurrentDailyStartTime() const;
+    LONG getCurrentDailyStopTime() const;
     RWOrdered& getLMControlAreaTriggers();
     RWOrdered& getLMPrograms();
 
@@ -73,8 +75,8 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     CtiLMControlArea& setDefOperationalState(const RWCString& opstate);
     CtiLMControlArea& setControlInterval(ULONG interval);
     CtiLMControlArea& setMinResponseTime(ULONG response);
-    CtiLMControlArea& setDefDailyStartTime(ULONG start);
-    CtiLMControlArea& setDefDailyStopTime(ULONG stop);
+    CtiLMControlArea& setDefDailyStartTime(LONG start);
+    CtiLMControlArea& setDefDailyStopTime(LONG stop);
     CtiLMControlArea& setRequireAllTriggersActiveFlag(BOOL requireall);
     CtiLMControlArea& figureNextCheckTime();
     CtiLMControlArea& setNewPointDataReceivedFlag(BOOL newdatareceived);
@@ -82,6 +84,8 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     CtiLMControlArea& setControlAreaStatusPointId(ULONG statuspointid);
     CtiLMControlArea& setControlAreaState(ULONG state);
     CtiLMControlArea& setCurrentPriority(LONG currpriority);
+    CtiLMControlArea& setCurrentDailyStartTime(LONG tempstart);
+    CtiLMControlArea& setCurrentDailyStopTime(LONG tempstop);
 
     BOOL isControlTime(ULONG nowInSeconds);
     BOOL isControlStillNeeded();
@@ -132,8 +136,8 @@ private:
     RWCString _defoperationalstate;
     ULONG _controlinterval;
     ULONG _minresponsetime;
-    ULONG _defdailystarttime;
-    ULONG _defdailystoptime;
+    LONG _defdailystarttime;
+    LONG _defdailystoptime;
     BOOL _requirealltriggersactiveflag;
     RWDBDateTime _nextchecktime;
     BOOL _newpointdatareceivedflag;
@@ -141,6 +145,8 @@ private:
     ULONG _controlareastatuspointid;
     ULONG _controlareastate;
     LONG _currentpriority;
+    LONG _currentdailystarttime;
+    LONG _currentdailystoptime;
 
     RWOrdered _lmcontrolareatriggers;
     RWOrdered _lmprograms;

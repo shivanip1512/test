@@ -59,11 +59,11 @@ void CtiLMCommandExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWColl
             break;
 
         case CtiLMCommand::CHANGE_CURRENT_START_TIME:
-            ChangeCurrentStartTime(results);
+            ChangeDailyStartTime(results);
             break;
 
         case CtiLMCommand::CHANGE_CURRENT_STOP_TIME:
-            ChangeCurrentStopTime(results);
+            ChangeDailyStopTime(results);
             break;
 
         case CtiLMCommand::CHANGE_CURRENT_OPERATIONAL_STATE:
@@ -196,22 +196,6 @@ void CtiLMCommandExecutor::ChangeRestoreOffset(RWCountedPointer< CtiCountedPCPtr
             break;
         }
     }
-}
-
-/*---------------------------------------------------------------------------
-    ChangeCurrentStartTime
----------------------------------------------------------------------------*/    
-void CtiLMCommandExecutor::ChangeCurrentStartTime(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
-{
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-}
-
-/*---------------------------------------------------------------------------
-    ChangeCurrentStopTime
----------------------------------------------------------------------------*/    
-void CtiLMCommandExecutor::ChangeCurrentStopTime(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
-{
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 }
 
 /*---------------------------------------------------------------------------
@@ -396,6 +380,90 @@ void CtiLMCommandExecutor::SendAllControlAreas(RWCountedPointer< CtiCountedPCPtr
     CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(*(store->getControlAreas())));
     executor->Execute(queue);
     delete executor;
+}
+
+/*---------------------------------------------------------------------------
+    ChangeDailyStartTime
+---------------------------------------------------------------------------*/    
+void CtiLMCommandExecutor::ChangeDailyStartTime(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
+    ULONG commandPAOID = _command->getPAOId();
+    ULONG newStartTime = (ULONG)_command->getValue();
+    CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWOrdered& controlAreas = *(store->getControlAreas());
+
+    for(ULONG i=0;i<controlAreas.entries();i++)
+    {
+        CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)controlAreas[i];
+        if( currentLMControlArea->getPAOId() == commandPAOID )
+        {
+            currentLMControlArea->setCurrentDailyStartTime(newStartTime);
+            currentLMControlArea->setUpdatedFlag(TRUE);
+            {
+                char tempchar[80] = "";
+                RWCString text = RWCString("User Daily Start Change");
+                RWCString additional = RWCString("New Daily Start Time: ");
+                ULONG startTimeHours = newStartTime / 3600;
+                ULONG startTimeMinutes = (newStartTime - (startTimeHours * 3600)) / 60;
+                _snprintf(tempchar,80,"%d",startTimeHours);
+                additional += tempchar;
+                additional += ":";
+                _snprintf(tempchar,80,"%d",startTimeMinutes);
+                additional += tempchar;
+                additional += " changed in LMControlArea: ";
+                additional += currentLMControlArea->getPAOName();
+                additional += " PAO ID: ";
+                _snprintf(tempchar,80,"%d",currentLMControlArea->getPAOId());
+                additional += tempchar;
+                CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+            }
+            break;
+        }
+    }
+}
+
+/*---------------------------------------------------------------------------
+    ChangeDailyStopTime
+---------------------------------------------------------------------------*/    
+void CtiLMCommandExecutor::ChangeDailyStopTime(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
+    ULONG commandPAOID = _command->getPAOId();
+    ULONG newStopTime = (ULONG)_command->getValue();
+    CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWOrdered& controlAreas = *(store->getControlAreas());
+
+    for(ULONG i=0;i<controlAreas.entries();i++)
+    {
+        CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)controlAreas[i];
+        if( currentLMControlArea->getPAOId() == commandPAOID )
+        {
+            currentLMControlArea->setCurrentDailyStopTime(newStopTime);
+            currentLMControlArea->setUpdatedFlag(TRUE);
+            {
+                char tempchar[80] = "";
+                RWCString text = RWCString("User Daily Stop Change");
+                RWCString additional = RWCString("New Daily Stop Time: ");
+                ULONG stopTimeHours = newStopTime / 3600;
+                ULONG stopTimeMinutes = (newStopTime - (stopTimeHours * 3600)) / 60;
+                _snprintf(tempchar,80,"%d",stopTimeHours);
+                additional += tempchar;
+                additional += ":";
+                _snprintf(tempchar,80,"%d",stopTimeMinutes);
+                additional += tempchar;
+                additional += " changed in LMControlArea: ";
+                additional += currentLMControlArea->getPAOName();
+                additional += " PAO ID: ";
+                _snprintf(tempchar,80,"%d",currentLMControlArea->getPAOId());
+                additional += tempchar;
+                CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+            }
+            break;
+        }
+    }
 }
 
 

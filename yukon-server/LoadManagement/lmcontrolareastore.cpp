@@ -220,6 +220,8 @@ void CtiLMControlAreaStore::reset()
                 << dynamicLMControlAreaTable["updatedflag"]
                 << dynamicLMControlAreaTable["controlareastate"]
                 << dynamicLMControlAreaTable["currentpriority"]
+                << dynamicLMControlAreaTable["currentdailystarttime"]
+                << dynamicLMControlAreaTable["currentdailystoptime"]
                 << dynamicLMControlAreaTable["timestamp"];
 
                 selector.from(yukonPAObjectTable);
@@ -252,6 +254,9 @@ void CtiLMControlAreaStore::reset()
                 for(UINT i=0;i<_controlAreas->entries();i++)
                 {
                     CtiLMControlArea* currentArea = (CtiLMControlArea*)((*_controlAreas)[i]);
+                    currentArea->setUpdatedFlag(TRUE);
+                    //HACK: make sure all the control areas are sent on a DB reload
+                    //only redundant on the first load from the DB
 
                     RWDBTable lmControlAreaTriggerTable = db.table("lmcontrolareatrigger");
                     RWDBTable dynamicLMControlAreaTriggerTable = db.table("dynamiclmcontrolareatrigger");
@@ -1055,6 +1060,7 @@ void CtiLMControlAreaStore::reset()
     }
 
     _isvalid = TRUE;
+
     dumpAllDynamicData();
 }
 
@@ -1144,8 +1150,7 @@ void CtiLMControlAreaStore::doResetThr()
 
             if( currenttime.rwdate() != RWDBDateTime().rwdate() )
             {//check to see if it is midnight
-                checkDefOperationalStates();
-                runLoadManagementReports();
+                checkMidnightDefaultsForReset();
             }
             currenttime = RWDBDateTime();
 
@@ -1343,13 +1348,13 @@ bool CtiLMControlAreaStore::UpdateTriggerInDB(CtiLMControlArea* controlArea, Cti
 }
 
 /*---------------------------------------------------------------------------
-    checkDefOperationalStates
+    checkMidnightDefaultsForReset
 
     Only called at midnight!  Checks each of the control area default
     operational states and updates the area's disable flag if not synched with
     the def op state.
 ---------------------------------------------------------------------------*/
-bool CtiLMControlAreaStore::checkDefOperationalStates()
+bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
@@ -1359,20 +1364,19 @@ bool CtiLMControlAreaStore::checkDefOperationalStates()
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
         if( currentControlArea->getDefOperationalState() != CtiLMControlArea::DefOpStateNone )
-        {
+        {//check default operational state
             if( ( currentControlArea->getDefOperationalState() == CtiLMControlArea::DefOpStateEnabled &&
                   currentControlArea->getDisableFlag() ) ||
                 ( currentControlArea->getDefOperationalState() == CtiLMControlArea::DefOpStateDisabled &&
                   !currentControlArea->getDisableFlag() ) )
             {
                 {
-                    char tempchar[80] = "";
                     RWCString text = RWCString("Automatic Disable Flag Update");
-                    RWCString additional = RWCString(" Current disable flag does not match Default Operational State: ");
+                    RWCString additional = RWCString(" Disable Flag not set to Default Operational State.  Control Area: ");
+                    additional += currentControlArea->getPAOName();
+                    additional += " was automatically ";
                     additional += currentControlArea->getDefOperationalState();
-                    additional += ".  Control Area was automatically ";
-                    additional += currentControlArea->getDefOperationalState();
-                    additional += " to return to the default state.";
+                    additional += ".";
                     CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
                 }
                 currentControlArea->setDisableFlag(!currentControlArea->getDisableFlag());
@@ -1380,23 +1384,65 @@ bool CtiLMControlAreaStore::checkDefOperationalStates()
                 returnBool = true;
             }
         }
+        if( currentControlArea->getCurrentDailyStartTime() != currentControlArea->getDefDailyStartTime() ||
+            currentControlArea->getCurrentDailyStopTime() != currentControlArea->getDefDailyStopTime() )
+        {//check default daily start and stop times
+            if( currentControlArea->getCurrentDailyStartTime() != currentControlArea->getDefDailyStartTime() )
+            {
+                char tempchar[80] = "";
+                RWCString text = RWCString("Automatic Daily Start Time Update");
+                RWCString additional = RWCString(" Current Daily Start Time not set to Default Start Time.  Control Area: ");
+                additional += currentControlArea->getPAOName();
+                additional += " Daily Start Time was automatically set back to default of ";
+                LONG defStartTimeHours = currentControlArea->getDefDailyStartTime() / 3600;
+                LONG defStartTimeMinutes = (currentControlArea->getDefDailyStartTime() - (defStartTimeHours * 3600)) / 60;
+                _snprintf(tempchar,80,"%d",defStartTimeHours);
+                additional += tempchar;
+                additional += ":";
+                _snprintf(tempchar,80,"%d",defStartTimeMinutes);
+                additional += tempchar;
+                additional += " from ";
+                LONG currentStartTimeHours = currentControlArea->getCurrentDailyStartTime() / 3600;
+                LONG currentStartTimeMinutes = (currentControlArea->getCurrentDailyStartTime() - (currentStartTimeHours * 3600)) / 60;
+                _snprintf(tempchar,80,"%d",currentStartTimeHours);
+                additional += tempchar;
+                additional += ":";
+                _snprintf(tempchar,80,"%d",currentStartTimeMinutes);
+                additional += tempchar;
+                additional += ".";
+                CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
+            }
+            if( currentControlArea->getCurrentDailyStopTime() != currentControlArea->getDefDailyStopTime() )
+            {
+                char tempchar[80] = "";
+                RWCString text = RWCString("Automatic Daily Stop Time Update");
+                RWCString additional = RWCString(" Current Daily Stop Time not set to Default Stop Time.  Control Area: ");
+                additional += currentControlArea->getPAOName();
+                additional += " Daily Stop Time was automatically set back to default of ";
+                LONG defStopTimeHours = currentControlArea->getDefDailyStopTime() / 3600;
+                LONG defStopTimeMinutes = (currentControlArea->getDefDailyStopTime() - (defStopTimeHours * 3600)) / 60;
+                _snprintf(tempchar,80,"%d",defStopTimeHours);
+                additional += tempchar;
+                additional += ":";
+                _snprintf(tempchar,80,"%d",defStopTimeMinutes);
+                additional += tempchar;
+                additional += " from ";
+                LONG currentStopTimeHours = currentControlArea->getCurrentDailyStopTime() / 3600;
+                LONG currentStopTimeMinutes = (currentControlArea->getCurrentDailyStopTime() - (currentStopTimeHours * 3600)) / 60;
+                _snprintf(tempchar,80,"%d",currentStopTimeHours);
+                additional += tempchar;
+                additional += ":";
+                _snprintf(tempchar,80,"%d",currentStopTimeMinutes);
+                additional += tempchar;
+                additional += ".";
+                CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
+            }
+            currentControlArea->setCurrentDailyStartTime(currentControlArea->getDefDailyStartTime());
+            currentControlArea->setCurrentDailyStopTime(currentControlArea->getDefDailyStopTime());
+            currentControlArea->dumpDynamicData();
+            returnBool = true;
+        }
     }
-
-    return returnBool;
-}
-
-/*---------------------------------------------------------------------------
-    runLoadManagementReports
-
-    Only called at midnight!  Generates and saves the nightly load management
-    reports.
----------------------------------------------------------------------------*/
-bool CtiLMControlAreaStore::runLoadManagementReports()
-{
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-
-    bool returnBool = false;
-
 
     return returnBool;
 }

@@ -45,14 +45,14 @@ public:
 private:
     void ChangeThreshold(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
     void ChangeRestoreOffset(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void ChangeCurrentStartTime(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void ChangeCurrentStopTime(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
     void ChangeCurrentOperationalState(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
     void EnableControlArea(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
     void DisableControlArea(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
     void EnableProgram(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
     void DisableProgram(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
     void SendAllControlAreas(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    void ChangeDailyStartTime(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    void ChangeDailyStopTime(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
 
     CtiLMCommand* _command;
     RWRecursiveLock<RWMutexLock> _mutex;

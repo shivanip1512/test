@@ -62,8 +62,7 @@ private:
 
     void doResetThr();
 
-    bool checkDefOperationalStates();
-    bool runLoadManagementReports();
+    bool checkMidnightDefaultsForReset();
 
     RWOrdered* _controlAreas;
         

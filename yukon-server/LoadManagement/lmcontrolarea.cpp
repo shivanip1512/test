@@ -175,7 +175,7 @@ ULONG CtiLMControlArea::getMinResponseTime() const
     Returns the default daily start time as the number of seconds after
     midnight for the control area
 ---------------------------------------------------------------------------*/
-ULONG CtiLMControlArea::getDefDailyStartTime() const
+LONG CtiLMControlArea::getDefDailyStartTime() const
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _defdailystarttime;
@@ -187,7 +187,7 @@ ULONG CtiLMControlArea::getDefDailyStartTime() const
     Returns the default daily stop time as the number of seconds after
     midnight for the control area
 ---------------------------------------------------------------------------*/
-ULONG CtiLMControlArea::getDefDailyStopTime() const
+LONG CtiLMControlArea::getDefDailyStopTime() const
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _defdailystoptime;
@@ -290,6 +290,30 @@ LONG CtiLMControlArea::getCurrentPriority() const
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _currentpriority;
+}
+
+/*---------------------------------------------------------------------------
+    getCurrentDailyStartTime
+
+    Returns the current daily start time as the number of seconds after
+    midnight for the control area
+---------------------------------------------------------------------------*/
+LONG CtiLMControlArea::getCurrentDailyStartTime() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _currentdailystarttime;
+}
+
+/*---------------------------------------------------------------------------
+    getCurrentDailyStopTime
+
+    Returns the default daily stop time as the number of seconds after
+    midnight for the control area
+---------------------------------------------------------------------------*/
+LONG CtiLMControlArea::getCurrentDailyStopTime() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _currentdailystoptime;
 }
 
 /*---------------------------------------------------------------------------
@@ -423,7 +447,7 @@ CtiLMControlArea& CtiLMControlArea::setMinResponseTime(ULONG response)
     Sets the default daily start time as the number of seconds after
     midnight for the control area
 ---------------------------------------------------------------------------*/
-CtiLMControlArea& CtiLMControlArea::setDefDailyStartTime(ULONG start)
+CtiLMControlArea& CtiLMControlArea::setDefDailyStartTime(LONG start)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _defdailystarttime = start;
@@ -437,7 +461,7 @@ CtiLMControlArea& CtiLMControlArea::setDefDailyStartTime(ULONG start)
     Sets the default daily stop time as the number of seconds after
     midnight for the control area
 ---------------------------------------------------------------------------*/
-CtiLMControlArea& CtiLMControlArea::setDefDailyStopTime(ULONG stop)
+CtiLMControlArea& CtiLMControlArea::setDefDailyStopTime(LONG stop)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _defdailystoptime = stop;
@@ -546,6 +570,34 @@ CtiLMControlArea& CtiLMControlArea::setCurrentPriority(LONG currpriority)
     return *this;
 }
 
+/*---------------------------------------------------------------------------
+    setCurrentDailyStartTime
+
+    Sets the current daily start time as the number of seconds after
+    midnight for the control area
+---------------------------------------------------------------------------*/
+CtiLMControlArea& CtiLMControlArea::setCurrentDailyStartTime(LONG tempstart)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _currentdailystarttime = tempstart;
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setCurrentDailyStopTime
+
+    Sets the current daily stop time as the number of seconds after
+    midnight for the control area
+---------------------------------------------------------------------------*/
+CtiLMControlArea& CtiLMControlArea::setCurrentDailyStopTime(LONG tempstop)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _currentdailystoptime = tempstop;
+
+    return *this;
+}
+
 
 /*---------------------------------------------------------------------------
     isControlTime
@@ -557,19 +609,19 @@ BOOL CtiLMControlArea::isControlTime(ULONG nowInSeconds)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
-    ULONG tempDefDailyStartTime = getDefDailyStartTime();
-    ULONG tempDefDailyStopTime = getDefDailyStopTime();
+    LONG tempCurrentDailyStartTime = getCurrentDailyStartTime();
+    LONG tempCurrentDailyStopTime = getCurrentDailyStopTime();
 
-    if( getDefDailyStartTime() == -1 )
+    if( getCurrentDailyStartTime() == -1 )
     {
-        tempDefDailyStartTime = 0;
+        tempCurrentDailyStartTime = 0;
     }
-    if( getDefDailyStopTime() == -1 )
+    if( getCurrentDailyStopTime() == -1 )
     {
-        tempDefDailyStopTime = 86400;
+        tempCurrentDailyStopTime = 86400;
     }
 
-    if( tempDefDailyStartTime <= nowInSeconds && nowInSeconds <= tempDefDailyStopTime )
+    if( tempCurrentDailyStartTime <= nowInSeconds && nowInSeconds <= tempCurrentDailyStopTime )
     {
         return TRUE;
     }
@@ -1223,7 +1275,9 @@ void CtiLMControlArea::dumpDynamicData()
             << dynamicLMControlAreaTable["updatedflag"].assign(RWCString( (getUpdatedFlag() ? 'Y':'N') ))
             << dynamicLMControlAreaTable["controlareastate"].assign( getControlAreaState() )
             << dynamicLMControlAreaTable["currentpriority"].assign( getCurrentPriority() )
-            << dynamicLMControlAreaTable["timestamp"].assign((RWDBDateTime)currentDateTime);
+            << dynamicLMControlAreaTable["timestamp"].assign((RWDBDateTime)currentDateTime)
+            << dynamicLMControlAreaTable["currentdailystarttime"].assign( getCurrentDailyStartTime() )
+            << dynamicLMControlAreaTable["currentdailystoptime"].assign( getCurrentDailyStopTime() );
 
             updater.where(dynamicLMControlAreaTable["deviceid"]==getPAOId());//will be paobjectid
 
@@ -1249,7 +1303,9 @@ void CtiLMControlArea::dumpDynamicData()
             << RWCString( ( getUpdatedFlag() ? 'Y': 'N' ) )
             << getControlAreaState()
             << getCurrentPriority()
-            << currentDateTime;
+            << currentDateTime
+            << getCurrentDailyStartTime()
+            << getCurrentDailyStopTime();
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1295,6 +1351,8 @@ void CtiLMControlArea::restoreGuts(RWvistream& istrm)
     >> _controlareastatuspointid
     >> _controlareastate
     >> _currentpriority
+    >> _currentdailystarttime
+    >> _currentdailystoptime
     >> _lmcontrolareatriggers
     >> _lmprograms;
 
@@ -1332,6 +1390,8 @@ void CtiLMControlArea::saveGuts(RWvostream& ostrm ) const
     << _controlareastatuspointid
     << _controlareastate
     << _currentpriority
+    << _currentdailystarttime
+    << _currentdailystoptime
     << _lmcontrolareatriggers
     << _lmprograms;
 
@@ -1366,6 +1426,8 @@ CtiLMControlArea& CtiLMControlArea::operator=(const CtiLMControlArea& right)
         _controlareastatuspointid = right._controlareastatuspointid;
         _controlareastate = right._controlareastate;
         _currentpriority = right._currentpriority;
+        _currentdailystarttime = right._currentdailystarttime;
+        _currentdailystoptime = right._currentdailystoptime;
 
         _lmcontrolareatriggers.clearAndDestroy();
         for(UINT i=0;i<right._lmcontrolareatriggers.entries();i++)
@@ -1458,6 +1520,8 @@ void CtiLMControlArea::restore(RWDBReader& rdr)
         setUpdatedFlag(tempBoolString=="y"?TRUE:FALSE);
         rdr["controlareastate"] >> _controlareastate;
         rdr["currentpriority"] >> _currentpriority;
+        rdr["currentdailystarttime"] >> _currentdailystarttime;
+        rdr["currentdailystoptime"] >> _currentdailystoptime;
         rdr["timestamp"] >> dynamicTimeStamp;
 
         _insertDynamicDataFlag = FALSE;
@@ -1466,10 +1530,12 @@ void CtiLMControlArea::restore(RWDBReader& rdr)
     {
         figureNextCheckTime();
         setNewPointDataReceivedFlag(FALSE);
-        setUpdatedFlag(FALSE);
+        setUpdatedFlag(TRUE);//should always be sent to clients if it is newly added!
         setControlAreaState(CtiLMControlArea::InactiveState);
         //current priority set below zero when inactive
         setCurrentPriority(-1);
+        setCurrentDailyStartTime(getDefDailyStartTime());
+        setCurrentDailyStopTime(getDefDailyStopTime());
 
         _insertDynamicDataFlag = TRUE;
     }
