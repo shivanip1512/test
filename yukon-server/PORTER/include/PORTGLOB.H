@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/PORTGLOB.H-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:41 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/08 14:28:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,7 +24,13 @@
 #include "porter.h"
 #include "logger.h"
 
+#define PORTER_DEBUG_VERBOSE           0x00000001
+#define PORTER_DEBUG_NEXUSREAD         0x00000004
+#define PORTER_DEBUG_PORTQUEREAD       0x00000008
+#define PORTER_DEBUG_SENDERROR         0x00000010
 #define PORTER_DEBUG_RIPPLE            0x00000800
+#define PORTER_DEBUG_PRIORITIES        0x00001000
+#define PORTER_DEBUG_CCUMESSAGES       0x00010000
 
 #define PORTER_DBGBIT_VERBOSEERRORS    0x00000001
 

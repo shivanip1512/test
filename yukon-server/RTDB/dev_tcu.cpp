@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tcu.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:09 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/08 14:28:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +33,7 @@
 #include "msg_pcreturn.h"
 #include "msg_pdata.h"
 #include "msg_multi.h"
+#include "utility.h"
 
 #define DEBUG_PRINT_DECODE 0
 //extern CtiConnection VanGoghConnection;
@@ -91,7 +92,7 @@ INT CtiDeviceTCU::GeneralScan(CtiRequestMsg *pReq,
    {
       setScanPending();
 
-      OutMessage->Priority = ScanPriority;
+      EstablishOutMessagePriority( OutMessage, ScanPriority );
       status = TCUScanAll(OutMessage);
 
       // Put the single built up OUTMESS into the Slist

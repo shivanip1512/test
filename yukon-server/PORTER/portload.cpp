@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portload.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:39 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/08 14:28:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -318,7 +318,7 @@ LoadRemoteRoutes(CtiDeviceBase *RemoteRecord)
 
                     Index = PREIDL;
 
-                    if( PorterDebugLevel & 0x00000001 )
+                    if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Route " << RouteCount << " **** " << endl;
@@ -337,7 +337,7 @@ LoadRemoteRoutes(CtiDeviceBase *RemoteRecord)
                     if( CCURouteRecord->isDefaultRoute() )
                         OutMessage->Buffer.OutMessage[Index - 1] |= 0x80;
 
-                    if( PorterDebugLevel & 0x00000001 )
+                    if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << endl << "**** RouteCount: " << RouteCount << " ****" << endl;
@@ -360,7 +360,7 @@ LoadRemoteRoutes(CtiDeviceBase *RemoteRecord)
                     OutMessage->Buffer.OutMessage[Index++] = LOBYTE (-1);
                     OutMessage->Buffer.OutMessage[Index++] = LOBYTE (-1);
 
-                    if( PorterDebugLevel & 0x00000001 )
+                    if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-7]) << " "
@@ -380,7 +380,7 @@ LoadRemoteRoutes(CtiDeviceBase *RemoteRecord)
 
                     OutMessage->Buffer.OutMessage[Index++] = LOBYTE (RouteCount);
 
-                    if( PorterDebugLevel & 0x00000001 )
+                    if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
@@ -392,7 +392,7 @@ LoadRemoteRoutes(CtiDeviceBase *RemoteRecord)
                     /* Last SETL */
                     OutMessage->Buffer.OutMessage[Index++] = 0;
 
-                    if( PorterDebugLevel & 0x00000001 )
+                    if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
@@ -401,7 +401,7 @@ LoadRemoteRoutes(CtiDeviceBase *RemoteRecord)
                     /* Thats it so send the message */
                     OutMessage->OutLength = Index - PREIDL + 2;
 
-                    if( PorterDebugLevel & 0x00000001 )
+                    if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << "OutLength " << OutMessage->OutLength << endl;
@@ -456,7 +456,7 @@ LoadRemoteRoutes(CtiDeviceBase *RemoteRecord)
 
             OutMessage->Buffer.OutMessage[Index++] = (UCHAR)RouteCount;
 
-            if( PorterDebugLevel & 0x00000001 )
+            if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << endl << "**** Final Message ****" << endl;
@@ -509,7 +509,7 @@ LoadRemoteRoutes(CtiDeviceBase *RemoteRecord)
 
             OutMessage->Buffer.OutMessage[Index++] = LOBYTE (AmpMode);
 
-            if( PorterDebugLevel & 0x00000001 )
+            if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
@@ -542,7 +542,7 @@ LoadRemoteRoutes(CtiDeviceBase *RemoteRecord)
 
             OutMessage->Buffer.OutMessage[Index++] = (UCHAR)RouteCount;
 
-            if( PorterDebugLevel & 0x00000001 )
+            if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
@@ -559,7 +559,7 @@ LoadRemoteRoutes(CtiDeviceBase *RemoteRecord)
 
             OutMessage->Buffer.OutMessage[Index++] = (UCHAR)RouteCount;
 
-            if( PorterDebugLevel & 0x00000001 )
+            if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
@@ -571,7 +571,7 @@ LoadRemoteRoutes(CtiDeviceBase *RemoteRecord)
             /* Last SETL */
             OutMessage->Buffer.OutMessage[Index++] = 0;
 
-            if( PorterDebugLevel & 0x00000001 )
+            if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
@@ -580,7 +580,7 @@ LoadRemoteRoutes(CtiDeviceBase *RemoteRecord)
             /* Thats it so send the message */
             OutMessage->OutLength = Index - PREIDL + 2;
 
-            if( PorterDebugLevel & 0x00000001 )
+            if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "OutLength " << OutMessage->OutLength << endl;

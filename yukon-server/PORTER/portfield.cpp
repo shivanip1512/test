@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/07 16:47:00 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/05/08 14:28:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -274,7 +274,7 @@ VOID PortThread (VOID *arg)
          *  previous ReadQueue's operation. Note that the ReadQueue call mallocs space for the
          *  OutMessage pointer, and fills it from it's queue entries!
          */
-        if((status = ReadQueue (Port->getPortQueueHandle(), &ReadResult, &ReadLength, (PPVOID) &OutMessage, gQueSlot, DCWW_WAIT,&ReadPriority)) != NORMAL )
+        if((status = ReadQueue (Port->getPortQueueHandle(), &ReadResult, &ReadLength, (PPVOID) &OutMessage, gQueSlot, DCWW_WAIT, &ReadPriority)) != NORMAL )
         {
             if(status == ERROR_QUE_EMPTY)
             {
@@ -289,17 +289,19 @@ VOID PortThread (VOID *arg)
             }
             continue;
         }
-        else if(PorterDebugLevel & 0x00000008)
+        else if(PorterDebugLevel & PORTER_DEBUG_PORTQUEREAD)
         {
-            CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->DeviceID);
+            CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->TargetID);
+
+            if(tempDev)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Portfield connection read an outmessage for " << tempDev->getName() << endl;
+                dout << RWTime() << " Port " << Port->getName() << " read an outmessage for " << tempDev->getName();
+                dout << " at priority " << OutMessage->Priority << endl;
             }
         }
 
-
-        if(PorterDebugLevel & 0x00000001)
+        if(PorterDebugLevel & PORTER_DEBUG_VERBOSE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Portfield connection read OutMessage->DeviceID = " << OutMessage->DeviceID << endl
@@ -307,11 +309,9 @@ VOID PortThread (VOID *arg)
             << "                           OutMessage->Port     = " << OutMessage->Port << endl;
         }
 
-        if(OutMessage->DeviceID == 0 &&
-           OutMessage->Remote != 0 &&
-           OutMessage->Port != 0 )
+        if(OutMessage->DeviceID == 0 && OutMessage->Remote != 0 && OutMessage->Port != 0)
         {
-            if( PorterDebugLevel & 0x00000001 )
+            if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " looking for new deviceID..." << endl;
@@ -323,7 +323,7 @@ VOID PortThread (VOID *arg)
             {
                 OutMessage->DeviceID = tempDev->getID();
 
-                if( PorterDebugLevel & 0x00000001 )
+                if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " assigned new deviceID = " << tempDev->getID() << endl;
@@ -331,7 +331,7 @@ VOID PortThread (VOID *arg)
             }
             else
             {
-                if( PorterDebugLevel & 0x00000001 )
+                if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " did not assign new deviceID" << endl;
@@ -1704,7 +1704,7 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
 
                     i = Port->outMess(trx, Device, traceList);
 
-                    if(PorterDebugLevel & 0x00010000)
+                    if(PorterDebugLevel & PORTER_DEBUG_CCUMESSAGES)
                     {
                         CtiProtocol711 ccu711;
                         ccu711.setMasterRequest( OutMessage->Buffer.OutMessage );
@@ -1986,7 +1986,7 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
                                 InMessage->InLength -= 20;
                             }
 
-                            if(PorterDebugLevel & 0x00010000)
+                            if(PorterDebugLevel & PORTER_DEBUG_CCUMESSAGES)
                             {
                                 CtiProtocol711 ccu711;
                                 ccu711.setSlaveResponse( InMessage->IDLCStat );
@@ -2923,7 +2923,7 @@ BOOL areAnyOutMessagesForCRCID(void *pId, void* d)
     LONG Id = (LONG)pId;
     OUTMESS *OutMessage = (OUTMESS *)d;
 
-    if(PorterDebugLevel & 0x00000001 && OutMessage->Request.CheckSum == 0)
+    if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && OutMessage->Request.CheckSum == 0)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << " OutMessage detected zero valued checksum " << __FILE__ << " (" << __LINE__ << ") " <<

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:59 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/08 14:28:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,6 +44,7 @@ using namespace std;
 #include "msg_multi.h"
 #include "prot_711.h"
 #include "prot_emetcon.h"
+#include "utility.h"
 #include "yukon.h"
 
 
@@ -304,8 +305,9 @@ INT CtiDeviceCCU::CCU711Reset(OUTMESS* OutMessage)
     OutMessage->ReturnNexus = NULL;
     OutMessage->SaveNexus   = NULL;
 
-    OutMessage->Priority    = MAXPRIORITY;
     OutMessage->Buffer.OutMessage[PREIDL] = COLD;  //  16... ?
+
+    EstablishOutMessagePriority( OutMessage, MAXPRIORITY );
 
     return(NORMAL);
 }

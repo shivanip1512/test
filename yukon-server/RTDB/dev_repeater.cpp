@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/04/29 18:25:39 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/05/08 14:28:04 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -192,10 +192,7 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
             pOut->RouteID         = routeID;
             pOut->Request.RouteID = routeID;
 
-            if( pReq->getMessagePriority() )
-                pOut->Priority = pReq->getMessagePriority();
-            else
-                pOut->Priority = MAXPRIORITY - 4;
+            EstablishOutMessagePriority( OutMessage, MAXPRIORITY - 4 );
 
             if( (Route = CtiDeviceBase::getRoute( routeID )) != NULL )    // This is "this's" route
             {
@@ -301,7 +298,7 @@ INT CtiDeviceRepeater900::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &par
             OutMessage->Port      = getPortID();
             OutMessage->Remote    = getAddress();
             OutMessage->RouteID   = getRouteID();
-            OutMessage->Priority  = ScanPriority;
+            EstablishOutMessagePriority( OutMessage, ScanPriority );
             OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = CtiProtocolEmetcon::Scan_General;     // Helps us figure it out later!
             OutMessage->Retry     = 3;
@@ -355,7 +352,6 @@ INT CtiDeviceRepeater900::executeLoopback(CtiRequestMsg                  *pReq,
         OutMessage->Port      = getPortID();
         OutMessage->Remote    = getAddress();
         OutMessage->RouteID   = getRouteID();
-//        OutMessage->Priority  = MAXPRIORITY - 4;
         OutMessage->TimeOut   = 2;
         OutMessage->Sequence  = function;     // Helps us figure it out later!
         OutMessage->Retry     = 3;
@@ -419,7 +415,6 @@ INT CtiDeviceRepeater900::executeGetConfig(CtiRequestMsg                  *pReq,
         OutMessage->Port      = getPortID();
         OutMessage->Remote    = getAddress();
         OutMessage->RouteID   = getRouteID();
-//        OutMessage->Priority  = MAXPRIORITY - 4;
         OutMessage->TimeOut   = 2;
         OutMessage->Sequence  = function;     // Helps us figure it out later!
         OutMessage->Retry     = 3;
@@ -484,7 +479,6 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg                  *pReq,
        OutMessage->Port      = getPortID();
        OutMessage->Remote    = getAddress();
        OutMessage->RouteID   = getRouteID();
-//       OutMessage->Priority  = MAXPRIORITY - 4;
        OutMessage->TimeOut   = 2;
        OutMessage->Sequence  = function;     // Helps us figure it out later!
        OutMessage->Retry     = 3;
@@ -529,7 +523,6 @@ INT CtiDeviceRepeater900::executeGetValue(CtiRequestMsg                  *pReq,
       OutMessage->Port      = getPortID();
       OutMessage->Remote    = getAddress();
       OutMessage->RouteID   = getRouteID();
-//      OutMessage->Priority  = MAXPRIORITY - 4;
       OutMessage->TimeOut   = 2;
       OutMessage->Sequence  = function;         // Helps us figure it out later!
       OutMessage->Retry     = 3;

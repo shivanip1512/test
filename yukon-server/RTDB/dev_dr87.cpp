@@ -31,6 +31,7 @@ using namespace std ;
 
 #include "logger.h"
 #include "guard.h"
+#include "utility.h"
 
 //#define PRINT_DEBUG
 INT             DR87Retries = 7;
@@ -1380,14 +1381,11 @@ INT CtiDeviceDR87::GeneralScan(CtiRequestMsg *pReq,
         * a master with slaves has a slave address of 0
         *************************
         */
-        if (isMaster())
-//        if (getIED().isMaster())
+        EstablishOutMessagePriority( OutMessage, ScanPriority );
+
+        if (!isMaster())
         {
-            OutMessage->Priority  = ScanPriority;
-        }
-        else
-        {
-            OutMessage->Priority  = ScanPriority-1;
+            OverrideOutMessagePriority( OutMessage, OutMessage->Priority - 1 );
         }
 
         OutMessage->TimeOut   = 2;

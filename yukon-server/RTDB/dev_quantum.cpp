@@ -43,6 +43,7 @@
 
 #include "logger.h"
 #include "guard.h"
+#include "utility.h"
 
 
 SchlumbergerCommandBlk_t quantumScanCommands[] =
@@ -232,16 +233,14 @@ INT CtiDeviceQuantum::GeneralScan( CtiRequestMsg *pReq,
 
         // if this is a slave, drop the priority
         if( isMaster( ) )
-//      if (getIED().isMaster())
         {
-            OutMessage->Priority = ScanPriority;
-
+            EstablishOutMessagePriority( OutMessage, ScanPriority );
         }
         else
         {
             //  slave 1 = 1, slave 2 = 2, slave 3 = 3, slave 4 = 4 - so we're demoting priority based on
             //    position in the daisy chain.
-            OutMessage->Priority = ScanPriority - getIED( ).getSlaveAddress( );
+            OverrideOutMessagePriority(OutMessage, ScanPriority - getIED( ).getSlaveAddress( ));
         }
 
         OutMessage->TimeOut   = 2;

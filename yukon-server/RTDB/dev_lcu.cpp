@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/18 16:17:56 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/05/08 14:28:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -145,7 +145,7 @@ INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
         if(_lcuType == LCU_T3026)
         {
             setScanPending();
-            OutMessage->Priority = ScanPriority;
+            EstablishOutMessagePriority( OutMessage, ScanPriority );
 
             OUTMESS *pNewOutMessage = new OUTMESS(*OutMessage);
 
@@ -161,7 +161,7 @@ INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
         else
         {
             setScanPending();
-            OutMessage->Priority = ScanPriority;
+            EstablishOutMessagePriority( OutMessage, ScanPriority );
             status = lcuScanAll(OutMessage);
 
             // Put the single built up OUTMESS into the Slist
@@ -184,7 +184,7 @@ INT CtiDeviceLCU::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, 
     if(OutMessage != NULL)
     {
         setScanFreezePending();
-        OutMessage->Priority = ScanPriority;
+        EstablishOutMessagePriority( OutMessage, ScanPriority );
         status = lcuFreeze(OutMessage);
 
         // Put the single built up OUTMESS into the Slist
@@ -626,7 +626,7 @@ OUTMESS* CtiDeviceLCU::lcuControl(OUTMESS *&OutMessage)
     USHORT Count;
 
     /* Load up all the goodies */
-    OutMessage->Priority     = MAXPRIORITY - 3;
+    EstablishOutMessagePriority( OutMessage, MAXPRIORITY - 3 );
     OutMessage->TimeOut      = 3;
     OutMessage->InLength     = -1;
     OutMessage->EventCode    |= ENCODED | RESULT | RIPPLE;          // May contain RESULT based upon the incoming OutMessage
@@ -1622,7 +1622,7 @@ OUTMESS* CtiDeviceLCU::lcuStage(OUTMESS *&OutMessage)
                 if((MyOutMessage =  new OUTMESS(*OutMessage) ) != NULL)
                 {
                     /* Load up all the goodies */
-                    MyOutMessage->Priority = MAXPRIORITY - 2;
+                    EstablishOutMessagePriority( OutMessage, MAXPRIORITY - 2 );
                     MyOutMessage->TimeOut = 2;
                     MyOutMessage->OutLength = MASTERLENGTH;
                     MyOutMessage->InLength = -1;

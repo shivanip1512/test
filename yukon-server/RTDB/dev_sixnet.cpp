@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_sixnet.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:08 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/08 14:28:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +26,7 @@
 #include "pt_status.h"
 #include "pt_analog.h"
 #include "pt_accum.h"
+#include "utility.h"
 
 
 
@@ -1089,7 +1090,7 @@ INT CtiDeviceSixnet::generateCommand(CtiXfer  &Transfer, RWTPtrSlist< CtiMessage
             {
                 break;
             }
-            
+
         case SXNT_MOREDATANEEDED:
             {
                 // set it back to the previous completed state
@@ -1696,7 +1697,7 @@ INT CtiDeviceSixnet::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
             OutMessage->Port      = getPortID();
             OutMessage->Remote    = getAddress();
 
-            OutMessage->Priority  = ScanPriority;
+            EstablishOutMessagePriority( OutMessage, ScanPriority );
 
             OutMessage->TimeOut   = 2;
             OutMessage->EventCode = RESULT | ENCODED;
@@ -1950,7 +1951,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, RWTime &TimeNow
                 resetScanException();
             }
         }
-        else 
+        else
             if (getDebugLevel() & 0x10000000)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);

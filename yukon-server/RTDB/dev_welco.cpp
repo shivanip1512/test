@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/02 17:02:22 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/05/08 14:28:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -97,7 +97,7 @@ INT CtiDeviceWelco::AccumulatorScan(CtiRequestMsg *pReq,
         OutMessage->Buffer.OutMessage[4]  = 0x08;
         OutMessage->Port                  = getPortID();
         OutMessage->Remote                = getAddress();
-        OutMessage->Priority              = (UCHAR)ScanPriority;
+        EstablishOutMessagePriority( OutMessage, ScanPriority );
         OutMessage->TimeOut               = 2;
         OutMessage->OutLength             = 0;
         OutMessage->InLength              = -1;
@@ -313,7 +313,7 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
 
         OutMessage->Port                  = getPortID();
         OutMessage->Remote                = getAddress();
-        OutMessage->Priority              = (UCHAR)ScanPriority;
+        EstablishOutMessagePriority( OutMessage, ScanPriority );
         OutMessage->TimeOut               = 2;
 
         if(isScanFrozen() || isScanFreezeFailed())
@@ -1222,7 +1222,7 @@ INT CtiDeviceWelco::WelCoGetError(OUTMESS *OutMessage, INT Priority)            
     OutMessage->Buffer.OutMessage[4] = 0x08;
     OutMessage->Port         = getPortID();
     OutMessage->Remote       = getAddress();
-    OutMessage->Priority     = (UCHAR)Priority;
+    EstablishOutMessagePriority( OutMessage, Priority );
     OutMessage->TimeOut      = 2;
     OutMessage->OutLength    = 0;
     OutMessage->InLength     = -1;
@@ -1258,7 +1258,7 @@ INT CtiDeviceWelco::WelCoContinue (OUTMESS *OutMessage, INT Priority)
     OutMessage->DeviceID  = getID();
     OutMessage->Port      = getPortID();
     OutMessage->Remote    = getAddress();
-    OutMessage->Priority  = (UCHAR)Priority;
+    EstablishOutMessagePriority( OutMessage, Priority );
     OutMessage->TimeOut   = 2;
     OutMessage->OutLength = 0;
     OutMessage->InLength  = -1;
@@ -1285,7 +1285,7 @@ INT CtiDeviceWelco::WelCoPoll (OUTMESS *OutMessage, INT Priority)
     OutMessage->DeviceID     = getID();
     OutMessage->Port         = getPortID();
     OutMessage->Remote       = getAddress();
-    OutMessage->Priority     = (UCHAR)Priority;
+    EstablishOutMessagePriority( OutMessage, Priority );
     OutMessage->TimeOut      = 2;
     OutMessage->OutLength    = 0;
     OutMessage->InLength     = -1;
@@ -1344,7 +1344,7 @@ INT CtiDeviceWelco::WelCoTimeSync(OUTMESS *OutMessage, INT Priority)
         OutMessage->Source             = 0;
         OutMessage->Destination        = 0;
         OutMessage->Sequence           = 0;
-        OutMessage->Priority           = (UCHAR)Priority;
+        EstablishOutMessagePriority( OutMessage, Priority );
         OutMessage->EventCode          = NORESULT | ENCODED | TSYNC;
         OutMessage->ReturnNexus        = NULL;
         OutMessage->SaveNexus          = NULL;
@@ -1375,7 +1375,7 @@ INT CtiDeviceWelco::WelCoReset(OUTMESS *OutMessage, INT Priority)
     OutMessage->DeviceID     = getID();
     OutMessage->Port         = getPortID();
     OutMessage->Remote       = getAddress();
-    OutMessage->Priority     = (UCHAR)Priority;
+    EstablishOutMessagePriority( OutMessage, Priority );
     OutMessage->TimeOut      = 2;
     OutMessage->OutLength    = 3;
     OutMessage->InLength     = -1;
@@ -1539,7 +1539,7 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, RWTPtrSlist< OUTMESS > &
                         MyOutMessage->DeviceID                 = getID();
                         MyOutMessage->Port                     = getPortID();
                         MyOutMessage->Remote                   = getAddress();
-                        MyOutMessage->Priority                 = (UCHAR)Priority;
+                        EstablishOutMessagePriority( MyOutMessage, Priority );
                         MyOutMessage->TimeOut                  = 2;
                         MyOutMessage->OutLength                = ByteCount + 2;
                         MyOutMessage->InLength                 = -1;
@@ -1846,7 +1846,8 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
                         OutMessage->Port        = getPortID();
                         OutMessage->Remote      = getAddress();
 
-                        OutMessage->Priority    = MAXPRIORITY;
+                        EstablishOutMessagePriority( OutMessage, MAXPRIORITY );
+
                         OutMessage->TimeOut     = 2;
                         OutMessage->InLength    = -1;
                         OutMessage->EventCode   |= ENCODED | NOWAIT | NORESULT;          // May contain RESULT based upon the incoming OutMessage

@@ -235,7 +235,7 @@ INT CtiDeviceION::GeneralScan( CtiRequestMsg              *pReq,
         OutMessage->Port      = getPortID( );
         OutMessage->Remote    = getAddress( );
 
-        OutMessage->Priority  = ScanPriority;
+        EstablishOutMessagePriority( OutMessage, ScanPriority );
 
         //  if this is a slave, drop the priority
 //      if( !(getIED( ).isMaster( )) )

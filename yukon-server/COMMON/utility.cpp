@@ -314,6 +314,28 @@ BOOL OutEchoToIN(const OUTMESS *Out, INMESS *In)
     return bRet;
 }
 
+/*
+ *  This method will set the outmessage's priority if it has not been already set.  In general all the device execute
+ *  routines should use this function or the next.
+ */
+INT EstablishOutMessagePriority(OUTMESS *Out, INT priority)
+{
+    if(Out->Priority <= 0)
+    {
+        Out->Priority = priority;
+    }
+
+    return Out->Priority;
+}
+
+/*
+ *  This method will set the outmessage's priority.  It is provided only as a contrast to EstablishOutMessagePriority
+ */
+INT OverrideOutMessagePriority(OUTMESS *Out, INT priority)
+{
+    return Out->Priority = priority;
+}
+
 
 
 // defines //////////////////////////////////////////////////////

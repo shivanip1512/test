@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/05/02 17:02:30 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/05/08 14:28:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -243,7 +243,7 @@ void applyTAPPortStatus(const CtiHashKey *unusedKey, CtiPort *&Port, void *unuse
     Port->setTAP( isTAPTermPort(Port->getPortID() ));
 
 
-    if((PorterDebugLevel & 0x00000001) && Port->isTAP())
+    if((PorterDebugLevel & PORTER_DEBUG_VERBOSE) && Port->isTAP())
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " WARNING: " << Port->getName() << " has a TAP device on it." << endl;

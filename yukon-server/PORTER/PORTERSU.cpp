@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:30 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/08 14:28:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -145,7 +145,7 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode)
         else if(OutMessage->Priority == MAXPRIORITY)
             InMessage.Priority = MAXPRIORITY - 1;
 
-        if(PorterDebugLevel & 0x00000010)
+        if(PorterDebugLevel & PORTER_DEBUG_SENDERROR)
         {
             CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->DeviceID);
             {

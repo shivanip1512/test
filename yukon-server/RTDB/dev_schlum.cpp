@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_schlum.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:07 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/08 14:28:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,6 +39,7 @@
 
 #include "logger.h"
 #include "guard.h"
+#include "utility.h"
 
 /*
  * Command Char, Command Name, Sent bytes (less CRC), Rec. Bytes (less CRC)
@@ -367,16 +368,11 @@ INT CtiDeviceSchlumberger::GeneralScan(CtiRequestMsg *pReq,
         OutMessage->Remote    = getAddress();
 
         // if this is a slave, drop the priority
-        if (isMaster())
-//      if (getIED().isMaster())
-        {
-            OutMessage->Priority  = ScanPriority;
+        EstablishOutMessagePriority( OutMessage, ScanPriority );
 
-        }
-        else
+        if (!isMaster())
         {
-            OutMessage->Priority  = ScanPriority-1;
-
+            OverrideOutMessagePriority( OutMessage, OutMessage->Priority - 1 );
         }
 
         OutMessage->TimeOut   = 2;

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/02 17:02:22 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/08 14:28:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -92,7 +92,6 @@ INT CtiDeviceILEX::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse,
         OutMessage->DeviceID              = getID();
         OutMessage->Port                  = getPortID();
         OutMessage->Remote                = getAddress();
-        OutMessage->Priority              = (UCHAR)(MAXPRIORITY - 3);
         OutMessage->TimeOut               = 2;
         OutMessage->OutLength             = 3;
         OutMessage->InLength              = -1;
@@ -101,6 +100,7 @@ INT CtiDeviceILEX::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse,
         OutMessage->Retry                 = 3;
 
         OutMessage->Buffer.OutMessage[9]  = getFreezeNumber();
+        EstablishOutMessagePriority( OutMessage, (MAXPRIORITY - 3) );
 
         setScanIntegrity(TRUE);                         // We are an integrity scan (equiv. anyway).  Data must be propagated.
 
@@ -152,7 +152,7 @@ INT CtiDeviceILEX::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         OutMessage->DeviceID              = getID();
         OutMessage->Port                  = getPortID();
         OutMessage->Remote                = getAddress();
-        OutMessage->Priority              = (UCHAR)(ScanPriority);
+        EstablishOutMessagePriority( OutMessage, ScanPriority );
         OutMessage->TimeOut               = 2;
         OutMessage->OutLength             = 2;
         OutMessage->InLength              = -1;

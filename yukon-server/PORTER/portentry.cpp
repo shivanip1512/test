@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:55:59 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/08 14:28:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -265,12 +265,15 @@ VOID ConnectionThread (VOID *Arg)
             }
         }
 
-        if(PorterDebugLevel & 0x00000004)
+        if(PorterDebugLevel & PORTER_DEBUG_NEXUSREAD)
         {
-            CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->DeviceID);
+            CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->TargetID);
+
+            if(tempDev)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Portentry connection received an outmessage for " << tempDev->getName() << endl;
+                dout << RWTime() << " Portentry connection received an outmessage for " << tempDev->getName();
+                dout << " at priority " << OutMessage->Priority << endl;
             }
         }
 
