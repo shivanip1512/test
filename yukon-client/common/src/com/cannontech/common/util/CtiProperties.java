@@ -83,6 +83,8 @@ public class CtiProperties extends java.util.Properties implements ClientRights
    public static final String KEY_MAIL_FROM_ADDRESS="mail.from.address";
    
    public static final String KEY_LC_REDUCTION_COL = "lc_reduction_col";
+   
+   public static final String KEY_STARS_SOAP_SERVER = "stars_soap_server";
     
    
 	public static final String[] ALL_CONFIG_KEYS =
@@ -132,7 +134,8 @@ public class CtiProperties extends java.util.Properties implements ClientRights
       
       KEY_SMTP_HOST,
       KEY_MAIL_FROM_ADDRESS,
-      KEY_LC_REDUCTION_COL
+      KEY_LC_REDUCTION_COL,
+      KEY_STARS_SOAP_SERVER
 
 	};
 
