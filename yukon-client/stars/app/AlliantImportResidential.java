@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ServletUtils;
 
 /*
  * Created on May 24, 2004
@@ -43,8 +44,8 @@ public class AlliantImportResidential {
 				String[] columns = ServerUtils.splitString( lines[i], "," );;
 				output[i] = lines[i] + "," +
 						"ExpressStat," +
-						"AE Residential StatSaver," +
-						"AE Residential " + columns[2] + "," +
+						"AE Residential DegreeSaver," +
+						"AE Residential " + ServletUtils.capitalize2(columns[2]) + "," +
 						columns[8] + "," + columns[8];	// username = password = serial #
 			}
 			
