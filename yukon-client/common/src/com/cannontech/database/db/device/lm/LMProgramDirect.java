@@ -79,7 +79,7 @@ public String getStoppedEarlyMsg() {
 	return stoppedEarlyMsg;
 }
 
-public static final LMDirectCustomerList[] getAllCustomerList(Integer programDeviceID, java.sql.Connection conn) throws java.sql.SQLException
+public static final LMDirectNotificationGroupList[] getAllNotificationGroupsList(Integer programDeviceID, java.sql.Connection conn) throws java.sql.SQLException
 {
 	java.util.ArrayList tmpList = new java.util.ArrayList(30);
 	java.sql.PreparedStatement pstmt = null;
@@ -88,7 +88,7 @@ public static final LMDirectCustomerList[] getAllCustomerList(Integer programDev
 	
 	String sql = "select l.ProgramID, l.CustomerID " +
 				 "from " +
-				 LMDirectCustomerList.TABLE_NAME + " l " +
+				 LMDirectNotificationGroupList.TABLE_NAME + " l " +
 				 "where l.ProgramID = ? " +
 				 "order by l.CustomerID";
 
@@ -110,7 +110,7 @@ public static final LMDirectCustomerList[] getAllCustomerList(Integer programDev
 	
 			while( rset.next() )
 			{
-				LMDirectCustomerList customer = new LMDirectCustomerList();
+				LMDirectNotificationGroupList customer = new LMDirectNotificationGroupList();
 				
 				customer.setDeviceID( new Integer(rset.getInt("ProgramID")) );
 				customer.setCustomerID( new Integer(rset.getInt("CustomerID")) );
@@ -137,7 +137,7 @@ public static final LMDirectCustomerList[] getAllCustomerList(Integer programDev
 	}
 
 
-	LMDirectCustomerList retVal[] = new LMDirectCustomerList[ tmpList.size() ];
+	LMDirectNotificationGroupList retVal[] = new LMDirectNotificationGroupList[ tmpList.size() ];
 	tmpList.toArray( retVal );
 	
 	return retVal;

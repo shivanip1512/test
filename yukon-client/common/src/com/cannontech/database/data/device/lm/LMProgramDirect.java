@@ -1,6 +1,6 @@
 package com.cannontech.database.data.device.lm;
 
-import com.cannontech.database.db.device.lm.LMDirectCustomerList;
+import com.cannontech.database.db.device.lm.LMDirectNotificationGroupList;
 /**
  * Insert the type's description here.
  * Creation date: (12/6/00 3:54:11 PM)
@@ -16,7 +16,7 @@ public class LMProgramDirect extends LMProgramBase
 
 	//this vector should only contain com.cannontech.database.db.device.lm.LMProgramDirectGear
 	private java.util.Vector lmProgramDirectGearVector = null;
-	private java.util.Vector lmProgramDirectCustomerVector = null;
+	private java.util.Vector lmProgramDirectNotifyGroupVector = null;
 /**
  * LMProgramBase constructor comment.
  */
@@ -50,8 +50,8 @@ public void add() throws java.sql.SQLException
 	}
 	
 	//add the customers
-	for( int i = 0; i < getLmProgramDirectCustomerVector().size(); i++ )
-		((LMDirectCustomerList)getLmProgramDirectCustomerVector().elementAt(i)).add();
+	for( int i = 0; i < getLmProgramDirectNotifyGroupVector().size(); i++ )
+		((LMDirectNotificationGroupList)getLmProgramDirectNotifyGroupVector().elementAt(i)).add();
 }
 /**
  * This method was created in VisualAge.
@@ -61,8 +61,8 @@ public void delete() throws java.sql.SQLException
 	
 	//delete all of our direct customers first
 	  delete(
-		  LMDirectCustomerList.TABLE_NAME,
-		  LMDirectCustomerList.CONSTRAINT_COLUMNS[0],
+		  LMDirectNotificationGroupList.TABLE_NAME,
+		  LMDirectNotificationGroupList.CONSTRAINT_COLUMNS[0],
 		  getPAObjectID() );
 	
 	LMProgramDirectGear.deleteAllDirectGears( getPAObjectID(), getDbConnection() );
@@ -111,12 +111,12 @@ public java.util.Vector getLmProgramDirectGearVector()
 	return lmProgramDirectGearVector;
 }
 
-public java.util.Vector getLmProgramDirectCustomerVector()
+public java.util.Vector getLmProgramDirectNotifyGroupVector()
 {
-	if( lmProgramDirectCustomerVector == null )
-		lmProgramDirectCustomerVector = new java.util.Vector();
+	if( lmProgramDirectNotifyGroupVector == null )
+		lmProgramDirectNotifyGroupVector = new java.util.Vector();
 		
-	return lmProgramDirectCustomerVector;
+	return lmProgramDirectNotifyGroupVector;
 }
 /**
  * This method was created in VisualAge.
@@ -136,11 +136,11 @@ public void retrieve() throws java.sql.SQLException
 	for( int i = 0; i < groups.length; i++ )
 		getLmProgramStorageVector().add( groups[i] );
 		
-	LMDirectCustomerList[] customers = com.cannontech.database.db.device.lm.LMProgramDirect.getAllCustomerList( 
+	LMDirectNotificationGroupList[] customers = com.cannontech.database.db.device.lm.LMProgramDirect.getAllNotificationGroupsList( 
 		getPAObjectID(), getDbConnection() );
 
 	for( int i = 0; i < customers.length; i++ )
-		getLmProgramDirectCustomerVector().add( customers[i] );
+		getLmProgramDirectNotifyGroupVector().add( customers[i] );
 	
 }
 /**
@@ -156,8 +156,8 @@ public void setDbConnection(java.sql.Connection conn)
 	for( int i = 0; i < getLmProgramDirectGearVector().size(); i++ )
 		((LMProgramDirectGear)getLmProgramDirectGearVector().elementAt(i)).setDbConnection(conn);
 		
-	for( int i = 0; i < getLmProgramDirectCustomerVector().size(); i++ )
-		((LMDirectCustomerList)getLmProgramDirectCustomerVector().elementAt(i)).setDbConnection(conn);
+	for( int i = 0; i < getLmProgramDirectNotifyGroupVector().size(); i++ )
+		((LMDirectNotificationGroupList)getLmProgramDirectNotifyGroupVector().elementAt(i)).setDbConnection(conn);
 
 }
 /**
@@ -188,8 +188,8 @@ public void setPAObjectID(Integer paoID)
 	for( int i = 0; i < getLmProgramDirectGearVector().size(); i++ )
 		((LMProgramDirectGear)getLmProgramDirectGearVector().elementAt(i)).setDeviceID( paoID );
 	
-	for( int i = 0; i < getLmProgramDirectCustomerVector().size(); i++ )
-		((LMDirectCustomerList)getLmProgramDirectCustomerVector().elementAt(i)).setDeviceID(paoID);
+	for( int i = 0; i < getLmProgramDirectNotifyGroupVector().size(); i++ )
+		((LMDirectNotificationGroupList)getLmProgramDirectNotifyGroupVector().elementAt(i)).setDeviceID(paoID);
 }
 /**
  * This method was created in VisualAge.
@@ -229,14 +229,14 @@ public void update() throws java.sql.SQLException
 	
 	//delete all of our energy exchange customers first
 	delete( 
-		LMDirectCustomerList.TABLE_NAME, 
-		LMDirectCustomerList.CONSTRAINT_COLUMNS[0],
+		LMDirectNotificationGroupList.TABLE_NAME, 
+		LMDirectNotificationGroupList.CONSTRAINT_COLUMNS[0],
 		getPAObjectID() );
 
-	for( int i = 0; i < getLmProgramDirectCustomerVector().size(); i++ )
+	for( int i = 0; i < getLmProgramDirectNotifyGroupVector().size(); i++ )
 	{
-		((LMDirectCustomerList)getLmProgramDirectCustomerVector().elementAt(i)).setDeviceID( getDirectProgram().getDeviceID() );
-		((LMDirectCustomerList)getLmProgramDirectCustomerVector().elementAt(i)).add();
+		((LMDirectNotificationGroupList)getLmProgramDirectNotifyGroupVector().elementAt(i)).setDeviceID( getDirectProgram().getDeviceID() );
+		((LMDirectNotificationGroupList)getLmProgramDirectNotifyGroupVector().elementAt(i)).add();
 	 }
 
 }
