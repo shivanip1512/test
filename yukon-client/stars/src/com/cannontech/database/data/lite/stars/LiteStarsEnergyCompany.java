@@ -152,13 +152,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private int primaryContactID = CtiUtilities.NONE_ID;
 	private int userID = com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID;
 	
-	private ArrayList custAccountInfos = null;	// List of LiteStarsCustAccountInformation
-	private ArrayList addresses = null;			// List of LiteAddress
+	private Hashtable custAccountInfos = null;	// Map of Integer(AccountID) to LiteStarsCustAccountInformation
+	private Hashtable addresses = null;			// Map of Integer(AddressID) to LiteAddress
+	private Hashtable inventory = null;			// Map of Integer(InventoryID) to LiteInventoryBase
+	private Hashtable lmCtrlHists = null;		// Map of Integer(GroupID) to LiteStarsLMControlHistory
+	private Hashtable workOrders = null;		// Map of Integer(OrderID) to LiteWorkOrderBase
+	
 	private ArrayList pubPrograms = null;		// List of LiteLMProgramWebPublishing
-	private ArrayList inventory = null;			// List of LiteInventoryBase
-	private ArrayList lmCtrlHists = null;		// List of LiteStarsLMControlHistory
 	private ArrayList appCategories = null;		// List of LiteApplianceCategory
-	private ArrayList workOrders = null;		// List of LiteWorkOrderBase
 	private ArrayList serviceCompanies = null;	// List of LiteServiceCompany
 	private ArrayList selectionLists = null;	// List of YukonSelectionList
 	private ArrayList interviewQuestions = null;	// List of LiteInterviewQuestion
@@ -206,8 +207,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private Hashtable starsSelectionLists = null;	// Map String(list name) to StarsSelectionListEntry
 	private Hashtable starsCustAcctInfos = null;	// Map Integer(account ID) to StarsCustAccountInformation
 	private Hashtable starsLMCtrlHists = null;		// Map Integer(group ID) to StarsLMControlHistory
-	
-	private ArrayList activeAccounts = null;		// List of StarsCustAccountInformation
 	
 	// Energy company hierarchy
 	private LiteStarsEnergyCompany parent = null;
@@ -489,8 +488,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		starsSelectionLists = null;
 		starsCustAcctInfos = null;
 		starsLMCtrlHists = null;
-		
-		activeAccounts = null;
 		
 		parent = null;
 		children = null;
@@ -1277,39 +1274,59 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		nextOrderNo = 0;
 	}
 	
-	public ArrayList getAllAddresses() {
+	private Hashtable getAddressMap() {
 		if (addresses == null)
-			addresses = new ArrayList();
+			addresses = new Hashtable();
 		
 		return addresses;
 	}
 	
-	public ArrayList getAllInventory() {
+	public ArrayList getAllAddresses() {
+		return new ArrayList( getAddressMap().values() );
+	}
+	
+	private Hashtable getInventoryMap() {
 		if (inventory == null)
-			inventory = new ArrayList();
-			
+			inventory = new Hashtable();
+		
 		return inventory;
 	}
 	
-	public ArrayList getAllWorkOrders() {
+	public ArrayList getAllInventory() {
+		return new ArrayList( getInventoryMap().values() );
+	}
+	
+	private Hashtable getWorkOrderMap() {
 		if (workOrders == null)
-			workOrders = new ArrayList();
+			workOrders = new Hashtable();
 		
 		return workOrders;
 	}
 	
-	public ArrayList getAllCustAccountInformation() {
+	public ArrayList getAllWorkOrders() {
+		return new ArrayList( getWorkOrderMap().values() );
+	}
+	
+	private Hashtable getCustAccountInfoMap() {
 		if (custAccountInfos == null)
-			custAccountInfos = new ArrayList();
+			custAccountInfos = new Hashtable();
 		
 		return custAccountInfos;
 	}
 	
-	public ArrayList getAllLMControlHistory() {
+	public ArrayList getAllCustAccountInformation() {
+		return new ArrayList( getCustAccountInfoMap().values() );
+	}
+	
+	private Hashtable getLMCtrlHistMap() {
 		if (lmCtrlHists == null)
-			lmCtrlHists = new ArrayList();
+			lmCtrlHists = new Hashtable();
 		
 		return lmCtrlHists;
+	}
+	
+	public ArrayList getAllLMControlHistory() {
+		return new ArrayList( getLMCtrlHistMap().values() );
 	}
 	
 	
@@ -1452,16 +1469,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	private LiteAddress getAddress(int addressID, boolean autoLoad) {
-		ArrayList addressList = getAllAddresses();
-		LiteAddress liteAddr = null;
-		
-		synchronized (addressList) {
-			for (int i = 0; i < addressList.size(); i++) {
-				liteAddr = (LiteAddress) addressList.get(i);
-				if (liteAddr.getAddressID() == addressID)
-					return liteAddr;
-			}
-		}
+		LiteAddress liteAddr = (LiteAddress) getAddressMap().get( new Integer(addressID) );
+		if (liteAddr != null) return liteAddr;
 		
 		if (autoLoad) {
 			try {
@@ -1469,9 +1478,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				addr.setAddressID( new Integer(addressID) );
 				addr = (com.cannontech.database.db.customer.Address)
 						Transaction.createTransaction( Transaction.RETRIEVE, addr ).execute();
-				liteAddr = (LiteAddress) StarsLiteFactory.createLite( addr );
 				
-				synchronized (addressList) { addressList.add( liteAddr ); }
+				liteAddr = (LiteAddress) StarsLiteFactory.createLite( addr );
+				addAddress( liteAddr );
 				return liteAddr;
 			}
 			catch (Exception e) {
@@ -1487,23 +1496,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public void addAddress(LiteAddress liteAddr) {
-		ArrayList addressList = getAllAddresses();
-		synchronized (addressList) { addressList.add( liteAddr ); }
+		getAddressMap().put( new Integer(liteAddr.getAddressID()), liteAddr );
 	}
 	
 	public LiteAddress deleteAddress(int addressID) {
-		ArrayList addressList = getAllAddresses();
-		synchronized (addressList) {
-			for (int i = 0; i < addressList.size(); i++) {
-				LiteAddress liteAddr = (LiteAddress) addressList.get(i);
-				if (liteAddr.getAddressID() == addressID) {
-					addressList.remove(i);
-					return liteAddr;
-				}
-			}
-		}
-		
-		return null;
+		return (LiteAddress) getAddressMap().remove( new Integer(addressID) );
 	}
 	
 	public LiteLMProgramWebPublishing getProgram(int programID) {
@@ -1630,15 +1627,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public LiteInventoryBase getInventoryBrief(int inventoryID, boolean autoLoad) {
-		ArrayList inventory = getAllInventory();
-		
-		synchronized (inventory) {
-			for (int i = 0; i < inventory.size(); i++) {
-				LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
-				if (liteInv.getInventoryID() == inventoryID)
-					return liteInv;
-			}
-		}
+		LiteInventoryBase liteInv = (LiteInventoryBase) getInventoryMap().get( new Integer(inventoryID) );
+		if (liteInv != null) return liteInv;
 		
 		if (autoLoad && !inventoryLoaded)
 			return loadInventory( inventoryID );
@@ -1656,24 +1646,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public void addInventory(LiteInventoryBase liteInv) {
-		ArrayList inventory = getAllInventory();
-		synchronized (inventory) { inventory.add( liteInv ); }
+		getInventoryMap().put( new Integer(liteInv.getInventoryID()), liteInv );
 	}
 	
 	public LiteInventoryBase deleteInventory(int invID) {
-		ArrayList inventory = getAllInventory();
-		
-		synchronized (inventory) {
-			for (int i = 0; i < inventory.size(); i++) {
-				LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
-				if (liteInv.getInventoryID() == invID) {
-					inventory.remove(i);
-					return liteInv;
-				}
-			}
-		}
-		
-		return null;
+		return (LiteInventoryBase) getInventoryMap().get( new Integer(invID) );
 	}
 	
 	/**
@@ -1683,19 +1660,16 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		throws ObjectInOtherEnergyCompanyException
 	{
 		ArrayList inventory = getAllInventory();
-		
-		synchronized (inventory) {
-			for (int i = 0; i < inventory.size(); i++) {
-				LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
-				if (liteInv.getInventoryID() < 0) continue;
-				if (!(liteInv instanceof LiteStarsLMHardware)) continue;
-				
-				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
-				if (YukonListFuncs.getYukonListEntry( liteHw.getLmHardwareTypeID() ).getYukonDefID() == devTypeDefID &&
-					liteHw.getManufacturerSerialNumber().equalsIgnoreCase( serialNo ))
-				{
-					return new Pair(liteHw, this);
-				}
+		for (int i = 0; i < inventory.size(); i++) {
+			LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
+			if (liteInv.getInventoryID() < 0) continue;
+			if (!(liteInv instanceof LiteStarsLMHardware)) continue;
+			
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
+			if (YukonListFuncs.getYukonListEntry( liteHw.getLmHardwareTypeID() ).getYukonDefID() == devTypeDefID &&
+				liteHw.getManufacturerSerialNumber().equalsIgnoreCase( serialNo ))
+			{
+				return new Pair(liteHw, this);
 			}
 		}
 		
@@ -1773,17 +1747,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		throws ObjectInOtherEnergyCompanyException
 	{
 		ArrayList inventory = getAllInventory();
-		
-		synchronized (inventory) {
-			for (int i = 0; i < inventory.size(); i++) {
-				LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
-				if (liteInv.getInventoryID() < 0) continue;
-				if (liteInv.getDeviceID() == CtiUtilities.NONE_ID) continue;
-				
-				if (liteInv.getCategoryID() == categoryID &&
-					PAOFuncs.getYukonPAOName( liteInv.getDeviceID() ).equalsIgnoreCase( deviceName ))
-					return liteInv;
-			}
+		for (int i = 0; i < inventory.size(); i++) {
+			LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
+			if (liteInv.getInventoryID() < 0) continue;
+			if (liteInv.getDeviceID() == CtiUtilities.NONE_ID) continue;
+			
+			if (liteInv.getCategoryID() == categoryID &&
+				PAOFuncs.getYukonPAOName( liteInv.getDeviceID() ).equalsIgnoreCase( deviceName ))
+				return liteInv;
 		}
 		
 		if (!inventoryLoaded
@@ -1832,13 +1803,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	 */
 	public LiteInventoryBase getDevice(int deviceID) throws ObjectInOtherEnergyCompanyException {
 		ArrayList inventory = getAllInventory();
-		
-		synchronized (inventory) {
-			for (int i = 0; i < inventory.size(); i++) {
-				LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
-				if (liteInv.getDeviceID() == deviceID)
-					return liteInv;
-			}
+		for (int i = 0; i < inventory.size(); i++) {
+			LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
+			if (liteInv.getDeviceID() == deviceID)
+				return liteInv;
 		}
 		
 		if (!inventoryLoaded
@@ -2054,16 +2022,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public LiteStarsLMControlHistory getLMControlHistory(int groupID) {
 		if (groupID == CtiUtilities.NONE_ID) return null;
 		
-		LiteStarsLMControlHistory lmCtrlHist = null;
-		
-		ArrayList lmCtrlHistList = getAllLMControlHistory();
-		synchronized (lmCtrlHistList) {
-			for (int i = 0; i < lmCtrlHistList.size(); i++) {
-				lmCtrlHist = (LiteStarsLMControlHistory) lmCtrlHistList.get(i);
-				if (lmCtrlHist.getGroupID() == groupID)
-					return lmCtrlHist;
-			}
-		}
+		LiteStarsLMControlHistory lmCtrlHist =
+				(LiteStarsLMControlHistory) getLMCtrlHistMap().get( new Integer(groupID) );
+		if (lmCtrlHist != null) return lmCtrlHist;
 		
 		ArrayList ctrlHistList = new ArrayList();
 		com.cannontech.database.db.pao.LMControlHistory[] ctrlHist = com.cannontech.stars.util.LMControlHistoryUtil.getLMControlHistory(
@@ -2075,7 +2036,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		lmCtrlHist.setLmControlHistory( ctrlHistList );
 		//lmCtrlHist.updateStartIndices( tz );
 		
-		synchronized (lmCtrlHistList) { lmCtrlHistList.add( lmCtrlHist ); }
+		getLMCtrlHistMap().put( new Integer(groupID), lmCtrlHist );
 		return lmCtrlHist;
 	}
 	
@@ -2135,8 +2096,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public synchronized ArrayList loadWorkOrders() {
-		ArrayList workOrders = getAllWorkOrders();
-		if (workOrdersLoaded) return workOrders;
+		if (workOrdersLoaded) return getAllWorkOrders();
 		
 		try {
 			String sql = "SELECT WorkOrderID FROM ECToWorkOrderMapping WHERE EnergyCompanyID=" + getEnergyCompanyID();
@@ -2161,7 +2121,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			workOrdersLoaded = true;
 			CTILogger.info( "All work orders loaded for energy company #" + getEnergyCompanyID() );
 			
-			return workOrders;
+			return getAllWorkOrders();
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
@@ -2171,16 +2131,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public LiteWorkOrderBase getWorkOrderBase(int orderID, boolean autoLoad) {
-		ArrayList workOrders = getAllWorkOrders();
-		LiteWorkOrderBase workOrder = null;
-        
-		synchronized (workOrders) {
-			for (int i = 0; i < workOrders.size(); i++) {
-				workOrder = (LiteWorkOrderBase) workOrders.get(i);
-				if (workOrder.getOrderID() == orderID)
-					return workOrder;
-			}
-		}
+		LiteWorkOrderBase workOrder = (LiteWorkOrderBase) getWorkOrderMap().get( new Integer(orderID) );
+        if (workOrder != null) return workOrder;
         
 		if (autoLoad) {
 			try {
@@ -2189,8 +2141,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				order = (com.cannontech.database.db.stars.report.WorkOrderBase)
 						Transaction.createTransaction( Transaction.RETRIEVE, order ).execute();
 				workOrder = (LiteWorkOrderBase) StarsLiteFactory.createLite( order );
-        	
-				synchronized (workOrders) { workOrders.add( workOrder ); }
+        		
+				addWorkOrderBase( workOrder );
 				return workOrder;
 			}
 			catch (Exception e) {
@@ -2202,22 +2154,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public void addWorkOrderBase(LiteWorkOrderBase liteOrder) {
-		ArrayList workOrders = getAllWorkOrders();
-		synchronized (workOrders) { workOrders.add( liteOrder ); }
+		getWorkOrderMap().put( new Integer(liteOrder.getOrderID()), liteOrder );
 	}
 	
 	public void deleteWorkOrderBase(int orderID) {
-		ArrayList workOrders = getAllWorkOrders();
-        
-		synchronized (workOrders) {
-			for (int i = 0; i < workOrders.size(); i++) {
-				LiteWorkOrderBase workOrder = (LiteWorkOrderBase) workOrders.get(i);
-				if (workOrder.getOrderID() == orderID) {
-					workOrders.remove( i );
-					return;
-				}
-			}
-		}
+		getWorkOrderMap().remove( new Integer(orderID) );
 	}
 	
 	private LiteStarsCustAccountInformation addBriefCustAccountInfo(com.cannontech.database.data.stars.customer.CustomerAccount account) {
@@ -2256,15 +2197,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		liteAcctInfo.setInventories( inventories );
         
 		com.cannontech.database.db.customer.Address streetAddr = site.getStreetAddress();
-		LiteAddress liteAddr = (LiteAddress) StarsLiteFactory.createLite( streetAddr );
-		addAddress( liteAddr );
+		addAddress( (LiteAddress) StarsLiteFactory.createLite(streetAddr) );
 		
 		com.cannontech.database.db.customer.Address billAddr = account.getBillingAddress();
-		liteAddr = (LiteAddress) StarsLiteFactory.createLite( billAddr );
-		addAddress( liteAddr );
+		addAddress( (LiteAddress) StarsLiteFactory.createLite(billAddr) );
         
-		ArrayList custAcctInfoList = getAllCustAccountInformation();
-		synchronized (custAcctInfoList) { custAcctInfoList.add( liteAcctInfo ); }
+		getCustAccountInfoMap().put( new Integer(liteAcctInfo.getAccountID()), liteAcctInfo );
+		
 		return liteAcctInfo;
 	}
 	
@@ -2380,16 +2319,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public LiteStarsCustAccountInformation getBriefCustAccountInfo(int accountID, boolean autoLoad) {
-		ArrayList custAcctInfoList = getAllCustAccountInformation();
-		LiteStarsCustAccountInformation liteAcctInfo = null;
-		
-		synchronized (custAcctInfoList) {
-			for (int i = 0; i < custAcctInfoList.size(); i++) {
-				liteAcctInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
-				if (liteAcctInfo.getCustomerAccount().getAccountID() == accountID)
-					return liteAcctInfo;
-			}
-		}
+		LiteStarsCustAccountInformation liteAcctInfo =
+				(LiteStarsCustAccountInformation) getCustAccountInfoMap().get( new Integer(accountID) );
+		if (liteAcctInfo != null) return liteAcctInfo;
 		
 		if (autoLoad) {
 			try {
@@ -2455,18 +2387,16 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			deleteWorkOrderBase( orderID );
 		}
 		
-		// Remove the customer account from custAccountInfos
-		getAllCustAccountInformation().remove( liteAcctInfo );
+		// Remove the customer account from cache
+		getCustAccountInfoMap().remove( new Integer(liteAcctInfo.getAccountID()) );
 	}
 	
 	private LiteStarsCustAccountInformation searchByAccountNo(String accountNo) {
 		ArrayList custAcctInfoList = getAllCustAccountInformation();
-		synchronized (custAcctInfoList) {
-			for (int i = 0; i < custAcctInfoList.size(); i++) {
-				LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
-				if (accountInfo.getCustomerAccount().getAccountNumber().equalsIgnoreCase( accountNo ))
-					return accountInfo;
-			}
+		for (int i = 0; i < custAcctInfoList.size(); i++) {
+			LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
+			if (accountInfo.getCustomerAccount().getAccountNumber().equalsIgnoreCase( accountNo ))
+				return accountInfo;
 		}
 		
 		try {
@@ -2588,15 +2518,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	 */
 	public Object searchAccountByMapNo(String mapNo, boolean searchMembers) {
 		ArrayList acctInfoList = getAllCustAccountInformation();
-		synchronized (acctInfoList) {
-			for (int i = 0; i < acctInfoList.size(); i++) {
-				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) acctInfoList.get(i);
-				if (liteAcctInfo.getAccountSite().getSiteNumber().equalsIgnoreCase( mapNo )) {
-					if (searchMembers)
-						return new Pair(liteAcctInfo, this);
-					else
-						return liteAcctInfo;
-				}
+		for (int i = 0; i < acctInfoList.size(); i++) {
+			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) acctInfoList.get(i);
+			if (liteAcctInfo.getAccountSite().getSiteNumber().equalsIgnoreCase( mapNo )) {
+				if (searchMembers)
+					return new Pair(liteAcctInfo, this);
+				else
+					return liteAcctInfo;
 			}
 		}
 		
