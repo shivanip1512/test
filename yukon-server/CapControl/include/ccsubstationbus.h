@@ -62,13 +62,15 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE getCurrentWattLoadPointValue() const;
     DOUBLE getUpperBandwidth() const;
     LONG getControlInterval() const;
-    LONG getMinResponseTime() const;
+    LONG getMaxConfirmTime() const;
     LONG getMinConfirmPercent() const;
     LONG getFailurePercent() const;
     const RWCString& getDaysOfWeek() const;
     LONG getMapLocationId() const;
     DOUBLE getLowerBandwidth() const;
     const RWCString& getControlUnits() const;
+    LONG getControlDelayTime() const;
+    LONG getControlSendRetries() const;
     LONG getDecimalPlaces() const;
     const RWDBDateTime& getNextCheckTime() const;
     BOOL getNewPointDataReceivedFlag() const;
@@ -90,6 +92,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE getKVARSolution() const;
     DOUBLE getEstimatedPowerFactorValue() const;
     LONG getCurrentVarPointQuality() const;
+    BOOL getWaiveControlFlag() const;
 
     RWOrdered& getCCFeeders();
 
@@ -113,13 +116,15 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setCurrentWattLoadPointValue(DOUBLE currentwattval);
     CtiCCSubstationBus& setUpperBandwidth(DOUBLE bandwidth);
     CtiCCSubstationBus& setControlInterval(LONG interval);
-    CtiCCSubstationBus& setMinResponseTime(LONG response);
+    CtiCCSubstationBus& setMaxConfirmTime(LONG confirm);
     CtiCCSubstationBus& setMinConfirmPercent(LONG confirm);
     CtiCCSubstationBus& setFailurePercent(LONG failure);
     CtiCCSubstationBus& setDaysOfWeek(const RWCString& days);
     CtiCCSubstationBus& setMapLocationId(LONG maplocation);
     CtiCCSubstationBus& setLowerBandwidth(DOUBLE bandwidth);
     CtiCCSubstationBus& setControlUnits(const RWCString& contunit);
+    CtiCCSubstationBus& setControlDelayTime(LONG delay);
+    CtiCCSubstationBus& setControlSendRetries(LONG retries);
     CtiCCSubstationBus& setDecimalPlaces(LONG places);
     CtiCCSubstationBus& figureNextCheckTime();
     CtiCCSubstationBus& setNewPointDataReceivedFlag(BOOL newpointdatareceived);
@@ -141,8 +146,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setKVARSolution(DOUBLE solution);
     CtiCCSubstationBus& setEstimatedPowerFactorValue(DOUBLE epfval);
     CtiCCSubstationBus& setCurrentVarPointQuality(LONG cvpq);
+    CtiCCSubstationBus& setWaiveControlFlag(BOOL waive);
 
-    BOOL isPastResponseTime(const RWDBDateTime& currentDateTime);
+    BOOL isPastMaxConfirmTime(const RWDBDateTime& currentDateTime);
     BOOL isVarCheckNeeded(const RWDBDateTime& currentDateTime);
     BOOL isConfirmCheckNeeded();
     BOOL capBankControlStatusUpdate(RWOrdered& pointChanges);
@@ -180,6 +186,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     static const RWCString IndividualFeederControlMethod;
     static const RWCString SubstationBusControlMethod;
     static const RWCString BusOptimizedFeederControlMethod;
+    static const RWCString ManualOnlyControlMethod;
 
     static const RWCString KVARControlUnits;
     static const RWCString PF_BY_KVARControlUnits;
@@ -209,13 +216,15 @@ private:
     DOUBLE _currentwattloadpointvalue;
     DOUBLE _upperbandwidth;
     LONG _controlinterval;
-    LONG _minresponsetime;
+    LONG _maxconfirmtime;
     LONG _minconfirmpercent;
     LONG _failurepercent;
     RWCString _daysofweek;
     LONG _maplocationid;
     DOUBLE _lowerbandwidth;
     RWCString _controlunits;
+    LONG _controldelaytime;
+    LONG _controlsendretries;
     LONG _decimalplaces;
     RWDBDateTime _nextchecktime;
     BOOL _newpointdatareceivedflag;
@@ -237,6 +246,7 @@ private:
     DOUBLE _kvarsolution;
     DOUBLE _estimatedpowerfactorvalue;
     LONG _currentvarpointquality;
+    BOOL _waivecontrolflag;
 
     RWOrdered _ccfeeders;
 
