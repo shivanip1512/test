@@ -5,7 +5,7 @@
 </head>
 
 <body bgcolor="#FFFFFF" text="#000000">
-<form method="POST" action="/servlet/InventoryManager">
+<form method="POST" action="<%= request.getContextPath() %>/servlet/InventoryManager">
 <input type="hidden" name="action" value="SearchInventory">
 <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Hardware/ResultSet.jsp">
   <table width="100%" border="0" cellpadding = "5" height="69">
