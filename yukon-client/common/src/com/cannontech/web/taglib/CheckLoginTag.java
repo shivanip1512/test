@@ -25,7 +25,7 @@ public int doStartTag() throws javax.servlet.jsp.JspException {
 		
 		if( (session = pageContext.getSession()) != null ) {			 
 			if(session.getAttribute("YUKON_USER") != null ) {
-				return SKIP_BODY;
+				return EVAL_PAGE;
 			}
 		}
 
@@ -39,7 +39,7 @@ public int doStartTag() throws javax.servlet.jsp.JspException {
 		throw new JspException(e.getMessage());
 	}
 
-	return SKIP_BODY;
+	return SKIP_PAGE;
 	
 }
 }
