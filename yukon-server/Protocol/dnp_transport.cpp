@@ -10,14 +10,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/07/16 13:58:00 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/10/09 19:24:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "logger.h"
-#include "prot_dnp.h"
+
 #include "dnp_transport.h"
 
 CtiDNPTransport::CtiDNPTransport()
@@ -212,14 +212,11 @@ int CtiDNPTransport::decode( CtiXfer &xfer, int status )
 
             case Input:
             {
-                int inLen, dataLen;
+                int dataLen;
 
                 //  copy out the data
-                inLen = _datalink.getInLength();
+                dataLen = _datalink.getInPayloadLength();
                 _datalink.getInPayload((unsigned char *)&_inPacket);
-
-                //  remove the header
-                dataLen = inLen - sizeof(_inPacket.header);
 
                 memcpy(&_inAppLayer[_inAppLayerRecv], _inPacket.data, dataLen);
 
