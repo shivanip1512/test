@@ -117,6 +117,9 @@ public class SOAPClient extends HttpServlet {
 		else {
 			setServerLocal( true );
 			SOAPServer.setClientLocal( true );
+			
+			// Initiate the SOAPServer
+			SOAPServer.getInstance();
 		}
 	}
 	
