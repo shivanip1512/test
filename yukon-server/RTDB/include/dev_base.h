@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2005/03/10 19:24:00 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2005/04/05 16:52:52 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,7 +48,6 @@ class CtiRouteManager;
 class CtiPointBase;
 class CtiPointManager;
 class CtiTransmitterInfo;
-class CtiDeviceBase;
 
 namespace Cti       {
 namespace Protocol  {
@@ -57,13 +56,6 @@ class Interface;
 }
 
 using namespace Cti;  //  in preparation for moving devices to their own namespace
-
-#if VSLICK_TAG_WORKAROUND
-typedef CtiDeviceBase * CtiDeviceSPtr;
-#else
-typedef shared_ptr< CtiDeviceBase > CtiDeviceSPtr;
-#endif
-
 
 
 /*
@@ -338,6 +330,13 @@ inline INT CtiDeviceBase::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dq
 inline bool CtiDeviceBase::hasQueuedWork() const { return false; }
 inline INT CtiDeviceBase::queuedWorkCount() const { return 0; }
 inline bool CtiDeviceBase::operator<(const CtiDeviceBase& rhs) const { return getID() < rhs.getID(); }
+
+
+#if VSLICK_TAG_WORKAROUND
+typedef CtiDeviceBase * CtiDeviceSPtr;
+#else
+typedef shared_ptr< CtiDeviceBase > CtiDeviceSPtr;
+#endif
 
 
 #endif // #ifndef __DEV_BASE_H__
