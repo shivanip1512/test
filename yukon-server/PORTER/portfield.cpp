@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.107 $
-* DATE         :  $Date: 2004/05/24 20:25:36 $
+* REVISION     :  $Revision: 1.108 $
+* DATE         :  $Date: 2004/05/24 22:35:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -827,7 +827,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
     /*
      *  Only certain devices will be able to queue OMs into them.  They will use the OMs to determine the exclusion selection!
      */
-    UINT dqcnt;
+    UINT dqcnt = 0;
 
     if( (MSGFLG_APPLY_EXCLUSION_LOGIC & OutMessage->MessageFlags) && QUEUED_TO_DEVICE == (status = Device->queueOutMessageToDevice(OutMessage, &dqcnt)) )
     {
