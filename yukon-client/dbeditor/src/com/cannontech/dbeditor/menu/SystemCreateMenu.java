@@ -60,7 +60,7 @@ private void initialize() {
 	baselineMenuItem.setFont( font );
 	baselineMenuItem.setMnemonic('b');
 	
-	seasonMenuItem = new CommandableMenuItem("Season...");
+	seasonMenuItem = new CommandableMenuItem("Season Schedule...");
 	seasonMenuItem.setFont( font );
 	seasonMenuItem.setMnemonic('s');
 	

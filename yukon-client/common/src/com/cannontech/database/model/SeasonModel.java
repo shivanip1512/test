@@ -6,7 +6,7 @@
  */
 package com.cannontech.database.model;
 
-import com.cannontech.database.data.lite.LiteSeason;
+import com.cannontech.database.data.lite.LiteSeasonSchedule;
 /**
  * @author jdayton
  */
@@ -17,7 +17,7 @@ public class SeasonModel extends DBTreeModel
  * SeasonModel constructor comment.
  */
 public SeasonModel() {
-	super(new DBTreeNode("Seasons"));
+	super(new DBTreeNode("Season Schedules"));
 }
 /**
  * Insert the method's description here.
@@ -26,7 +26,7 @@ public SeasonModel() {
  */
 public boolean isLiteTypeSupported( int liteType )
 {
-	return ( liteType == com.cannontech.database.data.lite.LiteTypes.SEASON );
+	return ( liteType == com.cannontech.database.data.lite.LiteTypes.SEASON_SCHEDULE );
 }
 /**
  * Insert the method's description here.
@@ -34,7 +34,7 @@ public boolean isLiteTypeSupported( int liteType )
  * @return java.lang.String
  */
 public String toString() {
-	return "Season";
+	return "Season Schedule";
 }
 /**
  * Insert the method's description here.
@@ -48,7 +48,7 @@ public void update()
 
 	synchronized (cache)
 	{
-		java.util.List seasons = cache.getAllSeasons();
+		java.util.List seasons = cache.getAllSeasonSchedules();
 
 		java.util.Collections.sort(seasons, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
 
@@ -58,10 +58,8 @@ public void update()
 		for (int i = 0; i < seasons.size(); i++)
 		{
 			DBTreeNode seasonNode = new DBTreeNode(seasons.get(i));
-			if(((LiteSeason)seasons.get(i)).getSeasonID() == 0)
-				seasonNode.setIsSystemReserved(true);
-
-			rootNode.add(seasonNode);
+			if(((LiteSeasonSchedule)seasons.get(i)).getScheduleID() != 0)
+				rootNode.add(seasonNode);
 		}
 	}
 

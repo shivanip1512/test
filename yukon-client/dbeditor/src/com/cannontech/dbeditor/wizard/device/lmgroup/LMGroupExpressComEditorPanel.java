@@ -411,6 +411,11 @@ private void connEtoC20(java.awt.event.ActionEvent arg1) {
 private void connEtoC21(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
+		if(getJCheckBoxSPLINTER().isSelected())
+		{
+			getJCheckBoxLOAD().setSelected(false);
+			
+		}
 		// user code end
 		this.fireInputUpdate();
 		// user code begin {2}

@@ -1,35 +1,19 @@
-/*
- * Created on May 4, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package com.cannontech.database.db.season;
 
 /**
- * @author jdayton
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
+ * Insert the type's description here.
+ * Creation date: (6/22/2004 10:35:21 AM)
+ * @author: 
  */
 public class SeasonSchedule extends com.cannontech.database.db.DBPersistent
 {
-	private Integer seasonScheduleID;
-	private String seasonScheduleName;
-	private Integer springMonth;
-	private Integer springDay;
-	private Integer summerMonth = new Integer(0);
-	private Integer summerDay = new Integer(0);
-	private Integer fallMonth = new Integer(0);
-	private Integer fallDay = new Integer(0);
-	private Integer winterMonth = new Integer(0);
-	private Integer winterDay = new Integer(0);
-	
+	private Integer scheduleID;
+	private String scheduleName;
+
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"ScheduleName", "SpringMonth", "SpringDay", "SummerMonth", 
-		"SummerDay", "FallMonth", "FallDay", "WinterMonth", "WinterDay"
+		"ScheduleName"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "ScheduleID" };
@@ -43,57 +27,47 @@ public SeasonSchedule() {
 }
 /**
  * Insert the method's description here.
+ * Creation date: (6/22/2004 12:08:19 PM)
  */
 public void add() throws java.sql.SQLException 
 {
-	Object addValues[] = { getSeasonID(), getSeasonName(),
-							getSeasonMonth(), getSeasonDay(),
-							summerMonth, summerDay,
-							fallMonth, fallDay,
-							winterMonth, winterDay  };
+	Object addValues[] = { getScheduleID(), getScheduleName()};
 
 	add( TABLE_NAME, addValues );
 }
 /**
  * Insert the method's description here.
+ * Creation date: (6/22/2004 12:08:42 PM)
  */
 public void delete() throws java.sql.SQLException 
 {
-	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getSeasonID());
+	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getScheduleID());
 }
 /**
  * Insert the method's description here.
+ * Creation date: (6/22/2004 1:31:31 PM)
  */
-public Integer getSeasonID()
+public Integer getScheduleID()
 {
-	return seasonScheduleID;
+	return scheduleID;
 }
 /**
  * Insert the method's description here.
- * Creation date: (8/24/2001 1:34:49 PM)
+ * Creation date: (6/22/2004 1:34:49 PM)
  */
-public String getSeasonName() {
-	return seasonScheduleName;
-}
-
-public Integer getSeasonMonth() {
-	return springMonth;
-}
-
-public Integer getSeasonDay() {
-	return springDay;
-}
+public String getScheduleName() {
+	return scheduleName;}
 /**
  * This method was created in VisualAge.
  * @return java.lang.Integer
  */
-public final static Integer getNextSeasonID()
+public final static Integer getNextSeasonScheduleID()
 {
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	synchronized(cache)
 	{
-		java.util.List seasonSchedules = cache.getAllSeasons();
+		java.util.List seasonSchedules = cache.getAllSeasonSchedules();
 		java.util.Collections.sort(seasonSchedules);
 
 		int counter = 1;
@@ -101,7 +75,7 @@ public final static Integer getNextSeasonID()
 		 														
 		for(int i=0;i<seasonSchedules.size();i++)
 		{
-			currentID = ((com.cannontech.database.data.lite.LiteSeason)seasonSchedules.get(i)).getSeasonID();
+			currentID = ((com.cannontech.database.data.lite.LiteSeasonSchedule)seasonSchedules.get(i)).getScheduleID();
 
 			if( currentID > counter )
 				break;
@@ -114,66 +88,46 @@ public final static Integer getNextSeasonID()
 }
 /**
  * Insert the method's description here.
+ * Creation date: (6/22/2004 12:08:08 PM)
  */
 public void retrieve() throws java.sql.SQLException
 {
-	Object constraintValues[] = { getSeasonID()};
+	Object constraintValues[] = { getScheduleID()};
 
 	Object results[] = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
 
 	if (results.length == SETTER_COLUMNS.length)
 	{
-		setSeasonName((String) results[0]);
-		setSeasonMonth((Integer) results[1]);
-		setSeasonDay((Integer) results[2]);
-		summerMonth = ((Integer) results[3]);
-		summerDay = ((Integer) results[4]);
-		fallMonth = ((Integer) results[5]);
-		fallDay = ((Integer) results[6]);
-		winterMonth = ((Integer) results[7]);
-		winterDay = ((Integer) results[8]);
-			
+		setScheduleName((String) results[0]);		
 	}
 
 }
 /**
  * Insert the method's description here.
+ * Creation date: (6/22/2004 1:39:07 PM)
  * @param id java.lang.Integer
  */
-public void setSeasonID(Integer id) 
-{
-	seasonScheduleID = id;
+public void setScheduleID(Integer id) {
+	scheduleID = id;
 	}
 /**
  * Insert the method's description here.
+ * Creation date: (6/22/2004 1:38:37 PM)
  * @param name java.lang.String
  */
-public void setSeasonName(String name) 
-{
-	seasonScheduleName = name;
+public void setScheduleName(String name) {
+	scheduleName = name;
 	
-}
-
-public void setSeasonMonth(Integer month)
-{
-	springMonth = month;
-}
-
-public void setSeasonDay(Integer day)
-{
-	springDay = day;
-}
+	}
 /**
  * Insert the method's description here.
+ * Creation date: (6/22/2004 12:08:59 PM)
  */
 public void update() throws java.sql.SQLException
 {
-	Object setValues[] = { getSeasonName(), getSeasonMonth(), getSeasonDay(),
-						 	summerMonth, summerDay, fallMonth, fallDay, 
-						 	winterMonth, winterDay};
-	Object constraintValues[] = { getSeasonID()};
+	Object setValues[] = { getScheduleName()};
+	Object constraintValues[] = { getScheduleID()};
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues);
 }
 }
-

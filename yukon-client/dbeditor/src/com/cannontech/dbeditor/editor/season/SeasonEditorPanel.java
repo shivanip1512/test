@@ -7,7 +7,7 @@
 package com.cannontech.dbeditor.editor.season;
 
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.dbeditor.wizard.season.SeasonBasePanel;
+import com.cannontech.dbeditor.wizard.season.SeasonScheduleBasePanel;
 /**
  * @author jdayton
  *
@@ -37,7 +37,7 @@ public Object[] createNewPanel(int panelIndex)
 {
 	Object[] objs = new Object[2];
 	
-	objs[0] = new SeasonBasePanel();
+	objs[0] = new SeasonScheduleBasePanel();
 	objs[1] = "General";
 			
 	return objs;

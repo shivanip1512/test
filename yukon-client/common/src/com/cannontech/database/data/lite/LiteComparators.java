@@ -215,10 +215,10 @@ public final class LiteComparators
 				thisVal = ((LiteHolidaySchedule)o1).getHolidayScheduleName();
 				anotherVal = ((LiteHolidaySchedule)o2).getHolidayScheduleName();
 			}
-			else if(o1 instanceof LiteSeason && o2 instanceof LiteSeason)
+			else if(o1 instanceof LiteSeasonSchedule && o2 instanceof LiteSeasonSchedule)
 			{
-				thisVal = ((LiteSeason)o1).getSeasonName();
-				anotherVal = ((LiteSeason)o2).getSeasonName();
+				thisVal = ((LiteSeasonSchedule)o1).getScheduleName();
+				anotherVal = ((LiteSeasonSchedule)o2).getScheduleName();
 			}
 			else if(o1 instanceof LiteBaseline && o2 instanceof LiteBaseline)
 			{

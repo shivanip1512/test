@@ -73,7 +73,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allLMScenarioProgs = null;
 
 	private ArrayList allTags = null;
-	private ArrayList allSeasons = null;
+	private ArrayList allSeasonSchedules = null;
 	private ArrayList allGears = null;
 	
 	private ArrayList allYukonUsers = null;
@@ -487,17 +487,17 @@ public synchronized java.util.List getAllBaselines()
 	}
 }
 
-public synchronized java.util.List getAllSeasons()
+public synchronized java.util.List getAllSeasonSchedules()
 {
 
-	if (allSeasons != null)
-		return allSeasons;
+	if (allSeasonSchedules != null)
+		return allSeasonSchedules;
 	else
 	{
-		allSeasons = new ArrayList();
-		SeasonLoader seasonLoader = new SeasonLoader(allSeasons, databaseAlias);
+		allSeasonSchedules = new ArrayList();
+		SeasonScheduleLoader seasonLoader = new SeasonScheduleLoader(allSeasonSchedules, databaseAlias);
 		seasonLoader.run();
-		return allSeasons;
+		return allSeasonSchedules;
 	}
 }
 
@@ -1610,9 +1610,9 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	{
 		retLBase = handleBaselineChange( dbType, id );
 	}
-	else if( database == DBChangeMsg.CHANGE_SEASON_DB )
+	else if( database == DBChangeMsg.CHANGE_SEASON_SCHEDULE_DB )
 	{
-		retLBase = handleSeasonChange( dbType, id );
+		retLBase = handleSeasonScheduleChange( dbType, id );
 	}
 	else if( database == DBChangeMsg.CHANGE_CONFIG_DB )
 	{
@@ -1913,58 +1913,58 @@ private synchronized LiteBase handleBaselineChange( int changeType, int id )
 	return lBase;
 }
 
-private synchronized LiteBase handleSeasonChange( int changeType, int id )
+private synchronized LiteBase handleSeasonScheduleChange( int changeType, int id )
 {
 	boolean alreadyAdded = false;
 	LiteBase lBase = null;
 
 	// if the storage is not already loaded, we must not care about it
-	if( allSeasons == null )
+	if( allSeasonSchedules == null )
 		return lBase;
 
 	switch(changeType)
 	{
 		case DBChangeMsg.CHANGE_TYPE_ADD:
-				for(int i=0;i<allSeasons.size();i++)
+				for(int i=0;i<allSeasonSchedules.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteSeason)allSeasons.get(i)).getSeasonID() == id )
+					if( ((com.cannontech.database.data.lite.LiteSeasonSchedule)allSeasonSchedules.get(i)).getScheduleID() == id )
 					{
 						alreadyAdded = true;
-						lBase = (LiteBase)allSeasons.get(i);
+						lBase = (LiteBase)allSeasonSchedules.get(i);
 						break;
 					}
 				}
 				if( !alreadyAdded )
 				{
-					com.cannontech.database.data.lite.LiteSeason lh = new com.cannontech.database.data.lite.LiteSeason(id);
+					com.cannontech.database.data.lite.LiteSeasonSchedule lh = new com.cannontech.database.data.lite.LiteSeasonSchedule(id);
 					lh.retrieve(databaseAlias);
-					allSeasons.add(lh);
+					allSeasonSchedules.add(lh);
 					lBase = lh;
 				}
 				break;
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-				for(int i=0;i<allSeasons.size();i++)
+				for(int i=0;i<allSeasonSchedules.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteSeason)allSeasons.get(i)).getSeasonID() == id )
+					if( ((com.cannontech.database.data.lite.LiteSeasonSchedule)allSeasonSchedules.get(i)).getScheduleID() == id )
 					{
-						((com.cannontech.database.data.lite.LiteSeason)allSeasons.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allSeasons.get(i);
+						((com.cannontech.database.data.lite.LiteSeasonSchedule)allSeasonSchedules.get(i)).retrieve(databaseAlias);
+						lBase = (LiteBase)allSeasonSchedules.get(i);
 						break;
 					}
 				}
 				break;
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
-				for(int i=0;i<allSeasons.size();i++)
+				for(int i=0;i<allSeasonSchedules.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteSeason)allSeasons.get(i)).getSeasonID() == id )
+					if( ((com.cannontech.database.data.lite.LiteSeasonSchedule)allSeasonSchedules.get(i)).getScheduleID() == id )
 					{
-						lBase = (LiteBase)allSeasons.remove(i);
+						lBase = (LiteBase)allSeasonSchedules.remove(i);
 						break;
 					}
 				}
 				break;
 		default:
-				releaseAllSeasons();
+				releaseAllSeasonSchedules();
 				break;
 	}
 
@@ -2661,7 +2661,7 @@ public synchronized void releaseAllCache()
 	allGraphDefinitions = null;
 	allHolidaySchedules = null;
 	allBaselines = null;
-	allSeasons = null;
+	allSeasonSchedules = null;
 	allConfigs = null;
 	allTags = null;
 	allDeviceMeterGroups = null;
@@ -2749,9 +2749,9 @@ public synchronized void releaseAllBaselines()
 	allBaselines = null;
 }
 
-public synchronized void releaseAllSeasons()
+public synchronized void releaseAllSeasonSchedules()
 {
-	allSeasons = null;
+	allSeasonSchedules = null;
 }
 
 public synchronized void releaseAllConfigs()

@@ -33,7 +33,7 @@ public final class LiteTypes
 	public final static int GRAPH_CUSTOMER_LIST		= 26;
 	public final static int LMCONSTRAINT			= 27;
 	public final static int LMSCENARIO_PROG		= 28;
-	public final static int SEASON					= 29;
+	public final static int SEASON_SCHEDULE			= 29;
 	public final static int GEAR					= 30;	
 
 	

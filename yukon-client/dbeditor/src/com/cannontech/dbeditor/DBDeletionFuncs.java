@@ -4,6 +4,7 @@ import Acme.RefInt;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.config.ConfigTwoWay;
 import com.cannontech.database.data.holiday.HolidaySchedule;
+import com.cannontech.database.data.season.SeasonSchedule;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.lm.LMProgramConstraint;
@@ -36,6 +37,7 @@ public class DBDeletionFuncs
 	public static final int CONFIG_TYPE = 13;
 	public static final int TAG_TYPE = 14;
 	public static final int LMPROG_CONSTR_TYPE = 15;
+	public static final int SEASON_SCHEDULE = 16;
 
    //the return types of each possible delete
    public static final byte STATUS_ALLOW = 1;
@@ -464,7 +466,14 @@ public class DBDeletionFuncs
 			unableDel.append("You cannot delete the holiday schedule '" + nodeName + "'");
 			anID = ((HolidaySchedule) toDelete).getHolidayScheduleID().intValue();
 			deletionType = DBDeletionFuncs.HOLIDAY_SCHEDULE;
-		}	
+		}
+		else if (toDelete instanceof SeasonSchedule)
+		{
+		 message.append("Are you sure you want to permanently delete '" + nodeName + "'?");
+			unableDel.append("You cannot delete the season schedule '" + nodeName + "'");
+			anID = ((SeasonSchedule) toDelete).getScheduleID().intValue();
+			deletionType = DBDeletionFuncs.SEASON_SCHEDULE;
+		}		
 		else if (toDelete instanceof LMProgramConstraint)
 		{
 			message.append("Are you sure you want to permanently delete '" + nodeName + "'?");
@@ -532,7 +541,8 @@ public class DBDeletionFuncs
 			else if( type == CUSTOMER_TYPE
 						 || type == PAO_TYPE 
 						 || type == HOLIDAY_SCHEDULE
-						 || type == LOGIN_GRP_TYPE )
+						 || type == LOGIN_GRP_TYPE
+						 || type == SEASON_SCHEDULE )
 			{
 				return STATUS_CONFIRM;
 			}

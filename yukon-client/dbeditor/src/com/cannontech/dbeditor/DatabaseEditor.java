@@ -674,11 +674,11 @@ private void displayAWizardPanel(JMenuItem item)
 	}
 	else if (item == systemCreateMenu.seasonMenuItem) 
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.season.SeasonWizardPanel());
+		showWizardPanel(new com.cannontech.dbeditor.wizard.season.SeasonScheduleWizardPanel());
 	}
 	else if (item == systemCreateMenu.tagMenuItem) 
 	{
-			showWizardPanel(new com.cannontech.dbeditor.wizard.tags.TagWizardPanel());
+		showWizardPanel(new com.cannontech.dbeditor.wizard.tags.TagWizardPanel());
 	}
 
 }

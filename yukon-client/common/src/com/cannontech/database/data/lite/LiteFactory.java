@@ -116,10 +116,10 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 				((com.cannontech.database.data.holiday.HolidaySchedule)returnObject).setHolidayScheduleID(new Integer(((LiteHolidaySchedule)liteObject).getHolidayScheduleID()) );
 				((com.cannontech.database.data.holiday.HolidaySchedule)returnObject).setHolidayScheduleName( ((LiteHolidaySchedule)liteObject).getHolidayScheduleName() );
 				break;
-			case LiteTypes.SEASON:
-				returnObject = new com.cannontech.database.data.season.Season();
-				((com.cannontech.database.data.season.Season)returnObject).setSeasonID(new Integer(((LiteSeason)liteObject).getSeasonID()) );
-				((com.cannontech.database.data.season.Season)returnObject).setSeasonName( ((LiteSeason)liteObject).getSeasonName() );
+			case LiteTypes.SEASON_SCHEDULE:
+				returnObject = new com.cannontech.database.data.season.SeasonSchedule();
+				((com.cannontech.database.data.season.SeasonSchedule)returnObject).setScheduleID(new Integer(((LiteSeasonSchedule)liteObject).getScheduleID()) );
+				((com.cannontech.database.data.season.SeasonSchedule)returnObject).setScheduleName( ((LiteSeasonSchedule)liteObject).getScheduleName() );
 				break;
 			case LiteTypes.BASELINE:
 				returnObject = new com.cannontech.database.data.baseline.Baseline();
@@ -250,11 +250,11 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 			((com.cannontech.database.data.holiday.HolidaySchedule)val).getHolidayScheduleName() );
 			
 	}
-	else if( val instanceof com.cannontech.database.data.season.Season )
+	else if( val instanceof com.cannontech.database.data.season.SeasonSchedule )
 	{
-		returnLite = new LiteSeason(
-			((com.cannontech.database.data.season.Season)val).getSeasonID().intValue(),
-			((com.cannontech.database.data.season.Season)val).getSeasonName() );
+		returnLite = new LiteSeasonSchedule(
+			((com.cannontech.database.data.season.SeasonSchedule)val).getScheduleID().intValue(),
+			((com.cannontech.database.data.season.SeasonSchedule)val).getScheduleName() );
 			
 	}
 	else if( val instanceof com.cannontech.database.data.baseline.Baseline )

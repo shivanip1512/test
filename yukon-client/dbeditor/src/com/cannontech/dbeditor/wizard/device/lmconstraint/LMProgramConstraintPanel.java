@@ -1150,7 +1150,6 @@ public Object getValue(Object o)
 	
 	con.setConstraintName(getJTextFieldConstraintName().getText());
 	
-	con.setAvailableSeasons( getJCheckBoxSeasonChooser().getSelectedSeasons4Chars() );
 	con.setAvailableWeekdays( getJCheckBoxDayChooser().getSelectedDays8Chars() );
 
 	con.setMaxHoursDaily( new Integer( ((Number)getJCSpinFieldMaxHoursDaily().getValue()).intValue() ) );
@@ -1358,7 +1357,6 @@ public void setValue(Object o)
 	
 		getJTextFieldConstraintName().setText(con.getConstraintName());
 	
-		getJCheckBoxSeasonChooser().setSelectedSeasons( con.getAvailableSeasons() );
 		getJCheckBoxDayChooser().setSelectedCheckBoxes( con.getAvailableWeekdays() );
 		getJCSpinFieldMaxHoursDaily().setValue( con.getMaxHoursDaily() );
 		getJCSpinFieldMaxHoursMonthly().setValue( con.getMaxHoursMonthly() );

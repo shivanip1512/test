@@ -38,7 +38,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final int CHANGE_TAG_DB						= 16;
 	public static final int CHANGE_CI_CUSTOMER_DB				= 17;
 	public static final int CHANGE_LMCONSTRAINT_DB				= 18;
-	public static final int CHANGE_SEASON_DB					= 20;
+	public static final int CHANGE_SEASON_SCHEDULE_DB			= 20;
 
 
 	
@@ -60,7 +60,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final String CAT_TAG			= "Tag";
 	public static final String CAT_LMCONSTRAINT		= "Load Constraint";
 	public static final String CAT_LMSCENARIO		= "Load Scenario";
-	public static final String CAT_SEASON	= "Season";
+	public static final String CAT_SEASON_SCHEDULE	= "Season Schedule";
 	
 	// Categories used by stars
 	public static final String CAT_CUSTOMER_ACCOUNT = "CustomerAccount";

@@ -11,7 +11,7 @@ import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.data.season.Season;
+import com.cannontech.database.data.season.SeasonSchedule;
 import com.cannontech.dbeditor.editor.season.SeasonEditorPanel;
 
 public final class EditorPanelFactory
@@ -96,7 +96,7 @@ public final class EditorPanelFactory
 	{LMScenario.class,
 		com.cannontech.dbeditor.editor.device.lmscenario.LMScenarioEditorPanel.class},
 		
-	{Season.class,
+	{SeasonSchedule.class,
 		SeasonEditorPanel.class}
 	
    	//Remove the Schedule editor because of dependency issues

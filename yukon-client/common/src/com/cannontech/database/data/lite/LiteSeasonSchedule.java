@@ -12,36 +12,36 @@ package com.cannontech.database.data.lite;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class LiteSeason extends LiteBase
+public class LiteSeasonSchedule extends LiteBase
 {
-	private String seasonName;
+	private String scheduleName;
 /**
  * LiteSeason constructor comment.
  */
-public LiteSeason()
+public LiteSeasonSchedule()
 {
 	super();
 
-	setLiteType(LiteTypes.SEASON);
+	setLiteType(LiteTypes.SEASON_SCHEDULE);
 }
 /**
  * LiteSeason constructor comment.
  */
-public LiteSeason(int seasID)
+public LiteSeasonSchedule(int seasID)
 {
 	super();
 
 	setLiteID( seasID );
-	setLiteType(LiteTypes.SEASON);
+	setLiteType(LiteTypes.SEASON_SCHEDULE);
 }
 
 /**
  * LiteSeason constructor comment.
  */
-public LiteSeason(int seasID, String schdName_ )
+public LiteSeasonSchedule(int seasID, String schdName_ )
 {
 	this( seasID );
-	setSeasonName( schdName_ );
+	setScheduleName( schdName_ );
 }
 
 /**
@@ -49,7 +49,7 @@ public LiteSeason(int seasID, String schdName_ )
  * Creation date: (8/24/2001 11:13:50 AM)
  * @return int
  */
-public int getSeasonID() 
+public int getScheduleID() 
 {
 	return getLiteID();
 }
@@ -58,8 +58,8 @@ public int getSeasonID()
  * Creation date: (8/24/2001 11:14:47 AM)
  * @return java.lang.String
  */
-public String getSeasonName() {
-	return seasonName;
+public String getScheduleName() {
+	return scheduleName;
 }
 /**
  * retrieve method comment.
@@ -70,7 +70,7 @@ public void retrieve(String databaseAlias)
 	  new com.cannontech.database.SqlStatement(
 		 "SELECT ScheduleID, ScheduleName "  + 
 			"FROM " + com.cannontech.database.db.season.SeasonSchedule.TABLE_NAME +
-			" where ScheduleID = " + getSeasonID(),
+			" where ScheduleID = " + getScheduleID(),
 		 com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
    try 
@@ -78,11 +78,11 @@ public void retrieve(String databaseAlias)
 	  s.execute();
 
 	  if( s.getRowCount() <= 0 )
-		 throw new IllegalStateException("Unable to find Season with seasonID = " + getLiteID() );
+		 throw new IllegalStateException("Unable to find Season with ScheduleID = " + getLiteID() );
 
 
-	  setSeasonID( new Integer(s.getRow(0)[0].toString()).intValue() );
-	  setSeasonName( s.getRow(0)[1].toString() );
+	  setScheduleID( new Integer(s.getRow(0)[0].toString()).intValue() );
+	  setScheduleName( s.getRow(0)[1].toString() );
    }
    catch( Exception e )
    {
@@ -95,7 +95,7 @@ public void retrieve(String databaseAlias)
  * Creation date: (8/24/2001 11:13:50 AM)
  * @return void
  */
-public void setSeasonID( int seasID )
+public void setScheduleID( int seasID )
 {
 	setLiteID( seasID );
 }
@@ -104,9 +104,9 @@ public void setSeasonID( int seasID )
  * Creation date: (8/24/2001 11:13:50 AM)
  * @return void
  */
-public void setSeasonName( String name )
+public void setScheduleName( String name )
 {
-	seasonName = name;
+	scheduleName = name;
 }
 /**
  * Insert the method's description here.
@@ -115,6 +115,6 @@ public void setSeasonName( String name )
  */
 public String toString() 
 {
-	return getSeasonName();
+	return getScheduleName();
 }
 }

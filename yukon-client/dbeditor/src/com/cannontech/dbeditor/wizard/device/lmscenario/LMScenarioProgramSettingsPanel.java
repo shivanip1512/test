@@ -716,9 +716,9 @@ public void populateAvailableList()
 		java.util.List progs = cache.getAllLoadManagement();
 		java.util.Collections.sort( progs, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
 		allGears.addAll(cache.getAllGears());
-		
 		try
 		{
+			System.out.println("Evil, plodding for loop starting.");
 			for( int i = 0; i < progs.size(); i++ )
 			{ 
 				Integer progID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)progs.get(i)).getLiteID());
@@ -729,6 +729,7 @@ public void populateAvailableList()
 					availablePrograms.addElement(((com.cannontech.database.data.lite.LiteYukonPAObject)progs.get(i)));
 				}				
 			}
+			System.out.println("Evil, plodding for loop ending.");
 		}
 		catch (java.sql.SQLException e2)
 		{
