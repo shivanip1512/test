@@ -2,7 +2,7 @@
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	boolean invCheckEarly = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING_TIME).equalsIgnoreCase(InventoryManager.INVENTORY_CHECKING_TIME_EARLY);
-	if (invCheckEarly)
+	if (!invCheckEarly)
 		session.removeAttribute(InventoryManager.STARS_LM_HARDWARE_TEMP);
 	
 	StarsLMHardware hardware = (StarsLMHardware) session.getAttribute(InventoryManager.STARS_LM_HARDWARE_TEMP);
