@@ -77,6 +77,8 @@ public class ProgramOptOutAction implements ActionBase {
 			TimeZone tz = energyCompany.getDefaultTimeZone();
             
 			StarsProgramOptOut optOut = new StarsProgramOptOut();
+			if (req.getParameter("InvID") != null)
+				optOut.setInventoryID( Integer.parseInt(req.getParameter("InvID")) );
 			
 			if (req.getParameter("OptOutPeriod") != null) {
 				int period = 0;
@@ -105,6 +107,9 @@ public class ProgramOptOutAction implements ActionBase {
 						optOut.setPeriod( REPEAT_LAST );
 					}
 				}
+			}
+			else if (req.getParameter("action").equalsIgnoreCase("RepeatLastOptOut")) {
+				optOut.setPeriod( REPEAT_LAST );
 			}
 			else {
 				Date today = ServletUtil.getToday( tz );
@@ -226,7 +231,7 @@ public class ProgramOptOutAction implements ActionBase {
 				
 				OptOutEventQueue.OptOutEvent lastEvent = null;
 				for (int i = 0; i < reenableEvents.length; i++) {
-					if (reenableEvents[i].getInventoryID() == 0) {
+					if (reenableEvents[i].getInventoryID() == optOut.getInventoryID()) {
 						lastEvent = reenableEvents[i];
 						break;
 					}

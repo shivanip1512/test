@@ -319,7 +319,10 @@ public class SOAPClient extends HttpServlet {
 			if (destURL == null) destURL = req.getContextPath() + "/operator/Operations.jsp";
 			if (errorURL == null) errorURL = req.getContextPath() + "/operator/Consumer/Update.jsp";
 		}
-		else if (action.equalsIgnoreCase("OptOutProgram")) {
+		else if (action.equalsIgnoreCase("OptOutProgram")
+			|| action.equalsIgnoreCase("RepeatLastOptOut")
+			|| action.equalsIgnoreCase("OptOutLMHardware"))
+		{
 			clientAction = new ProgramOptOutAction();
 			SOAPMessage msg = clientAction.build( req, session );
 			if (msg == null) {
@@ -338,7 +341,9 @@ public class SOAPClient extends HttpServlet {
 					questions = ecSettings.getStarsExitInterviewQuestions();
 			}
             
-			if (questions != null && questions.getStarsExitInterviewQuestionCount() > 0) {
+			if (questions != null && questions.getStarsExitInterviewQuestionCount() > 0
+				&& action.equalsIgnoreCase("OptOutProgram"))
+			{
 				session.setAttribute( ServletUtils.ATT_MULTI_ACTIONS, actions );
 				resp.sendRedirect( req.getParameter(ServletUtils.ATT_REDIRECT2) );
 				return;
