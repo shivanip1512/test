@@ -611,38 +611,48 @@ void CtiCalcLogicService::_inputThread( void )
 
         while( !interrupted )
         {
-            //  while i'm not getting anything
-            while( NULL == (incomingMsg = _conxion->ReadConnQue( 200 )) && !interrupted )
+            try
             {
-                if( _pSelf.serviceInterrupt( ) )
-                    interrupted = TRUE;
-                else
-                    _pSelf.sleep( 200 );
+                //  while i'm not getting anything
+                while( NULL == (incomingMsg = _conxion->ReadConnQue( 200 )) && !interrupted )
+                {
+                    if( _pSelf.serviceInterrupt( ) )
+                        interrupted = TRUE;
+                    else
+                        _pSelf.sleep( 200 );
+                }
+
+                //  dump out if we're being called
+                if( !interrupted )
+                {
+                    /*{
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime( ) << " - message received - " << endl;
+                    }*/
+
+                    //time_start = clock( );
+
+                    //  common variable, but this is the only place that writes to it, so i think it's okay.
+                    parseMessage( incomingMsg, calcThread );
+                    //_dbChange = TRUE;
+
+                    //time_finish = clock( );
+
+                    //{
+                    //    RWMutexLock::LockGuard coutGuard(coutMux);
+                    //    cout << endl;
+                    //    cout << "took " << (time_finish - time_start) << " ms to post " << numPDataVals << " messages" << endl;
+                    //}
+
+                    delete incomingMsg;   //  Make sure to delete this - its on the heap
+                }
             }
-
-            //  dump out if we're being called
-            if( !interrupted )
+            catch(...)
             {
-                /*{
+                {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime( ) << " - message received - " << endl;
-                }*/
-
-                //time_start = clock( );
-
-                //  common variable, but this is the only place that writes to it, so i think it's okay.
-                parseMessage( incomingMsg, calcThread );
-                //_dbChange = TRUE;
-
-                //time_finish = clock( );
-
-                //{
-                //    RWMutexLock::LockGuard coutGuard(coutMux);
-                //    cout << endl;
-                //    cout << "took " << (time_finish - time_start) << " ms to post " << numPDataVals << " messages" << endl;
-                //}
-
-                delete incomingMsg;   //  Make sure to delete this - its on the heap
+                    dout << RWTime() << " - EXCEPTION in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
             }
         }
     }
