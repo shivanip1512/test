@@ -391,7 +391,10 @@ private void writePointData(int id, float multiplier, DSM2PointData[] data)
 		} catch(java.sql.SQLException e2) { e2.printStackTrace(); }
 	}
 }
-
+/**
+ * If there is nothing in RawPointHistory, lastTimestamp will remain at 0 (its init value) - 20041214 SN
+ * @return
+ */
 private boolean initYukonStuff() {
 	Connection conn = null;
 	Statement stmt = null;
@@ -404,7 +407,8 @@ private boolean initYukonStuff() {
 	
 		if(rset.next()) {
 			changeID = rset.getInt(1) + 1;
-			lastTimestamp = rset.getTimestamp(2).getTime();	
+			if( rset.getTimestamp(2) != null)
+			    lastTimestamp = rset.getTimestamp(2).getTime();	
 		}	
 		rset.close();
 		return true;
