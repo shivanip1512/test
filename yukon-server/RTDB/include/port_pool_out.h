@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/05/09 16:09:55 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/09/06 01:00:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,8 @@
 #define PORTPOOL_DEBUGLEVL_CHILDAVAILABILITY            0x00000010
 #define PORTPOOL_DEBUGLEVL_CHILDSELECTION               0x00000020
 #define PORTPOOL_DEBUGLEVL_CHILDALLOCATION              0x00000040
+#define PORTPOOL_DEBUGLEVL_CHILDADDITION                0x00000080
+
 #define PORTPOOL_DEBUGLEVL_POOLQUEUE                    0x00010000  // Used on the porter side...
 #define PORTPOOL_DEBUGLEVL_QUEUEDUMPS                   0x00020000
 
@@ -44,20 +46,25 @@ public:
     enum
     {
         PPSC_ParentQueueEmpty,
-        PPSC_AllChildrenBusy
+        PPSC_AllChildrenBusy,
+        PPSC_ChildReady
     }
     CtiPortPoolDialoutStatusCode;
 
     typedef CtiPort Inherited;
 
-    CtiPortPoolDialout() {}
+    CtiPortPoolDialout()
+    {
+    }
 
     CtiPortPoolDialout(const CtiPortPoolDialout& aRef)
     {
         *this = aRef;
     }
 
-    virtual ~CtiPortPoolDialout() {}
+    virtual ~CtiPortPoolDialout()
+    {
+    }
 
     CtiPortPoolDialout& operator=(const CtiPortPoolDialout& aRef);
 

@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/07/21 22:14:08 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/09/06 01:00:25 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,6 +49,9 @@ VOID PortPoolDialoutThread(void *pid)
     RWTime         lastQueueReportTime;
     CtiDeviceBase  *Device = 0;
 
+    /* make it clear who is the boss */
+    CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
+
 
     if(!ParentPort)
     {
@@ -74,6 +77,8 @@ VOID PortPoolDialoutThread(void *pid)
         dout << RWTime() << " PortPoolDialoutThread TID: " << CurrentTID () << " for port: " << setw(4) << ParentPort->getPortID() << " / " << ParentPort->getName() << endl;
     }
 
+    sgPoolDebugLevel = gConfigParms.getValueAsULong("PORTPOOL_DEBUGLEVEL", 0, 16);
+
     while(!PorterQuit)
     {
         OutMessage = 0;
@@ -83,8 +88,6 @@ VOID PortPoolDialoutThread(void *pid)
             PorterQuit = TRUE;
             continue;
         }
-
-        sgPoolDebugLevel = gConfigParms.getValueAsULong("PORTPOOL_DEBUGLEVEL", 0, 16);
 
         if((status = ParentPort->readQueue( &ReadResult, &ReadLength, (PPVOID) &OutMessage, gQueSlot, DCWW_WAIT, &ReadPriority, &QueEntries)) != NORMAL )
         {
@@ -140,7 +143,7 @@ VOID PortPoolDialoutThread(void *pid)
         if(PorterDebugLevel & PORTER_DEBUG_VERBOSE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Portfield connection read OutMessage->DeviceID = " << OutMessage->DeviceID << endl;
+            dout << RWTime() << " Portpool  connection read OutMessage->DeviceID = " << OutMessage->DeviceID << endl;
             dout << RWTime() << "                           OutMessage->Remote   = " << OutMessage->Remote << endl;
             dout << RWTime() << "                           OutMessage->Port     = " << OutMessage->Port << endl;
         }
@@ -239,6 +242,14 @@ VOID PortPoolDialoutThread(void *pid)
             }
 
             ParentPort->waitForPost(hPorterEvents[P_QUIT_EVENT], 15000);
+        }
+        else if(status == CtiPortPoolDialout::PPSC_ChildReady)
+        {
+            if(sgPoolDebugLevel & PORTPOOL_DEBUGLEVL_POOLQUEUE)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Port " << ParentPort->getName() << " **** Child Ports available **** " << endl;
+            }
         }
         else if(status == CtiPortPoolDialout::PPSC_ParentQueueEmpty)
         {

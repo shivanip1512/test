@@ -1,4 +1,5 @@
 
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   port_pool_out
@@ -8,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/05/09 16:09:55 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/09/06 01:00:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -93,6 +94,14 @@ CtiPortPoolDialout& CtiPortPoolDialout::operator=(const CtiPortPoolDialout& aRef
 
 size_t CtiPortPoolDialout::addPort(CtiPortSPtr port)
 {
+    if(CtiPortPoolDialout::_poolDebugLevel & PORTPOOL_DEBUGLEVL_CHILDADDITION)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Port " << getName() << " adding " << port->getName() << " to child list" << endl;
+        }
+    }
+
     _ports.push_back(port);
     return _ports.size();
 }
@@ -120,7 +129,7 @@ CtiPortSPtr CtiPortPoolDialout::getAvailableChildPort(CtiDevice* Device)
         // Is there a port which claims this device as it GUID device?
         // Is there a port which has no other work to do?
 
-        // Look through all ports for one claiming this port as its own.
+        // Look through all ports for one claiming this device as its own.
         for(itr = _ports.begin(); itr != _ports.end(); itr++)
         {
             curport = *itr;
@@ -280,33 +289,40 @@ INT CtiPortPoolDialout::allocateQueueEntsToChildPort()
             {
                 childport = *itr;
 
-                if(!childport->isInhibited() && childport->getPoolAssignedGUID() != 0 && !childport->isQuestionable() )
+                if(!childport->isInhibited() && !childport->isQuestionable() )
                 {
-                    do
+                    if(childport->getPoolAssignedGUID() == 0)
                     {
-                        qloc = searchPortQueue( (void*)childport->getPoolAssignedGUID(), searchFuncForOutMessageUniqueID );
-                        if(qloc > 0)
+                        status = PPSC_ChildReady;
+                    }
+                    else
+                    {
+                        do
                         {
-                            OUTMESS        *OutMessage;
-                            REQUESTDATA    ReadResult;
-                            BYTE           ReadPriority;
-                            ULONG          QueEntries;
-                            ULONG          ReadLength;
-
-                            // Move the OM from the pool queue to the child queue.
-                            if( readQueue( &ReadResult, &ReadLength, (PPVOID) &OutMessage, qloc, DCWW_WAIT, &ReadPriority, &QueEntries ) == NORMAL )
+                            qloc = searchPortQueue( (void*)childport->getPoolAssignedGUID(), searchFuncForOutMessageUniqueID );
+                            if(qloc > 0)
                             {
-                                childport->writeQueue( OutMessage->EventCode, sizeof(*OutMessage), (char *) OutMessage, OutMessage->Priority );
+                                OUTMESS        *OutMessage;
+                                REQUESTDATA    ReadResult;
+                                BYTE           ReadPriority;
+                                ULONG          QueEntries;
+                                ULONG          ReadLength;
 
-                                if(CtiPortPoolDialout::_poolDebugLevel & PORTPOOL_DEBUGLEVL_CHILDALLOCATION)
+                                // Move the OM from the pool queue to the child queue.
+                                if( readQueue( &ReadResult, &ReadLength, (PPVOID) &OutMessage, qloc, DCWW_WAIT, &ReadPriority, &QueEntries ) == NORMAL )
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " Allocating OutMessage from pool queue to child port " << childport->getName() << ". Child has " << childport->queueCount() << " queue entries" << endl;
+                                    childport->writeQueue( OutMessage->EventCode, sizeof(*OutMessage), (char *) OutMessage, OutMessage->Priority );
+
+                                    if(CtiPortPoolDialout::_poolDebugLevel & PORTPOOL_DEBUGLEVL_CHILDALLOCATION)
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " Allocating OutMessage from pool queue to child port " << childport->getName() << ". Child has " << childport->queueCount() << " queue entries" << endl;
+                                    }
                                 }
                             }
                         }
+                        while(qloc != 0);
                     }
-                    while(qloc != 0);
                 }
             }
         }
@@ -323,4 +339,3 @@ INT CtiPortPoolDialout::allocateQueueEntsToChildPort()
 
     return status;
 }
-
