@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.119 $
-* DATE         :  $Date: 2004/09/30 21:37:23 $
+* REVISION     :  $Revision: 1.120 $
+* DATE         :  $Date: 2004/10/08 20:46:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1098,7 +1098,6 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         if( Device->isSingle() )
                         {
                             ds->recvCommRequest(OutMessage);
-
                             while( !ds->isTransactionComplete() )
                             {
                                 //  ACH - perhaps pass the VanGoghConnection object into the protocol,
@@ -2387,7 +2386,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
         commFail(Device, (iscommfailed ? CLOSED : OPENED));
     }
 
-    if(OutMessage->TargetID != OutMessage->DeviceID)
+    if(OutMessage->TargetID != 0 && OutMessage->TargetID != OutMessage->DeviceID)
     {
         // In this case, we need to account for the fail on the target device too..
         CtiDeviceSPtr pTarget = DeviceManager.getEqual( OutMessage->TargetID );
