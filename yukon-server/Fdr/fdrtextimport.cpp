@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2003/06/04 21:18:51 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2003/10/20 20:28:18 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,12 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
+      Revision 1.4  2003/10/20 20:28:18  dsutton
+      Bug:  The application wasn't locking the point list down before looking for a
+      point.  The database reload does lock the list down before reloading.  If the
+      lookup and the reload happened at the same time,  the lookup lost and threw
+      and exception
+
       Revision 1.3  2003/06/04 21:18:51  dsutton
       Interface wasn't applying the multiplier or offset to the incoming points
 
@@ -228,7 +234,6 @@ bool CtiFDR_TextImport::processFunctionOne (RWCString &aLine, CtiMessage **aRetM
     * function,id,value,quality,timestamp,daylight savings flag
     *****************************
     */
-
     while (!(tempString1 = cmdLine(",\r\n")).isNull() && pointValidFlag)
     {
         switch (fieldNumber)
@@ -240,7 +245,12 @@ bool CtiFDR_TextImport::processFunctionOne (RWCString &aLine, CtiMessage **aRetM
                 }
             case 2:
                 {
-                    pointValidFlag = findTranslationNameInList (tempString1, getReceiveFromList(), point);
+                    // lock the list while we're returning the point
+                    {
+                        CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
+                        pointValidFlag = findTranslationNameInList (tempString1, getReceiveFromList(), point);
+                    }
+
                     translationName=tempString1;
 
                     if (pointValidFlag != true)
@@ -650,12 +660,14 @@ bool CtiFDR_TextImport::loadTranslationLists()
                 }   // end for interator
 
                 // lock the receive list and remove the old one
-                CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
-                if (getReceiveFromList().getPointList() != NULL)
                 {
-                    getReceiveFromList().deletePointList();
+                    CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
+                    if (getReceiveFromList().getPointList() != NULL)
+                    {
+                        getReceiveFromList().deletePointList();
+                    }
+                    getReceiveFromList().setPointList (pointList);
                 }
-                getReceiveFromList().setPointList (pointList);
 
                 pointList=NULL;
                 if (!successful)

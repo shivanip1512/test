@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextexport.cpp-arc  $
-*    REVISION     :  $Revision: 1.2 $
-*    DATE         :  $Date: 2003/04/22 20:44:44 $
+*    REVISION     :  $Revision: 1.3 $
+*    DATE         :  $Date: 2003/10/20 20:28:17 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,12 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextexport.cpp,v $
+      Revision 1.3  2003/10/20 20:28:17  dsutton
+      Bug:  The application wasn't locking the point list down before looking for a
+      point.  The database reload does lock the list down before reloading.  If the
+      lookup and the reload happened at the same time,  the lookup lost and threw
+      and exception
+
       Revision 1.2  2003/04/22 20:44:44  dsutton
       Interfaces FDRTextExport and FDRTextImport and all the pieces needed
       to make them compile and work
@@ -367,13 +373,15 @@ bool CtiFDR_TextExport::loadTranslationLists()
                     }
                 }   // end for interator
 
-                // lock the receive list and remove the old one
-                CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
-                if (getSendToList().getPointList() != NULL)
                 {
-                    getSendToList().deletePointList();
+                    // lock the send list and remove the old one
+                    CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());  
+                    if (getSendToList().getPointList() != NULL)
+                    {
+                        getSendToList().deletePointList();
+                    }
+                    getSendToList().setPointList (pointList);
                 }
-                getSendToList().setPointList (pointList);
 
                 pointList=NULL;
                 if (!successful)
@@ -549,10 +557,10 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
             // now is the time to write the file
             if (timeNow >= refreshTime)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << " **** Checkpoint **** dumping file" << endl;
-                }
+//                {
+//                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+//                    dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << " **** Checkpoint **** dumping file" << endl;
+//                }
 
                 _snprintf (fileName, 200, "%s\\%s",getDriveAndPath(),getFileName());
 
@@ -573,6 +581,7 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
                 }
                 else
                 {
+                    CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());  
                     CtiFDRManager::CTIFdrPointIterator  myIterator(getSendToList().getPointList()->getMap());
 
                     for ( ; myIterator(); )
@@ -628,14 +637,14 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
     catch ( RWCancellation &cancellationMsg )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "CANCELLATION CtiFDRTextFileBase::threadFunctionReadFromFile in interface " <<getInterfaceName()<< endl;
+        dout << "CANCELLATION CtiFDRTextExportBase::threadFunctionWriteToFile in interface " <<getInterfaceName()<< endl;
     }
 
     // try and catch the thread death
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Fatal Error:  CtiFDRTextFileBase::threadFunctionReadFromFile  " << getInterfaceName() << " is dead! " << endl;
+        dout << RWTime() << " Fatal Error:  CtiFDRTextExportBase::threadFunctionWriteToFile  " << getInterfaceName() << " is dead! " << endl;
     }
 }
 

@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrdsm2import.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2002/04/16 15:58:32 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2003/10/20 20:28:17 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,12 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrdsm2import.cpp,v $
+      Revision 1.4  2003/10/20 20:28:17  dsutton
+      Bug:  The application wasn't locking the point list down before looking for a
+      point.  The database reload does lock the list down before reloading.  If the
+      lookup and the reload happened at the same time,  the lookup lost and threw
+      and exception
+
       Revision 1.3  2002/04/16 15:58:32  softwarebuild
       20020416_1031_2_16
 
@@ -233,7 +239,11 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (RWCString &aLine, CtiMessage **re
     // do we have an of these
     if (!(tempString1 = cmdLine(",\r\n")).isNull())
     {
-        flag = findTranslationNameInList (tempString1, getReceiveFromList(), point);
+        {
+            CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
+            flag = findTranslationNameInList (tempString1, getReceiveFromList(), point);
+        }
+
         RWCString translationName=tempString1;
 
         if (flag == true)
