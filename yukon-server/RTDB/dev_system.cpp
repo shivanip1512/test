@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_system.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/07/21 22:12:37 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/03/18 19:52:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -106,10 +106,15 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
 
                         break;
                     }
-                case ProtocolFisherPierceType:
                 case ProtocolSA105Type:
                 case ProtocolSA205Type:
                 case ProtocolSA305Type:
+                    {
+                        OutMessage->EventCode |= NORESULT;
+                        OutMessage->Retry = 2;                      // Default to two tries per route!
+                        break;
+                    }
+                case ProtocolFisherPierceType:
                 default:
                     {
                         {
@@ -194,10 +199,15 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                         OutMessage->Retry = 2;                      // Default to two tries per route!
                         break;
                     }
-                case ProtocolFisherPierceType:
                 case ProtocolSA105Type:
                 case ProtocolSA205Type:
                 case ProtocolSA305Type:
+                    {
+                        OutMessage->EventCode |= NORESULT;
+                        OutMessage->Retry = 2;                      // Default to two tries per route!
+                        break;
+                    }
+                case ProtocolFisherPierceType:
                 default:
                     {
                         {
