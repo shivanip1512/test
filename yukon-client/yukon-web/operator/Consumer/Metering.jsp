@@ -68,6 +68,9 @@
 					<img id = "theGraph" src="<%= request.getContextPath() %>/servlet/GraphGenerator?action=EncodeGraph" > 
 				<%}
 				%>
+				<cti:checkProperty propertyid="<%= CommercialMeteringRole.TRENDING_DISCLAIMER%>"> 
+				<br><font size="-1"><cti:getProperty propertyid="<%= CommercialMeteringRole.TRENDING_DISCLAIMER%>"/></font>
+				</cti:checkProperty>
 				</center></td>
 			</tr>
 			</table>
