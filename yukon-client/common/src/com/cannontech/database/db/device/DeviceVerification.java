@@ -97,8 +97,8 @@ public static final Vector getAllVerifications( Integer deviceID, java.sql.Conne
 	java.sql.ResultSet rset = null;
 	
 	String sql = "SELECT " + SETTER_COLUMNS[0] + ", " + SETTER_COLUMNS[1] + ", " +
-				SETTER_COLUMNS[2] + " FROM " + TABLE_NAME + " WHERE " + 
-				CONSTRAINT_COLUMNS[0] + " = " + deviceID;
+				SETTER_COLUMNS[2] + ", " + SETTER_COLUMNS[3] + " FROM " 
+				+ TABLE_NAME + " WHERE " + CONSTRAINT_COLUMNS[0] + " = " + deviceID;
 	
 	try
 	{		
