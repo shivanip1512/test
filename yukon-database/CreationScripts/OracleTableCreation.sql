@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     10/26/2004 4:40:13 PM                        */
+/* Created on:     11/8/2004 11:46:08 AM                        */
 /*==============================================================*/
 
 
@@ -258,6 +258,10 @@ drop table DeviceCustomerList cascade constraints
 
 
 drop table DeviceDirectCommSettings cascade constraints
+/
+
+
+drop table DeviceMCT400Series cascade constraints
 /
 
 
@@ -673,11 +677,11 @@ drop table TEMPLATECOLUMNS cascade constraints
 /
 
 
-drop table TOUDeviceMapping cascade constraints
+drop table TOUDay cascade constraints
 /
 
 
-drop table TOURateOffset cascade constraints
+drop table TOUDayMapping cascade constraints
 /
 
 
@@ -1151,7 +1155,7 @@ create table CTIDatabase  (
 insert into CTIDatabase values('3.01', 'Ryan', '10-MAY-2004', 'Added many load control and protocol changes', 1);
 
 alter table CTIDatabase
-   add constraint PK_CTIDATABASE primary key (Version)
+   add constraint PK_CTIDATABASE primary key (Version, Build)
 /
 
 
@@ -2157,6 +2161,24 @@ alter table DeviceDirectCommSettings
 
 
 /*==============================================================*/
+/* Table : DeviceMCT400Series                                   */
+/*==============================================================*/
+
+
+create table DeviceMCT400Series  (
+   DeviceID             NUMBER                           not null,
+   DisconnectAddress    NUMBER                           not null,
+   TOUScheduleID        NUMBER                           not null
+)
+/
+
+
+alter table DeviceMCT400Series
+   add constraint PK_DEV400S primary key (DeviceID)
+/
+
+
+/*==============================================================*/
 /* Table : DeviceRTC                                            */
 /*==============================================================*/
 
@@ -2640,6 +2662,15 @@ alter table DynamicVerification
 /*==============================================================*/
 create index Index_DYNVER_CS on DynamicVerification (
    CodeSequence ASC
+)
+/
+
+
+/*==============================================================*/
+/* Index: Indx_DYNV_TIME                                        */
+/*==============================================================*/
+create index Indx_DYNV_TIME on DynamicVerification (
+   TimeArrival ASC
 )
 /
 
@@ -3399,10 +3430,10 @@ create table LMGroupExpressCom  (
    GeoID                NUMBER                           not null,
    SubstationID         NUMBER                           not null,
    FeederID             NUMBER                           not null,
-   ZipCodeAddress       NUMBER                           not null,
-   UDAddress            NUMBER                           not null,
+   ZipID                NUMBER                           not null,
+   UserID               NUMBER                           not null,
    ProgramID            NUMBER                           not null,
-   SplinterAddress      NUMBER                           not null,
+   SplinterID           NUMBER                           not null,
    AddressUsage         VARCHAR2(10)                     not null,
    RelayUsage           CHAR(15)                         not null
 )
@@ -3971,7 +4002,8 @@ create table MCTConfig  (
    MCTWire2             NUMBER                           not null,
    Ke2                  FLOAT                            not null,
    MCTWire3             NUMBER                           not null,
-   Ke3                  FLOAT                            not null
+   Ke3                  FLOAT                            not null,
+   DisplayDigits        NUMBER                           not null
 )
 /
 
@@ -4725,37 +4757,38 @@ alter table TEMPLATECOLUMNS
 
 
 /*==============================================================*/
-/* Table : TOUDeviceMapping                                     */
+/* Table : TOUDay                                               */
 /*==============================================================*/
 
 
-create table TOUDeviceMapping  (
-   TOUScheduleID        NUMBER                           not null,
-   DeviceID             NUMBER                           not null
-)
-/
-
-
-alter table TOUDeviceMapping
-   add constraint PK_TOUDEVICEMAPPING primary key (TOUScheduleID, DeviceID)
-/
-
-
-/*==============================================================*/
-/* Table : TOURateOffset                                        */
-/*==============================================================*/
-
-
-create table TOURateOffset  (
-   TOUScheduleID        NUMBER                           not null,
+create table TOUDay  (
+   TOUDayID             NUMBER                           not null,
    SwitchRate           VARCHAR2(4)                      not null,
    SwitchOffset         NUMBER                           not null
 )
 /
 
 
-alter table TOURateOffset
-   add constraint PK_TOURATEOFFSET primary key (TOUScheduleID, SwitchOffset)
+alter table TOUDay
+   add constraint PK_TOUDAY primary key (TOUDayID)
+/
+
+
+/*==============================================================*/
+/* Table : TOUDayMapping                                        */
+/*==============================================================*/
+
+
+create table TOUDayMapping  (
+   TOUScheduleID        NUMBER                           not null,
+   TOUDayID             NUMBER                           not null,
+   TOUDayOffset         NUMBER                           not null
+)
+/
+
+
+alter table TOUDayMapping
+   add constraint PK_TOUDAYMAPPING primary key (TOUScheduleID, TOUDayID)
 /
 
 
@@ -4766,7 +4799,8 @@ alter table TOURateOffset
 
 create table TOUSchedule  (
    TOUScheduleID        NUMBER                           not null,
-   TOUScheduleName      VARCHAR2(32)                     not null
+   TOUScheduleName      VARCHAR2(32)                     not null,
+   TOUDefaultRate       VARCHAR2(8)                      not null
 )
 /
 
@@ -7019,15 +7053,19 @@ where YukonPAObject.PAObjectID = POINT.PAObjectID
 create or replace view ExpressComAddress_View as
 select x.LMGroupID, x.RouteID, x.SerialNumber, s.Address as serviceaddress,
 g.Address as geoaddress, b.Address as substationaddress, f.Address as feederaddress,
-x.ZipCodeAddress, x.UDAddress, p.Address as programaddress, x.SplinterAddress, x.AddressUsage, x.RelayUsage
+z.Address as ZipAddress, us.Address as UDAddress, p.Address as programaddress, sp.Address as SplinterAddress, x.AddressUsage, x.RelayUsage
 from LMGroupExpressCom x, LMGroupExpressComAddress s, 
 LMGroupExpressComAddress g, LMGroupExpressComAddress b, LMGroupExpressComAddress f,
-LMGroupExpressComAddress p
+LMGroupExpressComAddress p,
+LMGroupExpressComAddress sp, LMGroupExpressComAddress us, LMGroupExpressComAddress z
 where ( x.ServiceProviderID = s.AddressID and ( s.AddressType = 'SERVICE' or s.AddressID = 0 ) )
 and ( x.FeederID = f.AddressID and ( f.AddressType = 'FEEDER' or f.AddressID = 0 ) )
 and ( x.GeoID = g.AddressID and ( g.AddressType = 'GEO' or g.AddressID = 0 ) )
 and ( x.ProgramID = p.AddressID and ( p.AddressType = 'PROGRAM' or p.AddressID = 0 ) )
 and ( x.SubstationID = b.AddressID and ( b.AddressType = 'SUBSTATION' or b.AddressID = 0 ) )
+and ( x.SplinterID = sp.AddressID and ( sp.AddressType = 'SPLINTER' or sp.AddressID = 0 ) )
+and ( x.UserID = us.AddressID and ( us.AddressType = 'USER' or us.AddressID = 0 ) )
+and ( x.ZipID = z.AddressID and ( z.AddressType = 'ZIP' or z.AddressID = 0 ) )
 /
 
 
@@ -7638,6 +7676,18 @@ alter table DateOfSeason
 /
 
 
+alter table DeviceMCT400Series
+   add constraint FK_Dev4_DevC foreign key (DeviceID)
+      references DEVICECARRIERSETTINGS (DEVICEID)
+/
+
+
+alter table DeviceMCT400Series
+   add constraint FK_Dev4_TOU foreign key (TOUScheduleID)
+      references TOUSchedule (TOUScheduleID)
+/
+
+
 alter table DeviceTypeCommand
    add constraint FK_DevCmd_Cmd foreign key (CommandID)
       references Command (CommandID)
@@ -8076,21 +8126,15 @@ alter table LMProgramConstraints
 /
 
 
-alter table TOUDeviceMapping
-   add constraint FK_TOU_Dev foreign key (DeviceID)
-      references DEVICE (DEVICEID)
-/
-
-
-alter table TOUDeviceMapping
+alter table TOUDayMapping
    add constraint FK_TOUd_TOUSc foreign key (TOUScheduleID)
       references TOUSchedule (TOUScheduleID)
 /
 
 
-alter table TOURateOffset
-   add constraint FK_TOUr_TOUSc foreign key (TOUScheduleID)
-      references TOUSchedule (TOUScheduleID)
+alter table TOUDayMapping
+   add constraint FK_TOUm_TOUd foreign key (TOUDayID)
+      references TOUDay (TOUDayID)
 /
 
 
