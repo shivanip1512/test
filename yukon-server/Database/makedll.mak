@@ -49,6 +49,7 @@ tbl_dv_expresscom.obj \
 tbl_dv_idlcremote.obj \
 tbl_dv_ied.obj \
 tbl_dv_lmvcserial.obj \
+tbl_dv_lmgmct.obj \
 tbl_dv_lmg_ripple.obj \
 tbl_dv_mctiedport.obj \
 tbl_dv_scandata.obj \
@@ -244,6 +245,8 @@ tbl_dv_ied.obj: tbl_dv_ied.h dlldefs.h dllbase.h os2_2w32.h types.h \
                 cticalls.h dsm2.h mutex.h guard.h dbmemobject.h dbaccess.h \
                 sema.h resolvers.h pointtypes.h yukon.h ctidbgmem.h \
                 db_entry_defines.h logger.h thread.h
+tbl_dv_lmgmct.obj:      tbl_dv_lmgmct.h dllbase.h os2_2w32.h dlldefs.h \
+                types.h cticalls.h dsm2.h mutex.h guard.h logger.h thread.h
 tbl_dv_lmg_ripple.obj:  logger.h thread.h mutex.h dlldefs.h guard.h \
                 tbl_dv_lmg_ripple.h dllbase.h os2_2w32.h types.h cticalls.h \
                 dsm2.h dbmemobject.h dbaccess.h sema.h resolvers.h \
@@ -288,6 +291,9 @@ tbl_pao.obj:    dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
                 cticalls.h dsm2.h mutex.h guard.h sema.h logger.h thread.h \
                 resolvers.h pointtypes.h yukon.h ctidbgmem.h \
                 db_entry_defines.h tbl_pao.h dbmemobject.h
+tbl_paoexclusion.obj:   dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
+                types.h cticalls.h dsm2.h mutex.h guard.h sema.h logger.h \
+                thread.h tbl_paoexclusion.h utility.h yukon.h ctidbgmem.h
 tbl_port_base.obj:      tbl_port_base.h dbmemobject.h dbaccess.h dlldefs.h \
                 dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
                 guard.h sema.h resolvers.h pointtypes.h yukon.h ctidbgmem.h \
