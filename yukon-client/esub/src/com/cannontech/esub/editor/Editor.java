@@ -366,7 +366,7 @@ public class Editor extends JPanel {
 		
 		frame.setSize(defaultSize);
 		frame.setTitle("Untitled");		
-		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("esubEditorIcon.png"));
+		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("esubEditorIcon.gif"));
 		frame.setIconImage(icon.getImage());
 
 		ClientSession session = ClientSession.getInstance(); 
