@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/01/07 16:47:06 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/01/08 23:17:25 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -163,38 +163,42 @@ INT CtiDeviceMarkV::ResultDecode( INMESS                    *InMessage,
                                   RWTPtrSlist< OUTMESS >    &outList)
 {
    vector<CtiTransdataData *>    transVector;
-   INT                           retCode;
+   INT                           retCode = NOTNORMAL;
 
-   if( InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] == 0 )
+   try
    {
-      if( _transdataProtocol.getCommand() == CtiTransdataApplication::General )
+      if( InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] == 0 )
       {
-         memcpy( &_llp, InMessage->Buffer.DUPSt.DUPRep.Message, sizeof( _llp ));
-         RWTime x( _llp.lastLP );
-         setLastLPTime( x );
-         memcpy( InMessage->Buffer.InMessage, InMessage->Buffer.DUPSt.DUPRep.Message + sizeof( _llp ), InMessage->InLength-sizeof( _llp ));
-
-         transVector = _transdataProtocol.resultDecode( InMessage );
-
-         if( transVector.size() )
+         if( _transdataProtocol.getCommand() == CtiTransdataApplication::General )
          {
-            decodeResultScan( InMessage,TimeNow, vgList, retList, transVector );
+            memcpy( &_llp, InMessage->Buffer.DUPSt.DUPRep.Message, sizeof( _llp ));
+            RWTime x( _llp.lastLP );
+            setLastLPTime( x );
+            memcpy( InMessage->Buffer.InMessage, InMessage->Buffer.DUPSt.DUPRep.Message + sizeof( _llp ), InMessage->InLength-sizeof( _llp ));
 
-            for( int count = 0; count < transVector.size() - 1; count++ )    //matt say use iterator!
+            transVector = _transdataProtocol.resultDecode( InMessage );
+
+            if( transVector.size() )
             {
-               delete transVector[count];
+               decodeResultScan( InMessage,TimeNow, vgList, retList, transVector );
+
+               for( int count = 0; count < transVector.size() - 1; count++ )    //matt say use iterator!
+               {
+                  delete transVector[count];
+               }
             }
          }
-      }
-      else //LOADPROFILE
-      {
-      }
+         else 
+         {
+            //LOADPROFILE
+         }
 
-      retCode = NORMAL;
+         retCode = NORMAL;
+      }
    }
-   else
+   catch(...)
    {
-      retCode = NOTNORMAL;
+      //what the hell happened?
    }
 
    return( retCode );
@@ -922,6 +926,240 @@ CtiProtocolTransdata & CtiDeviceMarkV::getProtocol( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
+void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
+{
+   CtiTransdataTracker::mark_v_lp   *lp = NULL;
+   CtiMultiMsg                      *msgMulti = new CtiMultiMsg;
+   CtiPointDataMsg                  *pData = NULL;
+   CtiPointBase                     *pPoint = NULL;
+   BYTE                             *_storage = NULL; //change this back to storage
+   int                              index;
+   int                              numEnabledChannels = 0;
+   bool                             firstLoop = true;
+
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " ----Process Dispatch Message In Progress----" << endl;
+   }
+
+   if( _transdataProtocol.getDidProcess() )
+   {
+      _storage = new BYTE[30000];
+      _transdataProtocol.retreiveData( _storage );
+
+      lp = ( CtiTransdataTracker::mark_v_lp *)_storage;
+      _llp.lastLP = lp->meterTime;
+      RWTime mTime( lp->meterTime );
+
+      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      {
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << RWTime() << " ----Dispatch will see this time ->" << mTime << endl;
+      }
+
+      for( index = 0; index < lp->numLpRecs; )
+      {
+         for( int x = 0; x < 4; x++ )
+         {
+            if( lp->enabledChannels[x] == true )
+            {
+               pPoint = getDevicePointOffsetTypeEqual( getChannelOffset( x ) + LOAD_PROFILE, AnalogPointType );
+
+               if( pPoint != NULL )
+               {
+                  pData = new CtiPointDataMsg();
+                  pData->setId( pPoint->getID() );
+                  pData->setValue( correctValue( lp->lpData[index] ) );
+                  pData->setQuality( checkQuality( lp->lpFormat[1], correctValue( lp->lpData[index] ) )); 
+                  pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
+                  pData->setMessageTime( mTime );
+                  pData->setType( pPoint->getType() );
+
+                  msgMulti->getData().insert( pData );
+
+                  if( firstLoop )
+                  {
+                     //stick this pData into something for scanner
+                     pData = new CtiPointDataMsg();
+                     pData->setId( pPoint->getID() );
+                     pData->setValue( correctValue( lp->lpData[index] ) );
+                     pData->setQuality( checkQuality( lp->lpFormat[1], correctValue( lp->lpData[index] ) )); 
+                     pData->setMessageTime( mTime );
+                     pData->setType( pPoint->getType() );
+
+                     msgMulti->getData().insert( pData );
+                  }
+
+                  index += 2;
+               }
+            }
+         }
+         
+         if( firstLoop )
+         {
+            firstLoop = false;
+         }
+
+         //decrement the time to the interval previous to the current one...
+         mTime -= lp->lpFormat[0] * 60; 
+      }
+
+      msgPtr->insert( msgMulti );
+
+      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      {
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << RWTime() << " ----Dispatch Message Inserted----" << endl;
+      }
+   }
+   else
+   {
+      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      {
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << RWTime() << " ----No Data For Dispatch Message----" << endl;
+      }
+   }
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+int CtiDeviceMarkV::sendCommResult( INMESS *InMessage )
+{
+   CtiProtocolTransdata::llp  *lLP = NULL;
+   
+   lLP = &_llp;
+
+   //insert lastlptime struct into inmess
+   memcpy( InMessage->Buffer.DUPSt.DUPRep.Message, lLP, sizeof( _llp ) );
+      
+   //we have succeeded in communicating
+   InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = _transdataProtocol.sendCommResult( InMessage );
+              
+   return( 1 );
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+void CtiDeviceMarkV::DecodeDatabaseReader( RWDBReader &rdr )
+{
+   Inherited::DecodeDatabaseReader( rdr );       // get the base class handled
+
+   getProtocol().injectData( getIED().getPassword() );
+}
+
+//=====================================================================================================================
+//flip our bytes into the correct order to get a value
+//=====================================================================================================================
+
+int CtiDeviceMarkV::correctValue( CtiTransdataTracker::lpRecord rec )
+{
+   BYTEUSHORT temp;
+   
+   if(( rec.rec[0] != NULL ) && ( rec.rec[1] != 0 ))
+   {
+      temp.ch[0] = rec.rec[1];
+      temp.ch[1] = rec.rec[0];
+   }
+   else
+   {
+      temp.sh = 0;
+   }
+
+   return( temp.sh );
+}
+
+//=====================================================================================================================
+//transdata qualities
+// 0 = end of interval
+// 6 = end of interval with power outage
+// 8 = entire interval occured during outage
+// a = end of interval during demand deferral
+// 2 = interval time correction
+// e = end of interval with diagnostics alarm
+// c = loss of potential alarm
+// 4 = harmonic distortion alarm
+//=====================================================================================================================
+
+int CtiDeviceMarkV::checkQuality( int yyMap, int lpValue )
+{
+   int quality = NormalQuality;
+
+   if( yyMap == Type_II )
+   {
+      //the top 3 bits tell us what the quality is
+      quality = ( lpValue & 0xe000 );
+
+      switch( quality )
+      {
+      case 0x0:
+         quality = NormalQuality;
+         break;
+
+      case 0x6:
+         quality = PowerfailQuality;
+         break;
+
+      case 0x8:
+         quality = PowerfailQuality;
+         break;
+
+      case 0xa:
+         quality = AbnormalQuality;
+         break;
+
+      case 0x2:
+         quality = PartialIntervalQuality;
+         break;
+
+      case 0xe:
+      case 0xc:
+      case 0x4:
+         quality = QuestionableQuality;
+
+      default:
+         quality = AbnormalQuality;
+         break;
+      }
+   }
+
+   return( quality );
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+int CtiDeviceMarkV::getChannelOffset( int index )
+{
+   int retVal = 0;
+
+   switch( index )
+   {
+   case 0:
+      retVal = CH1_OFFSET;
+      break;
+
+   case 1:
+      retVal = CH2_OFFSET;
+      break;
+
+   case 2:
+      retVal = CH3_OFFSET;
+      break;
+
+   case 3:
+      retVal = CH4_OFFSET;
+      break;
+   }
+
+   return( retVal );
+}
+
+
+/*
 void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
 {
    CtiTransdataTracker::mark_v_lp   *lp = NULL;
@@ -1152,101 +1390,4 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
 }
 
 //=====================================================================================================================
-//=====================================================================================================================
-
-int CtiDeviceMarkV::sendCommResult( INMESS *InMessage )
-{
-   CtiProtocolTransdata::llp  *lLP = NULL;
-   
-   lLP = &_llp;
-
-   //insert lastlptime struct into inmess
-   memcpy( InMessage->Buffer.DUPSt.DUPRep.Message, lLP, sizeof( _llp ) );
-      
-   //we have succeeded in communicating
-   InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = _transdataProtocol.sendCommResult( InMessage );
-              
-   return( 1 );
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-void CtiDeviceMarkV::DecodeDatabaseReader( RWDBReader &rdr )
-{
-   Inherited::DecodeDatabaseReader( rdr );       // get the base class handled
-
-   getProtocol().injectData( getIED().getPassword() );
-}
-
-//=====================================================================================================================
-//flip our bytes into the correct order to get a value
-//=====================================================================================================================
-
-int CtiDeviceMarkV::correctValue( CtiTransdataTracker::lpRecord rec )
-{
-   BYTEUSHORT temp;
-   
-   temp.ch[0] = rec.rec[1];
-   temp.ch[1] = rec.rec[0];
-
-   return( temp.sh );
-}
-
-//=====================================================================================================================
-//transdata qualities
-// 0 = end of interval
-// 6 = end of interval with power outage
-// 8 = entire interval occured during outage
-// a = end of interval during demand deferral
-// 2 = interval time correction
-// e = end of interval with diagnostics alarm
-// c = loss of potential alarm
-// 4 = harmonic distortion alarm
-//=====================================================================================================================
-
-int CtiDeviceMarkV::checkQuality( int yyMap, int lpValue )
-{
-   int quality = NormalQuality;
-
-   if( yyMap == Type_II )
-   {
-      //the top 3 bits tell us what the quality is
-      quality = ( lpValue & 0xe000 );
-
-      switch( quality )
-      {
-      case 0x0:
-         quality = NormalQuality;
-         break;
-
-      case 0x6:
-         quality = PowerfailQuality;
-         break;
-
-      case 0x8:
-         quality = PowerfailQuality;
-         break;
-
-      case 0xa:
-         quality = AbnormalQuality;
-         break;
-
-      case 0x2:
-         quality = PartialIntervalQuality;
-         break;
-
-      case 0xe:
-      case 0xc:
-      case 0x4:
-         quality = QuestionableQuality;
-
-      default:
-         quality = AbnormalQuality;
-         break;
-      }
-   }
-
-   return( quality );
-}
-
+*/

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/01/07 16:47:06 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/01/08 23:17:25 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -77,7 +77,6 @@ private:
 
 
    CtiProtocolTransdata       _transdataProtocol;
-//   CtiTransdataData           *_converted;
    CtiProtocolTransdata::llp  _llp;
    
 protected:
@@ -134,10 +133,11 @@ public:
                           RWTPtrSlist< CtiMessage > &retList,
                           vector<CtiTransdataData *> transVector );
 
-   void processDispatchReturnMessage( CtiConnection &conn );
+   void processDispatchReturnMessage( CtiReturnMsg *msgPtr );
    int sendCommResult( INMESS *InMessage );
    int checkQuality( int yyMap, int lpValue );
    int correctValue( CtiTransdataTracker::lpRecord rec );
+   int getChannelOffset( int index );
 
    CtiProtocolTransdata & getProtocol( void );
    RWTime getMsgTime( int timeID, int dateID, vector<CtiTransdataData *> transVector );
