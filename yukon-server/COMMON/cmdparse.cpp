@@ -334,8 +334,9 @@ void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
     RWCRExpr   re_kvarh("kvarh");
 
     RWCRExpr   re_demand("dema|kw( |$)|kvar( |$)|kva( |$)");  //  match "dema"nd, but also match "kw", "kvar", or "kva"
-    RWCRExpr   re_frozen("froz");                                         //     at the end of the string or with whitespace following
+    RWCRExpr   re_frozen("froz");                             //     at the end of the string or with whitespace following
     RWCRExpr   re_peak  ("peak");
+    RWCRExpr   re_minmax("minmax");
 
     RWCRExpr   re_powerfail("power");
 
@@ -410,6 +411,10 @@ void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
         else if(!(token = CmdStr.match(re_peak)).isNull())      // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_GV_PEAK;
+        }
+        else if(!(token = CmdStr.match(re_minmax)).isNull())      // Sourcing from CmdStr, which is the entire command string.
+        {
+            flag |= CMD_FLAG_GV_MINMAX;
         }
         else if(!(token = CmdStr.match(re_offset)).isNull())      // Sourcing from CmdStr, which is the entire command string.
         {
@@ -1502,6 +1507,14 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
                 _cmd["scandelay"] = CtiParseValue( atoi( cmdtok().data() ) );
             }
         }
+        if(!(CmdStr.match("onoffpeak")).isNull())
+        {
+            _cmd["onoffpeak"] = CtiParseValue(TRUE);
+        }
+        if(!(CmdStr.match("minmax")).isNull())
+        {
+            _cmd["minmax"] = CtiParseValue(TRUE);
+        }
         if(!(CmdStr.match("group")).isNull())
         {
             if(!(token = CmdStr.match(groupAddr)).isNull())
@@ -2564,28 +2577,31 @@ void  CtiCommandParser::doParsePutStatusEmetcon(const RWCString &CmdStr)
 
             _cmd["flag"] = CtiParseValue(flag);
         }
-
+        if(CmdStr.contains(" peak"))
+        {
+            if(CmdStr.contains(" peak on"))
+            {
+                _cmd["peak"] = CtiParseValue(TRUE);
+            }
+            else if(CmdStr.contains(" peak off"))
+            {
+                _cmd["peak"] = CtiParseValue(FALSE);
+            }
+        }
         if(CmdStr.contains(" freeze"))
         {
-            unsigned int flag = 0;
-
-            if( isKeyValid("flag") )
-                flag = getiValue("flag", 0);
-
-            if(CmdStr.contains(" zero"))
+            if(CmdStr.contains(" one"))
             {
-                flag |= CMD_FLAG_PS_FREEZEZERO;
+                _cmd["freeze"] = CtiParseValue(1);
             }
-            else if(CmdStr.contains(" one"))
+            else if(CmdStr.contains(" two"))
             {
-                flag |= CMD_FLAG_PS_FREEZEONE;
+                _cmd["freeze"] = CtiParseValue(2);
             }
             else
             {
-                flag |= CMD_FLAG_PS_FREEZEZERO | CMD_FLAG_PS_FREEZEONE;
+                _cmd["freeze"] = CtiParseValue(0);
             }
-
-            _cmd["flag"] = CtiParseValue(flag);
         }
     }
     else

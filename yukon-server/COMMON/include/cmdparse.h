@@ -138,7 +138,8 @@ public:
 #define CMD_FLAG_GV_KVAH         0x00000040
 #define CMD_FLAG_GV_DEMAND       0x00000080
 #define CMD_FLAG_GV_PEAK         0x00000100
-#define CMD_FLAG_GV_CHMASK       0x000001F0
+#define CMD_FLAG_GV_MINMAX       0x00000200
+#define CMD_FLAG_GV_CHMASK       0x000003F0
 
 #define CMD_FLAG_GV_IED          0x00001000     // The reading is to be from a connected ied!
 
