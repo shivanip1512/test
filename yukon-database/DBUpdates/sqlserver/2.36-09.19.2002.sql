@@ -13,10 +13,6 @@ go
 alter TABLE DynamicPointDispatch add LastAlarmLogID NUMERIC not null DEFAULT 0;
 
 
-/* Add a billing file format */
-insert into BillingFileFormats values(7,'NCDC');
-go
-
 
 /* Add a column to the DynamicCCSubstationBus table */
 alter TABLE DynamicCCSubstationBus add EstimatedPFValue FLOAT not null DEFAULT 0.0;
