@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/09/15 20:49:09 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/01/04 22:16:49 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -148,7 +148,7 @@ void CtiDeviceGateway::sendGMTClock (BYTE hour, BYTE minute)
 
     RWCString gmt_str = today.asString("%Y/%m/%d ") + CtiNumStr(now.hourGMT()).zpad(2) + ":" + CtiNumStr(now.minuteGMT()).zpad(2) + ":" + CtiNumStr(now.second()).zpad(2) + " GMT";
 
-    tm_Clock.Type = htons (TYPE_TM_CLOCK);
+    tm_Clock.Type = htons (TYPE_GMTTM_CLOCK);
     tm_Clock.tm_sec = now.second();
     tm_Clock.tm_min = now.minuteGMT();
     tm_Clock.tm_hour = now.hourGMT();
