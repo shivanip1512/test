@@ -904,6 +904,32 @@ alter table TOURateOffset
       references TOUSchedule (TOUScheduleID);
 
 
+create table Command  (
+   CommandID            NUMBER                           not null,
+   Command              VARCHAR2(128)                    not null,
+   Label                VARCHAR2(64)                     not null,
+   Category             CHAR(32)                         not null
+);
+alter table Command
+   add constraint PK_COMMAND primary key (CommandID);
+
+create table DeviceTypeCommand  (
+   DeviceCommandID      NUMBER                           not null,
+   CommandID            NUMBER                           not null,
+   DeviceType           VARCHAR2(32)                     not null,
+   DisplayOrder         NUMBER                           not null,
+   VisibleFlag          VARCHAR2(1)                      not null
+);
+alter table DeviceTypeCommand
+   add constraint PK_DEVICETYPECOMMAND primary key (DeviceCommandID);
+alter table DeviceTypeCommand
+   add constraint FK_DevCmd_Cmd foreign key (CommandID)
+      references Command (CommandID);
+
+
+
+
+
 
 
 

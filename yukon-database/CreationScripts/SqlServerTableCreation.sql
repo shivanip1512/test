@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     9/22/2004 2:58:29 PM                         */
+/* Created on:     9/28/2004 4:01:26 PM                         */
 /*==============================================================*/
 
 
@@ -405,6 +405,23 @@ go
 
 alter table CommPort
    add constraint SYS_C0013112 primary key  (PORTID)
+go
+
+
+/*==============================================================*/
+/* Table : Command                                              */
+/*==============================================================*/
+create table Command (
+CommandID            numeric              not null,
+Command              varchar(128)         not null,
+Label                varchar(64)          not null,
+Category             char(32)             not null
+)
+go
+
+
+alter table Command
+   add constraint PK_COMMAND primary key  (CommandID)
 go
 
 
@@ -976,6 +993,24 @@ go
 
 alter table DeviceSeries5RTU
    add constraint PK_DEVICESERIES5RTU primary key  (DeviceID)
+go
+
+
+/*==============================================================*/
+/* Table : DeviceTypeCommand                                    */
+/*==============================================================*/
+create table DeviceTypeCommand (
+DeviceCommandID      numeric              not null,
+CommandID            numeric              not null,
+DeviceType           varchar(32)          not null,
+DisplayOrder         numeric              not null,
+VisibleFlag          varchar(1)           not null
+)
+go
+
+
+alter table DeviceTypeCommand
+   add constraint PK_DEVICETYPECOMMAND primary key  (DeviceCommandID)
 go
 
 
@@ -3947,6 +3982,12 @@ go
 alter table DateOfSeason
    add constraint FK_DaOfSe_SeSc foreign key (SeasonScheduleID)
       references SeasonSchedule (ScheduleID)
+go
+
+
+alter table DeviceTypeCommand
+   add constraint FK_DevCmd_Cmd foreign key (CommandID)
+      references Command (CommandID)
 go
 
 

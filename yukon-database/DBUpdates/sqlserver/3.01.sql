@@ -1023,6 +1023,37 @@ alter table TOURateOffset
 go
 
 
+create table Command (
+CommandID            numeric              not null,
+Command              varchar(128)         not null,
+Label                varchar(64)          not null,
+Category             char(32)             not null
+);
+go
+alter table Command
+   add constraint PK_COMMAND primary key  (CommandID);
+go
+
+create table DeviceTypeCommand (
+DeviceCommandID      numeric              not null,
+CommandID            numeric              not null,
+DeviceType           varchar(32)          not null,
+DisplayOrder         numeric              not null,
+VisibleFlag          varchar(1)           not null
+);
+go
+alter table DeviceTypeCommand
+   add constraint PK_DEVICETYPECOMMAND primary key  (DeviceCommandID)
+go;
+alter table DeviceTypeCommand
+   add constraint FK_DevCmd_Cmd foreign key (CommandID)
+      references Command (CommandID);
+go
+
+
+
+
+
 
 
 /******************************************************************************/

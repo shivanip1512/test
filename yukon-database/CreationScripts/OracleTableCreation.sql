@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     9/22/2004 2:59:10 PM                         */
+/* Created on:     9/28/2004 4:00:30 PM                         */
 /*==============================================================*/
 
 
@@ -443,6 +443,25 @@ create table CommPort  (
 
 alter table CommPort
    add constraint SYS_C0013112 primary key (PORTID)
+/
+
+
+/*==============================================================*/
+/* Table : Command                                              */
+/*==============================================================*/
+
+
+create table Command  (
+   CommandID            NUMBER                           not null,
+   Command              VARCHAR2(128)                    not null,
+   Label                VARCHAR2(64)                     not null,
+   Category             CHAR(32)                         not null
+)
+/
+
+
+alter table Command
+   add constraint PK_COMMAND primary key (CommandID)
 /
 
 
@@ -1078,6 +1097,26 @@ create table DeviceSeries5RTU  (
 
 alter table DeviceSeries5RTU
    add constraint PK_DEVICESERIES5RTU primary key (DeviceID)
+/
+
+
+/*==============================================================*/
+/* Table : DeviceTypeCommand                                    */
+/*==============================================================*/
+
+
+create table DeviceTypeCommand  (
+   DeviceCommandID      NUMBER                           not null,
+   CommandID            NUMBER                           not null,
+   DeviceType           VARCHAR2(32)                     not null,
+   DisplayOrder         NUMBER                           not null,
+   VisibleFlag          VARCHAR2(1)                      not null
+)
+/
+
+
+alter table DeviceTypeCommand
+   add constraint PK_DEVICETYPECOMMAND primary key (DeviceCommandID)
 /
 
 
@@ -4290,6 +4329,12 @@ alter table CustomerAdditionalContact
 alter table DateOfSeason
    add constraint FK_DaOfSe_SeSc foreign key (SeasonScheduleID)
       references SeasonSchedule (ScheduleID)
+/
+
+
+alter table DeviceTypeCommand
+   add constraint FK_DevCmd_Cmd foreign key (CommandID)
+      references Command (CommandID)
 /
 
 
