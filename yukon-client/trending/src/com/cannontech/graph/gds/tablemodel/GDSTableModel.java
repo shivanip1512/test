@@ -39,10 +39,9 @@ public class GDSTableModel extends javax.swing.table.AbstractTableModel
 		javax.swing.JCheckBox.class,
 		Double.class
 	};	
-	
-	// rows contains GraphDataSeries
+
+	//Graph data series rows
 	public java.util.ArrayList rows = new java.util.ArrayList(10);
-	public com.cannontech.database.db.graph.GraphDataSeries peakGDS = null;
 	
 /**
  * DataSeriesTableModel constructor comment.
@@ -63,16 +62,8 @@ public GDSTableModel()
  */
 public void addRow(com.cannontech.database.db.graph.GraphDataSeries gds) 
 {
-
-	if (gds.getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES))
-	{
-		setPeakGDS(gds);
-	}
-	else //if( gds.getType().equalsIgnoreCase(includeType) )
-	{
-		getRows().add(gds);
-		fireTableDataChanged();
-	}
+	getRows().add(gds);
+	fireTableDataChanged();
 }
 /**
  * Insert the method's description here.
@@ -82,8 +73,6 @@ public void addRow(com.cannontech.database.db.graph.GraphDataSeries gds)
 public com.cannontech.database.db.graph.GraphDataSeries[] getAllDataSeries()
 {
 	int gdsArraySize = getRowCount();
-	if( getPeakGDS() != null)
-		gdsArraySize++;
 		
 	com.cannontech.database.db.graph.GraphDataSeries[] retVal =
 		new com.cannontech.database.db.graph.GraphDataSeries[ gdsArraySize];
@@ -95,9 +84,6 @@ public com.cannontech.database.db.graph.GraphDataSeries[] getAllDataSeries()
 	{
 		retVal[i++] = (com.cannontech.database.db.graph.GraphDataSeries) iter.next();
 	}
-
-	if( getPeakGDS() != null)
-		retVal[i++] = getPeakGDS();
 
 	return retVal;
 }
@@ -144,15 +130,6 @@ public String[] getColumnNames()
 public Class[] getColumnTypes()
 {
 	return columnTypes;
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/23/2001 4:05:56 PM)
- * @return GraphDataSeries
- */
-public com.cannontech.database.db.graph.GraphDataSeries getPeakGDS()
-{
-	return peakGDS;
 }
 /**
  * Insert the method's description here.
@@ -296,15 +273,6 @@ public void removeRow(int row)
 		getRows().remove(row);
 
 	fireTableDataChanged();
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/23/2001 4:05:56 PM)
- * @return java.util.ArrayList
- */
-public void setPeakGDS(com.cannontech.database.db.graph.GraphDataSeries newPeakGDS)
-{
-	peakGDS = newPeakGDS;
 }
 /**
  * Insert the method's description here.
