@@ -231,12 +231,16 @@ public class StatisticModel extends ReportModelBase
 			{
 				case ReportTypes.CARRIER_COMM_DATA:
 					category = PAOGroups.STRING_CAT_DEVICE;
+					break;
 				case ReportTypes.COMM_CHANNEL_DATA:
 					category = PAOGroups.STRING_CAT_PORT;
+					break;
 				case ReportTypes.DEVICE_COMM_DATA:
 					category = PAOGroups.STRING_CAT_DEVICE;
+					break;
 				case ReportTypes.TRANS_COMM_DATA:
 					category = PAOGroups.STRING_CAT_DEVICE;
+					break;
 				default:
 					category = null;	
 			}
@@ -256,12 +260,16 @@ public class StatisticModel extends ReportModelBase
 			{
 				case ReportTypes.CARRIER_COMM_DATA:
 					paoClass = DeviceClasses.STRING_CLASS_CARRIER;
+					break;
 				case ReportTypes.COMM_CHANNEL_DATA:
 					paoClass = PAOGroups.STRING_CAT_PORT;
+					break;
 				case ReportTypes.DEVICE_COMM_DATA:
 					paoClass = null;
+					break;					
 				case ReportTypes.TRANS_COMM_DATA:
 					paoClass = DeviceClasses.STRING_CLASS_TRANSMITTER;
+					break;
 				default:
 					paoClass = null;	
 			}
