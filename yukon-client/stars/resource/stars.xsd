@@ -418,7 +418,7 @@
 						<xs:attribute name="programID" type="xs:int"/>
 						<xs:attribute name="applianceCategoryID" type="xs:int"/>
 						<xs:attribute name="addressingGroupID" type="xs:int"/>
-					</xs:complexType>
+					<xs:attribute name="inventoryID"/></xs:complexType>
 				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
