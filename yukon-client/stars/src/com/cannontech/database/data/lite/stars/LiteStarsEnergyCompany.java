@@ -1866,159 +1866,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return hwList;
 	}
 	
-	/**
-	 * Search the inventory by account #. If searchMembers is true,
-	 * it returns a list of Pair(LiteInventoryBase, LiteStarsEnergyCompany);
-	 * otherwise it returns a list of LiteInventoryBase.
-	 */
-	public ArrayList searchInventoryByAccountNo(String accountNo, boolean searchMembers) {
-		ArrayList invList = new ArrayList();
-		ArrayList inventory = loadAllInventory();
-		
-		LiteStarsCustAccountInformation liteAcctInfo = searchByAccountNo( accountNo );
-		if (liteAcctInfo != null) {
-			synchronized (inventory) {
-				for (int i = 0; i < inventory.size(); i++) {
-					LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
-					if (liteInv.getAccountID() == liteAcctInfo.getAccountID()) {
-						if (searchMembers)
-							invList.add( new Pair(liteInv, this) );
-						else
-							invList.add( liteInv );
-					}
-				}
-			}
-		}
-		
-		if (searchMembers) {
-			ArrayList children = getChildren();
-			synchronized (children) {
-				for (int i = 0; i < children.size(); i++) {
-					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
-					ArrayList memberList = company.searchInventoryByAccountNo( accountNo, searchMembers );
-					invList.addAll( memberList );
-				}
-			}
-		}
-		
-		return invList;
-	}
-	
-	private ArrayList searchInventoryByContactIDs(int[] contactIDs, boolean searchMembers) {
-		ArrayList invList = new ArrayList();
-		ArrayList inventory = loadAllInventory();
-		ArrayList acctList = searchAccountByContactIDs( contactIDs, false );
-		
-		synchronized (inventory) {
-			for (int i = 0; i < inventory.size(); i++) {
-				LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
-				for (int j = 0; j < acctList.size(); j++) {
-					LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) acctList.get(j);
-					if (liteInv.getAccountID() == liteAcctInfo.getAccountID()) {
-						if (searchMembers)
-							invList.add( new Pair(liteInv, this) );
-						else
-							invList.add( liteInv );
-						break;
-					}
-				}
-			}
-		}
-		
-		if (searchMembers) {
-			ArrayList children = getChildren();
-			synchronized (children) {
-				for (int i = 0; i < children.size(); i++) {
-					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
-					ArrayList memberList = company.searchInventoryByContactIDs( contactIDs, searchMembers );
-					invList.addAll( memberList );
-				}
-			}
-		}
-		
-		return invList;
-	}
-	
-	/**
-	 * Search the inventory by phone #. If searchMembers is true,
-	 * it returns a list of Pair(LiteInventoryBase, LiteStarsEnergyCompany);
-	 * otherwise it returns a list of LiteInventoryBase.
-	 */
-	public ArrayList searchInventoryByPhoneNo(String phoneNo, boolean searchMembers) {
-		LiteContact[] contacts = ContactFuncs.getContactsByPhoneNo(
-				phoneNo, new int[] {YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE}, true );
-		
-		int[] contactIDs = new int[ contacts.length ];
-		for (int i = 0; i < contacts.length; i++)
-			contactIDs[i] = contacts[i].getContactID();
-		
-		return searchInventoryByContactIDs( contactIDs, searchMembers );
-	}
-	
-	/**
-	 * Search the inventory by last name. If searchMembers is true,
-	 * it returns a list of Pair(LiteInventoryBase, LiteStarsEnergyCompany);
-	 * otherwise it returns a list of LiteInventoryBase.
-	 */
-	public ArrayList searchInventoryByLastName(String lastName, boolean searchMembers) {
-		LiteContact[] contacts = ContactFuncs.getContactsByLName( lastName, true );
-		
-		int[] contactIDs = new int[ contacts.length ];
-		for (int i = 0; i < contacts.length; i++)
-			contactIDs[i] = contacts[i].getContactID();
-		
-		return searchInventoryByContactIDs( contactIDs, searchMembers );
-	}
-	
-	/**
-	 * Search the inventory by order #. If searchMembers is true,
-	 * it returns a list of Pair(LiteInventoryBase, LiteStarsEnergyCompany);
-	 * otherwise it returns a list of LiteInventoryBase.
-	 */
-	public ArrayList searchInventoryByOrderNo(String orderNo, boolean searchMembers) {
-		ArrayList invList = new ArrayList();
-		ArrayList inventory = loadAllInventory();
-		ArrayList workOrders = loadWorkOrders();
-		LiteWorkOrderBase liteOrder = null;
-		
-		synchronized (workOrders) {
-			for (int i = 0; i < workOrders.size(); i++) {
-				LiteWorkOrderBase lOrder = (LiteWorkOrderBase) workOrders.get(i);
-				if (lOrder.getOrderNumber().equalsIgnoreCase( orderNo )) {
-					liteOrder = lOrder;
-					break;
-				}
-			}
-		}
-		
-		if (liteOrder != null) {
-			synchronized (inventory) {
-				for (int i = 0; i < inventory.size(); i++) {
-					LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
-					if (liteInv.getAccountID() == liteOrder.getAccountID()) {
-						if (searchMembers)
-							invList.add( new Pair(liteInv, this) );
-						else
-							invList.add( liteInv );
-					}
-				}
-			}
-		}
-		
-		if (searchMembers) {
-			ArrayList children = getChildren();
-			synchronized (children) {
-				for (int i = 0; i < children.size(); i++) {
-					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
-					ArrayList memberList = company.searchInventoryByOrderNo( orderNo, searchMembers );
-					invList.addAll( memberList );
-				}
-			}
-		}
-		
-		return invList;
-	}
-	
 	public LiteStarsLMControlHistory getLMControlHistory(int groupID) {
 		if (groupID == CtiUtilities.NONE_ID) return null;
 		
@@ -2531,13 +2378,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		try {
 			Integer accountID = com.cannontech.database.db.stars.customer.AccountSite.getAccountIDBySiteNo( mapNo, getLiteID() );
 			if (accountID != null) {
-				com.cannontech.database.data.stars.customer.CustomerAccount account =
-						new com.cannontech.database.data.stars.customer.CustomerAccount();
-				account.setAccountID( accountID );
-				account = (com.cannontech.database.data.stars.customer.CustomerAccount)
-						Transaction.createTransaction(Transaction.RETRIEVE, account).execute();
-				
-				LiteStarsCustAccountInformation liteAcctInfo = addBriefCustAccountInfo( account );
+				LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountID.intValue(), true );
 				if (searchMembers)
 					return new Pair(liteAcctInfo, this);
 				else
@@ -2561,6 +2402,78 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Search customer accounts by service address. The search is based on partial match, and is case-insensitive.
+	 * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
+	 * otherwise it returns a list of LiteStarsCustAccountInformation.
+	 */
+	public ArrayList searchAccountByAddress(String address, boolean searchMembers) {
+		ArrayList accountList = new ArrayList();
+		
+		try {
+			int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAddress( address, getLiteID() );
+			if (accountIDs != null) {
+				for (int i = 0; i < accountIDs.length; i++) {
+					LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountIDs[i], true );
+					if (searchMembers)
+						accountList.add( new Pair(liteAcctInfo, this) );
+					else
+						accountList.add( liteAcctInfo );
+				}
+			}
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+			return null;
+		}
+		
+		if (searchMembers) {
+			ArrayList children = getChildren();
+			synchronized (children) {
+				for (int i = 0; i < children.size(); i++) {
+					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
+					ArrayList memberList = company.searchAccountByAddress( address, searchMembers );
+					accountList.addAll( memberList );
+				}
+			}
+		}
+		
+		return accountList;
+	}
+	
+	public ArrayList searchAccountByOrderNo(String orderNo, boolean searchMembers) {
+		ArrayList accountList = new ArrayList();
+		ArrayList workOrders = loadWorkOrders();
+		
+		synchronized (workOrders) {
+			for (int i = 0; i < workOrders.size(); i++) {
+				LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(i);
+				
+				if (liteOrder.getOrderNumber().equalsIgnoreCase( orderNo )) {
+					LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( liteOrder.getAccountID(), true );
+					if (searchMembers)
+						accountList.add( new Pair(liteAcctInfo, this) );
+					else
+						accountList.add( liteAcctInfo );
+					break;
+				}
+			}
+		}
+		
+		if (searchMembers) {
+			ArrayList children = getChildren();
+			synchronized (children) {
+				for (int i = 0; i < children.size(); i++) {
+					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
+					ArrayList memberList = company.searchAccountByOrderNo( orderNo, searchMembers );
+					accountList.addAll( memberList );
+				}
+			}
+		}
+		
+		return accountList;
 	}
 	
 	private ArrayList searchAccountByContactIDs(int[] contactIDs, boolean searchMembers) {

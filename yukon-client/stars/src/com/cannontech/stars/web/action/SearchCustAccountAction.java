@@ -17,6 +17,7 @@ import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -70,6 +71,26 @@ public class SearchCustAccountAction implements ActionBase {
     		return result;
     	}
     };
+    
+    private static Comparator ADDRESS_CMP = new Comparator() {
+		public int compare(Object o1, Object o2) {
+			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) ((Pair)o1).getSecond();
+			LiteStarsCustAccountInformation acct1 = (LiteStarsCustAccountInformation) ((Pair)o1).getFirst();
+			LiteStarsCustAccountInformation acct2 = (LiteStarsCustAccountInformation) ((Pair)o2).getFirst();
+			
+			LiteAddress addr1 = company.getAddress( acct1.getAccountSite().getStreetAddressID() );
+			LiteAddress addr2 = company.getAddress( acct2.getAccountSite().getStreetAddressID() );
+			
+			int result = addr1.getLocationAddress1().toUpperCase().compareTo( addr2.getLocationAddress1().toUpperCase() );
+			if (result == 0)
+				result = addr1.getLocationAddress2().toUpperCase().compareTo( addr2.getLocationAddress2().toUpperCase() );
+			if (result == 0)
+				result = addr1.getZipCode().compareTo( addr2.getZipCode() );
+			if (result == 0)
+				result = acct1.getCustomerAccount().getAccountNumber().compareTo( acct2.getCustomerAccount().getAccountNumber() );
+			return result;
+		}
+	};
     
     public SearchCustAccountAction() {
         super();
@@ -164,7 +185,10 @@ public class SearchCustAccountAction implements ActionBase {
             	if (obj != null) {
             		accountList = new ArrayList();
             		accountList.add( obj );
-            	} 
+            	}
+            }
+            else if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ADDRESS) {
+            	accountList = energyCompany.searchAccountByAddress( searchAccount.getSearchValue(), searchMembers );
             }
             
 			StarsSearchCustomerAccountResponse resp = new StarsSearchCustomerAccountResponse();
@@ -207,7 +231,7 @@ public class SearchCustAccountAction implements ActionBase {
             	}
 				else {
 					// Order the search result by company name/search criteria
-					// (last name if search by last name, account # otherwise)
+					// (last name if search by last name, address if search by address, account # otherwise)
 					TreeMap companyNameMap = new TreeMap();
 					Hashtable companyAcctTable = new Hashtable();
 					
@@ -237,10 +261,20 @@ public class SearchCustAccountAction implements ActionBase {
 						LiteStarsCustAccountInformation[] accounts = new LiteStarsCustAccountInformation[ acctList.size() ];
 						acctList.toArray( accounts );
 						
-						if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_LAST_NAME)
+						if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_LAST_NAME) {
 							Arrays.sort( accounts, LAST_NAME_CMP );
-						else
+						}
+						else if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ADDRESS) {
+							Pair[] pairs = new Pair[ accounts.length ];
+							for (int i = 0; i < accounts.length; i++)
+								pairs[i] = new Pair( accounts[i], company );
+							Arrays.sort( pairs, ADDRESS_CMP );
+							for (int i = 0; i < accounts.length; i++)
+								accounts[i] = (LiteStarsCustAccountInformation) pairs[i].getFirst();
+						}
+						else {
 							Arrays.sort( accounts, ACCOUNT_NO_CMP );
+						}
 						
 						for (int i = 0; i < accounts.length; i++) {
 							StarsBriefCustAccountInfo starsAcctInfo = new StarsBriefCustAccountInfo();

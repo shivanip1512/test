@@ -31,6 +31,7 @@ import com.cannontech.database.data.device.MCT410_KWH_Only;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -66,6 +67,7 @@ import com.cannontech.stars.web.action.DeleteLMHardwareAction;
 import com.cannontech.stars.web.action.UpdateLMHardwareAction;
 import com.cannontech.stars.web.action.UpdateLMHardwareConfigAction;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
+import com.cannontech.stars.web.bean.InventoryBean;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.DeviceType;
 import com.cannontech.stars.xml.serialize.ExpressCom;
@@ -101,6 +103,7 @@ public class InventoryManager extends HttpServlet {
 	
 	public static final String INVENTORY_TO_CHECK = "INVENTORY_TO_CHECK";
 	public static final String INVENTORY_TO_DELETE = "INVENTORY_TO_DELETE";
+	public static final String INVENTORY_TO_CONFIG = "INVENTORY_TO_CONFIG";
 	
 	public static final String INVENTORY_SET = "INVENTORY_SET";
 	public static final String INVENTORY_SET_DESC = "INVENTORY_SET_DESCRIPTION";
@@ -187,8 +190,8 @@ public class InventoryManager extends HttpServlet {
 			configSNRange( user, req, session );
 		else if (action.equalsIgnoreCase("SendSwitchCommands"))
 			sendSwitchCommands( user, req, session );
-		else if (action.equalsIgnoreCase("ClearSwitchCommands"))
-			clearSwitchCommands( user, req, session );
+		else if (action.equalsIgnoreCase("RemoveSwitchCommands"))
+			removeSwitchCommands( user, req, session );
 		else if (action.equalsIgnoreCase("SearchInventory"))
 			searchInventory( user, req, session );
 		else if (action.equalsIgnoreCase("CreateHardware"))
@@ -209,22 +212,29 @@ public class InventoryManager extends HttpServlet {
 		int invID = Integer.parseInt( req.getParameter("InvID") );
 		LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID, true );
 		
-		if (liteInv.getAccountID() == CtiUtilities.NONE_ID) {
-			// The hardware is in warehouse, so populate the hardware information
-			StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteInv, energyCompany );
-			starsInv.setRemoveDate( null );
-			starsInv.setInstallDate( new Date() );
-			starsInv.setInstallationNotes( "" );
-			
-			String invNo = (String) session.getAttribute(STARS_INVENTORY_NO);
-			session.setAttribute( STARS_INVENTORY_TEMP + invNo, starsInv );
-			
-			redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
+		int htmlStyle = Integer.parseInt( req.getParameter("style") );
+		if (htmlStyle == InventoryBean.HTML_STYLE_SELECT_INVENTORY) {
+			if (liteInv.getAccountID() == CtiUtilities.NONE_ID) {
+				// The hardware is in warehouse, so populate the hardware information
+				StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteInv, energyCompany );
+				starsInv.setRemoveDate( null );
+				starsInv.setInstallDate( new Date() );
+				starsInv.setInstallationNotes( "" );
+				
+				String invNo = (String) session.getAttribute(STARS_INVENTORY_NO);
+				session.setAttribute( STARS_INVENTORY_TEMP + invNo, starsInv );
+				
+				redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
+			}
+			else {
+				// The hardware is installed with another account, go to CheckInv.jsp to let the user confirm the action
+				session.setAttribute(INVENTORY_TO_CHECK, liteInv);
+				redirect = req.getContextPath() + "/operator/Consumer/CheckInv.jsp";
+			}
 		}
-		else {
-			// The hardware is installed with another account, go to CheckInv.jsp to let the user confirm the action
+		else if (htmlStyle == InventoryBean.HTML_STYLE_SELECT_LM_HARDWARE) {
 			session.setAttribute(INVENTORY_TO_CHECK, liteInv);
-			redirect = req.getContextPath() + "/operator/Consumer/CheckInv.jsp";
+			redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
 		}
 	}
 	
@@ -839,41 +849,11 @@ public class InventoryManager extends HttpServlet {
 	private void configSNRange(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
-		Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
-		int categoryID = ECUtils.getInventoryCategoryID( devTypeID.intValue(), energyCompany );
-		if (ECUtils.isMCT( categoryID )) {
-			String mctType = YukonListFuncs.getYukonListEntry( devTypeID.intValue() ).getEntryText();
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Cannot config SN range for device type " + mctType);
-			return;
-		}
-		
-		String fromStr = req.getParameter("From");
-		String toStr = req.getParameter("To");
-		Integer snFrom = null;
-		Integer snTo = null;
-		
-		if (!fromStr.equals("*")) {
-			try {
-				snFrom = Integer.valueOf( fromStr );
-				if (!toStr.equals("*")) {
-					snTo = Integer.valueOf( toStr );
-					if (snFrom.intValue() > snTo.intValue()) {
-						session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The 'From' value is greater than the 'To' value");
-						return;
-					}
-				}
-			}
-			catch (NumberFormatException nfe) {
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid number format in the SN range");
-				return;
-			}
-		}
-		
 		boolean configNow = req.getParameter("ConfigNow") != null;
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
-		ConfigSNRangeTask task = new ConfigSNRangeTask( snFrom, snTo, devTypeID, configNow, req );
+		ConfigSNRangeTask task = new ConfigSNRangeTask( configNow, req );
 		long id = ProgressChecker.addTask( task );
 		
 		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
@@ -905,14 +885,22 @@ public class InventoryManager extends HttpServlet {
 	}
 	
 	/**
-	 * Send all the scheduled switch commands
+	 * Send scheduled switch commands
 	 */
 	private void sendSwitchCommands(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		try {
-			sendSwitchCommands( energyCompany );
-			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Batched switch commands sent out successfully");
+			int[] invIDs = null;
+			if (req.getParameter("All") == null) {
+				String[] values = req.getParameterValues( "InvID" );
+				invIDs = new int[ values.length ];
+				for (int i = 0; i < values.length; i++)
+					invIDs[i] = Integer.parseInt( values[i] );
+			}
+			
+			sendSwitchCommands( energyCompany, invIDs );
+			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Switch commands sent out successfully");
 		}
 		catch (WebClientException e) {
 			CTILogger.error( e.getMessage(), e );
@@ -921,12 +909,22 @@ public class InventoryManager extends HttpServlet {
 	}
 	
 	/**
-	 * Clear all the scheduled switch commands 
+	 * Remove scheduled switch commands 
 	 */
-	private void clearSwitchCommands(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+	private void removeSwitchCommands(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-		energyCompany.getSwitchCommandQueue().clearCommands( user.getEnergyCompanyID() );
-		session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "All the scheduled switch commands are cleared");
+		SwitchCommandQueue queue = energyCompany.getSwitchCommandQueue();
+		
+		if (req.getParameter("All") != null) {
+			queue.clearCommands( user.getEnergyCompanyID() );
+		}
+		else {
+			String[] values = req.getParameterValues( "InvID" );
+			for (int i = 0; i < values.length; i++)
+				queue.removeCommand( Integer.parseInt(values[i]) );
+		}
+		
+		session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Switch commands removed successfully");
 	}
 	
 	private void searchInventory(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
@@ -948,12 +946,14 @@ public class InventoryManager extends HttpServlet {
 			invList = energyCompany.searchInventoryBySerialNo( searchValue, searchMembers );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ACCT_NO) {
-			invList = energyCompany.searchInventoryByAccountNo( searchValue, searchMembers );
+			ArrayList accounts = energyCompany.searchAccountByAccountNo( searchValue, searchMembers );
+			invList = getInventoryByAccounts( accounts, energyCompany );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_PHONE_NO) {
 			try {
 				String phoneNo = ServletUtils.formatPhoneNumber( searchValue );
-				invList = energyCompany.searchInventoryByPhoneNo( phoneNo, searchMembers );
+				ArrayList accounts = energyCompany.searchAccountByPhoneNo( phoneNo, searchMembers );
+				invList = getInventoryByAccounts( accounts, energyCompany );
 			}
 			catch (WebClientException e) {
 				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
@@ -961,13 +961,19 @@ public class InventoryManager extends HttpServlet {
 			}
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_LAST_NAME) {
-			invList = energyCompany.searchInventoryByLastName( searchValue, searchMembers );
+			ArrayList accounts = energyCompany.searchAccountByLastName( searchValue, searchMembers );
+			invList = getInventoryByAccounts( accounts, energyCompany );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ORDER_NO) {
 			// TODO: The WorkOrderBase table doesn't have InventoryID column, maybe should be added
 			if (AuthFuncs.checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN ))
 				searchValue = ServerUtils.AUTO_GEN_NUM_PREC + searchValue;
-			invList = energyCompany.searchInventoryByOrderNo( searchValue, searchMembers );
+			ArrayList accounts = energyCompany.searchAccountByOrderNo( searchValue, searchMembers );
+			invList = getInventoryByAccounts( accounts, energyCompany );
+		}
+		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ADDRESS) {
+			ArrayList accounts = energyCompany.searchAccountByAddress( searchValue, searchMembers );
+			invList = getInventoryByAccounts( accounts, energyCompany );
 		}
 		
 		if (invList == null || invList.size() == 0) {
@@ -1131,6 +1137,37 @@ public class InventoryManager extends HttpServlet {
 	}
 	
 	/**
+	 * Get all the hardwares in inventory for accounts
+	 * @param accounts List of LiteStarsCustAccountInformation, or Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany)
+	 * @return List of LiteInventoryBase or Pair(LiteInventoryBase, LiteStarsEnergyCompany), based on the element type of accounts
+	 */
+	private ArrayList getInventoryByAccounts(ArrayList accounts, LiteStarsEnergyCompany energyCompany) {
+		ArrayList invList = new ArrayList();
+		
+		for (int i = 0; i < accounts.size(); i++) {
+			if (accounts.get(i) instanceof Pair) {
+				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) ((Pair)accounts.get(i)).getFirst();
+				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) ((Pair)accounts.get(i)).getSecond();
+				
+				for (int j = 0; j < liteAcctInfo.getInventories().size(); j++) {
+					int invID = ((Integer)liteAcctInfo.getInventories().get(j)).intValue();
+					LiteInventoryBase liteInv = company.getInventoryBrief( invID, true );
+					invList.add( new Pair(liteInv, company) );
+				}
+			}
+			else {
+				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) accounts.get(i);
+				for (int j = 0; j < liteAcctInfo.getInventories().size(); j++) {
+					int invID = ((Integer)liteAcctInfo.getInventories().get(j)).intValue();
+					invList.add( energyCompany.getInventoryBrief(invID, true) );
+				}
+			}
+		}
+		
+		return invList;
+	}
+	
+	/**
 	 * Store hardware information entered by user into a StarsLMHw object 
 	 */
 	public static void setStarsInv(StarsInv starsInv, HttpServletRequest req, TimeZone tz) throws WebClientException {
@@ -1231,16 +1268,27 @@ public class InventoryManager extends HttpServlet {
 		return devList;
 	}
 	
-	public static void sendSwitchCommands(LiteStarsEnergyCompany energyCompany) throws WebClientException {
+	public static void sendSwitchCommands(LiteStarsEnergyCompany energyCompany, int[] invIDs) throws WebClientException {
 		SwitchCommandQueue queue = energyCompany.getSwitchCommandQueue();
 		if (queue == null)
 			throw new WebClientException( "Failed to retrieve the batched switch commands" );
 		
-		SwitchCommandQueue.SwitchCommand[] commands = queue.getCommands( energyCompany.getLiteID() );
+		SwitchCommandQueue.SwitchCommand[] commands = null;
+		if (invIDs == null) {
+			queue.getCommands( energyCompany.getLiteID(), true );
+		}
+		else {
+			commands = new SwitchCommandQueue.SwitchCommand[ invIDs.length ];
+			for (int i = 0; i < invIDs.length; i++)
+				commands[i] = queue.getCommand( invIDs[i], true );
+		}
+		
 		if (commands.length == 0)
 			throw new WebClientException( "There is no batched switch command" );
 		
 		for (int i = 0; i < commands.length; i++) {
+			if (commands[i] == null) continue;
+			
 			try {
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory(commands[i].getInventoryID(), true);
 				

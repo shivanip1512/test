@@ -140,6 +140,50 @@ public class CustomerAccount extends DBPersistent {
     	
 		return null;
     }
+    
+    public static int[] searchByAddress(String address, int energyCompanyID) {
+    	String sql = "SELECT DISTINCT acct.AccountID " +
+    			"FROM CustomerAccount acct, ECToAccountMapping map, AccountSite site, Address addr " +
+    			"WHERE map.EnergyCompanyID = ? AND map.AccountID = acct.AccountID " +
+    			"AND acct.AccountSiteID = site.AccountSiteID AND site.StreetAddressID = addr.AddressID " +
+    			"AND UPPER(addr.LocationAddress1) LIKE UPPER(?)";
+		
+		java.sql.Connection conn = null;
+		java.sql.PreparedStatement stmt = null;
+		java.sql.ResultSet rset = null;
+		
+		try {
+			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+	        
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, energyCompanyID);
+			stmt.setString(2, address + "%");
+			rset = stmt.executeQuery();
+	        
+			ArrayList acctIDList = new ArrayList();
+			while (rset.next())
+				acctIDList.add( new Integer(rset.getInt(1)) );
+	        
+			int[] accountIDs = new int[ acctIDList.size() ];
+			for (int i = 0; i < accountIDs.length; i++)
+				accountIDs[i] = ((Integer) acctIDList.get(i)).intValue();
+			
+			return accountIDs;
+		}
+		catch( java.sql.SQLException e ) {
+			CTILogger.error( e.getMessage(), e );
+		}
+		finally {
+			try {
+				if (rset != null) rset.close();
+				if (stmt != null) stmt.close();
+				if (conn != null) conn.close();
+			}
+			catch (java.sql.SQLException e) {}
+		}
+		
+		return null;
+    }
 
     public static CustomerAccount getCustomerAccount(Integer accountID) {
         String sql = "SELECT AccountID, AccountSiteID, AccountNumber, CustomerID, BillingAddressID, AccountNotes "
@@ -170,52 +214,6 @@ public class CustomerAccount extends DBPersistent {
         }
 
         return null;
-    }
-    
-    /**
-     * Search by LocationAddress1, must be an exact match (case-insensitive)
-     */
-    public static int[] searchByAddress(Integer energyCompanyID, String addr1) {
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement stmt = null;
-		java.sql.ResultSet rset = null;
-		
-		try {
-			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			
-			String sql = "SELECT Contact.ContactID FROM Contact, Address "
-					+ "WHERE UPPER(Address.LocationAddress1) LIKE UPPER(?) AND Contact.AddressID = Address.AddressID";
-			
-			stmt = conn.prepareStatement( sql );
-			stmt.setString( 1, "%" + addr1 + "%" );
-			rset = stmt.executeQuery();
-			
-			ArrayList contactIDList = new ArrayList();
-			while (rset.next())
-				contactIDList.add( new Integer(rset.getInt(1)) );
-			
-			if (contactIDList.size() == 0)
-				return new int[0];
-			
-			int[] contactIDs = new int[ contactIDList.size() ];
-			for (int i = 0; i < contactIDs.length; i++)
-				contactIDs[i] = ((Integer) contactIDList.get(i)).intValue();
-			
-	        return searchByPrimaryContactIDs( contactIDs, energyCompanyID.intValue() );
-		}
-		catch (java.sql.SQLException e) {
-			CTILogger.error( e.getMessage(), e );
-		}
-		finally {
-			try {
-				if (rset != null) rset.close();
-				if (stmt != null) stmt.close();
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {}
-		}
-		
-		return null;
     }
 
     public void delete() throws java.sql.SQLException {

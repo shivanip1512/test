@@ -18,13 +18,10 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
 import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -116,33 +113,14 @@ public class WorkOrderManager extends HttpServlet {
 			orderIDs = WorkOrderBase.searchByOrderNumber( searchValue, user.getEnergyCompanyID() );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ACCT_NO) {
-			int[] acctIDs = CustomerAccount.searchByAccountNumber(energyCompany.getEnergyCompanyID(), searchValue);
-			if (acctIDs != null && acctIDs.length > 0)
-				orderIDs = WorkOrderBase.searchByAccountID( acctIDs[0] ); 
+			ArrayList accounts = energyCompany.searchAccountByAccountNo( searchValue, false );
+			orderIDs = getOrderIDsByAccounts( accounts );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_PHONE_NO) {
 			try {
 				String phoneNo = ServletUtils.formatPhoneNumber( searchValue );
-				
-				LiteContact[] contacts = ContactFuncs.getContactsByPhoneNo(
-						phoneNo, new int[] {YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE}, true );
-				int[] contactIDs = new int[ contacts.length ];
-				for (int i = 0; i < contacts.length; i++)
-					contactIDs[i] = contacts[i].getContactID();
-				
-				int[] acctIDs = CustomerAccount.searchByPrimaryContactIDs( contactIDs, energyCompany.getLiteID() );
-				if (acctIDs != null && acctIDs.length > 0) {
-					ArrayList orderIDList = new ArrayList();
-					for (int i = 0; i < acctIDs.length; i++) {
-						int[] woIDs = WorkOrderBase.searchByAccountID( acctIDs[i] );
-						for (int j = 0; j < woIDs.length; j++)
-							orderIDList.add( new Integer(woIDs[j]) );
-					}
-				
-					orderIDs = new int[ orderIDList.size() ];
-					for (int i = 0; i< orderIDList.size(); i++)
-						orderIDs[i] = ((Integer) orderIDList.get(i)).intValue();
-				}
+				ArrayList accounts = energyCompany.searchAccountByPhoneNo( phoneNo, false );
+				orderIDs = getOrderIDsByAccounts( accounts );
 			}
 			catch (WebClientException e) {
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
@@ -150,27 +128,15 @@ public class WorkOrderManager extends HttpServlet {
 			}
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_LAST_NAME) {
-			LiteContact[] contacts = ContactFuncs.getContactsByLName( searchValue, true );
-			int[] contactIDs = new int[ contacts.length ];
-			for (int i = 0; i < contacts.length; i++)
-				contactIDs[i] = contacts[i].getContactID();
-			
-			int[] acctIDs = CustomerAccount.searchByPrimaryContactIDs( contactIDs, energyCompany.getLiteID() );
-			if (acctIDs != null && acctIDs.length > 0) {
-				ArrayList orderIDList = new ArrayList();
-				for (int i = 0; i < acctIDs.length; i++) {
-					int[] woIDs = WorkOrderBase.searchByAccountID( acctIDs[i] );
-					for (int j = 0; j < woIDs.length; j++)
-						orderIDList.add( new Integer(woIDs[j]) );
-				}
-				
-				orderIDs = new int[ orderIDList.size() ];
-				for (int i = 0; i< orderIDList.size(); i++)
-					orderIDs[i] = ((Integer) orderIDList.get(i)).intValue();
-			}
+			ArrayList accounts = energyCompany.searchAccountByLastName( searchValue, false );
+			orderIDs = getOrderIDsByAccounts( accounts );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_SERIAL_NO) {
 			// TODO: The WorkOrderBase table doesn't have InventoryID column, maybe should be added
+		}
+		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ADDRESS) {
+			ArrayList accounts = energyCompany.searchAccountByAddress( searchValue, false );
+			orderIDs = getOrderIDsByAccounts( accounts );
 		}
 		
 		if (orderIDs == null || orderIDs.length == 0) {
@@ -240,6 +206,31 @@ public class WorkOrderManager extends HttpServlet {
 		
 		operation.getStarsUpdateServiceRequest().setAccountID( liteAcctInfo.getAccountID() );
 		session.setAttribute(STARS_WORK_ORDER_OPER_REQ, operation);
+	}
+	
+	private int[] getOrderIDsByAccounts(ArrayList accounts) {
+		if (accounts != null && accounts.size() > 0) {
+			ArrayList orderIDList = new ArrayList();
+			
+			for (int i = 0; i < accounts.size(); i++) {
+				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) accounts.get(i);
+				if (liteAcctInfo.isExtended()) {
+					orderIDList.addAll( liteAcctInfo.getServiceRequestHistory() );
+				}
+				else {
+					int[] woIDs = WorkOrderBase.searchByAccountID( liteAcctInfo.getAccountID() );
+					for (int j = 0; j < woIDs.length; j++)
+						orderIDList.add( new Integer(woIDs[j]) );
+				}
+			}
+			
+			int[] orderIDs = new int[ orderIDList.size() ];
+			for (int i = 0; i< orderIDList.size(); i++)
+				orderIDs[i] = ((Integer) orderIDList.get(i)).intValue();
+			return orderIDs;
+		}
+		
+		return null;
 	}
 	
 	public static void setStarsServiceRequest(StarsSrvReq starsOrder, HttpServletRequest req, java.util.TimeZone tz)
