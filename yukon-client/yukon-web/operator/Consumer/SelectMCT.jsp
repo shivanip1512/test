@@ -1,20 +1,17 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.bean.DeviceBean" %>
-<%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
 <%
-	boolean inWizard = ((String) session.getAttribute(ServletUtils.ATT_REFERRER)).indexOf("Wizard=true") >= 0;
-	if (!inWizard && accountInfo == null) {
-		response.sendRedirect("../Operations.jsp");
-		return;
-	}
+	String prevRef = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
+	boolean inWizard = prevRef != null && prevRef.indexOf("Wizard=true") >= 0;
 
-	if (request.getParameter("SerialNo") != null) {
+	String action = request.getParameter("action");
+	if (action != null && action.equalsIgnoreCase("CheckInventory")) {
 		// Submitted from SerialNumber.jsp
 		session.setAttribute(ServletUtils.ATT_REFERRER2, request.getHeader("referer"));
 		session.setAttribute(ServletUtils.ATT_REDIRECT, request.getParameter(ServletUtils.ATT_REDIRECT));
 	}
-	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER2);
 	
+	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER2);
 	int mctCatID = SOAPServer.getEnergyCompany(user.getEnergyCompanyID()).getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT).getEntryID();
 %>
 
@@ -26,19 +23,17 @@
 
 <% if (request.getParameter("page") == null) { %>
 	<%-- intialize bean properties --%>
-<% if (request.getParameter("DeviceName") == null) { %>
 	<jsp:setProperty name="mctBean" property="filter" value="<%= DeviceBean.DEV_FILTER_NOT_ASSIGNED %>"/>
-	<jsp:setProperty name="mctBean" property="deviceName" value=""/>
-<% } else { %>
-	<jsp:setProperty name="mctBean" property="filter" value="<%= DeviceBean.DEV_FILTER_DEVICE_NAME %>"/>
-<% } %>
 	<jsp:setProperty name="mctBean" property="page" value="1"/>
 	<jsp:setProperty name="mctBean" property="referer" value="<%= referer %>"/>
+<% } %>
+<% if (request.getParameter("SearchDeviceName") == null || request.getParameter("SearchDeviceName").equals("")) { %>
+	<jsp:setProperty name="mctBean" property="deviceName" value=""/>
 <% } %>
 
 <%-- Grab the bean properties --%>
 <jsp:setProperty name="mctBean" property="filter" param="Filter"/>
-<jsp:setProperty name="mctBean" property="deviceName" param="DeviceName"/>
+<jsp:setProperty name="mctBean" property="deviceName" param="SearchDeviceName"/>
 <jsp:setProperty name="mctBean" property="page" param="page"/>
 
 <html>
@@ -50,6 +45,7 @@
 <script language="JavaScript">
 function submitIt(filter) {
 	document.MForm.Filter.value = filter;
+	document.MForm.SearchDeviceName.value = "";
 	document.MForm.submit();
 }
 </script>
@@ -82,14 +78,14 @@ function submitIt(filter) {
 <% } else { %>
               <%@ include file="include/InfoSearchBar2.jsp" %>
 <% } %>
-
+			  
 			  <form name="MForm" method="post" action="SelectMCT.jsp">
-			    <input type="hidden" name="Filter" value="<%= DeviceBean.DEV_FILTER_DEVICE_NAME %>">
+			    <input type="hidden" name="Filter" value="<%= mctBean.getFilter() %>">
 				<input type="hidden" name="page" value="1">
                 <table width="80%" border="0" cellspacing="0" cellpadding="1">
                   <tr> 
                     <td class="MainText" align="center">Device Name: 
-                      <input type="text" name="DeviceName" value="<%= ServerUtils.forceNotNull(mctBean.getDeviceName()) %>">
+                      <input type="text" name="SearchDeviceName" value="<%= ServerUtils.forceNotNull(mctBean.getDeviceName()) %>">
                       &nbsp;&nbsp;&nbsp;&nbsp; 
                       <input type="submit" name="Search" value="Search">
                     </td>
@@ -97,9 +93,9 @@ function submitIt(filter) {
                   <tr> 
                     <td class="MainText" align="center"> 
                       <input type="button" name="ShowAll" value="Show All" onclick="submitIt(<%= DeviceBean.DEV_FILTER_ALL %>)"
-					  <% if (mctBean.getFilter() == DeviceBean.DEV_FILTER_ALL) { %>disabled<% } %>>
+					  <% if (mctBean.getFilter() == DeviceBean.DEV_FILTER_ALL && mctBean.getDeviceName().equals("")) { %>disabled<% } %>>
                       <input type="button" name="ShowNotAssigned" value="Show Not Assigned" onclick="submitIt(<%= DeviceBean.DEV_FILTER_NOT_ASSIGNED %>)"
-					  <% if (mctBean.getFilter() == DeviceBean.DEV_FILTER_NOT_ASSIGNED) { %>disabled<% } %>>
+					  <% if (mctBean.getFilter() == DeviceBean.DEV_FILTER_NOT_ASSIGNED && mctBean.getDeviceName().equals("")) { %>disabled<% } %>>
                     </td>
                   </tr>
                 </table>

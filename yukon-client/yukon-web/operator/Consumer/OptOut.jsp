@@ -6,6 +6,17 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<script language="JavaScript">
+function validate(form) {
+	if (form.action.value == "OptOutProgram" && (form.StartDate.value == "" || form.EndDate.value == "")) {
+		alert("The start and end date cannot be empty");
+		return false;
+	}
+	return true;
+}
+</script>
+<script language="JavaScript" src="<%= request.getContextPath() %>/JavaScript/calendar.js">
+</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -39,52 +50,45 @@
 			  
               <table width="550" border="0" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td><div align="center">
-                <p class="MainText"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_DESC_OPT_OUT %>" defaultvalue="If you would like to temporarily opt out of all programs, select the time frame from the drop-down box below, then select Submit."/></p>
-              </div>
-              </td>
+                  <td class="MainText" align="center"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_DESC_OPT_OUT %>"/>
+                  </td>
                 </tr>
               </table>
-			<form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
+			  <br>
+			<form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)">
 			  <input type="hidden" name="action" value="OptOutProgram">
 			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Programs.jsp">
 			  <input type="hidden" name="REDIRECT2" value="<%=request.getContextPath()%>/operator/Consumer/OptForm.jsp">
 			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/OptOut.jsp">
-                <table width="250" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" align="center">
+                <table width="350" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" align="center">
                   <tr> 
                   <td> 
-                    <div align="center"> 
-                      <p class="HeaderCell">Temporarily <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_OPT_OUT_VERB %>" defaultvalue="opt out of"/> 
-					  all programs</p>
-                    </div>
-                    <table width="180" border="0" cellspacing="0" cellpadding="0" align="center">
-                      <tr> 
-                        <td width="180" align="center"> 
-                          <select name="OptOutPeriod">
-<%
-	StarsCustSelectionList periodList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD );
-	for (int i = 0; i < periodList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = periodList.getStarsSelectionListEntry(i);
-		if (entry.getYukonDefID() > 0) {	// This is a special entry, e.g. "Today"
-%>
-							<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-<%
-		}
-		else {	// If entry.getYukonDefID() = x (<=0), then -x is the number of days to be opted out
-%>
-							<option value="<%= entry.getYukonDefID() %>"><%= entry.getContent() %></option>
-<%
-		}
-	}
-%>
-                          </select>
-                        </td>
-                        <td width="180" align="center"> 
-                          <input type="submit" name="Submit" value="Submit" <% if (programs.getStarsLMProgramCount() == 0) out.print("disabled"); %>>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
+                      <div align="center"> 
+                        <p class="HeaderCell">Temporarily <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_OPT_OUT_VERB %>" defaultvalue="opt out of"/> 
+                          all programs</p>
+                        <table width="300" border="0" cellspacing="0" cellpadding="3" class="TableCell2">
+                          <tr> 
+                            <td align="right" width="120">Start Date:</td>
+                            <td width="168"> 
+                              <input type="text" name="StartDate" id="StartDate" size="14" value="<%= datePart.format(new Date()) %>">
+                              <a href="javascript:openCalendar(document.getElementById('StartDate'))"
+					    onMouseOver="window.status='Start Date Calendar';return true;"
+						onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
+                              </a> </td>
+                          </tr>
+                          <tr> 
+                            <td align="right" width="120">End Date (midnight of):</td>
+                            <td width="168"> 
+                              <input type="text" name="EndDate" id="EndDate" size="14" value="<%= datePart.format(new Date()) %>">
+                              <a href="javascript:openCalendar(document.getElementById('EndDate'))"
+					    onMouseOver="window.status='Start Date Calendar';return true;"
+						onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
+                              </a> </td>
+                          </tr>
+                        </table>
+                        <input type="submit" name="Submit" value="Submit">
+                      </div>
+                    </td>
                 </tr>
               </table>
               <p align="center" class="Subtext"><br>

@@ -61,18 +61,24 @@
 			    <input type="hidden" name="action" value="ConfirmCheck">
 <%
 	if (inOther) {
-		LiteStarsEnergyCompany member = ((ObjectInOtherEnergyCompanyException)obj).getEnergyCompany();
-		if (ECUtils.getAllDescendants(liteEC).contains(member)) {
+		LiteStarsEnergyCompany company = ((ObjectInOtherEnergyCompanyException)obj).getEnergyCompany();
+		if (ECUtils.isDescendantOf(company, liteEC)) {
 %>
                 <p class="ErrorMsg">The hardware or device is found in the inventory 
-                  of <i><%= member.getName() %></i>.</p>
+                  of <i><%= company.getName() %></i>.</p>
 <%
 		}
-		else {
+		else if (ECUtils.isDescendantOf(liteEC, company)) {
 %>
                 <p class="ErrorMsg">The hardware or device is found in another 
                   energy company. Please contact <i><%= liteEC.getParent().getName() %></i> 
                   for more information.</p>
+<%
+		}
+		else {
+%>
+                <p class="ErrorMsg">The device has already been assigned to another 
+                  energy company.</p>
 <%
 		}
 %>

@@ -2,8 +2,10 @@
 <%@ page import="com.cannontech.common.util.CtiUtilities" %>
 <%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
 <%@ page import="com.cannontech.database.cache.functions.YukonUserFuncs" %>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.roles.consumer.ResidentialCustomerRole" %>
 <%@ page import="com.cannontech.roles.operator.AdministratorRole" %>
+<%@ page import="com.cannontech.roles.yukon.EnergyCompanyRole" %>
 <%@ page import="com.cannontech.stars.util.ECUtils" %>
 <%	if (!AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
 		|| ecSettings == null) {
@@ -218,6 +220,7 @@ function removeAllMembers(form) {
                         </form>
                       </td>
                     </tr>
+<cti:checkNoProperty propertyid="<%= EnergyCompanyRole.SINGLE_ENERGY_COMPANY %>">
                     <tr> 
                       <td><b><font color="#0000FF">Routes:</font></b> 
                         <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
@@ -228,14 +231,13 @@ function removeAllMembers(form) {
                                   <td class="TableCell" width="5%">&nbsp;</td>
                                   <td class="TableCell" width="70%"> 
 <%
-	ArrayList routeIDs = liteEC.getRouteIDs();
-	for (int i = 0; i < routeIDs.size() && i < 5; i++) {
-		int routeID = ((Integer) routeIDs.get(i)).intValue();
+	LiteYukonPAObject[] routes = liteEC.getAllRoutes();
+	for (int i = 0; i < routes.length && i < 3; i++) {
 %>
-                                    <%= PAOFuncs.getYukonPAOName(routeID) %><br>
+                                    <%= routes[i].getPaoName() %><br>
 <%
 	}
-	if (routeIDs.size() > 5) {
+	if (routes.length > 3) {
 %>
                                     And more...<br>
 <%
@@ -253,6 +255,7 @@ function removeAllMembers(form) {
                         <br>
                       </td>
                     </tr>
+</cti:checkNoProperty>
                     <tr> 
                       <td> 
                         <form name="form3" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">

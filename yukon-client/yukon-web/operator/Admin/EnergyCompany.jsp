@@ -140,20 +140,11 @@ function editAddress(form) {
                           <select name="Route">
 						    <option value="-1">(none)</option>
 <%
-	TreeMap routeMap = new TreeMap();
-	ArrayList routeIDs = liteEC.getRouteIDs();
-	for (int i = 0; i < routeIDs.size(); i++) {
-		int routeID = ((Integer) routeIDs.get(i)).intValue();
-		LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO(routeID);
-		routeMap.put(litePao.getPaoName(), litePao);
-	}
-	
-	Iterator it = routeMap.values().iterator();
-	while (it.hasNext()) {
-		LiteYukonPAObject route = (LiteYukonPAObject) it.next();
-		String selected = (route.getYukonID() == ec.getRouteID())? "selected" : "";
+	LiteYukonPAObject[] routes = liteEC.getAllRoutes();
+	for (int i = 0; i < routes.length; i++) {
+		String selected = (routes[i].getYukonID() == liteEC.getDefaultRouteID())? "selected" : "";
 %>
-						    <option value="<%= route.getYukonID() %>" <%= selected %>><%= route.getPaoName() %></option>
+						    <option value="<%= routes[i].getYukonID() %>" <%= selected %>><%= routes[i].getPaoName() %></option>
 <%
 	}
 %>

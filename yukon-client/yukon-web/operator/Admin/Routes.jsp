@@ -134,7 +134,6 @@ function prepareSubmit(form) {
                                       <select id="RoutesAvailable" name="RoutesAvailable" size="20" style="width:235" multiple>
 <%
 	ArrayList routeIDs = liteEC.getRouteIDs();
-	
 	LiteYukonPAObject[] allRoutes = PAOFuncs.getAllLiteRoutes();
 	for (int i = 0; i < allRoutes.length; i++) {
 		if (routeIDs.contains( new Integer(allRoutes[i].getYukonID()) ))
@@ -161,19 +160,11 @@ function prepareSubmit(form) {
 <%
 	}
 	
-	TreeMap routeMap = new TreeMap();
-	for (int i = 0; i < routeIDs.size(); i++) {
-		int routeID = ((Integer) routeIDs.get(i)).intValue();
-		if (routeID == liteEC.getDefaultRouteID()) continue;
-		LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( routeID );
-		routeMap.put( litePao.getPaoName(), litePao );
-	}
-	
-	Iterator it = routeMap.values().iterator();
-	while (it.hasNext()) {
-		LiteYukonPAObject route = (LiteYukonPAObject) it.next();
+	LiteYukonPAObject[] routes = liteEC.getAllRoutes();
+	for (int i = 0; i < routes.length; i++) {
+		if (routes[i].getYukonID() == liteEC.getDefaultRouteID()) continue;
 %>
-                                        <option value="<%= route.getYukonID() %>"><%= route.getPaoName() %></option>
+                                        <option value="<%= routes[i].getYukonID() %>"><%= routes[i].getPaoName() %></option>
 <%
 	}
 %>
