@@ -95,12 +95,15 @@ public class TrendSerie
 		if( maximumTSDataPair == null)
 		{
 			double max = Double.MIN_VALUE;
-			for (int i = 0; i < getDataPairArray().length; i++)
+			if( getDataPairArray() != null)
 			{
-				if( getDataPairArray()[i].getValue().doubleValue() > max)
+				for (int i = 0; i < getDataPairArray().length; i++)
 				{
-					max = getDataPairArray()[i].getValue().doubleValue();
-					maximumTSDataPair = getDataPairArray()[i];
+					if( getDataPairArray()[i].getValue().doubleValue() > max)
+					{
+						max = getDataPairArray()[i].getValue().doubleValue();
+						maximumTSDataPair = getDataPairArray()[i];
+					}
 				}
 			}
 		}
@@ -111,12 +114,15 @@ public class TrendSerie
 		if( minimumTSDataPair == null)
 		{
 			double min = Double.MAX_VALUE;
-			for (int i = 0; i < getDataPairArray().length; i++)
+			if( getDataPairArray() != null )
 			{
-				if( getDataPairArray()[i].getValue().doubleValue() < min)
+				for (int i = 0; i < getDataPairArray().length; i++)
 				{
-					min = getDataPairArray()[i].getValue().doubleValue();					
-					minimumTSDataPair = getDataPairArray()[i];
+					if( getDataPairArray()[i].getValue().doubleValue() < min)
+					{
+						min = getDataPairArray()[i].getValue().doubleValue();					
+						minimumTSDataPair = getDataPairArray()[i];
+					}
 				}
 			}
 		}
@@ -125,7 +131,10 @@ public class TrendSerie
 
 	public double getMaximumValue()
 	{
-		return getMaximumTSDataPair().getValue().doubleValue();
+		if( getMaximumTSDataPair() != null)
+			return getMaximumTSDataPair().getValue().doubleValue();
+		else 
+			return -100;
 	}
 	/*
 	public long getMaximumTimestamp()
@@ -135,7 +144,10 @@ public class TrendSerie
 	*/
 	public double getMinimumValue()
 	{
-		return getMinimumTSDataPair().getValue().doubleValue();
+		if( getMinimumTSDataPair() != null)
+			return getMinimumTSDataPair().getValue().doubleValue();
+		else
+			return -100;
 	}
 	/*
 	public long getMinimumTimestamp()
