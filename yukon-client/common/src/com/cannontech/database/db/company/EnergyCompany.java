@@ -221,8 +221,7 @@ public static final Integer getNextEnergyCompanyID()
 	java.sql.ResultSet rset = null;
 	java.sql.Connection conn = null;
 
-	String sql = "SELECT MAX(EnergyCompanyID) FROM " + 
-					 TABLE_NAME + " order by EnergyCompanyID";
+	String sql = "SELECT MAX(EnergyCompanyID)+1 FROM " + TABLE_NAME;
 
 	try
 	{
@@ -232,7 +231,7 @@ public static final Integer getNextEnergyCompanyID()
 		rset = pstmt.executeQuery();							
 
 		while( rset.next() )
-			result = new Integer(rset.getInt(CONSTRAINT_COLUMNS[0]));
+			result = new Integer(rset.getInt(1));
 	}
 	catch( java.sql.SQLException e )
 	{
