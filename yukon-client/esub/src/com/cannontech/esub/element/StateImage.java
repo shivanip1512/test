@@ -64,6 +64,10 @@ public void setPoint(com.cannontech.database.data.lite.LitePoint newPoint) {
 	point = newPoint;
 }
 
+public void setPointID(int pointID) {
+	setPoint(PointFuncs.getLitePoint(pointID));
+}
+
 	/**
 	 * @see com.cannontech.esub.editor.element.DrawingElement#getDrawing()
 	 */
