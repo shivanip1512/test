@@ -344,12 +344,16 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
 
         if( kva != 0.0 )
         {
+            if( kw < 0 )
+            {
+                kw = -kw;
+            }
             newPowerFactorValue = kw / kva;
             //check if this is leading
-            if( kvar < 0.0 && newPowerFactorValue != 1.0 )
+            /*if( kvar < 0.0 && newPowerFactorValue != 1.0 )
             {
                 newPowerFactorValue = 2.0-newPowerFactorValue;
-            }
+            }*/
         }
         retVal = newPowerFactorValue;
     }
@@ -366,12 +370,16 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
 
         if( kva != 0.0 )
         {
+            if( kw < 0 )
+            {
+                kw = -kw;
+            }
             newPowerFactorValue = kw / kva;
             //check if this is leading
-            if( kvar < 0.0 && newPowerFactorValue != 1.0 )
+            /*if( kvar < 0.0 && newPowerFactorValue != 1.0 )
             {
                 newPowerFactorValue = 2.0-newPowerFactorValue;
-            }
+            }*/
         }
         retVal = newPowerFactorValue;
     }
@@ -383,6 +391,10 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
 
         if( kva != 0.0 )
         {
+            if( kw < 0 )
+            {
+                kw = -kw;
+            }
             newPowerFactorValue = kw / kva;
             //check if this is leading
             /*if( kvar < 0.0 && newPowerFactorValue != 1.0 )

@@ -677,11 +677,15 @@ private double calculatePowerFactor(PF pFactor)
 
 	if( kva != 0.0)
 	{
+                if( kw < 0 )
+                {
+                    kw = -kw;
+                }
 		pfValue = kw / kva;
-		if( kvar < 0.0 && pfValue != 1.0)
+		/*if( kvar < 0.0 && pfValue != 1.0)
 		{
 			pfValue = 2.0 - pfValue;
-		}
+		}*/
 	}
 	else
 	{

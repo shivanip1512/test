@@ -2561,6 +2561,10 @@ DOUBLE CtiCCSubstationBus::calculatePowerFactor(DOUBLE kvar, DOUBLE kw)
 
     if( kva != 0.0 )
     {
+        if( kw < 0 )
+        {
+            kw = -kw;
+        }
         newPowerFactorValue = kw / kva;
         //check if this is leading
         if( kvar < 0.0 && newPowerFactorValue != 1.0 )
