@@ -7,19 +7,22 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrDSm2Filein.cpp-arc  $
-*    REVISION     :  $Revision: 1.2 $
-*    DATE         :  $Date: 2004/03/24 22:38:51 $
+*    REVISION     :  $Revision: 1.3 $
+*    DATE         :  $Date: 2004/09/27 23:33:28 $
 *
 *
 *    AUTHOR: David Sutton
 *
 *    PURPOSE:  ascii import
 *
-*    DESCRIPTION: 
+*    DESCRIPTION:
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
       $Log: fdrdsm2filein.cpp,v $
+      Revision 1.3  2004/09/27 23:33:28  mfisher
+      changes/updates for Boost compatibility
+
       Revision 1.2  2004/03/24 22:38:51  dsutton
       Added a text file interface to FDR to allow Yukon users to import data formated
       for DSM2's filein format.  Revision 1.0
@@ -71,9 +74,9 @@ const CHAR * CtiFDR_Dsm2Filein::KEY_USE_SYSTEM_TIME = "FDR_DSM2FILEIN_USE_SYSTEM
 // Constructors, Destructor, and Operators
 CtiFDR_Dsm2Filein::CtiFDR_Dsm2Filein()
 : CtiFDRTextFileBase(RWCString("DSM2FILEIN"))
-{  
+{
     // init these lists so they have something
-    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),RWCString(FDR_INTERFACE_RECEIVE)); 
+    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),RWCString(FDR_INTERFACE_RECEIVE));
     getReceiveFromList().setPointList (recList);
     recList = NULL;
     init();
@@ -110,8 +113,8 @@ CtiFDR_Dsm2Filein &CtiFDR_Dsm2Filein::setUseSystemTime (bool aFlag)
 BOOL CtiFDR_Dsm2Filein::init( void )
 {
     // init the base class
-    Inherited::init();    
-    _threadReadFromFile = rwMakeThreadFunction(*this, 
+    Inherited::init();
+    _threadReadFromFile = rwMakeThreadFunction(*this,
                                                &CtiFDR_Dsm2Filein::threadFunctionReadFromFile);
 
     if (!readConfig( ))
@@ -126,7 +129,7 @@ BOOL CtiFDR_Dsm2Filein::init( void )
 * Function Name: CtiFDR_Dsm2Filein::run()
 *
 * Description: runs the interface
-* 
+*
 **************************************************
 */
 BOOL CtiFDR_Dsm2Filein::run( void )
@@ -144,8 +147,8 @@ BOOL CtiFDR_Dsm2Filein::run( void )
 /*************************************************
 * Function Name: CtiFDR_Dsm2Filein::stop()
 *
-* Description: stops all threads 
-* 
+* Description: stops all threads
+*
 **************************************************
 */
 BOOL CtiFDR_Dsm2Filein::stop( void )
@@ -163,7 +166,7 @@ RWTime CtiFDR_Dsm2Filein::ForeignToYukonTime (RWCString aTime)
 
     if (aTime.length() == 19)
     {
-        try 
+        try
         {
             if (sscanf (aTime.data(),
                         "%2ld/%2ld/%4ld %2ld:%2ld:%2ld",
@@ -182,7 +185,7 @@ RWTime CtiFDR_Dsm2Filein::ForeignToYukonTime (RWCString aTime)
                 ts.tm_mon--;
                 ts.tm_isdst = RWTime().isDST();
 
-                try 
+                try
                 {
                     retVal = RWTime(&ts);
 
@@ -217,13 +220,13 @@ USHORT CtiFDR_Dsm2Filein::ForeignToYukonQuality (RWCString aQuality)
     if (!aQuality.compareTo ("M",RWCString::ignoreCase))
         Quality = ManualQuality;
 
-	return(Quality);
+    return(Quality);
 }
 
 
 bool CtiFDR_Dsm2Filein::processFunctionOne (RWCString &aLine, CtiMessage **aRetMsg)
 {
-	bool retCode = false;
+    bool retCode = false;
     bool pointValidFlag=true;
     RWCString tempString1;                // Will receive each token
     RWCTokenizer cmdLine(aLine);           // Tokenize the string a
@@ -257,7 +260,7 @@ bool CtiFDR_Dsm2Filein::processFunctionOne (RWCString &aLine, CtiMessage **aRetM
 
                     // lock the list while we're returning the point
                     {
-                        CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
+                        CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());
                         pointValidFlag = findTranslationNameInList (tempString1, getReceiveFromList(), point);
                     }
 
@@ -296,7 +299,7 @@ bool CtiFDR_Dsm2Filein::processFunctionOne (RWCString &aLine, CtiMessage **aRetM
                 {
                     linetimestamp=linetimestamp + " " + tempString1;
 
-                    if (useSystemTime()) 
+                    if (useSystemTime())
                     {
                         pointtimestamp=RWTime();
                     }
@@ -324,9 +327,9 @@ bool CtiFDR_Dsm2Filein::processFunctionOne (RWCString &aLine, CtiMessage **aRetM
 }
 
 
-bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint, 
-                                          DOUBLE aValue, 
-                                          RWTime aTimestamp, 
+bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
+                                          DOUBLE aValue,
+                                          RWTime aTimestamp,
                                           int aQuality,
                                           RWCString aTranslationName,
                                           CtiMessage **aRetMsg)
@@ -348,9 +351,9 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
             value *= aPoint.getMultiplier();
             value += aPoint.getOffset();
 
-            *aRetMsg = new CtiPointDataMsg(aPoint.getPointID(), 
-                                           value, 
-                                           aQuality, 
+            *aRetMsg = new CtiPointDataMsg(aPoint.getPointID(),
+                                           value,
+                                           aQuality,
                                         AnalogPointType);
                                     ((CtiPointDataMsg *)*aRetMsg)->setTime(aTimestamp);
 
@@ -393,7 +396,7 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
                     ((CtiCommandMsg *)*aRetMsg)->insert( -1 );                // This is the dispatch token and is unimplemented at this time
                     ((CtiCommandMsg *)*aRetMsg)->insert(0);                   // device id, unknown at this point, dispatch will find it
                     ((CtiCommandMsg *)*aRetMsg)->insert(aPoint.getPointID());  // point for control
-                    ((CtiCommandMsg *)*aRetMsg)->insert(aValue);       
+                    ((CtiCommandMsg *)*aRetMsg)->insert(aValue);
                     retCode = true;
 
                 }
@@ -407,7 +410,7 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
                     CHAR state[20];
                     _snprintf (state,20,"%.0f",aValue);
                     desc = getFileName() + RWCString (" control point received with an invalid state ") + RWCString (state);
-                    _snprintf(action,60,"%s for pointID %d", 
+                    _snprintf(action,60,"%s for pointID %d",
                               aTranslationName,
                               aPoint.getPointID());
                     logEvent (desc,RWCString (action));
@@ -426,9 +429,9 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
                     {
                         tracestate = RWCString ("Closed");
                     }
-                    *aRetMsg = new CtiPointDataMsg(aPoint.getPointID(), 
-                                                aValue, 
-                                                aQuality, 
+                    *aRetMsg = new CtiPointDataMsg(aPoint.getPointID(),
+                                                aValue,
+                                                aQuality,
                                                 StatusPointType);
                                             ((CtiPointDataMsg*)*aRetMsg)->setTime(aTimestamp);
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
@@ -450,7 +453,7 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
                     CHAR state[20];
                     _snprintf (state,20,"%.0f",aValue);
                     desc = getFileName() + RWCString (" status point received with an invalid state ") + RWCString (state);
-                    _snprintf(action,60,"%s for pointID %d", 
+                    _snprintf(action,60,"%s for pointID %d",
                               aTranslationName,
                               aPoint.getPointID());
                     logEvent (desc,RWCString (action));
@@ -462,11 +465,11 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
     }
     return retCode;
 }
-    
+
 
 bool CtiFDR_Dsm2Filein::validateAndDecodeLine (RWCString &aLine, CtiMessage **aRetMsg)
 {
-	bool retCode = false;
+    bool retCode = false;
     bool flag;
     aLine.toLower();
     RWCString tempString1;                // Will receive each token
@@ -494,7 +497,7 @@ bool CtiFDR_Dsm2Filein::validateAndDecodeLine (RWCString &aLine, CtiMessage **aR
             }
             default:
                 break;
-                
+
         }
     }
 
@@ -504,7 +507,7 @@ bool CtiFDR_Dsm2Filein::validateAndDecodeLine (RWCString &aLine, CtiMessage **aR
 
 
 int CtiFDR_Dsm2Filein::readConfig( void )
-{    
+{
     int         successful = TRUE;
     RWCString   tempStr;
 
@@ -616,9 +619,9 @@ int CtiFDR_Dsm2Filein::readConfig( void )
 /************************************************************************
 * Function Name: CtiFDRTextFileBase::loadTranslationLists()
 *
-* Description: Creates a collection of points and their translations for the 
-*				specified direction
-* 
+* Description: Creates a collection of points and their translations for the
+*               specified direction
+*
 *************************************************************************
 */
 bool CtiFDR_Dsm2Filein::loadTranslationLists()
@@ -634,7 +637,7 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
     try
     {
         // make a list with all received points
-        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), 
+        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(),
                                                        RWCString (FDR_INTERFACE_RECEIVE));
 
         // keep the status
@@ -700,13 +703,13 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
 
                                     tempString2 = nextTempToken(";");
                                     tempString2(0,tempString2.length()) = tempString2 (1,(tempString2.length()-1));
-                                    if (!tempString2.isNull()) 
+                                    if (!tempString2.isNull())
                                     {
                                         translation_name+=tempString2;
                                         translationPoint->getDestinationList()[x].setTranslation (translation_name);
                                         successful = true;
                                     }
- 
+
                                 }
                             }
                         }   // first token invalid
@@ -715,7 +718,7 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
 
                 // lock the receive list and remove the old one
                 {
-                    CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
+                    CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());
                     if (getReceiveFromList().getPointList() != NULL)
                     {
                         getReceiveFromList().deletePointList();
@@ -776,7 +779,7 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
 * Function Name: CtiFDRTextFileBase::threadFunctionReadFromFile (void )
 *
 * Description: thread that waits and then grabs the file for processing
-* 
+*
 ***************************************************************************
 */
 void CtiFDR_Dsm2Filein::threadFunctionReadFromFile( void )
@@ -859,7 +862,7 @@ void CtiFDR_Dsm2Filein::threadFunctionReadFromFile( void )
                     DeleteFile (fileName);
                 }
 
-                refreshTime = RWTime() - (RWTime().seconds() % getInterval()) + getInterval();
+                refreshTime = RWTime() - (RWTime::now().seconds() % getInterval()) + getInterval();
             }
         }
     }
@@ -880,8 +883,8 @@ void CtiFDR_Dsm2Filein::threadFunctionReadFromFile( void )
 
 /****************************************************************************************
 *
-*      Here Starts some C functions that are used to Start the 
-*      Interface and Stop it from the Main() of FDR.EXE.  
+*      Here Starts some C functions that are used to Start the
+*      Interface and Stop it from the Main() of FDR.EXE.
 *
 */
 
@@ -892,11 +895,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int RunInterface(void)
 *
-* Description: This is used to Start the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Start the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function creates a global FDRCygnet Object and then
 *              calls its run method to cank it up.
-* 
+*
 *************************************************************************
 */
 
@@ -913,11 +916,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int StopInterface(void)
 *
-* Description: This is used to Stop the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Stop the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function stops a global FDRCygnet Object and then
 *              deletes it.
-* 
+*
 *************************************************************************
 */
     DLLEXPORT int StopInterface( void )

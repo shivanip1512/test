@@ -53,7 +53,7 @@ ctiholidaydb.dll:   $(YUKONHOLIDAYDLLOBJS) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(YUKONHOLIDAYDLLOBJS) id_devdll.obj -link $(RWLIBS) $(HOLIDAYDBLIBS)
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(YUKONHOLIDAYDLLOBJS) id_devdll.obj -link $(RWLIBS) $(BOOSTLIBS) $(HOLIDAYDBLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

@@ -9,6 +9,7 @@ INCLPATHS+= \
 -I$(DATABASE)\include \
 -I$(COMMON)\include \
 -I$(RW) \
+-I$(BOOST) \
 -I$(R_COMMON)\include \
 -I$(R_SIGNAL)\include \
 -I$(R_DATABASE)\include \
@@ -66,7 +67,7 @@ sigsend.exe:    $(BASEOBJS)
                 @echo Compiling $@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(TABLETESTLIBS)
+$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) $(TABLETESTLIBS)
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
