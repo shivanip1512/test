@@ -1581,14 +1581,18 @@ public void setButtonBarPanelVisible(boolean visible)
  */
 public void setFont( java.awt.Font font )
 {
-	getJTableControlArea().setFont( font );
-	getJTableControlArea().setRowHeight( font.getSize() + 2 );
+   for( int i = 0; i < getJTables().length; i++ )
+   {
+   	getJTables()[i].setFont( font );
+   	getJTables()[i].setRowHeight( font.getSize() + 2 );
 
-	// set the table headers font
-	getJTableControlArea().getTableHeader().setFont( font );
+   	// set the table headers font
+   	getJTables()[i].getTableHeader().setFont( font );
+   
+   	getJTables()[i].revalidate();
+      getJTables()[i].revalidate();
+   }
 
-	getJTableControlArea().revalidate();
-	getJTableControlArea().repaint();	
 }
 /**
  * Insert the method's description here.
