@@ -4158,11 +4158,12 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
         if( !is_ramping_out && returnBool )
         {
             setReductionTotal(0.0);
-            setProgramState(CtiLMProgramBase::InactiveState);
+            setProgramState(CtiLMProgramBase::InactiveState);  
             for(int i = 0; i < _lmprogramdirectgroups.entries(); i++)
             {
                 CtiLMGroupBase* lm_group = (CtiLMGroupBase*) _lmprogramdirectgroups[i];
-                lm_group->setGroupControlState(CtiLMGroupBase::InactiveState);
+//Why set the state??  shouldn't we let dispatch update this via status point?
+//                lm_group->setGroupControlState(CtiLMGroupBase::InactiveState);
             }
             setCurrentGearNumber(0);
             setStartedControlling(RWDBDateTime(1990,1,1,0,0,0,0));
