@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/09/22 20:34:15 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/09/27 17:13:16 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -37,9 +37,18 @@ public:
       KillApp        //call all fooptrs and remove thread from list
    };                
 
-   typedef void (*fooptr)( void* );
+   typedef void (*behaviourFuncPtr)( void *p );
 
    CtiThreadRegData();
+   CtiThreadRegData( int id,
+                      string name,
+                      Behaviours type,
+                      int tickle_freq,
+                      behaviourFuncPtr ptr1,
+                      void *args1,
+                      behaviourFuncPtr ptr2,
+                      void *args2 );
+
    virtual ~CtiThreadRegData();
 
    bool operator<( const CtiThreadRegData& y ) const;   //just for the queue, me thinks
@@ -48,7 +57,7 @@ public:
    void setName( const string in );
 
    int getId( void );
-   void setId( const int in );
+   void setId( const int &in );
 
    CtiThreadRegData::Behaviours getBehaviour( void );
    void setBehaviour( CtiThreadRegData::Behaviours in );
@@ -59,37 +68,45 @@ public:
    ptime getTickledTime( void );
    void setTickledTime( ptime in );
 
-   fooptr getShutdownFunc( void );
-   void setShutdownFunc( fooptr in );
+   behaviourFuncPtr getShutdownFunc( void );
+   void setShutdownFunc( behaviourFuncPtr in );
 
    void* getShutdownArgs( void );
-   void setShutdownArgs( void* in );
+   void setShutdownArgs( void *in );
 
-   fooptr getAlternateFunc( void );
-   void setAlternateFunc( fooptr in );
+   behaviourFuncPtr getAlternateFunc( void );
+   void setAlternateFunc( behaviourFuncPtr in );
 
    void* getAlternateArgs( void );
-   void setAlternateArgs( void* in );
+   void setAlternateArgs( void *in );
 
    bool getReported( void );
    void setReported( const bool in );
+
+
 
 protected:
 
 private:
 
-   bool           _reported;
-   string         _name;
-   int            _id;
-   Behaviours     _behaviourType;
-   fooptr         _shutdown;
-   fooptr         _alternate;
-   ULONG          _tickleFreq;
-   ptime          _tickledTime;
-   void*          _shutdown_args;
-   void*          _shutdown_arg_count;
-   void*          _alt_args;
-   void*          _alt_arg_count;
+   bool                 _reported;
+   ptime                _tickledTime;
+
+   //
+   //registeration: must haves
+   //
+   string               _name;
+   int                  _id;
+   Behaviours           _behaviourType;
+   ULONG                _tickleFreq;
+
+   //
+   //registeration: optionals
+   //
+   behaviourFuncPtr     _shutdown;
+   behaviourFuncPtr     _alternate;
+   void*                _shutdown_args;
+   void*                _alt_args;
 };
 
 #endif // #ifndef __THREAD_REGISTER_DATA_H__
