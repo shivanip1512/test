@@ -5,16 +5,22 @@ package com.cannontech.dbeditor;
  * Creation date: (6/14/2002 3:25:50 PM)
  * @author: 
  */
-public class DBDeletionWarn {
-
+public class DBDeletionWarn 
+{
 	private static StringBuffer theWarning = new StringBuffer("");
-
+   
+   //types of delete
 	public static final int POINT_TYPE = 1;
 	public static final int NOTIFICATION_TYPE = 2;
 	public static final int STATEGROUP_TYPE = 3;
 	public static final int PORT_TYPE = 4;
 	public static final int DEVICE_TYPE = 5;
-	
+
+   //the return types of each possible delete
+   public static final byte STATUS_ALLOW = 1;
+   public static final byte STATUS_CONFIRM = 2;
+   public static final byte STATUS_DISALLOW = 3;
+   
 /**
  * DBDeletionWarn constructor comment.
  */
@@ -27,7 +33,7 @@ private DBDeletionWarn() {
  * @return java.lang.String
  * @param pointID int
  */
-private static boolean createDeleteStringForCommPort(int portID) throws java.sql.SQLException
+private static byte createDeleteStringForCommPort(int portID) throws java.sql.SQLException
 {
 	Integer theID = new Integer( portID );
 
@@ -35,11 +41,11 @@ private static boolean createDeleteStringForCommPort(int portID) throws java.sql
 	{
 		theWarning.delete(0, theWarning.length());
 		theWarning.append("\nbecause it is used by a device.");
-		return false;
+		return STATUS_DISALLOW;
 	}
 
 	//this point is deleteable
-	return true;
+	return STATUS_ALLOW;
 }
 /**
  * Insert the method's description here.
@@ -47,7 +53,7 @@ private static boolean createDeleteStringForCommPort(int portID) throws java.sql
  * @return java.lang.String
  * @param pointID int
  */
-private static boolean createDeleteStringForDevice(int deviceID) throws java.sql.SQLException
+private static byte createDeleteStringForDevice(int deviceID) throws java.sql.SQLException
 {
 	Integer theID = new Integer( deviceID );
 
@@ -55,11 +61,11 @@ private static boolean createDeleteStringForDevice(int deviceID) throws java.sql
 	{
 		theWarning.delete(0, theWarning.length());
 		theWarning.append("\nbecause it is utilized by a route.");
-		return false;
+		return STATUS_DISALLOW;
 	}
 
 	//this point is deleteable
-	return true;
+	return STATUS_ALLOW;
 }
 /**
  * Insert the method's description here.
@@ -67,7 +73,7 @@ private static boolean createDeleteStringForDevice(int deviceID) throws java.sql
  * @return java.lang.String
  * @param pointID int
  */
-private static boolean createDeleteStringForNotification(int noteID) throws java.sql.SQLException
+private static byte createDeleteStringForNotification(int noteID) throws java.sql.SQLException
 {
 	Integer theID = new Integer( noteID );
 
@@ -75,7 +81,7 @@ private static boolean createDeleteStringForNotification(int noteID) throws java
 	{
 		theWarning.delete(0, theWarning.length());
 		theWarning.append("\nbecause it is used by a point alarm.");
-		return false;
+      return STATUS_DISALLOW;
 	}
 	
 	
@@ -83,17 +89,18 @@ private static boolean createDeleteStringForNotification(int noteID) throws java
 	{
 		theWarning.delete(0, theWarning.length());
 		theWarning.append("\nbecause it is used by an Alarm Category.");
-		return false;
+		return STATUS_DISALLOW;
 	}
+
 	if( com.cannontech.database.data.notification.GroupNotification.hasPointAlarming( theID ) )
 	{
 		theWarning.delete(0, theWarning.length());
 		theWarning.append("\nbecause it is used by a point alarm.");
-		return false;
+		return STATUS_DISALLOW;
 	}
 
 	//this point is deleteable
-	return true;
+	return STATUS_ALLOW;
 }
 /**
  * Insert the method's description here.
@@ -101,48 +108,54 @@ private static boolean createDeleteStringForNotification(int noteID) throws java
  * @return java.lang.String
  * @param pointID int
  */
-private static boolean createDeleteStringForPoints(int pointID) throws java.sql.SQLException
+private static byte createDeleteStringForPoints(int pointID) throws java.sql.SQLException
 {
 	Integer ptID = new Integer( pointID );
-
-	if( com.cannontech.database.data.point.PointBase.hasRawPointHistorys( ptID ) || com.cannontech.database.data.point.PointBase.hasSystemLogEntry( ptID ) )
-	{
-		theWarning.delete(0, theWarning.length());
-		theWarning.append("\nThis Point has historical data that will be lost if removed.");
-		return false;
-	}
-		
+   	      
 	if( com.cannontech.database.data.point.PointBase.hasCapControlSubstationBus( ptID ) )
 	{
 		theWarning.delete(0, theWarning.length());
 		theWarning.append("\nbecause it is used by a CapControl Substation Bus.");
-		return false;
+		return STATUS_DISALLOW;
 	}
 
 	if( com.cannontech.database.data.point.PointBase.hasCapBank( ptID ) )
 	{
 		theWarning.delete(0, theWarning.length());
 		theWarning.append("\nbecause it is used by a CapBank Device.");
-		return false;
+		return STATUS_DISALLOW;
 	}
 
 	if( com.cannontech.database.data.point.PointBase.hasLMTrigger( ptID ) )
 	{
 		theWarning.delete(0, theWarning.length());
 		theWarning.append("\nbecause it is used by a LoadManagement Trigger.");
-		return false;
+		return STATUS_DISALLOW;
 	}
 
 	if( com.cannontech.database.data.point.PointBase.hasLMGroup( ptID ) )
 	{
 		theWarning.delete(0, theWarning.length());
 		theWarning.append("\nbecause it is used by a Load Group.");
-		return false;
+		return STATUS_DISALLOW;
 	}
 	
-	
+   if( com.cannontech.database.data.point.PointBase.hasRawPointHistorys( ptID ) )
+   {
+      theWarning.delete(0, theWarning.length());
+      theWarning.append("\nThis point has archived historical data that will be lost if removed.");
+      return STATUS_CONFIRM;
+   }
+   
+   if( com.cannontech.database.data.point.PointBase.hasSystemLogEntry( ptID ) )
+   {
+      theWarning.delete(0, theWarning.length());
+      theWarning.append("\nThis point has system log data that will be lost if removed.");
+      return STATUS_CONFIRM;
+   }
+
 	//this point is deleteable
-	return true;
+	return STATUS_ALLOW;
 }
 /**
  * Insert the method's description here.
@@ -150,7 +163,7 @@ private static boolean createDeleteStringForPoints(int pointID) throws java.sql.
  * @return java.lang.String
  * @param pointID int
  */
-private static boolean createDeleteStringForStateGroup(int sGroupID) throws java.sql.SQLException
+private static byte createDeleteStringForStateGroup(int sGroupID) throws java.sql.SQLException
 {
 	Integer theID = new Integer( sGroupID );
 
@@ -158,20 +171,19 @@ private static boolean createDeleteStringForStateGroup(int sGroupID) throws java
 	{
 		theWarning.delete(0, theWarning.length());
 		theWarning.append("\nbecause it is used by a point.");
-		return false;
+		return STATUS_DISALLOW;
 	}
 
 	//this point is deleteable
-	return true;
+	return STATUS_ALLOW;
 }
 /**
  * Insert the method's description here.
  * Creation date: (3/14/2001 5:28:42 PM)
  * @param event java.awt.event.ActionEvent
  */
-protected static boolean deletionAttempted(int anID, int type) throws java.sql.SQLException
+public static byte deletionAttempted(int anID, int type) throws java.sql.SQLException
 {
-	
 		theWarning.delete(0, theWarning.length());	
 	
 		if (type == POINT_TYPE)
@@ -190,16 +202,14 @@ protected static boolean deletionAttempted(int anID, int type) throws java.sql.S
 			return createDeleteStringForDevice(anID);
 
 		else
-		{
-			return false;
-		}
+			return STATUS_DISALLOW;
 }
 /**
  * Insert the method's description here.
  * Creation date: (6/14/2002 4:48:31 PM)
  * @return java.lang.StringBuffer
  */
-protected static java.lang.StringBuffer getTheWarning() {
+public static java.lang.StringBuffer getTheWarning() {
 	return theWarning;
 }
 /**
@@ -210,4 +220,5 @@ protected static java.lang.StringBuffer getTheWarning() {
 void setTheWarning(java.lang.StringBuffer newTheWarning) {
 	theWarning = newTheWarning;
 }
+
 }

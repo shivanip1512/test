@@ -749,11 +749,13 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
 			StringBuffer message =
 			   new StringBuffer(
 				  "Are you sure you want to change the type of '"+node.toString() + "'?");
-			   
-			if (DBDeletionWarn.deletionAttempted(((com.cannontech.database.data.point.PointBase) userObject)
-			   .getPoint().getPointID().intValue(), DBDeletionWarn.POINT_TYPE))
-				
-			{
+
+
+         byte deleteVal = DBDeletionWarn.deletionAttempted(((com.cannontech.database.data.point.PointBase) userObject)
+                              .getPoint().getPointID().intValue(), DBDeletionWarn.POINT_TYPE);
+         
+         if( deleteVal == DBDeletionWarn.STATUS_ALLOW )
+         {
 			   showChangeTypeWizardPanel(
 				  new com.cannontech.dbeditor.wizard.changetype.point.PointChangeTypeWizardPanel(
 					 userObject));
@@ -910,18 +912,21 @@ private void executeDeleteButton_ActionPerformed(ActionEvent event)
 	{
 		try
 		{	
-			if ( DBDeletionWarn.deletionAttempted(anID, deletionType))
+         byte deleteVal = DBDeletionWarn.deletionAttempted(anID, deletionType);
+         
+         if( deleteVal == DBDeletionWarn.STATUS_ALLOW
+             || deleteVal == DBDeletionWarn.STATUS_CONFIRM )
+         {
 					confirm =
 						javax.swing.JOptionPane.showConfirmDialog(
 							getParentFrame(),
-							message.toString(),
+							message.toString() + DBDeletionWarn.getTheWarning().toString(),
 							"Confirm Delete",
 							JOptionPane.YES_NO_OPTION,
 							JOptionPane.WARNING_MESSAGE);
-
+         }
 			else
-			{
-				
+			{				
 					confirm =
 						javax.swing.JOptionPane.showConfirmDialog(
 							getParentFrame(),
@@ -929,7 +934,8 @@ private void executeDeleteButton_ActionPerformed(ActionEvent event)
 							"Unable to Delete",
 							JOptionPane.CLOSED_OPTION,
 							JOptionPane.WARNING_MESSAGE);
-							confirm = JOptionPane.NO_OPTION; //make it seem they clicked the NO to delete the Point
+
+               confirm = JOptionPane.NO_OPTION; //make it seem they clicked the NO to delete the Point
 			}
 		}
 		catch (java.sql.SQLException e)
