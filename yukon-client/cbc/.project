@@ -4,6 +4,7 @@
 	<comment></comment>
 	<projects>
 		<project>common</project>
+		<project>esub</project>
 		<project>tdc</project>
 	</projects>
 	<buildSpec>
