@@ -321,7 +321,7 @@ public class SOAPClient extends HttpServlet {
 		}
 		else if (action.equalsIgnoreCase("OptOutProgram")
 			|| action.equalsIgnoreCase("RepeatLastOptOut")
-			|| action.equalsIgnoreCase("OptOutLMHardware"))
+			|| action.equalsIgnoreCase("OverrideLMHardware"))
 		{
 			clientAction = new ProgramOptOutAction();
 			SOAPMessage msg = clientAction.build( req, session );
