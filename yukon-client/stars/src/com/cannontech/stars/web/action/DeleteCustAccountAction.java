@@ -99,7 +99,7 @@ public class DeleteCustAccountAction implements ActionBase {
 						LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( liteApp.getInventoryID(), true );
 						if (!hwToDisable.contains( liteHw )) {
 							hwToDisable.add( liteHw );
-							YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw );
+							YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, null );
 						}
 					}
 				}

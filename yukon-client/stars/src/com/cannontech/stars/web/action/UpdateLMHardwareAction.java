@@ -155,7 +155,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 					createHw.getLMHardware().getStarsLMHardwareConfigCount() > 0 &&
 					AuthFuncs.checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION))
 				{
-					YukonSwitchCommandAction.sendConfigCommand( energyCompany, (LiteStarsLMHardware)liteInv, false );
+					YukonSwitchCommandAction.sendConfigCommand( energyCompany, (LiteStarsLMHardware)liteInv, false, null );
 				}
 			}
 			else {

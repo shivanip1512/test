@@ -175,13 +175,13 @@ public class ProgramSignUpAction implements ActionBase {
 						if (!useHardwareAddressing
 							&& (ECUtils.isOperator(user) && AuthFuncs.checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION )
 								|| ECUtils.isResidentialCustomer(user) && AuthFuncs.checkRoleProperty(user.getYukonUser(), ResidentialCustomerRole.AUTOMATIC_CONFIGURATION)))
-							YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, false );
+							YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, false, null );
 						else if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL)
-							YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw );
+							YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw, null );
 					}
 					else {
 						// Send disable command to hardware
-						YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw );
+						YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, null );
 					}
 					
 					StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
@@ -808,7 +808,7 @@ public class ProgramSignUpAction implements ActionBase {
 			try {
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
 				if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
-					YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw );
+					YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, null );
 					starsInvs.addStarsInventory( StarsLiteFactory.createStarsInventory(liteHw, energyCompany) );
 				}
 			}

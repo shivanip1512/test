@@ -230,6 +230,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 					com.cannontech.database.db.stars.hardware.InventoryBase invDB = hardware.getInventoryBase();
 					invDB.setAccountID( new Integer(CtiUtilities.NONE_ID) );
 					invDB.setRemoveDate( removeDate );
+					invDB.setDeviceLabel( "" );
 					Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
 					
 					liteInvNew = new LiteStarsLMHardware();
@@ -244,6 +245,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 					StarsLiteFactory.setInventoryBase( invDB, liteInv );
 					invDB.setAccountID( new Integer(CtiUtilities.NONE_ID) );
 					invDB.setRemoveDate( removeDate );
+					invDB.setDeviceLabel( "" );
 					
 					invDB = (com.cannontech.database.db.stars.hardware.InventoryBase)
 							Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();

@@ -373,9 +373,9 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 				}
 				else {
 					if (toConfig)
-						YukonSwitchCommandAction.sendConfigCommand( energyCompany, lHw, true );
+						YukonSwitchCommandAction.sendConfigCommand( energyCompany, lHw, true, null );
 					else
-						YukonSwitchCommandAction.sendDisableCommand( energyCompany, lHw );
+						YukonSwitchCommandAction.sendDisableCommand( energyCompany, lHw, null );
 				}
 			}
 			
