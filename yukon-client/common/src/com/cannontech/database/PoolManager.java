@@ -1,5 +1,7 @@
 package com.cannontech.database;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.sql.Connection;
@@ -16,7 +18,7 @@ import com.cannontech.common.util.CtiUtilities;
 
 public class PoolManager
 {
-	public static final String DB_PROPERTIES_FILE  = "/db.properties";
+	public static final String DB_PROPERTIES_FILE  = "db.properties";
 	
 	public static final String DRV_SQLSERVER = "jdbc:microsoft:sqlserver:";
 	public static final String DRV_ORACLE = "jdbc:oracle:thin:";
@@ -276,7 +278,18 @@ public String[] getAllPoolsStrings()
    
    public static final URL getPropertyURL()
    {   	
-   	return PoolManager.class.getResource( DB_PROPERTIES_FILE );
+   	//return PoolManager.class.getResource( DB_PROPERTIES_FILE );
+   	try
+   	{
+			File f = new File(DB_PROPERTIES_FILE);			
+   		return f.toURL();
+   	}
+   	catch( Exception ex )
+   	{
+   		CTILogger.error("Something went wrong with the URL of a file", ex );
+   		return null;
+   	}
+   	
    }
 
 
@@ -284,9 +297,18 @@ public String[] getAllPoolsStrings()
    {
    		Properties props = null;
    		
-		InputStream is = PoolManager.class.getResourceAsStream( DB_PROPERTIES_FILE );
 		try
 		{
+			File f = new File(DB_PROPERTIES_FILE);
+			CTILogger.info( "Abs = " + f.getAbsolutePath() );
+			CTILogger.info( "Con = " + f.getCanonicalPath() );
+			CTILogger.info( "ppp = " + f.getPath() );
+			
+			FileInputStream fi = new FileInputStream( DB_PROPERTIES_FILE );
+			
+			InputStream is = fi;		
+			//PoolManager.class.getResourceAsStream( DB_PROPERTIES_FILE );
+
 			props = new Properties();
 			props.load(is);
 		 }
