@@ -32,6 +32,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
@@ -68,7 +69,7 @@ import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.action.CreateApplianceAction;
+import com.cannontech.stars.web.action.UpdateApplianceAction;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
 import com.cannontech.stars.web.action.CreateServiceRequestAction;
 import com.cannontech.stars.web.action.DeleteCustAccountAction;
@@ -78,27 +79,69 @@ import com.cannontech.stars.web.action.ProgramSignUpAction;
 import com.cannontech.stars.web.action.UpdateCustAccountAction;
 import com.cannontech.stars.web.action.UpdateLMHardwareAction;
 import com.cannontech.stars.web.action.UpdateLoginAction;
+import com.cannontech.stars.web.action.UpdateResidenceInfoAction;
 import com.cannontech.stars.web.action.UpdateThermostatScheduleAction;
 import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.ACType;
+import com.cannontech.stars.xml.serialize.AirConditioner;
+import com.cannontech.stars.xml.serialize.BinSize;
+import com.cannontech.stars.xml.serialize.BlowerEnergySource;
+import com.cannontech.stars.xml.serialize.BlowerHeatSource;
+import com.cannontech.stars.xml.serialize.BlowerHorsePower;
+import com.cannontech.stars.xml.serialize.DryerType;
+import com.cannontech.stars.xml.serialize.DualFuel;
+import com.cannontech.stars.xml.serialize.EnergySource;
+import com.cannontech.stars.xml.serialize.Generator;
+import com.cannontech.stars.xml.serialize.GrainDryer;
+import com.cannontech.stars.xml.serialize.HeatPump;
+import com.cannontech.stars.xml.serialize.HorsePower;
+import com.cannontech.stars.xml.serialize.Irrigation;
+import com.cannontech.stars.xml.serialize.IrrigationType;
+import com.cannontech.stars.xml.serialize.MeterLocation;
+import com.cannontech.stars.xml.serialize.MeterVoltage;
+import com.cannontech.stars.xml.serialize.NumberOfGallons;
+import com.cannontech.stars.xml.serialize.PumpSize;
+import com.cannontech.stars.xml.serialize.PumpType;
+import com.cannontech.stars.xml.serialize.SecondaryEnergySource;
+import com.cannontech.stars.xml.serialize.SoilType;
+import com.cannontech.stars.xml.serialize.StandbySource;
+import com.cannontech.stars.xml.serialize.StorageHeat;
+import com.cannontech.stars.xml.serialize.StorageType;
+import com.cannontech.stars.xml.serialize.SwitchOverType;
+import com.cannontech.stars.xml.serialize.Tonnage;
+import com.cannontech.stars.xml.serialize.TransferSwitchManufacturer;
+import com.cannontech.stars.xml.serialize.TransferSwitchType;
+import com.cannontech.stars.xml.serialize.WaterHeater;
 import com.cannontech.stars.xml.serialize.AnswerType;
 import com.cannontech.stars.xml.serialize.BillingAddress;
 import com.cannontech.stars.xml.serialize.CompanyAddress;
+import com.cannontech.stars.xml.serialize.ConstructionMaterial;
 import com.cannontech.stars.xml.serialize.CurrentState;
+import com.cannontech.stars.xml.serialize.DecadeBuilt;
 import com.cannontech.stars.xml.serialize.DeviceStatus;
 import com.cannontech.stars.xml.serialize.Email;
+import com.cannontech.stars.xml.serialize.GeneralCondition;
 import com.cannontech.stars.xml.serialize.InstallationCompany;
+import com.cannontech.stars.xml.serialize.InsulationDepth;
 import com.cannontech.stars.xml.serialize.LMHardware;
 import com.cannontech.stars.xml.serialize.LMHardwareType;
 import com.cannontech.stars.xml.serialize.Location;
+import com.cannontech.stars.xml.serialize.MainCoolingSystem;
+import com.cannontech.stars.xml.serialize.MainFuelType;
+import com.cannontech.stars.xml.serialize.MainHeatingSystem;
 import com.cannontech.stars.xml.serialize.Manufacturer;
 import com.cannontech.stars.xml.serialize.MCT;
+import com.cannontech.stars.xml.serialize.NumberOfOccupants;
+import com.cannontech.stars.xml.serialize.OwnershipType;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.QuestionType;
+import com.cannontech.stars.xml.serialize.ResidenceType;
+import com.cannontech.stars.xml.serialize.SquareFeet;
 import com.cannontech.stars.xml.serialize.SULMProgram;
 import com.cannontech.stars.xml.serialize.ServiceCompany;
 import com.cannontech.stars.xml.serialize.ServiceType;
+import com.cannontech.stars.xml.serialize.StarsApp;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
-import com.cannontech.stars.xml.serialize.StarsCreateAppliance;
 import com.cannontech.stars.xml.serialize.StarsCreateLMHardware;
 import com.cannontech.stars.xml.serialize.StarsCreateServiceRequest;
 import com.cannontech.stars.xml.serialize.StarsCustAccount;
@@ -126,7 +169,9 @@ import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
 import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsSiteInformation;
+import com.cannontech.stars.xml.serialize.StarsUpdateAppliance;
 import com.cannontech.stars.xml.serialize.StarsUpdateCustomerAccount;
+import com.cannontech.stars.xml.serialize.StarsUpdateResidenceInformation;
 import com.cannontech.stars.xml.serialize.StarsUpdateLMHardware;
 import com.cannontech.stars.xml.serialize.StarsUpdateLogin;
 import com.cannontech.stars.xml.serialize.StarsUpdateThermostatSchedule;
@@ -135,7 +180,6 @@ import com.cannontech.stars.xml.serialize.StreetAddress;
 import com.cannontech.stars.xml.serialize.Substation;
 import com.cannontech.stars.xml.serialize.Voltage;
 import com.cannontech.stars.xml.util.SOAPUtil;
-import com.cannontech.stars.xml.util.StarsConstants;
 
 interface ImportFileParser {
 	String[] populateFields(String line) throws Exception;
@@ -157,6 +201,7 @@ public class StarsAdmin extends HttpServlet {
 	public static final String PREPROCESSED_STARS_DATA = "PREPROCESSED_STARS_DATA";
 	public static final String UNASSIGNED_LISTS = "UNASSIGNED_LISTS";
 	
+	// Table of list names and list labels
 	public static final String[][] LIST_NAMES = {
 		{"Substation", "Substation"},
 		{"DeviceType", "Device Type"},
@@ -164,12 +209,46 @@ public class StarsAdmin extends HttpServlet {
 		{"ServiceCompany", "Service Company"},
 		{"DeviceStatus", "Device Status"},
 		{"LoadGroup", "Load Group"},
-		{"ApplianceCategory", "Appliance Category"},
+		{"ApplianceType", "Appliance Type"},
 		{"Manufacturer", "Manufacturer"},
+		{"ACTonnage", "AC Tonnage"},
+		{"WHNumberOfGallons", "WH Size"},
+		{"WHEnergySource", "WH Energy Source"},
+		{"GENTransferSwitchType", "GEN Trans Switch Type"},
+		{"GENTransferSwitchMfg", "GEN Trans Switch Manufacturer"},
+		{"IrrigationType", "IRR Type"},
+		{"IRREnergySource", "IRR Energy Source"},
+		{"IRRHorsePower", "IRR Horse Power"},
+		{"IRRMeterVoltage", "IRR Meter Voltage"},
+		{"IRRMeterLocation", "IRR Location Source"},
+		{"IRRSoilType", "IRR Soil Type"},
+		{"GrainDryerType", "GDry Type"},
+		{"GDEnergySource", "GDry Energy Source"},
+		{"GDHorsePower", "GDry Horse Power"},
+		{"GDHeatSource", "GDry Heat Source"},
+		{"GDBinSize", "GDry Bin Size"},
+		{"HeatPumpType", "HP Type"},
+		{"HeatPumpSize", "HP Size"},
+		{"HPStandbySource", "HP Standby Heat"},
+		{"StorageHeatType", "SH Type"},
+		{"DFSwitchOverType", "DF Secondary Src"},
+		{"DFSecondarySource", "DF Switch Over"},
 		{"ServiceStatus", "Service Status"},
-		{"ServiceType", "Service Type"}
+		{"ServiceType", "Service Type"},
+		{"ResidenceType", "Residence Type"},
+		{"ConstructionMaterial", "Construction Material"},
+		{"DecadeBuilt", "Decade Built"},
+		{"SquareFeet", "Square Feet"},
+		{"InsulationDepth", "Insulation Depth"},
+		{"GeneralCondition", "General Condition"},
+		{"CoolingSystem", "Main Cooling System"},
+		{"HeatingSystem", "Main Heating System"},
+		{"NumberOfOccupants", "Number of Occupants"},
+		{"OwnershipType", "Ownership Type"},
+		{"FuelType", "Main Fuel Type"},
 	};
     
+    // Customer account fields
 	private static final int IDX_ACCOUNT_ID = 0;
 	private static final int IDX_ACCOUNT_NO = 1;
 	private static final int IDX_CUSTOMER_TYPE = 2;
@@ -198,6 +277,7 @@ public class StarsAdmin extends HttpServlet {
 	private static final int IDX_SERV_VOLT = 25;
 	private static final int NUM_ACCOUNT_FIELDS = 26;
 	
+	// Inventory fields
 	// IDX_ACCOUNT_ID = 0
 	private static final int IDX_INV_ID = 1;
 	private static final int IDX_SERIAL_NO = 2;
@@ -221,15 +301,50 @@ public class StarsAdmin extends HttpServlet {
 	private static final int IDX_R3_STATUS = 20;
 	private static final int NUM_INV_FIELDS = 21;
 	
+	// Appliance fields
 	// IDX_ACCOUNT_ID = 0
 	// IDX_INV_ID = 1;
-	private static final int IDX_RELAY_NUM = 2;
-	private static final int IDX_APP_TYPE = 3;
-	private static final int IDX_APP_NOTES = 4;
-	private static final int IDX_MANUFACTURER = 5;
-	private static final int IDX_YEAR_MADE = 6;
-	private static final int NUM_APP_FIELDS = 7;
+	private static final int IDX_APP_ID = 2;
+	private static final int IDX_RELAY_NUM = 3;
+	private static final int IDX_APP_TYPE = 4;
+	private static final int IDX_APP_NOTES = 5;
+	private static final int IDX_MANUFACTURER = 6;
+	private static final int IDX_YEAR_MADE = 7;
+	private static final int IDX_APP_KW = 8;
+	private static final int IDX_AC_TONNAGE = 9;
+	private static final int IDX_WH_NUM_GALLONS = 10;
+	private static final int IDX_WH_NUM_ELEMENTS = 11;
+	private static final int IDX_WH_ENERGY_SRC = 12;
+	private static final int IDX_GEN_TRAN_SWITCH_TYPE = 13;
+	private static final int IDX_GEN_TRAN_SWITCH_MFC = 14;
+	private static final int IDX_GEN_CAPACITY = 15;
+	private static final int IDX_GEN_FUEL_CAP = 16;
+	private static final int IDX_GEN_START_DELAY = 17;
+	private static final int IDX_IRR_TYPE = 18;
+	private static final int IDX_IRR_HORSE_POWER = 19;
+	private static final int IDX_IRR_ENERGY_SRC = 20;
+	private static final int IDX_IRR_SOIL_TYPE = 21;
+	private static final int IDX_IRR_METER_LOC = 22;
+	private static final int IDX_IRR_METER_VOLT = 23;
+	private static final int IDX_GDRY_TYPE = 24;
+	private static final int IDX_GDRY_BIN_SIZE = 25;
+	private static final int IDX_GDRY_ENERGY_SRC = 26;
+	private static final int IDX_GDRY_HORSE_POWER = 27;
+	private static final int IDX_GDRY_HEAT_SRC = 28;
+	private static final int IDX_HP_TYPE = 29;
+	private static final int IDX_HP_SIZE = 30;
+	private static final int IDX_HP_STANDBY_SRC = 31;
+	private static final int IDX_HP_RESTART_DELAY = 32;
+	private static final int IDX_SH_TYPE = 33;
+	private static final int IDX_SH_CAPACITY = 34;
+	private static final int IDX_SH_RECHARGE_TIME = 35;
+	private static final int IDX_DF_SWITCH_OVER_TYPE = 36;
+	private static final int IDX_DF_2ND_CAPACITY = 37;
+	private static final int IDX_DF_2ND_ENERGY_SRC = 38;
+	private static final int IDX_APP_CAT_DEF_ID = 39;
+	private static final int NUM_APP_FIELDS = 40;
 	
+	// Work order fields
 	// IDX_ACCOUNT_ID = 0
 	// IDX_INV_ID = 1;
 	private static final int IDX_ORDER_NO = 2;
@@ -243,6 +358,111 @@ public class StarsAdmin extends HttpServlet {
 	private static final int IDX_ORDER_DESC = 10;
 	private static final int IDX_ACTION_TAKEN = 11;
 	private static final int NUM_ORDER_FIELDS = 12;
+	
+	// Customer residence fields
+	// IDX_ACCOUNT_ID = 0
+	private static final int IDX_RES_TYPE = 1;
+	private static final int IDX_CONSTRUCTION_TYPE = 2;
+	private static final int IDX_DECADE_BUILT = 3;
+	private static final int IDX_SQUARE_FEET = 4;
+	private static final int IDX_INSULATION_DEPTH = 5;
+	private static final int IDX_GENERAL_COND = 6;
+	private static final int IDX_MAIN_COOLING_SYS = 7;
+	private static final int IDX_MAIN_HEATING_SYS = 8;
+	private static final int IDX_NUM_OCCUPANTS = 9;
+	private static final int IDX_OWNERSHIP_TYPE = 10;
+	private static final int IDX_MAIN_FUEL_TYPE = 11;
+	private static final int IDX_RES_NOTES = 12;
+	private static final int NUM_RES_FIELDS = 13;
+	
+	// Tables of index of lists(in LIST_NAMES) and index of fields(in corresponding field definition above)
+	private static final int[][] SERVINFO_LIST_FIELDS = {
+		{0, IDX_SUBSTATION},
+	};
+	
+	private static final int[][] INV_LIST_FIELDS = {
+		{1, IDX_DEVICE_TYPE},
+		{2, IDX_DEVICE_VOLTAGE},
+		{3, IDX_SERVICE_COMPANY},
+	};
+	
+	private static final int[][] RECV_LIST_FIELDS = {
+		{4, IDX_DEVICE_STATUS},
+		{5, IDX_R1_GROUP},
+		{5, IDX_R2_GROUP},
+		{5, IDX_R3_GROUP},
+	};
+	
+	private static final int[][] APP_LIST_FIELDS = {
+		{6, IDX_APP_TYPE},
+		{7, IDX_MANUFACTURER},
+	};
+	
+	private static final int[][] AC_LIST_FIELDS = {
+		{8, IDX_AC_TONNAGE},
+	};
+	
+	private static final int[][] WH_LIST_FIELDS = {
+		{9, IDX_WH_NUM_GALLONS},
+		{10, IDX_WH_ENERGY_SRC},
+	};
+	
+	private static final int[][] GEN_LIST_FIELDS = {
+		{11, IDX_GEN_TRAN_SWITCH_TYPE},
+		{12, IDX_GEN_TRAN_SWITCH_MFC},
+	};
+	
+	private static final int[][] IRR_LIST_FIELDS = {
+		{13, IDX_IRR_TYPE},
+		{14, IDX_IRR_ENERGY_SRC},
+		{15, IDX_IRR_HORSE_POWER},
+		{16, IDX_IRR_METER_VOLT},
+		{17, IDX_IRR_METER_LOC},
+		{18, IDX_IRR_SOIL_TYPE},
+	};
+	
+	private static final int[][] GDRY_LIST_FIELDS = {
+		{19, IDX_GDRY_TYPE},
+		{20, IDX_GDRY_ENERGY_SRC},
+		{21, IDX_GDRY_HORSE_POWER},
+		{22, IDX_GDRY_HEAT_SRC},
+		{23, IDX_GDRY_BIN_SIZE},
+	};
+	
+	private static final int[][] HP_LIST_FIELDS = {
+		{24, IDX_HP_TYPE},
+		{25, IDX_HP_SIZE},
+		{26, IDX_HP_STANDBY_SRC},
+	};
+	
+	private static final int[][] SH_LIST_FIELDS = {
+		{27, IDX_SH_TYPE},
+	};
+	
+	private static final int[][] DF_LIST_FIELDS = {
+		{28, IDX_DF_SWITCH_OVER_TYPE},
+		{29, IDX_DF_2ND_ENERGY_SRC},
+	};
+	
+	private static final int[][] ORDER_LIST_FIELDS = {
+		{30, IDX_ORDER_STATUS},
+		{31, IDX_ORDER_TYPE},
+		{3, IDX_ORDER_CONTRACTOR},
+	};
+	
+	private static final int[][] RES_LIST_FIELDS = {
+		{32, IDX_RES_TYPE},
+		{33, IDX_CONSTRUCTION_TYPE},
+		{34, IDX_DECADE_BUILT},
+		{35, IDX_SQUARE_FEET},
+		{36, IDX_INSULATION_DEPTH},
+		{37, IDX_GENERAL_COND},
+		{38, IDX_MAIN_COOLING_SYS},
+		{39, IDX_MAIN_HEATING_SYS},
+		{40, IDX_NUM_OCCUPANTS},
+		{41, IDX_OWNERSHIP_TYPE},
+		{42, IDX_MAIN_FUEL_TYPE},
+	};
     
     private static final String NEW_ADDRESS = "NEW_ADDRESS";
     
@@ -252,6 +472,10 @@ public class StarsAdmin extends HttpServlet {
     
     private static final java.text.SimpleDateFormat starsDateFormat =
     		new java.text.SimpleDateFormat( "yyyyMMdd" );
+    private static final java.text.SimpleDateFormat starsTimeFormat =
+    		new java.text.SimpleDateFormat( "HHmm" );
+    
+    private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
     
     private static StreamTokenizer prepareStreamTokenzier(String line) {
 		StreamTokenizer st = new StreamTokenizer( new StringReader(line) );
@@ -660,7 +884,7 @@ public class StarsAdmin extends HttpServlet {
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_PROP_NOTES] += "MeterNumber:" + st.sval + ",";
+					fields[IDX_PROP_NOTES] += "MeterNumber:" + st.sval + LINE_SEPARATOR;
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
@@ -689,7 +913,7 @@ public class StarsAdmin extends HttpServlet {
 					if (st.ttype != ',') st.nextToken();
 					st.nextToken();
 					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-						fields[IDX_PROP_NOTES] += st.sval + ",";
+						fields[IDX_PROP_NOTES] += st.sval + LINE_SEPARATOR;
 				}
 				
 				return fields;
@@ -739,12 +963,12 @@ public class StarsAdmin extends HttpServlet {
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_INV_NOTES] += "MapNumber:" + st.sval + ",";
+					fields[IDX_INV_NOTES] += "MapNumber:" + st.sval + LINE_SEPARATOR;
 				for (int i = 7; i <= 8; i++) {
 					if (st.ttype != ',') st.nextToken();
 					st.nextToken();
 					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-						fields[IDX_INV_NOTES] += st.sval + ",";
+						fields[IDX_INV_NOTES] += st.sval + LINE_SEPARATOR;
 				}
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
@@ -770,7 +994,7 @@ public class StarsAdmin extends HttpServlet {
 					if (st.ttype != ',') st.nextToken();
 					st.nextToken();
 					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-						fields[IDX_INV_NOTES] += st.sval + ",";
+						fields[IDX_INV_NOTES] += st.sval + LINE_SEPARATOR;
 				}
 				
 				return fields;
@@ -808,21 +1032,21 @@ public class StarsAdmin extends HttpServlet {
 					if (st.ttype != ',') st.nextToken();
 					st.nextToken();
 					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-						fields[IDX_INV_NOTES] += st.sval + ",";
+						fields[IDX_INV_NOTES] += st.sval + LINE_SEPARATOR;
 				}
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_INV_NOTES] += "Technician:" + st.sval + ",";
+					fields[IDX_INV_NOTES] += "Technician:" + st.sval + LINE_SEPARATOR;
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_INV_NOTES] += "Location:" + st.sval + ",";
+					fields[IDX_INV_NOTES] += "Location:" + st.sval + LINE_SEPARATOR;
 				for (int i = 9; i <= 10; i++) {
 					if (st.ttype != ',') st.nextToken();
 					st.nextToken();
 					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-						fields[IDX_INV_NOTES] += st.sval + ",";
+						fields[IDX_INV_NOTES] += st.sval + LINE_SEPARATOR;
 				}
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
@@ -836,7 +1060,7 @@ public class StarsAdmin extends HttpServlet {
 					if (st.ttype != ',') st.nextToken();
 					st.nextToken();
 					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-						fields[IDX_INV_NOTES] += st.sval + ",";
+						fields[IDX_INV_NOTES] += st.sval + LINE_SEPARATOR;
 					if (st.ttype != ',') st.nextToken();
 					st.nextToken();
 					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
@@ -876,7 +1100,7 @@ public class StarsAdmin extends HttpServlet {
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_INV_NOTES] += "Technician:" + st.sval + ",";
+					fields[IDX_INV_NOTES] += "Technician:" + st.sval + LINE_SEPARATOR;
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_INSTALL_DATE] = st.sval;
@@ -889,9 +1113,9 @@ public class StarsAdmin extends HttpServlet {
 			}
 		});
 		
-		/** Old STARS LoadInfo table
+		/** Old STARS load info table
 		 * COL_NUM:	COL_NAME
-		 * 1		----	// Load ID
+		 * 1		APP_ID
 		 * 2		(ACCOUNT_ID)
 		 * 3		(INV_ID)
 		 * 4		RELAY_NUM
@@ -912,6 +1136,7 @@ public class StarsAdmin extends HttpServlet {
 				StreamTokenizer st = prepareStreamTokenzier( line );
 				
 				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -924,14 +1149,14 @@ public class StarsAdmin extends HttpServlet {
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_APP_NOTES] += st.sval + ",";
+					fields[IDX_APP_NOTES] += st.sval + LINE_SEPARATOR;
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_TYPE] = st.sval;
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_APP_NOTES] += "EquipCode:" + st.sval + ",";
+					fields[IDX_APP_NOTES] += "EquipCode:" + st.sval + LINE_SEPARATOR;
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
@@ -939,19 +1164,19 @@ public class StarsAdmin extends HttpServlet {
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_APP_NOTES] += "Contractor1:" + st.sval + ",";
+					fields[IDX_APP_NOTES] += "Contractor1:" + st.sval + LINE_SEPARATOR;
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_APP_NOTES] += "Contractor2:" + st.sval + ",";
+					fields[IDX_APP_NOTES] += "Contractor2:" + st.sval + LINE_SEPARATOR;
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_APP_NOTES] += "WarrantyInfo:" + st.sval + ",";
+					fields[IDX_APP_NOTES] += "WarrantyInfo:" + st.sval + LINE_SEPARATOR;
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD)
-					fields[IDX_APP_NOTES] += "AvailForCtrl:" + st.sval + ",";
+					fields[IDX_APP_NOTES] += "AvailForCtrl:" + st.sval + LINE_SEPARATOR;
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_YEAR_MADE] = st.sval;
@@ -959,14 +1184,14 @@ public class StarsAdmin extends HttpServlet {
 					if (st.ttype != ',') st.nextToken();
 					st.nextToken();
 					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-						fields[IDX_APP_NOTES] += st.sval + ",";
+						fields[IDX_APP_NOTES] += st.sval + LINE_SEPARATOR;
 				}
 				
 				return fields;
 			}
 		});
 		
-		/** Old STARS WorkOrder table
+		/** Old STARS work order table
 		 * COL_NUM:	COL_NAME
 		 * 1		ORDER_NO
 		 * 2		(ACCOUNT_ID)
@@ -1049,6 +1274,591 @@ public class StarsAdmin extends HttpServlet {
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
 					fields[IDX_ORDER_CONTRACTOR] = st.sval;
+				
+				return fields;
+			}
+		});
+		
+		/** Old STARS residence info table
+		 * COL_NUM:	COL_NAME
+		 * 1		(ACCOUNT_ID)
+		 * 2		OWNERSHIP_TYPE
+		 * 3		RES_TYPE
+		 * 4		CONSTRUCTION_TYPE
+		 * 5		DECADE_BUILT
+		 * 6		SQUARE_FEET
+		 * 7		NUM_OCCUPANTS
+		 * 8		GENERAL_COND
+		 * 9		INSULATION_DEPTH
+		 * 10		MAIN_FUEL_TYPE
+		 * 11		RES_NOTES
+		 * 12		MAIN_COOLING_SYS
+		 * 13,14	RES_NOTES
+		 * 15		MAIN_HEATING_SYS
+		 * 16-21	RES_NOTES
+		 */
+		parsers.put("STARS ResInfo", new ImportFileParser() {
+			public String[] populateFields(String line) throws Exception {
+				String[] fields = new String[ NUM_RES_FIELDS ];
+				for (int i = 0; i < fields.length; i++)
+					fields[i] = "";
+				
+				StreamTokenizer st = prepareStreamTokenzier( line );
+				
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_OWNERSHIP_TYPE] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_RES_TYPE] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_CONSTRUCTION_TYPE] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_DECADE_BUILT] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_SQUARE_FEET] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_NUM_OCCUPANTS] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_GENERAL_COND] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_INSULATION_DEPTH] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_MAIN_FUEL_TYPE] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD)
+					fields[IDX_RES_NOTES] += "SetBackThermostat:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_MAIN_COOLING_SYS] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD)
+					fields[IDX_RES_NOTES] += "CoolingSystemYearInstalled:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD)
+					fields[IDX_RES_NOTES] += "CoolingSystemEfficiency:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_MAIN_HEATING_SYS] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD)
+					fields[IDX_RES_NOTES] += "HeatingSystemYearInstalled:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD)
+					fields[IDX_RES_NOTES] += "HeatingSystemEfficiency:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD)
+					fields[IDX_RES_NOTES] += "EnergyAudit:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD)
+					fields[IDX_RES_NOTES] += "HeatLoss:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD)
+					fields[IDX_RES_NOTES] += "HeatGain:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD)
+					fields[IDX_RES_NOTES] += "EnergyManagementParticipant:" + st.sval;
+				
+				return fields;
+			}
+		});
+		
+		/** Old STARS AC info table
+		 * COL_NUM:	COL_NAME
+		 * 1		(ACCOUNT_ID)
+		 * 2		(APP_ID)
+		 * 3		APP_KW
+		 * 4		APP_NOTES
+		 * 5		AC_TONNAGE
+		 * 6,7		NOTES
+		 */
+		parsers.put("STARS ACInfo", new ImportFileParser() {
+			public String[] populateFields(String line) throws Exception {
+				String[] fields = new String[ NUM_APP_FIELDS ];
+				for (int i = 0; i < fields.length; i++)
+					fields[i] = "";
+				
+				StreamTokenizer st = prepareStreamTokenzier( line );
+				
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_KW] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD)
+					fields[IDX_APP_NOTES] += "Rebate:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_AC_TONNAGE] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_APP_NOTES] += "BTU_Hour:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_APP_NOTES] += st.sval;
+				
+				return fields;
+			}
+		});
+		
+		/** Old STARS WH info table
+		 * COL_NUM:	COL_NAME
+		 * 1		(ACCOUNT_ID)
+		 * 2		(APP_ID)
+		 * 3		APP_KW
+		 * 4		APP_NOTES
+		 * 5		WH_NUM_GALLONS
+		 * 6		WH_NUM_ELEMENTS
+		 * 7		WH_ENERGY_SRC
+		 * 8		WH_LOCATION
+		 * 8		APP_NOTES
+		 */
+		parsers.put("STARS WHInfo", new ImportFileParser() {
+			public String[] populateFields(String line) throws Exception {
+				String[] fields = new String[ NUM_APP_FIELDS ];
+				for (int i = 0; i < fields.length; i++)
+					fields[i] = "";
+				
+				StreamTokenizer st = prepareStreamTokenzier( line );
+				
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_KW] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD)
+					fields[IDX_APP_NOTES] += "Rebate:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_WH_NUM_GALLONS] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_WH_NUM_ELEMENTS] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_WH_ENERGY_SRC] = st.sval;
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_APP_NOTES] += "Location:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_APP_NOTES] += st.sval;
+				
+				return fields;
+			}
+		});
+		
+		/** Old STARS generator info table
+		 * COL_NUM:	COL_NAME
+		 * 1		(ACCOUNT_ID)
+		 * 2		(APP_ID)
+		 * 3		APP_NOTES
+		 * 4		GEN_FUEL_CAP
+		 * 5		GEN_START_DELAY
+		 * 6		GEN_CAPACITY
+		 * 7		GEN_TRAN_SWITCH_MFC
+		 * 8		GEN_TRAN_SWITCH_TYPE
+		 */
+		parsers.put("STARS GenInfo", new ImportFileParser() {
+			public String[] populateFields(String line) throws Exception {
+				String[] fields = new String[ NUM_APP_FIELDS ];
+				for (int i = 0; i < fields.length; i++)
+					fields[i] = "";
+				
+				StreamTokenizer st = prepareStreamTokenzier( line );
+				
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_APP_NOTES] += "StandbyKW:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_GEN_FUEL_CAP] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_GEN_START_DELAY] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_GEN_CAPACITY] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_GEN_TRAN_SWITCH_MFC] = st.sval;
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_GEN_TRAN_SWITCH_TYPE] = st.sval;
+				
+				return fields;
+			}
+		});
+		
+		/** Old STARS irrigation info table
+		 * COL_NUM:	COL_NAME
+		 * 1		(ACCOUNT_ID)
+		 * 2		(APP_ID)
+		 * 3		APP_KW
+		 * 4		APP_NOTES
+		 * 5		IRR_TYPE
+		 * 6		IRR_ENERGY_SRC
+		 * 7		IRR_HORSE_POWER
+		 * 8		IRR_METER_VOLT
+		 * 9		IRR_METER_LOC
+		 * 10		IRR_SOIL_TYPE
+		 */
+		parsers.put("STARS IrrInfo", new ImportFileParser() {
+			public String[] populateFields(String line) throws Exception {
+				String[] fields = new String[ NUM_APP_FIELDS ];
+				for (int i = 0; i < fields.length; i++)
+					fields[i] = "";
+				
+				StreamTokenizer st = prepareStreamTokenzier( line );
+				
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_KW] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD)
+					fields[IDX_APP_NOTES] += "Rebate:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_IRR_TYPE] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_IRR_ENERGY_SRC] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_IRR_HORSE_POWER] = st.sval;
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_IRR_METER_VOLT] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_IRR_METER_LOC] += st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_IRR_SOIL_TYPE] = st.sval;
+				
+				return fields;
+			}
+		});
+		
+		/** Old STARS grain dryer info table
+		 * COL_NUM:	COL_NAME
+		 * 1		(ACCOUNT_ID)
+		 * 2		(APP_ID)
+		 * 3		APP_KW
+		 * 4		APP_NOTES
+		 * 5		GDRY_TYPE
+		 * 6		GDRY_ENERGY_SRC
+		 * 7		GDRY_HORSE_POWER
+		 * 8		GDRY_HEAT_SRC
+		 * 9		GDRY_BIN_SIZE
+		 */
+		parsers.put("STARS GDryInfo", new ImportFileParser() {
+			public String[] populateFields(String line) throws Exception {
+				String[] fields = new String[ NUM_APP_FIELDS ];
+				for (int i = 0; i < fields.length; i++)
+					fields[i] = "";
+				
+				StreamTokenizer st = prepareStreamTokenzier( line );
+				
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_KW] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD)
+					fields[IDX_APP_NOTES] += "Rebate:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_GDRY_TYPE] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_GDRY_ENERGY_SRC] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_GDRY_HORSE_POWER] = st.sval;
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_GDRY_HEAT_SRC] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_GDRY_BIN_SIZE] = st.sval;
+				
+				return fields;
+			}
+		});
+		
+		/** Old STARS heat pump info table
+		 * COL_NUM:	COL_NAME
+		 * 1		(ACCOUNT_ID)
+		 * 2		(APP_ID)
+		 * 3		APP_KW
+		 * 4		APP_NOTES
+		 * 5		HP_TYPE
+		 * 6		HP_SIZE
+		 * 7		HP_STANDBY_SRC
+		 * 8		HP_RESTART_DELAY
+		 * 9		APP_NOTES
+		 */
+		parsers.put("STARS HPInfo", new ImportFileParser() {
+			public String[] populateFields(String line) throws Exception {
+				String[] fields = new String[ NUM_APP_FIELDS ];
+				for (int i = 0; i < fields.length; i++)
+					fields[i] = "";
+				
+				StreamTokenizer st = prepareStreamTokenzier( line );
+				
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_KW] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD)
+					fields[IDX_APP_NOTES] += "Rebate:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_HP_TYPE] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_HP_SIZE] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_HP_STANDBY_SRC] = st.sval;
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_HP_RESTART_DELAY] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_APP_NOTES] += st.sval;
+				
+				return fields;
+			}
+		});
+		
+		/** Old STARS storage heat info table
+		 * COL_NUM:	COL_NAME
+		 * 1		(ACCOUNT_ID)
+		 * 2		(APP_ID)
+		 * 3		APP_KW
+		 * 4		APP_NOTES
+		 * 5		SH_TYPE
+		 * 6		SH_CAPACITY
+		 * 7		SH_RECHARGE_TIME
+		 * 8,9		APP_NOTES
+		 */
+		parsers.put("STARS SHInfo", new ImportFileParser() {
+			public String[] populateFields(String line) throws Exception {
+				String[] fields = new String[ NUM_APP_FIELDS ];
+				for (int i = 0; i < fields.length; i++)
+					fields[i] = "";
+				
+				StreamTokenizer st = prepareStreamTokenzier( line );
+				
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_KW] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD)
+					fields[IDX_APP_NOTES] += "Rebate:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_SH_TYPE] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_SH_CAPACITY] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_SH_RECHARGE_TIME] = st.sval;
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD)
+					fields[IDX_APP_NOTES] += "ContractHours:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_APP_NOTES] += st.sval;
+				
+				return fields;
+			}
+		});
+		
+		/** Old STARS dual fuel info table
+		 * COL_NUM:	COL_NAME
+		 * 1		(ACCOUNT_ID)
+		 * 2		(APP_ID)
+		 * 3		APP_KW
+		 * 4,5		APP_NOTES
+		 * 6		DF_2ND_ENERGY_SRC
+		 * 7		DF_2ND_CAPACITY
+		 * 8		DF_SWITCH_OVER_TYPE
+		 * 9		APP_NOTES
+		 */
+		parsers.put("STARS DFInfo", new ImportFileParser() {
+			public String[] populateFields(String line) throws Exception {
+				String[] fields = new String[ NUM_APP_FIELDS ];
+				for (int i = 0; i < fields.length; i++)
+					fields[i] = "";
+				
+				StreamTokenizer st = prepareStreamTokenzier( line );
+				
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_KW] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD)
+					fields[IDX_APP_NOTES] += "Rebate:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_APP_NOTES] += "PrimarySize:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_DF_2ND_ENERGY_SRC] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_DF_2ND_CAPACITY] = st.sval;
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_DF_SWITCH_OVER_TYPE] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_APP_NOTES] += st.sval;
+				
+				return fields;
+			}
+		});
+		
+		/** Old STARS general info table
+		 * COL_NUM:	COL_NAME
+		 * 1		(ACCOUNT_ID)
+		 * 2		(APP_ID)
+		 * 3		APP_KW
+		 * 4,5		APP_NOTES
+		 */
+		parsers.put("STARS GenlInfo", new ImportFileParser() {
+			public String[] populateFields(String line) throws Exception {
+				String[] fields = new String[ NUM_APP_FIELDS ];
+				for (int i = 0; i < fields.length; i++)
+					fields[i] = "";
+				
+				StreamTokenizer st = prepareStreamTokenzier( line );
+				
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_KW] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD)
+					fields[IDX_APP_NOTES] += "Rebate:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_APP_NOTES] += st.sval;
 				
 				return fields;
 			}
@@ -1203,9 +2013,7 @@ public class StarsAdmin extends HttpServlet {
 			newAccount.setStarsUpdateLogin( login );
 		}
 		
-		LiteStarsCustAccountInformation liteAcctInfo = NewCustAccountAction.newCustomerAccount( newAccount, user, energyCompany );
-		
-		return liteAcctInfo;
+		return NewCustAccountAction.newCustomerAccount( newAccount, user, energyCompany );
 	}
 	
 	private void updateCustomerAccount(String[] fields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
@@ -1344,7 +2152,7 @@ public class StarsAdmin extends HttpServlet {
 		}
 	}
 	
-	private void insertLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
+	private LiteInventoryBase insertLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
 		LiteStarsEnergyCompany energyCompany, java.sql.Connection conn) throws Exception
 	{
 		// Check inventory and build request message
@@ -1372,7 +2180,7 @@ public class StarsAdmin extends HttpServlet {
 		fields[IDX_DEVICE_TYPE] = String.valueOf( devTypeID );
 		setStarsInventory( createHw, fields, energyCompany );
         
-        CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany, conn );
+        return CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany, conn );
 	}
 	
 	private void updateLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
@@ -1468,46 +2276,26 @@ public class StarsAdmin extends HttpServlet {
 		DeleteLMHardwareAction.removeInventory( deleteHw, liteAcctInfo, energyCompany, conn );
 	}
 	
-	private void programSignUp(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteStarsEnergyCompany energyCompany, HttpServletRequest req, java.sql.Connection conn)
+	private void programSignUp(ArrayList programs, LiteStarsCustAccountInformation liteAcctInfo,
+		Integer invID, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
 		throws Exception
 	{
 		// Build request message
-		StarsSULMPrograms programs = new StarsSULMPrograms();
-		String[] catIDs = req.getParameterValues( "CatID" );
-		String[] progIDs = req.getParameterValues( "ProgID" );
-		
-		if (progIDs != null) {
-			for (int i = 0; i < progIDs.length; i++) {
-				if (progIDs[i].length() == 0) continue;
-				
-				int progID = Integer.parseInt(progIDs[i]);
-				LiteLMProgram liteProg = energyCompany.getLMProgram( progID );
-				
-                int groupID = 0;
-                if (fields[IDX_ADDR_GROUP].length() > 0 && liteProg.getGroupIDs() != null) {
-                	for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
-                		if (com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] )
-                				.equalsIgnoreCase( fields[IDX_ADDR_GROUP] ))
-                		{
-                			groupID = liteProg.getGroupIDs()[j];
-                			break;
-                		}
-                	}
-                }
-				
-				SULMProgram program = new SULMProgram();
-				program.setProgramID( progID );
-				program.setApplianceCategoryID( Integer.parseInt(catIDs[i]) );
-				program.setAddressingGroupID( groupID );
-				programs.addSULMProgram( program );
-			}
+		StarsSULMPrograms suPrograms = new StarsSULMPrograms();
+		for (int i = 0; i < programs.size(); i++) {
+			int[] prog = (int[]) programs.get(i);
+			
+			SULMProgram suProg = new SULMProgram();
+			suProg.setProgramID( prog[0] );
+			suProg.setApplianceCategoryID( prog[1] );
+			suProg.setAddressingGroupID( prog[2] );
+			suPrograms.addSULMProgram( suProg );
 		}
 		
 		StarsProgramSignUp progSignUp = new StarsProgramSignUp();
-		progSignUp.setStarsSULMPrograms( programs );
+		progSignUp.setStarsSULMPrograms( suPrograms );
         
-        ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, energyCompany, conn );
+        ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, invID, energyCompany, conn );
 	}
 	
 	private void deleteCustomerAccounts(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
@@ -1566,12 +2354,12 @@ public class StarsAdmin extends HttpServlet {
 		return null;
 	}
 	
-	private void writeFile(File file, String[] lines) throws IOException {
+	private void writeFile(File file, ArrayList lines) throws IOException {
 		java.io.PrintWriter fw = new java.io.PrintWriter(
 				new java.io.BufferedWriter( new java.io.FileWriter(file) ));
 		
-		for (int i = 0; i < lines.length; i++)
-			fw.println( lines[i] );
+		for (int i = 0; i < lines.size(); i++)
+			fw.println( (String)lines.get(i) );
 		
 		fw.close();
 	}
@@ -1605,19 +2393,57 @@ public class StarsAdmin extends HttpServlet {
 				String[] invFields = new String[ NUM_INV_FIELDS ];
 				System.arraycopy( custFields, NUM_ACCOUNT_FIELDS, invFields, 0, NUM_INV_FIELDS );
 				
+				// Process request parameters for program enrollment
+				ArrayList programs = new ArrayList();
+				String[] catIDs = req.getParameterValues( "CatID" );
+				String[] progIDs = req.getParameterValues( "ProgID" );
+				
+				if (progIDs != null) {
+					for (int i = 0; i < progIDs.length; i++) {
+						if (progIDs[i].length() == 0) continue;
+						
+						int progID = Integer.parseInt(progIDs[i]);
+						LiteLMProgram liteProg = energyCompany.getLMProgram( progID );
+						
+						int groupID = 0;
+						if (invFields[IDX_ADDR_GROUP].length() > 0 && liteProg.getGroupIDs() != null) {
+							for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
+								if (PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] ).equalsIgnoreCase( invFields[IDX_ADDR_GROUP] ))
+								{
+									groupID = liteProg.getGroupIDs()[j];
+									break;
+								}
+							}
+						}
+						
+						int[] prog = new int[3];
+						prog[0] = progID;
+						prog[1] = Integer.parseInt(catIDs[i]);
+						prog[2] = groupID;
+						programs.add( prog );
+					}
+				}
+				
 				LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchByAccountNumber( custFields[IDX_ACCOUNT_NO] );
 				
 				if (liteAcctInfo == null) {
 					liteAcctInfo = newCustomerAccount( custFields, user, energyCompany );
+					
+					LiteInventoryBase liteInv = null;
 					if (!invFields[IDX_SERIAL_NO].equalsIgnoreCase(""))
-						insertLMHardware( invFields, liteAcctInfo, energyCompany, conn );
-					programSignUp( invFields, liteAcctInfo, energyCompany, req, conn );
+						liteInv = insertLMHardware( invFields, liteAcctInfo, energyCompany, conn );
+					
+					Integer invID = null;
+					if (liteInv != null)
+						invID = new Integer( liteInv.getInventoryID() );
+					programSignUp( programs, liteAcctInfo, invID, energyCompany, conn );
 					
 					numAdded++;
 				}
 				else {
 					updateCustomerAccount( custFields, liteAcctInfo, energyCompany, conn );
 					//updateLogin( fields, liteAcctInfo, energyCompany, session );
+					
 					if (!invFields[IDX_SERIAL_NO].equalsIgnoreCase(""))
 					{
 						if (invFields[IDX_HARDWARE_ACTION].equalsIgnoreCase( HARDWARE_ACTION_INSERT ))
@@ -1634,8 +2460,12 @@ public class StarsAdmin extends HttpServlet {
 						}
 					}
 					
-					if (liteAcctInfo.getInventories().size() > 0)
-						programSignUp( invFields, liteAcctInfo, energyCompany, req, conn );
+					if (liteAcctInfo.getInventories().size() > 0) {
+						Integer dftInvID = null;
+						if (liteAcctInfo.getInventories().size() == 1)
+							dftInvID = (Integer) liteAcctInfo.getInventories().get(0);
+						programSignUp( programs, liteAcctInfo, dftInvID, energyCompany, conn );
+					}
 					
 					numUpdated++;
 				}
@@ -1675,47 +2505,195 @@ public class StarsAdmin extends HttpServlet {
 		}
 	}
 	
-	private void newAppliance(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
-			LiteStarsEnergyCompany energyCompany, HttpSession session) throws Exception
-	{
-		StarsCreateAppliance createApp = new StarsCreateAppliance();
-		createApp.setApplianceCategoryID( Integer.parseInt(fields[IDX_APP_TYPE]) );
-		createApp.setYearManufactured( fields[IDX_YEAR_MADE] );
-		createApp.setNotes( fields[IDX_APP_NOTES] );
-		createApp.setModelNumber( "" );
-		createApp.setKWCapacity( 0 );
-		createApp.setEfficiencyRating( 0 );
+	private void setStarsAppliance(StarsApp app, String[] fields, LiteStarsEnergyCompany energyCompany) {
+		app.setApplianceCategoryID( Integer.parseInt(fields[IDX_APP_TYPE]) );
+		app.setYearManufactured( fields[IDX_YEAR_MADE] );
+		app.setNotes( fields[IDX_APP_NOTES] );
+		app.setModelNumber( "" );
+		app.setEfficiencyRating( -1 );
+		
+		if (fields[IDX_APP_KW].length() > 0) {
+			int kwCap = (int) Double.parseDouble(fields[IDX_APP_KW]);
+			if (kwCap >= 0) app.setKWCapacity( kwCap );
+		}
 		
 		Location location = new Location();
 		location.setEntryID( CtiUtilities.NONE_ID );
-		createApp.setLocation( location );
+		app.setLocation( location );
 		
 		Manufacturer mfc = new Manufacturer();
 		mfc.setEntryID( Integer.parseInt(fields[IDX_MANUFACTURER]) );
-		createApp.setManufacturer( mfc );
+		app.setManufacturer( mfc );
 		
-		StarsOperation operation = new StarsOperation();
-		operation.setStarsCreateAppliance( createApp );
-		SOAPMessage reqMsg = SOAPUtil.buildSOAPMessage( operation );
-        
-		StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
-		StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-		user.setAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
-		user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
-        
-		CreateApplianceAction action = new CreateApplianceAction();
-		SOAPMessage respMsg = action.process( reqMsg, session );
-        
-		int status = action.parse( reqMsg, respMsg, session );
-		if (status != 0) {
-			if (status == StarsConstants.FAILURE_CODE_OPERATION_FAILED) {
-				String errorMsg = (String) session.getAttribute( ServletUtils.ATT_ERROR_MESSAGE );
-				session.removeAttribute( ServletUtils.ATT_ERROR_MESSAGE );
-				throw new Exception( errorMsg );
-			}
-			else
-				throw new Exception( "Failed to process response message for CreateApplianceAction" );
+		if (fields[IDX_APP_CAT_DEF_ID].equals("")) return;
+		int catDefID = Integer.parseInt( fields[IDX_APP_CAT_DEF_ID] );
+		
+		if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER) {
+			AirConditioner ac = new AirConditioner();
+			
+			Tonnage tonnage = new Tonnage();
+			tonnage.setEntryID( Integer.parseInt(fields[IDX_AC_TONNAGE]) );
+			ac.setTonnage( tonnage );
+			
+			ACType type = new ACType();
+			type.setEntryID( 0 );
+			ac.setACType( type );
+			
+			app.setAirConditioner( ac );
 		}
+		else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER) {
+			WaterHeater wh = new WaterHeater();
+			
+			NumberOfGallons numGal = new NumberOfGallons();
+			numGal.setEntryID( Integer.parseInt(fields[IDX_WH_NUM_GALLONS]) );
+			wh.setNumberOfGallons( numGal );
+			
+			EnergySource es = new EnergySource();
+			es.setEntryID( Integer.parseInt(fields[IDX_WH_ENERGY_SRC]) );
+			wh.setEnergySource( es );
+			
+			int numElmt = Integer.parseInt(fields[IDX_WH_NUM_ELEMENTS]);
+			if (numElmt >= 0) wh.setNumberOfElements( numElmt );
+			
+			app.setWaterHeater( wh );
+		}
+		else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GENERATOR) {
+			Generator gen = new Generator();
+			
+			TransferSwitchType tsType = new TransferSwitchType();
+			tsType.setEntryID( Integer.parseInt(fields[IDX_GEN_TRAN_SWITCH_TYPE]) );
+			gen.setTransferSwitchType( tsType );
+			
+			TransferSwitchManufacturer tsMfc = new TransferSwitchManufacturer();
+			tsMfc.setEntryID( Integer.parseInt(fields[IDX_GEN_TRAN_SWITCH_MFC]) );
+			gen.setTransferSwitchManufacturer( tsMfc );
+			
+			int peakKW = Integer.parseInt(fields[IDX_GEN_CAPACITY]);
+			if (peakKW >= 0) gen.setPeakKWCapacity( peakKW );
+			
+			int fuelCap = Integer.parseInt(fields[IDX_GEN_FUEL_CAP]);
+			if (fuelCap >= 0) gen.setFuelCapGallons( fuelCap );
+			
+			int startDelay = Integer.parseInt(fields[IDX_GEN_START_DELAY]);
+			if (startDelay >= 0) gen.setStartDelaySeconds( startDelay );
+			
+			app.setGenerator( gen );
+		}
+		else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION) {
+			Irrigation irr = new Irrigation();
+			
+			IrrigationType type = new IrrigationType();
+			type.setEntryID( Integer.parseInt(fields[IDX_IRR_TYPE]) );
+			irr.setIrrigationType( type );
+			
+			HorsePower horsePwr = new HorsePower();
+			horsePwr.setEntryID( Integer.parseInt(fields[IDX_IRR_HORSE_POWER]) );
+			irr.setHorsePower( horsePwr );
+			
+			EnergySource energySrc = new EnergySource();
+			energySrc.setEntryID( Integer.parseInt(fields[IDX_IRR_ENERGY_SRC]) );
+			irr.setEnergySource( energySrc );
+			
+			SoilType soilType = new SoilType();
+			soilType.setEntryID( Integer.parseInt(fields[IDX_IRR_SOIL_TYPE]) );
+			irr.setSoilType( soilType );
+			
+			MeterLocation meterLoc = new MeterLocation();
+			meterLoc.setEntryID( Integer.parseInt(fields[IDX_IRR_METER_LOC]) );
+			irr.setMeterLocation( meterLoc );
+			
+			MeterVoltage meterVolt = new MeterVoltage();
+			meterVolt.setEntryID( Integer.parseInt(fields[IDX_IRR_METER_VOLT]) );
+			irr.setMeterVoltage( meterVolt );
+			
+			app.setIrrigation( irr );
+		}
+		else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER) {
+			GrainDryer gd = new GrainDryer();
+			
+			DryerType type = new DryerType();
+			type.setEntryID( Integer.parseInt(fields[IDX_GDRY_TYPE]) );
+			gd.setDryerType( type );
+			
+			BinSize binSize = new BinSize();
+			binSize.setEntryID( Integer.parseInt(fields[IDX_GDRY_BIN_SIZE]) );
+			gd.setBinSize( binSize );
+			
+			BlowerEnergySource energySrc = new BlowerEnergySource();
+			energySrc.setEntryID( Integer.parseInt(fields[IDX_GDRY_ENERGY_SRC]) );
+			gd.setBlowerEnergySource( energySrc );
+			
+			BlowerHorsePower horsePwr = new BlowerHorsePower();
+			horsePwr.setEntryID( Integer.parseInt(fields[IDX_GDRY_HORSE_POWER]) );
+			gd.setBlowerHorsePower( horsePwr );
+			
+			BlowerHeatSource heatSrc = new BlowerHeatSource();
+			heatSrc.setEntryID( Integer.parseInt(fields[IDX_GDRY_HEAT_SRC]) );
+			gd.setBlowerHeatSource( heatSrc );
+			
+			app.setGrainDryer( gd );
+		}
+		else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP) {
+			HeatPump hp = new HeatPump();
+			
+			PumpType type = new PumpType();
+			type.setEntryID( Integer.parseInt(fields[IDX_HP_TYPE]) );
+			hp.setPumpType( type );
+			
+			PumpSize size = new PumpSize();
+			type.setEntryID( Integer.parseInt(fields[IDX_HP_SIZE]) );
+			hp.setPumpSize( size );
+			
+			StandbySource standbySrc = new StandbySource();
+			standbySrc.setEntryID( Integer.parseInt(fields[IDX_HP_STANDBY_SRC]) );
+			hp.setStandbySource( standbySrc );
+			
+			int restartDelay = Integer.parseInt(fields[IDX_HP_RESTART_DELAY]);
+			if (restartDelay >= 0) hp.setRestartDelaySeconds( restartDelay );
+			
+			app.setHeatPump( hp );
+		}
+		else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_STORAGE_HEAT) {
+			StorageHeat sh = new StorageHeat();
+			
+			StorageType type = new StorageType();
+			type.setEntryID( Integer.parseInt(fields[IDX_SH_TYPE]) );
+			sh.setStorageType( type );
+			
+			int peakKW = Integer.parseInt(fields[IDX_SH_CAPACITY]);
+			if (peakKW >= 0) sh.setPeakKWCapacity( peakKW );
+			
+			int rechargeTime = Integer.parseInt(fields[IDX_SH_RECHARGE_TIME]);
+			if (rechargeTime >= 0) sh.setHoursToRecharge( rechargeTime );
+			
+			app.setStorageHeat( sh );
+		}
+		else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL) {
+			DualFuel df = new DualFuel();
+			
+			SwitchOverType soType = new SwitchOverType();
+			soType.setEntryID( Integer.parseInt(fields[IDX_DF_SWITCH_OVER_TYPE]) );
+			df.setSwitchOverType( soType );
+			
+			int kwCap2 = Integer.parseInt(fields[IDX_DF_2ND_CAPACITY]);
+			if (kwCap2 >= 0) df.setSecondaryKWCapacity( kwCap2 );
+			
+			SecondaryEnergySource energySrc = new SecondaryEnergySource();
+			energySrc.setEntryID( Integer.parseInt(fields[IDX_DF_2ND_ENERGY_SRC]) );
+			df.setSecondaryEnergySource( energySrc );
+			
+			app.setDualFuel( df );
+		}
+	}
+	
+	private void updateAppliance(String[] fields, int appID, LiteStarsCustAccountInformation liteAcctInfo,
+		LiteStarsEnergyCompany energyCompany) throws Exception
+	{
+		StarsUpdateAppliance updateApp = new StarsUpdateAppliance();
+		updateApp.setApplianceID( appID );
+		setStarsAppliance( updateApp, fields, energyCompany );
+		
+		UpdateApplianceAction.updateAppliance( updateApp, liteAcctInfo );
 	}
 	
 	private String formatTimeString(String str) {
@@ -1738,7 +2716,7 @@ public class StarsAdmin extends HttpServlet {
 	}
 	
 	private void newServiceRequest(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
-			LiteStarsEnergyCompany energyCompany, HttpSession session) throws Exception
+		LiteStarsEnergyCompany energyCompany) throws Exception
 	{
 		StarsCreateServiceRequest createOrder = new StarsCreateServiceRequest();
 		createOrder.setOrderNumber( fields[IDX_ORDER_NO] );
@@ -1800,31 +2778,61 @@ public class StarsAdmin extends HttpServlet {
 		ServiceCompany company = new ServiceCompany();
 		company.setEntryID( Integer.parseInt(fields[IDX_ORDER_CONTRACTOR]) );
 		createOrder.setServiceCompany( company );
+        
+		CreateServiceRequestAction.createServiceRequest( createOrder, liteAcctInfo, energyCompany );
+	}
+	
+	private void newResidenceInfo(String[] fields, LiteStarsCustAccountInformation liteAcctInfo)
+		throws Exception
+	{
+		StarsUpdateResidenceInformation updateResInfo = new StarsUpdateResidenceInformation();
+		updateResInfo.setNotes( fields[IDX_RES_NOTES] );
 		
-		StarsOperation operation = new StarsOperation();
-		operation.setStarsCreateServiceRequest( createOrder );
-		SOAPMessage reqMsg = SOAPUtil.buildSOAPMessage( operation );
-        
-        if (liteAcctInfo != null) {
-			StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-			user.setAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
-			user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
-        }
-        
-		CreateServiceRequestAction action = new CreateServiceRequestAction();
-		SOAPMessage respMsg = action.process( reqMsg, session );
-        
-		int status = action.parse( reqMsg, respMsg, session );
-		if (status != 0) {
-			if (status == StarsConstants.FAILURE_CODE_OPERATION_FAILED) {
-				String errorMsg = (String) session.getAttribute( ServletUtils.ATT_ERROR_MESSAGE );
-				session.removeAttribute( ServletUtils.ATT_ERROR_MESSAGE );
-				throw new Exception( errorMsg );
-			}
-			else
-				throw new Exception( "Failed to process response message for CreateServiceRequestAction" );
-		}
+		ResidenceType resType = new ResidenceType();
+		resType.setEntryID( Integer.parseInt(fields[IDX_RES_TYPE]) );
+		updateResInfo.setResidenceType( resType );
+		
+		ConstructionMaterial constrType = new ConstructionMaterial();
+		constrType.setEntryID( Integer.parseInt(fields[IDX_CONSTRUCTION_TYPE]) );
+		updateResInfo.setConstructionMaterial( constrType );
+		
+		DecadeBuilt decade = new DecadeBuilt();
+		decade.setEntryID( Integer.parseInt(fields[IDX_DECADE_BUILT]) );
+		updateResInfo.setDecadeBuilt( decade );
+		
+		SquareFeet sqrFeet = new SquareFeet();
+		sqrFeet.setEntryID( Integer.parseInt(fields[IDX_SQUARE_FEET]) );
+		updateResInfo.setSquareFeet( sqrFeet );
+		
+		InsulationDepth insulDepth = new InsulationDepth();
+		insulDepth.setEntryID( Integer.parseInt(fields[IDX_INSULATION_DEPTH]) );
+		updateResInfo.setInsulationDepth( insulDepth );
+		
+		GeneralCondition genCond = new GeneralCondition();
+		genCond.setEntryID( Integer.parseInt(fields[IDX_GENERAL_COND]) );
+		updateResInfo.setGeneralCondition( genCond );
+		
+		MainCoolingSystem coolSys = new MainCoolingSystem();
+		coolSys.setEntryID( Integer.parseInt(fields[IDX_MAIN_COOLING_SYS]) );
+		updateResInfo.setMainCoolingSystem( coolSys );
+		
+		MainHeatingSystem heatSys = new MainHeatingSystem();
+		heatSys.setEntryID( Integer.parseInt(fields[IDX_MAIN_HEATING_SYS]) );
+		updateResInfo.setMainHeatingSystem( heatSys );
+		
+		NumberOfOccupants numOccpt = new NumberOfOccupants();
+		numOccpt.setEntryID( Integer.parseInt(fields[IDX_NUM_OCCUPANTS]) );
+		updateResInfo.setNumberOfOccupants( numOccpt );
+		
+		OwnershipType ownType = new OwnershipType();
+		ownType.setEntryID( Integer.parseInt(fields[IDX_OWNERSHIP_TYPE]) );
+		updateResInfo.setOwnershipType( ownType );
+		
+		MainFuelType fuelType = new MainFuelType();
+		fuelType.setEntryID( Integer.parseInt(fields[IDX_MAIN_FUEL_TYPE]) );
+		updateResInfo.setMainFuelType( fuelType );
+		
+		UpdateResidenceInfoAction.updateResidenceInformation( updateResInfo, liteAcctInfo );
 	}
 	
 	private void preprocessStarsData(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
@@ -1837,7 +2845,17 @@ public class StarsAdmin extends HttpServlet {
 			File recvrFile = new File( req.getParameter("RecvrFile") );
 			File meterFile = new File( req.getParameter("MeterFile") );
 			File loadInfoFile = new File( req.getParameter("LoadInfoFile") );
+			File acInfoFile = new File( req.getParameter("ACInfoFile") );
+			File whInfoFile = new File( req.getParameter("WHInfoFile") );
+			File genInfoFile = new File( req.getParameter("GenInfoFile") );
+			File irrInfoFile = new File( req.getParameter("IrrInfoFile") );
+			File gdryInfoFile = new File( req.getParameter("GDryInfoFile") );
+			File hpInfoFile = new File( req.getParameter("HPInfoFile") );
+			File shInfoFile = new File( req.getParameter("SHInfoFile") );
+			File dfInfoFile = new File( req.getParameter("DFInfoFile") );
+			File genlInfoFile = new File( req.getParameter("GenlInfoFile") );
 			File workOrderFile = new File( req.getParameter("WorkOrderFile") );
+			File resInfoFile = new File( req.getParameter("ResInfoFile") );
 			
 			ArrayList custLines = readFile( custFile );
 			ArrayList servInfoLines = readFile( servInfoFile );
@@ -1845,7 +2863,17 @@ public class StarsAdmin extends HttpServlet {
 			ArrayList recvrLines = readFile( recvrFile );
 			ArrayList meterLines = readFile( meterFile );
 			ArrayList loadInfoLines = readFile( loadInfoFile );
+			ArrayList acInfoLines = readFile( acInfoFile );
+			ArrayList whInfoLines = readFile( whInfoFile );
+			ArrayList genInfoLines = readFile( genInfoFile );
+			ArrayList irrInfoLines = readFile( irrInfoFile );
+			ArrayList gdryInfoLines = readFile( gdryInfoFile );
+			ArrayList hpInfoLines = readFile( hpInfoFile );
+			ArrayList shInfoLines = readFile( shInfoFile );
+			ArrayList dfInfoLines = readFile( dfInfoFile );
+			ArrayList genlInfoLines = readFile( genlInfoFile );
 			ArrayList workOrderLines = readFile( workOrderFile );
+			ArrayList resInfoLines = readFile( resInfoFile );
 			
 			Hashtable preprocessedData = (Hashtable) session.getAttribute(PREPROCESSED_STARS_DATA);
 			if (preprocessedData == null)
@@ -1853,52 +2881,23 @@ public class StarsAdmin extends HttpServlet {
 			
 			Hashtable acctIDFields = new Hashtable();	// Map from account id(Integer) to fields(String[])
 			Hashtable invIDFields = new Hashtable();	// Map from inventory id(Integer) to fields(String[])
+			Hashtable appIDFields = new Hashtable();	// Map from appliance id(Integer) to fields(String[])
 			
 			ArrayList acctFieldsList = new ArrayList();		// List of all account fields(String[])
 			ArrayList invFieldsList = new ArrayList();		// List of all inventory fields(String[])
 			ArrayList appFieldsList = new ArrayList();		// List of all appliance fields(String[])
 			ArrayList orderFieldsList = new ArrayList();	// List of all work order fields(String[])
+			ArrayList resFieldsList = new ArrayList();		// List of all residence fields(String[])
 			
 			// Sorted maps of import value(String) to id(Integer), filled in assignSelectionList()
-			TreeMap subValueID = (TreeMap) preprocessedData.get("Substation");
-			if (subValueID == null) subValueID = new TreeMap();
-			int subValueCnt = subValueID.size();
+			TreeMap[] valueIDMaps = new TreeMap[ LIST_NAMES.length ];
+			int[] valueIDCnt = new int[ LIST_NAMES.length ];
 			
-			TreeMap devTypeValueID = (TreeMap) preprocessedData.get("DeviceType");
-			if (devTypeValueID == null) devTypeValueID = new TreeMap();
-			int devTypeValueCnt = devTypeValueID.size();
-			
-			TreeMap devVoltValueID = (TreeMap) preprocessedData.get("DeviceVoltage");
-			if (devVoltValueID == null) devVoltValueID = new TreeMap();
-			int devVoltValueCnt = devVoltValueID.size();
-			
-			TreeMap companyValueID = (TreeMap) preprocessedData.get("ServiceCompany");
-			if (companyValueID == null) companyValueID = new TreeMap();
-			int companyValueCnt = companyValueID.size();
-			
-			TreeMap devStatValueID = (TreeMap) preprocessedData.get("DeviceStatus");
-			if (devStatValueID == null) devStatValueID = new TreeMap();
-			int devStatValueCnt = devStatValueID.size();
-			
-			TreeMap loadGroupValueID = (TreeMap) preprocessedData.get("LoadGroup");
-			if (loadGroupValueID == null) loadGroupValueID = new TreeMap();
-			int loadGroupValueCnt = loadGroupValueID.size();
-			
-			TreeMap appTypeValueID = (TreeMap) preprocessedData.get("ApplianceCategory");
-			if (appTypeValueID == null) appTypeValueID = new TreeMap();
-			int appTypeValueCnt = appTypeValueID.size();
-			
-			TreeMap appMfcValueID = (TreeMap) preprocessedData.get("Manufacturer");
-			if (appMfcValueID == null) appMfcValueID = new TreeMap();
-			int appMfcValueCnt = appMfcValueID.size();
-			
-			TreeMap orderStatValueID = (TreeMap) preprocessedData.get("ServiceStatus");
-			if (orderStatValueID == null) orderStatValueID = new TreeMap();
-			int orderStatValueCnt = orderStatValueID.size();
-			
-			TreeMap orderTypeValueID = (TreeMap) preprocessedData.get("ServiceType");
-			if (orderTypeValueID == null) orderTypeValueID = new TreeMap();
-			int orderTypeValueCnt = orderTypeValueID.size();
+			for (int i = 0; i < LIST_NAMES.length; i++) {
+				valueIDMaps[i] = (TreeMap) preprocessedData.get( LIST_NAMES[i][0] );
+				if (valueIDMaps[i] == null) valueIDMaps[i] = new TreeMap();
+				valueIDCnt[i] = valueIDMaps[i].size();
+			}
 			
 			Integer zero = new Integer(0);
 			
@@ -1924,9 +2923,9 @@ public class StarsAdmin extends HttpServlet {
 						acctFieldsList.add( fields );
 						acctIDFields.put( fields[IDX_ACCOUNT_ID], fields );
 					}
-					
-					preprocessedData.put("CustomerFilePath", custFile.getParent());
 				}
+				
+				preprocessedData.put("CustomerFilePath", custFile.getParent());
 			}
 			else {
 				if (preprocessedData.get("CustomerAccountMap") == null)
@@ -1944,32 +2943,32 @@ public class StarsAdmin extends HttpServlet {
 						for (int j = 0; j < custFields.length; j++)
 							if (fields[j].length() > 0) custFields[j] = fields[j];
 						
-						if (!subValueID.containsKey(fields[IDX_SUBSTATION]))
-							subValueID.put( fields[IDX_SUBSTATION], zero );
+						for (int j = 0; j < SERVINFO_LIST_FIELDS.length; j++) {
+							int listIdx = SERVINFO_LIST_FIELDS[j][0];
+							int fieldIdx = SERVINFO_LIST_FIELDS[j][1];
+							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
+								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+						}
 					}
 				}
 			}
 			
 			if (invLines != null) {
 				if (invFile.getName().equals("hwconfig.map")) {
-					// hwconfig.map file format: import_inventory_id,relay_num,db_appliance_id
+					// hwconfig.map file format: import_inv_id,relay1_db_app_id,relay2_db_app_id,relay3_db_app_id
 					Hashtable appIDMap = new Hashtable();
 					
 					for (int i = 0; i < invLines.size(); i++) {
 						String[] fields = ((String) invLines.get(i)).split(",");
-						if (fields.length != 3)
+						if (fields.length != 4)
 							throw new WebClientException("Invalid format of file '" + invFile.getPath() + "'");
 						
 						Integer invID = Integer.valueOf( fields[0] );
-						int relayNum = Integer.parseInt( fields[1] );
-						int appID = Integer.parseInt( fields[2] );
+						int[] appIDs = new int[3];
+						for (int j = 0; j < 3; j++)
+							appIDs[j] = Integer.parseInt( fields[j+1] );
 						
-						int[] appIDs = (int[]) appIDMap.get( invID );
-						if (appIDs == null) {
-							appIDs = new int[3];
-							appIDMap.put( invID, appIDs );
-						}
-						appIDs[relayNum - 1] = appID;
+						appIDMap.put( invID, appIDs );
 					}
 					
 					preprocessedData.put("HwConfigAppMap", appIDMap);
@@ -1979,15 +2978,15 @@ public class StarsAdmin extends HttpServlet {
 					
 					for (int i = 0; i < invLines.size(); i++) {
 						String[] fields = parser.populateFields( (String)invLines.get(i) );
-						if (!devTypeValueID.containsKey(fields[IDX_DEVICE_TYPE]))
-							devTypeValueID.put( fields[IDX_DEVICE_TYPE], zero );
-						if (!devVoltValueID.containsKey(fields[IDX_DEVICE_VOLTAGE]))
-							devVoltValueID.put( fields[IDX_DEVICE_VOLTAGE], zero );
-						if (!companyValueID.containsKey(fields[IDX_SERVICE_COMPANY]))
-							companyValueID.put( fields[IDX_SERVICE_COMPANY], zero );
-						
 						invFieldsList.add( fields );
 						invIDFields.put( fields[IDX_INV_ID], fields );
+						
+						for (int j = 0; j < INV_LIST_FIELDS.length; j++) {
+							int listIdx = INV_LIST_FIELDS[j][0];
+							int fieldIdx = INV_LIST_FIELDS[j][1];
+							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
+								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+						}
 					}
 				}
 			}
@@ -2009,14 +3008,12 @@ public class StarsAdmin extends HttpServlet {
 							}
 						}
 						
-						if (!devStatValueID.containsKey(fields[IDX_DEVICE_STATUS]))
-							devStatValueID.put( fields[IDX_DEVICE_STATUS], zero );
-						if (!loadGroupValueID.containsKey(fields[IDX_R1_GROUP]))
-							loadGroupValueID.put( fields[IDX_R1_GROUP], zero );
-						if (!loadGroupValueID.containsKey(fields[IDX_R2_GROUP]))
-							loadGroupValueID.put( fields[IDX_R2_GROUP], zero );
-						if (!loadGroupValueID.containsKey(fields[IDX_R3_GROUP]))
-							loadGroupValueID.put( fields[IDX_R3_GROUP], zero );
+						for (int j = 0; j < RECV_LIST_FIELDS.length; j++) {
+							int listIdx = RECV_LIST_FIELDS[j][0];
+							int fieldIdx = RECV_LIST_FIELDS[j][1];
+							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
+								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+						}
 					}
 				}
 			}
@@ -2050,11 +3047,259 @@ public class StarsAdmin extends HttpServlet {
 				for (int i = 0; i < loadInfoLines.size(); i++) {
 					String[] fields = parser.populateFields( (String)loadInfoLines.get(i) );
 					appFieldsList.add( fields );
+					appIDFields.put( fields[IDX_APP_ID], fields );
 					
-					if (!appTypeValueID.containsKey(fields[IDX_APP_TYPE]))
-						appTypeValueID.put( fields[IDX_APP_TYPE], zero );
-					if (!appMfcValueID.containsKey(fields[IDX_MANUFACTURER]))
-						appMfcValueID.put( fields[IDX_MANUFACTURER], zero );
+					for (int j = 0; j < APP_LIST_FIELDS.length; j++) {
+						int listIdx = APP_LIST_FIELDS[j][0];
+						int fieldIdx = APP_LIST_FIELDS[j][1];
+						if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
+							valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+					}
+				}
+			}
+			
+			if (acInfoLines != null) {
+				ImportFileParser parser = (ImportFileParser) parsers.get("STARS ACInfo");
+				
+				for (int i = 0; i < acInfoLines.size(); i++) {
+					String[] fields = parser.populateFields( (String)acInfoLines.get(i) );
+					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
+					
+					if (appFields != null) {
+						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER);
+						for (int j = 0; j < appFields.length; j++) {
+							if (fields[j].length() > 0) {
+								if (j == IDX_APP_NOTES && appFields[j].length() > 0)
+									appFields[j] += fields[j];
+								else
+									appFields[j] = fields[j];
+							}
+						}
+						
+						for (int j = 0; j < AC_LIST_FIELDS.length; j++) {
+							int listIdx = AC_LIST_FIELDS[j][0];
+							int fieldIdx = AC_LIST_FIELDS[j][1];
+							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
+								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+						}
+					}
+				}
+			}
+			
+			if (whInfoLines != null) {
+				ImportFileParser parser = (ImportFileParser) parsers.get("STARS WHInfo");
+				
+				for (int i = 0; i < whInfoLines.size(); i++) {
+					String[] fields = parser.populateFields( (String)whInfoLines.get(i) );
+					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
+					
+					if (appFields != null) {
+						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER);
+						for (int j = 0; j < appFields.length; j++) {
+							if (fields[j].length() > 0) {
+								if (j == IDX_APP_NOTES && appFields[j].length() > 0)
+									appFields[j] += fields[j];
+								else
+									appFields[j] = fields[j];
+							}
+						}
+						
+						for (int j = 0; j < WH_LIST_FIELDS.length; j++) {
+							int listIdx = WH_LIST_FIELDS[j][0];
+							int fieldIdx = WH_LIST_FIELDS[j][1];
+							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
+								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+						}
+					}
+				}
+			}
+			
+			if (genInfoLines != null) {
+				ImportFileParser parser = (ImportFileParser) parsers.get("STARS GenInfo");
+				
+				for (int i = 0; i < genInfoLines.size(); i++) {
+					String[] fields = parser.populateFields( (String)genInfoLines.get(i) );
+					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
+					
+					if (appFields != null) {
+						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GENERATOR);
+						for (int j = 0; j < appFields.length; j++) {
+							if (fields[j].length() > 0) {
+								if (j == IDX_APP_NOTES && appFields[j].length() > 0)
+									appFields[j] += fields[j];
+								else
+									appFields[j] = fields[j];
+							}
+						}
+						
+						for (int j = 0; j < GEN_LIST_FIELDS.length; j++) {
+							int listIdx = GEN_LIST_FIELDS[j][0];
+							int fieldIdx = GEN_LIST_FIELDS[j][1];
+							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
+								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+						}
+					}
+				}
+			}
+			
+			if (irrInfoLines != null) {
+				ImportFileParser parser = (ImportFileParser) parsers.get("STARS IrrInfo");
+				
+				for (int i = 0; i < irrInfoLines.size(); i++) {
+					String[] fields = parser.populateFields( (String)irrInfoLines.get(i) );
+					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
+					
+					if (appFields != null) {
+						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION);
+						for (int j = 0; j < appFields.length; j++) {
+							if (fields[j].length() > 0) {
+								if (j == IDX_APP_NOTES && appFields[j].length() > 0)
+									appFields[j] += fields[j];
+								else
+									appFields[j] = fields[j];
+							}
+						}
+						
+						for (int j = 0; j < IRR_LIST_FIELDS.length; j++) {
+							int listIdx = IRR_LIST_FIELDS[j][0];
+							int fieldIdx = IRR_LIST_FIELDS[j][1];
+							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
+								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+						}
+					}
+				}
+			}
+			
+			if (gdryInfoLines != null) {
+				ImportFileParser parser = (ImportFileParser) parsers.get("STARS GDryInfo");
+				
+				for (int i = 0; i < gdryInfoLines.size(); i++) {
+					String[] fields = parser.populateFields( (String)gdryInfoLines.get(i) );
+					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
+					
+					if (appFields != null) {
+						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER);
+						for (int j = 0; j < appFields.length; j++) {
+							if (fields[j].length() > 0) {
+								if (j == IDX_APP_NOTES && appFields[j].length() > 0)
+									appFields[j] += fields[j];
+								else
+									appFields[j] = fields[j];
+							}
+						}
+						
+						for (int j = 0; j < GDRY_LIST_FIELDS.length; j++) {
+							int listIdx = GDRY_LIST_FIELDS[j][0];
+							int fieldIdx = GDRY_LIST_FIELDS[j][1];
+							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
+								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+						}
+					}
+				}
+			}
+			
+			if (hpInfoLines != null) {
+				ImportFileParser parser = (ImportFileParser) parsers.get("STARS HPInfo");
+				
+				for (int i = 0; i < hpInfoLines.size(); i++) {
+					String[] fields = parser.populateFields( (String)hpInfoLines.get(i) );
+					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
+					
+					if (appFields != null) {
+						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP);
+						for (int j = 0; j < appFields.length; j++) {
+							if (fields[j].length() > 0) {
+								if (j == IDX_APP_NOTES && appFields[j].length() > 0)
+									appFields[j] += fields[j];
+								else
+									appFields[j] = fields[j];
+							}
+						}
+						
+						for (int j = 0; j < HP_LIST_FIELDS.length; j++) {
+							int listIdx = HP_LIST_FIELDS[j][0];
+							int fieldIdx = HP_LIST_FIELDS[j][1];
+							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
+								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+						}
+					}
+				}
+			}
+			
+			if (shInfoLines != null) {
+				ImportFileParser parser = (ImportFileParser) parsers.get("STARS SHInfo");
+				
+				for (int i = 0; i < shInfoLines.size(); i++) {
+					String[] fields = parser.populateFields( (String)shInfoLines.get(i) );
+					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
+					
+					if (appFields != null) {
+						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_STORAGE_HEAT);
+						for (int j = 0; j < appFields.length; j++) {
+							if (fields[j].length() > 0) {
+								if (j == IDX_APP_NOTES && appFields[j].length() > 0)
+									appFields[j] += fields[j];
+								else
+									appFields[j] = fields[j];
+							}
+						}
+						
+						for (int j = 0; j < SH_LIST_FIELDS.length; j++) {
+							int listIdx = SH_LIST_FIELDS[j][0];
+							int fieldIdx = SH_LIST_FIELDS[j][1];
+							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
+								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+						}
+					}
+				}
+			}
+			
+			if (dfInfoLines != null) {
+				ImportFileParser parser = (ImportFileParser) parsers.get("STARS DFInfo");
+				
+				for (int i = 0; i < dfInfoLines.size(); i++) {
+					String[] fields = parser.populateFields( (String)dfInfoLines.get(i) );
+					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
+					
+					if (appFields != null) {
+						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL);
+						for (int j = 0; j < appFields.length; j++) {
+							if (fields[j].length() > 0) {
+								if (j == IDX_APP_NOTES && appFields[j].length() > 0)
+									appFields[j] += fields[j];
+								else
+									appFields[j] = fields[j];
+							}
+						}
+						
+						for (int j = 0; j < DF_LIST_FIELDS.length; j++) {
+							int listIdx = DF_LIST_FIELDS[j][0];
+							int fieldIdx = DF_LIST_FIELDS[j][1];
+							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
+								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+						}
+					}
+				}
+			}
+			
+			if (genlInfoLines != null) {
+				ImportFileParser parser = (ImportFileParser) parsers.get("STARS GenlInfo");
+				
+				for (int i = 0; i < genlInfoLines.size(); i++) {
+					String[] fields = parser.populateFields( (String)genlInfoLines.get(i) );
+					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
+					
+					if (appFields != null) {
+						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DEFAULT);
+						for (int j = 0; j < appFields.length; j++) {
+							if (fields[j].length() > 0) {
+								if (j == IDX_APP_NOTES && appFields[j].length() > 0)
+									appFields[j] += fields[j];
+								else
+									appFields[j] = fields[j];
+							}
+						}
+					}
 				}
 			}
 			
@@ -2065,12 +3310,28 @@ public class StarsAdmin extends HttpServlet {
 					String[] fields = parser.populateFields( (String)workOrderLines.get(i) );
 					orderFieldsList.add( fields );
 					
-					if (!orderStatValueID.containsKey(fields[IDX_ORDER_STATUS]))
-						orderStatValueID.put( fields[IDX_ORDER_STATUS], zero );
-					if (!orderTypeValueID.containsKey(fields[IDX_ORDER_TYPE]))
-						orderTypeValueID.put( fields[IDX_ORDER_TYPE], zero );
-					if (!companyValueID.containsKey(fields[IDX_ORDER_CONTRACTOR]))
-						companyValueID.put( fields[IDX_ORDER_CONTRACTOR], zero );
+					for (int j = 0; j < ORDER_LIST_FIELDS.length; j++) {
+						int listIdx = ORDER_LIST_FIELDS[j][0];
+						int fieldIdx = ORDER_LIST_FIELDS[j][1];
+						if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
+							valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+					}
+				}
+			}
+			
+			if (resInfoLines != null) {
+				ImportFileParser parser = (ImportFileParser) parsers.get("STARS ResInfo");
+				
+				for (int i = 0; i < resInfoLines.size(); i++) {
+					String[] fields = parser.populateFields( (String)resInfoLines.get(i) );
+					resFieldsList.add( fields );
+					
+					for (int j = 0; j < RES_LIST_FIELDS.length; j++) {
+						int listIdx = RES_LIST_FIELDS[j][0];
+						int fieldIdx = RES_LIST_FIELDS[j][1];
+						if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
+							valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+					}
 				}
 			}
 			
@@ -2078,16 +3339,9 @@ public class StarsAdmin extends HttpServlet {
 			preprocessedData.put( "Inventory", invFieldsList );
 			preprocessedData.put( "Appliance", appFieldsList );
 			preprocessedData.put( "WorkOrder", orderFieldsList );
-			preprocessedData.put( "Substation", subValueID );
-			preprocessedData.put( "DeviceType", devTypeValueID );
-			preprocessedData.put( "DeviceVoltage", devVoltValueID );
-			preprocessedData.put( "ServiceCompany", companyValueID );
-			preprocessedData.put( "DeviceStatus", devStatValueID );
-			preprocessedData.put( "LoadGroup", loadGroupValueID );
-			preprocessedData.put( "ApplianceCategory", appTypeValueID );
-			preprocessedData.put( "Manufacturer", appMfcValueID );
-			preprocessedData.put( "ServiceStatus", orderStatValueID );
-			preprocessedData.put( "ServiceType", orderTypeValueID );
+			preprocessedData.put( "CustomerResidence", resFieldsList );
+			for (int i = 0; i < LIST_NAMES.length; i++)
+				preprocessedData.put( LIST_NAMES[i][0], valueIDMaps[i] );
 			session.setAttribute(PREPROCESSED_STARS_DATA, preprocessedData);
 			
 			Hashtable unassignedLists = (Hashtable) session.getAttribute(UNASSIGNED_LISTS);
@@ -2096,26 +3350,11 @@ public class StarsAdmin extends HttpServlet {
 				session.setAttribute(UNASSIGNED_LISTS, unassignedLists);
 			}
 			
-			if (subValueID.size() > subValueCnt)
-				unassignedLists.put( "Substation", new Boolean(true) );
-			if (devTypeValueID.size() > devTypeValueCnt)
-				unassignedLists.put( "DeviceType", new Boolean(true) );
-			if (devVoltValueID.size() > devVoltValueCnt)
-				unassignedLists.put( "DeviceVoltage", new Boolean(true) );
-			if (companyValueID.size() > companyValueCnt)
-				unassignedLists.put( "ServiceCompany", new Boolean(true) );
-			if (devStatValueID.size() > devStatValueCnt)
-				unassignedLists.put( "DeviceStatus", new Boolean(true) );
-			if (loadGroupValueID.size() > loadGroupValueCnt)
-				unassignedLists.put( "LoadGroup", new Boolean(true) );
-			if (appTypeValueID.size() > appTypeValueCnt)
-				unassignedLists.put( "ApplianceCategory", new Boolean(true) );
-			if (appMfcValueID.size() > appMfcValueCnt)
-				unassignedLists.put( "Manufacturer", new Boolean(true) );
-			if (orderStatValueID.size() > orderStatValueCnt)
-				unassignedLists.put( "ServiceStatus", new Boolean(true) );
-			if (orderTypeValueID.size() > orderTypeValueCnt)
-				unassignedLists.put( "ServiceType", new Boolean(true) );
+			Boolean bTrue = new Boolean(true);
+			for (int i = 0; i < LIST_NAMES.length; i++) {
+				if (valueIDMaps[i].size() > valueIDCnt[i])
+					unassignedLists.put( LIST_NAMES[i][0], bTrue );
+			}
 		}
 		catch (WebClientException e) {
 			e.printStackTrace();
@@ -2181,41 +3420,6 @@ public class StarsAdmin extends HttpServlet {
 						ecSettings.getStarsServiceCompanies().addStarsServiceCompany( starsCompany );
 						
 						valueIDMap.put( values[i], companyDB.getCompanyID() );
-					}
-				}
-				else if (listName.equals("ApplianceCategory")) {
-					// Should first delete all appliance categories, but we will assume there is none
-					Integer dftCatID = new Integer(
-							energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DEFAULT).getEntryID() );
-					
-					for (int i = 0; i < entryTexts.length; i++) {
-						com.cannontech.database.db.web.YukonWebConfiguration config =
-								new com.cannontech.database.db.web.YukonWebConfiguration();
-						config.setLogoLocation( "" );
-						config.setAlternateDisplayName( entryTexts[i] );
-						config.setDescription( "" );
-						config.setURL( "" );
-						
-						com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
-								new com.cannontech.database.data.stars.appliance.ApplianceCategory();
-						com.cannontech.database.db.stars.appliance.ApplianceCategory appCatDB = appCat.getApplianceCategory();
-						
-						appCatDB.setCategoryID( dftCatID );
-						appCatDB.setDescription( entryTexts[i] );
-						appCat.setWebConfiguration( config );
-						appCat.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-						appCat.setDbConnection( conn );
-						appCat.add();
-						
-						LiteApplianceCategory liteAppCat = (LiteApplianceCategory) StarsLiteFactory.createLite( appCatDB );
-						energyCompany.addApplianceCategory( liteAppCat );
-						LiteWebConfiguration liteConfig = (LiteWebConfiguration) StarsLiteFactory.createLite( config );
-						SOAPServer.addWebConfiguration( liteConfig );
-						
-						StarsApplianceCategory starsAppCat = StarsLiteFactory.createStarsApplianceCategory( liteAppCat, energyCompany );
-						ecSettings.getStarsEnrollmentPrograms().addStarsApplianceCategory( starsAppCat );
-						
-						valueIDMap.put( values[i], appCatDB.getApplianceCategoryID() );
 					}
 				}
 				else {
@@ -2330,63 +3534,158 @@ public class StarsAdmin extends HttpServlet {
 		ArrayList invFieldsList = (ArrayList) preprocessedData.get("Inventory");
 		ArrayList appFieldsList = (ArrayList) preprocessedData.get("Appliance");
 		ArrayList orderFieldsList = (ArrayList) preprocessedData.get("WorkOrder");
-		TreeMap subValueID = (TreeMap) preprocessedData.get("Substation");
-		TreeMap devTypeValueID = (TreeMap) preprocessedData.get("DeviceType");
-		TreeMap devVoltValueID = (TreeMap) preprocessedData.get("DeviceVoltage");
-		TreeMap companyValueID = (TreeMap) preprocessedData.get("ServiceCompany");
-		TreeMap devStatValueID = (TreeMap) preprocessedData.get("DeviceStatus");
-		TreeMap appTypeValueID = (TreeMap) preprocessedData.get("ApplianceCategory");
-		TreeMap appMfcValueID = (TreeMap) preprocessedData.get("Manufacturer");
-		TreeMap orderStatValueID = (TreeMap) preprocessedData.get("ServiceStatus");
-		TreeMap orderTypeValueID = (TreeMap) preprocessedData.get("ServiceType");
+		ArrayList resFieldsList = (ArrayList) preprocessedData.get("CustomerResidence");
 		
+		TreeMap[] valueIDMaps = new TreeMap[ LIST_NAMES.length ];
+		for (int i = 0; i < LIST_NAMES.length; i++)
+			valueIDMaps[i] = (TreeMap) preprocessedData.get( LIST_NAMES[i][0] );
+		
+		// Map of import_account_id(Integer) to db_account_id(Integer) or LiteStarsCustAccountInformation object
 		Hashtable acctIDMap = (Hashtable) preprocessedData.get( "CustomerAccountMap" );
 		if (acctIDMap == null) {
 			acctIDMap = new Hashtable();
 			preprocessedData.put( "CustomerAccountMap", acctIDMap );
 		}
 		
+		// Map of import_inv_id(Integer) to db_app_ids (int[]: {relay1_app_id, relay2_app_id, relay3_app_id})
 		Hashtable appIDMap = (Hashtable) preprocessedData.get( "HwConfigAppMap" );
+		if (appIDMap == null) {
+			appIDMap = new Hashtable();
+			preprocessedData.put( "HwConfigAppMap", appIDMap );
+		}
 		
 		// Replace import values with ids assigned to them
 		for (int i = 0; i < acctFieldsList.size(); i++) {
 			String[] fields = (String[]) acctFieldsList.get(i);
 			
-			Integer subId = (Integer) subValueID.get(fields[IDX_SUBSTATION]);
-			fields[IDX_SUBSTATION] = (subId != null)? subId.toString() : "0";
+			for (int j = 0; j < SERVINFO_LIST_FIELDS.length; j++) {
+				int listIdx = SERVINFO_LIST_FIELDS[j][0];
+				int fieldIdx = SERVINFO_LIST_FIELDS[j][1];
+				Integer id = (Integer) valueIDMaps[listIdx].get( fields[fieldIdx] );
+				fields[fieldIdx] = (id != null)? id.toString() : "0";
+			}
 		}
 		
 		for (int i = 0; i < invFieldsList.size(); i++) {
 			String[] fields = (String[]) invFieldsList.get(i);
 			
-			Integer devTypeId = (Integer) devTypeValueID.get(fields[IDX_DEVICE_TYPE]);
-			fields[IDX_DEVICE_TYPE] = (devTypeId != null)? devTypeId.toString() : "0";
-			Integer devVoltId = (Integer) devVoltValueID.get(fields[IDX_DEVICE_VOLTAGE]);
-			fields[IDX_DEVICE_VOLTAGE] = (devVoltId != null)? devVoltId.toString() : "0";
-			Integer companyId = (Integer) companyValueID.get(fields[IDX_SERVICE_COMPANY]);
-			fields[IDX_SERVICE_COMPANY] = (companyId != null)? companyId.toString() : "0";
-			Integer devStatId = (Integer) devStatValueID.get(fields[IDX_DEVICE_STATUS]);
-			if (devStatId != null) fields[IDX_DEVICE_STATUS] = devStatId.toString();
+			for (int j = 0; j < INV_LIST_FIELDS.length; j++) {
+				int listIdx = INV_LIST_FIELDS[j][0];
+				int fieldIdx = INV_LIST_FIELDS[j][1];
+				Integer id = (Integer) valueIDMaps[listIdx].get( fields[fieldIdx] );
+				fields[fieldIdx] = (id != null)? id.toString() : "0";
+			}
+			
+			if (fields[IDX_DEVICE_NAME].equals("")) {
+				// This is a receiver
+				for (int j = 0; j < RECV_LIST_FIELDS.length; j++) {
+					int listIdx = RECV_LIST_FIELDS[j][0];
+					int fieldIdx = RECV_LIST_FIELDS[j][1];
+					Integer id = (Integer) valueIDMaps[listIdx].get( fields[fieldIdx] );
+					fields[fieldIdx] = (id != null)? id.toString() : "0";
+				}
+			}
 		}
 		
 		for (int i = 0; i < appFieldsList.size(); i++) {
 			String[] fields = (String[]) appFieldsList.get(i);
 			
-			Integer appTypeID = (Integer) appTypeValueID.get(fields[IDX_APP_TYPE]);
-			fields[IDX_APP_TYPE] = (appTypeID != null)? appTypeID.toString() : "0";
-			Integer appMfcID = (Integer) appMfcValueID.get(fields[IDX_MANUFACTURER]);
-			fields[IDX_MANUFACTURER] = (appMfcID != null)? appMfcID.toString() : "0";
+			for (int j = 0; j < APP_LIST_FIELDS.length; j++) {
+				int listIdx = APP_LIST_FIELDS[j][0];
+				int fieldIdx = APP_LIST_FIELDS[j][1];
+				Integer id = (Integer) valueIDMaps[listIdx].get( fields[fieldIdx] );
+				fields[fieldIdx] = (id != null)? id.toString() : "0";
+			}
+			
+			if (fields[IDX_APP_CAT_DEF_ID].equals("")) continue;
+			int catDefID = Integer.parseInt( fields[IDX_APP_CAT_DEF_ID] );
+			
+			if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER) {
+				for (int j = 0; j < AC_LIST_FIELDS.length; j++) {
+					int listIdx = AC_LIST_FIELDS[j][0];
+					int fieldIdx = AC_LIST_FIELDS[j][1];
+					Integer id = (Integer) valueIDMaps[listIdx].get( fields[fieldIdx] );
+					fields[fieldIdx] = (id != null)? id.toString() : "0";
+				}
+			}
+			else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER) {
+				for (int j = 0; j < WH_LIST_FIELDS.length; j++) {
+					int listIdx = WH_LIST_FIELDS[j][0];
+					int fieldIdx = WH_LIST_FIELDS[j][1];
+					Integer id = (Integer) valueIDMaps[listIdx].get( fields[fieldIdx] );
+					fields[fieldIdx] = (id != null)? id.toString() : "0";
+				}
+			}
+			else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GENERATOR) {
+				for (int j = 0; j < GEN_LIST_FIELDS.length; j++) {
+					int listIdx = GEN_LIST_FIELDS[j][0];
+					int fieldIdx = GEN_LIST_FIELDS[j][1];
+					Integer id = (Integer) valueIDMaps[listIdx].get( fields[fieldIdx] );
+					fields[fieldIdx] = (id != null)? id.toString() : "0";
+				}
+			}
+			else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION) {
+				for (int j = 0; j < IRR_LIST_FIELDS.length; j++) {
+					int listIdx = IRR_LIST_FIELDS[j][0];
+					int fieldIdx = IRR_LIST_FIELDS[j][1];
+					Integer id = (Integer) valueIDMaps[listIdx].get( fields[fieldIdx] );
+					fields[fieldIdx] = (id != null)? id.toString() : "0";
+				}
+			}
+			else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER) {
+				for (int j = 0; j < GDRY_LIST_FIELDS.length; j++) {
+					int listIdx = GDRY_LIST_FIELDS[j][0];
+					int fieldIdx = GDRY_LIST_FIELDS[j][1];
+					Integer id = (Integer) valueIDMaps[listIdx].get( fields[fieldIdx] );
+					fields[fieldIdx] = (id != null)? id.toString() : "0";
+				}
+			}
+			else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP) {
+				for (int j = 0; j < HP_LIST_FIELDS.length; j++) {
+					int listIdx = HP_LIST_FIELDS[j][0];
+					int fieldIdx = HP_LIST_FIELDS[j][1];
+					Integer id = (Integer) valueIDMaps[listIdx].get( fields[fieldIdx] );
+					fields[fieldIdx] = (id != null)? id.toString() : "0";
+				}
+			}
+			else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_STORAGE_HEAT) {
+				for (int j = 0; j < SH_LIST_FIELDS.length; j++) {
+					int listIdx = SH_LIST_FIELDS[j][0];
+					int fieldIdx = SH_LIST_FIELDS[j][1];
+					Integer id = (Integer) valueIDMaps[listIdx].get( fields[fieldIdx] );
+					fields[fieldIdx] = (id != null)? id.toString() : "0";
+				}
+			}
+			else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL) {
+				for (int j = 0; j < DF_LIST_FIELDS.length; j++) {
+					int listIdx = DF_LIST_FIELDS[j][0];
+					int fieldIdx = DF_LIST_FIELDS[j][1];
+					Integer id = (Integer) valueIDMaps[listIdx].get( fields[fieldIdx] );
+					fields[fieldIdx] = (id != null)? id.toString() : "0";
+				}
+			}
 		}
 		
 		for (int i = 0; i < orderFieldsList.size(); i++) {
 			String[] fields = (String[]) orderFieldsList.get(i);
 			
-			Integer orderStatID = (Integer) orderStatValueID.get(fields[IDX_ORDER_STATUS]);
-			fields[IDX_ORDER_STATUS] = (orderStatID != null)? orderStatID.toString() : "0";
-			Integer orderTypeID = (Integer) orderTypeValueID.get(fields[IDX_ORDER_TYPE]);
-			fields[IDX_ORDER_TYPE] = (orderTypeID != null)? orderTypeID.toString() : "0";
-			Integer companyId = (Integer) companyValueID.get(fields[IDX_ORDER_CONTRACTOR]);
-			fields[IDX_ORDER_CONTRACTOR] = (companyId != null)? companyId.toString() : "0";
+			for (int j = 0; j < ORDER_LIST_FIELDS.length; j++) {
+				int listIdx = ORDER_LIST_FIELDS[j][0];
+				int fieldIdx = ORDER_LIST_FIELDS[j][1];
+				Integer id = (Integer) valueIDMaps[listIdx].get( fields[fieldIdx] );
+				fields[fieldIdx] = (id != null)? id.toString() : "0";
+			}
+		}
+		
+		for (int i = 0; i < resFieldsList.size(); i++) {
+			String[] fields = (String[]) resFieldsList.get(i);
+			
+			for (int j = 0; j < RES_LIST_FIELDS.length; j++) {
+				int listIdx = RES_LIST_FIELDS[j][0];
+				int fieldIdx = RES_LIST_FIELDS[j][1];
+				Integer id = (Integer) valueIDMaps[listIdx].get( fields[fieldIdx] );
+				fields[fieldIdx] = (id != null)? id.toString() : "0";
+			}
 		}
 		
 		int numAcctAdded = 0;
@@ -2394,10 +3693,25 @@ public class StarsAdmin extends HttpServlet {
 		int numRecvrAdded = 0;
 		int numMeterAdded = 0;
 		int numAppAdded = 0;
+		int numACAdded = 0;
+		int numWHAdded = 0;
+		int numGenAdded = 0;
+		int numIrrAdded = 0;
+		int numGDryAdded = 0;
+		int numHPAdded = 0;
+		int numSHAdded = 0;
+		int numDFAdded = 0;
+		int numGenlAdded = 0;
+		int numAppUpdated = 0;
 		int numOrderAdded = 0;
+		int numResAdded = 0;
 		
 		int lineNo = 0;
 		java.sql.Connection conn = null;
+		ArrayList logMsg = new ArrayList();
+		String errorMsg = null;
+		
+		long startTime = System.currentTimeMillis();
 		
 		try {
 			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
@@ -2445,6 +3759,120 @@ public class StarsAdmin extends HttpServlet {
 					LiteStarsCustAccountInformation liteAcctInfo = null;
 					
 					Object obj = acctIDMap.get(acctID);
+					if (obj != null) {
+						if (obj instanceof LiteStarsCustAccountInformation) {
+							liteAcctInfo = (LiteStarsCustAccountInformation) obj;
+						}
+						else if (obj instanceof Integer) {
+							// This is loaded from file customer.map
+							liteAcctInfo = energyCompany.getCustAccountInformation( ((Integer)obj).intValue(), true );
+							if (liteAcctInfo != null)
+								acctIDMap.put(acctID, liteAcctInfo);
+						}
+					}
+					
+					if (liteAcctInfo == null)
+						throw new Exception("Cannot find customer account with id=" + acctID.intValue());
+					
+					LiteInventoryBase liteInv = insertLMHardware( fields, liteAcctInfo, energyCompany, conn );
+					
+					if (liteInv.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL)
+						logMsg.add("Receiver (import_inv_id=" + fields[IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") is out of service");
+					else if (liteInv.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL)
+						logMsg.add("Receiver (import_inv_id=" + fields[IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") is temporarily out of service");
+					
+					// If load groups for relays are specified, automatically add appliances through program enrollment
+					ArrayList appCats = energyCompany.getAllApplianceCategories();
+					ArrayList programs = new ArrayList();
+					int[] progIDs = new int[3];	// Save the program ID on each relay here so we can map them to appliance id later
+					
+					for (int i = 0; i < 3; i++) {
+						if (fields[IDX_R1_GROUP + i].equals("") || fields[IDX_R1_GROUP + i].equals("0"))
+							continue;
+						
+						int groupID = Integer.parseInt( fields[IDX_R1_GROUP + i] );
+						int progID = 0;
+						int appCatID = 0;
+						
+						for (int j = 0; j < appCats.size(); j++) {
+							LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(j);
+							for (int k = 0; k < liteAppCat.getPublishedPrograms().length; k++) {
+								LiteLMProgram liteProg = liteAppCat.getPublishedPrograms()[k];
+								for (int l = 0; l < liteProg.getGroupIDs().length; l++) {
+									if (liteProg.getGroupIDs()[l] == groupID) {
+										progID = liteProg.getProgramID();
+										appCatID = liteAppCat.getApplianceCategoryID();
+										progIDs[i] = progID;
+										break;
+									}
+								}
+								if (progID > 0) break;
+							}
+							if (progID > 0) break;
+						}
+						
+						if (progID == 0)
+							throw new Exception( "Cannot find LM program for load group id = " + groupID );
+						
+						programs.add( new int[] {progID, appCatID, groupID} );
+					}
+					
+					if (programs.size() > 0) {
+						programSignUp( programs, liteAcctInfo, new Integer(liteInv.getInventoryID()), energyCompany, conn );
+						
+						for (int i = 0; i < 3; i++) {
+							if (fields[IDX_R1_STATUS + i].equals("1"))
+								logMsg.add("Receiver (import_inv_id=" + fields[IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") relay " + (i+1) + " is out of service");
+							else if (fields[IDX_R1_STATUS + i].equals("2"))
+								logMsg.add("Receiver (import_inv_id=" + fields[IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") relay " + (i+1) + " was out before switch placed out");
+						}
+						
+						int[] appIDs = new int[3];
+						for (int i = 0; i < 3; i++) {
+							if (progIDs[i] == 0) continue;
+							
+							for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
+								LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+								if (liteApp.getLmProgramID() == progIDs[i]) {
+									appIDs[i] = liteApp.getApplianceID();
+									break;
+								}
+							}
+							
+							if (appIDs[i] == 0)	// shouldn't happen
+								throw new Exception("Cannot find appliance with RelayNum = " + (i+1));
+						}
+						
+						appIDMap.put( new Integer(fields[IDX_INV_ID]), appIDs );
+						numAppAdded += programs.size();
+					}
+				}
+				
+				numInvAdded++;
+				if (fields[IDX_DEVICE_NAME].equals(""))
+					numRecvrAdded++;
+				else
+					numMeterAdded++;
+			}
+			
+			for (lineNo = 1; lineNo <= appFieldsList.size(); lineNo++) {
+				String[] fields = (String[]) appFieldsList.get(lineNo - 1);
+				
+				Integer invID = Integer.valueOf( fields[IDX_INV_ID] );
+				int relayNum = Integer.parseInt( fields[IDX_RELAY_NUM] );
+				int appID = 0;
+				
+				int[] appIDs = (int[]) appIDMap.get( invID );
+				if (appIDs != null) appID = appIDs[relayNum - 1];
+				
+				if (appID == 0)
+					throw new Exception("Cannot find appliance with InventoryID = " + invID + " and RelayNum = " + relayNum);
+				
+				Integer acctID = Integer.valueOf( fields[IDX_ACCOUNT_ID] );
+				LiteStarsCustAccountInformation liteAcctInfo = null;
+				
+				Object obj = acctIDMap.get(acctID);
+				if (obj != null) {
 					if (obj instanceof LiteStarsCustAccountInformation) {
 						liteAcctInfo = (LiteStarsCustAccountInformation) obj;
 					}
@@ -2454,42 +3882,35 @@ public class StarsAdmin extends HttpServlet {
 						if (liteAcctInfo != null)
 							acctIDMap.put(acctID, liteAcctInfo);
 					}
-					
-					if (liteAcctInfo == null)
-						throw new Exception("Cannot find customer account with id=" + acctID.intValue());
-					
-					insertLMHardware( fields, liteAcctInfo, energyCompany, conn );
-				}
-				
-				numInvAdded++;
-				if (fields[IDX_DEVICE_NAME].length() == 0)
-					numRecvrAdded++;
-				else
-					numMeterAdded++;
-			}
-			
-			for (lineNo = 1; lineNo <= appFieldsList.size(); lineNo++) {
-				String[] fields = (String[]) appFieldsList.get(lineNo - 1);
-				Integer acctID = Integer.valueOf( fields[IDX_ACCOUNT_ID] );
-				
-				LiteStarsCustAccountInformation liteAcctInfo = null;
-				
-				Object obj = acctIDMap.get(acctID);
-				if (obj instanceof LiteStarsCustAccountInformation) {
-					liteAcctInfo = (LiteStarsCustAccountInformation) obj;
-				}
-				else if (obj instanceof Integer) {
-					// This is loaded from file customer.map
-					liteAcctInfo = energyCompany.getCustAccountInformation( ((Integer)obj).intValue(), true );
-					if (liteAcctInfo != null)
-						acctIDMap.put(acctID, liteAcctInfo);
 				}
 				
 				if (liteAcctInfo == null)
 					throw new Exception("Cannot find customer account with id=" + acctID.intValue());
 				
-				newAppliance(fields, liteAcctInfo, energyCompany, session);
-				numAppAdded++;
+				updateAppliance(fields, appID, liteAcctInfo, energyCompany);
+				numAppUpdated++;
+				
+				if (fields[IDX_APP_CAT_DEF_ID].equals("")) continue;
+				int catDefID = Integer.parseInt( fields[IDX_APP_CAT_DEF_ID] );
+				
+				if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER)
+					numACAdded++;
+				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER)
+					numWHAdded++;
+				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GENERATOR)
+					numGenAdded++;
+				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION)
+					numIrrAdded++;
+				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER)
+					numGDryAdded++;
+				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP)
+					numHPAdded++;
+				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_STORAGE_HEAT)
+					numSHAdded++;
+				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL)
+					numDFAdded++;
+				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DEFAULT)
+					numGenlAdded++;
 			}
 			
 			for (lineNo = 1; lineNo <= orderFieldsList.size(); lineNo++) {
@@ -2514,8 +3935,34 @@ public class StarsAdmin extends HttpServlet {
 						throw new Exception("Cannot find customer account with id=" + acctID.intValue());
 				}
 				
-				newServiceRequest(fields, liteAcctInfo, energyCompany, session);
+				newServiceRequest( fields, liteAcctInfo, energyCompany );
 				numOrderAdded++;
+			}
+			
+			for (lineNo = 1; lineNo <= resFieldsList.size(); lineNo++) {
+				String[] fields = (String[]) resFieldsList.get(lineNo - 1);
+				Integer acctID = Integer.valueOf( fields[IDX_ACCOUNT_ID] );
+				
+				LiteStarsCustAccountInformation liteAcctInfo = null;
+				
+				if (acctID.intValue() > 0) {
+					Object obj = acctIDMap.get(acctID);
+					if (obj instanceof LiteStarsCustAccountInformation) {
+						liteAcctInfo = (LiteStarsCustAccountInformation) obj;
+					}
+					else if (obj instanceof Integer) {
+						// This is loaded from file customer.map
+						liteAcctInfo = energyCompany.getCustAccountInformation( ((Integer)obj).intValue(), true );
+						if (liteAcctInfo != null)
+							acctIDMap.put(acctID, liteAcctInfo);
+					}
+					
+					if (liteAcctInfo == null)
+						throw new Exception("Cannot find customer account with id=" + acctID.intValue());
+				}
+				
+				newResidenceInfo( fields, liteAcctInfo );
+				numResAdded++;
 			}
 			
 			//session.removeAttribute( PREPROCESSED_STARS_DATA );
@@ -2524,16 +3971,24 @@ public class StarsAdmin extends HttpServlet {
 		catch (Exception e) {
 			e.printStackTrace();
 			
-			if (lineNo == 0)
+			if (lineNo == 0) {
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to import old STARS data");
-			if (numAcctAdded < acctFieldsList.size())
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Error encountered when processing customer file line #" + lineNo);
-			else if (numInvAdded < invFieldsList.size())
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Error encountered when processing inventory file line #" + lineNo);
-			else if (numAppAdded < appFieldsList.size())
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Error encountered when processing loadinfo file line #" + lineNo);
-			else if (numOrderAdded < orderFieldsList.size())
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Error encountered when processing workorder file line #" + lineNo);
+				errorMsg = e.getMessage();
+			}
+			else {
+				if (numAcctAdded < acctFieldsList.size())
+					errorMsg = "Error encountered when processing customer file line #" + lineNo;
+				else if (numInvAdded < invFieldsList.size())
+					errorMsg = "Error encountered when processing inventory file line #" + lineNo;
+				else if (numAppUpdated < appFieldsList.size())
+					errorMsg = "Error encountered when processing loadinfo file line #" + lineNo;
+				else if (numOrderAdded < orderFieldsList.size())
+					errorMsg = "Error encountered when processing workorder file line #" + lineNo;
+				else if (numResAdded < resFieldsList.size())
+					errorMsg = "Error encountered when processing resinfo file line #" + lineNo;
+				if (errorMsg != null)
+					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, errorMsg);
+			}
 		}
 		finally {
 			try {
@@ -2542,10 +3997,12 @@ public class StarsAdmin extends HttpServlet {
 			catch (java.sql.SQLException e) {}
 		}
 		
+		// Directory where the map and log files will be written into
+		String path = (String) preprocessedData.get( "CustomerFilePath" );
+		
 		if (numAcctAdded > 0) {
-			// New account(s) added, regenerate the 'customer.map' file
-			String[] lines = new String[ acctIDMap.size() ];
-			int cnt = 0;
+			// New accounts added, regenerate the 'customer.map' file
+			ArrayList lines = new ArrayList();
 			
 			Iterator it = acctIDMap.entrySet().iterator();
 			while (it.hasNext()) {
@@ -2558,11 +4015,11 @@ public class StarsAdmin extends HttpServlet {
 				else if (entry.getValue() instanceof Integer)
 					acctID2 = ((Integer) entry.getValue()).intValue();
 				
-				lines[cnt++] = acctID.toString() + "," + String.valueOf(acctID2);
+				String line = acctID.toString() + "," + String.valueOf(acctID2);
+				lines.add( line );
 			}
 			
 			try {
-				String path = (String) preprocessedData.get( "CustomerFilePath" );
 				File custMapFile = new File(path, "customer.map");
 				writeFile(custMapFile, lines);
 			}
@@ -2571,15 +4028,97 @@ public class StarsAdmin extends HttpServlet {
 			}
 		}
 		
-		String confirmMsg = "";
+		if (numAppAdded > 0) {
+			// New appliances added, regenerate the 'hwconfig.map' file
+			ArrayList lines = new ArrayList();
+			
+			Iterator it = appIDMap.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry entry = (Map.Entry) it.next();
+				Integer invID = (Integer) entry.getKey();
+				int[] appIDs = (int[]) entry.getValue();
+				
+				String line = invID.toString()
+						+ "," + appIDs[0]
+						+ "," + appIDs[1]
+						+ "," + appIDs[2];
+				lines.add( line );
+			}
+			
+			try {
+				File hwConfigMapFile = new File(path, "hwconfig.map");
+				writeFile(hwConfigMapFile, lines);
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		long stopTime = System.currentTimeMillis();
+		
+		int minutes = (int) ((stopTime - startTime) * 0.001 / 60 + 0.5);
+		int hourTaken = minutes / 60;
+		int minTaken = minutes % 60;
+		String timeTaken = "";
+		if (hourTaken > 1)
+			timeTaken += hourTaken + " hours ";
+		else if (hourTaken == 1)
+			timeTaken += hourTaken + " hour ";
+		if (minTaken > 1)
+			timeTaken += minTaken + " minutes";
+		else
+			timeTaken += minTaken + " minute";
+		
+		int idx = 0;
+		logMsg.add(idx++, "Start Time: " + ServerUtils.formatDate( new Date(startTime), java.util.TimeZone.getDefault() ));
+		logMsg.add(idx++, "Time Taken: " + timeTaken);
+		logMsg.add(idx++, "");
+		
+		if (errorMsg != null) {
+			logMsg.add(idx++, errorMsg);
+			logMsg.add(idx++, "");
+		}
+		
 		if (numAcctAdded > 0)
-			confirmMsg += numAcctAdded + " customer accounts added.<br>";
+			logMsg.add(idx++, numAcctAdded + " customer accounts added");
 		if (numInvAdded > 0)
-			confirmMsg += numInvAdded + " hardwares added (" + numRecvrAdded + " receivers, " + numMeterAdded + " meters).<br>";
+			logMsg.add(idx++, numInvAdded + " hardwares added (" + numRecvrAdded + " receivers, " + numMeterAdded + " meters)");
 		if (numAppAdded > 0)
-			confirmMsg += numAppAdded + " appliances added.<br>";
+			logMsg.add(idx++, numAppAdded + " appliances automatically added");
+		if (numAppUpdated > 0)
+			logMsg.add(idx++, numAppUpdated + " appliances updated (" +
+					numACAdded + " ac, " +
+					numWHAdded + " wh, " +
+					numGenAdded + " gen, " +
+					numIrrAdded + " irr, " +
+					numGDryAdded + " gdry, " +
+					numHPAdded + " hp, " +
+					numSHAdded + " sh, " +
+					numDFAdded + " df, " +
+					numGenlAdded + " genl)"
+					);
 		if (numOrderAdded > 0)
-			confirmMsg += numOrderAdded + " work orders added.";
+			logMsg.add(idx++, numOrderAdded + " work orders added");
+		if (numResAdded > 0)
+			logMsg.add(idx++, numResAdded + " residence info added");
+		logMsg.add(idx++, "");
+		
+		Date logDate = new Date();
+		String logFileName = "import_" + starsDateFormat.format(logDate) + "_" + starsTimeFormat.format(logDate) + ".log";
+		File logFile = new File(path, logFileName);
+		
+		try {
+			writeFile(logFile, logMsg);
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		String confirmMsg = "";
+		if (errorMsg == null)
+			confirmMsg += "Old STARS data imported successfully. ";
+		if (logFile != null)
+			confirmMsg += "For detailed information, view the log file '" + logFile.getPath() + "'.";
 		if (confirmMsg.length() > 0)
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, confirmMsg);
 	}
@@ -2873,7 +4412,7 @@ public class StarsAdmin extends HttpServlet {
 				config.setAlternateDisplayName( req.getParameter("Name") );
 			else
 				config.setAlternateDisplayName( req.getParameter("DispName") );
-			config.setDescription( req.getParameter("Description").replaceAll("\r\n", "<br>") );
+			config.setDescription( req.getParameter("Description").replaceAll(LINE_SEPARATOR, "<br>") );
 			config.setURL( "" );
 			
 			com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
@@ -2947,7 +4486,7 @@ public class StarsAdmin extends HttpServlet {
 							new com.cannontech.database.db.web.YukonWebConfiguration();
 					cfg.setLogoLocation( config.getLogoLocation() + "," + progIconNames[i] );
 					cfg.setAlternateDisplayName( progDispNames[i] + "," + progShortNames[i] );
-					cfg.setDescription( progDescriptions[i].replaceAll("\r\n", "<br>") );
+					cfg.setDescription( progDescriptions[i].replaceAll(LINE_SEPARATOR, "<br>") );
 					pubProg.setWebConfiguration( cfg );
 					
 					if (pubPrograms[i] != null) {
