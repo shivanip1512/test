@@ -49,7 +49,7 @@ public class RefreshTimerTask extends StarsTimerTask {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		CTILogger.info( "*** Start Refresh timer task ***" );
+		CTILogger.debug( "*** Start Refresh timer task ***" );
 		
 		ArrayList companies = SOAPServer.getAllEnergyCompanies();
 		
@@ -90,7 +90,7 @@ public class RefreshTimerTask extends StarsTimerTask {
 			}
 		}
 		
-		CTILogger.info( "*** End Refresh timer task ***" );
+		CTILogger.debug( "*** End Refresh timer task ***" );
 	}
 
 }
