@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2003/12/17 15:31:50 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2003/12/19 16:23:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1662,6 +1662,7 @@ void CtiDeviceManager::refreshIONMeterGroups(LONG paoID)
 
 void CtiDeviceManager::refreshMacroSubdevices(LONG paoID)
 {
+    int childcount = 0;
     CtiDeviceBase *pTempCtiDevice;
 
     RWDBConnection conn = getConnection();
@@ -1676,24 +1677,39 @@ void CtiDeviceManager::refreshMacroSubdevices(LONG paoID)
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Macro Subdevices" << endl;
     }
 
+    {
+        selector << rwdbName("childcount",rwdbCount("ChildID"));
+        selector.from(tblGenericMacro);
+        selector.where(tblGenericMacro["MacroType"] == RWDBExpr("GROUP"));
+        if(paoID != 0) selector.where( tblGenericMacro["OwnerID"] == RWDBExpr( paoID ) && selector.where() );
+        rdr = selector.reader(conn);
+
+        if(setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok)
+        {
+            if( rdr() )
+            {
+                rdr["childcount"] >> childcount;
+            }
+        }
+
+        selector.clear();
+    }
+
     selector << tblGenericMacro["ChildID"] << tblGenericMacro["OwnerID"];
     selector.from(tblGenericMacro);
     selector.where(tblGenericMacro["MacroType"] == RWDBExpr("GROUP"));
     if(paoID != 0) selector.where( tblGenericMacro["OwnerID"] == RWDBExpr( paoID ) && selector.where() );
     selector.orderBy(tblGenericMacro["ChildOrder"]);
 
-
     RWDBResult macroResult = selector.execute(conn);
     RWDBTable myMacroTable = macroResult.table();
-    long macrocount = macroResult.rowCount();
-
 
     if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
     }
 
-    if(macrocount > 0 && macroResult.status().errorCode() == RWDBStatus::ok)
+    if(childcount != 0 && macroResult.status().errorCode() == RWDBStatus::ok)
     {
         rdr = myMacroTable.reader();
         Map.apply(ApplyClearMacroDeviceList, NULL);
@@ -1714,10 +1730,10 @@ void CtiDeviceManager::refreshMacroSubdevices(LONG paoID)
             }
         }
     }
-    else if(DebugLevel & 0x00020000)
+    else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " No macros or error reading macro subdevices from database: " << macroResult.status().errorCode() << endl;
+        dout << RWTime() << " There is a DB error or zero entries in GenericMacro Table. DB return code: " << macroResult.status().errorCode() << endl;
     }
 
     if(DebugLevel & 0x00020000)
