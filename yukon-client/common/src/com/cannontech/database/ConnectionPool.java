@@ -52,13 +52,17 @@ public class ConnectionPool
    }            
    public synchronized void freeConnection(Connection conn)
    {
+     if( conn == null || checkedOut <= 0 )
+     	return;
+     
 	  // Put the connection at the end of the Vector
 	  freeConnections.addElement(conn);
 	  checkedOut--;
 	  notifyAll();
 	  CTILogger.getStandardLog().debug("Returned/Added connection to pool");
 	  CTILogger.getStandardLog().debug( getStats() );
-   }   
+   }
+
    public Connection getConnection() throws SQLException 
    {
 
@@ -301,11 +305,7 @@ public class ConnectionPool
    
    protected synchronized void wrapperClosed(Connection conn)
 	{
-	  // Put the connection at the end of the Vector
-	  freeConnections.addElement(conn);
-	  checkedOut--;
-	  notifyAll();
-	  CTILogger.getStandardLog().debug( "Returned connection to pool" );
-	  CTILogger.getStandardLog().debug( getStats() );
-   }   
+	  freeConnection( conn );
+   }
+
 }
