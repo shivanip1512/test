@@ -475,7 +475,18 @@ private javax.swing.JTable getGraphGDSTable() {
 			ivjGraphGDSTable.setBounds(0, 0, 200, 200);
 			// user code begin {1}
 			ivjGraphGDSTable.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-				
+
+			//Column inits.
+			javax.swing.table.TableColumnModel colModel = ivjGraphGDSTable.getColumnModel();
+			colModel.getColumn(GDSTableModel.DEVICE_NAME_COLUMN).setPreferredWidth(80);
+			colModel.getColumn(GDSTableModel.POINT_NAME_COLUMN).setPreferredWidth(65);
+			colModel.getColumn(GDSTableModel.LABEL_NAME_COLUMN).setPreferredWidth(122);
+			colModel.getColumn(GDSTableModel.COLOR_NAME_COLUMN).setPreferredWidth(55);
+			colModel.getColumn(GDSTableModel.AXIS_NAME_COLUMN).setPreferredWidth(8);
+			colModel.getColumn(GDSTableModel.TYPE_NAME_COLUMN).setPreferredWidth(40);
+			colModel.getColumn(GDSTableModel.MULT_NAME_COLUMN).setPreferredWidth(40);			
+			colModel.getColumn(GDSTableModel.SETUP_NAME_COLUMN).setPreferredWidth(10);
+
 			//Color choices setup
 			java.awt.Color[] colors = getGraphColors().getAvailableColors();
 			String[] colorStrings = new String[colors.length];
@@ -521,23 +532,11 @@ private javax.swing.JTable getGraphGDSTable() {
 			colorComboBox.setRenderer(new com.cannontech.common.gui.util.ColorComboBoxCellRenderer() );
 			javax.swing.DefaultCellEditor colorEditor = new javax.swing.DefaultCellEditor(colorComboBox);
 
-			//Column inits.
-			javax.swing.table.TableColumnModel colModel = ivjGraphGDSTable.getColumnModel();
-			colModel.getColumn(GDSTableModel.DEVICE_NAME_COLUMN).setPreferredWidth(80);
-			colModel.getColumn(GDSTableModel.POINT_NAME_COLUMN).setPreferredWidth(65);
-			colModel.getColumn(GDSTableModel.LABEL_NAME_COLUMN).setPreferredWidth(122);
-			colModel.getColumn(GDSTableModel.COLOR_NAME_COLUMN).setPreferredWidth(55);
-			colModel.getColumn(GDSTableModel.AXIS_NAME_COLUMN).setPreferredWidth(8);
-			colModel.getColumn(GDSTableModel.TYPE_NAME_COLUMN).setPreferredWidth(40);
-			colModel.getColumn(GDSTableModel.MULT_NAME_COLUMN).setPreferredWidth(20);			
-
-
 //			javax.swing.JColorChooser colorChooser = new javax.swing.JColorChooser(java.awt.Color.BLUE);
 //			javax.swing.JComboBox testBox = new javax.swing.JComboBox(new javax.swing.JColorChooser[] {colorChooser.get});
 //			colorChooser.showDialog(testBox, "COLOR", java.awt.Color.BLUE);
 //			javax.swing.DefaultCellEditor colorEditor = new javax.swing.DefaultCellEditor(testBox);
 //			colModel.getColumn(GDSTableModel.COLOR_NAME_COLUMN).setCellEditor(colorEditor);
-
 
 			colModel.getColumn(GDSTableModel.COLOR_NAME_COLUMN).setCellEditor(colorEditor);
 			javax.swing.table.TableColumn tblColumn = colModel.getColumn(GDSTableModel.COLOR_NAME_COLUMN);
@@ -547,9 +546,14 @@ private javax.swing.JTable getGraphGDSTable() {
 			javax.swing.DefaultCellEditor axisEditor = new javax.swing.DefaultCellEditor(axisComboBox);
 			colModel.getColumn(GDSTableModel.AXIS_NAME_COLUMN).setCellEditor(axisEditor);
 			
-			javax.swing.JComboBox typeComboBox = new javax.swing.JComboBox( new String[] { "graph", "usage", "yesterday" } );
+			javax.swing.JComboBox typeComboBox = new javax.swing.JComboBox( new String[] { "graph", "yesterday", "peakvalue", "usage" } );
 			javax.swing.DefaultCellEditor typeEditor = new javax.swing.DefaultCellEditor(typeComboBox);
 			colModel.getColumn(GDSTableModel.TYPE_NAME_COLUMN).setCellEditor(typeEditor);
+
+			//A checkBox is used here instead of a button, but you are REALLY putting a button in here.
+			com.cannontech.graph.gds.tablemodel.GDSTableButtonEditor setupEditor = new com.cannontech.graph.gds.tablemodel.GDSTableButtonEditor(new javax.swing.JCheckBox());
+			colModel.getColumn(GDSTableModel.SETUP_NAME_COLUMN).setCellRenderer(new com.cannontech.common.gui.util.ButtonRenderer());
+			colModel.getColumn(GDSTableModel.SETUP_NAME_COLUMN).setCellEditor(setupEditor);
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1170,7 +1174,6 @@ public static void main(java.lang.String[] args)
 				System.exit(0);
 			};
 		});
-	
 		frame.show();
 		java.awt.Insets insets = frame.getInsets();
 		frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
@@ -1361,7 +1364,7 @@ public com.cannontech.database.data.graph.GraphDefinition showCreateGraphPanelDi
 	
 	dialog.setModal(true);	
 	dialog.getContentPane().add(this);
-	dialog.setSize(800, 511);
+	dialog.setSize(900, 500);
 	dialog.show();
 
 	getOkButton().removeActionListener(listener);
