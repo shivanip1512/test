@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/07/19 13:41:54 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/10/09 19:23:59 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,6 +32,7 @@ protected:
     enum
     {
         DNPDatalinkHeaderLen  = 10,
+        DNPDatalinkFramingLen =  2,
         DNPDatalinkRetryCount =  3
     };
 
@@ -121,7 +122,7 @@ public:
 
     int getOutPayloadLength( void );
     int getInPayload( unsigned char *buf );
-    int getInLength ( void );
+    int getInPayloadLength ( void );
 
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );
@@ -129,8 +130,8 @@ public:
     bool isTransactionComplete( void );
     bool errorCondition( void );
 
-    DatalinkError validateInPacket( void );
-    bool          areInPacketCRCsValid( void );
+    bool areFramingBytesValid( void );
+    bool areInPacketCRCsValid( void );
 
     enum ControlFunction
     {

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/07/16 13:57:59 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/10/09 19:23:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -240,6 +240,22 @@ int CtiDNPDatalink::decode( CtiXfer &xfer, int status )
                 {
                     _inRecv += _inActual;
 
+                    if( _inRecv >= DNPDatalinkFramingLen && !areFramingBytesValid() )
+                    {
+                        status = BadFraming;
+                    }
+                    else if( _inRecv >= DNPDatalinkHeaderLen )
+                    {
+                        if( _inRecv == calcPacketLength( _inPacket.header.len ) )
+                        {
+                            if( !areInPacketCRCsValid() )
+                            {
+                                status = BadCRC;
+                            }
+                        }
+                    }
+
+
                     break;
                 }
 
@@ -323,7 +339,7 @@ int CtiDNPDatalink::calcPacketLength( int headerLen )
 }
 
 
-int CtiDNPDatalink::getInLength(void)
+int CtiDNPDatalink::getInPayloadLength(void)
 {
     return _inPacket.header.len - 5;
 }
@@ -420,18 +436,17 @@ bool CtiDNPDatalink::areInPacketCRCsValid( void )
 }
 
 
-CtiDNPDatalink::DatalinkError CtiDNPDatalink::validateInPacket( void )
+bool CtiDNPDatalink::areFramingBytesValid( void )
 {
-    DatalinkError retVal = NoError;
+    bool retVal = false;
 
-    if( _inPacket.header.framing[0] != 0x05 ||
-        _inPacket.header.framing[1] != 0x64 )
+    if( _inRecv >= DNPDatalinkFramingLen )
     {
-        retVal = BadFraming;
-    }
-    else if( !areInPacketCRCsValid() )
-    {
-        retVal = BadCRC;
+        if( _inPacket.header.framing[0] == 0x05 &&
+            _inPacket.header.framing[1] == 0x64 )
+        {
+            retVal = true;
+        }
     }
 
     return retVal;
