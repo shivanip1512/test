@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.65 $
-* DATE         :  $Date: 2003/05/23 22:21:40 $
+* REVISION     :  $Revision: 1.66 $
+* DATE         :  $Date: 2003/06/02 14:56:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -820,6 +820,8 @@ INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
 {
     INT status = NORMAL;
     LONG LastConnectedDevice = 0L;
+
+    Port->setShouldDisconnect(FALSE);
 
     status = Port->connectToDevice(Device, LastConnectedDevice, TraceFlag);
 
@@ -2385,6 +2387,10 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
     {
         try
         {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
             if(OutMessage && OutMessage->MessageFlags & MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL)
             {
                 CtiOutMessage *NewOM = CTIDBG_new CtiOutMessage(*OutMessage);
@@ -2394,7 +2400,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
 
                 CtiPort *prt = Port.get();
                 prt->writeQueue(NewOM->EventCode, sizeof (*NewOM), (char *) NewOM, NewOM->Priority, PortThread);
-                prt->setShouldDisconnect( TRUE );       // Must hangup!
+                prt->setShouldDisconnect( TRUE );  //  The REQUEUE_CMD flag means hang up and try again, so hang up
             }
         }
         catch(...)
