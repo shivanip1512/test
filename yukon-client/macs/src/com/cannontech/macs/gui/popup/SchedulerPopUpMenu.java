@@ -124,7 +124,7 @@ private javax.swing.JMenuItem getJMenuItemStartStop()
 		jMenuItemStartStop = new javax.swing.JMenuItem();
 		jMenuItemStartStop.setName("JMenuItemStartStop");
 		jMenuItemStartStop.setMnemonic('s');
-		jMenuItemStartStop.setText("Start");
+		jMenuItemStartStop.setText("Start...");
 		jMenuItemStartStop.setVisible( com.cannontech.macs.gui.Scheduler.isStartable() );
 	}
 	
@@ -207,14 +207,14 @@ public void setSchedule(Schedule newSchedule)
 		if( getSchedule().getCurrentState().equalsIgnoreCase( Schedule.STATE_RUNNING ) )
 		{
 			getJMenuItemDelete().setEnabled(false);
-			getJMenuItemStartStop().setText("Stop");
+			getJMenuItemStartStop().setText("Stop...");
 		}
 		else
 		{
 			getJMenuItemDelete().setEnabled(true);
-			getJMenuItemStartStop().setText("Start");
+			getJMenuItemStartStop().setText("Start...");
 		}
-				
+
 		if( getSchedule().getCurrentState().equalsIgnoreCase( Schedule.STATE_DISABLED ) )
 		{
 			getJMenuItemStartStop().setEnabled(false);
@@ -236,7 +236,7 @@ public void setSchedule(Schedule newSchedule)
 		// should always be at the bottom of this method
 		if( getSchedule().getCurrentState().equalsIgnoreCase( Schedule.STATE_PENDING ) )
 		{
-			getJMenuItemStartStop().setText("Stop");
+			getJMenuItemStartStop().setText("Stop...");
 			getJMenuItemDelete().setEnabled(false);
 			getJMenuItemEnableDisable().setEnabled(false);
 			getJMenuItemUpdate().setEnabled(false);
