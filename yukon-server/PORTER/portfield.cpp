@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.130 $
-* DATE         :  $Date: 2005/01/18 19:13:33 $
+* REVISION     :  $Revision: 1.131 $
+* DATE         :  $Date: 2005/02/01 18:02:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -188,6 +188,9 @@ VOID PortThread(void *pid)
 
     LONG           portid = (LONG)pid;      // NASTY CAST HERE!!!
 
+    bool           profiling = (portid == gConfigParms.getValueAsULong("PORTER_PORT_PROFILING"));
+    DWORD          ticks;
+
     CtiDeviceSPtr  Device;
     CtiDeviceSPtr  LastExclusionDevice;
 
@@ -261,48 +264,54 @@ VOID PortThread(void *pid)
         }
 
 
-//  these calls are expensive, so they're commented out unless we're going to profile the code
-#define TIME_GETWORK 0
-
-#if TIME_GETWORK
-        time_t t = ::time(0);
-#endif
+        if( profiling)
+        {
+            ticks = GetTickCount();
+        }
 
         if( !OutMessage && (status = GetWork( Port, OutMessage, QueEntries )) != NORMAL )
         {
-            Sleep(250);
-
-#if TIME_GETWORK
-            if( (::time(0) - t) > 2 )
+            if( profiling )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - after getWork() (" << (::time(0) - t) << "s) [continue] for portid " << portid << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                ticks = GetTickCount() - ticks;
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Profiling - getWork() took " << ticks << " ms **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
-#endif
+
+            Sleep(250);
 
             continue;
         }
-        else if(PorterDebugLevel & PORTER_DEBUG_PORTQUEREAD)
+        else
         {
-            CtiDeviceSPtr tempDev = DeviceManager.getEqual(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
-
-            if(tempDev)
+            if( profiling )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << Port->getName() << " read an outmessage for " << tempDev->getName();
-                dout << " at priority " << OutMessage->Priority << " retries = " << OutMessage->Retry << endl;
-                if(strlen(OutMessage->Request.CommandStr) > 0) dout << RWTime() << " Command : " << OutMessage->Request.CommandStr << endl;
-                if(QueEntries > 50) dout << RWTime() << " Port has " << QueEntries << " pending OUTMESS requests " << endl;
+                ticks = GetTickCount() - ticks;
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Profiling - getWork() took " << ticks << " ms **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+
+            if(PorterDebugLevel & PORTER_DEBUG_PORTQUEREAD)
+            {
+                CtiDeviceSPtr tempDev = DeviceManager.getEqual(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
+
+                if(tempDev)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Port " << Port->getName() << " read an outmessage for " << tempDev->getName();
+                    dout << " at priority " << OutMessage->Priority << " retries = " << OutMessage->Retry << endl;
+                    if(strlen(OutMessage->Request.CommandStr) > 0) dout << RWTime() << " Command : " << OutMessage->Request.CommandStr << endl;
+                    if(QueEntries > 50) dout << RWTime() << " Port has " << QueEntries << " pending OUTMESS requests " << endl;
+                }
             }
         }
 
-#if TIME_GETWORK
-        if( (::time(0) - t) > 2 )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - after getWork() (" << (::time(0) - t) << "s) [!if] for portid " << portid << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-#endif
 
         /*
          *  Must verify that the outmessage has not expired.  The OM will be consumed and error returned to any
@@ -379,6 +388,11 @@ VOID PortThread(void *pid)
             continue;
         }
 
+        if( profiling )
+        {
+            ticks = GetTickCount();
+        }
+
         try
         {
             /* Execute based on wrap protocol.  Sends OutMessage and fills in InMessage */
@@ -389,6 +403,16 @@ VOID PortThread(void *pid)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+
+        if( profiling )
+        {
+            ticks = GetTickCount() - ticks;
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Profiling - CommunicateDevice took " << ticks << " ms for \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
 
