@@ -205,15 +205,15 @@ public void update()
 	}
 }
 
-public final static boolean hasDisconnectAddress(Integer mctID) throws java.sql.SQLException 
+public final static boolean hasExistingDisconnectAddress(Integer mctID) throws java.sql.SQLException 
 {	
-	return hasDisconnectAddress(mctID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+	return hasExistingDisconnect(mctID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
 }
 /**
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer
  */
-public final static boolean hasDisconnectAddress(Integer mctID, String databaseAlias) throws java.sql.SQLException 
+public final static boolean hasExistingDisconnect(Integer mctID, String databaseAlias) throws java.sql.SQLException 
 {
 	com.cannontech.database.SqlStatement stmt =
 		new com.cannontech.database.SqlStatement("SELECT DisconnectAddress FROM " + TABLE_NAME + " WHERE DeviceID=" + mctID,
@@ -230,15 +230,15 @@ public final static boolean hasDisconnectAddress(Integer mctID, String databaseA
 	}
 }
 
-public final static boolean hasTOUSchedule(Integer mctID) throws java.sql.SQLException 
+public final static boolean hasExistingTOUSchedule(Integer mctID) throws java.sql.SQLException 
 {	
-	return hasTOUSchedule(mctID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+	return hasExistingTOUSchedule(mctID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
 }
 /**
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer
  */
-public final static boolean hasTOUSchedule(Integer mctID, String databaseAlias) throws java.sql.SQLException 
+public final static boolean hasExistingTOUSchedule(Integer mctID, String databaseAlias) throws java.sql.SQLException 
 {
 	com.cannontech.database.SqlStatement stmt =
 		new com.cannontech.database.SqlStatement("SELECT TOUScheduleID FROM " + TABLE_NAME + " WHERE DeviceID=" + mctID,

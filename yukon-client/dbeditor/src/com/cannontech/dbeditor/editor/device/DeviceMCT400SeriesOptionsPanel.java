@@ -242,13 +242,13 @@ public Object getValue(Object o)
 	if(getJCheckBoxEnableDisconnect().isSelected() &&
 		getJTextFieldDisconnectAddress().getText().length() > 0)
 		{
-			mct400.setHasDisconnect(true);
+			mct400.setHasNewDisconnect(true);
 			mct400.getDeviceMCT400Series().setDeviceID(mct400.getPAObjectID());
 			mct400.getDeviceMCT400Series().setDisconnectAddress(new Integer(getJTextFieldDisconnectAddress().getText()));
 		}
 	else
 	{
-		mct400.setHasDisconnect(false);
+		mct400.setHasNewDisconnect(false);
 		mct400.getDeviceMCT400Series().deleteAnAddress(mct400.getPAObjectID());
 	}
 		
@@ -347,7 +347,7 @@ public void setValue(Object o)
 {
 	MCT400SeriesBase mct400 = (MCT400SeriesBase)o;
 	
-	if(mct400.hasDisconnect())
+	if(mct400.hasExistingDisconnect())
 	{
 		Integer addy = mct400.getDeviceMCT400Series().getDisconnectAddress();
 		getJCheckBoxEnableDisconnect().doClick();

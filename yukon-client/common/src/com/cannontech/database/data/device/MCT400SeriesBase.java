@@ -8,8 +8,8 @@ import com.cannontech.database.db.device.DeviceMCT400Series;
 public class MCT400SeriesBase extends MCTBase 
 {
 	private DeviceMCT400Series deviceMCT400Series = null;
-	private boolean hasTOU = false;
-	private boolean hasDisconnect = false;
+	private boolean hasNewTOU = false;
+	private boolean hasNewDisconnect = false;
 
 /**
  * MCT constructor comment.
@@ -22,7 +22,7 @@ public MCT400SeriesBase() {
  */
 public void add() throws java.sql.SQLException {
 	super.add();
-	if(hasMCT400SeriesSettings())
+	if(hasNewMCT400SeriesSettings())
 		getDeviceMCT400Series().add();
 }
 
@@ -36,7 +36,7 @@ public void addPartial() throws java.sql.SQLException
 {
 	super.addPartial();
 	
-	if(hasMCT400SeriesSettings())
+	if(hasNewMCT400SeriesSettings())
 		getDeviceMCT400Series().add();
 		
 }
@@ -46,7 +46,7 @@ public void addPartial() throws java.sql.SQLException
  */
 public void delete() throws java.sql.SQLException 
 {
-	if(hasMCT400SeriesSettings())
+	if(hasExistingMCT400SeriesSettings())
 		getDeviceMCT400Series().delete();
 	
 	super.delete();
@@ -116,55 +116,60 @@ public void setDeviceID(Integer deviceID) {
 public void update() throws java.sql.SQLException {
 	super.update();
 	
-	if(hasMCT400SeriesSettings())
+	if(hasExistingMCT400SeriesSettings())
+		getDeviceMCT400Series().update();
+	else if(hasNewTOU || hasNewDisconnect)
 		getDeviceMCT400Series().add();
 }
 
-private boolean hasMCT400SeriesSettings()
+//this should all be temporary
+//replace with a decent plan
+private boolean hasExistingMCT400SeriesSettings()
 {
-	return (hasTOU || hasDisconnect);
+	return (hasExistingTOU() || hasExistingDisconnect());
 }
 
-public void setHasTOU(boolean usesTOU)
+private boolean hasNewMCT400SeriesSettings()
 {
-	hasTOU = usesTOU;
+	return ((!hasExistingMCT400SeriesSettings()) && (hasNewTOU || hasNewDisconnect));
 }
 
-public void setHasDisconnect(boolean usesDisconn)
+public void setHasNewTOU(boolean usesTOU)
 {
-	hasDisconnect = usesDisconn;
+	hasNewTOU = usesTOU;
 }
 
-public boolean hasDisconnect()
+public void setHasNewDisconnect(boolean usesDisconn)
 {
-	hasDisconnect = false;
-	
+	hasNewDisconnect = usesDisconn;
+}
+
+public boolean hasExistingDisconnect()
+{
 	try
 	{
-		hasDisconnect = DeviceMCT400Series.hasDisconnectAddress(getDevice().getDeviceID());
+		return DeviceMCT400Series.hasExistingDisconnectAddress(getDevice().getDeviceID());
 	}
 	catch( java.sql.SQLException e2 )
 	{
 		com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
 	}	
 	
-	return hasDisconnect;
+	return false;
 }
 
-public boolean hasTOU()
+public boolean hasExistingTOU()
 {
-	hasTOU = false;
-	
 	try
 	{
-		hasTOU = DeviceMCT400Series.hasTOUSchedule(getDevice().getDeviceID());
+		return DeviceMCT400Series.hasExistingTOUSchedule(getDevice().getDeviceID());
 	}
 	catch( java.sql.SQLException e2 )
 	{
 		com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
 	}	
 	
-	return hasTOU;
+	return false;
 }
 
 }
