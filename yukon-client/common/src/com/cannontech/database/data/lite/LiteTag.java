@@ -32,7 +32,7 @@ public class LiteTag extends LiteBase {
 	}
 	
 	public String toString() {
-		return "TagID: " + getTagID() + " TagName: " + getTagName() + " TagLevel: " + getTagLevel() + " Inhibit: " + isInhibit() + " ColorID: " + getColorID() + " TagID: " + getTagID();
+		return getTagName();
 	}
 	
 	/**
