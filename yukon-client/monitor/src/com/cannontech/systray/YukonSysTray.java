@@ -219,8 +219,6 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 		}
 		else if( e.getSource() == getMenuItemTDC() )
 		{
-System.out.println(" -- " + ISystrayDefines.EXEC_TDC );
-
 			try
 			{
 				Process p = Runtime.getRuntime().exec(
@@ -302,7 +300,7 @@ System.out.println(" -- " + ISystrayDefines.EXEC_TDC );
 
 		Vector cntrls = new Vector();
 		cntrls.add( getMenuItemMute() );
-		cntrls.add( getMenuItemProperties() );
+		//cntrls.add( getMenuItemProperties() );
 
 		Vector apps = new Vector();
 		apps.add( getMenuItemTDC() );
