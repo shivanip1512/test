@@ -23,17 +23,18 @@ import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.util.ServletUtil;
 import com.jrefinery.chart.JFreeChart;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.data.graph.GraphDefinition;
 
 public class Graph implements GraphDefines, com.jrefinery.chart.event.ChartChangeListener
 {
-	private java.lang.String DB_ALIAS = "yukon";
+	private java.lang.String DB_ALIAS = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 	private java.lang.String databaseAlias = DB_ALIAS;	//defaults set to yukon! 5/24/01
 	private long lastUpdateTime = 0;
+
 	private int viewType = TrendModelType.LINE_VIEW;
 
-	// This is the type of data series the graph will load
-	// !HACK!HACK! AL- a value of null will cause all types to be loaded!
-	
+	private java.util.Date startDate = ServletUtil.getToday();	
 	private int seriesMask = 0x00;
 	
 	private static final int DEFAULT_GIF_WIDTH = 556;
@@ -48,15 +49,15 @@ public class Graph implements GraphDefines, com.jrefinery.chart.event.ChartChang
 	private JFreeChart freeChart = null;
 	private TrendModel trendModel = null;
 
-	private com.cannontech.database.data.graph.GraphDefinition currentGraphDefinition = null;
-	private int currentTimePeriod = ServletUtil.getIntValue( ServletUtil.ONEDAY );  //default to first period in drop down periodComboBox
-
+	private GraphDefinition graphDefinition = null;
+//	private int graphDefinitionID = -1;
+	private String period = ServletUtil.ONEDAY;
 	private java.lang.String title = null;
 		
 	private static final int DEFAULT_INTERVAL_RATE = 300;  //rate is in seconds
 	private int minIntervalRate = DEFAULT_INTERVAL_RATE;
 
-	private int options_mask_holder = 0x00;
+	private int options_mask_holder = 0x00;	
 	private boolean updateTrend = true;
 	private StringBuffer htmlString = null;
 
@@ -185,7 +186,7 @@ public void encodeSVG(java.io.OutputStream out) throws java.io.IOException
 		
 		Element svgRoot = svgGenerator.getRoot();
 		
-		svgRoot.setAttributeNS(null,"gdefid",getCurrentGraphDefinition().getGraphDefinition().getGraphDefinitionID().toString() );
+		svgRoot.setAttributeNS(null,"gdefid", String.valueOf(getGraphDefinition().getGraphDefinition().getGraphDefinitionID()));
 		
 		// Finally, stream out SVG to the standard output 
 		// is this a good encoding to use?
@@ -273,18 +274,52 @@ public void encodeUsageHTML(java.io.OutputStream out) throws java.io.IOException
 }
 
 /**
- * Insert the method's description here.
- * Creation date: (5/16/2001 11:23:16 AM)
- * @return int
+ * Returns graphDefinition, but first retrieves and sets the 
+ *  GraphDefinition to the current cache retrieval using DBPersistentFuncs.
+ * @return graphDefinition com.cannontech.database.data.graph.GraphDefinition
  */
-public com.cannontech.database.data.graph.GraphDefinition getCurrentGraphDefinition()
-{	
-	return currentGraphDefinition;
+private GraphDefinition getGraphDefinition()
+{
+	return graphDefinition;
 }
+
+/**
+ * Set the graphDefinition.
+ * Flags updateTrend = true (forces trend to update on every set of graphDefinition field).
+ * @param graphDefinition com.cannontech.database.graph.GraphDefinition
+ */
+public void setGraphDefinition(GraphDefinition newGraphDefinition)
+{
+	setUpdateTrend(true);
+	graphDefinition = newGraphDefinition;	
+}
+
+/**
+ * Set the graphDefinition using only the GraphDefinitionID.
+ * Creates a GraphDefinition and calls setGraphDefinition(GraphDefinition)
+ * @param graphDefinitionID int values of the GraphDefinition
+ */
+public void setGraphDefinition(com.cannontech.database.data.lite.LiteGraphDefinition liteGraphDefinitionID)
+{
+	GraphDefinition tempGraphDefinition = (GraphDefinition)com.cannontech.database.cache.functions.DBPersistentFuncs.retrieve(liteGraphDefinitionID);
+	setGraphDefinition(tempGraphDefinition);
+}
+
+/**
+ * Set the graphDefinition using only the GraphDefinitionID.
+ * Creates a GraphDefinition and calls setGraphDefinition(GraphDefinition)
+ * @param graphDefinitionID int values of the GraphDefinition
+ */
+public void setGraphDefinition(int newGraphDefinitionID)
+{
+	com.cannontech.database.data.lite.LiteGraphDefinition liteGraphDef = com.cannontech.database.cache.functions.GraphFuncs.getLiteGraphDefinition(newGraphDefinitionID);
+	setGraphDefinition(liteGraphDef);
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (5/17/2001 4:49:15 PM)
- * @return GraphModelInterface [][]
+ * @return TrendModel [][]
  */
 public TrendModel getTrendModel()
 {
@@ -293,11 +328,11 @@ public TrendModel getTrendModel()
 /**
  * Insert the method's description here.
  * Creation date: (5/16/2001 11:23:16 AM)
- * @return int
+ * @return String
  */
-public int getCurrentTimePeriod()
+public String getPeriod()
 {
-	return currentTimePeriod;
+	return period;
 }
 public String getDatabaseAlias() 
 {
@@ -313,7 +348,7 @@ public synchronized com.jrefinery.chart.JFreeChart getFreeChart()
 {
 	if( freeChart == null)
 	{
-		freeChart = com.jrefinery.chart.ChartFactory.createTimeSeriesChart("Yukon Trending Application", "Date/Time", "Value", new com.jrefinery.data.TimeSeriesCollection(), true);
+		freeChart = com.jrefinery.chart.ChartFactory.createTimeSeriesChart("Yukon Trending Application", "Date/Time", "Value", new com.jrefinery.data.TimeSeriesCollection(), true, true, true);
 		freeChart.setBackgroundPaint(java.awt.Color.white);
 	}
 	return freeChart;
@@ -367,14 +402,16 @@ public java.lang.String getTitle() {
 public boolean isUpdateTrend()
 {
 	long now = (new java.util.Date()).getTime();
-	if( (lastUpdateTime + getMinIntervalRate()) <= now)
+	com.cannontech.clientutils.CTILogger.debug( "LAST = " + new java.util.Date(lastUpdateTime) );
+	com.cannontech.clientutils.CTILogger.debug( "NOW  = " + new java.util.Date(now) );
+	com.cannontech.clientutils.CTILogger.debug( "waiting until  = " + new java.util.Date(lastUpdateTime + (getMinIntervalRate() * 1000)) );	
+	if( (lastUpdateTime + (getMinIntervalRate() *1000)) <= now)
 	{
 		updateTrend = true;
 		lastUpdateTime = now;
 	}
 	return updateTrend;
 }
-
 /**
  * Retrieves the data for the given point list for the date
  * range indicated in the startDate and endDate.
@@ -483,10 +520,14 @@ private int retrieveIntervalRate()
  * Creation date: (10/12/00 3:02:39 PM)
  * @param gDef com.cannontech.database.data.graph.GraphDefinition
  */
-public void setCurrentGraphDefinition(com.cannontech.database.data.graph.GraphDefinition gDef) 
-{
-	currentGraphDefinition = gDef;
-} 
+//public void setGraphDefinitionID(int newGraphDefinitionID)
+//{
+////	if( graphDefinitionID != newGraphDefinitionID)
+//	{
+//		graphDefinitionID = newGraphDefinitionID;
+//		retrieveGraphDefinition();
+//	}	
+//} 
 /**
  ** Both Server and Client use **
  * Insert the method's description here.
@@ -494,9 +535,9 @@ public void setCurrentGraphDefinition(com.cannontech.database.data.graph.GraphDe
  * @param width int
  * @param height int
  */
-public void setCurrentTimePeriod(int newTimePeriod) 
+public void setPeriod(String newPeriod) 
 {
-	currentTimePeriod = newTimePeriod;
+	period = newPeriod;
 }  
 /**
  * Insert the method's description here.
@@ -531,6 +572,25 @@ public void setViewType(int newViewType)
 {
 //	setUpdateTrend(true);
 	viewType = newViewType;
+}
+
+public void setStartDate(java.util.Date newStartDate)
+{
+	if( startDate.compareTo((Object)newStartDate) != 0 )
+	{
+		com.cannontech.clientutils.CTILogger.info("Changing Date!");
+		startDate = newStartDate;
+	}
+}
+
+public java.util.Date getStartDate()
+{
+	return com.cannontech.util.ServletUtil.getStartingDateOfInterval( startDate, getPeriod());
+}
+
+public java.util.Date getStopDate()
+{
+	return com.cannontech.util.ServletUtil.getEndingDateOfInterval( startDate, getPeriod() );
 }
 public void setOptionsMaskHolder(int newMask, boolean setMasked)
 {
@@ -647,7 +707,8 @@ public void update()
 	
 	if( isUpdateTrend())
 	{
-		TrendModel newModel = new TrendModel(getCurrentGraphDefinition(), getOptionsMaskHolder()); 
+		
+		TrendModel newModel = new TrendModel(getGraphDefinition(), getStartDate(), getStopDate(), getOptionsMaskHolder()); 
 		setTrendModel( newModel );
 		updateTrend = false;		
 	}

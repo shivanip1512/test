@@ -10,6 +10,8 @@ import java.awt.event.WindowEvent;
 import java.util.Date;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.DBPersistentFuncs;
+import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.model.GraphDefinitionTreeModel;
 import com.cannontech.graph.buffer.html.HTMLBuffer;
 import com.cannontech.graph.buffer.html.PeakHtml;
@@ -24,72 +26,12 @@ import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.graph.model.TrendModelType;
-public class GraphClient extends javax.swing.JPanel implements com.cannontech.database.cache.DBChangeListener, GraphDefines, java.awt.event.ActionListener, java.awt.event.WindowListener, javax.swing.event.ChangeListener, javax.swing.event.TreeSelectionListener {
-
-private class TrendDataAutoUpdater extends Thread
+public class GraphClient extends javax.swing.JPanel implements com.cannontech.database.cache.DBChangeListener, GraphDefines, java.awt.event.ActionListener, java.awt.event.WindowListener, javax.swing.event.ChangeListener, javax.swing.event.TreeSelectionListener
 {
-	public boolean ignoreAutoUpdate = false;
-	public void run()
-	{
-		while (true)
-		{
-			try
-			{
-				//interval rate is in seconds (* 1000 for millis)
-				Thread.sleep((long) (GraphClient.this.getGraph().getMinIntervalRate() * 1000));
-			}
-			catch (InterruptedException ie)
-			{
-				return;
-			}
-			
-			if( GraphClient.this.connToDispatch.isValid() )
-			{
-				synchronized (com.cannontech.graph.GraphClient.class)
-				{
-					if( ignoreAutoUpdate )
-					{
-						com.cannontech.clientutils.CTILogger.info("** ignoreAutoUpdate **\n");
-						ignoreAutoUpdate = false;
-						continue;
-					}
-				}					
-			
-				if (GraphClient.this.getCurrentRadioButton().isSelected())
-				{
-					javax.swing.SwingUtilities.invokeLater(new Runnable()
-					{
-						public void run()
-						{
-							java.awt.Frame frame = GraphClient.this.getGraphParentFrame();
-							java.awt.Cursor savedCursor = GraphClient.this.getCursor();
-
-							if (getGraph().getTrendModel() != null)
-							{
-								frame.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-								// Set to currentDate - always want this date to be TODAY!
-								GraphClient.this.getStartDateComboBox().setSelectedDate(com.cannontech.util.ServletUtil.getToday());
-								GraphClient.this.setGraphDefinitionDates( null, null );
-								GraphClient.this.getGraph().setUpdateTrend(true);
-								updateCurrentPane();
-								long timer = (System.currentTimeMillis());
-								frame.setTitle("Yukon Trending - ( Updated " + extendedDateTimeformat.format(new java.util.Date(timer)) + " )");
-								com.cannontech.clientutils.CTILogger.info("[" + extendedDateTimeformat.format(new java.util.Date(timer)) + "] - Yukon Trending - Auto Updating Point Data");
-								frame.setCursor(savedCursor);
-
-							}
-						}
-					});
-				}
-			}
-		}
-	}
-}
+	//This is a somewhat temporary field user
 	private int savedViewType = TrendModelType.LINE_VIEW;
 	private static Graph graphClass = null;
 	private static javax.swing.JFrame graphClientFrame = null;
-	private final java.lang.String DB_ALIAS = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 	private String directory = null;
 	private static boolean isGraphDefinitionEditable = true;
 	public static double scalePercent = 0;
@@ -104,13 +46,14 @@ private class TrendDataAutoUpdater extends Thread
 	private int histIndex = 0;	//Historical timeperiodComboBox index
 	private Object currDate = null;
 	private Object histDate = null;
-	private Date currentStartDate = null;
 	private int histWeek = 0;
 	private int currentWeek = NO_WEEK;	//used when more than one week is selected.
-	private boolean timeToUpdate = true;	//true, update button was pushed, initial is ture also
 	private java.util.Date[] sliderValuesArray = null;
-	private CreateGraphPanel createPanel =  null;
 	private javax.swing.ButtonGroup dataViewButtonGroup;
+	
+	private boolean timeToUpdate = true;	//true, update button was pushed, initial is ture also
+		
+	private CreateGraphPanel createPanel =  null;
 	//Menu Bar and Items
 	private javax.swing.JMenuBar menuBar = null;
 	private FileMenu fileMenu = null;
@@ -118,8 +61,12 @@ private class TrendDataAutoUpdater extends Thread
 	private ViewMenu viewMenu = null;
 	private OptionsMenu optionsMenu = null;
 	private HelpMenu helpMenu = null;
-	private static boolean showPointLabels = true;
+
 	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
+	private com.cannontech.common.gui.util.TreeViewPanel ivjTreeViewPanel = null;
+	private com.cannontech.common.gui.util.DateComboBox ivjStartDateComboBox = null;
+	private com.cannontech.jfreechart.chart.YukonChartPanel freeChartPanel = null;
+	
 	private TrendDataAutoUpdater trendDataAutoUpdater;
 	private javax.swing.JRadioButton ivjCurrentRadioButton = null;
 	private javax.swing.JPanel ivjGraphTabPanel = null;
@@ -128,20 +75,78 @@ private class TrendDataAutoUpdater extends Thread
 	private javax.swing.JLabel ivjStartDateLabel = null;
 	private javax.swing.JComboBox ivjTimePeriodComboBox = null;
 	private javax.swing.JLabel ivjTimePeriodLabel = null;
-	private com.cannontech.common.gui.util.TreeViewPanel ivjTreeViewPanel = null;
 	private javax.swing.JEditorPane ivjTabularEditorPane = null;
 	private javax.swing.JSlider ivjTabularSlider = null;
 	private javax.swing.JPanel ivjTabularTabPanel = null;
 	private javax.swing.JPanel ivjSliderPanel = null;
 	private javax.swing.JScrollPane ivjTabularTabScrollPane = null;
 	private javax.swing.JSplitPane ivjLeftRightSplitPane = null;
-	private com.cannontech.common.gui.util.DateComboBox ivjStartDateComboBox = null;
-	private com.cannontech.jfreechart.chart.YukonChartPanel freeChartPanel = null;
 	private javax.swing.JTabbedPane ivjTabbedPane = null;
 	private javax.swing.JPanel ivjTrendDisplayPanel = null;
 	private javax.swing.JPanel ivjTrendSetupPanel = null;
 	private javax.swing.JEditorPane ivjSummaryEditorPane = null;
 	private javax.swing.JScrollPane ivjSummaryTabScrollPane = null;
+
+	private class TrendDataAutoUpdater extends Thread
+	{
+		public boolean ignoreAutoUpdate = false;
+		public void run()
+		{
+			while (true)
+			{
+				try
+				{
+					//interval rate is in seconds (* 1000 for millis)
+					Thread.sleep((long) (GraphClient.this.getGraph().getMinIntervalRate() * 1000));
+				}
+				catch (InterruptedException ie)
+				{
+					return;
+				}
+				
+				if( GraphClient.this.connToDispatch.isValid() )
+				{
+					synchronized (com.cannontech.graph.GraphClient.class)
+					{
+						if( ignoreAutoUpdate )
+						{
+							com.cannontech.clientutils.CTILogger.info("** ignoreAutoUpdate **\n");
+							ignoreAutoUpdate = false;
+							continue;
+						}
+					}					
+				
+					if (GraphClient.this.getCurrentRadioButton().isSelected())
+					{
+						javax.swing.SwingUtilities.invokeLater(new Runnable()
+						{
+							public void run()
+							{
+								java.awt.Frame frame = GraphClient.this.getGraphParentFrame();
+								java.awt.Cursor savedCursor = GraphClient.this.getCursor();
+	
+								if (getGraph().getTrendModel() != null)
+								{
+									frame.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+									// Set to currentDate - always want this date to be TODAY!
+									GraphClient.this.getStartDateComboBox().setSelectedDate(com.cannontech.util.ServletUtil.getToday());
+									GraphClient.this.getGraph().setStartDate(getStartDateComboBox().getSelectedDate());
+									GraphClient.this.getGraph().setUpdateTrend(true);
+									updateCurrentPane();
+									long timer = (System.currentTimeMillis());
+									frame.setTitle("Yukon Trending - ( Updated " + extendedDateTimeformat.format(new java.util.Date(timer)) + " )");
+									com.cannontech.clientutils.CTILogger.info("[" + extendedDateTimeformat.format(new java.util.Date(timer)) + "] - Yukon Trending - Auto Updating Point Data");
+									frame.setCursor(savedCursor);
+	
+								}
+							}
+						});
+					}
+				}
+			}
+		}
+	}	
+	
 /**
  * This method needs to be implemented for the abstract class JCValueListener.
  *  JCValueListener is the DatePopupComboBox's listener.  This particular method is
@@ -189,11 +194,10 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	else if (event.getSource() == getStartDateComboBox())
 	{
 		// Need to make sure the date has changed otherwise we are doing a billion updates on the one stateChange.
-		if( getCurrentStartDate().compareTo((Object)ivjStartDateComboBox.getSelectedDate()) != 0 )
+		if( getStartDate().compareTo((Object)ivjStartDateComboBox.getSelectedDate()) != 0 )
 		{
-			com.cannontech.clientutils.CTILogger.info("Changing Date!");
+			getGraph().setStartDate(ivjStartDateComboBox.getSelectedDate());
 			actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
-			setCurrentStartDate(ivjStartDateComboBox.getSelectedDate());
 		}
 	}
 	else if( event.getSource() == getViewMenu().getLineGraphRadioButtonItem() )
@@ -363,6 +367,7 @@ public void actionPerformed_AboutMenuItem( )
 	aboutDialog.setValue(null);
 	aboutDialog.show();
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (6/22/00 2:07:26 PM)
@@ -370,14 +375,14 @@ public void actionPerformed_AboutMenuItem( )
  */
 public void actionPerformed_CreateMenuItem( )
 {
-
 	createPanel =  new CreateGraphPanel();
-	com.cannontech.database.data.graph.GraphDefinition gDef = createPanel.showCreateGraphPanelDialog( getGraphParentFrame());
-
+	GraphDefinition gDef = createPanel.showCreateGraphPanelDialog( getGraphParentFrame());
+	
 	if( gDef != null )
 	{
-		addGraphDefinition(gDef);
-		getTreeViewPanel().selectByString(gDef.getGraphDefinition().getName() );
+		DBPersistentFuncs.add(gDef, connToDispatch);
+		getTreeViewPanel().refresh();
+		getTreeViewPanel().selectObject(gDef);
 	}
 	createPanel = null;
 }
@@ -390,17 +395,16 @@ public void actionPerformed_DeleteMenuItem( )
 {
 	Object selected = getTreeViewPanel().getSelectedItem();
 
-	if (selected != null && selected instanceof com.cannontech.database.data.lite.LiteGraphDefinition)
+	if (selected != null && selected instanceof com.cannontech.database.data.lite.LiteBase)
 	{
-		com.cannontech.database.data.graph.GraphDefinition gDef =
-			retrieveGraphDefinition((com.cannontech.database.data.lite.LiteGraphDefinition) selected);
-
 		int option = javax.swing.JOptionPane.showConfirmDialog( getGraphParentFrame(),
-	        		"Are you sure you want to permanently delete '" + gDef.getGraphDefinition().getName() + "'?",
+	        		"Are you sure you want to permanently delete '" + ((com.cannontech.database.data.lite.LiteGraphDefinition)selected).getName() + "'?",
 	        		"Confirm Delete", javax.swing.JOptionPane.YES_NO_OPTION);
 		if (option == javax.swing.JOptionPane.YES_OPTION)
 		{
-			deleteGraphDefinition(gDef);
+			com.cannontech.database.cache.functions.DBPersistentFuncs.delete((com.cannontech.database.data.lite.LiteBase)selected, connToDispatch);
+			getTreeViewPanel().refresh();
+			getFreeChart().getPlot().setDataset(null);
 		}
 	}
 }
@@ -424,26 +428,23 @@ public void actionPerformed_EditMenuItem( )
 		savedCursor = this.getCursor();
 		this.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 		
-		if (selected instanceof com.cannontech.database.data.lite.LiteGraphDefinition)
+		if (selected instanceof com.cannontech.database.data.lite.LiteBase)
 		{
-			com.cannontech.database.data.graph.GraphDefinition gDef =
-				retrieveGraphDefinition((com.cannontech.database.data.lite.LiteGraphDefinition) selected);
+			GraphDefinition gDef = (GraphDefinition)DBPersistentFuncs.retrieve((com.cannontech.database.data.lite.LiteBase)selected);
 
-			//CreateGraphPanel panel = new CreateGraphPanel();
 			createPanel.setValue(gDef);
 			gDef = createPanel.showCreateGraphPanelDialog(getGraphParentFrame());
-
-			if (gDef == null) //cancelled out of dialog will give a null value
-				return;
-
-			updateGraphDefinition(gDef);
-
-			getTreeViewPanel().selectByString(gDef.getGraphDefinition().getName());
-
-			// set the start and end date...null's let them be computed in the function too.
-			setGraphDefinitionDates( null, null );
-			updateCurrentPane();
-
+			
+			if (gDef != null)	// 'OK' out of dialog to continue on.
+			{
+				DBPersistentFuncs.update(gDef, connToDispatch);
+				getGraph().setGraphDefinition(gDef);
+			
+				getTreeViewPanel().refresh();
+				getTreeViewPanel().selectObject(gDef);			
+				updateCurrentPane();
+			}
+			//else (gDef == null)	//'CANCEL' out of dialog.
 		}
 	}
 	catch (Exception e)
@@ -544,9 +545,6 @@ public void actionPerformed_GetRefreshButton( int refreshModelType )
 			return;
 		}
 
-		// set the start and end date...null's let them be computed in the function too.
-		setGraphDefinitionDates( null, null );
-
 		timeToUpdate = true; //flags that update button was selected
 		updateCurrentPane();
 
@@ -570,7 +568,7 @@ public void actionPerformed_GetRefreshButton( int refreshModelType )
  */
 public void actionPerformed_GetTimePeriodComboBox( )
 {
-	getGraph().setCurrentTimePeriod( ServletUtil.getIntValue( getTimePeriodComboBox().getSelectedItem().toString() ) );
+	getGraph().setPeriod( getTimePeriodComboBox().getSelectedItem().toString() );
 	if (getCurrentRadioButton().isSelected()
 		|| getTimePeriodComboBox().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.util.ServletUtil.ONEDAY.toString())
 		|| getTimePeriodComboBox().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.util.ServletUtil.THREEDAYS.toString())
@@ -679,7 +677,7 @@ public void actionPerformed_PrintMenuItem( )
 				scalePercent = pf.getImageableHeight() / getTabbedPane().getSelectedComponent().getHeight();
 
 			pj.setPrintable(getFreeChartPanel(), pf);
-//				pj.setPrintable((PrintableChart) getChart(), pf);
+//			pj.setPrintable((PrintableChart) getChart(), pf);
 			pj.print();
 		}
 		catch (java.awt.print.PrinterException ex)
@@ -687,70 +685,6 @@ public void actionPerformed_PrintMenuItem( )
 			ex.printStackTrace();
 		}
 	}
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/27/00 12:57:26 PM)
- * @param gDef com.cannontech.database.data.graph.GraphDefinition
- */
-private void addGraphDefinition(com.cannontech.database.data.graph.GraphDefinition gDef) 
-{
-	java.sql.Connection conn = null;
-
-	try
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection( DB_ALIAS);	
-		gDef.setDbConnection(conn);
-		gDef.add();
-		gDef.setDbConnection(null);
-		conn.commit();
-	}
-	catch( java.sql.SQLException e )
-	{
-		try
-		{
-			if( conn != null )
-				conn.rollback();
-			e.printStackTrace();
-		}
-		catch( java.sql.SQLException e2 )
-		{
-			//hopeless
-			e2.printStackTrace();
-		}
-	}
-	finally
-	{
-		try
-		{
-			if( conn != null )
-				conn.close();
-		}
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
-		}
-	}
-
-	com.cannontech.message.dispatch.message.DBChangeMsg dbChange = new com.cannontech.message.dispatch.message.DBChangeMsg(
-		gDef.getGraphDefinition().getGraphDefinitionID().intValue(),
-		DBChangeMsg.CHANGE_GRAPH_DB,
-		DBChangeMsg.CAT_GRAPH,
-		DBChangeMsg.CAT_GRAPH,
-		DBChangeMsg.CHANGE_TYPE_ADD
-		);
-
-	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange);
-
-	//Now handled with the Base Message Class.
-	//// Try not to update on the "echo"
-	//synchronized (com.cannontech.graph.GraphClient.class)
-	//{
-		//dbChangeListener.ignoreNext = true;
-	//}	
-	connToDispatch.write(dbChange);
-	
-	getTreeViewPanel().refresh();
 }
 /**
  * Insert the method's description here.
@@ -779,6 +713,34 @@ public void addMenuItemActionListeners(javax.swing.JMenu menu)
 		}
 				
 	}
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (9/25/2001 11:12:24 AM)
+ */
+public void exit()
+{
+	try
+	{
+		if ( connToDispatch!= null && connToDispatch.isValid() )  // free up Dispatchs resources
+		{
+			com.cannontech.message.dispatch.message.Command command = new com.cannontech.message.dispatch.message.Command();
+			command.setPriority(15);
+			
+			command.setOperation( com.cannontech.message.dispatch.message.Command.CLIENT_APP_SHUTDOWN );
+
+			connToDispatch.write( command );
+
+			connToDispatch.disconnect();
+		}
+	}
+	catch ( java.io.IOException e )
+	{
+		e.printStackTrace();
+	}
+
+	System.exit(0);
+
 }
 /**
  * Update the pane.
@@ -816,87 +778,14 @@ private String buildHTMLBuffer( HTMLBuffer htmlBuffer)
 	return returnBuffer.toString();
 }
 /**
- * Insert the method's description here.
- * Creation date: (10/31/00 1:53:46 PM)
- */
-private void deleteGraphDefinition(com.cannontech.database.data.graph.GraphDefinition gDef) 
-{
-	java.sql.Connection conn = null;
-	try
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
-		gDef.setDbConnection(conn);
-		gDef.delete();
-		
-		// Lose the reference to the connection
-		gDef.setDbConnection(null);
-	}
-	catch( java.sql.SQLException e )
-	{
-		e.printStackTrace();		 
-	}
-	finally
-	{   //make sure to close the connection
-		try { if( conn != null ) conn.close(); } catch( java.sql.SQLException e2 ) { e2.printStackTrace(); };
-	}
-
-	com.cannontech.message.dispatch.message.DBChangeMsg dbChange = new com.cannontech.message.dispatch.message.DBChangeMsg(
-		gDef.getGraphDefinition().getGraphDefinitionID().intValue(),
-		DBChangeMsg.CHANGE_GRAPH_DB,
-		DBChangeMsg.CAT_GRAPH,
-		DBChangeMsg.CAT_GRAPH,
-		DBChangeMsg.CHANGE_TYPE_DELETE
-		);
-	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange);
-
-	// Don't update on the echo
-	//synchronized (com.cannontech.graph.GraphClient.class)
-	//{
-		//dbChangeListener.ignoreNext = true;
-	//}
-	connToDispatch.write(dbChange);
-	getTreeViewPanel().refresh();
-
-	getFreeChart().getXYPlot().setDataset(null);
-//	getChart().setVisible(false);
-	return;
-}
-/**
- * Insert the method's description here.
- * Creation date: (9/25/2001 11:12:24 AM)
- */
-public void exit()
-{
-	try
-	{
-		if ( connToDispatch!= null && connToDispatch.isValid() )  // free up Dispatchs resources
-		{
-			com.cannontech.message.dispatch.message.Command command = new com.cannontech.message.dispatch.message.Command();
-			command.setPriority(15);
-			
-			command.setOperation( com.cannontech.message.dispatch.message.Command.CLIENT_APP_SHUTDOWN );
-
-			connToDispatch.write( command );
-
-			connToDispatch.disconnect();
-		}
-	}
-	catch ( java.io.IOException e )
-	{
-		e.printStackTrace();
-	}
-
-	System.exit(0);
-
-}
-/**
  * Update the tabular pane.
  * Creation date: (11/15/00 4:11:14 PM)
  * Modified: (7/18/01 by SN) - eliminated a second call to hitDatabase()
  */
+//private int formatDateRangeSlider()
 private int formatDateRangeSlider(TrendModel model, TabularHtml htmlData)
 {
-	int timePeriod = getGraph().getCurrentTimePeriod();
+	String timePeriod = getGraph().getPeriod();
 	
 	java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 	int valueSelected = Integer.MIN_VALUE;	//some number not -1 or greater
@@ -906,8 +795,8 @@ private int formatDateRangeSlider(TrendModel model, TabularHtml htmlData)
 	int valuesCount = sliderValuesArray.length;	//number of days in time period
 
 	
-	if( timePeriod != ServletUtil.getIntValue( ServletUtil.ONEDAY) &&
-		timePeriod != ServletUtil.getIntValue( ServletUtil.TODAY) )  //1 day
+	if( ! (timePeriod.equalsIgnoreCase(ServletUtil.ONEDAY) || 
+			timePeriod.equalsIgnoreCase(ServletUtil.TODAY) ))  //1 day
 	{
 		if(timeToUpdate == true)	//update button pushed ("new start date selected")
 		{
@@ -949,8 +838,8 @@ private int formatDateRangeSlider(TrendModel model, TabularHtml htmlData)
 		
 	}
 
-	if( timePeriod == ServletUtil.getIntValue( ServletUtil.ONEDAY) ||
-		timePeriod == ServletUtil.getIntValue( ServletUtil.TODAY) )  //1 day
+	if( timePeriod.equalsIgnoreCase( ServletUtil.ONEDAY) ||
+		timePeriod.equalsIgnoreCase(ServletUtil.TODAY) )  //1 day
 	{
 		getSliderPanel().setVisible(false);
 	}
@@ -1061,7 +950,7 @@ private javax.swing.JRadioButton getCurrentRadioButton() {
  * Creation date: (7/6/2001 1:32:01 PM)
  * @return javax.swing.ButtonGroup
  */
-public javax.swing.ButtonGroup getDataViewButtonGroup()
+private javax.swing.ButtonGroup getDataViewButtonGroup()
 {
 	if( dataViewButtonGroup == null )
 	{
@@ -1076,7 +965,7 @@ public javax.swing.ButtonGroup getDataViewButtonGroup()
  * Creation date: (10/25/2001 9:55:03 AM)
  * @return java.lang.String
  */
-private String getDirectory()
+public String getDirectory()
 {
 	if( directory == null )
 	{
@@ -1101,18 +990,9 @@ private String getDirectory()
 	}
 	return directory;
 }
-	//private OptionsMenu optionsMenu = null;
-private Date getCurrentStartDate()
+private Date getStartDate()
 {
-	if( currentStartDate == null)
-	{
-		currentStartDate = ServletUtil.getToday();	//init to today.
-	}
-	return currentStartDate;
-}
-private void setCurrentStartDate(Date newStartDate)
-{
-	currentStartDate = newStartDate;
+	return getGraph().getStartDate();
 }
 private FileMenu getFileMenu()
 {
@@ -1123,7 +1003,7 @@ private FileMenu getFileMenu()
 	}
 	return fileMenu;
 }
-private com.jrefinery.chart.JFreeChart getFreeChart()
+public com.jrefinery.chart.JFreeChart getFreeChart()
 {
 	return getGraph().getFreeChart();
 }
@@ -1241,7 +1121,7 @@ private javax.swing.JSplitPane getLeftRightSplitPane() {
  * Creation date: (5/17/2001 10:57:58 AM)
  * @return javax.swing.JButton
  */
-public javax.swing.JMenuBar getMenuBar()
+private javax.swing.JMenuBar getMenuBar()
 {
 	if (menuBar == null)
 	{
@@ -1276,7 +1156,7 @@ private OptionsMenu getOptionsMenu()
  * Creation date: (5/17/2001 10:57:58 AM)
  * @return javax.swing.JButton
  */
-public javax.swing.JButton getRefreshButton() {
+private javax.swing.JButton getRefreshButton() {
 	if (ivjRefreshButton == null) {
 		try {
 			ivjRefreshButton = new javax.swing.JButton();
@@ -1301,7 +1181,7 @@ public javax.swing.JButton getRefreshButton() {
  * Creation date: (3/27/2001 12:06:15 PM)
  * @return javax.swing.JPanel
  */
-public javax.swing.JPanel getSliderPanel() {
+private javax.swing.JPanel getSliderPanel() {
 	if (ivjSliderPanel == null) {
 		try {
 			ivjSliderPanel = new javax.swing.JPanel();
@@ -1331,8 +1211,8 @@ private com.cannontech.common.gui.util.DateComboBox getStartDateComboBox() {
 			ivjStartDateComboBox.setName("StartDateComboBox");
 			ivjStartDateComboBox.setMinimumSize(new java.awt.Dimension(50, 23));
 			// user code begin {1}
-			setCurrentStartDate(ivjStartDateComboBox.getSelectedDate());
-			com.cannontech.clientutils.CTILogger.info(" DAY -> "+ivjStartDateComboBox.getSelectedDate() + " and  " + getCurrentStartDate());
+			getGraph().setStartDate(ivjStartDateComboBox.getSelectedDate());
+			com.cannontech.clientutils.CTILogger.info(" DAY -> "+ivjStartDateComboBox.getSelectedDate() + " and  " + getStartDate());
 			ivjStartDateComboBox.addActionListener(this);
 			ivjStartDateComboBox.setEnabled(false);
 			// user code end
@@ -1535,7 +1415,7 @@ private javax.swing.JScrollPane getTabularTabScrollPane() {
  * Creation date: (5/17/2001 10:57:58 AM)
  * @return javax.swing.JButton
  */
-public javax.swing.JComboBox getTimePeriodComboBox() {
+private javax.swing.JComboBox getTimePeriodComboBox() {
 	if (ivjTimePeriodComboBox == null) {
 		try {
 			ivjTimePeriodComboBox = new javax.swing.JComboBox();
@@ -1562,7 +1442,7 @@ public javax.swing.JComboBox getTimePeriodComboBox() {
  * Creation date: (5/17/2001 10:57:58 AM)
  * @return javax.swing.JButton
  */
-public javax.swing.JLabel getTimePeriodLabel() {
+private javax.swing.JLabel getTimePeriodLabel() {
 	if (ivjTimePeriodLabel == null) {
 		try {
 			ivjTimePeriodLabel = new javax.swing.JLabel();
@@ -1584,7 +1464,7 @@ public javax.swing.JLabel getTimePeriodLabel() {
  * Creation date: (5/17/2001 10:57:58 AM)
  * @return javax.swing.JButton
  */
-public com.cannontech.common.gui.util.TreeViewPanel getTreeViewPanel() {
+private com.cannontech.common.gui.util.TreeViewPanel getTreeViewPanel() {
 	if (ivjTreeViewPanel == null) {
 		try {
 			ivjTreeViewPanel = new com.cannontech.common.gui.util.TreeViewPanel();
@@ -1727,7 +1607,7 @@ private javax.swing.JPanel getTrendSetupPanel() {
  */
 public static String getVersion()
 {
-	return (com.cannontech.common.version.VersionTools.getYUKON_VERSION() + VERSION);
+	return (com.cannontech.common.version.VersionTools.getYUKON_VERSION());
 }
 private ViewMenu getViewMenu()
 {
@@ -1930,14 +1810,7 @@ private void initializeSwingComponents()
 	initDispatchConnection();
 	getDirectory();	//setup the directory for the exports
 }
-/**
- * Insert the method's description here.
- * Creation date: (6/6/2001 11:39:04 AM)
- * @return boolean
- */
-public static boolean isShowPointLabels() {
-	return showPointLabels;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (6/9/00 1:19:04 PM)
@@ -2012,67 +1885,12 @@ public static void main(String[] args)
 }
 /**
  * Insert the method's description here.
- * Creation date: (10/31/00 1:53:46 PM)
- */
-private com.cannontech.database.data.graph.GraphDefinition retrieveGraphDefinition(com.cannontech.database.data.lite.LiteGraphDefinition lGDef) 
-{
-	com.cannontech.database.data.graph.GraphDefinition gDef = (com.cannontech.database.data.graph.GraphDefinition) com.cannontech.database.data.lite.LiteFactory.createDBPersistent(lGDef);
-
-	java.sql.Connection conn = null;
-	try
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
-		gDef.setDbConnection(conn);
-		gDef.retrieve();
-		
-		// Lose the reference to the connection
-		gDef.setDbConnection(null);
-	}
-	catch( java.sql.SQLException e )
-	{
-		e.printStackTrace();		 
-	}
-	finally
-	{   //make sure to close the connection
-		try { if( conn != null ) conn.close(); } catch( java.sql.SQLException e2 ) { e2.printStackTrace(); };
-	}
-
-	return gDef;
-}
-/**
- * Insert the method's description here.
  * Creation date: (6/10/2002 3:32:07 PM)
  * @param frame javax.swing.JFrame
  */
 public void setGraphClientFrame(javax.swing.JFrame frame)
 {
 	graphClientFrame = frame;
-}
-/**
- * Set the current GraphDefinition's start Date and end Dates.
- *  Check for null allows this function to compute the start and end dates.
- *  If they are not null, then we just set the current graphDefinition dates to those
- * 	 passed in through the function call.
- * Creation date: (6/7/2001 12:27:23 PM)
- * @param newStart java.util.Date
- * @param newStop java.util.Date
- */
-public void setGraphDefinitionDates(java.util.Date newStart, java.util.Date newStop)
-{
-	if (newStart == null )
-	{
-		newStart = getStartDateComboBox().getSelectedDate();
-	}
-
-	if (newStop == null)
-	{
-		newStop = com.cannontech.util.ServletUtil.getEndingDateOfInterval( newStart, getTimePeriodComboBox().getSelectedItem().toString() );
-	}
-
-	newStart = com.cannontech.util.ServletUtil.getStartingDateOfInterval( newStart, getTimePeriodComboBox().getSelectedItem().toString() );
-
-	getGraph().getCurrentGraphDefinition().getGraphDefinition().setStartDate(newStart);
-	getGraph().getCurrentGraphDefinition().getGraphDefinition().setStopDate(newStop);
 }
 /**
  *** Client *** 
@@ -2088,13 +1906,18 @@ private int setLabelData(int minIndex, int maxIndex, int value)
 	int next = currentWeek * 7;
 	int prev = ((currentWeek - 2) * 7);
 
+	String graphPeriod = getGraph().getPeriod();
+	
 	if( getCurrentRadioButton().isSelected() )
 	{
 		setSliderLabels(minIndex, maxIndex);
 		currentWeek = NO_WEEK;
 	}
 
-	else if (getGraph().getCurrentTimePeriod() < ServletUtil.getIntValue(ServletUtil.FOURWEEKS))	// 2 - 7 days (index of Array, not a value)
+	else if (graphPeriod.equalsIgnoreCase(ServletUtil.ONEDAY) ||
+				graphPeriod.equalsIgnoreCase(ServletUtil.THREEDAYS) ||
+				graphPeriod.equalsIgnoreCase(ServletUtil.FIVEDAYS) ||
+				graphPeriod.equalsIgnoreCase(ServletUtil.ONEWEEK))	// 2 - 7 days (index of Array, not a value)
 	{
 		setSliderLabels(minIndex, maxIndex);
 		currentWeek = NO_WEEK;
@@ -2102,7 +1925,7 @@ private int setLabelData(int minIndex, int maxIndex, int value)
 
 	else	//8 or more days
 	{
-		if(	value == next )	//week "NEXT"
+		if( value == next )	//week "NEXT"
 		{
 			currentWeek++;
 			setSliderLabels( next, maxIndex);
@@ -2116,15 +1939,6 @@ private int setLabelData(int minIndex, int maxIndex, int value)
 
 	return value;
 
-}
-/**
- * Insert the method's description here.
- * Creation date: (6/29/2001 11:24:02 AM)
- * @param b boolean
- */
-public void setShowPointLabels(boolean b)
-{
-	showPointLabels = b;
 }
 /**
  * Insert the method's description here.
@@ -2173,7 +1987,7 @@ public void setSliderLabels(int minIndex, int maxIndex)
 	}
 
 	else if ( (currentWeek == FOURTH_WEEK && 
-				getGraph().getCurrentTimePeriod() == ServletUtil.getIntValue( ServletUtil.FOURWEEKS ) )
+				getGraph().getPeriod().equalsIgnoreCase(ServletUtil.FOURWEEKS ) )
 			|| currentWeek == FIFTH_WEEK)	//farthest we can go on slider, No next
 	{
 		maxIndex = minIndex + 6;
@@ -2248,7 +2062,7 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 	
 			if( getTabbedPane().getSelectedComponent() == getGraphTabPanel())
 			{
-				com.cannontech.clientutils.CTILogger.info("GRAPH TAB");
+//				com.cannontech.clientutils.CTILogger.info("GRAPH TAB");
 				getGraph().setViewType(savedViewType);
 				if( getTreeViewPanel().getSelectedNode().getParent() == null)	//has no parent, therefore is the root.
 				{
@@ -2259,7 +2073,7 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 				
 			else if( getTabbedPane().getSelectedComponent() == getTabularTabScrollPane())
 			{
-				com.cannontech.clientutils.CTILogger.info("TABULAR TAB");
+//				com.cannontech.clientutils.CTILogger.info("TABULAR TAB");
 				getGraph().setViewType(TrendModelType.TABULAR_VIEW);
 				if( getTreeViewPanel().getSelectedNode().getParent() == null)
 				{
@@ -2272,7 +2086,6 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 					getGraph().update();
 					StringBuffer buf = new StringBuffer();
 					buf.append( buildHTMLBuffer(new TabularHtml()));
-					buf.append("</CENTER></HTML>");
 					getTabularEditorPane().setText( buf.toString() );
 					getTabularEditorPane().setCaretPosition(0);
 					getGraph().setHtmlString(buf);
@@ -2280,7 +2093,7 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 			}
 			else if( getTabbedPane().getSelectedComponent() == getSummaryTabScrollPane())
 			{
-				com.cannontech.clientutils.CTILogger.info("SUMMARY TAB");
+//				com.cannontech.clientutils.CTILogger.info("SUMMARY TAB");
 				getGraph().setViewType(TrendModelType.SUMMARY_VIEW);
 				
 				if( getTreeViewPanel().getSelectedNode().getParent() == null)
@@ -2291,8 +2104,6 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 					getGraph().update();
 					buf.append( buildHTMLBuffer( new PeakHtml()));
 					buf.append( buildHTMLBuffer(new UsageHtml()));
-		
-					buf.append("</CENTER></HTML>");
 					getSummaryEditorPane().setText(buf.toString());
 					getSummaryEditorPane().setCaretPosition(0);
 					getGraph().setHtmlString(buf);
@@ -2367,52 +2178,6 @@ public void updateCurrentPane()
 
 }
 /**
- * Insert the method's description here.
- * Creation date: (10/31/00 1:59:14 PM)
- * @param gDef com.cannontech.database.data.graph.GraphDefinition
- */
-private com.cannontech.database.data.graph.GraphDefinition updateGraphDefinition(com.cannontech.database.data.graph.GraphDefinition gDef) 
-{
-	java.sql.Connection conn = null;
-	try
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
-		gDef.setDbConnection(conn);
-		gDef.update();
-		
-		// Lose the reference to the connection
-		gDef.setDbConnection(null);
-	}
-	catch( java.sql.SQLException e )
-	{
-		e.printStackTrace();		 
-	}
-	finally
-	{   //make sure to close the connection
-		try { if( conn != null ) conn.close(); } catch( java.sql.SQLException e2 ) { e2.printStackTrace(); };
-	}
-
-	com.cannontech.message.dispatch.message.DBChangeMsg dbChange = new com.cannontech.message.dispatch.message.DBChangeMsg(
-		gDef.getGraphDefinition().getGraphDefinitionID().intValue(),
-		DBChangeMsg.CHANGE_GRAPH_DB,
-		DBChangeMsg.CAT_GRAPH,
-		DBChangeMsg.CAT_GRAPH,
-		DBChangeMsg.CHANGE_TYPE_UPDATE
-		);
-
-	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange);
-	
-	// Don't update on the echo
-	//synchronized (com.cannontech.graph.GraphClient.class)
-	//{
-		//dbChangeListener.ignoreNext = true;
-	//}
-	connToDispatch.write(dbChange);
-	getTreeViewPanel().refresh();
-	
-	return gDef;
-}
-/**
  * Selections on the left hand tree generate and event that appears here.
  * Creation date: (6/22/00 10:57:11 AM)
  * @param event javax.swing.event.TreeSelectionEvent
@@ -2426,44 +2191,29 @@ public void valueChanged(javax.swing.event.TreeSelectionEvent event)
 
 	try
 	{
-		// Signal the trend to be rebuilt through a database hit.
-		getGraph().setUpdateTrend(true);
-		
-		//Current cursor set to waiting during the update.
-		savedCursor = this.getCursor();
-		this.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
-
-		//Find the selected graph definition and display it
-		Object item = getTreeViewPanel().getSelectedItem();
-		if( item == null || !( item instanceof com.cannontech.database.data.lite.LiteGraphDefinition) )
-			return;
-
-		// Item is an instance of LiteGraphDefinition...(from previous statement)	
-		com.cannontech.database.data.graph.GraphDefinition selection = 
-					retrieveGraphDefinition( (com.cannontech.database.data.lite.LiteGraphDefinition) item );
-		if( selection == null )
-			return;
-
-		getGraph().setCurrentGraphDefinition( selection );
-
-		for (int i = 0; i < selection.getGraphDataSeries().size(); i++)
-		{
-			com.cannontech.database.db.graph.GraphDataSeries gds = (com.cannontech.database.db.graph.GraphDataSeries) getGraph().getCurrentGraphDefinition().getGraphDataSeries().get(i);
-
-//			if ( getGraph().isPeakSeries( gds.getType()) )
-//			{
-//				getGraph().setHasPeakSeries( true );
-//				break;
-//			}
-		}
-		// set the start and end date...null's let them be computed in the method too.
-		setGraphDefinitionDates ( null, null );	
 
 		//  *Note:  An update will only occur when event is null.
 		//			Null events are passed from the mouse Listener (in displayGraph..)
 		//			and only occur after a double click has happened on a tree node.
 		if( event == null)
 		{
+			
+			// Signal the trend to be rebuilt through a database hit.
+			getGraph().setUpdateTrend(true);
+			
+			//Current cursor set to waiting during the update.
+			savedCursor = this.getCursor();
+			this.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
+	
+			//Find the selected graph definition and display it
+			Object item = getTreeViewPanel().getSelectedItem();
+			if( item == null || !( item instanceof com.cannontech.database.data.lite.LiteBase) )
+				return;
+			
+			// Item is an instance of LiteBase...(from previous statement)	
+	//		com.cannontech.database.db.DBPersistent object = DBPersistentFuncs.retrieve((com.cannontech.database.data.lite.LiteBase)item);
+			getGraph().setGraphDefinition( ((com.cannontech.database.data.lite.LiteBase)item).getLiteID());
+
 			updateCurrentPane();
 			getGraphParentFrame().setTitle("Yukon Trending - ( Updated " + extendedDateTimeformat.format(new java.util.Date( System.currentTimeMillis() ) )+ " )" );
 			getRefreshButton().requestFocus();
