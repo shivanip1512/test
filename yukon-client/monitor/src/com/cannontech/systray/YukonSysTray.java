@@ -329,7 +329,7 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 
 		// insert items
 		yukonSysTray.addItem( getMenuItemExit() );
-		//yukonSysTray.addItem( getMenuItemLogout() );
+		yukonSysTray.addItem( getMenuItemLogout() );
 		yukonSysTray.addSeparator();
 		yukonSysTray.addItem( getMenuItemAbout() );
 		yukonSysTray.addSeparator();
@@ -407,7 +407,7 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 	{
 		if( menuItemLogout == null )
 		{
-			menuItemLogout = new SysTrayMenuItem("Logout", "logout");
+			menuItemLogout = new SysTrayMenuItem("End Session", "logout");
 		}
 		
 		return menuItemLogout;
