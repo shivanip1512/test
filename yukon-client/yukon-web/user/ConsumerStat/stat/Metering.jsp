@@ -77,14 +77,9 @@ MM_reloadPage(true);
 					}
 					else // "graph" is default
 					{%>
-        	            <img id = "theGraph" src="<%=request.getContextPath()%>/servlet/GraphGenerator?" >
+					<img id = "theGraph" src="<%=request.getContextPath()%>/servlet/GraphGenerator?action=EncodeGraph" >
                 	<%}%>
 
-					<%
-					if( request.getParameter("update") != null && request.getParameter("update").equalsIgnoreCase("now"))
-					{
-						graphBean.getDataNow();
-					}%>
 					<br><font size="-1"><cti:getProperty propertyid="<%= CommercialMeteringRole.TRENDING_DISCLAIMER%>"/></font>                	
 					</center>
                 </td>
