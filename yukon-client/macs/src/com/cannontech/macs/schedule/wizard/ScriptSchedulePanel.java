@@ -1,5 +1,9 @@
 package com.cannontech.macs.schedule.wizard;
 
+import java.awt.Rectangle;
+
+import com.cannontech.clientutils.CTILogger;
+
 /**
  * Insert the type's description here.
  * Creation date: (2/15/2001 12:44:42 PM)
@@ -429,7 +433,7 @@ public Object getValue(Object val)
 	} 
 	catch( java.io.IOException e ) 
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		CTILogger.error( e.getMessage(), e );
 	}
 
 	sch.getNonPersistantData().getScript().setFileContents( buf.toString() );
@@ -443,8 +447,8 @@ public Object getValue(Object val)
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+	CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initializes connections
@@ -579,7 +583,7 @@ public boolean isInputValid()
  */
 public void jButtonCheckScript_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	com.cannontech.clientutils.CTILogger.info("Check script is not implemented");
+	CTILogger.info("Check script is not implemented");
 	
 	return;
 }
@@ -588,7 +592,7 @@ public void jButtonCheckScript_ActionPerformed(java.awt.event.ActionEvent action
  */
 public void jComboBoxTemplate_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	com.cannontech.clientutils.CTILogger.info("DO NOTHING FOR TEMPLATE JCOMBOBOX");
+	CTILogger.info("DO NOTHING FOR TEMPLATE JCOMBOBOX");
 	
 	return;
 }
@@ -614,7 +618,7 @@ public static void main(java.lang.String[] args) {
 		frame.setVisible(true);
 	} catch (Throwable exception) {
 		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+		CTILogger.error( exception.getMessage(), exception );;
 	}
 }
 /**
@@ -636,10 +640,13 @@ private void setScriptText(String text)
 			buf.append(in + "\n");
 
 		getJTextAreaScript().setText(buf.toString());
+		
+		//scroll us to the top
+		getJTextAreaScript().setCaretPosition( 0 );
 	}
 	catch (java.io.IOException e) 
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		CTILogger.error( e.getMessage(), e );
 	}
 	 
 }
@@ -658,19 +665,19 @@ public void setScriptValues(final com.cannontech.message.macs.message.ScriptFile
 		{
 			if( this.isDisplayable() )
 			{
-com.cannontech.clientutils.CTILogger.info("		TRUE - ScriptEditor isVisible()");
+CTILogger.info("		** TRUE - ScriptEditor isVisible()");
 				break;
 			}
 			else
 			{
-com.cannontech.clientutils.CTILogger.info("		Sleeping until ScriptEditor isVisible()");
+CTILogger.info("		** Sleeping until ScriptEditor isVisible()");
 				Thread.currentThread().sleep(200);
 			}
 		}
 
 		if( i == 25 )
 		{
-			com.cannontech.clientutils.CTILogger.info("		TimeOut occured while waiting for our ScriptEditor screen to become Visible.");
+			CTILogger.info("		** TimeOut occured while waiting for our ScriptEditor screen to become Visible.");
 			return;
 		}
 
@@ -690,8 +697,11 @@ com.cannontech.clientutils.CTILogger.info("		Sleeping until ScriptEditor isVisib
 			getJTextAreaScript().setEnabled(true);
 			getJTextAreaScript().setText(""); //clear any current text
 			setScriptText( file.getFileContents() );
+			CTILogger.info("		** Done setting script contents");
+
 		}
 	});
+
 	
 }
 /**

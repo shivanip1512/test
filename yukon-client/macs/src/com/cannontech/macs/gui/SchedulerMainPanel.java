@@ -14,6 +14,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableModelEvent;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.panel.ManualChangeJPanel;
@@ -1002,6 +1003,7 @@ public void showEditorPanel( final Schedule selectedSchedule )
 		frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("tdcIcon.gif"));
 		frame.show();
 
+
 		// IF ITS A SCRIPT SCHEDULE, WE MUST GET THE SCRIPT TEXT HERE
 		if( Schedule.SCRIPT_TYPE.equalsIgnoreCase(selectedSchedule.getType()) )
 			getIMACSConnection().sendRetrieveScriptText( selectedSchedule.getScriptFileName() );
@@ -1169,7 +1171,14 @@ public void update(java.util.Observable obs, Object val)
 			javax.swing.JFrame f = (javax.swing.JFrame)getFrames().get(i);
 
 			if( f.isVisible() && f.getContentPane() instanceof ScheduleEditorPanel )
+			//{
 				((ScheduleEditorPanel)f.getContentPane()).updateScriptText( (com.cannontech.message.macs.message.ScriptFile)val );
+//				CTILogger.info(" ** Good FRAME " + i + "    " + f.hashCode() );
+//			}
+//			else
+//			{
+//				CTILogger.info(" ** Bad FRAME  " + i + "    " + f.hashCode() );
+//			}
 			
 		}
 		

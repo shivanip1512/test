@@ -1,5 +1,6 @@
 package com.cannontech.macs.schedule.editor;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.message.macs.message.Schedule;
 
@@ -8,6 +9,9 @@ import com.cannontech.message.macs.message.Schedule;
  */
 public class ScheduleEditorPanel extends com.cannontech.common.editor.PropertyPanel implements com.cannontech.common.editor.IMultiPanelEditor
 {
+	//an attempt the synchronize this panel better
+	private boolean isNotified = false;
+	
 	private DataInputPanel[] inputPanels;
 	private String[] inputPanelTabNames;
 	private String type = Schedule.SIMPLE_TYPE;
@@ -139,8 +143,8 @@ private java.lang.String getType() {
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+	CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initialize the class.
@@ -196,18 +200,24 @@ public void setValue(Object val)
 
  	}
 
-	this.inputPanels = new DataInputPanel[panels.size()];
-	panels.copyInto( this.inputPanels );
 
-	this.inputPanelTabNames = new String[tabs.size()];
-	tabs.copyInto( this.inputPanelTabNames );
-	
-	//Allow super to do whatever it needs to
-	super.setValue( val );
-
-	//tell our waiter that all the panel info is set
+	//lock down here instead of only on the notifyAll() method
 	synchronized( this )
-	{ notifyAll();	}
+	{
+		this.inputPanels = new DataInputPanel[panels.size()];
+		panels.copyInto( this.inputPanels );
+	
+		this.inputPanelTabNames = new String[tabs.size()];
+		tabs.copyInto( this.inputPanelTabNames );
+		
+		//Allow super to do whatever it needs to
+		super.setValue( val );
+		
+		//tell our waiter that all the panel info is set
+		notifyAll();
+		isNotified = true;
+	}
+
 }
 /**
  * This method was created in VisualAge.
@@ -227,20 +237,26 @@ public void updateScriptText(final com.cannontech.message.macs.message.ScriptFil
 	{
 		if( getType().equalsIgnoreCase(Schedule.SCRIPT_TYPE) )
 		{
-			com.cannontech.clientutils.CTILogger.info("		** RECEIVED AN updateScriptText() msg");
+			CTILogger.info("		** RECEIVED AN updateScriptText() msg");
 
-			if( inputPanels == null )
+			//be sure we have panels before we try to set them
+			if( inputPanels == null ) 
 			{
-				com.cannontech.clientutils.CTILogger.info("		   Waiting for input panels to be not null...");
+				CTILogger.info("		** Waiting for input panels to be not null...");
 				synchronized( this )
-				{ wait(); }					
+				{ 
+					//only wait if we have not been notified yet
+					if( !isNotified )
+						wait(); 
+				}
+					
 			}
 
 			for( int i = 0; i < inputPanels.length; i++ )
 			{
 				if( inputPanels[i] instanceof com.cannontech.macs.schedule.wizard.ScriptSchedulePanel )
 				{
-					com.cannontech.clientutils.CTILogger.info("		*** UPDATE SCRIPT TEXT SET");
+					CTILogger.info("		** UPDATE SCRIPT TEXT SET");
 					((com.cannontech.macs.schedule.wizard.ScriptSchedulePanel)inputPanels[i]).setScriptValues(file);
 					((com.cannontech.macs.schedule.wizard.ScriptSchedulePanel)inputPanels[i]).repaint();
 					
