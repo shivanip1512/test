@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2003/06/10 20:58:45 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2003/07/21 22:08:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -110,6 +110,15 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
     ULONG BytesWritten;
     ERRSTRUCT ErrStruct;
     struct timeb TimeB;
+
+    if(!OutMessage)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " SendError generally requires an OutMessage." << endl;
+        }
+        return NORMAL;
+    }
 
     InMessage.DeviceID = PORTERSU_DEVID;
     /* create and send return message if calling process expects it */
