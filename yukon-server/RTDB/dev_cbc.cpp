@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/17 14:52:49 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/07 16:45:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -68,7 +68,7 @@ int CtiDeviceCBC::getCBCRetries( void )
             //  default to 3 attempts (2 retries)
             _cbcTries = 3;
 
-            //if( getDebugLevel() & 0x00000001 )
+            if( getDebugLevel() & 0x00000001 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
