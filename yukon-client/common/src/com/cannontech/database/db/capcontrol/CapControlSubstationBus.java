@@ -31,6 +31,8 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
 	private Integer mapLocationID = new Integer(0);  //not used as of 11-12-2001
 	private Double lowerBandwidth = new Double(0.0);
 	private String controlUnits = CalcComponentTypes.LABEL_KVAR;
+	private Integer controlDelayTime = new Integer(0);
+	private Integer controlSendRetries = new Integer(0);
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
@@ -39,7 +41,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
 		"CurrentVarLoadPointID", "CurrentWattLoadPointID", "UpperBandwidth",
 		"ControlInterval", "MinResponseTime", "MinConfirmPercent",
 		"FailurePercent", "DaysOfWeek", "MapLocationID",
-		"LowerBandwidth", "ControlUnits"
+		"LowerBandwidth", "ControlUnits", "ControlDelayTime", "ControlSendRetries"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "SubstationBusID" };
@@ -80,7 +82,8 @@ public void add() throws java.sql.SQLException
 		getUpperBandwidth(), getControlInterval(), getMinResponseTime(), 
 		getMinConfirmPercent(), getFailurePercent(),
 		getDaysOfWeek(), getMapLocationID(),
-		getLowerBandwidth(), getControlUnits()
+		getLowerBandwidth(), getControlUnits(), getControlDelayTime(),
+		getControlSendRetries()
 	};
 
 	add( TABLE_NAME, addValues );
@@ -278,7 +281,18 @@ public java.lang.Double getUpperBandwidth() {
 	return upperBandwidth;
 }
 
+/**
+ * Insert the method's description here.
+ * Creation date: (7/5/2002 10:22:53 AM)
+ * @return java.lang.Double
+ */
+public Integer getControlDelayTime() {
+	return controlDelayTime;
+}
 
+public Integer getControlSendRetries() {
+	return controlSendRetries;
+}
 /**
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer
@@ -384,6 +398,8 @@ public void retrieve() throws java.sql.SQLException
 		setMapLocationID( (Integer) results[15] );
 		setLowerBandwidth( (Double) results[16] );
 		setControlUnits( (String) results[17] );
+		setControlDelayTime( (Integer) results[18] );
+		setControlSendRetries( (Integer) results[19] );
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -571,7 +587,13 @@ public void setUpperBandwidth(java.lang.Double newUpperBandwidth) {
 	upperBandwidth = newUpperBandwidth;
 }
 
+public void setControlDelayTime(Integer newValue) {
+	controlDelayTime = newValue;
+}
 
+public void setControlSendRetries(Integer newTime) {
+	controlSendRetries = newTime;
+}
 /**
  * update method comment.
  */
@@ -586,7 +608,8 @@ public void update() throws java.sql.SQLException
 		getUpperBandwidth(), getControlInterval(), getMinResponseTime(), 
 		getMinConfirmPercent(), getFailurePercent(),
 		getDaysOfWeek(), getMapLocationID(),
-		getLowerBandwidth(), getControlUnits()
+		getLowerBandwidth(), getControlUnits(), getControlDelayTime(),
+		getControlSendRetries()
 	};
 
 
