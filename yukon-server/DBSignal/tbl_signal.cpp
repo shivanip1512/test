@@ -38,6 +38,7 @@ _text(text),
 _additional(addl),
 _user(user)
 {
+    if(!_logID) _logID = SystemLogIdGen();
 }
 
 CtiTableSignal::CtiTableSignal(const CtiTableSignal& aRef)
@@ -61,6 +62,10 @@ CtiTableSignal::~CtiTableSignal()
 
 }
 
+bool CtiTableSignal::operator<(const CtiTableSignal& aRef) const
+{
+    return _logID < aRef.getLogID();
+}
 
 CtiTableSignal& CtiTableSignal::operator=(const CtiTableSignal& aRef)
 {
@@ -131,6 +136,7 @@ void CtiTableSignal::Insert(RWDBConnection &conn)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << "Error Code = " << stat.errorCode() << endl;
+        dout << inserter.asString() << endl;
     }
 }
 

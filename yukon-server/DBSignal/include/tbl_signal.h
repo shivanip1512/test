@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DBSIGNAL/INCLUDE/tbl_signal.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/12/12 20:39:59 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/12/31 14:09:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -72,6 +72,7 @@ private:
     CtiTableSignal& operator=(const CtiTableSignal& aRef);
 
     unsigned long operator()(const CtiTableSignal& aRef) const;
+    bool operator<(const CtiTableSignal& aRef) const;
     BOOL operator==(const CtiTableSignal& right) const;
 
     void DecodeDatabaseReader( RWDBReader& rdr );
