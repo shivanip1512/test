@@ -128,7 +128,7 @@ IM_EX_CTIBASE INT xIOInit(PCHAR ServerName)
 /* Routine to initialize pipe to porter */
 IM_EX_CTIBASE INT PortPipeInit (USHORT Wait)
 {
-   ULONG i = !NORMAL, j = 0;
+   ULONG i = NOTNORMAL, j = 0;
    PCHAR ServerName = NULL;
    PSZ EnvServerName;
    CHAR Name[100];
@@ -823,7 +823,7 @@ IM_EX_CTIBASE INT DecodeDialupData(INMESS *InMessage, DIALUPSTRUCT *DUPst) // De
 */
 
    default:
-      retval = !NORMAL;
+      retval = NOTNORMAL;
       break;
    }
 
@@ -864,7 +864,7 @@ IM_EX_CTIBASE INT nfpexec ( USHORT Function, USHORT PointOffset, DEVICE * Device
    {
       // I don't know nuthin'
       //printf("%s failed to find route <%.20s>\n", __FUNCTION__, RouteRecord.RouteName);
-      return(!NORMAL);
+      return(NOTNORMAL);
    }
 
    /* if pipe shut down return the error */

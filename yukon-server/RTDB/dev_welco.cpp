@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/06/25 20:01:28 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/08/08 23:24:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -379,7 +379,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << TimeNow << " Message returned for " << getName() << " is zero bytes in length " << endl;
-        return !NORMAL;
+        return READTIMEOUT;
     }
 
     MyInMessage = InMessage->Buffer.InMessage - 2;

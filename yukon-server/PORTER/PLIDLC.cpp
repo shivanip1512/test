@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:30 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/08/08 23:24:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -481,7 +481,7 @@ IDLCAlgStat (PBYTE Message, PUSHORT Status)
    {
       for(i = 0; i < 8; i++)
          Status[i] = 0;
-      return(!NORMAL);
+      return(NOTNORMAL);
    }
 
    Status[0] = (Message[0] >> 6) & 0x03;

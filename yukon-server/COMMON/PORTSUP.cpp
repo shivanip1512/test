@@ -556,7 +556,7 @@ ModemReset (HFILE PortHandle, USHORT Port, USHORT Trace, BOOL dcdTest)
       }
    }
 
-   return(!NORMAL);
+   return(NOTNORMAL);
 }
 
 
@@ -595,7 +595,7 @@ ModemSetup (HFILE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL dcd
       if(CTIWrite (PortHandle, MyMessage, strlen (MyMessage), &BytesWritten) ||
          BytesWritten != strlen (MyMessage))
       {
-         return(!NORMAL);
+         return(NOTNORMAL);
       }
 
       /* Send the CR */
@@ -633,14 +633,14 @@ ModemSetup (HFILE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL dcd
       }
       else if(!(strnicmp (Response, "ERROR", 5)))
       {
-         return(!NORMAL);
+         return(NOTNORMAL);
       }
    }
 
 
    if(j >= 5)
    {
-      return(!NORMAL);
+      return(NOTNORMAL);
    }
 
    return(NORMAL);
@@ -676,7 +676,7 @@ ModemConnect (HFILE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL d
    if(CTIWrite (PortHandle, MyMessage, strlen (MyMessage),&BytesWritten) ||
       BytesWritten != strlen (MyMessage))
    {
-      return(!NORMAL);
+      return(NOTNORMAL);
    }
 
    /* Send the CR */
@@ -763,7 +763,7 @@ ModemConnect (HFILE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL d
       dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
    }
 
-   return(!NORMAL);
+   return(NOTNORMAL);
 }
 
 
@@ -808,7 +808,7 @@ WaitForResponse (HFILE PortHandle, PULONG ResponseSize, PCHAR Response, ULONG Ti
 
       if(i + 2 > *ResponseSize)
       {
-         return(!NORMAL);
+         return(NOTNORMAL);
       }
    }
 
@@ -1022,7 +1022,7 @@ USHORT  CCITT16CRC(INT Id, UCHAR* buffer, LONG length, BOOL bAdd)
 INT     CheckCCITT16CRC(INT Id,BYTE *InBuffer,ULONG InCount)
 {
    BYTEUSHORT  CRC;
-   INT         retval = !NORMAL;
+   INT         retval = NOTNORMAL;
 
 
    switch(Id)
@@ -1206,7 +1206,7 @@ WaitForResponse (HFILE PortHandle, PULONG ResponseSize,  PCHAR Response, ULONG T
 
    if(PortHandle == (HFILE)NULL)
    {
-      return(!NORMAL);
+      return(NOTNORMAL);
    }
 
    /* Set the timeout on read to 1 second */
@@ -1267,7 +1267,7 @@ WaitForResponse (HFILE PortHandle, PULONG ResponseSize,  PCHAR Response, ULONG T
 
          if(i + 2 > *ResponseSize)     // are we still within the size limit.
          {
-            status = !NORMAL;
+            status = NOTNORMAL;
             break; // the while
          }
       }

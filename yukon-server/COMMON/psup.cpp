@@ -2548,7 +2548,7 @@ INT ForceScanCheck (void)
     {
         if(CTIOpenEventSem (SCANNERSEM, &ScannerSem, MUTEX_ALL_ACCESS))
         {
-            return(!NORMAL);
+            return(NOTNORMAL);
         }
     }
 
@@ -2556,7 +2556,7 @@ INT ForceScanCheck (void)
     {
         CTICloseEventSem (&ScannerSem);
         ScannerSem = (HEV) NULL;
-        return(!NORMAL);
+        return(NOTNORMAL);
     }
 
     return(NORMAL);
