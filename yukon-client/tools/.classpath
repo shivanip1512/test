@@ -25,5 +25,6 @@
     <classpathentry kind="lib" path="/third-party/junit.jar"/>
     <classpathentry kind="lib" path="/third-party/jcommon.jar"/>
     <classpathentry kind="lib" path="/third-party/classes12.jar"/>
+    <classpathentry kind="src" path="/esub"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
