@@ -1,8 +1,37 @@
 
+/*-----------------------------------------------------------------------------*
+*
+* File:   port_base
+*
+* Date:   6/24/2004
+*
+* Author: Corey G. Plender
+*
+* CVS KEYWORDS:
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2004/06/28 20:16:11 $
+*
+* HISTORY      :
+* $Log: port_base.cpp,v $
+* Revision 1.41  2004/06/28 20:16:11  cplender
+* Added cparms
+* # PORTER_RELEASE_IDLE_PORTS : true
+* # DEFAULT_MIN_CONNECT : 0
+* # DEFAULT_MAX_CONNECT : 10
+* and code to support opening and closing ALL port type on usage.  This allows
+* IP ports which disconnect, but do not close thier socket to function correctly.
+*
+*
+* Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
+*-----------------------------------------------------------------------------*/
+
+#pragma warning( disable : 4786)
+
 #include <iostream>
 using namespace std;
 
 
+#include "cparms.h"
 #include "port_base.h"
 #include "prot_emetcon.h"
 #include "dsm2err.h"
@@ -829,7 +858,7 @@ pair< bool, INT > CtiPort::verifyPortStatus(CtiDeviceSPtr Device, INT trace)
     //  no need to attempt this if we're simulating the port
     if( !isSimulated() )
     {
-        if( !isDialup() ) // We don't always want to re-open these types of port.
+        if( !isDialup() && !gConfigParms.isOpt("PORTER_RELEASE_IDLE_PORTS", "true")) // We don't always want to re-open these types of port.
         {
             rpair = checkCommStatus(Device, trace);
         }

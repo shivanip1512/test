@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2004/06/03 16:32:04 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2004/06/28 20:16:11 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -289,12 +289,9 @@ inline LONG CtiDeviceBase::getAddress() const            { return -1;}
 inline INT  CtiDeviceBase::getPostDelay() const          { return 0;}
 inline RWCString CtiDeviceBase::getPassword() const      { return RWCString();}
 inline RWCString CtiDeviceBase::getPhoneNumber() const   { return RWCString();}
-inline LONG CtiDeviceBase::getMinConnectTime() const     { return 1L;}
-inline LONG CtiDeviceBase::getMaxConnectTime() const     { return 0L;}
 inline LONG CtiDeviceBase::getRouteID() const            { return -1;}
 inline LONG CtiDeviceBase::getDemandInterval() const     { return LONG_MAX;}
 inline CtiProtocolBase *CtiDeviceBase::getProtocol() const  { return NULL;}
-inline ULONG CtiDeviceBase::getUniqueIdentifier() const  { return getID();}
 inline void CtiDeviceBase::invalidateScanRates()         { return;}
 inline void CtiDeviceBase::deleteNonUpdatedScanRates()   { return;}
 inline RWCString CtiDeviceBase::getMeterGroupName() const   { return RWCString();}

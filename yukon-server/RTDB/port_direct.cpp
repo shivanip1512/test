@@ -21,8 +21,9 @@
 #include <iomanip>
 using namespace std;
 
-#include "port_direct.h"
+#include "cparms.h"
 #include "dllbase.h"
+#include "port_direct.h"
 
 CtiTablePortLocalSerial CtiPortDirect::getLocalSerial() const
 {
@@ -562,6 +563,11 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMes
     ULONG    StartWrite;
     ULONG    ReturnWrite;
 
+    if(!isViable())
+    {
+        checkCommStatus(Dev, TRUE);
+    }
+
     //  if the handle is null and we're not simulating ports
     if( (getHandle() == NULL) && !isSimulated() )
     {
@@ -899,7 +905,7 @@ INT  CtiPortDirect::disconnect(CtiDeviceSPtr Device, INT trace)
     int status = NORMAL;
 
     status = Inherited::disconnect(Device,trace);
-    if(!status && _dialable)
+    if(!status && (_dialable || gConfigParms.isOpt("PORTER_RELEASE_IDLE_PORTS", "true")) )
     {
         status = close(trace);                           // Release the port handle
     }

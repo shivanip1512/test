@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/05/05 15:31:42 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/06/28 20:16:11 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,7 +42,7 @@ INT CtiPortPoolDialout::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, RWTPtrSlist< 
 void CtiPortPoolDialout::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
     Inherited::getSQL(db, keyTable, selector);
-    selector.where( selector.where() && keyTable["type"] == "Dialout Pool");
+    selector.where( selector.where() && rwdbUpper(keyTable["type"]) == "DIALOUT POOL");
 }
 
 void CtiPortPoolDialout::DecodeDatabaseReader(RWDBReader &rdr)
@@ -64,7 +64,7 @@ void CtiPortPoolDialout::getPooledPortsSQL(RWDBDatabase &db,  RWDBTable &keyTabl
     selector.from(paoTable);
     selector.from(keyTable);
 
-    selector.where( keyTable["ownerid"] == paoTable["paobjectid"] && paoTable["category"] == "PORT");
+    selector.where( keyTable["ownerid"] == paoTable["paobjectid"] && rwdbUpper(paoTable["category"]) == "PORT");
 }
 
 void CtiPortPoolDialout::DecodePooledPortsDatabaseReader(RWDBReader &rdr)

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2004/05/05 15:31:42 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2004/06/28 20:16:11 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -235,6 +235,11 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
 
 INT CtiPortTCPIPDirect::close(INT trace)
 {
+    if(_dialable)
+    {
+        _dialable->disconnect(CtiDeviceSPtr(), trace);
+    }
+
     return shutdownClose(__FILE__, __LINE__);
 }
 
@@ -485,6 +490,12 @@ INT CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, RWTPtrSlist< 
     ULONG    ReturnWrite;
 
     LockGuard gd(monitor());
+
+    if(!isViable())
+    {
+        checkCommStatus(Dev, TRUE);
+    }
+
 
     if(_socket == INVALID_SOCKET)
     {
@@ -901,9 +912,8 @@ INT  CtiPortTCPIPDirect::disconnect(CtiDeviceSPtr Device, INT trace)
 
     status = Inherited::disconnect(Device,trace);
 
-    if(!status && _dialable)
+    if(!status && (_dialable || gConfigParms.isOpt("PORTER_RELEASE_IDLE_PORTS", "true")) )
     {
-        _dialable->disconnect(Device,trace);
         close(trace);                           // Release the port handle
     }
 

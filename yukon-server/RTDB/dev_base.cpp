@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2004/05/20 22:42:10 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2004/06/28 20:16:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -973,5 +973,27 @@ LONG CtiDeviceBase::deviceQueueCommunicationTime() const
 LONG CtiDeviceBase::deviceMaxCommunicationTime() const
 {
     return 0L;
+}
+
+inline LONG CtiDeviceBase::getMinConnectTime() const
+{
+    return gConfigParms.getValueAsULong("DEFAULT_MIN_CONNECT",0);
+}
+inline LONG CtiDeviceBase::getMaxConnectTime() const
+{
+    return gConfigParms.getValueAsULong("DEFAULT_MAX_CONNECT",10);
+}
+
+inline ULONG CtiDeviceBase::getUniqueIdentifier() const
+{
+    #if 1
+    return getPortID();
+    #else
+
+    if(gConfigParms.isOpt("PORTER_RELEASE_IDLE_PORTS","true"))
+        return getPortID();
+    else
+        return getID();
+    #endif
 }
 

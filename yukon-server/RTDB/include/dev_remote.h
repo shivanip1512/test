@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_remote.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/03/13 19:36:13 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/06/28 20:16:11 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -208,13 +208,26 @@ public:
 
         if(!isNull)
         {
-            // There was a dialup
-            // allocate only if we haven't been here before
-            if(pDialup == NULL)
+            RWCString tempstr;
+            rdr["phonenumber"] >> tempstr;
+
+            if(tempstr.length() > 1)
             {
-                pDialup = CTIDBG_new CtiTableDeviceDialup;
+                // There was a dialup
+                // allocate only if we haven't been here before
+                if(pDialup == NULL)
+                {
+                    pDialup = CTIDBG_new CtiTableDeviceDialup;
+                }
+                pDialup->DecodeDatabaseReader(rdr);
             }
-            pDialup->DecodeDatabaseReader(rdr);
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** ERROR ****  Invalid DIALUPDEVICESETTINGS row for device (phonenumber is too short) " << getID() << " = " << getName() << endl;
+                }
+            }
         }
     }
 

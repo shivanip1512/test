@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.110 $
-* DATE         :  $Date: 2004/06/24 13:16:12 $
+* REVISION     :  $Revision: 1.111 $
+* DATE         :  $Date: 2004/06/28 20:16:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -640,7 +640,8 @@ INT ResetCommsChannel(CtiPortSPtr Port, CtiDeviceSPtr &Device)
 
             if(status == NORMAL)
             {
-                if(Port->isDialup())
+                // CGP 062304 // make all ports close
+                if(Port->isDialup() || gConfigParms.isOpt("PORTER_RELEASE_IDLE_PORTS", "true"))
                 {
                     Port->setQueueSlot( PostCommQueuePeek(Port, Device) );
                 }
