@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct210.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/10/30 17:40:03 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/01/26 21:55:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -108,6 +108,12 @@ bool CtiDeviceMCT210::initCommandStore()
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_Multiplier;
     cs._io      = IO_READ;
+    cs._funcLen = make_pair( (int)MCT210_MultPos,
+                             (int)MCT210_MultLen );
+    _commandStore.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_Multiplier;
+    cs._io      = IO_WRITE | Q_ARMC;
     cs._funcLen = make_pair( (int)MCT210_MultPos,
                              (int)MCT210_MultLen );
     _commandStore.insert( cs );
