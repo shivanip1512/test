@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base_lite.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:58 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/18 21:42:25 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,6 +46,12 @@ RWCString CtiDeviceBaseLite::getName() const
 {
     LockGuard guard( monitor() );
     return _name;
+}
+
+RWCString CtiDeviceBaseLite::getDescription() const
+{
+    LockGuard guard( monitor() );
+    return _description;
 }
 
 RWCString CtiDeviceBaseLite::getObjectType() const
@@ -93,6 +99,13 @@ CtiDeviceBaseLite& CtiDeviceBaseLite::setName( const RWCString &str )
     return *this;
 }
 
+CtiDeviceBaseLite& CtiDeviceBaseLite::setDescription( const RWCString &str )
+{
+    LockGuard guard( monitor() );
+    _description = str;
+    return *this;
+}
+
 bool CtiDeviceBaseLite::operator<( const CtiDeviceBaseLite &rhs ) const
 {
     LockGuard guard( monitor() );
@@ -118,6 +131,7 @@ void CtiDeviceBaseLite::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelec
     keyTable["paobjectid"] <<
     keyTable["paoname"] <<
     keyTable["type"] <<
+    keyTable["description"] <<
     keyTable["disableflag"] <<
     devtable["controlinhibit"];
 
@@ -133,6 +147,7 @@ void CtiDeviceBaseLite::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["paobjectid"] >> _deviceID;
     rdr["paoname"] >> _name;
     rdr["type"] >> _objectType;
+    rdr["description"] >> _description;
     rdr["disableflag"] >> _disableFlag;
     rdr["controlinhibit"] >> _controlInhibitFlag;
 }
@@ -159,6 +174,7 @@ RWDBStatus CtiDeviceBaseLite::Restore()
         selector << table["paobjectid"];
         selector << table["paoname"];
         selector << table["type"];
+        selector << table["description"];
         selector << table["disableflag"];
         selector << devtable["controlinhibit"];
 
@@ -187,6 +203,7 @@ CtiDeviceBaseLite& CtiDeviceBaseLite::operator=(const CtiDeviceBaseLite& aRef)
         _deviceID = aRef.getID();
         _name = aRef.getName();
         _objectType = aRef.getObjectType();
+        _description = aRef.getDescription();
         _disableFlag = aRef.getDisableFlag();
         _controlInhibitFlag = aRef.getControlInhibitFlag();
     }
