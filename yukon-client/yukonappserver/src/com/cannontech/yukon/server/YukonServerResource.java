@@ -164,14 +164,6 @@ public class YukonServerResource implements com.cannontech.yukon.IYukon
       return getDBCache().getAllGraphDefinitions();
    }
 
-
-   // This cache is derive from the point cache
-   public java.util.List getAllGraphTaggedPoints()
-   {
-      return getDBCache().getAllGraphTaggedPoints();
-   }
-
-
    public java.util.List getAllHolidaySchedules()
    {
       return getDBCache().getAllHolidaySchedules();

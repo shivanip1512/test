@@ -153,18 +153,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    public synchronized java.util.List getAllGraphDefinitions()
    {
       return getCache().getAllGraphDefinitions();
-   }
-   
-   // This cache is derive from the point cache
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
-   public synchronized java.util.List getAllGraphTaggedPoints()
-   {
-      return getCache().getAllGraphTaggedPoints();
-   }
-   
+   }   
    
    /**
     * @ejb:interface-method

@@ -44,8 +44,6 @@ public interface DatabaseCache
 
    public java.util.List getAllGraphDefinitions(  ) throws java.rmi.RemoteException;
 
-   public java.util.List getAllGraphTaggedPoints(  ) throws java.rmi.RemoteException;
-
    public java.util.List getAllHolidaySchedules(  ) throws java.rmi.RemoteException;
 
    public java.util.List getAllLMPrograms(  ) throws java.rmi.RemoteException;

@@ -247,26 +247,7 @@ public class ClientCache implements IDatabaseCache
          return new java.util.ArrayList();
       }
    }
-   
-   // This cache is derive from the point cache
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
-   public synchronized java.util.List getAllGraphTaggedPoints()
-   {
-      try
-      {
-         return getCache().getAllGraphTaggedPoints();
-      }
-      catch( java.rmi.RemoteException e )
-      {
-         com.cannontech.clientutils.CTILogger.info( e );
-         return new java.util.ArrayList();
-      }
-         
-   }
-   
+  
    
    /**
     * @ejb:interface-method
