@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/08 14:28:02 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/05/21 15:09:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -118,7 +118,7 @@ INT CtiDeviceILEX::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     if(OutMessage != NULL)
     {
         /* Load the forced scan message */
-        header(OutMessage->Buffer.OutMessage + PREIDLEN, ILEXSCAN, !getIlexSequenceNumber(), EXCEPTION_SCAN);
+        header(OutMessage->Buffer.OutMessage + PREIDLEN, ILEXSCAN, !getIlexSequenceNumber(), FORCED_SCAN);
 
         /* Load all the other stuff that is needed */
         OutMessage->DeviceID              = getID();
@@ -321,7 +321,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
                     setIlexSequenceNumber( InMessage->Buffer.InMessage[0] & 0x10 );
                     // if((i = ILEXExceptionScan (RemoteRecord, DeviceRecord, InMessage->Buffer.InMessage[0] & 0x10, MAXPRIORITY - 4)) != NORMAL)            }
-                    if((i = GeneralScan(NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4)) != NORMAL)
+                    if((i = exceptionScan(OutMessage, MAXPRIORITY - 4)) != NORMAL)
                     {
                         ReportError ((USHORT)i); /* Send Error to logger */
                     }
@@ -570,7 +570,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                 CtiCommandParser parse(InMessage->Return.CommandStr);
                                 setIlexSequenceNumber( InMessage->Buffer.InMessage[0] & 0x10 );
 
-                                if((i = GeneralScan(NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4)) != NORMAL)
+                                if((i = exceptionScan(OutMessage, MAXPRIORITY - 4)) != NORMAL)
                                 {
                                     ReportError ((USHORT)i); /* Send Error to logger */
                                 }
@@ -1037,3 +1037,29 @@ CtiDeviceILEX& CtiDeviceILEX::setIlexSequenceNumber(BYTE number)
     _sequence = number;
     return *this;
 }
+
+INT CtiDeviceILEX::exceptionScan(OUTMESS *&OutMessage, INT ScanPriority)
+{
+    INT status = NORMAL;
+
+    if(OutMessage != NULL)
+    {
+        /* Load the forced scan message */
+        header(OutMessage->Buffer.OutMessage + PREIDLEN, ILEXSCAN, !getIlexSequenceNumber(), EXCEPTION_SCAN);
+
+        /* Load all the other stuff that is needed */
+        OutMessage->DeviceID              = getID();
+        OutMessage->Port                  = getPortID();
+        OutMessage->Remote                = getAddress();
+        OutMessage->Priority              = (UCHAR)(ScanPriority);
+        OutMessage->TimeOut               = 2;
+        OutMessage->OutLength             = 2;
+        OutMessage->InLength              = -1;
+        OutMessage->EventCode             = RESULT | ENCODED;
+        OutMessage->Sequence              = 0;
+        OutMessage->Retry                 = 2;
+    }
+
+    return status;
+}
+
