@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/05/19 14:56:29 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/05/20 22:40:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,8 +56,8 @@ int main(int argc, char* argv[] )
    slog.start();     // fire up the logger thread
    slog.setOutputPath(gLogDirectory.data());
    slog.setOutputFile("simulate");
-   slog.setToStdOut(true);
-   slog.setWriteInterval(15000);
+   slog.setToStdOut(false);
+   slog.setWriteInterval(1000);
 
    {
        CtiLockGuard<CtiLogger> doubt_guard(slog);
