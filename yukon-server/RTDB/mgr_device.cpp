@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2003/05/09 16:09:55 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2003/05/15 22:36:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,29 +64,25 @@ bool findExecutingAndExcludedDevice(CtiDeviceManager::val_pair vpd, void* d)
     return bstatus;
 }
 
+inline void applyClearExclusions(const CtiHashKey *unusedkey, CtiDeviceBase *&Device, void* d)
+{
+    Device->clearExclusions();
+    return;
+}
+
 inline void applyRemoveProhibit(const CtiHashKey *unusedkey, CtiDeviceBase *&Device, void* d)
 {
-    LONG did = (LONG)d;                     // This is the id which is to be pulled from the prohibition list.
+    CtiDevice *pAnxiousDevice = (CtiDevice *)d;       // This is the port that wishes to execute!
+    LONG did = (LONG)pAnxiousDevice->getID();         // This is the id which is to be pulled from the prohibition list.
 
     if(Device->isExecutionProhibited())     // There is at least one entry in the list...
     {
         Device->removeExecutionProhibited( did );
-    }
 
-    return;
-}
-
-inline void applyProhibit(const CtiHashKey *unusedkey, CtiDeviceBase *&Device, void* d)
-{
-    CtiDevice *pAnxiousDevice = (CtiDevice *)d;       // This is the port that wishes to execute!
-
-    if(pAnxiousDevice->getID() != Device->getID())      // And it is not me...
-    {
-        bool excluded = pAnxiousDevice->isDeviceExcluded( Device->getID() );
-
-        if(excluded)
+        if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
         {
-            Device->setExecutionProhibited( pAnxiousDevice->getID() );
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Device " << Device->getName() << " no longer prohibited because of " << pAnxiousDevice->getName() << "." << endl;
         }
     }
 
@@ -598,6 +594,8 @@ void CtiDeviceManager::refresh(CtiDeviceBase* (*Factory)(RWDBReader &), bool (*r
         // we were given no id.  There must be no dbchange info.
         refreshList(Factory, removeFunc, d, paoID);
     }
+
+    refreshExclusions(paoID);
 
 }
 
@@ -1509,7 +1507,7 @@ bool CtiDeviceManager::refreshDeviceByPao(CtiDeviceBase *&pDev, LONG paoID)
 /*
  * ptr_type anxiousDevice has asked to execute.  We make certain that no other device which is in his exclusion list is executing.
  */
-bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceBase* anxiousDevice)
+bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceBase* anxiousDevice, CtiTablePaoExclusion &deviceexclusion)
 {
     bool bstatus = false;
 
@@ -1524,13 +1522,67 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceBase* anxiousDevic
             {
                 if(anxiousDevice->hasExclusions())
                 {
-                    CtiDeviceManager::val_pair result = Map.find(findExecutingAndExcludedDevice, (void*)anxiousDevice);
+                    CtiDeviceBase *device = 0;
+                    vector< CtiDeviceBase* > exlist;
 
-                    CtiDeviceBase *device = result.second;
-                    // Find any single device which should keep the anxious device from executing.
-                    if(!device)   // There is NOT any device which is excluding us....
+                    CtiDevice::exclusions exvector = anxiousDevice->getExclusions();
+                    CtiDevice::exclusions::iterator itr;
+
+                    for(itr = exvector.begin(); itr != exvector.end(); itr++)
                     {
-                        apply( applyProhibit, (void*)anxiousDevice);    // Mark all excluded devices as prohibited.
+                        CtiTablePaoExclusion &paox = *itr;
+
+                        switch(paox.getFunctionId())
+                        {
+                        case (CtiTablePaoExclusion::ExFunctionIdExclusion):
+                            {
+                                device = getEqual(paox.getExcludedPaoId());
+
+                                if(device)
+                                {
+                                    if(device->isExecuting())
+                                    {
+                                        if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << RWTime() << " Device " << anxiousDevice->getName() << " cannot execute because " << device->getName() << " is executing" << endl;
+                                        }
+                                        deviceexclusion = paox;   // Pass this out to the callee!
+                                        exlist.clear();         // Cannot use it!
+                                        break;                  // we cannot go
+                                    }
+                                    else
+                                    {
+                                        exlist.push_back(device);
+                                    }
+                                }
+
+                                break;
+                            }
+                        default:
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+                                break;
+                            }
+                        }
+                    }
+
+                    if(!exlist.empty())     // This tells me that I have noconflicting points!
+                    {
+                        vector< CtiDeviceBase* >::iterator xitr;
+                        for(xitr = exlist.begin(); xitr != exlist.end(); xitr++)
+                        {
+                            if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " Device " << device->getName() << " prohibited because " << anxiousDevice->getName() << " is executing" << endl;
+                            }
+                            device = *xitr;
+                            device->setExecutionProhibited(anxiousDevice->getID());
+                        }
                         bstatus = true;
                     }
                 }
@@ -1542,6 +1594,11 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceBase* anxiousDevic
 
             if(bstatus)
             {
+                if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Device " << anxiousDevice->getName() << " is clear to execute" << endl;
+                }
                 anxiousDevice->setExecuting(true);                    // Mark ourselves as executing!
             }
         }
@@ -1568,7 +1625,7 @@ bool CtiDeviceManager::removeDeviceExclusionBlocks(CtiDeviceBase* anxiousDevice)
     {
         if(anxiousDevice)
         {
-            apply( applyRemoveProhibit, (void*)anxiousDevice->getID());   // Remove prohibit mark from any device.
+            apply( applyRemoveProhibit, (void*)anxiousDevice);   // Remove prohibit mark from any device.
             anxiousDevice->setExecuting(false);                               // Mark ourselves as executing!
         }
     }
@@ -1581,4 +1638,66 @@ bool CtiDeviceManager::removeDeviceExclusionBlocks(CtiDeviceBase* anxiousDevice)
     return bstatus;
 }
 
+
+void CtiDeviceManager::refreshExclusions(LONG id)
+{
+    LONG        lTemp = 0;
+    CtiDeviceBase*   pTempCtiDevice = NULL;
+
+    LockGuard  dev_guard(monitor());       // Protect our iteration!
+
+    // clear the exclusion lists.
+    apply( applyClearExclusions, NULL);
+
+    CtiRTDBIterator   itr(Map);
+
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+    RWDBDatabase db = getDatabase();
+
+    RWDBTable   keyTable;
+
+    RWDBSelector selector = db.selector();
+
+    if(DebugLevel & 0x00020000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Looking for Device Exclusions" << endl;
+    }
+    CtiTablePaoExclusion::getSQL( db, keyTable, selector );
+
+    if(id > 0)
+    {
+        selector.where(keyTable["paoid"] == id && selector.where());
+    }
+
+    if(DebugLevel & 0x00020000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << selector.asString() << endl;
+    }
+
+    RWDBReader rdr = selector.reader(conn);
+
+    while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+    {
+        CtiDeviceBase* pSp = NULL;
+
+        rdr["paoid"] >> lTemp;            // get the DeviceID
+
+        if( Map.entries() > 0 && ((pTempCtiDevice = getEqual(lTemp)) != NULL) )
+        {
+            CtiTablePaoExclusion paox;
+            paox.DecodeDatabaseReader(rdr);
+            // Add this exclusion into the list.
+            pTempCtiDevice->addExclusion(paox);
+        }
+    }
+
+    if(DebugLevel & 0x00020000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Done looking for Device Exclusions" << endl;
+    }
+}
 

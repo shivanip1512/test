@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2003/05/09 16:09:55 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2003/05/15 22:36:40 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,6 +32,7 @@
 #include "tbl_stats.h"
 #include "tbl_scanrate.h"
 #include "tbl_pao.h"
+#include "tbl_paoexclusion.h"
 #include "yukon.h"
 #include "queues.h"
 #include "utility.h"
@@ -58,7 +59,8 @@ class IM_EX_DEVDB CtiDeviceBase : public CtiTblPAO, public RWMonitor< RWRecursiv
 public:
 
     typedef CtiTblPAO Inherited;
-    typedef vector< unsigned long > exclusions;
+    typedef vector< CtiTablePaoExclusion > exclusions;
+    typedef vector< unsigned long > prohibitions;
 
     CtiDeviceBase();
     CtiDeviceBase(const CtiDeviceBase& aRef);
@@ -118,6 +120,7 @@ public:
     /* Properly defined by the device types themselves... */
     virtual INT ResetDevicePoints();
     virtual INT RefreshDevicePoints();
+    virtual bool orphanDevicePoint(LONG id);
     virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = 11);
     virtual INT IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = 11);
     virtual INT AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = 12);
@@ -202,6 +205,8 @@ public:
 
     bool hasExclusions() const;
     exclusions getExclusions() const;
+    void addExclusion(CtiTablePaoExclusion &paox);
+    void clearExclusions();
     bool isDeviceExcluded(long id) const;
     bool isExecuting() const;
     void setExecuting(bool set);
@@ -239,9 +244,9 @@ private:
     int _responsesOnTrxID;
     RWTime _lastReport;
 
-    bool        _executing;             // Device is currently executing...
-    exclusions  _excluded;
-    exclusions  _executionProhibited;   // Device is currently prohibited from executing because of this list of devids.
+    bool          _executing;             // Device is currently executing...
+    exclusions    _excluded;
+    prohibitions  _executionProhibited;   // Device is currently prohibited from executing because of this list of devids.
 
 };
 

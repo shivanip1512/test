@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2003/05/09 16:09:55 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2003/05/15 22:36:40 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,7 @@ using namespace std;
 #include "dlldefs.h"
 #include "logger.h"
 #include "tbl_port_base.h"
+#include "tbl_paoexclusion.h"
 #include "xfer.h"
 
 #ifdef CTIOLDSTATS
@@ -46,7 +47,8 @@ class IM_EX_PRTDB CtiPort : public CtiMemDBObject, public RWMonitor< RWRecursive
 {
 public:
 
-    typedef vector< unsigned long > exclusions;
+    typedef vector< CtiTablePaoExclusion >  exclusions;
+    typedef vector< unsigned long >         prohibitions;
     typedef CtiMemDBObject Inherited;
 
 
@@ -183,6 +185,8 @@ public:
 
     bool hasExclusions() const;
     exclusions getExclusions() const;
+    void addExclusion(CtiTablePaoExclusion &paox);
+    void clearExclusions();
     bool isPortExcluded(long portid) const;
     bool isExecuting() const;
     void setExecuting(bool set);
@@ -250,7 +254,7 @@ private:
     CTI_PORTTHREAD_FUNC_PTR     _portFunc;
 
     bool                        _executing;             // Port is currently executing work...
-    exclusions                  _executionProhibited;   // Port is currently prohibited from executing because of this list of portids.
+    prohibitions                _executionProhibited;   // Port is currently prohibited from executing because of this list of portids.
     exclusions                  _excluded;
     RWTime                      _lastReport;    // Last comm fail report happened here.
     bool                        _minMaxIdle;

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2003/05/09 16:09:54 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2003/05/15 22:36:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -197,6 +197,24 @@ INT CtiDeviceBase::RefreshDevicePoints()
     else
     {
         status = MEMORY;
+    }
+
+    return status;
+}
+
+bool CtiDeviceBase::orphanDevicePoint(LONG pid)
+{
+    bool status = false;
+
+    LockGuard guard(monitor());
+
+    if(_pointMgr != NULL)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Deleting point id " << pid << " from device " << getName() << endl;
+        }
+        status = _pointMgr->orphan(pid);
     }
 
     return status;
@@ -418,7 +436,9 @@ INT CtiDeviceBase::executeScan(CtiRequestMsg                  *pReq,
     return nRet;
 }
 
+
 CtiDeviceBase::CtiDeviceBase() :
+_executing(false),
 _commFailCount(gDefaultCommFailCount),
 _attemptCount(0),
 _attemptFailCount(0),
@@ -433,6 +453,7 @@ _currTrxID(0)
 {}
 
 CtiDeviceBase::CtiDeviceBase(const CtiDeviceBase& aRef) :
+_executing(false),
 _commFailCount(gDefaultCommFailCount),
 _attemptCount(0),
 _attemptFailCount(0),
@@ -776,6 +797,18 @@ CtiDeviceBase::exclusions CtiDeviceBase::getExclusions() const
 {
     return _excluded;
 }
+void CtiDeviceBase::addExclusion(CtiTablePaoExclusion &paox)
+{
+    _excluded.push_back(paox);
+    return;
+}
+
+void CtiDeviceBase::clearExclusions()
+{
+    _excluded.clear();
+    return;
+}
+
 
 bool CtiDeviceBase::hasLongScanRate(const RWCString &cmd) const
 {
@@ -796,7 +829,9 @@ bool CtiDeviceBase::isDeviceExcluded(long id) const
 
         for(itr = _excluded.begin(); itr != _excluded.end(); itr++)
         {
-            if(*itr == id)
+            const CtiTablePaoExclusion &paox = *itr;
+
+            if(paox.getExcludedPaoId() == id)
             {
                 bstatus = true;
                 break;
@@ -830,16 +865,30 @@ size_t CtiDeviceBase::setExecutionProhibited(unsigned long id)
 
 void CtiDeviceBase::removeExecutionProhibited(unsigned long id)
 {
-    CtiDeviceBase::exclusions::iterator itr;
+    CtiDeviceBase::prohibitions::iterator itr;
 
-    for(itr = _executionProhibited.begin(); itr != _executionProhibited.end(); itr++)
+    try
     {
-        if(*itr == id)
+        for(itr = _executionProhibited.begin(); itr != _executionProhibited.end(); )
         {
-            _executionProhibited.erase(itr);
-            break;
+            if(*itr == id)
+            {
+                itr = _executionProhibited.erase(itr);
+            }
+            else
+            {
+                itr++;
+            }
         }
     }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
     return;
 }
 

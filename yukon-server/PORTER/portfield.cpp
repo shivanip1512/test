@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2003/05/09 16:09:55 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2003/05/15 22:36:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -107,6 +107,7 @@ using namespace std;
 #include "statistics.h"
 #include "trx_info.h"
 #include "trx_711.h"
+#include "tbl_paoexclusion.h"
 #include "utility.h"
 
 #define INF_LOOP_COUNT 10000
@@ -168,6 +169,9 @@ INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessa
 INT verifyConnectedDevice(CtiPortSPtr Port, CtiDevice *pDevice, LONG &oldid, LONG &portConnectedUID);
 void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDevice *Device, CtiOutMessage *OutMessage );
 INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDevice *Device );
+INT ClearExclusions(CtiPortSPtr Port, CtiDevice *Device);
+BOOL areAnyQueueEntriesOkToSend(void *data, void* d);
+bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDevice *device );
 
 /* Threads that handle each port for communications */
 VOID PortThread(void *pid)
@@ -264,10 +268,10 @@ VOID PortThread(void *pid)
             }
         }
 
-        if(gQueSlot == 0)
+
+        if(gQueSlot == 0)       // This keeps us locked on if we have other work out there which we should pop off the queue next!
         {
-            PortManager.removePortExclusionBlocks(Port);
-            DeviceManager.removeDeviceExclusionBlocks(Device);
+            ClearExclusions(Port,Device);
         }
 
         /*
@@ -583,6 +587,10 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
         ULONG stayConnectedMin = Device->getMinConnectTime();
         ULONG stayConnectedMax = Device->getMaxConnectTime();
 
+        RWTime current;
+        RWTime minTimeout(current + stayConnectedMin);
+        RWTime maxTimeout(current + stayConnectedMax);
+
         if((gQueSlot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), searchFuncForOutMessageUniqueID)) != 0 )
         {
             if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && Device)
@@ -597,7 +605,8 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
 
             if(stayConnectedMin)
             {
-                for(i = 0; i < (ULONG)(4 * stayConnectedMin - 1); i++)
+                current = current.now();
+                for(i = 0; i < (ULONG)(4 * stayConnectedMin - 1); i++, current <= minTimeout)
                 {
                     /* Check the queue 4 times per second for a CTIDBG_new entry for this port ... */
                     if((gQueSlot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), searchFuncForOutMessageUniqueID)) != 0 )
@@ -606,13 +615,15 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
                     }
 
                     CTISleep (250L);
+                    current = current.now();
                 }
             }
 
             Port->setMinMaxIdle(true);
 
             /* do not reinit i since times are non cumulative! */
-            for( ; gQueSlot == 0 && i < (ULONG)(4 * stayConnectedMax); i++)
+            current = current.now();
+            for( ; gQueSlot == 0 && i < (ULONG)(4 * stayConnectedMax); i++, current <= maxTimeout)
             {
                 /* Check the queue 4 times per second for a CTIDBG_new entry for this port ... */
                 if( !QueryQueue(Port->getPortQueueHandle(), &QueueCount) && QueueCount > 0)
@@ -631,6 +642,7 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
                 }
 
                 CTISleep (250L);
+                current = current.now();
             }
 
             Port->setMinMaxIdle(false);
@@ -857,29 +869,100 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Devic
      *
      *  A paobject will be considered blocked if a paobjectid in the exclusion list of the paobject in question
      *  reports itself as currently executing...
-     *
      */
 
+    if(OutMessage->MessageFlags & MSGFLG_APPLY_EXCLUSION_LOGIC)
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
-        portMayExecute = PortManager.mayPortExecuteExclusionFree(Port);
+        CtiTablePaoExclusion exclusion;
 
-        if(portMayExecute)
         {
-            deviceMayExecute = DeviceManager.mayDeviceExecuteExclusionFree(Device);
+            CtiPortManager::LockGuard  port_guard(PortManager.getMux());
+            RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
+
+            portMayExecute = PortManager.mayPortExecuteExclusionFree(Port, exclusion);
+
+            if(portMayExecute)
+            {
+                deviceMayExecute = DeviceManager.mayDeviceExecuteExclusionFree(Device, exclusion);
+            }
+        }
+
+        if( !portMayExecute || !deviceMayExecute )
+        {
+            // There is an exclusion conflict for this device or port!
+            ClearExclusions(Port,Device);       // Make sure we didn't dirty up the books.
+
+            // Decide how to requeue this port/device combo.
+            switch(exclusion.getFunctionRequeue())
+            {
+            case (CtiTablePaoExclusion::RequeueNextExecutableOM):
+                {
+                    if( ShuffleQueue( Port, OutMessage, Device ) )
+                    {
+                        // Queue has been shuffled and we have a different OM now than when we entered!
+                        if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " OutMessage shuffled excluded for non-excluded outmessage. " << endl;
+                        }
+
+                        break;
+                    }
+
+                    if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Queue unable to be shuffled.  No non-excluded outmessages exist. " << endl;
+                    }
+
+                    if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
+                        }
+
+                        delete OutMessage;
+                    }
+
+                    OutMessage = 0;
+                    Sleep(100L);
+
+                    return RETRY_SUBMITTED;
+                }
+            case (CtiTablePaoExclusion::RequeueThisCommandNext):
+                {
+                    // Keep this ONE HIGH HIGH PRIORITY.
+                    OutMessage->Priority = MAXPRIORITY - 1;
+
+                    if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Re-queuing original (excluded) message at high priority to examine next" << endl;
+                    }
+                    // FALL THROUGH!
+                }
+            case (CtiTablePaoExclusion::RequeueQueuePriority):
+            default:
+                {
+                    if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
+                        }
+
+                        delete OutMessage;
+                    }
+
+                    OutMessage = 0;
+                    Sleep(100L);
+
+                    return RETRY_SUBMITTED;
+                }
+            }
         }
     }
-
-
-    if( !portMayExecute || !deviceMayExecute )
-    {
-        // There is an exclusion conflict for this device!
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** ACH ACH For a queue shuffle! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-
     // 030503 CGP END Exclusion logic.
 
     if( Port->isDialup() )
@@ -3354,13 +3437,182 @@ INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDevice *Device )
     return protocol;
 }
 
-INT DevicePostProcessing(CtiPortSPtr Port, CtiDevice *Device)
+INT ClearExclusions(CtiPortSPtr Port, CtiDevice *Device)
 {
     INT status = NORMAL;
+
+    CtiPortManager::LockGuard  port_guard(PortManager.getMux());
+    RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
 
     PortManager.removePortExclusionBlocks(Port);
     DeviceManager.removeDeviceExclusionBlocks(Device);
 
     return status;
 }
+
+
+bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDevice *device )
+{
+    bool bSubstitutionMade = false;
+    ULONG QueueCount, ReadLength;
+    OUTMESS *pOutMessage = NULL;
+
+    CtiPort *Port = shPort.get();
+
+    try
+    {
+        QueryQueue( Port->getPortQueueHandle(), &QueueCount );
+
+        if(QueueCount)      // There are queue entries.
+        {
+            // We cannot be executed, we should look for another CONTROL queue entry.. We are still protected by mux...
+            INT qEnt = SearchQueue( Port->getPortQueueHandle(), NULL, areAnyQueueEntriesOkToSend );
+
+            if(qEnt > 0)
+            {
+                REQUESTDATA    ReadResult;
+                BYTE           ReadPriority;
+
+                if(ReadQueue( *QueueHandle(OutMessage->Port), &ReadResult, &ReadLength, (PPVOID)&pOutMessage, qEnt, DCWW_NOWAIT, &ReadPriority))
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Error Reading Port Queue " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+                else
+                {
+                    if(PortManager.writeQueue(pOutMessage->Port, pOutMessage->EventCode, sizeof (*pOutMessage), (char *)pOutMessage, MAXPRIORITY - 1))
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Error Shuffling the Queue.  Message lost " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                        delete pOutMessage;
+                        pOutMessage = NULL;
+                    }
+
+                    /* The OUTMESS that got us here is always examined next again! */
+                    if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *)OutMessage, MAXPRIORITY - 1))
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Error Shuffling the Queue.  CONTROL message lost " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                        delete OutMessage;
+                        OutMessage = NULL;
+                    }
+                    else
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " OutMessage Swap!" << endl;
+                        }
+                        OutMessage = pOutMessage;
+                        bSubstitutionMade = true;
+                    }
+                }
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return bSubstitutionMade;
+}
+
+
+/*
+ *  Used by SearchQueue.  Must be protected appropriately.
+ */
+BOOL areAnyQueueEntriesOkToSend(void *data, void* d)
+{
+    BOOL     bStatus = FALSE;
+    OUTMESS  *OutMessage = (OUTMESS *)d;
+
+    bool     blockedByExclusion = false;
+
+    if(OutMessage->MessageFlags & MSGFLG_APPLY_EXCLUSION_LOGIC)     // Indicates an excludable message!
+    {
+        {
+            bool portMayExecute;
+            bool deviceMayExecute;
+
+            CtiPortManager::LockGuard  port_guard(PortManager.getMux());
+            RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
+
+            CtiPortSPtr Port = PortManager.PortGetEqual( OutMessage->Port );
+            CtiDevice* Device = DeviceManager.getEqual( OutMessage->DeviceID );
+
+            if(Port && Device)
+            {
+                CtiTablePaoExclusion exclusion;
+
+                portMayExecute = PortManager.mayPortExecuteExclusionFree(Port, exclusion);
+
+                if(portMayExecute)
+                {
+                    deviceMayExecute = DeviceManager.mayDeviceExecuteExclusionFree(Device, exclusion);
+                }
+
+                if( portMayExecute && deviceMayExecute )
+                {
+                    if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Found an excludable which MAY be executed!" << endl;
+                    }
+                    bStatus = TRUE;     // This device/port combo is locked in as executable!!!
+                }
+                else
+                {
+                    ClearExclusions(Port,Device);
+                }
+            }
+        }
+
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** NON-Excludable OM found  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        bStatus = TRUE; // We can send anythig which says it is non-excludable!
+    }
+
+
+#if 0
+    if(OutMessage->EventCode & RIPPLE)     // Indicates a command message!
+    {
+        CtiDevice* Dev = DeviceManager.getEqual( OutMessage->DeviceID );
+
+        if(Dev != NULL)
+        {
+            if(isLCU(Dev->getType()))
+            {
+                CtiDeviceLCU *lcu = (CtiDeviceLCU*)Dev;      // This IS an LCU
+
+                if( Now > lcu->getNextCommandTime() )
+                {
+                    RWMutexLock::LockGuard guard( lcu->getExclusionMux() );             // get mux for all LCU's
+                    blockedByExclusion = DeviceManager.getMap().contains( containsExclusionBlockage, (void*)lcu);
+
+                    if( !blockedByExclusion )
+                    {
+                        bStatus = TRUE;
+                        CtiDeviceLCU::assignToken( lcu->getID() );
+                    }
+                }
+            }
+        }
+    }
+#endif
+
+    return bStatus;
+}
+
 

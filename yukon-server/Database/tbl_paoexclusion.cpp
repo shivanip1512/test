@@ -9,24 +9,36 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/05/14 14:25:42 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/05/15 22:36:41 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #pragma warning( disable : 4786)
 
+#include "dbaccess.h"
+#include "logger.h"
 #include "tbl_paoexclusion.h"
+#include "utility.h"
+#include "yukon.h"
 
 CtiTablePaoExclusion::CtiTablePaoExclusion(long xid,
                                            long paoid,
                                            long excludedpaoid,
-                                           long pointid = 0,
-                                           double value = 0.0,
-                                           long function = 0,
-                                           RWCString str = RWCString(),
-                                           long funcrequeue = 0)
+                                           long pointid,
+                                           double value,
+                                           long function,
+                                           RWCString str,
+                                           long funcrequeue) :
+_exclusionId(xid),
+_paoId(paoid),
+_excludedPaoId(excludedpaoid),
+_pointId(pointid),
+_value(value),
+_functionId(function),
+_funcName(str),
+_funcRequeue(funcrequeue)
 {
 
 }
@@ -188,12 +200,8 @@ RWDBStatus CtiTablePaoExclusion::Restore()
     if( reader() )
     {
         DecodeDatabaseReader( reader );
-        setDirty( false );
     }
-    else
-    {
-        setDirty( true );
-    }
+
     return reader.status();
 }
 
@@ -227,8 +235,6 @@ RWDBStatus CtiTablePaoExclusion::Update()
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBUpdater updater = table.updater();
 
-    updater.where( table["paobjectid"] == getPAOID() );
-
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -245,7 +251,6 @@ RWDBStatus CtiTablePaoExclusion::Delete()
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBDeleter deleter = table.deleter();
 
-    deleter.where( table["paobjectid"] == getPAOID() );
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -253,5 +258,24 @@ RWDBStatus CtiTablePaoExclusion::Delete()
     }
 
     return deleter.status();
+}
+
+void CtiTablePaoExclusion::dump() const
+{
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+        dout << "exclusionid    " <<  _exclusionId << endl;
+        dout << "paoid          " <<  _paoId << endl;
+        dout << "excludedpaoid  " <<  _excludedPaoId << endl;
+        dout << "pointid        " <<  _pointId << endl;
+        dout << "value          " <<  _value << endl;
+        dout << "functionid     " <<  _functionId << endl;
+        dout << "funcname       " <<  _funcName << endl;
+        dout << "funcrequeue    " <<  _funcRequeue << endl;
+
+    }
 }
 

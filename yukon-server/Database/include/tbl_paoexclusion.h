@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/05/14 14:26:13 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/05/15 22:36:41 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,13 @@
 #ifndef __TBL_PAOEXCLUSION_H__
 #define __TBL_PAOEXCLUSION_H__
 
-class CtiTablePaoExclusion
+#include <rw\cstring.h>
+#include <rw/db/db.h>
+#include <rw/db/dbase.h>
+#include <rw/db/table.h>
+
+
+class IM_EX_CTIYUKONDB CtiTablePaoExclusion
 {
 protected:
 
@@ -36,9 +42,9 @@ private:
 
 public:
 
-    CtiTablePaoExclusion(long xid,
-                         long paoid,
-                         long excludedpaoid,
+    CtiTablePaoExclusion(long xid = 0,
+                         long paoid = 0,
+                         long excludedpaoid = 0,
                          long pointid = 0,
                          double value = 0.0,
                          long function = 0,
@@ -83,6 +89,24 @@ public:
     virtual RWDBStatus Insert(RWDBConnection &conn);
     virtual RWDBStatus Update();
     virtual RWDBStatus Delete();
+
+    void dump() const;
+
+    enum
+    {
+        RequeueNextExecutableOM,        // Find and substitute next executable OM with the highest priority.
+        RequeueThisCommandNext,         // Maintain the Q's order.  This message must go next.
+        RequeueQueuePriority            // Requeue this OM.  If there are any messages of equal or higher priorty, they will be selected first.
+
+    } CtiExclusionRequeue_t;
+
+    enum
+    {
+        ExFunctionIdExclusion,          // This is the default and stipulates a non-simultaneous execution.  A cannot execute with B.
+        ExFunctionTimeMethod1
+
+
+    } CtiExclusionFunction_t;
 
 };
 #endif // #ifndef __TBL_PAOEXCLUSION_H__

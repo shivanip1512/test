@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2003/05/09 16:09:55 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2003/05/15 22:36:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -102,30 +102,26 @@ inline bool isNotUpdated(CtiPortSPtr &Port, void* d)
 
 inline void applyRemoveProhibit(const long key, CtiPortSPtr Port, void* d)
 {
-    LONG pid = (LONG)d;       // This is the port id which is to be pulled from the prohibition list.
+    CtiPort *pAnxiousPort = (CtiPort *)d;       // This is the port that wishes to execute!
+    LONG pid = (LONG)pAnxiousPort->getPortID();       // This is the port id which is to be pulled from the prohibition list.
 
     if(Port->isExecutionProhibited())   // There is at least one entry in the list...
     {
         Port->removeExecutionProhibited( pid );
+
+        if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Port " << Port->getName() << " no longer prohibited because of " << pAnxiousPort->getName() << "." << endl;
+        }
     }
 
     return;
 }
 
-inline void applyProhibit(const long key, CtiPortSPtr Port, void* d)
+inline void applyClearExclusions(const long key, CtiPortSPtr Port, void* d)
 {
-    CtiPort *pAnxiousPort = (CtiPort *)d;       // This is the port that wishes to execute!
-
-    if(pAnxiousPort->getPortID() != Port->getPortID())      // And it is not me...
-    {
-        bool portexcluded = pAnxiousPort->isPortExcluded( Port->getPortID() );
-
-        if(portexcluded)
-        {
-            Port->setExecutionProhibited( pAnxiousPort->getPortID() );
-        }
-    }
-
+    Port->clearExclusions();
     return;
 }
 
@@ -319,6 +315,8 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for Pool Ports Children" << endl;
                 }
             }
+
+            refreshExclusions();
 
             if(_smartMap.getErrorCode() != RWDBStatus::ok)
             {
@@ -637,7 +635,7 @@ void CtiPortManager::RefreshPooledPortEntries(bool &rowFound, RWDBReader& rdr, C
 /*
  * ptr_type anxiousPort has asked to execute.  We make certain that no other port which is in his exclusion list is executing.
  */
-bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort)
+bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTablePaoExclusion &portexclusion)
 {
     bool bstatus = false;
 
@@ -655,12 +653,66 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort)
 
                 if(anxiousPort->hasExclusions())
                 {
-                    // Find any single port which should keep the anxious port from executing.
-                    port = find( findExecutingAndExcludedPort, (void*)anxiousPort.get());
+                    vector< ptr_type > exlist;
 
-                    if(!port)   // There is NOT any port which is excluding us....
+                    CtiPort::exclusions exvector = anxiousPort->getExclusions();
+                    CtiPort::exclusions::iterator itr;
+
+                    for(itr = exvector.begin(); itr != exvector.end(); itr++)
                     {
-                        apply( applyProhibit, (void*)anxiousPort.get());    // Mark all excluded ports as prohibited.
+                        CtiTablePaoExclusion &paox = *itr;
+
+                        switch(paox.getFunctionId())
+                        {
+                        case (CtiTablePaoExclusion::ExFunctionIdExclusion):
+                            {
+                                port = PortGetEqual(paox.getExcludedPaoId());
+
+                                if(port)
+                                {
+                                    if(port->isExecuting())
+                                    {
+                                        if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << RWTime() << " Port " << anxiousPort->getName() << " cannot execute because " << port->getName() << " is executing" << endl;
+                                        }
+                                        portexclusion = paox;   // Pass this out to the callee!
+                                        exlist.clear();         // Cannot use it!
+                                        break;                  // we cannot go
+                                    }
+                                    else
+                                    {
+                                        exlist.push_back(port);
+                                    }
+                                }
+
+                                break;
+                            }
+                        default:
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+                                break;
+                            }
+                        }
+                    }
+
+                    if(!exlist.empty())     // This tells me that I have noconflicting points!
+                    {
+                        vector< ptr_type >::iterator xitr;
+                        for(xitr = exlist.begin(); xitr != exlist.end(); xitr++)
+                        {
+                            if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " Port " << port->getName() << " prohibited because " << anxiousPort->getName() << " is executing" << endl;
+                            }
+                            port = *xitr;
+                            port->setExecutionProhibited(anxiousPort->getPortID());
+                        }
                         bstatus = true;
                     }
                 }
@@ -672,6 +724,11 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort)
 
             if(bstatus)
             {
+                if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Port " << anxiousPort->getName() << " is clear to execute" << endl;
+                }
                 anxiousPort->setExecuting(true);                    // Mark ourselves as executing!
             }
         }
@@ -696,7 +753,7 @@ bool CtiPortManager::removePortExclusionBlocks(ptr_type anxiousPort)
     {
         if(anxiousPort)
         {
-            apply( applyRemoveProhibit, (void*)anxiousPort->getPortID());   // Remove prohibit mark from any port.
+            apply( applyRemoveProhibit, (void*)anxiousPort.get());   // Remove prohibit mark from any port.
             anxiousPort->setExecuting(false);                               // Mark ourselves as executing!
         }
     }
@@ -709,4 +766,63 @@ bool CtiPortManager::removePortExclusionBlocks(ptr_type anxiousPort)
     return bstatus;
 }
 
+
+void CtiPortManager::refreshExclusions(LONG id)
+{
+    LONG     lTemp = 0;
+    ptr_type pTempPort;
+
+    CtiLockGuard<CtiMutex> gaurd(_mux);
+
+    // Reset everyone's Updated flag.
+    if(!_smartMap.empty())
+    {
+        apply(applyClearExclusions, NULL);
+    }
+
+
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+    // are out of scope when the release is called
+
+    RWDBDatabase db = conn.database();
+    RWDBSelector selector = conn.database().selector();
+    RWDBTable   keyTable;
+
+    if(DebugLevel & 0x00080000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for Port Exclusions" << endl;
+    }
+    CtiTablePaoExclusion::getSQL( db, keyTable, selector );
+
+    if(id > 0)
+    {
+        selector.where(keyTable["paoid"] == id && selector.where());
+    }
+
+    RWDBReader  rdr = selector.reader( conn );
+    if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+    }
+
+    while( (_smartMap.setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+    {
+        rdr["paoid"] >> lTemp;            // get the RouteID
+
+        if( !_smartMap.empty() && (pTempPort = _smartMap.find(lTemp)) )
+        {
+            CtiTablePaoExclusion paox;
+
+            paox.DecodeDatabaseReader(rdr);
+            // Add this exclusion into the list.
+            pTempPort->addExclusion(paox);
+        }
+    }
+
+    if(DebugLevel & 0x00080000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for Port Exclusions" << endl;
+    }
+}
 

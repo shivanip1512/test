@@ -852,6 +852,17 @@ CtiPort::exclusions CtiPort::getExclusions() const
 {
     return _excluded;
 }
+void CtiPort::addExclusion(CtiTablePaoExclusion &paox)
+{
+    _excluded.push_back(paox);
+    return;
+}
+
+void CtiPort::clearExclusions()
+{
+    _excluded.clear();
+    return;
+}
 
 /*
  *  Check if the passed portid is in the exclusion list?
@@ -866,7 +877,8 @@ bool CtiPort::isPortExcluded(long portid) const
 
         for(itr = _excluded.begin(); itr != _excluded.end(); itr++)
         {
-            if(*itr == portid)
+            const CtiTablePaoExclusion &paox = *itr;
+            if(paox.getExcludedPaoId() == portid)
             {
                 bstatus = true;
                 break;
@@ -901,14 +913,17 @@ size_t CtiPort::setExecutionProhibited(unsigned long pid)
 void CtiPort::removeExecutionProhibited(unsigned long pid)
 {
 
-    CtiPort::exclusions::iterator itr;
+    CtiPort::prohibitions::iterator itr;
 
-    for(itr = _executionProhibited.begin(); itr != _executionProhibited.end(); itr++)
+    for(itr = _executionProhibited.begin(); itr != _executionProhibited.end(); )
     {
         if(*itr == pid)
         {
-            _executionProhibited.erase(itr);
-            break;
+            itr = _executionProhibited.erase(itr);
+        }
+        else
+        {
+            itr++;
         }
     }
     return;
