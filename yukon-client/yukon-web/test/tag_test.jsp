@@ -74,12 +74,12 @@ DBEditorRole.POINT_ID_EDIT is false!, good<br>
 <br><b>checkMultiRole</b><br>
 ----<br>
 Checking for WebClientRole AND SystemRole<br>
-<cti:checkMultiRole roleid="<%= Integer.toString(WebClientRole.ROLEID) + "," + Integer.toString(SystemRole.ROLEID) %>">
+<cti:checkMultiRole roleid="<%= Integer.toString(WebClientRole.ROLEID) + ',' + Integer.toString(SystemRole.ROLEID) %>">
 Found WebClientRole AND SystemRole, good<br>
 </cti:checkMultiRole>
 ----<br>
 Checking for WebClientRole AND DBEditorRole<br>
-<cti:checkMultiRole roleid="<%= Integer.toString(WebClientRole.ROLEID) + "," + Integer.toString(DBEditorRole.ROLEID) %>">
+<cti:checkMultiRole roleid="<%= Integer.toString(WebClientRole.ROLEID) + ',' + Integer.toString(DBEditorRole.ROLEID) %>">
 Found WebClientRole AND DBEditorRole, this could be an error<br>
 </cti:checkMultiRole>
 ----<br>
@@ -87,12 +87,12 @@ Found WebClientRole AND DBEditorRole, this could be an error<br>
 <br><b>checkMultiProperty</b><br>
 ----<br>
 Checking for WebClientRole.STYLE_SHEET AND SystemRole.DISPATCH_MACHINE<br>
-<cti:checkMultiProperty propertyid="<%= Integer.toString(WebClientRole.STYLE_SHEET) + "," + Integer.toString(SystemRole.DISPATCH_MACHINE) %>">
+<cti:checkMultiProperty propertyid="<%= Integer.toString(WebClientRole.STYLE_SHEET) + ',' + Integer.toString(SystemRole.DISPATCH_MACHINE) %>">
 Found style sheet AND dispatch machine<br>
 </cti:checkMultiProperty>
 ----<br>
 Checking for WebClientRole.STYLE_SHEET AND DBEditorRole.POINT_ID_EDIT<br>
-<cti:checkMultiProperty propertyid="<%= Integer.toString(WebClientRole.STYLE_SHEET) + "," + Integer.toString(DBEditorRole.POINT_ID_EDIT) %>">
+<cti:checkMultiProperty propertyid="<%= Integer.toString(WebClientRole.STYLE_SHEET) + ',' + Integer.toString(DBEditorRole.POINT_ID_EDIT) %>">
 Found style sheet AND DBEditor.POINT_ID_EDIT, this could be an error<br>
 </cti:checkMultiProperty>
 ----<br>
