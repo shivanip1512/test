@@ -10,12 +10,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.LoginController;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.element.DrawingMetaElement;
 import com.cannontech.esub.util.DrawingUpdater;
-import com.cannontech.esub.web.SessionInfo;
 import com.cannontech.roles.cicustomer.EsubDrawingsRole;
 
 /**
@@ -50,8 +50,7 @@ public class SVGGenerator extends HttpServlet {
 			d.load(jlxPath);
 		 
 			//Check if this user has access to this drawing!	
-			SessionInfo	info = (SessionInfo) req.getSession(false).getAttribute(SessionInfo.SESSION_KEY);	
-			LiteYukonUser user = info.getUser();
+			LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);
 			DrawingMetaElement metaElem = d.getMetaElement();
 			
 			// User requires the role specific to access this drawing

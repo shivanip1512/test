@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.LoginController;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -21,7 +22,6 @@ import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.esub.PointAttributes;
 import com.cannontech.esub.util.Util;
-import com.cannontech.esub.web.SessionInfo;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.EsubDrawingsRole;
 
@@ -48,8 +48,7 @@ public class UpdateAttribute extends HttpServlet {
 	protected void service(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException, IOException {
 		
-		SessionInfo	info = (SessionInfo) req.getSession(false).getAttribute(SessionInfo.SESSION_KEY);	
-		LiteYukonUser user = info.getUser();
+		LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);
 		
 		if(!AuthFuncs.checkRoleProperty(user, EsubDrawingsRole.EDIT)) {
 			CTILogger.info("Update request received by user without EDIT role, ip: " + req.getRemoteAddr());

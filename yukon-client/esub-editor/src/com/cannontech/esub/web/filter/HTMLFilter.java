@@ -13,10 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.LoginController;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.editor.Drawing;
-import com.cannontech.esub.web.SessionInfo;
 
 /**
  * Forwards all request for any file that matches this filter to
@@ -66,8 +66,7 @@ public class HTMLFilter implements Filter {
 			d.load(jlxPath);
 		 
 			//Check if this user has access to this drawing!	
-			SessionInfo	info = (SessionInfo) hreq.getSession(false).getAttribute(SessionInfo.SESSION_KEY);	
-			LiteYukonUser user = info.getUser();
+			LiteYukonUser user = (LiteYukonUser) hreq.getSession(false).getAttribute(LoginController.YUKON_USER);
 			if( AuthFuncs.checkRole(user, d.getMetaElement().getRoleID()) != null) {
 				chain.doFilter(req,resp);				
 			}

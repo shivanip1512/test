@@ -10,11 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.common.cache.PointChangeCache;
+import com.cannontech.common.constants.LoginController;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.util.Util;
-import com.cannontech.esub.web.SessionInfo;
 import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.Signal;
@@ -40,19 +40,18 @@ public class ClearAlarm extends HttpServlet {
 	protected void service(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException, IOException {
 		
-		SessionInfo info = (SessionInfo) req.getSession(false).getAttribute(SessionInfo.SESSION_KEY);
-		
+		LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);	
 		Writer out = resp.getWriter();
 		
 		String pointID = req.getParameter(POINT_ID); 
 				
 		if(pointID != null) {
-			clearPoint(Integer.parseInt(pointID), info.getUser());
+			clearPoint(Integer.parseInt(pointID), user);
 		}
 		
 		String deviceID = req.getParameter(DEVICE_ID);
 		if(deviceID != null) {
-			clearDevice(Integer.parseInt(deviceID), info.getUser());
+			clearDevice(Integer.parseInt(deviceID), user);
 		}
 		
 		if(pointID == null && deviceID == null) {

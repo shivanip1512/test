@@ -46,14 +46,19 @@ public class JSFilter implements Filter {
 		String uri = hreq.getRequestURI();
 		String conPath = hreq.getContextPath();
 
+		if(!(uri.endsWith(".js"))) {
+			chain.doFilter(req,resp);
+			return;
+		}
+		
 		String jsPath= uri.replaceFirst(conPath, "");
 		
-		if( jsPath.startsWith("/js/") ) {					
+		if( jsPath.startsWith("/esub/js/") ) {					
 			chain.doFilter(req,resp);		
 		}
 		else {
 			jsPath = jsPath.substring(jsPath.lastIndexOf("/"));
-			config.getServletContext().getRequestDispatcher("/js" + jsPath).forward(req, resp);
+			config.getServletContext().getRequestDispatcher("/esub/js" + jsPath).forward(req, resp);
 		}
 			
 	}

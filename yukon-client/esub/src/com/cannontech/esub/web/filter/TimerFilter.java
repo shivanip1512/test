@@ -46,7 +46,6 @@ public class TimerFilter implements Filter {
       		name = ((HttpServletRequest)req).getRequestURI();
     	}	
     	CTILogger.info(name + ": " + (after - before) + "ms");
-//    	config.getServletContext().log(name + ": " + (after - before) + "ms");
   	}
 	
 

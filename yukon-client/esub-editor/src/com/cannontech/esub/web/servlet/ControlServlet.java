@@ -10,12 +10,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.LoginController;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.util.Util;
-import com.cannontech.esub.web.SessionInfo;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.roles.operator.EsubDrawingsRole;
@@ -41,8 +41,7 @@ public class ControlServlet extends HttpServlet {
 	protected void service(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException, IOException {
 		
-		SessionInfo	info = (SessionInfo) req.getSession(false).getAttribute(SessionInfo.SESSION_KEY);	
-		LiteYukonUser user = info.getUser();
+		LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);
 		
 		if(!AuthFuncs.checkRoleProperty(user, EsubDrawingsRole.CONTROL)) {
 			CTILogger.info("Control request received by user without CONTROL role, ip: " + req.getRemoteAddr());

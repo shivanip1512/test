@@ -54,14 +54,19 @@ public class ImageFilter implements Filter {
 		String uri = hreq.getRequestURI();
 		String conPath = hreq.getContextPath();
 
+		if(!(uri.endsWith(".gif") || uri.endsWith(".png") || uri.endsWith(".jpg"))) {
+			chain.doFilter(req,resp);
+			return; 
+		}
+		
 		String imgPath= uri.replaceFirst(conPath, "");
 		
-		if( imgPath.startsWith("/images/") ) {		
+		if( imgPath.startsWith("/esub/images/") ) {		
 			ensureImageExists(config.getServletContext().getRealPath(imgPath));
 			chain.doFilter(req,resp);		
 		}
 		else {			
-			imgPath = "/images" + imgPath.substring(imgPath.lastIndexOf("/"));
+			imgPath = "/esub/images" + imgPath.substring(imgPath.lastIndexOf("/"));
 			ensureImageExists(config.getServletContext().getRealPath(imgPath));
 			config.getServletContext().getRequestDispatcher(imgPath).forward(req, resp);
 		}
