@@ -3,7 +3,8 @@
 <%@ include file="../../trending_functions.jsp" %>
 <head>
 <title>Consumer Energy Services</title>
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
+<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <META NAME="robots" CONTENT="noindex, nofollow">
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
@@ -65,9 +66,7 @@ MM_reloadPage(true);
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF" > 
           
-			<!--TRENDING OPTIONS-->
 			<%@include file="../../trending_options.jsp"%>
-			<!-- END TRENDING OPTIONS -->
 
             <table width="575" border="0" cellspacing="0" cellpadding="0" align="center" height="46">
             <tr> 

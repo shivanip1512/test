@@ -21,10 +21,8 @@
 <html>
 <head>
 <title>Consumer Energy Services</title>
+<link id="StyleSheet" rel="stylesheet" href="../../../WebConfig/CannonStyle.css" type="text/css">
 <link id="StyleSheet" rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
-<script language="JavaScript">
-	document.getElementById("StyleSheet").href = '../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_STYLE_SHEET %>"/>';
-</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">

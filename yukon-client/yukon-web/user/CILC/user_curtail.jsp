@@ -1,11 +1,12 @@
 <html>
+<%@ page import="com.cannontech.util.ServletUtil" %>
+<%@ include file="../user_header.jsp" %>
 <head>
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<!--<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">-->
+<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
+<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 </head>
-<%@ page import="com.cannontech.util.ServletUtil" %>
-<%@ include file="../user_header.jsp" %>
 <%
     // From the ViewLMCurtailCustomerActivity view grab the 
     // Mandatory Curtailment notice, if there is one
