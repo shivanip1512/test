@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_svc.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:09 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/06/14 21:01:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,6 +45,7 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
     case CTRL_CLOSE_EVENT:
 
         SetEvent(hShutdown);
+        Sleep(30000);
         return TRUE;
 
     // Don't quit if

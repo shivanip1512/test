@@ -2,7 +2,7 @@
     Filename:  ccservice.cpp
 
     Programmer:  Josh Wolberg
-    
+
     Description:  Source file for CtiCCService.
 
     Initial Date:  9/04/2001
@@ -41,6 +41,7 @@ bool CtrlHandler(DWORD fdwCtrlType)
     case CTRL_CLOSE_EVENT:
 
         capcontrol_do_quit = TRUE;
+        Sleep(30000);
         return TRUE;
 
         /* CTRL+CLOSE: confirm that the user wants to exit. */

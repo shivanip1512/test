@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:37 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/06/14 21:01:43 $
 *
 * AUTHOR: Ben Wallace
 *
@@ -77,7 +77,8 @@ BOOL MyCtrlHandler( DWORD fdwCtrlType )
         case CTRL_LOGOFF_EVENT:
         case CTRL_SHUTDOWN_EVENT:
             // notify of shutdown
-            SetEvent(iShutdown);    
+            SetEvent(iShutdown);
+            Sleep(30000);
             return TRUE;
 
         default:
@@ -90,14 +91,14 @@ IMPLEMENT_SERVICE(CtiFDRService, FDR)
 
 
 CtiFDRService::CtiFDRService(LPCTSTR szName, LPCTSTR szDisplay, DWORD dwType ) :
-    CService( szName, szDisplay, dwType ), 
+    CService( szName, szDisplay, dwType ),
     iGoodStatus(TRUE),
     iInterfaceCount(0)
 {
     // Special static pointer needed by base class
     m_pThis = this;
 
-    
+
     for(int count=0; count < MAX_FDR_INTERFACES; count++)
     {
         interfacesList[count].StartFunction = 0;
@@ -119,7 +120,7 @@ void CtiFDRService::RunInConsole( DWORD argc, LPTSTR *argv )
         dout << RWTime() << " FDR Could not install control handler" << endl;
     }
 
-    
+
     Init( );
     Run( );
 
@@ -138,8 +139,8 @@ void CtiFDRService::DeInit( )
 * Function Name: CtiFDRService::Init()
 *
 * Description: loads all interface dll's but does not start them
-* 
-* 
+*
+*
 *************************************************************************
 */
 void CtiFDRService::Init( )
@@ -148,7 +149,7 @@ void CtiFDRService::Init( )
     RWCString   interfaces;
     int         count;
 
-    
+
     CtiConfigParameters configParameters;
 
     try
@@ -159,7 +160,7 @@ void CtiFDRService::Init( )
             dout << "No interfaces specified in config file " << CPARM_NAME_FDR_INTERFACES << endl;
             return;
         }
-        
+
         interfaces = configParameters.getValueAsString(CPARM_NAME_FDR_INTERFACES);
         if(interfaces.length() == 0)
         {
@@ -179,7 +180,7 @@ void CtiFDRService::Init( )
             HINSTANCE   hInterfaceLib;
 
             myInterfaceName+= ".DLL";
-            
+
             //  load DLL
             if( !(hInterfaceLib = LoadLibrary( myInterfaceName )) )
             {
@@ -192,7 +193,7 @@ void CtiFDRService::Init( )
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << "Loaded Interface: " << myInterfaceName << endl;
                 }
-                
+
                 //  make sure the DLL has the startup routine
                 interfacesList[iInterfaceCount].StartFunction = (int (FAR WINAPI *)())GetProcAddress( hInterfaceLib, "RunInterface" );
                 if( !interfacesList[iInterfaceCount].StartFunction )
@@ -209,13 +210,13 @@ void CtiFDRService::Init( )
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << "Unable to find routine StopInterface() in: " << myInterfaceName << endl;
                     }
-                        
+
                     // track the interfaces loaded
                     ++iInterfaceCount;
 
                 }
             }
-            
+
         } // end while (!(myInterfaceName=next
 
     }
@@ -225,7 +226,7 @@ void CtiFDRService::Init( )
         dout << "Exception in FDR Service init(): ";
         dout << msg.why() << endl;
     }
-    
+
 
 }
 
@@ -239,67 +240,67 @@ void CtiFDRService::ParseArgs( DWORD argc, LPTSTR *argv )
 void CtiFDRService::OnStop( )
 {
     // change state
-    SetStatus( SERVICE_STOP_PENDING, 
+    SetStatus( SERVICE_STOP_PENDING,
                33,       // check point??
                5000     // hint
              );
-    
-    // stop all threads
-    stopInterfaces();	  
 
-    SetStatus( SERVICE_STOP_PENDING, 
+    // stop all threads
+    stopInterfaces();   
+
+    SetStatus( SERVICE_STOP_PENDING,
                66,       // check point??
                5000     // hint
              );
-    
+
     //complete
     //UserQuit = true;
-    SetEvent(iShutdown);    
-	
-	// stop dout thread
-	dout.interrupt(CtiThread::SHUTDOWN);
-	dout.join();
+    SetEvent(iShutdown);
     
+    // stop dout thread
+    dout.interrupt(CtiThread::SHUTDOWN);
+    dout.join();
+
     CloseHandle(iShutdown);
 
-    SetStatus( SERVICE_STOPPED ); 
+    SetStatus( SERVICE_STOPPED );
 
 }
 
 
 void CtiFDRService::Run( )
 {
-    
+
     // for shutting down
-    iShutdown = CreateEvent(NULL,TRUE,FALSE,NULL);     
-    
+    iShutdown = CreateEvent(NULL,TRUE,FALSE,NULL);
+
     SetStatus(SERVICE_START_PENDING, 33, 5000 );
-    
+
     try
     {
         //call run method to start interfaces
         startInterfaces();
-        				    
+                        
         // set service as running
         SetStatus(SERVICE_RUNNING, 0, 0,
                   SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
 
-        
+
         //Wait for the shutdown event to become signalled
-        WaitForSingleObject( iShutdown, INFINITE );        
+        WaitForSingleObject( iShutdown, INFINITE );
 
     }
     catch( RWxmsg &msg )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-		dout << "Exception in FDR Run() Service: ";
+        dout << "Exception in FDR Run() Service: ";
         dout << msg.why() << endl;
     }
 
 }
 
 
-        
+
 void CtiFDRService::startInterfaces( )
 {
     // start all interfaces
@@ -325,14 +326,14 @@ void CtiFDRService::stopInterfaces( )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Stopping All FDR Interfaces" << endl;
-    }	
-    
+    }   
+
     for (int i=0; i < iInterfaceCount; i++)
     {
         if (interfacesList[i].StopFunction != 0)
         {
-            interfacesList[i].StopFunction();  
-		}
+            interfacesList[i].StopFunction();
+        }
     }
-       
+
 }

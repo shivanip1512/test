@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:36 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/06/14 21:01:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,6 +43,7 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
    case CTRL_LOGOFF_EVENT:
       ScannerQuit = TRUE;
       SetEvent(hScannerSyncs[S_QUIT_EVENT]);
+      Sleep(30000);
       return TRUE;
    default:
       return FALSE;

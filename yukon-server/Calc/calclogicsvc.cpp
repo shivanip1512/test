@@ -49,6 +49,7 @@ BOOL MyCtrlHandler( DWORD fdwCtrlType )
         case CTRL_SHUTDOWN_EVENT:
         default:
             UserQuit = TRUE;
+            Sleep(30000);
             return TRUE;
     }
 }
@@ -96,15 +97,15 @@ void CtiCalcLogicService::Init( )
         _dispatchPort = VANGOGHNEXUS;
         _CALC_DEBUG = FALSE;
         //defaults
-    
+
         RWCString str;
         char var[128];
-    
+
         dout.start();     // fire up the logger thread
         dout.setOutputPath(gLogDirectory.data());
         dout.setToStdOut(true);
         dout.setWriteInterval(1);
-    
+
         strcpy(var, "CALC_LOGIC_LOG_FILE");
         if( !(str = gConfigParms.getValueAsString(var)).isNull() )
         {
@@ -121,7 +122,7 @@ void CtiCalcLogicService::Init( )
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
-        
+
         strcpy(var, "DISPATCH_MACHINE");
         if( !(str = gConfigParms.getValueAsString(var)).isNull() )
         {
@@ -137,7 +138,7 @@ void CtiCalcLogicService::Init( )
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
-    
+
         strcpy(var, "DISPATCH_PORT");
         if( !(str = gConfigParms.getValueAsString(var)).isNull() )
         {
@@ -153,7 +154,7 @@ void CtiCalcLogicService::Init( )
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
-    
+
         strcpy(var, "CALC_LOGIC_DEBUG");
         if( !(str = gConfigParms.getValueAsString(var)).isNull() )
         {
@@ -203,7 +204,7 @@ void CtiCalcLogicService::Init( )
             }
             _dispatchMachine = RWCString ("127.0.0.1");
         }
-        
+
         if( (*fpGetAsString)( "DISPATCH_PORT", temp, 180 ) )
         {
             _dispatchPort = atoi(temp);
@@ -370,8 +371,8 @@ void CtiCalcLogicService::Run( )
 
             //FIXFIXFIX - move CHECK_RATE_SECONDS to a CParm in the future
             //
-            nextCheckTime += CHECK_RATE_SECONDS;    // added some time to it 
-            
+            nextCheckTime += CHECK_RATE_SECONDS;    // added some time to it
+
             _dbChange = FALSE;                      // make sure our flag is reset
 
             for( ; !UserQuit; )
@@ -381,14 +382,14 @@ void CtiCalcLogicService::Run( )
                 time (&timeNow);
                 if( timeNow > nextCheckTime )
                 {
-                    
+
                     if( _CALC_DEBUG )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Timer Checking for DB Change." << endl;
                     }
-                    
-                    
+
+
                     // check for DB Changes on a set interval
                     // this makes us a little kinder on re-registrations
                     if(_dbChange)
@@ -399,7 +400,7 @@ void CtiCalcLogicService::Run( )
                         break; // exit the loop and reload
                     }
 
-                    nextCheckTime = timeNow + CHECK_RATE_SECONDS; 
+                    nextCheckTime = timeNow + CHECK_RATE_SECONDS;
                 }
 
             } // end for userquit
@@ -496,7 +497,7 @@ void CtiCalcLogicService::_inputThread( void )
     //    time_t          time_start, time_finish;
         BOOL            interrupted = FALSE;
         //int             numPDataVals;
-    
+
         while( !interrupted )
         {
             //  while i'm not getting anything
@@ -507,7 +508,7 @@ void CtiCalcLogicService::_inputThread( void )
                 else
                     _pSelf.sleep( 200 );
             }
-    
+
             //  dump out if we're being called
             if( !interrupted )
             {
@@ -515,21 +516,21 @@ void CtiCalcLogicService::_inputThread( void )
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime( ) << " - message received - " << endl;
                 }*/
-    
+
                 //time_start = clock( );
-    
+
                 //  common variable, but this is the only place that writes to it, so i think it's okay.
                 parseMessage( incomingMsg, calcThread );
                     //_dbChange = TRUE;
-    
+
                 //time_finish = clock( );
-    
+
                 //{
                 //    RWMutexLock::LockGuard coutGuard(coutMux);
                 //    cout << endl;
                 //    cout << "took " << (time_finish - time_start) << " ms to post " << numPDataVals << " messages" << endl;
                 //}
-    
+
                 delete incomingMsg;   //  Make sure to delete this - its on the heap
             }
         }
@@ -551,7 +552,7 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
         CtiMultiMsg *msgMulti;
         CtiPointDataMsg *pData;
         int x;
-        
+
         switch( message->isA( ) )
         {
             case MSG_DBCHANGE:
@@ -561,38 +562,38 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                     //((CtiDBChangeMsg*)message)->getId()
                     if ( ((CtiDBChangeMsg*)message)->getTypeOfChange() != ChangeTypeAdd)
                     {
-    
+
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime()  << " - Looking update DBChange PointID in Calc List..." << endl;
                         }
-    
+
                         // Must have been a delete or update
                         if (calcThread->isACalcPointID(((CtiDBChangeMsg*)message)->getId()) == TRUE)
                         {
                             _dbChange = TRUE;
-    
+
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime()  << " - Database change on loaded calc.  Setting reload flag." << endl;
                             }
-    
+
                         }
                     }
                     else
                     {
                         // always load when a point is added
                         _dbChange = TRUE;
-    
+
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime()  << " - Database change- Point Added.  Setting reload flag." << endl;
                         }
                     }
                 }
-    
+
                 break;
-    
+
             case MSG_COMMAND:
                 // we will handle some messages
                 switch( ((CtiCommandMsg*)message)->getOperation())
@@ -603,50 +604,50 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                             dout << RWTime() << " CalcLogic received a shutdown message from somewhere- Ignoring!!" << endl;
                         }
                         break;
-    
+
                     case (CtiCommandMsg::AreYouThere):
                         // echo back the same message - we are here
                         _conxion->WriteConnQue( new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15) );
-    
+
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " CalcLogic has been pinged" << endl;
                         }
                         break;
-    
+
                     default:
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " CalcLogic received a unknown/don't care Command message- " << endl;
                         }
                         break;
-    
+
                 }
                 break;
-    
+
             case MSG_POINTDATA:
                 {
                     pData = (CtiPointDataMsg *)message;
                     calcThread->pointChange( pData->getId(), pData->getValue(), pData->getTime(), pData->getQuality(), pData->getTags() );
                 }
                 break;
-    
+
             case MSG_MULTI:
                 // pull all of the messages out
                 msgMulti = (CtiMultiMsg *)message;
-    
+
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime()  << "  Processing Multi Message with: " << msgMulti->getData( ).entries( ) << " messages -  " << endl;
                 }
-    
+
                 for( x = 0; x < msgMulti->getData( ).entries( ); x++ )
                 {
                     // recursive call to parse this message
                     parseMessage( msgMulti->getData( )[x], calcThread );
                 }
                 break;
-    
+
             case MSG_SIGNAL:
                 // not an error
                 {
@@ -654,7 +655,7 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                     dout << RWTime( ) << " - Signal Message received for point id: " << ((CtiSignalMsg*)message)->getId() << endl;
                 }
                 break;
-    
+
             default:
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -667,7 +668,7 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-    
+
     return retval;
 }
 

@@ -31,6 +31,7 @@ bool CtrlHandler(DWORD fdwCtrlType)
     case CTRL_CLOSE_EVENT:
 
         load_management_do_quit = TRUE;
+        Sleep(30000);
         return TRUE;
 
         /* CTRL+CLOSE: confirm that the user wants to exit. */
@@ -248,7 +249,7 @@ void CtiLMService::Run()
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime().asString() << " - Figuring initial actual var values." << endl;
                 }
-    
+
                 for(ULONG i=0;i<strategies.entries();i++)
                 {
                     CtiLMStrategy *current = (CtiCCStrategy*)strategies[i];
