@@ -38,6 +38,7 @@ public class DatabaseReport extends YukonReportBase
 	public DatabaseReport()
 	{
 		super();
+		model = new DatabaseModel();
 	}
 	
 	/**
