@@ -2829,6 +2829,43 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
                     _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
                 }
             }
+
+            if(getiValue("type") == ProtocolExpresscomType)
+            {
+                int serialnumber = getiValue("serial", 0);
+                RWCString xcprefixrange = gConfigParms.getValueAsString("LCR_EXPRESSCOM_SERIAL_PREFIX_RANGES");
+                if(!xcprefixrange.isNull())
+                {
+                    while(!xcprefixrange.isNull())
+                    {
+                        RWCString str = xcprefixrange.match("[0-9]*-[0-9]*,?");
+
+                        if(!str.isNull())
+                        {
+                            char *chptr;
+                            RWCString startstr = str.match("[0-9]*");
+                            RWCString stopstr = str.match(" *- *[0-9]* *,? *");
+                            stopstr = stopstr.strip(RWCString::both, ' ');
+                            stopstr = stopstr.strip(RWCString::leading, '-');
+                            stopstr = stopstr.strip(RWCString::trailing, ',');
+                            stopstr = stopstr.strip(RWCString::both, ' ');
+
+                            UINT startaddr = strtoul( startstr.data(), &chptr, 10 );
+                            UINT stopaddr = strtoul( stopstr.data(), &chptr, 10 );
+
+                            if(startaddr <= serialnumber && serialnumber <= stopaddr)
+                            {
+                                // This is a prefix switch switch and we can continue!
+                                _cmd["xcprefix"] = CtiParseValue( TRUE );
+                                _cmd["xcprefixstr"] = CtiParseValue( gConfigParms.getValueAsString("LCR_EXPRESSCOM_SERIAL_PREFIX_MESSAGE") );
+                                break;
+                            }
+                        }
+
+                        xcprefixrange.replace("[0-9]*-[0-9]*,?", "");
+                    }
+                }
+            }
         }
         else
         {
