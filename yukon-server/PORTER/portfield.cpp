@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.103 $
-* DATE         :  $Date: 2004/05/11 15:52:48 $
+* REVISION     :  $Revision: 1.104 $
+* DATE         :  $Date: 2004/05/19 14:57:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -77,6 +77,7 @@ using namespace std;
 #include "dsm2err.h"
 #include "device.h"
 #include "dev_tap.h"
+#include "dev_rtc.h"
 #include "dev_wctp.h"
 #include "routes.h"
 #include "porter.h"
@@ -88,6 +89,7 @@ using namespace std;
 #include "porttcp.h"
 
 #include "portglob.h"
+#include "prot_sa3rdparty.h"
 
 #include "connection.h"
 #include "c_port_interface.h"
@@ -113,6 +115,7 @@ using namespace std;
 #include "trx_711.h"
 #include "tbl_paoexclusion.h"
 #include "utility.h"
+
 
 #define INF_LOOP_COUNT 10000
 
@@ -158,6 +161,7 @@ INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
 INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries);
 
 static void ApplyTapNeedsLogon(const long key, CtiDeviceSPtr Dev, void* vpPortId);
+static INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device, CtiTablePaoExclusion &exclusion);
 
 /* Threads that handle each port for communications */
 VOID PortThread(void *pid)
@@ -213,9 +217,15 @@ VOID PortThread(void *pid)
         {
             if( LastExclusionDevice &&
                 LastExclusionDevice->hasQueuedWork() &&
-                nowTime < LastExclusionDevice->getExclusion().getExecutingUntil() )
+                nowTime < LastExclusionDevice->getExclusion().getExecutingUntil() &&
+                nowTime > LastExclusionDevice->getExclusion().getEvaluateNextAt() )
             {
                 Device = LastExclusionDevice;
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Last Exclusion Device " << Device->getName() << " has been reselected." << endl;
+                }
             }
             else
             {
@@ -814,13 +824,15 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
     /*
      *  Only certain devices will be able to queue OMs into them.  They will use the OMs to determine the exclusion selection!
      */
-    if( QUEUED_TO_DEVICE == (status = Device->queueOutMessageToDevice(OutMessage)) )
+    UINT dqcnt;
+
+    if( QUEUED_TO_DEVICE == (status = Device->queueOutMessageToDevice(OutMessage, &dqcnt)) )
     {
         Port->setDeviceQueued( Device->getID() );
 
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << Device->getName() << " enqueuing work. " << endl;
+            CtiLockGuard<CtiLogger> doubt_guard(slog);
+            slog << RWTime() << " " << Device->getName() << " queuing work.  There are " << dqcnt << " entries on the queue" << endl;
         }
     }
 
@@ -1528,6 +1540,50 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 case TYPE_RTC:
                     {
                         OutMessage->InLength = 0;
+
+                        CtiDeviceRTC *rtc = (CtiDeviceRTC *)Device.get();
+
+                        CtiOutMessage *rtcOutMessage = 0;
+
+                        INT codecount = 1;      // One is for The one in OutMessage.
+
+                        try
+                        {
+                            CtiProtocolSA3rdParty prot;
+
+                            prot.setSAData( OutMessage->Buffer.SASt );
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(slog);
+                                slog << RWTime() << " " <<  rtc->getName() << ": " << prot.asString() << endl;
+                            }
+
+                            while( codecount <= 35 && rtc->getOutMessage(rtcOutMessage) )
+                            {
+                                codecount++;
+                                memcpy((char*)(&OutMessage->Buffer.OutMessage[OutMessage->OutLength]), (char*)rtcOutMessage->Buffer.SASt._buffer, rtcOutMessage->OutLength);
+                                OutMessage->OutLength += rtcOutMessage->OutLength;
+
+                                prot.setSAData( rtcOutMessage->Buffer.SASt );
+
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(slog);
+                                    slog << RWTime() << " " <<  rtc->getName() << ": " << prot.asString() << endl;
+                                }
+
+                                delete rtcOutMessage;
+                                rtcOutMessage = 0;
+                            }
+
+                            prot.setTransmitterAddress(rtc->getAddress());
+                            prot.appendVariableLengthTimeSlot(OutMessage->Buffer.OutMessage, OutMessage->OutLength);
+
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
 
                         /* output the message to the remote */
                         trx.setOutBuffer(OutMessage->Buffer.OutMessage);
@@ -3326,13 +3382,11 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
 
                 if( DeviceManager.mayDeviceExecuteExclusionFree(Device, exclusion) )
                 {
-                    #if 0 // 5/11/2004 CGP This is too darn much.
                     if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Found an excludable which MAY be executed!" << endl;
+                        dout << RWTime() << " " << Device->getName() << " might be able to execute." << endl;
                     }
-                    #endif
                     bStatus = TRUE;     // This device is locked in as executable!!!
                 }
             }
@@ -3344,13 +3398,11 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
         }
         else
         {
-            #if 0 // 5/11/2004 CGP This is too darn much.
-            if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+            if(0 && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " NON-Excludable OM found for PAOID " << OutMessage->DeviceID << endl;
             }
-            #endif
 
             bStatus = TRUE; // We can send anything which says it is non-excludable!
         }
@@ -3396,11 +3448,9 @@ INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr 
 {
     INT status = NORMAL;
 
-    // 030503 CGP Adding Exclusion logic in this location.
     /*
      * Exclusion logic will consist of:
      *  - Is there a time exclusion on either the port or the device in that order?
-     *  - Is this port blocked by any other currently executing port.
      *  - Is the device blocked by any other currently executing device.
      *
      *  A paobject will be considered blocked if a paobjectid in the exclusion list of the paobject in question
@@ -3416,87 +3466,17 @@ INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr 
 
             if( !DeviceManager.mayDeviceExecuteExclusionFree(Device, exclusion) )
             {
-                // There is an exclusion conflict for this device or port!
+                // There is an exclusion conflict for this device.  It cannot execute this OM.
+                DeviceManager.removeInfiniteExclusion(Device);  // Remove any infinite time exclusions caused by Device from any other device in the list.
 
-                if(0 && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << Device->getName() << " may not execute.  Requeueing the OM" << endl;
+                    dout << RWTime() << " " << Device->getName() << " may not execute this request.  Requeue and scan for another." << endl;
                 }
 
-                DeviceManager.removeInfiniteExclusion(Device);
-
-                // Decide how to requeue this port/device combo.
-                switch(exclusion.getFunctionRequeue())              // Determine what to do with this OM based upon the exclusion which BLOCKED us?
-                {
-                case (CtiTablePaoExclusion::RequeueNextExecutableOM):
-                    {
-                        if( ShuffleQueue( Port, OutMessage, Device ) )
-                        {
-                            // Queue has been shuffled!  OutMessage is no longer ours to touch..
-                            if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " OutMessage shuffled excluded for non-excluded outmessage. " << endl;
-                            }
-                        }
-                        else
-                        {
-                            if(getDebugLevel() & DEBUGLEVEL_LUDICROUS && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " " << Port->getName() << " queue unable to be shuffled.  No non-excluded outmessages exist. " << endl;
-                            }
-
-                            if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
-                            {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
-                                }
-
-                                delete OutMessage;
-                            }
-
-                            OutMessage = 0;
-                            Sleep(100L);
-                        }
-
-                        status = RETRY_SUBMITTED;
-                        break;
-                    }
-                case (CtiTablePaoExclusion::RequeueThisCommandNext):
-                    {
-                        // Keep this ONE HIGH HIGH PRIORITY.
-                        OutMessage->Priority = MAXPRIORITY - 1;
-
-                        if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Re-queuing original (excluded) message at high priority to examine next" << endl;
-                        }
-                        // FALL THROUGH!
-                    }
-                case (CtiTablePaoExclusion::RequeueQueuePriority):
-                default:
-                    {
-                        if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
-                            }
-
-                            delete OutMessage;
-                        }
-
-                        OutMessage = 0;
-                        Sleep(100L);
-
-                        status = RETRY_SUBMITTED;
-                        break;
-                    }
-                }
+                // Decide how to requeue the failed OM.
+                status = OutMessageRequeueOnExclusionFail(Port, OutMessage, Device, exclusion);
             }
         }
     }
@@ -3740,4 +3720,82 @@ void ApplyTapNeedsLogon(const long key, CtiDeviceSPtr Dev, void* vpPortId)
     }
 
     return;
+}
+
+INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device, CtiTablePaoExclusion &exclusion)
+{
+    INT status = NORMAL;
+
+    switch(exclusion.getFunctionRequeue())              // Determine what to do with this OM based upon the exclusion which BLOCKED us?
+    {
+    case (CtiTablePaoExclusion::RequeueNextExecutableOM):
+        {
+            if( ShuffleQueue( Port, OutMessage, Device ) )
+            {
+                // Queue has been shuffled!  OutMessage is no longer ours to touch..
+                if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " OutMessage shuffled excluded for non-excluded outmessage. " << endl;
+                }
+            }
+            else
+            {
+                if(getDebugLevel() & DEBUGLEVEL_LUDICROUS && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " " << Port->getName() << " queue unable to be shuffled.  No non-excluded outmessages exist. " << endl;
+                }
+
+                if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
+                    }
+
+                    delete OutMessage;
+                }
+
+                OutMessage = 0;
+                Sleep(100L);
+            }
+
+            status = RETRY_SUBMITTED;
+            break;
+        }
+    case (CtiTablePaoExclusion::RequeueThisCommandNext):
+        {
+            // Keep this ONE HIGH HIGH PRIORITY.
+            OutMessage->Priority = MAXPRIORITY - 1;
+
+            if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Re-queuing original (excluded) message at high priority to examine next" << endl;
+            }
+            // FALL THROUGH!
+        }
+    case (CtiTablePaoExclusion::RequeueQueuePriority):
+    default:
+        {
+            if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
+                }
+
+                delete OutMessage;
+            }
+
+            OutMessage = 0;
+            Sleep(100L);
+
+            status = RETRY_SUBMITTED;
+            break;
+        }
+    }
+
+    return status;
 }
