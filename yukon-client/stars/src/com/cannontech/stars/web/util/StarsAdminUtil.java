@@ -651,19 +651,19 @@ public class StarsAdminUtil {
 			
 			// Delete all the remaining entries
 			for (int i = 0; i < oldEntries.size(); i++) {
-				int entryID = ((YukonListEntry) oldEntries.get(i)).getEntryID();
+				YukonListEntry cEntry = (YukonListEntry) oldEntries.get(i);
 				
 				try {
 					com.cannontech.database.db.constants.YukonListEntry entry =
 							new com.cannontech.database.db.constants.YukonListEntry();
-					entry.setEntryID( new Integer(entryID) );
+					entry.setEntryID( new Integer(cEntry.getEntryID()) );
 					entry.setDbConnection( conn );
 					entry.delete();
 				}
 				catch (java.sql.SQLException e) {
 					CTILogger.error( e.getMessage(), e );
 					conn.rollback();
-					throw new WebClientException("Cannot delete list entry with id = " + entryID + ", make sure it is not referenced", e);
+					throw new WebClientException("Cannot delete list entry \"" + cEntry.getEntryText() + "\", make sure it is not referenced", e);
 				}
 			}
 			
@@ -723,6 +723,7 @@ public class StarsAdminUtil {
 		}
 		
 		java.sql.Connection conn = null;
+		boolean autoCommit = true;
 		java.sql.PreparedStatement pstmt1 = null;
 		java.sql.PreparedStatement pstmt2 = null;
 		
@@ -759,28 +760,40 @@ public class StarsAdminUtil {
 				rset.close();
 			}
 			
+			autoCommit = conn.getAutoCommit();
+			conn.setAutoCommit( false );
 			pstmt2 = conn.prepareStatement( sql2 );
 			
-			for (int i = 0; i < companies.size(); i++) {
-				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
-				
-				Iterator it = entryIDMap.keySet().iterator();
-				while (it.hasNext()) {
-					Integer oldEntryID = (Integer) it.next();
-					Integer newEntryID = (Integer) entryIDMap.get( oldEntryID );
-					pstmt2.setInt( 1, newEntryID.intValue() );
-					pstmt2.setInt( 2, oldEntryID.intValue() );
-					pstmt2.setInt( 3, company.getLiteID() );
-					pstmt2.addBatch();
+			try {
+				for (int i = 0; i < companies.size(); i++) {
+					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+					
+					Iterator it = entryIDMap.keySet().iterator();
+					while (it.hasNext()) {
+						Integer oldEntryID = (Integer) it.next();
+						Integer newEntryID = (Integer) entryIDMap.get( oldEntryID );
+						pstmt2.setInt( 1, newEntryID.intValue() );
+						pstmt2.setInt( 2, oldEntryID.intValue() );
+						pstmt2.setInt( 3, company.getLiteID() );
+						pstmt2.execute();
+					}
 				}
 			}
+			catch (java.sql.SQLException e) {
+				CTILogger.error( e.getMessage(), e );
+				conn.rollback();
+				throw new WebClientException("Failed to update refenreces from the old list to the new list");
+			}
 			
-			pstmt2.executeBatch();
+			conn.commit();
 		}
 		finally {
 			if (pstmt1 != null) pstmt1.close();
 			if (pstmt2 != null) pstmt2.close();
-			if (conn != null) conn.close();
+			if (conn != null) {
+				conn.setAutoCommit( autoCommit );
+				conn.close();
+			} 
 		}
 		
 		for (int i = 0; i < companies.size(); i++) {
