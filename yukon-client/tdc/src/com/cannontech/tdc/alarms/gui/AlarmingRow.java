@@ -99,7 +99,7 @@ public int getRowNumber()
 
 public boolean containsSignal( Signal signal_ )
 {
-	return ( getSignalHash().get( new Integer(signal_.getCondition())) != null );
+	return ( getSignalHash().get(signal_) != null );
 }
   
 /**
@@ -159,7 +159,7 @@ public synchronized void updateSignal(Signal signal)
 {
 	if( signal != null && signal.getCondition() >= IAlarmDefs.MIN_CONDITION_ID )
 	{
-		getSignalHash().put( new Integer(signal.getCondition()), signal );
+		getSignalHash().put(signal, signal );
 		
 		updateBlinkingState();
 	}
@@ -191,7 +191,7 @@ public synchronized void removeSignal(Signal signal)
 	if( signal == null )
 		return;
 
-	getSignalHash().remove( new Integer(signal.getCondition()) );
+	getSignalHash().remove( signal );
 	
 	updateBlinkingState();	
 }
