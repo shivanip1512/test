@@ -5,6 +5,7 @@ package com.cannontech.tools.msg;
  * Creation date: (6/13/00 10:32:57 AM)
  * @author: 
  */
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.PointRegistration;
 import com.cannontech.message.util.MessageEvent;
@@ -12,6 +13,8 @@ import com.cannontech.message.util.MessageListener;
 
 public class PointGenerator implements MessageListener 
 {
+	private int cnt = 0;
+	
 /**
  * This method was created in VisualAge.
  * @param args java.lang.String[]
@@ -20,10 +23,10 @@ public static void main(String[] args)
 {
 	if( args.length < 5 )
 	{
-		com.cannontech.clientutils.CTILogger.info("Usage:  PointChangeSource vangoghmachine port numberofchanges delay pointcount { pointID } { pointType }");
-		com.cannontech.clientutils.CTILogger.info("specify numberofchanges = -1 to keep sending changes forever");
-		com.cannontech.clientutils.CTILogger.info("note that port 1510 has been the default");
-		com.cannontech.clientutils.CTILogger.info("PointTypes : 0=Status  1=Analog  2=PulsAccum  3=DmdAccum  4=Calculated");		
+		CTILogger.info("Usage:  PointChangeSource vangoghmachine port numberofchanges delay pointcount { pointID } { pointType }");
+		CTILogger.info("specify numberofchanges = -1 to keep sending changes forever");
+		CTILogger.info("note that port 1510 has been the default");
+		CTILogger.info("PointTypes : 0=Status  1=Analog  2=PulsAccum  3=DmdAccum  4=Calculated");		
 		System.exit(0);
 	}
 	
@@ -57,6 +60,8 @@ public static void main(String[] args)
 	pr.setRegFlags( PointRegistration.REG_ALL_PTS_MASK );
 	conn.setRegistrationMsg( pr );
 	conn.addMessageListener( new PointGenerator() );
+	
+	conn.setQueueMessages(false);
 
 	conn.setHost(vanGogh);
 	conn.setPort(port);
@@ -67,12 +72,12 @@ public static void main(String[] args)
 	}
 	catch( java.io.IOException e )
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		CTILogger.error( e.getMessage(), e );
 		System.exit(0);
 	}
 
 	//First do a registration
-	com.cannontech.clientutils.CTILogger.info("Registering client with vangogh");
+	CTILogger.info("Registering client with vangogh");
 	com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
 	reg.setAppName("Point Change Source - Java" + (new java.util.Date()).getTime() );
 	reg.setAppIsUnique(0);
@@ -82,14 +87,14 @@ public static void main(String[] args)
 	conn.write( reg );
 
 	//Do a loopback
-/*	com.cannontech.clientutils.CTILogger.info("Attempting a loopback command");
+/*	CTILogger.info("Attempting a loopback command");
 	com.cannontech.message.dispatch.message.Command cmd = new com.cannontech.message.dispatch.message.Command();
 	cmd.setOperation( com.cannontech.message.dispatch.message.Command.NO_OP );
 	conn.write( cmd );
 
 	//Expect the message back
 	Object response = conn.read();
-	com.cannontech.clientutils.CTILogger.info("Received loopback:  " + response );*/
+	CTILogger.info("Received loopback:  " + response );*/
 
 	//Send changes
 	int numSent = 0;
@@ -129,14 +134,14 @@ public static void main(String[] args)
 		conn.write( outMsg );
 		numSent++;
 		
-		com.cannontech.clientutils.CTILogger.info((new java.util.Date()).toString() + " - Sent change #" + numSent);
+		CTILogger.info((new java.util.Date()).toString() + " - Sent change #" + numSent);
 		try
 		{
 			Thread.sleep(delay);
 		}
 		catch( InterruptedException e )
 		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 	}
 
@@ -146,6 +151,10 @@ public static void main(String[] args)
 
 public void messageReceived(MessageEvent e)
 {
+	cnt++;
+	if( (cnt % 20) == 0 )
+		CTILogger.info( "   MEM1= " + Runtime.getRuntime().freeMemory() + " / " 
+			+ Runtime.getRuntime().totalMemory() );
 
 }
 
