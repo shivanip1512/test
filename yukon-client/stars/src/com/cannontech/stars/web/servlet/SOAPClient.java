@@ -39,6 +39,7 @@ import com.cannontech.stars.web.action.SendOddsForControlAction;
 import com.cannontech.stars.web.action.SendOptOutNotificationAction;
 import com.cannontech.stars.web.action.UpdateApplianceAction;
 import com.cannontech.stars.web.action.UpdateCallReportAction;
+import com.cannontech.stars.web.action.UpdateContactsAction;
 import com.cannontech.stars.web.action.UpdateControlNotificationAction;
 import com.cannontech.stars.web.action.UpdateCustAccountAction;
 import com.cannontech.stars.web.action.UpdateLMHardwareAction;
@@ -237,6 +238,11 @@ public class SOAPClient extends HttpServlet {
 			clientAction = new UpdateCustAccountAction();
 			destURL = req.getContextPath() + "/operator/Consumer/Update.jsp";
 			errorURL = req.getContextPath() + "/operator/Consumer/Update.jsp";
+		}
+		else if (action.equalsIgnoreCase("UpdateContacts")) {
+			clientAction = new UpdateContactsAction();
+			destURL = req.getContextPath() + "/operator/Consumer/Contacts.jsp";
+			errorURL = req.getContextPath() + "/operator/Consumer/Contacts.jsp";
 		}
 		else if (action.equalsIgnoreCase("ReloadCustAccount")) {
 			clientAction = new ReloadCustAccountAction();

@@ -24,6 +24,7 @@ import com.cannontech.stars.util.task.RefreshTimerTask;
 import com.cannontech.stars.util.task.StarsTimerTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.util.SOAPUtil;
@@ -434,37 +435,50 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	{
 		if (msg.getSource().equals(com.cannontech.common.util.CtiUtilities.DEFAULT_MSG_SOURCE))
 			return;
-		if (msg.getDatabase() != DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB)
-			return;
 		
 		CTILogger.debug(" ## DBChangeMsg ##\n" + msg);
 		
-		LiteStarsCustAccountInformation liteAcctInfo = null;
+		ArrayList companies = getAllEnergyCompanies();
 		LiteStarsEnergyCompany energyCompany = null;
 		
-		ArrayList companies = getAllEnergyCompanies();
-		for (int i = 0; i < companies.size(); i++) {
-    		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
-			liteAcctInfo = company.getCustAccountInformation( msg.getId(), false );
-			if (liteAcctInfo != null) {
-				energyCompany = company;
-				break;
+		if (msg.getDatabase() == DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB) {
+			LiteStarsCustAccountInformation liteAcctInfo = null;
+			
+			for (int i = 0; i < companies.size(); i++) {
+				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+				liteAcctInfo = company.getCustAccountInformation( msg.getId(), false );
+				if (liteAcctInfo != null) {
+					energyCompany = company;
+					break;
+				}
 			}
-		}
-		
-		// If the customer account information is not loaded yet, we don't need to care about it
-		if (liteAcctInfo == null) return;
-		
-		if( msg.getCategory().equalsIgnoreCase(DBChangeMsg.CAT_CUSTOMER_ACCOUNT) )
-		{
+			
+			// If the customer account information is not loaded yet, do nothing
+			if (liteAcctInfo == null) return;
+			
 			handleCustomerAccountChange( msg, energyCompany, liteAcctInfo );
+		}
+		else if (msg.getDatabase() == DBChangeMsg.CHANGE_CONTACT_DB) {
+			LiteCustomerContact liteContact = null;
+			
+			for (int i = 0; i < companies.size(); i++) {
+				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+				liteContact = company.getCustomerContact( msg.getId(), false );
+				if (liteContact != null) {
+					energyCompany = company;
+					break;
+				}
+			}
+			
+			// If customer contact is not loaded yet, do nothing
+			if (liteContact == null) return;
+			
+			handleCustomerContactChange( msg, energyCompany, liteContact );
 		}
 	}
 	
 	private void handleCustomerAccountChange( DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteStarsCustAccountInformation liteAcctInfo )
 	{
-		LiteBase lBase = null;
-	
 		switch( msg.getTypeOfChange() )
 		{
 			case DBChangeMsg.CHANGE_TYPE_ADD:
@@ -485,7 +499,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				for (int i = 0; i < contacts.size(); i++) {
 					LiteCustomerContact liteContact = new LiteCustomerContact( ((Integer) contacts.get(i)).intValue() );
 					liteContact.retrieve();
-					energyCompany.addCustomerContact( liteContact );
+					energyCompany.addCustomerContact( liteContact, liteAcctInfo );
 				}
 				
 				energyCompany.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() ).retrieve();
@@ -499,6 +513,69 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 			case DBChangeMsg.CHANGE_TYPE_DELETE:
 				energyCompany.deleteCustAccountInformation( liteAcctInfo );
 				energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
+				break;
+		}
+	}
+	
+	private void handleCustomerContactChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteCustomerContact liteContact) {
+		LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInfoByContact( liteContact.getContactID() );
+		
+		switch (msg.getTypeOfChange()) {
+			case DBChangeMsg.CHANGE_TYPE_ADD :
+				// Don't need to do anything, since customer contact is load-on-demand
+				break;
+				
+			case DBChangeMsg.CHANGE_TYPE_UPDATE :
+				liteContact.retrieve();
+				
+				if (liteAcctInfo != null) {
+					StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo.getAccountID() );
+					
+					if (starsAcctInfo != null) {
+						if (starsAcctInfo.getStarsCustomerAccount().getPrimaryContact().getContactID() == liteContact.getContactID()) {
+							StarsLiteFactory.setStarsCustomerContact(starsAcctInfo.getStarsCustomerAccount().getPrimaryContact(), liteContact);
+						}
+						else {
+							for (int i = 0; i < starsAcctInfo.getStarsCustomerAccount().getAdditionalContactCount(); i++) {
+								if (starsAcctInfo.getStarsCustomerAccount().getAdditionalContact(i).getContactID() == liteContact.getContactID()) {
+									StarsLiteFactory.setStarsCustomerContact(starsAcctInfo.getStarsCustomerAccount().getAdditionalContact(i), liteContact);
+									break;
+								}
+							}
+						}
+					}
+				}
+				
+				break;
+				
+			case DBChangeMsg.CHANGE_TYPE_DELETE :
+				energyCompany.deleteCustomerContact( liteContact.getContactID() );
+				
+				if (liteAcctInfo != null) {
+					if (liteAcctInfo.getCustomer().getPrimaryContactID() == liteContact.getContactID()) {
+						// This is bad! Somebody deleted the primary contact not through the web page
+						CTILogger.info("ERROR: Primary contact with id = " + liteContact.getContactID() + " deleted not through the web page!");
+					}
+					
+					ArrayList contactIDs = liteAcctInfo.getCustomer().getAdditionalContacts();
+					for (int i = 0; i < contactIDs.size(); i++) {
+						if (((Integer) contactIDs.get(i)).intValue() == liteContact.getContactID()) {
+							contactIDs.remove(i);
+							break;
+						}
+					}
+					
+					StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo.getAccountID() );
+					if (starsAcctInfo != null) {
+						for (int i = 0; i < starsAcctInfo.getStarsCustomerAccount().getAdditionalContactCount(); i++) {
+							if (starsAcctInfo.getStarsCustomerAccount().getAdditionalContact(i).getContactID() == liteContact.getContactID()) {
+								starsAcctInfo.getStarsCustomerAccount().removeAdditionalContact(i);
+								break;
+							}
+						}
+					}
+				}
+				
 				break;
 		}
 	}

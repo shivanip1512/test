@@ -142,9 +142,14 @@ public class StarsLiteFactory {
 		liteContact.setLoginID( contact.getContact().getLogInID().intValue() );
 		liteContact.setAddressID( contact.getContact().getAddressID().intValue() );
 		
+		liteContact.setHomePhone( null );
+		liteContact.setWorkPhone( null );
+		liteContact.setEmail( null );
+		
 		for (int i = 0; i < contact.getContactNotifVect().size(); i++) {
 			com.cannontech.database.db.contact.ContactNotification notif =
 					(com.cannontech.database.db.contact.ContactNotification) contact.getContactNotifVect().get(i);
+			
 			if (notif.getNotificationCatID().intValue() == SOAPServer.YUK_LIST_ENTRY_ID_HOME_PHONE)
 				liteContact.setHomePhone( notif.getNotification() );
 			else if (notif.getNotificationCatID().intValue() == SOAPServer.YUK_LIST_ENTRY_ID_WORK_PHONE)

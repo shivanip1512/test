@@ -994,7 +994,7 @@ public class StarsAdmin extends HttpServlet {
 				contact = (com.cannontech.database.data.customer.Contact)
 						Transaction.createTransaction( Transaction.INSERT, contact ).execute();
 				StarsLiteFactory.setLiteCustomerContact( liteContact, contact );
-				energyCompany.addCustomerContact( liteContact );
+				energyCompany.addCustomerContact( liteContact, null );
 				
 				CompanyAddress starsAddr = new CompanyAddress();
 				StarsLiteFactory.setStarsCustomerAddress(
@@ -1423,7 +1423,7 @@ public class StarsAdmin extends HttpServlet {
 				energyCompany.addAddress( liteAddr );
 				
 				liteContact = (LiteCustomerContact) StarsLiteFactory.createLite( contact );
-				energyCompany.addCustomerContact( liteContact );
+				energyCompany.addCustomerContact( liteContact, null );
 				
 				liteCompany = (LiteServiceCompany) StarsLiteFactory.createLite( company.getServiceCompany() );
 				energyCompany.addServiceCompany( liteCompany );

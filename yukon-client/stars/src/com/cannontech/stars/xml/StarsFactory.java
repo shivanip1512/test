@@ -339,7 +339,8 @@ public class StarsFactory {
 	public static StarsContactNotification newStarsContactNotification(boolean enabled, String notification, Class type) {
         try {
             StarsContactNotification newNotif = (StarsContactNotification) type.newInstance();
-            newNotif.setEnabled( enabled );
+            // If notification is empty, enabled is automatically set to false
+            newNotif.setEnabled( (notification.length() > 0)? enabled : false );
             newNotif.setNotification( notification );
             
             return newNotif;

@@ -1,12 +1,9 @@
 package com.cannontech.stars.web.action;
 
-import java.util.ArrayList;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
-import com.cannontech.database.Transaction;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.stars.LiteAccountSite;
 import com.cannontech.database.data.lite.stars.LiteAddress;
@@ -23,7 +20,6 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
-import com.cannontech.stars.xml.serialize.AdditionalContact;
 import com.cannontech.stars.xml.serialize.BillingAddress;
 import com.cannontech.stars.xml.serialize.Email;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
@@ -50,14 +46,13 @@ import com.cannontech.stars.xml.util.StarsConstants;
 
 public class UpdateCustAccountAction implements ActionBase {
 
-    public UpdateCustAccountAction() {
-        super();
-    }
-
     public SOAPMessage build(HttpServletRequest req, HttpSession session) {
         try {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
+			
+			StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation)
+					user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 
             StarsUpdateCustomerAccount updateAccount = new StarsUpdateCustomerAccount();
 
@@ -112,12 +107,12 @@ public class UpdateCustAccountAction implements ActionBase {
             primContact.setFirstName( req.getParameter("FirstName") );
             primContact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("HomePhone")) );
             primContact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone")) );
+			primContact.setEmail( (Email) StarsFactory.newStarsContactNotification(
+					Boolean.valueOf(req.getParameter("NotifyControl")).booleanValue(),
+					req.getParameter("Email"), Email.class) );
             
-            Email email = new Email();
-            email.setNotification( req.getParameter("Email") );
-            email.setEnabled( Boolean.valueOf(req.getParameter("NotifyControl")).booleanValue() );
-            primContact.setEmail( email );
             updateAccount.setPrimaryContact( primContact );
+            updateAccount.setAdditionalContact( starsAcctInfo.getStarsCustomerAccount().getAdditionalContact() );
 
             StarsOperation operation = new StarsOperation();
             operation.setStarsUpdateCustomerAccount( updateAccount );
@@ -134,6 +129,7 @@ public class UpdateCustAccountAction implements ActionBase {
 
     public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
         StarsOperation respOper = new StarsOperation();
+        java.sql.Connection conn = null;
         
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
@@ -152,8 +148,10 @@ public class UpdateCustAccountAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
             
-            int energyCompanyID = user.getEnergyCompanyID();
-            LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+            LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+            
+            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
+					com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
             
             /* Update customer account */
             StarsUpdateCustomerAccount updateAccount = reqOper.getStarsUpdateCustomerAccount();
@@ -161,13 +159,9 @@ public class UpdateCustAccountAction implements ActionBase {
             
             if (!liteAccount.getAccountNumber().equalsIgnoreCase( updateAccount.getAccountNumber() )) {
 	            // Check to see if the account number has duplicates
-	            String sql = "SELECT 1 FROM CustomerAccount acct, ECToAccountMapping map "
-	            		   + "WHERE acct.AccountID = map.AccountID AND map.EnergyCompanyID = " + user.getEnergyCompanyID()
-	            		   + " AND UPPER(acct.AccountNumber) = UPPER('" + updateAccount.getAccountNumber() + "')";
-	            com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-	            		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-	            stmt.execute();
-	            if (stmt.getRowCount() > 0) {
+	            int[] result = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber(
+	            		energyCompany.getEnergyCompanyID(), updateAccount.getAccountNumber() );
+	            if (result != null && result.length > 0) {
 	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
 	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The account number already exists, please enter a different one.") );
 	            	return SOAPUtil.buildSOAPMessage( respOper );
@@ -182,21 +176,18 @@ public class UpdateCustAccountAction implements ActionBase {
             			(com.cannontech.database.db.customer.Address) StarsLiteFactory.createDBPersistent( liteBillAddr );
             	StarsFactory.setCustomerAddress( billAddr, starsBillAddr );
             	
-            	billAddr = (com.cannontech.database.db.customer.Address)
-            			Transaction.createTransaction( Transaction.UPDATE, billAddr ).execute();
+            	billAddr.setDbConnection( conn );
+            	billAddr.update();
             	StarsLiteFactory.setLiteAddress( liteBillAddr, billAddr );
             }
             
             if (!StarsLiteFactory.isIdenticalCustomerAccount( liteAccount, updateAccount )) {
             	com.cannontech.database.db.stars.customer.CustomerAccount account =
             			(com.cannontech.database.db.stars.customer.CustomerAccount) StarsLiteFactory.createDBPersistent( liteAccount );
-/*            	account = (com.cannontech.database.db.stars.customer.CustomerAccount)
-            			Transaction.createTransaction( Transaction.RETRIEVE, account ).execute();*/
-            			
             	StarsFactory.setCustomerAccount( account, updateAccount );
-            	account = (com.cannontech.database.db.stars.customer.CustomerAccount)
-            			Transaction.createTransaction( Transaction.UPDATE, account ).execute();
             	
+            	account.setDbConnection( conn );
+            	account.update();
             	StarsLiteFactory.setLiteCustomerAccount( liteAccount, account );
             }
     		
@@ -212,75 +203,22 @@ public class UpdateCustAccountAction implements ActionBase {
             	com.cannontech.database.data.customer.Contact primContact =
             			(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( litePrimContact );
             	StarsFactory.setCustomerContact( primContact, starsPrimContact );
-            	primContact = (com.cannontech.database.data.customer.Contact)
-            			Transaction.createTransaction( Transaction.UPDATE, primContact ).execute();
-            			
+            	
+            	primContact.setDbConnection( conn );
+            	primContact.update();
 				StarsLiteFactory.setLiteCustomerContact( litePrimContact, primContact );
-				//ServerUtils.handleDBChange( litePrimContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
-            }
-
-			ArrayList contactList = liteCustomer.getAdditionalContacts();
-            ArrayList newContactList = new ArrayList();
-            
-            for (int i = 0; i < updateAccount.getAdditionalContactCount(); i++) {
-            	AdditionalContact starsContact = updateAccount.getAdditionalContact(i);
-            	LiteCustomerContact liteContact = null;
 				
-            	for (int j = 0; j < contactList.size(); j++) {
-		        	Integer contactID = (Integer) contactList.get(j);
-		        	if (contactID.intValue() == starsContact.getContactID()) {
-		        		contactList.remove(j);
-		        		liteContact = energyCompany.getCustomerContact( contactID.intValue() );
-		        		
-		        		if (!StarsLiteFactory.isIdenticalCustomerContact(liteContact, starsContact)) {
-			        		// Update the customer contact
-			        		com.cannontech.database.data.customer.Contact contact =
-			        				(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
-			            	StarsFactory.setCustomerContact( contact, starsContact );
-			            	contact = (com.cannontech.database.data.customer.Contact)
-			            			Transaction.createTransaction( Transaction.UPDATE, contact ).execute();
-			            			
-							StarsLiteFactory.setLiteCustomerContact( liteContact, contact );
-							//ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
-		        		}
-		        		break;
-		        	}
-            	}
-            	
-            	if (liteContact == null) {
-            		// Add the new customer contact
-            		com.cannontech.database.data.customer.Contact contact = new com.cannontech.database.data.customer.Contact();
-		            StarsFactory.setCustomerContact( contact, starsContact );
-		            contact = (com.cannontech.database.data.customer.Contact)
-		            		Transaction.createTransaction( Transaction.INSERT, contact ).execute();
-		            
-		            liteContact = (LiteCustomerContact) StarsLiteFactory.createLite( contact );
-		            energyCompany.addCustomerContact( liteContact );
-            	}
-            	
-            	newContactList.add( new Integer(liteContact.getContactID()) );
+				ServerUtils.handleDBChange( litePrimContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
             }
-            
-            // Remove customer contacts that are not in the update list
-            for (int i = 0; i < contactList.size(); i++) {
-            	LiteCustomerContact liteContact = energyCompany.getCustomerContact( ((Integer) contactList.get(i)).intValue() );
-            	com.cannontech.database.data.customer.Contact contact =
-            			(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
-	            contact = (com.cannontech.database.data.customer.Contact)
-	            		Transaction.createTransaction( Transaction.DELETE, contact ).execute();
-            	
-            	energyCompany.deleteCustomerContact( liteContact.getContactID() );
-            }
-            
-            liteCustomer.setAdditionalContacts( newContactList );
 	        
             if (!StarsLiteFactory.isIdenticalCustomer(liteCustomer, updateAccount)) {
 	            int custTypeID = updateAccount.getIsCommercial() ? CustomerTypes.CUSTOMER_CI : CustomerTypes.CUSTOMER_RESIDENTIAL;
 	            customer.setCustomerTypeID( new Integer(custTypeID) );
 	            if (updateAccount.getTimeZone() != null)
 	            	liteCustomer.setTimeZone( updateAccount.getTimeZone() );
-	            customer = (com.cannontech.database.db.customer.Customer)
-	            		Transaction.createTransaction( Transaction.UPDATE, customer ).execute();
+	            
+	            customer.setDbConnection( conn );
+	            customer.update();
 	            
 	            liteCustomer.setCustomerTypeID( custTypeID );
 	            liteCustomer.setTimeZone( customer.getTimeZone() );
@@ -297,21 +235,18 @@ public class UpdateCustAccountAction implements ActionBase {
             			(com.cannontech.database.db.customer.Address) StarsLiteFactory.createDBPersistent( liteStAddr );
             	StarsFactory.setCustomerAddress( stAddr, starsStAddr );
             	
-            	stAddr = (com.cannontech.database.db.customer.Address)
-            			Transaction.createTransaction( Transaction.UPDATE, stAddr ).execute();
+            	stAddr.setDbConnection( conn );
+            	stAddr.update();
             	StarsLiteFactory.setLiteAddress( liteStAddr, stAddr );
             }
             
             if (!StarsLiteFactory.isIdenticalAccountSite( liteAcctSite, updateAccount )) {
             	com.cannontech.database.db.stars.customer.AccountSite acctSite =
             			(com.cannontech.database.db.stars.customer.AccountSite) StarsLiteFactory.createDBPersistent( liteAcctSite );
-/*            	acctSite = (com.cannontech.database.db.stars.customer.AccountSite)
-            			Transaction.createTransaction( Transaction.RETRIEVE, acctSite ).execute();*/
-            	
             	StarsFactory.setAccountSite( acctSite, updateAccount );
-            	acctSite = (com.cannontech.database.db.stars.customer.AccountSite)
-            			Transaction.createTransaction( Transaction.UPDATE, acctSite ).execute();
             	
+            	acctSite.setDbConnection( conn );
+            	acctSite.update();
             	StarsLiteFactory.setLiteAccountSite( liteAcctSite, acctSite );
             }
             
@@ -322,13 +257,10 @@ public class UpdateCustAccountAction implements ActionBase {
             if (!StarsLiteFactory.isIdenticalSiteInformation(liteSiteInfo, starsSiteInfo)) {
             	com.cannontech.database.db.stars.customer.SiteInformation siteInfo =
             			(com.cannontech.database.db.stars.customer.SiteInformation) StarsLiteFactory.createDBPersistent( liteSiteInfo );
-/*            	siteInfo = (com.cannontech.database.db.stars.customer.SiteInformation)
-            			Transaction.createTransaction( Transaction.RETRIEVE, siteInfo ).execute();*/
-            	
             	StarsFactory.setSiteInformation( siteInfo, updateAccount );
-            	siteInfo = (com.cannontech.database.db.stars.customer.SiteInformation)
-            			Transaction.createTransaction( Transaction.UPDATE, siteInfo ).execute();
             	
+            	siteInfo.setDbConnection( conn );
+            	siteInfo.update();
             	StarsLiteFactory.setLiteSiteInformation( liteSiteInfo, siteInfo );
             }
             
@@ -351,6 +283,12 @@ public class UpdateCustAccountAction implements ActionBase {
             catch (Exception e2) {
             	e2.printStackTrace();
             }
+        }
+        finally {
+        	try {
+        		if (conn != null) conn.close();
+        	}
+        	catch (java.sql.SQLException e) {}
         }
 
         return null;

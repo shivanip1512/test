@@ -89,7 +89,7 @@ public class UpdateControlNotificationAction implements ActionBase {
 	            			(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( litePrimContact );
 	            	Transaction.createTransaction(Transaction.UPDATE, primContact).execute();
 	            	
-		            ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_UPDATE );
+		            ServerUtils.handleDBChange( litePrimContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
             	}
             }
 /*            else if (litePrimContact.getEmail() != null) {
