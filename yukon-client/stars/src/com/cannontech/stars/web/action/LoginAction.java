@@ -9,6 +9,8 @@ import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsLogin;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
+import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
+import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -68,10 +70,24 @@ public class LoginAction implements ActionBase {
             com.cannontech.database.db.stars.CustomerSelectionList[] selectionLists =
             		com.cannontech.database.data.stars.CustomerSelectionList.getAllSelectionLists(
             			new Integer((int) operator.getEnergyCompanyID()) );
-            			
             java.util.Hashtable selectionListTable = new java.util.Hashtable();
-            for (int i = 0; i < selectionLists.length; i++)
-            	selectionListTable.put( selectionLists[i].getListName(), selectionLists[i].getListID() );
+            
+            for (int i = 0; i < selectionLists.length; i++) {
+            	com.cannontech.database.db.stars.CustomerListEntry[] entries =
+            			com.cannontech.database.data.stars.CustomerListEntry.getAllListEntries( selectionLists[i].getListID() );
+            	StarsCustSelectionList starsList = new StarsCustSelectionList();
+            	starsList.setListID( selectionLists[i].getListID().intValue() );
+            	
+            	for (int j = 0; j < entries.length; j++) {
+            		StarsSelectionListEntry starsEntry = new StarsSelectionListEntry();
+            		starsEntry.setEntryID( entries[j].getEntryID().intValue() );
+            		starsEntry.setContent( entries[j].getEntryText() );
+            		starsEntry.setYukonDefinition( entries[j].getYukonDefinition() );
+            		starsList.addStarsSelectionListEntry( starsEntry );
+            	}
+            	
+            	selectionListTable.put( selectionLists[i].getListName(), starsList );
+            }
             	
             operator.setAttribute( "CUSTOMER_SELECTION_LIST", selectionListTable );
             

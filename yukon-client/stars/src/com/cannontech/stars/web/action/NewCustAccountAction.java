@@ -22,6 +22,8 @@ import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSiteInformation;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.serialize.StreetAddress;
+import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
+import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -161,16 +163,19 @@ public class NewCustAccountAction implements ActionBase {
             }
             
             Hashtable selectionList = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
-            Integer custTypeID = com.cannontech.database.data.stars.CustomerListEntry.getListEntryID(
-		    		(Integer) selectionList.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CUSTOMERTYPE),
-		            com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_CUSTTYPE_RES );
-		    if (custTypeID == null)
-		    	custTypeID = new Integer( com.cannontech.database.db.stars.CustomerListEntry.NONE_INT );
+            StarsCustSelectionList custTypeList = (StarsCustSelectionList) selectionList.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CUSTOMERTYPE );
+            
+            Integer custTypeResID = null;
+            for (int i = 0; i < custTypeList.getStarsSelectionListEntryCount(); i++) {
+            	StarsSelectionListEntry entry = custTypeList.getStarsSelectionListEntry(i);
+            	if (entry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_CUSTTYPE_RES ))
+            		custTypeResID = new Integer( entry.getEntryID() );
+            }
             
             customer.getEnergyCompanyBase().getEnergyCompany().setEnergyCompanyID( energyCompanyID );
             customerDB.setCustomerID( customerDB.getNextCustomerID() );
             customerDB.setPrimaryContactID( primContact.getContactID() );
-            customerDB.setCustomerTypeID( custTypeID );
+            customerDB.setCustomerTypeID( custTypeResID );
             customerDB.setTimeZone( Calendar.getInstance().getTimeZone().getID() );
             customerDB.setPaoID( new Integer(0) );
 

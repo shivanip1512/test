@@ -23,6 +23,8 @@ import com.cannontech.stars.xml.serialize.StarsLMHardwareHistory;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSwitchCommand;
 import com.cannontech.stars.xml.serialize.StarsSwitchCommandResponse;
+import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
+import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 import com.cannontech.stars.xml.util.XMLUtil;
@@ -203,8 +205,29 @@ public class YukonSwitchCommandAction implements ActionBase {
             StarsSwitchCommandResponse cmdResp = new StarsSwitchCommandResponse();
             
             Hashtable selectionList = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
-		    Integer actionListID = (Integer) selectionList.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION);
-		    Integer custEventListID = (Integer) selectionList.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMEREVENT);
+            StarsCustSelectionList actionList = (StarsCustSelectionList) selectionList.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION );
+            StarsCustSelectionList custEventList = (StarsCustSelectionList) selectionList.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMEREVENT );
+            
+            // Get list entry IDs
+            Integer hwEventEntryID = null;
+            Integer progEventEntryID = null;
+            Integer tempTermEntryID = null;
+            Integer futureActEntryID = null;
+            Integer actCompEntryID = null;
+            
+            for (int i = 0; i < actionList.getStarsSelectionListEntryCount(); i++) {
+            	StarsSelectionListEntry entry = actionList.getStarsSelectionListEntry(i);
+            	if (entry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_LMHARDWAREEVENT ))
+            		hwEventEntryID = new Integer( entry.getEntryID() );
+            	else if (entry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_LMPROGRAMEVENT ))
+            		progEventEntryID = new Integer( entry.getEntryID() );
+            	else if (entry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_TEMPTERMINATION ))
+            		tempTermEntryID = new Integer( entry.getEntryID() );
+            	else if (entry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION ))
+            		futureActEntryID = new Integer( entry.getEntryID() );
+            	else if (entry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED ))
+            		actCompEntryID = new Integer( entry.getEntryID() );
+            }
             
             if (command.getStarsDisableService() != null) {
                 StarsDisableService service = command.getStarsDisableService();
@@ -219,23 +242,6 @@ public class YukonSwitchCommandAction implements ActionBase {
         			energyCompany.setEnergyCompanyID( energyCompanyID );
         		else
             		energyCompany.setEnergyCompanyID( new Integer((int) operator.getEnergyCompanyID()) );
-                
-                // Get list entry IDs
-                Integer hwEventEntryID = com.cannontech.database.data.stars.CustomerListEntry.getListEntryID(
-                		custEventListID, com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_LMHARDWAREEVENT );
-                Integer progEventEntryID = com.cannontech.database.data.stars.CustomerListEntry.getListEntryID(
-                		custEventListID, com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_LMPROGRAMEVENT );
-                Integer tempTermEntryID = null;
-                Integer futureActEntryID = null;
-                
-                com.cannontech.database.db.stars.CustomerListEntry[] actionListEntries =
-                		com.cannontech.database.data.stars.CustomerListEntry.getAllListEntries( actionListID );
-                for (int i = 0; i < actionListEntries.length; i++) {
-                	if (actionListEntries[i].getYukonDefinition().equals( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_TEMPTERMINATION ))
-                		tempTermEntryID = actionListEntries[i].getEntryID();
-                	else if (actionListEntries[i].getYukonDefinition().equals( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION ))
-                		futureActEntryID = actionListEntries[i].getEntryID();
-                }
                 
                 Vector invVct = account.getInventoryVector();
                 for (int j = 0; j < invVct.size(); j++) {
@@ -335,23 +341,6 @@ public class YukonSwitchCommandAction implements ActionBase {
         		else
             		energyCompany.setEnergyCompanyID( new Integer((int) operator.getEnergyCompanyID()) );
                 
-                // Get list entry IDs
-                Integer hwEventEntryID = com.cannontech.database.data.stars.CustomerListEntry.getListEntryID(
-                		custEventListID, com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_LMHARDWAREEVENT );
-                Integer progEventEntryID = com.cannontech.database.data.stars.CustomerListEntry.getListEntryID(
-                		custEventListID, com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_LMPROGRAMEVENT );
-                Integer actCompEntryID = null;
-                Integer futureActEntryID = null;
-                
-                com.cannontech.database.db.stars.CustomerListEntry[] actionListEntries =
-                		com.cannontech.database.data.stars.CustomerListEntry.getAllListEntries( actionListID );
-                for (int i = 0; i < actionListEntries.length; i++) {
-                	if (actionListEntries[i].getYukonDefinition().equals( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED ))
-                		actCompEntryID = actionListEntries[i].getEntryID();
-                	else if (actionListEntries[i].getYukonDefinition().equals( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION ))
-                		futureActEntryID = actionListEntries[i].getEntryID();
-                }
-
                 Vector invVct = account.getInventoryVector();
                 for (int j = 0; j < invVct.size(); j++) {
                 	com.cannontech.database.data.stars.hardware.LMHardwareBase hw =

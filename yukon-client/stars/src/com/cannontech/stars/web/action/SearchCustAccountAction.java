@@ -28,6 +28,8 @@ import com.cannontech.stars.xml.serialize.StarsSearchCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsSearchCustomerAccountResponse;
 import com.cannontech.stars.xml.serialize.StarsSiteInformation;
 import com.cannontech.stars.xml.serialize.StreetAddress;
+import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
+import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -114,15 +116,18 @@ public class SearchCustAccountAction implements ActionBase {
             com.cannontech.database.db.stars.customer.CustomerBase customerDB = customer.getCustomerBase();
             
             Hashtable selectionList = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
-            Integer custTypeCommID = com.cannontech.database.data.stars.CustomerListEntry.getListEntryID(
-		    		(Integer) selectionList.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CUSTOMERTYPE),
-		            com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_CUSTTYPE_COMM );
-		    if (custTypeCommID == null)
-		    	custTypeCommID = new Integer( com.cannontech.database.db.stars.CustomerListEntry.NONE_INT );
+            StarsCustSelectionList custTypeList = (StarsCustSelectionList) selectionList.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CUSTOMERTYPE );
+            
+            int custTypeCommID = 0;
+            for (int i = 0; i < custTypeList.getStarsSelectionListEntryCount(); i++) {
+            	StarsSelectionListEntry entry = custTypeList.getStarsSelectionListEntry(i);
+            	if (entry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_CUSTTYPE_COMM ))
+            		custTypeCommID = entry.getEntryID();
+            }
 
             StarsCustomerAccount starsAccount = new StarsCustomerAccount();
             starsAccount.setAccountNumber( accountDB.getAccountNumber() );
-            starsAccount.setIsCommercial( customerDB.getCustomerTypeID().intValue() == custTypeCommID.intValue() );
+            starsAccount.setIsCommercial( customerDB.getCustomerTypeID().intValue() == custTypeCommID );
             starsAccount.setCompany( "" );
             if (accountDB.getAccountNotes() != null)
                 starsAccount.setAccountNotes( accountDB.getAccountNotes() );

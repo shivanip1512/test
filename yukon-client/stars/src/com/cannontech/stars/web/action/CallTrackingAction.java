@@ -1,6 +1,7 @@
 package com.cannontech.stars.web.action;
 
 import java.util.Hashtable;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
@@ -12,6 +13,9 @@ import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsGetCallReportHistory;
 import com.cannontech.stars.xml.serialize.StarsGetCallReportHistoryResponse;
 import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
+import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
+import com.cannontech.stars.xml.StarsCustListEntryFactory;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -76,9 +80,7 @@ public class CallTrackingAction implements ActionBase {
             if (calls == null) return null;
             
             Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
-            com.cannontech.database.db.stars.CustomerListEntry[] callTypes =
-            		com.cannontech.database.data.stars.CustomerListEntry.getAllListEntries(
-            			(Integer) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CALLTYPE) );
+            StarsCustSelectionList callTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CALLTYPE );
             
             StarsGetCallReportHistoryResponse callTrackingResp = new StarsGetCallReportHistoryResponse();
             for (int i = 0; i < calls.length; i++) {
@@ -87,13 +89,13 @@ public class CallTrackingAction implements ActionBase {
 				callHist.setCallNumber( calls[i].getCallNumber() );
             	callHist.setCallDate( calls[i].getDateTaken() );
             	
-            	CallType callType = new CallType();
-            	for (int j = 0; j < callTypes.length; j++)
-            		if (callTypes[j].getEntryID().intValue() == calls[i].getCallTypeID().intValue()) {
-            			callType.setEntryID( callTypes[j].getEntryID().intValue() );
-		            	callType.setContent( callTypes[j].getEntryText() );
+            	for (int j = 0; j < callTypeList.getStarsSelectionListEntryCount(); j++) {
+            		StarsSelectionListEntry entry = callTypeList.getStarsSelectionListEntry(j);
+            		if (entry.getEntryID() == calls[i].getCallTypeID().intValue()) {
+            			CallType callType = (CallType) StarsCustListEntryFactory.newStarsCustListEntry( entry, CallType.class );
+		            	callHist.setCallType( callType );
             		}
-            	callHist.setCallType( callType );
+            	}
             	
             	callHist.setTakenBy( "" );
             	callHist.setDescription( calls[i].getDescription() );
