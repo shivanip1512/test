@@ -19,9 +19,6 @@ public interface EnergyCompanyRole {
 	public static final int SWITCH_COMMAND_FILE = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 3;
 	public static final int OPTOUT_COMMAND_FILE = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 4;
 	public static final int CUSTOMER_GROUP_NAME = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 5;
-	public static final int OPT_OUT_NOUN = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 6;
-	public static final int OPT_OUT_VERB = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 7;
-	public static final int OPT_OUT_PAST = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 8;
-	public static final int TERM_REENABLE = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 9;
+	public static final int OPERATOR_GROUP_NAME = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 6;
 
 }
