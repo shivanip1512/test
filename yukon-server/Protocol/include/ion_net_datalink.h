@@ -104,7 +104,7 @@ private:
     void freeMemory( void );
 
     int _currentInputFrame, _currentOutputFrame;
-    int _src, _dst;
+    int _masterAddress, _slaveAddress;
 
     ion_input_frame  _inFrame;
     ion_output_frame _outFrame;
@@ -117,7 +117,7 @@ private:
     int             _dataLength, _dataSent;
     int             _bytesInLastFrame;
     unsigned long   _inActual, _inTotal;
-    int             _commErrorCount, _packetErrorCount;
+    int             _commErrorCount, _packetErrorCount, _framingErrorCount;
 
     enum IOState
     {
@@ -134,7 +134,8 @@ private:
 
     enum
     {
-        PacketRetries = 3
+        PacketRetries  =  3,
+        FramingRetries = 30
     };
 
 protected:
@@ -144,7 +145,7 @@ public:
     CtiIONDatalinkLayer( );
     ~CtiIONDatalinkLayer( );
 
-    void setAddresses( unsigned short srcID, unsigned short dstID );
+    void setAddresses( unsigned short masterAddress, unsigned short slaveAddress );
 
     void resetConnection( void );
 

@@ -32,10 +32,10 @@ CtiIONDatalinkLayer::~CtiIONDatalinkLayer( )
 }
 
 
-void CtiIONDatalinkLayer::setAddresses( unsigned short srcID, unsigned short dstID )
+void CtiIONDatalinkLayer::setAddresses( unsigned short masterAddress, unsigned short slaveAddress )
 {
-    _src = srcID;
-    _dst = dstID;
+    _masterAddress = masterAddress;
+    _slaveAddress  = slaveAddress;
 }
 
 
@@ -55,12 +55,13 @@ void CtiIONDatalinkLayer::setToOutput( CtiIONSerializable &payload )
 {
     freeMemory();
 
-    _dataSent       = 0;
+    _dataSent = 0;
 
-    _ioState        = Output;
+    _ioState  = Output;
 
-    _commErrorCount   = 0;
-    _packetErrorCount = 0;
+    _commErrorCount    = 0;
+    _packetErrorCount  = 0;
+    _framingErrorCount = 0;
 
     _dataLength = payload.getSerializedLength();
     _data       = CTIDBG_new unsigned char[_dataLength];
@@ -94,8 +95,9 @@ void CtiIONDatalinkLayer::setToInput( void )
 
     _ioState            = InputHeader;
 
-    _commErrorCount   = 0;
-    _packetErrorCount = 0;
+    _commErrorCount    = 0;
+    _packetErrorCount  = 0;
+    _framingErrorCount = 0;
 }
 
 
@@ -290,8 +292,8 @@ void CtiIONDatalinkLayer::generateOutputData( ion_output_frame *out_frame )
     out_frame->header.sync = 0x14;
     out_frame->header.fmt  = 0xAC;
 
-    out_frame->header.srcid = _src;
-    out_frame->header.dstid = _dst;
+    out_frame->header.srcid = _masterAddress;
+    out_frame->header.dstid = _slaveAddress;
 
     out_frame->header.cntldirection = 0;
     out_frame->header.cntlframetype = DataAcknakEnbl;
@@ -351,8 +353,8 @@ void CtiIONDatalinkLayer::generateOutputAck( ion_output_frame *out_frame, const 
     out_frame->header.sync = 0x14;
     out_frame->header.fmt  = 0xAC;
 
-    out_frame->header.srcid = _src;
-    out_frame->header.dstid = _dst;
+    out_frame->header.srcid = _masterAddress;
+    out_frame->header.dstid = _slaveAddress;
 
     out_frame->header.cntldirection = 0;
     out_frame->header.cntlframetype = AcknakACK;
@@ -377,8 +379,8 @@ void CtiIONDatalinkLayer::generateOutputNack( ion_output_frame *out_frame, const
     out_frame->header.sync = 0x14;
     out_frame->header.fmt  = 0xAC;
 
-    out_frame->header.srcid = _src;
-    out_frame->header.dstid = _dst;
+    out_frame->header.srcid = _masterAddress;
+    out_frame->header.dstid = _slaveAddress;
 
     out_frame->header.cntldirection = 0;
     out_frame->header.cntlframetype = AcknakNAK;
@@ -405,8 +407,11 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
             case PORTREAD:
             default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint -- comm error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint -- comm error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
         }
 
@@ -443,7 +448,8 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
         {
             case InputHeader:
             {
-                //  ACH:  someday, make a unified packet-reading function or something - this is ugly
+                //  ACH:  someday, make a unified packet-reading function or something - this is ugly...
+                //          if nothing else, add handler functions for setting state/inbound counters, etc
                 if( _inTotal == 0 )
                 {
                     //  still looking for the sync byte
@@ -463,7 +469,7 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                     else
                     {
                         //  we didn't read the sync byte this try
-                        ++_packetErrorCount;
+                        ++_framingErrorCount;
                     }
                 }
                 else
@@ -486,65 +492,75 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
             {
                 _inTotal += _inActual;
 
+                //  if we have the whole packet
                 if( _inTotal >= _inFrame.header.len + UncountedHeaderBytes )
                 {
                     if( crcIsValid(&_inFrame) )
                     {
-                        //  ACH:  do _src and _dst need checking?
-
-                        //  if it claims to be the first frame and we're expecting the first frame
-                        if( _inFrame.header.tranfirstframe && _currentInputFrame < 0 )
+                        //  make sure it was addressed to us
+                        if( _inFrame.header.dstid == _masterAddress && _inFrame.header.srcid == _slaveAddress )
                         {
-                            //  frame count to expect
-                            _currentInputFrame = _inFrame.header.trancounter;
-                        }
-
-                        if( _currentInputFrame == _inFrame.header.trancounter )
-                        {
-                            //  put the frame in the list
-                            _inputFrameVector.push_back(_inFrame);
-
-                            if( _inFrame.header.cntlframetype == DataAcknakEnbl )
+                            //  if it claims to be the first frame and we're expecting the first frame
+                            if( _inFrame.header.tranfirstframe && _currentInputFrame < 0 )
                             {
-                                //  we're ready to send an ACK
-                                _ioState = InputSendAck;
+                                //  frame count to expect
+                                _currentInputFrame = _inFrame.header.trancounter;
                             }
-                            else
+
+                            if( _currentInputFrame == _inFrame.header.trancounter )
                             {
-                                if( _currentInputFrame == 0 )
+                                //  put the frame in the list
+                                _inputFrameVector.push_back(_inFrame);
+
+                                if( _inFrame.header.cntlframetype == DataAcknakEnbl )
                                 {
-                                    _ioState = Complete;
+                                    //  we're ready to send an ACK
+                                    _ioState = InputSendAck;
                                 }
                                 else
                                 {
-                                    _inTotal = 0;
+                                    if( _currentInputFrame == 0 )
+                                    {
+                                        _ioState = Complete;
+                                    }
+                                    else
+                                    {
+                                        //  read another packet...
+                                        _inTotal = 0;
+                                        _ioState = InputHeader;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                //  they sent the wrong packet
+                                ++_packetErrorCount;
 
+                                if( _inFrame.header.cntlframetype == DataAcknakEnbl )
+                                {
+                                    //  send a NACK
+                                    _ioState = InputSendNack;
+                                }
+                                else
+                                {
+                                    //  try reading again
+                                    _inTotal = 0;
                                     _ioState = InputHeader;
                                 }
                             }
                         }
                         else
                         {
-                            //  they sent the wrong packet
+                            //  not addressed to us, listen again
                             ++_packetErrorCount;
 
-                            if( _inFrame.header.cntlframetype == DataAcknakEnbl )
-                            {
-                                //  send a NACK
-                                _ioState = InputSendNack;
-                            }
-                            else
-                            {
-                                _inTotal = 0;
-
-                                _ioState = InputHeader;
-                            }
+                            _inTotal = 0;
+                            _ioState = InputHeader;
                         }
                     }
                     else
                     {
                         //  bad CRC - this read failed
-
                         _ioState = Failed;
                     }
                 }
@@ -602,7 +618,7 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                     else
                     {
                         //  we didn't read the sync byte
-                        ++_packetErrorCount;
+                        ++_framingErrorCount;
                     }
                 }
                 else
@@ -654,7 +670,8 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
             }
         }
 
-        if( _packetErrorCount > PacketRetries )
+        if( _packetErrorCount  > PacketRetries ||
+            _framingErrorCount > FramingRetries )
         {
             _ioState = Failed;
         }
