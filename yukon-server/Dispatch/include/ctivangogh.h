@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2004/10/19 20:24:23 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2004/10/26 16:12:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,7 @@
 #include <functional>
 #include <iostream>
 #include <set>
+#include <map>
 using namespace std;
 
 
@@ -81,6 +82,8 @@ class IM_EX_CTIVANGOGH CtiVanGogh : public CtiServer
 {
 public:
 
+    typedef map< long, CtiTableLMControlHistory >  CtiICLMControlHistMap_t;       // Contains the intial conditions for controls history and control state.
+
     typedef set< CtiPendingPointOperations >  CtiPendingOpSet_t;
     typedef set< CtiTableNotificationGroup >  CtiNotificationGroupSet_t;
     typedef set< CtiTableContactNotification >  CtiContactNotificationSet_t;
@@ -120,8 +123,16 @@ private:
     CtiDeviceLiteSet_t         _deviceLiteSet;
     CtiDeviceCICustSet_t       _ciCustSet;             // customer device.
 
+    CtiICLMControlHistMap_t _controlHistoryPrimeValues;
+
     CtiSignalManager           _signalManager;
     CtiTagManager              _tagManager;
+
+    static CtiICLMControlHistMap_t _initialConditionControlHistMap;
+    static void resetICControlMap();
+    static bool loadICControlMap();
+    static bool getICControlHistory( CtiTableLMControlHistory &lmch );
+
 
     UINT writeRawPointHistory(bool justdoit, int maxrowstowrite);
     void verifyControlTimesValid( CtiPendingPointOperations &ppc );
@@ -139,7 +150,7 @@ private:
 
     bool ablementDevice(CtiDeviceLiteSet_t::iterator &dliteit, UINT setmask, UINT tagmask);
     bool ablementPoint(CtiPointBase *&pPoint, bool &devicedifferent, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &Multi);
-    bool addToPendingSet(CtiPendingPointOperations &pendingControlRequest, RWTime &updatetime = RWTime());
+    bool addToPendingSet(CtiPendingPointOperations &pendingOp, RWTime &updatetime = RWTime());
 
     void insertControlHistoryRow( CtiPendingPointOperations &ppc);
     void postControlHistoryPoints( CtiPendingPointOperations &ppc);
@@ -150,6 +161,8 @@ private:
     void acknowledgeCommandMsg( CtiPointBase *&pPt, const CtiCommandMsg *&Cmd, int alarmcondition );
     void acknowledgeAlarmCondition( CtiPointBase *&pPt, const CtiCommandMsg *&Cmd, int alarmcondition );
     bool processInputFunction(CHAR Char);
+
+    static bool createOrUpdateICControl(long paoid, CtiTableLMControlHistory &lmch );
 
 public:
 
@@ -217,6 +230,7 @@ public:
     void  purifyClientConnectionList();
     void  updateRuntimeDispatchTable(bool force = false);
     void  writeLMControlHistoryToDB(bool justdoit = false);
+    void writeDynamicLMControlHistoryToDB(bool justdoit = false);
     void  writeCommErrorHistoryToDB(bool justdoit = false);
     void  writeArchiveDataToDB(bool justdoit = false);
     void  writeSignalsToDB(bool justdoit = false);

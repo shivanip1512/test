@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.81 $
-* DATE         :  $Date: 2004/10/19 20:24:22 $
+* REVISION     :  $Revision: 1.82 $
+* DATE         :  $Date: 2004/10/26 16:12:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +33,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 
 #include "collectable.h"
+#include "counter.h"
 #include "monitor.h"
 #include "cparms.h"
 #include "guard.h"
@@ -92,6 +93,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #define UPDATERTDB_RATE          3600           // Save all dirty point records once per n seconds
 #define SANITY_RATE              300
 
+#define PERF_TO_MS(b,a,p) ((UINT)((b).QuadPart - (a).QuadPart) / ((UINT)(p).QuadPart / 1000L))
+
 DLLIMPORT extern CtiLogger   dout;              // From proclog.dll
 
 DLLEXPORT BOOL  bGCtrlC = FALSE;
@@ -105,6 +108,13 @@ static int CntlHistInterval = 3600;
 static int CntlHistPointPostInterval = 60;
 static int CntlStopInterval = 60;
 
+static CtiCounter msgCounts;
+static CtiCounter msgPrioritys;
+static CtiCounter msgTimes;
+
+static bool processExecutionTime(UINT ms);
+
+static LARGE_INTEGER perfFrequency;
 /*
  *  This function detects all group control status points which are indicating control, but do not have a pending control object.
  *  It should synchronize the control state of the group with what is known about the point from the control history table.
@@ -216,6 +226,8 @@ void CtiVanGogh::VGMainThread()
     ULONG MessageCount = 0;
     ULONG MessageLog = 0;
 
+    LARGE_INTEGER completeTime, missqueueTime, dequeueTime, getQTime, loopDoneTime;
+
     INPUT_RECORD      inRecord;
     HANDLE            hStdIn = GetStdHandle(STD_INPUT_HANDLE);
     DWORD             Count;
@@ -252,7 +264,14 @@ void CtiVanGogh::VGMainThread()
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Reloading pending control information" << endl;
         }
-        loadPendingControls();      // Reload any controls written out at last shutdown.
+        if( !loadICControlMap() )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Done reloading dynamic control information.  Deep control history load beginning." << endl;
+            }
+            loadPendingControls();      // Reload any controls written out at last shutdown.
+        }
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Done Reloading pending control information" << endl;
@@ -266,6 +285,8 @@ void CtiVanGogh::VGMainThread()
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Done verifying control point states" << endl;
         }
+
+        QueryPerformanceFrequency(&perfFrequency);
 
         _rphThread = rwMakeThreadFunction(*this, &CtiVanGogh::VGRPHWriterThread);
         _rphThread.start();
@@ -289,21 +310,36 @@ void CtiVanGogh::VGMainThread()
         ConnThread_ = rwMakeThreadFunction(*this, &CtiVanGogh::VGConnectionHandlerThread);
         ConnThread_.start();
 
-        SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
+
+        // SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
+        CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
 
         for(;!bQuit;)
         {
+            QueryPerformanceCounter(&getQTime);
             MsgPtr = MainQueue_.getQueue( 1000 );
 
             if(MsgPtr != NULL)
             {
+                QueryPerformanceCounter(&dequeueTime);
+
+                msgCounts.inc( MsgPtr->isA() );
+                msgPrioritys.inc( MsgPtr->getMessagePriority() );
+
                 switch( MsgPtr->isA() )
                 {
                 case MSG_PCRETURN:
                 case MSG_MULTI:
                     {
-                        MessageCount += ((CtiMultiMsg*)MsgPtr)->getCount();
-                        MessageLog += ((CtiMultiMsg*)MsgPtr)->getCount();
+                        int increment = ((CtiMultiMsg*)MsgPtr)->getCount();
+                        MessageCount += increment;
+                        MessageLog += increment;
+
+                        if(increment > 20)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** BIGMULTI Checkpoint **** submessages to process " << increment << endl;
+                        }
                         break;
                     }
                 default:
@@ -345,6 +381,28 @@ void CtiVanGogh::VGMainThread()
                         if((pExec = ExecFactory.getExecutor(MsgPtr)) != NULL)
                         {
                             nRet = pExec->ServerExecute(this);     // The "this" in question is the CtiVanGogh object...
+
+                            QueryPerformanceCounter(&completeTime);
+
+                            if(1)
+                            {
+                                if(processExecutionTime(PERF_TO_MS(completeTime, dequeueTime, perfFrequency)))
+                                {
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        if(pExec->getMessage())
+                                            dout << RWTime() << " Message Type " << pExec->getMessage()->typeString() << " get ms = " << PERF_TO_MS(dequeueTime, getQTime, perfFrequency) << "  ms = " << PERF_TO_MS(completeTime, dequeueTime, perfFrequency) << endl;
+                                    }
+
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " The last message took more than 5 sec to process in dispatch " << endl;
+                                        if(pExec->getMessage())
+                                            pExec->getMessage()->dump();
+                                    }
+                                }
+                            }
+
                             delete pExec;
                         }
                         else
@@ -382,13 +440,22 @@ void CtiVanGogh::VGMainThread()
             }
             else
             {
+                QueryPerformanceCounter(&missqueueTime);
+
+                if(0)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Last Message ms ago = " << PERF_TO_MS(getQTime, dequeueTime, perfFrequency) << " Queue miss took " << PERF_TO_MS(missqueueTime, getQTime, perfFrequency) << endl;
+                }
+
+
                 if( !(ConnThread_.isValid() &&
                       ConnThread_.getExecutionState() & RW_THR_ACTIVE &&
                       ConnThread_.getCompletionState() == RW_THR_PENDING) )
                 {
                     if(ConnThread_.getCompletionState() != RW_THR_PENDING)
                     {
-                        CtiLockGuard<CtiMutex> pmguard(server_mux, 10000);
+                        CtiLockGuard<CtiMutex> pmguard(_server_mux, 10000);
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -416,7 +483,8 @@ void CtiVanGogh::VGMainThread()
 
             }
 
-            if(PeekConsoleInput(hStdIn, &inRecord, 1L, &Count))     // There is something ther if we succeed.
+            Count = 0;
+            if(PeekConsoleInput(hStdIn, &inRecord, 1L, &Count) && (Count > 0))     // There is something there if we succeed.
             {
                 if(inRecord.EventType != KEY_EVENT)
                 {
@@ -467,6 +535,13 @@ void CtiVanGogh::VGMainThread()
                 }
                 bQuit = TRUE;
                 bGCtrlC = TRUE;
+            }
+
+            QueryPerformanceCounter(&loopDoneTime);
+            if(PERF_TO_MS(loopDoneTime, getQTime, perfFrequency) > 1000)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << "  Main Loop duration (ms) = " << PERF_TO_MS(loopDoneTime, getQTime, perfFrequency) << " mainqueue has " << MainQueue_.entries() << endl;
             }
         }
 
@@ -583,7 +658,7 @@ void CtiVanGogh::VGConnectionHandlerThread()
             }
 
             {
-                CtiLockGuard<CtiMutex> guard(server_mux);
+                CtiLockGuard<CtiMutex> guard(_server_mux);
 
                 XChg                                = CTIDBG_new CtiExchange(sock);
                 CtiVanGoghConnectionManager *ConMan = CTIDBG_new CtiVanGoghConnectionManager(XChg, &MainQueue_);
@@ -743,7 +818,7 @@ int CtiVanGogh::registration(CtiVanGoghConnectionManager *CM, const CtiPointRegi
     return nRet;
 }
 
-// Assumes lock on server_mux has been obtained.
+// Assumes lock on _server_mux has been obtained.
 int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 {
     int status = NORMAL;
@@ -1061,7 +1136,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
             try
             {
-                CtiLockGuard<CtiMutex> pmguard(server_mux);
+                CtiLockGuard<CtiMutex> pmguard(_server_mux);
                 CtiPointClientManager::CtiRTDBIterator  itr(PointMgr.getMap());
 
                 for(;itr();)
@@ -1098,7 +1173,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                             pendingSeasonReset.getControl().setControlCompleteTime(Cmd->getMessageTime());
                             pendingSeasonReset.getControl().setSoeTag( CtiTableLMControlHistory::getNextSOE() );
 
-                            verifyControlTimesValid(pendingSeasonReset);
+                            //verifyControlTimesValid(pendingSeasonReset);
                             addToPendingSet(pendingSeasonReset, Cmd->getMessageTime());
                         }
                     }
@@ -1135,7 +1210,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
 void CtiVanGogh::clientShutdown(CtiConnectionManager *&CM)
 {
-    CtiLockGuard<CtiMutex> guard(server_mux);
+    CtiLockGuard<CtiMutex> guard(_server_mux);
 
     try
     {
@@ -1196,7 +1271,7 @@ int CtiVanGogh::postDBChange(const CtiDBChangeMsg &Msg)
 
             // Send the message out to every connected client.
             {
-                CtiLockGuard<CtiMutex> guard(server_mux);
+                CtiLockGuard<CtiMutex> guard(_server_mux);
                 CtiServer::iterator  iter(mConnectionTable);
 
                 for(;(Mgr = (CtiVanGoghConnectionManager *)iter());)
@@ -1341,7 +1416,7 @@ void CtiVanGogh::VGTimedOperationThread()
                 reportOnThreads();
             }
 
-            rwSleep(1000);
+            rwSleep(15000);
 
             purifyClientConnectionList();
             updateRuntimeDispatchTable();
@@ -1464,7 +1539,7 @@ INT CtiVanGogh::archiveSignalMessage(const CtiSignalMsg& aSig)
 
         {
             // See if I know about this point ID
-            CtiLockGuard<CtiMutex> pmguard(server_mux);
+            CtiLockGuard<CtiMutex> pmguard(_server_mux);
             CtiPoint *TempPoint = PointMgr.getEqual(aSig.getId());
 
             if(TempPoint != NULL)
@@ -1663,6 +1738,10 @@ INT CtiVanGogh::processMessageData( CtiMessage *pMsg )
         case MSG_LMCONTROLHISTORY:
             {
                 processControlMessage((CtiLMControlHistoryMsg*)pMsg);
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
                 break;
             }
         case MSG_COMMERRORHISTORY:
@@ -1695,7 +1774,7 @@ INT CtiVanGogh::postMessageToClients(CtiMessage *pMsg)
 
     CtiMultiMsg  *pMulti;
 
-    CtiLockGuard<CtiMutex> guard(server_mux);
+    CtiLockGuard<CtiMutex> guard(_server_mux);
     CtiServer::iterator  iter(mConnectionTable);
 
     CtiConnectionManager *Mgr = NULL;
@@ -2179,11 +2258,15 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 {
     int status = NORMAL;
 
+    LARGE_INTEGER startTime, t1Time, t2Time, t3Time, t4Time, t5Time, t6Time, t7Time;
+
     try
     {
+        QueryPerformanceCounter(&startTime);
         CtiPoint *pPoint = NULL;
-        CtiLockGuard<CtiMutex> pmguard(server_mux);
+        CtiLockGuard<CtiMutex> pmguard(_server_mux);
         pPoint = PointMgr.getEqual(pMsg->getPointId());
+        QueryPerformanceCounter(&t1Time);
 
         if(pPoint != NULL)
         {
@@ -2198,6 +2281,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                 {
                     pMsg->setPAOId( pPoint->getDeviceID() );
                 }
+                QueryPerformanceCounter(&t2Time);
 
                 CtiPendingPointOperations pendingControlLMMsg(pPoint->getID());
                 pendingControlLMMsg.setType(CtiPendingPointOperations::pendingControl);
@@ -2217,7 +2301,9 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                 pendingControlLMMsg.getControl().setStartTime(pMsg->getStartDateTime());
                 pendingControlLMMsg.getControl().setStopTime(pMsg->getStartDateTime().seconds() + pMsg->getControlDuration());
                 pendingControlLMMsg.getControl().setControlCompleteTime(pMsg->getStartDateTime().seconds() + pMsg->getControlDuration());
+                QueryPerformanceCounter(&t3Time);
                 pendingControlLMMsg.getControl().setSoeTag( CtiTableLMControlHistory::getNextSOE() );
+                QueryPerformanceCounter(&t4Time);
 
                 CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), 0, "Control " + ResolveStateName(pPoint->getStateGroupID(), pMsg->getRawState()) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure), pMsg->getUser());
 
@@ -2230,10 +2316,28 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 
                 pendingControlLMMsg.setSignal( pFailSig );
 
+                QueryPerformanceCounter(&t5Time);
+
                 addToPendingSet( pendingControlLMMsg, pMsg->getMessageTime() );
+                QueryPerformanceCounter(&t6Time);
 
                 pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
                 bumpDeviceToAlternateRate( pPoint );
+
+                QueryPerformanceCounter(&t7Time);
+
+                if(PERF_TO_MS(t4Time, startTime, perfFrequency) > 100)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << " t1Time " << PERF_TO_MS(t1Time, startTime, perfFrequency) << endl;
+                    dout << " t2Time " << PERF_TO_MS(t2Time, startTime, perfFrequency) << endl;
+                    dout << " t3Time " << PERF_TO_MS(t3Time, startTime, perfFrequency) << endl;
+                    dout << " t4Time " << PERF_TO_MS(t4Time, startTime, perfFrequency) << endl;
+                    dout << " t5Time " << PERF_TO_MS(t5Time, startTime, perfFrequency) << endl;
+                    dout << " t6Time " << PERF_TO_MS(t6Time, startTime, perfFrequency) << endl;
+                    dout << " t7Time " << PERF_TO_MS(t7Time, startTime, perfFrequency) << endl;
+                }
             }
         }
     }
@@ -2253,7 +2357,7 @@ int CtiVanGogh::processMessage(CtiMessage *pMsg)
     int status = NORMAL;
     CtiMultiWrapper MultiWrapper;
 
-    CtiLockGuard<CtiMutex> guard(server_mux);
+    CtiLockGuard<CtiMutex> guard(_server_mux);
 
     checkDataStateQuality(pMsg, MultiWrapper);
     /*
@@ -2286,7 +2390,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
     {
         pMulti->setMessagePriority(15);
 
-        CtiLockGuard<CtiMutex> pmguard(server_mux);
+        CtiLockGuard<CtiMutex> pmguard(_server_mux);
         CtiPointClientManager::CtiRTDBIterator  itr(PointMgr.getMap());
 
         for(;itr();)
@@ -2387,7 +2491,7 @@ INT CtiVanGogh::loadPendingSignals()
     INT            status = NORMAL;
     LONG           lTemp;
 
-    CtiLockGuard<CtiMutex> pmguard(server_mux);
+    CtiLockGuard<CtiMutex> pmguard(_server_mux);
     {
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
@@ -2440,12 +2544,19 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
 {
     CtiSignalMsg   *sigMsg;
     UINT           panicCounter = 0;
+    static UINT  dumpCounter = 0;
+
 
     RWOrdered      postList;
 
     try
     {
-        if(_signalMsgQueue.entries() > 0)
+        // 102004 CGP???
+        //if(_signalMsgQueue.entries() > 100 || (_signalMsgQueue.entries() && justdoit))
+        //if(_signalMsgQueue.entries() > 0)
+        if(!(++dumpCounter % DUMP_RATE)
+           || _signalMsgQueue.entries() > MAX_ARCHIVER_ENTRIES
+           || justdoit == true )                                 // Only chase the queue once per DUMP_RATE seconds.
         {
             {
                 RWCString signals("signals");
@@ -2784,7 +2895,7 @@ void CtiVanGogh::purifyClientConnectionList()
          */
         if(!(++confrontationCount % CONFRONT_RATE) )    // Only chase the queue once per CONFRONT_RATE seconds.
         {
-            CtiLockGuard<CtiMutex> server_guard(server_mux, 2500);      // Get a lock on it.
+            CtiLockGuard<CtiMutex> server_guard(_server_mux, 2500);      // Get a lock on it.
 
             if(server_guard.isAcquired())
             {
@@ -2837,9 +2948,9 @@ void CtiVanGogh::updateRuntimeDispatchTable(bool force)
     {
         if(force || !(callCounter % UPDATERTDB_RATE) )    // Only chase the queue once per CONFRONT_RATE seconds.
         {
-            unsigned long delay = force ? 20000 : 2500;
+            unsigned long delay = force ? 30000 : 2500;
 
-            CtiLockGuard<CtiMutex> server_guard(server_mux, delay);      // Get a lock on it.
+            CtiLockGuard<CtiMutex> server_guard(_server_mux, delay);      // Get a lock on it.
 
             if(server_guard.isAcquired())
             {
@@ -3044,7 +3155,7 @@ INT CtiVanGogh::checkSignalStateQuality(CtiSignalMsg  *pSig, CtiMultiWrapper &aW
  *
  * Additional messages may be generated and added to the CtiMultiWrapper object.
  *
- * CtiLockGuard<CtiMutex> guard(server_mux); must have been grabbed already.
+ * CtiLockGuard<CtiMutex> guard(_server_mux); must have been grabbed already.
  *----------------------------------------------------------------------------*/
 INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrapper &aWrap)
 {
@@ -3118,14 +3229,7 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
                 pendingPointData.setTime( pData->getTime() );
                 pendingPointData.setPointData( (CtiPointDataMsg*)pData->replicateMessage() );
 
-                pair< CtiPendingOpSet_t::iterator, bool > resultpair = _pendingPointInfo.insert( pendingPointData );            // Add to the pending operations.
-
-                if(resultpair.second != true)
-                {
-                    /*  Based upon the removal above, we never expect a collision here, but if the operator<() method
-                     *  gets touched, it could occur.. This is insurance. */
-                    *resultpair.first = pendingPointData;
-                }
+                addToPendingSet(pendingPointData);
             }
             else
             {
@@ -3172,7 +3276,7 @@ INT CtiVanGogh::commandMsgUpdateFailedHandler(CtiCommandMsg *pCmd, CtiMultiWrapp
     {
         LONG did = Op.at((size_t)2);
 
-        CtiLockGuard<CtiMutex> pmguard(server_mux);
+        CtiLockGuard<CtiMutex> pmguard(_server_mux);
         CtiPointClientManager::CtiRTDBIterator  itr(PointMgr.getMap());
 
         for(;itr();)
@@ -3187,7 +3291,7 @@ INT CtiVanGogh::commandMsgUpdateFailedHandler(CtiCommandMsg *pCmd, CtiMultiWrapp
     }
     else if( Op.at((size_t)1) == RWInteger(OP_POINTID) )
     {
-        CtiLockGuard<CtiMutex> pmguard(server_mux);
+        CtiLockGuard<CtiMutex> pmguard(_server_mux);
         CtiPoint *pPoint = PointMgr.getEqual(Op.at((size_t)2));
 
         if(pPoint != NULL)      // We know this point..
@@ -3245,7 +3349,7 @@ CtiVanGoghConnectionManager* CtiVanGogh::getPILConnection()
     CtiVanGoghConnectionManager *Mgr = NULL;
 
     {
-        CtiLockGuard<CtiMutex> guard(server_mux);
+        CtiLockGuard<CtiMutex> guard(_server_mux);
         CtiServer::iterator  iter(mConnectionTable);
 
         for(;(Mgr = (CtiVanGoghConnectionManager *)iter());)
@@ -3269,7 +3373,7 @@ CtiVanGoghConnectionManager* CtiVanGogh::getScannerConnection()
     CtiVanGoghConnectionManager *Mgr = NULL;
 
     {
-        CtiLockGuard<CtiMutex> guard(server_mux);
+        CtiLockGuard<CtiMutex> guard(_server_mux);
         CtiServer::iterator  iter(mConnectionTable);
 
         for(;(Mgr = (CtiVanGoghConnectionManager *)iter());)
@@ -3294,7 +3398,7 @@ void CtiVanGogh::validateConnections()
 
     CtiConnectionManager *CM = rwnil;
 
-    CtiLockGuard<CtiMutex> guard(server_mux);
+    CtiLockGuard<CtiMutex> guard(_server_mux);
 
     if(MainQueue_.entries() == 0)
     {
@@ -3327,7 +3431,7 @@ void CtiVanGogh::postSignalAsEmail( const CtiSignalMsg &sig )
 
             CtiPoint *pPoint = NULL;
             {
-                CtiLockGuard<CtiMutex> pmguard(server_mux);
+                CtiLockGuard<CtiMutex> pmguard(_server_mux);
                 pPoint = PointMgr.getEqual(sig.getId());
 
                 if(pPoint)
@@ -3379,7 +3483,7 @@ void CtiVanGogh::loadAlarmToDestinationTranslation()
 
     try
     {   // Make sure all objects that that store results are out of scope when the release is called
-        CtiLockGuard<CtiMutex> guard(server_mux, 5000);
+        CtiLockGuard<CtiMutex> guard(_server_mux, 5000);
 
         if(guard.isAcquired())
         {
@@ -3656,7 +3760,7 @@ INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGrou
     RWCString paodescription;
     bool excluded = true;
 
-    CtiLockGuard<CtiMutex> pmguard(server_mux);
+    CtiLockGuard<CtiMutex> pmguard(_server_mux);
     if((point =  PointMgr.getEqual(sig.getId())) != NULL)
     {
         {
@@ -3758,7 +3862,7 @@ INT CtiVanGogh::sendMail(const CtiEmailMsg &aMail, const CtiTableContactNotifica
 
 RWCString CtiVanGogh::getAlarmStateName( INT alarm )
 {
-    CtiLockGuard<CtiMutex> guard(server_mux);
+    CtiLockGuard<CtiMutex> guard(_server_mux);
     if( _alarmToDestInfo[alarm].grpid < SignalEvent )  // Zero is invalid!
     {
         // OK, prime the array!
@@ -3777,7 +3881,7 @@ int CtiVanGogh::clientPurgeQuestionables(PULONG pDeadClients)
     int status = NORMAL;
     CtiConnectionManager *Mgr;
 
-    CtiLockGuard<CtiMutex> server_guard(server_mux);      // Get a lock on it.
+    CtiLockGuard<CtiMutex> server_guard(_server_mux);      // Get a lock on it.
 
     if(MainQueue_.entries() == 0)
     {
@@ -3811,7 +3915,7 @@ int  CtiVanGogh::clientRegistration(CtiConnectionManager *CM)
     RWBoolean   removeMgr(FALSE);
     CtiConnectionManager *Mgr;
 
-    CtiLockGuard<CtiMutex> guard(server_mux);
+    CtiLockGuard<CtiMutex> guard(_server_mux);
 
     if(gDispatchDebugLevel & DISPATCH_DEBUG_CONNECTIONS)
     {
@@ -3926,7 +4030,7 @@ int  CtiVanGogh::clientRegistration(CtiConnectionManager *CM)
 
     if(removeMgr && Mgr != NULL)
     {
-        CtiLockGuard<CtiMutex> guard(server_mux);
+        CtiLockGuard<CtiMutex> guard(_server_mux);
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3953,7 +4057,7 @@ int  CtiVanGogh::clientArbitrationWinner(CtiConnectionManager *CM)
     int status = NORMAL;
     CtiConnectionManager *Mgr;
 
-    CtiLockGuard<CtiMutex> guard(server_mux);
+    CtiLockGuard<CtiMutex> guard(_server_mux);
 
     // Now that it is locked, get an iterator
     RWTPtrHashMultiSetIterator< CtiConnectionManager, vg_hash, equal_to<CtiConnectionManager> >  iter(mConnectionTable);
@@ -4049,12 +4153,16 @@ void CtiVanGogh::messageDump(CtiMessage *pMsg)
 
 void CtiVanGogh::doPendingOperations(bool bShutdown)
 {
+    LARGE_INTEGER startTime, completeTime;
+
     try
     {
         if( !_pendingPointInfo.empty() )
         {
-            CtiLockGuard<CtiMutex> sguard(server_mux, 1000);
 
+            CtiLockGuard<CtiMutex> sguard(_server_mux, 1000);
+
+            QueryPerformanceCounter(&startTime);
             int lpcnt = 0;
             while(bShutdown && ++lpcnt < 30 && !sguard.isAcquired())
             {
@@ -4269,6 +4377,14 @@ void CtiVanGogh::doPendingOperations(bool bShutdown)
                     it++;
                 }
             }
+
+            QueryPerformanceCounter(&completeTime);
+
+            if(PERF_TO_MS(completeTime, startTime, perfFrequency) > 50)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << "  doPendingOp duration (ms) = " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;
+            }
         }
     }
     catch(...)
@@ -4308,7 +4424,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
             // This loads up the points that VanGogh will manage.
             if( pChg == NULL || (pChg->getDatabase() == ChangePointDb) )
             {
-                CtiLockGuard<CtiMutex> pmguard(server_mux, 10000);
+                CtiLockGuard<CtiMutex> pmguard(_server_mux, 10000);
                 if(pmguard.isAcquired())
                 {
                     if(pChg != NULL && (pChg->getTypeOfChange() == ChangeTypeUpdate || pChg->getTypeOfChange() == ChangeTypeAdd))
@@ -4377,7 +4493,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
 
             if( pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) )
             {
-                CtiLockGuard<CtiMutex> guard(server_mux, 5000);
+                CtiLockGuard<CtiMutex> guard(_server_mux, 5000);
 
                 if(guard.isAcquired())
                 {
@@ -4438,7 +4554,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
 
             if(pChg != NULL && (pChg->getDatabase() == ChangeNotificationGroupDb || pChg->getDatabase() == ChangeNotificationRecipientDb))
             {
-                CtiLockGuard<CtiMutex> guard(server_mux, 1000);
+                CtiLockGuard<CtiMutex> guard(_server_mux, 1000);
 
                 while(!guard.isAcquired() && !guard.tryAcquire(5000))
                 {
@@ -4728,7 +4844,7 @@ void CtiVanGogh::loadDeviceLites(LONG id)
  */
 void CtiVanGogh::loadDeviceNames()
 {
-    CtiLockGuard<CtiMutex> guard(server_mux, 10000);
+    CtiLockGuard<CtiMutex> guard(_server_mux, 10000);
 
     if(guard.isAcquired() && !_deviceLiteSet.empty())
     {
@@ -4758,7 +4874,7 @@ void CtiVanGogh::loadDeviceNames()
 
 void CtiVanGogh::loadCICustomers(LONG id)
 {
-    CtiLockGuard<CtiMutex> guard(server_mux, 2500);
+    CtiLockGuard<CtiMutex> guard(_server_mux, 2500);
 
     if(guard.isAcquired())
     {
@@ -4806,7 +4922,7 @@ void CtiVanGogh::loadCICustomers(LONG id)
 CtiTableContactNotification* CtiVanGogh::getContactNotification(LONG cNotifID)
 {
     CtiTableContactNotification* pCNotif = NULL;
-    CtiLockGuard<CtiMutex> guard(server_mux);
+    CtiLockGuard<CtiMutex> guard(_server_mux);
     CtiTableContactNotification cNotif(cNotifID);
 
     CtiContactNotificationSet_t::iterator cnit = _contactNotificationSet.find(cNotif);
@@ -4849,7 +4965,7 @@ LONG CtiVanGogh::alarmToNotificationGroup(INT signaltrx)
     LONG ngid;
 
     {
-        CtiLockGuard<CtiMutex> guard(server_mux);
+        CtiLockGuard<CtiMutex> guard(_server_mux);
         if( _alarmToDestInfo[signaltrx].grpid < SignalEvent )  // Zero is invalid!
         {
             // OK, prime the array!
@@ -4864,7 +4980,7 @@ LONG CtiVanGogh::alarmToNotificationGroup(INT signaltrx)
 void CtiVanGogh::sendSignalToGroup(LONG ngid, const CtiSignalMsg& sig)
 {
     CtiTableNotificationGroup mygroup( ngid );
-    CtiLockGuard<CtiMutex> guard(server_mux);
+    CtiLockGuard<CtiMutex> guard(_server_mux);
 
     CtiNotificationGroupSet_t::iterator git = _notificationGroupSet.find( mygroup );
 
@@ -4905,7 +5021,7 @@ void CtiVanGogh::sendSignalToGroup(LONG ngid, const CtiSignalMsg& sig)
             int cnotifid = *r_iter;
 
             {
-                CtiLockGuard<CtiMutex> guard(server_mux);
+                CtiLockGuard<CtiMutex> guard(_server_mux);
                 if( (pCNotif = getContactNotification(cnotifid)) != NULL)
                 {
                     //Now we have it ALL!!! send the email
@@ -4919,7 +5035,7 @@ void CtiVanGogh::sendSignalToGroup(LONG ngid, const CtiSignalMsg& sig)
 void CtiVanGogh::sendEmailToGroup(LONG ngid, const CtiEmailMsg& email)
 {
     CtiTableNotificationGroup mygroup( ngid );
-    CtiLockGuard<CtiMutex> guard(server_mux);
+    CtiLockGuard<CtiMutex> guard(_server_mux);
 
     CtiNotificationGroupSet_t::iterator git = _notificationGroupSet.find( mygroup );
 
@@ -4960,7 +5076,7 @@ void CtiVanGogh::sendEmailToGroup(LONG ngid, const CtiEmailMsg& email)
             int cnotifid = *r_iter;
 
             {
-                CtiLockGuard<CtiMutex> guard(server_mux);
+                CtiLockGuard<CtiMutex> guard(_server_mux);
                 if( (pCNotif = getContactNotification(cnotifid)) != NULL)
                 {
                     sendMail(email, *pCNotif);
@@ -4973,7 +5089,7 @@ void CtiVanGogh::sendEmailToGroup(LONG ngid, const CtiEmailMsg& email)
 void CtiVanGogh::displayConnections(void)
 {
     CtiVanGoghConnectionManager *Mgr = NULL;
-    CtiLockGuard<CtiMutex> guard(server_mux);
+    CtiLockGuard<CtiMutex> guard(_server_mux);
     CtiServer::iterator  iter(mConnectionTable);
 
     for(;(Mgr = (CtiVanGoghConnectionManager *)iter());)
@@ -5097,7 +5213,7 @@ CtiTableCICustomerBase* CtiVanGogh::getCustomer( LONG custid )
 {
     CtiTableCICustomerBase *pCustomer = NULL;
 
-    CtiLockGuard<CtiMutex> guard(server_mux);
+    CtiLockGuard<CtiMutex> guard(_server_mux);
     CtiTableCICustomerBase customer( custid );
     CtiDeviceCICustSet_t::iterator custit = _ciCustSet.find( customer );
 
@@ -5134,7 +5250,7 @@ int CtiVanGogh::mail(const CtiEmailMsg &aMail)
         {
         case (CtiEmailMsg::CICustomerEmailType):
             {
-                CtiLockGuard<CtiMutex> guard(server_mux);
+                CtiLockGuard<CtiMutex> guard(_server_mux);
 
                 CtiTableCICustomerBase *pCustomer = getCustomer( aMail.getID() );
 
@@ -5196,7 +5312,7 @@ int CtiVanGogh::mail(const CtiEmailMsg &aMail)
 CtiVanGogh::CtiVanGogh()
 {
     {
-        CtiLockGuard<CtiMutex> guard(server_mux);
+        CtiLockGuard<CtiMutex> guard(_server_mux);
         for(int i = 0; i < MAX_ALARM_TRX; i++)
         {
             _alarmToDestInfo[i].grpid = 0; // Zero is invalid!
@@ -5312,6 +5428,7 @@ void CtiVanGogh::VGDBWriterThread()
 
                 writeLMControlHistoryToDB();
                 writeCommErrorHistoryToDB();
+                writeDynamicLMControlHistoryToDB();
             }
             catch(...)
             {
@@ -5322,9 +5439,12 @@ void CtiVanGogh::VGDBWriterThread()
             }
         }
 
+        _timedOpThread.join();      // _timedOpThread is a producer for us...
+
         // Make sure no one snuck in under the wire..
         writeLMControlHistoryToDB(true);
         writeCommErrorHistoryToDB(true);
+        writeDynamicLMControlHistoryToDB(true);
     }
     catch(RWxmsg& msg )
     {
@@ -5370,7 +5490,7 @@ CtiVanGogh::CtiDeviceLiteSet_t::iterator CtiVanGogh::deviceLiteFind(const LONG p
     CtiDeviceBaseLite &dLite = CtiDeviceBaseLite(paoId);
     CtiDeviceLiteSet_t::iterator dliteit = _deviceLiteSet.end();
 
-    CtiLockGuard<CtiMutex> guard(server_mux, 30000);
+    CtiLockGuard<CtiMutex> guard(_server_mux, 30000);
 
     if(guard.isAcquired())
     {
@@ -5398,7 +5518,7 @@ CtiVanGogh::CtiDeviceLiteSet_t::iterator CtiVanGogh::deviceLiteFind(const LONG p
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Unable to aqcuire the server_mux for deviceLiteFind() " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << RWTime() << " Unable to aqcuire the _server_mux for deviceLiteFind() " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return dliteit;
@@ -5409,7 +5529,7 @@ bool CtiVanGogh::removePointDataFromPending( LONG pID, const CtiPointDataMsg &Da
     bool bRemoved = false;
     bool bRemoveIt = false;
 
-    CtiLockGuard<CtiMutex> guard(server_mux);
+    CtiLockGuard<CtiMutex> guard(_server_mux);
     if( !_pendingPointInfo.empty() )
     {
         // There are pending operations for points out there in the world!
@@ -5453,7 +5573,7 @@ void CtiVanGogh::establishListener()
 {
     try
     {
-        CtiLockGuard<CtiMutex> guard(server_mux);
+        CtiLockGuard<CtiMutex> guard(_server_mux);
 
         if(Listener != 0)
         {
@@ -5490,7 +5610,7 @@ void CtiVanGogh::reportOnThreads()
 
     try
     {
-        CtiLockGuard<CtiMutex> sguard(server_mux, 1000);
+        CtiLockGuard<CtiMutex> sguard(_server_mux, 1000);
 
         if(sguard.isAcquired())
         {
@@ -5619,7 +5739,7 @@ void CtiVanGogh::writeMessageToClient(CtiMessage *&pReq, RWCString clientName)
     CtiVanGoghConnectionManager *CM;
     bool bDone = false;
     {
-        CtiLockGuard<CtiMutex> guard(server_mux);
+        CtiLockGuard<CtiMutex> guard(_server_mux);
         CtiServer::iterator  iter(mConnectionTable);
 
         for(;(CM = (CtiVanGoghConnectionManager *)iter());)
@@ -5721,7 +5841,7 @@ void CtiVanGogh::writeMessageToScanner(const CtiCommandMsg *Cmd)
  */
 void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &thetime, RWTime &now )
 {
-    CtiLockGuard<CtiMutex> guard(server_mux);
+    CtiLockGuard<CtiMutex> guard(_server_mux);
     CtiPendingOpSet_t::iterator it = _pendingPointInfo.find(CtiPendingPointOperations(pendid, CtiPendingPointOperations::pendingControl));
 
     if( it != _pendingPointInfo.end() )
@@ -5739,7 +5859,7 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
                 if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress &&
                    ppc.getControl().getControlDuration() != RESTORE_DURATION)
                 {
-                    verifyControlTimesValid(ppc);                                                       // Make sure ppc has been primed.
+                    //verifyControlTimesValid(ppc);                                                       // Make sure ppc has been primed.
 
                     RWTime completiontime = ppc.getControl().getStopTime();
                     ppc.getControl().incrementTimes( thetime, 0 );                                      // This effectively primes the entry for the next write.  Critical.
@@ -5765,7 +5885,7 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
 
                     if(addnlseconds >= 0)
                     {
-                        verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
+                        //verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
 
                         ppc.getControl().incrementTimes( thetime, addnlseconds );
 
@@ -5797,7 +5917,7 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
 
                     if(addnlseconds >= 0)
                     {
-                        verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
+                        //verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
 
                         CtiPendingPointOperations temporaryPPC(ppc);
                         temporaryPPC.getControl().incrementTimes( thetime, addnlseconds );
@@ -5828,7 +5948,7 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
 
                     if(addnlseconds >= 0)
                     {
-                        verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
+                        //verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
                         ppc.getControl().setStopTime(thetime);
                         ppc.getControl().incrementTimes( thetime, addnlseconds );
 
@@ -5855,7 +5975,7 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
 
                     if(addnlseconds >= 0)
                     {
-                        verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
+                        //verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
 
                         ppc.getControl().incrementTimes( thetime, addnlseconds );
                         ppc.setControlState( CtiPendingPointOperations::controlCompleteCommanded );
@@ -5881,7 +6001,7 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
 
                     if(addnlseconds >= 0)
                     {
-                        verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
+                        //verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
 
                         ppc.getControl().incrementTimes( thetime, addnlseconds );
                         ppc.setControlState( CtiPendingPointOperations::controlCompleteTimedIn );
@@ -5908,7 +6028,7 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
 
                     if(addnlseconds >= 0)
                     {
-                        verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
+                        //verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -5945,7 +6065,7 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
 
                     if(addnlseconds >= 0)
                     {
-                        verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
+                        //verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
 
                         ppc.getControl().incrementTimes( thetime, addnlseconds );
 
@@ -5962,7 +6082,7 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
                 }
                 else
                 {
-                    verifyControlTimesValid(ppc);                                                       // Make sure ppc has been primed.
+                    //verifyControlTimesValid(ppc);                                                       // Make sure ppc has been primed.
 
                     RWTime writetime = ppc.getControl().getStopTime();
                     ppc.getControl().incrementTimes( thetime, 0, true );                                // This effectively primes the entry for the write.  Seasonal hours are reset.  Critical.
@@ -5989,7 +6109,7 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
 
                     if(addnlseconds >= 0)
                     {
-                        verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
+                        //verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
 
                         ppc.getControl().incrementTimes( thetime, addnlseconds );
                         ppc.getControl().setStopTime( ppc.getControl().getControlCompleteTime() );
@@ -5999,8 +6119,8 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
                         // ppc.dump();
 
                         insertControlHistoryRow(ppc);
-                        postControlHistoryPoints(ppc);
-                        postControlStopPoint(ppc,now);
+                        //postControlHistoryPoints(ppc);
+                        //postControlStopPoint(ppc,now);
                     }
                     else
                     {
@@ -6027,7 +6147,7 @@ void CtiVanGogh::dumpPendingOps( bool force  )
 {
     if(force || gDispatchDebugLevel & DISPATCH_DEBUG_PENDINGOPS)
     {
-        CtiLockGuard<CtiMutex> guard(server_mux);
+        CtiLockGuard<CtiMutex> guard(_server_mux);
         if( !_pendingPointInfo.empty() )
         {
             // There are pending operations for points out there in the world!
@@ -6087,7 +6207,7 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, R
     INT status = NORMAL;
     RWCString objtype = resolveDeviceObjectType(did);
 
-    CtiLockGuard<CtiMutex> smguard(server_mux, 10000);
+    CtiLockGuard<CtiMutex> smguard(_server_mux, 10000);
     if(smguard.isAcquired())
     {
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -6133,7 +6253,7 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RW
 {
     INT status = NORMAL;
 
-    CtiLockGuard<CtiMutex> smguard(server_mux, 10000);
+    CtiLockGuard<CtiMutex> smguard(_server_mux, 10000);
     if(smguard.isAcquired())
     {
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -6286,8 +6406,6 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id)
     }
 }
 
-
-
 UINT CtiVanGogh::writeRawPointHistory(bool justdoit, int maxrowstowrite)
 {
     UINT panicCounter = 0;      // Make sure we don't write for too long...
@@ -6328,6 +6446,10 @@ void CtiVanGogh::verifyControlTimesValid( CtiPendingPointOperations &ppc )
     {
         try
         {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << ppc.getControl().getPAOID() << endl;
+            }
             ppc.getControl().RestoreControlTimes();
         }
         catch(...)
@@ -6352,7 +6474,7 @@ RWCString CtiVanGogh::resolveEmailMsgDescription( const CtiEmailMsg &aMail )
         }
     case (CtiEmailMsg::CICustomerEmailType):
         {
-            CtiLockGuard<CtiMutex> guard(server_mux);
+            CtiLockGuard<CtiMutex> guard(_server_mux);
             CtiTableCICustomerBase *pCustomer = getCustomer( aMail.getID() );
             rstr = RWCString("\r\n\r\n") + resolveDeviceDescription( pCustomer->getID() );
             break;
@@ -6545,7 +6667,7 @@ void CtiVanGogh::checkForPendingLimitViolation( CtiPointDataMsg *pData, CtiPoint
 {
     bool bRemoved = false;
 
-    CtiLockGuard<CtiMutex> guard(server_mux);
+    CtiLockGuard<CtiMutex> guard(_server_mux);
 
     if( !_pendingPointInfo.empty() )
     {
@@ -6652,29 +6774,10 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
                     // If there is a limit duration, we modify the data message, so clients don't immediately know that this point is in a pending alarm.
                     pData->resetTags( TAG_ACTIVE_ALARM | TAG_UNACKNOWLEDGED_ALARM );
 
+                    if(addToPendingSet(pendingPointLimit) == true)
                     {
-                        CtiLockGuard<CtiMutex> guard(server_mux);
-                        pair< CtiPendingOpSet_t::iterator, bool > resultpair;
-                        resultpair = _pendingPointInfo.insert( pendingPointLimit );            // Add to the pending operations.
-
-                        if(resultpair.second != true)
-                        {
-                            CtiPendingPointOperations &ppl = *resultpair.first;
-
-                            if(ppl.getLimitBeingTimed() > pendingPointLimit.getLimitBeingTimed() )
-                            {
-                                ppl = pendingPointLimit;
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** LIMIT Violation ****  Point: " << pointNumeric.getName() << " delayed violation " << ppl.getLimitBeingTimed() + 1 << " preempted. Limit " << statelimit+1 << " pending alarm." << endl;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** LIMIT Violation ****  Point: " << pointNumeric.getName() << " delayed (" << duration << ") violation. Limit " << statelimit+1 << " pending alarm." << endl;
-                        }
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** LIMIT Violation ****  Point: " << pointNumeric.getName() << " delayed (" << duration << ") violation. Limit " << statelimit+1 << " pending alarm." << endl;
                     }
                 }
             }
@@ -6745,7 +6848,7 @@ void CtiVanGogh::checkStatusCommandFail(int alarm, CtiPointDataMsg *pData, CtiMu
     // and someone has sent out a command.  Otherwise this is irrelevant.
     if(tags & TAG_ATTRIB_CONTROL_AVAILABLE)
     {
-        CtiLockGuard<CtiMutex> guard(server_mux);
+        CtiLockGuard<CtiMutex> guard(_server_mux);
         CtiPendingOpSet_t::iterator it = _pendingPointInfo.find(CtiPendingPointOperations(point.getPointID(), CtiPendingPointOperations::pendingControl));
 
         if( it != _pendingPointInfo.end() )
@@ -6883,69 +6986,101 @@ void CtiVanGogh::pruneCommErrorHistory()
 }
 
 
-bool CtiVanGogh::addToPendingSet(CtiPendingPointOperations &pendingControlRequest, RWTime &updatetime)
+bool CtiVanGogh::addToPendingSet(CtiPendingPointOperations &pendingOp, RWTime &updatetime)
 {
-    bool bRet = true;
+    bool bRet;
 
-    CtiLockGuard<CtiMutex> guard(server_mux);
+    CtiLockGuard<CtiMutex> guard(_server_mux);
     pair< CtiPendingOpSet_t::iterator, bool > resultpair;
-    resultpair = _pendingPointInfo.insert( pendingControlRequest );            // Add to the pending operations.
+    resultpair = _pendingPointInfo.insert( pendingOp );            // Add to the pending operations.
+
+    CtiPendingPointOperations &ppo = *resultpair.first;
+    bRet = resultpair.second;
 
     if(resultpair.second != true)
     {
-        CtiPendingPointOperations &ppo = *resultpair.first;
-
-        /*
-         *  We only need to "do something" if the earlier control had gone into the controlInProgress state.
-         *  Otherwise it is waiting or completed and left over.
-         */
-        if(ppo.getControlState() == CtiPendingPointOperations::controlInProgress)
+        switch(pendingOp.getType())
         {
-            if( pendingControlRequest.getControlState() == CtiPendingPointOperations::controlSeasonalReset )
+        case (CtiPendingPointOperations::pendingControl):
             {
-                RWCString origType = ppo.getControl().getControlType();
-                ppo.getControl().setControlType(pendingControlRequest.getControl().getControlType());
-                ppo.getControl().setCurrentSeasonalTime(0);
-                updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::seasonReset, updatetime );
+                /*
+                 *  We only need to "do something" if the earlier control had gone into the controlInProgress state.
+                 *  Otherwise it is waiting or completed and left over.
+                 */
+                if(ppo.getControlState() == CtiPendingPointOperations::controlInProgress)
+                {
+                    if( pendingOp.getControlState() == CtiPendingPointOperations::controlSeasonalReset )
+                    {
+                        RWCString origType = ppo.getControl().getControlType();
+                        ppo.getControl().setControlType(pendingOp.getControl().getControlType());
+                        ppo.getControl().setCurrentSeasonalTime(0);
+                        updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::seasonReset, updatetime );
 
-                ppo.getControl().setControlType(origType);
+                        ppo.getControl().setControlType(origType);
+                    }
+                    else if( pendingOp.getControl().getControlDuration() <= 0 )
+                    {
+                        // The incoming control information is a RESTORE type operation.
+                        ppo.getControl().setActiveRestore(LMAR_MANUAL_RESTORE);
+                        updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::control, updatetime );
+                        ppo = pendingOp;    // Copy it to update the control state.
+                    }
+                    else if( pendingOp.getControl().getControlType() == ppo.getControl().getControlType() )
+                    {
+                        // The control command we just received is the same command as that which started the prior control.
+                        // This is a repeat/continuation of the old command!  We just record that and continue.
+                        ppo.getControl().setActiveRestore(LMAR_CONT_CONTROL);
+
+                        RWTime logTime = pendingOp.getControl().getStartTime() >= ppo.getControl().getPreviousLogTime() ? pendingOp.getControl().getStartTime() : ppo.getControl().getPreviousLogTime();
+
+                        ppo.getControl().setStopTime(logTime);
+                        updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::repeatcontrol, logTime );
+
+                        pendingOp.getControl().setStartTime(ppo.getControl().getStartTime());
+                        pendingOp.getControl().setPreviousLogTime(ppo.getControl().getStopTime());
+                        pendingOp.getControl().setNotNewControl();
+                        ppo = pendingOp;    // Copy it to update the control state.
+                    }
+                    else
+                    {
+                        // A new and different control command has arrived.  We need to record the old command as having
+                        // been overridden.
+                        ppo.getControl().setActiveRestore(LMAR_OVERRIDE_CONTROL);
+                        updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::control, updatetime );
+
+                        ppo = pendingOp;    // Copy it to update the control state.
+                    }
+                }
+                else
+                {
+                    ppo = pendingOp;    // Copy it to update the control state.
+                }
+                break;
             }
-            else if( pendingControlRequest.getControl().getControlDuration() <= 0 )
+        case (CtiPendingPointOperations::pendingLimit):
+        case (CtiPendingPointOperations::pendingPointData):
+        default:
             {
-                // The incoming control information is a RESTORE type operation.
-                ppo.getControl().setActiveRestore(LMAR_MANUAL_RESTORE);
-                updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::control, updatetime );
-                ppo = pendingControlRequest;    // Copy it to update the control state.
-            }
-            else if( pendingControlRequest.getControl().getControlType() == ppo.getControl().getControlType() )
-            {
-                // The control command we just received is the same command as that which started the prior control.
-                // This is a repeat/continuation of the old command!  We just record that and continue.
-                ppo.getControl().setActiveRestore(LMAR_CONT_CONTROL);
-
-                RWTime logTime = pendingControlRequest.getControl().getStartTime() >= ppo.getControl().getPreviousLogTime() ? pendingControlRequest.getControl().getStartTime() : ppo.getControl().getPreviousLogTime();
-
-                ppo.getControl().setStopTime(logTime);
-                updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::repeatcontrol, logTime );
-
-                pendingControlRequest.getControl().setStartTime(ppo.getControl().getStartTime());
-                pendingControlRequest.getControl().setPreviousLogTime(ppo.getControl().getStopTime());
-                pendingControlRequest.getControl().setNotNewControl();
-                ppo = pendingControlRequest;    // Copy it to update the control state.
-            }
-            else
-            {
-                // A new and different control command has arrived.  We need to record the old command as having
-                // been overridden.
-                ppo.getControl().setActiveRestore(LMAR_OVERRIDE_CONTROL);
-                updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::control, updatetime );
-
-                ppo = pendingControlRequest;    // Copy it to update the control state.
+                ppo = pendingOp;    // Copy it.
+                break;
             }
         }
-        else
+    }
+    else
+    {
+        // It went in clean.
+        switch(pendingOp.getType())
         {
-            ppo = pendingControlRequest;    // Copy it to update the control state.
+        case (CtiPendingPointOperations::pendingControl):
+            {
+                // Make certain controls know about any predecessor controls.
+                getICControlHistory( ppo.getControl() );
+                break;
+            }
+        default:
+            {
+                break;
+            }
         }
     }
 
@@ -6955,11 +7090,13 @@ bool CtiVanGogh::addToPendingSet(CtiPendingPointOperations &pendingControlReques
 
 void CtiVanGogh::insertControlHistoryRow( CtiPendingPointOperations &ppc)
 {
-    ppc.getControl().Insert();
+    // ppc.getControl().Insert();
+    createOrUpdateICControl(ppc.getControl().getPAOID(), ppc.getControl());
+    _lmControlHistoryQueue.putQueue(CTIDBG_new CtiTableLMControlHistory(ppc.getControl()) );
     return;
 }
 
-void CtiVanGogh::postControlHistoryPoints( CtiPendingPointOperations &ppc)
+void CtiVanGogh::postControlHistoryPoints( CtiPendingPointOperations &ppc )
 {
     int poff;
 
@@ -7109,7 +7246,7 @@ void CtiVanGogh::acknowledgeAlarmCondition( CtiPointBase *&pPt, const CtiCommand
     CtiSignalMsg *pSigNew = 0;
 
     {
-        CtiLockGuard<CtiMutex> pmguard(server_mux);
+        CtiLockGuard<CtiMutex> pmguard(_server_mux);
         pSigNew = _signalManager.setAlarmAcknowledged(pPt->getPointID(), alarmcondition, true);    // Clear the tag, return the signal!
 
         if(pSigNew)
@@ -7289,7 +7426,6 @@ void CtiVanGogh::VGDBSignalWriterThread()
                 }
 
                 rwSleep(1000);
-
                 writeSignalsToDB();
             }
             catch(...)
@@ -7401,7 +7537,7 @@ int CtiVanGogh::loadPendingControls()
 
     typedef map< pair<LONG, LONG>, CtiTableLMControlHistory > LMCHMap_t;    // Key is make_pair(PAOID, SOE)
 
-    CtiLockGuard<CtiMutex> pmguard(server_mux);
+    CtiLockGuard<CtiMutex> pmguard(_server_mux);
 
     // RWDBStatus upStat = CtiTableLMControlHistory::updateCompletedOutstandingControls();     // This cleans up any controls which "completed" while dispatch was not running.
 
@@ -7477,8 +7613,8 @@ int CtiVanGogh::loadPendingControls()
                             ppc.getControl().incrementTimes( incTime, addnlseconds );
 
                             insertControlHistoryRow(ppc);
-                            postControlHistoryPoints(ppc);
-                            postControlStopPoint(ppc, incTime);
+                            //postControlHistoryPoints(ppc);
+                            //postControlStopPoint(ppc, incTime);
 
                             ppc.getControl().setActiveRestore(ppc.getControl().getDefaultActiveRestore());
                         }
@@ -7567,7 +7703,7 @@ bool CtiVanGogh::isPointInPendingControl(LONG pointid)
 {
     bool stat = false;
 
-    CtiLockGuard<CtiMutex> guard(server_mux);
+    CtiLockGuard<CtiMutex> guard(_server_mux);
     CtiPendingOpSet_t::iterator it = _pendingPointInfo.find(CtiPendingPointOperations(pointid, CtiPendingPointOperations::pendingControl));
 
     return(it != _pendingPointInfo.end());
@@ -7637,7 +7773,7 @@ bool CtiVanGogh::processInputFunction(CHAR Char)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Manager " << Mgr->getName() << " has " << Mgr->outQueueCount() << " outqueue entries " << endl;
+                            dout << RWTime() << " " << Mgr->outQueueCount() << " outqueue entries on connection to " << Mgr->getName() << " / " << Mgr->who() << endl;
                         }
                     }
                 }
@@ -7648,6 +7784,7 @@ bool CtiVanGogh::processInputFunction(CHAR Char)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " Vangogh mainqueue has " << MainQueue_.entries() << " entries" << endl;
                     dout << "  CtiLMControlHistoryMsg   icnt = " << CtiLMControlHistoryMsg::getInstanceCount() << endl;
                     dout << "  CtiPointdataMsg          icnt = " << CtiPointDataMsg::getInstanceCount() << endl;
                     dout << "  CtiSignalMsg             icnt = " << CtiSignalMsg::getInstanceCount() << endl;
@@ -7655,14 +7792,86 @@ bool CtiVanGogh::processInputFunction(CHAR Char)
 
                 break;
             }
-        case 0x65:              // alt-e
-            {
-            }
         case 0x64:              // alt-d
             {
+
+                /*
+                    #define MSG_TRACE                         ((MSG_BASE) + 20)
+                    #define MSG_COMMAND                       ((MSG_BASE) + 30)
+                    #define MSG_REGISTER                      ((MSG_BASE) + 40)
+                    #define MSG_SERVER_REQUEST                ((MSG_BASE) + 50)
+                    #define MSG_SERVER_RESPONSE               ((MSG_BASE) + 51)
+                    #define MSG_POINTREGISTRATION             ((MSG_BASE) + 70)
+                    #define MSG_DBCHANGE                      ((MSG_BASE) + 80)
+                    #define MSG_PCREQUEST                     ((MSG_BASE) + 85)
+                    #define MSG_PCRETURN                      ((MSG_BASE) + 90)
+
+                    #define MSG_MULTI                         ((MSG_BASE) + 91)
+                    #define MSG_TAG                           ((MSG_BASE) + 94)
+                    #define MSG_POINTDATA                     ((MSG_BASE) + 95)
+                    #define MSG_SIGNAL                        ((MSG_BASE) + 96)
+                    #define MSG_EMAIL                         ((MSG_BASE) + 97)
+                    #define MSG_LMCONTROLHISTORY              ((MSG_BASE) + 98)
+                    #define MSG_COMMERRORHISTORY              ((MSG_BASE) + 99)
+                */
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " Vangogh mainqueue has " << MainQueue_.entries() << " entries" << endl;
+                    dout << " MSG_TRACE                      " << msgCounts.get(MSG_TRACE) << endl;
+                    dout << " MSG_COMMAND                    " << msgCounts.get(MSG_COMMAND) << endl;
+                    dout << " MSG_REGISTER                   " << msgCounts.get(MSG_REGISTER) << endl;
+                    dout << " MSG_SERVER_REQUEST             " << msgCounts.get(MSG_SERVER_REQUEST) << endl;
+                    dout << " MSG_SERVER_RESPONSE            " << msgCounts.get(MSG_SERVER_RESPONSE) << endl;
+                    dout << " MSG_POINTREGISTRATION          " << msgCounts.get(MSG_POINTREGISTRATION) << endl;
+                    dout << " MSG_DBCHANGE                   " << msgCounts.get(MSG_DBCHANGE) << endl;
+                    dout << " MSG_PCREQUEST                  " << msgCounts.get(MSG_PCREQUEST) << endl;
+                    dout << " MSG_PCRETURN                   " << msgCounts.get(MSG_PCRETURN) << endl;
+
+                    dout << " MSG_MULTI                      " << msgCounts.get(MSG_MULTI) << endl;
+                    dout << " MSG_TAG                        " << msgCounts.get(MSG_TAG) << endl;
+                    dout << " MSG_POINTDATA                  " << msgCounts.get(MSG_POINTDATA) << endl;
+                    dout << " MSG_SIGNAL                     " << msgCounts.get(MSG_SIGNAL) << endl;
+                    dout << " MSG_EMAIL                      " << msgCounts.get(MSG_EMAIL) << endl;
+                    dout << " MSG_LMCONTROLHISTORY           " << msgCounts.get(MSG_LMCONTROLHISTORY) << endl;
+                    dout << " MSG_COMMERRORHISTORY           " << msgCounts.get(MSG_COMMERRORHISTORY) << endl;
+
+                    for(int i = 1; i <= 15; i++)
+                    {
+                        dout << " Priority               " << i << " has " << msgPrioritys.get(i) << endl;
+                    }
+                    for(i = 1; i <= 15; i++)
+                    {
+                        if(i <= 10)
+                            dout << " Message times          " << i*50 << " ms = " << msgTimes.get(i) << endl;
+                        else
+                            dout << " Message times          " << 1000 + ((i-11)*1000) << " ms = " << msgTimes.get(i) << endl;
+                    }
+                }
+                break;
+            }
+        case 0x65:              // alt-e
+            {
+                msgCounts.resetAll();
+                msgPrioritys.resetAll();
+                break;
             }
         case 0x66:              // alt-f trace filter.
             {
+                CtiMessage *pMsg;
+                while(0 != (pMsg = MainQueue_.getQueue(500)))
+                {
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        pMsg->dump();
+                    }
+
+                    delete pMsg;
+                }
+
+                break;
             }
         case 0x6c:              // alt-l
             {
@@ -7693,4 +7902,290 @@ bool CtiVanGogh::processInputFunction(CHAR Char)
     }
 
     return process_fail;
+}
+
+bool processExecutionTime(UINT ms)
+{
+    bool ret = false;
+
+    static int cnt = 0;
+
+    if(ms < 50 )
+    {
+        msgTimes.inc(1);
+    }
+    else if(50 <= ms && ms < 100)
+    {
+        msgTimes.inc(2);
+    }
+    else if(100 <= ms && ms < 150)
+    {
+        msgTimes.inc(3);
+    }
+    else if(150 <= ms && ms < 200)
+    {
+        msgTimes.inc(4);
+    }
+    else if(200 <= ms && ms < 250)
+    {
+        msgTimes.inc(5);
+    }
+    else if(250 <= ms && ms < 300)
+    {
+        msgTimes.inc(6);
+    }
+    else if(300 <= ms && ms < 350)
+    {
+        msgTimes.inc(7);
+    }
+    else if(350 <= ms && ms < 400)
+    {
+        msgTimes.inc(8);
+    }
+    else if(400 <= ms && ms < 450)
+    {
+        msgTimes.inc(9);
+    }
+    else if(500 <= ms && ms < 1000)
+    {
+        msgTimes.inc(10);
+    }
+    else if(1000 <= ms && ms < 2000)
+    {
+        msgTimes.inc(11);
+    }
+    else if(2000 <= ms && ms < 3000)
+    {
+        msgTimes.inc(12);
+    }
+    else if(3000 <= ms && ms < 4000)
+    {
+        msgTimes.inc(13);
+    }
+    else if(4000 <= ms && ms < 5000)
+    {
+        msgTimes.inc(14);
+    }
+    else if(5000 <= ms)
+    {
+        msgTimes.inc(15);
+
+        if(5000 <= ms)
+        {
+            ret = true;
+        }
+    }
+
+    return ret;
+}
+
+
+CtiVanGogh::CtiICLMControlHistMap_t CtiVanGogh::_initialConditionControlHistMap;
+
+void CtiVanGogh::resetICControlMap()
+{
+    _initialConditionControlHistMap.clear();
+    return;
+}
+
+bool CtiVanGogh::loadICControlMap()
+{
+    bool cleanShutdown = false;
+    bool allCompleted = true;
+
+    try
+    {
+        resetICControlMap();
+
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
+
+        RWDBDatabase   db       = conn.database();
+        RWDBSelector   selector = conn.database().selector();
+        RWDBTable      keyTable;
+        RWDBReader     rdr;
+
+        CtiTableLMControlHistory::getDynamicSQL( db, keyTable, selector );
+        rdr = selector.reader( conn );
+
+        if(rdr.status().errorCode() != RWDBStatus::ok)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << selector.asString() << endl;
+        }
+
+        while( rdr() )
+        {
+            long paoid = 0;
+            rdr["paobjectid"] >> paoid;
+
+            /*
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " loading dynamiclmcontrol info for paobjectid " << paoid << endl;
+            }
+            */
+
+            CtiTableLMControlHistory dynC;
+            dynC.DecodeDatabaseReader(rdr);
+
+            if(!dynC.getLoadedActiveRestore().compareTo(LMAR_DISPATCH_SHUTDOWN, RWCString::ignoreCase))
+            {
+                cleanShutdown = true;           // Shutdown was clean we do not need to recover from lmctrlhist.
+            }
+            else if(!cleanShutdown && allCompleted)
+            {
+                if(!(!dynC.getLoadedActiveRestore().compareTo(LMAR_MANUAL_RESTORE, RWCString::ignoreCase) ||
+                     !dynC.getLoadedActiveRestore().compareTo(LMAR_TIMED_RESTORE, RWCString::ignoreCase)))
+                {
+                    allCompleted = false;       // All controls in the list were not completed.
+                }
+            }
+
+            createOrUpdateICControl(paoid, dynC);
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    if(cleanShutdown || allCompleted)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Dynamic LMControlHistory was complete, no deep analysis required." << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Dynamic LMControlHistory was incomplete, _deep_ analysis required." << endl;
+    }
+
+    return (cleanShutdown || allCompleted);
+}
+
+bool CtiVanGogh::getICControlHistory( CtiTableLMControlHistory &lmch )
+{
+    bool found = false;
+    static RWTime lastLoadCheck;
+
+    if(_initialConditionControlHistMap.empty() && (lastLoadCheck + 300 < RWTime()) )        // Not more than once per 5 minutes...
+    {
+        lastLoadCheck = lastLoadCheck.now();
+        loadICControlMap();
+    }
+
+    if(!_initialConditionControlHistMap.empty())
+    {
+        CtiICLMControlHistMap_t::iterator itr = _initialConditionControlHistMap.find(lmch.getPAOID());
+
+        if( itr != _initialConditionControlHistMap.end() )
+        {
+            found = true;
+
+            lmch.setStopTime((*itr).second.getStopTime());
+            lmch.setCurrentDailyTime((*itr).second.getCurrentDailyTime());
+            lmch.setCurrentMonthlyTime((*itr).second.getCurrentMonthlyTime());
+            lmch.setCurrentSeasonalTime((*itr).second.getCurrentSeasonalTime());
+            lmch.setCurrentAnnualTime((*itr).second.getCurrentAnnualTime());
+            lmch.setActiveRestore((*itr).second.getActiveRestore());
+        }
+    }
+
+    return found;
+}
+
+bool CtiVanGogh::createOrUpdateICControl(long paoid, CtiTableLMControlHistory &lmch )
+{
+    pair< CtiICLMControlHistMap_t::iterator, bool > resultpair = _initialConditionControlHistMap.insert( make_pair(paoid, lmch) );
+
+    if(resultpair.second == false)           // Insert was unsuccessful.
+    {
+        CtiICLMControlHistMap_t::iterator itr = resultpair.first;
+        if(itr != _initialConditionControlHistMap.end())
+        {
+            CtiICLMControlHistMap_t::value_type vt = *itr;
+            CtiTableLMControlHistory &origLMCH = vt.second;
+
+            origLMCH = lmch;
+        }
+    }
+
+    return resultpair.second;
+}
+
+
+void CtiVanGogh::writeDynamicLMControlHistoryToDB(bool justdoit)
+{
+#define PANIC_CONSTANT 1000
+
+
+    return;
+
+    static UINT  dumpCounter = 0;
+    UINT         panicCounter = 0;      // Make sure we don't write for too long...
+
+    try
+    {
+        CtiTableLMControlHistory *pTblEntry;
+        size_t lmentries = _lmControlHistoryQueue.entries();
+
+        /*
+         *  Go look if we need to write out archive points.
+         *  We only do this once every 30 seconds or if there are >= 10 entries to do.
+         */
+        if(!(++dumpCounter % DUMP_RATE)
+           || lmentries > MAX_ARCHIVER_ENTRIES * 10
+           || justdoit == true )                                 // Only chase the queue once per DUMP_RATE seconds.
+        {
+            if(lmentries > 0)
+            {
+                RWCString controlHistory("dynamicControlHistory");
+                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+                RWDBConnection conn = getConnection();
+
+                conn.beginTransaction(controlHistory);
+
+                while( conn.isValid() && ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _lmControlHistoryQueue.getQueue(0)) != NULL)
+                {
+                    panicCounter++;
+                    pTblEntry->UpdateDynamic(conn);
+                    delete pTblEntry;
+                }
+
+                conn.commitTransaction(controlHistory);
+            }
+            if( panicCounter > 0 )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " LMControlHistory transaction complete. Inserted " << panicCounter << " rows" << endl;
+                }
+            }
+
+            if(panicCounter >= PANIC_CONSTANT)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " LM Control History queue has " << _lmControlHistoryQueue.entries() << " entries" << endl;
+                }
+            }
+        }
+    }
+    catch(const RWxmsg& x)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Exception: " << __FILE__ << " (" << __LINE__ << ") " << x.why() << endl;
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 }

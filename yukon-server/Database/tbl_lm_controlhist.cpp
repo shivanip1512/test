@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2004/10/08 20:38:55 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2004/10/26 16:12:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -301,10 +301,41 @@ RWCString CtiTableLMControlHistory::getTableName()
     return "LMControlHistory";
 }
 
+RWCString CtiTableLMControlHistory::getDynamicTableName()
+{
+    return "DynamicLMControlHistory";
+}
+
 void CtiTableLMControlHistory::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
     keyTable = db.table("YukonPAObject");                  //yes or no?
     RWDBTable devTbl = db.table(getTableName());
+
+    selector <<
+    keyTable["paobjectid"] <<
+    devTbl["lmctrlhistid"] <<
+    devTbl["startdatetime"] <<
+    devTbl["stopdatetime"] <<
+    devTbl["soe_tag"] <<
+    devTbl["controlduration"] <<
+    devTbl["controltype"] <<
+    devTbl["currentdailytime"] <<
+    devTbl["currentmonthlytime"] <<
+    devTbl["currentseasonaltime"] <<
+    devTbl["currentannualtime"] <<
+    devTbl["activerestore"] <<
+    devTbl["reductionvalue"];
+
+    selector.from(keyTable);
+    selector.from(devTbl);
+
+    selector.where( selector.where() && keyTable["paobjectid"] == devTbl["paobjectid"] );
+}
+
+void CtiTableLMControlHistory::getDynamicSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+{
+    keyTable = db.table("YukonPAObject");                  //yes or no?
+    RWDBTable devTbl = db.table(getDynamicTableName());
 
     selector <<
     keyTable["paobjectid"] <<
@@ -399,9 +430,10 @@ soe_tag not in (select soe_tag from lmcontrolhistory where activerestore='M' or 
 
 void CtiTableLMControlHistory::DecodeDatabaseReader(RWDBReader &rdr)
 {
+    if(getDebugLevel() & 0x0800)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     rdr["paobjectid"]          >> _paoID;
@@ -524,7 +556,6 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
 
     setLMControlHistoryID( LMControlHistoryIdGen() );
 
-
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBInserter inserter = table.inserter();
 
@@ -567,6 +598,9 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
         }
 
         dbstat = inserter.status();
+
+        // Record the DynamicCondition as well.
+        UpdateDynamic(conn);            // Does this leak memory??
     }
     else
     {
@@ -864,4 +898,98 @@ void CtiTableLMControlHistory::getSQLForIncompleteControls(RWDBDatabase &db,  RW
                     keyTable["activerestore"] == LMAR_DISPATCH_SHUTDOWN) &&
                     keyTable["startdatetime"] > thepast);
 }
+
+
+
+RWDBStatus CtiTableLMControlHistory::UpdateDynamic(RWDBConnection &conn)
+{
+    RWDBTable table = getDatabase().table( getDynamicTableName() );
+    RWDBUpdater updater = table.updater();
+
+    updater.where( table["paobjectid"] == getPAOID() );
+
+    updater <<
+    table["paobjectid"].assign(getPAOID() ) <<
+    table["lmctrlhistid"].assign(getLMControlHistoryID()) <<
+    table["startdatetime"].assign(getStartTime() ) <<
+    table["stopdatetime"].assign(getStopTime() ) <<
+    table["soe_tag"].assign( getSoeTag() ) <<
+    table["controlduration"].assign( (getStopTime().seconds() - getStartTime().seconds()) ) <<
+    table["controltype"].assign( getControlType() ) <<
+    table["currentdailytime"].assign( getCurrentDailyTime() ) <<
+    table["currentmonthlytime"].assign( getCurrentMonthlyTime() ) <<
+    table["currentseasonaltime"].assign( getCurrentSeasonalTime() ) <<
+    table["currentannualtime"].assign( getCurrentAnnualTime() ) <<
+    table["activerestore"].assign( getActiveRestore() ) <<
+    table["reductionvalue"].assign( getReductionValue() );
+
+    RWDBResult myResult = updater.execute( conn );
+    RWDBStatus stat = myResult.status();
+    RWDBStatus::ErrorCode ec = stat.errorCode();
+
+    RWDBTable myTable = myResult.table();
+    long rowsAffected = myResult.rowCount();
+
+    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << endl << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << updater.asString() << endl << endl;
+    }
+
+    if( ec != RWDBStatus::ok || rowsAffected <= 0)
+    {
+        stat = InsertDynamic(conn);        // Try a vanilla insert if the update failed!
+    }
+
+    return updater.status();
+}
+
+
+RWDBStatus CtiTableLMControlHistory::InsertDynamic(RWDBConnection &conn)
+{
+    RWDBStatus dbstat( RWDBStatus::ok );
+
+    RWDBTable table = getDatabase().table( getDynamicTableName() );
+    RWDBInserter inserter = table.inserter();
+
+    inserter <<
+    getPAOID() <<
+    getLMControlHistoryID() <<
+    RWDBDateTime(getStartTime()) <<
+    getSoeTag() <<
+    (getStopTime().seconds() - getStartTime().seconds()) <<
+    (getControlType().isNull() ? "(none)" : getControlType()) <<
+    getCurrentDailyTime() <<
+    getCurrentMonthlyTime() <<
+    getCurrentSeasonalTime() <<
+    getCurrentAnnualTime() <<
+    getActiveRestore() <<
+    getReductionValue() <<
+    RWDBDateTime(getStopTime());
+
+    if(getStopTime().seconds() >= getStartTime().seconds())
+    {
+        if( inserter.execute( conn ).status().errorCode() != RWDBStatus::ok)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Unable to insert Dynamic LM Control History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "   " << inserter.asString() << endl;
+        }
+
+        dbstat = inserter.status();
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** DynamicLMControlHistory cannot record negative control times. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << inserter.asString() << endl;
+            dump();
+        }
+    }
+
+    return dbstat;
+}
+
 
