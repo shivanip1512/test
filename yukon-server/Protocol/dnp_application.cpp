@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/07/25 20:53:18 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/09/18 21:22:36 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -284,7 +284,7 @@ bool CtiDNPApplication::hasOutput( void )
 }
 
 
-/*---  Porter-side functions  --*/
+/*---  Porter-side functions  ---*/
 
 void CtiDNPApplication::restoreReq( unsigned char *buf, int len )
 {
