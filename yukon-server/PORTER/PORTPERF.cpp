@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/06/03 22:55:03 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/06/06 19:53:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -786,10 +786,6 @@ CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId)
                     if(resultpair.second == true)           // Insert was successful.
                     {
                         dstatitr = resultpair.first;        // Iterator which points to the set entry.
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Statistics Object added for id " << paoId << endl;
-                        }
                     }
                     else
                     {
