@@ -54,7 +54,7 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
 		"Target",
 		"VAR Load",
 		"Time",		
-		"PFactor",
+      "PFactor/Estimated",
 		"Watts",
 		"Estimated VARS",
 		"Daily/Max Ops"
@@ -314,7 +314,7 @@ public Object getValueAt(int row, int col)
 			{
             if( sub.isPowerFactorControlled() )
             {
-               return getPowerFactorText(sub) + " Pk";
+               return getPowerFactorText(sub.getPowerFactorValue().doubleValue()) + " Pk";
             }
             else
 				  return(sub.getPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue()) +
@@ -326,7 +326,7 @@ public Object getValueAt(int row, int col)
 			{
             if( sub.isPowerFactorControlled() )
             {
-               return getPowerFactorText(sub) + " OffPk";
+               return getPowerFactorText(sub.getPowerFactorValue().doubleValue()) + " OffPk";
             }
             else
    				return(sub.getOffPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue()) +
@@ -358,7 +358,9 @@ public Object getValueAt(int row, int col)
       
 		case POWER_FACTOR_COLUMN:
       {
-         return getPowerFactorText(sub);
+         return getPowerFactorText( sub.getPowerFactorValue().doubleValue() )
+                 + " / " +
+                 getPowerFactorText( sub.getEstimatedPFValue().doubleValue() );
       }
 			
 		case WATTS_COLUMN:
@@ -381,13 +383,13 @@ public Object getValueAt(int row, int col)
 	
 }
 
-private String getPowerFactorText( SubBus sub )
+private String getPowerFactorText( double value  )
 {   
-   if( sub.getPowerFactorValue().doubleValue() <= CapControlConst.PF_INVALID_VALUE )
+   if( value <= CapControlConst.PF_INVALID_VALUE )
       return "  NA";
    else
       return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces(
-            sub.getPowerFactorValue().doubleValue() * 100, 1 ) + "%"; //get percent   
+            value * 100, 1 ) + "%"; //get percent   
 }
 
 /**

@@ -43,7 +43,7 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
 		"Target",
 		"VAR Load",
 		"Time",		
-      "PFactor",
+      "PFactor/Estimated",
 		"Estimated VARS",
 		"Daily Ops"
 	};
@@ -263,7 +263,7 @@ public Object getValueAt(int row, int col)
 				if( getCurrentSubBus().getPeakTimeFlag().booleanValue() )
 				{
                if( getCurrentSubBus().isPowerFactorControlled() )
-                  return getPowerFactorText(feeder) + " Pk";
+                  return getPowerFactorText(feeder.getPowerFactorValue().doubleValue()) + " Pk";
                else
    					return (feeder.getPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue()) +
    							 " to " + 
@@ -273,7 +273,7 @@ public Object getValueAt(int row, int col)
 				else
 				{
                if( getCurrentSubBus().isPowerFactorControlled() )
-                  return getPowerFactorText(feeder) + " OffPk";
+                  return getPowerFactorText(feeder.getPowerFactorValue().doubleValue()) + " OffPk";
                else
    					return (feeder.getOffPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue()) +
    							 " to " + 
@@ -284,7 +284,12 @@ public Object getValueAt(int row, int col)
 			}
 
          case POWER_FACTOR_COLUMN:
-            return getPowerFactorText(feeder);
+         {
+            return getPowerFactorText( feeder.getPowerFactorValue().doubleValue() )
+                    + " / " +
+                    getPowerFactorText( feeder.getEstimatedPFValue().doubleValue() );
+         }
+         
          
 			case DAILY_OPERATIONS_COLUMN:
 				return feeder.getCurrentDailyOperations();
@@ -314,13 +319,13 @@ public Object getValueAt(int row, int col)
 	
 }
 
-private String getPowerFactorText( Feeder feeder )
+private String getPowerFactorText( double value )
 {
-   if( feeder.getPowerFactorValue().doubleValue() <= CapControlConst.PF_INVALID_VALUE )
+   if( value <= CapControlConst.PF_INVALID_VALUE )
       return "  NA";
    else   
       return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces(
-            feeder.getPowerFactorValue().doubleValue() * 100, 1 ) + "%"; //get percent   
+            value * 100, 1 ) + "%"; //get percent   
 }
 
 /**
