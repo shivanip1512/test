@@ -660,7 +660,7 @@ public Object getValue(Object o)
 	else
 		program.getDirectProgram().setStoppedEarlyMsg( getJTextPaneMsgStoppedEarly().getText() );
 
-	program.getDirectProgram().setNotifyInterval( new Integer( ((Number)getJCSpinFieldMinNotifyTime().getValue()).intValue() * 60 ) );
+	program.getDirectProgram().setNotifyOffset( new Integer( ((Number)getJCSpinFieldMinNotifyTime().getValue()).intValue() * 60 ) );
 
 	return o;
 }
@@ -791,7 +791,7 @@ public void setValue(Object o)
 	if( program.getDirectProgram().getStoppedEarlyMsg().compareTo(CtiUtilities.STRING_NONE) != 0)
 		getJTextPaneMsgStoppedEarly().setText( program.getDirectProgram().getStoppedEarlyMsg() );
 
-	getJCSpinFieldMinNotifyTime().setValue( new Integer(program.getDirectProgram().getNotifyInterval().intValue() / 60) );
+	getJCSpinFieldMinNotifyTime().setValue( new Integer(program.getDirectProgram().getNotifyOffset().intValue() / 60) );
 	
 }
 
