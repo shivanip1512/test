@@ -80,7 +80,7 @@ public interface RoleTypes {
 	public static final int CONSUMERINFO_HARDWARES_CREATE = -173;
 	public static final int CONSUMERINFO_WORKORDERS = -174;
 	public static final int CONSUMERINFO_ADMIN = -175;
-	public static final int CONSUMERINFO_ADMIN_CHANGE_PASSWORD = -176;
+	public static final int CONSUMERINFO_ADMIN_CHANGE_LOGIN = -176;
 	public static final int CONSUMERINFO_THERMOSTAT = -177;
 	public static final int CONSUMERINFO_QUESTIONS = -178;
 	public static final int CONSUMERINFO_ACCOUNT_RESIDENCE = -179;
