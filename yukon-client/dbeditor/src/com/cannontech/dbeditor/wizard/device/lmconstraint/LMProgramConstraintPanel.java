@@ -264,7 +264,7 @@ private javax.swing.JComboBox getJComboBoxSeasonSchedule() {
 		try {
 			ivjJComboBoxSeasonSchedule = new javax.swing.JComboBox();
 			ivjJComboBoxSeasonSchedule.setName("JComboBoxSeasonSchedule");
-			ivjJComboBoxSeasonSchedule.setToolTipText("Holiday schedule used to exclude control");
+			ivjJComboBoxSeasonSchedule.setToolTipText("Season schedule used to exclude control");
 			ivjJComboBoxSeasonSchedule.setPreferredSize(new java.awt.Dimension(155, 23));
 			// user code begin {1}
 			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
