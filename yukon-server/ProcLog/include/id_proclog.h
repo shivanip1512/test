@@ -4,7 +4,7 @@
 #define PROJECT   "CTI Logger DLL "
 
 #define MAJORREVISION   2
-#define MINORREVISION   30
+#define MINORREVISION   31
 #define BUILDNUMBER     0
 
 CTICOMPILEINFO CompileInfo = {

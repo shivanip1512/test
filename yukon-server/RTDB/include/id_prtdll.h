@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/id_prtdll.h-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2002/08/01 22:58:52 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2002/08/09 20:06:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,7 @@
 #define PROJECT   "CTI Port RTDB DLL "
 
 #define MAJORREVISION   2
-#define MINORREVISION   30
+#define MINORREVISION   31
 #define BUILDNUMBER     0
 
 CTICOMPILEINFO CompileInfo = {
