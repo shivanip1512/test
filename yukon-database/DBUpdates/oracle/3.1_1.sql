@@ -1443,7 +1443,8 @@ update YukonRoleProperty set KeyName='stars_preload_data', DefaultValue='false',
 insert into YukonRoleProperty values(-10112,-101,'cbc_allow_ovuv','false','Allows users to toggle OV/UV usage on capbanks');
 insert into YukonGroupRole values(-1031,-2,-101,-10112,'(none)');
 
-
+insert into FDRInterface values( 19, 'XA21LM','Receive,Send', 't' );
+insert into FDRInterfaceOption values(19, 'Translation', 1, 'Text', '(none)' );
 
 
 
