@@ -20,7 +20,7 @@
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
-               <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Load Response</td>
+               <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;<cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/></td>
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
@@ -114,10 +114,10 @@
 
 			com.cannontech.web.history.HEnergyExchangeProgram program = offers[i].getEnergyExchangeProgram();
 			com.cannontech.web.history.HEnergyExchangeOfferRevision[] revisions = offers[i].getEnergyExchangeOfferRevisions();
-
+			double amountCommitted = 0;
 			for(int j = 0; j < revisions.length; j++) {
 				double amountRequested = revisions[j].getAmountRequested();
-				double amountCommitted = revisions[j].getAmountCommitted();
+				amountCommitted += revisions[j].getAmountCommitted();
 			%>
                 <tr valign="top"> 
                   <td height="23" class="TableCell"><a href="oper_ee.jsp?tab=historydetail&prog=<%= program.getDeviceId() %>&offer=<%= offers[i].getOfferId() %>&rev=<%= revisions[j].getRevisionNumber() %>" class="Link1"> 

@@ -19,7 +19,7 @@
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
-               <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Load Response</td>
+               <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;<cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/></td>
                 <td width="235" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -93,8 +93,8 @@
             <td class="HeaderCell">Status</td>
             <td class="HeaderCell">Notify Date/Time</td>
             <td class="HeaderCell">Expire Date/Time</td>
-            <td class="HeaderCell">Committed Total (kW)</td>
-            <td class="HeaderCell">Target Total (kW)</td>
+            <td class="HeaderCell">Committed Total (kWh)</td>
+            <td class="HeaderCell">Target Total (kWh)</td>
           </tr>
           <%
                           {
@@ -145,13 +145,14 @@
                                                          {
                                                               LMEnergyExchangeCustomerReply reply = (LMEnergyExchangeCustomerReply) replies.elementAt(n);
                                                               if( reply.getOfferID().intValue() == revision.getOfferID().intValue() &&
-                                                                  reply.getRevisionNumber().intValue() == revision.getRevisionNumber().intValue() ) 
+                                                                  reply.getRevisionNumber().intValue() <= revision.getRevisionNumber().intValue() ) 
                                                               {                                                              
                                                                 java.util.Vector hourlyReplies = reply.getEnergyExchangeHourlyCustomer();
                                                                 for( int o = 0; o < hourlyReplies.size(); o++ )
                                                                 {
                                                                     LMEnergyExchangeHourlyCustomer hourlyReply = (LMEnergyExchangeHourlyCustomer) hourlyReplies.elementAt(o);
-                                                                    committedTotal += hourlyReply.getAmountCommitted().doubleValue();
+                                                                    if( hourlyReply.getRevisionNumber().intValue() == reply.getRevisionNumber().intValue())
+                                                                      committedTotal += hourlyReply.getAmountCommitted().doubleValue();
                                                                 }
                                                               }
                                                          }
@@ -164,8 +165,8 @@
             <td class="TableCell"><%= offer.getRunStatus() %></td>
             <td class="TableCell"><%= timePart.format(revision.getNotificationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(revision.getNotificationDateTime()) %></td>
             <td class="TableCell"><%= timePart.format(revision.getOfferExpirationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(revision.getOfferExpirationDateTime()) %></td>
-            <td class="TableCell"><%= committedTotal %></td>
-            <td class="TableCell"><%= targetTotal %></td>
+            <td class="TableCell"><%= numberFormat.format(committedTotal) %></td>
+            <td class="TableCell"><%= numberFormat.format(targetTotal) %></td>
           </tr>
           <%        
                                            }
@@ -186,8 +187,8 @@
           <td class="HeaderCell">Status</td>
           <td class="HeaderCell">Notify Date/Time</td>
           <td class="HeaderCell">Expire Date/Time</td>
-          <td class="HeaderCell">Committed Total (kW)</td>
-          <td class="HeaderCell">Target Total (kW)</td>
+          <td class="HeaderCell">Committed Total (kWh)</td>
+          <td class="HeaderCell">Target Total (kWh)</td>
         </tr>
         <%
                           {
@@ -241,13 +242,14 @@
                                                          {
                                                               LMEnergyExchangeCustomerReply reply = (LMEnergyExchangeCustomerReply) replies.elementAt(n);
                                                               if( reply.getOfferID().intValue() == revision.getOfferID().intValue() &&
-                                                                  reply.getRevisionNumber().intValue() == revision.getRevisionNumber().intValue() )
+                                                                  reply.getRevisionNumber().intValue() <= revision.getRevisionNumber().intValue() )
                                                               {                                                              
                                                                 java.util.Vector hourlyReplies = reply.getEnergyExchangeHourlyCustomer();
                                                                 for( int o = 0; o < hourlyReplies.size(); o++ )
                                                                 {
                                                                     LMEnergyExchangeHourlyCustomer hourlyReply = (LMEnergyExchangeHourlyCustomer) hourlyReplies.elementAt(o);
-                                                                    committedTotal += hourlyReply.getAmountCommitted().doubleValue();
+                                                                    if( hourlyReply.getRevisionNumber().intValue() == reply.getRevisionNumber().intValue())
+                                                                      committedTotal += hourlyReply.getAmountCommitted().doubleValue();
                                                                 }
                                                               }
                                                          }
@@ -260,8 +262,8 @@
           <td class="TableCell"><%= offer.getRunStatus() %></td>
           <td class="TableCell"> <%= timePart.format(revision.getNotificationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(revision.getNotificationDateTime()) %></td>
           <td class="TableCell"> <%= timePart.format(revision.getOfferExpirationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(revision.getOfferExpirationDateTime()) %></td>
-          <td class="TableCell"> <%= committedTotal %></td>
-          <td class="TableCell"> <%= targetTotal %></td>
+          <td class="TableCell"> <%= numberFormat.format(committedTotal) %></td>
+          <td class="TableCell"> <%= numberFormat.format(targetTotal) %></td>
         </tr>
         <%        
                                            }
@@ -281,8 +283,8 @@
           <td class="HeaderCell">Status</td>
           <td class="HeaderCell">Notify Date/Time</td>
           <td class="HeaderCell">Expire Date/Time</td>
-          <td class="HeaderCell">Committed Total (kW)</td>
-          <td class="HeaderCell">Target Total (kW)</td>
+          <td class="HeaderCell">Committed Total (kWh)</td>
+          <td class="HeaderCell">Target Total (kWh)</td>
         </tr>
         <%
                           {
@@ -337,12 +339,13 @@
                                                          {
                                                               LMEnergyExchangeCustomerReply reply = (LMEnergyExchangeCustomerReply) replies.elementAt(n);
                                                               if( reply.getOfferID().intValue() == revision.getOfferID().intValue() &&
-                                                                  reply.getRevisionNumber().intValue() == revision.getRevisionNumber().intValue() )
+                                                                  reply.getRevisionNumber().intValue() <= revision.getRevisionNumber().intValue() )
                                                               {                                                              
                                                                 java.util.Vector hourlyReplies = reply.getEnergyExchangeHourlyCustomer();
                                                                 for( int o = 0; o < hourlyReplies.size(); o++ )
                                                                 {
                                                                     LMEnergyExchangeHourlyCustomer hourlyReply = (LMEnergyExchangeHourlyCustomer) hourlyReplies.elementAt(o);
+                                                                    if( hourlyReply.getRevisionNumber().intValue() == reply.getRevisionNumber().intValue())
                                                                     committedTotal += hourlyReply.getAmountCommitted().doubleValue();
                                                                 }
                                                               }
@@ -356,8 +359,8 @@
           <td class="TableCell"><%= offer.getRunStatus() %></td>
           <td class="TableCell"> <%= timePart.format(revision.getNotificationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(revision.getNotificationDateTime()) %></td>
           <td class="TableCell"> <%= timePart.format(revision.getOfferExpirationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(revision.getOfferExpirationDateTime()) %></td>
-          <td class="TableCell"> <%= committedTotal %></td>
-          <td class="TableCell"> <%= targetTotal %></td>
+          <td class="TableCell"> <%= numberFormat.format(committedTotal) %></td>
+          <td class="TableCell"> <%= numberFormat.format(targetTotal) %></td>
         </tr>
         <%        
                                            }
