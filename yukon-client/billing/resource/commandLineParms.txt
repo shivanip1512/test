@@ -1,6 +1,10 @@
 MainClass:  com.cannontech.billing.mainprograms.BillingFile
 
-CommandLineParameters:
+COMMAND LINE PARAMETERS:
+
+*-- ['=', ':'] The command parameter delimeter --*
+    -- The default command delimeter is the equal sign (=) but a colon (:) is also valid and will be checked for if the default
+    --  delimiter '=' is not found.  The colon is used mainly for patch file command parameter passing (as for macs use).
 
 *-- Billing file format - default: CTICSV --*
 format|type=<formatID|formatType>  where formatID|formatType are int|string values from yukon.billingfileformats db table.
