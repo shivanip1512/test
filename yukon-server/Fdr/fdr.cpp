@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:30 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/12/03 17:53:40 $
 *
 *
 * AUTHOR: Matt Fisher
@@ -28,8 +28,8 @@
 //
 //$Archive$
 //
-//$Revision: 1.3 $
-//$Date: 2002/04/16 15:58:30 $
+//$Revision: 1.4 $
+//$Date: 2002/12/03 17:53:40 $
 //
 
 /** include files **/
@@ -62,7 +62,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 int install( void );
 int remove( void );
 
-LPTSTR szServiceName = "YukonFDR";
+LPTSTR szServiceName = "FDR";
 LPTSTR szDisplayName = "Yukon Foreign Data Service";
 
 int main( int argc, char *argv[] )
