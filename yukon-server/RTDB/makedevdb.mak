@@ -54,6 +54,9 @@ dev_grp_expresscom.obj \
 dev_grp_energypro.obj \
 dev_grp_mct.obj \
 dev_grp_ripple.obj \
+dev_grp_sasimple.obj \
+dev_grp_sa105.obj \
+dev_grp_sa205.obj \
 dev_grp_sa305.obj \
 dev_grp_versacom.obj \
 dev_gwstat.obj \
