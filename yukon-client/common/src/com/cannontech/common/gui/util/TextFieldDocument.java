@@ -48,7 +48,6 @@ public class TextFieldDocument extends javax.swing.text.PlainDocument
 	{
 		'\'',
 		',',
-		'#',
 		'|',
 		'"'	
 	};
@@ -85,7 +84,7 @@ protected TextFieldDocument(javax.swing.text.AbstractDocument.Content c) {
 public boolean checkInputValue(String proposedValue) 
 {
 	if( proposedValue.length() <= maxCharCount
-)//		 && isValidString(proposedValue) )
+		 && isValidString(proposedValue) )
 	{
 		return true;
 	}
