@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2002/08/06 19:04:34 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2002/08/16 13:07:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -560,9 +560,6 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         PrintError ((USHORT)i);
         CTIExit (EXIT_PROCESS, -1);
     }
-
-    /* Announce our presence to the world */
-    SendProcessStart ("PORT CONTROL");           // For elogger.
 
     if(RefreshPorterRTDB())             // Loads globals and the RTDB
     {
