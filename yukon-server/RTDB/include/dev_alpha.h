@@ -90,6 +90,11 @@
 #define ALPHA_RATE_C       102
 #define ALPHA_RATE_D       103
 #define ALPHA_RATE_TOTAL      105
+#define ALPHA_QUADRANT_1      106
+#define ALPHA_QUADRANT_2      107
+#define ALPHA_QUADRANT_3      108
+#define ALPHA_QUADRANT_4      109
+
 
 #define ALPHA_DEMAND       1
 #define ALPHA_ENERGY       2

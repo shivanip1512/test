@@ -1,3 +1,7 @@
+#pragma warning( disable : 4786)
+#ifndef __POINTDEFS_H__
+#define __POINTDEFS_H__
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   pointdefs
@@ -9,10 +13,6 @@
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#ifndef __POINTDEFS_H__
-#define __POINTDEFS_H__
-#pragma warning( disable : 4786)
-
 
 
 #define DAILYCONTROLHISTOFFSET      2500
@@ -92,7 +92,7 @@
 #define MASK_ANY_CONTROL_DISABLE             0x00000044
 
 /***************************
-* point offsets for metering points
+* point offsets for electronic metering
 ****************************
 */
 
@@ -173,8 +173,20 @@
 #define OFFSET_TOTAL_CHANNEL_4                      96
 #define OFFSET_LOADPROFILE_CHANNEL_4                97
 
+#define OFFSET_QUADRANT1_TOTAL_KVARH                110
+#define OFFSET_QUADRANT1_LAST_INTERVAL_KVAR         111
 
-#define OFFSET_HIGHEST_CURRENT_OFFSET              100
+#define OFFSET_QUADRANT2_TOTAL_KVARH                125
+#define OFFSET_QUADRANT2_LAST_INTERVAL_KVAR         126
+
+#define OFFSET_QUADRANT3_TOTAL_KVARH                140
+#define OFFSET_QUADRANT3_LAST_INTERVAL_KVAR         141
+
+#define OFFSET_QUADRANT4_TOTAL_KVARH                155
+#define OFFSET_QUADRANT4_LAST_INTERVAL_KVAR         156
+
+                                                     
+#define OFFSET_HIGHEST_CURRENT_OFFSET              160
 
 //  to be added to a point to yield the load profile equivalent
 //    (the first load profile demand accumulator on an MCT is 101, for example.)

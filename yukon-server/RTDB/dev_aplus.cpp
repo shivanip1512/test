@@ -8,13 +8,19 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_aplus.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/04/10 21:45:47 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/07/14 20:17:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History: 
       $Log: dev_aplus.cpp,v $
-      Revision 1.6  2003/04/10 21:45:47  dsutton
+      Revision 1.7  2003/07/14 20:17:11  dsutton
+      Added processing for usage hours and last interval demand for
+      vars atttributed to the four quadrants.  New point offsets were needed
+      and the alpha power plus is the only electronic meter to support these
+      offsets as of 7/14
+
+      Revision 1.5.2.1  2003/04/10 21:45:21  dsutton
       Added code to check the CRC on the multiple message classes (ones over 64 bytes)
       and added checks to make sure we had received the entire message
 
@@ -342,24 +348,27 @@ INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< C
                             if (getTotalByteCount() == sizeof (AlphaPPlusClass0Raw_t))
                             {
                                 localData->Real.class0.valid = TRUE;
+                                setReadClass(6);
+                                setReadFunction(6);
+                                setSingleMsgByteCount(0);
+                                setAttemptsRemaining(3);
+
+                                setClassReadComplete (FALSE);
+                                setPreviousState (StateScanValueSet7);
+                                Transfer.setOutCount (0);
+                                Transfer.setInCountExpected(0);
+                                Transfer.setInTimeout (1);
+                                setCurrentState (StateScanDecode7);
                             }
                             else
                             {
-                                // if we failed to read this, make sure we are still copying into the correct place
-                                // for the next class
-                                setTotalByteCount (sizeof (AlphaPPlusClass0Raw_t));
+                                setPreviousState (StateScanAbort);
+                                generateCommandTerminate (Transfer, traceList);
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " Class 0 failed for " << getName() << " aborting scan " << endl;
+                                }  
                             }
-                            setReadClass(6);
-                            setReadFunction(6);
-                            setSingleMsgByteCount(0);
-                            setAttemptsRemaining(3);
-
-                            setClassReadComplete (FALSE);
-                            setPreviousState (StateScanValueSet7);
-                            Transfer.setOutCount (0);
-                            Transfer.setInCountExpected(0);
-                            Transfer.setInTimeout (1);
-                            setCurrentState (StateScanDecode7);
                             break;
                         }
 
@@ -370,27 +379,30 @@ INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< C
                                                         sizeof (AlphaPPlusClass6Raw_t)))
                             {
                                 localData->Real.class6.valid = TRUE;
+                                // moving to load profile next, reset parameters
+                                setReadClass(2);
+                                setReadFunction(2);
+                                setSingleMsgByteCount(0);
+                                setAttemptsRemaining(3);
+
+                                setClassReadComplete (FALSE);
+                                setPreviousState (StateScanValueSet7);
+                                Transfer.setOutCount (0);
+                                Transfer.setInCountExpected(0);
+                                Transfer.setInTimeout (1);
+                                setCurrentState (StateScanDecode7);
+
                             }
                             else
                             {
-                                // if we failed to read this, make sure we are still copying into the correct place
-                                // for the next class
-                                setTotalByteCount (sizeof (AlphaPPlusClass0Raw_t) +
-                                                   sizeof (AlphaPPlusClass6Raw_t));
+                                setPreviousState (StateScanAbort);
+                                generateCommandTerminate (Transfer, traceList);
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " Class 6 failed for " << getName() << " aborting scan " << endl;
+                                }
                             }
 
-                            // moving to load profile next, reset parameters
-                            setReadClass(2);
-                            setReadFunction(2);
-                            setSingleMsgByteCount(0);
-                            setAttemptsRemaining(3);
-
-                            setClassReadComplete (FALSE);
-                            setPreviousState (StateScanValueSet7);
-                            Transfer.setOutCount (0);
-                            Transfer.setInCountExpected(0);
-                            Transfer.setInTimeout (1);
-                            setCurrentState (StateScanDecode7);
                             break;
                         }
 
@@ -402,27 +414,28 @@ INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< C
                                                         sizeof (AlphaPPlusClass2Raw_t)))
                             {
                                 localData->Real.class2.valid = TRUE;
+                                setReadClass(82);
+                                setReadFunction(82);
+                                setSingleMsgByteCount(0);
+                                setAttemptsRemaining(3);
+
+                                setClassReadComplete (FALSE);
+                                setPreviousState (StateScanValueSet7);
+                                Transfer.setOutCount (0);
+                                Transfer.setInCountExpected(0);
+                                Transfer.setInTimeout (1);
+                                setCurrentState (StateScanDecode7);
                             }
                             else
                             {
-                                // if we failed to read this, make sure we are still copying into the correct place
-                                // for the next class
-                                setTotalByteCount (sizeof (AlphaPPlusClass0Raw_t) +
-                                                   sizeof (AlphaPPlusClass6Raw_t) +
-                                                   sizeof (AlphaPPlusClass2Raw_t));
+                                setPreviousState (StateScanAbort);
+                                generateCommandTerminate (Transfer, traceList);
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " Class 2 failed for " << getName() << " aborting scan " << endl;
+                                }
                             }
 
-                            setReadClass(82);
-                            setReadFunction(82);
-                            setSingleMsgByteCount(0);
-                            setAttemptsRemaining(3);
-
-                            setClassReadComplete (FALSE);
-                            setPreviousState (StateScanValueSet7);
-                            Transfer.setOutCount (0);
-                            Transfer.setInCountExpected(0);
-                            Transfer.setInTimeout (1);
-                            setCurrentState (StateScanDecode7);
                             break;
                         }
 
@@ -435,28 +448,29 @@ INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< C
                                                         sizeof (AlphaPPlusClass82Raw_t)))
                             {
                                 localData->Real.class82.valid = TRUE;
+                                setReadClass(11);
+                                setReadFunction(11);
+                                setSingleMsgByteCount(0);
+                                setAttemptsRemaining(3);
+
+                                setClassReadComplete (FALSE);
+                                setPreviousState (StateScanValueSet7);
+                                Transfer.setOutCount (0);
+                                Transfer.setInCountExpected(0);
+                                Transfer.setInTimeout (1);
+                                setCurrentState (StateScanDecode7);
+
                             }
                             else
                             {
-                                // if we failed to read this, make sure we are still copying into the correct place
-                                // for the next class
-                                setTotalByteCount (sizeof (AlphaPPlusClass0Raw_t) +
-                                                   sizeof (AlphaPPlusClass2Raw_t) +
-                                                   sizeof (AlphaPPlusClass6Raw_t) +
-                                                   sizeof (AlphaPPlusClass82Raw_t));
+                                setPreviousState (StateScanAbort);
+                                generateCommandTerminate (Transfer, traceList);
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " Class 82 failed for " << getName() << " aborting scan " << endl;
+                                }
                             }
 
-                            setReadClass(11);
-                            setReadFunction(11);
-                            setSingleMsgByteCount(0);
-                            setAttemptsRemaining(3);
-
-                            setClassReadComplete (FALSE);
-                            setPreviousState (StateScanValueSet7);
-                            Transfer.setOutCount (0);
-                            Transfer.setInCountExpected(0);
-                            Transfer.setInTimeout (1);
-                            setCurrentState (StateScanDecode7);
                             break;
                         }
                     case 11:
@@ -468,11 +482,6 @@ INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< C
                                                         sizeof (AlphaPPlusClass11Raw_t)))
                             {
                                 localData->Real.class11.valid = TRUE;
-                            }
-
-                            // see if we read either of these correctly
-                            if (localData->Real.class82.valid && localData->Real.class11.valid)
-                            {
                                 // set total bytes retrieved into buffer and reset count for load profile retrieval
                                 ((AlphaPPlusScanData_t *)_dataBuffer)->totalByteCount = getTotalByteCount();
                                 setTotalByteCount(0);
@@ -496,23 +505,15 @@ INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< C
                                 Transfer.setInCountExpected(0);
                                 Transfer.setInTimeout (1);
                                 setCurrentState (StateScanDecode8);
+
                             }
                             else
                             {
                                 setPreviousState (StateScanAbort);
                                 generateCommandTerminate (Transfer, traceList);
-                                if( DebugLevel & 0x0001 )
                                 {
-                                    if (localData->Real.class82.valid)
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Class 11 billing data read failed for " << getName() << " aborting scan " << endl;
-                                    }
-                                    else
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Class 82 demand data read failed for " << getName() << " aborting scan " << endl;
-                                    }
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " Class 11 failed for " << getName() << " aborting scan " << endl;
                                 }
                             }
                             break;
@@ -2755,18 +2756,46 @@ UCHAR CtiDeviceAlphaPPlus::touBlockMapping (UCHAR config, USHORT type)
         }
         else if (config & 0x01)
         {
+/*
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " ****** Alpha " << getName() << " configured for Q1 vars, defaulting to delivered vars ******" << endl;
+            }
+            retCode = PPLUS_REACTIVE_DELIVERED;
+*/            
             retCode = PPLUS_REACTIVE_QUADRANT1;
         }
         else if (config & 0x02)
         {
+/*
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " ****** Alpha " << getName() << " configured for Q2 vars, defaulting to delivered vars ******" << endl;
+            }
+            retCode = PPLUS_REACTIVE_DELIVERED;
+*/            
             retCode = PPLUS_REACTIVE_QUADRANT2;
         }
         else if (config & 0x03)
         {
+/*
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " ****** Alpha " << getName() << " configured for Q3 vars, defaulting to delivered vars ******" << endl;
+            }
+            retCode = PPLUS_REACTIVE_DELIVERED;
+*/            
             retCode = PPLUS_REACTIVE_QUADRANT3;
         }
         else if (config & 0x04)
         {
+/*
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " ****** Alpha " << getName() << " configured for Q4 vars, defaulting to delivered vars ******" << endl;
+            }
+            retCode = PPLUS_REACTIVE_DELIVERED;
+*/            
             retCode = PPLUS_REACTIVE_QUADRANT4;
         }
         else
@@ -3023,6 +3052,10 @@ BOOL CtiDeviceAlphaPPlus::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValu
     /* Get the value from InMessage */
     switch (aOffset)
     {
+        case OFFSET_QUADRANT1_LAST_INTERVAL_KVAR:
+        case OFFSET_QUADRANT2_LAST_INTERVAL_KVAR:
+        case OFFSET_QUADRANT3_LAST_INTERVAL_KVAR:
+        case OFFSET_QUADRANT4_LAST_INTERVAL_KVAR:
         case OFFSET_PEAK_KW_OR_RATE_A_KW:
         case OFFSET_RATE_B_KW:
         case OFFSET_RATE_C_KW:
@@ -3052,6 +3085,10 @@ BOOL CtiDeviceAlphaPPlus::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValu
                 break;
             }
 
+        case OFFSET_QUADRANT1_TOTAL_KVARH:
+        case OFFSET_QUADRANT2_TOTAL_KVARH:
+        case OFFSET_QUADRANT3_TOTAL_KVARH:
+        case OFFSET_QUADRANT4_TOTAL_KVARH:
         case OFFSET_TOTAL_KWH:
         case OFFSET_RATE_A_KWH:
         case OFFSET_RATE_B_KWH:
@@ -3112,7 +3149,6 @@ BOOL CtiDeviceAlphaPPlus::getRateValueFromBlock (DOUBLE &aValue,
 {
     int x;
     BOOL retCode=FALSE;
-
 
     if (data->Real.class2.configTOUBlk1 == aBlockMapping)
     {
@@ -3476,6 +3512,30 @@ USHORT CtiDeviceAlphaPPlus::getOffsetMapping (int aOffset)
                 type = PPLUS_KVA_DELIVERED;
                 break;
             }
+        case OFFSET_QUADRANT1_TOTAL_KVARH:
+        case OFFSET_QUADRANT1_LAST_INTERVAL_KVAR:
+            {
+                type = PPLUS_REACTIVE_QUADRANT1;
+                break;
+            }
+        case OFFSET_QUADRANT2_TOTAL_KVARH:
+        case OFFSET_QUADRANT2_LAST_INTERVAL_KVAR:
+            {
+                type = PPLUS_REACTIVE_QUADRANT2;
+                break;
+            }
+        case OFFSET_QUADRANT3_TOTAL_KVARH:
+        case OFFSET_QUADRANT3_LAST_INTERVAL_KVAR:
+            {
+                type = PPLUS_REACTIVE_QUADRANT3;
+                break;
+            }
+        case OFFSET_QUADRANT4_TOTAL_KVARH:
+        case OFFSET_QUADRANT4_LAST_INTERVAL_KVAR:
+            {
+                type = PPLUS_REACTIVE_QUADRANT4;
+                break;
+            }
         default:
             break;
     }
@@ -3489,6 +3549,14 @@ USHORT CtiDeviceAlphaPPlus::getRate (int aOffset)
     /* Get the value from InMessage */
     switch (aOffset)
     {
+        case OFFSET_QUADRANT1_TOTAL_KVARH:
+        case OFFSET_QUADRANT1_LAST_INTERVAL_KVAR:
+        case OFFSET_QUADRANT2_TOTAL_KVARH:
+        case OFFSET_QUADRANT2_LAST_INTERVAL_KVAR:
+        case OFFSET_QUADRANT3_TOTAL_KVARH:
+        case OFFSET_QUADRANT3_LAST_INTERVAL_KVAR:
+        case OFFSET_QUADRANT4_TOTAL_KVARH:
+        case OFFSET_QUADRANT4_LAST_INTERVAL_KVAR:
         case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KW:
         case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVAR:
         case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVA:
