@@ -264,7 +264,8 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 			graph.setGraphDefinition(gDef);
 
 			graph.setViewType(getTrendType());
-						
+			graph.getTrendProperties().setOptionsMaskSettings(GraphRenderers.LEGEND_MIN_MAX_MASK);
+					
 			graph.setUpdateTrend(true);
 			graph.update();
 		

@@ -95,9 +95,10 @@ drawing.getLxGraph().startUndoEdit("update");
 										change = true;
 									}	
 	
-								}
+								}								
 							}
-
+							
+							si.updateImage();
 						}
 						
 						if( isUpdateGraphs() && comp[i] instanceof DynamicGraphElement ) {

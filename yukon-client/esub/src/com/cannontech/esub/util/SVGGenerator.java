@@ -26,6 +26,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.db.graph.GraphRenderers;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.AlarmTextElement;
 import com.cannontech.esub.element.CurrentAlarmsTable;
@@ -331,7 +332,7 @@ public class SVGGenerator {
 			imgElem.setAttributeNS(xlinkNS, "xlink:href", Util.genExportedGraphName(graph));
 		}
 		else {
-			imgElem.setAttributeNS(xlinkNS, "xlink:href", "/servlet/GraphGenerator?gdefid=" + graph.getGraphDefinitionID() + "&view=" + graph.getTrendType() + "&width=" + width + "&height=" + height + "&format=png&start=" + dateFormat.format(graph.getCurrentStartDate()) + "&period=" + graph.getDisplayPeriod());
+			imgElem.setAttributeNS(xlinkNS, "xlink:href", "/servlet/GraphGenerator?gdefid=" + graph.getGraphDefinitionID() + "&view=" + graph.getTrendType() + "&width=" + width + "&height=" + height + "&format=png&start=" + dateFormat.format(graph.getCurrentStartDate()) + "&period=" + graph.getDisplayPeriod() + "&option=" + Integer.toString(GraphRenderers.LEGEND_MIN_MAX_MASK));
 		}
 		imgElem.setAttributeNS(null, "x", Integer.toString(x));
 		imgElem.setAttributeNS(null, "y", Integer.toString(y));
@@ -342,6 +343,7 @@ public class SVGGenerator {
 		imgElem.setAttributeNS(null, "view", Integer.toString(graph.getTrendType()));
 		imgElem.setAttributeNS(null, "format", "png");
 		imgElem.setAttributeNS(null, "db", CtiUtilities.getDatabaseAlias());
+		imgElem.setAttributeNS(null, "option", Integer.toString(GraphRenderers.LEGEND_MIN_MAX_MASK));
 		imgElem.setAttributeNS(null, "loadfactor", "false");
 		imgElem.setAttributeNS(null, "start", dateFormat.format(graph.getCurrentStartDate()));
 		imgElem.setAttributeNS(null, "period", graph.getDisplayPeriod());
