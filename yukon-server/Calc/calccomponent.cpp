@@ -14,14 +14,14 @@ extern BOOL _CALC_DEBUG;
 
 RWDEFINE_NAMED_COLLECTABLE( CtiCalcComponent, "CtiCalcComponent" );
 
-CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long componentPointId, 
+CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long componentPointId,
                                     const RWCString &operationType,
                                     double constantValue, const RWCString &functionName )
 {
     _updatesInCurrentAvg = 0;
     _valid = TRUE;
 
-    if( componentPointId == 0 && !componentType.compareTo("operation", RWCString::ignoreCase) )
+    if( componentPointId <= 0 && !componentType.compareTo("operation", RWCString::ignoreCase) )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -59,16 +59,7 @@ CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long compone
     else if( !componentType.compareTo("constant", RWCString::ignoreCase) )
     {
         _componentType = constant;
-        if( constantValue != 0.0 )
-            _constantValue = constantValue;
-        else
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Why is there a constant with value 0.0 in the equation, ComponentPointID = " << componentPointId << endl;
-            }
-            _valid = FALSE;
-        }
+        _constantValue = constantValue;
 
         if( operationType == "+" )          _operationType = addition;
         else if( operationType == "-" )     _operationType = subtraction;
@@ -99,7 +90,7 @@ CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long compone
     }
     else
     {
-        _valid = FALSE;   
+        _valid = FALSE;
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -121,7 +112,7 @@ CtiCalcComponent &CtiCalcComponent::operator=( const CtiCalcComponent &copyFrom 
     return *this;
 }
 
-/*  FIX_ME:  This class has some wacky persistence issues.  I'm not sure how to fix this, and I 
+/*  FIX_ME:  This class has some wacky persistence issues.  I'm not sure how to fix this, and I
                don't know if save/restoreGuts will ever be used...
 void CtiCalcComponent::restoreGuts( RWvistream& aStream )
 {
@@ -191,61 +182,64 @@ BOOL CtiCalcComponent::isUpdated( void )
 double CtiCalcComponent::calculate( double input )
 {
     double orignal = input;
+
     if( _componentType == operation )
     {
-        CtiHashKey hashKey(_componentPointId);
-        CtiPointStore* pointStore = CtiPointStore::getInstance();
-        CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&hashKey]);
-
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << " component point id: " << _componentPointId << " lastUseUpdateNum: " << _lastUseUpdateNum << " componentPointPtr->getNumUpdates()" << componentPointPtr->getNumUpdates() << endl;
-        }*/
-        _lastUseUpdateNum = componentPointPtr->getNumUpdates( );
-
         switch( _operationType )
         {
-            case addition:       input += componentPointPtr->getPointValue( );  break;
-            case subtraction:    input -= componentPointPtr->getPointValue( );  break;
-            case multiplication: input *= componentPointPtr->getPointValue( );  break;
-            case division:       input /= componentPointPtr->getPointValue( );  break;
-            case push:           
-                if( _parent != NULL )
+        case addition:       input = _doFunction(RWCString("addition"));  break;
+        case subtraction:    input = _doFunction(RWCString("subtraction"));  break;
+        case multiplication: input = _doFunction(RWCString("multiplication"));  break;
+        case division:       input = _doFunction(RWCString("division"));  break;
+        case push:
+            {
+                if(_componentPointId > 0)
                 {
-                    _parent->push( componentPointPtr->getPointValue( ) );
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << __FILE__ << " (" << __LINE__ << ")  attempt to \'push\' with no parent pointer - returning \'input\'" << endl;
+                    CtiPointStore* pointStore = CtiPointStore::getInstance();
+
+                    CtiHashKey componentHashKey(_componentPointId);
+                    CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
+
+                    if(_parent != NULL && componentPointPtr != NULL)
+                    {
+                        DOUBLE componentPointValue = componentPointPtr->getPointValue();
+
+                        _lastUseUpdateNum = componentPointPtr->getNumUpdates( );
+                        _parent->push( componentPointValue );
+                    }
                 }
                 break;
+            }
         }
+
+/*
         if( _CALC_DEBUG )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "CtiCalcComponent::calculate(); point operation; input:" << orignal << ",   value:" << componentPointPtr->getPointValue() << ",   return:" << input << endl;
         }
+*/
     }
     else if( _componentType == constant )
     {
+        // Push the constant and then perform the action against the stack.
+        if( _parent != NULL )
+        {
+            _parent->push( _constantValue );
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << __FILE__ << " (" << __LINE__ << ")  attempt to \'push\' with no parent pointer - returning \'input\'" << endl;
+        }
+
         switch( _operationType )
         {
-            case addition:       input += _constantValue;  break;
-            case subtraction:    input -= _constantValue;  break;
-            case multiplication: input *= _constantValue;  break;
-            case division:       input /= _constantValue;  break;
-            case push:           
-                if( _parent != NULL )
-                {
-                    _parent->push( _constantValue );
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << __FILE__ << " (" << __LINE__ << ")  attempt to \'push\' with no parent pointer - returning \'input\'" << endl;
-                }
-                break;
+        case addition:       input = _doFunction(RWCString("addition"));  break;
+        case subtraction:    input = _doFunction(RWCString("subtraction"));  break;
+        case multiplication: input = _doFunction(RWCString("multiplication"));  break;
+        case division:       input = _doFunction(RWCString("division"));  break;
+        case push:           break; // This was completed with the above push!
         }
         if( _CALC_DEBUG )
         {
@@ -272,290 +266,363 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
 {
     double retVal = 0.0;
 
-    //  Transformer Thermal Age Calculation
-    //  params:  Thermal Age Hours - the current thermal age of the transformer
-    //           HotSpotTemp - the hot spot temperature of the transformer, calculated elsewhere
-    //           UpdateFreq - the minutes between updates of the thermal age
-    if( !functionName.compareTo("XfrmThermAge",RWCString::ignoreCase) )
+    try
     {
-        double ThermalAgeHours, HotSpotTemp, UpdateFreq, tmp;
-        ThermalAgeHours = _parent->pop( );
-        HotSpotTemp = _parent->pop( );
-        UpdateFreq = _parent->pop( );
+        if(_componentPointId > 0)
+        {
+            CtiPointStore* pointStore = CtiPointStore::getInstance();
 
-        if( UpdateFreq < 0.001 )
+            CtiHashKey componentHashKey(_componentPointId);
+            CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
+
+            if(_parent != NULL && componentPointPtr != NULL)
+            {
+                DOUBLE componentPointValue = componentPointPtr->getPointValue();
+
+                _lastUseUpdateNum = componentPointPtr->getNumUpdates( );
+                _parent->push( componentPointValue );
+            }
+        }
+
+        if( !functionName.compareTo("addition",RWCString::ignoreCase) )
+        {
+            double operand2 = _parent->pop( );
+            double operand1 = _parent->pop( );
+
+            retVal = operand1 + operand2;
+        }
+        else if( !functionName.compareTo("subtraction",RWCString::ignoreCase) )
+        {
+            double operand2 = _parent->pop( );
+            double operand1 = _parent->pop( );
+
+            retVal = operand1 - operand2;
+        }
+        else if( !functionName.compareTo("multiplication",RWCString::ignoreCase) )
+        {
+            double operand2 = _parent->pop( );
+            double operand1 = _parent->pop( );
+
+            retVal = operand1 * operand2;
+        }
+        else if( !functionName.compareTo("division",RWCString::ignoreCase) )
+        {
+            double operand2 = _parent->pop( );
+            double operand1 = _parent->pop( );
+
+            retVal = operand1 / operand2;
+        }
+        else if( !functionName.compareTo("logical and",RWCString::ignoreCase) )
+        {
+            double operand2 = _parent->pop( );
+            double operand1 = _parent->pop( );
+
+            retVal = (operand1 != 0.0 && operand2 != 0.0) ? 1.0 : 0.0;
+        }
+        else if( !functionName.compareTo("logical or",RWCString::ignoreCase) )
+        {
+            double operand2 = _parent->pop( );
+            double operand1 = _parent->pop( );
+
+            retVal = (operand1 != 0.0 || operand2 != 0.0) ? 1.0 : 0.0;
+        }
+        else if( !functionName.compareTo("logical not",RWCString::ignoreCase) )
+        {
+            double operand = _parent->pop( );
+
+            retVal = (operand == 0.0) ? 1.0 : 0.0;
+        }
+        else if( !functionName.compareTo("logical xor",RWCString::ignoreCase) )
+        {
+            double operand2 = _parent->pop( );
+            double operand1 = _parent->pop( );
+
+            retVal = ((operand1 != 0.0) ^ (operand2 != 0.0)) ? 1.0 : 0.0;
+        }
+        //  Transformer Thermal Age Calculation
+        //  params:  Thermal Age Hours - the current thermal age of the transformer
+        //           HotSpotTemp - the hot spot temperature of the transformer, calculated elsewhere
+        //           UpdateFreq - the minutes between updates of the thermal age
+        else if( !functionName.compareTo("XfrmThermAge",RWCString::ignoreCase) )
+        {
+            double ThermalAgeHours, HotSpotTemp, UpdateFreq, tmp;
+            ThermalAgeHours = _parent->pop( );
+            HotSpotTemp = _parent->pop( );
+            UpdateFreq = _parent->pop( );
+
+            if( UpdateFreq < 0.001 )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << __FILE__ << " (" << __LINE__ << ")  in \'XfrmThermAge\' function -  parameter UpdateFreq < 0.001, setting to 1.0e10 to prevent runaway transformer aging" << endl;
+                UpdateFreq = 1.0e10;
+            }
+
+            tmp = ((15000.0 / 383.0) - 15000.0 / (HotSpotTemp + 273.0));
+            ThermalAgeHours += pow( 2.78, tmp ) / (60.0 / UpdateFreq);
+
+            retVal = ThermalAgeHours;
+        }
+        //  Hot Spot Calculation
+        //  params:
+        else if( !functionName.compareTo("HotSpot",RWCString::ignoreCase) )
+        {
+            double HotSpotTemp, OilTemp, TempRise, Load;
+            double Rating, Mfactor, LoadWatts, LoadVARs;
+            OilTemp = _parent->pop( );
+            TempRise = _parent->pop( );
+            LoadWatts = _parent->pop( );
+            LoadVARs = _parent->pop( );
+            Rating = _parent->pop( );
+            Mfactor = _parent->pop( );
+
+            if( Rating == 0.0 )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << __FILE__ << " (" << __LINE__ << ")  in \'HotSpot\' function - Rating parameter equal to zero, setting to 1" << endl;
+                Rating = 1.0;
+            }
+
+            DOUBLE NaNDefenseDouble = (LoadWatts*LoadWatts)+(LoadVARs*LoadVARs);
+            if( NaNDefenseDouble <= 0.0 )
+            {
+                Load = 0.0;
+            }
+            else
+            {
+                Load = sqrt(NaNDefenseDouble);
+            }
+            HotSpotTemp = OilTemp + TempRise * pow( (Load / Rating), (2 * Mfactor) );
+
+            retVal = HotSpotTemp;
+        }
+        else if( !functionName.compareTo("DemandAvg15",RWCString::ignoreCase) )
+        {
+            retVal = _figureDemandAvg(900);// seconds in avg
+        }
+        else if( !functionName.compareTo("DemandAvg30",RWCString::ignoreCase) )
+        {
+            retVal = _figureDemandAvg(1800);// seconds in avg
+        }
+        else if( !functionName.compareTo("DemandAvg60",RWCString::ignoreCase) )
+        {
+            retVal = _figureDemandAvg(3600);// seconds in avg
+        }
+        else if( !functionName.compareTo("P-Factor KW/KVar",RWCString::ignoreCase) )
+        {
+            DOUBLE kvar = _parent->pop();
+            DOUBLE kw = _parent->pop();
+            DOUBLE newPowerFactorValue = 1.0;
+            DOUBLE kva = 0.0;
+
+            DOUBLE NaNDefenseDouble = (kw*kw)+(kvar*kvar);
+            if( NaNDefenseDouble <= 0.0 )
+            {
+                kva = 0.0;
+            }
+            else
+            {
+                kva = sqrt(NaNDefenseDouble);
+            }
+
+            if( kva != 0.0 )
+            {
+                if( kw < 0 )
+                {
+                    kw = -kw;
+                }
+                newPowerFactorValue = kw / kva;
+            }
+            retVal = newPowerFactorValue;
+        }
+        else if( !functionName.compareTo("P-Factor KW/KQ",RWCString::ignoreCase) )
+        {
+            DOUBLE kq = _parent->pop();
+            DOUBLE kw = _parent->pop();
+            DOUBLE kvar = ((2.0*kq)-kw)/SQRT3;
+            DOUBLE newPowerFactorValue = 1.0;
+            DOUBLE kva = 0.0;
+
+            DOUBLE NaNDefenseDouble = (kw*kw)+(kvar*kvar);
+            if( NaNDefenseDouble <= 0.0 )
+            {
+                kva = 0.0;
+            }
+            else
+            {
+                kva = sqrt(NaNDefenseDouble);
+            }
+
+            if( kva != 0.0 )
+            {
+                if( kw < 0 )
+                {
+                    kw = -kw;
+                }
+                newPowerFactorValue = kw / kva;
+            }
+            retVal = newPowerFactorValue;
+        }
+        else if( !functionName.compareTo("P-Factor KW/KVa",RWCString::ignoreCase) )
+        {
+            DOUBLE kva = _parent->pop();
+            DOUBLE kw = _parent->pop();
+            DOUBLE newPowerFactorValue = 1.0;
+
+            if( kva != 0.0 )
+            {
+                if( kw < 0 )
+                {
+                    kw = -kw;
+                }
+                newPowerFactorValue = kw / kva;
+                //check if this is leading
+                /*if( kvar < 0.0 && newPowerFactorValue != 1.0 )
+                {
+                    newPowerFactorValue = 2.0-newPowerFactorValue;
+                }*/
+            }
+            retVal = newPowerFactorValue;
+        }
+        //added 3/4/03 JW
+        else if( !functionName.compareTo("KVar from KW/KQ",RWCString::ignoreCase) )
+        {
+            DOUBLE kq = _parent->pop();
+            DOUBLE kw = _parent->pop();
+            DOUBLE kvar = ((2.0*kq)-kw)/SQRT3;
+
+            retVal = kvar;
+        }
+        else if( !functionName.compareTo("KVa from KW/KVar",RWCString::ignoreCase) )
+        {
+            DOUBLE kvar = _parent->pop();
+            DOUBLE kw = _parent->pop();
+
+            DOUBLE NaNDefenseDouble = (kw*kw)+(kvar*kvar);
+            DOUBLE kva = 0.0;
+            if( NaNDefenseDouble <= 0.0 )
+            {
+                kva = 0.0;
+            }
+            else
+            {
+                kva = sqrt(NaNDefenseDouble);
+            }
+
+            retVal = kva;
+        }
+        else if( !functionName.compareTo("KVa from KW/KQ",RWCString::ignoreCase) )
+        {
+            DOUBLE kq = _parent->pop();
+            DOUBLE kw = _parent->pop();
+            DOUBLE kvar = ((2.0*kq)-kw)/SQRT3;
+
+            DOUBLE kva = 0.0;
+            DOUBLE NaNDefenseDouble = (kw*kw)+(kvar*kvar);
+            if( NaNDefenseDouble <= 0.0 )
+            {
+                kva = 0.0;
+            }
+            else
+            {
+                kva = sqrt(NaNDefenseDouble);
+            }
+
+            retVal = kva;
+        }
+        else if( !functionName.compareTo("KW from KVa/KVAR",RWCString::ignoreCase) )
+        {
+            DOUBLE kvar = _parent->pop();
+            DOUBLE kva = _parent->pop();
+
+            DOUBLE kw = 0.0;
+            DOUBLE NaNDefenseDouble = (kva*kva)-(kvar*kvar);
+            if( NaNDefenseDouble <= 0.0 )
+            {
+                kw = 0.0;
+            }
+            else
+            {
+                kw = sqrt(NaNDefenseDouble);
+            }
+
+            retVal = kw;
+        }
+        else if( !functionName.compareTo("KVAR from KW/KVa",RWCString::ignoreCase) )
+        {
+            DOUBLE kva = _parent->pop();
+            DOUBLE kw = _parent->pop();
+
+            DOUBLE kvar = 0.0;
+            DOUBLE NaNDefenseDouble = (kva*kva)-(kw*kw);
+            if( NaNDefenseDouble <= 0.0 )
+            {
+                kvar = 0.0;
+            }
+            else
+            {
+                kvar = sqrt(NaNDefenseDouble);
+            }
+
+            retVal = kvar;
+        }
+        else if( !functionName.compareTo("Squared",RWCString::ignoreCase) )
+        {
+            DOUBLE componentPointValue = _parent->pop( );;
+
+            retVal = componentPointValue*componentPointValue;
+        }
+        else if( !functionName.compareTo("Square Root",RWCString::ignoreCase) )
+        {
+            DOUBLE componentPointValue = _parent->pop( );;
+
+            if( componentPointValue <= 0.0 )
+            {
+                retVal = 0.0;
+            }
+            else
+            {
+                retVal = sqrt(componentPointValue);
+            }
+        }
+        else if( !functionName.compareTo("COS from P/Q",RWCString::ignoreCase) )
+        {
+            DOUBLE q = _parent->pop();
+            DOUBLE p = _parent->pop();
+            DOUBLE temp = p/q;
+            retVal = cos(temp);
+        }
+        else if( !functionName.compareTo("ArcTan",RWCString::ignoreCase) )
+        {
+            DOUBLE componentPointValue = _parent->pop( );;
+            retVal = atan(componentPointValue);
+        }
+        //added 3/4/03 JW
+        //added 7/31/03 JW
+        else if( !functionName.compareTo("X^Y",RWCString::ignoreCase) )
+        {
+            DOUBLE y = _parent->pop();
+            DOUBLE x = _parent->pop();
+            retVal = pow(x,y);
+        }
+        else
+        {
+            // We do not have a function.
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Function " << functionName << " not implemented " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            retVal = _parent->pop();     // Do a pop() to allow a retVal push() below to keep the stack sane.
+        }
+    }
+    catch(...)
+    {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << __FILE__ << " (" << __LINE__ << ")  in \'XfrmThermAge\' function -  parameter UpdateFreq < 0.001, setting to 1.0e10 to prevent runaway transformer aging" << endl;
-            UpdateFreq = 1.0e10;
-        }
-
-        tmp = ((15000.0 / 383.0) - 15000.0 / (HotSpotTemp + 273.0));
-        ThermalAgeHours += pow( 2.78, tmp ) / (60.0 / UpdateFreq);
-
-        retVal = ThermalAgeHours;
-    }
-
-    //  Hot Spot Calculation
-    //  params:  
-    else if( !functionName.compareTo("HotSpot",RWCString::ignoreCase) )
-    {
-        double HotSpotTemp, OilTemp, TempRise, Load; 
-        double Rating, Mfactor, LoadWatts, LoadVARs;
-        OilTemp = _parent->pop( );
-        TempRise = _parent->pop( );
-        LoadWatts = _parent->pop( );
-        LoadVARs = _parent->pop( );
-        Rating = _parent->pop( );
-        Mfactor = _parent->pop( );
-
-        if( Rating == 0.0 )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << __FILE__ << " (" << __LINE__ << ")  in \'HotSpot\' function - Rating parameter equal to zero, setting to 1" << endl;
-            Rating = 1.0;
-        }
-
-        DOUBLE NaNDefenseDouble = (LoadWatts*LoadWatts)+(LoadVARs*LoadVARs);
-        if( NaNDefenseDouble <= 0.0 )
-        {
-            Load = 0.0;
-        }
-        else
-        {
-            Load = sqrt(NaNDefenseDouble);
-        }
-        HotSpotTemp = OilTemp + TempRise * pow( (Load / Rating), (2 * Mfactor) );
-
-        retVal = HotSpotTemp;
-    }
-    else if( !functionName.compareTo("DemandAvg15",RWCString::ignoreCase) )
-    {
-        retVal = _figureDemandAvg(900);// seconds in avg
-    }
-    else if( !functionName.compareTo("DemandAvg30",RWCString::ignoreCase) )
-    {
-        retVal = _figureDemandAvg(1800);// seconds in avg
-    }
-    else if( !functionName.compareTo("DemandAvg60",RWCString::ignoreCase) )
-    {
-        retVal = _figureDemandAvg(3600);// seconds in avg
-    }
-    else if( !functionName.compareTo("P-Factor KW/KVar",RWCString::ignoreCase) )
-    {
-        DOUBLE kvar = _parent->pop();
-        DOUBLE kw = _parent->pop();
-        DOUBLE newPowerFactorValue = 1.0;
-        DOUBLE kva = 0.0;
-
-        DOUBLE NaNDefenseDouble = (kw*kw)+(kvar*kvar);
-        if( NaNDefenseDouble <= 0.0 )
-        {
-            kva = 0.0;
-        }
-        else
-        {
-            kva = sqrt(NaNDefenseDouble);
-        }
-
-        if( kva != 0.0 )
-        {
-            if( kw < 0 )
-            {
-                kw = -kw;
-            }
-            newPowerFactorValue = kw / kva;
-        }
-        retVal = newPowerFactorValue;
-    }
-    else if( !functionName.compareTo("P-Factor KW/KQ",RWCString::ignoreCase) )
-    {
-        DOUBLE kq = _parent->pop();
-        DOUBLE kw = _parent->pop();
-        DOUBLE kvar = ((2.0*kq)-kw)/SQRT3;
-        DOUBLE newPowerFactorValue = 1.0;
-        DOUBLE kva = 0.0;
-
-        DOUBLE NaNDefenseDouble = (kw*kw)+(kvar*kvar);
-        if( NaNDefenseDouble <= 0.0 )
-        {
-            kva = 0.0;
-        }
-        else
-        {
-            kva = sqrt(NaNDefenseDouble);
-        }
-
-        if( kva != 0.0 )
-        {
-            if( kw < 0 )
-            {
-                kw = -kw;
-            }
-            newPowerFactorValue = kw / kva;
-        }
-        retVal = newPowerFactorValue;
-    }
-    else if( !functionName.compareTo("P-Factor KW/KVa",RWCString::ignoreCase) )
-    {
-        DOUBLE kva = _parent->pop();
-        DOUBLE kw = _parent->pop();
-        DOUBLE newPowerFactorValue = 1.0;
-
-        if( kva != 0.0 )
-        {
-            if( kw < 0 )
-            {
-                kw = -kw;
-            }
-            newPowerFactorValue = kw / kva;
-            //check if this is leading
-            /*if( kvar < 0.0 && newPowerFactorValue != 1.0 )
-            {
-                newPowerFactorValue = 2.0-newPowerFactorValue;
-            }*/
-        }
-        retVal = newPowerFactorValue;
-    }
-    //added 3/4/03 JW
-    else if( !functionName.compareTo("KVar from KW/KQ",RWCString::ignoreCase) )
-    {
-        DOUBLE kq = _parent->pop();
-        DOUBLE kw = _parent->pop();
-        DOUBLE kvar = ((2.0*kq)-kw)/SQRT3;
-
-        retVal = kvar;
-    }
-    else if( !functionName.compareTo("KVa from KW/KVar",RWCString::ignoreCase) )
-    {
-        DOUBLE kvar = _parent->pop();
-        DOUBLE kw = _parent->pop();
-
-        DOUBLE NaNDefenseDouble = (kw*kw)+(kvar*kvar);
-        DOUBLE kva = 0.0;
-        if( NaNDefenseDouble <= 0.0 )
-        {
-            kva = 0.0;
-        }
-        else
-        {
-            kva = sqrt(NaNDefenseDouble);
-        }
-
-        retVal = kva;
-    }
-    else if( !functionName.compareTo("KVa from KW/KQ",RWCString::ignoreCase) )
-    {
-        DOUBLE kq = _parent->pop();
-        DOUBLE kw = _parent->pop();
-        DOUBLE kvar = ((2.0*kq)-kw)/SQRT3;
-
-        DOUBLE kva = 0.0;
-        DOUBLE NaNDefenseDouble = (kw*kw)+(kvar*kvar);
-        if( NaNDefenseDouble <= 0.0 )
-        {
-            kva = 0.0;
-        }
-        else
-        {
-            kva = sqrt(NaNDefenseDouble);
-        }
-
-        retVal = kva;
-    }
-    else if( !functionName.compareTo("KW from KVa/KVAR",RWCString::ignoreCase) )
-    {
-        DOUBLE kvar = _parent->pop();
-        DOUBLE kva = _parent->pop();
-
-        DOUBLE kw = 0.0;
-        DOUBLE NaNDefenseDouble = (kva*kva)-(kvar*kvar);
-        if( NaNDefenseDouble <= 0.0 )
-        {
-            kw = 0.0;
-        }
-        else
-        {
-            kw = sqrt(NaNDefenseDouble);
-        }
-
-        retVal = kw;
-    }
-    else if( !functionName.compareTo("KVAR from KW/KVa",RWCString::ignoreCase) )
-    {
-        DOUBLE kva = _parent->pop();
-        DOUBLE kw = _parent->pop();
-
-        DOUBLE kvar = 0.0;
-        DOUBLE NaNDefenseDouble = (kva*kva)-(kw*kw);
-        if( NaNDefenseDouble <= 0.0 )
-        {
-            kvar = 0.0;
-        }
-        else
-        {
-            kvar = sqrt(NaNDefenseDouble);
-        }
-
-        retVal = kvar;
-    }
-    else if( !functionName.compareTo("Squared",RWCString::ignoreCase) )
-    {
-        CtiPointStore* pointStore = CtiPointStore::getInstance();
-
-        CtiHashKey componentHashKey(_componentPointId);
-        CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
-
-        DOUBLE componentPointValue = componentPointPtr->getPointValue();
-
-        retVal = componentPointValue*componentPointValue;
-    }
-    else if( !functionName.compareTo("Square Root",RWCString::ignoreCase) )
-    {
-        CtiPointStore* pointStore = CtiPointStore::getInstance();
-
-        CtiHashKey componentHashKey(_componentPointId);
-        CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
-
-        DOUBLE componentPointValue = componentPointPtr->getPointValue();
-
-        if( componentPointValue <= 0.0 )
-        {
-            retVal = 0.0;
-        }
-        else
-        {
-            retVal = sqrt(componentPointValue);
+            dout << RWTime() << " **** EXCEPTION performing component calculate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
-    else if( !functionName.compareTo("COS from P/Q",RWCString::ignoreCase) )
-    {
-        DOUBLE q = _parent->pop();
-        DOUBLE p = _parent->pop();
-        DOUBLE temp = p/q;
-        retVal = cos(temp);
-    }
-    else if( !functionName.compareTo("ArcTan",RWCString::ignoreCase) )
-    {
-        CtiPointStore* pointStore = CtiPointStore::getInstance();
 
-        CtiHashKey componentHashKey(_componentPointId);
-        CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
-
-        DOUBLE componentPointValue = componentPointPtr->getPointValue();
-
-        retVal = atan(componentPointValue);
-    }
-    //added 3/4/03 JW
     //added 7/31/03 JW
-    else if( !functionName.compareTo("X^Y",RWCString::ignoreCase) )
-    {
-        DOUBLE y = _parent->pop();
-        DOUBLE x = _parent->pop();
-        retVal = pow(x,y);
-    }
-    //added 7/31/03 JW
-
     if( _isnan(retVal) )
     {
         retVal = 0.0;
@@ -564,6 +631,8 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
             dout << __FILE__ << " (" << __LINE__ << ")  _doFunction tried to return a NaN for Calc Point Id: " << _parent->getPointId() << endl;
         }
     }
+
+    _parent->push( retVal );       // Return it to the stack so it can be used properly by another callee.
 
     return retVal;
 }
@@ -645,7 +714,7 @@ double CtiCalcComponent::_figureDemandAvg(long secondsInAvg)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " - Calc Point Id: " << _parent->getPointId()
-                     << " Demand Avg Reset!" << endl;
+                << " Demand Avg Reset!" << endl;
             }
         }
     }

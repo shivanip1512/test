@@ -96,7 +96,7 @@ void CtiCalc::appendComponent( CtiCalcComponent *componentToAdd )
 {
     _components.append( componentToAdd );
     componentToAdd->passParent( this );
-}               
+}
 
 
 void CtiCalc::cleanup( void )
@@ -112,35 +112,49 @@ double CtiCalc::calculate( void )
 
 //    _countdown = _updateInterval;
 
-    //  Iterate through all of the calculations in the collection
-    if( _CALC_DEBUG )
+    try
     {
-        CtiPointStore* pointStore = CtiPointStore::getInstance();
+        //  Iterate through all of the calculations in the collection
+        if( _CALC_DEBUG )
+        {
+            CtiPointStore* pointStore = CtiPointStore::getInstance();
 
-        CtiHashKey calcPointHashKey(_pointId);
-        CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore)[&calcPointHashKey]);
+            CtiHashKey calcPointHashKey(_pointId);
+            CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore)[&calcPointHashKey]);
 
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " - CtiCalc::calculate(); Calc Point ID:" << _pointId << "; Start Value:" << calcPointPtr->getPointValue() << endl;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - CtiCalc::calculate(); Calc Point ID:" << _pointId << "; Start Value:" << calcPointPtr->getPointValue() << endl;
+        }
+
+        push( retVal );     // Prime the stack with a zero value (should effectively clear it).
+
+        for( ; iter( ) && _valid; )
+        {
+            CtiCalcComponent *tmpComponent = (CtiCalcComponent *)iter.key( );
+            _valid = _valid & tmpComponent->isValid( );  //  Entire calculation is only valid if each component is valid
+            retVal = tmpComponent->calculate( retVal );  //  Calculate on returned value
+        }
+
+        if( !_valid )   //  NOT valid - actually, you should never get here, because the ready( ) back in CalcThread should
+        {               //    detect that you're invalid, and reject you with a "not ready" then.
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << __FILE__ << " (" << __LINE__ << ")  ERROR - attempt to calculate invalid point \"" << _pointId << "\" - returning 0.0" << endl;
+            retVal = 0.0;
+        }
+
+        if( _CALC_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "CtiCalc::calculate(); Calc Point ID:" << _pointId << "; Return Value:" << retVal << endl;
+        }
     }
-    for( ; iter( ) && _valid; )
+    catch(...)
     {
-        CtiCalcComponent *tmpComponent = (CtiCalcComponent *)iter.key( );
-        _valid = _valid & tmpComponent->isValid( );  //  Entire calculation is only valid if each component is valid
-        retVal = tmpComponent->calculate( retVal );  //  Calculate on returned value
-    }
-
-    if( !_valid )   //  NOT valid - actually, you should never get here, because the ready( ) back in CalcThread should
-    {               //    detect that you're invalid, and reject you with a "not ready" then.
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << __FILE__ << " (" << __LINE__ << ")  ERROR - attempt to calculate invalid point \"" << _pointId << "\" - returning 0.0" << endl;
-        retVal = 0.0;
-    }
-
-    if( _CALC_DEBUG )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "CtiCalc::calculate(); Calc Point ID:" << _pointId << "; Return Value:" << retVal << endl;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION in calculate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "    Calc Point ID " << _pointId << endl;
+        }
     }
     return retVal;
 }
@@ -197,8 +211,10 @@ double CtiCalc::pop( void )
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << __FILE__ << " (" << __LINE__ << ")  ERROR - attempt to pop from empty stack in point \"" << _pointId << "\" - returning 0.0" << endl;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " ERROR - attempt to pop from empty stack in point \"" << _pointId << "\" - returning 0.0 " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
         val = 0.0;
     }
     return val;
@@ -217,8 +233,10 @@ BOOL CtiCalc::ready( void )
     BOOL isReady = TRUE;
     if( !_valid )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        setNextInterval(getUpdateInterval());       // It is not valid, do not harp about it so often!
         isReady = FALSE;
+
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime( ) << " - CtiCalc::ready( ) - Point " << _pointId << " is INVALID." << endl;
     }
     else

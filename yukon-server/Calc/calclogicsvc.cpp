@@ -61,6 +61,7 @@ IMPLEMENT_SERVICE(CtiCalcLogicService, CALCLOGIC)
 CtiCalcLogicService::CtiCalcLogicService(LPCTSTR szName, LPCTSTR szDisplay, DWORD dwType ) :
     CService( szName, szDisplay, dwType ), _ok(TRUE), _dbChange(FALSE)
 {
+    calcThread = 0;
     m_pThis = this;
 }
 
@@ -340,8 +341,11 @@ void CtiCalcLogicService::Run( )
                 continue;
             }
 
-            calcThread = new CtiCalculateThread;
-            if( !readCalcPoints( calcThread ) )
+            CtiCalculateThread *tempCalcThread;
+
+
+            tempCalcThread = new CtiCalculateThread;
+            if( !readCalcPoints( tempCalcThread ) )
             {
                 if( attempts % 300 == 0 )
                 {//only say we can't load any calc points every 5 minutes
@@ -351,7 +355,7 @@ void CtiCalcLogicService::Run( )
                 attempts++;
 
                 // try it again
-                delete calcThread;
+                delete tempCalcThread;
 
                 Sleep(1000);   // sleep for 1 second
 
@@ -359,9 +363,14 @@ void CtiCalcLogicService::Run( )
             }
             else
             {
+                delete calcThread;
+                calcThread = 0;
+                calcThread = tempCalcThread;
+
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " " << calcThread->numberOfLoadedCalcPoints() << " Calc Points Loaded" << endl;
             }
+
 
             //  validate the connection before we attempt to send anything across
             //    (note that the above database read delays this check long enough to allow the
@@ -382,6 +391,7 @@ void CtiCalcLogicService::Run( )
 
                     // try it again
                     delete calcThread;
+                    calcThread = 0;
 
                     Sleep(1000);   // sleep for 1 second
 
@@ -407,6 +417,7 @@ void CtiCalcLogicService::Run( )
                 }
 
                 delete calcThread;
+                calcThread = 0;
                 Sleep(1000);   // sleep for 1 second
                 continue;
             }
@@ -421,10 +432,11 @@ void CtiCalcLogicService::Run( )
             msgPtReg = new CtiPointRegistrationMsg(0);
             for( ; (*depIter)( ); )
             {
-                /*{
+                if( _CALC_DEBUG )
+                {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " - Registered for point id: " << ((CtiPointStoreElement *)depIter->value( ))->getPointNum() << endl;
-                }*/
+                }
                 msgPtReg->insert( ((CtiPointStoreElement *)depIter->value( ))->getPointNum( ) );
             }
             delete depIter;
@@ -511,13 +523,14 @@ void CtiCalcLogicService::Run( )
             calcThreadFunc.join( );
 
             //  from this point out, i'm one thread again
-            delete calcThread;
+            // CGP do not loose the list if it can be helped. // delete calcThread;
         }
 
         SetStatus(SERVICE_STOP_PENDING, 50, 5000 );
 
         //  tell Dispatch we're going away, then leave
         _conxion->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+        Sleep(2500);
         _conxion->ShutdownConnection();
 
         SetStatus(SERVICE_STOP_PENDING, 75, 5000 );
@@ -826,6 +839,15 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
 
             // put the collection in the correct collection based on type
             calcThread->appendPoint( pointid, updatetype, updateinterval );
+
+            if(CalcCount > 2000)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+                }
+            }
         }
 
 
@@ -881,6 +903,16 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
                 //    order is defined externally - by the order that they're selected and appended
                 calcThread->appendPointComponent( pointIdList[i], componenttype, componentpointid,
                                                   operationtype, constantvalue, functionname );
+                if( _CALC_DEBUG )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "Component for calc Id " << pointIdList[i] <<
+                        " CT " << componenttype <<
+                        ", CPID " << componentpointid <<
+                        ", OP " << operationtype <<
+                        ", CONST " << constantvalue <<
+                        ", FUNC " << functionname << endl;
+                }
             }
 
         } // end for loop
