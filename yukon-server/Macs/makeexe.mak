@@ -83,6 +83,7 @@ $(BASEOBJS) -link $(LIBS) $(RWLIBS)
               @echo:
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
               -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+              -if exist tcl\*.* copy tcl\*.* $(YUKONOUTPUT)
               @%cd $(CWD)
               @echo Done building Target ..\$@
               @echo:
@@ -90,6 +91,7 @@ $(BASEOBJS) -link $(LIBS) $(RWLIBS)
 copy:       $(TARGS)
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
+           -if exist tcl\*.* copy tcl\*.* $(YUKONOUTPUT)
 
 
 deps:
