@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2002/05/14 15:41:58 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2002/05/15 18:35:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,6 +46,8 @@
 
 #include <rw\re.h>
 #include <rw/ctoken.h>
+
+unsigned gMccmdDebugLevel = 0x00000000;
 
 const RWCRExpr   re_num("[0-9]+");
 const RWCRExpr   re_timeout("timeout[= ]+[0-9]+");
@@ -163,6 +165,25 @@ void DumpReturnMessage(CtiReturnMsg& msg)
     }
 
     WriteOutput((char*) out.data());
+}
+
+void DumpRequestMessage(CtiRequestMsg& msg)
+{
+    RWCString out;
+
+    out += "deviceid: ";
+    out += CtiNumStr(msg.DeviceId());
+    out += " routeid: ";
+    out += CtiNumStr(msg.RouteId());
+    out += " msgid: ";
+    out += CtiNumStr(msg.UserMessageId());
+    out += " priority: ";
+    out += CtiNumStr(msg.getMessagePriority());
+    out += "\r\n";
+
+    out += msg.CommandString();
+
+    WriteOutput(out.data());
 }
 
 void WriteOutput(const char* output)
@@ -430,8 +451,7 @@ int Mccmd_Init(Tcl_Interp* interp)
     Tcl_CreateCommand( interp, "IMPORTCOMMANDFILE", importCommandFile, NULL, NULL );
 
     /* Load up the initialization script */
-    RWCString init_script("c:/yukon/server/macsscripts/init.tcl");
-
+    RWCString init_script;
     HINSTANCE hLib = LoadLibrary("cparms.dll");
 
     if(hLib)
@@ -440,14 +460,29 @@ int Mccmd_Init(Tcl_Interp* interp)
 
         CPARM_GETCONFIGSTRING   fpGetAsString = (CPARM_GETCONFIGSTRING)GetProcAddress( hLib, "getConfigValueAsString" );
 
-        if( (*fpGetAsString)("CTL_SCRIPTS_DIR", temp, 64) )
-            init_script = temp;
+        if( (*fpGetAsString)(MCCMD_CTL_SCRIPTS_DIR, temp, 64) )                
+            init_script = temp;           
+        else
+            init_script = "c:/yukon/server/macsscripts";       
 
+        init_script += "/";
 
-        if( (*fpGetAsString)("INIT_SCRIPT", temp, 64) )
+        if( (*fpGetAsString)(MCCMD_INIT_SCRIPT, temp, 64) )        
+            init_script += temp;            
+        else
+            init_script += "init.tcl";
+
+        if( (*fpGetAsString)(MCCMD_DEBUG_LEVEL, temp, 64) )        
         {
-            init_script += "\\";
-            init_script += temp;
+            char *eptr;
+            gMccmdDebugLevel = strtoul(temp, &eptr, 16);
+        }
+            //    gMccmdDebugLevel = atoi(temp);            
+       
+        if( gMccmdDebugLevel > 0 )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " " << MCCMD_DEBUG_LEVEL << ": 0x" << hex <<  gMccmdDebugLevel << dec << endl;
         }
 
         FreeLibrary(hLib);
@@ -464,6 +499,7 @@ int Mccmd_Init(Tcl_Interp* interp)
         dout << "Using: " << init_script << endl;
     }
 
+    
     Tcl_EvalFile(interp, (char*) init_script.data() );
 
     /* declare that we are implementing the MCCmd package so that scripts that have
@@ -1143,7 +1179,12 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
         CtiRequestMsg* req = (CtiRequestMsg*) iter.key();
         req->setUserMessageId(msgid);
 
-        WriteOutput( (char*) req->CommandString().data() );
+        if( gMccmdDebugLevel & MCCMD_DEBUG_PILREQUEST )         
+            DumpRequestMessage(*req);        
+        else
+            WriteOutput( (char*) req->CommandString().data() );
+           
+
         PILConnection->WriteConnQue(req);
     }
 

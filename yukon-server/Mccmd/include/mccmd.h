@@ -41,6 +41,16 @@ using namespace std;
 #define DEFAULT_ONE_WAY_TIMEOUT 0
 #define DEFAULT_TWO_WAY_TIMEOUT 900
 
+/* CPARMS */
+#define MCCMD_INIT_SCRIPT       "INIT_SCRIPT"
+#define MCCMD_CTL_SCRIPTS_DIR   "CTL_SCRIPTS_DIR"
+#define MCCMD_DEBUG_LEVEL       "MCCMD_DEBUGLEVEL"
+
+/* Debug levels */
+#define MCCMD_DEBUG_PILREQUEST 0x00000001
+
+extern unsigned gMccmdDebugLevel;
+
 #ifdef __cplusplus
 extern "C" {      
 #endif
@@ -151,6 +161,7 @@ static void _MessageThrFunc();
 
 void AppendToString(RWCString& str, int argc, char* argv[]);
 void DumpReturnMessage(CtiReturnMsg& msg);
+void DumpRequestMessage(CtiRequestMsg& msg);
 
 /* Let the world know of any interesting output - it will put the output onto the
    queue stored for the current thread, if there is one */
