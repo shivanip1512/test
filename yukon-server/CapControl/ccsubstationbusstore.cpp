@@ -175,7 +175,7 @@ void CtiCCSubstationBusStore::reset()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
-    if( _CC_DEBUG )
+    //if( _CC_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Obtaining connection to the database..." << endl;
@@ -685,7 +685,7 @@ void CtiCCSubstationBusStore::checkAMFMSystemForUpdates()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
-    if( _CC_DEBUG )
+    //if( _CC_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Checking AMFM system for updates..." << endl;
@@ -1231,7 +1231,7 @@ void CtiCCSubstationBusStore::shutdown()
     _ccSubstationBuses->clearAndDestroy();
     delete _ccSubstationBuses;
 
-    if( _CC_DEBUG )
+    //if( _CC_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - done shutting down the cc substation store." << endl;
@@ -1277,7 +1277,7 @@ void CtiCCSubstationBusStore::doResetThr()
 
         if ( RWDBDateTime() >= nextDatabaseRefresh )
         {
-            if( _CC_DEBUG )
+            //if( _CC_DEBUG )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Restoring substation list from the database" << endl;

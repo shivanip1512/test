@@ -888,7 +888,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
         {
             if( setpoint < getCurrentVarLoadPointValue() )
             {
-                if( _CC_DEBUG )
+                //if( _CC_DEBUG )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Attempting to Reduce Var level in feeder: " << getPAOName().data() << endl;
@@ -905,7 +905,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
             }
             else
             {
-                if( _CC_DEBUG )
+                //if( _CC_DEBUG )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Attempting to Increase Var level in feeder: " << getPAOName().data() << endl;

@@ -1005,7 +1005,7 @@ void CtiCCPointDataMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<R
     unsigned tags = _pointDataMsg->getTags();
     RWTime& timestamp = _pointDataMsg->getTime();
 
-    if( _CC_DEBUG )
+    //if( _CC_DEBUG )
 	{
         char tempchar[80];
         RWCString outString = "Point data message received from a client. ID:";
@@ -1098,6 +1098,36 @@ void CtiCCPointDataMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<R
 
 
 /*===========================================================================
+    CtiCCMultiMsgExecutor
+===========================================================================*/
+/*---------------------------------------------------------------------------
+    Execute
+---------------------------------------------------------------------------*/    
+void CtiCCMultiMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
+    CtiCCExecutorFactory f;
+    RWOrdered& messages = _multiMsg->getData();
+    while(messages.entries( )>0)
+    {
+        RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
+        CtiMessage* message = (CtiMessage*)(messages.pop());
+        if( message != NULL )
+        {
+            CtiCCExecutor* executor = f.createExecutor(message);
+            executor->Execute(queue);
+            delete executor;
+        }
+        else
+        {
+            break;
+        }
+    }
+}
+
+
+/*===========================================================================
     CtiCCShutdown
 ===========================================================================*/
 
@@ -1170,6 +1200,10 @@ CtiCCExecutor* CtiCCExecutorFactory::createExecutor(const CtiMessage* message)
             ret_val = new CtiCCPointDataMsgExecutor( (CtiPointDataMsg*)message );
             break;
     
+        case MSG_MULTI:
+            ret_val = new CtiCCMultiMsgExecutor( (CtiMultiMsg*)message );
+            break;
+        
         case MSG_COMMAND:
             ret_val = new CtiCCForwardMsgToDispatchExecutor( (CtiMessage*)message );
             break;

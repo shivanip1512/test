@@ -1162,7 +1162,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE setpoint, const RWDB
         ULONG iterations = 0;
         if( setpoint < getCurrentVarLoadPointValue() )
         {
-            if( _CC_DEBUG )
+            //if( _CC_DEBUG )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Attempting to Decrease Var level in substation bus: " << getPAOName().data() << endl;
@@ -1193,7 +1193,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE setpoint, const RWDB
         }
         else
         {
-            if( _CC_DEBUG )
+            //if( _CC_DEBUG )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Attempting to Increase Var level in substation bus: " << getPAOName().data() << endl;
@@ -1275,7 +1275,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RW
 
         if( setpoint < getCurrentVarLoadPointValue() )
         {
-            if( _CC_DEBUG )
+            //if( _CC_DEBUG )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Attempting to Decrease Var level in substation bus: " << getPAOName().data() << endl;
@@ -1303,7 +1303,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RW
         }
         else
         {
-            if( _CC_DEBUG )
+            //if( _CC_DEBUG )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Attempting to Increase Var level in substation bus: " << getPAOName().data() << endl;

@@ -126,6 +126,19 @@ private:
     RWRecursiveLock<RWMutexLock> _mutex;
 };
 
+class CtiCCMultiMsgExecutor : public CtiCCExecutor
+{
+public:
+    CtiCCMultiMsgExecutor(CtiMultiMsg* multiMsg) : _multiMsg(multiMsg) {};
+    virtual ~CtiCCMultiMsgExecutor() { delete _multiMsg;};
+
+    virtual void Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+
+private:
+    CtiMultiMsg* _multiMsg;
+    RWRecursiveLock<RWMutexLock> _mutex;
+};
+
 class CtiCCShutdownExecutor : public CtiCCExecutor
 {
 public:
