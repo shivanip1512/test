@@ -23,11 +23,11 @@ public class ExportFormatTypes
 		"DBPurge"
 	};
 
-	public static String [] formatTypeShortName =
-	{
-		"csv",
-		"dbp"
-	};
+//	public static String [] formatTypeShortName =
+//	{
+//		"csv",
+//		"dbp"
+//	};
 /**
  * ExportFormatTypes constructor comment.
  */
@@ -36,9 +36,9 @@ public ExportFormatTypes() {
 }
 public static int getFormatTypeInt (String format)
 {
-	if( format.equalsIgnoreCase(formatTypeShortName[DBPURGE_FORMAT]))
+	if( format.equalsIgnoreCase(formatTypeNames[DBPURGE_FORMAT]))
 		return DBPURGE_FORMAT;
-	else if ( format.equalsIgnoreCase(formatTypeShortName[CSVBILLING_FORMAT]))
+	else if ( format.equalsIgnoreCase(formatTypeNames[CSVBILLING_FORMAT]))
 		return CSVBILLING_FORMAT;
 	else
 		return -1;
@@ -48,9 +48,9 @@ public static String getFormatTypeName(int format)
 	switch(format)
 	{
 		case DBPURGE_FORMAT:
-			return formatTypeShortName[DBPURGE_FORMAT];
+			return formatTypeNames[DBPURGE_FORMAT];
 		case CSVBILLING_FORMAT:
-			return formatTypeShortName[CSVBILLING_FORMAT];
+			return formatTypeNames[CSVBILLING_FORMAT];
 		default:
 			return null;
 	}
