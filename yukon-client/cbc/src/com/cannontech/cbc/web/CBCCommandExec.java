@@ -79,6 +79,15 @@ public class CBCCommandExec
 				executeCommand( bank.getControlDeviceID().intValue(), CBCCommand.CONFIRM_CLOSE );
 			}
 		}
+		else if( cmdID_ == CBCCommand.CLOSE_CAPBANK 
+			 	 || cmdID_ == CBCCommand.OPEN_CAPBANK )
+		{
+			CapBankDevice bank = (CapBankDevice)cbcCache.getCapBankTableModel().getCapbank( paoID_ );
+			
+			executeCommand( 
+				bank.getControlDeviceID().intValue(),
+				cmdID_ );			
+		}
 		else if( cmdID_ == CBCCommand.CMD_MANUAL_ENTRY )
 		{
 			CapBankDevice bank = (CapBankDevice)cbcCache.getCapBankTableModel().getCapbank( paoID_ );
