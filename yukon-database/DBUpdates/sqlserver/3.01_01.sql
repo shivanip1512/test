@@ -1573,7 +1573,8 @@ alter table FDRTRANSLATION add constraint PK_FDRTrans primary key (POINTID, DIRE
 
 update YukonRoleProperty set KeyName='stars_preload_data', DefaultValue='false', Description='Controls whether the STARS application should preload data into the cache.' where RolePropertyID=-1013;
 
-
+insert into YukonRoleProperty values(-10112,-101,'cbc_allow_ovuv','false','Allows users to toggle OV/UV usage on capbanks');
+insert into YukonGroupRole values(-1031,-2,-101,-10112,'(none)');
 
 
 
