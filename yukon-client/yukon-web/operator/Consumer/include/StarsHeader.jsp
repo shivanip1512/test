@@ -152,7 +152,7 @@
 					}
 					
 					session.setAttribute(ServletUtils.ATT_REDIRECT2, request.getContextPath() + "/operator/Admin/SelectionList.jsp?List=DeviceType");
-					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "This is the first time that you login as the default operator. Please edit the device type list and other energy company settings.");
+					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "This is the first time you have logged in as the default operator. Please edit the device type list and other energy company settings.");
 					response.sendRedirect(request.getContextPath() + "/operator/Admin/Message.jsp?delay=0");
 					return;
 				}

@@ -1749,12 +1749,8 @@ public class StarsAdmin extends HttpServlet {
 				
 				groupRole.setRoleID( new Integer(AdministratorRole.ROLEID) );
 				groupRole.setRolePropertyID( new Integer(roleProps[i].getRolePropertyID()) );
-				if (roleProps[i].getRolePropertyID() == AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY) {
-					if (!ECUtils.isDefaultEnergyCompany(energyCompany) && req.getParameter("AddMember") != null)
-						groupRole.setValue( CtiUtilities.TRUE_STRING );
-					else
-						groupRole.setValue( StarsAdminUtil.FIRST_TIME );
-				}
+				if (roleProps[i].getRolePropertyID() == AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
+					groupRole.setValue( StarsAdminUtil.FIRST_TIME );
 				else
 					groupRole.setValue( CtiUtilities.STRING_NONE );
 				
