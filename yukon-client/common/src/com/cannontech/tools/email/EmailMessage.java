@@ -6,12 +6,16 @@
  */
 package com.cannontech.tools.email;
 
+import java.io.IOException;
+
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -36,8 +40,10 @@ public class EmailMessage
 	private String to_CC;	//a comma separated string of email addresses for CC
 	private String to_BCC;	//a comma separated string of email addresses for BC
 	
+	//Elements of char[] values
+	private java.util.ArrayList attachments;	//email files attachment char[] data 
 	//Elements of String values (of filenames)
-	private java.util.ArrayList attachments;	//email files attachment names 
+	private java.util.ArrayList attachmentNames;	//email files attachment names 
 	
 	public EmailMessage()
 	{
@@ -99,10 +105,16 @@ public class EmailMessage
 				String subString = (String)args[i].substring(startIndex);
 				emailMessage.setBody(subString);
 			}
-			else if( argLowerCase.startsWith("attach"))
+			else if( argLowerCase.startsWith("attachmessage"))
 			{
 				String subString = (String)args[i].substring(startIndex);
-				emailMessage.addAttachment(subString);
+				char [] attachmentMessage = subString.toCharArray();
+				emailMessage.addAttachment(attachmentMessage);
+			}
+			else if (argLowerCase.startsWith("attachfilename"))
+			{
+				String subString = (String)args[i].substring(startIndex);
+				emailMessage.addAttachmentName(subString);
 			}
 			else if( argLowerCase.startsWith("subj"))
 			{
@@ -121,60 +133,71 @@ public class EmailMessage
 			}
 		}
 
-		emailMessage.send();
+		try
+		{
+			emailMessage.send();
+		}
+		catch (MessagingException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		System.exit(0);
 	}
 	
 	/**
 	 * Create emailMessage and send it, with attachments if exist.
 	 */
-	public void send()
+	public void send() throws AddressException, MessagingException
 	{
-		try
-		{
-			java.util.Properties systemProps = System.getProperties();
-			systemProps.put(CtiProperties.KEY_SMTP_HOST, getSmtpServer());
+		java.util.Properties systemProps = System.getProperties();
+		systemProps.put(CtiProperties.KEY_SMTP_HOST, getSmtpServer());
+		
+		Session session = Session.getInstance(systemProps);
+		
+		Message	message = new MimeMessage(session);
+		message.setFrom(new InternetAddress(getFrom()));
+		message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(getTo()));
+		if( getTo_CC() != null)
+			message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(getTo_CC()));
+		if( getTo_BCC() != null)
+			message.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(getTo_BCC()));
 			
-			Session session = Session.getInstance(systemProps);
-			
-			Message	message = new MimeMessage(session);
-			message.setFrom(new InternetAddress(getFrom()));
-			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(getTo()));
-			if( getTo_CC() != null)
-				message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(getTo_CC()));
-			if( getTo_BCC() != null)
-				message.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(getTo_BCC()));
-				
-			message.setSubject(getSubject());
+		message.setSubject(getSubject());
 
-			Multipart multiPart = new MimeMultipart();
-			
-			MimeBodyPart bodyPart = new MimeBodyPart();
-			bodyPart.setText(getBody());
-			multiPart.addBodyPart(bodyPart);
-			
-			if( !getAttachments().isEmpty())
+		Multipart multiPart = new MimeMultipart();
+		
+		MimeBodyPart bodyPart = new MimeBodyPart();
+		bodyPart.setText(getBody());
+		multiPart.addBodyPart(bodyPart);
+		
+		if( !getAttachments().isEmpty())
+		{
+			for (int i = 0; i < getAttachments().size(); i++)
 			{
-				for (int i = 0; i < attachments.size(); i++)
+				bodyPart = new MimeBodyPart();
+				try
 				{
-					bodyPart = new MimeBodyPart();
-					FileDataSource file = new FileDataSource((String) attachments.get(i));
-					bodyPart.setDataHandler(new DataHandler(file));
-					bodyPart.setFileName((String) attachments.get(i));
+					java.io.File tempFile = java.io.File.createTempFile("temp", "txt");
+					java.io.FileWriter fWriter = new java.io.FileWriter(tempFile);
+					fWriter.write((char []) getAttachments().get(i));
+					FileDataSource fileDataSource = new FileDataSource(tempFile);
+					bodyPart.setDataHandler(new DataHandler(fileDataSource));
+					bodyPart.setFileName((String) getAttachmentNames().get(i));
 					multiPart.addBodyPart(bodyPart);
 				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+				
 			}
-			message.setContent(multiPart);
-			message.setHeader("X-Mailer", "CannontechEmail");
-			message.setSentDate(new java.util.Date());
+		}
+		message.setContent(multiPart);
+		message.setHeader("X-Mailer", "CannontechEmail");
+		message.setSentDate(new java.util.Date());
 
-			Transport.send(message);
-			
-		}
-		catch (javax.mail.MessagingException me)
-		{
-			 me.printStackTrace();
-		}
+		Transport.send(message);
 	}
 	/**
 	 * @return
@@ -285,10 +308,34 @@ public class EmailMessage
 		attachments = list;
 	}
 
-	public void addAttachment(String fileName)
+	public void addAttachment(char [] fileData)
 	{
-		getAttachments().add(fileName);	
+		getAttachments().add(fileData);	
 	}
+
+	/**
+	 * @return
+	 */
+	public java.util.ArrayList getAttachmentNames()
+	{
+		if( attachmentNames == null)
+				attachmentNames = new java.util.ArrayList(1);
+			return attachmentNames;
+	}
+
+	/**
+	 * @param list
+	 */
+	public void setAttachmentNames(java.util.ArrayList list)
+	{
+		attachmentNames = list;
+	}
+
+	public void addAttachmentName(String fileName)
+	{
+		getAttachmentNames().add(fileName);	
+	}
+
 	
 	public String toString()
 	{
