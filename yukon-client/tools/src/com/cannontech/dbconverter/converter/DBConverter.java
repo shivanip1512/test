@@ -1120,9 +1120,6 @@ public boolean processMCTDevices()
 		// set LoadProfile Interval
 		device.getDeviceLoadProfile().setLoadProfileDemandRate(new Integer( Integer.parseInt(tokenizer.nextElement().toString()) ));
 
-	    // set LoadProfile defaults
-	    device.getDeviceLoadProfile().setLastIntervalDemandRate( new Integer(300) );
-			    
 	    
 		if (deviceType.equals(new String("MCT-318L")) || 
 			deviceType.equals(new String("MCT-310IL"))  ||
