@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.128 $
-* DATE         :  $Date: 2004/12/31 17:04:39 $
+* REVISION     :  $Revision: 1.129 $
+* DATE         :  $Date: 2005/01/04 22:17:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -897,10 +897,6 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
                     pGroup[byt] |= pMatch[byt];
                 }
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** PUSH GROUP TO LCUCheckpoint **** " << __FILE__ << " (" << __LINE__ << ") Group " << om->DeviceIDofLMGroup << endl;
-                }
                 ((CtiDeviceLCU*)Device.get())->pushControlledGroupInfo(om->DeviceIDofLMGroup, om->TrxID); // Record the groups, TrxIDs in qustion here.
 
                 delete om;
@@ -4060,7 +4056,7 @@ BOOL searchFuncForRippleOutMessage(void *firstOM, void* om)
     OUTMESS *groupOM = (OUTMESS *)firstOM;       // First OM contains the group and area code to match the bits upon.  All Bits must match.
     OUTMESS *matchOM = (OUTMESS *)om;            // This is the om on queue which is being evaluated for match.
 
-    if( matchOM->EventCode & RIPPLE )           // This is a control communication to an LCU.
+    if( matchOM->EventCode & RIPPLE && (matchOM->DeviceID == groupOM->DeviceID))           // This is a control communication to the same LCU (Minnkota will only have LCUGLOBAL).
     {
         BYTE *pGroup = (BYTE*)(groupOM->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
         BYTE *pMatch = (BYTE*)(matchOM->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
