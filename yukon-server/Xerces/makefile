@@ -8,9 +8,9 @@ ALL:            copy
 
 copy:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               -if exist *.dll copy $(XERCES_DLL).dll $(YUKONOUTPUT)
+               -@if not exist $(YUKONOUTPUT)\$(XERCES_DLL).dll copy $(XERCES_DLL).dll $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-               -if exist *.lib copy $(XERCES_LIB).lib $(COMPILEBASE)\lib
+               -@if not exist $(COMPILEBASE)\lib\$(XERCES_LIB).lib copy $(XERCES_LIB).lib $(COMPILEBASE)\lib
 
 
 

@@ -1,18 +1,18 @@
 
 all:
         @echo:
-        @title Building in cparms
-        @echo Building in cparms
+        @title Building in $(COMPILEBASE)\cparms
+        @echo Building in $(COMPILEBASE)\cparms
         @echo:
         @%cd cparms
         @$(MAKE) -nologo
-        @title Building in tcl
-        @echo Building in tcl
+        @title Building in $(COMPILEBASE)\tcl
+        @echo Building in $(COMPILEBASE)\tcl
         @echo:
         @%cd $(COMPILEBASE)\tcl
         @$(MAKE) -nologo
-        @title Building in xerces
-        @echo Building in xerces
+        @title Building in $(COMPILEBASE)\xerces
+        @echo Building in $(COMPILEBASE)\xerces
         @echo:
         @%cd $(COMPILEBASE)\xerces
         @$(MAKE) -nologo
