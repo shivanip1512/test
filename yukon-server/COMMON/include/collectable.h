@@ -18,6 +18,7 @@
 #define MSG_PCRETURN                      ((MSG_BASE) + 90)
 
 #define MSG_MULTI                         ((MSG_BASE) + 91)
+#define MSG_TAG                           ((MSG_BASE) + 94)
 #define MSG_POINTDATA                     ((MSG_BASE) + 95)
 #define MSG_SIGNAL                        ((MSG_BASE) + 96)
 #define MSG_EMAIL                         ((MSG_BASE) + 97)
