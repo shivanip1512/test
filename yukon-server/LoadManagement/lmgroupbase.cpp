@@ -245,6 +245,26 @@ const RWDBDateTime& CtiLMGroupBase::getLastControlSent() const
 }
 
 /*---------------------------------------------------------------------------
+    getControlStartTime
+
+    Returns the time when the current group control started
+---------------------------------------------------------------------------*/
+const RWDBDateTime& CtiLMGroupBase::getControlStartTime() const
+{
+    return _controlstarttime;
+}
+
+/*---------------------------------------------------------------------------
+    getControlCompleteTime
+
+    Returns the time when the current group control is scheduled to complete
+---------------------------------------------------------------------------*/
+const RWDBDateTime& CtiLMGroupBase::getControlCompleteTime() const
+{
+    return _controlcompletetime;
+}
+
+/*---------------------------------------------------------------------------
     getHoursDailyPointId
 
     Returns the point id of the daily control hours point for the group
@@ -297,6 +317,16 @@ LONG CtiLMGroupBase::getLMProgramId() const
 {
 
     return _lmprogramid;
+}
+
+/*---------------------------------------------------------------------------
+    getControlStatusPointId
+
+    Returns the point id of the pseudo control point for this group
+---------------------------------------------------------------------------*/
+LONG CtiLMGroupBase::getControlStatusPointId() const
+{
+    return _controlstatuspointid;
 }
 
 
@@ -517,6 +547,28 @@ CtiLMGroupBase& CtiLMGroupBase::setLastControlSent(const RWDBDateTime& controlse
 }
 
 /*---------------------------------------------------------------------------
+    setControlStartTime
+
+    Sets the time when the current group control started
+---------------------------------------------------------------------------*/
+CtiLMGroupBase& CtiLMGroupBase::setControlStartTime(const RWDBDateTime& start)
+{
+    _controlstarttime = start;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setControlCompleteTime
+
+    Sets the time when the current group control is scheduled to complete
+---------------------------------------------------------------------------*/
+CtiLMGroupBase& CtiLMGroupBase::setControlCompleteTime(const RWDBDateTime& complete)
+{
+    _controlcompletetime = complete;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
     setHoursDailyPointId
 
     Sets the point id of the point that tracks daily control hours for the group
@@ -573,6 +625,17 @@ CtiLMGroupBase& CtiLMGroupBase::setLMProgramId(LONG progid)
 {
 
     _lmprogramid = progid;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setControlStatusPointId
+
+    Sets the point id of the pseudo control point for this group
+---------------------------------------------------------------------------*/
+CtiLMGroupBase& CtiLMGroupBase::setControlStatusPointId(LONG cntid)
+{
+    _controlstatuspointid = cntid;
     return *this;
 }
 
@@ -649,7 +712,9 @@ void CtiLMGroupBase::restoreGuts(RWvistream& istrm)
 
     RWCollectable::restoreGuts( istrm );
 
-    RWTime tempTime;
+    RWTime tempTime1;
+    RWTime tempTime2;
+    RWTime tempTime3;
     istrm >> _paoid
     >> _paocategory
     >> _paoclass
@@ -667,9 +732,13 @@ void CtiLMGroupBase::restoreGuts(RWvistream& istrm)
     >> _currenthoursmonthly
     >> _currenthoursseasonal
     >> _currenthoursannually
-    >> tempTime;
+    >> tempTime1
+    >> tempTime2
+    >> tempTime3;
 
-    _lastcontrolsent = RWDBDateTime(tempTime);
+    _lastcontrolsent = RWDBDateTime(tempTime1);
+    _controlstarttime = RWDBDateTime(tempTime2);
+    _controlcompletetime = RWDBDateTime(tempTime3);
 }
 
 /*---------------------------------------------------------------------------
@@ -701,7 +770,9 @@ void CtiLMGroupBase::saveGuts(RWvostream& ostrm ) const
     << _currenthoursmonthly
     << _currenthoursseasonal
     << _currenthoursannually
-    << _lastcontrolsent.rwtime();
+    << _lastcontrolsent.rwtime()
+    << _controlstarttime.rwtime()
+    << _controlcompletetime.rwtime();
 
     return;
 }
@@ -733,11 +804,14 @@ CtiLMGroupBase& CtiLMGroupBase::operator=(const CtiLMGroupBase& right)
         _currenthoursseasonal = right._currenthoursseasonal;
         _currenthoursannually = right._currenthoursannually;
         _lastcontrolsent = right._lastcontrolsent;
+        _controlstarttime = right._controlstarttime;
+        _controlcompletetime = right._controlcompletetime;
         _hoursdailypointid = right._hoursdailypointid;
         _hoursmonthlypointid = right._hoursmonthlypointid;
         _hoursseasonalpointid = right._hoursseasonalpointid;
         _hoursannuallypointid = right._hoursannuallypointid;
         _lmprogramid = right._lmprogramid;
+        _controlstatuspointid = right._controlstatuspointid;
     }
 
     return *this;
@@ -864,6 +938,8 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
         rdr["currenthoursannually"] >> _currenthoursannually;
         rdr["lastcontrolsent"] >> _lastcontrolsent;
         rdr["timestamp"] >> dynamicTimeStamp;
+        rdr["controlstarttime"] >> _controlstarttime;
+        rdr["controlcompletetime"] >> _controlcompletetime;
 
         _insertDynamicDataFlag = FALSE;
     }
@@ -875,6 +951,8 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
         setCurrentHoursSeasonal(0);
         setCurrentHoursAnnually(0);
         setLastControlSent(RWDBDateTime(1990,1,1,0,0,0,0));
+        setControlStartTime(RWDBDateTime(1990,1,1,0,0,0,0));
+        setControlCompleteTime(RWDBDateTime(1990,1,1,0,0,0,0));
 
         _insertDynamicDataFlag = TRUE;
     }
@@ -967,12 +1045,14 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
                 RWDBUpdater updater = dynamicLMGroupTable.updater();
 
                 updater << dynamicLMGroupTable["groupcontrolstate"].assign( getGroupControlState() )
-                << dynamicLMGroupTable["currenthoursdaily"].assign( getCurrentHoursDaily() )
-                << dynamicLMGroupTable["currenthoursmonthly"].assign( getCurrentHoursMonthly() )
-                << dynamicLMGroupTable["currenthoursseasonal"].assign( getCurrentHoursSeasonal() )
-                << dynamicLMGroupTable["currenthoursannually"].assign( getCurrentHoursAnnually() )
-                << dynamicLMGroupTable["lastcontrolsent"].assign( getLastControlSent() )
-                << dynamicLMGroupTable["timestamp"].assign( currentDateTime );
+                        << dynamicLMGroupTable["currenthoursdaily"].assign( getCurrentHoursDaily() )
+                        << dynamicLMGroupTable["currenthoursmonthly"].assign( getCurrentHoursMonthly() )
+                        << dynamicLMGroupTable["currenthoursseasonal"].assign( getCurrentHoursSeasonal() )
+                        << dynamicLMGroupTable["currenthoursannually"].assign( getCurrentHoursAnnually() )
+                        << dynamicLMGroupTable["lastcontrolsent"].assign( getLastControlSent() )
+                        << dynamicLMGroupTable["timestamp"].assign( currentDateTime )
+                        << dynamicLMGroupTable["controlstarttime"].assign( getControlStartTime() )
+                        << dynamicLMGroupTable["controlcompletetime"].assign( getControlCompleteTime() );
 
                 updater.where(dynamicLMGroupTable["deviceid"]==getPAOId()&&
                               dynamicLMGroupTable["lmprogramid"]==getLMProgramId());
@@ -1012,7 +1092,9 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
                 << getCurrentHoursAnnually()
                 << getLastControlSent()
                 << currentDateTime
-                << getLMProgramId();
+                << getLMProgramId()
+                << getControlStartTime()
+                << getControlCompleteTime();
 
                 /*{
                     CtiLockGuard<CtiLogger> logger_guard(dout);
