@@ -8,7 +8,7 @@ import javax.xml.messaging.ReqRespListener;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiProperties;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteContact;
@@ -20,6 +20,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.servlet.PILConnectionServlet;
 import com.cannontech.stars.util.task.HourlyTimerTask;
 import com.cannontech.stars.util.task.RefreshTimerTask;
@@ -133,9 +134,16 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	}
 	
 	void initDispatchConnection() {
-		CtiProperties properties = CtiProperties.getInstance();
-		String host = properties.getProperty(CtiProperties.KEY_DISPATCH_MACHINE, "127.0.0.1");
-		int port = Integer.parseInt( properties.getProperty(CtiProperties.KEY_DISPATCH_PORT, "1510") );
+//		CtiProperties properties = CtiProperties.getInstance();
+		//String host = properties.getProperty(CtiProperties.KEY_DISPATCH_MACHINE, "127.0.0.1");
+		String host =
+			ClientSession.getInstance().getRolePropertyValue(
+				SystemRole.DISPATCH_MACHINE, "127.0.0.1" ).toString();
+		
+		
+		int port = Integer.parseInt(
+				ClientSession.getInstance().getRolePropertyValue(
+					SystemRole.DISPATCH_PORT, "1510" ) );
 		
 		connToDispatch = new com.cannontech.message.dispatch.ClientConnection();
 		
