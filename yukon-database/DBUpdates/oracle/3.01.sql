@@ -313,6 +313,9 @@ insert into yukongrouprole values (-887,-301,-201,-20887,'(none)');
 insert into yukongrouprole values (-888,-301,-201,-20888,'(none)');
 insert into yukongrouprole values (-889,-301,-201,-20889,'(none)');
 
+/* Hardware addressing role property */
+insert into YukonRoleProperty values(-1107,-2,'track_hardware_addressing','false','Controls whether to track the hardware addressing information.');
+
 /* Authentication (safeword) Role/Properties */
 insert into YukonRole values(-4,'Authentication','Yukon','Settings for using an authentication server to login instead of standard yukon login.');
 
@@ -369,10 +372,14 @@ alter table DeviceSeries5RTU modify Retries number not null;
 alter table LMControlScenarioProgram rename column StartDelay to StartOffset;
 
 
+update YukonListEntry set EntryText='LCR-5000(Xcom)' where EntryID=1051;
 update YukonListEntry set YukonDefinitionID=1305 where EntryID=1052;
 update YukonListEntry set YukonDefinitionID=1306 where EntryID=1053;
 update YukonListEntry set YukonDefinitionID=1307 where EntryID=1054;
 update YukonListEntry set YukonDefinitionID=1308 where EntryID=1055;
+insert into YukonListEntry values (1060,1005,0,'SA-205',1309);
+insert into YukonListEntry values (1061,1005,0,'SA-305',1310);
+insert into YukonListEntry values (1062,1005,0,'LCR-5000(Vcom)',1311);
 
 update yukonuserrole set value = 'true' where userroleid = -107;
 
