@@ -101,10 +101,12 @@ public class UpdateUtil {
 			}
 		}
 		
-		if( (displayAttrib & PointAttributes.LIMIT_DURATION) != 0 ) {		
+		if( (displayAttrib & PointAttributes.LIMIT_DURATION) != 0 ) {	
+			// always convert seconds -> minutes!	
 			LitePointLimit lpl = PointFuncs.getPointLimit(pointID);
 			if( lpl != null ) {
-				text += Integer.toString(lpl.getLimitDuration());		
+				int min = lpl.getLimitDuration() / 60;
+				text += Integer.toString(min);		
 				prev = true;	
 			}
 		}

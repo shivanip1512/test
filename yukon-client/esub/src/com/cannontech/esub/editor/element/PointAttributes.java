@@ -63,11 +63,12 @@ public class PointAttributes {
 			}
 			break;
 			
-			case LIMIT_DURATION:
+			case LIMIT_DURATION: //always treat this as minutes -> seconds conversion
 			{
 				PointLimit lp = getPointLimit(dbObj);
 				if( lp != null ) {
-					lp.setLimitDuration(new Integer(newValue.toString()));
+					int secs = Integer.parseInt(newValue.toString()) * 60;					
+					lp.setLimitDuration(new Integer(secs));
 				}
 			}
 			break;
