@@ -88,6 +88,7 @@ function confirmSubmit(form) { //v1.0
                 </tr>
               </table>
            
+              <br>
               <table  border="0" cellspacing="0" cellpadding="0">
                 <tr align = "center"> 
                   <td width="304" valign="top" align = "center"> 
@@ -103,7 +104,6 @@ function confirmSubmit(form) { //v1.0
                               <tr> 
                                 <td width="180" align="center"> 
                                   <select name="OptOutPeriod">
-									<option value="0">&lt;none&gt;</option>
 									<option value="1">One Day</option>
 									<option value="2">Two Days</option>
 									<option value="3">Three Days</option>
