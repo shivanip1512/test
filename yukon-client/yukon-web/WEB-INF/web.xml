@@ -13,7 +13,6 @@
         <display-name>LoginController</display-name>
         <description>Handles user authentication.</description>
         <servlet-class>com.cannontech.servlet.LoginController</servlet-class>
-        <load-on-startup>3</load-on-startup>
     </servlet>
 
     <servlet>
@@ -29,7 +28,6 @@
         <display-name>GraphGenerator</display-name>
         <description>Dynamically generates graphs in gif format</description>
         <servlet-class>com.cannontech.servlet.GraphGenerator</servlet-class>
-        <load-on-startup>4</load-on-startup>
     </servlet>
     
     <servlet>
@@ -45,7 +43,6 @@
         <display-name>ScheduleController</display-name>
         <description>Handles start/stop requests to MACS</description>
         <servlet-class>com.cannontech.servlet.ScheduleController</servlet-class>
-        <load-on-startup>7</load-on-startup>
     </servlet>
 
     <servlet>
@@ -53,7 +50,6 @@
         <display-name>SwitchCommand</display-name>
         <description>Handles commands by serial number.</description>
         <servlet-class>com.cannontech.servlet.YukonSwitchCommand</servlet-class>
-        <load-on-startup>8</load-on-startup>
     </servlet>
     
     <servlet>
@@ -61,7 +57,6 @@
         <display-name>CurtailmentServlet</display-name>
         <description>Handles acknowledging of mandatory curtailments.</description>
         <servlet-class>com.cannontech.servlet.CurtailmentServlet</servlet-class>
-        <load-on-startup>9</load-on-startup>
     </servlet>
     
     <servlet>
@@ -69,7 +64,7 @@
         <display-name>LCConnectionServlet</display-name>
         <description>Maintains a connection with loadcontrol server.</description>
         <servlet-class>com.cannontech.servlet.LCConnectionServlet</servlet-class>
-        <load-on-startup>11</load-on-startup>
+        <load-on-startup>3</load-on-startup>
     </servlet>
 
     <servlet>
@@ -77,7 +72,6 @@
         <display-name>Download</display-name>
         <description>Handles downloading of tabular data in various formats.</description>
         <servlet-class>com.cannontech.servlet.Download</servlet-class>
-        <load-on-startup>12</load-on-startup>
     </servlet>
 
     <servlet>
@@ -92,7 +86,6 @@
         <display-name>SOAPServer</display-name>
         <description>Parse the request SOAP message and send back SOAP response.</description>
         <servlet-class>com.cannontech.stars.web.servlet.SOAPServer</servlet-class>
-        <load-on-startup>13</load-on-startup>
     </servlet>
 
     <servlet>
@@ -100,7 +93,6 @@
         <display-name>SOAPClient</display-name>
         <description>Send SOAP request to server and parse respones from server.</description>
         <servlet-class>com.cannontech.stars.web.servlet.SOAPClient</servlet-class>
-        <load-on-startup>14</load-on-startup>
     </servlet>
     
     <servlet>
@@ -108,7 +100,6 @@
         <display-name>UpdateContacts</display-name>
         <description>Update customer contacts</description>
         <servlet-class>com.cannontech.stars.web.servlet.UpdateContacts</servlet-class>
-        <load-on-startup>15</load-on-startup>
     </servlet>
     
     <servlet>
@@ -116,7 +107,6 @@
         <display-name>UpdateThermostat</display-name>
         <description>Update thermostat settings</description>
         <servlet-class>com.cannontech.stars.web.servlet.UpdateThermostat</servlet-class>
-        <load-on-startup>16</load-on-startup>
     </servlet>
 
     <session-config>
