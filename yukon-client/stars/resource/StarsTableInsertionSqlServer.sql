@@ -94,6 +94,9 @@ insert into YukonSelectionList values (1050,'N','(none)','Gateway end device dat
 insert into YukonSelectionList values (1051,'N','(none)','Hardware Inventory search by selection', 'InvSearchBy','N');
 insert into YukonSelectionList values (1052,'N','(none)','Hardware Inventory sort by selection', 'InvSortBy','N');
 insert into YukonSelectionList values (1053,'N','(none)','Hardware Inventory filter by selection', 'InvFilterBy','N');
+insert into YukonSelectionList values (1054,'N','(none)','Service order search by selection','SOSearchBy','N');
+insert into YukonSelectionList values (1055,'N','(none)','Service order sort by selection', 'SOSortBy','N');
+insert into YukonSelectionList values (1056,'N','(none)','Service order filter by selection', 'SOFilterBy','N');
 insert into YukonSelectionList values (2000,'N','(none)','Customer Selection Base','(none)','N');
 
 /* YukonListEntry */
@@ -124,7 +127,7 @@ insert into YukonListEntry values (1024,1008,0,'General',0);
 insert into YukonListEntry values (1025,1008,0,'Credit',0);
 insert into YukonListEntry values (1026,1009,0,'Service Call',0);
 insert into YukonListEntry values (1027,1009,0,'Install',0);
-insert into YukonListEntry values (1028,1010,0,'Unscheduled',1501);
+insert into YukonListEntry values (1028,1010,0,'Pending',1501);
 insert into YukonListEntry values (1029,1010,0,'Scheduled',1502);
 insert into YukonListEntry values (1030,1010,0,'Completed',1503);
 insert into YukonListEntry values (1031,1011,0,'Acct #',1601);
@@ -215,6 +218,7 @@ insert into YukonListEntry values (1115,1015,0,'Wednesday',2107);
 insert into YukonListEntry values (1116,1015,0,'Thursday',2108);
 insert into YukonListEntry values (1117,1015,0,'Friday',2109);
 insert into YukonListEntry values (1118,1002,0,'Uninstall',1111);
+insert into YukonListEntry values (1119,1010,0,'Cancelled',1504);
 insert into YukonListEntry values (1201,1050,0,'Last Updated Time',3201);
 insert into YukonListEntry values (1202,1050,0,'Setpoint',3202);
 insert into YukonListEntry values (1203,1050,0,'Fan',3203);
@@ -237,6 +241,16 @@ insert into YukonListEntry values (1321,1053,0,'Device type',2901);
 insert into YukonListEntry values (1322,1053,0,'Service company',2902);
 insert into YukonListEntry values (1323,1053,0,'Location',2903);
 insert into YukonListEntry values (1324,1053,0,'Configuration',2904);
+insert into YukonListEntry values (1331,1054,0,'Order #',3301);
+insert into YukonListEntry values (1332,1054,0,'Acct #',3302);
+insert into YukonListEntry values (1333,1054,0,'Phone #',3303);
+insert into YukonListEntry values (1334,1054,0,'Last Name',3304);
+insert into YukonListEntry values (1335,1054,0,'Serial #',3305);
+insert into YukonListEntry values (1341,1055,0,'Order #',3401);
+insert into YukonListEntry values (1342,1055,0,'Date/Time',3402);
+//insert into YukonListEntry values (1351,1056,0,'Status',3501);
+insert into YukonListEntry values (1352,1056,0,'Service Type',3502);
+insert into YukonListEntry values (1353,1056,0,'Service Company',3503);
 insert into YukonListEntry values (2000,0,0,'Customer List Entry Base',0);
 
 /* ECToGenericMapping */
@@ -293,6 +307,9 @@ insert into ECToGenericMapping values (-1, 1050, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1051, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1052, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1053, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1054, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1055, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1056, 'YukonSelectionList');
 
 /* CustomerFAQ */
 insert into CustomerFAQ values(1,1061,'How long does it take for my program to become effective after adding or changing a program?','Immediately! You can take advantage of energy savings the moment you decide to. Just make your selection on the "Programs - Add/Change" page, click the submit button, and select Yes at the prompt.');
