@@ -539,9 +539,9 @@ private com.klg.jclass.field.JCSpinField getJCSpinFieldChangeTriggerNumber() {
 			ivjJCSpinFieldChangeTriggerNumber.setDataProperties(
 					new com.klg.jclass.field.DataProperties(
 						new com.klg.jclass.field.validate.JCIntegerValidator(
-						null, new Integer(0), new Integer(99999), null, true, 
+						null, new Integer(1), new Integer(99999), null, true, 
 						null, new Integer(1), "#,##0.###;-#,##0.###", false, 
-						false, false, null, new Integer(0)), 
+						false, false, null, new Integer(1)), 
 						new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, 
 						new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 2, 
 						new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
