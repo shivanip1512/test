@@ -36,6 +36,8 @@ public class LoginController extends javax.servlet.http.HttpServlet {
 	
 	private static final String USERNAME = "USERNAME";
 	private static final String PASSWORD = "PASSWORD";
+	
+	private static final String REDIRECT = "REDIRECT";
 		
 /**
  * Handles login authentication, logout.
@@ -49,7 +51,8 @@ public class LoginController extends javax.servlet.http.HttpServlet {
 public void service(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException 
 {
 	String action = req.getParameter(ACTION).toString();
-	String nextURI = INVALID_URI;
+	String nextURI = req.getParameter(REDIRECT);
+	if (nextURI == null) nextURI = LOG_OUT_URI;
 		
 	if(action.equalsIgnoreCase(LOGIN)) {
 		String username = req.getParameter(USERNAME);
@@ -76,7 +79,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 	else 
 	if(action.equalsIgnoreCase(LOGOUT))  {
 		HttpSession session = req.getSession();
-		resp.sendRedirect(LOG_OUT_URI);
+		resp.sendRedirect(nextURI);
 		if(session != null) {
 			session.invalidate();
 		}			
