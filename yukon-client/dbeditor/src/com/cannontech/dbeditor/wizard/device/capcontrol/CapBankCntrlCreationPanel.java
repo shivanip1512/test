@@ -252,6 +252,8 @@ private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObj
 		newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CAPBANKCONTROLLER);
    else if( getJComboBoxCBCType().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0]) )
       newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.DNP_CBC_6510);
+   else if( getJComboBoxCBCType().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_EXPRESSCOM[0]))
+   	  newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_EXPRESSCOM);
 
    //store the SerialNumber
    Integer serialNumber = new Integer(getJTextFieldCBCAddress().getText());
@@ -485,7 +487,8 @@ private javax.swing.JComboBox getJComboBoxCBCType() {
 
 			ivjJComboBoxCBCType.addItem( com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0]);
 			ivjJComboBoxCBCType.addItem( com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0]);
-         ivjJComboBoxCBCType.addItem( com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0]);
+         	ivjJComboBoxCBCType.addItem( com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0]);
+         	ivjJComboBoxCBCType.addItem( com.cannontech.database.data.pao.PAOGroups.STRING_CBC_EXPRESSCOM[0]);
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
