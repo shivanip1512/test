@@ -49,6 +49,10 @@ public class TagManager implements MessageListener {
 	//Singleton instance
 	private static TagManager _instance;
 	
+	//an optional reference to a Dispatch connection
+	private ClientConnection _dispatchConn = null;
+	
+	
 	public static synchronized TagManager getInstance() {
 		if(_instance == null) {
 			_instance = new TagManager();
@@ -154,10 +158,8 @@ public class TagManager implements MessageListener {
 	 * from dispatch before returning.
 	 * @param msg
 	 */
-	private void writeMsg(TagMsg msg) throws Exception {
-//		TODO: BAD! GET A DISPATCH CONNECITION SOMEWHERE ELSE!
-		ClientConnection conn = PointChangeCache.getPointChangeCache().getDispatchConnection();
-		
+	private void writeMsg(TagMsg msg) throws Exception 
+	{
 		Integer msgID = new Integer(nextClientMessageID());
 		msg.setClientMessageID(msgID.intValue());
 
@@ -166,7 +168,7 @@ public class TagManager implements MessageListener {
 		try {		
 			_waitForIDMap.put(msgID, synchObj);	
 			synchronized(synchObj) {
-				conn.write(msg);
+				getDispatchConn().write(msg);
 				synchObj.wait(DISPATCH_RESPONSE_TIMEOUT);
 			}
 		}
@@ -231,10 +233,35 @@ public class TagManager implements MessageListener {
 	 */
 	private TagManager() {
 		//TODO: BAD!
-		PointChangeCache.getPointChangeCache().getDispatchConnection().addMessageListener(this);
-		PointChangeCache.getPointChangeCache().getDispatchConnection().write(PointChangeCache.getPointChangeCache().getDispatchConnection().getRegistrationMsg());
-		
+		getDispatchConn().addMessageListener(this);
+		getDispatchConn().write(getDispatchConn().getRegistrationMsg());
 	}
+	
+	/**
+	 * gets the current dispatch connection we should use
+	 * 
+	 */
+	private synchronized ClientConnection getDispatchConn()
+	{
+		if( _dispatchConn == null )
+			return PointChangeCache.getPointChangeCache().getDispatchConnection();
+		else
+			return _dispatchConn;
+	}
+
+	/**
+	 * Allow for others to give me a connection to Dispatch I can use
+	 * Only use this constructor if needed!!
+	 */
+	public TagManager( ClientConnection conn )
+	{
+		if( conn == null )
+			throw new IllegalArgumentException("Need a non null connection for the constructor");
+
+		_dispatchConn = conn;
+		_dispatchConn.addMessageListener(this);
+	}
+	
 	/**
 	 * Generate the next client message id
 	 * @return
