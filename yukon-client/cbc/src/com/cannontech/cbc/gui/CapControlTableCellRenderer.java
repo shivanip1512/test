@@ -1,5 +1,8 @@
 package com.cannontech.cbc.gui;
 
+import com.cannontech.cbc.data.CapControlTags;
+import com.cannontech.common.gui.util.Colors;
+
 /**
  * This type was created in VisualAge.
  */
@@ -63,6 +66,9 @@ public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table
 	}
 
 
+	//do the BG color here
+	setBackground( model.getCellBackgroundColor(row, column) );
+
 	if( model instanceof SubBusTableModel )
 	{
 		handleSubBusTableModel( (SubBusTableModel)model, row, column, table, isSelected );
@@ -76,9 +82,6 @@ public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table
 		handleCapBankTableModel( (CapBankTableModel)model, row, column, table, isSelected );
 	}
 
-	
-	//do the BG color here
-	setBackground( model.getCellBackgroundColor(row, column) );
 
 	if( value != null )
 	{
@@ -112,6 +115,17 @@ private void handleCapBankTableModel(CapBankTableModel model, int row, int colum
 	}
 	else
 		this.setHorizontalAlignment( javax.swing.SwingConstants.LEFT );
+
+	if( CapControlTags.isTemporaryMove(model.getRowAt(row).getCapBankTags()) )
+	{
+		setForeground( Colors.getColor(Colors.GRAY_ID) );
+	}
+	else if( CapControlTags.isTemporaryMoveOrig(model.getRowAt(row).getCapBankTags()) )
+	{
+		setForeground( Colors.getColor(Colors.GRAY_ID) );
+	}
+	
+	
 }
 /**
  * Insert the method's description here.

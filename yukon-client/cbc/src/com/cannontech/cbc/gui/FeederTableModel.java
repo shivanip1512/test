@@ -97,6 +97,20 @@ public void forcePaintTableRowUpdated( int minLocation, int maxLocation )
 {
 	fireTableRowsUpdated( minLocation, maxLocation );
 }
+
+public Feeder getCapBankFeederOwner( CapBankDevice capBank )
+{
+	for( int i = 0; i < getRowCount(); i++ )
+	{
+		java.util.List banks = getRowAt(i).getCcCapBanks();
+		for( int j = 0; j < banks.size(); j++ )
+			if( banks.get(j).equals(capBank) )
+				return getRowAt(i);
+	}
+			
+	return null;
+}
+
 /**
  * This method was created in VisualAge.
  * @return java.awt.Color

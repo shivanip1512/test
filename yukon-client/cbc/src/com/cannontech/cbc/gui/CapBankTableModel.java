@@ -75,17 +75,17 @@ public class CapBankTableModel extends javax.swing.table.AbstractTableModel impl
 	// colors are [fg][bg]
 	private static Color[][] stateColors =
 	{
-		{Colors.getColor(0), Colors.getColor(6)},	 // Open
-		{Colors.getColor(0), Colors.getColor(6)},	 // Close
+		{Colors.getColor(Colors.GREEN_ID), Colors.getColor(Colors.BLACK_ID)}, // Open
+		{Colors.getColor(Colors.GREEN_ID), Colors.getColor(Colors.BLACK_ID)}, // Close
 
-		{Colors.getColor(3), Colors.getColor(6)},  // OpenQuestionable
-		{Colors.getColor(3), Colors.getColor(6)},	 // CloseQuestionable
+		{Colors.getColor(Colors.YELLOW_ID), Colors.getColor(Colors.BLACK_ID)}, // OpenQuestionable
+		{Colors.getColor(Colors.YELLOW_ID), Colors.getColor(Colors.BLACK_ID)}, // CloseQuestionable
 		
-		{Colors.getColor(1), Colors.getColor(6)},  // OpenFail
-		{Colors.getColor(1), Colors.getColor(6)},	 // CloseFail
+		{Colors.getColor(Colors.RED_ID), Colors.getColor(Colors.BLACK_ID)}, // OpenFail
+		{Colors.getColor(Colors.RED_ID), Colors.getColor(Colors.BLACK_ID)}, // CloseFail
 
-		{Colors.getColor(5), Colors.getColor(6)},  // OpenPending
-		{Colors.getColor(5), Colors.getColor(6)}	 // ClosePending
+		{Colors.getColor(Colors.CYAN_ID), Colors.getColor(Colors.BLACK_ID)}, // OpenPending
+		{Colors.getColor(Colors.CYAN_ID), Colors.getColor(Colors.BLACK_ID)}  // ClosePending
 	};	
 /**
  * ScheduleTableModel constructor comment.

@@ -71,11 +71,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	capBank.setLastStatusChangeTime( (java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );	
 	capBank.setTagControlStatus( new Integer( (int)vstr.extractUnsignedInt() ) );
 
-/*	capBank.setStatusReceivedFlag( 
-		((int)vstr.extractUnsignedInt() == 1)
-		? new Boolean(true) : new Boolean(false) );
-*/
 
+	/* capBank.setCapBankTags( (int)vstr.extractUnsignedInt() ); */
 }
 /**
  * saveGuts method comment.
@@ -105,10 +102,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.saveObject( capBank.getLastStatusChangeTime(), SimpleMappings.Time );
 	vstr.insertUnsignedInt( capBank.getTagControlStatus().intValue() );
 
-/*	vstr.insertUnsignedInt( 
-		(capBank.getStatusReceivedFlag().booleanValue() == true)
-		? 1 : 0 );
-*/
+	/*vstr.insertUnsignedInt( capBank.getCapBankTags().intValue() ); */	
 
 }
 }

@@ -14,6 +14,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableModelEvent;
 
+import com.cannontech.cbc.data.CapBankDevice;
+import com.cannontech.cbc.data.Feeder;
 import com.cannontech.cbc.data.SubBus;
 import com.cannontech.cbc.messages.CBCCommand;
 import com.cannontech.cbc.popupmenu.CapBankDevicePopUp;
@@ -128,6 +130,8 @@ public void actionPerformed(ActionEvent event)
 		}
 	}
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (1/8/2001 12:44:52 PM)
@@ -138,14 +142,18 @@ private void capBankPopUpMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent 
 	com.cannontech.cbc.data.CapBankDevice capBank = getCapBankTableModel().getRowAt(getCapBankTable().getSelectedRow());
 
 	if( capBank != null )
-	{
-		getCapBankPopupMenu().setCapBankDevice( capBank );
+	{				
+		getCapBankPopupMenu().setCapBankDevice( 
+				capBank,
+				getFeederTableModel().getCapBankFeederOwner(capBank) );
 
 		getCapBankPopupMenu().setObservedCapBankRow( getCapBankTableModel().getObservableRow() );
 
 	}
 
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (3/23/00 2:08:41 PM)

@@ -15,6 +15,7 @@ import com.cannontech.cbc.messages.DefineCollectableCBCMessage;
 import com.cannontech.cbc.messages.DefineCollectableCBCStateGroupMessage;
 import com.cannontech.cbc.messages.DefineCollectableCBCSubAreaName;
 import com.cannontech.cbc.messages.DefineCollectableCBCSubstationBuses;
+import com.cannontech.cbc.messages.DefineCollectableCBCTempMoveCapBank;
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.message.util.ClientConnection;
@@ -54,7 +55,8 @@ public class CBCClientConnection extends java.util.Observable implements java.ut
 		new DefineCollectableCBCMessage(), // not used except as a superclass
 		new com.cannontech.message.dispatch.message.DefineCollectablePointData(),
 		new com.cannontech.message.dispatch.message.DefineCollectableCommand(),
-		new DefineCollectableCBCStateGroupMessage()
+		new DefineCollectableCBCStateGroupMessage(),
+		new DefineCollectableCBCTempMoveCapBank()
 	};
 	
 /**
@@ -573,24 +575,9 @@ private void updateAreaSubBus(SubBus subBus)
  * Insert the method's description here.
  * Creation date: (12/5/2001 11:17:28 AM)
  */
-public void write( com.cannontech.message.dispatch.message.Command cmd )
+public void write( com.cannontech.message.util.Message cmd )
 {
 	getConnection().write( cmd );
 }
-/**
- * Insert the method's description here.
- * Creation date: (12/5/2001 11:17:28 AM)
- */
-public void write( com.cannontech.message.dispatch.message.Multi multi )
-{
-	getConnection().write( multi );
-}
-/**
- * Insert the method's description here.
- * Creation date: (12/5/2001 11:17:28 AM)
- */
-public void write( com.cannontech.message.dispatch.message.PointData pt )
-{
-	getConnection().write( pt );
-}
+
 }

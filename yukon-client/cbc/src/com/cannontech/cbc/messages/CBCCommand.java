@@ -21,6 +21,7 @@ public class CBCCommand extends com.cannontech.cbc.messages.CBCMessage
 	public static final int CONFIRM_OPEN = 8;
 	public static final int CONFIRM_CLOSE = 9;	
 	public static final int REQUEST_ALL_SUBS = 10;
+	public static final int RETURN_BANK_TO_FEEDER = 11;
 
 
 	public static final String[] COMMAND_STRINGS =
@@ -36,7 +37,8 @@ public class CBCCommand extends com.cannontech.cbc.messages.CBCMessage
 		"CLOSE CAPBANK",
 		"CONFIRM OPEN",
 		"CONFIRM CLOSE",
-		"REQUEST ALL SUBSTATION BUSES"
+		"REQUEST ALL SUBSTATION BUSES",
+		"RETURN BANK TO FEEDER"
 	};
 	
 		

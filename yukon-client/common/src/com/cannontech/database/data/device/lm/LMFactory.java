@@ -38,7 +38,7 @@ public final static com.cannontech.database.data.pao.YukonPAObject createLoadMan
 			retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
 			break;
 		case PAOGroups.LM_GROUP_EXPRESSCOMM:
-			retLm = new com.cannontech.database.data.device.lm.LMGroupExpressComm();
+			retLm = new com.cannontech.database.data.device.lm.LMGroupExpressCom();
 			retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
 			retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
 			break;			

@@ -162,7 +162,7 @@ public final static DeviceBase createDevice(int deviceType) {
 			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
 			break;
 		case PAOGroups.LM_GROUP_EXPRESSCOMM:
-			returnDevice = new com.cannontech.database.data.device.lm.LMGroupExpressComm();
+			returnDevice = new com.cannontech.database.data.device.lm.LMGroupExpressCom();
 			returnDevice.setDeviceType( PAOGroups.STRING_EXPRESSCOMM_GROUP[0] );
 			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
 			break;

@@ -1,15 +1,21 @@
 package com.cannontech.cbc.popupmenu;
 
+import javax.swing.JSeparator;
+
+import com.cannontech.cbc.capbankeditor.CapBankManualEntryPanel;
+import com.cannontech.cbc.capbankeditor.CapBankTempMovePanel;
+import com.cannontech.cbc.capbankeditor.ObservableCapBankRow;
+import com.cannontech.cbc.data.CBCClientConnection;
+import com.cannontech.cbc.data.CapBankDevice;
+import com.cannontech.cbc.data.CapControlTags;
+import com.cannontech.cbc.data.Feeder;
+import com.cannontech.cbc.messages.CBCCommand;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/25/00 10:36:10 AM)
  * @author: 
  */
-import com.cannontech.cbc.capbankeditor.CapBankManualEntryPanel;
-import com.cannontech.cbc.capbankeditor.ObservableCapBankRow;
-import com.cannontech.cbc.data.CBCClientConnection;
-import com.cannontech.cbc.data.CapBankDevice;
-import com.cannontech.cbc.messages.CBCCommand;
 
 public class CapBankDevicePopUp extends javax.swing.JPopupMenu implements java.awt.event.ActionListener, javax.swing.event.TableModelListener 
 {
@@ -18,7 +24,10 @@ public class CapBankDevicePopUp extends javax.swing.JPopupMenu implements java.a
 	private javax.swing.JMenuItem ivjJMenuItemOpenClose = null;
 	private javax.swing.JMenuItem jMenuItemAckAlarm = null;
 	private javax.swing.JMenuItem jMenuItemClearAlarm = null;
+	private javax.swing.JMenuItem jMenuItemTempMove = null;
+	private javax.swing.JMenuItem jMenuItemMoveBack = null;
 
+	private Feeder ownerFeeder = null;
 	private CapBankDevice capBankDevice = null;
 	private javax.swing.JMenuItem ivjJMenuItemManualEntry = null;
 	private CBCClientConnection connectionWrapper = null;
@@ -65,6 +74,12 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 
 	if (e.getSource() == getJMenuItemClearAlarm()) 
 		jMenuItemClearAlarm_ActionPerformed(e);
+
+	if (e.getSource() == getJMenuItemTempMove()) 
+		jMenuItemTempMove_ActionPerformed(e);
+
+	if (e.getSource() == getJMenuItemMoveBack()) 
+		jMenuItemMoveBack_ActionPerformed(e);
 
 	// user code end
 }
@@ -188,6 +203,58 @@ public javax.swing.JMenuItem getJMenuItemClearAlarm()
 	
 	return jMenuItemClearAlarm;
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (1/15/2001 9:20:50 AM)
+ * @return javax.swing.JMenuItem
+ */
+public javax.swing.JMenuItem getJMenuItemTempMove() 
+{
+	if (jMenuItemTempMove == null) 
+	{
+		try 
+		{
+			jMenuItemTempMove = new javax.swing.JMenuItem();
+			jMenuItemTempMove.setName("TempMove");
+			jMenuItemTempMove.setMnemonic('v');
+			jMenuItemTempMove.setText("Temporary Move...");
+			jMenuItemTempMove.setActionCommand("JMenuItemTempMove");
+		} 
+		catch (java.lang.Throwable ivjExc) 
+		{
+			handleException(ivjExc);
+		}
+	}
+	
+	return jMenuItemTempMove;
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (1/15/2001 9:20:50 AM)
+ * @return javax.swing.JMenuItem
+ */
+public javax.swing.JMenuItem getJMenuItemMoveBack() 
+{
+	if (jMenuItemMoveBack == null) 
+	{
+		try 
+		{
+			jMenuItemMoveBack = new javax.swing.JMenuItem();
+			jMenuItemMoveBack.setName("MopveBack");
+			jMenuItemMoveBack.setMnemonic('k');
+			jMenuItemMoveBack.setText("Move Back");
+			jMenuItemMoveBack.setActionCommand("JMenuItemMoveBack");
+		} 
+		catch (java.lang.Throwable ivjExc) 
+		{
+			handleException(ivjExc);
+		}
+	}
+	
+	return jMenuItemMoveBack;
+}
 /**
  * Insert the method's description here.
  * Creation date: (1/8/2001 5:13:20 PM)
@@ -282,6 +349,7 @@ private javax.swing.JMenuItem getJMenuItemOpenClose() {
 	}
 	return ivjJMenuItemOpenClose;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (1/8/2001 2:29:07 PM)
@@ -313,6 +381,9 @@ private void initConnections() throws java.lang.Exception
 	getJMenuItemAckAlarm().addActionListener(this);
 	getJMenuItemClearAlarm().addActionListener(this);
 	
+	getJMenuItemTempMove().addActionListener(this);
+	getJMenuItemMoveBack().addActionListener(this);
+	
 	// user code end
 	getJMenuItemOpenClose().addActionListener(this);
 	getJMenuItemEnableDisable().addActionListener(this);
@@ -327,10 +398,6 @@ private void initialize()
 	try 
 	{
 		setName("CapBankDevicePopUp");
-		//setPreferredSize(new java.awt.Dimension(100, 150));
-		//setLayout(new java.awt.FlowLayout());
-		//setMaximumSize(new java.awt.Dimension(100, 150));
-		//setMinimumSize(new java.awt.Dimension(100, 150));
 		
 		add(getJMenuItemAckAlarm(), getJMenuItemAckAlarm().getName() );
 		add(getJMenuItemClearAlarm(), getJMenuItemClearAlarm().getName() );
@@ -338,7 +405,13 @@ private void initialize()
 		add(getJMenuItemEnableDisable(), getJMenuItemEnableDisable().getName());
 		add(getJMenuItemConfirm(), getJMenuItemConfirm().getName() );
 		add(getJMenuItemOpenClose(), getJMenuItemOpenClose().getName());
+
+/* UNCOMMENT WHEN READY TO ROLL! */		
+/*		add( new JSeparator() );
 		
+		add(getJMenuItemTempMove(), getJMenuItemTempMove().getName());
+		add(getJMenuItemMoveBack(), getJMenuItemMoveBack().getName());
+*/		
 		initConnections();
 	}
 	catch (java.lang.Throwable ivjExc) 
@@ -387,6 +460,59 @@ public void jMenuItemClearAlarm_ActionPerformed(java.awt.event.ActionEvent actio
 		
 	return;
 }
+
+/**
+ * Comment
+ */
+public void jMenuItemTempMove_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+	java.awt.Frame pFrame = com.cannontech.common.util.CtiUtilities.getParentFrame(this.getInvoker());	
+	final javax.swing.JDialog d = new javax.swing.JDialog( pFrame ); 
+
+
+	CapBankTempMovePanel panel = new CapBankTempMovePanel( getConnectionWrapper() )
+	{
+		protected void disposePanel()
+		{
+			d.dispose();
+		};
+	};
+
+	if( panel != null )
+	{
+		panel.setOwnerFeeder( getOwnerFeeder() );
+		panel.setCapBankDevice( getCapBankDevice() );
+		d.getContentPane().add(panel);
+		d.pack();
+		d.setTitle("Cap Bank Temporary Move");
+	}
+
+	d.setLocationRelativeTo( pFrame );
+	d.setModal( true );		
+	d.show();
+	
+	return;
+}
+
+/**
+ * Comment
+ */
+public void jMenuItemMoveBack_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+	try
+	{
+		getConnectionWrapper().executeCommand( 
+			getCapBankDevice().getCcId().intValue(),
+			CBCCommand.RETURN_BANK_TO_FEEDER );
+	}
+	catch( java.io.IOException e )
+	{
+		handleException(e);
+	}
+
+	return;
+}
+
 /**
  * Comment
  */
@@ -529,11 +655,12 @@ private void setAlarmMenuItems()
  * Creation date: (8/25/00 10:40:12 AM)
  * @param newCapDevice com.cannontech.cbc.CapBankDevice
  */
-public void setCapBankDevice(CapBankDevice newCapDevice) 
+public void setCapBankDevice(CapBankDevice newCapDevice, Feeder feeder ) 
 {
 	if( newCapDevice != null )
 	{
 		capBankDevice = newCapDevice;
+		setOwnerFeeder( feeder );
 
 		// set the state of the OpenClose menu item
 		setFixedMenuItems( getCapBankDevice().getOperationalState().equalsIgnoreCase("Fixed") );
@@ -548,6 +675,16 @@ public void setCapBankDevice(CapBankDevice newCapDevice)
 
 
       getJMenuItemConfirm().setEnabled( !getCapBankDevice().getCcDisableFlag().booleanValue() );
+
+		//allow any bank that has not been temp moved to be moved
+      getJMenuItemTempMove().setEnabled( 
+      	!CapControlTags.isTemporaryMove(getCapBankDevice().getCapBankTags()) );
+
+		//allow a return to the og feeder if this bank is the moved feeder OR
+		// it is the original bank that has been moved
+      getJMenuItemMoveBack().setEnabled(
+      	CapControlTags.isTemporaryMove(getCapBankDevice().getCapBankTags())
+      	|| CapControlTags.isTemporaryMoveOrig(getCapBankDevice().getCapBankTags()) );
       
 		// set the state of the alarm menu items
 		setAlarmMenuItems();			
@@ -631,8 +768,19 @@ public void tableChanged(javax.swing.event.TableModelEvent event )
 {
 	// the capBankDevice will change, so lets have the popupmenus
 	// text change along with it
-	setCapBankDevice( getCapBankDevice() );
+	setCapBankDevice( getCapBankDevice(), getOwnerFeeder() );
 }
+
+private Feeder getOwnerFeeder()
+{
+	return ownerFeeder;
+}
+
+private void setOwnerFeeder( Feeder feeder_ )
+{
+	ownerFeeder = feeder_;
+}
+
 /**
  * 
  */
