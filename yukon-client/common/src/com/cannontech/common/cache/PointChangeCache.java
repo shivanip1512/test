@@ -187,6 +187,19 @@ public String getState(long pointId, double value)
 }
 
 /**
+ * Return the current state that a point is in if avaialble.
+ * Prefer this over getState(..)
+ * @param pointID
+ * @return
+ */
+public LiteState getCurrentState(long pointID) {
+	com.cannontech.message.dispatch.message.PointData pData = (com.cannontech.message.dispatch.message.PointData) pointData.get( new Long(pointID) );
+	LitePoint lp = PointFuncs.getLitePoint((int)pointID);
+	
+	return (pData == null || lp == null ? null :
+			StateFuncs.getLiteState( (int)lp.getStateGroupID(), (int) pData.getValue()));
+}
+/**
  * Return the most recent PointData for a given point
  * Creation date: (3/31/00 1:03:43 PM)
  * @return com.cannontech.servlet.PointData
@@ -261,7 +274,7 @@ private void handleMessage(com.cannontech.message.util.Message msg) {
 		CTILogger.debug("Received DBChangeMsg from: " + msg.getSource());
 	}
 	else {
-		CTILogger.warn("received an unknown message of class:  " + msg.getClass() );
+		//CTILogger.warn("received an unknown message of class:  " + msg.getClass() );
 	}
 	
 	lastChange = msg.getTimeStamp();
