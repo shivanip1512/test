@@ -3,6 +3,7 @@ package com.cannontech.common.gui.tree;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -33,10 +34,36 @@ public class CheckNodeSelectionListener extends MouseAdapter
       TreePath  path = tree.getPathForRow(row);
       //TreePath  path = tree.getSelectionPath();
 
+
+int cnt = ((JPanel)tree.getCellRenderer()).getComponentCount();
+for( int i = 0; i < cnt; i++ )
+	 System.out.println("   cmp=("+i+") " + 
+	 	((JPanel)tree.getCellRenderer()).getComponent(i).getLocation() );
+	 
+//System.out.println("   y=" + y );
+System.out.println("   x=" + 
+		((JPanel)tree.getCellRenderer()).getComponentAt(
+			e.getPoint()) );
+		
+System.out.println("   y=" + 
+		((JPanel)tree.getCellRenderer()).getComponentCount() );
+
+System.out.println("   l=" + 
+		((JPanel)tree.getCellRenderer()).getLocation() );
+		
+System.out.println("   pt=" + e.getPoint() );
+
+System.out.println();
+
+
+		if( tree.getCellRenderer() instanceof JPanel )
+			((JPanel)tree.getCellRenderer()).getLocation();
+
       if( path != null
       	 && path.getLastPathComponent() instanceof CheckNode ) 
       {
         CheckNode node = (CheckNode)path.getLastPathComponent();
+
                 
          boolean doSelect = !node.isSelected();
          

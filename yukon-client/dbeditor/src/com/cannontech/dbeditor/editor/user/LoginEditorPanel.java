@@ -9,7 +9,7 @@ public class LoginEditorPanel extends com.cannontech.common.editor.PropertyPanel
 {
 	private DataInputPanel[] inputPanels;
 	private String[] inputPanelTabNames;
-	public static final int PANEL_COUNT = 1;
+	public static final int PANEL_COUNT = 2;
 
 
 	public LoginEditorPanel() {
@@ -35,12 +35,12 @@ public class LoginEditorPanel extends com.cannontech.common.editor.PropertyPanel
 				objs[0] = new UserLoginBasePanel();
 				objs[1] = "General";
 				break;
-/*
+
 			case 1: 
 				objs[0] = new UserRolePanel();
 				objs[1] = "Roles";
 				break;
-*/
+
 		}
 			
 		return objs;

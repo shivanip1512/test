@@ -530,9 +530,12 @@ public static void main(java.lang.String[] args) {
 						roleNode.setSelected( true );
 						
 						//direct lookup here
-						((CheckNode)getJTreeModel().findNode(
-								new TreePath(roleNode),
-								roleNode)).setSelected( true );
+						CheckNode srchNode =
+							(CheckNode)getJTreeModel().findNode(
+									new TreePath(roleNode), roleNode);
+									
+						if( srchNode != null )
+							srchNode.setSelected( true );
 								
 						getJTreeModel().reload();
 						
