@@ -49,6 +49,7 @@ import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.dbeditor.DBDeletionFuncs;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -523,7 +524,8 @@ public class InventoryManager extends HttpServlet {
 			
 			try {
 				Transaction.createTransaction( Transaction.DELETE, inventory ).execute();
-				energyCompany.deleteInventory( invID );
+				LiteInventoryBase liteInv2 = energyCompany.deleteInventory( invID );
+				LiteInventoryBase liteInv3 = energyCompany.getInventoryBrief( invID, true );
 				
 				if (liteInv.getDeviceID() > 0 && Boolean.valueOf(req.getParameter("DeleteFromYukon")).booleanValue()) {
 					byte status = DBDeletionFuncs.deletionAttempted( liteInv.getDeviceID(), DBDeletionFuncs.DEVICE_TYPE );
@@ -574,7 +576,7 @@ public class InventoryManager extends HttpServlet {
 			
 			if (Boolean.valueOf( req.getParameter("SaveToBatch") ).booleanValue()) {
 				UpdateLMHardwareConfigAction.saveSwitchCommand( liteHw, SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE, energyCompany );
-				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration saved to batch" );
+				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration saved to batch successfully." );
 			}
 			else {
 				YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true, null );
@@ -586,8 +588,14 @@ public class InventoryManager extends HttpServlet {
 						UpdateLMHardwareAction.parseResponse( liteHw.getInventoryID(), starsInv, starsAcctInfo, null );
 					}
 				}
-				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration updated successfully" );
+				
+				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration sent out successfully." );
 			}
+			
+			session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
+			session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
+			redirect = referer = req.getContextPath() +
+					(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		}
 		catch (WebClientException e) {
 			CTILogger.error( e.getMessage(), e );
@@ -944,7 +952,8 @@ public class InventoryManager extends HttpServlet {
 			return;
 		}
 		
-		boolean searchMembers = energyCompany.getChildren().size() > 0;
+		boolean searchMembers = AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
+				&& (energyCompany.getChildren().size() > 0);
 		ArrayList invList = null; 
 		
 		if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_SERIAL_NO) {
@@ -1012,6 +1021,17 @@ public class InventoryManager extends HttpServlet {
 		try {
 			StarsCreateLMHardware createHw = new StarsCreateLMHardware();
 			setStarsInv( createHw, req, energyCompany.getDefaultTimeZone() );
+			
+			try {
+				LiteInventoryBase existingHw = energyCompany.searchForLMHardware(
+						createHw.getDeviceType().getEntryID(), createHw.getLMHardware().getManufacturerSerialNumber() );
+				if (existingHw != null)
+					throw new WebClientException("Cannot create hardware: serial # already exists");
+			}
+			catch (ObjectInOtherEnergyCompanyException e) {
+				throw new WebClientException("Cannot create hardware: serial # is found in another energy company");
+			}
+			
 			LiteInventoryBase liteInv = CreateLMHardwareAction.addInventory( createHw, null, energyCompany );
 			
 			if (req.getParameter("UseHardwareAddressing") != null) {

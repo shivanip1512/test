@@ -173,7 +173,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	private int nextCallNo = 0;
 	private int nextOrderNo = 0;
-	private boolean initiated = false;
 	private boolean inventoryLoaded = false;
 	private boolean workOrdersLoaded = false;
 	private boolean hierarchyLoaded = false;
@@ -409,17 +408,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	
 	public synchronized void init() {
-		if (initiated) return;
-		
 		// Load the inventory when energy company is initiated
-		if (!ECUtils.isDefaultEnergyCompany( this )) {
+		if (!inventoryLoaded && !ECUtils.isDefaultEnergyCompany( this )) {
 			if (!inventoryLoaded && loadInvTask == null) {
 				loadInvTask = new LoadInventoryTask( this );
 				new Thread( loadInvTask ).start();
+				CTILogger.info( "*** Start loading all inventory ***" );
 			}
 		}
-		
-		initiated = true;
 	}
 	
 	public void clear() {
@@ -1274,7 +1270,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		nextOrderNo = 0;
 	}
 	
-	private Hashtable getAddressMap() {
+	private synchronized Hashtable getAddressMap() {
 		if (addresses == null)
 			addresses = new Hashtable();
 		
@@ -1285,7 +1281,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return new ArrayList( getAddressMap().values() );
 	}
 	
-	private Hashtable getInventoryMap() {
+	private synchronized Hashtable getInventoryMap() {
 		if (inventory == null)
 			inventory = new Hashtable();
 		
@@ -1296,7 +1292,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return new ArrayList( getInventoryMap().values() );
 	}
 	
-	private Hashtable getWorkOrderMap() {
+	private synchronized Hashtable getWorkOrderMap() {
 		if (workOrders == null)
 			workOrders = new Hashtable();
 		
@@ -1307,7 +1303,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return new ArrayList( getWorkOrderMap().values() );
 	}
 	
-	private Hashtable getCustAccountInfoMap() {
+	private synchronized Hashtable getCustAccountInfoMap() {
 		if (custAccountInfos == null)
 			custAccountInfos = new Hashtable();
 		
@@ -1318,7 +1314,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return new ArrayList( getCustAccountInfoMap().values() );
 	}
 	
-	private Hashtable getLMCtrlHistMap() {
+	private synchronized Hashtable getLMCtrlHistMap() {
 		if (lmCtrlHists == null)
 			lmCtrlHists = new Hashtable();
 		
@@ -1453,7 +1449,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return liteContact;
 	}
 	
-	private Hashtable getContactCustAccountInfoMap() {
+	private synchronized Hashtable getContactCustAccountInfoMap() {
 		if (contactCustAccountInfoMap == null)
 			contactCustAccountInfoMap = new Hashtable();
 		
@@ -1650,7 +1646,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public LiteInventoryBase deleteInventory(int invID) {
-		return (LiteInventoryBase) getInventoryMap().get( new Integer(invID) );
+		return (LiteInventoryBase) getInventoryMap().remove( new Integer(invID) );
 	}
 	
 	/**
@@ -2172,13 +2168,17 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		
 		if (autoLoad) {
 			try {
-				com.cannontech.database.data.stars.customer.CustomerAccount account =
-						new com.cannontech.database.data.stars.customer.CustomerAccount();
-				account.setAccountID( new Integer(accountID) );
-				account = (com.cannontech.database.data.stars.customer.CustomerAccount)
-						Transaction.createTransaction( Transaction.RETRIEVE, account ).execute();
-				
-				return addBriefCustAccountInfo( account );
+				com.cannontech.database.db.stars.customer.CustomerAccount accountDB =
+						com.cannontech.database.db.stars.customer.CustomerAccount.getCustomerAccount( new Integer(accountID) );
+				if (accountDB != null) {
+					com.cannontech.database.data.stars.customer.CustomerAccount account =
+							new com.cannontech.database.data.stars.customer.CustomerAccount();
+					account.setAccountID( accountDB.getAccountID() );
+					account = (com.cannontech.database.data.stars.customer.CustomerAccount)
+							Transaction.createTransaction( Transaction.RETRIEVE, account ).execute();
+					
+					return addBriefCustAccountInfo( account );
+				}
 			}
 			catch (Exception e) {
 				CTILogger.error( e.getMessage(), e );
@@ -2615,24 +2615,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private void updateCustSelectionLists() {
 		starsCustSelLists.removeAllStarsCustSelectionList();
 		
-		// Currently the consumer side only need opt out period list and hardware status list
-		StarsCustSelectionList list = getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS);
-		if (list == null) {
-			list = getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
-			if (list != null) {
-				StarsCustSelectionList cusList = new StarsCustSelectionList();
-				cusList.setListID( list.getListID() );
-				cusList.setListName( YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS );
-				cusList.setStarsSelectionListEntry( list.getStarsSelectionListEntry() );
-				list = cusList;
-				
-				Hashtable starsSelectionLists = getStarsCustSelectionLists();
-				synchronized (starsSelectionLists) { starsSelectionLists.put(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS, cusList); }
-			}
-		}
-		if (list != null) starsCustSelLists.addStarsCustSelectionList( list );
-		
-		list = getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS);
+		// Currently the consumer side only need chance of control list
+		StarsCustSelectionList list = getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL);
 		if (list != null) starsCustSelLists.addStarsCustSelectionList( list );
 	}
 	
@@ -2772,13 +2756,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return starsCustAcctInfos;
 	}
 	
-	public StarsCustAccountInformation getStarsCustAccountInformation(int accountID) {
-		Hashtable starsCustAcctInfos = getStarsCustAcctInfos();
-		synchronized (starsCustAcctInfos) {
-			return (StarsCustAccountInformation)starsCustAcctInfos.get( new Integer(accountID) );
-		}
-	}
-	
 	public StarsCustAccountInformation getStarsCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo) {
 		Hashtable starsCustAcctInfos = getStarsCustAcctInfos();
 		synchronized (starsCustAcctInfos) {
@@ -2792,6 +2769,27 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			
 			return starsAcctInfo;
 		}
+	}
+	
+	public StarsCustAccountInformation getStarsCustAccountInformation(int accountID, boolean autoLoad) {
+		Hashtable starsCustAcctInfos = getStarsCustAcctInfos();
+		synchronized (starsCustAcctInfos) {
+			StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation)
+					starsCustAcctInfos.get( new Integer(accountID) );
+			if (starsAcctInfo != null) return starsAcctInfo;
+		}
+		
+		if (autoLoad) {
+			LiteStarsCustAccountInformation liteAcctInfo = getCustAccountInformation( accountID, true );
+			if (liteAcctInfo != null)
+				return getStarsCustAccountInformation( liteAcctInfo );
+		}
+		
+		return null;
+	}
+	
+	public StarsCustAccountInformation getStarsCustAccountInformation(int accountID) {
+		return getStarsCustAccountInformation( accountID, false );
 	}
 	
 	public StarsCustAccountInformation updateStarsCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo) {
@@ -2822,7 +2820,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	 * Register the StarsCustAccountInformation object as "active"
 	 * If the return value is false, it means the StarsCustAccountInformation object
 	 * is out of date, user should store a new object in the session by calling
-	 * getStarsCustAccountInformation(accountID)
+	 * getStarsCustAccountInformation(accountID, true)
 	 */
 	public boolean registerActiveAccount(StarsCustAccountInformation starsAcctInfo) {
 		starsAcctInfo.setLastActiveTime( new Date() );
@@ -2831,10 +2829,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		synchronized (starsCustAcctInfos) {
 			Integer accountID = new Integer( starsAcctInfo.getStarsCustomerAccount().getAccountID() );
 			StarsCustAccountInformation storedAcctInfo = (StarsCustAccountInformation) starsCustAcctInfos.get( accountID );
-			
-			if (storedAcctInfo == null)
-				starsCustAcctInfos.put( accountID, starsAcctInfo );
-			else if (!storedAcctInfo.equals( starsAcctInfo ))
+			if (storedAcctInfo == null || !storedAcctInfo.equals( starsAcctInfo ))
 				return false;
 		}
 		

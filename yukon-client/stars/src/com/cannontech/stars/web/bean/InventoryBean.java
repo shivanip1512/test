@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteContact;
@@ -22,9 +23,11 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.serialize.StreetAddress;
 import com.cannontech.util.ServletUtil;
@@ -245,21 +248,19 @@ public class InventoryBean {
 				else
 					hardwares = inventory;
 			}
-			else {
+			else if (showEnergyCompany) {
 				hardwares = new ArrayList();
 				
 				ArrayList members = ECUtils.getAllDescendants( getEnergyCompany() );
 				for (int i = 0; i < members.size(); i++) {
 					LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) members.get(i);
 					ArrayList inventory = member.loadAllInventory();
-					
-					if (showEnergyCompany) {
-						for (int j = 0; j < inventory.size(); j++)
-							hardwares.add( new Pair(inventory.get(j), member) );
-					}
-					else
-						hardwares.addAll( inventory );
+					for (int j = 0; j < inventory.size(); j++)
+						hardwares.add( new Pair(inventory.get(j), member) );
 				}
+			}
+			else {
+				hardwares = getEnergyCompany().loadAllInventory();
 			}
 		}
 		
@@ -374,8 +375,12 @@ public class InventoryBean {
 	}
 	
 	public String getHTML(HttpServletRequest req) {
+		StarsYukonUser user = (StarsYukonUser) req.getSession().getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+		
 		boolean showEnergyCompany = false;
-		if (getEnergyCompany().getChildren().size() > 0) {
+		if (AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
+			&& (getEnergyCompany().getChildren().size() > 0))
+		{
 			if ((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0) {
 				showEnergyCompany = true;
 			}

@@ -42,6 +42,34 @@ public class CustomerAccount extends DBPersistent {
     public CustomerAccount() {
         super();
     }
+    
+    /**
+     * @return Array of {Account ID(Integer), Account #(String)}
+     */
+	public static Object[][] getAllCustomerAccounts(Integer energyCompanyID) {
+		String sql = "SELECT acct.AccountID, acct.AccountNumber " +
+				"FROM " + TABLE_NAME + " acct, ECToAccountMapping map " +
+				"WHERE map.EnergyCompanyID = " + energyCompanyID + " AND map.AccountID = acct.AccountID";
+		
+		try {
+			SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+			stmt.execute();
+			
+			Object[][] res = new Object[ stmt.getRowCount() ][];
+			for (int i = 0; i < stmt.getRowCount(); i++) {
+				res[i] = new Object[2];
+				res[i][0] = new Integer( ((java.math.BigDecimal)stmt.getRow(i)[0]).intValue() );
+				res[i][1] = (String) stmt.getRow(i)[1];
+			}
+			
+			return res;
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+		}
+		
+		return null;
+	}
 
     public static int[] searchByAccountNumber(Integer energyCompanyID, String accountNumber) {
 		java.sql.Connection conn = null;

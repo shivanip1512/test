@@ -14,6 +14,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -265,8 +266,8 @@ public class SOAPClient extends HttpServlet {
 				else {
 					session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
 					session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
-					int lastSlashPos = destURL.lastIndexOf('/');
-					destURL = errorURL = destURL.substring(0, lastSlashPos) + "/Message.jsp";
+					destURL = errorURL = req.getContextPath() +
+							(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 				}
 			}
 		}
@@ -374,8 +375,8 @@ public class SOAPClient extends HttpServlet {
 				
 				session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
 				session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
-				int lastSlashPos = destURL.lastIndexOf('/');
-				destURL = errorURL = destURL.substring(0, lastSlashPos) + "/Message.jsp";
+				destURL = errorURL = req.getContextPath() +
+						(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 			}
 		}
 		else if (action.equalsIgnoreCase("SendOptOutNotification")) {
@@ -394,8 +395,8 @@ public class SOAPClient extends HttpServlet {
 			
 			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
 			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
-			int lastSlashPos = destURL.lastIndexOf('/');
-			destURL = errorURL = destURL.substring(0, lastSlashPos) + "/Message.jsp";
+			destURL = errorURL = req.getContextPath() +
+					(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		}
 		else if (action.equalsIgnoreCase("ReenableProgram") || action.equalsIgnoreCase("CancelScheduledOptOut")) {
 			clientAction = new ProgramReenableAction();
@@ -404,24 +405,24 @@ public class SOAPClient extends HttpServlet {
 			
 			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
 			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
-			int lastSlashPos = destURL.lastIndexOf('/');
-			destURL = errorURL = destURL.substring(0, lastSlashPos) + "/Message.jsp";
+			destURL = errorURL = req.getContextPath() +
+					(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		}
 		else if (action.equalsIgnoreCase("DisableLMHardware") || action.equalsIgnoreCase("EnableLMHardware")) {
 			clientAction = new YukonSwitchCommandAction();
 			
 			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
 			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
-			int lastSlashPos = destURL.lastIndexOf('/');
-			destURL = errorURL = destURL.substring(0, lastSlashPos) + "/Message.jsp";
+			destURL = errorURL = req.getContextPath() +
+					(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		}
 		else if (action.equalsIgnoreCase("UpdateLMHardwareConfig")) {
 			clientAction = new UpdateLMHardwareConfigAction();
 			
 			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
 			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
-			int lastSlashPos = destURL.lastIndexOf('/');
-			destURL = errorURL = destURL.substring(0, lastSlashPos) + "/Message.jsp";
+			destURL = errorURL = req.getContextPath() +
+					(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		}
 		else if (action.equalsIgnoreCase("GetLMCtrlHist")) {
 			clientAction = new GetLMCtrlHistAction();
@@ -509,16 +510,16 @@ public class SOAPClient extends HttpServlet {
 			
 			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
 			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
-			int lastSlashPos = destURL.lastIndexOf('/');
-			destURL = errorURL = destURL.substring(0, lastSlashPos) + "/Message.jsp";
+			destURL = errorURL = req.getContextPath() +
+					(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		}
 		else if (action.equalsIgnoreCase("UpdateThermostatOption")) {
 			clientAction = new UpdateThermostatManualOptionAction();
 			
 			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
 			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
-			int lastSlashPos = destURL.lastIndexOf('/');
-			destURL = errorURL = destURL.substring(0, lastSlashPos) + "/Message.jsp";
+			destURL = errorURL = req.getContextPath() +
+					(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		}
 		else if (action.equalsIgnoreCase("SaveThermostatSchedule")) {
 			clientAction = new SaveThermostatScheduleAction();

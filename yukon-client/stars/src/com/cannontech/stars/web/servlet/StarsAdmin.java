@@ -226,11 +226,51 @@ public class StarsAdmin extends HttpServlet {
 		try {
 			ServletUtils.removeTransientAttributes( session );
 			
-			String acctNo = req.getParameter( "AcctNo" );
-			int[] accountIDs = CustomerAccount.searchByAccountNumber(
-					energyCompany.getEnergyCompanyID(), acctNo.replace('*', '%') );
+			String fromStr = req.getParameter( "From" );
+			String toStr = req.getParameter( "To" );
+			Integer fromAcctNo = null;
+			Integer toAcctNo = null;
 			
-			if (accountIDs != null) {
+			try {
+				if (fromStr.equals("") || fromStr.equals("*"))
+					fromAcctNo = new Integer(Integer.MIN_VALUE);
+				else
+					fromAcctNo = Integer.valueOf( fromStr );
+				if (toStr.equals("") || toStr.equals("*"))
+					toAcctNo = new Integer(Integer.MAX_VALUE);
+				else
+					toAcctNo = Integer.valueOf( toStr );
+			}
+			catch (NumberFormatException e) {}
+			
+			Object[][] accounts = CustomerAccount.getAllCustomerAccounts( energyCompany.getEnergyCompanyID() );
+			ArrayList acctIDList = new ArrayList();
+			
+			for (int i = 0; i < accounts.length; i++) {
+				Integer accountID = (Integer) accounts[i][0];
+				String accountNo = (String) accounts[i][1];
+				
+				if (fromAcctNo != null && toAcctNo != null) {
+					// Account # is numeric
+					try {
+						int acctNo = Integer.parseInt( accountNo );
+						if (acctNo >= fromAcctNo.intValue() && acctNo <= toAcctNo.intValue())
+							acctIDList.add( accountID );
+					}
+					catch (NumberFormatException e) {}
+				}
+				else {
+					// Account # is alphabetic
+					if (accountNo.compareToIgnoreCase( fromStr ) >= 0 && accountNo.compareToIgnoreCase( toStr ) <= 0)
+						acctIDList.add( accountID );
+				}
+			}
+			
+			if (acctIDList.size() > 0) {
+				int[] accountIDs = new int[ acctIDList.size() ];
+				for (int i = 0; i < acctIDList.size(); i++)
+					accountIDs[i] = ((Integer)acctIDList.get(i)).intValue();
+				
 				DeleteCustAccountsTask task = new DeleteCustAccountsTask(user, accountIDs);
 				long id = ProgressChecker.addTask( task );
 				
@@ -257,8 +297,6 @@ public class StarsAdmin extends HttpServlet {
 				session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
 				redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 			}
-			else
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Search for account number failed");
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
@@ -2364,6 +2402,8 @@ public class StarsAdmin extends HttpServlet {
 				{
 					throw new WebClientException( "The member login is no longer valid" );
 				}
+				
+				req.getSession().setAttribute( ServletUtils.ATT_CONTEXT_SWITCHED, "true" );
 				return;
 			}
 		}

@@ -16,11 +16,13 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
@@ -119,7 +121,8 @@ public class AddSNRangeTask implements TimeConsumingTask {
 		status = STATUS_RUNNING;
 		
 		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
-		boolean showEnergyCompany = energyCompany.getChildren().size() > 0;
+		boolean showEnergyCompany = AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
+				&& (energyCompany.getChildren().size() > 0);
 		
 		for (int sn = snFrom; sn <= snTo; sn++) {
 			String serialNo = String.valueOf(sn);
@@ -136,7 +139,7 @@ public class AddSNRangeTask implements TimeConsumingTask {
 				}
 			}
 			catch (ObjectInOtherEnergyCompanyException e) {
-				if (descendants.contains( e.getEnergyCompany() ))
+				if (showEnergyCompany && descendants.contains( e.getEnergyCompany() ))
 					hardwareSet.add( new Pair(e.getObject(), e.getEnergyCompany()) );
 				else
 					serialNoSet.add( serialNo );

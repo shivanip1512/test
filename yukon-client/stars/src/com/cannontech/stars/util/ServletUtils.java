@@ -73,6 +73,8 @@ public class ServletUtils {
 	public static final String ATT_OMIT_GATEWAY_TIMEOUT = "OMIT_GATEWAY_TIMEOUT";
 	public static final String ATT_THERMOSTAT_INVENTORY_IDS = "THERMOSTAT_INVENTORY_IDS";
 	
+	public static final String ATT_CONTEXT_SWITCHED = "CONTEXT_SWITCHED";
+	
 	public static final String IN_SERVICE = "In Service";
 	public static final String OUT_OF_SERVICE = "Out of Service";
 	
