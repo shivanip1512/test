@@ -2703,9 +2703,9 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                             LONG estimatedControlTimeInSeconds = cycleLength * (((double)percent)/100.0);
                             if( getManualControlReceivedFlag() )
                             {
-                                ULONG secondsSince1901 = RWDBDateTime().seconds();
-                                if( (secondsSince1901 + cycleLength) > getDirectStopTime().seconds())
-                                {
+                                ULONG secondsAtLastControl = currentLMGroup->getLastControlSent().seconds();
+                                if( (secondsAtLastControl + cycleLength) >= (getDirectStopTime().seconds()-120) )
+                                {//if the last control sent is not within 2 minutes before the stop control time a refresh will be sent
                                     cycleCount = 0;
                                 }
                             }
