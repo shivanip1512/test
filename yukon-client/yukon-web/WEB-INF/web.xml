@@ -151,6 +151,13 @@
 		<description>Allows a user to request a password via email.</description>
 		<servlet-class>com.cannontech.stars.web.servlet.StarsPWordRequest</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>TimerTaskServlet</servlet-name>
+		<display-name>TimerTaskServlet</display-name>
+		<description>Start periodical tasks when the web server starts.</description>
+		<servlet-class>com.cannontech.stars.web.servlet.TimerTaskServlet</servlet-class>
+		<load-on-startup>6</load-on-startup>
+	</servlet>
 	<!-- STARS specific configs -->
 	<!-- CapControl specific configs -->
 	<servlet>
