@@ -85,9 +85,13 @@ void CtiLMCommandExecutor::Execute()
             break;
 
         case CtiLMCommand::DISABLE_PROGRAM:
-            DisableProgram();
+            DisableProgram(false);
             break;
 
+        case CtiLMCommand::EMERGENCY_DISABLE_PROGRAM:
+	    DisableProgram(true);
+	    break;
+	
         case CtiLMCommand::REQUEST_ALL_CONTROL_AREAS:
             SendAllControlAreas();
             break;
@@ -391,8 +395,10 @@ void CtiLMCommandExecutor::EnableProgram()
 
 /*---------------------------------------------------------------------------
     DisableProgram
+    If emergency is true then stop and disable the program without causing
+    any commands to be sent.
 ---------------------------------------------------------------------------*/    
-void CtiLMCommandExecutor::DisableProgram()
+void CtiLMCommandExecutor::DisableProgram(bool emergency)
 {
     LONG commandPAOID = _command->getPAOId();
     bool found = FALSE;
@@ -413,9 +419,12 @@ void CtiLMCommandExecutor::DisableProgram()
                     char tempchar[80];
                     RWCString text = RWCString("Disabling Program: ");
                     text += currentLMProgramBase->getPAOName();
+		    if(emergency)
+		       text += " (emergency)";
                     RWCString additional = RWCString("PAO Id: ");
                     _ltoa(currentLMProgramBase->getPAOId(),tempchar,10);
                     additional += tempchar;
+		    
 
                     CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                     {
@@ -430,11 +439,26 @@ void CtiLMCommandExecutor::DisableProgram()
                     { // do curtialment types still need this state?
                         currentLMProgramBase->setProgramState(CtiLMProgramBase::StoppingState);
                     }
-                    currentLMProgramBase->setManualControlReceivedFlag(TRUE);
-                    {
+
+		    if(emergency)
+		    {
+			//No manual stop please, just set the program inactive immediately
+			currentLMProgramBase->setManualControlReceivedFlag(FALSE);
+			currentLMProgramBase->setProgramState(CtiLMProgramBase::InactiveState);
+		    }
+		    else
+		    {   // Next main loop we want to do a manual stop
+			// I guess the fact that we disabled the program and set the
+			// manual controll received flag means stop the program (!)
+			currentLMProgramBase->setManualControlReceivedFlag(TRUE);
+		    }
+
+     		    {   // let them know
                         char tempchar[80];
                         RWCString text = RWCString("Stopping Control Program: ");
                         text += currentLMProgramBase->getPAOName();
+			if(emergency)
+			    text += " (emergency)";			
                         RWCString additional = RWCString("Reason: Program Disabled");
                         additional += " PAO Id: ";
                         _ltoa(currentLMProgramBase->getPAOId(),tempchar,10);

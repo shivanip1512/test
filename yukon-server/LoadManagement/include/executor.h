@@ -54,7 +54,7 @@ private:
     void EnableControlArea();
     void DisableControlArea();
     void EnableProgram();
-    void DisableProgram();
+    void DisableProgram(bool emergency);
     void SendAllControlAreas();
     void ChangeDailyStartTime();
     void ChangeDailyStopTime();
@@ -64,7 +64,7 @@ private:
     void EnableGroup();
     void DisableGroup();
     void ConfirmGroup();
-    void ResetPeakPointValue();    
+    void ResetPeakPointValue();
 
     CtiLMCommand* _command;
 };

@@ -147,7 +147,7 @@ LONG CtiLMCommand::getAuxId() const
 {
     return _auxid;
 }
-    
+
 /*-------------------------------------------------------------------------
     restoreGuts
     

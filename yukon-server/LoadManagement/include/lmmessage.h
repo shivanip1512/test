@@ -72,13 +72,11 @@ public:
         ENABLE_GROUP,
         DISABLE_GROUP,
         CONFIRM_GROUP,
-	RESET_PEAK_POINT_VALUE
+	RESET_PEAK_POINT_VALUE,
+	EMERGENCY_DISABLE_PROGRAM
     };
 
     CtiLMCommand() { }; //provided for polymorphic persitence only
-    /*CtiLMCommand(LONG command);
-    CtiLMCommand(LONG command, LONG id);
-    CtiLMCommand(const CtiLMCommand& commandMsg);*/
     
     virtual ~CtiLMCommand();
 
