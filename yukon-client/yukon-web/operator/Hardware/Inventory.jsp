@@ -22,6 +22,7 @@
 <jsp:setProperty name="inventoryBean" property="serviceCompany" param="ServiceCompany"/>
 <jsp:setProperty name="inventoryBean" property="location" param="Location"/>
 <jsp:setProperty name="inventoryBean" property="addressingGroup" param="AddressingGroup"/>
+<jsp:setProperty name="inventoryBean" property="deviceStatus" param="DeviceStatus"/>
 <jsp:setProperty name="inventoryBean" property="page" param="page"/>
 
 <html>
@@ -36,6 +37,7 @@ function changeFilter(filterBy) {
 	document.getElementById("DivServiceCompany").style.display = (filterBy == <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SRV_COMPANY %>)? "" : "none";
 	document.getElementById("DivLocation").style.display = (filterBy == <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION %>)? "" : "none";
 	document.getElementById("DivAddressingGroup").style.display = (filterBy == <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG %>)? "" : "none";
+	document.getElementById("DivDeviceStatus").style.display = (filterBy == <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS %>)? "" : "none";
 }
 
 function init() {
@@ -214,6 +216,20 @@ function showAll(form) {
 		String selected = (inventoryBean.getAddressingGroup() == group.getEntryID())? "selected" : "";
 %>
                                 <option value="<%= group.getEntryID() %>" <%= selected %>><%= group.getContent() %></option>
+                                <%
+	}
+%>
+                              </select>
+                            </div>
+                            <div id="DivDeviceStatus" style="display:none"> 
+                              <select name="DeviceStatus">
+                                <%
+	StarsCustSelectionList deviceStatList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS );
+	for (int i = 0; i < deviceStatList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = deviceStatList.getStarsSelectionListEntry(i);
+		String selected = (entry.getYukonDefID() == inventoryBean.getDeviceStatus())? "selected" : "";
+%>
+                                <option value="<%= entry.getYukonDefID() %>" <%= selected %>><%= entry.getContent() %></option>
                                 <%
 	}
 %>
