@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2004/07/12 19:30:37 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2004/10/22 15:08:17 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -474,22 +474,22 @@ bool CtiDeviceMCT::initCommandStore()
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::Control_Close;
-    cs._io      = IO_WRITE;
+    cs._io      = IO_WRITE | Q_ARML;
     cs._funcLen = make_pair( (int)MCT_Function_Close, 0 );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::Control_Open;
-    cs._io      = IO_WRITE;
+    cs._io      = IO_WRITE | Q_ARML;
     cs._funcLen = make_pair( (int)MCT_Function_Open, 0 );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::Control_Conn;
-    cs._io      = IO_WRITE;
+    cs._io      = IO_WRITE | Q_ARML;
     cs._funcLen = make_pair( (int)MCT_Function_Close, 0 );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::Control_Disc;
-    cs._io      = IO_WRITE;
+    cs._io      = IO_WRITE | Q_ARML;
     cs._funcLen = make_pair( (int)MCT_Function_Open, 0 );
     _commandStore.insert( cs );
 
@@ -931,6 +931,7 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         case CtiProtocolEmetcon::PutConfig_GroupAddrInhibit:
         case CtiProtocolEmetcon::PutConfig_Raw:
         case CtiProtocolEmetcon::PutConfig_TSync:
+        case CtiProtocolEmetcon::PutConfig_Intervals:
         case CtiProtocolEmetcon::PutConfig_DemandInterval:
         case CtiProtocolEmetcon::PutConfig_LoadProfileInterval:
         case CtiProtocolEmetcon::PutConfig_IEDClass:
@@ -1095,11 +1096,31 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
 
                 case ScanRateLoadProfile:
                 {
-                    for( i = 0; i < MAX_COLLECTED_CHANNEL; i++ )
+                    switch( getType() )
                     {
-                        if( getLoadProfile().isChannelValid(i) )
+                        case TYPEMCT410:
                         {
-                            insertPointFail( InMessage, retMsg, ScanRateLoadProfile, (i + 1) + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
+                            int channel = parse.getiValue("loadprofile_channel", 0);
+
+                            if( channel )
+                            {
+                                insertPointFail( InMessage, retMsg, ScanRateLoadProfile, channel + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
+                            }
+
+                            break;
+                        }
+
+                        default:
+                        {
+                            for( i = 0; i < CtiTableDeviceLoadProfile::MaxCollectedChannel; i++ )
+                            {
+                                if( getLoadProfile().isChannelValid(i) )
+                                {
+                                    insertPointFail( InMessage, retMsg, ScanRateLoadProfile, (i + 1) + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
+                                }
+                            }
+
+                            break;
                         }
                     }
 
@@ -2374,7 +2395,18 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
     else if(parse.isKeyValid("interval"))
     {
         temp = parse.getsValue("interval");
-        if( temp == "lp" )
+
+        if( temp == "intervals" )
+        {
+            function = CtiProtocolEmetcon::PutConfig_Intervals;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+            OutMessage->Buffer.BSt.Message[0] = getLoadProfile().getLastIntervalDemandRate() / 60;
+            OutMessage->Buffer.BSt.Message[1] = getLoadProfile().getLoadProfileDemandRate()  / 60;
+            OutMessage->Buffer.BSt.Message[2] = getLoadProfile().getVoltageDemandInterval()  / 15;
+            OutMessage->Buffer.BSt.Message[3] = getLoadProfile().getVoltageLoadProfileRate() / 60;
+        }
+        else if( temp == "lp" )
         {
             function = CtiProtocolEmetcon::PutConfig_LoadProfileInterval;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
