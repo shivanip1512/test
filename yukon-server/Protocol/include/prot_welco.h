@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_welco.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:35:49 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/05/20 22:39:25 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,6 +48,9 @@
 #define EW_FMW_BIT              0x40
 #define EW_HDW_BIT              0x20
 #define EW_SYN_BIT              0x10
+
+#define EW_TRIP_MASK            0x40
+#define EW_CLOSE_MASK           0x80
 
 #define EW_DIAG_EX_ACCUM32      0x01           /* RTU supports 32 bit accums   */
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2004/01/05 15:40:05 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2004/05/20 22:39:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1946,13 +1946,13 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
                         {
                             controlState = STATEZERO;
                             MyOutMessage->Buffer.OutMessage[8] = LOBYTE (ctlPoint->getPointStatus().getCloseTime1() / 10);
-                            MyOutMessage->Buffer.OutMessage[9] = (HIBYTE (ctlPoint->getPointStatus().getCloseTime1() / 10) & 0x3f) | 0x40;
+                            MyOutMessage->Buffer.OutMessage[9] = (HIBYTE (ctlPoint->getPointStatus().getCloseTime1() / 10) & 0x3f) | ((parse.getFlags() & CMD_FLAG_CTL_OPEN) ? EW_TRIP_MASK : EW_CLOSE_MASK);
                         }
                         else if( parse.getCommandStr().contains(ctlPoint->getPointStatus().getStateOneControl(), RWCString::ignoreCase) )  // (parse.getFlags() & CMD_FLAG_CTL_CLOSE)
                         {
                             controlState = STATEONE;
                             MyOutMessage->Buffer.OutMessage[8] = LOBYTE (ctlPoint->getPointStatus().getCloseTime2() / 10);
-                            MyOutMessage->Buffer.OutMessage[9] = (HIBYTE (ctlPoint->getPointStatus().getCloseTime2() / 10) & 0x3f) | 0x80;
+                            MyOutMessage->Buffer.OutMessage[9] = (HIBYTE (ctlPoint->getPointStatus().getCloseTime2() / 10) & 0x3f) | ((parse.getFlags() & CMD_FLAG_CTL_OPEN) ? EW_TRIP_MASK : EW_CLOSE_MASK);
                         }
                         else
                         {
