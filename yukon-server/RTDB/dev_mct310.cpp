@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2004/02/11 05:05:39 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2004/02/20 20:12:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -745,7 +745,10 @@ INT CtiDeviceMCT310::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
             if( getType() == TYPEMCT310ID ||
                 getType() == TYPEMCT310IL )
             {
-                Value = (int)Value % MCT_Rollover;
+                while( Value > MCT_Rollover )
+                {
+                    Value -= MCT_Rollover;
+                }
             }
 
             resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
@@ -765,7 +768,10 @@ INT CtiDeviceMCT310::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
             if( getType() == TYPEMCT310ID ||
                 getType() == TYPEMCT310IL )
             {
-                RecentValue = (int)RecentValue % MCT_Rollover;
+                while( RecentValue > MCT_Rollover )
+                {
+                    RecentValue -= MCT_Rollover;
+                }
             }
 
             resultString = getName() + " / KYZ 1 = " + CtiNumStr(RecentValue) + "  --  POINT UNDEFINED IN DB";
