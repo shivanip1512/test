@@ -26,6 +26,7 @@ public interface ConsumerInfoRole {
 	public static final int CONSUMER_INFO_ADMIN_CHANGE_LOGIN = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 15;
 	public static final int CONSUMER_INFO_ADMIN_FAQ = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 16;
 	public static final int CONSUMER_INFO_THERMOSTATS_ALL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 17;
+	public static final int CONSUMER_INFO_HARDWARES_METER = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 18;
 	
 	public static final int SUPER_OPERATOR = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 50;
 	public static final int NEW_ACCOUNT_WIZARD = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 51;
