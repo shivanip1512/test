@@ -126,11 +126,10 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
     		}
     		
-    		boolean isTwoWay = ServerUtils.isTwoWayThermostat( liteHw, energyCompany );
 			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID()) + " load 1";
 			
 			StringBuffer cmd = new StringBuffer();
-			if (isTwoWay)
+			if (liteHw.isTwoWayThermostat())
 				cmd.append("putconfig epro setstate");
 			else
 				cmd.append("putconfig xcom setstate");
@@ -176,7 +175,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 			resp.setStarsThermostatManualEvent( starsEvent );
 			respOper.setStarsUpdateThermostatManualOptionResponse( resp );
             
-            if (isTwoWay) {
+            if (liteHw.isTwoWayThermostat()) {
 				Thread.sleep(3 * 1000);		// Wait a while
 				energyCompany.updateThermostatSettings( liteAcctInfo );
 	            Thread.sleep(2 * 1000);		// Wait a while for the update to finish

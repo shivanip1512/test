@@ -68,8 +68,8 @@ public class LMHardwareBase extends DBPersistent {
     }
     
     public static int[] searchBySerialNumber(String serialNo) {
-    	String sql = "SELECT InventoryID FROM " + TABLE_NAME
-    			   + " WHERE UPPER(ManufacturerSerialNumber) = UPPER('" + serialNo + "')";
+    	String sql = "SELECT InventoryID FROM " + TABLE_NAME + " WHERE InventoryID >= 0 "
+    			   + "AND UPPER(ManufacturerSerialNumber) = UPPER('" + serialNo + "')";
     	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
     			sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
     	

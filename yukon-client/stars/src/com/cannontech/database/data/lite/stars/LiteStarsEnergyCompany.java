@@ -46,6 +46,7 @@ import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.action.CreateLMHardwareAction;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCallReport;
@@ -590,7 +591,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		if (dftThermSettings != null) return;
 		
 		int dftInventoryID = -1;
-		boolean useDefault = false;
 		java.sql.Connection conn = null;
 		
 		String sql = "SELECT inv.InventoryID FROM ECToInventoryMapping map, "
@@ -608,6 +608,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			
 			if (rset.next()) {
 				dftInventoryID = rset.getInt(1);
+				LiteStarsLMHardware liteHw = getLMHardware( dftInventoryID, true );
+				if (liteHw != null)
+					dftThermSettings = liteHw.getThermostatSettings();
 			}
 			else {
 	        	if (getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID) {
@@ -634,9 +637,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	        	hardware.setDbConnection( conn );
 	        	hardware.add();
 				
-	        	com.cannontech.stars.web.action.CreateLMHardwareAction.populateThermostatTables(
-	        			dftInventoryID, SOAPServer.getDefaultEnergyCompany(), false, conn );
-				
 				com.cannontech.database.data.stars.event.LMThermostatManualEvent event =
 						new com.cannontech.database.data.stars.event.LMThermostatManualEvent();
 				event.getLMCustomerEventBase().setEventTypeID( new Integer(
@@ -658,39 +658,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				event.add();
 	        	
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) StarsLiteFactory.createLite( hardware );
-				liteHw.setThermostatSettings( getThermostatSettings(liteHw, false) );
 				addLMHardware( liteHw );
+				
+	        	CreateLMHardwareAction.populateThermostatTables( liteHw, SOAPServer.getDefaultEnergyCompany(), conn );
+	        	dftThermSettings = getThermostatSettings( liteHw );
+	        	liteHw.setThermostatSettings( dftThermSettings );
 			}
-			
-	        dftThermSettings = new LiteStarsThermostatSettings();
-	        dftThermSettings.setInventoryID( dftInventoryID );
-	        
-	        com.cannontech.database.data.stars.hardware.LMThermostatSeason[] seasons =
-	        		com.cannontech.database.data.stars.hardware.LMThermostatSeason.getAllLMThermostatSeasons(
-	        			new Integer(dftInventoryID) );
-	        			
-	        if (seasons != null && seasons.length == 2) {
-		        dftThermSettings.setThermostatSeasons( new ArrayList() );
-		        for (int j = 0; j < seasons.length; j++) {
-		        	LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) StarsLiteFactory.createLite( seasons[j] );
-		        	dftThermSettings.getThermostatSeasons().add( liteSeason );
-		        }
-	        }
-	        else if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID)
-	        	useDefault = true;
-	        else
-				CTILogger.info( "No default thermostat schedules found!!!" );
-	        
-	        com.cannontech.database.data.stars.event.LMThermostatManualEvent[] events =
-	        		com.cannontech.database.data.stars.event.LMThermostatManualEvent.getAllLMThermostatManualEvents( new Integer(dftInventoryID) );
-	        if (events != null && events.length >= 1) {
-        		dftThermSettings.getThermostatManualEvents().add(
-        			(LiteLMThermostatManualEvent) StarsLiteFactory.createLite(events[0]) );
-	        }
-	        else if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID)
-	        	useDefault = true;
-	        else
-				CTILogger.info( "No default thermostat option found!!!" );
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -702,16 +675,19 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			catch (java.sql.SQLException e) {}
 		}
 		
-		if (useDefault) {
+		if (dftThermSettings == null || dftThermSettings.getThermostatSeasons().size() == 0 || dftThermSettings.getThermostatManualEvents().size() == 0) {
+			if (getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID) {
+				CTILogger.info( "Default thermostat settings not found!!!" );
+				return;
+			}
+			
 			LiteStarsThermostatSettings dftSettings = SOAPServer.getDefaultEnergyCompany().getDefaultThermostatSettings();
 			if (dftThermSettings == null) {
 				dftThermSettings = new LiteStarsThermostatSettings();
 				dftThermSettings.setInventoryID( dftSettings.getInventoryID() );
 			}
-			
 			if (dftThermSettings.getThermostatSeasons().size() == 0)
 				dftThermSettings.setThermostatSeasons( dftSettings.getThermostatSeasons() );
-			
 			if (dftThermSettings.getThermostatManualEvents().size() == 0)
 				dftThermSettings.setThermostatManualEvents( dftSettings.getThermostatManualEvents() );
 		}
@@ -1281,7 +1257,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		synchronized (lmHardwareList) {
 			for (int i = 0; i < lmHardwareList.size(); i++) {
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) lmHardwareList.get(i);
-				if (liteHw.getManufactureSerialNumber().equalsIgnoreCase( serialNo ))
+				if (liteHw.getInventoryID() >= 0 && liteHw.getManufactureSerialNumber().equalsIgnoreCase( serialNo ))
 					return liteHw;
 			}
 		}
@@ -1388,17 +1364,60 @@ public class LiteStarsEnergyCompany extends LiteBase {
         }
 	}
 	
-	public LiteStarsThermostatSettings getThermostatSettings(LiteStarsLMHardware liteHw, boolean isTwoWay) {
+	public LiteStarsThermostatSettings getThermostatSettings(LiteStarsLMHardware liteHw) {
 		LiteStarsThermostatSettings settings = new LiteStarsThermostatSettings();
         settings.setInventoryID( liteHw.getInventoryID() );
         
         com.cannontech.database.data.stars.hardware.LMThermostatSeason[] seasons =
         		com.cannontech.database.data.stars.hardware.LMThermostatSeason.getAllLMThermostatSeasons( new Integer(liteHw.getInventoryID()) );
-        if (seasons != null) {
-	        settings.setThermostatSeasons( new ArrayList() );
+        if (liteHw.getInventoryID() >= 0) {
+	        // Check to see if thermostat season entries are complete, and if not, re-populate thermostat tables
+	        boolean thermTableComplete = true;
+	        ArrayList dftThermSeasons = getDefaultThermostatSettings().getThermostatSeasons();
+	        int numSeasons = dftThermSeasons.size();
+	        int numIntervals = ((LiteLMThermostatSeason) dftThermSeasons.get(0)).getSeasonEntries().size() / 3;
 	        
+	        if (seasons == null || seasons.length < numSeasons)
+	        	thermTableComplete = false;
+	        else {
+	        	for (int i = 0; i < seasons.length; i++) {
+	        		int numSeasonEntries = seasons[i].getLMThermostatSeasonEntries().size();
+	        		if (liteHw.isOneWayThermostat() && numSeasonEntries < 3 * numIntervals ||
+	        			liteHw.isTwoWayThermostat() && numSeasonEntries < 7 * numIntervals)
+	        		{
+	        			thermTableComplete = false;
+	        			break;
+	        		}
+	        	}
+	        }
+	        
+	        if (!thermTableComplete) {
+	        	java.sql.Connection conn = null;
+	        	try {
+		        	conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+		        	if (seasons != null) {
+				    	for (int i = 0; i < seasons.length; i++) {
+				    		seasons[i].setDbConnection( conn );
+				    		seasons[i].delete();
+				    	}
+		        	}
+		        	seasons = CreateLMHardwareAction.populateThermostatTables( liteHw, this, conn );
+	        	}
+	        	catch (java.sql.SQLException e) {
+	        		e.printStackTrace();
+	        	}
+	        	finally {
+	        		try {
+	        			if (conn != null) conn.close();
+	        		}
+	        		catch (java.sql.SQLException e) {}
+	        	}
+	        }
+        }
+        
+        if (seasons != null) {
 	        for (int i = 0; i < seasons.length; i++) {
-	        	LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) StarsLiteFactory.createLite( seasons[i] );
+	        	LiteLMThermostatSeason liteSeason = StarsLiteFactory.createLiteLMThermostatSeason( seasons[i] );
 	        	settings.getThermostatSeasons().add( liteSeason );
 	        }
         }
@@ -1411,7 +1430,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         			(LiteLMThermostatManualEvent) StarsLiteFactory.createLite(events[i]) );
         }
         
-        if (isTwoWay) {
+        if (liteHw.isTwoWayThermostat()) {
         	settings.setDynamicData( new LiteStarsGatewayEndDevice() );
         	settings.updateThermostatSettings( liteHw, this );
         }
@@ -1425,7 +1444,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
 			int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
 			LiteStarsLMHardware liteHw = getLMHardware( invID, true );
-			if (!ServerUtils.isTwoWayThermostat(liteHw, this)) continue;
+			if (!liteHw.isTwoWayThermostat()) continue;
 			
 			LiteStarsThermostatSettings liteSettings = liteHw.getThermostatSettings();
 			liteSettings.updateThermostatSettings( liteHw, this );

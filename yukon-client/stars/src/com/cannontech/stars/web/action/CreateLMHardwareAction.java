@@ -22,6 +22,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.data.stars.hardware.LMThermostatSeason;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -157,10 +158,8 @@ public class CreateLMHardwareAction implements ActionBase {
 	            liteHw = (LiteStarsLMHardware) StarsLiteFactory.createLite( hw );
 	            energyCompany.addLMHardware( liteHw );
 	            
-	        	if (ServerUtils.isOneWayThermostat(liteHw, energyCompany))
-	        		populateThermostatTables( liteHw.getInventoryID(), energyCompany, false, conn );
-	        	else if (ServerUtils.isTwoWayThermostat(liteHw, energyCompany))
-	        		populateThermostatTables( liteHw.getInventoryID(), energyCompany, true, conn );
+	        	if (liteHw.isThermostat())
+	        		populateThermostatTables( liteHw, energyCompany, conn );
             }
             else {
             	liteHw = energyCompany.getLMHardware( invID, true );
@@ -205,7 +204,7 @@ public class CreateLMHardwareAction implements ActionBase {
             liteAcctInfo.getInventories().add( new Integer(liteHw.getInventoryID()) );
             
             // If this is a two-way thermostat, set the account for receiving dynamic data
-        	if (ServerUtils.isTwoWayThermostat(liteHw, energyCompany)) {
+        	if (liteHw.isTwoWayThermostat()) {
 	            java.util.ArrayList accountList = energyCompany.getAccountsWithGatewayEndDevice();
 	            synchronized (accountList) {
 	            	if (!accountList.contains( liteAcctInfo )) accountList.add( liteAcctInfo );
@@ -354,11 +353,11 @@ public class CreateLMHardwareAction implements ActionBase {
 		return CtiUtilities.NONE_ID;
 	}
 	
-	public static void populateThermostatTables(int inventoryID, LiteStarsEnergyCompany energyCompany, boolean isTwoWay, java.sql.Connection conn)
+	public static LMThermostatSeason[] populateThermostatTables(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
 	throws java.sql.SQLException {
 		com.cannontech.database.data.multi.MultiDBPersistent multiDB =
 				new com.cannontech.database.data.multi.MultiDBPersistent();
-				
+		
 		int weekdayID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY).getEntryID();
 		int[] weekdayIDs = new int[] {
 				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_MONDAY).getEntryID(),
@@ -369,23 +368,24 @@ public class CreateLMHardwareAction implements ActionBase {
 		};
 		
 		ArrayList liteSeasons = energyCompany.getDefaultThermostatSettings().getThermostatSeasons();
+		LMThermostatSeason[] seasons = new LMThermostatSeason[ liteSeasons.size() ];
+				
 		for (int i = 0; i < liteSeasons.size(); i++) {
 			LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSeasons.get(i);
-			com.cannontech.database.data.stars.hardware.LMThermostatSeason season =
-					new com.cannontech.database.data.stars.hardware.LMThermostatSeason();
-			StarsLiteFactory.setLMThermostatSeason( season.getLMThermostatSeason(), liteSeason );
-			season.getLMThermostatSeason().setSeasonID( null );
-			season.getLMThermostatSeason().setInventoryID( new Integer(inventoryID) );
+			seasons[i] = new LMThermostatSeason();
+			StarsLiteFactory.setLMThermostatSeason( seasons[i].getLMThermostatSeason(), liteSeason );
+			seasons[i].getLMThermostatSeason().setSeasonID( null );
+			seasons[i].getLMThermostatSeason().setInventoryID( new Integer(liteHw.getInventoryID()) );
 			
 			for (int j = 0; j < liteSeason.getSeasonEntries().size(); j++) {
 				LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(j);
 				
-				if (!isTwoWay || liteEntry.getTimeOfWeekID() != weekdayID) {
+				if (!liteHw.isTwoWayThermostat() || liteEntry.getTimeOfWeekID() != weekdayID) {
 					com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry entry =
 							new com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry();
 					StarsLiteFactory.setLMThermostatSeasonEntry( entry, liteEntry );
 					entry.setEntryID( null );
-					season.getLMThermostatSeasonEntries().add( entry );
+					seasons[i].getLMThermostatSeasonEntries().add( entry );
 				}
 				else {
 					for (int k= 0; k < weekdayIDs.length; k++) {
@@ -394,16 +394,18 @@ public class CreateLMHardwareAction implements ActionBase {
 						StarsLiteFactory.setLMThermostatSeasonEntry( entry, liteEntry );
 						entry.setEntryID( null );
 						entry.setTimeOfWeekID( new Integer(weekdayIDs[k]) );
-						season.getLMThermostatSeasonEntries().add( entry );
+						seasons[i].getLMThermostatSeasonEntries().add( entry );
 					}
 				}
 			}
 			
-			multiDB.getDBPersistentVector().add( season );
+			multiDB.getDBPersistentVector().add( seasons[i] );
 		}
 		
 		multiDB.setDbConnection( conn );
 		multiDB.add();
+		
+		return seasons;
 	}
 
 }

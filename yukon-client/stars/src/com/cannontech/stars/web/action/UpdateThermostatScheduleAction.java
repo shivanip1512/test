@@ -239,8 +239,6 @@ public class UpdateThermostatScheduleAction implements ActionBase {
     		}
     		
     		StarsUpdateThermostatScheduleResponse resp = updateThermostatSchedule( updateSched, liteHw, energyCompany );
-    		
-    		boolean isTwoWay = ServerUtils.isTwoWayThermostat( liteHw, energyCompany );
 			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID());
 			
 			LiteStarsThermostatSettings dftSettings = energyCompany.getDefaultThermostatSettings();
@@ -378,7 +376,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					String temp4H = (!isCool && !skip4)? String.valueOf(starsSched.getTemperature4()) : "ff";
 */					
 					StringBuffer cmd = new StringBuffer();
-					if (isTwoWay)
+					if (liteHw.isTwoWayThermostat())
 						cmd.append("putconfig epro schedule ");
 					else
 						cmd.append("putconfig xcom schedule ");
@@ -417,7 +415,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
     		resp.setStarsLMHardwareEvent( starsEvent );
 			respOper.setStarsUpdateThermostatScheduleResponse( resp );
 			
-			if (isTwoWay) {
+			if (liteHw.isTwoWayThermostat()) {
 				Thread.sleep(3 * 1000);		// Wait a while
 				energyCompany.updateThermostatSettings( liteAcctInfo );
 	            Thread.sleep(2 * 1000);		// Wait a while for the update to finish
@@ -498,7 +496,6 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 		
 		LiteStarsThermostatSettings liteDftSettings = energyCompany.getDefaultThermostatSettings();
 		LiteStarsThermostatSettings liteSettings = liteHw.getThermostatSettings();
-		boolean isTwoWay = ServerUtils.isTwoWayThermostat( liteHw, energyCompany );
 		
 		java.sql.Connection conn = null;
 		try {
@@ -581,7 +578,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					int[] towIDs = null;
 					
 					if (starsSched.getDay().getType() == StarsThermoDaySettings.ALL_TYPE) {
-						if (isTwoWay) {
+						if (liteHw.isTwoWayThermostat()) {
 							// Add season entries monday through sunday
 							towIDs = new int[] {
 								energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_MONDAY ).getEntryID(),
@@ -602,7 +599,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 							};
 						}
 					}
-					else if (starsSched.getDay().getType() == StarsThermoDaySettings.WEEKDAY_TYPE && isTwoWay) {
+					else if (starsSched.getDay().getType() == StarsThermoDaySettings.WEEKDAY_TYPE && liteHw.isTwoWayThermostat()) {
 						// Add season entries monday through friday
 						towIDs = new int[] {
 							energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_MONDAY ).getEntryID(),

@@ -97,10 +97,6 @@ public class StarsLiteFactory {
 			lite = new LiteLMThermostatSeasonEntry();
 			setLiteLMThermostatSeasonEntry( (LiteLMThermostatSeasonEntry) lite, (com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry) db );
 		}
-		else if (db instanceof com.cannontech.database.data.stars.hardware.LMThermostatSeason) {
-			lite = new LiteLMThermostatSeason();
-			setLiteLMThermostatSeason( (LiteLMThermostatSeason) lite, (com.cannontech.database.data.stars.hardware.LMThermostatSeason) db );
-		}
 		else if (db instanceof com.cannontech.database.data.stars.event.LMThermostatManualEvent) {
 			lite = new LiteLMThermostatManualEvent();
 			setLiteLMThermostatManualEvent( (LiteLMThermostatManualEvent) lite, (com.cannontech.database.data.stars.event.LMThermostatManualEvent) db );
@@ -198,10 +194,8 @@ public class StarsLiteFactory {
 		}
 		liteHw.updateDeviceStatus();
 		
-    	if (ServerUtils.isOneWayThermostat(liteHw, energyCompany))
-        	liteHw.setThermostatSettings( energyCompany.getThermostatSettings(liteHw, false) );
-    	else if (ServerUtils.isTwoWayThermostat(liteHw, energyCompany))
-        	liteHw.setThermostatSettings( energyCompany.getThermostatSettings(liteHw, true) );
+    	if (liteHw.isThermostat())
+        	liteHw.setThermostatSettings( energyCompany.getThermostatSettings(liteHw) );
 		
 		liteHw.setExtended( true );
 	}
@@ -296,16 +290,19 @@ public class StarsLiteFactory {
 		liteSeasonEntry.setTemperature( seasonEntry.getTemperature().intValue() );
 	}
 	
-	public static void setLiteLMThermostatSeason(LiteLMThermostatSeason liteSeason, com.cannontech.database.data.stars.hardware.LMThermostatSeason season) {
+	public static LiteLMThermostatSeason createLiteLMThermostatSeason(com.cannontech.database.data.stars.hardware.LMThermostatSeason season) {
+		LiteLMThermostatSeason liteSeason = new LiteLMThermostatSeason();
 		setLiteLMThermostatSeason( liteSeason, season.getLMThermostatSeason() );
 		
 		ArrayList seasonEntries = season.getLMThermostatSeasonEntries();
-		liteSeason.setSeasonEntries( new ArrayList() );
+		liteSeason.getSeasonEntries().clear();
 		for (int i = 0; i < seasonEntries.size(); i++) {
 			com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry seasonEntry =
 					(com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry) seasonEntries.get(i);
 			liteSeason.getSeasonEntries().add( createLite(seasonEntry) );
 		}
+		
+		return liteSeason;
 	}
 	
 	public static void setLiteLMThermostatManualEvent(LiteLMThermostatManualEvent liteEvent, com.cannontech.database.data.stars.event.LMThermostatManualEvent event) {

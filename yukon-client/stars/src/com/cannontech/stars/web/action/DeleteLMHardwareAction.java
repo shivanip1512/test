@@ -221,7 +221,7 @@ public class DeleteLMHardwareAction implements ActionBase {
     	liteAcctInfo.getInventories().remove( new Integer(invID) );
     	
     	// Remove the account from two-way thermostat account list if necessary
-		if (ServerUtils.isTwoWayThermostat(liteHw, energyCompany) &&
+		if (liteHw.isTwoWayThermostat() &&
 			!ServerUtils.hasTwoWayThermostat(liteAcctInfo, energyCompany))
 		{
 			ArrayList accountList = energyCompany.getAccountsWithGatewayEndDevice();

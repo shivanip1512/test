@@ -41,7 +41,7 @@ insert into YukonRoleProperty values(-20117,-201,'Thermostats All','false','Cont
 insert into YukonRoleProperty values(-20150,-201,'Super Operator','false','Used for some testing functions (not recommended)');
 insert into YukonRoleProperty values(-20151,-201,'New Account Wizard','true','Controls whether to enable the new account wizard');
 insert into YukonRoleProperty values(-20152,-201,'Import Customer Account','false','Controls whether to enable the customer account importing feature');
-insert into YukonRoleProperty values(-20800,-201,'Link FAQ','FAQ.jsp','The customized FAQ link');
+insert into YukonRoleProperty values(-20800,-201,'Link FAQ','(none)','The customized FAQ link');
 insert into YukonRoleProperty values(-20810,-201,'Text Control','control','Term for control');
 insert into YukonRoleProperty values(-20813,-201,'Text Opt Out Noun','opt out','Noun form of the term for opt out');
 insert into YukonRoleProperty values(-20814,-201,'Text Opt Out Verb','opt out of','Verbical form of the term for opt out');

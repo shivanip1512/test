@@ -405,33 +405,11 @@ public class ServerUtils {
 		return (str1.equalsIgnoreCase("(none)")) ? "" : str1;
 	}
 	
-	public static boolean isOneWayThermostat(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
-		if (liteHw.getInventoryID() < 0) return true;	// Default hardware is always "a thermostat"
-		
-		int oneWayRecID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC ).getEntryID();
-		int thermTypeID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_THERMOSTAT ).getEntryID();
-		
-		if (liteHw.getCategoryID() == oneWayRecID)
-			if (liteHw.getLmHardwareTypeID() == thermTypeID)
-				return true;
-		return false;
-	}
-	
-	public static boolean isTwoWayThermostat(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
-		int gwyEndDevID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC ).getEntryID();
-		int eproTypeID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO ).getEntryID();
-		
-		if (liteHw.getCategoryID() == gwyEndDevID)
-			if (liteHw.getLmHardwareTypeID() == eproTypeID)
-				return true;
-		return false;
-	}
-	
 	public static boolean hasTwoWayThermostat(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany) {
 		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
 			int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
 			LiteStarsLMHardware liteHw = energyCompany.getLMHardware( invID, true );
-			if (isTwoWayThermostat(liteHw, energyCompany))
+			if (liteHw.isTwoWayThermostat())
 				return true;
 		}
 		return false;
