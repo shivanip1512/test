@@ -1,11 +1,17 @@
 package com.cannontech.graph.model;
 
 import java.awt.Color;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeriesDataItem;
 
+import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.db.graph.GDSTypes;
 import com.cannontech.database.db.graph.GraphDataSeries;
+import com.cannontech.database.db.graph.GraphRenderers;
 
 /**
  * @author snebben
@@ -17,20 +23,24 @@ public class TrendSerie
 {
 	//Contains values of org.jfree.data.time.TimeSeriesDataItem values.
 	//TimeSeriesDataItem has a value and timestamp item.
-	private TimeSeriesDataItem[] dataItemArray = null;
-
+	private HashMap dataItemsMap = null;
+//	private TimeSeriesDataItem[] dataItemArray = null;
+//	private AbstractDataset dataset = null;
+	private Object dataSeries = null;	//THIS SHOULD BE SERIES or DEFAULTCATEGORYDATASET
+	
 	private Integer pointId;
 	private String label = null;
 	private Color color = Color.blue;
 	private String deviceName = null;
 	private Double multiplier = new Double(1.0);	//This is different then the point multiplier, this is a GDS
 	private Character axis = new Character('L');
-	public int typeMask = GraphDataSeries.BASIC_GRAPH_TYPE;
-	public String moreData = com.cannontech.common.util.CtiUtilities.STRING_NONE;
-	 
+	public int typeMask = GDSTypes.BASIC_GRAPH_TYPE;
+	public String moreData = CtiUtilities.STRING_NONE;
+	public int renderer = GraphRenderers.LINE;
 	// Flag for using graph multiplier
 	public boolean useMultiplier = false;
 	public long resolution = 1;
+
 	private TimeSeriesDataItem minimumTSDataItem = null;
 	private TimeSeriesDataItem maximumTSDataItem = null;
 
@@ -54,7 +64,21 @@ public class TrendSerie
 	{
 		super();
 	}
-	
+	/**
+	 * @param gds
+	 */
+	public TrendSerie(GraphDataSeries gds)
+	{
+		super();
+		setPointId(gds.getPointID());
+		setColor(Colors.getColor(gds.getColor().intValue()));
+		setLabel(gds.getLabel().toString());
+		setAxis(gds.getAxis());
+		setTypeMask(gds.getType().intValue());
+		setMultiplier(gds.getMultiplier());
+		setMoreData(gds.getMoreData());
+	}
+
 	/**
 	 * @return
 	 */
@@ -62,9 +86,12 @@ public class TrendSerie
 	{
 		if( areaOfSet == 0)
 		{
-			for (int i = 0; i < getDataItemArray().length; i++)
+			Iterator iter = getDataItemsMap().entrySet().iterator();
+			while( iter.hasNext())
 			{
-				areaOfSet += getDataItemArray(i).getValue().doubleValue();
+				Map.Entry entry = (Map.Entry)iter.next();
+				TimeSeriesDataItem dataItem = (TimeSeriesDataItem)entry.getValue();
+				areaOfSet += dataItem.getValue().doubleValue();
 			}
 		}
 		return areaOfSet;
@@ -92,16 +119,21 @@ public class TrendSerie
 	 * Returns the dataItemArray value.
 	 * @return org.jfree.data.time.TimeSeriesDataItem[]
 	 */
-	public TimeSeriesDataItem[] getDataItemArray()
+	/*public TimeSeriesDataItem[] getDataItemArray()
 	{
 		return dataItemArray;
+	}*/
+	
+	public HashMap getDataItemsMap()
+	{
+		return dataItemsMap;
 	}
 
 	/**
 	 * Returns the dataItemArray[item] value.
 	 * @return org.jfree.data.time.TimeSeriesDataItem
 	 */
-	public TimeSeriesDataItem getDataItemArray(int item)
+	/*public TimeSeriesDataItem getDataItemArray(int item)
 	{
 		if( getUseMultiplier())
 		{
@@ -111,7 +143,7 @@ public class TrendSerie
 			return (multDP);
 		}
 		return dataItemArray[item];
-	}
+	}*/
 	
 	/**
 	 * Returns the decimalPlaces value.
@@ -145,7 +177,8 @@ public class TrendSerie
 	 */
 	public double getLoadFactor()
 	{
-		if(getDataItemArray() != null)
+//		if(getDataItemArray() != null)
+		if( getDataItemsMap() != null)
 		{
 			if (getMaxArea() != 0.0 )
 				return getAreaOfSet() / getMaxArea();
@@ -165,7 +198,7 @@ public class TrendSerie
 		if( maxArea == 0)
 		{
 			if( getMaximumValue() != null)
-				maxArea = getMaximumValue().doubleValue() * getDataItemArray().length;
+				maxArea = getMaximumValue().doubleValue() * getDataItemsMap().size();//getDataItemArray().length;
 		}
 		return maxArea;
 	}
@@ -179,14 +212,17 @@ public class TrendSerie
 		if( maximumTSDataItem == null)
 		{
 			double max = Double.MIN_VALUE;
-			if( getDataItemArray() != null)
+			if( getDataItemsMap() != null)
 			{
-				for (int i = 0; i < getDataItemArray().length; i++)
+				Iterator iter = getDataItemsMap().entrySet().iterator();
+				while( iter.hasNext())
 				{
-					if( getDataItemArray(i).getValue().doubleValue() > max)
+					Map.Entry entry = (Map.Entry)iter.next();
+					TimeSeriesDataItem dataItem = (TimeSeriesDataItem)entry.getValue();
+					if( dataItem.getValue().doubleValue() > max)
 					{
-						max = getDataItemArray(i).getValue().doubleValue();
-						maximumTSDataItem = getDataItemArray(i);
+						max = dataItem.getValue().doubleValue();
+						maximumTSDataItem = dataItem;
 					}
 				}
 			}
@@ -203,14 +239,17 @@ public class TrendSerie
 		if( minimumTSDataItem == null)
 		{
 			double min = Double.MAX_VALUE;
-			if( getDataItemArray() != null )
+			if( getDataItemsMap() != null )
 			{
-				for (int i = 0; i < getDataItemArray().length; i++)
+				Iterator iter = getDataItemsMap().entrySet().iterator();
+				while( iter.hasNext())
 				{
-					if( getDataItemArray(i).getValue().doubleValue() < min)
+					Map.Entry entry = (Map.Entry)iter.next();
+					TimeSeriesDataItem dataItem = (TimeSeriesDataItem)entry.getValue();
+					if( dataItem.getValue().doubleValue() < min)
 					{
-						min = getDataItemArray(i).getValue().doubleValue();					
-						minimumTSDataItem = getDataItemArray(i);
+						min = dataItem.getValue().doubleValue();					
+						minimumTSDataItem = dataItem;
 					}
 				}
 			}
@@ -278,18 +317,31 @@ public class TrendSerie
 	/**
 	 * Returns the valuesArray value.
 	 * An array of only TimeSeriesDataItem.value(s) is created from dataItemArray.
+	 * * Actually populates both the values and periods array if values array is null.
+	 *   We are already iterating through the entrySet, we might as well store everything we can. 
 	 * @return double[]
 	 */
 	public double[] getValuesArray()
 	{
 		if( valuesArray == null)
 		{
-			if( getDataItemArray() == null)
+			if( getDataItemsMap() == null )
 				return null;
-			valuesArray = new double[getDataItemArray().length];
-			for (int i = 0; i < getDataItemArray().length; i++)
+
+			valuesArray = new double[getDataItemsMap().size()];
+			periodsArray = new long[getDataItemsMap().size()];
+			Iterator iter = getDataItemsMap().entrySet().iterator();
+			int index = 0;
+			while( iter.hasNext())
 			{
-				valuesArray[i] = getDataItemArray(i).getValue().doubleValue();
+				Map.Entry entry = (Map.Entry)iter.next();
+				TimeSeriesDataItem dataItem = (TimeSeriesDataItem)entry.getValue();
+				valuesArray[index] = dataItem.getValue().doubleValue();
+				long time = dataItem.getPeriod().getStart().getTime();
+				long round = time % resolution;
+				time = time - round;
+				periodsArray[index] = time;
+				index++;
 			}
 		}
 		return valuesArray;
@@ -297,6 +349,8 @@ public class TrendSerie
 	/**
 	 * Returns the periodsArray value.
 	 * An array of only TimeSeriesDataItem.period(s) is created from dataItemArray.
+	 * * Actually populates both the values and periods array if periods array is null.
+	 *   We are already iterating through the entrySet, we might as well store everything we can. 
 	 * @return long[]
 	 */	
 	public long[] getPeriodsArray()
@@ -304,18 +358,23 @@ public class TrendSerie
 //		long resolution = this.resolution;
 		if( periodsArray == null)
 		{
-			if( getDataItemArray() == null)
+			if (getDataItemsMap() == null )
 				return null;
-			java.util.Date now = new java.util.Date();
 
-			periodsArray = new long[getDataItemArray().length];
-			for (int i = 0; i < getDataItemArray().length; i++)
+			valuesArray = new double[getDataItemsMap().size()];
+			periodsArray = new long[getDataItemsMap().size()];
+			Iterator iter = getDataItemsMap().entrySet().iterator();
+			int index = 0;
+			while( iter.hasNext())
 			{
-				//Apply the resolution to sync timeperiods.
-				long time = getDataItemArray(i).getPeriod().getStart().getTime();
+				Map.Entry entry = (Map.Entry)iter.next();
+				TimeSeriesDataItem dataItem = (TimeSeriesDataItem)entry.getValue();
+				valuesArray[index] = dataItem.getValue().doubleValue();
+				long time = dataItem.getPeriod().getStart().getTime();
 				long round = time % resolution;
 				time = time - round;
-				periodsArray[i] = time;
+				periodsArray[index] = time;
+				index++;
 			}
 		}
 		return periodsArray;
@@ -341,9 +400,13 @@ public class TrendSerie
 	 * Sets the dataItemArray value.
 	 * @param newDataItemArray org.jfree.data.time.TimeSeriesDataItem []
 	 */
-	protected void setDataItemArray(TimeSeriesDataItem[] newDataItemArray)
+//	protected void setDataItemArray(TimeSeriesDataItem[] newDataItemArray)
+//	{
+//		dataItemArray = newDataItemArray;
+//	}
+	protected void setDataItemsMap(HashMap newDataItemsMap)
 	{
-		dataItemArray = newDataItemArray;
+		dataItemsMap = newDataItemsMap;
 	}
 	/**
 	 * Sets the decimalPlaces value.
@@ -423,6 +486,38 @@ public class TrendSerie
 	public void setMoreData(String string)
 	{
 		moreData = string;
+	}
+
+	/**
+	 * @return
+	 */
+/*	public int getRenderer()
+	{
+		return renderer;
+	}
+*/
+	/**
+	 * @param i
+	 */
+/*	public void setRenderer(int i)
+	{
+		renderer = i;
+	}
+*/
+	/**
+	 * @return
+	 */
+	public Object getDataSeries()
+	{
+		return dataSeries;
+	}
+	
+	/**
+	 * @param series
+	 */
+	public void setDataSeries(Object series)
+	{
+		dataSeries = series;
 	}
 
 }
