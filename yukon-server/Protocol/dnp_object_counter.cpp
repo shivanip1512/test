@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/03/13 19:35:37 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/04/28 22:27:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,6 +73,7 @@ int CtiDNPCounter::restoreVariation(unsigned char *buf, int len, int variation)
     switch( variation )
     {
         case Binary32BitNoFlag:
+        case Delta32BitNoFlag:
         {
             unsigned char *val = (unsigned char *)&_counter;
 
@@ -80,6 +81,19 @@ int CtiDNPCounter::restoreVariation(unsigned char *buf, int len, int variation)
             val[1] = buf[pos++];
             val[2] = buf[pos++];
             val[3] = buf[pos++];
+
+            break;
+        }
+
+        case Binary16BitNoFlag:
+        case Delta16BitNoFlag:
+        {
+            unsigned char *val = (unsigned char *)&_counter;
+
+            val[0] = buf[pos++];
+            val[1] = buf[pos++];
+            val[2] = 0;
+            val[3] = 0;
 
             break;
         }
@@ -122,6 +136,9 @@ CtiPointDataMsg *CtiDNPCounter::getPoint( void )
     switch(getVariation())
     {
         case Binary32BitNoFlag:
+        case Binary16BitNoFlag:
+        case Delta32BitNoFlag:
+        case Delta16BitNoFlag:
         {
             val = _counter;
 
