@@ -688,9 +688,6 @@ private void initialize() {
  */
 public void jButtonAddImages_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-//   com.cannontech.esub.util.ImageChooser.getInstance().setCurrentDirectory(
-//      new java.io.File("c:/"));
-
    ImageChooser.getInstance().setDialogTitle("Select Image File");
    ImageChooser.getInstance().setMultiSelectionEnabled(true);
 	int res = ImageChooser.getInstance().showOpenDialog(this);
@@ -710,12 +707,9 @@ public void jButtonAddImages_ActionPerformed(java.awt.event.ActionEvent actionEv
             {
                byte[] byteArray = new byte[ (int)files[i].length() ];
                new java.io.FileInputStream(files[i]).read( byteArray, 0, byteArray.length );
-               
-               
-               String name = com.cannontech.common.util.CtiUtilities.getUserName() + 
-                              ":" + files[i].toString();
-               
-                        
+                              
+               String name = files[i].getName();
+                                       
                dbImg.setImageCategory( com.cannontech.common.util.CtiUtilities.STRING_NONE );  //not sure if this is right!
                dbImg.setImageName( (name.length() >= 80 ? name.substring(0,80) : name) );
                dbImg.setImageValue( byteArray );
