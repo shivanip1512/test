@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/parsetest.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:44 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/05/19 14:53:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,31 +36,40 @@ BOOL  bQuit = FALSE;
 
 void main(int argc, char **argv)
 {
-   char cmd[100] = { "GetStatus This is the default case...." };
+    char cmd[100] = { "GetStatus This is the default case...."};
 
-   strcpy(cmd, argv[1]);
+    strcpy(cmd, argv[1]);
 
-   dout.start();     // fire up the logger thread
-   dout.setOutputPath("c:\\temp\\");
-   dout.setOutputFile("temp");
-   dout.setToStdOut(true);
-   dout.setWriteInterval(0);
+    dout.start();     // fire up the logger thread
+    dout.setOutputPath("c:\\temp\\");
+    dout.setOutputFile("temp");
+    dout.setToStdOut(true);
+    dout.setWriteInterval(0);
 
-   try
-   {
-      CtiCommandParser  parse(cmd);
-      parse.Dump();
-   }
-   catch(RWxmsg &msg)
-   {
-      cout << "Exception: ";
-      cout << msg.why() << endl;
-   }
-
-   dout.interrupt(CtiThread::SHUTDOWN);
-   dout.join();
+    try
+    {
+        CtiCommandParser  parse(cmd);
+        parse.Dump();
 
 
-   exit(0);
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << parse.asString() << endl;
+        }
+
+        parse.parseAsString(parse.asString());
+
+    }
+    catch(RWxmsg &msg)
+    {
+        cout << "Exception: ";
+        cout << msg.why() << endl;
+    }
+
+    dout.interrupt(CtiThread::SHUTDOWN);
+    dout.join();
+
+
+    exit(0);
 
 }
