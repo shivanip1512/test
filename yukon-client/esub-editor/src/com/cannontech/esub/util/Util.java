@@ -323,50 +323,6 @@ public class Util {
 
 		return (Toolkit.getDefaultToolkit().getImage(imageURL));
 	}
-	/* 
-	 public static Image[] getStaticButtons() {
-	 	String sep = "/";
-	 	String home = CtiProperties.getInstance().getProperty(CtiProperties.KEY_YUKON_HOME, "c:" + sep + "yukon");
-	 	String buttonHome = home + sep + "client" + sep + "esub" + sep + "images" + sep + "buttons";
-	 	
-	 	File buttonDir = new File(buttonHome);
-	 	if( !buttonDir.exists() || !buttonDir.isDirectory()) {
-	 		CTILogger.error("Can't find images at " + buttonDir.getPath());
-	 		return null;
-	 	}
-	 	
-		return loadAllImagesInDir(buttonDir); 	
-	 }
-	 
-	 
-	 public static Image[] getOnelineImages() {
-	 	String sep = "/";
-	 	String home = CtiProperties.getInstance().getProperty(CtiProperties.KEY_YUKON_HOME, "c:" + sep + "yukon");
-	 	String onelineHome = home + sep + "client" + sep + "esub" + sep + "images" + sep + "oneline";
-	 	
-	 	File onelineDir = new File(onelineHome);
-	 	if( !onelineDir.exists() || !onelineDir.isDirectory()) {
-	 		CTILogger.error("Can't find images at " + onelineDir.getPath());
-	 		return null;
-	 	}
-	 	
-		return loadAllImagesInDir(onelineDir); 		
-	 }
-	
-	 private static Image[] loadAllImagesInDir(File dir) {
-	 	File[] all = dir.listFiles();
-	 	ArrayList images = new ArrayList(all.length);
-	 	ImageFilter filter = new ImageFilter();
-	 	for( int i = 0; i < all.length; i++ ) {
-	 		if( filter.accept(all[i]) ) {
-	 			images.add( ImageCache.getInstance().getImage(all[i].getPath())); 			
-	 		}
-	 	}
-	 	
-	 	Image[] iArr = new Image[images.size()];
-	 	images.toArray(iArr);
-	 	return iArr;	
-	 } */
 
 	public static Image prepareImage(byte[] imageBuf) {
 		Image img = Toolkit.getDefaultToolkit().createImage(imageBuf);
@@ -396,9 +352,7 @@ public class Util {
 		for (int i = 0; i < sel.length; i++) {
 			if (sel[i] instanceof LxRotatable) {
 				LxRotatable rot = (LxRotatable) sel[i];
-				rot.rotate(r);
-				//LxComponent comp = (LxComponent) sel[i]; 		
-				//comp.rotateCenter(r, comp.getCenter()); 
+				rot.rotate(r);				
 			}
 		}
 	}
