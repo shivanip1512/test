@@ -414,8 +414,6 @@ function confirmDelete() {
               Events</a></div>
           </td>
 </cti:checkProperty> 
-          <td align = "center" class = "MainText" width="25%">&nbsp;</td>
-          <td align = "center" class = "MainText" width="25%">&nbsp;</td>
         </tr>
 </cti:checkNoProperty> 
       </table>
