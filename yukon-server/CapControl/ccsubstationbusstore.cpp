@@ -364,6 +364,14 @@ void CtiCCSubstationBusStore::reset()
                                         {//daily operations point
                                             currentCCSubstationBus->setDailyOperationsAnalogPointId(tempPointId);
                                         }
+                                        else if( tempPointOffset==3 )
+                                        {//power factor point
+                                            currentCCSubstationBus->setPowerFactorPointId(tempPointId);
+                                        }
+                                        else if( tempPointOffset==4 )
+                                        {//estimated power factor point
+                                            currentCCSubstationBus->setEstimatedPowerFactorPointId(tempPointId);
+                                        }
                                         else
                                         {//undefined bus point
                                             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -486,6 +494,14 @@ void CtiCCSubstationBusStore::reset()
                                         else if( tempPointOffset==2 )
                                         {//daily operations point
                                             currentCCFeeder->setDailyOperationsAnalogPointId(tempPointId);
+                                        }
+                                        else if( tempPointOffset==3 )
+                                        {//power factor point
+                                            currentCCFeeder->setPowerFactorPointId(tempPointId);
+                                        }
+                                        else if( tempPointOffset==4 )
+                                        {//estimated power factor point
+                                            currentCCFeeder->setEstimatedPowerFactorPointId(tempPointId);
                                         }
                                         else
                                         {//undefined feeder point

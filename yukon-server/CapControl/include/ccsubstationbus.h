@@ -77,6 +77,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG getEstimatedVarLoadPointId() const;
     DOUBLE getEstimatedVarLoadPointValue() const;
     LONG getDailyOperationsAnalogPointId() const;
+    LONG getPowerFactorPointId() const;
+    LONG getEstimatedPowerFactorPointId() const;
     LONG getCurrentDailyOperations() const;
     BOOL getPeakTimeFlag() const;
     BOOL getRecentlyControlledFlag() const;
@@ -126,6 +128,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setEstimatedVarLoadPointId(LONG estimatedvarid);
     CtiCCSubstationBus& setEstimatedVarLoadPointValue(DOUBLE estimatedvarval);
     CtiCCSubstationBus& setDailyOperationsAnalogPointId(LONG opanalogpointid);
+    CtiCCSubstationBus& setPowerFactorPointId(LONG pfpointid);
+    CtiCCSubstationBus& setEstimatedPowerFactorPointId(LONG epfpointid);
     CtiCCSubstationBus& setCurrentDailyOperations(LONG operations);
     CtiCCSubstationBus& setPeakTimeFlag(LONG peaktime);
     CtiCCSubstationBus& setRecentlyControlledFlag(BOOL recentlycontrolled);
@@ -218,6 +222,8 @@ private:
     LONG _estimatedvarloadpointid;
     DOUBLE _estimatedvarloadpointvalue;
     LONG _dailyoperationsanalogpointid;
+    LONG _powerfactorpointid;
+    LONG _estimatedpowerfactorpointid;
     LONG _currentdailyoperations;
     BOOL _peaktimeflag;
     BOOL _recentlycontrolledflag;

@@ -275,6 +275,26 @@ LONG CtiCCFeeder::getDailyOperationsAnalogPointId() const
 }
 
 /*---------------------------------------------------------------------------
+    getPowerFactorPointId
+
+    Returns the power factor point id of the feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCFeeder::getPowerFactorPointId() const
+{
+    return _powerfactorpointid;
+}
+
+/*---------------------------------------------------------------------------
+    getEstimatedPowerFactorPointId
+
+    Returns the estimated power factor point id of the feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCFeeder::getEstimatedPowerFactorPointId() const
+{
+    return _estimatedpowerfactorpointid;
+}
+
+/*---------------------------------------------------------------------------
     getCurrentDailyOperations
 
     Returns the current daily operations of the feeder
@@ -675,6 +695,28 @@ CtiCCFeeder& CtiCCFeeder::setEstimatedVarLoadPointValue(DOUBLE estimatedvarval)
 CtiCCFeeder& CtiCCFeeder::setDailyOperationsAnalogPointId(LONG opspointid)
 {
     _dailyoperationsanalogpointid = opspointid;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setPowerFactorPointId
+
+    Sets the power factor point id of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setPowerFactorPointId(LONG pfpointid)
+{
+    _powerfactorpointid = pfpointid;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setEstimatedPowerFactorPointId
+
+    Sets the estimated power factor point id of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setEstimatedPowerFactorPointId(LONG epfpointid)
+{
+    _estimatedpowerfactorpointid = epfpointid;
     return *this;
 }
 
@@ -1783,6 +1825,8 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
     >> _estimatedvarloadpointid
     >> _estimatedvarloadpointvalue
     >> _dailyoperationsanalogpointid
+    >> _powerfactorpointid
+    >> _estimatedpowerfactorpointid
     >> _currentdailyoperations
     >> _recentlycontrolledflag
     >> tempTime2
@@ -1845,6 +1889,8 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _estimatedvarloadpointid
     << _estimatedvarloadpointvalue
     << _dailyoperationsanalogpointid
+    << _powerfactorpointid
+    << _estimatedpowerfactorpointid
     << _currentdailyoperations
     << _recentlycontrolledflag
     << _lastoperationtime.rwtime()
@@ -1890,6 +1936,8 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _estimatedvarloadpointid = right._estimatedvarloadpointid;
         _estimatedvarloadpointvalue = right._estimatedvarloadpointvalue;
         _dailyoperationsanalogpointid = right._dailyoperationsanalogpointid;
+        _powerfactorpointid = right._powerfactorpointid;
+        _estimatedpowerfactorpointid = right._estimatedpowerfactorpointid;
         _currentdailyoperations = right._currentdailyoperations;
         _recentlycontrolledflag = right._recentlycontrolledflag;
         _lastoperationtime = right._lastoperationtime;
@@ -1967,6 +2015,8 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
 
     _estimatedvarloadpointid = 0;
     _dailyoperationsanalogpointid = 0;
+    _powerfactorpointid = 0;
+    _estimatedpowerfactorpointid = 0;
 
     rdr["currentvarpointvalue"] >> isNull;
     if( !isNull )
@@ -2036,6 +2086,14 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
             else if( tempPointOffset==2 )
             {//daily operations point
                 _dailyoperationsanalogpointid = tempPointId;
+            }
+            else if( tempPointOffset==3 )
+            {//power factor point
+                _powerfactorpointid = tempPointId;
+            }
+            else if( tempPointOffset==4 )
+            {//estimated power factor point
+                _estimatedpowerfactorpointid = tempPointId;
             }
             else
             {//undefined feeder point

@@ -88,6 +88,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     LONG getEstimatedVarLoadPointId() const;
     DOUBLE getEstimatedVarLoadPointValue() const;
     LONG getDailyOperationsAnalogPointId() const;
+    LONG getPowerFactorPointId() const;
+    LONG getEstimatedPowerFactorPointId() const;
     LONG getCurrentDailyOperations() const;
     BOOL getRecentlyControlledFlag() const;
     const RWDBDateTime& getLastOperationTime() const;
@@ -124,6 +126,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setEstimatedVarLoadPointId(LONG estimatedvarid);
     CtiCCFeeder& setEstimatedVarLoadPointValue(DOUBLE estimatedvarval);
     CtiCCFeeder& setDailyOperationsAnalogPointId(LONG opspointid);
+    CtiCCFeeder& setPowerFactorPointId(LONG pfpointid);
+    CtiCCFeeder& setEstimatedPowerFactorPointId(LONG epfpointid);
     CtiCCFeeder& setCurrentDailyOperations(LONG operations);
     CtiCCFeeder& setRecentlyControlledFlag(BOOL recentlycontrolled);
     CtiCCFeeder& setLastOperationTime(const RWDBDateTime& lastoperation);
@@ -193,6 +197,8 @@ private:
     LONG _estimatedvarloadpointid;
     DOUBLE _estimatedvarloadpointvalue;
     LONG _dailyoperationsanalogpointid;
+    LONG _powerfactorpointid;
+    LONG _estimatedpowerfactorpointid;
     LONG _currentdailyoperations;
     BOOL _recentlycontrolledflag;
     RWDBDateTime _lastoperationtime;

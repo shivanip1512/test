@@ -407,6 +407,26 @@ LONG CtiCCSubstationBus::getDailyOperationsAnalogPointId() const
 }
 
 /*---------------------------------------------------------------------------
+    getPowerFactorPointId
+
+    Returns the power factor point id of the substation
+---------------------------------------------------------------------------*/
+LONG CtiCCSubstationBus::getPowerFactorPointId() const
+{
+    return _powerfactorpointid;
+}
+
+/*---------------------------------------------------------------------------
+    getEstimatedPowerFactorPointId
+
+    Returns the estimated power factor point id of the substation
+---------------------------------------------------------------------------*/
+LONG CtiCCSubstationBus::getEstimatedPowerFactorPointId() const
+{
+    return _estimatedpowerfactorpointid;
+}
+
+/*---------------------------------------------------------------------------
     getCurrentDailyOperations
 
     Returns the current daily operations of the substation
@@ -962,6 +982,28 @@ CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedVarLoadPointValue(DOUBLE est
 CtiCCSubstationBus& CtiCCSubstationBus::setDailyOperationsAnalogPointId(LONG opanalogpointid)
 {
     _dailyoperationsanalogpointid = opanalogpointid;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setPowerFactorPointId
+
+    Sets the power factor point id of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setPowerFactorPointId(LONG pfpointid)
+{
+    _powerfactorpointid = pfpointid;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setEstimatedPowerFactorPointId
+
+    Sets the estimated power factor point id of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedPowerFactorPointId(LONG epfpointid)
+{
+    _estimatedpowerfactorpointid = epfpointid;
     return *this;
 }
 
@@ -2748,6 +2790,8 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     >> _estimatedvarloadpointid
     >> _estimatedvarloadpointvalue
     >> _dailyoperationsanalogpointid
+    >> _powerfactorpointid
+    >> _estimatedpowerfactorpointid
     >> _currentdailyoperations
     >> _peaktimeflag
     >> _recentlycontrolledflag
@@ -2821,6 +2865,8 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _estimatedvarloadpointid
     << _estimatedvarloadpointvalue
     << _dailyoperationsanalogpointid
+    << _powerfactorpointid
+    << _estimatedpowerfactorpointid
     << _currentdailyoperations
     << _peaktimeflag
     << _recentlycontrolledflag
@@ -2877,6 +2923,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _estimatedvarloadpointid = right._estimatedvarloadpointid;
         _estimatedvarloadpointvalue = right._estimatedvarloadpointvalue;
         _dailyoperationsanalogpointid = right._dailyoperationsanalogpointid;
+        _powerfactorpointid = right._powerfactorpointid;
+        _estimatedpowerfactorpointid = right._estimatedpowerfactorpointid;
         _currentdailyoperations = right._currentdailyoperations;
         _peaktimeflag = right._peaktimeflag;
         _recentlycontrolledflag = right._recentlycontrolledflag;
@@ -2977,6 +3025,8 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
 
     _estimatedvarloadpointid = 0;
     _dailyoperationsanalogpointid = 0;
+    _powerfactorpointid = 0;
+    _estimatedpowerfactorpointid = 0;
 
     rdr["currentvarpointvalue"] >> isNull;
     if( !isNull )
@@ -3053,6 +3103,14 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
             else if( tempPointOffset==2 )
             {//daily operations point
                 _dailyoperationsanalogpointid = tempPointId;
+            }
+            else if( tempPointOffset==3 )
+            {//power factor point
+                _powerfactorpointid = tempPointId;
+            }
+            else if( tempPointOffset==4 )
+            {//estimated power factor point
+                _estimatedpowerfactorpointid = tempPointId;
             }
             else
             {//undefined bus point
