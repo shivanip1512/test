@@ -33,15 +33,13 @@
 
 #include "dlldefs.h"
 
-#include "dupreq.h"
-#include "dialup.h"
-
 #include "logger.h"
 #include "guard.h"
 
 #include "utility.h"
 
-
+#include "dllyukon.h"
+#include "numstr.h"
 
 CtiDeviceION::CtiDeviceION() {}
 
@@ -61,7 +59,7 @@ CtiDeviceION &CtiDeviceION::operator=(const CtiDeviceION &aRef)
    return *this;
 }
 
-
+/*
 inline bool      CtiDeviceION::isMeter() const                      {   return true;    }
 inline RWCString CtiDeviceION::getMeterGroupName() const            {   return getMeterGroup().getCollectionGroup();    }
 inline RWCString CtiDeviceION::getAlternateMeterGroupName() const   {   return getMeterGroup().getTestCollectionGroup();    }
@@ -74,7 +72,7 @@ CtiDeviceION& CtiDeviceION::setMeterGroup( const CtiTableDeviceMeterGroup &aMete
     MeterGroup = aMeterGroup;
     return *this;
 }
-
+*/
 
 CtiProtocolBase *CtiDeviceION::getProtocol( void ) const
 {
@@ -103,28 +101,24 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
     {
         case ScanRequest:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Picked ScanRequest" << endl;
-            }
-
             switch(parse.getiValue("scantype"))
             {
-            case ScanRateStatus:
-            case ScanRateGeneral:
-               {
-                   _ion.setCommand(CtiProtocolION::Command_ExceptionScan);
-                   found = true;
-                   break;
-               }
-            case ScanRateAccum:
-            case ScanRateIntegrity:
-            default:
-               {
-                   _ion.setCommand(CtiProtocolION::Command_IntegrityScan);
-                   found = true;
-                   break;
-               }
+                case ScanRateStatus:
+                case ScanRateGeneral:
+                {
+                    _ion.setCommand(CtiProtocolION::Command_ExceptionScan);
+                    found = true;
+                    break;
+                }
+
+                case ScanRateAccum:
+                case ScanRateIntegrity:
+                default:
+                {
+                    _ion.setCommand(CtiProtocolION::Command_IntegrityScan);
+                    found = true;
+                    break;
+                }
             }
 
             break;
@@ -166,41 +160,6 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
                 nRet = NoError;
             }
-
-            break;
-        }
-
-        case ScanRequest:
-        {
-            switch( parse.getiValue("scantype") )
-            {
-                case ScanRateStatus:
-                {
-                    nRet = NoMethod;
-                    break;
-                }
-
-                case ScanRateGeneral:
-                {
-                    _ion.setCommand(CtiProtocolION::ION_Class123Read);
-                    nRet = NoError;
-                    break;
-                }
-
-                case ScanRateAccum:
-                {
-                    nRet = NoMethod;
-                    break;
-                }
-
-                case ScanRateIntegrity:
-                {
-                    _ion.setCommand(CtiProtocolION::ION_Class0Read);
-                    nRet = NoError;
-                    break;
-                }
-            }
-
 
             break;
         }
@@ -264,6 +223,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
         OutMessage->Port     = getPortID();
         OutMessage->DeviceID = getID();
         OutMessage->TargetID = getID();
+        OutMessage->Retry    = IONRetries;
         _ion.sendCommRequest( OutMessage, outList );
     }
     else
@@ -360,32 +320,66 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
     {
         _ion.getInboundPoints(ionPoints);
 
-        processInboundPoints(ionPoints, TimeNow, vgList, retList, outList);
+        processInboundPoints(InMessage, TimeNow, vgList, retList, outList, ionPoints);
     }
 
     return ErrReturn;
 }
 
 
-void CtiDeviceION::processInboundPoints(RWTPtrSlist<CtiPointDataMsg> &points, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
+void CtiDeviceION::processInboundPoints( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, RWTPtrSlist<CtiPointDataMsg> &points )
 {
+    CtiReturnMsg *retMsg, *vgMsg;
+
+    retMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    vgMsg  = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
     while( !points.isEmpty() )
     {
-        CtiPointDataMsg *tmpMsg = points.removeFirst();
-        CtiPointBase *point;
+        CtiPointDataMsg *tmpMsg;
+        CtiPointBase    *point;
+        double value;
+        RWCString resultString;
+
+        tmpMsg = points.removeFirst();
 
         //  !!! tmpMsg->getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
         if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId(), tmpMsg->getType())) != NULL )
         {
             tmpMsg->setId(point->getID());
 
-            retList.append(tmpMsg);
+            //  generate the point update string, if applicable
+            if( point->isNumeric() )
+            {
+                value = ((CtiPointNumeric *)point)->computeValueForUOM(tmpMsg->getValue());
+                tmpMsg->setValue(value);
+
+                //tmpMsg->getString()
+                resultString = getName() + " / " + point->getName() + ": " + CtiNumStr(tmpMsg->getValue(), ((CtiPointNumeric *)point)->getPointUnits().getDecimalPlaces());
+            }
+            else if( point->isStatus() )
+            {
+                resultString = getName() + " / " + point->getName() + ": " + ResolveStateName(((CtiPointStatus *)point)->getStateGroupID(), tmpMsg->getValue());
+            }
+            else
+            {
+                resultString = "";
+            }
+
+            tmpMsg->setString(resultString);
+
+            //  ACH:  maybe check for "update" someday...  but for now, who cares
+            vgMsg->PointData().append(tmpMsg->replicateMessage());
+            retMsg->PointData().append(tmpMsg);
         }
         else
         {
             delete tmpMsg;
         }
     }
+
+    retList.append(retMsg);
+    vgList.append(vgMsg);
 }
 
 
