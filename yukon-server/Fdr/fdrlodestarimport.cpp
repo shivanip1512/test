@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.2 $
-*    DATE         :  $Date: 2003/06/09 16:14:21 $
+*    REVISION     :  $Revision: 1.3 $
+*    DATE         :  $Date: 2003/07/18 21:46:14 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.3  2003/07/18 21:46:14  jwolberg
+      Fixes based on answers to questions asked of Xcel.
+
       Revision 1.2  2003/06/09 16:14:21  jwolberg
       Added FDR LodeStar interface.
 
@@ -60,6 +63,7 @@ const CHAR * CtiFDR_LodeStarImport::KEY_DRIVE_AND_PATH = "FDR_LODESTARIMPORT_DRI
 const CHAR * CtiFDR_LodeStarImport::KEY_DB_RELOAD_RATE = "FDR_LODESTARIMPORT_DB_RELOAD_RATE";
 const CHAR * CtiFDR_LodeStarImport::KEY_QUEUE_FLUSH_RATE = "FDR_LODESTARIMPORT_QUEUE_FLUSH_RATE";
 const CHAR * CtiFDR_LodeStarImport::KEY_DELETE_FILE = "FDR_LODESTARIMPORT_DELETE_FILE";
+const CHAR * CtiFDR_LodeStarImport::KEY_RENAME_SAVE_FILE = "FDR_LODESTARIMPORT_RENAME_SAVE_FILE";
 
 
 // Constructors, Destructor, and Operators
@@ -87,6 +91,17 @@ bool CtiFDR_LodeStarImport::shouldDeleteFileAfterImport() const
 CtiFDR_LodeStarImport &CtiFDR_LodeStarImport::setDeleteFileAfterImport (bool aFlag)
 {
     _deleteFileAfterImportFlag = aFlag;
+    return *this;
+}
+
+bool CtiFDR_LodeStarImport::shouldRenameSaveFileAfterImport() const
+{
+    return _renameSaveFileAfterImportFlag;
+}
+
+CtiFDR_LodeStarImport &CtiFDR_LodeStarImport::setRenameSaveFileAfterImport (bool aFlag)
+{
+    _renameSaveFileAfterImportFlag = aFlag;
     return *this;
 }
 
@@ -282,9 +297,16 @@ bool CtiFDR_LodeStarImport::decodeFirstHeaderRecord(RWCString& aLine,RWCString& 
                     }
                 case 2:
                     {
-                        bool pointFound = findTranslationNameInList(tempString1, getReceiveFromList(), point);
                         lsCustomerIdentifier = tempString1;
+                        break;
+                    }
+                case 3:
+                    {
+                        lsChannel = atol(tempString1);
     
+                        CHAR keyString[80];
+                        _snprintf(keyString,80,"%s %d",lsCustomerIdentifier,lsChannel);
+                        bool pointFound = findTranslationNameInList(RWCString(keyString), getReceiveFromList(), point);
                         if( pointFound )
                         {
                             pointId = point.getPointID();
@@ -301,12 +323,6 @@ bool CtiFDR_LodeStarImport::decodeFirstHeaderRecord(RWCString& aLine,RWCString& 
                             _snprintf(action,80,"%s", lsCustomerIdentifier);
                             logEvent (desc,RWCString (action));
                         }
-    
-                        break;
-                    }
-                case 3:
-                    {
-                        lsChannel = atol(tempString1);
                         break;
                     }
                 case 4:
@@ -616,7 +632,7 @@ bool CtiFDR_LodeStarImport::decodeDataRecord(RWCString& aLine, long pointId, dou
     RWCString           tokedStr = cmdLine("\r\n");
     char*               tempCharPtr = (char*)tokedStr.data();
     int                 fieldNumber = 1;
-    double              calculatedValue;
+    double              intervalValue;
     unsigned            importedQuality;
 
     /****************************
@@ -650,8 +666,7 @@ bool CtiFDR_LodeStarImport::decodeDataRecord(RWCString& aLine, long pointId, dou
             }
             else if( fieldNumber == 2 )
             {
-                double tempIntervalValue = atof(tempString1);
-                calculatedValue = (((tempIntervalValue*lsPulseMultiplier)+lsPulseOffset)*lsMeterMultiplier)+lsMeterOffset;
+                intervalValue = atof(tempString1);
             }
             else if( fieldNumber == 3 )
             {
@@ -659,7 +674,7 @@ bool CtiFDR_LodeStarImport::decodeDataRecord(RWCString& aLine, long pointId, dou
             }
             else if( fieldNumber == 4 )
             {
-                CtiPointDataMsg* pointData = new CtiPointDataMsg(pointId,calculatedValue,importedQuality,AnalogPointType);
+                CtiPointDataMsg* pointData = new CtiPointDataMsg(pointId,intervalValue,importedQuality,AnalogPointType);
                 if( tempString1.length() > 0 )
                 {
                     RWTime optionalTime = ForeignToYukonTime(tempString1,'A');
@@ -787,13 +802,23 @@ int CtiFDR_LodeStarImport::readConfig( void )
         setQueueFlushRate (1);
     }
 
-    setDeleteFileAfterImport(true);
+    setDeleteFileAfterImport(false);
     tempStr = getCparmValueAsString(KEY_DELETE_FILE);
+    if (tempStr.length() > 0)
+    {
+        if (!tempStr.compareTo ("true",RWCString::ignoreCase))
+        {
+            setDeleteFileAfterImport(true);
+        }
+    }
+
+    setRenameSaveFileAfterImport(true);
+    tempStr = getCparmValueAsString(KEY_RENAME_SAVE_FILE);
     if (tempStr.length() > 0)
     {
         if (!tempStr.compareTo ("false",RWCString::ignoreCase))
         {
-            setDeleteFileAfterImport (false);
+            setRenameSaveFileAfterImport(false);
         }
     }
 
@@ -811,6 +836,10 @@ int CtiFDR_LodeStarImport::readConfig( void )
         else
             dout << RWTime() << " Import file will NOT be deleted after import" << endl;
 
+        if (shouldRenameSaveFileAfterImport())
+            dout << RWTime() << " Import file will be renamed and saved after import" << endl;
+        else
+            dout << RWTime() << " Import file will NOT be rename and saved after import" << endl;
     }
 
 
@@ -890,11 +919,39 @@ bool CtiFDR_LodeStarImport::loadTranslationLists()
                             tempString2 = nextTempToken(";");
                             tempString2(0,tempString2.length()) = tempString2 (1,(tempString2.length()-1));
 
-                            // now we have a point id
+                            // now we have a customer identifier
                             if ( !tempString2.isNull() )
                             {
-                                translationPoint->getDestinationList()[x].setTranslation (tempString2);
-                                successful = true;
+                                translationName = tempString2;
+
+                                // next token is the channel
+                                if (!(tempString1 = nextTranslate(";")).isNull())
+                                {
+                                    RWCTokenizer nextTempToken(tempString1);
+
+                                    // do not care about the first part
+                                    nextTempToken(":");
+
+                                    tempString2 = nextTempToken(":");
+
+                                    // now we have a channel
+                                    if ( !tempString2.isNull() )
+                                    {
+                                        translationName += " ";
+                                        translationName += tempString2;
+                                        translationName.toUpper();
+    
+                                        translationPoint->getDestinationList()[x].setTranslation(translationName);
+                                        successful = true;
+
+                                        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << RWTime() << " Point ID " << translationPoint->getPointID();
+                                            dout << " translated: " << translationName << endl;
+                                        }
+                                    }
+                                }
                             }
                         }   // first token invalid
                     }
@@ -972,6 +1029,8 @@ void CtiFDR_LodeStarImport::threadFunctionReadFromFile( void )
     RWTime         refreshTime(rwEpoch);
     RWCString action,desc;
     CHAR fileName[200];
+    CHAR fileNameAndPath[250];
+    WIN32_FIND_DATA* fileData = new WIN32_FIND_DATA();
     FILE* fptr;
     char workBuffer[500];  // not real sure how long each line possibly is
     int attemptCounter=0;
@@ -988,9 +1047,11 @@ void CtiFDR_LodeStarImport::threadFunctionReadFromFile( void )
             // now is the time to get the file
             if (timeNow >= refreshTime)
             {
-                _snprintf (fileName, 200, "%s\\%s",getDriveAndPath(),getFileName());
+                _snprintf(fileName, 200, "%s\\%s",getDriveAndPath(),getFileName());
+                FindFirstFile(fileName, fileData);
 
-                fptr = fopen( fileName, "r");
+                _snprintf(fileNameAndPath, 250, "%s\\%s",getDriveAndPath(),fileData->cFileName);
+                fptr = fopen(fileNameAndPath, "r");
                 while ((fptr == NULL) && (attemptCounter < 10))
                 {
                     attemptCounter++;
@@ -1000,10 +1061,10 @@ void CtiFDR_LodeStarImport::threadFunctionReadFromFile( void )
 
                 if( fptr == NULL )
                 {
-                    {
+                    /*{
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " " << getInterfaceName() << "'s file " << RWCString (fileName) << " was either not found or could not be opened" << endl;
-                    }
+                    }*/
                 }
                 else
                 {
@@ -1017,6 +1078,7 @@ void CtiFDR_LodeStarImport::threadFunctionReadFromFile( void )
                     }
 
                     fclose(fptr);
+
                     if( ferror( fptr ) != 0 )
                     {
                         recordVector.erase(recordVector.begin(), recordVector.end());
@@ -1115,7 +1177,7 @@ void CtiFDR_LodeStarImport::threadFunctionReadFromFile( void )
                             else
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "Invalid record type in interface " << getInterfaceName() << " record:" << recordVector[lineCnt] << endl;
+                                dout << "Invalid record type in interface " << getInterfaceName() << " record:" << recordVector[lineCnt] << " line number: " << lineCnt << endl;
                             }
                             lineCnt++;
                         }
@@ -1137,11 +1199,36 @@ void CtiFDR_LodeStarImport::threadFunctionReadFromFile( void )
                             }
                         }
                     }
-                }
+                    if( shouldRenameSaveFileAfterImport() )
+                    {
+                        CHAR oldFileName[250];
+                        strcpy(oldFileName,fileNameAndPath);
+                        CHAR newFileName[250];
+                        CHAR* periodPtr = strchr(fileNameAndPath,'.');//reverse lookup
+                        if( periodPtr )
+                        {
+                            *periodPtr = NULL;
+                        }
+                        else
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "Uh Sir" << endl;
+                        }
 
-                if (shouldDeleteFileAfterImport())
-                {
-                    DeleteFile (fileName);
+                        _snprintf(newFileName, 250, "%s%s",fileNameAndPath,".bak");
+                        MoveFile(oldFileName,newFileName);
+
+                        DWORD lastError = GetLastError();
+                        if( lastError )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "Last Error Code: " << lastError << " for MoveFile()" << endl;
+                        }
+                    }
+                    if( shouldDeleteFileAfterImport() )
+                    {
+                        DeleteFile(fileName);
+                    }
                 }
 
                 refreshTime = RWTime() - (RWTime().seconds() % getInterval()) + getInterval();

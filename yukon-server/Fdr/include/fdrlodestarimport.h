@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.2 $
-*    DATE         :  $Date: 2003/06/09 16:14:21 $
+*    REVISION     :  $Revision: 1.3 $
+*    DATE         :  $Date: 2003/07/18 21:46:16 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport.h,v $
+      Revision 1.3  2003/07/18 21:46:16  jwolberg
+      Fixes based on answers to questions asked of Xcel.
+
       Revision 1.2  2003/06/09 16:14:21  jwolberg
       Added FDR LodeStar interface.
 
@@ -69,6 +72,9 @@ public:
     bool shouldDeleteFileAfterImport() const;
     CtiFDR_LodeStarImport &setDeleteFileAfterImport (bool aFlag);
 
+    bool shouldRenameSaveFileAfterImport() const;
+    CtiFDR_LodeStarImport &setRenameSaveFileAfterImport (bool aFlag);
+
     bool validateAndDecodeLine( RWCString &input, CtiMessage **aRetMsg);
 
     void threadFunctionReadFromFile( void );
@@ -80,10 +86,12 @@ public:
     static const CHAR * KEY_DB_RELOAD_RATE;
     static const CHAR * KEY_QUEUE_FLUSH_RATE;
     static const CHAR * KEY_DELETE_FILE;
+    static const CHAR * KEY_RENAME_SAVE_FILE;
 
 private:
     RWThreadFunction    _threadReadFromFile;
     bool                _deleteFileAfterImportFlag;
+    bool                _renameSaveFileAfterImportFlag;
 };
 
 
