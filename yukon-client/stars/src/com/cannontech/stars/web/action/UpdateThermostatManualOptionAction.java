@@ -305,9 +305,6 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 					invIDs[i] = Integer.parseInt( invIDStrs[i] );
 			}
             
-			StarsThermostatManualEvent event = resp.getStarsThermostatManualEvent();
-            String confirmMsg = "Thermostat settings has been sent.";
-            
             for (int i = 0; i < invIDs.length; i++) {
 				for (int j = 0; j < accountInfo.getStarsInventories().getStarsInventoryCount(); j++) {
 					StarsInventory inv = accountInfo.getStarsInventories().getStarsInventory(j);
