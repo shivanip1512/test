@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2005/02/17 22:58:47 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2005/03/14 01:19:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -165,7 +165,10 @@ void CtiPILServer::mainThread()
 
         if(!Listener)
         {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Could not open socket " << NetAddr << " for listning" << endl;
+            }
 
             exit(-1);
         }
@@ -1036,7 +1039,8 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                     outList.insert( tempOutList.get() );
                 }
 
-                if(status != NORMAL)
+                if(status != NORMAL &&
+                   status != DEVICEINHIBITED)
                 {
                     RWTime NowTime;
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
