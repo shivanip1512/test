@@ -24,6 +24,9 @@
 #include "dllbase.h"
 #include "logger.h"
 
+
+DLLEXPORT CtiSemaphore  gDBAccessSema(gMaxDBConnectionCount, gMaxDBConnectionCount);
+
 // Bookkeeping information about a database connection
 struct DBInfo
 {
@@ -76,7 +79,6 @@ void setDatabaseParams(unsigned dbID,
     if(info->db != NULL)
     {
         RWDBConnection conn = info->db->connection();
-        RWLockGuard<RWDBConnection> conn_guard(conn);
         conn.close();
 
         delete info->db;
@@ -127,9 +129,11 @@ RWDBDatabase getDatabase(unsigned dbID)
     {
         if(db != NULL)
         {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Invalidating all pending connections to " << info->name << " as " << info->user << " with " << info->dll << endl;
+            }
             RWDBConnection conn = db->connection();
-            RWLockGuard<RWDBConnection> conn_guard(conn);
-
             conn.close();
 
             delete db;
@@ -147,6 +151,8 @@ RWDBDatabase getDatabase(unsigned dbID)
     {
         RWDBManager::setErrorHandler(info->error_handler);
         *db = RWDBManager::database( info->dll,info->name, info->user, info->password, "" );
+
+        db->defaultConnections( gMaxDBConnectionCount );
 
         if( db->isValid() )
         {

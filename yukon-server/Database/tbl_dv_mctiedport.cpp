@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:00 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:33 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -184,12 +184,12 @@ void CtiTableDeviceMCTIEDPort::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RW
     RWDBTable devTbl = db.table(getTableName());
 
     selector << devTbl["deviceid"]
-             << devTbl["connectedied"]
-             << devTbl["password"]
-             << devTbl["iedscanrate"]
-             << devTbl["defaultdataclass"]
-             << devTbl["defaultdataoffset"]
-             << devTbl["realtimescan"];
+    << devTbl["connectedied"]
+    << devTbl["password"]
+    << devTbl["iedscanrate"]
+    << devTbl["defaultdataclass"]
+    << devTbl["defaultdataoffset"]
+    << devTbl["realtimescan"];
 
     selector.from(devTbl);
 
@@ -250,19 +250,19 @@ RWDBStatus CtiTableDeviceMCTIEDPort::Restore()
 
     char temp[32];
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable devTbl = getDatabase().table( getTableName() );
     RWDBSelector selector = getDatabase().selector();
 
     selector << devTbl["deviceid"]
-             << devTbl["connectedied"]
-             << devTbl["password"]
-             << devTbl["iedscanrate"]
-             << devTbl["defaultdataclass"]
-             << devTbl["defaultdataoffset"]
-             << devTbl["realtimescan"];
+    << devTbl["connectedied"]
+    << devTbl["password"]
+    << devTbl["iedscanrate"]
+    << devTbl["defaultdataclass"]
+    << devTbl["defaultdataoffset"]
+    << devTbl["realtimescan"];
 
     selector.where( devTbl["deviceid"] == getDeviceID() );
 

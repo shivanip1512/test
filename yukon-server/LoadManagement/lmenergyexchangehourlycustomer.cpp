@@ -2,13 +2,13 @@
         Filename:  lmenergyexchangehourlycustomer.cpp
 
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiLMEnergyExchangeHourlyCustomer.
                         CtiLMEnergyExchangeHourlyCustomer maintains the state and handles
                         the persistence of groups in Load Management.
 
         Initial Date:  5/15/2001
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
@@ -29,12 +29,12 @@ RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeHourlyCustomer, CTILMENERGYEXCHANGEHOUR
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeHourlyCustomer::CtiLMEnergyExchangeHourlyCustomer()
-{   
+{
 }
 
 CtiLMEnergyExchangeHourlyCustomer::CtiLMEnergyExchangeHourlyCustomer(RWDBReader& rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMEnergyExchangeHourlyCustomer::CtiLMEnergyExchangeHourlyCustomer(const CtiLMEnergyExchangeHourlyCustomer& customer)
@@ -86,7 +86,7 @@ ULONG CtiLMEnergyExchangeHourlyCustomer::getRevisionNumber() const
 /*---------------------------------------------------------------------------
     getHour
 
-    Returns the hour number 
+    Returns the hour number
 ---------------------------------------------------------------------------*/
 ULONG CtiLMEnergyExchangeHourlyCustomer::getHour() const
 {
@@ -169,7 +169,7 @@ CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setAmountC
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeHourlyCustomer::restoreGuts(RWvistream& istrm)
@@ -180,39 +180,39 @@ void CtiLMEnergyExchangeHourlyCustomer::restoreGuts(RWvistream& istrm)
     RWCollectable::restoreGuts( istrm );
 
     istrm >> _customerid
-          >> _offerid
-          >> _revisionnumber
-          >> _hour
-          >> _amountcommitted;
+    >> _offerid
+    >> _revisionnumber
+    >> _hour
+    >> _amountcommitted;
 }
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeHourlyCustomer::saveGuts(RWvostream& ostrm ) const  
+void CtiLMEnergyExchangeHourlyCustomer::saveGuts(RWvostream& ostrm ) const
 {
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        
+
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _customerid
-          << _offerid
-          << _revisionnumber
-          << _hour
-          << _amountcommitted;
+    << _offerid
+    << _revisionnumber
+    << _hour
+    << _amountcommitted;
 }
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeHourlyCustomer* CtiLMEnergyExchangeHourlyCustomer::replicate() const
 {
-    return (new CtiLMEnergyExchangeHourlyCustomer(*this));
+    return(new CtiLMEnergyExchangeHourlyCustomer(*this));
 }
 
 /*---------------------------------------------------------------------------
@@ -240,9 +240,9 @@ CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::operator=(
 int CtiLMEnergyExchangeHourlyCustomer::operator==(const CtiLMEnergyExchangeHourlyCustomer& right) const
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    return ( (getCustomerId() == right.getCustomerId()) &&
-             (getOfferId() == right.getOfferId()) &&
-             (getRevisionNumber() == right.getRevisionNumber()) );
+    return( (getCustomerId() == right.getCustomerId()) &&
+            (getOfferId() == right.getOfferId()) &&
+            (getRevisionNumber() == right.getRevisionNumber()) );
 }
 
 /*---------------------------------------------------------------------------
@@ -256,7 +256,7 @@ int CtiLMEnergyExchangeHourlyCustomer::operator!=(const CtiLMEnergyExchangeHourl
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeHourlyCustomer::restore(RWDBReader& rdr)
@@ -279,11 +279,11 @@ void CtiLMEnergyExchangeHourlyCustomer::addLMEnergyExchangeHourlyCustomerTable()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
-        if ( conn.isValid() )
+        if( conn.isValid() )
         {
             if( _LM_DEBUG )
             {
@@ -297,10 +297,10 @@ void CtiLMEnergyExchangeHourlyCustomer::addLMEnergyExchangeHourlyCustomerTable()
             RWDBInserter inserter = lmEnergyExchangeHourlyCustomerTable.inserter();
 
             inserter << getCustomerId()
-                     << getOfferId()
-                     << getRevisionNumber()
-                     << getHour()
-                     << getAmountCommitted();
+            << getOfferId()
+            << getRevisionNumber()
+            << getHour()
+            << getAmountCommitted();
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -326,11 +326,11 @@ void CtiLMEnergyExchangeHourlyCustomer::updateLMEnergyExchangeHourlyCustomerTabl
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
-        if ( conn.isValid() )
+        if( conn.isValid() )
         {
             RWDBDatabase db = getDatabase();
             RWDBTable lmEnergyExchangeHourlyCustomerTable = db.table("lmenergyexchangehourlycustomer");
@@ -360,5 +360,5 @@ void CtiLMEnergyExchangeHourlyCustomer::updateLMEnergyExchangeHourlyCustomerTabl
 
 // Static Members
 
-// Possible 
+// Possible
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/22 19:47:15 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/05/02 17:02:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -202,25 +202,25 @@ INT CtiDeviceBase::ResetDevicePoints()
 
 INT CtiDeviceBase::RefreshDevicePoints()
 {
-   INT status = NORMAL;
+    INT status = NORMAL;
 
-   LockGuard guard(monitor());
+    LockGuard guard(monitor());
 
-   if(_pointMgr == NULL)
-   {
-      _pointMgr = new CtiPointManager();
-   }
+    if(_pointMgr == NULL)
+    {
+        _pointMgr = new CtiPointManager();
+    }
 
-   if(_pointMgr != NULL)
-   {
-      _pointMgr->RefreshList( getID() );
-   }
-   else
-   {
-      status = MEMORY;
-   }
+    if(_pointMgr != NULL)
+    {
+        _pointMgr->RefreshList( getID() );
+    }
+    else
+    {
+        status = MEMORY;
+    }
 
-   return status;
+    return status;
 }
 
 CtiPointBase* CtiDeviceBase::getDevicePointEqual(INT id)
@@ -527,10 +527,10 @@ void CtiDeviceBase::DumpData()
 INT CtiDeviceBase::ReportError(INT mess) { return 0;}
 
 /* Properly defined by the device types themselves... */
-INT CtiDeviceBase::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)      { return NoGeneralScanMethod; }
-INT CtiDeviceBase::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)    { return NoIntegrityScanMethod; }
-INT CtiDeviceBase::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)  { return NoAccumulatorScanMethod; }
-INT CtiDeviceBase::LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)  { return NoLoadProfileScanMethod; }
+INT CtiDeviceBase::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)      { return NoGeneralScanMethod;}
+INT CtiDeviceBase::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)    { return NoIntegrityScanMethod;}
+INT CtiDeviceBase::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)  { return NoAccumulatorScanMethod;}
+INT CtiDeviceBase::LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)  { return NoLoadProfileScanMethod;}
 
 INT CtiDeviceBase::ResultDecode(INMESS*, RWTime&, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {

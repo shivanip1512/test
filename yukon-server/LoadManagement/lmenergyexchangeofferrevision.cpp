@@ -2,13 +2,13 @@
         Filename:  lmenergyexchangeofferrevision.cpp
 
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiLMEnergyExchangeOfferRevision.
                         CtiLMEnergyExchangeOfferRevision maintains the state and handles
                         the persistence of groups in Load Management.
 
         Initial Date:  5/9/2001
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
@@ -30,12 +30,12 @@ RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeOfferRevision, CTILMENERGYEXCHANGEOFFER
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeOfferRevision::CtiLMEnergyExchangeOfferRevision()
-{   
+{
 }
 
 CtiLMEnergyExchangeOfferRevision::CtiLMEnergyExchangeOfferRevision(RWDBReader& rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMEnergyExchangeOfferRevision::CtiLMEnergyExchangeOfferRevision(const CtiLMEnergyExchangeOfferRevision& revision)
@@ -54,7 +54,7 @@ CtiLMEnergyExchangeOfferRevision::~CtiLMEnergyExchangeOfferRevision()
 
 /*---------------------------------------------------------------------------
     getOfferId
-    
+
     Returns the reference id of the current control for the
     energy exchange program.
 ---------------------------------------------------------------------------*/
@@ -66,7 +66,7 @@ ULONG CtiLMEnergyExchangeOfferRevision::getOfferId() const
 
 /*---------------------------------------------------------------------------
     getRevisionNumber
-    
+
     Returns the reference id of the current control for the
     energy exchange program.
 ---------------------------------------------------------------------------*/
@@ -78,7 +78,7 @@ ULONG CtiLMEnergyExchangeOfferRevision::getRevisionNumber() const
 
 /*---------------------------------------------------------------------------
     getActionDateTime
-    
+
     Returns the action datetime of the current control for the
     energy exchange program.
 ---------------------------------------------------------------------------*/
@@ -90,7 +90,7 @@ const RWDBDateTime& CtiLMEnergyExchangeOfferRevision::getActionDateTime() const
 
 /*---------------------------------------------------------------------------
     getNotificationDateTime
-    
+
     Returns the Notification datetime of the current control for the
     energy exchange program.
 ---------------------------------------------------------------------------*/
@@ -102,7 +102,7 @@ const RWDBDateTime& CtiLMEnergyExchangeOfferRevision::getNotificationDateTime() 
 
 /*---------------------------------------------------------------------------
     getOfferExpirationDateTime
-    
+
     Returns the expiration datetime of the current offer for the
     energy exchange program.
 ---------------------------------------------------------------------------*/
@@ -114,7 +114,7 @@ const RWDBDateTime& CtiLMEnergyExchangeOfferRevision::getOfferExpirationDateTime
 
 /*---------------------------------------------------------------------------
     getAdditionalInfo
-    
+
     Returns the additional info of the current control for the
     energy exchange program.
 ---------------------------------------------------------------------------*/
@@ -126,7 +126,7 @@ const RWCString& CtiLMEnergyExchangeOfferRevision::getAdditionalInfo() const
 
 /*---------------------------------------------------------------------------
     getLMEnergyExchangeHourlyOffers
-    
+
     Returns a list of the price offers for each hour in the revision.
 ---------------------------------------------------------------------------*/
 RWOrdered& CtiLMEnergyExchangeOfferRevision::getLMEnergyExchangeHourlyOffers()
@@ -137,10 +137,10 @@ RWOrdered& CtiLMEnergyExchangeOfferRevision::getLMEnergyExchangeHourlyOffers()
 
 /*---------------------------------------------------------------------------
     setOfferId
-    
+
     Sets the reference id of the current control for the
     energy exchange program.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setOfferId(ULONG offid)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -151,10 +151,10 @@ CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setOfferId(U
 
 /*---------------------------------------------------------------------------
     setRevisionNumber
-    
+
     Sets the reference id of the current control for the
     energy exchange program.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setRevisionNumber(ULONG revnum)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -168,7 +168,7 @@ CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setRevisionN
 
     Sets the action datetime of the current control for the
     energy exchange program.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setActionDateTime(const RWDBDateTime& actiontime)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -182,7 +182,7 @@ CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setActionDat
 
     Sets the notification datetime of the current control for the
     energy exchange program.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setNotificationDateTime(const RWDBDateTime& notifytime)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -196,7 +196,7 @@ CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setNotificat
 
     Sets the expirtation datetime of the current control for the
     energy exchange program.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setOfferExpirationDateTime(const RWDBDateTime& expirationtime)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -207,10 +207,10 @@ CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setOfferExpi
 
 /*---------------------------------------------------------------------------
     setAdditionalInfo
-    
+
     Sets the additional info of the current control for the
     energy exchange program.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setAdditionalInfo(const RWCString& additional)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -222,9 +222,9 @@ CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setAdditiona
 
 /*---------------------------------------------------------------------------
     getFirstCurtailHour
-    
+
     Returns .
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 ULONG CtiLMEnergyExchangeOfferRevision::getFirstCurtailHour() const
 {
     ULONG returnULong = 0;
@@ -245,9 +245,9 @@ ULONG CtiLMEnergyExchangeOfferRevision::getFirstCurtailHour() const
 
 /*---------------------------------------------------------------------------
     getLastCurtailHour
-    
+
     Returns .
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 ULONG CtiLMEnergyExchangeOfferRevision::getLastCurtailHour() const
 {
     ULONG returnULong = 0;
@@ -268,7 +268,7 @@ ULONG CtiLMEnergyExchangeOfferRevision::getLastCurtailHour() const
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeOfferRevision::restoreGuts(RWvistream& istrm)
@@ -283,12 +283,12 @@ void CtiLMEnergyExchangeOfferRevision::restoreGuts(RWvistream& istrm)
     RWTime tempTime3;
 
     istrm >> _offerid
-          >> _revisionnumber
-          >> tempTime1
-          >> tempTime2
-          >> tempTime3
-          >> _additionalinfo
-          >> _lmenergyexchangehourlyoffers;
+    >> _revisionnumber
+    >> tempTime1
+    >> tempTime2
+    >> tempTime3
+    >> _additionalinfo
+    >> _lmenergyexchangehourlyoffers;
 
     _actiondatetime = RWDBDateTime(tempTime1);
     _notificationdatetime = RWDBDateTime(tempTime2);
@@ -297,35 +297,35 @@ void CtiLMEnergyExchangeOfferRevision::restoreGuts(RWvistream& istrm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeOfferRevision::saveGuts(RWvostream& ostrm ) const  
+void CtiLMEnergyExchangeOfferRevision::saveGuts(RWvostream& ostrm ) const
 {
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        
+
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _offerid
-          << _revisionnumber
-          << _actiondatetime.rwtime()
-          << _notificationdatetime.rwtime()
-          << _offerexpirationdatetime.rwtime()
-          << _additionalinfo
-          << _lmenergyexchangehourlyoffers;
+    << _revisionnumber
+    << _actiondatetime.rwtime()
+    << _notificationdatetime.rwtime()
+    << _offerexpirationdatetime.rwtime()
+    << _additionalinfo
+    << _lmenergyexchangehourlyoffers;
 
     return;
 }
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeOfferRevision* CtiLMEnergyExchangeOfferRevision::replicate() const
 {
-    return (new CtiLMEnergyExchangeOfferRevision(*this));
+    return(new CtiLMEnergyExchangeOfferRevision(*this));
 }
 
 /*---------------------------------------------------------------------------
@@ -360,7 +360,7 @@ CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::operator=(co
 int CtiLMEnergyExchangeOfferRevision::operator==(const CtiLMEnergyExchangeOfferRevision& right) const
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    return ( (getOfferId() == right.getOfferId()) && (getRevisionNumber() == right.getRevisionNumber()) );
+    return( (getOfferId() == right.getOfferId()) && (getRevisionNumber() == right.getRevisionNumber()) );
 }
 
 /*---------------------------------------------------------------------------
@@ -374,7 +374,7 @@ int CtiLMEnergyExchangeOfferRevision::operator!=(const CtiLMEnergyExchangeOfferR
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeOfferRevision::restore(RWDBReader& rdr)
@@ -398,11 +398,11 @@ void CtiLMEnergyExchangeOfferRevision::addLMEnergyExchangeOfferRevisionTable()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
-        if ( conn.isValid() )
+        if( conn.isValid() )
         {
             if( _LM_DEBUG )
             {
@@ -416,11 +416,11 @@ void CtiLMEnergyExchangeOfferRevision::addLMEnergyExchangeOfferRevisionTable()
             RWDBInserter inserter = lmEnergyExchangeOfferRevisionTable.inserter();
 
             inserter << getOfferId()
-                     << getRevisionNumber()
-                     << getActionDateTime()
-                     << getNotificationDateTime()
-                     << getOfferExpirationDateTime()
-                     << getAdditionalInfo();
+            << getRevisionNumber()
+            << getActionDateTime()
+            << getNotificationDateTime()
+            << getOfferExpirationDateTime()
+            << getAdditionalInfo();
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -446,20 +446,20 @@ void CtiLMEnergyExchangeOfferRevision::updateLMEnergyExchangeOfferRevisionTable(
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
-        if ( conn.isValid() )
+        if( conn.isValid() )
         {
             RWDBDatabase db = getDatabase();
             RWDBTable lmEnergyExchangeOfferRevisionTable = db.table("lmenergyexchangeofferrevision");
             RWDBUpdater updater = lmEnergyExchangeOfferRevisionTable.updater();
 
             updater << lmEnergyExchangeOfferRevisionTable["actiondatetime"].assign(getActionDateTime())
-                    << lmEnergyExchangeOfferRevisionTable["notificationdatetime"].assign(getNotificationDateTime())
-                    << lmEnergyExchangeOfferRevisionTable["offerexpirationdatetime"].assign(getOfferExpirationDateTime())
-                    << lmEnergyExchangeOfferRevisionTable["additionalinfo"].assign(getAdditionalInfo());
+            << lmEnergyExchangeOfferRevisionTable["notificationdatetime"].assign(getNotificationDateTime())
+            << lmEnergyExchangeOfferRevisionTable["offerexpirationdatetime"].assign(getOfferExpirationDateTime())
+            << lmEnergyExchangeOfferRevisionTable["additionalinfo"].assign(getAdditionalInfo());
 
             updater.where(lmEnergyExchangeOfferRevisionTable["offerid"]==getOfferId() &&
                           lmEnergyExchangeOfferRevisionTable["revisionnumber"]==getRevisionNumber());
@@ -481,7 +481,7 @@ void CtiLMEnergyExchangeOfferRevision::updateLMEnergyExchangeOfferRevisionTable(
 
 /*---------------------------------------------------------------------------
     dumpDynamicData
-    
+
     Writes out the dynamic information for this customer.
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeOfferRevision::dumpDynamicData()
@@ -493,28 +493,28 @@ void CtiLMEnergyExchangeOfferRevision::dumpDynamicData()
 
 /*---------------------------------------------------------------------------
     restoreDynamicData
-    
+
     Restores self's dynamic data given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeOfferRevision::restoreDynamicData(RWDBReader& rdr)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
-        if ( conn.isValid() )
+        if( conn.isValid() )
         {
             RWDBDatabase db = getDatabase();
             RWDBTable lmEnergyExchangeOfferRevisionTable = db.table("lmenergyexchangeofferrevision");
             RWDBSelector selector = db.selector();
             selector << lmEnergyExchangeOfferRevisionTable["offerid"]
-                     << lmEnergyExchangeOfferRevisionTable["revisionnumber"]
-                     << lmEnergyExchangeOfferRevisionTable["actiondatetime"]
-                     << lmEnergyExchangeOfferRevisionTable["notificationdatetime"]
-                     << lmEnergyExchangeOfferRevisionTable["offerexpirationdatetime"]
-                     << lmEnergyExchangeOfferRevisionTable["additionalinfo"];
+            << lmEnergyExchangeOfferRevisionTable["revisionnumber"]
+            << lmEnergyExchangeOfferRevisionTable["actiondatetime"]
+            << lmEnergyExchangeOfferRevisionTable["notificationdatetime"]
+            << lmEnergyExchangeOfferRevisionTable["offerexpirationdatetime"]
+            << lmEnergyExchangeOfferRevisionTable["additionalinfo"];
 
             selector.from(lmEnergyExchangeOfferRevisionTable);
 

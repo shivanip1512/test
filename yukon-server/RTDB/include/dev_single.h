@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:47:17 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/02 17:02:24 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -213,7 +213,6 @@ public:
 
     virtual void invalidateScanRates();
     virtual void deleteNonUpdatedScanRates();
-    virtual INT RefreshDevicePoints();
 
     virtual bool clearedForScan(int scantype);
     virtual void resetForScan(int scantype);

@@ -228,7 +228,7 @@ const RWCString& CtiCCCapBank::getSwitchManufacture() const
     Returns the map location id of the cap bank
 ---------------------------------------------------------------------------*/
 ULONG CtiCCCapBank::getMapLocationId() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _maplocationid;
 }
@@ -662,30 +662,30 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     RWCollectable::restoreGuts( istrm );
 
     istrm >> _paoid
-          >> _paocategory
-          >> _paoclass
-          >> _paoname
-          >> _paotype
-          >> _paodescription
-          >> _disableflag
-          >> _alarminhibitflag
-          >> _controlinhibitflag
-          >> _operationalstate
-          >> _controllertype
-          >> _controldeviceid
-          >> _controlpointid
-          >> _banksize
-          >> _typeofswitch
-          >> _switchmanufacture
-          >> _maplocationid
-          >> _controlorder
-          >> _statuspointid
-          >> _controlstatus
-          >> _operationanalogpointid
-          >> _currentdailyoperations
-          >> tempTime1
-          >> _tagscontrolstatus
-          >> _statusreceivedflag;
+    >> _paocategory
+    >> _paoclass
+    >> _paoname
+    >> _paotype
+    >> _paodescription
+    >> _disableflag
+    >> _alarminhibitflag
+    >> _controlinhibitflag
+    >> _operationalstate
+    >> _controllertype
+    >> _controldeviceid
+    >> _controlpointid
+    >> _banksize
+    >> _typeofswitch
+    >> _switchmanufacture
+    >> _maplocationid
+    >> _controlorder
+    >> _statuspointid
+    >> _controlstatus
+    >> _operationanalogpointid
+    >> _currentdailyoperations
+    >> tempTime1
+    >> _tagscontrolstatus
+    >> _statusreceivedflag;
 
     _laststatuschangetime = RWDBDateTime(tempTime1);
 }
@@ -702,30 +702,30 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _paoid
-          << _paocategory
-          << _paoclass
-          << _paoname
-          << _paotype
-          << _paodescription
-          << _disableflag
-          << _alarminhibitflag
-          << _controlinhibitflag
-          << _operationalstate
-          << _controllertype
-          << _controldeviceid
-          << _controlpointid
-          << _banksize
-          << _typeofswitch
-          << _switchmanufacture
-          << _maplocationid
-          << _controlorder
-          << _statuspointid
-          << _controlstatus
-          << _operationanalogpointid
-          << _currentdailyoperations
-          << _laststatuschangetime.rwtime()
-          << _tagscontrolstatus
-          << _statusreceivedflag;
+    << _paocategory
+    << _paoclass
+    << _paoname
+    << _paotype
+    << _paodescription
+    << _disableflag
+    << _alarminhibitflag
+    << _controlinhibitflag
+    << _operationalstate
+    << _controllertype
+    << _controldeviceid
+    << _controlpointid
+    << _banksize
+    << _typeofswitch
+    << _switchmanufacture
+    << _maplocationid
+    << _controlorder
+    << _statuspointid
+    << _controlstatus
+    << _operationanalogpointid
+    << _currentdailyoperations
+    << _laststatuschangetime.rwtime()
+    << _tagscontrolstatus
+    << _statusreceivedflag;
 }
 
 /*---------------------------------------------------------------------------
@@ -849,7 +849,7 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
 
         _insertDynamicDataFlag = TRUE;
     }
-    
+
     rdr["pointid"] >> isNull;
     if( !isNull )
     {
@@ -890,7 +890,7 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank* CtiCCCapBank::replicate() const
 {
-    return (new CtiCCCapBank(*this));
+    return(new CtiCCCapBank(*this));
 }
 
 /*---------------------------------------------------------------------------
@@ -914,9 +914,9 @@ void CtiCCCapBank::dumpDynamicData()
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
         RWDBTable dynamicCCCapBankTable = getDatabase().table( "dynamiccccapbank" );
         if( !_insertDynamicDataFlag )
@@ -924,10 +924,10 @@ void CtiCCCapBank::dumpDynamicData()
             RWDBUpdater updater = dynamicCCCapBankTable.updater();
 
             updater << dynamicCCCapBankTable["controlstatus"].assign( getControlStatus() )
-                    << dynamicCCCapBankTable["currentdailyoperations"].assign( getCurrentDailyOperations() )
-                    << dynamicCCCapBankTable["laststatuschangetime"].assign( (RWDBDateTime)getLastStatusChangeTime() )
-                    << dynamicCCCapBankTable["tagscontrolstatus"].assign( getTagsControlStatus() )
-                    << dynamicCCCapBankTable["ctitimestamp"].assign((RWDBDateTime)currentDateTime);
+            << dynamicCCCapBankTable["currentdailyoperations"].assign( getCurrentDailyOperations() )
+            << dynamicCCCapBankTable["laststatuschangetime"].assign( (RWDBDateTime)getLastStatusChangeTime() )
+            << dynamicCCCapBankTable["tagscontrolstatus"].assign( getTagsControlStatus() )
+            << dynamicCCCapBankTable["ctitimestamp"].assign((RWDBDateTime)currentDateTime);
 
             updater.where(dynamicCCCapBankTable["capbankid"]==getPAOId());
 
@@ -943,11 +943,11 @@ void CtiCCCapBank::dumpDynamicData()
             RWDBInserter inserter = dynamicCCCapBankTable.inserter();
 
             inserter << getPAOId()
-                     << getControlStatus()
-                     << getCurrentDailyOperations()
-                     << getLastStatusChangeTime()
-                     << getTagsControlStatus()
-                     << currentDateTime;
+            << getControlStatus()
+            << getCurrentDailyOperations()
+            << getLastStatusChangeTime()
+            << getTagsControlStatus()
+            << currentDateTime;
 
             /*if( _CC_DEBUG )
             {

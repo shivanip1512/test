@@ -1,4 +1,5 @@
 
+
 #pragma warning( disable : 4786)
 
 /*-----------------------------------------------------------------------------*
@@ -9,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:01 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,7 +44,8 @@
 
 #define DEBUG_PRINT_DECODE 0
 
-CtiDeviceILEX::CtiDeviceILEX()  {}
+CtiDeviceILEX::CtiDeviceILEX() : _freezeNumber(0)
+{}
 
 CtiDeviceILEX::CtiDeviceILEX(const CtiDeviceILEX& aRef)
 {
@@ -57,83 +59,79 @@ CtiDeviceILEX& CtiDeviceILEX::operator=(const CtiDeviceILEX& aRef)
     if(this != &aRef)
     {
         Inherited::operator=(aRef);
+        _freezeNumber = aRef.getFreezeNumber();
     }
     return *this;
 }
 
-//  no ILEX code implemented yet - all copied Welco code -- ACH ACH ACH
-#if 0
-INT CtiDeviceILEX::AccumulatorScan(CtiRequestMsg *pReq,
-                                    CtiCommandParser &parse,
-                                    OUTMESS *&OutMessage,
-                                    RWTPtrSlist< CtiMessage > &vgList,
-                                    RWTPtrSlist< CtiMessage > &retList,
-                                    RWTPtrSlist< OUTMESS > &outList,
-                                    INT ScanPriority)
-{
-    /*
-     *  This is the WelCoFreeze code from the bad old daze.
-     */
 
-    ULONG       BytesWritten;
-    INT         status      = NORMAL;
+INT CtiDeviceILEX::header(PBYTE  Header,          /* Pointer to message */
+                          USHORT Function,        /* Function code */
+                          USHORT SubFunction1,    /* High order sub function code */
+                          USHORT SubFunction2)    /* Low order sub function code */
+{
+    Header[0] = (Function & 0x0007);
+    Header[0] |= LOBYTE ((getAddress() << 5) & 0xe0);
+    if(SubFunction1) Header[0] |= 0x10;
+    if(SubFunction2) Header[0] |= 0x08;
+    Header[1] = LOBYTE (getAddress() >> 3);
+
+    return(NORMAL);
+}
+
+INT CtiDeviceILEX::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+{
+    INT status = NORMAL;
 
     if(OutMessage != NULL)
     {
-
-        /* Load the sectn to scan the demand accumulators */
-        OutMessage->Buffer.OutMessage[5] = IDLC_FREEZE | 0x80;
-        OutMessage->Buffer.OutMessage[6] = 0;
+        /* Load the freeze message */
+        header(OutMessage->Buffer.OutMessage + PREIDLEN, ILEXFREEZE, 0, 1);
 
         /* Load all the other stuff that is needed */
         OutMessage->DeviceID              = getID();
-        OutMessage->Buffer.OutMessage[4]  = 0x08;
         OutMessage->Port                  = getPortID();
         OutMessage->Remote                = getAddress();
-        OutMessage->Priority              = (UCHAR)ScanPriority;
+        OutMessage->Priority              = (UCHAR)(MAXPRIORITY - 3);
         OutMessage->TimeOut               = 2;
-        OutMessage->OutLength             = 0;
+        OutMessage->OutLength             = 3;
         OutMessage->InLength              = -1;
-
-        if(OutMessage->Remote == RTUGLOBAL)
-        {
-            OutMessage->EventCode = NORESULT | ENCODED;
-        }
-        else
-        {
-            OutMessage->EventCode = RESULT | ENCODED;
-        }
-
+        OutMessage->EventCode             = RESULT | ENCODED;
         OutMessage->Sequence              = 0;
-        OutMessage->Retry                 = 2;
+        OutMessage->Retry                 = 3;
+
+        OutMessage->Buffer.OutMessage[9]  = getFreezeNumber();
 
         setScanIntegrity(TRUE);                         // We are an integrity scan (equiv. anyway).  Data must be propagated.
-        outList.insert(OutMessage);
 
+        outList.insert(OutMessage);
         OutMessage = NULL;
     }
-
 
     return status;
 }
 
 INT CtiDeviceILEX::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
 {
-    ULONG BytesWritten;
-
     INT status = NORMAL;
-
-    if(getDeadbandsSent() == false)      // We are currently unsure whether a deadband request has ever been sent.
-    {
-        status = WelCoDeadBands(OutMessage, outList, MAXPRIORITY - 1);
-        // setDeadbandsSent( true );
-    }
 
     if(OutMessage != NULL)
     {
-        WelCoPoll(OutMessage, ScanPriority);
+        /* Load the forced scan message */
+        header(OutMessage->Buffer.OutMessage + PREIDLEN, ILEXSCAN, !getIlexSequenceNumber(), EXCEPTION_SCAN);
 
-        /* Message is loaded so send it to porter */
+        /* Load all the other stuff that is needed */
+        OutMessage->DeviceID              = getID();
+        OutMessage->Port                  = getPortID();
+        OutMessage->Remote                = getAddress();
+        OutMessage->Priority              = (UCHAR)(ScanPriority);
+        OutMessage->TimeOut               = 2;
+        OutMessage->OutLength             = 2;
+        OutMessage->InLength              = -1;
+        OutMessage->EventCode             = RESULT | ENCODED;
+        OutMessage->Sequence              = 0;
+        OutMessage->Retry                 = 2;
+
         outList.insert(OutMessage);
         OutMessage = NULL;
     }
@@ -141,194 +139,27 @@ INT CtiDeviceILEX::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     return status;
 }
 
-
-INT CtiDeviceILEX::IntegrityScan(CtiRequestMsg *pReq,
-                                  CtiCommandParser &parse,
-                                  OUTMESS *&OutMessage,
-                                  RWTPtrSlist< CtiMessage > &vgList,
-                                  RWTPtrSlist< CtiMessage > &retList,
-                                  RWTPtrSlist< OUTMESS > &outList,
-                                  INT ScanPriority)
+INT CtiDeviceILEX::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
 {
-    INT      AIOffset = 0;
-    ULONG    BytesWritten;
-
-    USHORT   AnalogFirst = 0xffff;
-    USHORT   AnalogLast = 0;
-
-    USHORT   StatusFirst = 0xffff;
-    USHORT   StatusLast = 0;
-
-    USHORT   AccumFirst = 0xffff;
-    USHORT   AccumLast = 0;
-
-    INT         status      = NORMAL;
+    INT status = NORMAL;
 
     if(OutMessage != NULL)
     {
-        if(_pointMgr == NULL)      // Attached via the dev_base object.
-        {
-            RefreshDevicePoints(  );
-        }
-
-        if(_pointMgr != NULL)
-        {
-            LockGuard guard(monitor());
-
-            /* Walk the point in memory db to see what the point range is */
-            CtiRTDB<CtiPoint>::CtiRTDBIterator   itr_pt(_pointMgr->getMap());
-
-            for(; ++itr_pt ;)
-            {
-                CtiPoint *PointRecord = itr_pt.value();
-                RWRecursiveLock<RWMutexLock>::LockGuard pGuard( PointRecord->getMux() );
-
-                switch(PointRecord->getType())
-                {
-                case StatusPointType:
-                    {
-                        CtiPointStatus *StatusPoint = (CtiPointStatus *)PointRecord;
-
-                        if(!StatusPoint->isPseudoPoint() && StatusPoint->getPointOffset() < 2000)
-                        {
-                            if(StatusPoint->getPointOffset() - 1 > StatusLast)
-                            {
-                                StatusLast = StatusPoint->getPointOffset() - 1;
-                            }
-
-                            if(StatusPoint->getPointOffset() - 1 < StatusFirst)
-                            {
-                                StatusFirst = StatusPoint->getPointOffset() - 1;
-                            }
-                        }
-                        break;
-                    }
-                case AnalogPointType:
-                    {
-                        CtiPointAnalog *AnalogPoint = (CtiPointAnalog *)PointRecord;
-
-                        if(AnalogPoint->getPointOffset() - 1 > AnalogLast)
-                        {
-                            AnalogLast = AnalogPoint->getPointOffset() - 1;
-                        }
-
-                        if(AnalogPoint->getPointOffset() - 1 < AnalogFirst)
-                        {
-                            AnalogFirst = AnalogPoint->getPointOffset() - 1;
-                        }
-
-                        break;
-                    }
-                case PulseAccumulatorPointType:
-                case DemandAccumulatorPointType:
-                    {
-                        CtiPointAccumulator *AccumPoint = (CtiPointAccumulator *)PointRecord;
-
-                        if(AccumPoint->getPointOffset() - 1 > AccumLast)
-                        {
-                            AccumLast = AccumPoint->getPointOffset() - 1;
-                        }
-
-                        if(AccumPoint->getPointOffset() - 1 < AccumFirst)
-                        {
-                            AccumFirst = AccumPoint->getPointOffset() - 1;
-                        }
-
-                        break;
-                    }
-                }
-            }
-        }
-
-
-        if(AnalogFirst > AnalogLast)
-        {
-            AnalogFirst = AnalogLast = 0;
-        }
-
-        if(AccumFirst > AccumLast)
-        {
-            AccumFirst = AccumLast = 0;
-        }
-
-        if(StatusFirst > StatusLast)
-        {
-            StatusFirst = StatusLast = 0;
-        }
-
-        if(isScanFrozen() || isScanFreezeFailed())
-        {
-            /*
-             *  This is our big hint that the message needs accums to be included!
-             */
-            OutMessage->Buffer.OutMessage[5] = IDLC_ACCUMDUMP;
-            OutMessage->Buffer.OutMessage[6] = 2;
-            OutMessage->Buffer.OutMessage[7] = LOBYTE (AccumFirst);
-            OutMessage->Buffer.OutMessage[8] = LOBYTE (AccumLast);
-            AIOffset = 4;
-
-#ifdef DEBUG1
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Accum Scan of device " << getName() << " in progress " << endl;
-            }
-#endif
-        }
-#ifdef DEBUG1
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Integrity Scan of device " << getName() << " in progress " << endl;
-        }
-#endif
-
-
-        /* Load the sectn to scan the stati */
-        OutMessage->Buffer.OutMessage[5  + AIOffset] = IDLC_STATUSDUMP;
-        OutMessage->Buffer.OutMessage[6  + AIOffset] = 4;
-        OutMessage->Buffer.OutMessage[7  + AIOffset] = LOBYTE (StatusFirst);
-        OutMessage->Buffer.OutMessage[8  + AIOffset] = HIBYTE (StatusFirst);
-        OutMessage->Buffer.OutMessage[9  + AIOffset] = LOBYTE (StatusLast);
-        OutMessage->Buffer.OutMessage[10 + AIOffset] = HIBYTE (StatusLast);
-
-        /* Load the Sectin to scan the Analogs */
-        OutMessage->Buffer.OutMessage[11 + AIOffset] = IDLC_ANALOGDUMP;
-        OutMessage->Buffer.OutMessage[12 + AIOffset] = 4;
-        OutMessage->Buffer.OutMessage[13 + AIOffset] = LOBYTE (AnalogFirst);
-        OutMessage->Buffer.OutMessage[14 + AIOffset] = HIBYTE (AnalogFirst);
-        OutMessage->Buffer.OutMessage[15 + AIOffset] = LOBYTE (AnalogLast);
-        OutMessage->Buffer.OutMessage[16 + AIOffset] = HIBYTE (AnalogLast);
-
-        /* Load the Sectin to request diagnostics */
-        OutMessage->Buffer.OutMessage[17 + AIOffset] = IDLC_DIAGNOSTICS | 0x80;
-        OutMessage->Buffer.OutMessage[18 + AIOffset] = 0;
-
+        /* Load the forced scan message */
+        header(OutMessage->Buffer.OutMessage + PREIDLEN, ILEXSCAN, getIlexSequenceNumber(), FORCED_SCAN);
 
         /* Load all the other stuff that is needed */
         OutMessage->DeviceID              = getID();
-        OutMessage->Buffer.OutMessage[4]  = 0x08;
         OutMessage->Port                  = getPortID();
         OutMessage->Remote                = getAddress();
-        OutMessage->Priority              = (UCHAR)ScanPriority;
+        OutMessage->Priority              = (UCHAR)(ScanPriority);
         OutMessage->TimeOut               = 2;
+        OutMessage->OutLength             = 2;
+        OutMessage->InLength              = -1;
+        OutMessage->EventCode             = RESULT | ENCODED;
+        OutMessage->Sequence              = 0;
+        OutMessage->Retry                 = 2;
 
-        if(isScanFrozen() || isScanFreezeFailed())
-        {
-            OutMessage->OutLength = 16;
-        }
-        else
-        {
-            OutMessage->OutLength = 12;
-        }
-
-        OutMessage->InLength = -1;
-        OutMessage->EventCode = RESULT | ENCODED;
-        OutMessage->Sequence = 0;
-        OutMessage->Retry = 2;
-
-        setScanIntegrity(TRUE);                         // We are an integrity scan.  Data must be propagated.
-
-        /* Message is loaded so send it to porter */
         outList.insert(OutMessage);
         OutMessage = NULL;
     }
@@ -339,54 +170,39 @@ INT CtiDeviceILEX::IntegrityScan(CtiRequestMsg *pReq,
 
 INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
-    LONG  PointOffset;
+    INT             status = NORMAL;
+    CtiPoint        *PointRecord;
+    CtiPointNumeric *NumericPoint;
+    CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    CtiPointAccumulator *pAccumPoint = NULL;
 
     CHAR  tStr[128];
+    INT AIPointOffset;
+
+    CtiPointDataMsg *pData = NULL;
+    CtiConnection   *Conn = ((CtiConnection*)InMessage->Return.Connection);
+    OUTMESS         *OutMessage = NULL;
+
+
     /* Misc. definitions */
-    ULONG i;
-    ULONG Pointer;
-    PBYTE MyInMessage, SaveInMessage;
+    ULONG i, j;
 
-    /* Define the various records */
-    CtiPoint          *PointRecord;
-    CtiPointNumeric   *NumericPoint;
-
-    /* Variables for decoding Messages */
-    SHORT Value;
-    USHORT UValue;
-    FLOAT PartHour;
-    FLOAT PValue;
-
-    ULONG StartPoint;
-    ULONG FinishPoint;
-
-    static LONG  NextTime = 0;
-
-    CtiPointDataMsg      *pData = NULL;
-    CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-    CtiConnection        *Conn = ((CtiConnection*)InMessage->Return.Connection);
-
-    OUTMESS              *OutMessage = NULL;
-
-/* Clear the Scan Pending flag, if neccesary it will be reset */
-    resetScanPending();
-
-    if(InMessage->InLength == 0)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << TimeNow << " Message returned for " << getName() << " is zero bytes in length " << endl;
-        return !NORMAL;
-    }
-
-    MyInMessage = InMessage->Buffer.InMessage - 2;
-
-    /* Check to see if this is a null response */
-    if((*(InMessage->Buffer.InMessage - 3)) & 0x80)
-    {
-        // CtiLockGuard<CtiLogger> doubt_guard(dout);
-        // dout << TimeNow << " " << getName() << " No exceptions.. " << endl;
-        return(NORMAL);
-    }
+    /* Variables for decoding ILEX Messages */
+    USHORT  Offset;
+    USHORT  NumAnalogs;
+    USHORT  NumAccum;
+    USHORT  NumStatus;
+    USHORT  NumSOE;
+    SHORT   Value;
+    USHORT  UValue;
+    USHORT  StartAccum;
+    USHORT  EndAccum;
+    USHORT  StartStatus;
+    FLOAT   PartHour;
+    USHORT  State1;
+    USHORT  State2;
+    USHORT  State3;
+    FLOAT   PValue;
 
     if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
@@ -395,233 +211,507 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
         return MEMORY;
     }
-
     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-    /* Walk through the sectins */
-    do
+    /* decode whatever message this is */
+    switch(InMessage->Buffer.InMessage[0] & 0x07)
     {
-        /* decode whatever message this is */
-        switch(MyInMessage[0] & 0x7f)
+    case ILEXFREEZE:
         {
-        case IDLC_CONFIGURATION:
+            if(isScanFreezePending())
             {
-                break;
-            }
-        case IDLC_DIAGNOSTICS:
-            {
-                RWCString result("Diagnostic Scan\n");
-                RWCString tstr = result;
+                resetScanFreezePending();
+                setScanFrozen();
+                setPrevFreezeTime(getLastFreezeTime());
+                setLastFreezeTime( RWTime(InMessage->Time) );
+                setPrevFreezeNumber( getLastFreezeNumber() );
+                setLastFreezeNumber(InMessage->Buffer.InMessage[2]);
+                resetScanFreezeFailed();
 
-                if(MyInMessage[2] & (EW_HDW_BIT))
+                /* then force a scan */
+                OutMessage = new OUTMESS;
+
+                if(OutMessage != NULL)
                 {
-                    result += RWCString("Hardware error is indicated by RTU\n");
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Hardware error is indicated by RTU " << getName() << endl;
-                }
+                    InEchoToOut(InMessage, OutMessage);
 
-                if(MyInMessage[2] & (EW_FMW_BIT))
-                {
-                    result += RWCString("Firmware error is indicated by RTU\n");
-                    OutMessage = new OUTMESS;
+                    CtiCommandParser parse(InMessage->Return.CommandStr);
 
-                    if(OutMessage != NULL)
+                    if((i = IntegrityScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4)) != NORMAL)
                     {
-                        InEchoToOut(InMessage, OutMessage);
-
-                        /* This is the Big E so reset the RTU, download the deadbands and clear the demand accums */
-                        if((i = WelCoReset(OutMessage, MAXPRIORITY)) != NORMAL)
-                        {
-                            /* Send Error to logger */
-                            ReportError ((USHORT)i);
-                        }
-                        else
-                        {
-                            outList.insert(OutMessage);
-                        }
-                    }
-                }
-
-                if(MyInMessage[2] & (EW_FMW_BIT | EW_PWR_BIT))
-                {
-                    result += RWCString("Deadbands downloaded due to powerfail bit\n");
-                    if((i = WelCoDeadBands(InMessage, outList, MAXPRIORITY - 1)) != NORMAL)
-                    {
-                        /* Send Error to logger */
-                        ReportError (i);
+                        ReportError ((USHORT)i); /* Send Error to logger */
                     }
                     else
                     {
-                        setDeadbandsSent(true);
-                    }
-
-                    break;
-                }
-
-                if(MyInMessage[2] & (EW_FMW_BIT | EW_PWR_BIT | EW_SYN_BIT))
-                {
-                    result += RWCString("Time synchronization sent to RTU\n");
-                    if((i = WelCoTimeSync (InMessage, outList, MAXPRIORITY - 1)) != NORMAL)
-                    {
-                        /* Send Error to logger */
-                        ReportError (i);
+                        setScanPending();
                     }
                 }
-
-                if(tstr == result)
+            }
+            else
+            {
                 {
-                    result += RWCString("RTU indicates GOOD status\n");
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " Throwing away unexpected freeze response" << endl;
                 }
+                setScanFreezeFailed();   // FIX FIX FIX 090799 CGP ?????
+                /* message for screwed up freeze */
+            }
+            break;
+        }
+    case ILEXSCAN:
+        {
+            if(isScanPending())
+            {
+                resetScanPending();
 
-                ReturnMsg->setResultString(result);
+                /* update the scan time */
+                // 04302002 CGP These don't seem to be used anywhere around here...
+                // DeviceRecord->LastFullScan      = TimeB->time;
+                // DeviceRecord->LastExceptionScan = TimeB->time;
 
+                /* The moron's at ILEX can't seem to keep straight the ACK/NACK bit so force it */
+                InMessage->Buffer.InMessage[0] |= 0x10;
+
+            }
+            else
+            {
+                /* Something screwed up message goes here */
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
                 break;
             }
-        case IDLC_FREEZE:
+
+#if 0
             {
-                if(isScanFreezePending())
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+
+                char oldfill = dout.fill('0');
+
+                dout << RWTime() << " Ilex Data:" << endl;
+                for(i=0; i < 64; i++)
                 {
-                    // dout << RWTime() << " Good/expected freeze response" << endl;
-                    resetScanFreezePending();
-                    setScanFrozen();
+                    if(i && !(i % 10)) dout << endl;
+                    dout << hex << setw(2) << (int)InMessage->Buffer.InMessage[i] << dec << " ";
+                }
+                dout << RWTime() << " Ilex Data Complete" << endl;
+                dout.fill(oldfill);
+            }
+#endif
 
-                    /* update the accumulator criteria for this RTU */
-                    setPrevFreezeTime(getLastFreezeTime());
-                    setLastFreezeTime( RWTime(InMessage->Time) );
-                    resetScanFreezeFailed();
 
-                    setPrevFreezeNumber(getLastFreezeNumber());
-                    setLastFreezeNumber(TRUE);
 
-                    /* then force a scan */
-                    OutMessage = new OUTMESS;
+            // !!! FALL THROUGH FALL THROUGH FALL THROUGH !!!
 
-                    if(OutMessage != NULL)
+        }
+    case ILEXSCANPARTIAL:
+        {
+            if((InMessage->Buffer.InMessage[0] & 0x07) == ILEXSCANPARTIAL)
+            {
+                /* do an exception scan */
+                OutMessage = new OUTMESS;
+
+                if(OutMessage != NULL)
+                {
+                    InEchoToOut(InMessage, OutMessage);
+
+                    CtiCommandParser parse(InMessage->Return.CommandStr);
+
+                    setIlexSequenceNumber( InMessage->Buffer.InMessage[0] & 0x10 );
+                    // if((i = ILEXExceptionScan (RemoteRecord, DeviceRecord, InMessage->Buffer.InMessage[0] & 0x10, MAXPRIORITY - 4)) != NORMAL)            }
+                    if((i = GeneralScan(NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4)) != NORMAL)
                     {
-                        InEchoToOut(InMessage, OutMessage);
-
-                        CtiCommandParser parse(InMessage->Return.CommandStr);
-
-                        if((i = IntegrityScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4)) != NORMAL)
-                        {
-                            ReportError ((USHORT)i); /* Send Error to logger */
-                        }
-                        else
-                        {
-                            setScanPending();
-                        }
+                        ReportError ((USHORT)i); /* Send Error to logger */
                     }
+                    else
+                    {
+                        setScanPending();
+                    }
+                }
+            }
+
+            if(InMessage->Buffer.InMessage[2])
+            {
+                Offset      = 3;
+                NumAnalogs  = InMessage->Buffer.InMessage[2];
+                NumStatus   = 0;
+                NumAccum    = 0;
+                NumSOE      = 0;
+            }
+            else
+            {
+                /* How many of each type is here? */
+                Offset      = 5;
+                NumAnalogs  = InMessage->Buffer.InMessage[3];
+                NumStatus   = InMessage->Buffer.InMessage[4] & 0x3f;
+
+                if( InMessage->Buffer.InMessage[4] & 0x40 )
+                {
+                    Offset  += 1;
+                    NumAccum = InMessage->Buffer.InMessage[5];
+                    if( InMessage->Buffer.InMessage[4] & 0x80 )
+                    {
+                        Offset      += 2;
+                        NumAnalogs  += InMessage->Buffer.InMessage[6];
+                        NumSOE      = InMessage->Buffer.InMessage[7];
+                    }
+                    else
+                        NumSOE      = 0;
                 }
                 else
                 {
-                    // What is this ??? DeviceRecord->ScanStatus &= SCANFREEZEFAILED;
-                    dout << RWTime() << " Throwing away unexpected freeze response" << endl;
-                    setScanFreezeFailed();   // FIX FIX FIX 090799 CGP ?????
-                    /* message for screwed up freeze */
+                    NumAccum        = 0;
+                    if( InMessage->Buffer.InMessage[4] & 0x80 )
+                    {
+                        Offset      += 2;
+                        NumAnalogs  += InMessage->Buffer.InMessage[5];
+                        NumSOE      = InMessage->Buffer.InMessage[6];
+                    }
+                    else
+                        NumSOE      = 0;
+                }
+            }
+
+            /* now check if we need to plug accums because of missed freeze */
+            if(((isScanFrozen()) || (isScanFreezeFailed())) && (NumAccum == 0))
+            {
+                /* make sure this guy is marked as a bad freeze */
+                setLastFreezeNumber( 0 );
+
+                if(_pointMgr == NULL)      // Attached via the dev_base object.
+                {
+                    RefreshDevicePoints();
                 }
 
-                break;
-            }
-        case IDLC_ACCUMDUMP:
-            {
-                CtiPointAccumulator *pAccumPoint;
-
-                StartPoint = MyInMessage[2] + 1;
-                FinishPoint = StartPoint + (MyInMessage[1] - 1 / 2) - 1;
-
-                if(isScanFreezePending())
+                if(_pointMgr != NULL)
                 {
+                    LockGuard guard(monitor());
 
-                    // This is a per device message, not per point....
+                    /* Walk the point in memory db to see what the point range is */
+                    CtiRTDB<CtiPoint>::CtiRTDBIterator   itr_pt(_pointMgr->getMap());
 
-                    for(PointOffset = (USHORT)StartPoint; PointOffset <= (USHORT)FinishPoint; PointOffset++)
+                    for(; ++itr_pt ;)
                     {
-                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, DemandAccumulatorPointType)) != NULL)
+                        PointRecord = itr_pt.value();
+                        RWRecursiveLock<RWMutexLock>::LockGuard pGuard( PointRecord->getMux() );
+
+                        switch(PointRecord->getType())
                         {
-                            pAccumPoint = (CtiPointAccumulator *)PointRecord;
-
-                            // Freeze Failed to dispatch message
+                        case StatusPointType:
+                        case AnalogPointType:
+                        case PulseAccumulatorPointType:
+                        case DemandAccumulatorPointType:
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                        }
-
-
-                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, PulseAccumulatorPointType)) != NULL)
-                        {
-                            pAccumPoint = (CtiPointAccumulator *)PointRecord;
-
-                            // Freeze Failed to dispatch message
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                CtiPointAccumulator *AccumPoint = (CtiPointAccumulator *)PointRecord;
+                                break;
                             }
                         }
                     }
-
-                    /* This is catastrophic so zero out previous freeze's */
-                    setPrevFreezeNumber(0);
-
-                    /* if it was just a reset let this one be */
-                    if(isScanFrozen() && !isScanFreezeFailed())
-                        setLastFreezeNumber(!0);
-                    else
-                        setLastFreezeNumber(0);
-
-                    resetScanFrozen();
-                    resetScanFreezeFailed();
-                    resetScanFreezePending();
                 }
-                else if(isScanFrozen())
+
+#if 0
+                /* loop through the accums for this Remote */
+                PointRecord.PointType = ACCUMULATORPOINT;
+                if(!(PointGetDeviceTypeFirst (&PointRecord)))
                 {
-                    Pointer = 1;
+                    do
+                    {
+                        PointLock (&PointRecord);
+
+                        /* BDW - The line below was moved above checkdatastatquality because that function updates the database. */
+                        /* Move the pulse count */
+                        PointRecord.PreviousPulses = PointRecord.PresentPulses;
+
+                        CheckDataStateQuality (DeviceRecord, &PointRecord, &PValue, NORMAL, TimeB->time, TimeB->dstflag, DATAFREEZEFAIL, LogFlag);
+
+
+                        /* Send the point to feedback */
+                        memcpy (DRPValue.DeviceName, PointRecord.DeviceName, STANDNAMLEN);
+                        memcpy (DRPValue.PointName, PointRecord.PointName, STANDNAMLEN);
+                        DRPValue.Quality = PointRecord.CurrentQuality;
+                        DRPValue.AlarmState = PointRecord.AlarmStatus;
+                        DRPValue.Value = PointRecord.CurrentValue;
+                        DRPValue.TimeStamp = PointRecord.CurrentTime;
+                        DRPValue.Type = DRPTYPEVALUE;
+
+                        SendDRPPoint (&DRPValue);
+
+                    } while(!(PointGetDeviceTypeNext (&PointRecord)));
+                }
+                /* loop through the demamd accums for this Remote */
+                memcpy (PointRecord.DeviceName, DeviceRecord->DeviceName, STANDNAMLEN);
+                PointRecord.PointType = DEMANDACCUMPOINT;
+                if(!(PointGetDeviceTypeFirst (&PointRecord)))
+                {
+                    do
+                    {
+                        PointLock (&PointRecord);
+
+                        /* BDW - The line below was moved above checkdatastatquality
+                                because that function updates the database. */
+                        /* Move the pulse count */
+                        PointRecord.PreviousPulses = PointRecord.PresentPulses;
+
+                        CheckDataStateQuality (DeviceRecord, &PointRecord, &PValue, NORMAL, TimeB->time, TimeB->dstflag, DATAFREEZEFAIL, LogFlag);
+
+                        /* Send the point to feedback */
+                        memcpy (DRPValue.DeviceName, PointRecord.DeviceName, STANDNAMLEN);
+                        memcpy (DRPValue.PointName, PointRecord.PointName, STANDNAMLEN);
+                        DRPValue.Quality = PointRecord.CurrentQuality;
+                        DRPValue.AlarmState = PointRecord.AlarmStatus;
+                        DRPValue.Value = PointRecord.CurrentValue;
+                        DRPValue.TimeStamp = PointRecord.CurrentTime;
+                        DRPValue.Type = DRPTYPEVALUE;
+
+                        SendDRPPoint (&DRPValue);
+                    } while(!(PointGetDeviceTypeNext (&PointRecord)));
+                }
+#endif
+
+                resetScanFrozen();
+                resetScanFreezeFailed();
+            }
+
+            /* Now process them in order */
+            if(NumStatus)
+            {
+
+                for(i = 0; i < NumStatus; i++)
+                {
+                    StartStatus = InMessage->Buffer.InMessage[Offset] * 16;
+                    dout << RWTime() << " Start status = " << StartStatus << endl;
+
+#if 1
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        char oldfill = dout.fill('0');
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+                        for(j = 0; j < 7; j++)
+                        {
+                            dout << "0x" << hex << setw(2) << (int)InMessage->Buffer.InMessage[Offset + j] << " " << dec << endl;
+                        }
+                        dout << endl;
+
+                        dout.fill(oldfill);
+                    }
+#endif
+
+                    for(j = 1; j <= 16; j++)
+                    {
+                        /* Get the Status Record */
+
+
+                        if( (PointRecord = getDevicePointOffsetTypeEqual( i, StatusPointType )) != NULL)
+                        {
+                            /****** NOTE 3-state's are ignored...
+                             * a status is a 2 state at this point, period.  Work needs to be done here if that changes.
+                             */
+
+                            /* Strip out bits for this status */
+                            /* Note:    State2 and State3 are not */
+                            /* used right now but may be in the */
+                            /* future so I computed them (Oh Hell! */
+                            /* more usecs down the drain */
+                            if(j <= 8)
+                            {
+                                State1 = InMessage->Buffer.InMessage[Offset + 1] >> (j - 1) & 0x0001;
+                                State2 = InMessage->Buffer.InMessage[Offset + 3] >> (j - 1) & 0x0001;
+                                State3 = InMessage->Buffer.InMessage[Offset + 5] >> (j - 1) & 0x0001;
+                            }
+                            else
+                            {
+                                State1 = InMessage->Buffer.InMessage[Offset + 2] >> (j - 9) & 0x0001;
+                                State2 = InMessage->Buffer.InMessage[Offset + 4] >> (j - 9) & 0x0001;
+                                State3 = InMessage->Buffer.InMessage[Offset + 6] >> (j - 9) & 0x0001;
+                            }
+
+                            /* Update the records */
+
+                            if(State1)
+                                Value = CLOSED;
+                            else
+                                Value = OPENED;
+
+                            PValue = (FLOAT) Value;
+
+                            sprintf(tStr, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
+
+                            pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
+
+                            if(pData != NULL)
+                            {
+                                ReturnMsg->PointData().insert(pData);
+                                pData = NULL;  // We just put it on the list...
+                            }
+                        }
+                    }
+                    Offset += 7;
+                }
+            }
+
+            if(NumAccum)
+            {
+                if((InMessage->Buffer.InMessage[0] & 0x07) == ILEXSCAN)
+                {
+                    if(isScanFrozen() || isScanFreezeFailed())
+                    {
+                        if( getScanRate(ScanRateGeneral) < getScanRate(ScanRateAccum) )
+                        {
+                            /* Force a continuation to clean that mother out */
+                            OutMessage = new OUTMESS;
+
+                            if(OutMessage != NULL)
+                            {
+                                InEchoToOut(InMessage, OutMessage);
+
+                                CtiCommandParser parse(InMessage->Return.CommandStr);
+                                setIlexSequenceNumber( InMessage->Buffer.InMessage[0] & 0x10 );
+
+                                if((i = GeneralScan(NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4)) != NORMAL)
+                                {
+                                    ReportError ((USHORT)i); /* Send Error to logger */
+                                }
+                                else
+                                {
+                                    setScanPending();
+                                }
+                            }
+                        }
+                    }
+                }
+
+                /* Check the freeze number */
+                if(
+                  ((getLastFreezeNumber() != InMessage->Buffer.InMessage[Offset]) && isScanFrozen()) ||
+                  (isScanFreezeFailed() && getPrevFreezeNumber() + 1 != 0 && getPrevFreezeNumber() + 1 != InMessage->Buffer.InMessage[Offset]) ||
+                  (isScanFreezeFailed() && getPrevFreezeNumber() + 1 == 0 && getPrevFreezeNumber() + 2 != InMessage->Buffer.InMessage[Offset])
+                  )
+                {
+                    /* Process wrong freeze number */
+                    Offset += (2 + (NumAccum * 2));
+
+                    /* make sure this guy is marked as a bad freeze */
+                    setLastFreezeNumber( 0 );
+
+#if 1
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << " " << getName() << " Bad freeze number!" << endl;
+                    }
+
+#else
+                    /* loop through the demand accums for this Remote */
+                    memcpy (PointRecord.DeviceName, DeviceRecord->DeviceName, STANDNAMLEN);
+                    PointRecord.PointType = DEMANDACCUMPOINT;
+                    if(!(PointGetDeviceTypeFirst (&PointRecord)))
+                    {
+                        do
+                        {
+
+                            PointLock (&PointRecord);
+
+                            /* BDW - The line below was moved above checkdatastatquality because that function updates the database. */
+                            /* Move the pulse count */
+                            PointRecord.PreviousPulses = PointRecord.PresentPulses;
+
+                            CheckDataStateQuality (DeviceRecord, &PointRecord, &PValue, NORMAL, TimeB->time, TimeB->dstflag, DATAFREEZEFAIL, LogFlag);
+
+                            /* Send the point to feedback */
+                            memcpy (DRPValue.DeviceName, PointRecord.DeviceName, STANDNAMLEN);
+                            memcpy (DRPValue.PointName, PointRecord.PointName, STANDNAMLEN);
+                            DRPValue.Quality = PointRecord.CurrentQuality;
+                            DRPValue.AlarmState = PointRecord.AlarmStatus;
+                            DRPValue.Value = PointRecord.CurrentValue;
+                            DRPValue.TimeStamp = PointRecord.CurrentTime;
+                            DRPValue.Type = DRPTYPEVALUE;
+
+                            SendDRPPoint (&DRPValue);
+                        } while(!(PointGetDeviceTypeNext (&PointRecord)));
+                    }
+
+                    /* loop through the accums for this Remote */
+                    memcpy (PointRecord.DeviceName, DeviceRecord->DeviceName, STANDNAMLEN);
+                    PointRecord.PointType = ACCUMULATORPOINT;
+                    if(!(PointGetDeviceTypeFirst (&PointRecord)))
+                    {
+                        do
+                        {
+
+                            PointLock (&PointRecord);
+
+                            /* BDW - The line below was moved above checkdatastatquality
+                                     because that function updates the database. */
+                            /* Move the pulse count */
+                            PointRecord.PreviousPulses = PointRecord.PresentPulses;
+
+                            CheckDataStateQuality (DeviceRecord, &PointRecord, &PValue, NORMAL, TimeB->time, TimeB->dstflag, DATAFREEZEFAIL, LogFlag);
+
+                            /* Send the point to feedback */
+                            memcpy (DRPValue.DeviceName, PointRecord.DeviceName, STANDNAMLEN);
+                            memcpy (DRPValue.PointName, PointRecord.PointName, STANDNAMLEN);
+                            DRPValue.Quality = PointRecord.CurrentQuality;
+                            DRPValue.AlarmState = PointRecord.AlarmStatus;
+                            DRPValue.Value = PointRecord.CurrentValue;
+                            DRPValue.TimeStamp = PointRecord.CurrentTime;
+                            DRPValue.Type = DRPTYPEVALUE;
+
+                            SendDRPPoint (&DRPValue);
+                        } while(!(PointGetDeviceTypeNext (&PointRecord)));
+                    }
+
+#endif
+                }
+                else
+                {
+                    // get the current pulse count
+                    ULONG curPulseValue;
+
+                    /* mark the freeze as valid */
+                    if(isScanFreezeFailed())
+                        setLastFreezeNumber(InMessage->Buffer.InMessage[Offset]);
 
                     /* Calculate the part of an hour involved here */
-                    PartHour = (FLOAT)(getLastFreezeTime().seconds() - getPrevFreezeTime().seconds());
+                    PartHour = (FLOAT) (getLastFreezeTime().seconds() - getPrevFreezeTime().seconds());
                     PartHour /= (3600.0);
 
-                    for(PointOffset = (USHORT)StartPoint; PointOffset <= FinishPoint; PointOffset++)
-                    {
-                        Pointer += 2;
+                    /* Loop through the accumulator records */
+                    StartAccum = InMessage->Buffer.InMessage[Offset + 1];
+                    EndAccum = StartAccum + NumAccum;
+                    Offset += 2;
 
-                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, DemandAccumulatorPointType)) != NULL)
+                    for(AIPointOffset = StartAccum + 1; AIPointOffset <= EndAccum; AIPointOffset++)
+                    {
+                        if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(AIPointOffset, DemandAccumulatorPointType)) != NULL)
                         {
-                            pAccumPoint = (CtiPointAccumulator *)PointRecord;
+                            curPulseValue = MAKEUSHORT(InMessage->Buffer.InMessage[Offset], InMessage->Buffer.InMessage[Offset + 1]);
 
                             /* Copy the pulses */
                             pAccumPoint->getPointHistory().setPreviousPulseCount(pAccumPoint->getPointHistory().getPresentPulseCount());
-                            pAccumPoint->getPointHistory().setPresentPulseCount(MAKEUSHORT (MyInMessage[Pointer], MyInMessage[Pointer + 1]));
+                            pAccumPoint->getPointHistory().setPresentPulseCount(curPulseValue);
 
                             if(!(getPrevFreezeNumber()) || !(getLastFreezeNumber()))
                             {
-                                /*
-                                if(PointRecord.CurrentValue < PointRecord.PlugValue)
-                                   PointRecord.CurrentValue = PointRecord.PlugValue;
-                                */
-
                                 // Inform dispatch that the point pump has just been primed.
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
                             }
                             else
                             {
                                 /* Calculate the number of pulses */
-                                if(pAccumPoint->getPointHistory().getPresentPulseCount() <
-                                   pAccumPoint->getPointHistory().getPreviousPulseCount())
-                                {
-                                    /* Rollover */
-                                    UValue = 0xffff -
-                                             pAccumPoint->getPointHistory().getPreviousPulseCount() +
-                                             pAccumPoint->getPointHistory().getPresentPulseCount();
-                                }
+                                if(pAccumPoint->getPointHistory().getPresentPulseCount() < pAccumPoint->getPointHistory().getPreviousPulseCount())
+                                    UValue = 0xffff - pAccumPoint->getPointHistory().getPreviousPulseCount() + pAccumPoint->getPointHistory().getPresentPulseCount();  /* Rollover */
                                 else
-                                {
-                                    UValue = pAccumPoint->getPointHistory().getPresentPulseCount() -
-                                             pAccumPoint->getPointHistory().getPreviousPulseCount();
-                                }
+                                    UValue = pAccumPoint->getPointHistory().getPresentPulseCount() - pAccumPoint->getPointHistory().getPreviousPulseCount();
 
                                 /* Calculate in units/hour */
-                                PValue = (FLOAT) UValue * pAccumPoint->getMultiplier(); // PointRecord.Multiplier;
-
+                                PValue = (FLOAT) UValue * pAccumPoint->getMultiplier();
                                 /* to convert to units */
                                 PValue /= PartHour;
 
@@ -630,11 +720,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
                                 sprintf(tStr, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
 
-                                pData = new CtiPointDataMsg(pAccumPoint->getPointID(),
-                                                            PValue,
-                                                            NormalQuality,
-                                                            DemandAccumulatorPointType,
-                                                            tStr);
+                                pData = new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, DemandAccumulatorPointType, tStr);
                                 if(pData != NULL)
                                 {
                                     ReturnMsg->PointData().insert(pData);
@@ -643,413 +729,254 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                             }
                         }
 
-                        /* Check if there is a pulse point */
-                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, PulseAccumulatorPointType)) != NULL)
+                        if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(AIPointOffset, PulseAccumulatorPointType)) != NULL)
                         {
-                            pAccumPoint = (CtiPointAccumulator *)PointRecord;
-
                             /* Copy the pulses */
                             pAccumPoint->getPointHistory().setPreviousPulseCount(pAccumPoint->getPointHistory().getPresentPulseCount());
-                            pAccumPoint->getPointHistory().setPresentPulseCount(MAKEUSHORT (MyInMessage[Pointer], MyInMessage[Pointer + 1]));
+                            pAccumPoint->getPointHistory().setPresentPulseCount(curPulseValue);
+
+                            if(pAccumPoint->getPointHistory().getPresentPulseCount() < pAccumPoint->getPointHistory().getPreviousPulseCount())
+                                UValue = 0xffff - pAccumPoint->getPointHistory().getPreviousPulseCount() + pAccumPoint->getPointHistory().getPresentPulseCount();  /* Rollover */
+                            else
+                                UValue = pAccumPoint->getPointHistory().getPresentPulseCount() - pAccumPoint->getPointHistory().getPreviousPulseCount();
+
 
                             /* Calculate in units/hour */
-                            PValue = (FLOAT) pAccumPoint->getPointHistory().getPresentPulseCount() * pAccumPoint->getMultiplier();
+                            PValue = (FLOAT) UValue * pAccumPoint->getMultiplier();
 
                             /* Apply offset */
                             PValue += pAccumPoint->getDataOffset();
 
                             sprintf(tStr, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
 
-                            pData = new CtiPointDataMsg(pAccumPoint->getPointID(),
-                                                        PValue,
-                                                        NormalQuality,
-                                                        PulseAccumulatorPointType,
-                                                        tStr);
+                            pData = new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
+
                             if(pData != NULL)
                             {
                                 ReturnMsg->PointData().insert(pData);
                                 pData = NULL;  // We just put it on the list...
                             }
                         }
+
+                        Offset += 2;
                     }
 
-                    resetScanFrozen();
-                    resetScanFreezeFailed();
-                }
-
-                break;
-            }
-        case IDLC_STATUSDUMP:
-            {
-                StartPoint = MAKEUSHORT (MyInMessage[2], MyInMessage[3]) + 1;
-                FinishPoint = StartPoint + ((MyInMessage[1] - 2) / 2) * 8;
-
-                /* Now loop through and update received points as needed */
-                for(PointOffset = StartPoint; PointOffset <= FinishPoint; PointOffset++)
-                {
-                    /* PointOffset is the offset is this RTU... */
-                    if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, StatusPointType)) != NULL)
+#if 0
+                    for(PointRecord.PointOffset = StartAccum + 1; PointRecord.PointOffset <= EndAccum; PointRecord.PointOffset++)
                     {
-                        /* Apply offset */
-                        if((MyInMessage[4 + 2 * ((PointOffset - StartPoint) / 8)] >> ((PointOffset - StartPoint) % 8)) & 0x01)
+                        /* Get the demand accumulator record */
+                        PointRecord.PointType = DEMANDACCUMPOINT;
+                        if(!(PointGetDeviceTypeOffsetEqual (&PointRecord)))
                         {
-                            PValue = CLOSED;
-                        }
-                        else
-                        {
-                            PValue = OPENED;
-                        }
 
-#if (DEBUG_PRINT_DECODE > 0)
-                        if(PValue == (FLOAT)CLOSED)
-                            dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " is  CLOSED" << endl;
-                        else
-                            dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " is  OPENED" << endl;
-#endif
+                            PointLock (&PointRecord);
 
-                        /*
-                         *  If this next bit is too confusing, you haven't read the protocol document.
-                         *
-                         *  Basically the RTU tells you the current status (above) and provides a bit which
-                         *   is set on the second (and subsequent) state change(s) since the last
-                         *   status (or exception) report.  We know only that two or more changes have
-                         *   occured iff the Change Flag is set, so we'll just log a change in the
-                         *   opposite direction and then the current state....
-                         */
+                            /* Move the pulse counts */
+                            PointRecord.PreviousPulses = PointRecord.PresentPulses;
 
-                        /* Check if this is "changed" */
-                        if((MyInMessage[4 + 2 * ((PointOffset - StartPoint) / 8) + 1] >> ((PointOffset - StartPoint) % 8)) & 0x01)
-                        {
-                            PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
-#if (DEBUG_PRINT_DECODE > 0)
-                            if(PValue == (FLOAT)CLOSED)
-                                dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " was CLOSED" << endl;
-                            else
-                                dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " was OPENED" << endl;
-#endif
-                        }
+                            /* Calculate the new pulses */
+                            PointRecord.PresentPulses = MAKEUSHORT (InMessage->Buffer.InMessage[Offset], InMessage->Buffer.InMessage[Offset + 1]);
 
-
-                        sprintf(tStr, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
-
-                        pData = new CtiPointDataMsg(PointRecord->getPointID(),
-                                                    PValue,
-                                                    NormalQuality,
-                                                    StatusPointType,
-                                                    tStr);
-                        if(pData != NULL)
-                        {
-                            ReturnMsg->PointData().insert(pData);
-                            pData = NULL;  // We just put it on the list...
-                        }
-
-                        /* Check if the "Changed Flag is high and toggle it back to the current status" */
-                        if((MyInMessage[4 + 2 * ((PointOffset - StartPoint) / 8) + 1] >> ((PointOffset - StartPoint) % 8)) & 0x01)
-                        {
-                            PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
-
-                            sprintf(tStr, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
-
-                            pData = new CtiPointDataMsg(PointRecord->getPointID(),
-                                                        PValue,
-                                                        NormalQuality,
-                                                        StatusPointType,
-                                                        tStr);
-                            if(pData != NULL)
+                            /* Check if we have two reads */
+                            if(!DeviceRecord->PrevFreezeNumber || !DeviceRecord->LastFreezeNumber)
                             {
-                                ReturnMsg->PointData().insert(pData);
-                                pData = NULL;  // We just put it on the list...
-                            }
-                        }
-                    }
-                }
+                                if(PointRecord.CurrentValue < PointRecord.PlugValue)
+                                    PointRecord.CurrentValue = PointRecord.PlugValue;
 
-                break;
-            }
-        case IDLC_STATUSEXCEPTION:
-            {
-                /* Now loop through and update received points as needed */
-                /* FinishPoint is used as COUNT of points in exception dump */
-                FinishPoint = MyInMessage[1] / 2;
-                /* StartPoint is used as the counter, and really holds the position rather than the actual offset point number */
-                for(StartPoint = 0; StartPoint < FinishPoint; StartPoint++)
-                {
-                    /* Which offset is this in the EW Protocol spec... */
-                    PointOffset = MAKEUSHORT (MyInMessage[(StartPoint * 2) + 2],
-                                              MyInMessage[(StartPoint * 2) + 3] & 0x0f) + 1;
-
-                    if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, StatusPointType)) != NULL)
-                    {
-                        /* get the present value */
-                        if(MyInMessage[(StartPoint * 2) + 3]  & 0x80)
-                        {
-                            PValue = CLOSED;
-                        }
-                        else
-                        {
-                            PValue = OPENED;
-                        }
-
-#if (DEBUG_PRINT_DECODE > 0)
-                        if(PValue == (FLOAT)CLOSED)
-                            dout << RWTime() << " Status " << PointOffset << " is  CLOSED" << endl;
-                        else
-                            dout << RWTime() << " Status " << PointOffset << " is  OPENED" << endl;
-#endif
-
-                        /* Check if this is "changed" */
-                        if(MyInMessage[(StartPoint * 2) + 3] & 0x40)
-                        {
-                            PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
-#if (DEBUG_PRINT_DECODE > 0)
-                            if(PValue == (FLOAT)CLOSED)
-                                dout << RWTime() << " Status " << PointOffset << " was CLOSED" << endl;
-                            else
-                                dout << RWTime() << " Status " << PointOffset << " was OPENED" << endl;
-#endif
-                        }
-
-                        sprintf(tStr, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
-
-                        pData = new CtiPointDataMsg(PointRecord->getPointID(),
-                                                    PValue,
-                                                    NormalQuality,
-                                                    StatusPointType,
-                                                    tStr);
-                        if(pData != NULL)
-                        {
-                            ReturnMsg->PointData().insert(pData);
-                            pData = NULL;  // We just put it on the list...
-                        }
-
-                        /* Check if this is "changed" */
-                        if(MyInMessage[(StartPoint * 2) + 3] & 0x40)
-                        {
-                            PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
-                            sprintf(tStr, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
-                            pData = new CtiPointDataMsg(PointRecord->getPointID(),
-                                                        PValue,
-                                                        NormalQuality,
-                                                        StatusPointType,
-                                                        tStr);
-                            if(pData != NULL)
-                            {
-                                ReturnMsg->PointData().insert(pData);
-                                pData = NULL;  // We just put it on the list...
-                            }
-                        }
-                    }
-                }
-
-                break;
-            }
-        case IDLC_ANALOGDUMP:
-            {
-                StartPoint = MAKEUSHORT (MyInMessage[2], MyInMessage[3]) + 1;
-
-                if((*(InMessage->Buffer.InMessage - 3)) & 0x08)
-                {
-                    /* This is a 16 bit analog */
-                    FinishPoint = StartPoint  + (MyInMessage[1] - 2) / 2 - 1;
-                }
-                else
-                {
-                    /* This is a 12 bit analog */
-                    FinishPoint = StartPoint  + ((MyInMessage[1] - 2) / 3) * 2;
-                    if(((MyInMessage[1] - 2) / 3) * 3 != (MyInMessage[1] - 2))
-                    {
-                        FinishPoint++;
-                    }
-                }
-
-                /* Now loop through and update received points as needed */
-
-                for(PointOffset = (USHORT)StartPoint; PointOffset <= FinishPoint; PointOffset++)
-                {
-                    if((NumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(PointOffset, AnalogPointType)) != NULL)
-                    {
-                        /* update the point data */
-                        if((*(InMessage->Buffer.InMessage - 3)) & 0x08)
-                        {
-                            /* This is a 16 bit analog */
-                            Value = MAKEUSHORT (MyInMessage[((PointOffset - StartPoint) * 2) + 4],
-                                                MyInMessage[((PointOffset - StartPoint) * 2) + 5]);
-                        }
-                        else
-                        {
-                            /* This is a 12 bit analog */
-                            if((PointOffset - StartPoint) & 0x01)
-                            {
-                                Value = MAKEUSHORT (((MyInMessage[((PointOffset - StartPoint) / 2) * 3 + 5] >> 4) & 0x0f) |
-                                                    ((MyInMessage[((PointOffset - StartPoint) / 2) * 3 + 6] << 4) &0xf0),
-                                                    (MyInMessage[((PointOffset - StartPoint) / 2) * 3 + 6] >> 4) & 0x0f);
+                                CheckDataStateQuality (DeviceRecord, &PointRecord, &PValue, NORMAL, TimeB->time, TimeB->dstflag, DATAFREEZEFAIL, LogFlag);
                             }
                             else
                             {
-                                Value = MAKEUSHORT (MyInMessage[((PointOffset - StartPoint) / 2) * 3 + 4],
-                                                    MyInMessage[((PointOffset - StartPoint) / 2) * 3 + 5] & 0x0f);
+                                /* Calculate the number of pulses */
+                                if(PointRecord.PresentPulses < PointRecord.PreviousPulses)
+                                    /* Rollover */
+                                    UValue = 0xffff - PointRecord.PreviousPulses + PointRecord.PresentPulses;
+                                else
+                                    UValue = PointRecord.PresentPulses - PointRecord.PreviousPulses;
+
+                                /* Calculate in units/hour */
+                                PValue = (FLOAT) UValue * PointRecord.Multiplier;
+
+                                /*  convert to units */
+                                PValue /= PartHour;
+
+                                /* Apply offset */
+                                PValue += PointRecord.Offset;
+
+                                CheckDataStateQuality (DeviceRecord, &PointRecord, &PValue, NORMAL, TimeB->time, TimeB->dstflag, NORMAL, LogFlag);
                             }
 
-                            Value = Value << 4;
-                            Value = Value / 16;
-                        }
+                            /* Send to DRP */
+                            memcpy (DRPValue.DeviceName, PointRecord.DeviceName, STANDNAMLEN);
+                            memcpy (DRPValue.PointName, PointRecord.PointName, STANDNAMLEN);
+                            DRPValue.Quality = PointRecord.CurrentQuality;
+                            DRPValue.AlarmState = PointRecord.AlarmStatus;
+                            DRPValue.Value = PointRecord.CurrentValue;
+                            DRPValue.TimeStamp = PointRecord.CurrentTime;
+                            DRPValue.Type = DRPTYPEVALUE;
 
-                        PValue = Value * NumericPoint->getMultiplier() + NumericPoint->getDataOffset();
-
-                        sprintf(tStr, "%s point %s = %f", getName(), NumericPoint->getName(), PValue );
-
-                        pData = new CtiPointDataMsg(NumericPoint->getPointID(),
-                                                    PValue,
-                                                    NormalQuality,
-                                                    AnalogPointType,
-                                                    tStr);
-                        if(pData != NULL)
-                        {
-                            ReturnMsg->PointData().insert(pData);
-                            pData = NULL;  // We just put it on the list...
-                        }
-                    }
-                }
-                break;
-
-            }
-        case IDLC_ANALOGEXCEPTION:
-            {
-
-                // memcpy (PointRecord.getName(), DeviceRecord->getName(), STANDNAMLEN);
-                // PointRecord.PointType = ANALOGPOINT;
-
-                /* FinishPoint is used as count for analog exceptions */
-                if((*(InMessage->Buffer.InMessage - 3)) & 0x08)
-                {
-                    /* 16 bit analogs pack 2 to 7 bytes */
-                    FinishPoint = (MyInMessage[1] * 2) / 7;
-                }
-                else
-                {
-                    /* 12 bit analogs pack 1 to 3 bytes */
-                    FinishPoint = MyInMessage[1] / 3;
-                }
-
-                /* StartPoint is used as the counter */
-                for(StartPoint = 0; StartPoint < FinishPoint; StartPoint++)
-                {
-                    if((*(InMessage->Buffer.InMessage - 3)) & 0x08)
-                    {
-                        if(StartPoint & 0x01)
-                        {
-                            PointOffset = MAKEUSHORT ( ((MyInMessage[(((StartPoint - 1) * 7) / 2) + 7] >> 4) & 0x0f) |
-                                                       ((MyInMessage[(((StartPoint - 1) * 7) / 2) + 8] << 4) & 0xf0),
-                                                       ((MyInMessage[(((StartPoint - 1) * 7) / 2) + 8] >> 4) & 0x0f)) + 1;
+                            SendDRPPoint (&DRPValue);
                         }
                         else
                         {
-                            PointOffset = MAKEUSHORT (MyInMessage[((StartPoint * 7) / 2) + 2],
-                                                      MyInMessage[((StartPoint * 7) / 2) + 3] & 0x0f) + 1;
-                        }
+                            PointRecord.PointType = ACCUMULATORPOINT;
+                            if(!(PointGetDeviceTypeOffsetEqual (&PointRecord)))
+                            {
 
+                                PointLock (&PointRecord);
+
+                                /* Move the pulse counts */
+                                PointRecord.PreviousPulses = PointRecord.PresentPulses;
+
+                                /* Calculate the new pulses */
+                                PointRecord.PresentPulses = MAKEUSHORT (InMessage->Buffer.InMessage[Offset],
+                                                                        InMessage->Buffer.InMessage[Offset + 1]);
+
+                                /* Check if we have two reads */
+                                if(!DeviceRecord->PrevFreezeNumber || !DeviceRecord->LastFreezeNumber)
+                                {
+                                    if(PointRecord.CurrentValue < PointRecord.PlugValue)
+                                        PointRecord.CurrentValue = PointRecord.PlugValue;
+
+                                    CheckDataStateQuality (DeviceRecord, &PointRecord, &PValue, NORMAL, TimeB->time, TimeB->dstflag, DATAFREEZEFAIL, LogFlag);
+                                }
+                                else
+                                {
+                                    /* Calculate the number of pulses */
+                                    if(PointRecord.PresentPulses < PointRecord.PreviousPulses)
+                                        /* Rollover */
+                                        UValue = 0xffff - PointRecord.PreviousPulses + PointRecord.PresentPulses;
+                                    else
+                                        UValue = PointRecord.PresentPulses - PointRecord.PreviousPulses;
+
+                                    /* Calculate in units/hour */
+                                    PValue = (FLOAT) UValue * PointRecord.Multiplier;
+
+                                    /* Apply offset */
+                                    PValue += PointRecord.Offset;
+
+                                    CheckDataStateQuality (DeviceRecord, &PointRecord, &PValue, NORMAL, TimeB->time, TimeB->dstflag, NORMAL, LogFlag);
+                                }
+
+                                /* Send to DRP */
+                                memcpy (DRPValue.DeviceName, PointRecord.DeviceName, STANDNAMLEN);
+                                memcpy (DRPValue.PointName, PointRecord.PointName, STANDNAMLEN);
+                                DRPValue.Quality = PointRecord.CurrentQuality;
+                                DRPValue.AlarmState = PointRecord.AlarmStatus;
+                                DRPValue.Value = PointRecord.CurrentValue;
+                                DRPValue.TimeStamp = PointRecord.CurrentTime;
+                                DRPValue.Type = DRPTYPEVALUE;
+
+                                SendDRPPoint (&DRPValue);
+                            }
+                        }
+                        Offset += 2;
+                    }
+
+#endif
+                }
+                resetScanFrozen();
+                resetScanFreezeFailed();
+            }
+
+            if(NumSOE)
+            {
+                /* No use for SOE reports at this time */
+                Offset += (NumSOE * 5);
+            }
+
+            if(NumAnalogs)
+            {
+                for(i = 0; i < NumAnalogs; i++)
+                {
+                    if(i & 0x01)
+                    {
+                        AIPointOffset = InMessage->Buffer.InMessage[Offset + 4] + 1;
+                        Value = MAKEUSHORT (InMessage->Buffer.InMessage[Offset + 3], InMessage->Buffer.InMessage[Offset + 2] & 0x0f);
+                        Offset += 5;
                     }
                     else
                     {
-                        PointOffset = MAKEUSHORT (MyInMessage[(StartPoint * 3) + 2],
-                                                  MyInMessage[(StartPoint * 3) + 3] & 0x0f);
+                        AIPointOffset = InMessage->Buffer.InMessage[Offset] + 1;
+                        Value = MAKEUSHORT (InMessage->Buffer.InMessage[Offset + 1], (InMessage->Buffer.InMessage[Offset + 2] & 0xf0) >> 4);
                     }
 
-                    /* Now Update the Record if it exists */
-                    if((NumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(PointOffset, AnalogPointType)) != NULL)
+                    Value = Value << 4;
+
+                    Value = Value / 16;
+
+                    if((NumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(AIPointOffset, AnalogPointType)) != NULL)
                     {
-                        if((*(InMessage->Buffer.InMessage - 3)) & 0x08)
-                        {
-                            if(StartPoint & 0x01)
-                            {
-                                Value = MAKEUSHORT ((((MyInMessage[(((StartPoint - 1) * 7) / 2) + 5] >> 4) & 0x0f) |
-                                                     ((MyInMessage[(((StartPoint - 1) * 7) / 2) + 6] << 4) & 0xf0)),
-                                                    (((MyInMessage[(((StartPoint - 1) * 7) / 2) + 6] >> 4) & 0x0f) |
-                                                     ((MyInMessage[(((StartPoint - 1) * 7) / 2) + 7] << 4) & 0xf0)));
-                            }
-                            else
-                            {
-                                Value = MAKEUSHORT ((((MyInMessage[((StartPoint * 7) / 2) + 3] >> 4) & 0x0f) |
-                                                     ((MyInMessage[((StartPoint * 7) / 2) + 4] << 4) & 0xf0)),
-                                                    (((MyInMessage[((StartPoint * 7) / 2) + 4] >> 4) & 0x0f) |
-                                                     ((MyInMessage[((StartPoint * 7) / 2) + 5] << 4) & 0xf0)));
-                            }
-                        }
-                        else
-                        {
-                            /* update the point data */
-                            Value = MAKEUSHORT (((MyInMessage[(StartPoint * 3) + 3] >> 4) & 0x0f),
-                                                MyInMessage[(StartPoint * 3) + 4]);
-
-                            Value = Value << 4;
-
-                            Value = Value / 16;
-                        }
-
-                        PValue = Value * NumericPoint->getMultiplier() + NumericPoint->getDataOffset();
+                        PValue = NumericPoint->computeValueForUOM( Value );
 
                         sprintf(tStr, "%s point %s = %f", getName(), NumericPoint->getName(), PValue );
 
-                        pData = new CtiPointDataMsg(NumericPoint->getPointID(),
-                                                    PValue,
-                                                    NormalQuality,
-                                                    AnalogPointType,
-                                                    tStr);
+                        pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, AnalogPointType, tStr);
+
                         if(pData != NULL)
                         {
                             ReturnMsg->PointData().insert(pData);
                             pData = NULL;  // We just put it on the list...
                         }
                     }
-
                 }       /* end of for */
+            }           /* end of analogs */
 
-                break;
-            }
-        case IDLC_DEADBANDS:
-            {
-                if(MyInMessage[4] > 0)     // Response indicates more than zero were sent!
-                {
-                    setDeadbandsSent(true);
-                }
+            break;
 
-                break;
-            }
-        default:
-            {
-                break;
-            }
-        }   /* End of switch */
-
-        /* Figure out the next sectin */
-        SaveInMessage = MyInMessage;
-        MyInMessage   = MyInMessage + MyInMessage[1] + 2;
-
-    } while(!(SaveInMessage[0] & 0x80));
-
-    /* Check if we need to do a continue */
-    if(!((*(InMessage->Buffer.InMessage - 3)) & 0x01))
-    {
-        OutMessage = new OUTMESS;
-
-        if(OutMessage != NULL)
+        }
+    default:
+    case ILEXNODATA:
         {
-            InEchoToOut(InMessage, OutMessage);
-
-            if((i = WelCoContinue (OutMessage, MAXPRIORITY - 4)) != NORMAL)
+            if(InMessage->Buffer.InMessage[0] & 0x08)
             {
-                /* Send Error to logger */
-                ReportError (i);
+                /* update the accumulator criteria for this Remote */
+                setLastFreezeTime(RWTime(YUKONEOT));
+                setLastFreezeNumber( 0 );
+
+                /* now force another scan */
+                OutMessage = new OUTMESS;
+
+                if(OutMessage != NULL)
+                {
+                    InEchoToOut(InMessage, OutMessage);
+
+                    CtiCommandParser parse(InMessage->Return.CommandStr);
+
+                    setIlexSequenceNumber( 1 );
+                    if((i = IntegrityScan(NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 3)) != NORMAL)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                        ReportError ((USHORT)i); /* Send Error to logger */
+                    }
+                    else
+                    {
+                        setScanPending();
+                    }
+                }
+            }
+            else if(isScanPending())
+            {
+                resetScanPending();
+
+                // 04302002 CGP This doesn't seem to be used anywhere around here...
+                // DeviceRecord->LastFullScan = TimeB->time;
             }
             else
             {
-                outList.insert(OutMessage);
-                setScanPending();
+                /* put a something fishy message here */
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
-        }
-    }
+            break;
+        }               /* end of default and reset conditions */
+    }                   /* End of switch */
 
-    resetScanIntegrity();
 
     if(ReturnMsg != NULL)
     {
@@ -1063,382 +990,50 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
         }
     }
 
-    return(NORMAL);
+
+    return status;
 }
 
-
-INT CtiDeviceILEX::ErrorDecode(INMESS *InMessage,
-                                RWTime &TimeNow,
-                                RWTPtrSlist< CtiMessage >   &vgList,
-                                RWTPtrSlist< CtiMessage > &retList,
-                                RWTPtrSlist<OUTMESS> &outList)
+INT CtiDeviceILEX::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
-    INT nRet = NoError;
+    INT status = NoError;
 
-#ifdef OLD_WAY
-    memcpy (PointRecord.getName(), DeviceRecord.getName(), STANDNAMLEN);
-    if(!(PointgetDeviceFirst (&PointRecord)))
-    {
-        do
-        {
-            /* Load up the common parts of the DRP message */
-            memcpy (DRPValue.getName(), PointRecord.getName(), STANDNAMLEN);
-            memcpy (DRPValue.PointName, PointRecord.PointName, STANDNAMLEN);
-            DRPValue.TimeStamp = InMessage.Time;
-
-            switch(PointRecord.PointType)
-            {
-            case ACCUMULATORPOINT:
-            case DEMANDACCUMPOINT:
-                if(DoAccums)
-                {
-                    DRPValue.Type = DRPTYPEVALUE;
-
-                    PointLock (&PointRecord);
-
-                    /* Move the pulse count */
-                    PointRecord.PreviousPulses = PointRecord.PresentPulses;
-
-                    /* Clear the pulse counts */
-                    PointRecord.PresentPulses = 0;
-
-                    CheckDataStateQuality (&DeviceRecord,
-                                           &PointRecord,
-                                           &PValue,
-                                           PLUGGED,
-                                           InMessage.Time,
-                                           InMessage.MilliTime & DSTACTIVE,
-                                           NORMAL,
-                                           LogFlag);
-                }
-
-                break;
-
-            case ANALOGPOINT:
-                DRPValue.Type = DRPTYPEVALUE;
-                PointLock (&PointRecord);
-
-                CheckDataStateQuality (&DeviceRecord,
-                                       &PointRecord,
-                                       &PValue,
-                                       PLUGGED,
-                                       InMessage.Time,
-                                       InMessage.MilliTime & DSTACTIVE,
-                                       NORMAL,
-                                       LogFlag);
-
-                break;
-
-            case TWOSTATEPOINT:
-                DRPValue.Type = DRPTYPEVALUE;
-                PointLock (&PointRecord);
-
-                CheckDataStateQuality (&DeviceRecord,
-                                       &PointRecord,
-                                       &PValue,
-                                       PLUGGED,
-                                       InMessage.Time,
-                                       InMessage.MilliTime & DSTACTIVE,
-                                       NORMAL,
-                                       LogFlag);
-
-
-                break;
-
-            case THREESTATEPOINT:
-                DRPValue.Type = DRPTYPEVALUE;
-                PointLock (&PointRecord);
-
-                CheckDataStateQuality (&DeviceRecord,
-                                       &PointRecord,
-                                       &PValue,
-                                       PLUGGED,
-                                       InMessage.Time,
-                                       InMessage.MilliTime & DSTACTIVE,
-                                       NORMAL,
-                                       LogFlag);
-
-
-                break;
-
-            default:
-                continue;
-            }
-
-            /* Send the point to drp */
-            DRPValue.Value = PointRecord.CurrentValue;
-            DRPValue.Quality = PointRecord.CurrentQuality;
-            DRPValue.AlarmState = PointRecord.AlarmStatus;
-
-            SendDRPPoint (&DRPValue);
-        } while(!(PointgetDeviceNext (&PointRecord)));
-    }
-#else
-
-    CtiCommandMsg *pMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
-
-    if(pMsg != NULL)
-    {
-        pMsg->insert( -1 );                 // This is the dispatch token and is unimplemented at this time
-        pMsg->insert(OP_DEVICEID);          // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
-        pMsg->insert(getID());        // The id (device or point which failed)
-        pMsg->insert(ScanRateGeneral);      // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
-
-        if(InMessage->EventCode != 0)
-        {
-            pMsg->insert(InMessage->EventCode);
-        }
-        else
-        {
-            pMsg->insert(GeneralScanAborted);
-        }
-
-        retList.insert( pMsg );
-    }
-
-
-
-#endif
-
-    return nRet;
+    return status;
 }
 
-INT CtiDeviceILEX::ExecuteRequest(CtiRequestMsg                  *pReq,
-                                   CtiCommandParser               &parse,
-                                   OUTMESS                        *&OutMessage,
-                                   RWTPtrSlist< CtiMessage >      &vgList,
-                                   RWTPtrSlist< CtiMessage >      &retList,
-                                   RWTPtrSlist< OUTMESS >         &outList)
+INT CtiDeviceILEX::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
-    INT nRet = NORMAL;
-    /*
-     *  This method should only be called by the dev_base method
-     *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
-     *   (NOTE THE DIFFERENCE IN ARGS)
-     *   That method prepares an outmessage for submission to the internals..
-     */
+    INT status = NoError;
 
-
-    switch(parse.getCommand())
-    {
-    case LoopbackRequest:
-        {
-            int cnt = parse.getiValue("count");
-
-            for(int i = 0; i < cnt; i++)
-            {
-                OUTMESS *OutMTemp = new OUTMESS(*OutMessage);
-
-                if(OutMTemp != NULL)
-                {
-                    OutMTemp->Request = OutMessage->Request;
-                    WelCoGetError(OutMTemp, 12);
-                    outList.insert(OutMTemp);
-                }
-            }
-
-            break;
-        }
-    case ScanRequest:
-        {
-            nRet = executeScan(pReq, parse, OutMessage, vgList, retList, outList);
-            break;
-        }
-    case ControlRequest:
-        {
-            nRet = executeControl(pReq, parse, OutMessage, vgList, retList, outList);
-            break;
-        }
-    case GetStatusRequest:
-    case GetValueRequest:
-    case PutValueRequest:
-    case PutStatusRequest:
-    case GetConfigRequest:
-    case PutConfigRequest:
-    default:
-        {
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
-            nRet = NoExecuteRequestMethod;
-            /* Set the error value in the base class. */
-            // FIX FIX FIX 092999
-            retList.insert( new CtiReturnMsg(getID(),
-                                             RWCString(OutMessage->Request.CommandStr),
-                                             RWCString("ILEX Devices do not support this command (yet?)"),
-                                             nRet,
-                                             OutMessage->Request.RouteID,
-                                             OutMessage->Request.MacroOffset,
-                                             OutMessage->Request.Attempt,
-                                             OutMessage->Request.TrxID,
-                                             OutMessage->Request.UserID,
-                                             OutMessage->Request.SOE,
-                                             RWOrdered()));
-
-            break;
-        }
-    }
-
-    return nRet;
+    return status;
 }
 
 INT CtiDeviceILEX::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
-    if(!isInhibited())
-    {
-        CtiPointStatus *ctlPoint = 0;
-        INT ctlpt = parse.getiValue("point");
-        INT controlState;
-
-        if(ctlpt < 0)
-        {
-            // Must have provided only a name... Find it the hard way.
-            RWCString pname = parse.getsValue("point");
-            ctlPoint = (CtiPointStatus*)getDevicePointEqualByName(pname);
-        }
-        else
-        {
-            ctlPoint = (CtiPointStatus*)getDevicePointEqual(ctlpt);
-        }
-
-
-        if(ctlPoint)
-        {
-            if(ctlPoint->getPointStatus().getControlType() > NoneControlType &&
-               ctlPoint->getPointStatus().getControlType() < InvalidControlType)
-            {
-                INT ctloffset = ctlPoint->getPointStatus().getControlOffset();
-
-                if( !ctlPoint->getPointStatus().getControlInhibit() )
-                {
-                    if(INT_MIN == ctlpt || !(parse.getFlags() & (CMD_FLAG_CTL_CLOSE | CMD_FLAG_CTL_OPEN)))
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  Poorly formed control message.  Specify select pointid and open or close" << endl;
-                    }
-                    else    // We have all our info available.
-                    {
-                        OutMessage->Port        = getPortID();
-                        OutMessage->Remote      = getAddress();
-
-                        OutMessage->Priority    = MAXPRIORITY;
-                        OutMessage->TimeOut     = 2;
-                        OutMessage->InLength    = -1;
-                        OutMessage->EventCode   |= ENCODED | NOWAIT | NORESULT;          // May contain RESULT based upon the incoming OutMessage
-                        OutMessage->ReturnNexus = NULL;
-                        OutMessage->SaveNexus   = NULL;
-
-                        if(!OutMessage->TargetID) OutMessage->TargetID = getID();
-                        if(!OutMessage->DeviceID) OutMessage->DeviceID = getID();
-
-                        OUTMESS *MyOutMessage = new OUTMESS(*OutMessage);
-
-                        MyOutMessage->OutLength = 3;
-
-                        /* Load Up the SBO Sectin */
-                        MyOutMessage->Buffer.OutMessage[4] = 0x01;
-
-                        MyOutMessage->Buffer.OutMessage[5] = IDLC_SBOSELECT | 0x80;
-                        MyOutMessage->Buffer.OutMessage[6] = 3;
-                        MyOutMessage->Buffer.OutMessage[7] = LOBYTE(ctloffset - 1);
-
-
-                        /* Load the appropriate times into the message */
-                        if(parse.getFlags() & CMD_FLAG_CTL_OPEN)
-                        {
-                            controlState = OPENED;
-                            MyOutMessage->Buffer.OutMessage[8] = LOBYTE (ctlPoint->getPointStatus().getCloseTime1() / 10);
-                            MyOutMessage->Buffer.OutMessage[9] = (HIBYTE (ctlPoint->getPointStatus().getCloseTime1() / 10) & 0x3f) | 0x40;
-                        }
-                        else if(parse.getFlags() & CMD_FLAG_CTL_CLOSE)
-                        {
-                            controlState = CLOSED;
-                            MyOutMessage->Buffer.OutMessage[8] = LOBYTE (ctlPoint->getPointStatus().getCloseTime2() / 10);
-                            MyOutMessage->Buffer.OutMessage[9] = (HIBYTE (ctlPoint->getPointStatus().getCloseTime2() / 10) & 0x3f) | 0x80;
-                        }
-                        else
-                        {
-                            delete (MyOutMessage);
-                            return(BADSTATE);
-                        }
-
-                        outList.insert( MyOutMessage );
-
-                        /* Load all the other stuff that is needed */
-                        OutMessage->Retry = 0;
-                        OutMessage->OutLength = 1;
-                        OutMessage->Sequence    = 0;
-
-                        /* Set up the SBO Execute */
-                        OutMessage->Buffer.OutMessage[5] = IDLC_SBOEXECUTE | 0x80;
-                        OutMessage->Buffer.OutMessage[6] = 1;
-                        OutMessage->Buffer.OutMessage[7] = LOBYTE (ctloffset - 1);
-
-                        /* Sent the message on to the remote */
-                        outList.insert( OutMessage );
-                        OutMessage = 0;
-
-                        CtiCommandMsg *cmdMsg = new CtiCommandMsg(CtiCommandMsg::ControlInformation);
-
-                        cmdMsg->insert( -1 );                       // This is the dispatch token and is unimplemented at this time
-                        cmdMsg->insert(0);                          // device id, not applicable.
-                        cmdMsg->insert((int)ctlPoint->getPointID());// point for control
-                        cmdMsg->insert(controlState);               // What is the control state we are heading toward?
-                        vgList.insert( cmdMsg );
-
-                        if(ctlPoint->isPseudoPoint())
-                        {
-                            // There is no physical point to observe and respect.  We lie to the control point.
-                            CtiPointDataMsg *pData = new CtiPointDataMsg(ctlPoint->getID(),
-                                                                         (DOUBLE)controlState,
-                                                                         NormalQuality,
-                                                                         StatusPointType,
-                                                                         RWCString("This point has been controlled"));
-                            pData->setUser( pReq->getUser() );
-                            vgList.insert(pData);
-                        }
-
-
-                        retList.insert( new CtiReturnMsg(getID(), parse.getCommandStr(), RWCString("Command submitted to port control")) );
-                    }
-                }
-                else
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  Control Point " << ctlPoint->getName() << " is disabled" << endl;
-                    }
-                }
-            }
-        }
-        else
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << getName() << " Control point " << ctlpt << " does not exist" << endl;
-            }
-        }
-    }
-    else
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << getName() << " is disabled" << endl;
-        }
-    }
-
-
     return status;
 }
 
 
-#endif
-//  no ILEX code implemented yet - all copied Welco code -- ACH ACH ACH
+BYTE CtiDeviceILEX::getFreezeNumber() const
+{
+    return _freezeNumber;
+}
 
+CtiDeviceILEX& CtiDeviceILEX::setFreezeNumber(BYTE number)
+{
+    _freezeNumber = number;
+    return *this;
+}
+
+BYTE CtiDeviceILEX::getIlexSequenceNumber() const
+{
+    return _sequence;
+}
+
+CtiDeviceILEX& CtiDeviceILEX::setIlexSequenceNumber(BYTE number)
+{
+    _sequence = number;
+    return *this;
+}

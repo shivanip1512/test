@@ -1,14 +1,14 @@
 /*---------------------------------------------------------------------------
         Filename:  ccfeeder.cpp
-        
+
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiCCFeeder.
                         CtiCCFeeder maintains the state and handles
                         the persistence of feeders for Cap Control.
 
         Initial Date:  8/28/2001
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 #pragma warning( disable : 4786)
@@ -32,12 +32,12 @@ RWDEFINE_COLLECTABLE( CtiCCFeeder, CTICCFEEDER_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiCCFeeder::CtiCCFeeder()
-{   
+{
 }
 
 CtiCCFeeder::CtiCCFeeder(RWDBReader& rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiCCFeeder::CtiCCFeeder(const CtiCCFeeder& feeder)
@@ -402,7 +402,7 @@ CtiCCFeeder& CtiCCFeeder::setPAOId(ULONG id)
     setPAOCategory
 
     Sets the pao category of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setPAOCategory(const RWCString& category)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -414,7 +414,7 @@ CtiCCFeeder& CtiCCFeeder::setPAOCategory(const RWCString& category)
     setPAOClass
 
     Sets the pao class of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setPAOClass(const RWCString& pclass)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -426,7 +426,7 @@ CtiCCFeeder& CtiCCFeeder::setPAOClass(const RWCString& pclass)
     setPAOName
 
     Sets the pao name of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setPAOName(const RWCString& name)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -438,7 +438,7 @@ CtiCCFeeder& CtiCCFeeder::setPAOName(const RWCString& name)
     setPAOType
 
     Sets the pao type of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setPAOType(const RWCString& type)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -450,7 +450,7 @@ CtiCCFeeder& CtiCCFeeder::setPAOType(const RWCString& type)
     setPAODescription
 
     Sets the pao description of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setPAODescription(const RWCString& description)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -462,7 +462,7 @@ CtiCCFeeder& CtiCCFeeder::setPAODescription(const RWCString& description)
     setDisableFlag
 
     Sets the disable flag of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setDisableFlag(BOOL disable)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -474,7 +474,7 @@ CtiCCFeeder& CtiCCFeeder::setDisableFlag(BOOL disable)
     setPeakSetPoint
 
     Sets the peak set point of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setPeakSetPoint(DOUBLE peak)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -486,7 +486,7 @@ CtiCCFeeder& CtiCCFeeder::setPeakSetPoint(DOUBLE peak)
     setOffPeakSetPoint
 
     Sets the off peak set point of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setOffPeakSetPoint(DOUBLE offpeak)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -498,7 +498,7 @@ CtiCCFeeder& CtiCCFeeder::setOffPeakSetPoint(DOUBLE offpeak)
     setBandwidth
 
     Sets the bandwidth of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setBandwidth(ULONG bandwidth)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -510,7 +510,7 @@ CtiCCFeeder& CtiCCFeeder::setBandwidth(ULONG bandwidth)
     setCurrentVarLoadPointId
 
     Sets the current var load point id of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setCurrentVarLoadPointId(ULONG currentvarid)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -522,7 +522,7 @@ CtiCCFeeder& CtiCCFeeder::setCurrentVarLoadPointId(ULONG currentvarid)
     setCurrentVarLoadPointValue
 
     Sets the current var load point value of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setCurrentVarLoadPointValue(DOUBLE currentvarval)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -534,7 +534,7 @@ CtiCCFeeder& CtiCCFeeder::setCurrentVarLoadPointValue(DOUBLE currentvarval)
     setCurrentWattLoadPointId
 
     Sets the current watt load point id of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setCurrentWattLoadPointId(ULONG currentwattid)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -546,7 +546,7 @@ CtiCCFeeder& CtiCCFeeder::setCurrentWattLoadPointId(ULONG currentwattid)
     setCurrentWattLoadPointValue
 
     Sets the current watt load point value of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setCurrentWattLoadPointValue(DOUBLE currentwattval)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -558,7 +558,7 @@ CtiCCFeeder& CtiCCFeeder::setCurrentWattLoadPointValue(DOUBLE currentwattval)
     setMapLocationId
 
     Sets the map location id of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setMapLocationId(ULONG maplocation)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -570,7 +570,7 @@ CtiCCFeeder& CtiCCFeeder::setMapLocationId(ULONG maplocation)
     setDisplayOrder
 
     Sets the display order of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setDisplayOrder(ULONG order)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -582,7 +582,7 @@ CtiCCFeeder& CtiCCFeeder::setDisplayOrder(ULONG order)
     setNewPointDataReceivedFlag
 
     Sets the new point data received flag of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setNewPointDataReceivedFlag(BOOL newpointdatareceived)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -594,7 +594,7 @@ CtiCCFeeder& CtiCCFeeder::setNewPointDataReceivedFlag(BOOL newpointdatareceived)
     setLastCurrentVarPointUpdateTime
 
     Sets the last current var point update time of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setLastCurrentVarPointUpdateTime(const RWDBDateTime& lastpointupdate)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -606,7 +606,7 @@ CtiCCFeeder& CtiCCFeeder::setLastCurrentVarPointUpdateTime(const RWDBDateTime& l
     setEstimatedVarLoadPointId
 
     Sets the estimated var load point id of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setEstimatedVarLoadPointId(ULONG estimatedvarid)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -618,7 +618,7 @@ CtiCCFeeder& CtiCCFeeder::setEstimatedVarLoadPointId(ULONG estimatedvarid)
     setEstimatedVarLoadPointValue
 
     Sets the estimated var load point value of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setEstimatedVarLoadPointValue(DOUBLE estimatedvarval)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -630,7 +630,7 @@ CtiCCFeeder& CtiCCFeeder::setEstimatedVarLoadPointValue(DOUBLE estimatedvarval)
     setStatusesReceivedFlag
 
     Sets the statuses received flag of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setStatusesReceivedFlag(BOOL statusesreceived)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -642,7 +642,7 @@ CtiCCFeeder& CtiCCFeeder::setStatusesReceivedFlag(BOOL statusesreceived)
     setDailyOperationsAnalogPointId
 
     Sets the daily operations analog point id of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setDailyOperationsAnalogPointId(ULONG opspointid)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -654,7 +654,7 @@ CtiCCFeeder& CtiCCFeeder::setDailyOperationsAnalogPointId(ULONG opspointid)
     setCurrentDailyOperations
 
     Sets the current daily operations of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setCurrentDailyOperations(ULONG operations)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -666,7 +666,7 @@ CtiCCFeeder& CtiCCFeeder::setCurrentDailyOperations(ULONG operations)
     setRecentlyControlledFlag
 
     Sets the recently controlled flag of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setRecentlyControlledFlag(BOOL recentlycontrolled)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -678,7 +678,7 @@ CtiCCFeeder& CtiCCFeeder::setRecentlyControlledFlag(BOOL recentlycontrolled)
     setLastOperationTime
 
     Sets the last operation time of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setLastOperationTime(const RWDBDateTime& lastoperation)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -690,7 +690,7 @@ CtiCCFeeder& CtiCCFeeder::setLastOperationTime(const RWDBDateTime& lastoperation
     setVarValueBeforeControl
 
     Sets the var value before control of the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setVarValueBeforeControl(DOUBLE oldvarval)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -702,7 +702,7 @@ CtiCCFeeder& CtiCCFeeder::setVarValueBeforeControl(DOUBLE oldvarval)
     setLastCapBankControlledDeviceId
 
     Sets the device id of the last cap bank controlled in the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setLastCapBankControlledDeviceId(ULONG lastcapbank)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -714,7 +714,7 @@ CtiCCFeeder& CtiCCFeeder::setLastCapBankControlledDeviceId(ULONG lastcapbank)
 
 /*---------------------------------------------------------------------------
     createIncreaseVarRequest
-    
+
     Creates a CtiRequestMsg to open the next cap bank to increase the
     var level for a strategy.
 ---------------------------------------------------------------------------*/
@@ -755,7 +755,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(RWOrdered& pointChanges, DO
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName()
-                              << " DeviceID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
+                << " DeviceID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
             }
 
             if( currentCapBank->getOperationAnalogPointId() > 0 )
@@ -778,7 +778,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(RWOrdered& pointChanges, DO
 
 /*---------------------------------------------------------------------------
     createDecreaseVarRequest
-    
+
     Creates a CtiRequestMsg to close the next cap bank to decrease the
     var level for a strategy.
 ---------------------------------------------------------------------------*/
@@ -819,7 +819,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(RWOrdered& pointChanges, DO
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName()
-                              << " DeviceID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
+                << " DeviceID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
             }
 
             if( currentCapBank->getOperationAnalogPointId() > 0 )
@@ -842,10 +842,10 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(RWOrdered& pointChanges, DO
 
 /*---------------------------------------------------------------------------
     figureEstimatedVarLoadPointValue
-    
+
     Figures out the estimated var point value according to the states
     of the individual cap banks in the feeder
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::figureEstimatedVarLoadPointValue()
 {
     DOUBLE tempValue;
@@ -872,8 +872,8 @@ CtiCCFeeder& CtiCCFeeder::figureEstimatedVarLoadPointValue()
 /*---------------------------------------------------------------------------
     checkForAndProvideNeededIndividualControl
 
-    
----------------------------------------------------------------------------*/    
+
+---------------------------------------------------------------------------*/
 BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, BOOL peakTimeFlag, ULONG decimalPlaces)
 {
     BOOL returnBoolean = FALSE;
@@ -900,7 +900,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Can Not Reduce Var level for feeder: " << getPAOName()
-                        << " any further.  All cap banks are already in the Close state" << endl;
+                    << " any further.  All cap banks are already in the Close state" << endl;
                 }
             }
             else
@@ -917,7 +917,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Can Not Increase Var level for feeder: " << getPAOName()
-                        << " any further.  All cap banks are already in the Open state" << endl;
+                    << " any further.  All cap banks are already in the Open state" << endl;
                 }
             }
 
@@ -946,16 +946,16 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
 
 /*---------------------------------------------------------------------------
     capBankControlStatusUpdate
-    
+
     Returns a boolean if the current day of the week can be a peak day
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, ULONG minConfirmPercent, ULONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue)
 {
     BOOL returnBoolean = TRUE;
     char tempchar[64] = "";
     RWCString text = "";
     RWCString additional = "";
-    
+
     for(UINT i=0;i<_cccapbanks.entries();i++)
     {
         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
@@ -1045,7 +1045,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, ULONG minC
                 dout << RWTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
                 returnBoolean = FALSE;
             }
-            
+
             if( currentCapBank->getStatusPointId() > 0 )
             {
                 if( text.length() > 0 )
@@ -1061,7 +1061,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, ULONG minC
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName()
-                              << " DeviceID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
+                << " DeviceID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
             }
             break;
         }
@@ -1076,7 +1076,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, ULONG minC
     areAllCapBankStatusesReceived
 
     Returns a boolean if all the cap banks in the feeder have updated statuses
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 BOOL CtiCCFeeder::areAllCapBankStatusesReceived()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -1109,7 +1109,7 @@ BOOL CtiCCFeeder::areAllCapBankStatusesReceived()
     0 (below current set point minus bandwidth),
     1 (within bandwidth around current set point), or
     2 (above current set point plus bandwidth)
-    
+
     Also sets the _busoptimizedvaroffset within the current
     _busoptimizedvarcategory
 ---------------------------------------------------------------------------*/
@@ -1142,10 +1142,10 @@ void CtiCCFeeder::fillOutBusOptimizedInfo(BOOL peakTimeFlag)
 
 /*---------------------------------------------------------------------------
     isAlreadyControlled
-    
+
     Returns a boolean if the last cap bank controlled expected var changes
     are reflected in the current var level before the min response time
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 BOOL CtiCCFeeder::isAlreadyControlled(ULONG minConfirmPercent)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -1205,11 +1205,11 @@ BOOL CtiCCFeeder::isAlreadyControlled(ULONG minConfirmPercent)
     isPastResponseTime
 
     Returns a boolean if the last control is past the minimum response time.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 BOOL CtiCCFeeder::isPastResponseTime(const RWDBDateTime& currentDateTime, ULONG minResponseTime)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    
+
     BOOL returnBoolean = FALSE;
 
     if( ((getLastOperationTime().seconds() + minResponseTime) <= currentDateTime.seconds()) )
@@ -1222,7 +1222,7 @@ BOOL CtiCCFeeder::isPastResponseTime(const RWDBDateTime& currentDateTime, ULONG 
 
 /*---------------------------------------------------------------------------
     dumpDynamicData
-    
+
     Writes out the dynamic information for this cc feeder.
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::dumpDynamicData()
@@ -1231,9 +1231,9 @@ void CtiCCFeeder::dumpDynamicData()
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
         RWDBTable dynamicCCFeederTable = getDatabase().table( "dynamicccfeeder" );
         if( !_insertDynamicDataFlag )
@@ -1241,18 +1241,18 @@ void CtiCCFeeder::dumpDynamicData()
             RWDBUpdater updater = dynamicCCFeederTable.updater();
 
             updater << dynamicCCFeederTable["currentvarpointvalue"].assign( getCurrentVarLoadPointValue() )
-                    << dynamicCCFeederTable["currentwattpointvalue"].assign( getCurrentWattLoadPointValue() )
-                    << dynamicCCFeederTable["newpointdatareceivedflag"].assign( RWCString((getNewPointDataReceivedFlag()?'Y':'N')) )
-                    << dynamicCCFeederTable["lastcurrentvarupdatetime"].assign( (RWDBDateTime)getLastCurrentVarPointUpdateTime() )
-                    << dynamicCCFeederTable["estimatedvarpointvalue"].assign( getEstimatedVarLoadPointValue() )
-                    << dynamicCCFeederTable["currentdailyoperations"].assign( getCurrentDailyOperations() )
-                    << dynamicCCFeederTable["recentlycontrolledflag"].assign( RWCString((getRecentlyControlledFlag()?'Y':'N')) )
-                    << dynamicCCFeederTable["lastoperationtime"].assign( (RWDBDateTime)getLastOperationTime() )
-                    << dynamicCCFeederTable["varvaluebeforecontrol"].assign( getVarValueBeforeControl() )
-                    << dynamicCCFeederTable["lastcapbankdeviceid"].assign( getLastCapBankControlledDeviceId() )
-                    << dynamicCCFeederTable["busoptimizedvarcategory"].assign( getBusOptimizedVarCategory() )
-                    << dynamicCCFeederTable["busoptimizedvaroffset"].assign( getBusOptimizedVarOffset() )
-                    << dynamicCCFeederTable["ctitimestamp"].assign((RWDBDateTime)currentDateTime);
+            << dynamicCCFeederTable["currentwattpointvalue"].assign( getCurrentWattLoadPointValue() )
+            << dynamicCCFeederTable["newpointdatareceivedflag"].assign( RWCString((getNewPointDataReceivedFlag()?'Y':'N')) )
+            << dynamicCCFeederTable["lastcurrentvarupdatetime"].assign( (RWDBDateTime)getLastCurrentVarPointUpdateTime() )
+            << dynamicCCFeederTable["estimatedvarpointvalue"].assign( getEstimatedVarLoadPointValue() )
+            << dynamicCCFeederTable["currentdailyoperations"].assign( getCurrentDailyOperations() )
+            << dynamicCCFeederTable["recentlycontrolledflag"].assign( RWCString((getRecentlyControlledFlag()?'Y':'N')) )
+            << dynamicCCFeederTable["lastoperationtime"].assign( (RWDBDateTime)getLastOperationTime() )
+            << dynamicCCFeederTable["varvaluebeforecontrol"].assign( getVarValueBeforeControl() )
+            << dynamicCCFeederTable["lastcapbankdeviceid"].assign( getLastCapBankControlledDeviceId() )
+            << dynamicCCFeederTable["busoptimizedvarcategory"].assign( getBusOptimizedVarCategory() )
+            << dynamicCCFeederTable["busoptimizedvaroffset"].assign( getBusOptimizedVarOffset() )
+            << dynamicCCFeederTable["ctitimestamp"].assign((RWDBDateTime)currentDateTime);
 
             updater.where(dynamicCCFeederTable["feederid"]==getPAOId());
 
@@ -1268,19 +1268,19 @@ void CtiCCFeeder::dumpDynamicData()
             RWDBInserter inserter = dynamicCCFeederTable.inserter();
 
             inserter << getPAOId()
-                     << getCurrentVarLoadPointValue()
-                     << getCurrentWattLoadPointValue()
-                     << getNewPointDataReceivedFlag()
-                     << getLastCurrentVarPointUpdateTime()
-                     << getEstimatedVarLoadPointValue()
-                     << getCurrentDailyOperations()
-                     << getRecentlyControlledFlag()
-                     << getLastOperationTime()
-                     << getVarValueBeforeControl()
-                     << getLastCapBankControlledDeviceId()
-                     << getBusOptimizedVarCategory()
-                     << getBusOptimizedVarOffset()
-                     << currentDateTime;
+            << getCurrentVarLoadPointValue()
+            << getCurrentWattLoadPointValue()
+            << getNewPointDataReceivedFlag()
+            << getLastCurrentVarPointUpdateTime()
+            << getEstimatedVarLoadPointValue()
+            << getCurrentDailyOperations()
+            << getRecentlyControlledFlag()
+            << getLastOperationTime()
+            << getVarValueBeforeControl()
+            << getLastCapBankControlledDeviceId()
+            << getBusOptimizedVarCategory()
+            << getBusOptimizedVarOffset()
+            << currentDateTime;
 
             /*if( _CC_DEBUG )
             {
@@ -1297,7 +1297,7 @@ void CtiCCFeeder::dumpDynamicData()
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiCCFeeder::restoreGuts(RWvistream& istrm)
@@ -1311,33 +1311,33 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
 
     RWCollectable::restoreGuts( istrm );
 
-    istrm >> _paoid         
-          >> _paocategory   
-          >> _paoclass      
-          >> _paoname       
-          >> _paotype       
-          >> _paodescription
-          >> _disableflag
-          >> _peaksetpoint
-          >> _offpeaksetpoint
-          >> _bandwidth
-          >> _currentvarloadpointid
-          >> _currentvarloadpointvalue
-          >> _currentwattloadpointid
-          >> _currentwattloadpointvalue
-          >> _maplocationid
-          >> _displayorder
-          >> _newpointdatareceivedflag
-          >> tempTime1
-          >> _estimatedvarloadpointid
-          >> _estimatedvarloadpointvalue
-          >> _statusesreceivedflag
-          >> _dailyoperationsanalogpointid
-          >> _currentdailyoperations
-          >> _recentlycontrolledflag
-          >> tempTime2
-          >> _varvaluebeforecontrol
-          >> _lastcapbankcontrolleddeviceid;
+    istrm >> _paoid
+    >> _paocategory
+    >> _paoclass
+    >> _paoname
+    >> _paotype
+    >> _paodescription
+    >> _disableflag
+    >> _peaksetpoint
+    >> _offpeaksetpoint
+    >> _bandwidth
+    >> _currentvarloadpointid
+    >> _currentvarloadpointvalue
+    >> _currentwattloadpointid
+    >> _currentwattloadpointvalue
+    >> _maplocationid
+    >> _displayorder
+    >> _newpointdatareceivedflag
+    >> tempTime1
+    >> _estimatedvarloadpointid
+    >> _estimatedvarloadpointvalue
+    >> _statusesreceivedflag
+    >> _dailyoperationsanalogpointid
+    >> _currentdailyoperations
+    >> _recentlycontrolledflag
+    >> tempTime2
+    >> _varvaluebeforecontrol
+    >> _lastcapbankcontrolleddeviceid;
     istrm >> numberOfCapBanks;
     for(UINT i=0;i<numberOfCapBanks;i++)
     {
@@ -1351,42 +1351,42 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const  
+void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        
+
     RWCollectable::saveGuts( ostrm );
 
-    ostrm << _paoid         
-          << _paocategory   
-          << _paoclass      
-          << _paoname       
-          << _paotype       
-          << _paodescription
-          << _disableflag
-          << _peaksetpoint
-          << _offpeaksetpoint
-          << _bandwidth
-          << _currentvarloadpointid
-          << _currentvarloadpointvalue
-          << _currentwattloadpointid
-          << _currentwattloadpointvalue
-          << _maplocationid
-          << _displayorder
-          << _newpointdatareceivedflag
-          << _lastcurrentvarpointupdatetime.rwtime()
-          << _estimatedvarloadpointid
-          << _estimatedvarloadpointvalue
-          << _statusesreceivedflag
-          << _dailyoperationsanalogpointid
-          << _currentdailyoperations
-          << _recentlycontrolledflag
-          << _lastoperationtime.rwtime()
-          << _varvaluebeforecontrol
-          << _lastcapbankcontrolleddeviceid;
+    ostrm << _paoid
+    << _paocategory
+    << _paoclass
+    << _paoname
+    << _paotype
+    << _paodescription
+    << _disableflag
+    << _peaksetpoint
+    << _offpeaksetpoint
+    << _bandwidth
+    << _currentvarloadpointid
+    << _currentvarloadpointvalue
+    << _currentwattloadpointid
+    << _currentwattloadpointvalue
+    << _maplocationid
+    << _displayorder
+    << _newpointdatareceivedflag
+    << _lastcurrentvarpointupdatetime.rwtime()
+    << _estimatedvarloadpointid
+    << _estimatedvarloadpointvalue
+    << _statusesreceivedflag
+    << _dailyoperationsanalogpointid
+    << _currentdailyoperations
+    << _recentlycontrolledflag
+    << _lastoperationtime.rwtime()
+    << _varvaluebeforecontrol
+    << _lastcapbankcontrolleddeviceid;
     ostrm << _cccapbanks.entries();
     for(UINT i=0;i<_cccapbanks.entries();i++)
     {
@@ -1460,17 +1460,17 @@ int CtiCCFeeder::operator!=(const CtiCCFeeder& right) const
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiCCFeeder* CtiCCFeeder::replicate() const
 {
-    return (new CtiCCFeeder(*this));
+    return(new CtiCCFeeder(*this));
 }
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::restore(RWDBReader& rdr)
@@ -1544,7 +1544,7 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
 
         _insertDynamicDataFlag = TRUE;
     }
-    
+
     rdr["pointid"] >> isNull;
     if( !isNull )
     {
@@ -1580,7 +1580,7 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
 
 /*---------------------------------------------------------------------------
     doubleToString
-    
+
     Returns the RWCString representation of a double
 ---------------------------------------------------------------------------*/
 RWCString CtiCCFeeder::doubleToString(DOUBLE doubleVal)

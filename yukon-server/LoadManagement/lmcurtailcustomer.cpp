@@ -2,13 +2,13 @@
         Filename:  lmcurtailcustomer.cpp
 
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiLMCurtailCustomer.
                         CtiLMCurtailCustomer maintains the state and handles
                         the persistence of groups in Load Management.
 
         Initial Date:  3/26/2001
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
@@ -29,12 +29,12 @@ RWDEFINE_COLLECTABLE( CtiLMCurtailCustomer, CTILMCURTAILCUSTOMER_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer::CtiLMCurtailCustomer()
-{   
+{
 }
 
 CtiLMCurtailCustomer::CtiLMCurtailCustomer(RWDBReader& rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMCurtailCustomer::CtiLMCurtailCustomer(const CtiLMCurtailCustomer& customer)
@@ -117,7 +117,7 @@ const RWCString& CtiLMCurtailCustomer::getPAODescription() const
 
 /*---------------------------------------------------------------------------
     getDisableFlag
-    
+
     Returns the disable flag of the customer
 ---------------------------------------------------------------------------*/
 BOOL CtiLMCurtailCustomer::getDisableFlag() const
@@ -161,7 +161,7 @@ const RWCString& CtiLMCurtailCustomer::getCustTimeZone() const
 
 /*---------------------------------------------------------------------------
     getRequireAck
-    
+
     Returns the require ack flag of the customer
 ---------------------------------------------------------------------------*/
 BOOL CtiLMCurtailCustomer::getRequireAck() const
@@ -249,7 +249,7 @@ const RWCString& CtiLMCurtailCustomer::getCurtailmentNotes() const
 
 /*---------------------------------------------------------------------------
     getAckLateFlag
-    
+
     Returns the ack late flag of the customer
 ---------------------------------------------------------------------------*/
 BOOL CtiLMCurtailCustomer::getAckLateFlag() const
@@ -275,7 +275,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOId(ULONG id)
     setPAOCategory
 
     Sets the pao category of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOCategory(const RWCString& category)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -287,7 +287,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOCategory(const RWCString& cate
     setPAOClass
 
     Sets the pao class of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOClass(const RWCString& pclass)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -299,7 +299,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOClass(const RWCString& pclass)
     setPAOName
 
     Sets the pao name of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOName(const RWCString& name)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -311,7 +311,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOName(const RWCString& name)
     setPAOType
 
     Sets the pao type of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOType(ULONG type)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -323,7 +323,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOType(ULONG type)
     setPAODescription
 
     Sets the pao description of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAODescription(const RWCString& description)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -333,9 +333,9 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAODescription(const RWCString& d
 
 /*---------------------------------------------------------------------------
     setDisableFlag
-    
+
     Sets the disable flag of the customer
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setDisableFlag(BOOL disable)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -369,9 +369,9 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCustFPL(DOUBLE fpl)
 
 /*---------------------------------------------------------------------------
     setCustTimeZone
-    
+
     Sets the time zone of the customer
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCustTimeZone(const RWCString& timezone)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -381,9 +381,9 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCustTimeZone(const RWCString& tim
 
 /*---------------------------------------------------------------------------
     setRequireAck
-    
+
     Sets the require ack flag of the customer
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setRequireAck(BOOL reqack)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -407,7 +407,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCurtailReferenceId(ULONG refid)
     setAcknowledgeStatus
 
     Sets the acknowledge status of the customer
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setAcknowledgeStatus(const RWCString& ackstatus)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -419,7 +419,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setAcknowledgeStatus(const RWCString
     setAckDateTime
 
     Sets the ack date time of the customer
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setAckDateTime(const RWDBDateTime& acktime)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -431,7 +431,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setAckDateTime(const RWDBDateTime& a
     setIPAddressOfAckUser
 
     Sets the ip address of the customer
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setIPAddressOfAckUser(const RWCString& ipaddress)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -443,7 +443,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setIPAddressOfAckUser(const RWCStrin
     setUserIdName
 
     Sets the user id name of the customer
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setUserIdName(const RWCString& username)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -453,9 +453,9 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setUserIdName(const RWCString& usern
 
 /*---------------------------------------------------------------------------
     setNameOfAckPerson
-    
+
     Sets the name of the ack person of the customer
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setNameOfAckPerson(const RWCString& nameackperson)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -465,9 +465,9 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setNameOfAckPerson(const RWCString& 
 
 /*---------------------------------------------------------------------------
     setCurtailmentNotes
-    
+
     Sets the curtailment notes of the customer
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCurtailmentNotes(const RWCString& curtailnotes)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -477,9 +477,9 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCurtailmentNotes(const RWCString&
 
 /*---------------------------------------------------------------------------
     setAckLateFlag
-    
+
     Sets the ack late flag of the customer
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setAckLateFlag(BOOL acklate)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -490,7 +490,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setAckLateFlag(BOOL acklate)
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiLMCurtailCustomer::restoreGuts(RWvistream& istrm)
@@ -502,71 +502,71 @@ void CtiLMCurtailCustomer::restoreGuts(RWvistream& istrm)
 
     RWTime tempTime;
     istrm >> _paoid
-          >> _paocategory
-          >> _paoclass
-          >> _paoname
-          >> _paotype
-          >> _paodescription
-          >> _disableflag
-          >> _customerorder
-          >> _custfpl
-          >> _custtimezone
-          >> _requireack
-          >> _curtailreferenceid
-          >> _acknowledgestatus
-          >> tempTime
-          >> _ipaddressofackuser
-          >> _useridname
-          >> _nameofackperson
-          >> _curtailmentnotes
-          >> _acklateflag;
+    >> _paocategory
+    >> _paoclass
+    >> _paoname
+    >> _paotype
+    >> _paodescription
+    >> _disableflag
+    >> _customerorder
+    >> _custfpl
+    >> _custtimezone
+    >> _requireack
+    >> _curtailreferenceid
+    >> _acknowledgestatus
+    >> tempTime
+    >> _ipaddressofackuser
+    >> _useridname
+    >> _nameofackperson
+    >> _curtailmentnotes
+    >> _acklateflag;
 
     _ackdatetime = RWDBDateTime(tempTime);
 }
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiLMCurtailCustomer::saveGuts(RWvostream& ostrm ) const  
+void CtiLMCurtailCustomer::saveGuts(RWvostream& ostrm ) const
 {
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        
+
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _paoid
-          << _paocategory
-          << _paoclass
-          << _paoname
-          << _paotype
-          << _paodescription
-          << _disableflag
-          << _customerorder
-          << _custfpl
-          << _custtimezone
-          << _requireack
-          << _curtailreferenceid
-          << _acknowledgestatus
-          << _ackdatetime.rwtime()
-          << _ipaddressofackuser
-          << _useridname
-          << _nameofackperson
-          << _curtailmentnotes
-          << _acklateflag;
+    << _paocategory
+    << _paoclass
+    << _paoname
+    << _paotype
+    << _paodescription
+    << _disableflag
+    << _customerorder
+    << _custfpl
+    << _custtimezone
+    << _requireack
+    << _curtailreferenceid
+    << _acknowledgestatus
+    << _ackdatetime.rwtime()
+    << _ipaddressofackuser
+    << _useridname
+    << _nameofackperson
+    << _curtailmentnotes
+    << _acklateflag;
 
     return;
 }
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer* CtiLMCurtailCustomer::replicate() const
 {
-    return (new CtiLMCurtailCustomer(*this));
+    return(new CtiLMCurtailCustomer(*this));
 }
 
 /*---------------------------------------------------------------------------
@@ -608,7 +608,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::operator=(const CtiLMCurtailCustomer
 int CtiLMCurtailCustomer::operator==(const CtiLMCurtailCustomer& right) const
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    return ( (getPAOId() == right.getPAOId()) && (getCustomerOrder() == right.getCustomerOrder()) );
+    return( (getPAOId() == right.getPAOId()) && (getCustomerOrder() == right.getCustomerOrder()) );
 }
 
 /*---------------------------------------------------------------------------
@@ -622,7 +622,7 @@ int CtiLMCurtailCustomer::operator!=(const CtiLMCurtailCustomer& right) const
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiLMCurtailCustomer::restore(RWDBReader& rdr)
@@ -631,7 +631,7 @@ void CtiLMCurtailCustomer::restore(RWDBReader& rdr)
 
     RWCString tempBoolString;
     RWCString tempTypeString;
-    
+
     rdr["paobjectid"] >> _paoid;
     rdr["category"] >> _paocategory;
     rdr["paoclass"] >> _paoclass;
@@ -668,11 +668,11 @@ void CtiLMCurtailCustomer::addLMCurtailCustomerActivityTable()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
-        if ( conn.isValid() )
+        if( conn.isValid() )
         {
             if( _LM_DEBUG )
             {
@@ -686,15 +686,15 @@ void CtiLMCurtailCustomer::addLMCurtailCustomerActivityTable()
             RWDBInserter inserter = lmCurtailCustomerActivityTable.inserter();
 
             inserter << getPAOId()
-                     << getCurtailReferenceId()
-                     << getAcknowledgeStatus()
-                     << getAckDateTime()
-                     << getIPAddressOfAckUser()
-                     << getUserIdName()
-                     << getNameOfAckPerson()
-                     << getCurtailmentNotes()
-                     << getCustFPL()
-                     << RWCString( ( getAckLateFlag() ? 'Y': 'N' ) );
+            << getCurtailReferenceId()
+            << getAcknowledgeStatus()
+            << getAckDateTime()
+            << getIPAddressOfAckUser()
+            << getUserIdName()
+            << getNameOfAckPerson()
+            << getCurtailmentNotes()
+            << getCustFPL()
+            << RWCString( ( getAckLateFlag() ? 'Y': 'N' ) );
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -720,24 +720,24 @@ void CtiLMCurtailCustomer::updateLMCurtailCustomerActivityTable()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
-        if ( conn.isValid() )
+        if( conn.isValid() )
         {
             RWDBDatabase db = getDatabase();
             RWDBTable lmCurtailCustomerActivityTable = db.table("lmcurtailcustomeractivity");
             RWDBUpdater updater = lmCurtailCustomerActivityTable.updater();
 
             updater << lmCurtailCustomerActivityTable["acknowledgestatus"].assign(getAcknowledgeStatus())
-                    << lmCurtailCustomerActivityTable["ackdatetime"].assign(getAckDateTime())
-                    << lmCurtailCustomerActivityTable["ipaddressofackuser"].assign(getIPAddressOfAckUser())
-                    << lmCurtailCustomerActivityTable["useridname"].assign(getUserIdName())
-                    << lmCurtailCustomerActivityTable["nameofackperson"].assign(getNameOfAckPerson())
-                    << lmCurtailCustomerActivityTable["curtailmentnotes"].assign(getCurtailmentNotes())
-                    << lmCurtailCustomerActivityTable["currentpdl"].assign(getCustFPL())
-                    << lmCurtailCustomerActivityTable["acklateflag"].assign(RWCString( (getAckLateFlag() ? 'Y':'N') ));
+            << lmCurtailCustomerActivityTable["ackdatetime"].assign(getAckDateTime())
+            << lmCurtailCustomerActivityTable["ipaddressofackuser"].assign(getIPAddressOfAckUser())
+            << lmCurtailCustomerActivityTable["useridname"].assign(getUserIdName())
+            << lmCurtailCustomerActivityTable["nameofackperson"].assign(getNameOfAckPerson())
+            << lmCurtailCustomerActivityTable["curtailmentnotes"].assign(getCurtailmentNotes())
+            << lmCurtailCustomerActivityTable["currentpdl"].assign(getCustFPL())
+            << lmCurtailCustomerActivityTable["acklateflag"].assign(RWCString( (getAckLateFlag() ? 'Y':'N') ));
 
             updater.where(lmCurtailCustomerActivityTable["customerid"]==getPAOId() &&
                           lmCurtailCustomerActivityTable["curtailreferenceid"]==getCurtailReferenceId());
@@ -759,7 +759,7 @@ void CtiLMCurtailCustomer::updateLMCurtailCustomerActivityTable()
 
 /*---------------------------------------------------------------------------
     dumpDynamicData
-    
+
     Writes out the dynamic information for this customer.
 ---------------------------------------------------------------------------*/
 void CtiLMCurtailCustomer::dumpDynamicData()
@@ -771,30 +771,30 @@ void CtiLMCurtailCustomer::dumpDynamicData()
 
 /*---------------------------------------------------------------------------
     restoreDynamicData
-    
+
     Restores self's dynamic data given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiLMCurtailCustomer::restoreDynamicData(RWDBReader& rdr)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
-        if ( conn.isValid() )
+        if( conn.isValid() )
         {
             RWDBDatabase db = getDatabase();
             RWDBTable lmCurtailCustomerActivityTable = db.table("lmcurtailcustomeractivity");
             RWDBSelector selector = db.selector();
             selector << lmCurtailCustomerActivityTable["curtailreferenceid"]
-                     << lmCurtailCustomerActivityTable["acknowledgestatus"]
-                     << lmCurtailCustomerActivityTable["ackdatetime"]
-                     << lmCurtailCustomerActivityTable["ipaddressofackuser"]
-                     << lmCurtailCustomerActivityTable["useridname"]
-                     << lmCurtailCustomerActivityTable["nameofackperson"]
-                     << lmCurtailCustomerActivityTable["curtailmentnotes"]
-                     << lmCurtailCustomerActivityTable["acklateflag"];
+            << lmCurtailCustomerActivityTable["acknowledgestatus"]
+            << lmCurtailCustomerActivityTable["ackdatetime"]
+            << lmCurtailCustomerActivityTable["ipaddressofackuser"]
+            << lmCurtailCustomerActivityTable["useridname"]
+            << lmCurtailCustomerActivityTable["nameofackperson"]
+            << lmCurtailCustomerActivityTable["curtailmentnotes"]
+            << lmCurtailCustomerActivityTable["acklateflag"];
 
             selector.from(lmCurtailCustomerActivityTable);
 

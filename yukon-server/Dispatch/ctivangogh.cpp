@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/04/30 16:30:09 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/05/02 17:02:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -432,7 +432,7 @@ void CtiVanGogh::VGConnectionHandlerThread()
 
                 ConMan->setBlockingWrites(TRUE);    // Writes must be blocking into the main queue
 
-                #if 1       // 041802 CGP.
+#if 1       // 041802 CGP.
 
                 clientConnect( ConMan );
                 ConMan->ThreadInitiate();     // Kick off the connection's communication threads.
@@ -443,7 +443,7 @@ void CtiVanGogh::VGConnectionHandlerThread()
                     dout << RWTime() << " New connection established" << endl;
                 }
 
-                #else
+#else
                 /*
                  *  Need to inform VGMain of the "New Guy" so that he may control its destiny from
                  *  now on.
@@ -468,7 +468,7 @@ void CtiVanGogh::VGConnectionHandlerThread()
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " ERROR Starting new connection! " << rwThreadId() << endl;
                 }
-                #endif
+#endif
             }
 
             reportOnThreads();
@@ -1039,11 +1039,11 @@ int  CtiVanGogh::commandMsgHandler(const CtiCommandMsg *Cmd)
         }
     case (CtiCommandMsg::UpdateFailed):
         {
-            #if 1
+#if 1
 
             processMessage( (CtiMessage*)Cmd );
 
-            #else
+#else
             CtiMultiWrapper MultiWrapper;
             checkDataStateQuality((CtiMessage*)Cmd, MultiWrapper);
 
@@ -1055,7 +1055,7 @@ int  CtiVanGogh::commandMsgHandler(const CtiCommandMsg *Cmd)
                 postMessageToClients((CtiMessage*)MultiWrapper.getMulti());
                 analyzeMessageData((CtiMessage*)MultiWrapper.getMulti());
             }
-            #endif
+#endif
 
             break;
         }
@@ -2310,8 +2310,8 @@ INT CtiVanGogh::loadPendingSignals()
             {
                 if( (pDyn->getDispatch().getTags() & MASK_ANY_ALARM) )
                 {
-                    RWDBConnection conn     = getConnection();
-                    RWLockGuard<RWDBConnection> conn_guard(conn);
+                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+                    RWDBConnection conn = getConnection();
 
                     RWDBDatabase   db       = conn.database();
                     RWDBSelector   selector = conn.database().selector();
@@ -2429,8 +2429,8 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
         {
             {
                 RWCString signals("signals");
+                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                 RWDBConnection conn = getConnection();
-                RWLockGuard<RWDBConnection> conn_guard(conn);
 
                 conn.beginTransaction(signals);
 
@@ -2519,7 +2519,7 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
 
 void CtiVanGogh::writeArchiveDataToDB(bool justdoit)
 {
-    #define PANIC_CONSTANT 1000
+#define PANIC_CONSTANT 1000
 
     static int maxrowstowrite = PANIC_CONSTANT;
     static UINT  dumpCounter = 0;
@@ -2618,8 +2618,8 @@ void CtiVanGogh::writeLMControlHistoryToDB(bool justdoit)
             if(lmentries > 0)
             {
                 RWCString controlHistory("controlHistory");
+                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                 RWDBConnection conn = getConnection();
-                RWLockGuard<RWDBConnection> conn_guard(conn);
 
                 conn.beginTransaction(controlHistory);
 
@@ -2709,9 +2709,9 @@ void CtiVanGogh::writeCommErrorHistoryToDB(bool justdoit)
             if(comment > 0)
             {
                 RWCString commError("commError");
+                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                 RWDBConnection conn = getConnection();
                 {
-                    RWLockGuard<RWDBConnection> conn_guard(conn);
 
                     conn.beginTransaction(commError);
 
@@ -3377,8 +3377,8 @@ void CtiVanGogh::loadAlarmToDestinationTranslation()
 
         if(guard.isAcquired())
         {
+            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
-            RWLockGuard<RWDBConnection> conn_guard(conn);
 
             RWDBDatabase   db       = conn.database();
             RWDBSelector   selector = conn.database().selector();
@@ -5005,12 +5005,15 @@ void CtiVanGogh::loadStateNames()
  */
 void CtiVanGogh::loadDeviceLites()
 {
-    if(DebugLevel & 0x00010000) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Loading DeviceLites " << endl; }
+    if(DebugLevel & 0x00010000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Loading DeviceLites " << endl;
+    }
 
 
     {
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
         RWDBDatabase   db       = conn.database();
         RWDBSelector   selector = conn.database().selector();
@@ -5057,7 +5060,10 @@ void CtiVanGogh::loadDeviceLites()
         }
     }
 
-    if(DebugLevel & 0x00010000) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Done Loading DeviceLites " << endl; }
+    if(DebugLevel & 0x00010000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Done Loading DeviceLites " << endl;
+    }
 }
 
 /*
@@ -5206,7 +5212,7 @@ void CtiVanGogh::sendSignalToGroup(LONG ngid, CtiSignalMsg sig)
 
         if(theGroup.isDirty())
         {
-
+            
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -6217,14 +6223,14 @@ void CtiVanGogh::insertAndPostControlHistoryPoints( CtiPendingPointOperations &p
                     remainingseconds = stoptime.seconds() - now.seconds();
                 }
 
-                #if 0
+#if 0
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "  Control stops at " << stoptime << endl;
                     dout << "  There are " << remainingseconds << " seconds = " << remainingseconds/60 << " minutes remaining" << endl;
                 }
-                #endif
+#endif
 
                 double ai = pPoint->computeValueForUOM((double)remainingseconds);
                 MainQueue_.putQueue( new CtiPointDataMsg(pPoint->getPointID(), ai, NormalQuality, pPoint->getType(), pPoint->getName() + " control remaining"));
@@ -6249,8 +6255,8 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, R
 
     {
         // In this case, we poke at the PAO table
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
         RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
         RWDBUpdater updater = yukonPAObjectTable.updater();
@@ -6266,8 +6272,8 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, R
     {
         // In this case, we poke at the base device table.
 
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
         RWDBTable deviceTable = getDatabase().table("device");
         RWDBUpdater updater = deviceTable.updater();
@@ -6295,8 +6301,8 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RW
     if(TAG_DISABLE_POINT_BY_POINT & tagmask)
     {
         // In this case, we poke at the PAO table
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
         RWDBTable tbl = getDatabase().table("point");
         RWDBUpdater updater = tbl.updater();
@@ -6312,8 +6318,8 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RW
     {
         // In this case, we poke at the base device table.
 
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
         RWDBTable tbl = getDatabase().table("pointstatus");
         RWDBUpdater updater = tbl.updater();
@@ -6440,8 +6446,8 @@ UINT CtiVanGogh::writeRawPointHistory(bool justdoit, int maxrowstowrite)
         CtiTableRawPointHistory *pTblEntry;
 
         RWCString raw("raw");
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
         conn.beginTransaction(raw);
 

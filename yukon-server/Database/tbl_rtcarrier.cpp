@@ -1,4 +1,5 @@
 
+
 #pragma warning( disable : 4786)
 
 /*-----------------------------------------------------------------------------*
@@ -11,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_rtcarrier.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:09 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,17 +22,17 @@
 #include "logger.h"
 
 CtiTableCarrierRoute::CtiTableCarrierRoute(INT b, INT f, INT v, INT a) :
-   _routeID(-1),
-   Bus(b),
-   CCUFixBits(f),
-   CCUVarBits(v),
-   _userLocked(false),
-   _resetRPTSettings(false)
+_routeID(-1),
+Bus(b),
+CCUFixBits(f),
+CCUVarBits(v),
+_userLocked(false),
+_resetRPTSettings(false)
 {}
 
 CtiTableCarrierRoute::CtiTableCarrierRoute(const CtiTableCarrierRoute& aRef)
 {
-   *this = aRef;
+    *this = aRef;
 }
 
 CtiTableCarrierRoute::~CtiTableCarrierRoute()
@@ -40,166 +41,166 @@ CtiTableCarrierRoute::~CtiTableCarrierRoute()
 
 CtiTableCarrierRoute& CtiTableCarrierRoute::operator=(const CtiTableCarrierRoute& aRef)
 {
-   if(this != &aRef)
-   {
-      _routeID          = aRef.getRouteID();
-      Bus               = aRef.getBus();
-      CCUFixBits        = aRef.getCCUFixBits();
-      CCUVarBits        = aRef.getCCUVarBits();
-      _userLocked       = aRef.getUserLocked();
-      _resetRPTSettings = aRef.getResetRPTSettings();
-   }
-   return *this;
+    if(this != &aRef)
+    {
+        _routeID          = aRef.getRouteID();
+        Bus               = aRef.getBus();
+        CCUFixBits        = aRef.getCCUFixBits();
+        CCUVarBits        = aRef.getCCUVarBits();
+        _userLocked       = aRef.getUserLocked();
+        _resetRPTSettings = aRef.getResetRPTSettings();
+    }
+    return *this;
 }
 
 void CtiTableCarrierRoute::DumpData()
 {
-   CtiLockGuard<CtiLogger> logger_guard(dout);
-   dout << " Bus Number                                 " << Bus        << endl;
-   dout << " CCU Fixed Bits                             " << CCUFixBits << endl;
-   dout << " CCU Variable Bits                          " << CCUVarBits << endl;
-   dout << " User Locked ?                              " << _userLocked << endl;
-   dout << " Reset RPT Settings ?                       " << _resetRPTSettings << endl;
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+    dout << " Bus Number                                 " << Bus        << endl;
+    dout << " CCU Fixed Bits                             " << CCUFixBits << endl;
+    dout << " CCU Variable Bits                          " << CCUVarBits << endl;
+    dout << " User Locked ?                              " << _userLocked << endl;
+    dout << " Reset RPT Settings ?                       " << _resetRPTSettings << endl;
 }
 
 INT  CtiTableCarrierRoute::getBus() const
 {
 
 
-   return Bus;
+    return Bus;
 }
 
 CtiTableCarrierRoute& CtiTableCarrierRoute::setBus( const INT aBus )
 {
 
 
-   Bus = aBus;
-   return *this;
+    Bus = aBus;
+    return *this;
 }
 
 LONG CtiTableCarrierRoute::getRouteID() const
 {
 
 
-   return _routeID;
+    return _routeID;
 }
 
 CtiTableCarrierRoute& CtiTableCarrierRoute::setRouteID( const LONG routeID )
 {
 
 
-   _routeID = routeID;
-   return *this;
+    _routeID = routeID;
+    return *this;
 }
 
 BOOL CtiTableCarrierRoute::getUserLocked() const
 {
 
 
-   return _userLocked;
+    return _userLocked;
 }
 
 CtiTableCarrierRoute& CtiTableCarrierRoute::setUserLocked( const BOOL userLocked )
 {
 
 
-   _userLocked = userLocked;
-   return *this;
+    _userLocked = userLocked;
+    return *this;
 }
 
 BOOL CtiTableCarrierRoute::getResetRPTSettings() const
 {
 
 
-   return _resetRPTSettings;
+    return _resetRPTSettings;
 }
 
 CtiTableCarrierRoute& CtiTableCarrierRoute::setResetRPTSettings( const BOOL reset )
 {
 
 
-   _resetRPTSettings = reset;
-   return *this;
+    _resetRPTSettings = reset;
+    return *this;
 }
 
 INT  CtiTableCarrierRoute::getCCUFixBits() const
 {
 
 
-   return CCUFixBits;
+    return CCUFixBits;
 }
 
 CtiTableCarrierRoute& CtiTableCarrierRoute::setCCUFixBits( const INT aCCUFixBit )
 {
 
 
-   CCUFixBits = aCCUFixBit;
-   return *this;
+    CCUFixBits = aCCUFixBit;
+    return *this;
 }
 
 INT  CtiTableCarrierRoute::getCCUVarBits() const
 {
 
 
-   return CCUVarBits;
+    return CCUVarBits;
 }
 
 CtiTableCarrierRoute& CtiTableCarrierRoute::setCCUVarBits( const INT aCCUVarBit )
 {
 
 
-   CCUVarBits = aCCUVarBit;
-   return *this;
+    CCUVarBits = aCCUVarBit;
+    return *this;
 }
 
 void CtiTableCarrierRoute::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-   RWDBTable routetbl = db.table(getTableName());
+    RWDBTable routetbl = db.table(getTableName());
 
-   selector <<
-      routetbl["busnumber"] <<
-      routetbl["ccufixbits"] <<
-      routetbl["ccuvariablebits"] <<
-      routetbl["userlocked"] <<
-      routetbl["resetrptsettings"];
+    selector <<
+    routetbl["busnumber"] <<
+    routetbl["ccufixbits"] <<
+    routetbl["ccuvariablebits"] <<
+    routetbl["userlocked"] <<
+    routetbl["resetrptsettings"];
 
-   selector.from(routetbl);
+    selector.from(routetbl);
 
-   selector.where( selector.where() && keyTable["paobjectid"].leftOuterJoin(routetbl["routeid"]));
+    selector.where( selector.where() && keyTable["paobjectid"].leftOuterJoin(routetbl["routeid"]));
 }
 
 RWCString CtiTableCarrierRoute::getTableName()
 {
-   return "CarrierRoute";
+    return "CarrierRoute";
 }
 
 void CtiTableCarrierRoute::DecodeDatabaseReader(RWDBReader &rdr)
 {
-   RWCString rwsTemp;
+    RWCString rwsTemp;
 
-   {
-      CtiLockGuard<CtiLogger> logger_guard(dout);
-      if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
-   rdr["busnumber"]        >> Bus;
+    rdr["busnumber"]        >> Bus;
 
-   // Bus will be zero based if I have anything to do with it.
-   Bus--;
+    // Bus will be zero based if I have anything to do with it.
+    Bus--;
 
-   rdr["routeid"] >> _routeID;
-   rdr["ccufixbits"]       >> CCUFixBits;
-   rdr["ccuvariablebits"]  >> CCUVarBits;
-   rdr["userlocked"]  >> rwsTemp;
+    rdr["routeid"] >> _routeID;
+    rdr["ccufixbits"]       >> CCUFixBits;
+    rdr["ccuvariablebits"]  >> CCUVarBits;
+    rdr["userlocked"]  >> rwsTemp;
 
-   rwsTemp.toLower();
-   _userLocked = rwsTemp[(size_t)0] == 'y' ? true : false;
+    rwsTemp.toLower();
+    _userLocked = rwsTemp[(size_t)0] == 'y' ? true : false;
 
 
-   rdr["resetrptsettings"]  >> rwsTemp;
+    rdr["resetrptsettings"]  >> rwsTemp;
 
-   rwsTemp.toLower();
-   _resetRPTSettings = rwsTemp[(size_t)0] == 'y' ? true : false;
+    rwsTemp.toLower();
+    _resetRPTSettings = rwsTemp[(size_t)0] == 'y' ? true : false;
 
 
 }
@@ -207,105 +208,104 @@ void CtiTableCarrierRoute::DecodeDatabaseReader(RWDBReader &rdr)
 RWDBStatus CtiTableCarrierRoute::Restore()
 {
 
-   char temp[32];
+    char temp[32];
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBSelector selector = getDatabase().selector();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBSelector selector = getDatabase().selector();
 
-   selector <<
-      table["routeid"] <<
-      table["busnumber"] <<
-      table["ccufixbits"] <<
-      table["ccuvariablebits"] <<
-      table["userlocked"] <<
-      table["resetrptsettings"];
+    selector <<
+    table["routeid"] <<
+    table["busnumber"] <<
+    table["ccufixbits"] <<
+    table["ccuvariablebits"] <<
+    table["userlocked"] <<
+    table["resetrptsettings"];
 
-   selector.where( table["routeid"] == getRouteID() );
+    selector.where( table["routeid"] == getRouteID() );
 
-   RWDBReader reader = selector.reader( conn );
+    RWDBReader reader = selector.reader( conn );
 
-   if( reader() )
-   {
-      DecodeDatabaseReader( reader );
-      setDirty( false );
-   }
-   else
-   {
-      setDirty( true );
-   }
-   return reader.status();
+    if( reader() )
+    {
+        DecodeDatabaseReader( reader );
+        setDirty( false );
+    }
+    else
+    {
+        setDirty( true );
+    }
+    return reader.status();
 }
 
 RWDBStatus CtiTableCarrierRoute::Insert()
 {
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBInserter inserter = table.inserter();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBInserter inserter = table.inserter();
 
-   inserter <<
-      getRouteID() <<
-      getBus() <<
-      getCCUFixBits() <<
-      getCCUVarBits() <<
-      getUserLocked() <<
-      getResetRPTSettings();
+    inserter <<
+    getRouteID() <<
+    getBus() <<
+    getCCUFixBits() <<
+    getCCUVarBits() <<
+    getUserLocked() <<
+    getResetRPTSettings();
 
-   if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
-   {
-      setDirty(false);
-   }
+    if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    {
+        setDirty(false);
+    }
 
-   return inserter.status();
+    return inserter.status();
 }
 
 RWDBStatus CtiTableCarrierRoute::Update()
 {
-   char temp[32];
+    char temp[32];
 
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBUpdater updater = table.updater();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBUpdater updater = table.updater();
 
-   updater.where( table["routeid"] == getRouteID() );
+    updater.where( table["routeid"] == getRouteID() );
 
-   updater <<
-      table["busnumber"].assign( getBus() ) <<
-      table["ccufixbits"].assign( getCCUFixBits() ) <<
-      table["ccuvariablebits"].assign(getCCUVarBits()) <<
-      table["userlocked"].assign(getUserLocked()) <<
-      table["resetrptsettings"].assign(getResetRPTSettings());
+    updater <<
+    table["busnumber"].assign( getBus() ) <<
+    table["ccufixbits"].assign( getCCUFixBits() ) <<
+    table["ccuvariablebits"].assign(getCCUVarBits()) <<
+    table["userlocked"].assign(getUserLocked()) <<
+    table["resetrptsettings"].assign(getResetRPTSettings());
 
-   if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
-   {
-      setDirty(false);
-   }
+    if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    {
+        setDirty(false);
+    }
 
-   return updater.status();
+    return updater.status();
 }
 
 RWDBStatus CtiTableCarrierRoute::Delete()
 {
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBDeleter deleter = table.deleter();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBDeleter deleter = table.deleter();
 
-   deleter.where( table["routeid"] == getRouteID() );
-   deleter.execute( conn );
-   return deleter.status();
+    deleter.where( table["routeid"] == getRouteID() );
+    deleter.execute( conn );
+    return deleter.status();
 }
-

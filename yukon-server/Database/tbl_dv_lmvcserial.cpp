@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_lmvcserial.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:00 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,17 +21,17 @@
 #include "logger.h"
 
 CtiTableLMGroupVersacomSerial::CtiTableLMGroupVersacomSerial() :
-   _deviceID(-1),
-   _serial(0),
-   _groupID(0),
-   _addressUsage(0),
-   _relayMask(0),
-   _routeID(-1)
+_deviceID(-1),
+_serial(0),
+_groupID(0),
+_addressUsage(0),
+_relayMask(0),
+_routeID(-1)
 {}
 
 CtiTableLMGroupVersacomSerial::CtiTableLMGroupVersacomSerial(const CtiTableLMGroupVersacomSerial& aRef)
 {
-   *this = aRef;
+    *this = aRef;
 }
 
 CtiTableLMGroupVersacomSerial::~CtiTableLMGroupVersacomSerial() {}
@@ -40,265 +40,265 @@ CtiTableLMGroupVersacomSerial& CtiTableLMGroupVersacomSerial::operator=(const Ct
 {
 
 
-   if(this != &aRef)
-   {
-      _deviceID = aRef.getDeviceID();
-      _serial = aRef.getSerial();
-      _groupID = aRef.getGroupID();
-      _addressUsage = aRef.getAddressUsage();
-      _relayMask = aRef.getRelayMask();
-      _routeID = aRef.getRouteID();
-   }
-   return *this;
+    if(this != &aRef)
+    {
+        _deviceID = aRef.getDeviceID();
+        _serial = aRef.getSerial();
+        _groupID = aRef.getGroupID();
+        _addressUsage = aRef.getAddressUsage();
+        _relayMask = aRef.getRelayMask();
+        _routeID = aRef.getRouteID();
+    }
+    return *this;
 }
 
 INT  CtiTableLMGroupVersacomSerial::getSerial() const
 {
 
-   return _serial;
+    return _serial;
 }
 
 CtiTableLMGroupVersacomSerial& CtiTableLMGroupVersacomSerial::setSerial( const INT a_ser )
 {
 
-   _serial = a_ser;
-   return *this;
+    _serial = a_ser;
+    return *this;
 }
 
 INT  CtiTableLMGroupVersacomSerial::getGroupID() const
 {
 
-   return _groupID;
+    return _groupID;
 }
 
 CtiTableLMGroupVersacomSerial& CtiTableLMGroupVersacomSerial::setGroupID( const INT i )
 {
 
-   _groupID = i;
-   return *this;
+    _groupID = i;
+    return *this;
 }
 
 INT  CtiTableLMGroupVersacomSerial::getAddressUsage() const
 {
 
-   return _addressUsage;
+    return _addressUsage;
 }
 
 BOOL CtiTableLMGroupVersacomSerial::useUtilityID() const
 {
 
-   return ((_addressUsage & U_MASK) ? TRUE : FALSE );
+    return((_addressUsage & U_MASK) ? TRUE : FALSE );
 }
 
 BOOL CtiTableLMGroupVersacomSerial::useSection() const
 {
 
-   return ((_addressUsage & S_MASK) ? TRUE : FALSE );
+    return((_addressUsage & S_MASK) ? TRUE : FALSE );
 }
 
 BOOL CtiTableLMGroupVersacomSerial::useClass() const
 {
 
-   return ((_addressUsage & C_MASK) ? TRUE : FALSE );
+    return((_addressUsage & C_MASK) ? TRUE : FALSE );
 }
 
 BOOL CtiTableLMGroupVersacomSerial::useDivision() const
 {
 
-   return ((_addressUsage & D_MASK) ? TRUE : FALSE );
+    return((_addressUsage & D_MASK) ? TRUE : FALSE );
 }
 
 CtiTableLMGroupVersacomSerial& CtiTableLMGroupVersacomSerial::setAddressUsage( const INT a_addressUsage )
 {
 
-   _addressUsage = a_addressUsage;
-   return *this;
+    _addressUsage = a_addressUsage;
+    return *this;
 }
 
 INT  CtiTableLMGroupVersacomSerial::getRelayMask() const
 {
 
-   return _relayMask;
+    return _relayMask;
 }
 
 BOOL CtiTableLMGroupVersacomSerial::useRelay(const INT r) const
 {
 
-   return ((_relayMask & (0x00000001 << (r - 1))) ? TRUE : FALSE);
+    return((_relayMask & (0x00000001 << (r - 1))) ? TRUE : FALSE);
 }
 
 CtiTableLMGroupVersacomSerial& CtiTableLMGroupVersacomSerial::setRelayMask( const INT a_relayMask )
 {
 
-   _relayMask = a_relayMask;
-   return *this;
+    _relayMask = a_relayMask;
+    return *this;
 }
 
 LONG  CtiTableLMGroupVersacomSerial::getRouteID() const
 {
 
-   return _routeID;
+    return _routeID;
 }
 
 CtiTableLMGroupVersacomSerial& CtiTableLMGroupVersacomSerial::setRouteID( const LONG a_routeID )
 {
 
-   _routeID = a_routeID;
-   return *this;
+    _routeID = a_routeID;
+    return *this;
 }
 
 void CtiTableLMGroupVersacomSerial::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-   RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName() );
 
-   selector <<
-      devTbl["serialnumber"] <<
-      devTbl["deviceidofgroup"] <<
-      devTbl["relayusage"] <<
-      devTbl["routeid"];
+    selector <<
+    devTbl["serialnumber"] <<
+    devTbl["deviceidofgroup"] <<
+    devTbl["relayusage"] <<
+    devTbl["routeid"];
 
-   selector.from(devTbl);
+    selector.from(devTbl);
 
-   selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
+    selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
 }
 
 RWCString CtiTableLMGroupVersacomSerial::getTableName()
 {
-   return "LMGroupVersacomSerial";
+    return "LMGroupVersacomSerial";
 }
 
 LONG CtiTableLMGroupVersacomSerial::getDeviceID() const
 {
 
-   return _deviceID;
+    return _deviceID;
 }
 
 CtiTableLMGroupVersacomSerial& CtiTableLMGroupVersacomSerial::setDeviceID( const LONG deviceID)
 {
 
-   _deviceID = deviceID;
-   return *this;
+    _deviceID = deviceID;
+    return *this;
 }
 
 void CtiTableLMGroupVersacomSerial::DecodeDatabaseReader(RWDBReader &rdr)
 {
-   RWCString rwsTemp;
+    RWCString rwsTemp;
 
 
 
-   {
-      CtiLockGuard<CtiLogger> logger_guard(dout);
-      if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
-   rdr["deviceid"]         >> _deviceID;
-   rdr["serialnumber"]     >> _serial;
-   rdr["deviceidofgroup"]  >> _groupID;
-   rdr["routeid"]          >> _routeID;
+    rdr["deviceid"]         >> _deviceID;
+    rdr["serialnumber"]     >> _serial;
+    rdr["deviceidofgroup"]  >> _groupID;
+    rdr["routeid"]          >> _routeID;
 
-   rdr["relayusage"]       >> rwsTemp;
-   _relayMask = resolveRelayUsage(rwsTemp);
+    rdr["relayusage"]       >> rwsTemp;
+    _relayMask = resolveRelayUsage(rwsTemp);
 
-   _addressUsage = 0;                     // This is a serial number ok!
+    _addressUsage = 0;                     // This is a serial number ok!
 
 }
 
 RWDBStatus CtiTableLMGroupVersacomSerial::Restore()
 {
 
-   char temp[32];
+    char temp[32];
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBSelector selector = getDatabase().selector();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBSelector selector = getDatabase().selector();
 
-   selector <<
-      table["deviceid"] <<
-      table["serialnumber"] <<
-      table["deviceidofgroup"] <<
-      table["routeid"];
+    selector <<
+    table["deviceid"] <<
+    table["serialnumber"] <<
+    table["deviceidofgroup"] <<
+    table["routeid"];
 
-   selector.where( table["deviceid"] == getDeviceID() );
+    selector.where( table["deviceid"] == getDeviceID() );
 
-   RWDBReader reader = selector.reader( conn );
+    RWDBReader reader = selector.reader( conn );
 
-   if( reader() )
-   {
-      DecodeDatabaseReader( reader  );
-      setDirty( false );
-   }
-   else
-   {
-      setDirty( true );
-   }
-   return reader.status();
+    if( reader() )
+    {
+        DecodeDatabaseReader( reader  );
+        setDirty( false );
+    }
+    else
+    {
+        setDirty( true );
+    }
+    return reader.status();
 }
 
 RWDBStatus CtiTableLMGroupVersacomSerial::Insert()
 {
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBInserter inserter = table.inserter();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBInserter inserter = table.inserter();
 
-   inserter <<
-      getDeviceID() <<
-      getSerial() <<
-      getGroupID() <<
-      getRouteID();
+    inserter <<
+    getDeviceID() <<
+    getSerial() <<
+    getGroupID() <<
+    getRouteID();
 
-   if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
-   {
-      setDirty(false);
-   }
+    if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    {
+        setDirty(false);
+    }
 
-   return inserter.status();
+    return inserter.status();
 }
 
 RWDBStatus CtiTableLMGroupVersacomSerial::Update()
 {
-   char temp[32];
+    char temp[32];
 
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBUpdater updater = table.updater();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBUpdater updater = table.updater();
 
-   updater.where( table["deviceid"] == getDeviceID() );
+    updater.where( table["deviceid"] == getDeviceID() );
 
-   updater <<
-      table["serialnumber"].assign(getSerial() ) <<
-      table["deviceidofgroup"].assign(getGroupID() ) <<
-      table["routeid"].assign(getRouteID() );
+    updater <<
+    table["serialnumber"].assign(getSerial() ) <<
+    table["deviceidofgroup"].assign(getGroupID() ) <<
+    table["routeid"].assign(getRouteID() );
 
-   if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
-   {
-      setDirty(false);
-   }
+    if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    {
+        setDirty(false);
+    }
 
-   return updater.status();
+    return updater.status();
 }
 
 RWDBStatus CtiTableLMGroupVersacomSerial::Delete()
 {
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBDeleter deleter = table.deleter();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBDeleter deleter = table.deleter();
 
-   deleter.where( table["deviceid"] == getDeviceID() );
-   deleter.execute( conn );
-   return deleter.status();
+    deleter.where( table["deviceid"] == getDeviceID() );
+    deleter.execute( conn );
+    return deleter.status();
 }
 

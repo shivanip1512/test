@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_status.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:07 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -306,24 +306,24 @@ void CtiTablePointStatus::Update()
 {
 
 
-   if(tag & TAG_ATTRIB_CONTROL_AVAILABLE)
-   {
-       RWDBConnection conn = getConnection();
-       RWLockGuard<RWDBConnection> conn_guard(conn);
+    if(tag & TAG_ATTRIB_CONTROL_AVAILABLE)
+    {
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
 
-       RWDBTable table = getDatabase().table( getTableName() );
-       RWDBUpdater updater = table.updater();
+        RWDBTable table = getDatabase().table( getTableName() );
+        RWDBUpdater updater = table.updater();
 
-       updater.where( table["pointid"] == getPointID() );
-       updater << table["controlinhibit"].assign( (tag & TAG_DISABLE_CONTROL_BY_POINT) ? RWCString("Y") : RWCString("N") );
+        updater.where( table["pointid"] == getPointID() );
+        updater << table["controlinhibit"].assign( (tag & TAG_DISABLE_CONTROL_BY_POINT) ? RWCString("Y") : RWCString("N") );
 
-       if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
-       {
-          setDirty(false);
-       }
-   }
+        if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
+        {
+            setDirty(false);
+        }
+    }
 
-   return;
+    return;
 }
 #endif
 

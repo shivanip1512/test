@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_cicust.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:59 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:32 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,339 +31,338 @@
 
 bool CtiTableCICustomerBase::operator<( const CtiTableCICustomerBase &rhs ) const
 {
-   return (getID() < rhs.getID());
+    return(getID() < rhs.getID());
 }
 bool CtiTableCICustomerBase::operator==( const CtiTableCICustomerBase &rhs ) const
 {
-   return (getID() == rhs.getID());
+    return(getID() == rhs.getID());
 }
 bool CtiTableCICustomerBase::operator()(const CtiTableCICustomerBase& aRef) const
 {
-   return operator<(aRef);
+    return operator<(aRef);
 }
-
 
 
 LONG CtiTableCICustomerBase::getID() const
 {
 
-   return _id;
+    return _id;
 }
 
 CtiTableCICustomerBase& CtiTableCICustomerBase::setID( const LONG &aRef )
 {
 
-   _id = aRef;
-   return *this;
+    _id = aRef;
+    return *this;
 }
 
 RWCString CtiTableCICustomerBase::getTableName()
 {
-   return RWCString("CICustomerBase");
+    return RWCString("CICustomerBase");
 }
 
 RWDBStatus CtiTableCICustomerBase::Insert()
 {
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBInserter inserter = table.inserter();
-
-
-
-   inserter << getID();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBInserter inserter = table.inserter();
 
 
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
 
-   inserter.execute( conn );
+    inserter << getID();
 
-   return inserter.status();
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    inserter.execute( conn );
+
+    return inserter.status();
 }
 
 RWDBStatus CtiTableCICustomerBase::Update()
 {
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBUpdater updater = table.updater();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBUpdater updater = table.updater();
 
 
 
-   updater.where( table["deviceid"] == getID() );
+    updater.where( table["deviceid"] == getID() );
 
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
-   updater.execute( conn );
+    updater.execute( conn );
 
-   return updater.status();
+    return updater.status();
 }
 
 RWDBStatus CtiTableCICustomerBase::Restore()
 {
-   int iTemp;
-   int contactid;
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
-   pair< INTSET::iterator, bool >  findpair;
+    int iTemp;
+    int contactid;
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+    pair< INTSET::iterator, bool >  findpair;
 
-   RWDBStatus dbstat;
+    RWDBStatus dbstat;
 
-   {
-      RWDBTable table = getDatabase().table( getTableName() );
-      RWDBSelector selector = getDatabase().selector();
+    {
+        RWDBTable table = getDatabase().table( getTableName() );
+        RWDBSelector selector = getDatabase().selector();
 
-      selector << table["deviceid"];
+        selector << table["deviceid"];
 
-      selector.where( table["deviceid"] == getID() );
+        selector.where( table["deviceid"] == getID() );
 
-      RWDBReader reader = selector.reader( conn );
+        RWDBReader reader = selector.reader( conn );
 
-      dbstat = selector.status();
+        dbstat = selector.status();
 
-      if( reader() )
-      {
-         DecodeDatabaseReader( reader );
-      }
-   }
+        if( reader() )
+        {
+            DecodeDatabaseReader( reader );
+        }
+    }
 
-   if( dbstat.errorCode() == RWDBStatus::ok )
-   {
+    if( dbstat.errorCode() == RWDBStatus::ok )
+    {
 
-      _custContacts.clear();         // blank the list.
+        _custContacts.clear();         // blank the list.
 
-      RWDBDatabase db = getDatabase();
-      RWDBTable table = db.table( "CICustContact" );
-      RWDBSelector selector = db.selector();
+        RWDBDatabase db = getDatabase();
+        RWDBTable table = db.table( "CICustContact" );
+        RWDBSelector selector = db.selector();
 
-      selector << table["deviceid"] << table["contactid"];
-      selector.from(table);
-      selector.where( table["deviceid"] == getID() );
+        selector << table["deviceid"] << table["contactid"];
+        selector.from(table);
+        selector.where( table["deviceid"] == getID() );
 
-      RWDBReader reader = selector.execute( conn ).table().reader();
-      dbstat = selector.status();
+        RWDBReader reader = selector.execute( conn ).table().reader();
+        dbstat = selector.status();
 
-      while( reader() )
-      {
-         reader["contactid"] >> contactid;
+        while( reader() )
+        {
+            reader["contactid"] >> contactid;
 
-         findpair = _custContacts.insert( contactid );
-
-         if(findpair.second == false)
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Company lists contactid (tbl CICustomerContact)" << contactid << endl;
-            dout << RWTime() << "    Multiple times.  Only one notification will be sent." << endl;
-         }
-      }
-   }
-
-
-   /*
-    *  Now go out and load up the CustomerContact itself to get the locationid!
-    */
-   if( dbstat.errorCode() == RWDBStatus::ok )
-   {
-      INTSET::iterator itr;
-
-
-      _custLocationIDs.clear();         // blank the list.
-
-      RWDBDatabase db = getDatabase();
-      RWDBTable table = db.table( "CustomerContact" );
-      RWDBSelector selector = db.selector();
-
-      selector << table["contactid"] << table["locationid"];
-      selector.from(table);
-
-      RWDBReader reader = selector.execute( conn ).table().reader();
-      dbstat = selector.status();
-
-      while( reader() )
-      {
-         reader["locationid"] >> iTemp;
-         reader["contactid"] >> contactid;
-
-         if( (itr = _custContacts.find(contactid)) != _custContacts.end() )
-         {
-            findpair = _custLocationIDs.insert( iTemp );   // Add it to our location ids then!
+            findpair = _custContacts.insert( contactid );
 
             if(findpair.second == false)
             {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << RWTime() << " Company " << endl;
-               dout << "    Lists locationid (tbl CustomerContact) " << iTemp << endl;
-               dout << "    Multiple times with different contact names/ids." << endl;
-               dout << "    Only one notification will be sent. " << endl;
-               dout << "    Second contactid is " << contactid << endl;
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Company lists contactid (tbl CICustomerContact)" << contactid << endl;
+                dout << RWTime() << "    Multiple times.  Only one notification will be sent." << endl;
             }
-         }
-      }
-   }
+        }
+    }
 
-   return dbstat;
+
+    /*
+     *  Now go out and load up the CustomerContact itself to get the locationid!
+     */
+    if( dbstat.errorCode() == RWDBStatus::ok )
+    {
+        INTSET::iterator itr;
+
+
+        _custLocationIDs.clear();         // blank the list.
+
+        RWDBDatabase db = getDatabase();
+        RWDBTable table = db.table( "CustomerContact" );
+        RWDBSelector selector = db.selector();
+
+        selector << table["contactid"] << table["locationid"];
+        selector.from(table);
+
+        RWDBReader reader = selector.execute( conn ).table().reader();
+        dbstat = selector.status();
+
+        while( reader() )
+        {
+            reader["locationid"] >> iTemp;
+            reader["contactid"] >> contactid;
+
+            if( (itr = _custContacts.find(contactid)) != _custContacts.end() )
+            {
+                findpair = _custLocationIDs.insert( iTemp );   // Add it to our location ids then!
+
+                if(findpair.second == false)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Company " << endl;
+                    dout << "    Lists locationid (tbl CustomerContact) " << iTemp << endl;
+                    dout << "    Multiple times with different contact names/ids." << endl;
+                    dout << "    Only one notification will be sent. " << endl;
+                    dout << "    Second contactid is " << contactid << endl;
+                }
+            }
+        }
+    }
+
+    return dbstat;
 }
 
 RWDBStatus CtiTableCICustomerBase::Delete()
 {
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBDeleter deleter = table.deleter();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBDeleter deleter = table.deleter();
 
-   deleter.where( table["deviceid"] == getID() );
+    deleter.where( table["deviceid"] == getID() );
 
-   return deleter.execute( conn ).status();
+    return deleter.execute( conn ).status();
 }
 
 void CtiTableCICustomerBase::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-   keyTable = db.table( getTableName() );
+    keyTable = db.table( getTableName() );
 
     selector <<
-        keyTable["deviceid"];
+    keyTable["deviceid"];
 
-   selector.from(keyTable);
+    selector.from(keyTable);
 }
 
 void CtiTableCICustomerBase::DecodeDatabaseReader(RWDBReader& rdr)
 {
-   RWCString temp;
+    RWCString temp;
 
-   {
+    {
 
-      rdr["deviceid"] >> _id;
-   }
+        rdr["deviceid"] >> _id;
+    }
 
-   return;
+    return;
 }
 
 size_t CtiTableCICustomerBase::entries() const
 {
 
-   return _custLocationIDs.size();
+    return _custLocationIDs.size();
 }
 
 
 void CtiTableCICustomerBase::dump() const
 {
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
-   dout << getID() << endl;
+    CtiLockGuard<CtiLogger> doubt_guard(dout);
+    dout << getID() << endl;
 }
 
 set< int > CtiTableCICustomerBase::getRecipientSet() const
 {
-   INTSET newset;
+    INTSET newset;
 
-   INTSET::const_iterator   theIterator;
-
-
-
-   try
-   {
-      for( theIterator = _custLocationIDs.begin(); theIterator != _custLocationIDs.end(); theIterator++ )
-      {
-         const int &aInt = *theIterator;
-         newset.insert( aInt );
-      }
-   }
-   catch(...)
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
+    INTSET::const_iterator   theIterator;
 
 
-   return newset;
+
+    try
+    {
+        for( theIterator = _custLocationIDs.begin(); theIterator != _custLocationIDs.end(); theIterator++ )
+        {
+            const int &aInt = *theIterator;
+            newset.insert( aInt );
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+
+    return newset;
 }
 
 
 void CtiTableCICustomerBase::dumpRecipients() const
 {
-   CtiTableCICustomerBase::CONST_INTSETITERATOR iter;
+    CtiTableCICustomerBase::CONST_INTSETITERATOR iter;
 
-   try
-   {
-      for(iter = _custLocationIDs.begin(); iter != _custLocationIDs.end(); ++iter)
-      {
-         set<int>::const_reference locID = *iter;
+    try
+    {
+        for(iter = _custLocationIDs.begin(); iter != _custLocationIDs.end(); ++iter)
+        {
+            set<int>::const_reference locID = *iter;
 
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << " LocationID " << locID << endl;
-         }
-      }
-   }
-   catch(...)
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << " LocationID " << locID << endl;
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 }
 
 CtiTableCICustomerBase& CtiTableCICustomerBase::setRecipientSet( const INTSET &rhs)
 {
-   _custLocationIDs = rhs;
-   return *this;
+    _custLocationIDs = rhs;
+    return *this;
 }
 
 vector<int> CtiTableCICustomerBase::getRecipientVector() const
 {
-   vector<int> vect;
+    vector<int> vect;
 
-   CtiTableCICustomerBase::CONST_INTSETITERATOR iter;
+    CtiTableCICustomerBase::CONST_INTSETITERATOR iter;
 
-   try
-   {
-      for(iter = _custLocationIDs.begin(); iter != _custLocationIDs.end(); ++iter)
-      {
-         set<int>::const_reference locID = *iter;
+    try
+    {
+        for(iter = _custLocationIDs.begin(); iter != _custLocationIDs.end(); ++iter)
+        {
+            set<int>::const_reference locID = *iter;
 
-         vect.push_back(locID);
-      }
-   }
-   catch(...)
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
+            vect.push_back(locID);
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
-   return vect;
+    return vect;
 }
 CtiTableCICustomerBase::CtiTableCICustomerBase(LONG id) :
-   _id(id)
+_id(id)
 {}
 
 CtiTableCICustomerBase::CtiTableCICustomerBase(const CtiTableCICustomerBase& aRef)
 {
-   if(this != &aRef)
-   {
-      _custContacts.clear();
-      _custLocationIDs.clear();
-   }
+    if(this != &aRef)
+    {
+        _custContacts.clear();
+        _custLocationIDs.clear();
+    }
 
-   *this = aRef;
+    *this = aRef;
 }
 
 CtiTableCICustomerBase::~CtiTableCICustomerBase() {}
 
 CtiTableCICustomerBase& CtiTableCICustomerBase::operator=(const CtiTableCICustomerBase& aRef)
 {
-   if(this != &aRef)
-   {
-      setID(aRef.getID());
-      setRecipientSet(aRef.getRecipientSet());
-   }
-   return *this;
+    if(this != &aRef)
+    {
+        setID(aRef.getID());
+        setRecipientSet(aRef.getRecipientSet());
+    }
+    return *this;
 }
 
 

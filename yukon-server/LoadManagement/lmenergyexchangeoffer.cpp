@@ -1,14 +1,14 @@
 /*---------------------------------------------------------------------------
         Filename:  lmenergyexchangeoffer.cpp
-        
+
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiLMEnergyExchangeOffer.
                         CtiLMEnergyExchangeOffer maintains the state and handles
                         the persistence of programs for Load Management.
 
         Initial Date:  5/7/2001
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 #include "dbaccess.h"
@@ -24,12 +24,12 @@ RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeOffer, CTILMENERGYEXCHANGEOFFER_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeOffer::CtiLMEnergyExchangeOffer()
-{   
+{
 }
 
 CtiLMEnergyExchangeOffer::CtiLMEnergyExchangeOffer(RWDBReader& rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMEnergyExchangeOffer::CtiLMEnergyExchangeOffer(const CtiLMEnergyExchangeOffer& energyexchangeoffer)
@@ -48,7 +48,7 @@ CtiLMEnergyExchangeOffer::~CtiLMEnergyExchangeOffer()
 
 /*---------------------------------------------------------------------------
     getPAOId
-    
+
     Returns the pao id of the energy exchange program associated with the
     offer.
 ---------------------------------------------------------------------------*/
@@ -60,7 +60,7 @@ ULONG CtiLMEnergyExchangeOffer::getPAOId() const
 
 /*---------------------------------------------------------------------------
     getOfferId
-    
+
     Returns the reference id of the energy exchange offer.
 ---------------------------------------------------------------------------*/
 ULONG CtiLMEnergyExchangeOffer::getOfferId() const
@@ -71,7 +71,7 @@ ULONG CtiLMEnergyExchangeOffer::getOfferId() const
 
 /*---------------------------------------------------------------------------
     getRunStatus
-    
+
     Returns the run status of the energy exchange offer.
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMEnergyExchangeOffer::getRunStatus() const
@@ -82,7 +82,7 @@ const RWCString& CtiLMEnergyExchangeOffer::getRunStatus() const
 
 /*---------------------------------------------------------------------------
     getOfferDate
-    
+
     Returns the date of the energy exchange offer.
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMEnergyExchangeOffer::getOfferDate() const
@@ -93,7 +93,7 @@ const RWDBDateTime& CtiLMEnergyExchangeOffer::getOfferDate() const
 
 /*---------------------------------------------------------------------------
     getLMEnergyExchangeOfferRevisions
-    
+
     Returns a list of offer revisions for this energy exchange offer.
 ---------------------------------------------------------------------------*/
 RWOrdered& CtiLMEnergyExchangeOffer::getLMEnergyExchangeOfferRevisions()
@@ -104,10 +104,10 @@ RWOrdered& CtiLMEnergyExchangeOffer::getLMEnergyExchangeOfferRevisions()
 
 /*---------------------------------------------------------------------------
     setPAOId
-    
+
     Sets the pao id of the energy exchange program associated with the
     offer.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeOffer& CtiLMEnergyExchangeOffer::setPAOId(ULONG devid)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -118,9 +118,9 @@ CtiLMEnergyExchangeOffer& CtiLMEnergyExchangeOffer::setPAOId(ULONG devid)
 
 /*---------------------------------------------------------------------------
     setOfferId
-    
+
     Sets the reference id of the energy exchange offer.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeOffer& CtiLMEnergyExchangeOffer::setOfferId(ULONG offid)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -131,9 +131,9 @@ CtiLMEnergyExchangeOffer& CtiLMEnergyExchangeOffer::setOfferId(ULONG offid)
 
 /*---------------------------------------------------------------------------
     setRunStatus
-    
+
     Sets the run status of the energy exchange offer.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeOffer& CtiLMEnergyExchangeOffer::setRunStatus(const RWCString& runstat)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -144,9 +144,9 @@ CtiLMEnergyExchangeOffer& CtiLMEnergyExchangeOffer::setRunStatus(const RWCString
 
 /*---------------------------------------------------------------------------
     setOfferDate
-    
+
     Sets the date of the energy exchange offer.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeOffer& CtiLMEnergyExchangeOffer::setOfferDate(const RWDBDateTime& offdate)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -184,11 +184,11 @@ void CtiLMEnergyExchangeOffer::addLMEnergyExchangeProgramOfferTable()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
-        if ( conn.isValid() )
+        if( conn.isValid() )
         {
             RWDBDatabase db = getDatabase();
             RWDBTable lmEnergyExchangeProgramOfferTable = db.table("lmenergyexchangeprogramoffer");
@@ -230,9 +230,9 @@ void CtiLMEnergyExchangeOffer::addLMEnergyExchangeProgramOfferTable()
                 RWDBInserter inserter = lmEnergyExchangeProgramOfferTable.inserter();
 
                 inserter << getPAOId()
-                         << getOfferId()
-                         << getRunStatus()
-                         << getOfferDate();
+                << getOfferId()
+                << getRunStatus()
+                << getOfferDate();
 
                 /*{
                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -259,18 +259,18 @@ void CtiLMEnergyExchangeOffer::updateLMEnergyExchangeProgramOfferTable()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
-        if ( conn.isValid() )
+        if( conn.isValid() )
         {
             RWDBDatabase db = getDatabase();
             RWDBTable lmEnergyExchangeProgramOfferTable = db.table("lmenergyexchangeprogramoffer");
             RWDBUpdater updater = lmEnergyExchangeProgramOfferTable.updater();
 
             updater << lmEnergyExchangeProgramOfferTable["runstatus"].assign(getRunStatus())
-                    << lmEnergyExchangeProgramOfferTable["offerdate"].assign(getOfferDate());
+            << lmEnergyExchangeProgramOfferTable["offerdate"].assign(getOfferDate());
 
             updater.where(lmEnergyExchangeProgramOfferTable["deviceid"]==getPAOId() &&//will be paobjectid
                           lmEnergyExchangeProgramOfferTable["offerid"]==getOfferId());
@@ -318,9 +318,9 @@ void CtiLMEnergyExchangeOffer::updateLMEnergyExchangeProgramOfferTable()
                 RWDBInserter inserter = lmEnergyExchangeProgramOfferTable.inserter();
 
                 inserter << getPAOId()
-                         << getOfferId()
-                         << getRunStatus()
-                         << getOfferDate();
+                << getOfferId()
+                << getRunStatus()
+                << getOfferDate();
 
                 /*{
                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -347,11 +347,11 @@ void CtiLMEnergyExchangeOffer::deleteLMEnergyExchangeProgramOfferTable()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
-        if ( conn.isValid() )
+        if( conn.isValid() )
         {
             RWDBDatabase db = getDatabase();
             RWDBTable lmEnergyExchangeProgramOfferTable = db.table("lmenergyexchangeprogramoffer");
@@ -377,7 +377,7 @@ void CtiLMEnergyExchangeOffer::deleteLMEnergyExchangeProgramOfferTable()
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeOffer::restoreGuts(RWvistream& istrm)
@@ -390,31 +390,31 @@ void CtiLMEnergyExchangeOffer::restoreGuts(RWvistream& istrm)
     RWTime tempTime;
 
     istrm >> _paoid
-          >> _offerid
-          >> _runstatus
-          >> tempTime
-          >> _lmenergyexchangeofferrevisions;
+    >> _offerid
+    >> _runstatus
+    >> tempTime
+    >> _lmenergyexchangeofferrevisions;
 
     _offerdate = RWDBDateTime(tempTime);
-}  
-   
+}
+
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeOffer::saveGuts(RWvostream& ostrm ) const  
+void CtiLMEnergyExchangeOffer::saveGuts(RWvostream& ostrm ) const
 {
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        
+
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _paoid
-          << _offerid
-          << _runstatus
-          << _offerdate.rwtime()
-          << _lmenergyexchangeofferrevisions;
+    << _offerid
+    << _runstatus
+    << _offerdate.rwtime()
+    << _lmenergyexchangeofferrevisions;
 
     return;
 }
@@ -449,7 +449,7 @@ CtiLMEnergyExchangeOffer& CtiLMEnergyExchangeOffer::operator=(const CtiLMEnergyE
 int CtiLMEnergyExchangeOffer::operator==(const CtiLMEnergyExchangeOffer& right) const
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    return ( (getPAOId() == right.getPAOId()) && (getOfferId() == right.getOfferId()) );
+    return( (getPAOId() == right.getPAOId()) && (getOfferId() == right.getOfferId()) );
 }
 
 /*---------------------------------------------------------------------------
@@ -463,17 +463,17 @@ int CtiLMEnergyExchangeOffer::operator!=(const CtiLMEnergyExchangeOffer& right) 
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeOffer* CtiLMEnergyExchangeOffer::replicate() const
 {
-    return (new CtiLMEnergyExchangeOffer(*this));
+    return(new CtiLMEnergyExchangeOffer(*this));
 }
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeOffer::restore(RWDBReader& rdr)
@@ -488,7 +488,7 @@ void CtiLMEnergyExchangeOffer::restore(RWDBReader& rdr)
 
 /*---------------------------------------------------------------------------
     dumpDynamicData
-    
+
     Writes out the dynamic information for this energy exchange offer.
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeOffer::dumpDynamicData()
@@ -500,7 +500,7 @@ void CtiLMEnergyExchangeOffer::dumpDynamicData()
 
 /*---------------------------------------------------------------------------
     restoreDynamicData
-    
+
     Restores self's dynamic data given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeOffer::restoreDynamicData(RWDBReader& rdr)

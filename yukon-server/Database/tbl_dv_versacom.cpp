@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:01 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,270 +22,270 @@
 #include "logger.h"
 
 CtiTableVersacomLoadGroup::CtiTableVersacomLoadGroup() :
-   _deviceID(-1),
-   _serial(0),
-   _utilityID(0),
-   _section(0),
-   _class(0),
-   _division(0),
-   _addressUsage(0),
-   _relayMask(0),
-   _routeID(-1)
+_deviceID(-1),
+_serial(0),
+_utilityID(0),
+_section(0),
+_class(0),
+_division(0),
+_addressUsage(0),
+_relayMask(0),
+_routeID(-1)
 {}
 
 CtiTableVersacomLoadGroup::CtiTableVersacomLoadGroup(const CtiTableVersacomLoadGroup& aRef)
 {
-   *this = aRef;
+    *this = aRef;
 }
 
 CtiTableVersacomLoadGroup::~CtiTableVersacomLoadGroup() {}
 
 CtiTableVersacomLoadGroup& CtiTableVersacomLoadGroup::operator=(const CtiTableVersacomLoadGroup& aRef)
 {
-   if(this != &aRef)
-   {
-      _deviceID      = aRef.getDeviceID();
-      _serial        = aRef.getSerial();
-      _utilityID     = aRef.getUtilityID();
-      _section       = aRef.getSection();
-      _class         = aRef.getClass();
-      _division      = aRef.getDivision();
-      _addressUsage  = aRef.getAddressUsage();
-      _relayMask     = aRef.getRelayMask();
-      _routeID       = aRef.getRouteID();
-   }
-   return *this;
+    if(this != &aRef)
+    {
+        _deviceID      = aRef.getDeviceID();
+        _serial        = aRef.getSerial();
+        _utilityID     = aRef.getUtilityID();
+        _section       = aRef.getSection();
+        _class         = aRef.getClass();
+        _division      = aRef.getDivision();
+        _addressUsage  = aRef.getAddressUsage();
+        _relayMask     = aRef.getRelayMask();
+        _routeID       = aRef.getRouteID();
+    }
+    return *this;
 }
 
 INT  CtiTableVersacomLoadGroup::getSerial() const
 {
 
-   return _serial;
+    return _serial;
 }
 
 CtiTableVersacomLoadGroup& CtiTableVersacomLoadGroup::setSerial( const INT a_ser )
 {
 
-   _serial = a_ser;
-   return *this;
+    _serial = a_ser;
+    return *this;
 }
 
 INT  CtiTableVersacomLoadGroup::getUtilityID() const
 {
 
-   return _utilityID;
+    return _utilityID;
 }
 
 CtiTableVersacomLoadGroup& CtiTableVersacomLoadGroup::setUtilityID( const INT a_uid )
 {
 
-   _utilityID = a_uid;
-   return *this;
+    _utilityID = a_uid;
+    return *this;
 }
 
 INT  CtiTableVersacomLoadGroup::getSection() const
 {
 
-   return _section;
+    return _section;
 }
 
 CtiTableVersacomLoadGroup& CtiTableVersacomLoadGroup::setSection( const INT aSection )
 {
 
-   _section = aSection;
-   return *this;
+    _section = aSection;
+    return *this;
 }
 
 INT  CtiTableVersacomLoadGroup::getClass() const
 {
 
-   return _class;
+    return _class;
 }
 
 CtiTableVersacomLoadGroup& CtiTableVersacomLoadGroup::setClass( const INT aClass )
 {
 
-   _class = aClass;
-   return *this;
+    _class = aClass;
+    return *this;
 }
 
 INT  CtiTableVersacomLoadGroup::getDivision() const
 {
 
-   return _division;
+    return _division;
 }
 
 CtiTableVersacomLoadGroup& CtiTableVersacomLoadGroup::setDivision( const INT aDivision )
 {
 
-   _division = aDivision;
-   return *this;
+    _division = aDivision;
+    return *this;
 }
 
 
 INT  CtiTableVersacomLoadGroup::getAddressUsage() const
 {
 
-   return _addressUsage;
+    return _addressUsage;
 }
 
 BOOL CtiTableVersacomLoadGroup::useUtilityID() const
 {
 
-   return ((_addressUsage & U_MASK) ? TRUE : FALSE );
+    return((_addressUsage & U_MASK) ? TRUE : FALSE );
 }
 
 BOOL CtiTableVersacomLoadGroup::useSection() const
 {
 
-   return ((_addressUsage & S_MASK) ? TRUE : FALSE );
+    return((_addressUsage & S_MASK) ? TRUE : FALSE );
 }
 
 BOOL CtiTableVersacomLoadGroup::useClass() const
 {
 
-   return ((_addressUsage & C_MASK) ? TRUE : FALSE );
+    return((_addressUsage & C_MASK) ? TRUE : FALSE );
 }
 
 BOOL CtiTableVersacomLoadGroup::useDivision() const
 {
 
-   return ((_addressUsage & D_MASK) ? TRUE : FALSE );
+    return((_addressUsage & D_MASK) ? TRUE : FALSE );
 }
 
 CtiTableVersacomLoadGroup& CtiTableVersacomLoadGroup::setAddressUsage( const INT a_addressUsage )
 {
 
-   _addressUsage = a_addressUsage;
-   return *this;
+    _addressUsage = a_addressUsage;
+    return *this;
 }
 
 INT  CtiTableVersacomLoadGroup::getRelayMask() const
 {
 
-   return _relayMask;
+    return _relayMask;
 }
 
 BOOL CtiTableVersacomLoadGroup::useRelay(const INT r) const
 {
 
-   return ((_relayMask & (0x00000001 << (r - 1))) ? TRUE : FALSE);
+    return((_relayMask & (0x00000001 << (r - 1))) ? TRUE : FALSE);
 }
 
 CtiTableVersacomLoadGroup& CtiTableVersacomLoadGroup::setRelayMask( const INT a_relayMask )
 {
 
-   _relayMask = a_relayMask;
-   return *this;
+    _relayMask = a_relayMask;
+    return *this;
 }
 
 LONG  CtiTableVersacomLoadGroup::getRouteID() const
 {
 
-   return _routeID;
+    return _routeID;
 }
 
 CtiTableVersacomLoadGroup& CtiTableVersacomLoadGroup::setRouteID( const LONG a_routeID )
 {
 
-   _routeID = a_routeID;
-   return *this;
+    _routeID = a_routeID;
+    return *this;
 }
 
 void CtiTableVersacomLoadGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-   RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName() );
 
-   selector <<
-      devTbl["serialaddress"] <<
-      devTbl["utilityaddress"] <<
-      devTbl["sectionaddress"] <<
-      devTbl["classaddress"] <<
-      devTbl["divisionaddress"] <<
-      devTbl["addressusage"] <<
-      devTbl["relayusage"] <<
-      devTbl["routeid"];
+    selector <<
+    devTbl["serialaddress"] <<
+    devTbl["utilityaddress"] <<
+    devTbl["sectionaddress"] <<
+    devTbl["classaddress"] <<
+    devTbl["divisionaddress"] <<
+    devTbl["addressusage"] <<
+    devTbl["relayusage"] <<
+    devTbl["routeid"];
 
-   selector.from(devTbl);
+    selector.from(devTbl);
 
-   selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
+    selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
 }
 
 void CtiTableVersacomLoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
 {
-   RWCString rwsTemp;
+    RWCString rwsTemp;
 
 
-   {
-      CtiLockGuard<CtiLogger> logger_guard(dout);
-      if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
-   rdr["serialaddress"]    >> rwsTemp;
-   _serial = atoi(rwsTemp.data());
-   rdr["utilityaddress"]   >> _utilityID;
-   rdr["sectionaddress"]   >> _section;
-   rdr["classaddress"]     >> _class;
-   rdr["divisionaddress"]  >> _division;
-   rdr["routeid"]          >> _routeID;
+    rdr["serialaddress"]    >> rwsTemp;
+    _serial = atoi(rwsTemp.data());
+    rdr["utilityaddress"]   >> _utilityID;
+    rdr["sectionaddress"]   >> _section;
+    rdr["classaddress"]     >> _class;
+    rdr["divisionaddress"]  >> _division;
+    rdr["routeid"]          >> _routeID;
 
-   rdr["addressusage"]     >> rwsTemp;
-   rwsTemp.toLower();
-   _addressUsage = resolveAddressUsage(rwsTemp);
+    rdr["addressusage"]     >> rwsTemp;
+    rwsTemp.toLower();
+    _addressUsage = resolveAddressUsage(rwsTemp);
 
-   rdr["relayusage"]       >> rwsTemp;
-   _relayMask = resolveRelayUsage(rwsTemp);
+    rdr["relayusage"]       >> rwsTemp;
+    _relayMask = resolveRelayUsage(rwsTemp);
 }
 
 LONG CtiTableVersacomLoadGroup::getDeviceID() const
 {
 
-   return _deviceID;
+    return _deviceID;
 }
 
 CtiTableVersacomLoadGroup& CtiTableVersacomLoadGroup::setDeviceID( const LONG deviceID )
 {
 
-   _deviceID = deviceID;
-   return *this;
+    _deviceID = deviceID;
+    return *this;
 }
 
 RWDBStatus CtiTableVersacomLoadGroup::Restore()
 {
 
-   char temp[32];
+    char temp[32];
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBSelector selector = getDatabase().selector();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBSelector selector = getDatabase().selector();
 
-   selector <<
-   table["deviceid"] <<
-   table["routeid"] <<
-   table["serialaddress"] <<
-   table["utilityaddress"] <<
-   table["sectionaddress"] <<
-   table["classaddress"] <<
-   table["divisionaddress"] <<
-   table["addressusage"] <<
-   table["relayusage"];
+    selector <<
+    table["deviceid"] <<
+    table["routeid"] <<
+    table["serialaddress"] <<
+    table["utilityaddress"] <<
+    table["sectionaddress"] <<
+    table["classaddress"] <<
+    table["divisionaddress"] <<
+    table["addressusage"] <<
+    table["relayusage"];
 
-   selector.where( table["deviceid"] == getDeviceID() );
+    selector.where( table["deviceid"] == getDeviceID() );
 
-   RWDBReader reader = selector.reader( conn );
+    RWDBReader reader = selector.reader( conn );
 
-   if( reader() )
-   {
-      DecodeDatabaseReader( reader );
-      setDirty( false );
-   }
-   else
-   {
-      setDirty( true );
-   }
-   return reader.status();
+    if( reader() )
+    {
+        DecodeDatabaseReader( reader );
+        setDirty( false );
+    }
+    else
+    {
+        setDirty( true );
+    }
+    return reader.status();
 }
 
 RWDBStatus CtiTableVersacomLoadGroup::Insert()
@@ -293,75 +293,75 @@ RWDBStatus CtiTableVersacomLoadGroup::Insert()
 #if 0
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBInserter inserter = table.inserter();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBInserter inserter = table.inserter();
 
-   inserter <<
-      getDeviceID()     <<
-      getRouteID() <<
-      getUtilityID() <<
-      getSection() <<
-      getClass() <<
-      getDivision() <<
-      getAddressUsage() <<
-      getRelayMask();
+    inserter <<
+    getDeviceID()     <<
+    getRouteID() <<
+    getUtilityID() <<
+    getSection() <<
+    getClass() <<
+    getDivision() <<
+    getAddressUsage() <<
+    getRelayMask();
 
-   if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
-   {
-      setDirty(false);
-   }
+    if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    {
+        setDirty(false);
+    }
 
-   return inserter.status();
+    return inserter.status();
 #else
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
-   return RWDBStatus::notSupported;
+    return RWDBStatus::notSupported;
 #endif
 }
 
 RWDBStatus CtiTableVersacomLoadGroup::Update()
 {
 #if 0
-   char temp[32];
+    char temp[32];
 
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBUpdater updater = table.updater();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBUpdater updater = table.updater();
 
-   updater.where( table["deviceid"] == getDeviceID() );
+    updater.where( table["deviceid"] == getDeviceID() );
 
-   updater <<
-      table["routeid"].assign(getRouteID() ) <<
-      table["utilityaddress"].assign(getUtilityID() ) <<
-      table["sectionaddress"].assign(getSection() ) <<
-      table["classaddress"].assign(getClass() ) <<
-      table["divisionaddress"].assign(getDivision() ) <<
-      table["addressusage"].assign(getAddressUsage() ) <<
-      table["relayusage"].assign(getRelayMask() );
+    updater <<
+    table["routeid"].assign(getRouteID() ) <<
+    table["utilityaddress"].assign(getUtilityID() ) <<
+    table["sectionaddress"].assign(getSection() ) <<
+    table["classaddress"].assign(getClass() ) <<
+    table["divisionaddress"].assign(getDivision() ) <<
+    table["addressusage"].assign(getAddressUsage() ) <<
+    table["relayusage"].assign(getRelayMask() );
 
-   if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
-   {
-      setDirty(false);
-   }
+    if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    {
+        setDirty(false);
+    }
 
-   return updater.status();
+    return updater.status();
 #else
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
-   return RWDBStatus::notSupported;
+    return RWDBStatus::notSupported;
 #endif
 }
 
@@ -369,18 +369,18 @@ RWDBStatus CtiTableVersacomLoadGroup::Delete()
 {
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBDeleter deleter = table.deleter();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBDeleter deleter = table.deleter();
 
-   deleter.where( table["deviceid"] == getDeviceID() );
-   deleter.execute( conn );
-   return deleter.status();
+    deleter.where( table["deviceid"] == getDeviceID() );
+    deleter.execute( conn );
+    return deleter.status();
 }
 
 RWCString CtiTableVersacomLoadGroup::getTableName()
 {
-   return "LMGroupVersacom";
+    return "LMGroupVersacom";
 }

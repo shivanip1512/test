@@ -55,14 +55,14 @@ const CHAR * CtiFDRManager::COLNAME_PTBASE_POINTTYPE =   "PointType";
 // constructors, destructors, operators first
 
 CtiFDRManager::CtiFDRManager(RWCString & aInterfaceName):
-   iInterfaceName(aInterfaceName),
-   iWhereSelectStr()
+iInterfaceName(aInterfaceName),
+iWhereSelectStr()
 {
 }
 
 CtiFDRManager::CtiFDRManager(RWCString & aInterfaceName, RWCString & aWhereSelectStr):
-   iInterfaceName(aInterfaceName),
-   iWhereSelectStr(aWhereSelectStr)
+iInterfaceName(aInterfaceName),
+iWhereSelectStr(aWhereSelectStr)
 {
 }
 
@@ -123,10 +123,10 @@ RWDBStatus CtiFDRManager::loadPointList()
     try
     {
         // Make sure all objects that that store results
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
 
         // are out of scope when the release is called
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
         RWDBDatabase db = conn.database();
         RWDBTable fdrTranslation = db.table(TBLNAME_FDRTRANSLATION);
@@ -135,12 +135,12 @@ RWDBStatus CtiFDRManager::loadPointList()
         RWDBSelector selector = db.selector();
 
         selector << fdrTranslation[COLNAME_FDR_POINTID]
-            << fdrTranslation[COLNAME_FDRTRANSLATION]
-            << fdrTranslation[COLNAME_FDRDESTINATION]
-            << fdrTranslation[COLNAME_FDRDIRECTIONTYPE]
-            << pointBaseTable[COLNAME_PTBASE_POINTTYPE]
-            << pointAnalogTable[COLNAME_PTANALOG_MULT] 
-            << pointAnalogTable[COLNAME_PTANALOG_OFFSET];
+        << fdrTranslation[COLNAME_FDRTRANSLATION]
+        << fdrTranslation[COLNAME_FDRDESTINATION]
+        << fdrTranslation[COLNAME_FDRDIRECTIONTYPE]
+        << pointBaseTable[COLNAME_PTBASE_POINTTYPE]
+        << pointAnalogTable[COLNAME_PTANALOG_MULT]
+        << pointAnalogTable[COLNAME_PTANALOG_OFFSET];
 
 
         selector.from( fdrTranslation);
@@ -148,28 +148,28 @@ RWDBStatus CtiFDRManager::loadPointList()
         selector.from( pointAnalogTable);
 
 
-        if (getWhereSelectStr() != "")
+        if(getWhereSelectStr() != "")
         {
             // we now have control options so put those into the same list as a default
-            if (getWhereSelectStr() == RWCString (FDR_INTERFACE_SEND))
+            if(getWhereSelectStr() == RWCString (FDR_INTERFACE_SEND))
             {
                 // use a direction clause
                 selector.where(fdrTranslation[COLNAME_FDRINTERFACETYPE] == getInterfaceName() && (
-                                fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == getWhereSelectStr() ||
-                                fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == RWCString(FDR_INTERFACE_SEND_FOR_CONTROL) ));
+                                                                                                 fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == getWhereSelectStr() ||
+                                                                                                 fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == RWCString(FDR_INTERFACE_SEND_FOR_CONTROL) ));
             }
-            else if (getWhereSelectStr() == RWCString (FDR_INTERFACE_RECEIVE))
+            else if(getWhereSelectStr() == RWCString (FDR_INTERFACE_RECEIVE))
             {
                 // use a direction clause
                 selector.where(fdrTranslation[COLNAME_FDRINTERFACETYPE] == getInterfaceName() && (
-                                fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == getWhereSelectStr() ||
-                                fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == RWCString(FDR_INTERFACE_RECEIVE_FOR_CONTROL)));
+                                                                                                 fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == getWhereSelectStr() ||
+                                                                                                 fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == RWCString(FDR_INTERFACE_RECEIVE_FOR_CONTROL)));
             }
             else
             {
                 // use a direction clause
                 selector.where(fdrTranslation[COLNAME_FDRINTERFACETYPE] == getInterfaceName() &&
-                                fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == getWhereSelectStr());
+                               fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == getWhereSelectStr());
             }
         }
         else
@@ -180,7 +180,7 @@ RWDBStatus CtiFDRManager::loadPointList()
 
         selector.where( selector.where() && fdrTranslation[COLNAME_FDR_POINTID] == pointBaseTable[COLNAME_PTBASE_POINTID] && pointBaseTable[COLNAME_PTBASE_POINTID].leftOuterJoin(pointAnalogTable[COLNAME_PTANALOG_POINTID]));
 
-        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+        if(getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " " << selector.asString() << endl;
@@ -189,11 +189,11 @@ RWDBStatus CtiFDRManager::loadPointList()
         // check execute status to stop the exception when database is gone
         retStatus = selector.execute(conn).status();
 
-        if (retStatus.errorCode() == RWDBStatus::ok)
+        if(retStatus.errorCode() == RWDBStatus::ok)
         {
             RWDBReader  rdr = selector.reader( conn );
 
-            while ( rdr() )
+            while( rdr() )
             {
                 rdr[COLNAME_FDR_POINTID]      >> pointID;
                 rdr[COLNAME_FDRTRANSLATION]   >> translation;
@@ -217,18 +217,18 @@ RWDBStatus CtiFDRManager::loadPointList()
                     pTempFdrPoint = new CtiFDRPoint( pointID );
                     pTempFdrPoint->setPointType ((CtiPointType_t) resolvePointType(tmp));
 
-                    if ((pTempFdrPoint->getPointType() == AnalogPointType) ||
-                     (pTempFdrPoint->getPointType() == PulseAccumulatorPointType) ||
-                     (pTempFdrPoint->getPointType() == DemandAccumulatorPointType) ||
-                     (pTempFdrPoint->getPointType() == CalculatedPointType))
+                    if((pTempFdrPoint->getPointType() == AnalogPointType) ||
+                       (pTempFdrPoint->getPointType() == PulseAccumulatorPointType) ||
+                       (pTempFdrPoint->getPointType() == DemandAccumulatorPointType) ||
+                       (pTempFdrPoint->getPointType() == CalculatedPointType))
                     {
                         pTempFdrPoint->setMultiplier(multiplier);
                         pTempFdrPoint->setOffset (dataOffset);
                     }
 
                     // set controllable
-                    if (direction == RWCString(FDR_INTERFACE_SEND_FOR_CONTROL) || 
-                        direction == RWCString(FDR_INTERFACE_RECEIVE_FOR_CONTROL))
+                    if(direction == RWCString(FDR_INTERFACE_SEND_FOR_CONTROL) ||
+                       direction == RWCString(FDR_INTERFACE_RECEIVE_FOR_CONTROL))
                     {
                         pTempFdrPoint->setControllable (true);
                     }
@@ -255,7 +255,7 @@ RWDBStatus CtiFDRManager::loadPointList()
         }
     }
 
-    catch (RWExternalErr e )
+    catch(RWExternalErr e )
     {
         //Make sure the list is cleared
         {
@@ -270,7 +270,7 @@ RWDBStatus CtiFDRManager::loadPointList()
 
         RWTHROW(e);
     }
-    catch (...)
+    catch(...)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);

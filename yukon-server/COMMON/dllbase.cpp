@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:13 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,6 +67,7 @@ IM_EX_CTIBASE INT             DebugLevel = 0;
 IM_EX_CTIBASE INT             Double = {FALSE};
 IM_EX_CTIBASE INT             useVersacomTypeFourControl = 0;  // Jeesh if you can't figure this out...
 IM_EX_CTIBASE INT             ModemConnectionTimeout = 60;     // Modem Connection Timeout in seconds (60 def.)
+IM_EX_CTIBASE int             gMaxDBConnectionCount = 5;       // Maximum number of DB connections to allow to remain open.
 
 /*
  *  These are global to the ctibase, but
@@ -201,6 +202,18 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     }
     if(DebugLevel & 0x0001) cout << "Versacom configuration " << ( gOptimizeVersacom ? "will " : "will NOT ") << "be optimized (section,class,division) "<< endl;
 
+
+
+    if( !(str = gConfigParms.getValueAsString("MAX_DBCONNECTION_COUNT")).isNull() )
+    {
+        gMaxDBConnectionCount = atoi(str.data());
+        if(DebugLevel & 0x0001) cout << "Max of " << gMaxDBConnectionCount << " RWDB connections allowed" << endl;
+    }
+    else
+    {
+        gMaxDBConnectionCount = 5;
+        if(DebugLevel & 0x0001) cout << "Max of " << gMaxDBConnectionCount << " RWDB connections allowed" << endl;
+    }
 
     if( !(str = gConfigParms.getValueAsString("MODEM_CONNECTION_TIMEOUT")).isNull() )
     {

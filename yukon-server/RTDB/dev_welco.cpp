@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/24 21:37:51 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/02 17:02:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,7 +84,6 @@ INT CtiDeviceWelco::AccumulatorScan(CtiRequestMsg *pReq,
      *  This is the WelCoFreeze code from the bad old daze.
      */
 
-    ULONG       BytesWritten;
     INT         status      = NORMAL;
 
     if(OutMessage != NULL)
@@ -127,8 +126,6 @@ INT CtiDeviceWelco::AccumulatorScan(CtiRequestMsg *pReq,
 
 INT CtiDeviceWelco::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
 {
-    ULONG BytesWritten;
-
     INT status = NORMAL;
 
     if(getDeadbandsSent() == false)      // We are currently unsure whether a deadband request has ever been sent.
@@ -158,7 +155,6 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
                                   INT ScanPriority)
 {
     INT      AIOffset = 0;
-    ULONG    BytesWritten;
 
     USHORT   AnalogFirst = 0xffff;
     USHORT   AnalogLast = 0;
@@ -590,8 +586,8 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                     PartHour /= (3600.0);
 
                     for(PointOffset = (USHORT)StartPoint, Pointer = 3;
-                        PointOffset <= FinishPoint;
-                        PointOffset++, Pointer += 4)                        // 4 bytes per accumulator.  Move Pointer offset to the next one!
+                       PointOffset <= FinishPoint;
+                       PointOffset++, Pointer += 4)                        // 4 bytes per accumulator.  Move Pointer offset to the next one!
                     {
                         curPulseValue = MAKEULONG( MAKEUSHORT (MyInMessage[Pointer], MyInMessage[Pointer + 1]), MAKEUSHORT (MyInMessage[Pointer + 2], MyInMessage[Pointer + 3]) );
 
@@ -883,11 +879,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
                         sprintf(tStr, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
 
-                        pData = new CtiPointDataMsg(PointRecord->getPointID(),
-                                                    PValue,
-                                                    NormalQuality,
-                                                    StatusPointType,
-                                                    tStr);
+                        pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
                         if(pData != NULL)
                         {
                             ReturnMsg->PointData().insert(pData);
@@ -901,11 +893,8 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
                             sprintf(tStr, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
 
-                            pData = new CtiPointDataMsg(PointRecord->getPointID(),
-                                                        PValue,
-                                                        NormalQuality,
-                                                        StatusPointType,
-                                                        tStr);
+                            pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
+
                             if(pData != NULL)
                             {
                                 ReturnMsg->PointData().insert(pData);
@@ -1716,8 +1705,6 @@ INT CtiDeviceWelco::ErrorDecode(INMESS *InMessage,
 
         retList.insert( pMsg );
     }
-
-
 
 #endif
 

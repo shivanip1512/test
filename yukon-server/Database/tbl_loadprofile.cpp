@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_loadprofile.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:02 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,89 +21,89 @@
 #include "logger.h"
 
 CtiTableDeviceLoadProfile::CtiTableDeviceLoadProfile() :
-   _deviceID(-1),
-   _lastIntervalDemandRate(INT_MAX),
-   _loadProfileDemandRate(INT_MAX)
+_deviceID(-1),
+_lastIntervalDemandRate(INT_MAX),
+_loadProfileDemandRate(INT_MAX)
 {
-   for(int i = 0; i < MAX_COLLECTED_CHANNEL; i++)
-   {
-      _channelValid[i] = FALSE;
-   }
+    for(int i = 0; i < MAX_COLLECTED_CHANNEL; i++)
+    {
+        _channelValid[i] = FALSE;
+    }
 }
 
 CtiTableDeviceLoadProfile::CtiTableDeviceLoadProfile(const CtiTableDeviceLoadProfile& aRef)
 {
-   *this = aRef;
+    *this = aRef;
 }
 
 CtiTableDeviceLoadProfile::~CtiTableDeviceLoadProfile() {}
 
 CtiTableDeviceLoadProfile& CtiTableDeviceLoadProfile::operator=(const CtiTableDeviceLoadProfile& aRef)
 {
-   if(this != &aRef)
-   {
-      _deviceID               = aRef.getDeviceID();
-      _lastIntervalDemandRate = aRef.getLastIntervalDemandRate();
-      _loadProfileDemandRate  = aRef.getLoadProfileDemandRate();
+    if(this != &aRef)
+    {
+        _deviceID               = aRef.getDeviceID();
+        _lastIntervalDemandRate = aRef.getLastIntervalDemandRate();
+        _loadProfileDemandRate  = aRef.getLoadProfileDemandRate();
 
-      for(int i = 0; i < MAX_COLLECTED_CHANNEL; i++)
-      {
-         _channelValid[i]     = aRef.isChannelValid(1);
-      }
-   }
-   return *this;
+        for(int i = 0; i < MAX_COLLECTED_CHANNEL; i++)
+        {
+            _channelValid[i]     = aRef.isChannelValid(1);
+        }
+    }
+    return *this;
 }
 
 INT  CtiTableDeviceLoadProfile::getLastIntervalDemandRate() const
 {
 
-   return _lastIntervalDemandRate;
+    return _lastIntervalDemandRate;
 }
 
 CtiTableDeviceLoadProfile& CtiTableDeviceLoadProfile::setLastIntervalDemandRate( const INT aDemandInterval )
 {
 
-   _lastIntervalDemandRate = aDemandInterval;
-   return *this;
+    _lastIntervalDemandRate = aDemandInterval;
+    return *this;
 }
 
 INT  CtiTableDeviceLoadProfile::getLoadProfileDemandRate() const
 {
 
-   return _loadProfileDemandRate;
+    return _loadProfileDemandRate;
 }
 
 CtiTableDeviceLoadProfile& CtiTableDeviceLoadProfile::setLoadProfileDemandRate( const INT aRate )
 {
 
-   _loadProfileDemandRate = aRate;
-   return *this;
+    _loadProfileDemandRate = aRate;
+    return *this;
 }
 
 BOOL CtiTableDeviceLoadProfile::isChannelValid(const INT ch) const
 {
 
-   return _channelValid[ch];
+    return _channelValid[ch];
 }
 
 CtiTableDeviceLoadProfile& CtiTableDeviceLoadProfile::setChannelValid( const INT ch, const BOOL val )
 {
 
-   _channelValid[ch] = val;
-   return *this;
+    _channelValid[ch] = val;
+    return *this;
 }
 
 void CtiTableDeviceLoadProfile::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-   RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName() );
 
-   selector <<
-      devTbl["lastintervaldemandrate"] <<
-      devTbl["loadprofiledemandrate"] <<
-      devTbl["loadprofilecollection"];
+    selector <<
+    devTbl["lastintervaldemandrate"] <<
+    devTbl["loadprofiledemandrate"] <<
+    devTbl["loadprofilecollection"];
 
-   selector.from(devTbl);
-   selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
+    selector.from(devTbl);
+    selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
 }
 
 void CtiTableDeviceLoadProfile::DecodeDatabaseReader(RWDBReader &rdr)
@@ -162,109 +162,109 @@ RWCString CtiTableDeviceLoadProfile::getTableName()
 LONG CtiTableDeviceLoadProfile::getDeviceID() const
 {
 
-   return _deviceID;
+    return _deviceID;
 }
 
 CtiTableDeviceLoadProfile& CtiTableDeviceLoadProfile::setDeviceID( const LONG deviceID )
 {
 
-   _deviceID = deviceID;
-   return *this;
+    _deviceID = deviceID;
+    return *this;
 }
 
 RWDBStatus CtiTableDeviceLoadProfile::Restore()
 {
 
-   char temp[32];
+    char temp[32];
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBSelector selector = getDatabase().selector();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBSelector selector = getDatabase().selector();
 
-   selector <<
-   table["deviceid"] <<
-   table["lastintervaldemandrate"] <<
-   table["loadprofiledemandrate"];
+    selector <<
+    table["deviceid"] <<
+    table["lastintervaldemandrate"] <<
+    table["loadprofiledemandrate"];
 
-   selector.where( table["deviceid"] == getDeviceID() );
+    selector.where( table["deviceid"] == getDeviceID() );
 
-   RWDBReader reader = selector.reader( conn );
+    RWDBReader reader = selector.reader( conn );
 
-   if( reader() )
-   {
-      DecodeDatabaseReader( reader );
-      setDirty( false );
-   }
-   else
-   {
-      setDirty( true );
-   }
-   return reader.status();
+    if( reader() )
+    {
+        DecodeDatabaseReader( reader );
+        setDirty( false );
+    }
+    else
+    {
+        setDirty( true );
+    }
+    return reader.status();
 }
 
 RWDBStatus CtiTableDeviceLoadProfile::Insert()
 {
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBInserter inserter = table.inserter();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBInserter inserter = table.inserter();
 
-   inserter <<
-      getDeviceID()     <<
-      getLastIntervalDemandRate() <<
-      getLoadProfileDemandRate();
+    inserter <<
+    getDeviceID()     <<
+    getLastIntervalDemandRate() <<
+    getLoadProfileDemandRate();
 
-   if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
-   {
-      setDirty(false);
-   }
+    if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    {
+        setDirty(false);
+    }
 
-   return inserter.status();
+    return inserter.status();
 }
 
 RWDBStatus CtiTableDeviceLoadProfile::Update()
 {
-   char temp[32];
+    char temp[32];
 
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBUpdater updater = table.updater();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBUpdater updater = table.updater();
 
-   updater.where( table["deviceid"] == getDeviceID() );
+    updater.where( table["deviceid"] == getDeviceID() );
 
-   updater <<
-      table["lastintervaldemandrate"].assign(getLastIntervalDemandRate() ) <<
-      table["loadprofiledemandrate"].assign(getLoadProfileDemandRate() );
+    updater <<
+    table["lastintervaldemandrate"].assign(getLastIntervalDemandRate() ) <<
+    table["loadprofiledemandrate"].assign(getLoadProfileDemandRate() );
 
-   if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
-   {
-      setDirty(false);
-   }
+    if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    {
+        setDirty(false);
+    }
 
-   return updater.status();
+    return updater.status();
 }
 
 RWDBStatus CtiTableDeviceLoadProfile::Delete()
 {
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBDeleter deleter = table.deleter();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBDeleter deleter = table.deleter();
 
-   deleter.where( table["deviceid"] == getDeviceID() );
-   deleter.execute( conn );
-   return deleter.status();
+    deleter.where( table["deviceid"] == getDeviceID() );
+    deleter.execute( conn );
+    return deleter.status();
 }
 

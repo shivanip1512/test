@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dct501.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:59 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:21 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,23 +32,23 @@
 set< CtiDLCCommandStore > CtiDeviceDCT501::_commandStore;
 
 
-CtiDeviceDCT501::CtiDeviceDCT501( ) { }
+CtiDeviceDCT501::CtiDeviceDCT501( ) {}
 
 CtiDeviceDCT501::CtiDeviceDCT501( const CtiDeviceDCT501 &aRef )
 {
     *this = aRef;
 }
 
-CtiDeviceDCT501::~CtiDeviceDCT501( ) { }
+CtiDeviceDCT501::~CtiDeviceDCT501( ) {}
 
 CtiDeviceDCT501& CtiDeviceDCT501::operator=(const CtiDeviceDCT501& aRef)
 {
-   if( this != &aRef )
-   {
-       Inherited::operator=( aRef );
-   }
+    if( this != &aRef )
+    {
+        Inherited::operator=( aRef );
+    }
 
-   return *this;
+    return *this;
 }
 
 
@@ -111,14 +111,14 @@ bool CtiDeviceDCT501::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 ULONG CtiDeviceDCT501::calcNextLPScanTime( void )
 {
     RWTime        Now,
-                  blockStart,
-                  plannedLPTime,
-                  panicLPTime;
+    blockStart,
+    plannedLPTime,
+    panicLPTime;
     unsigned long channelTime,
-                  nextTime,
-                  midnightOffset;
+    nextTime,
+    midnightOffset;
     int           lpBlockSize,
-                  lpDemandRate;
+    lpDemandRate;
 
     nextTime = YUKONEOT;
 
@@ -161,8 +161,8 @@ ULONG CtiDeviceDCT501::calcNextLPScanTime( void )
 
                 if( pPoint != NULL )
                 {
+                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                     RWDBConnection conn = getConnection();
-                    RWLockGuard<RWDBConnection> conn_guard(conn);
 
                     RWCString sql       = "select max(timestamp) as maxtimestamp from rawpointhistory where pointid=" + CtiNumStr(pPoint->getPointID());
                     RWDBResult results  = conn.executeSql( sql );
@@ -254,7 +254,7 @@ ULONG CtiDeviceDCT501::calcNextLPScanTime( void )
         }
     }
 
-    return (_nextLPScanTime = nextTime);
+    return(_nextLPScanTime = nextTime);
 }
 
 
@@ -265,9 +265,9 @@ INT CtiDeviceDCT501::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
     int           lpDemandRate;
     unsigned int  lpBlockAddress;
     unsigned long lpBlocksToCollect,
-                  lpMaxBlocks,
-                  lpBlockSize,
-                  lpMidnightOffset;
+    lpMaxBlocks,
+    lpBlockSize,
+    lpMidnightOffset;
     RWTime        lpBlockStartTime;
     RWTime        Now;
     OUTMESS       *tmpOutMess;
@@ -322,11 +322,11 @@ INT CtiDeviceDCT501::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
 
                 switch( i )
                 {
-                    case 3:     lpBlockAddress += 0x18;  //  add on the appropriate offset for the requested channel
-                    case 2:     lpBlockAddress += 0x18;
-                    case 1:     lpBlockAddress += 0x18;
+                case 3:     lpBlockAddress += 0x18;  //  add on the appropriate offset for the requested channel
+                case 2:     lpBlockAddress += 0x18;
+                case 1:     lpBlockAddress += 0x18;
                     //  all of the above fall through to this:
-                    case 0:     lpBlockAddress += 0x9a;  //  offset for first channel
+                case 0:     lpBlockAddress += 0x9a;  //  offset for first channel
                 }
 
                 tmpOutMess->Buffer.BSt.Function = lpBlockAddress;
@@ -373,26 +373,26 @@ INT CtiDeviceDCT501::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
     switch(InMessage->Sequence)
     {
-        case (CtiProtocolEmetcon::Scan_Integrity):
-        case (CtiProtocolEmetcon::GetValue_Demand):
+    case (CtiProtocolEmetcon::Scan_Integrity):
+    case (CtiProtocolEmetcon::GetValue_Demand):
         {
             status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::Scan_LoadProfile):
+    case (CtiProtocolEmetcon::Scan_LoadProfile):
         {
             status = decodeScanLoadProfile(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::GetConfig_Model):
+    case (CtiProtocolEmetcon::GetConfig_Model):
         {
             status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        default:
+    default:
         {
             status = Inherited::ResultDecode(InMessage, TimeNow, vgList, retList, outList);
 
@@ -543,10 +543,10 @@ INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
 
     RWCString valReport, resultString;
     int       intervalOffset,
-              lpDemandRate,
-              pointOffset,
-              charOffset,
-              badData;
+    lpDemandRate,
+    pointOffset,
+    charOffset,
+    badData;
     double    Value;
     unsigned long timeStamp, pulses;
     PointQuality_t pointQuality;
@@ -678,92 +678,92 @@ INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
 
 INT CtiDeviceDCT501::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
-   INT status = NORMAL;
+    INT status = NORMAL;
 
-   INT ErrReturn  = InMessage->EventCode & 0x3fff;
-   DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-   resetScanFreezePending();
-   resetScanFreezeFailed();
+    resetScanFreezePending();
+    resetScanFreezeFailed();
 
-   if(!decodeCheckErrorReturn(InMessage, retList))
-   {
-      // No error occured, we must do a real decode!
+    if(!decodeCheckErrorReturn(InMessage, retList))
+    {
+        // No error occured, we must do a real decode!
 
-      INT ssp;
-      char rev;
-      char temp[80];
+        INT ssp;
+        char rev;
+        char temp[80];
 
-      RWCString sspec;
-      RWCString options("Options:\n");
+        RWCString sspec;
+        RWCString options("Options:\n");
 
-      CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-
-
-      ssp = InMessage->Buffer.DSt.Message[4] * 256 + InMessage->Buffer.DSt.Message[0];
-      rev = 64 + InMessage->Buffer.DSt.Message[1];
-
-      sspec = "\nSoftware Specification " + CtiNumStr(ssp) + "  Rom Revision " + RWCString::RWCString(rev) + "\n";
-
-      if(InMessage->Buffer.DSt.Message[2] & 0x01)
-      {
-         options+= RWCString("  Latched loads\n");
-      }
-      if(InMessage->Buffer.DSt.Message[2] & 0x02)
-      {
-         options+= RWCString("  Timed loads\n");
-      }
-      if(InMessage->Buffer.DSt.Message[2] & 0x40)
-      {
-         options+= RWCString("  Extended addressing\n");
-      }
-      if(InMessage->Buffer.DSt.Message[2] & 0x80)
-      {
-         options+= RWCString("  Metering of basic kWh\n");
-      }
-
-      if(InMessage->Buffer.DSt.Message[3] & 0x01)
-      {
-         options+= RWCString("  Time-of-demand\n");
-      }
-      if(InMessage->Buffer.DSt.Message[3] & 0x04)
-      {
-         options+= RWCString("  Load survey\n");
-      }
-      if(InMessage->Buffer.DSt.Message[3] & 0x08)
-      {
-         options+= RWCString("  Full group address support\n");
-      }
-      if(InMessage->Buffer.DSt.Message[3] & 0x10)
-      {
-         options+= RWCString("  Feedback load control\n");
-      }
-      if(InMessage->Buffer.DSt.Message[3] & 0x40)
-      {
-         options+= RWCString("  Volt/VAR control\n");
-      }
-      if(InMessage->Buffer.DSt.Message[3] & 0x80)
-      {
-         options+= RWCString("  Capacitor control\n");
-      }
-
-      if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-      {
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-         }
-
-         return MEMORY;
-      }
-
-      ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-      ReturnMsg->setResultString( sspec + options );
-
-      retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
-   }
+        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
 
-   return status;
+        ssp = InMessage->Buffer.DSt.Message[4] * 256 + InMessage->Buffer.DSt.Message[0];
+        rev = 64 + InMessage->Buffer.DSt.Message[1];
+
+        sspec = "\nSoftware Specification " + CtiNumStr(ssp) + "  Rom Revision " + RWCString::RWCString(rev) + "\n";
+
+        if(InMessage->Buffer.DSt.Message[2] & 0x01)
+        {
+            options+= RWCString("  Latched loads\n");
+        }
+        if(InMessage->Buffer.DSt.Message[2] & 0x02)
+        {
+            options+= RWCString("  Timed loads\n");
+        }
+        if(InMessage->Buffer.DSt.Message[2] & 0x40)
+        {
+            options+= RWCString("  Extended addressing\n");
+        }
+        if(InMessage->Buffer.DSt.Message[2] & 0x80)
+        {
+            options+= RWCString("  Metering of basic kWh\n");
+        }
+
+        if(InMessage->Buffer.DSt.Message[3] & 0x01)
+        {
+            options+= RWCString("  Time-of-demand\n");
+        }
+        if(InMessage->Buffer.DSt.Message[3] & 0x04)
+        {
+            options+= RWCString("  Load survey\n");
+        }
+        if(InMessage->Buffer.DSt.Message[3] & 0x08)
+        {
+            options+= RWCString("  Full group address support\n");
+        }
+        if(InMessage->Buffer.DSt.Message[3] & 0x10)
+        {
+            options+= RWCString("  Feedback load control\n");
+        }
+        if(InMessage->Buffer.DSt.Message[3] & 0x40)
+        {
+            options+= RWCString("  Volt/VAR control\n");
+        }
+        if(InMessage->Buffer.DSt.Message[3] & 0x80)
+        {
+            options+= RWCString("  Capacitor control\n");
+        }
+
+        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            }
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString( sspec + options );
+
+        retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+    }
+
+
+    return status;
 }
 

@@ -2,13 +2,13 @@
         Filename:  lmenergyexchangehourlyoffer.cpp
 
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiLMEnergyExchangeHourlyOffer.
                         CtiLMEnergyExchangeHourlyOffer maintains the state and handles
                         the persistence of groups in Load Management.
 
         Initial Date:  5/14/2001
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
@@ -29,12 +29,12 @@ RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeHourlyOffer, CTILMENERGYEXCHANGEHOURLYO
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeHourlyOffer::CtiLMEnergyExchangeHourlyOffer()
-{   
+{
 }
 
 CtiLMEnergyExchangeHourlyOffer::CtiLMEnergyExchangeHourlyOffer(RWDBReader& rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMEnergyExchangeHourlyOffer::CtiLMEnergyExchangeHourlyOffer(const CtiLMEnergyExchangeHourlyOffer& hourly)
@@ -51,7 +51,7 @@ CtiLMEnergyExchangeHourlyOffer::~CtiLMEnergyExchangeHourlyOffer()
 
 /*---------------------------------------------------------------------------
     getOfferId
-    
+
     Returns the reference id of the current hour for the
     energy exchange offer.
 ---------------------------------------------------------------------------*/
@@ -63,7 +63,7 @@ ULONG CtiLMEnergyExchangeHourlyOffer::getOfferId() const
 
 /*---------------------------------------------------------------------------
     getRevisionNumber
-    
+
     Returns the reference id of the current hour for the
     energy exchange offer.
 ---------------------------------------------------------------------------*/
@@ -75,7 +75,7 @@ ULONG CtiLMEnergyExchangeHourlyOffer::getRevisionNumber() const
 
 /*---------------------------------------------------------------------------
     getHour
-    
+
     Returns the hour for the energy exchange offer.
 ---------------------------------------------------------------------------*/
 ULONG CtiLMEnergyExchangeHourlyOffer::getHour() const
@@ -86,7 +86,7 @@ ULONG CtiLMEnergyExchangeHourlyOffer::getHour() const
 
 /*---------------------------------------------------------------------------
     getPrice
-    
+
     Returns the price of the current offer for the
     energy exchange offer.
 ---------------------------------------------------------------------------*/
@@ -98,7 +98,7 @@ DOUBLE CtiLMEnergyExchangeHourlyOffer::getPrice() const
 
 /*---------------------------------------------------------------------------
     getAmountRequested
-    
+
     Returns the price of the current offer for the
     energy exchange offer.
 ---------------------------------------------------------------------------*/
@@ -110,10 +110,10 @@ DOUBLE CtiLMEnergyExchangeHourlyOffer::getAmountRequested() const
 
 /*---------------------------------------------------------------------------
     setOfferId
-    
+
     Sets the reference id of the current hour for the
     energy exchange offer.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeHourlyOffer& CtiLMEnergyExchangeHourlyOffer::setOfferId(ULONG offid)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -124,9 +124,9 @@ CtiLMEnergyExchangeHourlyOffer& CtiLMEnergyExchangeHourlyOffer::setOfferId(ULONG
 
 /*---------------------------------------------------------------------------
     setRevisionNumber
-    
+
     Sets the revision number for the energy exchange offer.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeHourlyOffer& CtiLMEnergyExchangeHourlyOffer::setRevisionNumber(ULONG revnum)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -137,9 +137,9 @@ CtiLMEnergyExchangeHourlyOffer& CtiLMEnergyExchangeHourlyOffer::setRevisionNumbe
 
 /*---------------------------------------------------------------------------
     setHour
-    
+
     Sets the hour for the energy exchange offer.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeHourlyOffer& CtiLMEnergyExchangeHourlyOffer::setHour(ULONG hour)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -150,9 +150,9 @@ CtiLMEnergyExchangeHourlyOffer& CtiLMEnergyExchangeHourlyOffer::setHour(ULONG ho
 
 /*---------------------------------------------------------------------------
     setPrice
-    
+
     Sets the price of the current hour for the energy exchange offer.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeHourlyOffer& CtiLMEnergyExchangeHourlyOffer::setPrice(DOUBLE price)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -163,10 +163,10 @@ CtiLMEnergyExchangeHourlyOffer& CtiLMEnergyExchangeHourlyOffer::setPrice(DOUBLE 
 
 /*---------------------------------------------------------------------------
     setAmountRequested
-    
+
     Sets the amount requested of the current hour for the energy exchange
     offer.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeHourlyOffer& CtiLMEnergyExchangeHourlyOffer::setAmountRequested(DOUBLE amtrequested)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -178,7 +178,7 @@ CtiLMEnergyExchangeHourlyOffer& CtiLMEnergyExchangeHourlyOffer::setAmountRequest
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeHourlyOffer::restoreGuts(RWvistream& istrm)
@@ -189,41 +189,41 @@ void CtiLMEnergyExchangeHourlyOffer::restoreGuts(RWvistream& istrm)
     RWCollectable::restoreGuts( istrm );
 
     istrm >> _offerid
-          >> _revisionnumber
-          >> _hour
-          >> _price
-          >> _amountrequested;
+    >> _revisionnumber
+    >> _hour
+    >> _price
+    >> _amountrequested;
 }
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeHourlyOffer::saveGuts(RWvostream& ostrm ) const  
+void CtiLMEnergyExchangeHourlyOffer::saveGuts(RWvostream& ostrm ) const
 {
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        
+
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _offerid
-          << _revisionnumber
-          << _hour
-          << _price
-          << _amountrequested;
+    << _revisionnumber
+    << _hour
+    << _price
+    << _amountrequested;
 
     return;
 }
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeHourlyOffer* CtiLMEnergyExchangeHourlyOffer::replicate() const
 {
-    return (new CtiLMEnergyExchangeHourlyOffer(*this));
+    return(new CtiLMEnergyExchangeHourlyOffer(*this));
 }
 
 /*---------------------------------------------------------------------------
@@ -251,9 +251,9 @@ CtiLMEnergyExchangeHourlyOffer& CtiLMEnergyExchangeHourlyOffer::operator=(const 
 int CtiLMEnergyExchangeHourlyOffer::operator==(const CtiLMEnergyExchangeHourlyOffer& right) const
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    return ( (getOfferId() == right.getOfferId()) &&
-             (getRevisionNumber() == right.getRevisionNumber()) &&
-             (getHour() == right.getHour()) );
+    return( (getOfferId() == right.getOfferId()) &&
+            (getRevisionNumber() == right.getRevisionNumber()) &&
+            (getHour() == right.getHour()) );
 }
 
 /*---------------------------------------------------------------------------
@@ -267,7 +267,7 @@ int CtiLMEnergyExchangeHourlyOffer::operator!=(const CtiLMEnergyExchangeHourlyOf
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeHourlyOffer::restore(RWDBReader& rdr)
@@ -290,11 +290,11 @@ void CtiLMEnergyExchangeHourlyOffer::addLMEnergyExchangeHourlyOfferTable()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
-        if ( conn.isValid() )
+        if( conn.isValid() )
         {
             /*if( _LM_DEBUG )
             {
@@ -308,10 +308,10 @@ void CtiLMEnergyExchangeHourlyOffer::addLMEnergyExchangeHourlyOfferTable()
             RWDBInserter inserter = lmEnergyExchangeOfferRevisionTable.inserter();
 
             inserter << getOfferId()
-                     << getRevisionNumber()
-                     << getHour()
-                     << getPrice()
-                     << getAmountRequested();
+            << getRevisionNumber()
+            << getHour()
+            << getPrice()
+            << getAmountRequested();
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -337,18 +337,18 @@ void CtiLMEnergyExchangeHourlyOffer::updateLMEnergyExchangeHourlyOfferTable()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
-        if ( conn.isValid() )
+        if( conn.isValid() )
         {
             RWDBDatabase db = getDatabase();
             RWDBTable lmEnergyExchangeHourlyOfferTable = db.table("lmenergyexchangehourlyoffer");
             RWDBUpdater updater = lmEnergyExchangeHourlyOfferTable.updater();
 
             updater << lmEnergyExchangeHourlyOfferTable["price"].assign(getPrice())
-                    << lmEnergyExchangeHourlyOfferTable["amountrequested"].assign(getAmountRequested());
+            << lmEnergyExchangeHourlyOfferTable["amountrequested"].assign(getAmountRequested());
 
             updater.where(lmEnergyExchangeHourlyOfferTable["offerid"]==getOfferId() &&
                           lmEnergyExchangeHourlyOfferTable["revisionnumber"]==getRevisionNumber() &&
@@ -371,7 +371,7 @@ void CtiLMEnergyExchangeHourlyOffer::updateLMEnergyExchangeHourlyOfferTable()
 
 /*---------------------------------------------------------------------------
     dumpDynamicData
-    
+
     Writes out the dynamic information for this customer.
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeHourlyOffer::dumpDynamicData()
@@ -383,24 +383,24 @@ void CtiLMEnergyExchangeHourlyOffer::dumpDynamicData()
 
 /*---------------------------------------------------------------------------
     restoreDynamicData
-    
+
     Restores self's dynamic data given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeHourlyOffer::restoreDynamicData(RWDBReader& rdr)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
-        if ( conn.isValid() )
+        if( conn.isValid() )
         {
             RWDBDatabase db = getDatabase();
             RWDBTable lmEnergyExchangeHourlyOfferTable = db.table("lmenergyexchangehourlyoffer");
             RWDBSelector selector = db.selector();
             selector << lmEnergyExchangeHourlyOfferTable["price"]
-                     << lmEnergyExchangeHourlyOfferTable["amountrequested"];
+            << lmEnergyExchangeHourlyOfferTable["amountrequested"];
 
             selector.from(lmEnergyExchangeHourlyOfferTable);
 

@@ -2,13 +2,13 @@
         Filename:  lmgroupbase.cpp
 
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiLMGroupBase.
                         CtiLMGroupBase maintains the state and handles
                         the persistence of groups in Load Management.
 
         Initial Date:  2/9/2001
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
@@ -27,12 +27,12 @@ extern BOOL _LM_DEBUG;
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase::CtiLMGroupBase()
-{   
+{
 }
 
 CtiLMGroupBase::CtiLMGroupBase(RWDBReader& rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMGroupBase::CtiLMGroupBase(const CtiLMGroupBase& groupbase)
@@ -115,7 +115,7 @@ const RWCString& CtiLMGroupBase::getPAODescription() const
 
 /*---------------------------------------------------------------------------
     getDisableFlag
-    
+
     Returns the disable flag of the group
 ---------------------------------------------------------------------------*/
 BOOL CtiLMGroupBase::getDisableFlag() const
@@ -159,7 +159,7 @@ ULONG CtiLMGroupBase::getChildOrder() const
 
 /*---------------------------------------------------------------------------
     getAlarmInhibit
-    
+
     Returns the alarm inhibit flag of the group
 ---------------------------------------------------------------------------*/
 BOOL CtiLMGroupBase::getAlarmInhibit() const
@@ -170,7 +170,7 @@ BOOL CtiLMGroupBase::getAlarmInhibit() const
 
 /*---------------------------------------------------------------------------
     getControlInhibit
-    
+
     Returns the control inhibit flag of the group
 ---------------------------------------------------------------------------*/
 BOOL CtiLMGroupBase::getControlInhibit() const
@@ -236,7 +236,7 @@ ULONG CtiLMGroupBase::getCurrentHoursAnnually() const
 
 /*---------------------------------------------------------------------------
     getLastControlSent
-    
+
     Returns the time of the last control sent for the program
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMGroupBase::getLastControlSent() const
@@ -262,7 +262,7 @@ CtiLMGroupBase& CtiLMGroupBase::setPAOId(ULONG id)
     setPAOCategory
 
     Sets the pao category of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupBase::setPAOCategory(const RWCString& category)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -274,7 +274,7 @@ CtiLMGroupBase& CtiLMGroupBase::setPAOCategory(const RWCString& category)
     setPAOClass
 
     Sets the pao class of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupBase::setPAOClass(const RWCString& pclass)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -286,7 +286,7 @@ CtiLMGroupBase& CtiLMGroupBase::setPAOClass(const RWCString& pclass)
     setPAOName
 
     Sets the pao name of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupBase::setPAOName(const RWCString& name)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -298,7 +298,7 @@ CtiLMGroupBase& CtiLMGroupBase::setPAOName(const RWCString& name)
     setPAOType
 
     Sets the pao type of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupBase::setPAOType(ULONG type)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -310,7 +310,7 @@ CtiLMGroupBase& CtiLMGroupBase::setPAOType(ULONG type)
     setPAODescription
 
     Sets the pao description of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupBase::setPAODescription(const RWCString& description)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -320,9 +320,9 @@ CtiLMGroupBase& CtiLMGroupBase::setPAODescription(const RWCString& description)
 
 /*---------------------------------------------------------------------------
     setDisableFlag
-    
+
     Sets the disable flaf of the group
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupBase::setDisableFlag(BOOL disable)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -368,9 +368,9 @@ CtiLMGroupBase& CtiLMGroupBase::setChildOrder(ULONG order)
 
 /*---------------------------------------------------------------------------
     setAlarmInhibit
-    
+
     Sets the alarm inhibit flag of the group
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupBase::setAlarmInhibit(BOOL alarm)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -380,9 +380,9 @@ CtiLMGroupBase& CtiLMGroupBase::setAlarmInhibit(BOOL alarm)
 
 /*---------------------------------------------------------------------------
     setControlInhibit
-    
+
     Sets the control inhibit flag of the group
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupBase::setControlInhibit(BOOL control)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -452,9 +452,9 @@ CtiLMGroupBase& CtiLMGroupBase::setCurrentHoursAnnually(ULONG annually)
 
 /*---------------------------------------------------------------------------
     setLastControlSent
-    
+
     Sets the time of the last control sent for the program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupBase::setLastControlSent(const RWDBDateTime& controlsent)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -487,7 +487,7 @@ CtiCommandMsg* CtiLMGroupBase::createLatchingRequestMsg(ULONG rawState) const
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiLMGroupBase::restoreGuts(RWvistream& istrm)
@@ -499,57 +499,57 @@ void CtiLMGroupBase::restoreGuts(RWvistream& istrm)
 
     RWTime tempTime;
     istrm >> _paoid
-          >> _paocategory
-          >> _paoclass
-          >> _paoname
-          >> _paotype
-          >> _paodescription
-          >> _disableflag
-          >> _grouporder
-          >> _kwcapacity
-          >> _childorder
-          >> _alarminhibit
-          >> _controlinhibit
-          >> _groupcontrolstate
-          >> _currenthoursdaily
-          >> _currenthoursmonthly
-          >> _currenthoursseasonal
-          >> _currenthoursannually
-          >> tempTime;
+    >> _paocategory
+    >> _paoclass
+    >> _paoname
+    >> _paotype
+    >> _paodescription
+    >> _disableflag
+    >> _grouporder
+    >> _kwcapacity
+    >> _childorder
+    >> _alarminhibit
+    >> _controlinhibit
+    >> _groupcontrolstate
+    >> _currenthoursdaily
+    >> _currenthoursmonthly
+    >> _currenthoursseasonal
+    >> _currenthoursannually
+    >> tempTime;
 
     _lastcontrolsent = RWDBDateTime(tempTime);
 }
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiLMGroupBase::saveGuts(RWvostream& ostrm ) const  
+void CtiLMGroupBase::saveGuts(RWvostream& ostrm ) const
 {
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        
+
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _paoid
-          << _paocategory
-          << _paoclass
-          << _paoname
-          << _paotype
-          << _paodescription
-          << _disableflag
-          << _grouporder
-          << _kwcapacity
-          << _childorder
-          << _alarminhibit
-          << _controlinhibit
-          << _groupcontrolstate
-          << _currenthoursdaily
-          << _currenthoursmonthly
-          << _currenthoursseasonal
-          << _currenthoursannually
-          << _lastcontrolsent.rwtime();
+    << _paocategory
+    << _paoclass
+    << _paoname
+    << _paotype
+    << _paodescription
+    << _disableflag
+    << _grouporder
+    << _kwcapacity
+    << _childorder
+    << _alarminhibit
+    << _controlinhibit
+    << _groupcontrolstate
+    << _currenthoursdaily
+    << _currenthoursmonthly
+    << _currenthoursseasonal
+    << _currenthoursannually
+    << _lastcontrolsent.rwtime();
 
     return;
 }
@@ -606,7 +606,7 @@ int CtiLMGroupBase::operator!=(const CtiLMGroupBase& right) const
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiLMGroupBase::restore(RWDBReader& rdr)
@@ -617,7 +617,7 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
     RWDBDateTime dynamicTimeStamp;
     RWCString tempBoolString;
     RWCString tempTypeString;
-    
+
     rdr["paobjectid"] >> _paoid;
     rdr["category"] >> _paocategory;
     rdr["paoclass"] >> _paoclass;
@@ -636,7 +636,7 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
     setControlInhibit(tempBoolString=="y"?TRUE:FALSE);
     rdr["grouporder"] >> _grouporder;
     rdr["kwcapacity"] >> _kwcapacity;
-    
+
     rdr["childorder"] >> isNull;
     if( !isNull )
     {
@@ -678,7 +678,7 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
 
 /*---------------------------------------------------------------------------
     dumpDynamicData
-    
+
     Writes out the dynamic information for this group.
 ---------------------------------------------------------------------------*/
 void CtiLMGroupBase::dumpDynamicData()
@@ -687,11 +687,11 @@ void CtiLMGroupBase::dumpDynamicData()
 
     RWDBDateTime currentDateTime = RWDBDateTime();
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
-        if ( conn.isValid() )
+        if( conn.isValid() )
         {
             RWDBDatabase db = getDatabase();
             RWDBTable dynamicLMGroupTable = db.table( "dynamiclmgroup" );
@@ -700,12 +700,12 @@ void CtiLMGroupBase::dumpDynamicData()
                 RWDBUpdater updater = dynamicLMGroupTable.updater();
 
                 updater << dynamicLMGroupTable["groupcontrolstate"].assign( getGroupControlState() )
-                        << dynamicLMGroupTable["currenthoursdaily"].assign( getCurrentHoursDaily() )
-                        << dynamicLMGroupTable["currenthoursmonthly"].assign( getCurrentHoursMonthly() )
-                        << dynamicLMGroupTable["currenthoursseasonal"].assign( getCurrentHoursSeasonal() )
-                        << dynamicLMGroupTable["currenthoursannually"].assign( getCurrentHoursAnnually() )
-                        << dynamicLMGroupTable["lastcontrolsent"].assign( getLastControlSent() )
-                        << dynamicLMGroupTable["timestamp"].assign( currentDateTime );
+                << dynamicLMGroupTable["currenthoursdaily"].assign( getCurrentHoursDaily() )
+                << dynamicLMGroupTable["currenthoursmonthly"].assign( getCurrentHoursMonthly() )
+                << dynamicLMGroupTable["currenthoursseasonal"].assign( getCurrentHoursSeasonal() )
+                << dynamicLMGroupTable["currenthoursannually"].assign( getCurrentHoursAnnually() )
+                << dynamicLMGroupTable["lastcontrolsent"].assign( getLastControlSent() )
+                << dynamicLMGroupTable["timestamp"].assign( currentDateTime );
 
                 updater.where(dynamicLMGroupTable["deviceid"]==getPAOId());
 
@@ -721,13 +721,13 @@ void CtiLMGroupBase::dumpDynamicData()
                 RWDBInserter inserter = dynamicLMGroupTable.inserter();
 
                 inserter << getPAOId()
-                         << getGroupControlState()
-                         << getCurrentHoursDaily()
-                         << getCurrentHoursMonthly()
-                         << getCurrentHoursSeasonal()
-                         << getCurrentHoursAnnually()
-                         << getLastControlSent()
-                         << currentDateTime;
+                << getGroupControlState()
+                << getCurrentHoursDaily()
+                << getCurrentHoursMonthly()
+                << getCurrentHoursSeasonal()
+                << getCurrentHoursAnnually()
+                << getLastControlSent()
+                << currentDateTime;
 
                 /*{
                     CtiLockGuard<CtiLogger> logger_guard(dout);

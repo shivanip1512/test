@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_accumhistory.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:05 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,163 +24,163 @@ CtiTablePointAccumulatorHistory::CtiTablePointAccumulatorHistory(LONG pid,
 _pointID(pid),
 _previousPulseCount(prevpulsecount),
 _presentPulseCount(pulsecount)
-{ }
+{}
 
 CtiTablePointAccumulatorHistory::CtiTablePointAccumulatorHistory(const CtiTablePointAccumulatorHistory& ref)
 {
-   *this = ref;
+    *this = ref;
 }
 
 CtiTablePointAccumulatorHistory::~CtiTablePointAccumulatorHistory()
 {
-   if(isDirty())
-   {
-      Update();
-   }
+    if(isDirty())
+    {
+        Update();
+    }
 }
 
 CtiTablePointAccumulatorHistory& CtiTablePointAccumulatorHistory::operator=(const CtiTablePointAccumulatorHistory& aRef)
 {
-   if(this != &aRef)
-   {
-      _pointID    = aRef.getPointID();
-      _previousPulseCount = aRef.getPreviousPulseCount();
-      _presentPulseCount = aRef.getPresentPulseCount();
-   }
-   return *this;
+    if(this != &aRef)
+    {
+        _pointID    = aRef.getPointID();
+        _previousPulseCount = aRef.getPreviousPulseCount();
+        _presentPulseCount = aRef.getPresentPulseCount();
+    }
+    return *this;
 }
 
 int CtiTablePointAccumulatorHistory::operator==(const CtiTablePointAccumulatorHistory& right) const
 {
-   return( getPointID() == right.getPointID() );
+    return( getPointID() == right.getPointID() );
 }
 
 RWCString CtiTablePointAccumulatorHistory::getTableName() const
 {
-   return "DynamicAccumulator";
+    return "DynamicAccumulator";
 }
 
 RWDBStatus CtiTablePointAccumulatorHistory::Restore()
 {
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBSelector selector = getDatabase().selector();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBSelector selector = getDatabase().selector();
 
-   selector <<
-      table["pointid"] <<
-      table["previouspulses"] <<
-      table["presentpulses"];
+    selector <<
+    table["pointid"] <<
+    table["previouspulses"] <<
+    table["presentpulses"];
 
-   selector.where( table["pointid"] == getPointID() );
+    selector.where( table["pointid"] == getPointID() );
 
-   RWDBReader reader = selector.reader( conn );
+    RWDBReader reader = selector.reader( conn );
 
-   if( reader() )
-   {
-      DecodeDatabaseReader( reader );
-      setDirty(FALSE);
-   }
-   else
-   {
-      setDirty( TRUE );
-   }
+    if( reader() )
+    {
+        DecodeDatabaseReader( reader );
+        setDirty(FALSE);
+    }
+    else
+    {
+        setDirty( TRUE );
+    }
 
-   return reader.status();
+    return reader.status();
 }
 
 RWDBStatus CtiTablePointAccumulatorHistory::Update()
 {
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBUpdater updater = table.updater();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBUpdater updater = table.updater();
 
-   updater.where( table["pointid"] == getPointID() );
+    updater.where( table["pointid"] == getPointID() );
 
-   updater <<
-      table["previouspulses"].assign( getPresentPulseCount() ) <<
-      table["presentpulses"].assign( getPresentPulseCount() );
+    updater <<
+    table["previouspulses"].assign( getPresentPulseCount() ) <<
+    table["presentpulses"].assign( getPresentPulseCount() );
 
-   if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok )
-   {
-      setDirty(FALSE);
-   }
+    if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok )
+    {
+        setDirty(FALSE);
+    }
 
-   return updater.status();
+    return updater.status();
 }
 
 RWDBStatus CtiTablePointAccumulatorHistory::Insert()
 {
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBInserter inserter = table.inserter();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBInserter inserter = table.inserter();
 
-   inserter <<
-      getPointID() <<
-      getPreviousPulseCount() <<
-      getPresentPulseCount();
+    inserter <<
+    getPointID() <<
+    getPreviousPulseCount() <<
+    getPresentPulseCount();
 
-   setDirty(FALSE);
+    setDirty(FALSE);
 
-   return inserter.execute( conn ).status();
+    return inserter.execute( conn ).status();
 }
 
 RWDBStatus CtiTablePointAccumulatorHistory::Delete()
 {
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBDeleter deleter = table.deleter();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBDeleter deleter = table.deleter();
 
-   deleter.where( table["pointid"] == getPointID() );
+    deleter.where( table["pointid"] == getPointID() );
 
 
-   return deleter.execute( conn ).status();
+    return deleter.execute( conn ).status();
 }
 
 void CtiTablePointAccumulatorHistory::DecodeDatabaseReader(RWDBReader& rdr )
 {
-   rdr >> _pointID >> _previousPulseCount >> _presentPulseCount;
+    rdr >> _pointID >> _previousPulseCount >> _presentPulseCount;
 }
 
 ULONG CtiTablePointAccumulatorHistory::getPreviousPulseCount() const
 {
-   return _previousPulseCount;
+    return _previousPulseCount;
 }
 
 ULONG CtiTablePointAccumulatorHistory::getPresentPulseCount() const
 {
-   return _presentPulseCount;
+    return _presentPulseCount;
 }
 
 LONG CtiTablePointAccumulatorHistory::getPointID() const
 {
-   return _pointID;
+    return _pointID;
 }
 CtiTablePointAccumulatorHistory& CtiTablePointAccumulatorHistory::setPointID(LONG pointID)
 {
-   _pointID = pointID;
-   return *this;
+    _pointID = pointID;
+    return *this;
 }
 
 CtiTablePointAccumulatorHistory& CtiTablePointAccumulatorHistory::setPreviousPulseCount(ULONG pc)
 {
-   _previousPulseCount = pc;
-   setDirty(TRUE);
-   return *this;
+    _previousPulseCount = pc;
+    setDirty(TRUE);
+    return *this;
 }
 
 CtiTablePointAccumulatorHistory& CtiTablePointAccumulatorHistory::setPresentPulseCount(ULONG pc)
 {
-   _presentPulseCount = pc;
-   setDirty(TRUE);
-   return *this;
+    _presentPulseCount = pc;
+    setDirty(TRUE);
+    return *this;
 }
 CtiTablePointAccumulatorHistory::CtiTablePointAccumulatorHistory(LONG pid,ULONG prevpulsecount,ULONG pulsecount);
 

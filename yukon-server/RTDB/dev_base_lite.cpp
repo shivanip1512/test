@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base_lite.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/18 21:42:25 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/02 17:02:21 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,9 +21,9 @@
 #include "dev_base_lite.h"
 
 CtiDeviceBaseLite::CtiDeviceBaseLite(LONG id) :
-    _deviceID(id),
-    _disableFlag("N"),
-    _controlInhibitFlag("N")
+_deviceID(id),
+_disableFlag("N"),
+_controlInhibitFlag("N")
 {
 }
 
@@ -160,8 +160,8 @@ RWCString CtiDeviceBaseLite::getTableName()
 RWDBStatus CtiDeviceBaseLite::Restore()
 {
     LockGuard guard( monitor() );
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBStatus dbstat;
 

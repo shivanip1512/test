@@ -1,14 +1,14 @@
 /*---------------------------------------------------------------------------
         Filename:  strategy.cpp
-        
+
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiCCStrategy.
                         CtiCCStrategy maintains the state and handles
                         the persistence of strategies for Cap Control.
 
         Initial Date:  8/18/2000
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2000
 ---------------------------------------------------------------------------*/
 #pragma warning( disable : 4786)
@@ -30,12 +30,12 @@ RWDEFINE_COLLECTABLE( CtiCCStrategy, CTICCSTRATEGY_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiCCStrategy::CtiCCStrategy()
-{   
+{
 }
 
 CtiCCStrategy::CtiCCStrategy(RWDBReader& rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiCCStrategy::CtiCCStrategy(const CtiCCStrategy& strat)
@@ -54,10 +54,10 @@ CtiCCStrategy::~CtiCCStrategy()
 
 /*---------------------------------------------------------------------------
     Id
-    
+
     Returns the unique id of the strategy
 ---------------------------------------------------------------------------*/
-ULONG CtiCCStrategy::Id() const  
+ULONG CtiCCStrategy::Id() const
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _id;
@@ -65,350 +65,350 @@ ULONG CtiCCStrategy::Id() const
 
 /*---------------------------------------------------------------------------
     Name
-    
+
     Returns the name of the strategy
 ---------------------------------------------------------------------------*/
 const RWCString& CtiCCStrategy::Name() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _name;
 }
 
 /*---------------------------------------------------------------------------
     District
-    
+
     Returns the district of the strategy
 ---------------------------------------------------------------------------*/
 const RWCString& CtiCCStrategy::District() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _district;
 }
 
 /*---------------------------------------------------------------------------
     ActualVarPointId
-    
+
     Returns the actual var point id of the strategy
 ---------------------------------------------------------------------------*/
 ULONG CtiCCStrategy::ActualVarPointId() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _actualid;
 }
 
 /*---------------------------------------------------------------------------
     ActualVarPointValue
-    
+
     Returns the actual var point value of the strategy
 ---------------------------------------------------------------------------*/
 DOUBLE CtiCCStrategy::ActualVarPointValue() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _actualval;
 }
 
 /*---------------------------------------------------------------------------
     MaxDailyOperation
-    
+
     Returns the max daily operations of the strategy
 ---------------------------------------------------------------------------*/
 ULONG CtiCCStrategy::MaxDailyOperation() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _max;
 }
 
 /*---------------------------------------------------------------------------
     PeakSetPoint
-    
+
     Returns the peak set point value of the strategy
 ---------------------------------------------------------------------------*/
 DOUBLE CtiCCStrategy::PeakSetPoint() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _peak;
 }
 
 /*---------------------------------------------------------------------------
     OffPeakSetPoint
-    
+
     Returns the off peak set point value of the strategy
 ---------------------------------------------------------------------------*/
 DOUBLE CtiCCStrategy::OffPeakSetPoint() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _offpeak;
 }
 
 /*---------------------------------------------------------------------------
     PeakStartTime
-    
+
     Returns the peak start time of the strategy
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiCCStrategy::PeakStartTime() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _start;
 }
 
 /*---------------------------------------------------------------------------
     PeakStopTime
-    
+
     Returns the peak start time of the strategy
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiCCStrategy::PeakStopTime() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _stop;
 }
 
 /*---------------------------------------------------------------------------
     CalculatedVarPointId
-    
+
     Returns the calculated var point id of the strategy
 ---------------------------------------------------------------------------*/
 ULONG CtiCCStrategy::CalculatedVarPointId() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _calculatedid;
 }
 
 /*---------------------------------------------------------------------------
     CalculatedVarPointValue
-    
+
     Returns the calculated var point value of the strategy
 ---------------------------------------------------------------------------*/
 DOUBLE CtiCCStrategy::CalculatedVarPointValue() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _calculatedval;
 }
 
 /*---------------------------------------------------------------------------
     Bandwidth
-    
+
     Returns the bandwidth value of the strategy
 ---------------------------------------------------------------------------*/
 DOUBLE CtiCCStrategy::Bandwidth() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _bandwidth;
 }
 
 /*---------------------------------------------------------------------------
     ControlInterval
-    
+
     Returns the control interval of the strategy
 ---------------------------------------------------------------------------*/
 ULONG CtiCCStrategy::ControlInterval() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _interval;
 }
 
 /*---------------------------------------------------------------------------
     MinResponseTime
-    
+
     Returns the min response time of the strategy
 ---------------------------------------------------------------------------*/
 ULONG CtiCCStrategy::MinResponseTime() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _response;
 }
 
 /*---------------------------------------------------------------------------
     MinConfirmPercent
-    
+
     Returns the min confirm percent of the strategy
 ---------------------------------------------------------------------------*/
 ULONG CtiCCStrategy::MinConfirmPercent() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _confirm;
 }
 
 /*---------------------------------------------------------------------------
     FailurePercent
-    
+
     Returns the min confirm percent of the strategy
 ---------------------------------------------------------------------------*/
 ULONG CtiCCStrategy::FailurePercent() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _failure;
 }
 
 /*---------------------------------------------------------------------------
     CapBankList
-    
+
     Returns the cap bank list of the strategy
 ---------------------------------------------------------------------------*/
 RWOrdered& CtiCCStrategy::CapBankList()
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _capbanks;
 }
 
 /*---------------------------------------------------------------------------
     NextCheckTime
-    
+
     Returns the next check time of the strategy
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiCCStrategy::NextCheckTime() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _nextcheck;
 }
 
 /*---------------------------------------------------------------------------
     NewPointDataReceived
-    
+
     Returns the boolean if new point data has been sent by dispatch
 ---------------------------------------------------------------------------*/
 BOOL CtiCCStrategy::NewPointDataReceived() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _newpointdatareceived;
 }
 
 /*---------------------------------------------------------------------------
     Status
-    
+
     Returns the status of the strategy
 ---------------------------------------------------------------------------*/
 const RWCString& CtiCCStrategy::Status() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _status;
 }
 
 /*---------------------------------------------------------------------------
     Operations
-    
+
     Returns the number of operations for the current day of the strategy
 ---------------------------------------------------------------------------*/
 ULONG CtiCCStrategy::Operations() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _operations;
 }
 
 /*---------------------------------------------------------------------------
     LastOperation
-    
+
     Returns the time of the last cap bank operation the strategy
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiCCStrategy::LastOperation() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _lastoperation;
 }
 
 /*---------------------------------------------------------------------------
     LastCapBankControlled
-    
+
     Returns the device id of the last cap bank controlled in the strategy
 ---------------------------------------------------------------------------*/
 ULONG CtiCCStrategy::LastCapBankControlled() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _lastcapbank;
 }
 
 /*---------------------------------------------------------------------------
     DaysOfWeek
-    
+
     Returns the days of the week that the strategy recognizes peak changes
 ---------------------------------------------------------------------------*/
 const RWCString& CtiCCStrategy::DaysOfWeek() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _daysofweek;
 }
 
 /*---------------------------------------------------------------------------
     PeakOrOffPeak
-    
+
     Returns if the strategy is in peak or off peak time
 ---------------------------------------------------------------------------*/
 ULONG CtiCCStrategy::PeakOrOffPeak() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _peakoroffpeak;
 }
 
 /*---------------------------------------------------------------------------
     RecentlyControlled
-    
+
     Returns the BOOLean if this strategy has controlled a cap bank recently
 ---------------------------------------------------------------------------*/
 BOOL CtiCCStrategy::RecentlyControlled() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _recentlycontrolled;
 }
 
 /*---------------------------------------------------------------------------
     CalculatedValueBeforeControl
-    
+
     Returns the calculated value of the strategy before the last control of
     a cap bank
 ---------------------------------------------------------------------------*/
 DOUBLE CtiCCStrategy::CalculatedValueBeforeControl() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _calculatedvaluebeforecontrol;
 }
 
 /*---------------------------------------------------------------------------
     StrategyUpdated
-    
+
     Returns the BOOLean if this strategy has been updated recently
 ---------------------------------------------------------------------------*/
 BOOL CtiCCStrategy::StrategyUpdated() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _strategyupdated;
 }
 
 /*---------------------------------------------------------------------------
     LastPointUpdate
-    
+
     Returns the time of the timestamp of the last current var point data msg
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiCCStrategy::LastPointUpdate() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _lastpointupdate;
 }
 
 /*---------------------------------------------------------------------------
     DecimalPlaces
-    
+
     Returns if the number of digits to be displayed after the decimal point
 ---------------------------------------------------------------------------*/
 ULONG CtiCCStrategy::DecimalPlaces() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _decimalplaces;
 }
 
 /*---------------------------------------------------------------------------
     StatusesReceivedFlag
-    
+
     Returns a boolean if all the cap bank statuses have been received from
     Dispatch
 ---------------------------------------------------------------------------*/
 BOOL CtiCCStrategy::StatusesReceivedFlag() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _statusesreceivedflag;
 }
 
 /*---------------------------------------------------------------------------
     setId
-    
+
     Sets the id of the strategy - use with caution
 ---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setId(ULONG id)
@@ -421,9 +421,9 @@ CtiCCStrategy& CtiCCStrategy::setId(ULONG id)
 
 /*---------------------------------------------------------------------------
     setName
-    
+
     Sets the name of the strategy
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setName(const RWCString& name)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -434,9 +434,9 @@ CtiCCStrategy& CtiCCStrategy::setName(const RWCString& name)
 
 /*---------------------------------------------------------------------------
     setDistrict
-    
+
     Sets the district of the strategy
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setDistrict(const RWCString& district)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -447,7 +447,7 @@ CtiCCStrategy& CtiCCStrategy::setDistrict(const RWCString& district)
 
 /*---------------------------------------------------------------------------
     setActualVarPointId
-    
+
     Sets the actual var point id of the strategy
 ---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setActualVarPointId(ULONG actualid)
@@ -460,7 +460,7 @@ CtiCCStrategy& CtiCCStrategy::setActualVarPointId(ULONG actualid)
 
 /*---------------------------------------------------------------------------
     setActualVarPointValue
-    
+
     Sets the actual var point value of the strategy
 ---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setActualVarPointValue(DOUBLE actualval)
@@ -473,7 +473,7 @@ CtiCCStrategy& CtiCCStrategy::setActualVarPointValue(DOUBLE actualval)
 
 /*---------------------------------------------------------------------------
     setMaxDailyOperation
-    
+
     Sets the max daily operations of the strategy
 ---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setMaxDailyOperation(ULONG max)
@@ -486,7 +486,7 @@ CtiCCStrategy& CtiCCStrategy::setMaxDailyOperation(ULONG max)
 
 /*---------------------------------------------------------------------------
     setPeakSetPoint
-    
+
     Sets the peak set point value of the strategy
 ---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setPeakSetPoint(DOUBLE peak)
@@ -499,7 +499,7 @@ CtiCCStrategy& CtiCCStrategy::setPeakSetPoint(DOUBLE peak)
 
 /*---------------------------------------------------------------------------
     setOffPeakSetPoint
-    
+
     Sets the off peak set point value of the strategy
 ---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setOffPeakSetPoint(DOUBLE offpeak)
@@ -512,9 +512,9 @@ CtiCCStrategy& CtiCCStrategy::setOffPeakSetPoint(DOUBLE offpeak)
 
 /*---------------------------------------------------------------------------
     setPeakStartTime
-    
+
     Sets the peak start time of the strategy
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setPeakStartTime(const RWDBDateTime& start)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -525,9 +525,9 @@ CtiCCStrategy& CtiCCStrategy::setPeakStartTime(const RWDBDateTime& start)
 
 /*---------------------------------------------------------------------------
     setPeakStopTime
-    
+
     Sets the peak stop time of the strategy
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setPeakStopTime(const RWDBDateTime& stop)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -538,7 +538,7 @@ CtiCCStrategy& CtiCCStrategy::setPeakStopTime(const RWDBDateTime& stop)
 
 /*---------------------------------------------------------------------------
     setCalculatedVarPointId
-    
+
     Sets the calculated var point id of the strategy
 ---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setCalculatedVarPointId(ULONG calculatedid)
@@ -551,7 +551,7 @@ CtiCCStrategy& CtiCCStrategy::setCalculatedVarPointId(ULONG calculatedid)
 
 /*---------------------------------------------------------------------------
     setCalculatedVarPointValue
-    
+
     Sets the calculated var point value of the strategy
 ---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setCalculatedVarPointValue(DOUBLE calculatedval)
@@ -564,7 +564,7 @@ CtiCCStrategy& CtiCCStrategy::setCalculatedVarPointValue(DOUBLE calculatedval)
 
 /*---------------------------------------------------------------------------
     setBandwidth
-    
+
     Sets the bandwidth value of the strategy
 ---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setBandwidth(DOUBLE bandwidth)
@@ -577,7 +577,7 @@ CtiCCStrategy& CtiCCStrategy::setBandwidth(DOUBLE bandwidth)
 
 /*---------------------------------------------------------------------------
     setControlInterval
-    
+
     Sets the control interval of the strategy
 ---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setControlInterval(ULONG interval)
@@ -590,7 +590,7 @@ CtiCCStrategy& CtiCCStrategy::setControlInterval(ULONG interval)
 
 /*---------------------------------------------------------------------------
     setMinResponseTime
-    
+
     Sets the min response time of the strategy
 ---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setMinResponseTime(ULONG response)
@@ -603,7 +603,7 @@ CtiCCStrategy& CtiCCStrategy::setMinResponseTime(ULONG response)
 
 /*---------------------------------------------------------------------------
     setMinConfirmPercent
-    
+
     Sets the min confirm percent of the strategy
 ---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setMinConfirmPercent(ULONG confirm)
@@ -616,7 +616,7 @@ CtiCCStrategy& CtiCCStrategy::setMinConfirmPercent(ULONG confirm)
 
 /*---------------------------------------------------------------------------
     setFailurePercent
-    
+
     Sets the failure percent of the strategy
 ---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setFailurePercent(ULONG failure)
@@ -629,10 +629,10 @@ CtiCCStrategy& CtiCCStrategy::setFailurePercent(ULONG failure)
 
 /*---------------------------------------------------------------------------
     figureNextCheckTime
-    
+
     Figures out when the strategy should be checked again according to the
     control interval.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::figureNextCheckTime()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -652,7 +652,7 @@ CtiCCStrategy& CtiCCStrategy::figureNextCheckTime()
 
 /*---------------------------------------------------------------------------
     setNewPointDataReceived
-    
+
     Sets the BOOLean if we have received new point data from dispatch.
 ---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setNewPointDataReceived(BOOL received)
@@ -665,7 +665,7 @@ CtiCCStrategy& CtiCCStrategy::setNewPointDataReceived(BOOL received)
 
 /*---------------------------------------------------------------------------
     insertCapBank
-    
+
     inserts a new cap bank device into the strategy's bank list
 ---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::insertCapBank(CtiCapBank* capbank)
@@ -678,9 +678,9 @@ CtiCCStrategy& CtiCCStrategy::insertCapBank(CtiCapBank* capbank)
 
 /*---------------------------------------------------------------------------
     setStatus
-    
+
     Sets the status of the strategy
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setStatus(const RWCString& status)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -691,7 +691,7 @@ CtiCCStrategy& CtiCCStrategy::setStatus(const RWCString& status)
 
 /*---------------------------------------------------------------------------
     setOperations
-    
+
     Sets the operations for the current day of the strategy
 ---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setOperations(ULONG operations)
@@ -704,9 +704,9 @@ CtiCCStrategy& CtiCCStrategy::setOperations(ULONG operations)
 
 /*---------------------------------------------------------------------------
     setLastOperation
-    
+
     Sets the time that the last cap bank operation occured in the strategy
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setLastOperation(const RWDBDateTime& lastoperation)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -717,7 +717,7 @@ CtiCCStrategy& CtiCCStrategy::setLastOperation(const RWDBDateTime& lastoperation
 
 /*---------------------------------------------------------------------------
     setLastCapBankControlled
-    
+
     Sets the device id of the last cap bank controlled for the strategy
 ---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setLastCapBankControlled(ULONG lastcapbank)
@@ -730,9 +730,9 @@ CtiCCStrategy& CtiCCStrategy::setLastCapBankControlled(ULONG lastcapbank)
 
 /*---------------------------------------------------------------------------
     setDaysOfWeek
-    
+
     Sets the days of the week that the strategy recognizes peak changes
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setDaysOfWeek(const RWCString& days)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -743,7 +743,7 @@ CtiCCStrategy& CtiCCStrategy::setDaysOfWeek(const RWCString& days)
 
 /*---------------------------------------------------------------------------
     setPeakOrOffPeak
-    
+
     Sets if the strategy is in peak or off peak time
 ---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setPeakOrOffPeak(ULONG peakoroff)
@@ -756,7 +756,7 @@ CtiCCStrategy& CtiCCStrategy::setPeakOrOffPeak(ULONG peakoroff)
 
 /*---------------------------------------------------------------------------
     setRecentlyControlled
-    
+
     Sets the BOOLean if this strategy has just been controlled
 ---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setRecentlyControlled(BOOL recentcontrol)
@@ -769,7 +769,7 @@ CtiCCStrategy& CtiCCStrategy::setRecentlyControlled(BOOL recentcontrol)
 
 /*---------------------------------------------------------------------------
     setCalculatedValueBeforeControl
-    
+
     Sets the calculated value of the strategy at the time of a cap bank
     control
 ---------------------------------------------------------------------------*/
@@ -783,7 +783,7 @@ CtiCCStrategy& CtiCCStrategy::setCalculatedValueBeforeControl(DOUBLE oldcalcval)
 
 /*---------------------------------------------------------------------------
     setStrategyUpdated
-    
+
     Sets the BOOLean when this strategy is updated
 ---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setStrategyUpdated(BOOL updated)
@@ -796,9 +796,9 @@ CtiCCStrategy& CtiCCStrategy::setStrategyUpdated(BOOL updated)
 
 /*---------------------------------------------------------------------------
     setLastPointUpdate
-    
+
     Sets the time that the last cap bank operation occured in the strategy
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setLastPointUpdate(const RWDBDateTime& lastpointupdate)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -809,7 +809,7 @@ CtiCCStrategy& CtiCCStrategy::setLastPointUpdate(const RWDBDateTime& lastpointup
 
 /*---------------------------------------------------------------------------
     setDecimalPlaces
-    
+
     Sets the number of digits to be displayed after the decimal point
 ---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::setDecimalPlaces(ULONG decimalplaces)
@@ -822,7 +822,7 @@ CtiCCStrategy& CtiCCStrategy::setDecimalPlaces(ULONG decimalplaces)
 
 /*---------------------------------------------------------------------------
     setStatusesReceivedFlag
-    
+
     Sets a boolean if all the cap bank statuses have been received from
     Dispatch
 ---------------------------------------------------------------------------*/
@@ -836,7 +836,7 @@ CtiCCStrategy& CtiCCStrategy::setStatusesReceivedFlag(BOOL statusesreceived)
 
 /*---------------------------------------------------------------------------
     createIncreaseVarRequest
-    
+
     Creates a CtiRequestMsg to open the next cap bank to increase the
     var level for a strategy.
 ---------------------------------------------------------------------------*/
@@ -884,7 +884,7 @@ CtiRequestMsg* CtiCCStrategy::createIncreaseVarRequest(RWOrdered& pointChanges)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime().asString() << " - " << "Cap Bank: " << current->Name()
-                              << " DeviceID: " << current->Id() << " doesn't have a status point!" << endl;
+                << " DeviceID: " << current->Id() << " doesn't have a status point!" << endl;
             }
 
             if( current->OperationAnalogPointId() > 0 )
@@ -907,7 +907,7 @@ CtiRequestMsg* CtiCCStrategy::createIncreaseVarRequest(RWOrdered& pointChanges)
 
 /*---------------------------------------------------------------------------
     createDecreaseVarRequest
-    
+
     Creates a CtiRequestMsg to close the next cap bank to decrease the
     var level for a strategy.
 ---------------------------------------------------------------------------*/
@@ -955,7 +955,7 @@ CtiRequestMsg* CtiCCStrategy::createDecreaseVarRequest(RWOrdered& pointChanges)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime().asString() << " - " << "Cap Bank: " << current->Name()
-                              << " DeviceID: " << current->Id() << " doesn't have a status point!" << endl;
+                << " DeviceID: " << current->Id() << " doesn't have a status point!" << endl;
             }
 
             if( current->OperationAnalogPointId() > 0 )
@@ -978,10 +978,10 @@ CtiRequestMsg* CtiCCStrategy::createDecreaseVarRequest(RWOrdered& pointChanges)
 
 /*---------------------------------------------------------------------------
     figureActualVarPointValue
-    
+
     Figures out the initial actual var point value according to the states
     of the individual cap banks in the strategy
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCStrategy& CtiCCStrategy::figureActualVarPointValue()
 {
     DOUBLE tempValue;
@@ -1007,15 +1007,15 @@ CtiCCStrategy& CtiCCStrategy::figureActualVarPointValue()
 
 /*---------------------------------------------------------------------------
     figureCurrentSetPoint
-    
+
     Returns the current set point depending on if it is peak or off peak
     time and sets the set point status
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 DOUBLE CtiCCStrategy::figureCurrentSetPoint(unsigned nowInSeconds)
 {
     unsigned startInSeconds = (PeakStartTime().hour() * 3600) + (PeakStartTime().minute() * 60) + PeakStartTime().second();
     unsigned stopInSeconds = (PeakStopTime().hour() * 3600) + (PeakStopTime().minute() * 60) + PeakStopTime().second();
-    
+
     if( isPeakDay() && startInSeconds <= nowInSeconds && nowInSeconds <= stopInSeconds )
     {
         setPeakOrOffPeak(CtiCCStrategy::PeakState);
@@ -1030,9 +1030,9 @@ DOUBLE CtiCCStrategy::figureCurrentSetPoint(unsigned nowInSeconds)
 
 /*---------------------------------------------------------------------------
     capBankControlStatusUpdate
-    
+
     Returns a BOOLean if the current day of the week can be a peak day
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 BOOL CtiCCStrategy::capBankControlStatusUpdate(RWOrdered& pointChanges)
 {
     BOOL returnValue = TRUE;
@@ -1041,7 +1041,7 @@ BOOL CtiCCStrategy::capBankControlStatusUpdate(RWOrdered& pointChanges)
     char tempchar[64] = "";
     RWCString text = "";
     RWCString additional = "";
-    
+
     for(UINT i=0;i<_capbanks.entries();i++)
     {
         CtiCapBank* current = (CtiCapBank*)_capbanks[i];
@@ -1131,7 +1131,7 @@ BOOL CtiCCStrategy::capBankControlStatusUpdate(RWOrdered& pointChanges)
                 dout << RWTime().asString() << " - " << "Last Cap Bank controlled not in pending status - strategy.cpp::capBankControlStatusUpdate(RWOrdered& pointChanges)" << endl;
                 returnValue = FALSE;
             }
-            
+
             if( current->StatusPointId() > 0 )
             {
                 if( text.length() > 0 )
@@ -1147,7 +1147,7 @@ BOOL CtiCCStrategy::capBankControlStatusUpdate(RWOrdered& pointChanges)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime().asString() << " - " << "Cap Bank: " << current->Name()
-                              << " DeviceID: " << current->Id() << " doesn't have a status point!" << endl;
+                << " DeviceID: " << current->Id() << " doesn't have a status point!" << endl;
             }
             break;
         }
@@ -1162,7 +1162,7 @@ BOOL CtiCCStrategy::capBankControlStatusUpdate(RWOrdered& pointChanges)
     isPeakDay
 
     Returns a BOOLean if the current day of the week can be a peak day
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 BOOL CtiCCStrategy::isPeakDay()
 {
     /*-------------------------------------
@@ -1183,11 +1183,11 @@ BOOL CtiCCStrategy::isPeakDay()
     areAllCapBankStatusesReceived
 
     Returns a BOOLean if all the cap banks in the strategy have updated statuses
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 BOOL CtiCCStrategy::areAllCapBankStatusesReceived()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    
+
     BOOL returnBoolean = TRUE;
 
     if( !_statusesreceivedflag )
@@ -1211,14 +1211,14 @@ BOOL CtiCCStrategy::areAllCapBankStatusesReceived()
 
 /*---------------------------------------------------------------------------
     isAlreadyControlled
-    
+
     Returns a BOOLean if the last cap bank controlled expected var changes
     are reflected in the current var level before the min response time
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 BOOL CtiCCStrategy::isAlreadyControlled()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    
+
     BOOL returnValue = FALSE;
 
     if( MinConfirmPercent() == 0 )
@@ -1276,7 +1276,7 @@ BOOL CtiCCStrategy::isAlreadyControlled()
 
 /*---------------------------------------------------------------------------
     dumpDynamicData
-    
+
     Writes out the dynamic information for this strategy.
 ---------------------------------------------------------------------------*/
 void CtiCCStrategy::dumpDynamicData()
@@ -1285,25 +1285,25 @@ void CtiCCStrategy::dumpDynamicData()
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
-    
+
     RWDBTable dynamicCapControlStrategy = getDatabase().table( "dynamiccapcontrolstrategy" );
     RWDBUpdater updater = dynamicCapControlStrategy.updater();
 
     updater << dynamicCapControlStrategy["newpointdatareceived"].assign(RWCString( ( NewPointDataReceived() ? 'Y': 'N' ) ))
-            << dynamicCapControlStrategy["strategyupdated"].assign(RWCString( ( StrategyUpdated() ? 'Y': 'N' ) ))
-            << dynamicCapControlStrategy["actualvarpointvalue"].assign(ActualVarPointValue())
-            << dynamicCapControlStrategy["nextchecktime"].assign((RWDBDateTime)NextCheckTime())
-            << dynamicCapControlStrategy["calcvarpointvalue"].assign(CalculatedVarPointValue())
-            << dynamicCapControlStrategy["operations"].assign(Operations())
-            << dynamicCapControlStrategy["lastoperation"].assign((RWDBDateTime)LastOperation())
-            << dynamicCapControlStrategy["lastcapbankcontrolled"].assign(LastCapBankControlled())
-            << dynamicCapControlStrategy["peakoroffpeak"].assign(RWCString( ( PeakOrOffPeak() ? 'Y': 'N' ) ))
-            << dynamicCapControlStrategy["recentlycontrolled"].assign(RWCString( ( RecentlyControlled() ? 'Y': 'N' ) ))
-            << dynamicCapControlStrategy["calcvaluebeforecontrol"].assign(CalculatedValueBeforeControl())
-            << dynamicCapControlStrategy["timestamp"].assign((RWDBDateTime)currentTime)
-            << dynamicCapControlStrategy["lastpointupdate"].assign((RWDBDateTime)LastPointUpdate());
+    << dynamicCapControlStrategy["strategyupdated"].assign(RWCString( ( StrategyUpdated() ? 'Y': 'N' ) ))
+    << dynamicCapControlStrategy["actualvarpointvalue"].assign(ActualVarPointValue())
+    << dynamicCapControlStrategy["nextchecktime"].assign((RWDBDateTime)NextCheckTime())
+    << dynamicCapControlStrategy["calcvarpointvalue"].assign(CalculatedVarPointValue())
+    << dynamicCapControlStrategy["operations"].assign(Operations())
+    << dynamicCapControlStrategy["lastoperation"].assign((RWDBDateTime)LastOperation())
+    << dynamicCapControlStrategy["lastcapbankcontrolled"].assign(LastCapBankControlled())
+    << dynamicCapControlStrategy["peakoroffpeak"].assign(RWCString( ( PeakOrOffPeak() ? 'Y': 'N' ) ))
+    << dynamicCapControlStrategy["recentlycontrolled"].assign(RWCString( ( RecentlyControlled() ? 'Y': 'N' ) ))
+    << dynamicCapControlStrategy["calcvaluebeforecontrol"].assign(CalculatedValueBeforeControl())
+    << dynamicCapControlStrategy["timestamp"].assign((RWDBDateTime)currentTime)
+    << dynamicCapControlStrategy["lastpointupdate"].assign((RWDBDateTime)LastPointUpdate());
 
     updater.where(dynamicCapControlStrategy["CapStrategyID"]==Id());
 
@@ -1312,7 +1312,7 @@ void CtiCCStrategy::dumpDynamicData()
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiCCStrategy::restoreGuts(RWvistream& istrm)
@@ -1323,76 +1323,76 @@ void CtiCCStrategy::restoreGuts(RWvistream& istrm)
     RWCollectable::restoreGuts( istrm );
 
     istrm >> _id
-          >> _name
-          >> _district
-          >> _actualid
-          >> _actualval
-          >> _max
-          >> _peak
-          >> _offpeak
-          >> _start.rwtime()
-          >> _stop.rwtime()
-          >> _calculatedid
-          >> _calculatedval
-          >> _bandwidth
-          >> _interval
-          >> _response
-          >> _confirm
-          >> _failure
-          >> _status
-          >> _operations
-          >> _lastoperation.rwtime()
-          >> _lastcapbank
-          >> _daysofweek
-          >> _peakoroffpeak
-          >> _recentlycontrolled
-          >> _calculatedvaluebeforecontrol
-          >> _lastpointupdate.rwtime()
-          >> _decimalplaces
-          >> _capbanks;
+    >> _name
+    >> _district
+    >> _actualid
+    >> _actualval
+    >> _max
+    >> _peak
+    >> _offpeak
+    >> _start.rwtime()
+    >> _stop.rwtime()
+    >> _calculatedid
+    >> _calculatedval
+    >> _bandwidth
+    >> _interval
+    >> _response
+    >> _confirm
+    >> _failure
+    >> _status
+    >> _operations
+    >> _lastoperation.rwtime()
+    >> _lastcapbank
+    >> _daysofweek
+    >> _peakoroffpeak
+    >> _recentlycontrolled
+    >> _calculatedvaluebeforecontrol
+    >> _lastpointupdate.rwtime()
+    >> _decimalplaces
+    >> _capbanks;
 
 }
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiCCStrategy::saveGuts(RWvostream& ostrm ) const  
+void CtiCCStrategy::saveGuts(RWvostream& ostrm ) const
 {
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        
+
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _id
-          << _name
-          << _district
-          << _actualid
-          << _actualval
-          << _max
-          << _peak
-          << _offpeak
-          << _start.rwtime()
-          << _stop.rwtime()
-          << _calculatedid
-          << _calculatedval
-          << _bandwidth
-          << _interval
-          << _response
-          << _confirm
-          << _failure
-          << _status
-          << _operations
-          << _lastoperation.rwtime()
-          << _lastcapbank
-          << _daysofweek
-          << _peakoroffpeak
-          << _recentlycontrolled
-          << _calculatedvaluebeforecontrol
-          << _lastpointupdate.rwtime()
-          << _decimalplaces
-          << _capbanks;
+    << _name
+    << _district
+    << _actualid
+    << _actualval
+    << _max
+    << _peak
+    << _offpeak
+    << _start.rwtime()
+    << _stop.rwtime()
+    << _calculatedid
+    << _calculatedval
+    << _bandwidth
+    << _interval
+    << _response
+    << _confirm
+    << _failure
+    << _status
+    << _operations
+    << _lastoperation.rwtime()
+    << _lastcapbank
+    << _daysofweek
+    << _peakoroffpeak
+    << _recentlycontrolled
+    << _calculatedvaluebeforecontrol
+    << _lastpointupdate.rwtime()
+    << _decimalplaces
+    << _capbanks;
 
     return;
 }
@@ -1468,28 +1468,28 @@ int CtiCCStrategy::operator!=(const CtiCCStrategy& right) const
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiCCStrategy* CtiCCStrategy::replicate() const
 {
-    return (new CtiCCStrategy(*this));
+    return(new CtiCCStrategy(*this));
 }
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiCCStrategy::restore(RWDBReader& rdr)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
-   // cout << "starting impl restore..." << endl;
+    // cout << "starting impl restore..." << endl;
 
     RWDBSchema schema = rdr.table().schema();
 
-    for ( UINT i = 0; i < schema.entries(); i++ )
+    for( UINT i = 0; i < schema.entries(); i++ )
     {
         RWCString col = schema[i].qualifiedName();
         col.toLower();
@@ -1497,126 +1497,126 @@ void CtiCCStrategy::restore(RWDBReader& rdr)
         RWDBNullIndicator isNull;
 
         //   cout << "col is:  " << col << endl;
-        if ( col == "capstrategyid" )
+        if( col == "capstrategyid" )
         {
             ULONG id;
             rdr[col] >> id;
 
             setId(id);
         }
-        else if ( col == "strategyname" )
+        else if( col == "strategyname" )
         {
             RWCString name;
             rdr[col] >> name;
 
             setName(name);
         }
-        else if ( col == "districtname" )
+        else if( col == "districtname" )
         {
             RWCString district;
             rdr[col] >> district;
 
             setDistrict(district);
         }
-        else if ( col == "actualvarpointid" )
+        else if( col == "actualvarpointid" )
         {
             ULONG actualid;
             rdr[col] >> actualid;
 
             setActualVarPointId(actualid);
         }
-        else if ( col == "maxdailyoperation" )
+        else if( col == "maxdailyoperation" )
         {
             ULONG max;
             rdr[col] >> max;
 
             setMaxDailyOperation(max);
         }
-        else if ( col == "peaksetpoint" )
+        else if( col == "peaksetpoint" )
         {
             DOUBLE peak;
             rdr[col] >> peak;
 
             setPeakSetPoint(peak);
         }
-        else if ( col == "offpeaksetpoint" )
+        else if( col == "offpeaksetpoint" )
         {
             DOUBLE offpeak;
             rdr[col] >> offpeak;
 
             setOffPeakSetPoint(offpeak);
         }
-        else if ( col == "peakstarttime" )
+        else if( col == "peakstarttime" )
         {
             RWDBDateTime start;
             rdr[col] >> start;
 
             setPeakStartTime(start);
         }
-        else if ( col == "peakstoptime" )
+        else if( col == "peakstoptime" )
         {
             RWDBDateTime stop;
             rdr[col] >> stop;
 
             setPeakStopTime(stop);
         }
-        else if ( col == "calculatedvarloadpointid" )
+        else if( col == "calculatedvarloadpointid" )
         {
             ULONG calculatedid;
             rdr[col] >> calculatedid;
 
             setCalculatedVarPointId(calculatedid);
         }
-        else if ( col == "bandwidth" )
+        else if( col == "bandwidth" )
         {
             DOUBLE bandwidth;
             rdr[col] >> bandwidth;
 
             setBandwidth(bandwidth);
         }
-        else if ( col == "controlinterval" )
+        else if( col == "controlinterval" )
         {
             ULONG interval;
             rdr[col] >> interval;
 
             setControlInterval(interval);
         }
-        else if ( col == "minresponsetime" )
+        else if( col == "minresponsetime" )
         {
             ULONG response;
             rdr[col] >> response;
 
             setMinResponseTime(response);
         }
-        else if ( col == "minconfirmpercent" )
+        else if( col == "minconfirmpercent" )
         {
             ULONG confirm;
             rdr[col] >> confirm;
 
             setMinConfirmPercent(confirm);
         }
-        else if ( col == "failurepercent" )
+        else if( col == "failurepercent" )
         {
             ULONG failure;
             rdr[col] >> failure;
 
             setFailurePercent(failure);
         }
-        else if ( col == "status" )
+        else if( col == "status" )
         {
             RWCString status;
             rdr[col] >> status;
 
             setStatus(status);
         }
-        else if ( col == "daysofweek" )
+        else if( col == "daysofweek" )
         {
             RWCString days;
             rdr[col] >> days;
 
             setDaysOfWeek(days);
         }
-        else if ( col == "decimalplaces" )
+        else if( col == "decimalplaces" )
         {
             ULONG decimalplaces;
             rdr[col] >> decimalplaces;
@@ -1643,7 +1643,7 @@ void CtiCCStrategy::restore(RWDBReader& rdr)
 
 /*---------------------------------------------------------------------------
     restoreDynamicData
-    
+
     Restores self's dynamic data given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiCCStrategy::restoreDynamicData(RWDBReader& rdr)
@@ -1656,95 +1656,95 @@ void CtiCCStrategy::restoreDynamicData(RWDBReader& rdr)
 
     RWDBSchema schema = rdr.table().schema();
 
-    for ( UINT i = 0; i < schema.entries(); i++ )
+    for( UINT i = 0; i < schema.entries(); i++ )
     {
         RWCString col = schema[i].qualifiedName();
         col.toLower();
 
         RWDBNullIndicator isNull;
 
-        if ( col == "newpointdatareceived" )
+        if( col == "newpointdatareceived" )
         {
             rdr[col] >> tempStr;
             tempStr.toLower();
 
             setNewPointDataReceived(tempStr=="y"?TRUE:FALSE);
         }
-        else if ( col == "strategyupdated" )
+        else if( col == "strategyupdated" )
         {
             rdr[col] >> tempStr;
             tempStr.toLower();
 
             setStrategyUpdated(tempStr=="y"?TRUE:FALSE);
         }
-        else if ( col == "actualvarpointvalue" )
+        else if( col == "actualvarpointvalue" )
         {
             DOUBLE actual;
             rdr[col] >> actual;
 
             setActualVarPointValue(actual);
         }
-        else if ( col == "nextchecktime" )
+        else if( col == "nextchecktime" )
         {
             RWDBDateTime next;
             rdr[col] >> next;
 
             _nextcheck = next;
         }
-        else if ( col == "calcvarpointvalue" )
+        else if( col == "calcvarpointvalue" )
         {
             DOUBLE calcval;
             rdr[col] >> calcval;
 
             setCalculatedVarPointValue(calcval);
         }
-        else if ( col == "operations" )
+        else if( col == "operations" )
         {
             ULONG ops;
             rdr[col] >> ops;
 
             setOperations(ops);
         }
-        else if ( col == "lastoperation" )
+        else if( col == "lastoperation" )
         {
             RWDBDateTime lastop;
             rdr[col] >> lastop;
 
             setLastOperation(lastop);
         }
-        else if ( col == "lastcapbankcontrolled" )
+        else if( col == "lastcapbankcontrolled" )
         {
             ULONG lastcapcontrolled;
             rdr[col] >> lastcapcontrolled;
 
             setLastCapBankControlled(lastcapcontrolled);
         }
-        else if ( col == "peakoroffpeak" )
+        else if( col == "peakoroffpeak" )
         {
             rdr[col] >> tempStr;
             tempStr.toLower();
 
             setPeakOrOffPeak(tempStr=="y"?TRUE:FALSE);
         }
-        else if ( col == "recentlycontrolled" )
+        else if( col == "recentlycontrolled" )
         {
             rdr[col] >> tempStr;
             tempStr.toLower();
 
             setRecentlyControlled(tempStr=="y"?TRUE:FALSE);
         }
-        else if ( col == "calcvaluebeforecontrol" )
+        else if( col == "calcvaluebeforecontrol" )
         {
             DOUBLE calcbefore;
             rdr[col] >> calcbefore;
 
             setCalculatedValueBeforeControl(calcbefore);
         }
-        else if ( col == "timestamp" )
+        else if( col == "timestamp" )
         {
             rdr[col] >> dynamicTimeStamp;
         }
-        else if ( col == "lastpointupdate" )
+        else if( col == "lastpointupdate" )
         {
             RWDBDateTime lastupdate;
             rdr[col] >> lastupdate;
@@ -1770,7 +1770,7 @@ void CtiCCStrategy::restoreDynamicData(RWDBReader& rdr)
         }
         setOperations(0);
     }
-    
+
     //if not recently controlled , reinit
     if( !RecentlyControlled() || dynamicTimeStamp.seconds() < (currentDateTime.seconds() - 900) )
     {
@@ -1831,7 +1831,7 @@ void CtiCCStrategy::restoreDynamicData(RWDBReader& rdr)
 
 /*---------------------------------------------------------------------------
     doubleToString
-    
+
     Returns the RWCString representation of a double
 ---------------------------------------------------------------------------*/
 RWCString CtiCCStrategy::doubleToString(DOUBLE doubleVal)

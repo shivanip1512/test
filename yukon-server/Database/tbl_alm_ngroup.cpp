@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_alm_ngroup.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:57 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -129,8 +129,8 @@ RWCString CtiTableNotificationGroup::getTableName()
 
 RWDBStatus CtiTableNotificationGroup::Insert()
 {
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBInserter inserter = table.inserter();
@@ -152,8 +152,8 @@ RWDBStatus CtiTableNotificationGroup::Insert()
 
 RWDBStatus CtiTableNotificationGroup::Update()
 {
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBUpdater updater = table.updater();
@@ -177,8 +177,8 @@ RWDBStatus CtiTableNotificationGroup::Update()
 
 RWDBStatus CtiTableNotificationGroup::Restore()
 {
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBStatus dbstat;
 
@@ -259,8 +259,8 @@ RWDBStatus CtiTableNotificationGroup::Restore()
 
 RWDBStatus CtiTableNotificationGroup::Delete()
 {
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBDeleter deleter = table.deleter();

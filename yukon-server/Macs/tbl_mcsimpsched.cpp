@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/tbl_mcsimpsched.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:10 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,17 +34,17 @@
 const char* CtiTableMCSimpleSchedule::_table_name = "MACSimpleSchedule";
 
 CtiTableMCSimpleSchedule::CtiTableMCSimpleSchedule(
-                                long schedule_id,
-                                const string& target_select,
-                                const string& start_command,
-                                const string& stop_command,
-                                long repeat_interval )
-                            :
-                                _schedule_id(schedule_id),
-                                _target_select(target_select),
-                                _start_command(start_command),
-                                _stop_command(stop_command),
-                                _repeat_interval(repeat_interval)
+                                                  long schedule_id,
+                                                  const string& target_select,
+                                                  const string& start_command,
+                                                  const string& stop_command,
+                                                  long repeat_interval )
+:
+_schedule_id(schedule_id),
+_target_select(target_select),
+_start_command(start_command),
+_stop_command(stop_command),
+_repeat_interval(repeat_interval)
 {
 
 }
@@ -116,13 +116,13 @@ void CtiTableMCSimpleSchedule::getSQL(  RWDBDatabase &db,
     keyTable = db.table(_table_name);
 
     selector                            <<
-        keyTable["scheduleid"]          <<
-        keyTable["targetselect"]        <<
-        keyTable["startcommand"]        <<
-        keyTable["stopcommand"]         <<
-        keyTable["repeatinterval"];
+    keyTable["scheduleid"]          <<
+    keyTable["targetselect"]        <<
+    keyTable["startcommand"]        <<
+    keyTable["stopcommand"]         <<
+    keyTable["repeatinterval"];
 
-   selector.from(keyTable);
+    selector.from(keyTable);
 
 }
 
@@ -158,8 +158,8 @@ bool CtiTableMCSimpleSchedule::Update()
     try
     {
         {
+            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
-            RWLockGuard<RWDBConnection> conn_guard(conn);
 
             RWDBTable t = conn.database().table( _table_name );
 
@@ -168,13 +168,13 @@ bool CtiTableMCSimpleSchedule::Update()
             updater.where( t["ScheduleID"] == getScheduleID() );
 
             updater << t["TargetSelect"].assign(
-                RWCString( (const char*) getTargetSelect().data() ));
+                                               RWCString( (const char*) getTargetSelect().data() ));
 
             updater << t["StartCommand"].assign(
-                RWCString( (const char*) getStartCommand().data() ));
+                                               RWCString( (const char*) getStartCommand().data() ));
 
             updater << t["StopCommand"].assign(
-                RWCString( (const char*) getStopCommand().data() ));
+                                              RWCString( (const char*) getStopCommand().data() ));
 
             updater << t["RepeatInterval"].assign(getRepeatInterval());
 
@@ -189,19 +189,19 @@ bool CtiTableMCSimpleSchedule::Update()
     {
         CtiLockGuard< CtiLogger > guard(dout);
         dout << RWTime()
-             << " An exception occured updating table \""
-             << _table_name
-             << "\""
-             << endl;
+        << " An exception occured updating table \""
+        << _table_name
+        << "\""
+        << endl;
     }
 
     if( !ret_val )
     {
-       CtiLockGuard< CtiLogger > guard(dout);
-       dout << RWTime()
-            << " "
-            << sql
-            << endl;
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << RWTime()
+        << " "
+        << sql
+        << endl;
     }
 
     return ret_val;
@@ -212,55 +212,55 @@ bool CtiTableMCSimpleSchedule::Insert()
     bool ret_val = false;
     string sql;
 
-   try
-   {
-       {
-           RWDBConnection conn = getConnection();
-           RWLockGuard<RWDBConnection> conn_guard(conn);
+    try
+    {
+        {
+            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+            RWDBConnection conn = getConnection();
 
-           RWDBTable t = conn.database().table( _table_name );
-           RWDBInserter inserter = t.inserter();
+            RWDBTable t = conn.database().table( _table_name );
+            RWDBInserter inserter = t.inserter();
 
-           inserter << getScheduleID();
+            inserter << getScheduleID();
 
-           inserter <<
-               RWCString( (const char*) getTargetSelect().data() );
+            inserter <<
+            RWCString( (const char*) getTargetSelect().data() );
 
-           inserter <<
-               RWCString( (const char*) getStartCommand().data() );
+            inserter <<
+            RWCString( (const char*) getStartCommand().data() );
 
-           inserter <<
-               RWCString( (const char*) getStopCommand().data() );
+            inserter <<
+            RWCString( (const char*) getStopCommand().data() );
 
-           inserter << getRepeatInterval();
+            inserter << getRepeatInterval();
 
-           sql = (const char*) inserter.asString().data();
-           RWDBResult result = inserter.execute();
+            sql = (const char*) inserter.asString().data();
+            RWDBResult result = inserter.execute();
 
-           ret_val = ( result.status().errorCode() == RWDBStatus::ok );
+            ret_val = ( result.status().errorCode() == RWDBStatus::ok );
 
-       }
-   }
-   catch(...)
-   {
-       CtiLockGuard< CtiLogger > guard(dout);
-       dout << RWTime()
-            << " An exception occured inserting to table \""
-            << _table_name
-            << "\""
-            << endl;
-   }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << RWTime()
+        << " An exception occured inserting to table \""
+        << _table_name
+        << "\""
+        << endl;
+    }
 
-   if( !ret_val )
-   {
-       CtiLockGuard< CtiLogger > guard(dout);
-       dout << RWTime()
-            << " "
-            << sql
-            << endl;
-   }
+    if( !ret_val )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << RWTime()
+        << " "
+        << sql
+        << endl;
+    }
 
-   return ret_val;
+    return ret_val;
 }
 
 bool CtiTableMCSimpleSchedule::Delete()
@@ -270,41 +270,41 @@ bool CtiTableMCSimpleSchedule::Delete()
 
     try
     {
-      {
-          RWDBConnection conn = getConnection();
-          RWLockGuard<RWDBConnection> conn_guard(conn);
+        {
+            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+            RWDBConnection conn = getConnection();
 
-          RWDBTable t = conn.database().table( _table_name );
-          RWDBDeleter deleter = t.deleter();
+            RWDBTable t = conn.database().table( _table_name );
+            RWDBDeleter deleter = t.deleter();
 
-          deleter.where( t["ScheduleID"] == getScheduleID() );
+            deleter.where( t["ScheduleID"] == getScheduleID() );
 
-          sql = (const char*) deleter.asString().data();
+            sql = (const char*) deleter.asString().data();
 
-          RWDBResult result = deleter.execute();
-          ret_val = ( result.status().errorCode() == RWDBStatus::ok );
-      }
+            RWDBResult result = deleter.execute();
+            ret_val = ( result.status().errorCode() == RWDBStatus::ok );
+        }
     }
     catch(...)
     {
         CtiLockGuard< CtiLogger > guard(dout);
-       dout << RWTime()
-            << " An exception occured deleting from table \""
-            << _table_name
-            << "\""
-            << endl;
+        dout << RWTime()
+        << " An exception occured deleting from table \""
+        << _table_name
+        << "\""
+        << endl;
     }
 
     if( !ret_val )
     {
-       CtiLockGuard< CtiLogger > guard(dout);
-       dout << RWTime()
-            << " "
-            << sql
-            << endl;
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << RWTime()
+        << " "
+        << sql
+        << endl;
     }
 
     return ret_val;
 }
-CtiTableMCSimpleSchedule::~CtiTableMCSimpleSchedule() { };
+CtiTableMCSimpleSchedule::~CtiTableMCSimpleSchedule() {};
 

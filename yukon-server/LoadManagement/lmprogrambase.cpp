@@ -1,14 +1,14 @@
 /*---------------------------------------------------------------------------
         Filename:  lmprogram.cpp
-        
+
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiLMProgramBase.
                         CtiLMProgramBase maintains the state and handles
                         the persistence of programs for Load Management.
 
         Initial Date:  2/12/2001
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
@@ -31,12 +31,12 @@ extern BOOL _LM_DEBUG;
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase::CtiLMProgramBase()
-{   
+{
 }
 
 CtiLMProgramBase::CtiLMProgramBase(RWDBReader& rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMProgramBase::CtiLMProgramBase(const CtiLMProgramBase& lmprog)
@@ -121,7 +121,7 @@ const RWCString& CtiLMProgramBase::getPAODescription() const
 
 /*---------------------------------------------------------------------------
     getDisableFlag
-    
+
     Returns the disable flag of the program
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramBase::getDisableFlag() const
@@ -132,7 +132,7 @@ BOOL CtiLMProgramBase::getDisableFlag() const
 
 /*---------------------------------------------------------------------------
     getUserOrder
-    
+
     Returns the user order of the program
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getUserOrder() const
@@ -143,7 +143,7 @@ ULONG CtiLMProgramBase::getUserOrder() const
 
 /*---------------------------------------------------------------------------
     getStopOrder
-    
+
     Returns the stop order of the program
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getStopOrder() const
@@ -154,7 +154,7 @@ ULONG CtiLMProgramBase::getStopOrder() const
 
 /*---------------------------------------------------------------------------
     getDefaultPriority
-    
+
     Returns the default priority of the program
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getDefaultPriority() const
@@ -165,7 +165,7 @@ ULONG CtiLMProgramBase::getDefaultPriority() const
 
 /*---------------------------------------------------------------------------
     getControlType
-    
+
     Returns the control type of the program
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramBase::getControlType() const
@@ -176,7 +176,7 @@ const RWCString& CtiLMProgramBase::getControlType() const
 
 /*---------------------------------------------------------------------------
     getAvailableSeasons
-    
+
     Returns the available seasons of the program
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramBase::getAvailableSeasons() const
@@ -187,7 +187,7 @@ const RWCString& CtiLMProgramBase::getAvailableSeasons() const
 
 /*---------------------------------------------------------------------------
     getAvailableWeekDays
-    
+
     Returns the available week days of the program
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramBase::getAvailableWeekDays() const
@@ -198,7 +198,7 @@ const RWCString& CtiLMProgramBase::getAvailableWeekDays() const
 
 /*---------------------------------------------------------------------------
     getMaxHoursDaily
-    
+
     Returns the max hours daily of the program in seconds
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getMaxHoursDaily() const
@@ -209,7 +209,7 @@ ULONG CtiLMProgramBase::getMaxHoursDaily() const
 
 /*---------------------------------------------------------------------------
     getMaxHoursMonthly
-    
+
     Returns the max hours monthly of the program in seconds
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getMaxHoursMonthly() const
@@ -220,7 +220,7 @@ ULONG CtiLMProgramBase::getMaxHoursMonthly() const
 
 /*---------------------------------------------------------------------------
     getMaxHoursSeasonal
-    
+
     Returns the max hours seasonal of the program in seconds
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getMaxHoursSeasonal() const
@@ -231,7 +231,7 @@ ULONG CtiLMProgramBase::getMaxHoursSeasonal() const
 
 /*---------------------------------------------------------------------------
     getMaxHoursAnnually
-    
+
     Returns the max hours annually of the program in seconds
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getMaxHoursAnnually() const
@@ -242,7 +242,7 @@ ULONG CtiLMProgramBase::getMaxHoursAnnually() const
 
 /*---------------------------------------------------------------------------
     getMinActivateTime
-    
+
     Returns the minimum activate time of the program in minutes
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getMinActivateTime() const
@@ -264,7 +264,7 @@ ULONG CtiLMProgramBase::getMinRestartTime() const
 
 /*---------------------------------------------------------------------------
     getProgramStatusPointId
-    
+
     Returns the status point id for the program of the program
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getProgramStatusPointId() const
@@ -275,7 +275,7 @@ ULONG CtiLMProgramBase::getProgramStatusPointId() const
 
 /*---------------------------------------------------------------------------
     getProgramState
-    
+
     Returns the state of the program
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getProgramState() const
@@ -286,7 +286,7 @@ ULONG CtiLMProgramBase::getProgramState() const
 
 /*---------------------------------------------------------------------------
     getReductionAnalogPointId
-    
+
     Returns the pointid of the analog that holds the current total reduction
     of load in the program
 ---------------------------------------------------------------------------*/
@@ -298,7 +298,7 @@ ULONG CtiLMProgramBase::getReductionAnalogPointId() const
 
 /*---------------------------------------------------------------------------
     getReductionTotal
-    
+
     Returns the current load reduced in KW of the program
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMProgramBase::getReductionTotal() const
@@ -309,7 +309,7 @@ DOUBLE CtiLMProgramBase::getReductionTotal() const
 
 /*---------------------------------------------------------------------------
     getStartedControlling
-    
+
     Returns the time that the program started controlling
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMProgramBase::getStartedControlling() const
@@ -320,7 +320,7 @@ const RWDBDateTime& CtiLMProgramBase::getStartedControlling() const
 
 /*---------------------------------------------------------------------------
     getLastControlSent
-    
+
     Returns the time of the last control sent in the program
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMProgramBase::getLastControlSent() const
@@ -331,7 +331,7 @@ const RWDBDateTime& CtiLMProgramBase::getLastControlSent() const
 
 /*---------------------------------------------------------------------------
     getLMProgramControlWindows
-    
+
     Returns the list of control windows for this program
 ---------------------------------------------------------------------------*/
 RWOrdered& CtiLMProgramBase::getLMProgramControlWindows()
@@ -342,7 +342,7 @@ RWOrdered& CtiLMProgramBase::getLMProgramControlWindows()
 
 /*---------------------------------------------------------------------------
     getManualControlReceivedFlag
-    
+
     Returns the manual control received flag of the program
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramBase::getManualControlReceivedFlag() const
@@ -368,7 +368,7 @@ CtiLMProgramBase& CtiLMProgramBase::setPAOId(ULONG id)
     setPAOCategory
 
     Sets the pao category of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setPAOCategory(const RWCString& category)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -380,7 +380,7 @@ CtiLMProgramBase& CtiLMProgramBase::setPAOCategory(const RWCString& category)
     setPAOClass
 
     Sets the pao class of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setPAOClass(const RWCString& pclass)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -392,7 +392,7 @@ CtiLMProgramBase& CtiLMProgramBase::setPAOClass(const RWCString& pclass)
     setPAOName
 
     Sets the pao name of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setPAOName(const RWCString& name)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -404,7 +404,7 @@ CtiLMProgramBase& CtiLMProgramBase::setPAOName(const RWCString& name)
     setPAOType
 
     Sets the pao type of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setPAOType(ULONG type)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -416,7 +416,7 @@ CtiLMProgramBase& CtiLMProgramBase::setPAOType(ULONG type)
     setPAODescription
 
     Sets the pao description of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setPAODescription(const RWCString& description)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -426,9 +426,9 @@ CtiLMProgramBase& CtiLMProgramBase::setPAODescription(const RWCString& descripti
 
 /*---------------------------------------------------------------------------
     setDisableFlag
-    
+
     Sets the disable flaf of the program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setDisableFlag(BOOL disable)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -439,9 +439,9 @@ CtiLMProgramBase& CtiLMProgramBase::setDisableFlag(BOOL disable)
 
 /*---------------------------------------------------------------------------
     setUserOrder
-    
+
     Sets the user order of the program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setUserOrder(ULONG userorder)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -454,7 +454,7 @@ CtiLMProgramBase& CtiLMProgramBase::setUserOrder(ULONG userorder)
     setStopOrder
 
     Sets the stop order of the program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setStopOrder(ULONG stoporder)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -467,7 +467,7 @@ CtiLMProgramBase& CtiLMProgramBase::setStopOrder(ULONG stoporder)
     setDefaultPriority
 
     Sets the default priority of the program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setDefaultPriority(ULONG defpriority)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -480,7 +480,7 @@ CtiLMProgramBase& CtiLMProgramBase::setDefaultPriority(ULONG defpriority)
     setControlType
 
     Sets the controltype of the program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setControlType(const RWCString& conttype)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -493,7 +493,7 @@ CtiLMProgramBase& CtiLMProgramBase::setControlType(const RWCString& conttype)
     setAvailableSeasons
 
     Sets the available seasons of the program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setAvailableSeasons(const RWCString& availseasons)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -506,7 +506,7 @@ CtiLMProgramBase& CtiLMProgramBase::setAvailableSeasons(const RWCString& availse
     setAvailableWeekDays
 
     Sets the available week days of the program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setAvailableWeekDays(const RWCString& availweekdays)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -517,9 +517,9 @@ CtiLMProgramBase& CtiLMProgramBase::setAvailableWeekDays(const RWCString& availw
 
 /*---------------------------------------------------------------------------
     setMaxHoursDaily
-    
+
     Sets the max hours daily of the program in seconds
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setMaxHoursDaily(ULONG daily)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -530,9 +530,9 @@ CtiLMProgramBase& CtiLMProgramBase::setMaxHoursDaily(ULONG daily)
 
 /*---------------------------------------------------------------------------
     setMaxHoursMonthly
-    
+
     Sets the max hours monthly of the program in seconds
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setMaxHoursMonthly(ULONG monthly)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -543,9 +543,9 @@ CtiLMProgramBase& CtiLMProgramBase::setMaxHoursMonthly(ULONG monthly)
 
 /*---------------------------------------------------------------------------
     setMaxHoursSeasonal
-    
+
     Sets the max hours seasonal of the program in seconds
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setMaxHoursSeasonal(ULONG seasonal)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -556,9 +556,9 @@ CtiLMProgramBase& CtiLMProgramBase::setMaxHoursSeasonal(ULONG seasonal)
 
 /*---------------------------------------------------------------------------
     setMaxHoursAnnually
-    
+
     Sets the max hours annually of the program in seconds
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setMaxHoursAnnually(ULONG annually)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -569,9 +569,9 @@ CtiLMProgramBase& CtiLMProgramBase::setMaxHoursAnnually(ULONG annually)
 
 /*---------------------------------------------------------------------------
     setMinActivateTime
-    
+
     Sets the minimum activate time of the program in minutes
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setMinActivateTime(ULONG activate)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -582,9 +582,9 @@ CtiLMProgramBase& CtiLMProgramBase::setMinActivateTime(ULONG activate)
 
 /*---------------------------------------------------------------------------
     setMinRestartTime
-    
+
     Sets the minimum restart time of the program in minutes
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setMinRestartTime(ULONG restart)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -595,9 +595,9 @@ CtiLMProgramBase& CtiLMProgramBase::setMinRestartTime(ULONG restart)
 
 /*---------------------------------------------------------------------------
     setProgramStatusPointId
-    
+
     Sets the status point id for the program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setProgramStatusPointId(ULONG statuspointid)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -608,9 +608,9 @@ CtiLMProgramBase& CtiLMProgramBase::setProgramStatusPointId(ULONG statuspointid)
 
 /*---------------------------------------------------------------------------
     setProgramState
-    
+
     Sets the current state of the program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setProgramState(ULONG progstate)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -621,10 +621,10 @@ CtiLMProgramBase& CtiLMProgramBase::setProgramState(ULONG progstate)
 
 /*---------------------------------------------------------------------------
     setReductionAnalogPointId
-    
+
     Sets the pointid of the analog point that holds the current reduction
     total for the program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setReductionAnalogPointId(ULONG reductionpointid)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -635,9 +635,9 @@ CtiLMProgramBase& CtiLMProgramBase::setReductionAnalogPointId(ULONG reductionpoi
 
 /*---------------------------------------------------------------------------
     setReductionTotal
-    
+
     Sets the current reduction total for the program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setReductionTotal(DOUBLE reduction)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -650,7 +650,7 @@ CtiLMProgramBase& CtiLMProgramBase::setReductionTotal(DOUBLE reduction)
     setStartedControlling
 
     Sets the time that the program started controlling
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setStartedControlling(const RWDBDateTime& startcont)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -663,7 +663,7 @@ CtiLMProgramBase& CtiLMProgramBase::setStartedControlling(const RWDBDateTime& st
     setLastControlSent
 
     Sets the time of the last control sent in the program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setLastControlSent(const RWDBDateTime& lastcontrol)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -674,9 +674,9 @@ CtiLMProgramBase& CtiLMProgramBase::setLastControlSent(const RWDBDateTime& lastc
 
 /*---------------------------------------------------------------------------
     setManualControlReceivedFlag
-    
+
     Sets the manual control received flag of the program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setManualControlReceivedFlag(BOOL manualreceived)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -733,13 +733,13 @@ BOOL CtiLMProgramBase::isWithinValidControlWindow(ULONG nowInSeconds)
     {
         returnBoolean = TRUE;
     }
-    
+
     return returnBoolean;
 }
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiLMProgramBase::restoreGuts(RWvistream& istrm)
@@ -752,32 +752,32 @@ void CtiLMProgramBase::restoreGuts(RWvistream& istrm)
     RWTime tempTime1;
     RWTime tempTime2;
     istrm >> _paoid
-          >> _paocategory
-          >> _paoclass
-          >> _paoname
-          >> _paotype
-          >> _paodescription
-          >> _disableflag
-          >> _userorder
-          >> _stoporder
-          >> _defaultpriority
-          >> _controltype
-          >> _availableseasons
-          >> _availableweekdays
-          >> _maxhoursdaily
-          >> _maxhoursmonthly
-          >> _maxhoursseasonal
-          >> _maxhoursannually
-          >> _minactivatetime
-          >> _minrestarttime
-          >> _programstatuspointid
-          >> _programstate
-          >> _reductionanalogpointid
-          >> _reductiontotal
-          >> tempTime1
-          >> tempTime2
-          >> _manualcontrolreceivedflag
-          >> _lmprogramcontrolwindows;
+    >> _paocategory
+    >> _paoclass
+    >> _paoname
+    >> _paotype
+    >> _paodescription
+    >> _disableflag
+    >> _userorder
+    >> _stoporder
+    >> _defaultpriority
+    >> _controltype
+    >> _availableseasons
+    >> _availableweekdays
+    >> _maxhoursdaily
+    >> _maxhoursmonthly
+    >> _maxhoursseasonal
+    >> _maxhoursannually
+    >> _minactivatetime
+    >> _minrestarttime
+    >> _programstatuspointid
+    >> _programstate
+    >> _reductionanalogpointid
+    >> _reductiontotal
+    >> tempTime1
+    >> tempTime2
+    >> _manualcontrolreceivedflag
+    >> _lmprogramcontrolwindows;
 
     _startedcontrolling = RWDBDateTime(tempTime1);
     _lastcontrolsent = RWDBDateTime(tempTime2);
@@ -785,43 +785,43 @@ void CtiLMProgramBase::restoreGuts(RWvistream& istrm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiLMProgramBase::saveGuts(RWvostream& ostrm ) const  
+void CtiLMProgramBase::saveGuts(RWvostream& ostrm ) const
 {
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        
+
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _paoid
-          << _paocategory
-          << _paoclass
-          << _paoname
-          << _paotype
-          << _paodescription
-          << _disableflag
-          << _userorder
-          << _stoporder
-          << _defaultpriority
-          << _controltype
-          << _availableseasons
-          << _availableweekdays
-          << _maxhoursdaily
-          << _maxhoursmonthly
-          << _maxhoursseasonal
-          << _maxhoursannually
-          << _minactivatetime
-          << _minrestarttime
-          << _programstatuspointid
-          << _programstate
-          << _reductionanalogpointid
-          << _reductiontotal
-          << _startedcontrolling.rwtime()
-          << _lastcontrolsent.rwtime()
-          << _manualcontrolreceivedflag
-          << _lmprogramcontrolwindows;
+    << _paocategory
+    << _paoclass
+    << _paoname
+    << _paotype
+    << _paodescription
+    << _disableflag
+    << _userorder
+    << _stoporder
+    << _defaultpriority
+    << _controltype
+    << _availableseasons
+    << _availableweekdays
+    << _maxhoursdaily
+    << _maxhoursmonthly
+    << _maxhoursseasonal
+    << _maxhoursannually
+    << _minactivatetime
+    << _minrestarttime
+    << _programstatuspointid
+    << _programstate
+    << _reductionanalogpointid
+    << _reductiontotal
+    << _startedcontrolling.rwtime()
+    << _lastcontrolsent.rwtime()
+    << _manualcontrolreceivedflag
+    << _lmprogramcontrolwindows;
 
     return;
 }
@@ -867,7 +867,7 @@ CtiLMProgramBase& CtiLMProgramBase::operator=(const CtiLMProgramBase& right)
         {
             _lmprogramcontrolwindows.insert(((CtiLMProgramControlWindow*)right._lmprogramcontrolwindows[i])->replicate());
         }
-        
+
     }
 
     return *this;
@@ -893,7 +893,7 @@ int CtiLMProgramBase::operator!=(const CtiLMProgramBase& right) const
 
 /*---------------------------------------------------------------------------
     dumpDynamicData
-    
+
     Writes out the dynamic information for this strategy.
 ---------------------------------------------------------------------------*/
 void CtiLMProgramBase::dumpDynamicData()
@@ -902,11 +902,11 @@ void CtiLMProgramBase::dumpDynamicData()
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
-        if ( conn.isValid() )
+        if( conn.isValid() )
         {
             RWDBDatabase db = getDatabase();
             RWDBTable dynamicLMProgramTable = db.table( "dynamiclmprogram" );
@@ -915,11 +915,11 @@ void CtiLMProgramBase::dumpDynamicData()
                 RWDBUpdater updater = dynamicLMProgramTable.updater();
 
                 updater << dynamicLMProgramTable["programstate"].assign( getProgramState() )
-                        << dynamicLMProgramTable["reductiontotal"].assign( getReductionTotal() )
-                        << dynamicLMProgramTable["startedcontrolling"].assign( getStartedControlling() )
-                        << dynamicLMProgramTable["lastcontrolsent"].assign( getLastControlSent() )
-                        << dynamicLMProgramTable["manualcontrolreceivedflag"].assign(RWCString( (getManualControlReceivedFlag() ? 'Y':'N') ))
-                        << dynamicLMProgramTable["timestamp"].assign((RWDBDateTime)currentDateTime);
+                << dynamicLMProgramTable["reductiontotal"].assign( getReductionTotal() )
+                << dynamicLMProgramTable["startedcontrolling"].assign( getStartedControlling() )
+                << dynamicLMProgramTable["lastcontrolsent"].assign( getLastControlSent() )
+                << dynamicLMProgramTable["manualcontrolreceivedflag"].assign(RWCString( (getManualControlReceivedFlag() ? 'Y':'N') ))
+                << dynamicLMProgramTable["timestamp"].assign((RWDBDateTime)currentDateTime);
 
                 updater.where(dynamicLMProgramTable["deviceid"]==getPAOId());//will be paobjectid
 
@@ -935,12 +935,12 @@ void CtiLMProgramBase::dumpDynamicData()
                 RWDBInserter inserter = dynamicLMProgramTable.inserter();
 
                 inserter << getPAOId()
-                         << getProgramState()
-                         << getReductionTotal()
-                         << getStartedControlling()
-                         << getLastControlSent()
-                         << RWCString( ( getManualControlReceivedFlag() ? 'Y': 'N' ) )
-                         << currentDateTime;
+                << getProgramState()
+                << getReductionTotal()
+                << getStartedControlling()
+                << getLastControlSent()
+                << RWCString( ( getManualControlReceivedFlag() ? 'Y': 'N' ) )
+                << currentDateTime;
 
                 /*{
                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -962,7 +962,7 @@ void CtiLMProgramBase::dumpDynamicData()
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiLMProgramBase::restore(RWDBReader& rdr)
@@ -973,7 +973,7 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
     RWDBDateTime dynamicTimeStamp;
     RWCString tempBoolString;
     RWCString tempTypeString;
-    
+
     rdr["paobjectid"] >> _paoid;
     rdr["category"] >> _paocategory;
     rdr["paoclass"] >> _paoclass;

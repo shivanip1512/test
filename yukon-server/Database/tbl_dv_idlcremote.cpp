@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_idlcremote.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:59 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,15 +20,15 @@
 #include "tbl_dv_idlcremote.h"
 
 CtiTableDeviceIDLC::CtiTableDeviceIDLC() :
-   _deviceID(-1),
-   _address(-1),
-   _postdelay(-1),
-   _ccuAmpUseType(RouteAmp1)
+_deviceID(-1),
+_address(-1),
+_postdelay(-1),
+_ccuAmpUseType(RouteAmp1)
 {}
 
 CtiTableDeviceIDLC::CtiTableDeviceIDLC(const CtiTableDeviceIDLC& aRef)
 {
-   *this = aRef;
+    *this = aRef;
 }
 
 CtiTableDeviceIDLC::~CtiTableDeviceIDLC()
@@ -39,239 +39,239 @@ CtiTableDeviceIDLC& CtiTableDeviceIDLC::operator=(const CtiTableDeviceIDLC& aRef
 {
 
 
-   if(this != &aRef)
-   {
-      _deviceID      = aRef.getDeviceID();
-      _address       = aRef.getAddress();
-      _postdelay     = aRef.getPostDelay();
-      _ccuAmpUseType = aRef.getCCUAmpUseType();
-   }
-   return *this;
+    if(this != &aRef)
+    {
+        _deviceID      = aRef.getDeviceID();
+        _address       = aRef.getAddress();
+        _postdelay     = aRef.getPostDelay();
+        _ccuAmpUseType = aRef.getCCUAmpUseType();
+    }
+    return *this;
 }
 
 LONG CtiTableDeviceIDLC::getDeviceID() const
 {
 
-   return _deviceID;
+    return _deviceID;
 }
 
 CtiTableDeviceIDLC& CtiTableDeviceIDLC::setDeviceID( const LONG deviceID )
 {
 
-   _deviceID = deviceID;
-   return *this;
+    _deviceID = deviceID;
+    return *this;
 }
 
 LONG CtiTableDeviceIDLC::getAddress() const
 {
 
-   return _address;
+    return _address;
 }
 
 void CtiTableDeviceIDLC::setAddress(LONG a)
 {
 
-   _address = a;
+    _address = a;
 }
 
 INT CtiTableDeviceIDLC::getCCUAmpUseType() const
 {
 
 
-   return _ccuAmpUseType;
+    return _ccuAmpUseType;
 }
 
 CtiTableDeviceIDLC& CtiTableDeviceIDLC::setCCUAmpUseType( const INT aAmpUseType )
 {
 
 
-   _ccuAmpUseType = aAmpUseType;
-   return *this;
+    _ccuAmpUseType = aAmpUseType;
+    return *this;
 }
 
 INT  CtiTableDeviceIDLC::getPostDelay() const
 {
 
-   return _postdelay;
+    return _postdelay;
 }
 
 void CtiTableDeviceIDLC::setPostDelay(int d)
 {
 
-   _postdelay = d;
+    _postdelay = d;
 }
 
 INT CtiTableDeviceIDLC::getAmp() const
 {
 
 
-   INT amp;
+    INT amp;
 
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " **** ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
-   switch(_ccuAmpUseType)
-   {
-      case RouteAmpUndefined:
-      case RouteAmp2:
-      case RouteAmpDefault2Fail1:
-         {
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    switch(_ccuAmpUseType)
+    {
+    case RouteAmpUndefined:
+    case RouteAmp2:
+    case RouteAmpDefault2Fail1:
+        {
             amp = 1;
             break;
-         }
+        }
 
-      case RouteAmpAlternating:
-      case RouteAmpAltFail:
-      case RouteAmp1:
-      case RouteAmpDefault1Fail2:
-      default:
-         {
+    case RouteAmpAlternating:
+    case RouteAmpAltFail:
+    case RouteAmp1:
+    case RouteAmpDefault1Fail2:
+    default:
+        {
             amp = 0;
             break;
-         }
-   }
+        }
+    }
 
-   return amp;
+    return amp;
 }
 
 void CtiTableDeviceIDLC::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-   RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName() );
 
-   selector <<
-      devTbl["address"] <<
-      devTbl["postcommwait"] <<
-      devTbl["ccuampusetype"];
+    selector <<
+    devTbl["address"] <<
+    devTbl["postcommwait"] <<
+    devTbl["ccuampusetype"];
 
-   selector.from(devTbl);
+    selector.from(devTbl);
 
-   selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
-   // selector.where( selector.where() && keyTable["deviceid"] == devTbl["deviceid"] );
+    selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
+    // selector.where( selector.where() && keyTable["deviceid"] == devTbl["deviceid"] );
 }
 
 void CtiTableDeviceIDLC::DecodeDatabaseReader(RWDBReader &rdr)
 {
 
 
-   RWCString rwsTemp;
+    RWCString rwsTemp;
 
 
-   {
-      CtiLockGuard<CtiLogger> logger_guard(dout);
-      if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
-   rdr["deviceid"] >> _deviceID;
-   rdr["address"]       >> _address;
-   rdr["postcommwait"]  >> _postdelay;
-   rdr["ccuampusetype"] >> rwsTemp;
+    rdr["deviceid"] >> _deviceID;
+    rdr["address"]       >> _address;
+    rdr["postcommwait"]  >> _postdelay;
+    rdr["ccuampusetype"] >> rwsTemp;
 
     _ccuAmpUseType = resolveAmpUseType(rwsTemp);
 }
 
 RWCString CtiTableDeviceIDLC::getTableName()
 {
-   return "DeviceIDLCRemote";
+    return "DeviceIDLCRemote";
 }
 
 RWDBStatus CtiTableDeviceIDLC::Restore()
 {
 
-   char temp[32];
+    char temp[32];
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBSelector selector = getDatabase().selector();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBSelector selector = getDatabase().selector();
 
-   selector <<
-      table["deviceid"] <<
-      table["address"] <<
-      table["postcommwait"] <<
-      table["ccuampusetype"];
+    selector <<
+    table["deviceid"] <<
+    table["address"] <<
+    table["postcommwait"] <<
+    table["ccuampusetype"];
 
-   selector.where( table["deviceid"] == getDeviceID() );
+    selector.where( table["deviceid"] == getDeviceID() );
 
-   RWDBReader reader = selector.reader( conn );
+    RWDBReader reader = selector.reader( conn );
 
-   if( reader() )
-   {
-      DecodeDatabaseReader( reader );
-      setDirty( false );
-   }
-   else
-   {
-      setDirty( true );
-   }
-   return reader.status();
+    if( reader() )
+    {
+        DecodeDatabaseReader( reader );
+        setDirty( false );
+    }
+    else
+    {
+        setDirty( true );
+    }
+    return reader.status();
 }
 
 RWDBStatus CtiTableDeviceIDLC::Insert()
 {
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBInserter inserter = table.inserter();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBInserter inserter = table.inserter();
 
-   inserter <<
-      getDeviceID() <<
-      getAddress() <<
-      getPostDelay() <<
-      desolveAmpUseType(getCCUAmpUseType() );
+    inserter <<
+    getDeviceID() <<
+    getAddress() <<
+    getPostDelay() <<
+    desolveAmpUseType(getCCUAmpUseType() );
 
-   if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
-   {
-      setDirty(false);
-   }
+    if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    {
+        setDirty(false);
+    }
 
-   return inserter.status();
+    return inserter.status();
 }
 
 RWDBStatus CtiTableDeviceIDLC::Update()
 {
-   char temp[32];
+    char temp[32];
 
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBUpdater updater = table.updater();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBUpdater updater = table.updater();
 
-   updater.where( table["deviceid"] == getDeviceID() );
+    updater.where( table["deviceid"] == getDeviceID() );
 
-   updater <<
-      table["address"].assign(getAddress() ) <<
-      table["postcommwait"].assign(getPostDelay() ) <<
-      table["ccuampusetype"].assign(desolveAmpUseType(getCCUAmpUseType() ));
+    updater <<
+    table["address"].assign(getAddress() ) <<
+    table["postcommwait"].assign(getPostDelay() ) <<
+    table["ccuampusetype"].assign(desolveAmpUseType(getCCUAmpUseType() ));
 //      table["ampusetype"].assign( desolveAmpUseType( getAmpUseType() )) <<
-   if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
-   {
-      setDirty(false);
-   }
+    if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    {
+        setDirty(false);
+    }
 
-   return updater.status();
+    return updater.status();
 }
 
 RWDBStatus CtiTableDeviceIDLC::Delete()
 {
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBDeleter deleter = table.deleter();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBDeleter deleter = table.deleter();
 
-   deleter.where( table["deviceid"] == getDeviceID() );
-   deleter.execute( conn );
-   return deleter.status();
+    deleter.where( table["deviceid"] == getDeviceID() );
+    deleter.execute( conn );
+    return deleter.status();
 }
 
 

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_alm_nloc.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:57 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,304 +33,304 @@
 LONG CtiTableGroupRecipient::getRecipientID() const
 {
 
-   return _recipientID;
+    return _recipientID;
 }
 
 const RWCString& CtiTableGroupRecipient::getRecipientName() const
 {
 
-   return _recipientName;
+    return _recipientName;
 }
 
 const RWCString& CtiTableGroupRecipient::getEmailAddress() const
 {
 
-   return _emailAddress;
+    return _emailAddress;
 }
 
 INT CtiTableGroupRecipient::getEmailSendType() const
 {
 
-   return _emailSendType;
+    return _emailSendType;
 }
 
 RWCString CtiTableGroupRecipient::getRecipientType() const
 {
 
-   return _recipientType;
+    return _recipientType;
 }
 
 const RWCString& CtiTableGroupRecipient::getPagerNumber() const
 {
 
-   return _pagerNumber;
+    return _pagerNumber;
 }
 
 bool CtiTableGroupRecipient::isDisabled() const
 {
 
-   return _disabled;
+    return _disabled;
 }
 
 CtiTableGroupRecipient& CtiTableGroupRecipient::setRecipientID(LONG id)
 {
 
-   _recipientID = id;
-   return *this;
+    _recipientID = id;
+    return *this;
 }
 
 CtiTableGroupRecipient& CtiTableGroupRecipient::setRecipientName(const RWCString &str)
 {
 
-   _recipientName = str;
-   return *this;
+    _recipientName = str;
+    return *this;
 }
 
 CtiTableGroupRecipient& CtiTableGroupRecipient::setEmailAddress(const RWCString &str)
 {
 
-   _emailAddress = str;
-   return *this;
+    _emailAddress = str;
+    return *this;
 }
 
 CtiTableGroupRecipient& CtiTableGroupRecipient::setEmailSendType(INT type)
 {
 
-   _emailSendType = type;
-   return *this;
+    _emailSendType = type;
+    return *this;
 }
 
 CtiTableGroupRecipient& CtiTableGroupRecipient::setRecipientType(RWCString type)
 {
 
-   _recipientType = type;
-   return *this;
+    _recipientType = type;
+    return *this;
 }
 
 CtiTableGroupRecipient& CtiTableGroupRecipient::setPagerNumber(const RWCString &str)
 {
 
-   _pagerNumber = str;
-   return *this;
+    _pagerNumber = str;
+    return *this;
 }
 
 CtiTableGroupRecipient& CtiTableGroupRecipient::setDisabled(bool b)
 {
 
-   _disabled = b;
-   return *this;
+    _disabled = b;
+    return *this;
 }
 
 CtiTableGroupRecipient& CtiTableGroupRecipient::setDirty( bool dirt )
 {
 
-   _isDirty = dirt;
-   return *this;
+    _isDirty = dirt;
+    return *this;
 }
 
 bool CtiTableGroupRecipient::isDirty() const
 {
 
-   return _isDirty;
+    return _isDirty;
 }
 
 void CtiTableGroupRecipient::dump() const
 {
 
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
+    CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-   dout << "Recipient ID: " << getRecipientID() << endl;
-   dout << "Recipient Name: " << getRecipientName() << endl;
-   dout << "Email Addr: " << getEmailAddress() << endl;
-   dout << "Email Type: " << getEmailSendType() << endl;
-   dout << "Pager Number: " << getPagerNumber() << endl;
-   dout << "Disabled: " << isDisabled() << endl;
-   dout << "Recipient Type: " << getRecipientType() << endl;
+    dout << "Recipient ID: " << getRecipientID() << endl;
+    dout << "Recipient Name: " << getRecipientName() << endl;
+    dout << "Email Addr: " << getEmailAddress() << endl;
+    dout << "Email Type: " << getEmailSendType() << endl;
+    dout << "Pager Number: " << getPagerNumber() << endl;
+    dout << "Disabled: " << isDisabled() << endl;
+    dout << "Recipient Type: " << getRecipientType() << endl;
 
 }
 
 void CtiTableGroupRecipient::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-   keyTable = db.table( getTableName() );
+    keyTable = db.table( getTableName() );
 
-   selector <<
-      keyTable["recipientid"] <<
-      keyTable["recipientname"] <<
-      keyTable["emailaddress"] <<
-      keyTable["emailsendtype"] <<
-      keyTable["pagernumber"] <<
-      keyTable["disableflag"] <<
-      keyTable["recipienttype"];
+    selector <<
+    keyTable["recipientid"] <<
+    keyTable["recipientname"] <<
+    keyTable["emailaddress"] <<
+    keyTable["emailsendtype"] <<
+    keyTable["pagernumber"] <<
+    keyTable["disableflag"] <<
+    keyTable["recipienttype"];
 
-   selector.from(keyTable);
+    selector.from(keyTable);
 }
 
 RWCString CtiTableGroupRecipient::getTableName()
 {
-   return RWCString("NotificationRecipient");
+    return RWCString("NotificationRecipient");
 }
 RWDBStatus CtiTableGroupRecipient::Insert()
 {
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBInserter inserter = table.inserter();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBInserter inserter = table.inserter();
 
 
 
-   inserter <<
-      getRecipientID() <<
-      getRecipientName() <<
-      getEmailAddress() <<
-      getEmailSendType() <<
-      getPagerNumber() <<
-      RWCString( ( isDisabled() ? 'Y': 'N' ) ) <<
-      getRecipientType();
+    inserter <<
+    getRecipientID() <<
+    getRecipientName() <<
+    getEmailAddress() <<
+    getEmailSendType() <<
+    getPagerNumber() <<
+    RWCString( ( isDisabled() ? 'Y': 'N' ) ) <<
+    getRecipientType();
 
-   inserter.execute( conn );
+    inserter.execute( conn );
 
-   return inserter.status();
+    return inserter.status();
 }
 RWDBStatus CtiTableGroupRecipient::Update()
 {
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBUpdater updater = table.updater();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBUpdater updater = table.updater();
 
 
 
-   updater.where( table["recipientid"] == getRecipientID() );
+    updater.where( table["recipientid"] == getRecipientID() );
 
-   updater <<
-      table["recipientname"].assign( getRecipientName() ) <<
-      table["emailaddress"].assign( getEmailAddress() ) <<
-      table["emailsendtype"].assign( getEmailSendType() ) <<
-      table["pagernumber"].assign( getPagerNumber() ) <<
-      table["disableflag"].assign( RWCString( ( isDisabled() ? 'Y': 'N' ) ) ) <<
-      table["recipienttype"].assign( getRecipientType() );
+    updater <<
+    table["recipientname"].assign( getRecipientName() ) <<
+    table["emailaddress"].assign( getEmailAddress() ) <<
+    table["emailsendtype"].assign( getEmailSendType() ) <<
+    table["pagernumber"].assign( getPagerNumber() ) <<
+    table["disableflag"].assign( RWCString( ( isDisabled() ? 'Y': 'N' ) ) ) <<
+    table["recipienttype"].assign( getRecipientType() );
 
-   updater.execute( conn );
+    updater.execute( conn );
 
-   return updater.status();
+    return updater.status();
 }
 
 RWDBStatus CtiTableGroupRecipient::Restore()
 {
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBStatus dbstat;
+    RWDBStatus dbstat;
 
-   {
-      RWDBTable table = getDatabase().table( getTableName() );
-      RWDBSelector selector = getDatabase().selector();
+    {
+        RWDBTable table = getDatabase().table( getTableName() );
+        RWDBSelector selector = getDatabase().selector();
 
-      selector <<
-         table["recipientid"] <<
-         table["recipientname"] <<
-         table["emailaddress"] <<
-         table["emailsendtype"] <<
-         table["pagernumber"] <<
-         table["disableflag"] <<
-         table["recipienttype"];
+        selector <<
+        table["recipientid"] <<
+        table["recipientname"] <<
+        table["emailaddress"] <<
+        table["emailsendtype"] <<
+        table["pagernumber"] <<
+        table["disableflag"] <<
+        table["recipienttype"];
 
-      selector.where( table["recipientid"] == getRecipientID() );
+        selector.where( table["recipientid"] == getRecipientID() );
 
-      RWDBReader reader = selector.reader( conn );
+        RWDBReader reader = selector.reader( conn );
 
-      dbstat = selector.status();
+        dbstat = selector.status();
 
-      if( reader() )
-      {
-         DecodeDatabaseReader( reader );
-      }
-   }
+        if( reader() )
+        {
+            DecodeDatabaseReader( reader );
+        }
+    }
 
-   return dbstat;
+    return dbstat;
 }
 
 RWDBStatus CtiTableGroupRecipient::Delete()
 {
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBDeleter deleter = table.deleter();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBDeleter deleter = table.deleter();
 
-   deleter.where( table["recipientid"] == getRecipientID() );
+    deleter.where( table["recipientid"] == getRecipientID() );
 
-   return deleter.execute( conn ).status();
+    return deleter.execute( conn ).status();
 }
 
 
 void CtiTableGroupRecipient::DecodeDatabaseReader(RWDBReader& rdr)
 {
 
-   RWCString rwstemp;
+    RWCString rwstemp;
 
-   rdr["recipientid"] >> _recipientID;
-   rdr["recipientname"] >> _recipientName;
-   rdr["emailaddress"] >> _emailAddress;
-   rdr["emailsendtype"] >> _emailSendType;
-   rdr["pagernumber"] >> _pagerNumber;
-   rdr["disableflag"] >> rwstemp;
-   rdr["recipienttype"] >> _recipientType;
+    rdr["recipientid"] >> _recipientID;
+    rdr["recipientname"] >> _recipientName;
+    rdr["emailaddress"] >> _emailAddress;
+    rdr["emailsendtype"] >> _emailSendType;
+    rdr["pagernumber"] >> _pagerNumber;
+    rdr["disableflag"] >> rwstemp;
+    rdr["recipienttype"] >> _recipientType;
 
-   rwstemp.toLower();
-   setDisabled(rwstemp[(size_t)0] == 'y');
+    rwstemp.toLower();
+    setDisabled(rwstemp[(size_t)0] == 'y');
 
-   return;
+    return;
 
 }
 
 bool CtiTableGroupRecipient::operator<( const CtiTableGroupRecipient &rhs ) const
 {
-   return (getRecipientID() < rhs.getRecipientID());
+    return(getRecipientID() < rhs.getRecipientID());
 }
 bool CtiTableGroupRecipient::operator==( const CtiTableGroupRecipient &rhs ) const
 {
-   return (getRecipientID() == rhs.getRecipientID());
+    return(getRecipientID() == rhs.getRecipientID());
 }
 bool CtiTableGroupRecipient::operator()(const CtiTableGroupRecipient& aRef) const
 {
-   return operator<(aRef);
+    return operator<(aRef);
 }
 
 CtiTableGroupRecipient::CtiTableGroupRecipient(LONG id) :
-   _recipientID( id ),
-   _isDirty(true),
-   _disabled(true)
+_recipientID( id ),
+_isDirty(true),
+_disabled(true)
 {}
 
 CtiTableGroupRecipient::CtiTableGroupRecipient(const CtiTableGroupRecipient& aRef)
 {
-   *this = aRef;
+    *this = aRef;
 }
 
 CtiTableGroupRecipient::~CtiTableGroupRecipient() {}
 
 CtiTableGroupRecipient& CtiTableGroupRecipient::operator=(const CtiTableGroupRecipient& aRef)
 {
-   if(this != &aRef)
-   {
+    if(this != &aRef)
+    {
 
 
-      _recipientID    = aRef.getRecipientID();
-      _recipientName = aRef.getRecipientName();
-      _emailAddress  = aRef.getEmailAddress();
-      _emailSendType = aRef.getEmailSendType();
-      _pagerNumber   = aRef.getPagerNumber();
-      _recipientType = aRef.getRecipientType();
-      _disabled      = aRef.isDisabled();
+        _recipientID    = aRef.getRecipientID();
+        _recipientName = aRef.getRecipientName();
+        _emailAddress  = aRef.getEmailAddress();
+        _emailSendType = aRef.getEmailSendType();
+        _pagerNumber   = aRef.getPagerNumber();
+        _recipientType = aRef.getRecipientType();
+        _disabled      = aRef.isDisabled();
 
-      setDirty( aRef.isDirty() );
-   }
-   return *this;
+        setDirty( aRef.isDirty() );
+    }
+    return *this;
 }
 

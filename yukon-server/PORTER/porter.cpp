@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/22 20:03:38 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/05/02 17:02:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -993,9 +993,8 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
         }
     }
 
-
-    if(_pilThread.isValid())               _pilThread.requestCancellation(2000);
-    if(_dispThread.isValid())              _dispThread.requestCancellation(2000);
+    if(_pilThread.isValid())               _pilThread.requestCancellation(200);
+    if(_dispThread.isValid())              _dispThread.requestCancellation(200);
     if(_connThread.isValid())              _connThread.requestCancellation(200);
     if(_guiThread.isValid())               _guiThread.requestCancellation(200);
     if(_tsyncThread.isValid())             _tsyncThread.requestCancellation(200);
@@ -1005,12 +1004,11 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
     if(_vconfThread.isValid())             _vconfThread.requestCancellation(200);
     if(_queueCCU711Thread.isValid())       _queueCCU711Thread.requestCancellation(200);
     if(_kickerCCU711Thread.isValid())      _kickerCCU711Thread.requestCancellation(200);
-    if(_dispThread.isValid())              _dispThread.requestCancellation(200);
 
 
     if(_connThread.isValid())
     {
-        if(_connThread.join(100) != RW_THR_COMPLETED )
+        if(_connThread.join(2000) != RW_THR_COMPLETED )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " _connThread did not shutdown" << endl;
@@ -1024,7 +1022,7 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
 
     if(_guiThread.isValid())
     {
-        if(_guiThread.join(100) != RW_THR_COMPLETED )
+        if(_guiThread.join(2000) != RW_THR_COMPLETED )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " _guiThread did not shutdown" << endl;
@@ -1038,7 +1036,7 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
 
     if(_perfThread.isValid())
     {
-        if(_perfThread.join(100) != RW_THR_COMPLETED )
+        if(_perfThread.join(2000) != RW_THR_COMPLETED )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " _perfThread did not shutdown" << endl;
@@ -1052,7 +1050,7 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
 
     if(_perfuThread.isValid())
     {
-        if(_perfuThread.join(100) != RW_THR_COMPLETED )
+        if(_perfuThread.join(2000) != RW_THR_COMPLETED )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " _perfuThread did not shutdown" << endl;
@@ -1066,7 +1064,7 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
 
     if(_tsyncThread.isValid())
     {
-        if(_tsyncThread.join(100) != RW_THR_COMPLETED )
+        if(_tsyncThread.join(2000) != RW_THR_COMPLETED )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " _tsyncThread did not shutdown" << endl;
@@ -1080,7 +1078,7 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
 
     if(_fillerThread.isValid())
     {
-        if(_fillerThread.join(100) != RW_THR_COMPLETED)
+        if(_fillerThread.join(2000) != RW_THR_COMPLETED)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " _fillerThread did not shutdown" << endl;
@@ -1094,7 +1092,7 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
 
     if(_vconfThread.isValid())
     {
-        if(_vconfThread.join(100) != RW_THR_COMPLETED )
+        if(_vconfThread.join(2000) != RW_THR_COMPLETED )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " _vconfThread did not shutdown" << endl;

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_tappaging.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:01 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,13 +21,13 @@
 #include "logger.h"
 
 CtiTableDeviceTapPaging::CtiTableDeviceTapPaging(RWCString pn) :
-   _deviceID(-1),
-   _pagerNumber(pn)
+_deviceID(-1),
+_pagerNumber(pn)
 {}
 
 CtiTableDeviceTapPaging::CtiTableDeviceTapPaging(const CtiTableDeviceTapPaging& aRef)
 {
-   *this = aRef;
+    *this = aRef;
 }
 
 CtiTableDeviceTapPaging::~CtiTableDeviceTapPaging()
@@ -37,166 +37,166 @@ CtiTableDeviceTapPaging& CtiTableDeviceTapPaging::operator=(const CtiTableDevice
 {
 
 
-   if(this != &aRef)
-   {
-      _deviceID    = aRef.getDeviceID();
-      _pagerNumber = aRef.getPagerNumber();
-   }
-   return *this;
+    if(this != &aRef)
+    {
+        _deviceID    = aRef.getDeviceID();
+        _pagerNumber = aRef.getPagerNumber();
+    }
+    return *this;
 }
 
 RWCString CtiTableDeviceTapPaging::getPagerNumber() const
 {
 
-   return _pagerNumber;
+    return _pagerNumber;
 }
 
 RWCString& CtiTableDeviceTapPaging::getPagerNumber()
 {
 
-   return _pagerNumber;
+    return _pagerNumber;
 }
 
 CtiTableDeviceTapPaging&   CtiTableDeviceTapPaging::setPagerNumber(const RWCString &aStr)
 {
 
 
-   _pagerNumber = aStr;
-   return *this;
+    _pagerNumber = aStr;
+    return *this;
 }
 
 void CtiTableDeviceTapPaging::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-   RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName() );
 
-   selector << devTbl["pagernumber"];
+    selector << devTbl["pagernumber"];
 
-   selector.from(devTbl);
+    selector.from(devTbl);
 
-   selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
+    selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
 }
 
 void CtiTableDeviceTapPaging::DecodeDatabaseReader(RWDBReader &rdr)
 {
 
 
-   {
-      CtiLockGuard<CtiLogger> logger_guard(dout);
-      if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
-   rdr["deviceid"] >> _deviceID;
-   rdr["pagernumber"] >> _pagerNumber;
+    rdr["deviceid"] >> _deviceID;
+    rdr["pagernumber"] >> _pagerNumber;
 }
 
 RWCString CtiTableDeviceTapPaging::getTableName()
 {
-   return "DeviceTapPagingSettings";
+    return "DeviceTapPagingSettings";
 }
 
 LONG CtiTableDeviceTapPaging::getDeviceID() const
 {
 
-   return _deviceID;
+    return _deviceID;
 }
 
 CtiTableDeviceTapPaging& CtiTableDeviceTapPaging::setDeviceID( const LONG deviceID )
 {
 
-   _deviceID = deviceID;
-   return *this;
+    _deviceID = deviceID;
+    return *this;
 }
 
 RWDBStatus CtiTableDeviceTapPaging::Restore()
 {
 
-   char temp[32];
+    char temp[32];
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBSelector selector = getDatabase().selector();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBSelector selector = getDatabase().selector();
 
-   selector <<
-      table["deviceid"] <<
-      table["pagernumber"];
+    selector <<
+    table["deviceid"] <<
+    table["pagernumber"];
 
-   selector.where( table["deviceid"] == getDeviceID() );
+    selector.where( table["deviceid"] == getDeviceID() );
 
-   RWDBReader reader = selector.reader( conn );
+    RWDBReader reader = selector.reader( conn );
 
-   if( reader() )
-   {
-      DecodeDatabaseReader( reader  );
-      setDirty( false );
-   }
-   else
-   {
-      setDirty( true );
-   }
-   return reader.status();
+    if( reader() )
+    {
+        DecodeDatabaseReader( reader  );
+        setDirty( false );
+    }
+    else
+    {
+        setDirty( true );
+    }
+    return reader.status();
 }
 
 RWDBStatus CtiTableDeviceTapPaging::Insert()
 {
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBInserter inserter = table.inserter();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBInserter inserter = table.inserter();
 
-   inserter <<
-      getDeviceID() <<
-      getPagerNumber();
+    inserter <<
+    getDeviceID() <<
+    getPagerNumber();
 
-   if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
-   {
-      setDirty(false);
-   }
+    if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    {
+        setDirty(false);
+    }
 
-   return inserter.status();
+    return inserter.status();
 }
 
 RWDBStatus CtiTableDeviceTapPaging::Update()
 {
-   char temp[32];
+    char temp[32];
 
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBUpdater updater = table.updater();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBUpdater updater = table.updater();
 
-   updater.where( table["deviceid"] == getDeviceID() );
+    updater.where( table["deviceid"] == getDeviceID() );
 
-   updater <<
-      table["pagernumber"].assign(getPagerNumber() );
+    updater <<
+    table["pagernumber"].assign(getPagerNumber() );
 
-   if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
-   {
-      setDirty(false);
-   }
+    if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    {
+        setDirty(false);
+    }
 
-   return updater.status();
+    return updater.status();
 }
 
 RWDBStatus CtiTableDeviceTapPaging::Delete()
 {
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBDeleter deleter = table.deleter();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBDeleter deleter = table.deleter();
 
-   deleter.where( table["deviceid"] == getDeviceID() );
-   deleter.execute( conn );
-   return deleter.status();
+    deleter.where( table["deviceid"] == getDeviceID() );
+    deleter.execute( conn );
+    return deleter.status();
 }
 

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_scandata.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:01 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -312,8 +312,8 @@ RWDBStatus CtiTableDeviceScanData::Restore()
 {
     char temp[32];
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBSelector selector = getDatabase().selector();
@@ -362,8 +362,8 @@ RWDBStatus CtiTableDeviceScanData::Update()
 {
     char temp[32];
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBUpdater updater = table.updater();
@@ -393,8 +393,8 @@ RWDBStatus CtiTableDeviceScanData::Update()
 
 RWDBStatus CtiTableDeviceScanData::Insert()
 {
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBInserter inserter = table.inserter();
@@ -422,8 +422,8 @@ RWDBStatus CtiTableDeviceScanData::Insert()
 
 RWDBStatus CtiTableDeviceScanData::Delete()
 {
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBDeleter deleter = table.deleter();
@@ -509,7 +509,7 @@ CtiTableDeviceScanData& CtiTableDeviceScanData::operator=(const CtiTableDeviceSc
 
 RWTime CtiTableDeviceScanData::getLastCommunicationTime(int i) const
 {
-   return _lastCommunicationTime[i];
+    return _lastCommunicationTime[i];
 }
 
 CtiTableDeviceScanData& CtiTableDeviceScanData::setLastCommunicationTime( int i, const RWTime& tme )

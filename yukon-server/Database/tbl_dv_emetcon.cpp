@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:59 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,277 +21,277 @@
 #include "logger.h"
 
 CtiTableEmetconLoadGroup::CtiTableEmetconLoadGroup() :
-   _deviceID(-1),
-   _silver(0),
-   _gold(0),
-   _addressUsage(SILVERADDRESS),
-   _relay(Invalid_Relay),
-   _routeID(-1)
+_deviceID(-1),
+_silver(0),
+_gold(0),
+_addressUsage(SILVERADDRESS),
+_relay(Invalid_Relay),
+_routeID(-1)
 {}
 
 CtiTableEmetconLoadGroup::CtiTableEmetconLoadGroup(const CtiTableEmetconLoadGroup& aRef)
 {
-   *this = aRef;
+    *this = aRef;
 }
 
 CtiTableEmetconLoadGroup::~CtiTableEmetconLoadGroup() {}
 
 CtiTableEmetconLoadGroup& CtiTableEmetconLoadGroup::operator=(const CtiTableEmetconLoadGroup& aRef)
 {
-   if(this != &aRef)
-   {
-      _deviceID      = aRef.getDeviceID();
-      _silver        = aRef.getSilver();
-      _gold          = aRef.getGold();
-      _addressUsage  = aRef.getAddressUsage();
-      _relay         = aRef.getRelay();
-      _routeID       = aRef.getRouteID();
-   }
-   return *this;
+    if(this != &aRef)
+    {
+        _deviceID      = aRef.getDeviceID();
+        _silver        = aRef.getSilver();
+        _gold          = aRef.getGold();
+        _addressUsage  = aRef.getAddressUsage();
+        _relay         = aRef.getRelay();
+        _routeID       = aRef.getRouteID();
+    }
+    return *this;
 }
 
 INT CtiTableEmetconLoadGroup::getEmetconAddress() const
 {
-   INT address;
+    INT address;
 
 
 
-   if(_addressUsage == GOLDADDRESS)
-   {
-      address = _gold;
-   }
-   else
-   {
-      address = _silver;
-   }
+    if(_addressUsage == GOLDADDRESS)
+    {
+        address = _gold;
+    }
+    else
+    {
+        address = _silver;
+    }
 
-   return address;
+    return address;
 }
 
 INT  CtiTableEmetconLoadGroup::getSilver() const
 {
 
-   return _silver;
+    return _silver;
 }
 
 CtiTableEmetconLoadGroup& CtiTableEmetconLoadGroup::setSilver( const INT a_silver )
 {
 
-   _silver = a_silver;
-   return *this;
+    _silver = a_silver;
+    return *this;
 }
 
 INT  CtiTableEmetconLoadGroup::getGold() const
 {
 
-   return _gold;
+    return _gold;
 }
 
 CtiTableEmetconLoadGroup& CtiTableEmetconLoadGroup::setGold( const INT a_gold )
 {
 
-   _gold = a_gold;
-   return *this;
+    _gold = a_gold;
+    return *this;
 }
 
 INT  CtiTableEmetconLoadGroup::getAddressUsage() const
 {
 
-   return _addressUsage;
+    return _addressUsage;
 }
 
 CtiTableEmetconLoadGroup& CtiTableEmetconLoadGroup::setAddressUsage( const INT a_addressUsage )
 {
 
-   _addressUsage = a_addressUsage;
-   return *this;
+    _addressUsage = a_addressUsage;
+    return *this;
 }
 
 INT  CtiTableEmetconLoadGroup::getRelay() const
 {
 
-   return _relay;
+    return _relay;
 }
 
 CtiTableEmetconLoadGroup& CtiTableEmetconLoadGroup::setRelay( const INT a_relay )
 {
-   _relay = a_relay;
-   return *this;
+    _relay = a_relay;
+    return *this;
 }
 
 LONG  CtiTableEmetconLoadGroup::getRouteID() const
 {
 
-   return _routeID;
+    return _routeID;
 }
 
 CtiTableEmetconLoadGroup& CtiTableEmetconLoadGroup::setRouteID( const LONG a_routeID )
 {
 
-   _routeID = a_routeID;
-   return *this;
+    _routeID = a_routeID;
+    return *this;
 }
 
 LONG  CtiTableEmetconLoadGroup::getDeviceID() const
 {
 
-   return _deviceID;
+    return _deviceID;
 }
 
 CtiTableEmetconLoadGroup& CtiTableEmetconLoadGroup::setDeviceID( const LONG deviceID )
 {
 
-   _deviceID = deviceID;
-   return *this;
+    _deviceID = deviceID;
+    return *this;
 }
 
 
 RWCString CtiTableEmetconLoadGroup::getTableName()
 {
-   return "LMGroupEmetcon";
+    return "LMGroupEmetcon";
 }
 
 void CtiTableEmetconLoadGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-   RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName() );
 
-   selector <<
-      devTbl["goldaddress"] <<
-      devTbl["silveraddress"] <<
-      devTbl["addressusage"] <<
-      devTbl["relayusage"] <<
-      devTbl["routeid"];
+    selector <<
+    devTbl["goldaddress"] <<
+    devTbl["silveraddress"] <<
+    devTbl["addressusage"] <<
+    devTbl["relayusage"] <<
+    devTbl["routeid"];
 
-   selector.from(devTbl);
+    selector.from(devTbl);
 
-   selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
-   // selector.where( selector.where() && keyTable["deviceid"] == devTbl["deviceid"] );
+    selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
+    // selector.where( selector.where() && keyTable["deviceid"] == devTbl["deviceid"] );
 }
 
 void CtiTableEmetconLoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
 {
-   RWCString rwsTemp;
+    RWCString rwsTemp;
 
 
 
-   {
-      CtiLockGuard<CtiLogger> logger_guard(dout);
-      if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
-   rdr["deviceid"] >> _deviceID;
-   rdr["goldaddress"]   >> _gold;
-   rdr["silveraddress"] >> _silver;
-   rdr["routeid"]       >> _routeID;
+    rdr["deviceid"] >> _deviceID;
+    rdr["goldaddress"]   >> _gold;
+    rdr["silveraddress"] >> _silver;
+    rdr["routeid"]       >> _routeID;
 
-   rdr["addressusage"] >> rwsTemp;
-   rwsTemp.toLower();
-   _addressUsage = ((rwsTemp == 'g') ? GOLDADDRESS : SILVERADDRESS);
+    rdr["addressusage"] >> rwsTemp;
+    rwsTemp.toLower();
+    _addressUsage = ((rwsTemp == 'g') ? GOLDADDRESS : SILVERADDRESS);
 
-   rdr["relayusage"] >> rwsTemp;
-   _relay = resolveRelayUsage(rwsTemp);
+    rdr["relayusage"] >> rwsTemp;
+    _relay = resolveRelayUsage(rwsTemp);
 
-   // Make these guys right with a binary world;
-   _silver -= 1;     // Silver is 0 through 59
-   _gold   += 59;    // Gold is 60 - 63
+    // Make these guys right with a binary world;
+    _silver -= 1;     // Silver is 0 through 59
+    _gold   += 59;    // Gold is 60 - 63
 }
 
 RWDBStatus CtiTableEmetconLoadGroup::Restore()
 {
 
-   char temp[32];
+    char temp[32];
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBSelector selector = getDatabase().selector();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBSelector selector = getDatabase().selector();
 
-   selector <<
-      table["deviceid"] <<
-      table["goldaddress"] <<
-      table["silveraddress"] <<
-      table["routeid"];
+    selector <<
+    table["deviceid"] <<
+    table["goldaddress"] <<
+    table["silveraddress"] <<
+    table["routeid"];
 
-   selector.where( table["deviceid"] == getDeviceID() );
+    selector.where( table["deviceid"] == getDeviceID() );
 
-   RWDBReader reader = selector.reader( conn );
+    RWDBReader reader = selector.reader( conn );
 
-   if( reader() )
-   {
-      DecodeDatabaseReader( reader );
-      setDirty( false );
-   }
-   else
-   {
-      setDirty( true );
-   }
-   return reader.status();
+    if( reader() )
+    {
+        DecodeDatabaseReader( reader );
+        setDirty( false );
+    }
+    else
+    {
+        setDirty( true );
+    }
+    return reader.status();
 }
 
 RWDBStatus CtiTableEmetconLoadGroup::Insert()
 {
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBInserter inserter = table.inserter();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBInserter inserter = table.inserter();
 
-   inserter <<
-      getDeviceID() <<
-      getGold() <<
-      getSilver() <<
-      getRouteID();
+    inserter <<
+    getDeviceID() <<
+    getGold() <<
+    getSilver() <<
+    getRouteID();
 
-   if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
-   {
-      setDirty(false);
-   }
+    if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    {
+        setDirty(false);
+    }
 
-   return inserter.status();
+    return inserter.status();
 }
 
 RWDBStatus CtiTableEmetconLoadGroup::Update()
 {
-   char temp[32];
+    char temp[32];
 
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBUpdater updater = table.updater();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBUpdater updater = table.updater();
 
-   updater.where( table["deviceid"] == getDeviceID() );
+    updater.where( table["deviceid"] == getDeviceID() );
 
-   updater <<
-      table["goldaddress"].assign(getGold() ) <<
-      table["silveraddress"].assign(getSilver() ) <<
-      table["routeid"].assign(getRouteID() );
+    updater <<
+    table["goldaddress"].assign(getGold() ) <<
+    table["silveraddress"].assign(getSilver() ) <<
+    table["routeid"].assign(getRouteID() );
 
-   if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
-   {
-      setDirty(false);
-   }
+    if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    {
+        setDirty(false);
+    }
 
-   return updater.status();
+    return updater.status();
 }
 
 RWDBStatus CtiTableEmetconLoadGroup::Delete()
 {
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBDeleter deleter = table.deleter();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBDeleter deleter = table.deleter();
 
-   deleter.where( table["deviceid"] == getDeviceID() );
-   deleter.execute( conn );
-   return deleter.status();
+    deleter.where( table["deviceid"] == getDeviceID() );
+    deleter.execute( conn );
+    return deleter.status();
 }
 

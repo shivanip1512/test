@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_lmg_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:00 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -173,8 +173,8 @@ RWDBStatus CtiTableRippleLoadGroup::Restore()
 
     char temp[32];
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBSelector selector = getDatabase().selector();
@@ -207,8 +207,8 @@ RWDBStatus CtiTableRippleLoadGroup::Insert()
 {
 
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBInserter inserter = table.inserter();
@@ -234,8 +234,8 @@ RWDBStatus CtiTableRippleLoadGroup::Update()
 
 
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBUpdater updater = table.updater();
@@ -260,8 +260,8 @@ RWDBStatus CtiTableRippleLoadGroup::Delete()
 {
 
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBDeleter deleter = table.deleter();

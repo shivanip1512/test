@@ -2,13 +2,13 @@
         Filename:  lmenergyexchangecustomerreply.cpp
 
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiLMEnergyExchangeCustomerReply.
                         CtiLMEnergyExchangeCustomerReply maintains the state and handles
                         the persistence of groups in Load Management.
 
         Initial Date:  5/15/2001
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
@@ -30,12 +30,12 @@ RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeCustomerReply, CTILMENERGYEXCHANGECUSTO
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeCustomerReply::CtiLMEnergyExchangeCustomerReply()
-{   
+{
 }
 
 CtiLMEnergyExchangeCustomerReply::CtiLMEnergyExchangeCustomerReply(RWDBReader& rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMEnergyExchangeCustomerReply::CtiLMEnergyExchangeCustomerReply(const CtiLMEnergyExchangeCustomerReply& customerreply)
@@ -192,7 +192,7 @@ CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setOfferId(U
     setAcceptStatus
 
     Sets the accept status of the customer
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setAcceptStatus(const RWCString& accstatus)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -204,7 +204,7 @@ CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setAcceptSta
     setAcceptDateTime
 
     Sets the accept date time of the customer
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setAcceptDateTime(const RWDBDateTime& acctime)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -228,7 +228,7 @@ CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setRevisionN
     setIPAddressOfAcceptUser
 
     Sets the ip address of the customer
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setIPAddressOfAcceptUser(const RWCString& ipaddress)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -240,7 +240,7 @@ CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setIPAddress
     setUserIdName
 
     Sets the user id name of the customer
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setUserIdName(const RWCString& username)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -250,9 +250,9 @@ CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setUserIdNam
 
 /*---------------------------------------------------------------------------
     setNameOfAcceptPerson
-    
+
     Sets the name of the accept person of the customer
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setNameOfAcceptPerson(const RWCString& nameaccperson)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -262,9 +262,9 @@ CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setNameOfAcc
 
 /*---------------------------------------------------------------------------
     setEnergyExchangeNotes
-    
+
     Sets the energy exchange notes of the customer
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setEnergyExchangeNotes(const RWCString& exchangenotes)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -275,7 +275,7 @@ CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setEnergyExc
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeCustomerReply::restoreGuts(RWvistream& istrm)
@@ -287,53 +287,53 @@ void CtiLMEnergyExchangeCustomerReply::restoreGuts(RWvistream& istrm)
 
     RWTime tempTime;
     istrm >> _customerid
-          >> _offerid
-          >> _acceptstatus
-          >> tempTime
-          >> _revisionnumber
-          >> _ipaddressofacceptuser
-          >> _useridname
-          >> _nameofacceptperson
-          >> _energyexchangenotes
-          >> _lmenergyexchangehourlycustomers;
+    >> _offerid
+    >> _acceptstatus
+    >> tempTime
+    >> _revisionnumber
+    >> _ipaddressofacceptuser
+    >> _useridname
+    >> _nameofacceptperson
+    >> _energyexchangenotes
+    >> _lmenergyexchangehourlycustomers;
 
     _acceptdatetime = RWDBDateTime(tempTime);
 }
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeCustomerReply::saveGuts(RWvostream& ostrm ) const  
+void CtiLMEnergyExchangeCustomerReply::saveGuts(RWvostream& ostrm ) const
 {
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        
+
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _customerid
-          << _offerid
-          << _acceptstatus
-          << _acceptdatetime.rwtime()
-          << _revisionnumber
-          << _ipaddressofacceptuser
-          << _useridname
-          << _nameofacceptperson
-          << _energyexchangenotes
-          << _lmenergyexchangehourlycustomers;
+    << _offerid
+    << _acceptstatus
+    << _acceptdatetime.rwtime()
+    << _revisionnumber
+    << _ipaddressofacceptuser
+    << _useridname
+    << _nameofacceptperson
+    << _energyexchangenotes
+    << _lmenergyexchangehourlycustomers;
 
     return;
 }
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeCustomerReply* CtiLMEnergyExchangeCustomerReply::replicate() const
 {
-    return (new CtiLMEnergyExchangeCustomerReply(*this));
+    return(new CtiLMEnergyExchangeCustomerReply(*this));
 }
 
 /*---------------------------------------------------------------------------
@@ -354,7 +354,7 @@ CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::operator=(co
         _useridname = right._useridname;
         _nameofacceptperson = right._nameofacceptperson;
         _energyexchangenotes = right._energyexchangenotes;
-        
+
         _lmenergyexchangehourlycustomers.clearAndDestroy();
         for(UINT i=0;i<right._lmenergyexchangehourlycustomers.entries();i++)
         {
@@ -371,9 +371,9 @@ CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::operator=(co
 int CtiLMEnergyExchangeCustomerReply::operator==(const CtiLMEnergyExchangeCustomerReply& right) const
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    return ( (getCustomerId() == right.getCustomerId()) &&
-             (getOfferId() == right.getOfferId()) &&
-             (getRevisionNumber() == right.getRevisionNumber()) );
+    return( (getCustomerId() == right.getCustomerId()) &&
+            (getOfferId() == right.getOfferId()) &&
+            (getRevisionNumber() == right.getRevisionNumber()) );
 }
 
 /*---------------------------------------------------------------------------
@@ -387,7 +387,7 @@ int CtiLMEnergyExchangeCustomerReply::operator!=(const CtiLMEnergyExchangeCustom
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeCustomerReply::restore(RWDBReader& rdr)
@@ -414,11 +414,11 @@ void CtiLMEnergyExchangeCustomerReply::addLMEnergyExchangeCustomerReplyTable()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
-        if ( conn.isValid() )
+        if( conn.isValid() )
         {
             if( _LM_DEBUG )
             {
@@ -432,14 +432,14 @@ void CtiLMEnergyExchangeCustomerReply::addLMEnergyExchangeCustomerReplyTable()
             RWDBInserter inserter = lmEnergyExchangeCustomerReplyTable.inserter();
 
             inserter << getCustomerId()
-                     << getOfferId()
-                     << getAcceptStatus()
-                     << getAcceptDateTime()
-                     << getRevisionNumber()
-                     << getIPAddressOfAcceptUser()
-                     << getUserIdName()
-                     << getNameOfAcceptPerson()
-                     << getEnergyExchangeNotes();
+            << getOfferId()
+            << getAcceptStatus()
+            << getAcceptDateTime()
+            << getRevisionNumber()
+            << getIPAddressOfAcceptUser()
+            << getUserIdName()
+            << getNameOfAcceptPerson()
+            << getEnergyExchangeNotes();
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -465,22 +465,22 @@ void CtiLMEnergyExchangeCustomerReply::updateLMEnergyExchangeCustomerReplyTable(
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
-        if ( conn.isValid() )
+        if( conn.isValid() )
         {
             RWDBDatabase db = getDatabase();
             RWDBTable lmEnergyExchangeCustomerReplyTable = db.table("lmenergyexchangecustomerreply");
             RWDBUpdater updater = lmEnergyExchangeCustomerReplyTable.updater();
 
             updater << lmEnergyExchangeCustomerReplyTable["acceptstatus"].assign(getAcceptStatus())
-                    << lmEnergyExchangeCustomerReplyTable["acceptdatetime"].assign(getAcceptDateTime())
-                    << lmEnergyExchangeCustomerReplyTable["ipaddressofacceptuser"].assign(getIPAddressOfAcceptUser())
-                    << lmEnergyExchangeCustomerReplyTable["useridname"].assign(getUserIdName())
-                    << lmEnergyExchangeCustomerReplyTable["nameofacceptperson"].assign(getNameOfAcceptPerson())
-                    << lmEnergyExchangeCustomerReplyTable["energyexchangenotes"].assign(getEnergyExchangeNotes());
+            << lmEnergyExchangeCustomerReplyTable["acceptdatetime"].assign(getAcceptDateTime())
+            << lmEnergyExchangeCustomerReplyTable["ipaddressofacceptuser"].assign(getIPAddressOfAcceptUser())
+            << lmEnergyExchangeCustomerReplyTable["useridname"].assign(getUserIdName())
+            << lmEnergyExchangeCustomerReplyTable["nameofacceptperson"].assign(getNameOfAcceptPerson())
+            << lmEnergyExchangeCustomerReplyTable["energyexchangenotes"].assign(getEnergyExchangeNotes());
 
             updater.where(lmEnergyExchangeCustomerReplyTable["customerid"]==getCustomerId() &&
                           lmEnergyExchangeCustomerReplyTable["offerid"]==getOfferId() &&
@@ -503,7 +503,7 @@ void CtiLMEnergyExchangeCustomerReply::updateLMEnergyExchangeCustomerReplyTable(
 
 /*---------------------------------------------------------------------------
     dumpDynamicData
-    
+
     Writes out the dynamic information for this customer.
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeCustomerReply::dumpDynamicData()
@@ -515,16 +515,16 @@ void CtiLMEnergyExchangeCustomerReply::dumpDynamicData()
 
 /*---------------------------------------------------------------------------
     restoreDynamicData
-    
+
     Restores self's dynamic data given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeCustomerReply::restoreDynamicData(RWDBReader& rdr)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
-    /*RWDBConnection conn = getConnection();
+    /*CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
         if ( conn.isValid() )
         {

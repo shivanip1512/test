@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/tbl_mcsched.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:09 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,43 +37,43 @@ CtiTableMCSchedule::CtiTableMCSchedule()
 }
 
 CtiTableMCSchedule::CtiTableMCSchedule(
-                        long sched_id,                        
-                        const string& category_name,
-                        long h_sched_id,
-                        const string& cmd_file,
-                        const string& state,
-                        const string& start_policy,
-                        const string& stop_policy,
-                        const RWTime& last_run_time,
-                        const string& last_run_status,
-                        int start_day,
-                        int start_month,
-                        int start_year,
-                        const string& start_time,
-                        const string& stop_time,
-                        const string& valid_week_days,
-                        int duration,
-                        const RWTime& manual_start_time,
-                        const RWTime& manual_stop_time )
-                       :
-                        _schedule_id(sched_id),
-                        _category_name(category_name),
-                        _holiday_schedule_id(h_sched_id),
-                        _command_file(cmd_file),
-                        _current_state(state),
-                        _start_policy(start_policy),
-                        _stop_policy(stop_policy),
-                        _last_run_time(last_run_time),
-                        _last_run_status(last_run_status),
-                        _start_day(start_day),
-                        _start_month(start_month),
-                        _start_year(start_year),
-                        _start_time(start_time),
-                        _stop_time(stop_time),
-                        _valid_week_days(valid_week_days),
-                        _duration(duration),
-                        _manual_start_time(manual_start_time),
-                        _manual_stop_time(manual_stop_time)
+                                      long sched_id,
+                                      const string& category_name,
+                                      long h_sched_id,
+                                      const string& cmd_file,
+                                      const string& state,
+                                      const string& start_policy,
+                                      const string& stop_policy,
+                                      const RWTime& last_run_time,
+                                      const string& last_run_status,
+                                      int start_day,
+                                      int start_month,
+                                      int start_year,
+                                      const string& start_time,
+                                      const string& stop_time,
+                                      const string& valid_week_days,
+                                      int duration,
+                                      const RWTime& manual_start_time,
+                                      const RWTime& manual_stop_time )
+:
+_schedule_id(sched_id),
+_category_name(category_name),
+_holiday_schedule_id(h_sched_id),
+_command_file(cmd_file),
+_current_state(state),
+_start_policy(start_policy),
+_stop_policy(stop_policy),
+_last_run_time(last_run_time),
+_last_run_status(last_run_status),
+_start_day(start_day),
+_start_month(start_month),
+_start_year(start_year),
+_start_time(start_time),
+_stop_time(stop_time),
+_valid_week_days(valid_week_days),
+_duration(duration),
+_manual_start_time(manual_start_time),
+_manual_stop_time(manual_stop_time)
 {
 }
 
@@ -86,26 +86,26 @@ void CtiTableMCSchedule::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSele
     keyTable = db.table(_table_name);
 
     selector                            <<
-        keyTable["scheduleid"]          <<
-        keyTable["categoryname"]        <<        
-        keyTable["holidayscheduleid"]   <<
-        keyTable["commandfile"]         <<
-        keyTable["currentstate"]        <<
-        keyTable["startpolicy"]         <<
-        keyTable["stoppolicy"]          <<
-        keyTable["lastruntime"]         <<
-        keyTable["lastrunstatus"]       <<
-        keyTable["startday"]            <<
-        keyTable["startmonth"]          <<
-        keyTable["startyear"]           <<
-        keyTable["starttime"]           <<
-        keyTable["stoptime"]            <<
-        keyTable["validweekdays"]       <<
-        keyTable["duration"]            <<
-        keyTable["manualstarttime"]     <<
-        keyTable["manualstoptime"];
+    keyTable["scheduleid"]          <<
+    keyTable["categoryname"]        <<
+    keyTable["holidayscheduleid"]   <<
+    keyTable["commandfile"]         <<
+    keyTable["currentstate"]        <<
+    keyTable["startpolicy"]         <<
+    keyTable["stoppolicy"]          <<
+    keyTable["lastruntime"]         <<
+    keyTable["lastrunstatus"]       <<
+    keyTable["startday"]            <<
+    keyTable["startmonth"]          <<
+    keyTable["startyear"]           <<
+    keyTable["starttime"]           <<
+    keyTable["stoptime"]            <<
+    keyTable["validweekdays"]       <<
+    keyTable["duration"]            <<
+    keyTable["manualstarttime"]     <<
+    keyTable["manualstoptime"];
 
-   selector.from(keyTable);
+    selector.from(keyTable);
 }
 
 bool CtiTableMCSchedule::DecodeDatabaseReader(RWDBReader &rdr)
@@ -116,11 +116,11 @@ bool CtiTableMCSchedule::DecodeDatabaseReader(RWDBReader &rdr)
     // a temporary RWCString and then copy it
     RWCString temp;
 
-    rdr["scheduleid"]       >> _schedule_id;    
+    rdr["scheduleid"]       >> _schedule_id;
 
     rdr["categoryname"]     >> temp;
     _category_name = temp;
-    
+
     rdr["holidayscheduleid"] >> _holiday_schedule_id;
 
     rdr["commandfile"]      >> temp;
@@ -179,97 +179,97 @@ bool CtiTableMCSchedule::Update()
     bool ret_val = false;
     string sql;
 
-   try
-   {
-       {
-           RWDBConnection conn = getConnection();
-           RWLockGuard<RWDBConnection> conn_guard(conn);
+    try
+    {
+        {
+            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+            RWDBConnection conn = getConnection();
 
-           RWDBTable t = conn.database().table( _table_name );
+            RWDBTable t = conn.database().table( _table_name );
 
-           RWDBUpdater updater = t.updater();
+            RWDBUpdater updater = t.updater();
 
-           updater.where( t["ScheduleID"] == getScheduleID() );
-           
-           updater << t["CategoryName"].assign(
-               RWCString( (const char*) getCategoryName().data() ));
-           
-           updater << t["HolidayScheduleID"].assign(getHolidayScheduleID());
+            updater.where( t["ScheduleID"] == getScheduleID() );
 
-           updater << t["CommandFile"].assign(
-               RWCString( (const char*) getCommandFile().data() ));
+            updater << t["CategoryName"].assign(
+                                               RWCString( (const char*) getCategoryName().data() ));
 
-           updater << t["CurrentState"].assign(
-               RWCString( (const char*) getCurrentState().data() ));
+            updater << t["HolidayScheduleID"].assign(getHolidayScheduleID());
 
-           updater << t["StartPolicy"].assign(
-               RWCString( (const char*) getStartPolicy().data() ));
+            updater << t["CommandFile"].assign(
+                                              RWCString( (const char*) getCommandFile().data() ));
 
-           updater << t["StopPolicy"].assign(
-               RWCString( (const char*) getStopPolicy().data() ));
+            updater << t["CurrentState"].assign(
+                                               RWCString( (const char*) getCurrentState().data() ));
 
-           if( getLastRunTime().isValid() )
+            updater << t["StartPolicy"].assign(
+                                              RWCString( (const char*) getStartPolicy().data() ));
+
+            updater << t["StopPolicy"].assign(
+                                             RWCString( (const char*) getStopPolicy().data() ));
+
+            if( getLastRunTime().isValid() )
                 updater << t["LastRunTime"].assign( getLastRunTime() );
 
-           updater << t["LastRunStatus"].assign(
-               RWCString( (const char*) getLastRunStatus().data() ));
+            updater << t["LastRunStatus"].assign(
+                                                RWCString( (const char*) getLastRunStatus().data() ));
 
-           updater << t["StartDay"].assign( getStartDay() );
-           updater << t["StartMonth"].assign( getStartMonth() );
-           updater << t["StartYear"].assign( getStartYear() );
+            updater << t["StartDay"].assign( getStartDay() );
+            updater << t["StartMonth"].assign( getStartMonth() );
+            updater << t["StartYear"].assign( getStartYear() );
 
-           updater << t["StartTime"].assign(
-               RWCString( (const char*) getStartTime().data() ));
+            updater << t["StartTime"].assign(
+                                            RWCString( (const char*) getStartTime().data() ));
 
-           updater << t["StopTime"].assign(
-               RWCString( (const char*) getStopTime().data() ));
+            updater << t["StopTime"].assign(
+                                           RWCString( (const char*) getStopTime().data() ));
 
-           updater << t["ValidWeekDays"].assign(
-               RWCString( (const char*) getValidWeekDays().data() ));
+            updater << t["ValidWeekDays"].assign(
+                                                RWCString( (const char*) getValidWeekDays().data() ));
 
-           updater << t["Duration"].assign( getDuration() );
+            updater << t["Duration"].assign( getDuration() );
 
-           /* manual start and stop times updating is disbled until
-              a way is found to insert a null or invalid date */
+            /* manual start and stop times updating is disbled until
+               a way is found to insert a null or invalid date */
 
 
-           if( getManualStartTime().isValid() )
+            if( getManualStartTime().isValid() )
                 updater << t["ManualStartTime"].assign( getManualStartTime() );
-           else
-               updater << t["ManualStartTime"].assign( RWDBValue() );
+            else
+                updater << t["ManualStartTime"].assign( RWDBValue() );
 
-           if( getManualStopTime().isValid() )
+            if( getManualStopTime().isValid() )
                 updater << t["ManualStopTime"].assign( getManualStopTime() );
-           else
+            else
                 updater << t["ManualStopTime"].assign( RWDBValue() );
 
-           sql = (const char*) updater.asString().data();
+            sql = (const char*) updater.asString().data();
 
-           RWDBResult result = updater.execute(conn);
+            RWDBResult result = updater.execute(conn);
 
-           ret_val = ( result.status().errorCode() == RWDBStatus::ok );
-       }
-   }
-   catch(...)
-   {
-       CtiLockGuard< CtiLogger > guard(dout);
-       dout << RWTime()
-            << " An exception occured updating table \""
-            << _table_name
-            << "\""
-            << endl;
-   }
+            ret_val = ( result.status().errorCode() == RWDBStatus::ok );
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << RWTime()
+        << " An exception occured updating table \""
+        << _table_name
+        << "\""
+        << endl;
+    }
 
-   if( !ret_val )
-   {
-       CtiLockGuard< CtiLogger > guard(dout);
-       dout << RWTime()
-            << " "
-            << sql
-            << endl;
-   }
+    if( !ret_val )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << RWTime()
+        << " "
+        << sql
+        << endl;
+    }
 
-   return ret_val;
+    return ret_val;
 }
 
 bool CtiTableMCSchedule::Insert()
@@ -280,60 +280,60 @@ bool CtiTableMCSchedule::Insert()
     try
     {
         {
+            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
-            RWLockGuard<RWDBConnection> conn_guard(conn);
 
             RWDBTable t = conn.database().table( _table_name );
             RWDBInserter inserter = t.inserter();
 
-            inserter << getScheduleID();            
+            inserter << getScheduleID();
 
-           inserter << RWCString( (const char*) getCategoryName().data() );           
+            inserter << RWCString( (const char*) getCategoryName().data() );
 
-           inserter << getHolidayScheduleID();
+            inserter << getHolidayScheduleID();
 
-           inserter << RWCString( (const char*) getCommandFile().data() );
+            inserter << RWCString( (const char*) getCommandFile().data() );
 
-           inserter << RWCString( (const char*) getCurrentState().data() );
+            inserter << RWCString( (const char*) getCurrentState().data() );
 
-           inserter << RWCString( (const char*) getStartPolicy().data() );
+            inserter << RWCString( (const char*) getStartPolicy().data() );
 
-           inserter << RWCString( (const char*) getStopPolicy().data() );
+            inserter << RWCString( (const char*) getStopPolicy().data() );
 
-           if( getLastRunTime().isValid() )
+            if( getLastRunTime().isValid() )
                 inserter << RWDBDateTime( getLastRunTime() );
-           else
+            else
                 inserter << RWDBValue(); //null
 
-           inserter << RWCString( (const char*) getLastRunStatus().data() );
+            inserter << RWCString( (const char*) getLastRunStatus().data() );
 
-           inserter << getStartDay();
-           inserter << getStartMonth();
-           inserter << getStartYear();
+            inserter << getStartDay();
+            inserter << getStartMonth();
+            inserter << getStartYear();
 
-           inserter << RWCString( (const char*) getStartTime().data());
+            inserter << RWCString( (const char*) getStartTime().data());
 
-           inserter << RWCString( (const char*) getStopTime().data() );
+            inserter << RWCString( (const char*) getStopTime().data() );
 
-           inserter << RWCString( (const char*) getValidWeekDays().data() );
+            inserter << RWCString( (const char*) getValidWeekDays().data() );
 
-           inserter << getDuration();
+            inserter << getDuration();
 
-           if( getManualStartTime().isValid() )
+            if( getManualStartTime().isValid() )
                 inserter << RWDBDateTime( getManualStartTime() );
-           else
+            else
                 inserter << RWDBValue(); //null
 
-           if( getManualStopTime().isValid() )
+            if( getManualStopTime().isValid() )
                 inserter << RWDBDateTime( getManualStopTime() );
-           else
+            else
                 inserter << RWDBValue(); //null
 
-           sql = (const char*) inserter.asString().data();
+            sql = (const char*) inserter.asString().data();
 
-           RWDBResult result = inserter.execute(conn);
+            RWDBResult result = inserter.execute(conn);
 
-           ret_val = ( result.status().errorCode() == RWDBStatus::ok );
+            ret_val = ( result.status().errorCode() == RWDBStatus::ok );
 
         }
     }
@@ -341,19 +341,19 @@ bool CtiTableMCSchedule::Insert()
     {
         CtiLockGuard< CtiLogger > guard(dout);
         dout << RWTime()
-            << " An exception occured inserting into table \""
-            << _table_name
-            << "\""
-            << endl;
+        << " An exception occured inserting into table \""
+        << _table_name
+        << "\""
+        << endl;
     }
 
     if( !ret_val )
     {
         CtiLockGuard< CtiLogger > guard(dout);
         dout << RWTime()
-             << " "
-             << sql
-             << endl;
+        << " "
+        << sql
+        << endl;
     }
 
     return ret_val;
@@ -367,38 +367,38 @@ bool CtiTableMCSchedule::Delete()
 
     try
     {
-      {
-          RWDBConnection conn = getConnection();
-          RWLockGuard<RWDBConnection> conn_guard(conn);
+        {
+            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+            RWDBConnection conn = getConnection();
 
-          RWDBTable t = conn.database().table( _table_name );
-          RWDBDeleter deleter = t.deleter();
+            RWDBTable t = conn.database().table( _table_name );
+            RWDBDeleter deleter = t.deleter();
 
-          deleter.where( t["ScheduleID"] == getScheduleID() );
+            deleter.where( t["ScheduleID"] == getScheduleID() );
 
-          sql = (const char*) deleter.asString().data();
+            sql = (const char*) deleter.asString().data();
 
-          RWDBResult result = deleter.execute();
-          ret_val = ( result.status().errorCode() == RWDBStatus::ok );
-      }
+            RWDBResult result = deleter.execute();
+            ret_val = ( result.status().errorCode() == RWDBStatus::ok );
+        }
     }
     catch(...)
     {
         CtiLockGuard< CtiLogger > guard(dout);
-       dout << RWTime()
-            << " An exception occured deleting from table \""
-            << _table_name
-            << "\""
-            << endl;
+        dout << RWTime()
+        << " An exception occured deleting from table \""
+        << _table_name
+        << "\""
+        << endl;
     }
 
     if( !ret_val )
     {
-       CtiLockGuard< CtiLogger > guard(dout);
-       dout << RWTime()
-            << " "
-            << sql
-            << endl;
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << RWTime()
+        << " "
+        << sql
+        << endl;
     }
 
     return ret_val;
@@ -582,7 +582,7 @@ CtiTableMCSchedule& CtiTableMCSchedule::setStopTime(const string& stop_time)
 
 
 CtiTableMCSchedule& CtiTableMCSchedule::setValidWeekDays(
-    const string& valid_week_days)
+                                                        const string& valid_week_days)
 {
     _valid_week_days = valid_week_days;
     return *this;
@@ -595,14 +595,14 @@ CtiTableMCSchedule& CtiTableMCSchedule::setDuration(int duration)
 }
 
 CtiTableMCSchedule& CtiTableMCSchedule::setManualStartTime(
-    const RWTime& manual_start_time )
+                                                          const RWTime& manual_start_time )
 {
     _manual_start_time = manual_start_time;
     return *this;
 }
 
 CtiTableMCSchedule& CtiTableMCSchedule::setManualStopTime(
-    const RWTime& manual_stop_time )
+                                                         const RWTime& manual_stop_time )
 {
     _manual_stop_time = manual_stop_time;
     return *this;

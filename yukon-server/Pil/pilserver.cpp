@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/18 21:43:53 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/05/02 17:02:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -953,6 +953,9 @@ void CtiPILServer::vgConnThread()
 
 
     } /* End of for */
+
+    VanGoghConnection.WriteConnQue(new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
+    VanGoghConnection.ShutdownConnection();
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_rtroute.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:09 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,7 +38,7 @@ CtiTableRoute::~CtiTableRoute() {}
 
 CtiTableRoute& CtiTableRoute::operator=(const CtiTableRoute& aRef)
 {
-    if (this != &aRef)
+    if(this != &aRef)
     {
         RouteID  = aRef.getRouteID();
         Type     = aRef.getType();
@@ -74,16 +74,16 @@ RWCString& CtiTableRoute::getSQLConditions(RWCString &str)
 
 void CtiTableRoute::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-   keyTable = db.table("Route");
+    keyTable = db.table("Route");
 
-   selector <<
-      keyTable["routeid"] <<
-      keyTable["name"] <<
-      keyTable["type"];
+    selector <<
+    keyTable["routeid"] <<
+    keyTable["name"] <<
+    keyTable["type"];
 
-   selector.from(keyTable);
+    selector.from(keyTable);
 
-   // No where clause...
+    // No where clause...
 
 }
 
@@ -121,8 +121,8 @@ CtiTableRoute& CtiTableRoute::setRouteID( const LONG aRouteID )
 void CtiTableRoute::Insert()
 {
     {
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
         RWDBTable table = getDatabase().table( getTableName() );
         RWDBInserter inserter = table.inserter();
@@ -135,8 +135,8 @@ void CtiTableRoute::Insert()
 void CtiTableRoute::Update()
 {
     {
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
         RWDBTable table = getDatabase().table( getTableName() );
         RWDBUpdater updater = table.updater();
@@ -152,8 +152,8 @@ void CtiTableRoute::Update()
 void CtiTableRoute::Delete()
 {
     {
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
         RWDBTable table = getDatabase().table( getTableName() );
         RWDBDeleter deleter = table.deleter();
@@ -167,8 +167,8 @@ void CtiTableRoute::Delete()
 void CtiTableRoute::Restore()
 {
     {
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
         RWDBTable table = getDatabase().table( getTableName() );
         RWDBSelector selector = getDatabase().selector();
@@ -178,10 +178,11 @@ void CtiTableRoute::Restore()
 
         RWDBReader reader = selector.reader( conn );
 
-        if ( reader() )
+        if( reader() )
         {
             DecodeDatabaseReader( reader );
-        } else
+        }
+        else
         {
             setDirty( true );
         }
@@ -198,8 +199,8 @@ void CtiTableRoute::DecodeDatabaseReader(RWDBReader &rdr)
     RWCString rwsTemp;
 
     {
-       CtiLockGuard<CtiLogger> logger_guard(dout);
-       if (getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     //rdr >> RouteID >> Name >> rwsTemp;

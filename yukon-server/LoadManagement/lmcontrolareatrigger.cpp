@@ -2,14 +2,14 @@
         Filename:  lmcontrolareatrigger.cpp
 
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiLMControlAreaTrigger.
                         CtiLMControlAreaTrigger maintains the state and handles
                         the persistence of control area triggers in Load
                         Management.
 
         Initial Date:  8/18/2000
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2000
 ---------------------------------------------------------------------------*/
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
@@ -31,12 +31,12 @@ RWDEFINE_COLLECTABLE( CtiLMControlAreaTrigger, CTILMCONTROLAREATRIGGER_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger::CtiLMControlAreaTrigger()
-{   
+{
 }
 
 CtiLMControlAreaTrigger::CtiLMControlAreaTrigger(RWDBReader& rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMControlAreaTrigger::CtiLMControlAreaTrigger(const CtiLMControlAreaTrigger& lmcontrolareatrigger)
@@ -53,7 +53,7 @@ CtiLMControlAreaTrigger::~CtiLMControlAreaTrigger()
 
 /*---------------------------------------------------------------------------
     getPAOId
-    
+
     Returns the unique id of the trigger
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlAreaTrigger::getPAOId() const
@@ -64,7 +64,7 @@ ULONG CtiLMControlAreaTrigger::getPAOId() const
 
 /*---------------------------------------------------------------------------
     getTriggerNumber
-    
+
     Returns the trigger number of the trigger
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlAreaTrigger::getTriggerNumber() const
@@ -86,7 +86,7 @@ const RWCString& CtiLMControlAreaTrigger::getTriggerType() const
 
 /*---------------------------------------------------------------------------
     getPointId
-    
+
     Returns the point id of the trigger
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlAreaTrigger::getPointId() const
@@ -97,7 +97,7 @@ ULONG CtiLMControlAreaTrigger::getPointId() const
 
 /*---------------------------------------------------------------------------
     getPointValue
-    
+
     Returns the point value of the trigger
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMControlAreaTrigger::getPointValue() const
@@ -108,7 +108,7 @@ DOUBLE CtiLMControlAreaTrigger::getPointValue() const
 
 /*---------------------------------------------------------------------------
     getLastPointValueTimestamp
-    
+
     Returns the timestamp of the last point value received by the trigger
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMControlAreaTrigger::getLastPointValueTimestamp() const
@@ -119,7 +119,7 @@ const RWDBDateTime& CtiLMControlAreaTrigger::getLastPointValueTimestamp() const
 
 /*---------------------------------------------------------------------------
     getNormalState
-    
+
     Returns the raw state of the normal state of the trigger
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlAreaTrigger::getNormalState() const
@@ -130,7 +130,7 @@ ULONG CtiLMControlAreaTrigger::getNormalState() const
 
 /*---------------------------------------------------------------------------
     getThreshold
-    
+
     Returns the threshold of the trigger
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMControlAreaTrigger::getThreshold() const
@@ -141,7 +141,7 @@ DOUBLE CtiLMControlAreaTrigger::getThreshold() const
 
 /*---------------------------------------------------------------------------
     getProjectionType
-    
+
     Returns the projection type of the trigger
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMControlAreaTrigger::getProjectionType() const
@@ -152,7 +152,7 @@ const RWCString& CtiLMControlAreaTrigger::getProjectionType() const
 
 /*---------------------------------------------------------------------------
     getProjectionPoints
-    
+
     Returns the number previous points to include in the projection
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlAreaTrigger::getProjectionPoints() const
@@ -163,7 +163,7 @@ ULONG CtiLMControlAreaTrigger::getProjectionPoints() const
 
 /*---------------------------------------------------------------------------
     getProjectAheadDuration
-    
+
     Returns how far out to do the projection in seconds
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlAreaTrigger::getProjectAheadDuration() const
@@ -174,7 +174,7 @@ ULONG CtiLMControlAreaTrigger::getProjectAheadDuration() const
 
 /*---------------------------------------------------------------------------
     getThresholdKickPercent
-    
+
     Returns the threshold kick percentage of the trigger
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlAreaTrigger::getThresholdKickPercent() const
@@ -185,7 +185,7 @@ ULONG CtiLMControlAreaTrigger::getThresholdKickPercent() const
 
 /*---------------------------------------------------------------------------
     getMinRestoreOffset
-    
+
     Returns the minimum restore offset of the trigger
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMControlAreaTrigger::getMinRestoreOffset() const
@@ -196,7 +196,7 @@ DOUBLE CtiLMControlAreaTrigger::getMinRestoreOffset() const
 
 /*---------------------------------------------------------------------------
     getPeakPointId
-    
+
     Returns the peak point id of the trigger
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlAreaTrigger::getPeakPointId() const
@@ -207,7 +207,7 @@ ULONG CtiLMControlAreaTrigger::getPeakPointId() const
 
 /*---------------------------------------------------------------------------
     getPeakPointValue
-    
+
     Returns the peak point value of the trigger
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMControlAreaTrigger::getPeakPointValue() const
@@ -240,7 +240,7 @@ DOUBLE CtiLMControlAreaTrigger::getProjectedPointValue() const
 
 /*---------------------------------------------------------------------------
     getProjectionPointEntriesQueue
-    
+
     Returns the timestamp of the last peak point value received by the trigger
 ---------------------------------------------------------------------------*/
 RWTValDlist<CtiLMProjectionPointEntry>& CtiLMControlAreaTrigger::getProjectionPointEntriesQueue()
@@ -252,7 +252,7 @@ RWTValDlist<CtiLMProjectionPointEntry>& CtiLMControlAreaTrigger::getProjectionPo
 
 /*---------------------------------------------------------------------------
     setPAOId
-    
+
     Sets the id of the control area - use with caution
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPAOId(ULONG id)
@@ -265,7 +265,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPAOId(ULONG id)
 
 /*---------------------------------------------------------------------------
     setTriggerNumber
-    
+
     Sets the trigger number of the trigger
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setTriggerNumber(ULONG trignum)
@@ -277,9 +277,9 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setTriggerNumber(ULONG trignum
 
 /*---------------------------------------------------------------------------
     setTriggerType
-    
+
     Sets the trigger type of the trigger
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setTriggerType(const RWCString& trigtype)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -289,7 +289,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setTriggerType(const RWCString
 
 /*---------------------------------------------------------------------------
     setPointId
-    
+
     Sets the point id of the trigger
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPointId(ULONG pntid)
@@ -301,7 +301,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPointId(ULONG pntid)
 
 /*---------------------------------------------------------------------------
     setPointValue
-    
+
     Sets the point value of the trigger
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPointValue(DOUBLE pntval)
@@ -313,7 +313,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPointValue(DOUBLE pntval)
 
 /*---------------------------------------------------------------------------
     setLastPointValueTimestamp
-    
+
     Sets the timestamp of the last point value received by the trigger
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setLastPointValueTimestamp(const RWDBDateTime& lastvaltime)
@@ -325,7 +325,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setLastPointValueTimestamp(con
 
 /*---------------------------------------------------------------------------
     setNormalState
-    
+
     Sets the raw state of the normal state of the trigger
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setNormalState(ULONG normalst)
@@ -337,7 +337,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setNormalState(ULONG normalst)
 
 /*---------------------------------------------------------------------------
     setThreshold
-    
+
     Sets the Threshold of the trigger
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setThreshold(DOUBLE threshold)
@@ -349,9 +349,9 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setThreshold(DOUBLE threshold)
 
 /*---------------------------------------------------------------------------
     setProjectionType
-    
+
     Sets the projection type of the trigger
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectionType(const RWCString& projtype)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -361,7 +361,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectionType(const RWCStr
 
 /*---------------------------------------------------------------------------
     setProjectionPoints
-    
+
     Sets the projection points of the trigger
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectionPoints(ULONG projpoints)
@@ -373,7 +373,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectionPoints(ULONG proj
 
 /*---------------------------------------------------------------------------
     setProjectAheadDuration
-    
+
     Sets the number of seconds ahead to do the projection of the trigger
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectAheadDuration(ULONG projaheaddur)
@@ -385,7 +385,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectAheadDuration(ULONG 
 
 /*---------------------------------------------------------------------------
     setThresholdKickPercent
-    
+
     Sets the threshold kick up percentage of the trigger
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setThresholdKickPercent(ULONG threskickpercent)
@@ -397,7 +397,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setThresholdKickPercent(ULONG 
 
 /*---------------------------------------------------------------------------
     setMinRestoreOffset
-    
+
     Sets the minimum restore offset of the trigger
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setMinRestoreOffset(DOUBLE minrestoffset)
@@ -409,7 +409,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setMinRestoreOffset(DOUBLE min
 
 /*---------------------------------------------------------------------------
     setPeakPointId
-    
+
     Sets the peak point id of the trigger
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPeakPointId(ULONG peakptid)
@@ -421,7 +421,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPeakPointId(ULONG peakptid)
 
 /*---------------------------------------------------------------------------
     setPeakPointValue
-    
+
     Sets the peak point value of the trigger
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPeakPointValue(DOUBLE peakptval)
@@ -433,7 +433,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPeakPointValue(DOUBLE peakp
 
 /*---------------------------------------------------------------------------
     setLastPeakPointValueTimestamp
-    
+
     Sets the timestamp of the last peak point value received by the trigger
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setLastPeakPointValueTimestamp(const RWDBDateTime& lastpeakvaltime)
@@ -445,7 +445,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setLastPeakPointValueTimestamp
 
 /*---------------------------------------------------------------------------
     setProjectedPointValue
-    
+
     Sets the peak point value of the trigger
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectedPointValue(DOUBLE proptval)
@@ -459,7 +459,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectedPointValue(DOUBLE 
 /*-------------------------------------------------------------------------
     calculateProjectedValue
 
-    
+
 --------------------------------------------------------------------------*/
 void CtiLMControlAreaTrigger::calculateProjectedValue()
 {
@@ -498,69 +498,69 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
 
                 if(delta != 0.0)
                 {
-                   double slope = ( (getProjectionPointEntriesQueue().entries() * sumXY) - (sumX * sumY) ) / delta;
-                   double intersect = ( (sumXX * sumY) - (sumX * sumXY) ) / delta;
-                   double inputX = getProjectionPointEntriesQueue()[getProjectionPointEntriesQueue().entries()-1].getTimestamp().seconds() - getProjectionPointEntriesQueue()[0].getTimestamp().seconds() + getProjectAheadDuration();
-                   double tempProjectedValue = (slope*inputX)+intersect;
-                   setProjectedPointValue(tempProjectedValue);
+                    double slope = ( (getProjectionPointEntriesQueue().entries() * sumXY) - (sumX * sumY) ) / delta;
+                    double intersect = ( (sumXX * sumY) - (sumX * sumXY) ) / delta;
+                    double inputX = getProjectionPointEntriesQueue()[getProjectionPointEntriesQueue().entries()-1].getTimestamp().seconds() - getProjectionPointEntriesQueue()[0].getTimestamp().seconds() + getProjectAheadDuration();
+                    double tempProjectedValue = (slope*inputX)+intersect;
+                    setProjectedPointValue(tempProjectedValue);
 
-                   {
-                       CtiLockGuard<CtiLogger> logger_guard(dout);
-                       dout << RWTime() << " - calculateProjectedValue() debug info: " << endl;
-                       /*dout << " - ProjectionPointEntriesQueue entries: " << endl;
-                       for(int j=0;j<getProjectionPointEntriesQueue().entries();j++)
-                       {
-                           dout << " Entry number: " << j << " value: " << getProjectionPointEntriesQueue()[j].getValue() << " timestamp: " << getProjectionPointEntriesQueue()[j].getTimestamp() << endl;
-                       }
-                       dout << " x: " << x << endl;
-                       dout << " delta: " << delta << endl;
-                       dout << " sumX: " << sumX << endl;
-                       dout << " sumY: " << sumY << endl;
-                       dout << " sumXX: " << sumXX << endl;
-                       dout << " sumXY: " << sumXY << endl;
-                       dout << " Slope: " << slope << endl;
-                       dout << " Intercept: " << intersect << endl;
-                       dout << " Input x: " << inputX << endl;*/
-                       dout << " Projected Value: " << tempProjectedValue << endl;
-                   }
-                   //From Corey's projection method, don't think we need all this
-                   /*long secondsFromBeginningOfRegression = 0;
-                   for(int i=0;i<getProjectionPointEntriesQueue().entries();i++)
-                   {
-                       dtemp = ( getProjectionPointEntriesQueue()[i].getValue() - intersect - slope * secondsFromBeginningOfRegression);
-                       sigmaY2 += (dtemp * dtemp);
-                       if( i+1 < getProjectionPointEntriesQueue().entries() )
-                       {
-                           secondsFromBeginningOfRegression += getProjectionPointEntriesQueue()[i+1].getTimestamp().seconds() - getProjectionPointEntriesQueue()[i].getTimestamp().seconds();
-                       }
-                   }
-                   sigmaY2 = sigmaY2 / (x - 2);
-                   if(sigmaY2 > 0.0)
-                   {
-                       regress->sigma_y = sqrt( sigmaY2 );
-                   }
-                   else
-                   {
-                      regress->sigma_y = 0;
-                   }
-                   dtemp = x * sigmaY2 / delta;
-                   if(dtemp > 0.0)
-                   {
-                      regress->sigma_m = sqrt( dtemp );
-                   }
-                   else
-                   {
-                      regress->sigma_m = 0.0;
-                   }
-                   dtemp = sigmaY2 * sumXX / delta;
-                   if(dtemp > 0.0)
-                   {
-                      regress->sigma_b = sqrt( dtemp );
-                   }
-                   else
-                   {
-                      regress->sigma_b = 0.0;
-                   }*/
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - calculateProjectedValue() debug info: " << endl;
+                        /*dout << " - ProjectionPointEntriesQueue entries: " << endl;
+                        for(int j=0;j<getProjectionPointEntriesQueue().entries();j++)
+                        {
+                            dout << " Entry number: " << j << " value: " << getProjectionPointEntriesQueue()[j].getValue() << " timestamp: " << getProjectionPointEntriesQueue()[j].getTimestamp() << endl;
+                        }
+                        dout << " x: " << x << endl;
+                        dout << " delta: " << delta << endl;
+                        dout << " sumX: " << sumX << endl;
+                        dout << " sumY: " << sumY << endl;
+                        dout << " sumXX: " << sumXX << endl;
+                        dout << " sumXY: " << sumXY << endl;
+                        dout << " Slope: " << slope << endl;
+                        dout << " Intercept: " << intersect << endl;
+                        dout << " Input x: " << inputX << endl;*/
+                        dout << " Projected Value: " << tempProjectedValue << endl;
+                    }
+                    //From Corey's projection method, don't think we need all this
+                    /*long secondsFromBeginningOfRegression = 0;
+                    for(int i=0;i<getProjectionPointEntriesQueue().entries();i++)
+                    {
+                        dtemp = ( getProjectionPointEntriesQueue()[i].getValue() - intersect - slope * secondsFromBeginningOfRegression);
+                        sigmaY2 += (dtemp * dtemp);
+                        if( i+1 < getProjectionPointEntriesQueue().entries() )
+                        {
+                            secondsFromBeginningOfRegression += getProjectionPointEntriesQueue()[i+1].getTimestamp().seconds() - getProjectionPointEntriesQueue()[i].getTimestamp().seconds();
+                        }
+                    }
+                    sigmaY2 = sigmaY2 / (x - 2);
+                    if(sigmaY2 > 0.0)
+                    {
+                        regress->sigma_y = sqrt( sigmaY2 );
+                    }
+                    else
+                    {
+                       regress->sigma_y = 0;
+                    }
+                    dtemp = x * sigmaY2 / delta;
+                    if(dtemp > 0.0)
+                    {
+                       regress->sigma_m = sqrt( dtemp );
+                    }
+                    else
+                    {
+                       regress->sigma_m = 0.0;
+                    }
+                    dtemp = sigmaY2 * sumXX / delta;
+                    if(dtemp > 0.0)
+                    {
+                       regress->sigma_b = sqrt( dtemp );
+                    }
+                    else
+                    {
+                       regress->sigma_b = 0.0;
+                    }*/
                 }
             }
             else
@@ -579,7 +579,7 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiLMControlAreaTrigger::restoreGuts(RWvistream& istrm)
@@ -593,22 +593,22 @@ void CtiLMControlAreaTrigger::restoreGuts(RWvistream& istrm)
     RWTime tempTime2;
 
     istrm >> _paoid
-          >> _triggernumber
-          >> _triggertype
-          >> _pointid
-          >> _pointvalue
-          >> tempTime1
-          >> _normalstate
-          >> _threshold
-          >> _projectiontype
-          >> _projectionpoints
-          >> _projectaheadduration
-          >> _thresholdkickpercent
-          >> _minrestoreoffset
-          >> _peakpointid
-          >> _peakpointvalue
-          >> tempTime2
-          >> _projectedpointvalue;
+    >> _triggernumber
+    >> _triggertype
+    >> _pointid
+    >> _pointvalue
+    >> tempTime1
+    >> _normalstate
+    >> _threshold
+    >> _projectiontype
+    >> _projectionpoints
+    >> _projectaheadduration
+    >> _thresholdkickpercent
+    >> _minrestoreoffset
+    >> _peakpointid
+    >> _peakpointvalue
+    >> tempTime2
+    >> _projectedpointvalue;
 
     _lastpointvaluetimestamp = RWDBDateTime(tempTime1);
     _lastpeakpointvaluetimestamp = RWDBDateTime(tempTime2);
@@ -616,33 +616,33 @@ void CtiLMControlAreaTrigger::restoreGuts(RWvistream& istrm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiLMControlAreaTrigger::saveGuts(RWvostream& ostrm ) const  
+void CtiLMControlAreaTrigger::saveGuts(RWvostream& ostrm ) const
 {
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        
+
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _paoid
-          << _triggernumber
-          << _triggertype
-          << _pointid
-          << _pointvalue
-          << _lastpointvaluetimestamp.rwtime()
-          << _normalstate
-          << _threshold
-          << _projectiontype
-          << _projectionpoints
-          << _projectaheadduration
-          << _thresholdkickpercent
-          << _minrestoreoffset
-          << _peakpointid
-          << _peakpointvalue
-          << _lastpeakpointvaluetimestamp.rwtime()
-          << _projectedpointvalue;
+    << _triggernumber
+    << _triggertype
+    << _pointid
+    << _pointvalue
+    << _lastpointvaluetimestamp.rwtime()
+    << _normalstate
+    << _threshold
+    << _projectiontype
+    << _projectionpoints
+    << _projectaheadduration
+    << _thresholdkickpercent
+    << _minrestoreoffset
+    << _peakpointid
+    << _peakpointvalue
+    << _lastpeakpointvaluetimestamp.rwtime()
+    << _projectedpointvalue;
 
     return;
 }
@@ -698,17 +698,17 @@ int CtiLMControlAreaTrigger::operator!=(const CtiLMControlAreaTrigger& right) co
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger* CtiLMControlAreaTrigger::replicate() const
 {
-    return (new CtiLMControlAreaTrigger(*this));
+    return(new CtiLMControlAreaTrigger(*this));
 }
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaTrigger::restore(RWDBReader& rdr)
@@ -753,7 +753,7 @@ void CtiLMControlAreaTrigger::restore(RWDBReader& rdr)
 
 /*---------------------------------------------------------------------------
     dumpDynamicData
-    
+
     Writes out the dynamic information for this strategy.
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaTrigger::dumpDynamicData()
@@ -762,9 +762,9 @@ void CtiLMControlAreaTrigger::dumpDynamicData()
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
         RWDBTable dynamicLMControlAreaTriggerTable = getDatabase().table( "dynamiclmcontrolareatrigger" );
         if( !_insertDynamicDataFlag )
@@ -772,9 +772,9 @@ void CtiLMControlAreaTrigger::dumpDynamicData()
             RWDBUpdater updater = dynamicLMControlAreaTriggerTable.updater();
 
             updater << dynamicLMControlAreaTriggerTable["pointvalue"].assign(getPointValue())
-                    << dynamicLMControlAreaTriggerTable["lastpointvaluetimestamp"].assign((RWDBDateTime)getLastPointValueTimestamp())
-                    << dynamicLMControlAreaTriggerTable["peakpointvalue"].assign(getPeakPointValue())
-                    << dynamicLMControlAreaTriggerTable["lastpeakpointvaluetimestamp"].assign((RWDBDateTime)getLastPeakPointValueTimestamp());
+            << dynamicLMControlAreaTriggerTable["lastpointvaluetimestamp"].assign((RWDBDateTime)getLastPointValueTimestamp())
+            << dynamicLMControlAreaTriggerTable["peakpointvalue"].assign(getPeakPointValue())
+            << dynamicLMControlAreaTriggerTable["lastpeakpointvaluetimestamp"].assign((RWDBDateTime)getLastPeakPointValueTimestamp());
 
             updater.where( dynamicLMControlAreaTriggerTable["deviceid"]==getPAOId() &&//will be paobjectid
                            dynamicLMControlAreaTriggerTable["triggernumber"]==getTriggerNumber() );
@@ -796,11 +796,11 @@ void CtiLMControlAreaTrigger::dumpDynamicData()
             RWDBInserter inserter = dynamicLMControlAreaTriggerTable.inserter();
 
             inserter << getPAOId()
-                     << getTriggerNumber()
-                     << getPointValue()
-                     << getLastPointValueTimestamp()
-                     << getPeakPointValue()
-                     << getLastPeakPointValueTimestamp();
+            << getTriggerNumber()
+            << getPointValue()
+            << getLastPointValueTimestamp()
+            << getPeakPointValue()
+            << getLastPeakPointValueTimestamp();
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);

@@ -35,9 +35,9 @@ private:
 
 #ifdef _WINDOWS
     HANDLE hMutex;
-    #ifdef DEBUG
+#ifdef DEBUG
     DWORD  _threadID;
-    #endif
+#endif
 #endif
 };
 #endif

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_single.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:08 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,8 +28,8 @@ using namespace std;
 
 RWTime CtiDeviceSingle::adjustNextScanTime(const INT scanType)
 {
-   RWTime Now;
-   RWTime When(YUKONEOT);
+    RWTime Now;
+    RWTime When(YUKONEOT);
 
     if( getScanRate(scanType) > 0 )
     {
@@ -131,7 +131,7 @@ void CtiDeviceSingle::validateScanTimes(bool force)
                     setPrevFreezeTime(RWTime());
                 }
             }
-            else if (isScanPending() || isScanFreezePending())
+            else if(isScanPending() || isScanFreezePending())
             {
                 // if we're pending, do the calculation anyway
                 setNextScan(rate, firstScan(Now, rate));
@@ -197,7 +197,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, IN
             adjustNextScanTime(ScanRateAccum);
             nRet = DEVICEINHIBITED;
         }
-        else if (!isScanWindowOpen())
+        else if(!isScanWindowOpen())
         {
             adjustNextScanTime(ScanRateAccum);
             nRet=SCAN_ERROR_DEVICE_WINDOW_CLOSED;
@@ -325,12 +325,12 @@ INT CtiDeviceSingle::initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT 
             nRet =  SCAN_ERROR_DEVICE_INHIBITED;
 
         }
-        else if (!isScanWindowOpen())
+        else if(!isScanWindowOpen())
         {
-  //          {
-  //             CtiLockGuard<CtiLogger> doubt_guard(dout);
-  //             dout << RWTime() << " " << getName() << "'s scan window is closed " << endl;
-  //          }
+            //          {
+            //             CtiLockGuard<CtiLogger> doubt_guard(dout);
+            //             dout << RWTime() << " " << getName() << "'s scan window is closed " << endl;
+            //          }
             nRet=SCAN_ERROR_DEVICE_WINDOW_CLOSED;
         }
         else // if(isInhibited()) ... so it isn't inhibited
@@ -445,7 +445,7 @@ INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT Sc
                  *
                  *  FIX FIX FIX 082899 CGP
                  */
-
+                
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Device " << getID() << ": " << getName() << " is inhibited!" << endl;
@@ -454,7 +454,7 @@ INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT Sc
                 adjustNextScanTime(ScanRateGeneral);
                 nRet = SCAN_ERROR_DEVICE_INHIBITED;
             }
-            else if (!isScanWindowOpen())
+            else if(!isScanWindowOpen())
             {
                 adjustNextScanTime(ScanRateGeneral);
                 nRet=SCAN_ERROR_DEVICE_WINDOW_CLOSED;
@@ -578,12 +578,12 @@ INT CtiDeviceSingle::initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, IN
             nRet =  SCAN_ERROR_DEVICE_INHIBITED;
 
         }
-        else if (!isScanWindowOpen())
+        else if(!isScanWindowOpen())
         {
-  //          {
-  //             CtiLockGuard<CtiLogger> doubt_guard(dout);
-  //             dout << RWTime() << " " << getName() << "'s scan window is closed " << endl;
-  //          }
+            //          {
+            //             CtiLockGuard<CtiLogger> doubt_guard(dout);
+            //             dout << RWTime() << " " << getName() << "'s scan window is closed " << endl;
+            //          }
             nRet = SCAN_ERROR_DEVICE_WINDOW_CLOSED;
         }
         else // if(isInhibited()) ... so it isn't inhibited
@@ -1254,29 +1254,6 @@ void CtiDeviceSingle::deleteNonUpdatedScanRates()
     return;
 }
 
-INT CtiDeviceSingle::RefreshDevicePoints()
-{
-    INT status = NORMAL;
-
-    LockGuard guard(monitor());  // guard the pointMgr
-
-    if(_pointMgr == NULL)
-    {
-        _pointMgr = new CtiPointManager();
-    }
-
-    if(_pointMgr != NULL)
-    {
-        _pointMgr->RefreshList( getID() );
-    }
-    else
-    {
-        status = MEMORY;
-    }
-
-    return status;
-}
-
 bool CtiDeviceSingle::clearedForScan(int scantype)
 {
     bool status = false;
@@ -1418,8 +1395,8 @@ CtiDeviceSingle::~CtiDeviceSingle()
         delete _scanData;
         _scanData = NULL;
     }
-   // dump the vector if needed
-   _windowVector.erase(_windowVector.begin(), _windowVector.end());
+    // dump the vector if needed
+    _windowVector.erase(_windowVector.begin(), _windowVector.end());
 }
 
 CtiDeviceSingle& CtiDeviceSingle::operator=(const CtiDeviceSingle& aRef)
@@ -1538,7 +1515,7 @@ LONG CtiDeviceSingle::getScanRate(int a) const
     LockGuard guard(monitor());
     if(_scanRateTbl[a] != NULL)
     {
-        if (isAlternateRateActive())
+        if(isAlternateRateActive())
         {
             return _scanRateTbl[a]->getAlternateRate();
         }
@@ -1589,23 +1566,23 @@ CtiDeviceSingle&     CtiDeviceSingle::setRateTables(const INT i, const CtiTableD
 
 BOOL CtiDeviceSingle::isScanWindowOpen(RWTime &aNow) const
 {
-   BOOL status = TRUE;
+    BOOL status = TRUE;
 
-   // loop the vector
-   for (int x=0; x <_windowVector.size(); x++)
-   {
-       if (_windowVector[x].getType() == DeviceWindowScan)
-       {
-           RWTime open ( RWTime(RWDate()).seconds()+_windowVector[x].getOpen());
-           RWTime close (open.seconds()+_windowVector[x].getDuration());
+    // loop the vector
+    for(int x=0; x <_windowVector.size(); x++)
+    {
+        if(_windowVector[x].getType() == DeviceWindowScan)
+        {
+            RWTime open ( RWTime(RWDate()).seconds()+_windowVector[x].getOpen());
+            RWTime close (open.seconds()+_windowVector[x].getDuration());
 
-           if ((aNow < open) || (aNow > close))
-           {
-               status = FALSE;
-           }
-       }
-   }
-   return status;
+            if((aNow < open) || (aNow > close))
+            {
+                status = FALSE;
+            }
+        }
+    }
+    return status;
 }
 
 
@@ -1614,26 +1591,26 @@ void CtiDeviceSingle::checkSignaledAlternateRateForExpiration()
     BOOL status = FALSE;
 
 
-    for (int x=0; x <_windowVector.size(); x++)
+    for(int x=0; x <_windowVector.size(); x++)
     {
-        if (_windowVector[x].getType() == DeviceWindowSignaledAlternateRate)
+        if(_windowVector[x].getType() == DeviceWindowSignaledAlternateRate)
         {
             RWTime open ( RWTime(RWDate()).seconds()+_windowVector[x].getOpen());
             RWTime close (open.seconds()+_windowVector[x].getDuration());
             RWTime now;
 
             // this was a scan once and remove
-            if ((open <= now) &&_windowVector[x].getDuration() == 0)
+            if((open <= now) &&_windowVector[x].getDuration() == 0)
             {
                 status = TRUE;
             }
-            else if ((open <= now) && (now > close))
+            else if((open <= now) && (now > close))
             {
                 // we've moved out of the dynamic window, delete it
                 status = TRUE;
             }
 
-            if (status)
+            if(status)
             {
                 _windowVector.erase(_windowVector.begin()+x);
                 break;
@@ -1645,68 +1622,68 @@ void CtiDeviceSingle::checkSignaledAlternateRateForExpiration()
 // this does a little more than it probably should but for now it will have to do DLS
 BOOL CtiDeviceSingle::isAlternateRateActive(RWTime &aNow) const
 {
-   BOOL status = FALSE;
+    BOOL status = FALSE;
 
-   // loop the vector
-   for (int x=0; x <_windowVector.size(); x++)
-   {
-       if (_windowVector[x].getType() == DeviceWindowAlternateRate)
-       {
-           RWTime open ( RWTime(RWDate()).seconds()+_windowVector[x].getOpen());
-           RWTime close (open.seconds()+_windowVector[x].getDuration());
+    // loop the vector
+    for(int x=0; x <_windowVector.size(); x++)
+    {
+        if(_windowVector[x].getType() == DeviceWindowAlternateRate)
+        {
+            RWTime open ( RWTime(RWDate()).seconds()+_windowVector[x].getOpen());
+            RWTime close (open.seconds()+_windowVector[x].getDuration());
 
-           if ((open <= aNow) && (close > aNow))
-           {
-               status = TRUE;
-           }
-       }
-       else if (_windowVector[x].getType() == DeviceWindowSignaledAlternateRate)
-       {
-           /*********************************
-           * we have an alternate rate from the outside somewhere
-           *
-           * once we find it, we must also decide if we should delete
-           * it after using it once
-           *
-           *    duration = 0 means we only do this once
-           **********************************
-           */
+            if((open <= aNow) && (close > aNow))
+            {
+                status = TRUE;
+            }
+        }
+        else if(_windowVector[x].getType() == DeviceWindowSignaledAlternateRate)
+        {
+            /*********************************
+            * we have an alternate rate from the outside somewhere
+            *
+            * once we find it, we must also decide if we should delete
+            * it after using it once
+            *
+            *    duration = 0 means we only do this once
+            **********************************
+            */
 
-           RWTime open ( RWTime(RWDate()).seconds()+_windowVector[x].getOpen());
-           RWTime close (open.seconds()+_windowVector[x].getDuration());
+            RWTime open ( RWTime(RWDate()).seconds()+_windowVector[x].getOpen());
+            RWTime close (open.seconds()+_windowVector[x].getDuration());
 
-           if ((open <= aNow) && (_windowVector[x].getDuration() == 0))
-           {
-               // do this one time
-               status = TRUE;
-           }
-           else
-           {
-               // check if we are inside the window
-               if ((open <= aNow) && (close > aNow))
-               {
-                   status = TRUE;
-               }
-           }
-       }
-   }
-   return status;
+            if((open <= aNow) && (_windowVector[x].getDuration() == 0))
+            {
+                // do this one time
+                status = TRUE;
+            }
+            else
+            {
+                // check if we are inside the window
+                if((open <= aNow) && (close > aNow))
+                {
+                    status = TRUE;
+                }
+            }
+        }
+    }
+    return status;
 }
 
 void CtiDeviceSingle::applySignaledRateChange(LONG aOpen, LONG aDuration)
 {
     bool found=false;
 
-    if ((RWTime(RWDate()).seconds()+aOpen+aDuration > RWTime().seconds()) ||
-        aOpen == -1 || aDuration == 0)
+    if((RWTime(RWDate()).seconds()+aOpen+aDuration > RWTime().seconds()) ||
+       aOpen == -1 || aDuration == 0)
     {
-        for (int x=0; x <_windowVector.size(); x++)
+        for(int x=0; x <_windowVector.size(); x++)
         {
-            if (_windowVector[x].getType() == DeviceWindowSignaledAlternateRate)
+            if(_windowVector[x].getType() == DeviceWindowSignaledAlternateRate)
             {
                 found = true;
 
-                if (aOpen == -1)
+                if(aOpen == -1)
                 {
                     _windowVector[x].setOpen (RWTime().seconds() - RWTime(RWDate()).seconds());
                     _windowVector[x].setAlternateOpen (RWTime().seconds() - RWTime(RWDate()).seconds());
@@ -1722,7 +1699,7 @@ void CtiDeviceSingle::applySignaledRateChange(LONG aOpen, LONG aDuration)
             }
         }
 
-        if (!found)
+        if(!found)
         {
             CtiTableDeviceWindow newWindow;
             newWindow.setID (getID());
@@ -1730,7 +1707,7 @@ void CtiDeviceSingle::applySignaledRateChange(LONG aOpen, LONG aDuration)
             newWindow.setDuration (aDuration);
             newWindow.setAlternateDuration (aDuration);
 
-            if (aOpen == -1)
+            if(aOpen == -1)
             {
                 newWindow.setOpen (RWTime().seconds() - RWTime(RWDate()).seconds());
                 newWindow.setAlternateOpen (RWTime().seconds() - RWTime(RWDate()).seconds());
@@ -1743,7 +1720,7 @@ void CtiDeviceSingle::applySignaledRateChange(LONG aOpen, LONG aDuration)
             _windowVector.push_back (newWindow);
         }
 
-        if (aOpen == -1)
+        if(aOpen == -1)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " " << getName() << " changing to alternate scan rate starting now for " << aDuration << " seconds" << endl;
@@ -1773,7 +1750,10 @@ void CtiDeviceSingle::DecodeDatabaseReader(RWDBReader &rdr)
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
     LockGuard guard(monitor());
-    if(getDebugLevel() & 0x0800) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl; }
+    if(getDebugLevel() & 0x0800)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
     _twoWay.DecodeDatabaseReader(rdr);
 }
 
@@ -1783,7 +1763,10 @@ void CtiDeviceSingle::DecodeStatisticsDatabaseReader(RWDBReader &rdr)
 
     RWCString rwsTemp;
 
-    if(getDebugLevel() & 0x0800) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl; }
+    if(getDebugLevel() & 0x0800)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
     rdr["statistictype"] >> rwsTemp;
 
@@ -1807,7 +1790,10 @@ void CtiDeviceSingle::DecodeScanRateDatabaseReader(RWDBReader &rdr)
 
     RWCString rwsTemp;
 
-    if(getDebugLevel() & 0x0800) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl; }
+    if(getDebugLevel() & 0x0800)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
     rdr["scantype"] >> rwsTemp;
     INT i = resolveScanType(rwsTemp);
@@ -1825,34 +1811,34 @@ void CtiDeviceSingle::DecodeScanRateDatabaseReader(RWDBReader &rdr)
 }
 void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(RWDBReader &rdr)
 {
-   LockGuard guard(monitor());
+    LockGuard guard(monitor());
 
-   if(getDebugLevel() & 0x0800)
-   {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << RWTime() << " Decoding device windows " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
+    if(getDebugLevel() & 0x0800)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Decoding device windows " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
-   CtiTableDeviceWindow newWindow;
-   newWindow.DecodeDatabaseReader(rdr);
+    CtiTableDeviceWindow newWindow;
+    newWindow.DecodeDatabaseReader(rdr);
 
-   /*************************
-   * if open and close were equal, duration of the window will be 0
-   *
-   * sounds like a config problem to me, make the window always open
-   **************************
-   */
-   if (newWindow.getDuration() == 0)
-   {
-       {
-           CtiLockGuard<CtiLogger> doubt_guard(dout);
-           dout << RWTime() << " " << getName() << "'s device window is invalid, open and close times are equal " << endl;
-       }
-   }
-   else
-   {
-       _windowVector.push_back (newWindow);
-   }
+    /*************************
+    * if open and close were equal, duration of the window will be 0
+    *
+    * sounds like a config problem to me, make the window always open
+    **************************
+    */
+    if(newWindow.getDuration() == 0)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " " << getName() << "'s device window is invalid, open and close times are equal " << endl;
+        }
+    }
+    else
+    {
+        _windowVector.push_back (newWindow);
+    }
 }
 
 

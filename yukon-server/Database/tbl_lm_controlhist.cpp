@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/24 21:37:52 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/05/02 17:02:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -359,8 +359,8 @@ RWDBStatus CtiTableLMControlHistory::RestoreControlTimes()
 {
     long maxid = GetMaxLMControl( getPAOID() );
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBSelector selector = getDatabase().selector();
@@ -388,8 +388,8 @@ RWDBStatus CtiTableLMControlHistory::Restore()
 {
     long maxid = GetMaxLMControl(getPAOID());
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBSelector selector = getDatabase().selector();
@@ -432,8 +432,8 @@ RWDBStatus CtiTableLMControlHistory::Restore()
 
 RWDBStatus CtiTableLMControlHistory::Insert()
 {
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     return Insert(conn);
 }
@@ -503,8 +503,8 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
 
 RWDBStatus CtiTableLMControlHistory::Update()
 {
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBUpdater updater = table.updater();
@@ -536,8 +536,8 @@ RWDBStatus CtiTableLMControlHistory::Update()
 
 RWDBStatus CtiTableLMControlHistory::Delete()
 {
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBDeleter deleter = table.deleter();

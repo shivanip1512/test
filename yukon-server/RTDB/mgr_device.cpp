@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/23 14:50:20 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/05/02 17:02:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,8 +87,8 @@ void CtiDeviceManager::RefreshList(LONG paoID)
 
     if(pDev)
     {
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
-        RWLockGuard<RWDBConnection> conn_guard(conn);
         RWDBDatabase db = getDatabase();
 
         RWDBTable   keyTable;
@@ -126,8 +126,8 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                 resetErrorCode();
 
                 {
+                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                     RWDBConnection conn = getConnection();
-                    RWLockGuard<RWDBConnection> conn_guard(conn);
                     RWDBDatabase db = getDatabase();
 
                     RWDBTable   keyTable;
@@ -157,8 +157,8 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                 }
 
                 {
+                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                     RWDBConnection conn = getConnection();
-                    RWLockGuard<RWDBConnection> conn_guard(conn);
                     RWDBDatabase db = getDatabase();
 
                     RWDBTable   keyTable;
@@ -184,8 +184,8 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                 }
 
                 {
+                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                     RWDBConnection conn = getConnection();
-                    RWLockGuard<RWDBConnection> conn_guard(conn);
                     RWDBDatabase db = getDatabase();
 
                     RWDBTable   keyTable;
@@ -211,8 +211,8 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                 }
 
                 {
+                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                     RWDBConnection conn = getConnection();
-                    RWLockGuard<RWDBConnection> conn_guard(conn);
                     RWDBDatabase db = getDatabase();
 
                     RWDBTable   keyTable;
@@ -238,8 +238,8 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                 }
 
                 {
+                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                     RWDBConnection conn = getConnection();
-                    RWLockGuard<RWDBConnection> conn_guard(conn);
                     RWDBDatabase db = getDatabase();
 
                     RWDBTable   keyTable;
@@ -265,8 +265,8 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                 }
 
                 {
+                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                     RWDBConnection conn = getConnection();
-                    RWLockGuard<RWDBConnection> conn_guard(conn);
                     RWDBDatabase db = getDatabase();
 
                     RWDBTable   keyTable;
@@ -296,8 +296,8 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                 }
 
                 {
+                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                     RWDBConnection conn = getConnection();
-                    RWLockGuard<RWDBConnection> conn_guard(conn);
                     RWDBDatabase db = getDatabase();
 
                     RWDBTable   keyTable;
@@ -322,8 +322,8 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                 }
 
                 {
+                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                     RWDBConnection conn = getConnection();
-                    RWLockGuard<RWDBConnection> conn_guard(conn);
                     RWDBDatabase db = getDatabase();
 
                     RWDBTable   keyTable;
@@ -349,8 +349,8 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                 }
 
                 {
+                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                     RWDBConnection conn = getConnection();
-                    RWLockGuard<RWDBConnection> conn_guard(conn);
                     RWDBDatabase db = getDatabase();
 
                     RWDBTable   keyTable;
@@ -376,8 +376,8 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                 }
 
                 {
+                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                     RWDBConnection conn = getConnection();
-                    RWLockGuard<RWDBConnection> conn_guard(conn);
                     RWDBDatabase db = getDatabase();
 
                     RWDBTable   keyTable;
@@ -404,8 +404,8 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                 }
 
                 {
+                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                     RWDBConnection conn = getConnection();
-                    RWLockGuard<RWDBConnection> conn_guard(conn);
                     RWDBDatabase db = getDatabase();
                     RWDBTable   keyTable;
 
@@ -432,8 +432,8 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
 
                 {
                     LockGuard dev_guard(monitor());
+                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                     RWDBConnection conn = getConnection();
-                    RWLockGuard<RWDBConnection> conn_guard(conn);
                     RWDBDatabase db = getDatabase();
                     RWDBSelector selector = db.selector();
                     RWDBTable tblGenericMacro = db.table("GenericMacro");
@@ -447,7 +447,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     }
 
                     selector << tblGenericMacro["ChildID"]
-                             << tblGenericMacro["OwnerID"];
+                    << tblGenericMacro["OwnerID"];
                     selector.from(tblGenericMacro);
                     selector.where(tblGenericMacro["MacroType"] == RWDBExpr("GROUP"));
                     selector.orderBy(tblGenericMacro["ChildOrder"]);
@@ -485,8 +485,8 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                 }
 
                 {
+                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                     RWDBConnection conn = getConnection();
-                    RWLockGuard<RWDBConnection> conn_guard(conn);
                     RWDBDatabase db = getDatabase();
                     RWDBTable   keyTable;
 
@@ -556,10 +556,10 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
         Map.clearAndDestroy();
 
 
-      {
-          CtiLockGuard<CtiLogger> doubt_guard(dout);
-          dout << RWTime() << " getDevices:  " << e.why() << endl;
-      }
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " getDevices:  " << e.why() << endl;
+        }
         RWTHROW(e);
 
     }
@@ -657,8 +657,8 @@ void CtiDeviceManager::RefreshScanRates()
 
     CtiRTDBIterator   itr(Map);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
     RWDBDatabase db = getDatabase();
 
     RWDBTable   keyTable;
@@ -734,68 +734,68 @@ void CtiDeviceManager::RefreshScanRates()
 
 void CtiDeviceManager::RefreshDeviceWindows()
 {
-   LONG        lTemp = 0;
-   CtiDeviceBase*   pTempCtiDevice = NULL;
+    LONG        lTemp = 0;
+    CtiDeviceBase*   pTempCtiDevice = NULL;
 
-   LockGuard  dev_guard(monitor());       // Protect our iteration!
+    LockGuard  dev_guard(monitor());       // Protect our iteration!
 
-   CtiRTDBIterator   itr(Map);
+    CtiRTDBIterator   itr(Map);
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
-   RWDBDatabase db = getDatabase();
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+    RWDBDatabase db = getDatabase();
 
-   RWDBTable   keyTable;
+    RWDBTable   keyTable;
 
-   RWDBSelector selector = db.selector();
+    RWDBSelector selector = db.selector();
 
-   if(DebugLevel & 0x00020000)
-   {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << RWTime() << " Looking for Device Windows" << endl;
-   }
-   CtiTableDeviceWindow::getSQL( db, keyTable, selector );
-   if(DebugLevel & 0x00020000)
-   {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << selector.asString() << endl;
-   }
+    if(DebugLevel & 0x00020000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Looking for Device Windows" << endl;
+    }
+    CtiTableDeviceWindow::getSQL( db, keyTable, selector );
+    if(DebugLevel & 0x00020000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << selector.asString() << endl;
+    }
 
-   RWDBReader rdr = selector.reader(conn);
+    RWDBReader rdr = selector.reader(conn);
 
-   if(DebugLevel & 0x00020000)
-   {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << RWTime() << " Done looking for ScanWindows" << endl;
-   }
+    if(DebugLevel & 0x00020000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Done looking for ScanWindows" << endl;
+    }
 
-   while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
-   {
-      CtiDeviceBase* pSp = NULL;
+    while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+    {
+        CtiDeviceBase* pSp = NULL;
 
-      rdr["deviceid"] >> lTemp;            // get the DeviceID
-      CtiHashKey key(lTemp);
+        rdr["deviceid"] >> lTemp;            // get the DeviceID
+        CtiHashKey key(lTemp);
 
-      if( Map.entries() > 0 && ((pTempCtiDevice = Map.findValue(&key)) != NULL) )
-      {
-         if( pTempCtiDevice->isSingle() )
-         {
-            /*
-             *  The point just returned from the rdr already was in my list, and is a
-             *  scannable device....  We need to
-             *  update the list entry with the scan rates!
-             */
-            ((CtiDeviceSingle*)pTempCtiDevice)->DecodeDeviceWindowDatabaseReader(rdr);        // Fills himself in from the reader
-         }
-         else
-         {
-             {
-                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                 dout << RWTime() << " There are scan windows in the device window table for a nonscannable device." << endl;
-             }
-         }
-      }
-   }
+        if( Map.entries() > 0 && ((pTempCtiDevice = Map.findValue(&key)) != NULL) )
+        {
+            if( pTempCtiDevice->isSingle() )
+            {
+                /*
+                 *  The point just returned from the rdr already was in my list, and is a
+                 *  scannable device....  We need to
+                 *  update the list entry with the scan rates!
+                 */
+                ((CtiDeviceSingle*)pTempCtiDevice)->DecodeDeviceWindowDatabaseReader(rdr);        // Fills himself in from the reader
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " There are scan windows in the device window table for a nonscannable device." << endl;
+                }
+            }
+        }
+    }
 }
 
 void CtiDeviceManager::RefreshStatistics()
@@ -805,8 +805,8 @@ void CtiDeviceManager::RefreshStatistics()
 
     LockGuard  dev_guard(monitor());       // Protect our iteration!
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
     RWDBDatabase db = getDatabase();
     RWDBTable   keyTable;
 
@@ -861,8 +861,8 @@ void CtiDeviceManager::RefreshRoutes()
 
     LockGuard  dev_guard(monitor());       // Protect our iteration!
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
     RWDBDatabase db = getDatabase();
     RWDBTable   keyTable;
 

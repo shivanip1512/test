@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mgr_mcsched.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:52:34 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/02 17:02:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,34 +22,34 @@
 
 ostream& operator<<( ostream& ostrm, CtiMCScheduleManager& mgr )
 {
-   CtiMCSchedule *sched = NULL;
-   try
-   {
-      CtiLockGuard< RWRecursiveLock<class RWMutexLock> > guard(mgr.getMux() );
+    CtiMCSchedule *sched = NULL;
+    try
+    {
+        CtiLockGuard< RWRecursiveLock<class RWMutexLock> > guard(mgr.getMux() );
 
-      ostrm << " " << mgr.getMap().entries() << " schedules are loaded." << endl;
+        ostrm << " " << mgr.getMap().entries() << " schedules are loaded." << endl;
 
-      CtiMCScheduleManager::CtiRTDBIterator itr(mgr.getMap());
+        CtiMCScheduleManager::CtiRTDBIterator itr(mgr.getMap());
 
-      for(;itr();)
-      {
-         sched = itr.value();
+        for(;itr();)
+        {
+            sched = itr.value();
 
             {
                 CtiLockGuard< RWRecursiveLock<class RWMutexLock> > sched_guard(sched->getMux());
                 ostrm << RWTime() << endl << *sched << endl;
             }
-      }
-   }
-   catch(RWExternalErr e )
-   {
-       CtiLockGuard<CtiLogger> guard(dout);
-       ostrm <<      RWTime()
-             <<      " operator<<(ostream&,const CtiMCScheduleManager mgr) - "
-             <<      e.why()
-             <<      endl;
-   }
-   return ostrm;
+        }
+    }
+    catch(RWExternalErr e )
+    {
+        CtiLockGuard<CtiLogger> guard(dout);
+        ostrm <<      RWTime()
+        <<      " operator<<(ostream&,const CtiMCScheduleManager mgr) - "
+        <<      e.why()
+        <<      endl;
+    }
+    return ostrm;
 }
 
 
@@ -109,8 +109,8 @@ bool CtiMCScheduleManager::refreshAllSchedules()
         temp_map.clearAndDestroy();
 
         {
-           CtiLockGuard<CtiLogger> guard(dout);
-           dout << RWTime() << " An error occured retrieving schedules from the database" << endl;
+            CtiLockGuard<CtiLogger> guard(dout);
+            dout << RWTime() << " An error occured retrieving schedules from the database" << endl;
         }
     }
 
@@ -133,63 +133,63 @@ bool CtiMCScheduleManager::updateAllSchedules()
     CtiMCScheduleManager::CtiRTDBIterator itr(getMap());
     CtiMCSchedule* sched;
 
-      for(;itr();)
-      {
-         sched = itr.value();
+    for(;itr();)
+    {
+        sched = itr.value();
 
+        {
+            CtiLockGuard< RWRecursiveLock<class RWMutexLock> > sched_guard(sched->getMux());
+
+            // Is this schedule already persisted in the database?
+            if( !sched->getUpdatedFlag() )
             {
-                CtiLockGuard< RWRecursiveLock<class RWMutexLock> > sched_guard(sched->getMux());
 
-                // Is this schedule already persisted in the database?
-                if( !sched->getUpdatedFlag() )
+                // add the schedule to the database
+                if( gMacsDebugLevel & MC_DEBUG_DB )
                 {
-
-                    // add the schedule to the database
-                    if( gMacsDebugLevel & MC_DEBUG_DB )
-                    {
-                        CtiLockGuard< CtiLogger > g(dout);
-                        dout << RWTime() << " Inserting schedule into the database:  " << sched->getScheduleID() << endl;
-                    }
-
-                    sched->Insert();
-                    //sched->setUpdatedFlag(true);
-                    //sched->setDirty(false);
+                    CtiLockGuard< CtiLogger > g(dout);
+                    dout << RWTime() << " Inserting schedule into the database:  " << sched->getScheduleID() << endl;
                 }
-                else  // The schedule is in the database but the version in memory
-                      // isn't consistent with the database
-                if( sched->isDirty() )
-                {
-                    if( gMacsDebugLevel & MC_DEBUG_DB )
-                    {
-                        CtiLockGuard< CtiLogger > g(dout);
-                        dout << RWTime() << " Update schedule in the database:  " << sched->getScheduleID() << endl;
-                    }
 
-                    sched->Update();
-
-                    //sched->setUpdatedFlag(true);
-                    //sched->setDirty(false);
-                }
+                sched->Insert();
+                //sched->setUpdatedFlag(true);
+                //sched->setDirty(false);
             }
-      }
+            else  // The schedule is in the database but the version in memory
+                  // isn't consistent with the database
+                if( sched->isDirty() )
+            {
+                if( gMacsDebugLevel & MC_DEBUG_DB )
+                {
+                    CtiLockGuard< CtiLogger > g(dout);
+                    dout << RWTime() << " Update schedule in the database:  " << sched->getScheduleID() << endl;
+                }
 
-      // Delete any schedules from the database as necessary
-      for( set< CtiMCSchedule* >::iterator iter = _schedules_to_delete.begin();
-           iter != _schedules_to_delete.end();
-           iter++ )
-      {
-          if( gMacsDebugLevel & MC_DEBUG_DB )
-          {
+                sched->Update();
+
+                //sched->setUpdatedFlag(true);
+                //sched->setDirty(false);
+            }
+        }
+    }
+
+    // Delete any schedules from the database as necessary
+    for( set< CtiMCSchedule* >::iterator iter = _schedules_to_delete.begin();
+       iter != _schedules_to_delete.end();
+       iter++ )
+    {
+        if( gMacsDebugLevel & MC_DEBUG_DB )
+        {
             CtiLockGuard< CtiLogger > g(dout);
             dout << RWTime() << " Deleteing schedule from the database:  " << (*iter)->getScheduleID() << endl;
-          }
+        }
 
-          delete *iter;
-      }
+        delete *iter;
+    }
 
-      _schedules_to_delete.clear();
+    _schedules_to_delete.clear();
 
-      return ret_val;
+    return ret_val;
 }
 
 /*
@@ -322,197 +322,197 @@ long CtiMCScheduleManager::getID(const string& name)
 }
 
 bool CtiMCScheduleManager::retrieveSimpleSchedules(
-    RWTPtrHashMap
-    < CtiHashKey, CtiMCSchedule, my_hash<CtiHashKey> , equal_to<CtiHashKey> >&
-    sched_map )
+                                                  RWTPtrHashMap
+                                                  < CtiHashKey, CtiMCSchedule, my_hash<CtiHashKey> , equal_to<CtiHashKey> >&
+                                                  sched_map )
 {
     bool success = true;
     string sql;
 
     try
     {
-      {
-          // Make sure all objects that that store results
-          // are out of scope when the release is called
-         RWDBConnection conn = getConnection();
-
-         RWLockGuard<RWDBConnection> conn_guard(conn);
-
-         RWDBDatabase   db       = conn.database();
-         RWDBSelector   selector = conn.database().selector();
-         RWDBTable      pao_table;
-         RWDBTable      mc_sched_table;
-         RWDBTable      mc_simple_sched_table;
-         RWDBReader     rdr;
-         RWDBStatus     status;
+        {
+            // Make sure all objects that that store results
+            // are out of scope when the release is called
+            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+            RWDBConnection conn = getConnection();
 
 
-         //First grab the simple schedules
-         CtiTblPAO().getSQL( db, pao_table, selector );
-         CtiMCSchedule::getSQL( db, mc_sched_table, selector );
-         CtiTableMCSimpleSchedule::getSQL( db, mc_simple_sched_table, selector );
-         selector.where( selector.where() &&
-                         pao_table["category"] == RWDBExpr("Schedule") &&
-                         pao_table["type"] == RWDBExpr("Simple") &&
-                         mc_sched_table["scheduleid"] == pao_table["paobjectid"] &&
-                         mc_simple_sched_table["scheduleid"] == pao_table["paobjectid"] &&
-                         mc_sched_table["scheduleid"] == mc_simple_sched_table["scheduleid"]);
+            RWDBDatabase   db       = conn.database();
+            RWDBSelector   selector = conn.database().selector();
+            RWDBTable      pao_table;
+            RWDBTable      mc_sched_table;
+            RWDBTable      mc_simple_sched_table;
+            RWDBReader     rdr;
+            RWDBStatus     status;
 
-                         //mc_simple_sched_table["scheduleid"] == mc_sched_table["scheduleid"] &&
-                         //mc_sched_table["scheduletype"]==RWDBExpr("Simple") );
 
-         rdr = selector.reader(conn);
-         sql = selector.asString();
-         status = selector.status();
+            //First grab the simple schedules
+            CtiTblPAO().getSQL( db, pao_table, selector );
+            CtiMCSchedule::getSQL( db, mc_sched_table, selector );
+            CtiTableMCSimpleSchedule::getSQL( db, mc_simple_sched_table, selector );
+            selector.where( selector.where() &&
+                            pao_table["category"] == RWDBExpr("Schedule") &&
+                            pao_table["type"] == RWDBExpr("Simple") &&
+                            mc_sched_table["scheduleid"] == pao_table["paobjectid"] &&
+                            mc_simple_sched_table["scheduleid"] == pao_table["paobjectid"] &&
+                            mc_sched_table["scheduleid"] == mc_simple_sched_table["scheduleid"]);
 
-         if( status.errorCode() == RWDBStatus::ok )
-         {
-            while( rdr() )
+            //mc_simple_sched_table["scheduleid"] == mc_sched_table["scheduleid"] &&
+            //mc_sched_table["scheduletype"]==RWDBExpr("Simple") );
+
+            rdr = selector.reader(conn);
+            sql = selector.asString();
+            status = selector.status();
+
+            if( status.errorCode() == RWDBStatus::ok )
             {
-                long id;
-                rdr["scheduleid"] >> id;
-
-                CtiMCSchedule* temp_sched = new CtiMCSchedule();
-                // Add it to the map
-                temp_sched->setUpdatedFlag();   // Mark it updated
-                sched_map.insert( new CtiHashKey(id), temp_sched );
-
-                if( !temp_sched->DecodeDatabaseReader(rdr) )
+                while( rdr() )
                 {
-                    success = false;
-                    break;
+                    long id;
+                    rdr["scheduleid"] >> id;
+
+                    CtiMCSchedule* temp_sched = new CtiMCSchedule();
+                    // Add it to the map
+                    temp_sched->setUpdatedFlag();   // Mark it updated
+                    sched_map.insert( new CtiHashKey(id), temp_sched );
+
+                    if( !temp_sched->DecodeDatabaseReader(rdr) )
+                    {
+                        success = false;
+                        break;
+                    }
                 }
             }
-         }
-         else
-         {
-             success = false;
-         }
-       }
-     }
-     catch(RWExternalErr e )
-     {
+            else
+            {
+                success = false;
+            }
+        }
+    }
+    catch(RWExternalErr e )
+    {
         success = false;
 
         {
             CtiLockGuard<CtiLogger> guard(dout);
             dout << RWTime() << " Exception:  " << e.why() << endl;
         }
-     }
-     catch(...)
-     {
+    }
+    catch(...)
+    {
         success = false;
 
         {
             CtiLockGuard<CtiLogger> guard(dout);
             dout << RWTime() << " An unkown exception occured"  << endl;
         }
-     }
+    }
 
-     if( !success )
-     {
-         {
+    if( !success )
+    {
+        {
             CtiLockGuard<CtiLogger> guard(dout);
             dout << RWTime() << " An error occured executing the following sql:"  << endl;
             dout << RWTime() << " " << sql << endl;
         }
-     }
+    }
 
-     return success;
+    return success;
 }
 
 bool CtiMCScheduleManager::retrieveScriptedSchedules(
-        RWTPtrHashMap
-        < CtiHashKey, CtiMCSchedule, my_hash<CtiHashKey> , equal_to<CtiHashKey> >&
-        sched_map )
+                                                    RWTPtrHashMap
+                                                    < CtiHashKey, CtiMCSchedule, my_hash<CtiHashKey> , equal_to<CtiHashKey> >&
+                                                    sched_map )
 {
     bool success = true;
     string sql;
 
     try
     {
-      {
-          // Make sure all objects that that store results
-          // are out of scope when the release is called
-         RWDBConnection conn = getConnection();
-
-         RWLockGuard<RWDBConnection> conn_guard(conn);
-
-         RWDBDatabase   db       = conn.database();
-         RWDBSelector   selector = conn.database().selector();
-         RWDBTable      pao_table;
-         RWDBTable      mc_sched_table;
-         RWDBReader     rdr;
-
-         RWDBStatus     status;
-
-         CtiTblPAO().getSQL( db, pao_table, selector );
-         CtiMCSchedule::getSQL( db, mc_sched_table, selector );
-         selector.where( pao_table["category"] == RWDBExpr("Schedule") &&
-                         pao_table["type"] == RWDBExpr("Script") &&
-                         mc_sched_table["scheduleid"] == pao_table["paobjectid"] );
+        {
+            // Make sure all objects that that store results
+            // are out of scope when the release is called
+            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+            RWDBConnection conn = getConnection();
 
 
-         //    selector.where() &&  mc_sched_table["scheduletype"]==RWDBExpr("Script") );
+            RWDBDatabase   db       = conn.database();
+            RWDBSelector   selector = conn.database().selector();
+            RWDBTable      pao_table;
+            RWDBTable      mc_sched_table;
+            RWDBReader     rdr;
 
-         rdr = selector.reader(conn);
+            RWDBStatus     status;
 
-         sql = selector.asString();
-         status = selector.status();
+            CtiTblPAO().getSQL( db, pao_table, selector );
+            CtiMCSchedule::getSQL( db, mc_sched_table, selector );
+            selector.where( pao_table["category"] == RWDBExpr("Schedule") &&
+                            pao_table["type"] == RWDBExpr("Script") &&
+                            mc_sched_table["scheduleid"] == pao_table["paobjectid"] );
 
-         if( status.errorCode() == RWDBStatus::ok )
-         {
-            while( rdr() )
+
+            //    selector.where() &&  mc_sched_table["scheduletype"]==RWDBExpr("Script") );
+
+            rdr = selector.reader(conn);
+
+            sql = selector.asString();
+            status = selector.status();
+
+            if( status.errorCode() == RWDBStatus::ok )
             {
-                long id;
-
-                rdr["scheduleid"] >> id;
-
-                CtiMCSchedule* temp_sched = new CtiMCSchedule();
-                // Add it to the map
-                temp_sched->setUpdatedFlag();   // Mark it updated
-                sched_map.insert( new CtiHashKey(id), temp_sched );
-
-                if( !temp_sched->DecodeDatabaseReader(rdr) )
+                while( rdr() )
                 {
-                    success = false;
-                    break;
+                    long id;
+
+                    rdr["scheduleid"] >> id;
+
+                    CtiMCSchedule* temp_sched = new CtiMCSchedule();
+                    // Add it to the map
+                    temp_sched->setUpdatedFlag();   // Mark it updated
+                    sched_map.insert( new CtiHashKey(id), temp_sched );
+
+                    if( !temp_sched->DecodeDatabaseReader(rdr) )
+                    {
+                        success = false;
+                        break;
+                    }
                 }
             }
-         }
-         else
-         {
-             success = false;
-         }
-       }
-     }
-     catch(RWExternalErr e )
-     {
+            else
+            {
+                success = false;
+            }
+        }
+    }
+    catch(RWExternalErr e )
+    {
         success = false;
 
         {
             CtiLockGuard<CtiLogger> guard(dout);
             dout << RWTime() << " Exception:  " << e.why() << endl;
         }
-     }
-     catch(...)
-     {
+    }
+    catch(...)
+    {
         success = false;
 
         {
             CtiLockGuard<CtiLogger> guard(dout);
             dout << RWTime() << " An unkown exception occured"  << endl;
         }
-     }
+    }
 
-     if( !success )
-     {
-         {
+    if( !success )
+    {
+        {
             CtiLockGuard<CtiLogger> guard(dout);
             dout << RWTime() << " An error occured executing the following sql:"  << endl;
             dout << RWTime() << " " << sql << endl;
         }
-     }
+    }
 
 
     return success;

@@ -1,14 +1,14 @@
 /*---------------------------------------------------------------------------
         Filename:  ccsubstationbus.cpp
-        
+
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiCCSubstationBus.
                         CtiCCSubstationBus maintains the state and handles
                         the persistence of substation buses for Cap Control.
 
         Initial Date:  8/28/2001
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 #pragma warning( disable : 4786)
@@ -33,12 +33,12 @@ RWDEFINE_COLLECTABLE( CtiCCSubstationBus, CTICCSUBSTATIONBUS_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus::CtiCCSubstationBus()
-{   
+{
 }
 
 CtiCCSubstationBus::CtiCCSubstationBus(RWDBReader& rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiCCSubstationBus::CtiCCSubstationBus(const CtiCCSubstationBus& sub)
@@ -535,7 +535,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPAOId(ULONG id)
     setPAOCategory
 
     Sets the pao category of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setPAOCategory(const RWCString& category)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -547,7 +547,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPAOCategory(const RWCString& category
     setPAOClass
 
     Sets the pao class of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setPAOClass(const RWCString& pclass)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -559,7 +559,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPAOClass(const RWCString& pclass)
     setPAOName
 
     Sets the pao name of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setPAOName(const RWCString& name)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -571,7 +571,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPAOName(const RWCString& name)
     setPAOType
 
     Sets the pao type of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setPAOType(const RWCString& type)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -583,7 +583,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPAOType(const RWCString& type)
     setPAODescription
 
     Sets the pao description of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setPAODescription(const RWCString& description)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -595,7 +595,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPAODescription(const RWCString& descr
     setDisableFlag
 
     Sets the disable flag of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setDisableFlag(BOOL disable)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -607,7 +607,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setDisableFlag(BOOL disable)
     setControlMethod
 
     Sets the control method of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setControlMethod(const RWCString& method)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -619,7 +619,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setControlMethod(const RWCString& method
     setMaxDailyOperation
 
     Sets the max daily operations of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setMaxDailyOperation(ULONG max)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -631,7 +631,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setMaxDailyOperation(ULONG max)
     setMaxOperationDisableFlag
 
     Sets the max operations disable flag of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setMaxOperationDisableFlag(BOOL maxopdisable)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -643,7 +643,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setMaxOperationDisableFlag(BOOL maxopdis
     setPeakSetPoint
 
     Sets the peak set point of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setPeakSetPoint(DOUBLE peak)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -655,7 +655,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPeakSetPoint(DOUBLE peak)
     setOffPeakSetPoint
 
     Sets the off peak set point of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setOffPeakSetPoint(DOUBLE offpeak)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -667,7 +667,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setOffPeakSetPoint(DOUBLE offpeak)
     setPeakStartTime
 
     Sets the peak start time of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setPeakStartTime(ULONG starttime)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -679,7 +679,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPeakStartTime(ULONG starttime)
     setPeakStopTime
 
     Sets the peak stop time of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setPeakStopTime(ULONG stoptime)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -691,7 +691,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPeakStopTime(ULONG stoptime)
     setCurrentVarLoadPointId
 
     Sets the current var load point id of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarLoadPointId(ULONG currentvarid)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -703,7 +703,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarLoadPointId(ULONG currentva
     setCurrentVarLoadPointValue
 
     Sets the current var load point value of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarLoadPointValue(DOUBLE currentvarval)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -715,7 +715,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarLoadPointValue(DOUBLE curre
     setCurrentWattLoadPointId
 
     Sets the current watt load point id of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setCurrentWattLoadPointId(ULONG currentwattid)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -727,7 +727,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentWattLoadPointId(ULONG currentw
     setCurrentWattLoadPointValue
 
     Sets the current watt load point value of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setCurrentWattLoadPointValue(DOUBLE currentwattval)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -739,7 +739,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentWattLoadPointValue(DOUBLE curr
     setBandwidth
 
     Sets the bandwidth of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setBandwidth(ULONG bandwidth)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -751,7 +751,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setBandwidth(ULONG bandwidth)
     setControlInterval
 
     Sets the control interval of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setControlInterval(ULONG interval)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -763,7 +763,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setControlInterval(ULONG interval)
     setMinResponseTime
 
     Sets the minimum response time of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setMinResponseTime(ULONG response)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -775,7 +775,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setMinResponseTime(ULONG response)
     setMinConfirmPercent
 
     Sets the min confirm percent of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setMinConfirmPercent(ULONG confirm)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -787,7 +787,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setMinConfirmPercent(ULONG confirm)
     setFailurePercent
 
     Sets the failure percent of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setFailurePercent(ULONG failure)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -799,7 +799,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setFailurePercent(ULONG failure)
     setDaysOfWeek
 
     Sets the days of the week of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setDaysOfWeek(const RWCString& days)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -811,7 +811,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setDaysOfWeek(const RWCString& days)
     setMapLocationId
 
     Sets the map location id of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setMapLocationId(ULONG maplocation)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -823,7 +823,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setMapLocationId(ULONG maplocation)
     setDecimalPlaces
 
     Sets the decimal places of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setDecimalPlaces(ULONG places)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -833,10 +833,10 @@ CtiCCSubstationBus& CtiCCSubstationBus::setDecimalPlaces(ULONG places)
 
 /*---------------------------------------------------------------------------
     figureNextCheckTime
-    
+
     Figures out when the substation should be checked again according to the
     control interval.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::figureNextCheckTime()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -857,7 +857,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::figureNextCheckTime()
     setNewPointDataReceivedFlag
 
     Sets the new point data received flag of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setNewPointDataReceivedFlag(BOOL newpointdatareceived)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -869,7 +869,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setNewPointDataReceivedFlag(BOOL newpoin
     setBusUpdatedFlag
 
     Sets the substation updated flag of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setBusUpdatedFlag(BOOL busupdated)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -881,7 +881,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setBusUpdatedFlag(BOOL busupdated)
     setLastCurrentVarPointUpdateTime
 
     Sets the last current var point update time of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setLastCurrentVarPointUpdateTime(const RWDBDateTime& lastpointupdate)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -893,7 +893,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastCurrentVarPointUpdateTime(const R
     setEstimatedVarLoadPointId
 
     Sets the estimated var load point id of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedVarLoadPointId(ULONG estimatedvarid)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -905,7 +905,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedVarLoadPointId(ULONG estimat
     setEstimatedVarLoadPointValue
 
     Sets the estimated var load point value of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedVarLoadPointValue(DOUBLE estimatedvarval)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -917,7 +917,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedVarLoadPointValue(DOUBLE est
     setStatusesReceivedFlag
 
     Sets the statuses received flag of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setStatusesReceivedFlag(BOOL statusesreceived)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -929,7 +929,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setStatusesReceivedFlag(BOOL statusesrec
     setDailyOperationsAnalogPointId
 
     Sets the daily operations analog point id of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setDailyOperationsAnalogPointId(ULONG opanalogpointid)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -941,7 +941,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setDailyOperationsAnalogPointId(ULONG op
     setCurrentDailyOperations
 
     Sets the current daily operations of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setCurrentDailyOperations(ULONG operations)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -953,7 +953,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentDailyOperations(ULONG operatio
     setPeakTimeFlag
 
     Sets the flag if the substation is in peak time
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setPeakTimeFlag(ULONG peaktime)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -965,7 +965,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPeakTimeFlag(ULONG peaktime)
     setRecentlyControlledFlag
 
     Sets the recently controlled flag of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setRecentlyControlledFlag(BOOL recentlycontrolled)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -977,7 +977,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setRecentlyControlledFlag(BOOL recentlyc
     setLastOperationTime
 
     Sets the last operation time of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setLastOperationTime(const RWDBDateTime& lastoperation)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -989,7 +989,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastOperationTime(const RWDBDateTime&
     setVarValueBeforeControl
 
     Sets the var value before control of the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setVarValueBeforeControl(DOUBLE oldvarval)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -1001,7 +1001,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setVarValueBeforeControl(DOUBLE oldvarva
     setLastFeederControlledPAOId
 
     Sets the pao id of the last feeder controlled in the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setLastFeederControlledPAOId(ULONG lastfeederpao)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -1013,7 +1013,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastFeederControlledPAOId(ULONG lastf
     setLastFeederControlledPosition
 
     Sets the position of the last feeder controlled in the substation
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setLastFeederControlledPosition(LONG lastfeederposition)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -1024,10 +1024,10 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastFeederControlledPosition(LONG las
 
 /*---------------------------------------------------------------------------
     figureEstimatedVarLoadPointValue
-    
+
     Figures out the estimated var point value according to the states
     of the individual cap banks in each of the feeders
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::figureEstimatedVarLoadPointValue()
 {
     DOUBLE tempValue;
@@ -1064,8 +1064,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::figureEstimatedVarLoadPointValue()
 /*---------------------------------------------------------------------------
     checkForAndProvideNeededControl
 
-    
----------------------------------------------------------------------------*/    
+
+---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
 {
     BOOL keepGoing = TRUE;
@@ -1149,8 +1149,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RW
 /*---------------------------------------------------------------------------
     regularSubstationBusControl
 
-    
----------------------------------------------------------------------------*/    
+
+---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE setpoint, const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
 {
     CtiRequestMsg* request = NULL;
@@ -1166,7 +1166,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE setpoint, const RWDB
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Attempting to Decrease Var level in substation bus: " << getPAOName().data() << endl;
             }
-    
+
             while( request == NULL &&
                    iterations < _ccfeeders.entries() )
             {
@@ -1182,12 +1182,12 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE setpoint, const RWDB
                 request = currentFeeder->createDecreaseVarRequest(pointChanges, getCurrentVarLoadPointValue(), getDecimalPlaces());
                 iterations++;
             }
-    
+
             if( request == NULL )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Can Not Reduce Var level for substation bus: " << getPAOName()
-                    << " any further.  All cap banks are already in the Close state" << endl;
+                << " any further.  All cap banks are already in the Close state" << endl;
             }
         }
         else
@@ -1197,7 +1197,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE setpoint, const RWDB
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Attempting to Increase Var level in substation bus: " << getPAOName().data() << endl;
             }
-    
+
             while( request == NULL &&
                    iterations < _ccfeeders.entries() )
             {
@@ -1213,12 +1213,12 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE setpoint, const RWDB
                 request = currentFeeder->createIncreaseVarRequest(pointChanges, getCurrentVarLoadPointValue(), getDecimalPlaces());
                 iterations++;
             }
-    
+
             if( request == NULL )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Can Not Increase Var level for substation bus: " << getPAOName()
-                    << " any further.  All cap banks are already in the Open state" << endl;
+                << " any further.  All cap banks are already in the Open state" << endl;
             }
         }
         if( request != NULL )
@@ -1251,8 +1251,8 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE setpoint, const RWDB
 /*---------------------------------------------------------------------------
     optimizedSubstationBusControl
 
-    
----------------------------------------------------------------------------*/    
+
+---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
 {
     CtiRequestMsg* request = NULL;
@@ -1292,12 +1292,12 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RW
                 iterations++;
                 currentPosition++;
             }
-    
+
             if( request == NULL )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Can Not Reduce Var level for substation bus: " << getPAOName()
-                    << " any further.  All cap banks are already in the Close state" << endl;
+                << " any further.  All cap banks are already in the Close state" << endl;
             }
         }
         else
@@ -1307,7 +1307,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RW
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Attempting to Increase Var level in substation bus: " << getPAOName().data() << endl;
             }
-    
+
             while( request == NULL &&
                    iterations < _ccfeeders.entries() )
             {
@@ -1320,12 +1320,12 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RW
                 iterations++;
                 currentPosition--;
             }
-    
+
             if( request == NULL )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Can Not Increase Var level for substation bus: " << getPAOName()
-                    << " any further.  All cap banks are already in the Open state" << endl;
+                << " any further.  All cap banks are already in the Open state" << endl;
             }
         }
         if( request != NULL )
@@ -1361,10 +1361,10 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RW
 
 /*---------------------------------------------------------------------------
     figureCurrentSetPoint
-    
+
     Returns the current set point depending on if it is peak or off peak
     time and sets the set point status
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 DOUBLE CtiCCSubstationBus::figureCurrentSetPoint(const RWDBDateTime& currentDateTime)
 {
     unsigned nowInSeconds = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
@@ -1382,9 +1382,9 @@ DOUBLE CtiCCSubstationBus::figureCurrentSetPoint(const RWDBDateTime& currentDate
 
 /*---------------------------------------------------------------------------
     capBankControlStatusUpdate
-    
+
     Returns a boolean if the current day of the week can be a peak day
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
 {
     BOOL returnBoolean = TRUE;
@@ -1453,11 +1453,11 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
 
     Returns a boolean if the control interval is up or if new point data has
     been received for all the points associated with the bus.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 BOOL CtiCCSubstationBus::isVarCheckNeeded(const RWDBDateTime& currentDateTime)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    
+
     BOOL returnBoolean = FALSE;
 
     if( getControlInterval() > 0 )
@@ -1555,7 +1555,7 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const RWDBDateTime& currentDateTime)
     isPeakDay
 
     Returns a boolean if the current day of the week can be a peak day
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 BOOL CtiCCSubstationBus::isPeakDay()
 {
     //-------------------------------------
@@ -1576,7 +1576,7 @@ BOOL CtiCCSubstationBus::isPeakDay()
     isPeakDay
 
     Returns a boolean if the current day of the week can be a peak day
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::clearOutNewPointReceivedFlags()
 {
     setNewPointDataReceivedFlag(FALSE);
@@ -1590,7 +1590,7 @@ void CtiCCSubstationBus::clearOutNewPointReceivedFlags()
     areAllCapBankStatusesReceived
 
     Returns a boolean if all the cap banks in each feeder have updated statuses
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 BOOL CtiCCSubstationBus::areAllCapBankStatusesReceived()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -1618,14 +1618,14 @@ BOOL CtiCCSubstationBus::areAllCapBankStatusesReceived()
 
 /*---------------------------------------------------------------------------
     isAlreadyControlled
-    
+
     Returns a boolean if the last cap bank controlled expected var changes
     are reflected in the current var level before the min response time
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 BOOL CtiCCSubstationBus::isAlreadyControlled()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    
+
     BOOL returnBoolean = FALSE;
 
     if( _controlmethod == CtiCCSubstationBus::IndividualFeederControlMethod ||
@@ -1716,11 +1716,11 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
     isPastResponseTime
 
     Returns a boolean if the last control is past the minimum response time.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 BOOL CtiCCSubstationBus::isPastResponseTime(const RWDBDateTime& currentDateTime)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    
+
     BOOL returnBoolean = FALSE;
 
     if( _controlmethod == CtiCCSubstationBus::IndividualFeederControlMethod )
@@ -1749,7 +1749,7 @@ BOOL CtiCCSubstationBus::isPastResponseTime(const RWDBDateTime& currentDateTime)
 
 /*---------------------------------------------------------------------------
     dumpDynamicData
-    
+
     Writes out the dynamic information for this strategy.
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::dumpDynamicData()
@@ -1758,9 +1758,9 @@ void CtiCCSubstationBus::dumpDynamicData()
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
         RWDBTable dynamicCCSubstationBusTable = getDatabase().table( "dynamicccsubstationbus" );
 
@@ -1769,20 +1769,20 @@ void CtiCCSubstationBus::dumpDynamicData()
             RWDBUpdater updater = dynamicCCSubstationBusTable.updater();
 
             updater << dynamicCCSubstationBusTable["currentvarpointvalue"].assign( getCurrentVarLoadPointValue() )
-                    << dynamicCCSubstationBusTable["currentwattpointvalue"].assign( getCurrentWattLoadPointValue() )
-                    << dynamicCCSubstationBusTable["nextchecktime"].assign( (RWDBDateTime)getNextCheckTime() )
-                    << dynamicCCSubstationBusTable["newpointdatareceivedflag"].assign( RWCString((getNewPointDataReceivedFlag()?'Y':'N')) )
-                    << dynamicCCSubstationBusTable["busupdatedflag"].assign( RWCString((getBusUpdatedFlag()?'Y':'N')) )
-                    << dynamicCCSubstationBusTable["lastcurrentvarupdatetime"].assign( (RWDBDateTime)getLastCurrentVarPointUpdateTime() )
-                    << dynamicCCSubstationBusTable["estimatedvarpointvalue"].assign( getEstimatedVarLoadPointValue() )
-                    << dynamicCCSubstationBusTable["currentdailyoperations"].assign( getCurrentDailyOperations() )
-                    << dynamicCCSubstationBusTable["peaktimeflag"].assign( RWCString((getPeakTimeFlag()?'Y':'N')) )
-                    << dynamicCCSubstationBusTable["recentlycontrolledflag"].assign( RWCString((getRecentlyControlledFlag()?'Y':'N')) )
-                    << dynamicCCSubstationBusTable["lastoperationtime"].assign( (RWDBDateTime)getLastOperationTime() )
-                    << dynamicCCSubstationBusTable["varvaluebeforecontrol"].assign( getVarValueBeforeControl() )
-                    << dynamicCCSubstationBusTable["lastfeederpaoid"].assign( getLastFeederControlledPAOId() )
-                    << dynamicCCSubstationBusTable["lastfeederposition"].assign( getLastFeederControlledPosition() )
-                    << dynamicCCSubstationBusTable["ctitimestamp"].assign((RWDBDateTime)currentDateTime);
+            << dynamicCCSubstationBusTable["currentwattpointvalue"].assign( getCurrentWattLoadPointValue() )
+            << dynamicCCSubstationBusTable["nextchecktime"].assign( (RWDBDateTime)getNextCheckTime() )
+            << dynamicCCSubstationBusTable["newpointdatareceivedflag"].assign( RWCString((getNewPointDataReceivedFlag()?'Y':'N')) )
+            << dynamicCCSubstationBusTable["busupdatedflag"].assign( RWCString((getBusUpdatedFlag()?'Y':'N')) )
+            << dynamicCCSubstationBusTable["lastcurrentvarupdatetime"].assign( (RWDBDateTime)getLastCurrentVarPointUpdateTime() )
+            << dynamicCCSubstationBusTable["estimatedvarpointvalue"].assign( getEstimatedVarLoadPointValue() )
+            << dynamicCCSubstationBusTable["currentdailyoperations"].assign( getCurrentDailyOperations() )
+            << dynamicCCSubstationBusTable["peaktimeflag"].assign( RWCString((getPeakTimeFlag()?'Y':'N')) )
+            << dynamicCCSubstationBusTable["recentlycontrolledflag"].assign( RWCString((getRecentlyControlledFlag()?'Y':'N')) )
+            << dynamicCCSubstationBusTable["lastoperationtime"].assign( (RWDBDateTime)getLastOperationTime() )
+            << dynamicCCSubstationBusTable["varvaluebeforecontrol"].assign( getVarValueBeforeControl() )
+            << dynamicCCSubstationBusTable["lastfeederpaoid"].assign( getLastFeederControlledPAOId() )
+            << dynamicCCSubstationBusTable["lastfeederposition"].assign( getLastFeederControlledPosition() )
+            << dynamicCCSubstationBusTable["ctitimestamp"].assign((RWDBDateTime)currentDateTime);
 
             updater.where(dynamicCCSubstationBusTable["substationbusid"]==getPAOId());
 
@@ -1798,21 +1798,21 @@ void CtiCCSubstationBus::dumpDynamicData()
             RWDBInserter inserter = dynamicCCSubstationBusTable.inserter();
 
             inserter << getPAOId()
-                     << getCurrentVarLoadPointValue()
-                     << getCurrentWattLoadPointValue()
-                     << getNextCheckTime()
-                     << getNewPointDataReceivedFlag()
-                     << getBusUpdatedFlag()
-                     << getLastCurrentVarPointUpdateTime()
-                     << getEstimatedVarLoadPointValue()
-                     << getCurrentDailyOperations()
-                     << getPeakTimeFlag()
-                     << getRecentlyControlledFlag()
-                     << getLastOperationTime()
-                     << getVarValueBeforeControl()
-                     << getLastFeederControlledPAOId()
-                     << getLastFeederControlledPosition()
-                     << currentDateTime;
+            << getCurrentVarLoadPointValue()
+            << getCurrentWattLoadPointValue()
+            << getNextCheckTime()
+            << getNewPointDataReceivedFlag()
+            << getBusUpdatedFlag()
+            << getLastCurrentVarPointUpdateTime()
+            << getEstimatedVarLoadPointValue()
+            << getCurrentDailyOperations()
+            << getPeakTimeFlag()
+            << getRecentlyControlledFlag()
+            << getLastOperationTime()
+            << getVarValueBeforeControl()
+            << getLastFeederControlledPAOId()
+            << getLastFeederControlledPosition()
+            << currentDateTime;
 
             /*if( _CC_DEBUG )
             {
@@ -1829,7 +1829,7 @@ void CtiCCSubstationBus::dumpDynamicData()
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
@@ -1843,47 +1843,47 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     RWCollectable::restoreGuts( istrm );
 
     istrm >> _paoid
-          >> _paocategory
-          >> _paoclass
-          >> _paoname
-          >> _paotype
-          >> _paodescription
-          >> _disableflag
-          >> _controlmethod
-          >> _maxdailyoperation
-          >> _maxoperationdisableflag
-          >> _peaksetpoint
-          >> _offpeaksetpoint
-          >> _peakstarttime
-          >> _peakstoptime
-          >> _currentvarloadpointid
-          >> _currentvarloadpointvalue
-          >> _currentwattloadpointid
-          >> _currentwattloadpointvalue
-          >> _bandwidth
-          >> _controlinterval
-          >> _minresponsetime
-          >> _minconfirmpercent
-          >> _failurepercent
-          >> _daysofweek
-          >> _maplocationid
-          >> _decimalplaces
-          >> tempTime1
-          >> _newpointdatareceivedflag
-          >> _busupdatedflag
-          >> tempTime2
-          >> _estimatedvarloadpointid
-          >> _estimatedvarloadpointvalue
-          >> _statusesreceivedflag
-          >> _dailyoperationsanalogpointid
-          >> _currentdailyoperations
-          >> _peaktimeflag
-          >> _recentlycontrolledflag
-          >> tempTime3
-          >> _varvaluebeforecontrol
-          >> _lastfeedercontrolledpaoid
-          >> _lastfeedercontrolledposition
-          >> _ccfeeders;
+    >> _paocategory
+    >> _paoclass
+    >> _paoname
+    >> _paotype
+    >> _paodescription
+    >> _disableflag
+    >> _controlmethod
+    >> _maxdailyoperation
+    >> _maxoperationdisableflag
+    >> _peaksetpoint
+    >> _offpeaksetpoint
+    >> _peakstarttime
+    >> _peakstoptime
+    >> _currentvarloadpointid
+    >> _currentvarloadpointvalue
+    >> _currentwattloadpointid
+    >> _currentwattloadpointvalue
+    >> _bandwidth
+    >> _controlinterval
+    >> _minresponsetime
+    >> _minconfirmpercent
+    >> _failurepercent
+    >> _daysofweek
+    >> _maplocationid
+    >> _decimalplaces
+    >> tempTime1
+    >> _newpointdatareceivedflag
+    >> _busupdatedflag
+    >> tempTime2
+    >> _estimatedvarloadpointid
+    >> _estimatedvarloadpointvalue
+    >> _statusesreceivedflag
+    >> _dailyoperationsanalogpointid
+    >> _currentdailyoperations
+    >> _peaktimeflag
+    >> _recentlycontrolledflag
+    >> tempTime3
+    >> _varvaluebeforecontrol
+    >> _lastfeedercontrolledpaoid
+    >> _lastfeedercontrolledposition
+    >> _ccfeeders;
 
     _nextchecktime = RWDBDateTime(tempTime1);
     _lastcurrentvarpointupdatetime = RWDBDateTime(tempTime2);
@@ -1892,57 +1892,57 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const  
+void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        
+
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _paoid
-          << _paocategory
-          << _paoclass
-          << _paoname
-          << _paotype
-          << _paodescription
-          << _disableflag
-          << _controlmethod
-          << _maxdailyoperation
-          << _maxoperationdisableflag
-          << _peaksetpoint
-          << _offpeaksetpoint
-          << _peakstarttime
-          << _peakstoptime
-          << _currentvarloadpointid
-          << _currentvarloadpointvalue
-          << _currentwattloadpointid
-          << _currentwattloadpointvalue
-          << _bandwidth
-          << _controlinterval
-          << _minresponsetime
-          << _minconfirmpercent
-          << _failurepercent
-          << _daysofweek
-          << _maplocationid
-          << _decimalplaces
-          << _nextchecktime.rwtime()
-          << _newpointdatareceivedflag
-          << _busupdatedflag
-          << _lastcurrentvarpointupdatetime.rwtime()
-          << _estimatedvarloadpointid
-          << _estimatedvarloadpointvalue
-          << _statusesreceivedflag
-          << _dailyoperationsanalogpointid
-          << _currentdailyoperations
-          << _peaktimeflag
-          << _recentlycontrolledflag
-          << _lastoperationtime.rwtime()
-          << _varvaluebeforecontrol
-          << _lastfeedercontrolledpaoid
-          << _lastfeedercontrolledposition
-          << _ccfeeders;
+    << _paocategory
+    << _paoclass
+    << _paoname
+    << _paotype
+    << _paodescription
+    << _disableflag
+    << _controlmethod
+    << _maxdailyoperation
+    << _maxoperationdisableflag
+    << _peaksetpoint
+    << _offpeaksetpoint
+    << _peakstarttime
+    << _peakstoptime
+    << _currentvarloadpointid
+    << _currentvarloadpointvalue
+    << _currentwattloadpointid
+    << _currentwattloadpointvalue
+    << _bandwidth
+    << _controlinterval
+    << _minresponsetime
+    << _minconfirmpercent
+    << _failurepercent
+    << _daysofweek
+    << _maplocationid
+    << _decimalplaces
+    << _nextchecktime.rwtime()
+    << _newpointdatareceivedflag
+    << _busupdatedflag
+    << _lastcurrentvarpointupdatetime.rwtime()
+    << _estimatedvarloadpointid
+    << _estimatedvarloadpointvalue
+    << _statusesreceivedflag
+    << _dailyoperationsanalogpointid
+    << _currentdailyoperations
+    << _peaktimeflag
+    << _recentlycontrolledflag
+    << _lastoperationtime.rwtime()
+    << _varvaluebeforecontrol
+    << _lastfeedercontrolledpaoid
+    << _lastfeedercontrolledposition
+    << _ccfeeders;
 }
 
 /*---------------------------------------------------------------------------
@@ -2025,17 +2025,17 @@ int CtiCCSubstationBus::operator!=(const CtiCCSubstationBus& right) const
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus* CtiCCSubstationBus::replicate() const
 {
-    return (new CtiCCSubstationBus(*this));
+    return(new CtiCCSubstationBus(*this));
 }
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::restore(RWDBReader& rdr)
@@ -2165,7 +2165,7 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
 
 /*---------------------------------------------------------------------------
     doubleToString
-    
+
     Returns the RWCString representation of a double
 ---------------------------------------------------------------------------*/
 RWCString CtiCCSubstationBus::doubleToString(DOUBLE doubleVal)

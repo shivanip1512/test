@@ -1,15 +1,15 @@
 /*---------------------------------------------------------------------------
         Filename:  lmcontrolarea.cpp
-        
+
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiLMControlArea.
                         CtiLMControlArea maintains the state and handles
                         the persistence of control areas for Load
                         Management.
 
         Initial Date:  2/12/2001
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
@@ -36,12 +36,12 @@ RWDEFINE_COLLECTABLE( CtiLMControlArea, CTILMCONTROLAREA_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMControlArea::CtiLMControlArea()
-{   
+{
 }
 
 CtiLMControlArea::CtiLMControlArea(RWDBReader& rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMControlArea::CtiLMControlArea(const CtiLMControlArea& controlarea)
@@ -127,7 +127,7 @@ const RWCString& CtiLMControlArea::getPAODescription() const
 
 /*---------------------------------------------------------------------------
     getDisableFlag
-    
+
     Returns the disable flag of the control area
 ---------------------------------------------------------------------------*/
 BOOL CtiLMControlArea::getDisableFlag() const
@@ -138,7 +138,7 @@ BOOL CtiLMControlArea::getDisableFlag() const
 
 /*---------------------------------------------------------------------------
     getDefOperationalState
-    
+
     Returns the default operational state of the control area
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMControlArea::getDefOperationalState() const
@@ -149,7 +149,7 @@ const RWCString& CtiLMControlArea::getDefOperationalState() const
 
 /*---------------------------------------------------------------------------
     getControlInterval
-    
+
     Returns the control interval of the control area in seconds
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlArea::getControlInterval() const
@@ -160,7 +160,7 @@ ULONG CtiLMControlArea::getControlInterval() const
 
 /*---------------------------------------------------------------------------
     getMinResponseTime
-    
+
     Returns the minimum response time of the control area in seconds
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlArea::getMinResponseTime() const
@@ -171,7 +171,7 @@ ULONG CtiLMControlArea::getMinResponseTime() const
 
 /*---------------------------------------------------------------------------
     getDefDailyStartTime
-    
+
     Returns the default daily start time as the number of seconds after
     midnight for the control area
 ---------------------------------------------------------------------------*/
@@ -183,7 +183,7 @@ ULONG CtiLMControlArea::getDefDailyStartTime() const
 
 /*---------------------------------------------------------------------------
     getDefDailyStopTime
-    
+
     Returns the default daily stop time as the number of seconds after
     midnight for the control area
 ---------------------------------------------------------------------------*/
@@ -195,7 +195,7 @@ ULONG CtiLMControlArea::getDefDailyStopTime() const
 
 /*---------------------------------------------------------------------------
     getRequireAllTriggersActiveFlag
-    
+
     Returns the require all triggers active flag of the control area
 ---------------------------------------------------------------------------*/
 BOOL CtiLMControlArea::getRequireAllTriggersActiveFlag() const
@@ -206,18 +206,18 @@ BOOL CtiLMControlArea::getRequireAllTriggersActiveFlag() const
 
 /*---------------------------------------------------------------------------
     getNextCheckTime
-    
+
     Returns the next check time of the control area
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMControlArea::getNextCheckTime() const
-{   
+{
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _nextchecktime;
 }
 
 /*---------------------------------------------------------------------------
     getLMControlAreaTriggers
-    
+
     Returns the list of triggers for this control area
 ---------------------------------------------------------------------------*/
 RWOrdered& CtiLMControlArea::getLMControlAreaTriggers()
@@ -228,7 +228,7 @@ RWOrdered& CtiLMControlArea::getLMControlAreaTriggers()
 
 /*---------------------------------------------------------------------------
     getLMPrograms
-    
+
     Returns the list of programs for this control area
 ---------------------------------------------------------------------------*/
 RWOrdered& CtiLMControlArea::getLMPrograms()
@@ -239,7 +239,7 @@ RWOrdered& CtiLMControlArea::getLMPrograms()
 
 /*---------------------------------------------------------------------------
     getNewPointDataReceivedFlag
-    
+
     Returns the new point data received flag of the control area
 ---------------------------------------------------------------------------*/
 BOOL CtiLMControlArea::getNewPointDataReceivedFlag() const
@@ -250,7 +250,7 @@ BOOL CtiLMControlArea::getNewPointDataReceivedFlag() const
 
 /*---------------------------------------------------------------------------
     getUpdatedFlag
-    
+
     Returns the updated flag of the control area
 ---------------------------------------------------------------------------*/
 BOOL CtiLMControlArea::getUpdatedFlag() const
@@ -261,7 +261,7 @@ BOOL CtiLMControlArea::getUpdatedFlag() const
 
 /*---------------------------------------------------------------------------
     getControlAreaStatusPointId
-    
+
     Returns the point id of the control area status point
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlArea::getControlAreaStatusPointId() const
@@ -272,7 +272,7 @@ ULONG CtiLMControlArea::getControlAreaStatusPointId() const
 
 /*---------------------------------------------------------------------------
     getControlAreaState
-    
+
     Returns the state of the control area
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlArea::getControlAreaState() const
@@ -283,7 +283,7 @@ ULONG CtiLMControlArea::getControlAreaState() const
 
 /*---------------------------------------------------------------------------
     getCurrentPriority
-    
+
     Returns the current priority of the control area
 ---------------------------------------------------------------------------*/
 LONG CtiLMControlArea::getCurrentPriority() const
@@ -309,7 +309,7 @@ CtiLMControlArea& CtiLMControlArea::setPAOId(ULONG id)
     setPAOCategory
 
     Sets the pao category of the control area
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setPAOCategory(const RWCString& category)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -321,7 +321,7 @@ CtiLMControlArea& CtiLMControlArea::setPAOCategory(const RWCString& category)
     setPAOClass
 
     Sets the pao class of the control area
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setPAOClass(const RWCString& pclass)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -333,7 +333,7 @@ CtiLMControlArea& CtiLMControlArea::setPAOClass(const RWCString& pclass)
     setPAOName
 
     Sets the pao name of the control area
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setPAOName(const RWCString& name)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -345,7 +345,7 @@ CtiLMControlArea& CtiLMControlArea::setPAOName(const RWCString& name)
     setPAOType
 
     Sets the pao type of the control area
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setPAOType(ULONG type)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -357,7 +357,7 @@ CtiLMControlArea& CtiLMControlArea::setPAOType(ULONG type)
     setPAODescription
 
     Sets the pao description of the control area
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setPAODescription(const RWCString& description)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -367,7 +367,7 @@ CtiLMControlArea& CtiLMControlArea::setPAODescription(const RWCString& descripti
 
 /*---------------------------------------------------------------------------
     setDisableFlag
-    
+
     Sets the disable flag of the control area
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setDisableFlag(BOOL disable)
@@ -380,7 +380,7 @@ CtiLMControlArea& CtiLMControlArea::setDisableFlag(BOOL disable)
 
 /*---------------------------------------------------------------------------
     setDefOperationalState
-    
+
     Sets the default operational state of the control area
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setDefOperationalState(const RWCString& opstate)
@@ -393,7 +393,7 @@ CtiLMControlArea& CtiLMControlArea::setDefOperationalState(const RWCString& opst
 
 /*---------------------------------------------------------------------------
     setControlInterval
-    
+
     Sets the control interval of the control area in seconds
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setControlInterval(ULONG interval)
@@ -406,7 +406,7 @@ CtiLMControlArea& CtiLMControlArea::setControlInterval(ULONG interval)
 
 /*---------------------------------------------------------------------------
     setMinResponseTime
-    
+
     Sets the minimum response time of the control area in seconds
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setMinResponseTime(ULONG response)
@@ -419,7 +419,7 @@ CtiLMControlArea& CtiLMControlArea::setMinResponseTime(ULONG response)
 
 /*---------------------------------------------------------------------------
     setDefDailyStartTime
-    
+
     Sets the default daily start time as the number of seconds after
     midnight for the control area
 ---------------------------------------------------------------------------*/
@@ -433,7 +433,7 @@ CtiLMControlArea& CtiLMControlArea::setDefDailyStartTime(ULONG start)
 
 /*---------------------------------------------------------------------------
     setDefDailyStopTime
-    
+
     Sets the default daily stop time as the number of seconds after
     midnight for the control area
 ---------------------------------------------------------------------------*/
@@ -447,7 +447,7 @@ CtiLMControlArea& CtiLMControlArea::setDefDailyStopTime(ULONG stop)
 
 /*---------------------------------------------------------------------------
     setRequireAllTriggersActiveFlag
-    
+
     Sets the require all triggers active flag of the control area
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setRequireAllTriggersActiveFlag(BOOL requireall)
@@ -460,7 +460,7 @@ CtiLMControlArea& CtiLMControlArea::setRequireAllTriggersActiveFlag(BOOL require
 
 /*---------------------------------------------------------------------------
     figureNextCheckTime
-    
+
     Figures out when the control area should be checked again according to the
     control interval.
 ---------------------------------------------------------------------------*/
@@ -483,7 +483,7 @@ CtiLMControlArea& CtiLMControlArea::figureNextCheckTime()
 
 /*---------------------------------------------------------------------------
     setNewPointDataReceivedFlag
-    
+
     Sets the new point data received flag of the control area
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setNewPointDataReceivedFlag(BOOL newdatareceived)
@@ -496,7 +496,7 @@ CtiLMControlArea& CtiLMControlArea::setNewPointDataReceivedFlag(BOOL newdatarece
 
 /*---------------------------------------------------------------------------
     setUpdatedFlag
-    
+
     Sets the updated flag of the control area
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setUpdatedFlag(BOOL updated)
@@ -509,7 +509,7 @@ CtiLMControlArea& CtiLMControlArea::setUpdatedFlag(BOOL updated)
 
 /*---------------------------------------------------------------------------
     setControlAreaStatusPointId
-    
+
     Sets the point id of the control area status point
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setControlAreaStatusPointId(ULONG statuspointid)
@@ -522,7 +522,7 @@ CtiLMControlArea& CtiLMControlArea::setControlAreaStatusPointId(ULONG statuspoin
 
 /*---------------------------------------------------------------------------
     setControlAreaState
-    
+
     Sets the state of the control area
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setControlAreaState(ULONG state)
@@ -535,7 +535,7 @@ CtiLMControlArea& CtiLMControlArea::setControlAreaState(ULONG state)
 
 /*---------------------------------------------------------------------------
     setCurrentPriority
-    
+
     Sets the current priority of the control area
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setCurrentPriority(LONG currpriority)
@@ -549,7 +549,7 @@ CtiLMControlArea& CtiLMControlArea::setCurrentPriority(LONG currpriority)
 
 /*---------------------------------------------------------------------------
     isControlTime
-    
+
     Returns a BOOLean if the control area can be controlled at the current
     time and day of the week.
 ---------------------------------------------------------------------------*/
@@ -568,7 +568,7 @@ BOOL CtiLMControlArea::isControlTime(ULONG nowInSeconds)
     {
         tempDefDailyStopTime = 86400;
     }
-    
+
     if( tempDefDailyStartTime <= nowInSeconds && nowInSeconds <= tempDefDailyStopTime )
     {
         return TRUE;
@@ -581,7 +581,7 @@ BOOL CtiLMControlArea::isControlTime(ULONG nowInSeconds)
 
 /*---------------------------------------------------------------------------
     isControlStillNeeded
-    
+
     Returns a BOOLean if the control area can stop all control because the
     load + reduction is below the threshold - minrestoreoffset or a status
     trigger has returned to it's normal state.
@@ -650,7 +650,7 @@ BOOL CtiLMControlArea::isControlStillNeeded()
 
 /*---------------------------------------------------------------------------
     isPastMinResponseTime
-    
+
     Returns a BOOLean if the control area can be controlled more because the
     time since the last control is at least as long as the min response time.
 ---------------------------------------------------------------------------*/
@@ -671,9 +671,9 @@ BOOL CtiLMControlArea::isPastMinResponseTime(ULONG nowInSeconds)
                 currentLMProgram->getLastControlSent().day() == currentDateTime.day() )
             {
                 lastControlTimePlusMinResponseTimeInSeconds = (currentLMProgram->getLastControlSent().hour() * 3600) +
-                                               (currentLMProgram->getLastControlSent().minute() * 60) +
-                                                currentLMProgram->getLastControlSent().second() +
-                                                getMinResponseTime();
+                                                              (currentLMProgram->getLastControlSent().minute() * 60) +
+                                                              currentLMProgram->getLastControlSent().second() +
+                                                              getMinResponseTime();
 
                 if( lastControlTimePlusMinResponseTimeInSeconds > nowInSeconds )
                 {
@@ -689,7 +689,7 @@ BOOL CtiLMControlArea::isPastMinResponseTime(ULONG nowInSeconds)
 
 /*---------------------------------------------------------------------------
     isManualControlReceived
-    
+
     Returns a BOOLean if one or more of the programs in the control area
     have received a manual control.
 ---------------------------------------------------------------------------*/
@@ -717,7 +717,7 @@ BOOL CtiLMControlArea::isManualControlReceived()
 
 /*---------------------------------------------------------------------------
     isThresholdTriggerTripped
-    
+
     Returns a BOOLean if any threshold trigger is tripped for the control area.
 ---------------------------------------------------------------------------*/
 BOOL CtiLMControlArea::isThresholdTriggerTripped()
@@ -747,7 +747,7 @@ BOOL CtiLMControlArea::isThresholdTriggerTripped()
 
 /*---------------------------------------------------------------------------
     calculateLoadReductionNeeded
-    
+
     Returns a double value representing the amount of KW we need to reduce
     in order to bring the control area to an acceptable amount of load.
 ---------------------------------------------------------------------------*/
@@ -1200,7 +1200,7 @@ void CtiLMControlArea::handleManualControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg
 
 /*---------------------------------------------------------------------------
     dumpDynamicData
-    
+
     Writes out the dynamic information for this strategy.
 ---------------------------------------------------------------------------*/
 void CtiLMControlArea::dumpDynamicData()
@@ -1209,9 +1209,9 @@ void CtiLMControlArea::dumpDynamicData()
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
         RWDBTable dynamicLMControlAreaTable = getDatabase().table( "dynamiclmcontrolarea" );
         if( !_insertDynamicDataFlag )
@@ -1219,11 +1219,11 @@ void CtiLMControlArea::dumpDynamicData()
             RWDBUpdater updater = dynamicLMControlAreaTable.updater();
 
             updater << dynamicLMControlAreaTable["nextchecktime"].assign((RWDBDateTime)getNextCheckTime())
-                    << dynamicLMControlAreaTable["newpointdatareceivedflag"].assign(RWCString( (getNewPointDataReceivedFlag() ? 'Y':'N') ))
-                    << dynamicLMControlAreaTable["updatedflag"].assign(RWCString( (getUpdatedFlag() ? 'Y':'N') ))
-                    << dynamicLMControlAreaTable["controlareastate"].assign( getControlAreaState() )
-                    << dynamicLMControlAreaTable["currentpriority"].assign( getCurrentPriority() )
-                    << dynamicLMControlAreaTable["timestamp"].assign((RWDBDateTime)currentDateTime);
+            << dynamicLMControlAreaTable["newpointdatareceivedflag"].assign(RWCString( (getNewPointDataReceivedFlag() ? 'Y':'N') ))
+            << dynamicLMControlAreaTable["updatedflag"].assign(RWCString( (getUpdatedFlag() ? 'Y':'N') ))
+            << dynamicLMControlAreaTable["controlareastate"].assign( getControlAreaState() )
+            << dynamicLMControlAreaTable["currentpriority"].assign( getCurrentPriority() )
+            << dynamicLMControlAreaTable["timestamp"].assign((RWDBDateTime)currentDateTime);
 
             updater.where(dynamicLMControlAreaTable["deviceid"]==getPAOId());//will be paobjectid
 
@@ -1244,12 +1244,12 @@ void CtiLMControlArea::dumpDynamicData()
             RWDBInserter inserter = dynamicLMControlAreaTable.inserter();
 
             inserter << getPAOId()
-                     << getNextCheckTime()
-                     << RWCString( ( getNewPointDataReceivedFlag() ? 'Y': 'N' ) )
-                     << RWCString( ( getUpdatedFlag() ? 'Y': 'N' ) )
-                     << getControlAreaState()
-                     << getCurrentPriority()
-                     << currentDateTime;
+            << getNextCheckTime()
+            << RWCString( ( getNewPointDataReceivedFlag() ? 'Y': 'N' ) )
+            << RWCString( ( getUpdatedFlag() ? 'Y': 'N' ) )
+            << getControlAreaState()
+            << getCurrentPriority()
+            << currentDateTime;
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1265,7 +1265,7 @@ void CtiLMControlArea::dumpDynamicData()
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiLMControlArea::restoreGuts(RWvistream& istrm)
@@ -1277,63 +1277,63 @@ void CtiLMControlArea::restoreGuts(RWvistream& istrm)
 
     RWTime tempTime;
     istrm >> _paoid
-          >> _paocategory
-          >> _paoclass
-          >> _paoname
-          >> _paotype
-          >> _paodescription
-          >> _disableflag
-          >> _defoperationalstate
-          >> _controlinterval
-          >> _minresponsetime
-          >> _defdailystarttime
-          >> _defdailystoptime
-          >> _requirealltriggersactiveflag
-          >> tempTime
-          >> _newpointdatareceivedflag
-          >> _updatedflag
-          >> _controlareastatuspointid
-          >> _controlareastate
-          >> _currentpriority
-          >> _lmcontrolareatriggers
-          >> _lmprograms;
+    >> _paocategory
+    >> _paoclass
+    >> _paoname
+    >> _paotype
+    >> _paodescription
+    >> _disableflag
+    >> _defoperationalstate
+    >> _controlinterval
+    >> _minresponsetime
+    >> _defdailystarttime
+    >> _defdailystoptime
+    >> _requirealltriggersactiveflag
+    >> tempTime
+    >> _newpointdatareceivedflag
+    >> _updatedflag
+    >> _controlareastatuspointid
+    >> _controlareastate
+    >> _currentpriority
+    >> _lmcontrolareatriggers
+    >> _lmprograms;
 
     _nextchecktime = RWDBDateTime(tempTime);
 }
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiLMControlArea::saveGuts(RWvostream& ostrm ) const  
+void CtiLMControlArea::saveGuts(RWvostream& ostrm ) const
 {
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        
+
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _paoid
-          << _paocategory
-          << _paoclass
-          << _paoname
-          << _paotype
-          << _paodescription
-          << _disableflag
-          << _defoperationalstate
-          << _controlinterval
-          << _minresponsetime
-          << _defdailystarttime
-          << _defdailystoptime
-          << _requirealltriggersactiveflag
-          << _nextchecktime.rwtime()
-          << _newpointdatareceivedflag
-          << _updatedflag
-          << _controlareastatuspointid
-          << _controlareastate
-          << _currentpriority
-          << _lmcontrolareatriggers
-          << _lmprograms;
+    << _paocategory
+    << _paoclass
+    << _paoname
+    << _paotype
+    << _paodescription
+    << _disableflag
+    << _defoperationalstate
+    << _controlinterval
+    << _minresponsetime
+    << _defdailystarttime
+    << _defdailystoptime
+    << _requirealltriggersactiveflag
+    << _nextchecktime.rwtime()
+    << _newpointdatareceivedflag
+    << _updatedflag
+    << _controlareastatuspointid
+    << _controlareastate
+    << _currentpriority
+    << _lmcontrolareatriggers
+    << _lmprograms;
 
     return;
 }
@@ -1372,7 +1372,7 @@ CtiLMControlArea& CtiLMControlArea::operator=(const CtiLMControlArea& right)
         {
             _lmcontrolareatriggers.insert(((CtiLMControlAreaTrigger*)right._lmcontrolareatriggers[i])->replicate());
         }
-        
+
         _lmprograms.clearAndDestroy();
         for(UINT j=0;j<right._lmprograms.entries();j++)
         {
@@ -1403,17 +1403,17 @@ int CtiLMControlArea::operator!=(const CtiLMControlArea& right) const
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiLMControlArea* CtiLMControlArea::replicate() const
 {
-    return (new CtiLMControlArea(*this));
+    return(new CtiLMControlArea(*this));
 }
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiLMControlArea::restore(RWDBReader& rdr)
@@ -1478,7 +1478,7 @@ void CtiLMControlArea::restore(RWDBReader& rdr)
 /*---------------------------------------------------------------------------
     getAutomaticallyStartedSignalString
 
-    
+
 ---------------------------------------------------------------------------*/
 RWCString* CtiLMControlArea::getAutomaticallyStartedSignalString()
 {

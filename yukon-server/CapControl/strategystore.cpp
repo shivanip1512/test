@@ -1,14 +1,14 @@
 /*---------------------------------------------------------------------------
         Filename:  strategystore.cpp
-        
+
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiCCStrategyStore
-                        CtiCCStrategyStore maintains a pool of 
+                        CtiCCStrategyStore maintains a pool of
                         CtiCCStrategies.
-                        
+
         Initial Date:  8/18/2000
-        
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2000
 ---------------------------------------------------------------------------*/
 #include <rw/thr/thrfunc.h>
@@ -55,14 +55,14 @@ CtiCCStrategyStore::~CtiCCStrategyStore()
 
 /*---------------------------------------------------------------------------
     Strategies
-    
+
     Returns a list of the CtiCCStrategies
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 RWOrdered &CtiCCStrategyStore::Strategies()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
-    if ( _doreset || !_isvalid )
+    if( _doreset || !_isvalid )
     {
         reset();
 
@@ -75,14 +75,14 @@ RWOrdered &CtiCCStrategyStore::Strategies()
 
 /*---------------------------------------------------------------------------
     StrategyList
-    
+
     Returns a CtiCCStrategyList
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiCCStrategyList* CtiCCStrategyStore::StrategyList()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
-    if ( _doreset || !_isvalid )
+    if( _doreset || !_isvalid )
     {
         reset();
 
@@ -95,14 +95,14 @@ CtiCCStrategyList* CtiCCStrategyStore::StrategyList()
 
 /*---------------------------------------------------------------------------
     StateList
-    
+
     Returns a RWOrdered of CtiCCStates
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 RWOrdered* CtiCCStrategyStore::StateList()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
-    if ( _doreset || !_isvalid )
+    if( _doreset || !_isvalid )
     {
         reset();
 
@@ -115,14 +115,14 @@ RWOrdered* CtiCCStrategyStore::StateList()
 
 /*---------------------------------------------------------------------------
     AreaList
-    
+
     Returns a RWOrdered of RWCStrings
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 RWOrdered* CtiCCStrategyStore::AreaList()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
-    if ( _doreset || !_isvalid )
+    if( _doreset || !_isvalid )
     {
         reset();
 
@@ -135,15 +135,15 @@ RWOrdered* CtiCCStrategyStore::AreaList()
 
 /*---------------------------------------------------------------------------
     UpdateStrategy
-    
+
     Updates a strategy in the database.
 ---------------------------------------------------------------------------*/
 bool CtiCCStrategyStore::UpdateStrategy(CtiCCStrategy* strategy)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable table = getDatabase().table( "capcontrolstrategy" );
     RWDBUpdater updater = table.updater();
@@ -159,15 +159,15 @@ bool CtiCCStrategyStore::UpdateStrategy(CtiCCStrategy* strategy)
 
 /*---------------------------------------------------------------------------
     UpdateCapBank
-    
+
     Updates a cap bank in the database.
 ---------------------------------------------------------------------------*/
 bool CtiCCStrategyStore::UpdateCapBank(CtiCapBank* bank)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable device = getDatabase().table("device");
     RWDBUpdater updater = device.updater();
@@ -183,7 +183,7 @@ bool CtiCCStrategyStore::UpdateCapBank(CtiCapBank* bank)
 
 /*---------------------------------------------------------------------------
     dumpAllDynamicData
-    
+
     Writes out the dynamic information for each of the strategies.
 ---------------------------------------------------------------------------*/
 void CtiCCStrategyStore::dumpAllDynamicData()
@@ -192,9 +192,9 @@ void CtiCCStrategyStore::dumpAllDynamicData()
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
-    
+
     RWDBTable dynamicCapControlStrategy = getDatabase().table( "DYNAMICCAPCONTROLSTRATEGY" );
     RWDBDeleter deleter = dynamicCapControlStrategy.deleter();
     deleter.execute( conn );
@@ -206,19 +206,19 @@ void CtiCCStrategyStore::dumpAllDynamicData()
         RWDBInserter inserter = dynamicCapControlStrategy.inserter();
 
         inserter << currentStrat->Id()
-                 << RWCString( ( currentStrat->NewPointDataReceived() ? 'Y': 'N' ) )
-                 << RWCString( ( currentStrat->StrategyUpdated() ? 'Y': 'N' ) )
-                 << currentStrat->ActualVarPointValue()
-                 << currentStrat->NextCheckTime()
-                 << currentStrat->CalculatedVarPointValue()
-                 << currentStrat->Operations()
-                 << currentStrat->LastOperation()
-                 << currentStrat->LastCapBankControlled()
-                 << RWCString( ( currentStrat->PeakOrOffPeak() ? 'Y': 'N' ) )
-                 << RWCString( ( currentStrat->RecentlyControlled() ? 'Y': 'N' ) )
-                 << currentStrat->CalculatedValueBeforeControl()
-                 << currentTime
-                 << currentStrat->LastPointUpdate();
+        << RWCString( ( currentStrat->NewPointDataReceived() ? 'Y': 'N' ) )
+        << RWCString( ( currentStrat->StrategyUpdated() ? 'Y': 'N' ) )
+        << currentStrat->ActualVarPointValue()
+        << currentStrat->NextCheckTime()
+        << currentStrat->CalculatedVarPointValue()
+        << currentStrat->Operations()
+        << currentStrat->LastOperation()
+        << currentStrat->LastCapBankControlled()
+        << RWCString( ( currentStrat->PeakOrOffPeak() ? 'Y': 'N' ) )
+        << RWCString( ( currentStrat->RecentlyControlled() ? 'Y': 'N' ) )
+        << currentStrat->CalculatedValueBeforeControl()
+        << currentTime
+        << currentStrat->LastPointUpdate();
 
         /*{
             RWMutexLock::LockGuard guard(coutMux);
@@ -230,31 +230,31 @@ void CtiCCStrategyStore::dumpAllDynamicData()
 
 /*---------------------------------------------------------------------------
     reset
-    
+
     Reset attempts to read in all the strategies from the database.
 ---------------------------------------------------------------------------*/
 void CtiCCStrategyStore::reset()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
-	RWOrdered& strats = _strategyList->Strategies();
-	if( strats.entries() > 0 )
+    RWOrdered& strats = _strategyList->Strategies();
+    if( strats.entries() > 0 )
     {
-		strats.clearAndDestroy();
+        strats.clearAndDestroy();
     }
 
     if( _CAP_DEBUG )
-    {    
+    {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime().asString() << " - " << "Obtaining connection to the database..." << endl;
         dout << RWTime().asString() << " - " << "Reseting strategies from database..." << endl;
     }
 
     {
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
-        if ( conn.isValid() )
+        if( conn.isValid() )
         {
             RWDBDatabase db = getDatabase();
             RWDBTable capControlStrategy = db.table("CapControlStrategy");
@@ -281,7 +281,7 @@ void CtiCCStrategyStore::reset()
             << pointUnit["decimalplaces"];
 
             selector.from(capControlStrategy);
-			selector.from(pointUnit);
+            selector.from(pointUnit);
 
             selector.where(capControlStrategy["calculatedvarloadpointid"]==pointUnit["pointid"]);
 
@@ -293,7 +293,7 @@ void CtiCCStrategyStore::reset()
 
             RWDBReader rdr = selector.reader(conn);
 
-            while ( rdr() )
+            while( rdr() )
             {
                 CtiCCStrategy* strat = new CtiCCStrategy(rdr);
                 _strategyList->Strategies().insert( strat );
@@ -310,18 +310,18 @@ void CtiCCStrategyStore::reset()
 
                 RWDBSelector selector = db.selector();
                 selector << dynamicCapControlStrategy["newpointdatareceived"]
-                         << dynamicCapControlStrategy["strategyupdated"]
-                         << dynamicCapControlStrategy["actualvarpointvalue"]
-                         << dynamicCapControlStrategy["nextchecktime"]
-                         << dynamicCapControlStrategy["calcvarpointvalue"]
-                         << dynamicCapControlStrategy["operations"]
-                         << dynamicCapControlStrategy["lastoperation"]
-                         << dynamicCapControlStrategy["lastcapbankcontrolled"]
-                         << dynamicCapControlStrategy["peakoroffpeak"]
-                         << dynamicCapControlStrategy["recentlycontrolled"]
-                         << dynamicCapControlStrategy["calcvaluebeforecontrol"]
-                         << dynamicCapControlStrategy["timestamp"]
-                         << dynamicCapControlStrategy["lastpointupdate"];
+                << dynamicCapControlStrategy["strategyupdated"]
+                << dynamicCapControlStrategy["actualvarpointvalue"]
+                << dynamicCapControlStrategy["nextchecktime"]
+                << dynamicCapControlStrategy["calcvarpointvalue"]
+                << dynamicCapControlStrategy["operations"]
+                << dynamicCapControlStrategy["lastoperation"]
+                << dynamicCapControlStrategy["lastcapbankcontrolled"]
+                << dynamicCapControlStrategy["peakoroffpeak"]
+                << dynamicCapControlStrategy["recentlycontrolled"]
+                << dynamicCapControlStrategy["calcvaluebeforecontrol"]
+                << dynamicCapControlStrategy["timestamp"]
+                << dynamicCapControlStrategy["lastpointupdate"];
 
                 selector.from(dynamicCapControlStrategy);
 
@@ -334,7 +334,7 @@ void CtiCCStrategyStore::reset()
                 }*/
 
                 RWDBReader rdr = selector.reader(conn);
-                while ( rdr() )
+                while( rdr() )
                 {
                     currentStrat->restoreDynamicData(rdr);
                 }
@@ -389,7 +389,7 @@ void CtiCCStrategyStore::reset()
                 }*/
 
                 RWDBReader rdr = selector.reader(conn);
-                while ( rdr() )
+                while( rdr() )
                 {
                     CtiCapBank* bank = new CtiCapBank(rdr);
                     currentStrat->insertCapBank(bank);
@@ -421,7 +421,7 @@ void CtiCCStrategyStore::reset()
                     }*/
 
                     RWDBReader rdr = selector.reader(conn);
-                    while ( rdr() )
+                    while( rdr() )
                     {
                         currentCapBank->restoreOperationFields(rdr);
                     }
@@ -438,8 +438,8 @@ void CtiCCStrategyStore::reset()
 
                 RWDBSelector selector = db.selector();
                 selector << state["text"]
-                         << state["foregroundcolor"]
-                         << state["backgroundcolor"];
+                << state["foregroundcolor"]
+                << state["backgroundcolor"];
 
                 selector.from(state);
 
@@ -454,7 +454,7 @@ void CtiCCStrategyStore::reset()
 
                 RWDBReader rdr = selector.reader(conn);
 
-                while ( rdr() )
+                while( rdr() )
                 {
                     CtiCCState* ccState = new CtiCCState(rdr);
                     _stateList->insert( ccState );
@@ -484,7 +484,7 @@ void CtiCCStrategyStore::reset()
 
                 RWDBReader rdr = selector.reader(conn);
 
-                while ( rdr() )
+                while( rdr() )
                 {
                     RWDBSchema schema = rdr.table().schema();
 
@@ -495,7 +495,7 @@ void CtiCCStrategyStore::reset()
                         col.toLower();
 
                         //   cout << "col is:  " << col << endl;
-                        if ( col == "districtname" )
+                        if( col == "districtname" )
                         {
                             RWCString tempStr;
                             rdr[col] >> tempStr;
@@ -526,7 +526,7 @@ void CtiCCStrategyStore::reset()
 
 /*---------------------------------------------------------------------------
     shutdown
-    
+
     Dumps the strategy list.
 ---------------------------------------------------------------------------*/
 void CtiCCStrategyStore::shutdown()
@@ -535,7 +535,7 @@ void CtiCCStrategyStore::shutdown()
 
     dumpAllDynamicData();
     _strategyList->Strategies().clearAndDestroy();
-	delete _strategyList;
+    delete _strategyList;
     _stateList->clearAndDestroy();
     delete _stateList;
     _areaList->clearAndDestroy();
@@ -550,7 +550,7 @@ void CtiCCStrategyStore::shutdown()
 
 /*---------------------------------------------------------------------------
     doResetThr
-    
+
     Starts on construction and simply forces a call to reset every 5 minutes
 ---------------------------------------------------------------------------*/
 void CtiCCStrategyStore::doResetThr()
@@ -560,13 +560,13 @@ void CtiCCStrategyStore::doResetThr()
 
     HINSTANCE hLib = LoadLibrary("cparms.dll");
 
-    if (hLib)
+    if(hLib)
     {
         CPARM_GETCONFIGSTRING   fpGetAsString = (CPARM_GETCONFIGSTRING)GetProcAddress( hLib, "getConfigValueAsString" );
 
         bool trouble = FALSE;
 
-        if ( (*fpGetAsString)("CAP_CONTROL_REFRESH", temp, 80) )
+        if( (*fpGetAsString)("CAP_CONTROL_REFRESH", temp, 80) )
         {
             if( _CAP_DEBUG )
             {
@@ -579,7 +579,7 @@ void CtiCCStrategyStore::doResetThr()
         else
             trouble = TRUE;
 
-        if ( trouble == TRUE )
+        if( trouble == TRUE )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime().asString() << " - " << "Unable to obtain one or more values from cparms." << endl;
@@ -599,14 +599,14 @@ void CtiCCStrategyStore::doResetThr()
     ULONG tempsum = (currenttime.seconds()-(currenttime.seconds()%refreshrate))+refreshrate;
     RWDBDateTime nextDatabaseRefresh = RWDBDateTime(RWTime(tempsum));
 
-    while (1)
+    while(1)
     {
         rwRunnable().serviceCancellation();
 
-        if ( RWDBDateTime() >= nextDatabaseRefresh )
+        if( RWDBDateTime() >= nextDatabaseRefresh )
         {
             if( _CAP_DEBUG )
-            {    
+            {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime().asString() << " - " << "Restoring strategy list from the database" << endl;
             }
@@ -626,18 +626,18 @@ void CtiCCStrategyStore::doResetThr()
     }
 }
 
-/* Pointer to the singleton instance of CtiCCStrategyStore 
+/* Pointer to the singleton instance of CtiCCStrategyStore
    Instantiate lazily by Instance */
 CtiCCStrategyStore* CtiCCStrategyStore::_instance = NULL;
 
 /*---------------------------------------------------------------------------
     Instance
-    
+
     Returns a pointer to the singleton instance of CtiCCStrategyStore
 ---------------------------------------------------------------------------*/
 CtiCCStrategyStore* CtiCCStrategyStore::Instance()
 {
-    if ( _instance == NULL )
+    if( _instance == NULL )
     {
         _instance = new CtiCCStrategyStore();
     }
@@ -647,7 +647,7 @@ CtiCCStrategyStore* CtiCCStrategyStore::Instance()
 
 /*---------------------------------------------------------------------------
     DeleteInstance
-    
+
     Deletes the singleton instance of CtiCCStrategyStore
 ---------------------------------------------------------------------------*/
 void CtiCCStrategyStore::DeleteInstance()
@@ -661,7 +661,7 @@ void CtiCCStrategyStore::DeleteInstance()
 
 /*---------------------------------------------------------------------------
     isValid
-    
+
     Returns a TRUE if the strategystore was able to initialize properly
 ---------------------------------------------------------------------------*/
 bool CtiCCStrategyStore::isValid() const
@@ -672,7 +672,7 @@ bool CtiCCStrategyStore::isValid() const
 
 /*---------------------------------------------------------------------------
     notValid
-    
+
     Sets the _isvalid flag to FALSE so the strategystore will reload
 ---------------------------------------------------------------------------*/
 void CtiCCStrategyStore::notValid()
@@ -683,7 +683,7 @@ void CtiCCStrategyStore::notValid()
 
 /*---------------------------------------------------------------------------
     getReregisterForPoints
-    
+
     Gets _reregisterforpoints
 ---------------------------------------------------------------------------*/
 bool CtiCCStrategyStore::getReregisterForPoints() const
@@ -694,7 +694,7 @@ bool CtiCCStrategyStore::getReregisterForPoints() const
 
 /*---------------------------------------------------------------------------
     setReregisterForPoints
-    
+
     Sets _reregisterforpoints
 ---------------------------------------------------------------------------*/
 void CtiCCStrategyStore::setReregisterForPoints(bool reregister)

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pthist.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:08 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,26 +59,27 @@ RWCString CtiTablePointHistory::getTableName() const
 
 void CtiTablePointHistory::Restore()
 {
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBSelector selector = getDatabase().selector();
 
     selector << table["pointid"]
-             << table["timestamp"]
-             << table["quality"]
-             << table["value"];
+    << table["timestamp"]
+    << table["quality"]
+    << table["value"];
 
     selector.where( table["pointid"] == getPointID() &&
                     table["timestamp"] == getTimeStamp() );
 
     RWDBReader reader = selector.reader( conn );
 
-    if ( reader() )
+    if( reader() )
     {
         DecodeDatabaseReader( reader );
-    } else
+    }
+    else
     {
         setDirty( true );
     }
@@ -86,8 +87,8 @@ void CtiTablePointHistory::Restore()
 
 void CtiTablePointHistory::Update()
 {
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBUpdater updater = table.updater();
@@ -96,31 +97,31 @@ void CtiTablePointHistory::Update()
                    table["timestamp"] == getTimeStamp() );
 
     updater << table["quality"].assign(getQuality())
-            << table["value"].assign(getValue());
+    << table["value"].assign(getValue());
 
     updater.execute( conn );
 }
 
 void CtiTablePointHistory::Insert()
 {
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBInserter inserter = table.inserter();
 
     inserter << getPointID()
-             << getTimeStamp()
-             << getQuality()
-             << getValue();
+    << getTimeStamp()
+    << getQuality()
+    << getValue();
 
     inserter.execute( conn );
 }
 
 void CtiTablePointHistory::Delete()
 {
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBDeleter deleter = table.deleter();
@@ -140,52 +141,52 @@ LONG CtiTablePointHistory::getPointID() const
 {
 
 
-   return PointID;
+    return PointID;
 }
 
 CtiTablePointHistory& CtiTablePointHistory::setPointID(LONG pointid)
 {
 
 
-   PointID = pointid;
-   return *this;
+    PointID = pointid;
+    return *this;
 }
 
 const RWDBDateTime& CtiTablePointHistory::getTimeStamp() const
 {
 
 
-   return TimeStamp;
+    return TimeStamp;
 }
 
 CtiTablePointHistory& CtiTablePointHistory::setTimeStamp(const RWDBDateTime& timestamp)
 {
 
 
-   TimeStamp = timestamp;
-   return *this;
+    TimeStamp = timestamp;
+    return *this;
 }
 
 INT CtiTablePointHistory::getQuality() const
 {
 
 
-   return Quality;
+    return Quality;
 }
 
 CtiTablePointHistory& CtiTablePointHistory::setQuality(INT quality)
 {
 
 
-   Quality = quality;
-   return *this;
+    Quality = quality;
+    return *this;
 }
 
 FLOAT CtiTablePointHistory::getValue() const
 {
 
 
-   return Value;
+    return Value;
 }
 
 CtiTablePointHistory& CtiTablePointHistory::setValue(FLOAT value)

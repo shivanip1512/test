@@ -35,8 +35,8 @@ LONG GetMaxLMControl(long pao)
 
     sql += RWCString(CtiNumStr(pao));
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBReader  rdr = ExecuteQuery( conn, sql );
 
@@ -66,9 +66,9 @@ LONG LMControlHistoryIdGen(bool force)
 
     if(!init_id || force)
     {   // Make sure all objects that that store results
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
         // are out of scope when the release is called
-        RWLockGuard<RWDBConnection> conn_guard(conn);
         RWDBReader  rdr = ExecuteQuery( conn, sql );
 
         if(rdr() && rdr.isValid())
@@ -104,9 +104,9 @@ LONG CommErrorHistoryIdGen(bool force)
 
     if(!init_id || force)
     {   // Make sure all objects that that store results
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
         // are out of scope when the release is called
-        RWLockGuard<RWDBConnection> conn_guard(conn);
         RWDBReader  rdr = ExecuteQuery( conn, sql );
 
         if(rdr() && rdr.isValid())
@@ -142,9 +142,9 @@ INT ChangeIdGen(bool force)
 
     if(!init_id || force)
     {   // Make sure all objects that that store results
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
         // are out of scope when the release is called
-        RWLockGuard<RWDBConnection> conn_guard(conn);
         RWDBReader  rdr = ExecuteQuery( conn, sql );
 
         if(rdr() && rdr.isValid())
@@ -178,9 +178,9 @@ INT SystemLogIdGen()
 
     if(!init_id)
     {   // Make sure all objects that that store results
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
         // are out of scope when the release is called
-        RWLockGuard<RWDBConnection> conn_guard(conn);
         RWDBReader  rdr = ExecuteQuery( conn, sql );
 
         if(rdr() && rdr.isValid())
@@ -206,9 +206,9 @@ INT PAOIdGen()
     static const CHAR sql[] = "SELECT MAX(PAOBJECTID) FROM YUKONPAOBJECT";
     INT id = 0;
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBReader  rdr = ExecuteQuery( conn, sql );
 
@@ -929,8 +929,8 @@ LONG GetPAOIdOfPoint(long pid)
 
     sql += CtiNumStr(pid);
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    RWLockGuard<RWDBConnection> conn_guard(conn);
 
     RWDBReader  rdr = ExecuteQuery( conn, sql );
 

@@ -1,15 +1,15 @@
 /*---------------------------------------------------------------------------
         Filename:  lmprogramdirect.cpp
-        
+
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiLMProgramDirect.
                         CtiLMProgramDirect maintains the state and handles
                         the persistence of direct programs in Load
                         Management.
 
         Initial Date:  2/9/2001
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
@@ -37,12 +37,12 @@ RWDEFINE_COLLECTABLE( CtiLMProgramDirect, CTILMPROGRAMDIRECT_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirect::CtiLMProgramDirect()
-{   
+{
 }
 
 CtiLMProgramDirect::CtiLMProgramDirect(RWDBReader& rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMProgramDirect::CtiLMProgramDirect(const CtiLMProgramDirect& directprog)
@@ -130,10 +130,10 @@ RWOrdered& CtiLMProgramDirect::getLMProgramDirectGroups()
 
 /*---------------------------------------------------------------------------
     setCurrentGearNumber
-    
+
     Sets the number of the current direct program gear starts at 0 and
     goes upto _lmprogramdirectgears.entries()-1
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramDirect& CtiLMProgramDirect::setCurrentGearNumber(ULONG currentgear)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -144,10 +144,10 @@ CtiLMProgramDirect& CtiLMProgramDirect::setCurrentGearNumber(ULONG currentgear)
 
 /*---------------------------------------------------------------------------
     setLastGroupControlled
-    
+
     Sets the device id of the last lm group that was controlled in the
     program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramDirect& CtiLMProgramDirect::setLastGroupControlled(ULONG lastcontrolled)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -158,9 +158,9 @@ CtiLMProgramDirect& CtiLMProgramDirect::setLastGroupControlled(ULONG lastcontrol
 
 /*---------------------------------------------------------------------------
     setDirectStartTime
-    
+
     Sets the direct start time for manual controls of the direct program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramDirect& CtiLMProgramDirect::setDirectStartTime(const RWDBDateTime& start)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -171,9 +171,9 @@ CtiLMProgramDirect& CtiLMProgramDirect::setDirectStartTime(const RWDBDateTime& s
 
 /*---------------------------------------------------------------------------
     setDirectStopTime
-    
+
     Sets the direct stop time for manual controls of the direct program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramDirect& CtiLMProgramDirect::setDirectStopTime(const RWDBDateTime& stop)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -185,9 +185,9 @@ CtiLMProgramDirect& CtiLMProgramDirect::setDirectStopTime(const RWDBDateTime& st
 
 /*---------------------------------------------------------------------------
     reduceProgramLoad
-    
+
     Sets the group selection method of the direct program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG nowInSeconds, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
@@ -464,9 +464,9 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG c
 
 /*---------------------------------------------------------------------------
     manualReduceProgramLoad
-    
-    
----------------------------------------------------------------------------*/    
+
+
+---------------------------------------------------------------------------*/
 DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
@@ -726,7 +726,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
 
 /*-------------------------------------------------------------------------
     findGroupToTake
-    
+
     Finds the next group to be controlled according to the group selection
     method.
 --------------------------------------------------------------------------*/
@@ -1134,7 +1134,7 @@ void CtiLMProgramDirect::updateProgramControlForGearChange(ULONG previousGearNum
                 {
                     ULONG sendRate = currentGearObject->getMethodRate();
                     ULONG shedTime = currentGearObject->getMethodPeriod();
-                    
+
                     for(ULONG i=0;i<_lmprogramdirectgroups.entries();i++)
                     {
                         CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
@@ -1155,7 +1155,7 @@ void CtiLMProgramDirect::updateProgramControlForGearChange(ULONG previousGearNum
                         multiPilMsg->insert(new CtiRequestMsg(currentLMGroup->getPAOId(), "control cycle terminate"));
                         currentLMGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
                     }
-                    
+
                     ULONG sendRate = currentGearObject->getMethodRate();
                     ULONG shedTime = currentGearObject->getMethodPeriod();
                     ULONG numberOfGroupsToTake = currentGearObject->getMethodRateCount();
@@ -1228,7 +1228,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG nowInSeconds, CtiMu
                 ULONG refreshRate = currentGearObject->getMethodRate();
                 ULONG shedTime = currentGearObject->getMethodPeriod();
                 ULONG numberOfGroupsToTake = currentGearObject->getMethodRateCount();
-    
+
                 for(ULONG i=0;i<_lmprogramdirectgroups.entries();i++)
                 {
                     CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
@@ -1237,8 +1237,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG nowInSeconds, CtiMu
                     {
                         ULONG refreshTimeInSeconds = (currentLMGroup->getLastControlSent().hour() * 3600) +
                                                      (currentLMGroup->getLastControlSent().minute() * 60) +
-                                                      currentLMGroup->getLastControlSent().second() +
-                                                      refreshRate;
+                                                     currentLMGroup->getLastControlSent().second() +
+                                                     refreshRate;
                         if( refreshTimeInSeconds <= nowInSeconds )
                         {
                             multiPilMsg->insert( currentLMGroup->createTimeRefreshRequestMsg(refreshRate, shedTime) );
@@ -1273,15 +1273,15 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG nowInSeconds, CtiMu
                 {
                     periodEndInSeconds = (getLastControlSent().hour() * 3600) +
                                          (getLastControlSent().minute() * 60) +
-                                          getLastControlSent().second() +
+                                         getLastControlSent().second() +
                                          (period * cycleCount) + 1;
                 }
                 else
                 {
                     periodEndInSeconds = (getLastControlSent().hour() * 3600) +
                                          (getLastControlSent().minute() * 60) +
-                                          getLastControlSent().second() +
-                                          cycleRefreshRate;
+                                         getLastControlSent().second() +
+                                         cycleRefreshRate;
                 }
 
                 if( periodEndInSeconds <= nowInSeconds )
@@ -1457,8 +1457,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG nowInSeconds, CtiMu
 
                 ULONG sendRateEndInSeconds = (getLastControlSent().hour() * 3600) +
                                              (getLastControlSent().minute() * 60) +
-                                              getLastControlSent().second() +
-                                              sendRate;
+                                             getLastControlSent().second() +
+                                             sendRate;
 
                 if( nowInSeconds >= sendRateEndInSeconds )
                 {
@@ -1470,8 +1470,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG nowInSeconds, CtiMu
                         {
                             ULONG shedTimeEndInSeconds = (currentLMGroup->getLastControlSent().hour() * 3600) +
                                                          (currentLMGroup->getLastControlSent().minute() * 60) +
-                                                          currentLMGroup->getLastControlSent().second() +
-                                                          shedTime;
+                                                         currentLMGroup->getLastControlSent().second() +
+                                                         shedTime;
 
                             if( nowInSeconds >= shedTimeEndInSeconds )
                             {
@@ -1888,7 +1888,7 @@ ULONG CtiLMProgramDirect::calculateGroupControlTimeLeft(CtiLMGroupBase* currentL
 
 /*-------------------------------------------------------------------------
     getCurrentGearObject
-    
+
     Returns a pointer to the gear at the current gear number.  Returns NULL
     if there is an invalid current gear number.
 --------------------------------------------------------------------------*/
@@ -1913,7 +1913,7 @@ CtiLMProgramDirectGear* CtiLMProgramDirect::getCurrentGearObject()
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiLMProgramDirect::restoreGuts(RWvistream& istrm)
@@ -1925,11 +1925,11 @@ void CtiLMProgramDirect::restoreGuts(RWvistream& istrm)
     RWTime tempTime1;
     RWTime tempTime2;
     istrm >> _currentgearnumber
-          >> _lastgroupcontrolled
-          >> tempTime1
-          >> tempTime2
-          >> _lmprogramdirectgears
-          >> _lmprogramdirectgroups;
+    >> _lastgroupcontrolled
+    >> tempTime1
+    >> tempTime2
+    >> _lmprogramdirectgears
+    >> _lmprogramdirectgroups;
 
 
     _directstarttime = RWDBDateTime(tempTime1);
@@ -1942,21 +1942,21 @@ void CtiLMProgramDirect::restoreGuts(RWvistream& istrm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiLMProgramDirect::saveGuts(RWvostream& ostrm ) const  
+void CtiLMProgramDirect::saveGuts(RWvostream& ostrm ) const
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        
+
     CtiLMProgramBase::saveGuts( ostrm );
 
     ostrm << (_currentgearnumber+1)
-          << _lastgroupcontrolled
-          << _directstarttime.rwtime()
-          << _directstoptime.rwtime()
-          << _lmprogramdirectgears
-          << _lmprogramdirectgroups;
+    << _lastgroupcontrolled
+    << _directstarttime.rwtime()
+    << _directstoptime.rwtime()
+    << _lmprogramdirectgears
+    << _lmprogramdirectgroups;
 
     return;
 }
@@ -1981,7 +1981,7 @@ CtiLMProgramDirect& CtiLMProgramDirect::operator=(const CtiLMProgramDirect& righ
         {
             _lmprogramdirectgears.insert(((CtiLMProgramDirectGear*)right._lmprogramdirectgears[i])->replicate());
         }
-        
+
         _lmprogramdirectgroups.clearAndDestroy();
         for(UINT j=0;j<right._lmprogramdirectgroups.entries();j++)
         {
@@ -2012,17 +2012,17 @@ int CtiLMProgramDirect::operator!=(const CtiLMProgramDirect& right) const
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase* CtiLMProgramDirect::replicate() const
 {
-    return (new CtiLMProgramDirect(*this));
+    return(new CtiLMProgramDirect(*this));
 }
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiLMProgramDirect::restore(RWDBReader& rdr)
@@ -2039,7 +2039,7 @@ void CtiLMProgramDirect::restore(RWDBReader& rdr)
 
 /*---------------------------------------------------------------------------
     restoreDirectSpecificDatabaseEntries
-    
+
     Restores the database entries for a direct program that are not contained
     in the base table.
 ---------------------------------------------------------------------------*/
@@ -2073,7 +2073,7 @@ void CtiLMProgramDirect::restoreDirectSpecificDatabaseEntries(RWDBReader& rdr)
 
 /*---------------------------------------------------------------------------
     dumpDynamicData
-    
+
     Writes out the dynamic information for this direct program.
 ---------------------------------------------------------------------------*/
 void CtiLMProgramDirect::dumpDynamicData()
@@ -2081,9 +2081,9 @@ void CtiLMProgramDirect::dumpDynamicData()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     RWDBDateTime currentDateTime = RWDBDateTime();
 
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
 
         if( conn.isValid() )
         {
@@ -2093,10 +2093,10 @@ void CtiLMProgramDirect::dumpDynamicData()
                 RWDBUpdater updater = dynamicLMProgramDirectTable.updater();
 
                 updater << dynamicLMProgramDirectTable["currentgearnumber"].assign( getCurrentGearNumber() )
-                        << dynamicLMProgramDirectTable["lastgroupcontrolled"].assign(getLastGroupControlled())
-                        << dynamicLMProgramDirectTable["starttime"].assign(getDirectStartTime())
-                        << dynamicLMProgramDirectTable["stoptime"].assign(getDirectStopTime())
-                        << dynamicLMProgramDirectTable["timestamp"].assign((RWDBDateTime)currentDateTime);
+                << dynamicLMProgramDirectTable["lastgroupcontrolled"].assign(getLastGroupControlled())
+                << dynamicLMProgramDirectTable["starttime"].assign(getDirectStartTime())
+                << dynamicLMProgramDirectTable["stoptime"].assign(getDirectStopTime())
+                << dynamicLMProgramDirectTable["timestamp"].assign((RWDBDateTime)currentDateTime);
 
                 updater.where(dynamicLMProgramDirectTable["deviceid"]==getPAOId());//will be paobjectid
 
@@ -2112,11 +2112,11 @@ void CtiLMProgramDirect::dumpDynamicData()
                 RWDBInserter inserter = dynamicLMProgramDirectTable.inserter();
 
                 inserter << getPAOId()
-                         << getCurrentGearNumber()
-                         << getLastGroupControlled()
-                         << getDirectStartTime()
-                         << getDirectStopTime()
-                         << currentDateTime;
+                << getCurrentGearNumber()
+                << getLastGroupControlled()
+                << getDirectStartTime()
+                << getDirectStopTime()
+                << currentDateTime;
 
                 /*{
                     CtiLockGuard<CtiLogger> logger_guard(dout);

@@ -50,7 +50,7 @@ public:
         _res.release();
     }
 
-    bool isAcquired() const { return _acquired; }
+    bool isAcquired() const { return _acquired;}
     bool tryAcquire(unsigned long millis)
     {
         if(!_acquired)

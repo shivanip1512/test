@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_ied.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:59 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/02 17:02:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,14 +21,14 @@
 #include "logger.h"
 
 CtiTableDeviceIED::CtiTableDeviceIED() :
-   _deviceID(-1),
-   _slaveAddress(0)
+_deviceID(-1),
+_slaveAddress(0)
 {
 }
 
 CtiTableDeviceIED::CtiTableDeviceIED(const CtiTableDeviceIED& aRef)
 {
-   *this = aRef;
+    *this = aRef;
 }
 
 CtiTableDeviceIED::~CtiTableDeviceIED() {}
@@ -36,204 +36,204 @@ CtiTableDeviceIED::~CtiTableDeviceIED() {}
 CtiTableDeviceIED& CtiTableDeviceIED::operator=(const CtiTableDeviceIED& aRef)
 {
 
-   if(this != &aRef)
-   {
-      _deviceID      = aRef.getDeviceID();
-      _password      = aRef.getPassword();
-      _slaveAddress  = aRef.getSlaveAddress();
-   }
-   return *this;
+    if(this != &aRef)
+    {
+        _deviceID      = aRef.getDeviceID();
+        _password      = aRef.getPassword();
+        _slaveAddress  = aRef.getSlaveAddress();
+    }
+    return *this;
 }
 
 INT CtiTableDeviceIED::getSlaveAddress() const
 {
 
-   return _slaveAddress;
+    return _slaveAddress;
 }
 
 INT& CtiTableDeviceIED::getSlaveAddress()
 {
 
-   return _slaveAddress;
+    return _slaveAddress;
 }
 
 CtiTableDeviceIED CtiTableDeviceIED::setSlaveAddress(INT &aInt)
 {
 
-   _slaveAddress = aInt;
-   return *this;
+    _slaveAddress = aInt;
+    return *this;
 }
 
 RWCString CtiTableDeviceIED::getPassword() const
 {
 
-   return _password;
+    return _password;
 }
 
 RWCString& CtiTableDeviceIED::getPassword()
 {
 
-   return _password;
+    return _password;
 }
 
 CtiTableDeviceIED CtiTableDeviceIED::setPassword(RWCString &aStr)
 {
 
-   _password = aStr;
-   return *this;
+    _password = aStr;
+    return *this;
 }
 
 void CtiTableDeviceIED::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-   RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName() );
 
-   selector <<
-      devTbl["password"] <<
-      devTbl["slaveaddress"];
+    selector <<
+    devTbl["password"] <<
+    devTbl["slaveaddress"];
 
-   selector.from(devTbl);
+    selector.from(devTbl);
 
-   selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
-   // selector.where( selector.where() && keyTable["deviceid"] == devTbl["deviceid"] );
+    selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
+    // selector.where( selector.where() && keyTable["deviceid"] == devTbl["deviceid"] );
 }
 
 void CtiTableDeviceIED::DecodeDatabaseReader(const INT DeviceType, RWDBReader &rdr)
 {
-   RWCString temp;
+    RWCString temp;
 
 
 
-   {
-      CtiLockGuard<CtiLogger> logger_guard(dout);
-      if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
-   rdr["password"]         >> temp;
+    rdr["password"]         >> temp;
 
-   if(!temp.isNull() && temp == RWCString("None"))
-   {
-      _password = RWCString();
-   }
-   else
-   {
-      _password = temp;
-   }
-   rdr["slaveaddress"]     >> temp;
+    if(!temp.isNull() && temp == RWCString("None"))
+    {
+        _password = RWCString();
+    }
+    else
+    {
+        _password = temp;
+    }
+    rdr["slaveaddress"]     >> temp;
 
-   _slaveAddress = resolveSlaveAddress(DeviceType, temp);
+    _slaveAddress = resolveSlaveAddress(DeviceType, temp);
 }
 
 RWCString CtiTableDeviceIED::getTableName()
 {
-   return "DeviceIED";
+    return "DeviceIED";
 }
 
 LONG CtiTableDeviceIED::getDeviceID() const
 {
 
-   return _deviceID;
+    return _deviceID;
 }
 
 CtiTableDeviceIED& CtiTableDeviceIED::setDeviceID( const LONG deviceID )
 {
 
-   _deviceID = deviceID;
-   return *this;
+    _deviceID = deviceID;
+    return *this;
 }
 
 RWDBStatus CtiTableDeviceIED::Restore()
 {
 
-   char temp[32];
+    char temp[32];
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBSelector selector = getDatabase().selector();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBSelector selector = getDatabase().selector();
 
-   selector <<
-      table["deviceid"] <<
-      table["password"] <<
-      table["slaveaddress"];
+    selector <<
+    table["deviceid"] <<
+    table["password"] <<
+    table["slaveaddress"];
 
-   selector.where( table["deviceid"] == getDeviceID() );
+    selector.where( table["deviceid"] == getDeviceID() );
 
-   RWDBReader reader = selector.reader( conn );
+    RWDBReader reader = selector.reader( conn );
 
-   if( reader() )
-   {
-      DecodeDatabaseReader( getDeviceID(), reader  );
-      setDirty( false );
-   }
-   else
-   {
-      setDirty( true );
-   }
-   return reader.status();
+    if( reader() )
+    {
+        DecodeDatabaseReader( getDeviceID(), reader  );
+        setDirty( false );
+    }
+    else
+    {
+        setDirty( true );
+    }
+    return reader.status();
 }
 
 RWDBStatus CtiTableDeviceIED::Insert()
 {
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBInserter inserter = table.inserter();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBInserter inserter = table.inserter();
 
-   inserter <<
-      getDeviceID() <<
-      getPassword() <<
-      getSlaveAddress();
+    inserter <<
+    getDeviceID() <<
+    getPassword() <<
+    getSlaveAddress();
 
-   if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
-   {
-      setDirty(false);
-   }
+    if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    {
+        setDirty(false);
+    }
 
-   return inserter.status();
+    return inserter.status();
 }
 
 RWDBStatus CtiTableDeviceIED::Update()
 {
-   char temp[32];
+    char temp[32];
 
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBUpdater updater = table.updater();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBUpdater updater = table.updater();
 
-   updater.where( table["deviceid"] == getDeviceID() );
+    updater.where( table["deviceid"] == getDeviceID() );
 
-   updater <<
-      table["password"].assign(getPassword() ) <<
-      table["slaveaddress"].assign(getSlaveAddress() );
+    updater <<
+    table["password"].assign(getPassword() ) <<
+    table["slaveaddress"].assign(getSlaveAddress() );
 
-   if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
-   {
-      setDirty(false);
-   }
+    if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    {
+        setDirty(false);
+    }
 
-   return updater.status();
+    return updater.status();
 }
 
 RWDBStatus CtiTableDeviceIED::Delete()
 {
 
 
-   RWDBConnection conn = getConnection();
-   RWLockGuard<RWDBConnection> conn_guard(conn);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-   RWDBTable table = getDatabase().table( getTableName() );
-   RWDBDeleter deleter = table.deleter();
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBDeleter deleter = table.deleter();
 
-   deleter.where( table["deviceid"] == getDeviceID() );
-   deleter.execute( conn );
-   return deleter.status();
+    deleter.where( table["deviceid"] == getDeviceID() );
+    deleter.execute( conn );
+    return deleter.status();
 }
 
