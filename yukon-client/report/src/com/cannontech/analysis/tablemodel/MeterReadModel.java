@@ -25,20 +25,22 @@ import com.cannontech.database.db.device.DeviceMeterGroup;
 public class MeterReadModel extends ReportModelBase
 {
 	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 5;
+	protected final int NUMBER_COLUMNS = 6;
 	
 	/** Enum values for column representation */
 	public final static int COLL_GROUP_NAME_COLUMN = 0;
 	public final static int DEVICE_NAME_COLUMN = 1;
-	public final static int POINT_NAME_COLUMN = 2;
-	public final static int POINT_ID_COLUMN = 3;
-	public final static int ROUTE_NAME_COLUMN = 4;
+	public final static int METER_NUMBER_COLUMN = 2;
+	public final static int PHYSICAL_ADDRESS_COLUMN = 3;
+	public final static int POINT_NAME_COLUMN = 4;
+	public final static int ROUTE_NAME_COLUMN = 5;
 
 	/** String values for column representation */
 	public final static String COLL_GROUP_NAME_STRING = "Collection Group";
 	public final static String DEVICE_NAME_STRING = "Device Name";
+	public final static String METER_NUMBER_STRING = "Meter Number";
+	public final static String PHYSICAL_ADDRESS_STRING = "Address";
 	public final static String POINT_NAME_STRING = "Point Name";
-	public final static String POINT_ID_STRING = "Point ID";
 	public final static String ROUTE_NAME_STRING = "Route Name";
 
 	/** A string for the title of the data */
@@ -89,11 +91,12 @@ public class MeterReadModel extends ReportModelBase
 		try
 		{
 			String collGrp = rset.getString(1);
-			String paoName = rset.getString(2);
-			String pointName = rset.getString(3);					
-			Integer pointID = new Integer(rset.getInt(4));
+			String meterNum = rset.getString(2);
+			String paoName = rset.getString(3);
+			String pointName = rset.getString(4);					
 			String routeName = rset.getString(5);
-			MeterData missedMeter = new MeterData(collGrp, paoName, pointName, pointID, routeName);
+			String address = String.valueOf(rset.getDouble(6));
+			MeterData missedMeter = new MeterData(collGrp, paoName, meterNum, address, pointName, routeName);
 
 			getData().add(missedMeter);
 		}
@@ -109,13 +112,14 @@ public class MeterReadModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT DISTINCT DMG.COLLECTIONGROUP, PAO.PAONAME, P.POINTNAME, P.POINTID, " + 
-			" PAO2.PAONAME ROUTENAME " +
-			" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, POINT P, YUKONPAOBJECT PAO2, DEVICEROUTES DR, POINTUNIT PU, UNITMEASURE UM " +
+		StringBuffer sql = new StringBuffer	("SELECT DISTINCT DMG.COLLECTIONGROUP, DMG.METERNUMBER, PAO.PAONAME, P.POINTNAME, " + 
+			" PAO2.PAONAME ROUTENAME, ADDRESS " +
+			" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, POINT P, YUKONPAOBJECT PAO2, DEVICEROUTES DR, POINTUNIT PU, UNITMEASURE UM, DEVICECARRIERSETTINGS DCS " +
 			" WHERE PAO.PAOBJECTID = DMG.DEVICEID " +
+			" AND PAO.PAOBJECTID = DCS.DEVICEID " +
 			" AND PAO.PAOBJECTID = DR.DEVICEID " +
 			" AND P.POINTID = PU.POINTID " +
-			" AND  PU.UOMID = UM.UOMID " +
+			" AND PU.UOMID = UM.UOMID " +
 			" AND UM.FORMULA ='usage' " +
 			" AND PAO2.PAOBJECTID = DR.ROUTEID " +
 			" AND P.PAOBJECTID = PAO.PAOBJECTID " +
@@ -227,7 +231,7 @@ public class MeterReadModel extends ReportModelBase
 	{
 		if ( o instanceof MeterData)
 		{
-			MeterData meter = ((MeterData)o); 
+			MeterData meter = ((MeterData)o);
 			switch( columnIndex)
 			{
 				case COLL_GROUP_NAME_COLUMN:
@@ -235,13 +239,16 @@ public class MeterReadModel extends ReportModelBase
 		
 				case DEVICE_NAME_COLUMN:
 					return meter.getDeviceName();
-	
+					
+				case METER_NUMBER_COLUMN:
+				    return meter.getMeterNumber();
+				    
+				case PHYSICAL_ADDRESS_COLUMN:
+				    return meter.getAddress();
+				    
 				case POINT_NAME_COLUMN:
 					return meter.getPointName();
 	
-				case POINT_ID_COLUMN:
-					return meter.getPointID();
-					
 				case ROUTE_NAME_COLUMN:
 					return meter.getRouteName();
 			}
@@ -259,8 +266,9 @@ public class MeterReadModel extends ReportModelBase
 			columnNames = new String[]{
 				COLL_GROUP_NAME_STRING,
 				DEVICE_NAME_STRING,
+				METER_NUMBER_STRING,
+				PHYSICAL_ADDRESS_STRING,
 				POINT_NAME_STRING,
-				POINT_ID_STRING,
 				ROUTE_NAME_STRING
 			};
 		}
@@ -278,7 +286,8 @@ public class MeterReadModel extends ReportModelBase
 				String.class,
 				String.class,
 				String.class,
-				Integer.class,
+				String.class,
+				String.class,
 				String.class
 			};
 		}
@@ -296,9 +305,10 @@ public class MeterReadModel extends ReportModelBase
 				//posX, posY, width, height, numberFormatString
 				new ColumnProperties(0, 1, 200, null),
 				new ColumnProperties(0, 1, 200, null),
-				new ColumnProperties(200, 1, 150, null),
-				new ColumnProperties(200, 1, 150, null),
-				new ColumnProperties(350, 1, 150, null)
+				new ColumnProperties(200, 1, 100, null),
+				new ColumnProperties(300, 1, 100, null),
+				new ColumnProperties(400, 1, 125, null),
+				new ColumnProperties(525, 1, 185, null)
 			};
 		}
 		return columnProperties;
