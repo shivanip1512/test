@@ -284,7 +284,9 @@ public class YukonSwitchCommandAction implements ActionBase {
 		}
 	}
     
-	public static void sendEnableCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, Integer routeID) throws WebClientException {
+	public static void sendEnableCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, Integer routeID)
+		throws WebClientException
+	{
 		// SA205 and SA305 switches don't have an "in service" command
 		if (ECUtils.isSA205( liteHw.getLmHardwareTypeID() ) || ECUtils.isSA305( liteHw.getLmHardwareTypeID() ))
 			return;
@@ -375,8 +377,11 @@ public class YukonSwitchCommandAction implements ActionBase {
 			// Send the config command a while later
 			TimerTask sendCfgTask = new TimerTask() {
 				public void run() {
-					for (int i = 0; i < cfgCmds.length; i++)
-						ServerUtils.sendSerialCommand( cfgCmds[i], routeID );
+					try {
+						for (int i = 0; i < cfgCmds.length; i++)
+							ServerUtils.sendSerialCommand( cfgCmds[i], routeID );
+					}
+					catch (WebClientException e) {}
 					CTILogger.info( "*** Config command sent ***" );
 				}
 			};

@@ -52,8 +52,11 @@ public class ServerUtils {
 	public static final String ADMIN_EMAIL_ADDRESS = "info@cannontech.com";
 	
 	
-	public static void sendSerialCommand(String command, int routeID)
+	public static void sendSerialCommand(String command, int routeID) throws WebClientException
 	{
+		if (routeID == 0)
+			throw new WebClientException("The route to send the serial command on is not specified");
+		
 		com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
 		synchronized (yc) {
 			yc.setRouteID( routeID );
