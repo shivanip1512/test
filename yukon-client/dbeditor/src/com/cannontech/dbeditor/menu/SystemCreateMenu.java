@@ -10,6 +10,7 @@ public class SystemCreateMenu extends javax.swing.JMenu {
 	//System wizards
 	public CommandableMenuItem customerMenuItem;
 	public CommandableMenuItem contactMenuItem;
+	public CommandableMenuItem loginMenuItem;
 	public CommandableMenuItem notificationGroupMenuItem;
 	public CommandableMenuItem holidayMenuItem;
 
@@ -44,6 +45,10 @@ private void initialize() {
 	contactMenuItem.setFont( font );
 	contactMenuItem.setMnemonic('t');
 
+	loginMenuItem = new CommandableMenuItem("Login...");
+	loginMenuItem.setFont( font );
+	loginMenuItem.setMnemonic('l');
+
 	
 	setText("Create");
 	setFont( font );
@@ -51,6 +56,7 @@ private void initialize() {
 
 	add( customerMenuItem );
 	add( contactMenuItem );
+	add( loginMenuItem );
 	add( notificationGroupMenuItem );
 	add( holidayMenuItem );
 }

@@ -3,38 +3,14 @@ package com.cannontech.dbeditor;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.AWTEvent;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.util.Vector;
+import javax.swing.*;
+import com.cannontech.dbeditor.menu.*;
+import com.cannontech.common.wizard.*;
+import com.cannontech.database.model.*;
+import java.awt.*;
+import java.awt.event.*;
 
-import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
-import javax.swing.JDesktopPane;
-import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRootPane;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTree;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
+import java.util.Vector;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.PopupMenuEvent;
@@ -53,9 +29,6 @@ import com.cannontech.common.gui.util.MessagePanel;
 import com.cannontech.common.util.FileMessageLog;
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
-import com.cannontech.common.wizard.CancelInsertException;
-import com.cannontech.common.wizard.WizardPanel;
-import com.cannontech.common.wizard.WizardPanelEvent;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -65,25 +38,11 @@ import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.model.DBTreeModel;
-import com.cannontech.database.model.DBTreeNode;
-import com.cannontech.database.model.DummyTreeNode;
-import com.cannontech.database.model.ModelFactory;
 import com.cannontech.dbeditor.defines.CommonDefines;
 import com.cannontech.dbeditor.editor.defaults.DefaultRoutes;
 import com.cannontech.dbeditor.editor.defaults.DefaultRoutesDialog;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateDialog;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
-import com.cannontech.dbeditor.menu.AboutDBEditor;
-import com.cannontech.dbeditor.menu.CapControlCreateMenu;
-import com.cannontech.dbeditor.menu.CoreCreateMenu;
-import com.cannontech.dbeditor.menu.EditMenu;
-import com.cannontech.dbeditor.menu.FileMenu;
-import com.cannontech.dbeditor.menu.HelpMenu;
-import com.cannontech.dbeditor.menu.LMCreateMenu;
-import com.cannontech.dbeditor.menu.SystemCreateMenu;
-import com.cannontech.dbeditor.menu.ToolsMenu;
-import com.cannontech.dbeditor.menu.ViewMenu;
 import com.cannontech.dbeditor.wizard.changetype.device.DeviceTypesPanel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import java.awt.Dimension;
@@ -135,7 +94,7 @@ public class DatabaseEditor
 
 	private int currentDatabase = DatabaseTypes.CORE_DB;
 	//Map of database types and treemodels to use
-	private final Integer[] CORE_MODELS =
+	private static final Integer[] CORE_MODELS =
 		{
 			new Integer(ModelFactory.PORT),
 			new Integer(ModelFactory.DEVICE),
@@ -149,7 +108,7 @@ public class DatabaseEditor
 			new Integer(ModelFactory.STATEGROUP),
 			new Integer(ModelFactory.TRANSMITTER)			
 		};
-	private final Integer[] LM_MODELS =
+	private static final Integer[] LM_MODELS =
 		{
 			new Integer(ModelFactory.LMGROUPS),
 			new Integer(ModelFactory.LMGROUPVERSACOM),
@@ -157,17 +116,18 @@ public class DatabaseEditor
 			new Integer(ModelFactory.LMPROGRAM),
 			new Integer(ModelFactory.LMCONTROLAREA)
 		};
-	private final Integer[] CAP_CONTROL_MODELS =
+	private static final Integer[] CAP_CONTROL_MODELS =
 		{
 			new Integer(ModelFactory.CAPBANK),
 			new Integer(ModelFactory.CAPBANKCONTROLLER),
 			new Integer(ModelFactory.CAPCONTROLFEEDER),
 			new Integer(ModelFactory.CAPCONTROLSTRATEGY)
 		};
-	private final Integer[] SYSTEM_MODELS =
+	private static final Integer[] SYSTEM_MODELS =
 		{
 			new Integer(ModelFactory.CICUSTOMER),
 			new Integer(ModelFactory.CONTACT),
+			new Integer(ModelFactory.LOGINS),
 			new Integer(ModelFactory.NOTIFICATION_GROUP),
 			new Integer(ModelFactory.ALARM_STATES),
 			new Integer(ModelFactory.HOLIDAY_SCHEDULE)
@@ -624,6 +584,10 @@ private void displayAWizardPanel(JMenuItem item)
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.contact.ContactWizardPanel());
 	}
+	else if (item == systemCreateMenu.loginMenuItem)
+	{
+		showWizardPanel(new com.cannontech.dbeditor.wizard.user.YukonUserWizardPanel());
+	}
 	else if (item == systemCreateMenu.holidayMenuItem)
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.holidayschedule.HolidayScheduleWizardPanel());
@@ -823,11 +787,11 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
 				  "Are you sure you want to change the type of '"+node.toString() + "'?");
 
 
-         byte deleteVal = DBDeletionWarn.deletionAttempted(((com.cannontech.database.data.point.PointBase) userObject)
-                              .getPoint().getPointID().intValue(), DBDeletionWarn.POINT_TYPE);
+         byte deleteVal = DBDeletionFuncs.deletionAttempted(((com.cannontech.database.data.point.PointBase) userObject)
+                              .getPoint().getPointID().intValue(), DBDeletionFuncs.POINT_TYPE);
          
-         if( deleteVal == DBDeletionWarn.STATUS_ALLOW
-             || deleteVal == DBDeletionWarn.STATUS_CONFIRM )
+         if( deleteVal == DBDeletionFuncs.STATUS_ALLOW
+             || deleteVal == DBDeletionFuncs.STATUS_CONFIRM )
          {
 			   showChangeTypeWizardPanel(
 				  new com.cannontech.dbeditor.wizard.changetype.point.PointChangeTypeWizardPanel(
@@ -838,7 +802,7 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
 			  
 			   javax.swing.JOptionPane.showConfirmDialog(
 				  getParentFrame(),
-				  ("You cannot change this point '"+node.toString() + "'" + DBDeletionWarn.getTheWarning().toString()),
+				  ("You cannot change this point '"+node.toString() + "'" + DBDeletionFuncs.getTheWarning().toString()),
 				  "Unable to change",
 				  JOptionPane.CLOSED_OPTION,
 				  JOptionPane.WARNING_MESSAGE);
@@ -1334,12 +1298,13 @@ private void generateDBChangeMsg( com.cannontech.database.db.DBPersistent object
 			updateTreePanel( lBase, dbChange[i].getTypeOfChange() );
          
          //select the newly added device if it is the first in our list
+/*         
          if( dbChange[i].getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_ADD
              && i == 0 )
          {
             getTreeViewPanel().selectLiteObject( lBase );			
          }
-         
+*/         
          
 			getConnToDispatch().write(dbChange[i]);
 		}
@@ -2435,6 +2400,7 @@ public void selectionPerformed( PropertyPanelEvent event)
 	{
 		
 		
+	//this event tells us the user inserted a DB object before clicking the OK/APPLY button
 	if( event.getID() == PropertyPanelEvent.EVENT_DB_INSERT )
 	{
 		DBPersistent dbPersist = (DBPersistent)event.getDataChanged();
@@ -2570,27 +2536,28 @@ public void selectionPerformed(WizardPanelEvent event)
 {
 
 
+	//this event tells us the user inserted a DB object before clicking the finish button
 	if( event.getID() == PropertyPanelEvent.EVENT_DB_INSERT )
 	{
 		DBPersistent dbPersist = (DBPersistent)event.getDataChanged();
 
 		insertDBPersistent( dbPersist );
 
-		return;		
+		return;
 	}
 
 
 	if( !( event.getSource() instanceof WizardPanel) )
 		return;
 
-	boolean changedObjectType = false;
+	boolean objTypeChange = false;
 	boolean successfullInsertion = false;
 
 	if (event.getID() == WizardPanelEvent.FINISH_SELECTION)
 	{
 		if( changingObjectType )
 		{
-			changedObjectType = executeChangeObjectType( event );
+			objTypeChange = executeChangeObjectType( event );
 		}
 		else
 		{		
@@ -2621,10 +2588,10 @@ public void selectionPerformed(WizardPanelEvent event)
 	}
 
 	
-	if (event.getID() == WizardPanelEvent.CANCEL_SELECTION
-		|| (event.getID() == WizardPanelEvent.FINISH_SELECTION && successfullInsertion)
-		|| (event.getID() == WizardPanelEvent.FINISH_SELECTION)
-		&& changedObjectType)
+	if( event.getID() == WizardPanelEvent.CANCEL_SELECTION
+		 || (event.getID() == WizardPanelEvent.FINISH_SELECTION && successfullInsertion)
+		 || (event.getID() == WizardPanelEvent.FINISH_SELECTION)
+		 && objTypeChange )
 	{
 		changingObjectType = false;
 		copyingObject = false;
@@ -2650,7 +2617,7 @@ public void selectionPerformed(WizardPanelEvent event)
 	}
 	
 
-	if(successfullInsertion || changedObjectType) {
+	if(successfullInsertion || objTypeChange) {
 		 showEditorSelectedObject();
 	}
 

@@ -1316,7 +1316,9 @@ public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispat
 	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_YUKON_USER_DB ) 
 	{
 		// This seems heavy handed!
-		allYukonUsers = null;
+		//allYukonUsers = null;
+		retLBase = handleYukonUserChange( dbType, id );
+		
 		allYukonRoles = null;
 		allYukonGroups = null;
 		allYukonUserRoles = null;
@@ -1832,6 +1834,68 @@ private synchronized LiteBase handleCICustomerChange( int changeType, int id )
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
  */
+private synchronized LiteBase handleYukonUserChange( int changeType, int id )
+{
+	boolean alreadyAdded = false;
+	LiteBase lBase = null;
+
+	// if the storage is not already loaded, we must not care about it
+	if( allYukonUsers == null )
+		return lBase;
+
+	switch(changeType)
+	{
+		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD:
+				for(int i=0;i<allYukonUsers.size();i++)
+				{
+					if( ((LiteYukonUser)allYukonUsers.get(i)).getUserID() == id )
+					{
+						alreadyAdded = true;
+						lBase = (LiteBase)allYukonUsers.get(i);
+						break;
+					}
+				}
+				if( !alreadyAdded )
+				{
+					LiteYukonUser lcst = new LiteYukonUser(id);
+					lcst.retrieve(databaseAlias);
+					allYukonUsers.add(lcst);
+					lBase = lcst;
+				}
+				break;
+		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE:
+				for(int i=0;i<allYukonUsers.size();i++)
+				{
+					if( ((LiteYukonUser)allYukonUsers.get(i)).getUserID() == id )
+					{
+						((LiteYukonUser)allYukonUsers.get(i)).retrieve(databaseAlias);
+						lBase = (LiteBase)allYukonUsers.get(i);
+						break;
+					}
+				}
+				break;
+		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE:
+				for(int i=0;i<allYukonUsers.size();i++)
+				{
+					if( ((LiteYukonUser)allYukonUsers.get(i)).getUserID() == id )
+					{
+						lBase = (LiteBase)allYukonUsers.remove(i);
+						break;
+					}
+				}
+				break;
+		default:
+				releaseAllYukonUsers();
+				break;
+	}
+
+	return lBase;
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (12/7/00 12:34:05 PM)
+ */
 private synchronized LiteBase handleYukonPAOChange( int changeType, int id )
 {
 	boolean alreadyAdded = false;
@@ -2079,6 +2143,14 @@ public synchronized void releaseAllCICustomers()
 public synchronized void releaseAllPoints(){
 
 	allPoints = null;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (3/14/00 3:22:47 PM)
+ */
+public synchronized void releaseAllYukonUsers(){
+
+	allYukonUsers = null;
 }
 /**
  * Insert the method's description here.

@@ -13,9 +13,9 @@ import com.cannontech.user.UserUtils;
  */
 public class YukonUser extends DBPersistent 
 {		
-	private static final String TABLE_NAME = "YukonUser";	
+	public static final String TABLE_NAME = "YukonUser";	
 		
-	private Integer userID = new Integer(UserUtils.USER_YUKON_ID);
+	private Integer userID = null;
 	private String username = null;
 	private String password = null;
 	private Integer loginCount = new Integer(0);
@@ -108,9 +108,11 @@ public class YukonUser extends DBPersistent
 	 * This method was created in VisualAge.
 	 * @return java.lang.Integer
 	 */
-	public static final Integer getNextUserID()
+	public static final Integer getNextUserID( java.sql.Connection conn )
 	{
-		java.sql.Connection conn = null;
+		if( conn == null )
+			throw new IllegalStateException("Database connection should not be null.");
+		
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
 	
@@ -118,8 +120,7 @@ public class YukonUser extends DBPersistent
 		int newID = 0;
 		
 		try
-		{		
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+		{
 			pstmt = conn.prepareStatement(sql.toString());
 			
 			rset = pstmt.executeQuery();							
@@ -139,7 +140,6 @@ public class YukonUser extends DBPersistent
 			try
 			{
 				if( pstmt != null ) pstmt.close();
-				if( conn != null ) conn.close();
 			} 
 			catch( java.sql.SQLException e2 )
 			{

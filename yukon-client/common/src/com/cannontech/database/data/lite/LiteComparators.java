@@ -173,6 +173,11 @@ public final class LiteComparators
 				thisVal = ((LiteContactNotification)o1).getNotification();
 				anotherVal = ((LiteContactNotification)o2).getNotification();
 			}			
+			else if(o1 instanceof LiteYukonUser && o2 instanceof LiteYukonUser)
+			{
+				thisVal = ((LiteYukonUser)o1).getUsername();
+				anotherVal = ((LiteYukonUser)o2).getUsername();
+			}			
 			else
 			{	// unknown lite type
 				throw new IllegalArgumentException("Unhandled lite types or the 2 objects being compared are not the same object types in comparator of : " + this.getClass().toString() );

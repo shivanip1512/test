@@ -1,5 +1,13 @@
 package com.cannontech.database.data.lite;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.db.user.YukonUser;
+
 /**
  * @author alauinger
  */
@@ -30,6 +38,53 @@ public class LiteYukonUser extends LiteBase {
 		return password;
 	}
 
+
+	public void retrieve( String dbAlias )
+	{
+		
+		String sql = 
+			"SELECT Username,Password FROM " + YukonUser.TABLE_NAME + " " +
+			"WHERE UserID = " + getUserID();
+   		
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rset = null;
+		
+		try 
+		{
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection(
+							dbAlias );
+
+			stmt = conn.createStatement();
+			rset = stmt.executeQuery(sql);
+
+			
+			if( rset.next() ) 
+			{
+      		setUsername( rset.getString(1).trim() );
+      		setPassword( rset.getString(2).trim() );
+         }
+         
+		}
+		catch(SQLException e ) 
+		{
+      	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}
+      finally 
+      {
+         	try {
+            	if( stmt != null )
+               	stmt.close();
+            	if( conn != null )
+               	conn.close();
+         	}
+         	catch( java.sql.SQLException e ) {
+            	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+         	}
+      }
+      
+	}
+	
 	/**
 	 * Returns the username.
 	 * @return String

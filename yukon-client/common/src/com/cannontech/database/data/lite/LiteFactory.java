@@ -3,6 +3,7 @@ package com.cannontech.database.data.lite;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.CustomerFactory;
+import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -152,8 +153,6 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 	}
 	else if( val instanceof com.cannontech.database.data.route.RouteBase )
 	{
-		//returnLite = new LiteRoute( 
-			//((com.cannontech.database.data.route.RouteBase)val).getRoute().getRouteID().intValue() );
 		returnLite = new LiteYukonPAObject( 
 			((com.cannontech.database.data.route.RouteBase)val).getPAObjectID().intValue() );
 	}
@@ -191,8 +190,9 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 	}
 	else if( val instanceof com.cannontech.database.data.graph.GraphDefinition )
 	{
-		returnLite = new LiteGraphDefinition( ((com.cannontech.database.data.graph.GraphDefinition)val).getGraphDefinition().getGraphDefinitionID().intValue(),
-											  ((com.cannontech.database.data.graph.GraphDefinition)val).getGraphDefinition().getName()	);
+		returnLite = new LiteGraphDefinition( 
+				((com.cannontech.database.data.graph.GraphDefinition)val).getGraphDefinition().getGraphDefinitionID().intValue(),
+				((com.cannontech.database.data.graph.GraphDefinition)val).getGraphDefinition().getName()	);
 	}
 	else if( val instanceof com.cannontech.database.data.notification.GroupNotification )
 	{
@@ -211,10 +211,13 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 		returnLite = new LiteDeviceMeterNumber( ((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)val).getDeviceMeterGroup().getDeviceID().intValue(),
 												((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)val).getDeviceMeterGroup().getMeterNumber());
 	}
+	else if( val instanceof YukonUser )
+	{
+		returnLite = new LiteYukonUser( 
+			((YukonUser)val).getUserID().intValue() );
+	}
 	else if( val instanceof com.cannontech.database.data.pao.YukonPAObject )
 	{
-
-	//if( val instanceof com.cannontech.database.data.device.DeviceBase )
 		returnLite = new LiteYukonPAObject( 
 			((com.cannontech.database.data.pao.YukonPAObject)val).getPAObjectID().intValue() );
 	}

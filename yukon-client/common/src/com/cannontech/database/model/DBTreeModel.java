@@ -11,6 +11,7 @@ public abstract class DBTreeModel extends javax.swing.tree.DefaultTreeModel impl
 {
 	public static final int SORT_POINT_NAME = 0;
 	public static final int SORT_POINT_OFFSET = 1;
+	
 
 /**
  * DBEditorTreeModel constructor comment.
@@ -19,6 +20,8 @@ public abstract class DBTreeModel extends javax.swing.tree.DefaultTreeModel impl
 public DBTreeModel(javax.swing.tree.TreeNode root) {
 	super(root);
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (4/18/2002 2:20:48 PM)
@@ -182,15 +185,12 @@ com.cannontech.clientutils.CTILogger.info("*** UPDATE Took " +
 
 	if( node != null )
 	{
-//		nodeChanged( node );
-//		return true;
-
-		node.setWillHaveChildren( true );
-		treePathWillExpand( new TreePath(node) );
-		nodeStructureChanged( node );
+		nodeChanged( node );
+		return true;			
 	}
 
 	return false;
 }
+
 
 }

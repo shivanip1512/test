@@ -4,20 +4,24 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.Vector;
 
+import com.cannontech.common.editor.EditorPanel;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /*** 
  * @author alauinger
  */
-public class YukonUser extends DBPersistent implements com.cannontech.database.db.CTIDbChange {
-	
+public class YukonUser extends DBPersistent implements com.cannontech.database.db.CTIDbChange, EditorPanel
+{	
 	private com.cannontech.database.db.user.YukonUser yukonUser;
 	
 	private Vector yukonGroups; //type = com.cannontech.database.db.user.YukonGroup
 	//private Vector yukonRoles;  //type = com.cannontech.database.db.user.YukonRole
 	
-	public YukonUser() {
+	public YukonUser() 
+	{
+		super();
 	}
 	
 	public void setDbConnection(java.sql.Connection conn) {
@@ -28,14 +32,23 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
-	public void add() throws SQLException {
+	public void add() throws SQLException 
+	{
+		if( getYukonUser().getUserID() == null )
+			setUserID(
+				com.cannontech.database.db.user.YukonUser.getNextUserID(getDbConnection()) );
+
 		getYukonUser().add();
 		getYukonUser().setDbConnection(null);
 		
-		for (int i = 0; i < getYukonGroups().size(); i++) {
-			Object[] addValues = {
-				getYukonUser().getUserID(), ((com.cannontech.database.db.user.YukonGroup) getYukonGroups().get(i)).getGroupID()
+		for (int i = 0; i < getYukonGroups().size(); i++) 
+		{
+			Object[] addValues = 
+			{
+				getYukonUser().getUserID(), 
+				((com.cannontech.database.db.user.YukonGroup) getYukonGroups().get(i)).getGroupID()
 			};
+
 			add( "YukonUserGroup", addValues );
 		}
 	}
@@ -226,8 +239,11 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	public void setStatus(String status) {
 		getYukonUser().setStatus(status);		
 	}
-
-
+	
+	public String toString()
+	{
+		return getYukonUser().getUsername();
+	}
 
 
 	/**

@@ -28,7 +28,7 @@ public class DeviceTreeModel extends DBTreeModel
  * @param root javax.swing.tree.TreeNode
  */
 public DeviceTreeModel() {
-	super( new DBTreeNode("Devices") );
+	this( true );
 }
 /**
  * DeviceTreeModel constructor comment.
@@ -36,7 +36,7 @@ public DeviceTreeModel() {
  */
 public DeviceTreeModel( DBTreeNode rootNode_ ) 
 {
-	super( rootNode_ );
+	this( true, rootNode_ );
 }
 /**
  * DeviceTreeModel constructor comment.
@@ -44,16 +44,16 @@ public DeviceTreeModel( DBTreeNode rootNode_ )
  */
 public DeviceTreeModel( boolean showPointNodes )
 {
-	this();
-	showPoints = showPointNodes;
+	this( showPointNodes, new DBTreeNode("Devices") );
 }
+
 /**
  * DeviceTreeModel constructor comment.
  * @param root javax.swing.tree.TreeNode
  */
 public DeviceTreeModel( boolean showPointNodes, DBTreeNode rootNode_ )
 {
-	this( rootNode_ );
+	super( rootNode_ );
 	showPoints = showPointNodes;
 }
 /**

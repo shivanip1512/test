@@ -152,6 +152,31 @@ com.cannontech.clientutils.CTILogger.info("*** !!! UPDATE Took " +
 public String toString() {
 	return "CI Customers";
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (4/17/2002 1:58:45 PM)
+ * @param lite com.cannontech.database.data.lite.LiteBase
+ */
+public boolean updateTreeObject(LiteBase lb) 
+{
+	if( lb == null || !isLiteTypeSupported(lb.getLiteType()) )
+		return false;
+
+	DBTreeNode node = findLiteObject( null, lb );
+
+	if( node != null )
+	{
+		//slightyly different from the SUPER
+		node.setWillHaveChildren( true );
+		treePathWillExpand( new TreePath(node) );
+		nodeStructureChanged( node );
+
+		return true;			
+	}
+
+	return false;
+}
 /**
  * This method was created in VisualAge.
  */
