@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/07/27 16:41:57 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/07/28 18:59:50 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -112,18 +112,17 @@ void CtiPorterVerification::verificationThread( void )
                                 (r_itr->second).push_back(work);
                                 work->addExpectation(a.receiver_id, a.retransmit);
                             }
-
-                            _work_queue.push(work);
                         }
                         else
                         {
+                            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - no associations found for for transmitter id \"" << work->getTransmitterID() << "\" - discarding work object **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << RWTime() << " **** Checkpoint - no associations found for for transmitter id \"" << work->getTransmitterID() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
-
-                            delete work;
                         }
+
+                        _work_queue.push(work);
 
                         break;
                     }
@@ -145,10 +144,10 @@ void CtiPorterVerification::verificationThread( void )
                                 //  if it's accepted
                                 if( (*itr)->checkReceipt(*report) )
                                 {
+                                    p_v.erase(itr);
+
                                     delete report;
                                     report = 0;
-
-                                    p_v.erase(itr);
 
                                     break;
                                 }
@@ -166,6 +165,18 @@ void CtiPorterVerification::verificationThread( void )
                                 delete report;
                                 report = 0;
                             }
+                        }
+                        else
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint - entry received for unknown receiver \"" << report->getReceiverID() << "\"  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+
+                            writeUnknown(*report);
+
+                            delete report;
+                            report = 0;
                         }
 
                         break;
@@ -312,6 +323,7 @@ void CtiPorterVerification::loadAssociations(void)
     {
         selector << tblVerification["ReceiverID"]
                  << tblVerification["TransmitterID"]
+                 << tblVerification["Verify"]
                  << tblVerification["ResendOnFail"];
 
         rdr = selector.reader(conn);
@@ -323,10 +335,12 @@ void CtiPorterVerification::loadAssociations(void)
                 association tmp_association;
                 unsigned long tmp_receiver,
                               tmp_transmitter;
-                RWCString     tmp_resend;
+                RWCString     tmp_resend,
+                              tmp_verify;
 
                 rdr["ReceiverID"]    >> tmp_receiver;
                 rdr["TransmitterID"] >> tmp_transmitter;
+                rdr["Verify"]        >> tmp_verify;
                 rdr["ResendOnFail"]  >> tmp_resend;
                 tmp_resend.toLower();
 
@@ -334,7 +348,13 @@ void CtiPorterVerification::loadAssociations(void)
                 tmp_association.receiver_id    = tmp_receiver;
                 tmp_association.retransmit     = (tmp_resend.compareTo("y") == 0)?true:false;
 
-                _associations.insert(make_pair(tmp_transmitter, tmp_association));
+                //  only add this association if we're to verify using it...  otherwise, ignore it and move on
+                //    generally, all associations on a transmitter will be either all on or all off, but
+                //    this allows for some flexibility
+                if( tmp_verify.compareTo("y", RWCString::ignoreCase) == 0 )
+                {
+                    _associations.insert(make_pair(tmp_transmitter, tmp_association));
+                }
             }
         }
     }
@@ -366,6 +386,7 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work)
     receipts     = work.getReceipts();
 
     string command      = work.getCommand();
+    string code         = work.getCode();
     string code_status  = CtiVerificationBase::getCodeStatusName(work.getCodeStatus());
     long transmitter_id = work.getTransmitterID();
     long sequence       = work.getSequence();
@@ -377,6 +398,23 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work)
         {
             RWDBStatus dbstat = conn.beginTransaction("DynamicVerification");
 
+            inserter << logIDGen()
+                     << work.getSubmissionTime()
+                     << 0
+                     << transmitter_id
+                     << command
+                     << code
+                     << sequence
+                     << "-"
+                     << CtiVerificationBase::getCodeStatusName(CtiVerificationBase::CodeStatus_Sent);
+
+            if( err = inserter.execute(conn).status().errorCode() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - error \"" << err << "\" while inserting in CtiPorterVerification::recordUnknown **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                //  dout << "Data: ";
+            }
+
             for( r_itr = receipts.begin(); (r_itr != receipts.end()) && dbstat.isValid() && conn.isValid(); r_itr++ )
             {
                 inserter << logIDGen()
@@ -384,8 +422,9 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work)
                          << r_itr->first
                          << transmitter_id
                          << command
-                         << "Y"
+                         << code
                          << sequence
+                         << "Y"
                          << code_status;
 
                 if( err = inserter.execute(conn).status().errorCode() )
@@ -396,16 +435,6 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work)
                 }
             }
 
-            for( e_itr = expectations.begin(); e_itr != expectations.end(); ++e_itr )
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << expectations.size() << endl;
-                    dout << "*e_itr = " << e_itr << endl;
-                }
-            }
-
             for( e_itr = expectations.begin(); (e_itr != expectations.end()) && dbstat.isValid() && conn.isValid(); e_itr++ )
             {
                 inserter << logIDGen()
@@ -413,8 +442,9 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work)
                          << *e_itr
                          << transmitter_id
                          << command
-                         << "N"
+                         << code
                          << sequence
+                         << "N"
                          << code_status;
 
                 if( err = inserter.execute(conn).status().errorCode() )
@@ -444,11 +474,19 @@ void CtiPorterVerification::writeUnknown(const CtiVerificationReport &report)
     inserter << logIDGen()
              << report.getReceiptTime()
              << report.getReceiverID()
-             << -1  //  unknown transmitter ID
+             << 0  //  unknown transmitter ID
+             << "-"
              << report.getCode()
-             << "Y"
              << -1
+             << "Y"
              << cs;
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << inserter.asString() << endl;
+    }
+
 
     if( e = inserter.execute(conn).status().errorCode() )
     {
