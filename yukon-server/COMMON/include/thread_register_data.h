@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/09/08 21:17:39 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/09/16 16:17:36 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -34,6 +34,9 @@ public:
 
    CtiThreadRegData();
    virtual ~CtiThreadRegData();
+   //I don't think we need a copy constructor
+
+   bool operator<( const CtiThreadRegData& y ) const;   //just for the queue, me thinks
 
    string getName( void );
    void setName( string in );
@@ -43,12 +46,14 @@ public:
    void setBehaviour( int in );
    ULONG getTickleFreq( void );
    void setTickleFreq( ULONG seconds );
-   ptime getTickleTime( void );
-   void setTickleTime( ptime in );
+   ptime getTickledTime( void );
+   void setTickledTime( ptime in );
    fooptr getShutdownFunc( void );
    void setShutdownFunc( fooptr in );
    fooptr getAlternate( void );
    void setAlternate( fooptr in );
+   bool getReported( void );
+   void setReported( bool in );
 
 protected:
 
@@ -61,13 +66,14 @@ private:
       None        //report missing thread and remove from list
    };                
 
+   bool     _reported;
    string   _name;
    int      _id;
    int      _behaviourType;
    fooptr   _shutdown;
    fooptr   _alternate;
    ULONG    _tickleFreq;
-   ptime    _tickleTime;
+   ptime    _tickledTime;
 };
 
 #endif // #ifndef __THREAD_REGISTER_DATA_H__

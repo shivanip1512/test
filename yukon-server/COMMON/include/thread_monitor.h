@@ -14,18 +14,33 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/09/08 21:17:39 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/09/16 16:17:36 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
 
-//#include "message.h"
-#include "thread_timer.h"
-#include "thread_listener.h"
+#include <map>
+using namespace std;
 
-class CtiThreadMonitor
+#include "queue.h"
+#include "thread.h"
+#include "thread_register_data.h"
+
+class CtiThreadMonitor : CtiThread
 {
+
+public:
+
+   typedef map < int, CtiThreadRegData > ThreadData;
+
+   CtiThreadMonitor();
+   virtual ~CtiThreadMonitor();
+
+   void insertThread( CtiThreadRegData *in ); 
+   void dump( void );
+   void stop( void );
+   virtual void run( void );
 
 protected:
 
@@ -34,15 +49,15 @@ private:
    bool noReport( CtiThreadRegData candidate );
    void removeThread( int index );
    void report( int index );
+   void setQuit( bool in );
+   void checkForExpriration( void );
+   void processQueue( void );
+   void processExpired( void );
 
-   CtiThreadTimer    _timer;
-   CtiThreadListener _listener;
+   mutable CtiMutex                                         _collMux;
+   bool                                                     _quit;
+   CtiQueue < CtiThreadRegData, less< CtiThreadRegData > >  _queue;
+   ThreadData                                               _threadData;
 
-public:
-
-	CtiThreadMonitor();
-	virtual ~CtiThreadMonitor();
-
-   void dump( void );
 };
 #endif // #ifndef __THREAD_MONITOR_H__

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2004/07/07 22:12:01 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2004/09/16 16:17:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,6 +48,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include "msg_notif_email.h"
 #include "msg_notif_email_attachment.h"
+//#include "thread_monitor.h"
+//#include "verification_objects.h"
 
 BOOL           bQuit = FALSE;
 
@@ -62,11 +64,10 @@ void lmExecute(int argc, char **argv);
 void lmHelp();
 void dbchangeExecute(int argc, char **argv);
 void socketExecute(int argc, char **argv);
+void testThreads( int argc, char **argv );
 
 typedef void (*XFUNC)(int argc, char **argv);       // Execution function
 typedef void (*HFUNC)();                           // Help Function
-
-
 
 typedef struct
 {
@@ -84,6 +85,7 @@ TESTFUNC_t testfunction[] = {
     {"notif", notifEmailExecute, defaultHelp},
     {"lm", lmExecute, lmHelp},
     {"socket", socketExecute, lmHelp},
+    {"thread", testThreads, defaultHelp },
     {"", 0, 0}
 };
 
@@ -211,6 +213,11 @@ void DoTheNasty(int argc, char **argv)
         cout << "Tester Exception: ";
         cout << msg.why() << endl;
     }
+}
+
+void testThreads( int argc, char **argv )
+{
+   
 }
 
 void notifEmailExecute( int argc, char **argv )
