@@ -82,7 +82,7 @@ public class TreeItemDeleter
 			{
 				javax.swing.JOptionPane.showMessageDialog(
 					getParentFrame(),
-					"System reserved items can not be deleted",
+					"System reserved items cannot be deleted",
 					"Unable to Delete",
 					JOptionPane.WARNING_MESSAGE);
 					
