@@ -126,6 +126,7 @@
 	<target name="webbuild" depends="build,webcopy"/>	
 
 	<target name ="webcopy">
+<!--
     	<copy todir="WEB-INF/lib"  preservelastmodified="yes">
         	<fileset dir="${yukon.lib}" >
             	<include name="*.jar"/>
@@ -133,6 +134,7 @@
 				<exclude name="j2ee.jar"/>
 			</fileset>
 		</copy>
+-->
 	</target>
 
 
