@@ -275,6 +275,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	{
 		boolean isMasked = getOptionsMenu().getMultiplierMenuItem().isSelected();
 		getGraph().setOptionsMaskHolder(TrendModelType.GRAPH_MULTIPLIER, isMasked);
+		actionPerformed_GetRefreshButton(DONT_CHANGE_MODEL);		
 	}
 	/*
 	else if( event.getSource() == getOptionsMenu().getDwellMenuItem())
