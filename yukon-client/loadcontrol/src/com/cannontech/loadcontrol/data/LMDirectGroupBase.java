@@ -1,5 +1,7 @@
 package com.cannontech.loadcontrol.data;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * Insert the type's description here.
  * Creation date: (1/14/2002 12:58:45 PM)
@@ -32,6 +34,20 @@ public java.lang.Boolean getAlarmInhibit() {
 public java.lang.Integer getChildOrder() {
 	return childOrder;
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (4/18/2001 8:56:31 AM)
+ * @return java.lang.String
+ */
+public String getStatistics()
+{
+	return CtiUtilities.decodeSecondsToTime(getCurrentHoursDaily().intValue()) + " / " 
+		+ CtiUtilities.decodeSecondsToTime(getCurrentHoursMonthly().intValue()).substring(0, 2) + " / "
+		+ CtiUtilities.decodeSecondsToTime(getCurrentHoursSeasonal().intValue()).substring(0, 2) + " / "
+		+ CtiUtilities.decodeSecondsToTime(getCurrentHoursAnnually().intValue()).substring(0, 2); 
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (1/14/2002 12:59:51 PM)

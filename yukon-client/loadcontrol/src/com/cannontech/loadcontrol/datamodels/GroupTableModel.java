@@ -21,12 +21,12 @@ public class GroupTableModel extends javax.swing.table.AbstractTableModel implem
   	public static final int REDUCTION = 4;
   	
 	//The column names based on their column index
-	public static final String[] columnNames =
+	public String[] columnNames =
 	{
 		"Group Name",
 		"State",
 		"Time",
-		"Statistics",
+		"Day/Month/Season/Year Hrs",
 		"Reduction"
 	};
 
@@ -68,6 +68,13 @@ public void clear()
 	//we can drop the current row selection here
 	fireTableDataChanged();
 }
+
+public void setStatsColumnName( String name )
+{
+	//we may need this some day for Curtailment  --RWN 11-6-2002
+	columnNames[STATS] = name;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (9/28/00 11:49:20 AM)

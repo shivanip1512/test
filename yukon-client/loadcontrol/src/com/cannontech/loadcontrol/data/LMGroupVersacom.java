@@ -62,17 +62,7 @@ public java.lang.Integer getRouteID() {
 public java.lang.Integer getSectionAddress() {
 	return sectionAddress;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/18/2001 8:56:31 AM)
- * @return java.lang.String
- */
-public String getStatistics()
-{
-	return getCurrentHoursDaily() + "/" 
-			 + getCurrentHoursMonthly() + "/"
-			 + getCurrentHoursAnnually() +" hrs (D/M/Y)";
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/3/2001 11:31:08 AM)

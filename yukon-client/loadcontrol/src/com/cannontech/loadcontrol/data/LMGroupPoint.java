@@ -34,17 +34,7 @@ public java.lang.Integer getPointIDUsage() {
 public java.lang.Integer getStartControlRawState() {
 	return startControlRawState;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/18/2001 8:56:31 AM)
- * @return java.lang.String
- */
-public String getStatistics()
-{
-	return getCurrentHoursDaily() + "/" 
-			 + getCurrentHoursMonthly() + "/"
-			 + getCurrentHoursAnnually() +" hrs (D/M/Y)";
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/14/2002 4:22:47 PM)

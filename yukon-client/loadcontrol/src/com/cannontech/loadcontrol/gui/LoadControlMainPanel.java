@@ -751,7 +751,9 @@ private GroupPopUpMenu getGroupPopUpMenu()
 private com.cannontech.loadcontrol.datamodels.GroupTableModel getGroupTableModel() 
 {
 	if( groupTableModel == null )
+	{
 		groupTableModel = new GroupTableModel();
+	}
 
 	return groupTableModel;
 }
