@@ -15,6 +15,11 @@ public class SmartMultiDBPersistent extends CommonMulti implements com.cannontec
 public SmartMultiDBPersistent() {
 	super();
 }
+
+public SmartMultiDBPersistent(MultiDBPersistent aMulti) {
+	super();
+	super.setDBPersistentVector(aMulti.getDBPersistentVector());
+}
 /**
  * Insert the method's description here.
  * Creation date: (10/25/2001 4:18:09 PM)
@@ -106,6 +111,7 @@ public synchronized void setOwnerDBPersistent(com.cannontech.database.db.DBPersi
  * Creation date: (10/25/2001 4:18:09 PM)
  * @return int 
  */
+
 public int size() 
 {
 	return getDBPersistentVector().size();

@@ -10,6 +10,7 @@ import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.ICapBankController;
 import com.cannontech.database.data.device.DeviceFactory;
+import com.cannontech.database.data.multi.*;
  
 public class CapBankCntrlCreationPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private java.util.List points = null;
@@ -724,25 +725,34 @@ public Dimension getPreferredSize() {
 public Object getValue(Object val) 
 {
 	CapBank capBank = null;
-	com.cannontech.database.data.multi.SmartMultiDBPersistent multiDB = (com.cannontech.database.data.multi.SmartMultiDBPersistent)val;
+	com.cannontech.database.data.multi.SmartMultiDBPersistent smartDB;
+	//oh my, this is fun
+	if(val instanceof MultiDBPersistent)
+	{
+		smartDB = new SmartMultiDBPersistent((MultiDBPersistent) val);
+		smartDB.setOwnerDBPersistent((com.cannontech.database.db.DBPersistent)
+		((MultiDBPersistent)val).getDBPersistentVector().elementAt(0));
+	}
+	else
+		smartDB = (com.cannontech.database.data.multi.SmartMultiDBPersistent)val;
 	
 	//get the first instance of Capbank and get out!   
-   capBank = (CapBank)multiDB.getFirstObjectOfType( CapBank.class, multiDB );
+   capBank = (CapBank)smartDB.getFirstObjectOfType( CapBank.class, smartDB );
 		
 	if( getJCheckBoxCreateCBC().isSelected() )
 	{
-		multiDB = createExtraObjects( multiDB, capBank );
+		smartDB = createExtraObjects( smartDB, capBank );
 
 		//Assign the CapBanks control IDs to that of the CBC status points pointID
-		for( int i = 0; i < multiDB.size(); i++ )
+		for( int i = 0; i < smartDB.size(); i++ )
 		{
-			if( multiDB.getDBPersistent(i) instanceof com.cannontech.database.data.point.PointBase )
+			if( smartDB.getDBPersistent(i) instanceof com.cannontech.database.data.point.PointBase )
 			{
 				capBank.getCapBank().setControlPointID(
-						((com.cannontech.database.data.point.PointBase)multiDB.getDBPersistent(i)).getPoint().getPointID() );
+						((com.cannontech.database.data.point.PointBase)smartDB.getDBPersistent(i)).getPoint().getPointID() );
 
 				capBank.getCapBank().setControlDeviceID(
-						((com.cannontech.database.data.point.PointBase)multiDB.getDBPersistent(i)).getPoint().getPaoID() );
+						((com.cannontech.database.data.point.PointBase)smartDB.getDBPersistent(i)).getPoint().getPaoID() );
 				break;
 			}
 		}
@@ -755,9 +765,8 @@ public Object getValue(Object val)
 
 		capBank.getCapBank().setControlDeviceID(
 				new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getControlDeviceComboBox().getSelectedItem()).getYukonID()));
-	}
-			
-	return multiDB;
+	}	
+	return smartDB;
 }
 /**
  * Called whenever the part throws an exception.

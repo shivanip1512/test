@@ -459,7 +459,7 @@ public void setValue(Object val) {
 		java.util.Collections.sort( allPoints, com.cannontech.database.data.lite.LiteComparators.litePointIDComparator );
 		int startingPointID = ((com.cannontech.database.data.lite.LitePoint)allPoints.get( allPoints.size() - 1 )).getPointID();				
 
-		getStartingPointNumberSpinner().setValue( new Integer(startingPointID + 1) );
+		getStartingPointNumberSpinner().setValue( new Integer(startingPointID + 2) );
 	}
 }
 /**

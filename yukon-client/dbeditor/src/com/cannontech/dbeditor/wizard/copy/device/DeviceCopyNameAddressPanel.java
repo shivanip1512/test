@@ -457,6 +457,7 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
 	
 		boolean hasRoute = false;
 		boolean hasPoints = false;
+		boolean isCapBank = false;
 	
 		String nameString = getNameTextField().getText();
 		device.setPAOName(nameString);
@@ -477,7 +478,10 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
 					 ((CarrierBase) val).getDeviceCarrierSettings().setAddress(addressHolder);
 				 }
 			else if (val instanceof CapBank)
+			{
 				 ((CapBank) val).setLocation(getAddressTextField().getText());
+				 isCapBank = true;
+			}
 			else if (val instanceof ICapBankController )
 				 ((ICapBankController) val).assignAddress( new Integer(getAddressTextField().getText()) );
 			else if (val instanceof Ion7700)
@@ -610,7 +614,7 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
 			}
 	
 		}
-		if (hasPoints || hasRoute)
+		if (hasPoints || hasRoute || isCapBank)
 		{
 			return objectsToAdd;
 		}

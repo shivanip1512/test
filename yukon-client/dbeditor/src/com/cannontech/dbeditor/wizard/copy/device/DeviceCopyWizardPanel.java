@@ -5,6 +5,7 @@ package com.cannontech.dbeditor.wizard.copy.device;
  */
 
 import com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupVersacomEditorPanel;
+import com.cannontech.dbeditor.wizard.device.capcontrol.CapBankCntrlCreationPanel;
 
 /* All Panels used in this WizardPanel MUST be able to handle MultiDBPersistent  */
 /*   Objects in their getValue(Object o) method!!! */
@@ -12,6 +13,7 @@ public class DeviceCopyWizardPanel extends com.cannontech.common.wizard.WizardPa
 {
 	private DeviceCopyNameAddressPanel deviceCopyNameAddressPanel;
 	private DeviceCopyPointPanel deviceCopyPointPanel;
+	private CapBankCntrlCreationPanel capBankCntrlCreationPanel;
 	
 	private LMGroupVersacomEditorPanel lmGroupVersacomEditorPanel;
 	private RoutePanel routePanel;
@@ -23,6 +25,7 @@ public class DeviceCopyWizardPanel extends com.cannontech.common.wizard.WizardPa
 	private com.cannontech.database.db.DBPersistent copyObject = null;
 	private int deviceType;
 	private Character addressUsage;
+	private boolean isCapBank = false;
 /**
  * DeviceWizardPanel constructor comment.
  */
@@ -34,6 +37,8 @@ public DeviceCopyWizardPanel(com.cannontech.database.db.DBPersistent objectToCop
 	setDeviceType();
 	if (objectToCopy instanceof com.cannontech.database.data.device.lm.LMGroupEmetcon)
 		setAddressUsage();
+	if(objectToCopy instanceof com.cannontech.database.data.capcontrol.CapBank)
+		isCapBank = true;
 }
 /**
  * Insert the method's description here.
@@ -81,6 +86,13 @@ protected DeviceCopyPointPanel getDeviceCopyPointPanel() {
 		deviceCopyPointPanel = new DeviceCopyPointPanel();
 		
 	return deviceCopyPointPanel;
+}
+
+protected com.cannontech.dbeditor.wizard.device.capcontrol.CapBankCntrlCreationPanel getCapBankCntrlCreationPanel() {
+	if( capBankCntrlCreationPanel == null )
+		capBankCntrlCreationPanel = new CapBankCntrlCreationPanel();
+		
+	return capBankCntrlCreationPanel;
 }
 /**
  * Insert the method's description here.
@@ -219,6 +231,10 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		getDeviceCopyPointPanel().setValue(copyObject);
 		return getDeviceCopyPointPanel();
 	}
+	else if( (currentInputPanel == getDeviceCopyNameAddressPanel() || currentInputPanel == getDeviceCopyPointPanel()) &&
+	getDeviceType() == com.cannontech.database.data.pao.PAOGroups.CAPBANK)
+		return getCapBankCntrlCreationPanel();
+	
 	else
 		throw new Error(getClass() + "::" + "getNextInputPanel() - Could not determine next DataInputPanel");
 }
@@ -264,6 +280,9 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
 	{
 		return true;
 	}
+	else if (isCapBank)
+		return (currentPanel == getCapBankCntrlCreationPanel());
+	
 	else	
 	if( editPointID )
 	{
