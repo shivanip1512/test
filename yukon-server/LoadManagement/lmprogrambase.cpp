@@ -870,7 +870,7 @@ BOOL CtiLMProgramBase::isAvailableToday()
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramBase::isWithinValidControlWindow(LONG secondsFromBeginningOfDay)
 {
-    if( _lmprogramcontrolwindows.entries == 0 )
+    if( _lmprogramcontrolwindows.entries() == 0 )
 	return TRUE; // No control windows defined, so anytime is inside our control window
 
     // Try to find the control window we are in
