@@ -3,6 +3,7 @@
 	<name>stars</name>
 	<comment></comment>
 	<projects>
+		<project>commander</project>
 		<project>common</project>
 		<project>servlet</project>
 	</projects>
