@@ -16,7 +16,10 @@ public class LMGroupWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	private LMGroupEmetconPanel lmGroupEmetconPanel = null;	
 	private RippleMessageShedPanel rippleMessageShedPanel = null;
 	private LMGroupExpressComEditorPanel lmGroupExpressComEditorPanel = null;
-	private LMGroupPointEditorPanel lmGroupPointEditorPanel = null;		
+	private LMGroupPointEditorPanel lmGroupPointEditorPanel = null;
+	
+	private LMGroupMCTEditorPanel lmGroupMCTEditorPanel = null;
+			
 /**
  * LMDeviceWizardPanel constructor comment.
  */
@@ -61,6 +64,19 @@ public GroupTypePanel getGroupTypePanel() {
 protected String getHeaderText() {
 	return "LM Group Setup";
 }
+
+/**
+ * This method was created in VisualAge.
+ * @return LMGroupBasePanel
+ */
+public LMGroupMCTEditorPanel getLMGroupMCTEditorPanel() 
+{
+	if( lmGroupMCTEditorPanel == null )
+		lmGroupMCTEditorPanel = new LMGroupMCTEditorPanel();
+	
+	return lmGroupMCTEditorPanel;
+}
+
 /**
  * This method was created in VisualAge.
  * @return LMGroupBasePanel
@@ -173,23 +189,29 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	{
 		return getLMGroupEmetconPanel();//getGoldOrSilverAddressPanel();
 	}
-	//Start Versacomspecific
+	//Start Versacom specific
 	else if ( currentInputPanel == getLMGroupBasePanel()
 			    && getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM )
 	{
 		return getLmGroupVersacomEditorPanel();
 	}
-	//Start ExpressCom specific
+	//Start Expresscom specific
 	else if ( currentInputPanel == getLMGroupBasePanel()
 			    && getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM )
 	{
 		return getLMGroupExpressComEditorPanel();
 	}
-	//Start Ripple specific
+	//Start LMGroupPoint specific
 	else if ( currentInputPanel == getLMGroupBasePanel()
 				&& getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT )
 	{
 		return getLmGroupPointEditorPanel();
+	}
+	//Start LMGroupMCT specific
+	else if ( currentInputPanel == getLMGroupBasePanel()
+				 && getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_MCT )
+	{
+		return getLMGroupMCTEditorPanel();
 	}
 	
 	System.err.println(getClass() + "::getNextInputPanel() - currentInputPanel was not recognized.");
@@ -231,6 +253,7 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
 		 	  || currentPanel == rippleMessageShedPanel
 		     || currentPanel == groupMacroLoadGroupsPanel
 		     || currentPanel == lmGroupExpressComEditorPanel
-		     || currentPanel == lmGroupPointEditorPanel );
+		     || currentPanel == lmGroupPointEditorPanel
+			  || currentPanel == lmGroupMCTEditorPanel );
 }
 }

@@ -4,7 +4,7 @@ package com.cannontech.database.data.device.lm;
  * This type was created in VisualAge.
  */
 
-public class LMGroupEmetcon extends LMGroup 
+public class LMGroupEmetcon extends LMGroup implements IGroupRoute
 {
 	private com.cannontech.database.db.device.lm.LMGroupEmetcon lmGroupEmetcon = null;
 /**
@@ -31,6 +31,19 @@ public void addPartial() throws java.sql.SQLException {
 	super.addPartial();
 	getLmGroupEmetconDefaults().add();
 }
+
+public void setRouteID( Integer rtID_ )
+{
+	getLmGroupEmetcon().setRouteID( rtID_ );
+}
+	
+
+public Integer getRouteID()
+{
+	return getLmGroupEmetcon().getRouteID();
+}
+
+
 /**
  * delete method comment.
  */

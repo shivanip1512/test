@@ -72,6 +72,7 @@ public interface DeviceTypes extends TypeBase
 
    public final static int RTU_DART                     = DEVICE_OFFSET + 62;
    public final static int MCT310IDL                    = DEVICE_OFFSET + 63;
+	public final static int LM_GROUP_MCT					  = DEVICE_OFFSET + 64;
 
 
 	//all the possible text representation of each device type.
@@ -139,5 +140,5 @@ public interface DeviceTypes extends TypeBase
    public static final String[] STRING_ION_7700 = {"ION-7700", "ION 7700" };
    public static final String[] STRING_ION_8300 = {"ION-8300", "ION 8300" };
    public static final String[] STRING_ION_7330 = {"ION-7330", "ION 7330" };
-   
+	public static final String[] STRING_MCT_GROUP = {"MCT GROUP", "MCT-GROUP"};
 }

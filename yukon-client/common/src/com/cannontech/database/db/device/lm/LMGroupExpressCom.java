@@ -7,15 +7,15 @@ public class LMGroupExpressCom extends com.cannontech.database.db.DBPersistent
 {
 	private Integer lmGroupID = null;
 	private Integer routeID = null;
-	private String serialNumber = LMGroupExpressComAddress.NONE_ADDRESS_ID.toString();
-	private Integer serviceProviderID = LMGroupExpressComAddress.NONE_ADDRESS_ID;
-	private Integer geoID = LMGroupExpressComAddress.NONE_ADDRESS_ID;
-	private Integer substationID = LMGroupExpressComAddress.NONE_ADDRESS_ID;
-	private Integer feederID = LMGroupExpressComAddress.NONE_ADDRESS_ID;
-	private Integer zipCodeAddress = LMGroupExpressComAddress.NONE_ADDRESS_ID;
-	private Integer udAddress = LMGroupExpressComAddress.NONE_ADDRESS_ID;
-	private Integer programID = LMGroupExpressComAddress.NONE_ADDRESS_ID;
-	private Integer splinterAddress = LMGroupExpressComAddress.NONE_ADDRESS_ID;
+	private String serialNumber = IlmDefines.NONE_ADDRESS_ID.toString();
+	private Integer serviceProviderID = IlmDefines.NONE_ADDRESS_ID;
+	private Integer geoID = IlmDefines.NONE_ADDRESS_ID;
+	private Integer substationID = IlmDefines.NONE_ADDRESS_ID;
+	private Integer feederID = IlmDefines.NONE_ADDRESS_ID;
+	private Integer zipCodeAddress = IlmDefines.NONE_ADDRESS_ID;
+	private Integer udAddress = IlmDefines.NONE_ADDRESS_ID;
+	private Integer programID = IlmDefines.NONE_ADDRESS_ID;
+	private Integer splinterAddress = IlmDefines.NONE_ADDRESS_ID;
 	private String addressUsage = " "; //default none
 	private String relayUsage = " "; //default none
 
@@ -236,7 +236,7 @@ public final static void purgeUnusedAddresses( java.sql.Connection conn )
 							"and addressid not in (select SubstationID from LMGroupExpressComm)  " +
 							"and addressid not in (select FeederID from LMGroupExpressComm) " +
 							"and addressid not in (select ProgramID from LMGroupExpressComm) " +
-							"and addressid > " + LMGroupExpressComAddress.NONE_ADDRESS_ID );
+							"and addressid > " + IlmDefines.NONE_ADDRESS_ID );
 
 			pstmt.executeUpdate();
 		}		

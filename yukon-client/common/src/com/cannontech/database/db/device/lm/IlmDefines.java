@@ -1,16 +1,21 @@
 package com.cannontech.database.db.device.lm;
+
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * Insert the type's description here.
  * Creation date: (4/3/2002 10:45:14 AM)
  * @author: 
  */
-public interface LMProgramDirectGearDefines 
+public interface IlmDefines 
 {
+	// --------------------------------------------------------------- 
+	//    Start LM Gears Defines
+	// --------------------------------------------------------------- 
 	/** NOTE ON GEARS ***
 	 * Gears numbers start at 1, not 0 (zero).
 	 * The gear number is also stored like this in the DB.
-	 */
-	
+	 */	
 	//A large limit is good
 	public static final int MAX_GEAR_COUNT = 16;
 	
@@ -61,5 +66,36 @@ public interface LMProgramDirectGearDefines
 	public static final String OPTION_FIXED_COUNT = "FixedCount";
 	public static final String OPTION_COUNT_DOWN = "CountDown";
 	public static final String OPTION_LIMITED_COUNT_DOWN = "LimitedCountDown";
+
+
+
+	// --------------------------------------------------------------- 
+	//    Start LM Trigger Defines
+	// --------------------------------------------------------------- 
+	public static final String TYPE_THRESHOLD = "Threshold";
+
+	public static final String TYPE_STATUS = "Status";
+
+	public static final int INVALID_INT_VALUE = 0;
+
+	/* Projection specific defines */
+	public static final String PROJ_TYPE_NONE		= CtiUtilities.STRING_NONE;
+	public static final String PROJ_TYPE_LSF		= "LSF";	
+
+
+
+	// --------------------------------------------------------------- 
+	//    Start LM Group Defines
+	// ---------------------------------------------------------------
+	public static final Integer NONE_ADDRESS_ID			= new Integer(0);
+	public static final String TYPE_SERVICE				= "SERVICE";
+	public static final String TYPE_GEO						= "GEO";
+	public static final String TYPE_SUBSTATION			= "SUBSTATION";
+	public static final String TYPE_FEEDER					= "FEEDER";
+	public static final String TYPE_PROGRAM				= "PROGRAM";
 	
+	
+	public static final String LEVEL_BRONZE				= "Bronze";
+	public static final String LEVEL_LEAD					= "Lead";
+	public static final String LEVEL_MCT					= "MCT Address";
 }

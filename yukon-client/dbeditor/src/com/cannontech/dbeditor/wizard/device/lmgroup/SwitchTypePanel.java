@@ -5,13 +5,15 @@ package com.cannontech.dbeditor.wizard.device.lmgroup;
  */
 import java.awt.Dimension;
 
+import com.cannontech.database.data.device.lm.LMFactory;
+
 public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPanel 
 {
 	private javax.swing.JLabel ivjSelectLabel = null;
 	private javax.swing.JList ivjSwitchList = null;
 	private javax.swing.JScrollPane ivjSwitchListScrollPane = null;
 
-	private static final String[] switchList = 
+	private static final String[] SWITCH_LIST = 
 	{
 			"LCR 5000       (EXPRESSCOM)",
 			"T-STAT         (EXPRESSCOM)",
@@ -22,12 +24,13 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 			"LCR 2000       (VERSACOM)",
 			"LCR 1000       (Ripple)",
 			"LMT 100 Series (EMETCON)",
-			"Point Group"
+			"Point Group",
+			"MCT Group"
 	};
 
 	// These are the values that correspond to each selection
 	// switchList
-	private static final int[] valueList = 
+	private static final int[] VALUE_LIST = 
 	{
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
@@ -38,7 +41,8 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RIPPLE,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EMETCON,
-			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT
+			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT,
+			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_MCT,
 	};
 
 /**
@@ -71,7 +75,7 @@ private void connEtoM1() {
  */
 public Object[] connEtoM1_ListData() {
 	
-	return this.switchList;
+	return SwitchTypePanel.SWITCH_LIST;
 		
 		
 }
@@ -173,7 +177,7 @@ private javax.swing.JScrollPane getSwitchListScrollPane() {
  * @return int
  */
 public int getTypeOfSwitchSelected() {
-	return valueList[getSwitchList().getSelectedIndex()];
+	return SwitchTypePanel.VALUE_LIST[getSwitchList().getSelectedIndex()];
 }
 /**
  * This method was created in VisualAge.
@@ -182,38 +186,16 @@ public int getTypeOfSwitchSelected() {
 public String getTypeOfSwitchSelectedString() 
 {
 	return com.cannontech.database.data.pao.PAOGroups.getDeviceTypeString(
-					valueList[getSwitchList().getSelectedIndex()]);
+				SwitchTypePanel.VALUE_LIST[getSwitchList().getSelectedIndex()]);
 }
 /**
  * getValue method comment.
  */
 public Object getValue(Object o) 
 {
-	if( getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EMETCON )
-	{
-		return com.cannontech.database.data.device.lm.LMFactory.createLoadManagement( com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EMETCON );
-	}
-	else if (getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RIPPLE )
-	{
-		return com.cannontech.database.data.device.lm.LMFactory.createLoadManagement(com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RIPPLE);
-	}
-	else if( getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM )
-	{
-		return com.cannontech.database.data.device.lm.LMFactory.createLoadManagement( com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM );
-	}	
-	else if( getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM )
-	{
-		return com.cannontech.database.data.device.lm.LMFactory.createLoadManagement( com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM );
-	}	
-	else if( getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT )
-	{
-		return com.cannontech.database.data.device.lm.LMFactory.createLoadManagement( com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT );
-	}	
-	else
-	{
-		return null;
-	}
+	return LMFactory.createLoadManagement( getTypeOfSwitchSelected() );
 }
+
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
@@ -269,29 +251,6 @@ private void initialize() {
 	}
 	// user code begin {2}
 	// user code end
-}
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		java.awt.Frame frame;
-		try {
-			Class aFrameClass = Class.forName("com.ibm.uvm.abt.edit.TestFrame");
-			frame = (java.awt.Frame)aFrameClass.newInstance();
-		} catch (java.lang.Throwable ivjExc) {
-			frame = new java.awt.Frame();
-		}
-		SwitchTypePanel aSwitchTypePanel;
-		aSwitchTypePanel = new SwitchTypePanel();
-		frame.add("Center", aSwitchTypePanel);
-		frame.setSize(aSwitchTypePanel.getSize());
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
 }
 /**
  * setValue method comment.

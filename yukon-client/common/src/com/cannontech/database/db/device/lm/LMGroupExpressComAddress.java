@@ -9,12 +9,10 @@ public class LMGroupExpressComAddress extends com.cannontech.database.db.DBPersi
 	private String addressType = null;
 	private Integer address = new Integer(0);
 	private String addressName = com.cannontech.common.util.CtiUtilities.STRING_NONE; //default none
-
-	public static final Integer NONE_ADDRESS_ID = new Integer(0);
-
+	
 	//default value for all addresses
 	public static final LMGroupExpressComAddress NONE_ADDRESS = 
-			new LMGroupExpressComAddress( NONE_ADDRESS_ID, com.cannontech.common.util.CtiUtilities.STRING_NONE );
+			new LMGroupExpressComAddress( IlmDefines.NONE_ADDRESS_ID, com.cannontech.common.util.CtiUtilities.STRING_NONE );
 
 
 	public static final String SETTER_COLUMNS[] = 
@@ -22,11 +20,6 @@ public class LMGroupExpressComAddress extends com.cannontech.database.db.DBPersi
 		"AddressType", "Address", "AddressName"
 	};
 
-	public static final String TYPE_SERVICE = "SERVICE";
-	public static final String TYPE_GEO = "GEO";
-	public static final String TYPE_SUBSTATION = "SUBSTATION";
-	public static final String TYPE_FEEDER = "FEEDER";
-	public static final String TYPE_PROGRAM = "PROGRAM";
 	
 	public static final String CONSTRAINT_COLUMNS[] = { "AddressID" };
 
@@ -78,7 +71,7 @@ public void add() throws java.sql.SQLException
 public void delete() throws java.sql.SQLException 
 {
 	//don not ever delete our NONE row
-	if( getAddressID().intValue() > NONE_ADDRESS_ID.intValue() )
+	if( getAddressID().intValue() > IlmDefines.NONE_ADDRESS_ID.intValue() )
 	{
 		delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getAddressID() );
 	}
@@ -149,7 +142,8 @@ public final static LMGroupExpressComAddress[] getAllExpressCommAddress( String 
 			pstmt = conn.prepareStatement("select " + 
 						"AddressID,AddressType,Address,AddressName " +
 						"from " +
-						TABLE_NAME + " where AddressType = " + type + " and AddressID > " + NONE_ADDRESS_ID + " order by AddressName" );
+						TABLE_NAME + " where AddressType = " + type + " and AddressID > " + 
+						IlmDefines.NONE_ADDRESS_ID + " order by AddressName" );
 
 			rset = pstmt.executeQuery();							
 
@@ -211,7 +205,8 @@ public final static LMGroupExpressComAddress[] getAllExpressCommAddressWithNames
 						"AddressID,AddressType,Address,AddressName " +
 						"from " +
 						TABLE_NAME + 
-						" where AddressID > " + NONE_ADDRESS_ID + " order by AddressName" );
+						" where AddressID > " + 
+						IlmDefines.NONE_ADDRESS_ID + " order by AddressName" );
 
 			rset = pstmt.executeQuery();							
 

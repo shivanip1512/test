@@ -1,7 +1,8 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 import javax.swing.JCheckBox;
 
-import com.cannontech.database.db.device.lm.LMGroupExpressComAddress;
+import com.cannontech.database.db.device.lm.IlmDefines;
+
 /**
  * This type was created in VisualAge.
  */
@@ -2482,43 +2483,43 @@ public Object getValue(Object o)
 		group.setServiceProviderAddress( createAddress(
 				getJComboBoxSPID(), 
 				getJTextFieldSPIDAddress(), 
-				com.cannontech.database.db.device.lm.LMGroupExpressComAddress.TYPE_SERVICE) );
+				IlmDefines.TYPE_SERVICE) );
 
 		group.setFeederAddress( createAddress(
 				getJComboBoxFEED(), 
 				getJTextFieldFeedAddress(), 
-				com.cannontech.database.db.device.lm.LMGroupExpressComAddress.TYPE_FEEDER) );
+				IlmDefines.TYPE_FEEDER) );
 		
 		group.setSubstationAddress( createAddress(
 				getJComboBoxSUB(), 
 				getJTextFieldSubAddress(), 
-				com.cannontech.database.db.device.lm.LMGroupExpressComAddress.TYPE_SUBSTATION) );
+				IlmDefines.TYPE_SUBSTATION) );
 
 		group.setGeoAddress( createAddress(
 				getJComboBoxGEO(), 
 				getJTextFieldGeoAddress(), 
-				com.cannontech.database.db.device.lm.LMGroupExpressComAddress.TYPE_GEO) );
+				IlmDefines.TYPE_GEO) );
 
 		group.setProgramAddress( createAddress(
 				getJComboBoxPROG(), 
 				getJTextFieldProgAddress(), 
-				com.cannontech.database.db.device.lm.LMGroupExpressComAddress.TYPE_PROGRAM) );
+				IlmDefines.TYPE_PROGRAM) );
 
 
 		if( getJTextFieldSplinter().getText() != null && getJTextFieldSplinter().getText().length() > 0 )
 			group.getLMGroupExpressComm().setSplinterAddress( new Integer(getJTextFieldSplinter().getText()) );
       else
-         group.getLMGroupExpressComm().setSplinterAddress( LMGroupExpressComAddress.NONE_ADDRESS_ID );
+         group.getLMGroupExpressComm().setSplinterAddress( IlmDefines.NONE_ADDRESS_ID );
 
 		if( getJTextFieldUserAddress().getText() != null && getJTextFieldUserAddress().getText().length() > 0 )			
 			group.getLMGroupExpressComm().setUdAddress( new Integer(getJTextFieldUserAddress().getText()) );
       else
-         group.getLMGroupExpressComm().setUdAddress( LMGroupExpressComAddress.NONE_ADDRESS_ID );
+         group.getLMGroupExpressComm().setUdAddress( IlmDefines.NONE_ADDRESS_ID );
 
 		if( getJTextFieldZipAddress().getText() != null && getJTextFieldZipAddress().getText().length() > 0 )		
 			group.getLMGroupExpressComm().setZipCodeAddress( new Integer(getJTextFieldZipAddress().getText()) );
       else
-         group.getLMGroupExpressComm().setZipCodeAddress( LMGroupExpressComAddress.NONE_ADDRESS_ID );
+         group.getLMGroupExpressComm().setZipCodeAddress( IlmDefines.NONE_ADDRESS_ID );
 
 		if( getJCheckBoxSerial().isSelected() 
 			 && getJTextFieldSerialAddress().getText() != null 
@@ -2527,7 +2528,7 @@ public Object getValue(Object o)
 			group.getLMGroupExpressComm().setSerialNumber( getJTextFieldSerialAddress().getText() );
 		}
       else
-         group.getLMGroupExpressComm().setSerialNumber( LMGroupExpressComAddress.NONE_ADDRESS_ID.toString() );
+         group.getLMGroupExpressComm().setSerialNumber( IlmDefines.NONE_ADDRESS_ID.toString() );
          
 		StringBuffer addressUsage = new StringBuffer();
 		StringBuffer relayUsage = new StringBuffer();
@@ -2618,15 +2619,15 @@ private void initAddressJComboBoxes()
 		com.cannontech.database.db.device.lm.LMGroupExpressComAddress.getAllExpressCommAddressWithNames();
 
 	for( int i = 0; i < addresses.length; i++ )
-		if( addresses[i].getAddressType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMGroupExpressComAddress.TYPE_SERVICE) )
+		if( addresses[i].getAddressType().equalsIgnoreCase(IlmDefines.TYPE_SERVICE) )
 			getJComboBoxSPID().addItem( addresses[i] );
-		else if( addresses[i].getAddressType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMGroupExpressComAddress.TYPE_GEO) )
+		else if( addresses[i].getAddressType().equalsIgnoreCase(IlmDefines.TYPE_GEO) )
 			getJComboBoxGEO().addItem( addresses[i] );
-		else if( addresses[i].getAddressType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMGroupExpressComAddress.TYPE_SUBSTATION) )
+		else if( addresses[i].getAddressType().equalsIgnoreCase(IlmDefines.TYPE_SUBSTATION) )
 			getJComboBoxSUB().addItem( addresses[i] );
-		else if( addresses[i].getAddressType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMGroupExpressComAddress.TYPE_FEEDER) )
+		else if( addresses[i].getAddressType().equalsIgnoreCase(IlmDefines.TYPE_FEEDER) )
 			getJComboBoxFEED().addItem( addresses[i] );
-		else if( addresses[i].getAddressType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMGroupExpressComAddress.TYPE_PROGRAM) )
+		else if( addresses[i].getAddressType().equalsIgnoreCase(IlmDefines.TYPE_PROGRAM) )
 			getJComboBoxPROG().addItem( addresses[i] );
 		else
 		{
@@ -2993,7 +2994,7 @@ public void setValue(Object o)
 
 		
 		Integer serial = new Integer(group.getLMGroupExpressComm().getSerialNumber());
-		if( serial.intValue() > LMGroupExpressComAddress.NONE_ADDRESS_ID.intValue() )
+		if( serial.intValue() > IlmDefines.NONE_ADDRESS_ID.intValue() )
 		{
 			getJCheckBoxSerial().doClick();
 			getJTextFieldSerialAddress().setText( serial.toString() );

@@ -3,9 +3,10 @@ package com.cannontech.database.data.device.lm;
 /**
  * This type was created in VisualAge.
  */
+import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMGroupExpressComAddress;
 
-public class LMGroupExpressCom extends LMGroup
+public class LMGroupExpressCom extends LMGroup implements IGroupRoute
 {
 	private com.cannontech.database.db.device.lm.LMGroupExpressCom lmGroupExpressComm = null;
 
@@ -76,6 +77,18 @@ public void addPartial() throws java.sql.SQLException
 	getProgramAddress().add();
 
 }
+
+public void setRouteID( Integer rtID_ )
+{
+	getLMGroupExpressComm().setRouteID( rtID_ );
+}	
+
+public Integer getRouteID()
+{
+	return getLMGroupExpressComm().getRouteID();
+}
+
+
 /**
  * delete method comment.
  */
@@ -137,7 +150,7 @@ public com.cannontech.database.db.device.lm.LMGroupExpressComAddress getFeederAd
 {
 	if( feederAddress == null )
 	{
-		feederAddress = new LMGroupExpressComAddress( LMGroupExpressComAddress.TYPE_FEEDER );
+		feederAddress = new LMGroupExpressComAddress( IlmDefines.TYPE_FEEDER );
 
 		getFeederAddress().setAddressID( getLMGroupExpressComm().getFeederID() );
 	}
@@ -153,7 +166,7 @@ public com.cannontech.database.db.device.lm.LMGroupExpressComAddress getGeoAddre
 {
 	if( geoAddress == null )
 	{
-		geoAddress = new LMGroupExpressComAddress( LMGroupExpressComAddress.TYPE_GEO );
+		geoAddress = new LMGroupExpressComAddress( IlmDefines.TYPE_GEO );
 
 		getGeoAddress().setAddressID( getLMGroupExpressComm().getGeoID() );
 	}
@@ -180,7 +193,7 @@ public com.cannontech.database.db.device.lm.LMGroupExpressComAddress getProgramA
 {
 	if( programAddress == null )
 	{
-		programAddress = new LMGroupExpressComAddress( LMGroupExpressComAddress.TYPE_PROGRAM );
+		programAddress = new LMGroupExpressComAddress( IlmDefines.TYPE_PROGRAM );
 
 		getProgramAddress().setAddressID( getLMGroupExpressComm().getProgramID() );
 	}
@@ -196,7 +209,7 @@ public com.cannontech.database.db.device.lm.LMGroupExpressComAddress getServiceP
 {
 	if( serviceProviderAddress == null )
 	{
-		serviceProviderAddress = new LMGroupExpressComAddress( LMGroupExpressComAddress.TYPE_SERVICE );
+		serviceProviderAddress = new LMGroupExpressComAddress( IlmDefines.TYPE_SERVICE );
 
 		getServiceProviderAddress().setAddressID( getLMGroupExpressComm().getServiceProviderID() );	
 	}
@@ -212,7 +225,7 @@ public com.cannontech.database.db.device.lm.LMGroupExpressComAddress getSubstati
 {
 	if( substationAddress == null )
 	{
-		substationAddress = new LMGroupExpressComAddress( LMGroupExpressComAddress.TYPE_SUBSTATION );
+		substationAddress = new LMGroupExpressComAddress( IlmDefines.TYPE_SUBSTATION );
 
 		getSubstationAddress().setAddressID( getLMGroupExpressComm().getSubstationID() );
 	}
@@ -227,31 +240,31 @@ public void retrieve() throws java.sql.SQLException
 	super.retrieve();
 	getLMGroupExpressComm().retrieve();
 	
-	if( !getLMGroupExpressComm().getServiceProviderID().equals(LMGroupExpressComAddress.NONE_ADDRESS_ID) )
+	if( !getLMGroupExpressComm().getServiceProviderID().equals(IlmDefines.NONE_ADDRESS_ID) )
 	{
 		getServiceProviderAddress().setAddressID( getLMGroupExpressComm().getServiceProviderID() );
 		getServiceProviderAddress().retrieve();
 	}
 
-	if( !getLMGroupExpressComm().getSubstationID().equals(LMGroupExpressComAddress.NONE_ADDRESS_ID) )
+	if( !getLMGroupExpressComm().getSubstationID().equals(IlmDefines.NONE_ADDRESS_ID) )
 	{
 		getSubstationAddress().setAddressID( getLMGroupExpressComm().getSubstationID() );
 		getSubstationAddress().retrieve();
 	}
 
-	if( !getLMGroupExpressComm().getFeederID().equals(LMGroupExpressComAddress.NONE_ADDRESS_ID) )
+	if( !getLMGroupExpressComm().getFeederID().equals(IlmDefines.NONE_ADDRESS_ID) )
 	{
 		getFeederAddress().setAddressID( getLMGroupExpressComm().getFeederID() );
 		getFeederAddress().retrieve();
 	}
 	
-	if( !getLMGroupExpressComm().getGeoID().equals(LMGroupExpressComAddress.NONE_ADDRESS_ID) )
+	if( !getLMGroupExpressComm().getGeoID().equals(IlmDefines.NONE_ADDRESS_ID) )
 	{
 		getGeoAddress().setAddressID( getLMGroupExpressComm().getGeoID() );
 		getGeoAddress().retrieve();
 	}
 	
-	if( !getLMGroupExpressComm().getProgramID().equals(LMGroupExpressComAddress.NONE_ADDRESS_ID) )
+	if( !getLMGroupExpressComm().getProgramID().equals(IlmDefines.NONE_ADDRESS_ID) )
 	{
 		getProgramAddress().setAddressID( getLMGroupExpressComm().getProgramID() );
 		getProgramAddress().retrieve();

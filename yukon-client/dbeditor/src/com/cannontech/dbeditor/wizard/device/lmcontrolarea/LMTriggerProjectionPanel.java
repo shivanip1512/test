@@ -3,7 +3,8 @@ package com.cannontech.dbeditor.wizard.device.lmcontrolarea;
  * This type was created in VisualAge.
  */
 
-import com.cannontech.database.db.device.lm.ILMControlAreaTrigger;
+import com.cannontech.database.db.device.lm.IlmDefines;
+import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
 import com.cannontech.common.util.CtiUtilities;
 
@@ -225,8 +226,8 @@ private javax.swing.JComboBox getJComboBoxType() {
 			ivjJComboBoxType.setName("JComboBoxType");
 			// user code begin {1}
 
-			ivjJComboBoxType.addItem( ILMControlAreaTrigger.PROJ_TYPE_NONE );
-			ivjJComboBoxType.addItem( ILMControlAreaTrigger.PROJ_TYPE_LSF );
+			ivjJComboBoxType.addItem( IlmDefines.PROJ_TYPE_NONE );
+			ivjJComboBoxType.addItem( IlmDefines.PROJ_TYPE_LSF );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -461,7 +462,7 @@ public boolean isInputValid()
  */
 public void jComboBoxType_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	boolean enabled = !ILMControlAreaTrigger.PROJ_TYPE_NONE.equalsIgnoreCase(
+	boolean enabled = !IlmDefines.PROJ_TYPE_NONE.equalsIgnoreCase(
 				getJComboBoxType().getSelectedItem().toString() );
 
 	getJLabelSamples().setEnabled( enabled );

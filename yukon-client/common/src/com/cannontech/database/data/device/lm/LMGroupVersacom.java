@@ -4,7 +4,7 @@ package com.cannontech.database.data.device.lm;
  * This type was created in VisualAge.
  */
 
-public class LMGroupVersacom extends LMGroup
+public class LMGroupVersacom extends LMGroup implements IGroupRoute
 {
 	private com.cannontech.database.db.device.lm.LMGroupVersacom lmGroupVersacom = null;
 /**
@@ -40,6 +40,19 @@ public void delete() throws java.sql.SQLException
 	getLmGroupVersacom().delete();
 	super.delete();
 }
+
+public void setRouteID( Integer rtID_ )
+{
+	getLmGroupVersacom().setRouteID( rtID_ );
+}
+	
+
+public Integer getRouteID()
+{
+	return getLmGroupVersacom().getRouteID();
+}
+
+
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.database.db.device.lm.LMGroupVersacom

@@ -231,6 +231,7 @@ public final static boolean isLmGroup(int deviceType)
 		case LM_GROUP_RIPPLE:
 		case LM_GROUP_POINT:
 		case MACRO_GROUP:
+		case LM_GROUP_MCT:
 			return true;
 	
 		default:

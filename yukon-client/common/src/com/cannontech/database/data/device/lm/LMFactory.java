@@ -28,22 +28,22 @@ public final static com.cannontech.database.data.pao.YukonPAObject createLoadMan
 	switch( lmType )
 	{
 		case PAOGroups.LM_GROUP_EMETCON:
-			retLm = new com.cannontech.database.data.device.lm.LMGroupEmetcon();
+			retLm = new LMGroupEmetcon();
 			retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
 			retLm.setPAOClass( DeviceClasses.STRING_CLASS_GROUP );
 			break;
 		case PAOGroups.LM_GROUP_VERSACOM:
-			retLm = new com.cannontech.database.data.device.lm.LMGroupVersacom();
+			retLm = new LMGroupVersacom();
 			retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
 			retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
 			break;
 		case PAOGroups.LM_GROUP_EXPRESSCOMM:
-			retLm = new com.cannontech.database.data.device.lm.LMGroupExpressCom();
+			retLm = new LMGroupExpressCom();
 			retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
 			retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
 			break;			
 		case PAOGroups.LM_GROUP_POINT:
-			retLm = new com.cannontech.database.data.device.lm.LMGroupPoint();
+			retLm = new LMGroupPoint();
 			retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
 			retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
 			break;
@@ -52,6 +52,12 @@ public final static com.cannontech.database.data.pao.YukonPAObject createLoadMan
 			retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
 			retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
 			break;
+		case PAOGroups.LM_GROUP_MCT:
+			retLm = new LMGroupMCT();
+			retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
+			retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
+			break;
+			
 		case PAOGroups.MACRO_GROUP:
 			retLm = new MacroGroup();
 			retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );

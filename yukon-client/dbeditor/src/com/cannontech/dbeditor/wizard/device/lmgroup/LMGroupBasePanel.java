@@ -1,7 +1,10 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.device.lm.LMGroup;
+import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 
@@ -976,14 +979,14 @@ public Object getValue(Object val)
 
 
 	if( getJCheckBoxDisable().isSelected() )
-		lmGroup.setDisableFlag( com.cannontech.common.util.CtiUtilities.trueChar );
+		lmGroup.setDisableFlag( CtiUtilities.trueChar );
 	else
-		lmGroup.setDisableFlag( com.cannontech.common.util.CtiUtilities.falseChar );
+		lmGroup.setDisableFlag( CtiUtilities.falseChar );
 
 	if( getJCheckBoxDisableControl().isSelected() )
-		lmGroup.getDevice().setControlInhibit( com.cannontech.common.util.CtiUtilities.trueChar );
+		lmGroup.getDevice().setControlInhibit( CtiUtilities.trueChar );
 	else
-		lmGroup.getDevice().setControlInhibit( com.cannontech.common.util.CtiUtilities.falseChar );
+		lmGroup.getDevice().setControlInhibit( CtiUtilities.falseChar );
 
 	if( getJTextFieldKWCapacity().getText() != null
 		 && getJTextFieldKWCapacity().getText().length() > 0 )
@@ -991,29 +994,14 @@ public Object getValue(Object val)
 		lmGroup.getLmGroup().setKwCapacity( new Double(getJTextFieldKWCapacity().getText()) );
 	}
 
-	//might have to change the bottom casts!!!!!!!!!
-	if( val instanceof com.cannontech.database.data.device.lm.LMGroupEmetcon )
+	//only set the route ID for certain LmGroups
+	if( val instanceof IGroupRoute )
 	{
-		((com.cannontech.database.data.device.lm.LMGroupEmetcon) val).getLmGroupEmetcon().setRouteID( 
-			new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getRouteComboBox().getSelectedItem()).getYukonID()) );
-	}
-	else if( val instanceof com.cannontech.database.data.device.lm.LMGroupVersacom )
-	{
-		((com.cannontech.database.data.device.lm.LMGroupVersacom) val).getLmGroupVersacom().setRouteID( 
-			new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getRouteComboBox().getSelectedItem()).getYukonID()) );
-	}
-	else if(val instanceof com.cannontech.database.data.device.lm.LMGroupRipple)
-	{
-		((com.cannontech.database.data.device.lm.LMGroupRipple) val).getLmGroupRipple().setRouteID( 
-			new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getRouteComboBox().getSelectedItem()).getYukonID()) );
-	}
-	else if(val instanceof com.cannontech.database.data.device.lm.LMGroupExpressCom)
-	{
-		((com.cannontech.database.data.device.lm.LMGroupExpressCom) val).getLMGroupExpressComm().setRouteID( 
+		((IGroupRoute) val).setRouteID( 
 			new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getRouteComboBox().getSelectedItem()).getYukonID()) );
 	}
 
-	if( val instanceof com.cannontech.database.data.device.lm.MacroGroup )
+	if( val instanceof MacroGroup )
 		return val;  //Macros will not have record history capability
 	else
 	{
@@ -1220,46 +1208,32 @@ public void setValue(Object val)
 
 
 	getJCheckBoxDisable().setSelected(
-		com.cannontech.common.util.CtiUtilities.isTrue(lmGroup.getPAODisableFlag()) );
+		CtiUtilities.isTrue(lmGroup.getPAODisableFlag()) );
 
 	getJCheckBoxDisableControl().setSelected(
-		com.cannontech.common.util.CtiUtilities.isTrue(lmGroup.getDevice().getControlInhibit()) );
+		CtiUtilities.isTrue(lmGroup.getDevice().getControlInhibit()) );
 
 	getJTextFieldKWCapacity().setText( lmGroup.getLmGroup().getKwCapacity().toString() );
 
 	
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized(cache)
+	if( lmGroup instanceof IGroupRoute )
 	{
-		java.util.List routes = cache.getAllRoutes();
-		int assignedRouteID = 0;
+		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		synchronized(cache)
+		{
+			java.util.List routes = cache.getAllRoutes();
+			int assignedRouteID = ((IGroupRoute)lmGroup).getRouteID().intValue();
 
-		if( lmGroup instanceof com.cannontech.database.data.device.lm.LMGroupEmetcon )
-      {
-			assignedRouteID = ((com.cannontech.database.data.device.lm.LMGroupEmetcon) lmGroup).getLmGroupEmetcon().getRouteID().intValue();
+			for( int i = 0 ; i < routes.size(); i++ )
+				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i)).getYukonID() == assignedRouteID )
+					getRouteComboBox().setSelectedItem((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i));
       }
-		else if( lmGroup instanceof com.cannontech.database.data.device.lm.LMGroupVersacom )
-      {
-			assignedRouteID = ((com.cannontech.database.data.device.lm.LMGroupVersacom) lmGroup).getLmGroupVersacom().getRouteID().intValue();
-      }
-		else if (lmGroup instanceof com.cannontech.database.data.device.lm.LMGroupRipple)
-      {
-			assignedRouteID = ((com.cannontech.database.data.device.lm.LMGroupRipple)lmGroup).getLmGroupRipple().getRouteID().intValue();
-      }
-      else if (lmGroup instanceof com.cannontech.database.data.device.lm.LMGroupExpressCom)
-      {
-         assignedRouteID = ((com.cannontech.database.data.device.lm.LMGroupExpressCom)lmGroup).getLMGroupExpressComm().getRouteID().intValue();
-      }
-
-		for( int i = 0 ; i < routes.size(); i++ )
-			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i)).getYukonID() == assignedRouteID )
-				getRouteComboBox().setSelectedItem((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i));
-
-		//show the needed entry fields only
-		setSwitchType( lmGroup.getPAOType() );
 	}
-
+	
+	//show the needed entry fields only
+	setSwitchType( lmGroup.getPAOType() );	
 }
+
 /**
  * 
  */

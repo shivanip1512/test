@@ -185,6 +185,12 @@ public final static DeviceBase createDevice(int deviceType) {
 			returnDevice.setDeviceType(PAOGroups.STRING_POINT_GROUP[0]);
 			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
 			break;
+		case PAOGroups.LM_GROUP_MCT:
+			returnDevice = new com.cannontech.database.data.device.lm.LMGroupMCT();
+			returnDevice.setDeviceType( PAOGroups.STRING_MCT_GROUP[0] );
+			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
+			break;
+			
 		case PAOGroups.MACRO_GROUP:
 			returnDevice = new MacroGroup();
 			returnDevice.setDeviceType(PAOGroups.STRING_MACRO_GROUP[0]);

@@ -12,7 +12,7 @@ import com.cannontech.database.data.device.lm.ThermostatSetbackGear;
 
 public abstract class LMProgramDirectGear
 	extends com.cannontech.database.db.DBPersistent
-	implements DeviceListItem, LMProgramDirectGearDefines
+	implements DeviceListItem, IlmDefines
 {
 	private Integer deviceID = null;
 	private String gearName = null;

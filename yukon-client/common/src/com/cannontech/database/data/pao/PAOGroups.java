@@ -197,6 +197,8 @@ public final static int getDeviceType(String typeString)
 	  return LM_GROUP_EMETCON;
    else if (isStringDevice(compareString, STRING_VERSACOM_GROUP))
 	  return LM_GROUP_VERSACOM;
+	else if (isStringDevice(compareString, STRING_MCT_GROUP))
+	  return LM_GROUP_MCT;	  
    else if (isStringDevice(compareString, STRING_EXPRESSCOMM_GROUP))
 	  return LM_GROUP_EXPRESSCOMM;
    else if (isStringDevice(compareString, STRING_POINT_GROUP))
@@ -344,6 +346,8 @@ public final static String getDeviceTypeString(int type)
 		  return STRING_MACRO_GROUP[0];
 	  case LM_GROUP_RIPPLE:
 		  return STRING_RIPPLE_GROUP[0];
+		case LM_GROUP_MCT:
+			return STRING_MCT_GROUP[0];
 
 	  case MCTBROADCAST:
 		  return STRING_MCT_BROADCAST[0];

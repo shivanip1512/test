@@ -7,7 +7,7 @@ public class LMControlAreaTrigger extends com.cannontech.database.db.DBPersisten
 {
 	private Integer deviceID = null;
 	private Integer triggerNumber = new Integer(0);
-	private String triggerType = ILMControlAreaTrigger.TYPE_THRESHOLD;
+	private String triggerType = IlmDefines.TYPE_THRESHOLD;
 	private Integer pointID = new Integer(0);
 	private Integer normalState = new Integer(0);
 	private Double threshold = null;

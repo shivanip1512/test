@@ -15,7 +15,7 @@ public class LMGroupEditor extends com.cannontech.common.editor.PropertyPanel im
 	{
 		//com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupBasePanel
 		{ PAOGroups.LM_GROUP_EMETCON, PAOGroups.LM_GROUP_RIPPLE, 
-		  PAOGroups.LM_GROUP_VERSACOM, PAOGroups.MACRO_GROUP,
+		  PAOGroups.LM_GROUP_VERSACOM, PAOGroups.MACRO_GROUP, PAOGroups.LM_GROUP_MCT,
 		  PAOGroups.LM_GROUP_POINT, PAOGroups.LM_GROUP_EXPRESSCOMM },
 
 		//com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupEmetconPanel
@@ -35,6 +35,9 @@ public class LMGroupEditor extends com.cannontech.common.editor.PropertyPanel im
 
 		//com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupExpressComEditorPanel
 		{ PAOGroups.LM_GROUP_EXPRESSCOMM },
+
+		//com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupMCTEditorPanel
+		{ PAOGroups.LM_GROUP_MCT },
 	};
 
 	
@@ -91,7 +94,12 @@ public Object[] createNewPanel(int panelIndex)
 		case 6:
 			objs[0] = new com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupExpressComEditorPanel();
 			objs[1] = "Addressing";
-			break;			
+			break;
+
+		case 7:
+			objs[0] = new com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupMCTEditorPanel();
+			objs[1] = "Addressing";
+			break;
 	}
 		
 	return objs;

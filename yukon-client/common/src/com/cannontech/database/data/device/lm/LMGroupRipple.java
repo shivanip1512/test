@@ -4,7 +4,7 @@ package com.cannontech.database.data.device.lm;
  * This type was created in VisualAge.
  */
 
-public class LMGroupRipple extends LMGroup
+public class LMGroupRipple extends LMGroup implements IGroupRoute
 {
 	private com.cannontech.database.db.device.lm.LMGroupRipple lmGroupRipple = null;
 /**
@@ -31,6 +31,18 @@ public void addPartial() throws java.sql.SQLException {
 	super.addPartial();
 	getLmGroupRippleDefaults().add();
 	}
+	
+	public void setRouteID( Integer rtID_ )
+	{
+		getLmGroupRipple().setRouteID( rtID_ );
+	}
+	
+
+	public Integer getRouteID()
+	{
+		return getLmGroupRipple().getRouteID();
+	}
+	
 /**
  * delete method comment.
  */
