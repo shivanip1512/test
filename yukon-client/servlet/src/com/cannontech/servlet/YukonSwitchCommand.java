@@ -21,7 +21,7 @@ PARAMETERS
  period				- cycle period
  periodCount		- number of periods
  time				- SHED time
- nextURL			- where the servlet should go after the post
+ REDIRECT			- where the servlet should go after the post
  
 */
 
@@ -142,13 +142,13 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 	sendCommand(command.toString());
 	CTILogger.info(user.getUsername() + " = " + command.toString());
 		
-	String redirectURL = req.getParameter("nextURL");
+	String redirectURL = req.getParameter("REDIRECT");
 	
 	if( redirectURL != null ) {
 		resp.sendRedirect(redirectURL + "?sn=" + serialNumber);
 	}
 	else {
-		resp.sendRedirect("/operator/switch_commands.jsp?sn=" + serialNumber );
+		resp.sendRedirect(req.getContextPath() + "/operator/switch_commands.jsp?sn=" + serialNumber );
 	}
 }
 /**
