@@ -13,7 +13,7 @@ package com.cannontech.servlet;
  * Parameters
  * 
  * gdefid	- GraphDefinition ID
- * pointid	- A pointID for an AD-HOC trend.
+ * pointid	- A pointID for an AD-HOC trend.  This can be a comma separated list of PointIds (Ex. "1,2,3")
  * **NOTE**	  ONLY gdefid or pointid should be set, if both are...then by default we choose gdefid to work with!!!
  
  * start	- Start date string, see dtFormat optional parameter for formatting
@@ -29,6 +29,8 @@ package com.cannontech.servlet;
  * @author: Aaron Lauinger
  * @author: Stacey Nebben
  */
+
+import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -70,7 +72,25 @@ public synchronized void service(HttpServletRequest req, HttpServletResponse res
 
 		param = req.getParameter("pointid");
 		if( param != null)
-			localBean.setPointid(Integer.parseInt( param));
+		{
+			int []pointIDs = null;
+			Vector ptIdsVec = new Vector();
+			int startIndex = 0;
+			int endIndex = param.indexOf(',');
+			while( startIndex < endIndex )
+			{
+				ptIdsVec.add(Integer.valueOf(param.substring(startIndex, endIndex).trim()));
+				startIndex = endIndex+1;
+				endIndex = param.indexOf(',', startIndex); 
+			}
+			ptIdsVec.add(Integer.valueOf(param.substring(startIndex).trim()));
+
+			pointIDs = new int[ptIdsVec.size()];
+			for (int i = 0; i < ptIdsVec.size(); i++)
+				pointIDs[i] = ((Integer)ptIdsVec.get(i)).intValue();
+
+			localBean.setPointIDs(pointIDs);
+		}
 		
 		param = req.getParameter("gdefid");
 		if( param != null)
