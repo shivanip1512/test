@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/devicetypes.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/06/27 20:03:02 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/07/21 21:36:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -116,6 +116,7 @@
 #define TYPE_LMGROUP_POINT                   2010
 #define TYPE_LMGROUP_EXPRESSCOM              2015
 #define TYPE_LMGROUP_MCT                     2020
+#define TYPE_LMGROUP_ENERGYPRO               2025
 
 #define TYPEMCTBCAST                         2050
 
@@ -133,6 +134,7 @@
 #define TYPE_MACRO                           2900
 // A system defined pseudo device. CGP 022300
 #define TYPE_SYSTEM                          3000
+#define TYPE_ENERGYPRO                       3100
 
 // Port types occupy the range 6000 to 6100.  !!!!!! DO NOT USE !!!!!!
 
