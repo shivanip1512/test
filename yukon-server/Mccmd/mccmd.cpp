@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2004/06/15 20:34:41 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2004/08/30 20:28:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -553,7 +553,6 @@ int Mccmd_Init(Tcl_Interp* interp)
     /* declare that we are implementing the MCCmd package so that scripts that have
     "package require McCmd" can load McCmd automatically. */
     Tcl_PkgProvide(interp, "mccmd", "1.0");
-
     return TCL_OK;
 }
 
@@ -914,11 +913,11 @@ int pmsi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 
 int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    bool rename=false;
+    bool rename=true;
     int commandLimit=0;
     int commandsPerTime=0;
     int interval=1,decodeResult=NORMAL;
-    CHAR newFileName[50];
+    CHAR newFileName[100];
     int retVal = TCL_OK;
     bool dsm2ImportFlag = false;
     int protocol = TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL;
@@ -927,13 +926,13 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
     {
         {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << " - Usage:  importcommandfile filename [/export][/cmdsperexecution:#]" << endl;
+            dout << " - Usage:  importcommandfile filename [/cmdsperexecution:#]" << endl;
             dout << "           optional parameters: " << endl;
-            dout << "                 /export - export commands sent to file export\\sent-mm-dd.txt" << endl;
             dout << "                 /cmdsperexecution:# - number of commands sent each execution (default to all)" << endl;
             dout << "                 /protocol:x - specify the protocol all commands should use (default versacom)" << endl;
             dout << "                      where x is versacom, expresscom, none (meaning don't specify)           " << endl;
             dout << "                 /dsm2 - import dsm2 vconfig.dat type commands (not valid with other options)" << endl;
+            dout << "               NOTE: Commands are exported to file export\\sent-mm-dd-yyyy.txt" << endl;
         }
 
         retVal = TCL_ERROR;
@@ -942,24 +941,24 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
     {
 
         RWCString file = argv[1];
+        RWCString temp;
         RWOrdered results;
+        sprintf (newFileName,"..\\export\\sent-%02d-%02d-%04d.txt",
+                 RWDate().month(),
+                 RWDate().dayOfMonth(),
+                 RWDate().year());
+
+        if( gMccmdDebugLevel > 0 )
+        {
+            CtiLockGuard< CtiLogger > guard(dout);
+            dout << RWTime() << " - Will export commands from " << file << " to " << RWCString (newFileName) <<endl;;
+        }
+
 
         if(argc > 2)
         {
             for(int i=2; i < argc; i++)
             {
-                // check for rename
-                if(!RWCString ("/export").compareTo (RWCString (argv[i]),RWCString::ignoreCase))
-                {
-                    {
-                        sprintf (newFileName,"..\\export\\sent-%02d-%02d.txt",
-                                 RWDate().month(),
-                                 RWDate().dayOfMonth());
-                        CtiLockGuard< CtiLogger > guard(dout);
-                        dout << RWTime() << " - Will export commands from " << file << " to " << RWCString (newFileName) <<endl;;
-                    }
-                    rename = true;
-                }
                 // left in here to support Nevada Power
                 if(RWCString(argv[i]).contains (RWCString ("/perinterval"),RWCString::ignoreCase))
                 {
@@ -969,10 +968,13 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                     {
                         commandLimit = atoi (argv[i]+colon+1);
                     }
+
+                    if( gMccmdDebugLevel > 0 )
                     {
                         CtiLockGuard< CtiLogger > guard(dout);
                         dout << RWTime() << " - Will export " << commandLimit << " commands from " << file << " per interval " <<endl;;
                     }
+                    
                 }
 
                 // left in here to support Nevada Power
@@ -984,6 +986,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                     {
                         interval = atoi (argv[i]+colon+1);
                     }
+                    if( gMccmdDebugLevel > 0 )
                     {
                         CtiLockGuard< CtiLogger > guard(dout);
                         dout << RWTime() << " - Interval: " << interval << " minutes " <<endl;;
@@ -998,15 +1001,18 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                     {
                         commandsPerTime = atoi (argv[i]+colon+1);
                     }
+                    if( gMccmdDebugLevel > 0 )
                     {
                         CtiLockGuard< CtiLogger > guard(dout);
                         dout << RWTime() << " - Will export " << commandsPerTime << " commands from " << file << " every execution " <<endl;;
                     }
+                    
                 }
 
                 if(RWCString(argv[i]).contains (RWCString ("/dsm2"),RWCString::ignoreCase))
                 {
                     dsm2ImportFlag = true;
+                    if( gMccmdDebugLevel > 0 )
                     {
                         CtiLockGuard< CtiLogger > guard(dout);
                         dout << RWTime() << " - Will import file as DSM2 vconfig.dat format " <<endl;;
@@ -1017,6 +1023,8 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                     if(RWCString(argv[i]).contains (RWCString ("versacom"),RWCString::ignoreCase))
                     {
                         protocol = TEXT_CMD_FILE_SPECIFY_VERSACOM;
+
+                        if( gMccmdDebugLevel > 0 )
                         {
                             CtiLockGuard< CtiLogger > guard(dout);
                             dout << RWTime() << " - Will export commands using versacom only " <<endl;
@@ -1025,6 +1033,8 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                     else if(RWCString(argv[i]).contains (RWCString ("expresscom"),RWCString::ignoreCase))
                     {
                         protocol = TEXT_CMD_FILE_SPECIFY_EXPRESSCOM;
+
+                        if( gMccmdDebugLevel > 0 )
                         {
                             CtiLockGuard< CtiLogger > guard(dout);
                             dout << RWTime() << " - Will export commands using expresscom only " <<endl;
@@ -1033,6 +1043,8 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                     else if(RWCString(argv[i]).contains (RWCString ("none"),RWCString::ignoreCase))
                     {
                         protocol = TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL;
+
+                        if( gMccmdDebugLevel > 0 )
                         {
                             CtiLockGuard< CtiLogger > guard(dout);
                             dout << RWTime() << " - Will export commands without specifying protocol " <<endl;
@@ -1041,6 +1053,8 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                     else
                     {
                         protocol = TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL;
+                        
+                        if( gMccmdDebugLevel > 0 )
                         {
                             CtiLockGuard< CtiLogger > guard(dout);
                             dout << RWTime() << " - Will export commands without specifing protocol " <<endl;

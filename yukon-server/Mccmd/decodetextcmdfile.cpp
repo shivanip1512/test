@@ -167,16 +167,17 @@ bool outputLogFile (vector<RWCString> &aLog)
     HANDLE logFileHandle,importFileHandle;
     ULONG fileSize,bytesRead,bytesWritten;
     CHAR *workBuffer;
-    CHAR newFileName[50];
+    CHAR newFileName[100];
     bool copyFailed = true;
     bool retVal = true;
     int cnt=0;
 
     if (aLog.size())
     {
-        sprintf (newFileName,"..\\export\\sent-%02d-%02d.txt",
+        sprintf (newFileName,"..\\export\\sent-%02d-%02d-%04d.txt",
                  RWDate().month(),
-                 RWDate().dayOfMonth());
+                 RWDate().dayOfMonth(),
+                 RWDate().year());
 
         // create or open file of the day
         logFileHandle = CreateFile (newFileName,
@@ -254,16 +255,17 @@ bool outputCommandFile (const RWCString &aFileName, int aLineCnt, vector<RWCStri
     HANDLE tmpFileHandle,importFileHandle;
     ULONG fileSize,bytesRead,bytesWritten;
     CHAR *workBuffer;
-    CHAR newFileName[50];
+    CHAR newFileName[100];
     bool copyFailed = true;
     bool retVal = true;
     int cnt=0;
 
     if (aCmdVector.size())
     {
-        sprintf (newFileName,"..\\export\\ctitmp%02d%02d.txt",
+        sprintf (newFileName,"..\\export\\ctitmp%02d%02d%04d.txt",
                  RWDate().month(),
-                 RWDate().dayOfMonth());
+                 RWDate().dayOfMonth(),
+                 RWDate().year());
 
         // create or open file of the day
         tmpFileHandle = CreateFile (newFileName,
