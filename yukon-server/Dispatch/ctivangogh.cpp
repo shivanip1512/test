@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.87 $
-* DATE         :  $Date: 2004/11/18 23:56:08 $
+* REVISION     :  $Revision: 1.88 $
+* DATE         :  $Date: 2004/11/19 17:10:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3156,11 +3156,6 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
                     CtiPendable *pendable = CTIDBG_new CtiPendable(pData->getId(), CtiPendable::CtiPendableAction_ControlStatusChanged);
                     pendable->_tags = pDyn->getDispatch().getTags();
                     pendable->_value = pData->getValue();
-
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
                     _pendingOpThread.push( pendable );
                 }
             }
@@ -6961,10 +6956,6 @@ void CtiVanGogh::checkStatusCommandFail(int alarm, CtiPointDataMsg *pData, CtiMu
 
         pendable->_value = pData->getValue();
         pendable->_tags = tags;
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
         _pendingOpThread.push( pendable );
 
         if(tags & TAG_CONTROL_PENDING)                                          // Are we still awaiting the start of control?
@@ -6996,10 +6987,6 @@ bool CtiVanGogh::addToPendingSet(CtiPendingPointOperations *&pendingOp, RWTime &
 
 bool CtiVanGogh::removePointDataFromPending( LONG pID )
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
     _pendingOpThread.push( CTIDBG_new CtiPendable(pID, CtiPendable::CtiPendableAction_RemovePointData) );
     return true;
 }

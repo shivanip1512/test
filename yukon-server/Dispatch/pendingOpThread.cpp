@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/11/18 23:56:08 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/11/19 17:10:28 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.6  2004/11/19 17:10:28  cplender
+* Control History Getting real close.
+*
 * Revision 1.5  2004/11/18 23:56:08  cplender
 * Control History Getting closer.
 *
@@ -257,9 +260,9 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
 {
     LARGE_INTEGER startTime, completeTime;
     RWTime now;
-    static RWTime cHistTime; //(now.seconds() - (now.seconds() % CntlHistInterval) + CntlHistInterval);
-    static RWTime cStopTime; //(now.seconds() - (now.seconds() % CntlStopInterval) + CntlStopInterval);
-    static RWTime cPostTime; //(now.seconds() - (now.seconds() % CntlHistPointPostInterval) + CntlHistPointPostInterval);
+    static RWTime cHistTime;
+    static RWTime cStopTime;
+    static RWTime cPostTime;
 
     int counter01 = 0;
     int counter02 = 0;
@@ -326,19 +329,10 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                         else if( ppo.getControl().getControlDuration() >= 0 &&
                                  now.seconds() >= ppo.getControl().getStartTime().seconds() + ppo.getControl().getControlDuration())
                         {
-                            /*  Do NOTHING.  CONTROL IS COMPLETE! Don't tally any more time though.. */
-                            if(gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
-                            {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << " Start + control duration are < now not gonna write any more..." << endl;
-                                    dout << " Control ID " << ppo.getControl().getPAOID() << endl;
-                                }
-                            }
-
-                            // it = _pendingControls.erase(it);
-                            // continue;   // iterator has been repositioned!
+                            /*  CONTROL IS COMPLETE!  Time it in. */
+                            updateControlHistory( ppo, CtiPendingPointOperations::datachange, now );    // This will write a 'T' row!
+                            it = _pendingControls.erase(it);
+                            continue;   // iterator has been repositioned!
                         }
                         else if(ppo.getControl().getControlDuration() < 0)
                         {
@@ -351,9 +345,6 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                                     dout << "  Control Duration is less than zero.  This could be a RESTORE." << endl;
                                 }
                             }
-
-                            // it = _pendingControls.erase(it);
-                            // continue;   // iterator has been repositioned!
                         }
                         else
                         {
@@ -457,11 +448,13 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                 dout << RWTime() << " doPendingControls count         = " << _pendingControls.size() << endl;
                 dout << RWTime() << " doPendingControls duration (ms) = " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;
 
+                /*
                 dout << " Counter 01 " << counter01 << endl;
                 dout << " Counter 02 " << counter02 << endl;
                 dout << " Counter 03 " << counter03 << endl;
                 dout << " Counter 04 " << counter04 << endl;
                 dout << " Counter 05 " << counter05 << endl;
+                */
             }
             #endif
 
@@ -518,8 +511,6 @@ void CtiPendingOpThread::doPendingPointData(bool bShutdown)
                             pData->setMessageTime( pOrig->getTime() );
                             pData->setMessagePriority( MAXPRIORITY - 1 );
                             pData->resetTags( TAG_POINT_DELAYED_UPDATE );
-
-                            // ACH // updateControlHistory( pData->getId(), CtiPendingPointOperations::delayeddatamessage, pData->getTime() );
 
                             _pMainQueue->putQueue( pData );    // Plop it out there for processing.
                             pData = 0;
@@ -775,12 +766,16 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
                 {
                     ppc.getControl().incrementTimes( thetime, addnlseconds );
 
-                    if(thetime < ppc.getControl().getControlCompleteTime())         // The control did not run for its full duration.  It must have been manually resotred
+                    if(thetime >= ppc.getControl().getControlCompleteTime())         // The control did not run for its full duration.  It must have been manually resotred
                     {
                         ppc.getControl().setActiveRestore( LMAR_MANUAL_RESTORE );
+                        ppc.setControlState( CtiPendingPointOperations::controlCompleteManual );
+                    }
+                    else
+                    {
+                        ppc.setControlState( CtiPendingPointOperations::controlCompleteTimedIn );
                     }
 
-                    ppc.setControlState( CtiPendingPointOperations::controlCompleteManual );
 
                     insertControlHistoryRow(ppc, __LINE__);
                     postControlHistoryPoints(ppc, true);
@@ -1272,10 +1267,11 @@ bool CtiPendingOpThread::loadICControlMap()
 
 bool CtiPendingOpThread::getICControlHistory( CtiTableLMControlHistory &lmch )
 {
+    RWTime now;
     bool found = false;
     static RWTime lastLoadCheck;
 
-    if(_initialConditionControlHistMap.empty() && (lastLoadCheck + 300 < RWTime()) )        // Not more than once per 5 minutes...
+    if(_initialConditionControlHistMap.empty() && (lastLoadCheck + 300 < now) )        // Not more than once per 5 minutes...
     {
         lastLoadCheck = lastLoadCheck.now();
         loadICControlMap();
@@ -1289,7 +1285,13 @@ bool CtiPendingOpThread::getICControlHistory( CtiTableLMControlHistory &lmch )
         {
             found = true;
 
-            lmch.setStopTime((*itr).second.getStopTime());
+#if 0 // FIX CGP???
+            if(now <= (*itr).second.getStopTime())
+            {
+                lmch.setStopTime((*itr).second.getStopTime());      //
+            }
+#endif
+
             lmch.setCurrentDailyTime((*itr).second.getCurrentDailyTime());
             lmch.setCurrentMonthlyTime((*itr).second.getCurrentMonthlyTime());
             lmch.setCurrentSeasonalTime((*itr).second.getCurrentSeasonalTime());
