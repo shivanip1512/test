@@ -263,16 +263,16 @@ public class WebGraph implements Runnable
 		{
 			try
 			{
-				java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-				createTimeInterval = new Integer(bundle.getString("webgraph_run_interval"));
-				CTILogger.info("RunTime Interval from config.properties: " + createTimeInterval + " seconds.");
+				String temp = ClientSession.getInstance().getRolePropertyValue(
+							WebGraphRole.RUN_INTERVAL, "900" );
+				
+				createTimeInterval = new Integer(temp);
+				CTILogger.info("RunTime Interval set to: " + createTimeInterval + " seconds.");
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
 				createTimeInterval = new Integer(900);
-				CTILogger.info("RunTime Interval NOT found in config.properties, default to: " + createTimeInterval + " seconds.");
-				CTILogger.info("Add row 'webgraph_run_interval' to config.properties.");
+				CTILogger.info("Problems parsing RunTime Interval, default to: " + createTimeInterval + " seconds.");
 			}
 		}
 		return createTimeInterval;
