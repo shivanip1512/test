@@ -1,5 +1,6 @@
 package com.cannontech.dbeditor.editor.device;
 
+import java.util.Vector;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -60,6 +61,31 @@ public class DeviceScanRateEditorPanel extends com.cannontech.common.gui.util.Da
 	private JLabel ivjJLabelhhmm = null;
 	private JLabel ivjJLabelhhmm1 = null;
 	private com.cannontech.common.gui.util.JTextFieldTimeEntry ivjJTextFieldClose = null;
+
+	
+	private static final String[] ALT_SELECTIONS =
+	{
+		"1 second",
+		"2 second",
+		"5 second",
+		"10 second",
+		"15 second",
+		"30 second",
+		"1 minute",
+		"2 minute",
+		"3 minute",
+		"5 minute",
+		"10 minute",
+		"15 minute",
+		"30 minute",
+		"1 hour",
+		"2 hour",
+		"6 hour",
+		"12 hour",
+		"1 day"		
+	};
+
+
 /**
  * Constructor
  */
@@ -651,6 +677,10 @@ private javax.swing.JComboBox getJComboBoxAltAccRate() {
 			ivjJComboBoxAltAccRate.setMinimumSize(new java.awt.Dimension(100, 27));
 			// user code begin {1}
 
+			for( int i = 0; i < ALT_SELECTIONS.length; i++ )
+				ivjJComboBoxAltAccRate.addItem( ALT_SELECTIONS[i] );
+
+
 			//default value
 			updateAltJComboBox( getAccumulatorRateComboBox(), getJComboBoxAltAccRate() );
 			
@@ -677,6 +707,10 @@ private javax.swing.JComboBox getJComboBoxAltHealthChk() {
 			ivjJComboBoxAltHealthChk.setMinimumSize(new java.awt.Dimension(100, 27));
 			// user code begin {1}
 
+			for( int i = 0; i < ALT_SELECTIONS.length; i++ )
+				ivjJComboBoxAltHealthChk.addItem( ALT_SELECTIONS[i] );
+
+
 			//default value
 			updateAltJComboBox( getPeriodicHealthIntervalComboBox(), getJComboBoxAltHealthChk() );
 
@@ -702,6 +736,9 @@ private javax.swing.JComboBox getJComboBoxAltIntegrityRate() {
 			ivjJComboBoxAltIntegrityRate.setPreferredSize(new java.awt.Dimension(100, 27));
 			ivjJComboBoxAltIntegrityRate.setMinimumSize(new java.awt.Dimension(100, 27));
 			// user code begin {1}
+
+			for( int i = 0; i < ALT_SELECTIONS.length; i++ )
+				ivjJComboBoxAltIntegrityRate.addItem( ALT_SELECTIONS[i] );
 
 			//default value
 			updateAltJComboBox( getIntegrityRateComboBox(), getJComboBoxAltIntegrityRate() );
@@ -2124,28 +2161,24 @@ public void setValue(Object val)
  * @param box javax.swing.JComboBox
  * @param altBox javax.swing.JComboBox
  */
-private void updateAltJComboBox(JComboBox box, JComboBox altBox) 
+private void updateAltJComboBox(JComboBox box_, JComboBox altBox_) 
 {
-	int oldAlt = ( altBox.getSelectedIndex() >= 0 
-		 				? altBox.getSelectedIndex() 
-		 				: box.getSelectedIndex() );
+	Object selItem_ = box_.getSelectedItem();
+	altBox_.removeAllItems();
 
-	altBox.removeAllItems();
-
-	if( oldAlt < box.getItemCount() )
+	for( int i = 0; i < ALT_SELECTIONS.length; i++ )
 	{
-		for( int i = 0; i < box.getItemCount(); i++ )
+		if( ALT_SELECTIONS[i].equals(selItem_) )
 		{
-			if( box.getSelectedIndex() == i )
-				altBox.addItem( CtiUtilities.STRING_NONE );
-			else
-				altBox.addItem( box.getItemAt(i) );
-		}
-
-		altBox.setSelectedIndex( oldAlt );
+			altBox_.addItem( CtiUtilities.STRING_NONE );
+			altBox_.setSelectedIndex( i );
+		}		
+		else
+			altBox_.addItem( ALT_SELECTIONS[i] );
 	}
-
+	
 }
+
 /**
  * 
  */
