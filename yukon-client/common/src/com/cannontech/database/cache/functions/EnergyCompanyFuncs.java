@@ -67,4 +67,15 @@ public static LiteYukonUser getEnergyCompanyUser(int energyCompanyID) {
 	return (ec == null ? null : getEnergyCompanyUser(ec));
 }
 
+/**
+ * Returns value of the energy company property
+ * @param user, rolePropertyID
+ * @return String
+ */
+public static String getEnergyCompanyProperty(LiteYukonUser user, int rolePropertyID) {
+	LiteEnergyCompany ec = getEnergyCompany( user );
+	LiteYukonUser ecUser = getEnergyCompanyUser( ec );
+	return AuthFuncs.getRolePropertyValue( ecUser, rolePropertyID );
+}
+
 }
