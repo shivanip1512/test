@@ -1718,6 +1718,17 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
 {
     RWCollectable::saveGuts( ostrm );
 
+    DOUBLE temppowerfactorvalue = _powerfactorvalue;
+    DOUBLE tempestimatedpowerfactorvalue = _estimatedpowerfactorvalue;
+    if( _powerfactorvalue > 1 )
+    {
+        temppowerfactorvalue = _powerfactorvalue - 2;
+    }
+    if( _estimatedpowerfactorvalue > 1 )
+    {
+        tempestimatedpowerfactorvalue = _estimatedpowerfactorvalue - 2;
+    }
+
     ostrm << _paoid
     << _paocategory
     << _paoclass
@@ -1745,9 +1756,9 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _lastoperationtime.rwtime()
     << _varvaluebeforecontrol
     << _lastcapbankcontrolleddeviceid
-    << _powerfactorvalue
+    << temppowerfactorvalue
     << _kvarsolution
-    << _estimatedpowerfactorvalue;
+    << tempestimatedpowerfactorvalue;
     ostrm << _cccapbanks.entries();
     for(UINT i=0;i<_cccapbanks.entries();i++)
     {

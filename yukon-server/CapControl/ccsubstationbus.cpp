@@ -2674,6 +2674,17 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
 {
     RWCollectable::saveGuts( ostrm );
 
+    DOUBLE temppowerfactorvalue = _powerfactorvalue;
+    DOUBLE tempestimatedpowerfactorvalue = _estimatedpowerfactorvalue;
+    if( _powerfactorvalue > 1 )
+    {
+        temppowerfactorvalue = _powerfactorvalue - 2;
+    }
+    if( _estimatedpowerfactorvalue > 1 )
+    {
+        tempestimatedpowerfactorvalue = _estimatedpowerfactorvalue - 2;
+    }
+
     ostrm << _paoid
     << _paocategory
     << _paoclass
@@ -2716,9 +2727,9 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _varvaluebeforecontrol
     << _lastfeedercontrolledpaoid
     << _lastfeedercontrolledposition
-    << _powerfactorvalue
+    << temppowerfactorvalue
     << _kvarsolution
-    << _estimatedpowerfactorvalue
+    << tempestimatedpowerfactorvalue
     << _ccfeeders;
 }
 
