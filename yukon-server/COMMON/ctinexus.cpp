@@ -427,12 +427,11 @@ INT CTINEXUS::CTINexusWrite(VOID *buf, ULONG len, PULONG BytesWritten, LONG Time
                     }
                     else
                     {
-                        if( !(wbLoops % 60) )  //  gripe every 30 seconds
+                        if( !(++wbLoops % 60) )  //  gripe every 30 seconds
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " Outbound socket full, will wait and retry. " << endl;
                         }
-                        wbLoops++;
                         Sleep(500);
                     }
 
@@ -453,6 +452,12 @@ INT CTINEXUS::CTINexusWrite(VOID *buf, ULONG len, PULONG BytesWritten, LONG Time
                 now = now.now();
 
             } while(((nReason == WSAEWOULDBLOCK && now < wbtime) || now < then) && len > 0);
+
+            if(wbLoops > 60)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Outbound socket write (was blocked) complete. " << wbLoops / 2 << endl;
+            }
         }
         else
         {
