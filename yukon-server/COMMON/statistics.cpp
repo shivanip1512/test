@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/06/03 20:24:10 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/06/03 20:28:57 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -413,7 +413,7 @@ int CtiStatistics::get(int counter, int index ) const
 
 RWCString CtiStatistics::getTableName()
 {
-    return RWCString("DeviceStatistics");
+    return RWCString("PaoStatistics");
 }
 
 RWDBStatus::ErrorCode CtiStatistics::Restore()
@@ -432,7 +432,7 @@ RWDBStatus::ErrorCode CtiStatistics::Restore()
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBSelector selector = getDatabase().selector();
 
-    selector << table["deviceid"]
+    selector << table["paobjectid"]
     << table["statistictype"]
     << table["requests"]
     << table["completions"]
@@ -443,7 +443,7 @@ RWDBStatus::ErrorCode CtiStatistics::Restore()
     << table["startdatetime"]
     << table["stopdatetime"];
 
-    selector.where( table["deviceid"] == getID() );
+    selector.where( table["paobjectid"] == getID() );
 
     dbstat = selector.execute().status();
 
@@ -557,7 +557,7 @@ RWDBStatus::ErrorCode  CtiStatistics::Update(RWDBConnection &conn)
     for(int i = 0; i < FinalCounterSlot && stat.errorCode() == RWDBStatus::ok; i++)
     {
         updater <<
-        table["deviceid"].assign(getID()) <<
+        table["paobjectid"].assign(getID()) <<
         table["statistictype"].assign(getCounterName( i )) <<
         table["requests"].assign(_counter[i].get( Requests )) <<
         table["completions"].assign(_counter[i].get( Completions )) <<
@@ -568,7 +568,7 @@ RWDBStatus::ErrorCode  CtiStatistics::Update(RWDBConnection &conn)
         table["startdatetime"].assign(RWDBDateTime(_startStopTimePairs[i].first)) <<
         table["stopdatetime"].assign(RWDBDateTime(_startStopTimePairs[i].second));
 
-        updater.where( table["deviceid"] == getID() && table["statistictype"] == getCounterName( i ));
+        updater.where( table["paobjectid"] == getID() && table["statistictype"] == getCounterName( i ));
 
         stat = updater.execute(conn).status();
 
