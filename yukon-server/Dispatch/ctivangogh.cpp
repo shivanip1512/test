@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.96 $
-* DATE         :  $Date: 2005/02/10 23:23:49 $
+* REVISION     :  $Revision: 1.97 $
+* DATE         :  $Date: 2005/02/18 14:38:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,6 +65,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "tbl_commerrhist.h"
 #include "tbl_ptdispatch.h"
 #include "tbl_pt_alarm.h"
+#include "thread_monitor.h"
 
 #include "mgr_ptclients.h"
 #include "dlldefs.h"
@@ -317,6 +318,7 @@ void CtiVanGogh::VGMainThread()
         ConnThread_ = rwMakeThreadFunction(*this, &CtiVanGogh::VGConnectionHandlerThread);
         ConnThread_.start();
 
+        ThreadMonitor.start();
 
         // SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
         CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
@@ -403,8 +405,8 @@ void CtiVanGogh::VGMainThread()
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                                         dout << RWTime() << " The last message took more than 5 sec to process in dispatch " << endl;
-                                        if(pExec->getMessage())
-                                            pExec->getMessage()->dump();
+                                        //if(pExec->getMessage())
+                                        //    pExec->getMessage()->dump();
                                     }
                                 }
                             }
@@ -475,6 +477,7 @@ void CtiVanGogh::VGMainThread()
                         ConnThread_.start();
                     }
                 }
+            }
 
 
                 if(!(++sanity % SANITY_RATE))
@@ -485,9 +488,12 @@ void CtiVanGogh::VGMainThread()
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " VG Main Thread Active " << endl;
                     }
-                }
 
+                CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "VG Main Thread", CtiThreadRegData::None, 300 );
+                ThreadMonitor.tickle( data );
             }
+
+
 
             Count = 0;
             if(PeekConsoleInput(hStdIn, &inRecord, 1L, &Count) && (Count > 0))     // There is something there if we succeed.
@@ -551,22 +557,7 @@ void CtiVanGogh::VGMainThread()
             }
         }
 
-        shutdown();                   // Shutdown the server object.
-
-        PointMgr.storeDirtyRecords();
-        PointMgr.DeleteList();
-
-        ConnThread_.join();            // Wait for the Conn thread to die.
-
-        _rphThread.join();
-        _archiveThread.join();
-        _timedOpThread.join();
-        _dbThread.join();
-        _dbSigThread.join();
-        _dbSigEmailThread.join();
-
-        _pendingOpThread.interrupt(CtiThread::SHUTDOWN);
-        _pendingOpThread.join();
+        stopDispatch();
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -586,20 +577,8 @@ void CtiVanGogh::VGMainThread()
             dout << "**** MAIN JUST DIED **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        shutdown();
         bQuit = TRUE;
-
-        PointMgr.storeDirtyRecords();
-        PointMgr.DeleteList();
-
-        ConnThread_.join();            // Wait for the Conn thread to die.
-
-        _rphThread.join();
-        _archiveThread.join();
-        _timedOpThread.join();
-        _dbThread.join();
-        _dbSigThread.join();
-        _dbSigEmailThread.join();
+        stopDispatch();
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1417,7 +1396,7 @@ void CtiVanGogh::VGTimedOperationThread()
     {
         for(;!bGCtrlC;)
         {
-            if(!(++sanity % (SANITY_RATE / 5)))
+            if(!(++sanity % SANITY_RATE))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -7067,3 +7046,27 @@ void CtiVanGogh::queueSignalToSystemLog( CtiSignalMsg *&pSig )
 }
 
 
+void CtiVanGogh::stopDispatch()
+{
+    RWWaitStatus rwwait;
+
+    shutdown();                   // Shutdown the server object.
+
+    // Interrupt the CtiThread based threads.
+    _pendingOpThread.interrupt(CtiThread::SHUTDOWN);
+    ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
+
+    if(RW_THR_TIMEOUT == ConnThread_.join(30000)) ConnThread_.terminate();
+    _pendingOpThread.join();
+    if(RW_THR_TIMEOUT == _rphThread.join(30000)) _rphThread.terminate();
+    if(RW_THR_TIMEOUT == _archiveThread.join(30000)) _archiveThread.terminate();
+    if(RW_THR_TIMEOUT == _timedOpThread.join(30000)) _timedOpThread.terminate();
+    if(RW_THR_TIMEOUT == _dbThread.join(30000)) _dbThread.terminate();
+    if(RW_THR_TIMEOUT == _dbSigThread.join(30000)) _dbSigThread.terminate();
+    if(RW_THR_TIMEOUT == _dbSigEmailThread.join(30000)) _dbSigEmailThread.terminate();
+    ThreadMonitor.join();
+
+    PointMgr.storeDirtyRecords();
+    PointMgr.DeleteList();
+
+}
