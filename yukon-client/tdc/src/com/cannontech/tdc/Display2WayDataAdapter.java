@@ -563,9 +563,9 @@ private void decrementAlarmedRowsPosition(int decValue, int rowNumber)
 				AlarmingRow alRow = ((AlarmingRow)getAlarmingRowVector().elementAt(i));
 				if( alRow.getRowNumber() > rowNumber )
 					alRow.subtractOffset( decValue );
-			}
+			}		
 		}
-	}			
+	}	
 }
 /**
  * Insert the method's description here.
@@ -1486,7 +1486,7 @@ public boolean isRowInAlarmVector( int rowNumber )
  
 public boolean isRowSelectedBlank( int location )
 {
-	if( getRows().size() > 0 && location >= 0 )
+	if( location < getRows().size() && location >= 0 )
 	{
 		if( getPointID( location ) == TDCDefines.ROW_BREAK_ID )
 			return true;
@@ -1724,7 +1724,7 @@ public void removeAllRows()
  * Version: <version>
  * @param rowNumber int
  */
-public void removeRow( int rowNumber ) 
+private void removeRow( int rowNumber ) 
 {
 	if( pointValues == null || rowNumber < 0 || rowNumber >= getRowCount() )
 		return;
@@ -1739,9 +1739,17 @@ public void removeRow( int rowNumber )
 	pointValues.removeElementAt( rowNumber );
 	getRows().removeElementAt( rowNumber );
 
-
 	forcePaintTableRowDeleted( rowNumber );
+
+	//if there is a blank row here row, remove it
+	if( isRowSelectedBlank(rowNumber) )
+	{
+		removeRow( rowNumber );
+		forcePaintTableRowDeleted( rowNumber );
+	}
+	
 }
+
 /**
  * This method was created in VisualAge.
  */
