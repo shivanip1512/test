@@ -5,7 +5,7 @@ package com.cannontech.graph.buffer.html;
  * Creation date: (1/31/2001 1:35:28 PM)
  * @author: 
  */
-import com.cannontech.graph.model.TrendSerie;
+
 //import com.cannontech.graph.GraphDataFormats;
 
 public class PeakHtml extends HTMLBuffer
@@ -93,7 +93,7 @@ public StringBuffer getHtml(StringBuffer buf)
 		//List all graph points
 		for( int i = 0; i < model.getTrendSeries().length; i++ )
 		{
-			if( model.getTrendSeries()[i].getPointId() != model.getTrendSeries()[(int)peakPointIndex].getPointId() && 
+			if( model.getTrendSeries()[i].getPointId().intValue() != model.getTrendSeries()[(int)peakPointIndex].getPointId().intValue() && 
 				model.getTrendSeries()[i].getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES) )
 			{
 				buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#999966\" class=\"HeaderCell\"><CENTER><B><FONT SIZE=\"-1\" FACE=\"Arial\">");
@@ -144,7 +144,7 @@ public StringBuffer getHtml(StringBuffer buf)
 			for( int j = 0; j < model.getTrendSeries().length; j++ )
 			{
 					
-				if( model.getTrendSeries()[j].getPointId() != model.getTrendSeries()[(int)peakPointIndex].getPointId() && 
+				if( model.getTrendSeries()[j].getPointId().intValue() != model.getTrendSeries()[(int)peakPointIndex].getPointId().intValue() && 
 					model.getTrendSeries()[j].getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES))
 				{
 					// Set the number of decimal places that are displayed for each point (series).
@@ -188,7 +188,7 @@ public StringBuffer getHtml(StringBuffer buf)
 		buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#CCCC99\" class=\"TableCell\"><CENTER><FONT SIZE=\"-1\" FACE=\"Arial\">N/A</FONT></CENTER></TD>\r\n");
 		for( int i = 0; i < model.getTrendSeries().length; i++ )
 		{
-			if( model.getTrendSeries()[i].getPointId() != model.getTrendSeries()[(int)peakPointIndex].getPointId() && 
+			if( model.getTrendSeries()[i].getPointId().intValue() != model.getTrendSeries()[(int)peakPointIndex].getPointId().intValue() && 
 				model.getTrendSeries()[i].getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES) )
 			{
 		buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#CCCC99\" class=\"TableCell\"><CENTER><FONT SIZE=\"-1\" FACE=\"Arial\">N/A</FONT></CENTER></TD>\r\n");
