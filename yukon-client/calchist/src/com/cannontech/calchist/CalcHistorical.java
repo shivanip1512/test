@@ -1235,25 +1235,6 @@ public void writeMultiMessage(Vector pointDataMsgVector, int pointID)
 		}
 	}
 
-//	if( calcComponentVector != null)	
-//		calcComponentVector.clear();
-
-	if (getDispatchConnection().isValid())
-	{
-		Object msg = getDispatchConnection().read(0);
-		if (msg != null)
-		{
-			if (msg instanceof Command)
-			{
-				if (((Command) msg).getOperation() == Command.ARE_YOU_THERE)
-				{
-					com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Echoing -Are You There- message back to Dispatch.");
-					logEvent("Echoing -Are You There- message back to Dispatch.", com.cannontech.common.util.LogWriter.INFO);
-					getDispatchConnection().write(msg);
-				}
-			}
-		}
-	}
 	//com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "] EXIT writeMultiMsg");
 }
 }
