@@ -129,12 +129,40 @@ INT CTIGetLastError(VOID)
 }
 
 
+bool CTINEXUS::CTINexusIsSocketError(INT Error)
+{
+    return (10000 < Error && Error <= 10099);
+}
+
+bool CTINEXUS::CTINexusIsFatalSocketError(INT Error)
+{
+    bool err = false;
+
+    if(CTINexusIsSocketError(Error))
+    {
+        switch(Error)
+        {
+        case WSAEWOULDBLOCK:
+            {
+                break;
+            }
+        default:
+            {
+                err = true;
+                break;
+            }
+        }
+    }
+
+    return err;
+}
+
 INT  CTINEXUS::CTINexusReportError(CHAR *Label, INT Line, INT Error) const
 {
     CtiLockGuard<CtiLogger> doubt_guard(dout);
     dout << RWTime() << " Socket " << sockt;
 
-    if(Error > 10000 && Error <= 10099)
+    if(CTINexusIsSocketError(Error))
     {
         dout << "   ERROR: " << Label << " (" << Line << "): " << Error << " -> " << CTINexusErrors[Error - 10000] << endl;
     }
@@ -463,7 +491,7 @@ INT CTINEXUS::CTINexusWrite(VOID *buf, ULONG len, PULONG BytesWritten, LONG Time
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "   A send was attempted to an invalid socket handle." << endl;
+                dout << "   A send was attempted to an invalid socket handle.  " << endl;
             }
 
             nReason = BADSOCK;

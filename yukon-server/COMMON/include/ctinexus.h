@@ -27,7 +27,7 @@
 #define  CAPCONTROLNEXUS                                    (NEXUSBASE + 410)
 #define  LOADMANAGEMENTNEXUS                                (NEXUSBASE + 420)
 
-#define  PORTSHARENEXUS                                     (NEXUSBASE + 430)  
+#define  PORTSHARENEXUS                                     (NEXUSBASE + 430)
 //  Next allocation should start at NEXUSBASE+530 to allow for 100 shared ports
 
 
@@ -80,6 +80,8 @@ public:
    INT CTINexusFlushInput   ();
 
    bool CTINexusValid() const;
+   static bool CTINexusIsSocketError(INT Error);
+   static bool CTINexusIsFatalSocketError(INT Error);
 
 };
 
