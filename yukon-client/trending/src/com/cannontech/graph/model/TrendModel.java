@@ -312,6 +312,38 @@ private int getSecondaryDatasetCount()
 	return count;
 }
 
+private void addRangeMarkers(Plot plot)
+{
+	for( int i = 0; i < getTrendSeries().length; i++)
+	{
+		TrendSerie serie = getTrendSeries()[i];
+		if( GraphDataSeries.isThresholdType(serie.getTypeMask()))
+		{
+			// add a labelled marker for the bid start price...
+			org.jfree.chart.Marker threshold = new org.jfree.chart.Marker(serie.getMultiplier().doubleValue(), serie.getColor());
+			threshold.setLabel(serie.getMultiplier().toString());
+			if( serie.getAxis().equals(axisChars[PRIMARY]))
+			{
+				if( plot instanceof XYPlot)
+					((XYPlot)plot).addRangeMarker(threshold);
+				else if( plot instanceof CategoryPlot)
+					((CategoryPlot)plot).addRangeMarker(threshold);
+					
+				threshold.setLabelPosition(org.jfree.chart.MarkerLabelPosition.TOP_LEFT);					
+			}
+			else
+			{
+				if( plot instanceof XYPlot)
+					((XYPlot)plot).addSecondaryRangeMarker(threshold);
+				else if( plot instanceof CategoryPlot)
+					((CategoryPlot)plot).addSecondaryRangeMarker(threshold);
+					
+				threshold.setLabelPosition(org.jfree.chart.MarkerLabelPosition.TOP_RIGHT);					
+			}
+		}
+	}
+//	return plot;	 
+}
 private java.awt.Paint[] getSeriesPaint(int datasetIndex)
 {
 	java.awt.Paint[] paint = null;
@@ -1075,7 +1107,7 @@ public JFreeChart refresh(int newRendererType)
 			rend.setSeriesPaint(i, seriesPaint[i]);
 		
 		plot = new XYPlot( (XYDataset)getPrimaryDataset(), (ValueAxis)getDomainAxis(), getPrimaryRangeAxis(), rend);
-		
+
 		//Attempt to do multiple axis
 		if(getDatasetCount(SECONDARY) > 0)
 		{
@@ -1209,7 +1241,7 @@ public JFreeChart refresh(int newRendererType)
 	{
 		return null;
 	}
-
+	addRangeMarkers(plot);
 	JFreeChart fChart = null;
 	fChart = new JFreeChart(plot);
 

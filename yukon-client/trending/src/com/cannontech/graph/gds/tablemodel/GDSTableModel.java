@@ -157,6 +157,9 @@ public Object getGDSAttribute(int index, com.cannontech.database.db.graph.GraphD
 					if( pt.getPointID() == id.intValue() )
 						return pt.getPointName();	
 				}
+				//must not have found it so we'll try some predefined points too.
+				if( id.intValue() == com.cannontech.database.data.point.PointTypes.SYS_PID_THRESHOLD)
+					return "Threshold";
 			}
 		break;
 		case LABEL_NAME_COLUMN:

@@ -7,9 +7,12 @@ package com.cannontech.graph;
  * @author: 
  */
 import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.graph.gds.tablemodel.GDSTableModel;
-public class CreateGraphPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener {
+public class CreateGraphPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener{
 	public static final int OK = 1;
 	public static final int CANCEL = 2;
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
@@ -73,6 +76,26 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	{
 		addGDS_ActionPerformed(getTreeViewPanel().getSelectedNode());
 	}
+	
+	else if ( event.getSource() == getThresholdsButton())
+	{
+		String value = javax.swing.JOptionPane.showInputDialog(
+			this, "Enter the value for your Threshold.\n(Threshold values are visible only when inclusive of trended data.)", "Threshold Value",
+			javax.swing.JOptionPane.QUESTION_MESSAGE );
+	
+		if( value != null )
+		{
+			LitePoint pt = new LitePoint(PointTypes.SYS_PID_THRESHOLD);
+			pt.retrieve(CtiUtilities.getDatabaseAlias());
+									
+			// Create the GDS to add in the tables.
+			GraphDataSeries gds = createGDS(pt, null);
+			gds.setMultiplier(new Double(value));
+			GDSTableModel model = (GDSTableModel) getGraphGDSTable().getModel();
+			model.addRow( gds );
+		}
+	
+	}
 }
 /**
  * Comment
@@ -135,14 +158,19 @@ private void connEtoM1(javax.swing.event.CaretEvent arg1) {
  * @param point com.cannontech.database.data.lite.LitePoint
  * @param deviceName java.lang.String
  */
-public com.cannontech.database.db.graph.GraphDataSeries createGDS(com.cannontech.database.data.lite.LitePoint point, String deviceName)
+public GraphDataSeries createGDS(com.cannontech.database.data.lite.LitePoint point, String deviceName)
 {
-	com.cannontech.database.db.graph.GraphDataSeries gds = new com.cannontech.database.db.graph.GraphDataSeries();
-	
-	gds.setDeviceName( deviceName );
+	GraphDataSeries gds = new GraphDataSeries();
 	gds.setPointID(new Integer( point.getPointID() ));
 	
-	String gdsLabel = point.getPointName() + " / " + gds.getDeviceName();
+	String gdsLabel = point.getPointName();
+	if( deviceName == null)
+	{
+		gds.setDeviceName( "System Device" );
+	}
+	else
+		gdsLabel += " / " + deviceName;
+	
 	if (gdsLabel.length() > 40)
 		gdsLabel = gdsLabel.substring(0, 39);
 	gds.setLabel(gdsLabel);
@@ -546,7 +574,8 @@ private javax.swing.JTable getGraphGDSTable() {
 				GraphDataSeries.USAGE_TYPE_STRING,
 				GraphDataSeries.YESTERDAY_GRAPH_TYPE_STRING,
 				GraphDataSeries.PEAK_GRAPH_TYPE_STRING,
-				GraphDataSeries.USAGE_GRAPH_TYPE_STRING
+				GraphDataSeries.USAGE_GRAPH_TYPE_STRING,
+				GraphDataSeries.THRESHOLD_TYPE_STRING
 			};
 			javax.swing.JComboBox typeComboBox = new javax.swing.JComboBox(typeStrings);
 			javax.swing.DefaultCellEditor typeEditor = new javax.swing.DefaultCellEditor(typeComboBox);
@@ -794,15 +823,19 @@ private javax.swing.JPanel getPointOptionsPanel() {
  * @return java.lang.String
  * @param pt com.cannontech.database.data.lite.LitePoint
  */
-public String getPointTypeString(com.cannontech.database.data.lite.LitePoint pt)
+public String getPointTypeString(LitePoint pt)
 {
-	if( pt.getTags() == com.cannontech.database.data.lite.LitePoint.POINT_UOFM_GRAPH)
-		return com.cannontech.database.db.graph.GraphDataSeries.BASIC_GRAPH_TYPE_STRING;
+	if( pt.getPointID() == PointTypes.SYS_PID_THRESHOLD)
+		return GraphDataSeries.THRESHOLD_TYPE_STRING;
 
-	else if (pt.getTags() == com.cannontech.database.data.lite.LitePoint.POINT_UOFM_USAGE)
-		return com.cannontech.database.db.graph.GraphDataSeries.USAGE_TYPE_STRING;
+	else if( pt.getTags() == LitePoint.POINT_UOFM_GRAPH)
+		return GraphDataSeries.BASIC_GRAPH_TYPE_STRING;
+
+	else if (pt.getTags() == LitePoint.POINT_UOFM_USAGE)
+		return GraphDataSeries.USAGE_TYPE_STRING;
+	
 	else
-		return com.cannontech.database.db.graph.GraphDataSeries.BASIC_GRAPH_TYPE_STRING;	//default
+		return GraphDataSeries.BASIC_GRAPH_TYPE_STRING;	//default
 }
 /**
  * Return the PrimaryPointComboBox property value.
@@ -894,9 +927,9 @@ private javax.swing.JButton getThresholdsButton() {
 			ivjThresholdsButton.setText("Add Thresholds...");
 			ivjThresholdsButton.setMaximumSize(new java.awt.Dimension(173, 25));
 			ivjThresholdsButton.setPreferredSize(new java.awt.Dimension(173, 25));
-			ivjThresholdsButton.setEnabled(false);
 			ivjThresholdsButton.setMinimumSize(new java.awt.Dimension(173, 25));
 			// user code begin {1}
+			ivjThresholdsButton.addActionListener(this);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
