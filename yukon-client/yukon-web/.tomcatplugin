@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tomcatProjectProperties>
-    <rootDir>/</rootDir>
+    <rootDir>/WebContent</rootDir>
     <exportSource>false</exportSource>
     <reloadable>true</reloadable>
     <redirectLogger>false</redirectLogger>
@@ -8,30 +8,39 @@
     <warLocation></warLocation>
     <webPath></webPath>
     <webClassPathEntries>
-        <webClassPathEntry>D:\eclipse\head\cbc\bin</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\common\bin</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\dbeditor\bin</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\esub\bin</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\loadcontrol\bin</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\macs\bin</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\servlet\bin</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\stars\bin</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\tdc\bin</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\log4j-1.2.4.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\SqlServer.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\acme.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\batik.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\castor-xml.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\classes12.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\rwav.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\xerces.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\trending\bin</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\yukon-web\WEB-INF\lib\web.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\yukonappserver\bin</webClassPathEntry>
-        <webClassPathEntry>D:\j2sdk1.4.1\jre\lib\rt.jar</webClassPathEntry>
-        <webClassPathEntry>D:\j2sdk1.4.1\lib\tools.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\jaxm-api.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\jaxm-client.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\jtds.jar</webClassPathEntry>
+        <webClassPathEntry>/cbc/bin</webClassPathEntry>
+        <webClassPathEntry>/common/bin</webClassPathEntry>
+        <webClassPathEntry>/tdc/bin</webClassPathEntry>
+        <webClassPathEntry>/third-party/SqlServer.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/acme.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/batik.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/castor-xml.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/classes12.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/ejbonly.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/jaxm-api.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/jaxm-client.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/jcchart401K.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/jcfield401K.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/jcommon.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/jcpagelayout450K.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/jfreechart.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/jloox30.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/jradius-client.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/jtds.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/led.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/log4j-1.2.4.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/mx4j-jmx.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/poi.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/rwav.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/struts.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/xerces.jar</webClassPathEntry>
+        <webClassPathEntry>/trending/bin</webClassPathEntry>
+        <webClassPathEntry>/yukonappserver/bin</webClassPathEntry>
+        <webClassPathEntry>/esub/bin</webClassPathEntry>
+        <webClassPathEntry>/servlet/bin</webClassPathEntry>
+        <webClassPathEntry>/stars/bin</webClassPathEntry>
+        <webClassPathEntry>/commander/bin</webClassPathEntry>
+        <webClassPathEntry>/loadcontrol/bin</webClassPathEntry>
+        <webClassPathEntry>/billing/bin</webClassPathEntry>
     </webClassPathEntries>
 </tomcatProjectProperties>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence>
+    <jsp-scripting>
+        <session>
+            <variable name="YUKON_USER" type="com.cannontech.database.data.lite.LiteYukonUser"/>
+            <variable name="lastSubID" type="java.lang.Integer"/>
+        </session>
+        <application>
+            <variable name="CBCConnection" type="com.cannontech.servlet.CBCConnServlet"/>
+        </application>
+        <request id="/web-cbc/WebContent/capcontrol/Xsubs.jsp"/>
+        <request id="/web-cbc/WebContent/capcontrol/cbctemplate.jtpl"/>
+    </jsp-scripting>
+    <beanData>
+        <bean id="/web-cbc/WebContent/Xsubs.jsp" type="com.cannontech.cbc.web.CapControlWebAnnex">
+            <collectionProperty name="areaNames">
+                <contains type="java.lang.Object"/>
+            </collectionProperty>
+        </bean>
+        <bean id="/web-cbc/WebContent/capcontrol/Xsubs.jsp" type="com.cannontech.cbc.web.CapControlWebAnnex">
+            <collectionProperty name="rows">
+                <contains type="com.cannontech.yukon.cbc.SubBus"/>
+            </collectionProperty>
+        </bean>
+        <bean id="/web-cbc/WebContent/capcontrol/cbctemplate.jtpl" type="com.cannontech.cbc.web.CapControlWebAnnex">
+            <collectionProperty name="rows">
+                <contains type="com.cannontech.yukon.cbc.SubBus"/>
+            </collectionProperty>
+            <collectionProperty name="areaNames">
+                <contains type="java.lang.String"/>
+            </collectionProperty>
+        </bean>
+        <bean id="/web-cbc/WebContent/capcontrol/cbctemplate.jtpl" type="com.cannontech.yukon.cbc.SubBus">
+            <collectionProperty name="ccFeeders">
+                <contains type="com.cannontech.yukon.cbc.Feeder"/>
+            </collectionProperty>
+        </bean>
+        <bean id="/web-cbc/WebContent/capcontrol/Xfeeders.jsp" type="com.cannontech.cbc.web.CapControlWebAnnex">
+            <collectionProperty name="rows">
+                <contains type="com.cannontech.yukon.cbc.Feeder"/>
+            </collectionProperty>
+        </bean>
+    </beanData>
+</persistence>

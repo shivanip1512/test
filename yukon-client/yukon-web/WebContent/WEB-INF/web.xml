@@ -1,8 +1,10 @@
-<?xml version="1.0"  encoding="iso-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
-<web-app>
+<web-app id="WebApp">
 	<display-name>Yukon Web Application</display-name>
 	<description>The Yukon web application</description>
+
+
 	<filter>
 		<filter-name>timerFilter</filter-name>
 		<filter-class>com.cannontech.esub.web.filter.TimerFilter</filter-class>
@@ -48,6 +50,22 @@
 		<filter-name>imageFilter</filter-name>
 		<url-pattern>/capcontrol/oneline/*</url-pattern>
 	</filter-mapping>
+
+
+
+	<listener>
+		<listener-class>com.sun.faces.config.ConfigureListener</listener-class>
+	</listener>	
+	<servlet>
+		<servlet-name>Faces Servlet</servlet-name>
+		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>JS Resource Servlet</servlet-name>
+		<servlet-class>com.ibm.faces.webapp.JSResourceServlet</servlet-class>
+		<load-on-startup>-1</load-on-startup>
+	</servlet>
+	
 	
 	<servlet>
 		<servlet-name>LoginController</servlet-name>
@@ -277,7 +295,16 @@
 	    <servlet-name>DynamicJNLPServlet</servlet-name>
 		<url-pattern>*.jnlp</url-pattern>
 	</servlet-mapping>
-
+	
+	
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>/f/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>JS Resource Servlet</servlet-name>
+		<url-pattern>/.ibmjsfres/*</url-pattern>
+	</servlet-mapping>
 	<session-config>
 		<session-timeout>60</session-timeout>
 	</session-config>
@@ -296,8 +323,11 @@
 	<mime-mapping>
 		<extension>svgz</extension>
 		<mime-type>image/svg+xml</mime-type>
-	</mime-mapping>
+	</mime-mapping>	
+
 	<welcome-file-list>
 		<welcome-file>login.jsp</welcome-file>
 	</welcome-file-list>
+
+	
 </web-app>
