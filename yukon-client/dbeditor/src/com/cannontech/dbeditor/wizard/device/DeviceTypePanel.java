@@ -67,7 +67,7 @@ public class DeviceTypePanel extends com.cannontech.common.gui.util.DataInputPan
 									PAOGroups.STRING_QUANTUM[0],
 									PAOGroups.STRING_VECTRON[0],
 									PAOGroups.STRING_SIXNET[0]
-									
+
 								},								
 								{	//RTUs
                            PAOGroups.STRING_DAVIS_WEATHER[0],

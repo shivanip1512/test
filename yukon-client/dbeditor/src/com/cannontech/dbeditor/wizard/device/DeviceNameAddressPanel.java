@@ -460,13 +460,13 @@ public Object getValue(Object val)
    {
 		((IDLCBase)device).getDeviceIDLCRemote().setAddress( address );	
    }
+   else if( val instanceof Ion7700 )
+   {
+      ((Ion7700)val).getDeviceDNP().setSlaveAddress( address );
+   }
    else if( val instanceof DNPBase )
    {
       ((DNPBase)val).getDeviceDNP().setMasterAddress( address );
-   }
-   else if( val instanceof Ion7700 )
-   {
-      ((Ion7700)val).getDeviceDNP().setMasterAddress( address );
    }
    else if( val instanceof CarrierBase )
 	{
@@ -627,6 +627,8 @@ public void setDeviceType(int newDeviceType)
 
    if( DeviceTypesFuncs.hasMasterAddress(deviceType) )
       getPhysicalAddressLabel().setText("Master Address:");
+   else if( DeviceTypesFuncs.hasSlaveAddress(deviceType) )
+      getPhysicalAddressLabel().setText("Slave Address:");
    else if( deviceType == com.cannontech.database.data.pao.DeviceTypes.MCTBROADCAST )
       getPhysicalAddressLabel().setText("Lead Meter Address:");
    else

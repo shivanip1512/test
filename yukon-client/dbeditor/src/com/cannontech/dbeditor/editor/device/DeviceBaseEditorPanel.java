@@ -1350,7 +1350,7 @@ public Object getValue(Object val)
 		else
 			((RemoteBase)val).getDeviceDialupSettings().setPhoneNumber(null);
 
-      if( DeviceTypesFuncs.hasMasterAddress(devType) ) //val instanceof DNPBase 
+      if( val instanceof DNPBase ) //DeviceTypesFuncs.hasMasterAddress(devType) ) 
       {
          DNPBase dnp = (DNPBase)val;
          try

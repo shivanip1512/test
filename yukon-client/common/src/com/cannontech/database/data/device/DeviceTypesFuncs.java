@@ -51,6 +51,22 @@ public final static boolean hasMasterAddress(int intType)
    switch( intType )
    {
       case RTU_DNP:
+         return true;
+      default:
+         return false;
+   }
+}
+
+/**
+ * This method was created in VisualAge.
+ * @return boolean
+ * @param type java.lang.String
+ */
+public final static boolean hasSlaveAddress(int intType) 
+{
+
+   switch( intType )
+   {
       case ION_7700:
       case ION_7330:
       case ION_8300:

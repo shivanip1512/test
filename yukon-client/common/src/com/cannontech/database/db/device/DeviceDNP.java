@@ -13,7 +13,7 @@ import com.cannontech.database.db.DBPersistent;
 public class DeviceDNP extends DBPersistent
 {
    private Integer deviceID = null;
-   private Integer masterAddress = new Integer(0);
+   private Integer masterAddress = new Integer(1);
    private Integer slaveAddress = new Integer(0);
    private Integer postCommWait = new Integer(0);
 

@@ -479,7 +479,7 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
 			else if (val instanceof ICapBankController )
 				 ((ICapBankController) val).assignAddress( new Integer(getAddressTextField().getText()) );
 			else if (val instanceof Ion7700)
-				 ((Ion7700) val).assignAddress( new Integer(getAddressTextField().getText()) );
+				 ((Ion7700) val).getDeviceDNP().setSlaveAddress( new Integer(getAddressTextField().getText()) );
 			else //didn't find it
 				throw new Error("Unable to determine device type when attempting to set the address");
 		}
@@ -822,6 +822,9 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
    
       if( val instanceof IEDMeter )
          getJTextFieldMeterNumber().setText( ((IEDMeter)val).getDeviceMeterGroup().getMeterNumber().toString() );
+
+      if( val instanceof Ion7700 )
+         getPhysicalAddressLabel().setText("Slave Address:");
    
       if( val instanceof ICapBankController )
       {
