@@ -250,6 +250,7 @@ typedef enum {
 
 } CtiClientRequest_t;
 
+/*
 typedef enum {
    NumericOffset = 0,
    KwhOffset,
@@ -260,6 +261,6 @@ typedef enum {
    InvalidOffset
 
 } CtiValueAlias_t;
-
+*/
 
 #endif // #ifndef __CMDPARSE_H__
