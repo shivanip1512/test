@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2003/04/02 16:38:10 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2003/04/08 19:36:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1579,6 +1579,9 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_DR87:
                     case TYPE_LGS4:
                     case TYPE_KV2:
+                    case TYPE_ION7330:
+                    case TYPE_ION7700:
+                    case TYPE_ION8300:
                         break;
                     case TYPE_CCU700:
                     case TYPE_CCU710:
