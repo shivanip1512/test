@@ -104,7 +104,7 @@ public:
             if(!(pvect_.entries() > 0))
             {
                 wRes = dataAvailable.wait(time); // monitor mutex released automatically
-                // thread must have been signalled AND mutex reacquired to reach here
+                // thread must have been signalled AND mutex reacquired to reach here OR RW_THR_TIMEOUT
             }
 
             if(wRes == RW_THR_COMPLETED)
@@ -121,6 +121,40 @@ public:
             RWTHROW(x);
         }
         return pval;
+    }
+
+    bool putQueue(T *pt, unsigned time)
+    {
+        bool putWasDone = false;
+        try
+        {
+            if(pt != NULL)
+            {
+                LockGuard lock(monitor()); // acquire monitor mutex
+                RWWaitStatus wRes = RW_THR_COMPLETED;
+
+                if(!(pvect_.entries() < maxEntries_))
+                {
+                    wRes = slotAvailable.wait(time);
+                    // mutex released automatically
+                    // thread must have been signalled AND mutex reacquired to reach here
+                }
+
+                if(wRes == RW_THR_COMPLETED && (pvect_.entries() < maxEntries_))
+                {
+                    pvect_.insert(pt);
+                    dataAvailable.signal();
+                    // mutex automatically released in LockGuard destructor
+                    putWasDone = true;
+                }
+            }
+        }
+        catch(const RWxmsg& x)
+        {
+            cout << "Exception: " << x.why() << endl;
+        }
+
+        return putWasDone;
     }
 
     T* getByFunc(RWBoolean (*fn)(const T*, void *), void *d)
