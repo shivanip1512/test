@@ -1623,6 +1623,12 @@ public Object getValue(Object val)
 		{
 			rtc.getDeviceRTC().setLBTMode( new Integer(0) );
 		}
+		
+		if(getControlInhibitCheckBox().isSelected())
+			rtc.getDeviceRTC().setDisableVerifies("Y");
+		else
+			rtc.getDeviceRTC().setDisableVerifies("N");
+			
       }
       
       
@@ -2214,6 +2220,7 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
 		getSlaveAddressComboBox().addItem( RTCBase.LBT2 );
 		getSlaveAddressComboBox().addItem( RTCBase.LBT1 );
 		getSlaveAddressComboBox().addItem( RTCBase.LBT0 );
+		getSlaveAddressComboBox().setSelectedItem(RTCBase.getLBTModeString(((RTCBase)rBase).getDeviceRTC().getLBTMode()));
 
 		getPostCommWaitSpinner().setVisible(false);
 		getPostCommWaitLabel().setVisible(false);
@@ -2221,6 +2228,14 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
 		getWaitLabel().setVisible(false);
 		getPasswordLabel().setVisible(false);
 		getPasswordTextField().setVisible(false);
+		
+		getControlInhibitCheckBox().setVisible(true);
+		ivjControlInhibitCheckBox.setText("Disable Verifies");
+		if(((RTCBase)rBase).getDeviceRTC().getDisableVerifies().compareTo("Y") == 0)
+			getControlInhibitCheckBox().setSelected(true);
+		else
+			getControlInhibitCheckBox().setSelected(false);
+		
 	}
 	else
 	{

@@ -125,5 +125,19 @@ public class RTCBase extends RemoteBase
 		if(newMode.compareTo(LBT3) == 0)
 			getDeviceRTC().setLBTMode(new Integer(3));
    }
+   
+   public static String getLBTModeString(Integer newMode)
+   {
+		String lbtFun = LBT0;
+		
+		if(newMode.intValue() == 1)
+			lbtFun = LBT1;
+		if(newMode.intValue() == 2)
+			lbtFun = LBT2;
+		if(newMode.intValue() == 3)
+			lbtFun = LBT3;
+			
+		return lbtFun;
+   }
 
 }

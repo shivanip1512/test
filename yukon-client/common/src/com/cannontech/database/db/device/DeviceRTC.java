@@ -20,11 +20,12 @@ public class DeviceRTC extends DBPersistent
 	private Integer rtcAddress;
 	private String response = "N";
 	private Integer lbtMode = new Integer(0);
+	private String disableVerifies = "N";
 	
 	public static final String SETTER_COLUMNS[] = 
 		{ 
 			"DEVICEID", "RTCADDRESS", "RESPONSE", 
-			"LBTMODE"
+			"LBTMODE", "DISABLEVERIFIES"
 		};
 
 		public static final String CONSTRAINT_COLUMNS[] = { "DEVICEID" };
@@ -54,7 +55,8 @@ public class DeviceRTC extends DBPersistent
 		Object addValues[] = 
 		{ 
 			getDeviceID(), getRTCAddress(),
-			getResponse(), getLBTMode()
+			getResponse(), getLBTMode(),
+			getDisableVerifies()
 		};
 
 		add( TABLE_NAME, addValues );
@@ -82,6 +84,10 @@ public class DeviceRTC extends DBPersistent
 		return lbtMode;
 	}
 	
+	public String getDisableVerifies() {
+		return disableVerifies;
+	}
+	
 	public void retrieve() 
 	{
 		Integer constraintValues[] = { getDeviceID() };	
@@ -95,6 +101,7 @@ public class DeviceRTC extends DBPersistent
 				setRTCAddress( (Integer) results[1] );
 				setResponse( (String) results[2]);
 				setLBTMode( (Integer) results[3]);
+				setDisableVerifies( (String) results[4]);
 			
 			}
 		else
@@ -123,6 +130,10 @@ public class DeviceRTC extends DBPersistent
 		lbtMode = newMode;
 	}
 	
+	public void setDisableVerifies(String newDisable) {
+		disableVerifies = newDisable;
+	}
+	
 	public void update() 
 	{
 		Object setValues[] =
@@ -130,7 +141,8 @@ public class DeviceRTC extends DBPersistent
 			getDeviceID(),
 			getRTCAddress(),
 			getResponse(),
-			getLBTMode()	
+			getLBTMode(),
+			getDisableVerifies()	
 		};
 	
 		Object constraintValues[] = { getDeviceID() };
