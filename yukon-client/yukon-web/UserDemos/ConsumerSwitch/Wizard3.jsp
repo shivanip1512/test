@@ -162,7 +162,7 @@ function changeProgram(radioBtn, index) {
               <p><b><span class="Main">SIGN UP WIZARD<br>
                 </span></b></p>
               <p class = "Main">Select the energy programs to sign-up for</p>
-                <table width="64%" border="1" height="311" cellspacing = "0">
+                <table width="64%" border="1" cellspacing = "0">
 <%
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
 		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
@@ -188,18 +188,18 @@ function changeProgram(radioBtn, index) {
                                 <%= category.getStarsWebConfig().getAlternateDisplayName() %></b></td>
 								<input type="hidden" name="CatID" value="">
 								<input type="hidden" name="ProgID" value="">
-								<input type="hidden" name="DefProgID" value="<%= category.getStarsEnrollmentLMProgram(0).getProgramID() %>">
+								<input type="hidden" name="DefProgID" value="<%= category.getStarsEnrLMProgram(0).getProgramID() %>">
                             </tr>
 <%
-		if (category.getStarsEnrollmentLMProgramCount() > 1) {
+		if (category.getStarsEnrLMProgramCount() > 1) {
 			/* If more than one program under this category, show the program list */
 %>
                             <tr> 
                               <td> 
                                 <table class = "TableCell" width="100%" border="0">
 <%
-			for (int j = 0; j < category.getStarsEnrollmentLMProgramCount(); j++) {
-				StarsEnrollmentLMProgram program = category.getStarsEnrollmentLMProgram(j);
+			for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
+				StarsEnrLMProgram program = category.getStarsEnrLMProgram(j);
 				/* Each row is a program in this category */
 %>
                                   <tr> 

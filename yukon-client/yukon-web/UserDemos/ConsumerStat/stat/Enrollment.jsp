@@ -1,8 +1,36 @@
+<%@ include file="StarsHeader.jsp" %>
 <html>
 <head>
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../demostyle.css" type="text/css">
+<script language="JavaScript">
+function changeCategory(checkbox, index) {
+	form = checkbox.form;
+	if (checkbox.checked) {
+		radioBtns = eval("form.Program" + index);
+		if (radioBtns != null)
+			radioBtns[0].checked = true;
+		form.CatID[index].value = checkbox.value;
+		form.ProgID[index].value = form.DefProgID[index].value;
+	}
+	else {
+		radioBtns = eval("form.Program" + index);
+		if (radioBtns != null)
+			for (i = 0; i < radioBtns.length; i++)
+				radioBtns[i].checked = false;
+		form.CatID[index].value = "";
+		form.ProgID[index].value = "";
+	}
+}
+
+function changeProgram(radioBtn, index) {
+	form = radioBtn.form;
+	form.AppCat[index].checked = true;
+	form.CatID[index].value = form.AppCat[index].value;
+	form.ProgID[index].value = radioBtn.value;
+}
+</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -86,10 +114,12 @@
               <tr>
                 <td align = "center"><span class="Main"> </span><span class="TableCell"> 
                   Select the check boxes and corresponding radio button of the 
-                  programs you would like to be enrolled in.<br> <br></span><b><span class="Main"></span></b><b>
+                  programs you would like to be enrolled in.<br> <br></span><b><span class="Main"></span></b>
 				  <form action = "ProgramDetails.jsp">
                   <input type="submit" name="Details" value="Program Details"></form>
                 
+			   <form method="post" action="/servlet/SOAPClient">
+				 <input type="hidden" name="action" value="UpdatePrograms">
                   <table border="1" cellspacing="0" cellpadding="3">
                     <tr align = "center"> 
                       <td width="143" class="HeaderCell"> 
@@ -99,75 +129,93 @@
                         <div align="center">Status</div>
                       </td>
                     </tr>
-                    <tr> 
-                      <td width="143"> 
-                        <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
-                          <tr> 
-                            <td width="23"> 
-                              <input type="checkbox" name="checkbox2" value="checkbox" checked>
-                            </td>
-                            <td width="84" class="TableCell">Cycle AC</td>
-                          </tr>
-                        </table>
-                        <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
-                          <tr> 
-                            <td width="37"> 
-                              <div align="right"> 
-                                <input type="radio" name="radiobutton" value="radiobutton" checked>
-                              </div>
-                            </td>
-                            <td width="70" class="TableCell">Medium</td>
-                          </tr>
-                          <tr> 
-                            <td width="37"> 
-                              <div align="right"> 
-                                <input type="radio" name="radiobutton" value="radiobutton">
-                              </div>
-                            </td>
-                            <td width="70" class="TableCell">Light</td>
-                          </tr>
-                        </table>
-                      </td>
-                      <td width="132" valign="top" class="TableCell"> 
-                        <div align="center">In Service</div>
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="143"> 
-                        <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
-                          <tr> 
-                            <td width="23"> 
-                              <input type="checkbox" name="checkbox22" value="checkbox" checked>
-                            </td>
-                            <td width="84" class="TableCell">Setback</td>
-                          </tr>
-                        </table>
-                        <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
-                          <tr> 
-                            <td width="37"> 
-                              <div align="right"> 
-                                <input type="radio" name="radiobutton" value="radiobutton">
-                              </div>
-                            </td>
-                            <td width="70" class="TableCell">4 Degrees</td>
-                          </tr>
-                          <tr> 
-                            <td width="37"> 
-                              <div align="right"> 
-                                <input type="radio" name="radiobutton" value="radiobutton">
-                              </div>
-                            </td>
-                            <td width="70" class="TableCell">2 Degrees</td>
-                          </tr>
-                        </table>
-                      </td>
-                      <td width="132" valign="top" class="TableCell"> 
-                        <div align="center">Out of Service</div>
-                      </td>
-                    </tr>
+<%
+	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
+		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
+		StarsAppliance appliance = null;
+		StarsLMProgram program = null;
+		String programStatus = "Not Enrolled";
+		
+		for (int j = 0; j < appliances.getStarsApplianceCount(); j++) {
+			StarsAppliance app = appliances.getStarsAppliance(j);
+			if (app.getApplianceCategoryID() == category.getApplianceCategoryID()) {
+				appliance = app;
+				
+				for (int k = 0; k < programs.getStarsLMProgramCount(); k++) {
+					StarsLMProgram prog = programs.getStarsLMProgram(k);
+					if (prog.getProgramID() == appliance.getLmProgramID()) {
+						program = prog;
+						StarsLMProgramHistory progHist = program.getStarsLMProgramHistory();
+						programStatus = "Out of Service";
+						
+						for (int l = progHist.getLMProgramEventCount() - 1; l >= 0 ; l--) {
+							LMProgramEvent event = progHist.getLMProgramEvent(l);
+							if (event.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED )) {
+								programStatus = "In Service";
+								break;
+							}
+							if (event.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION )) {
+								programStatus = "Out of Service";
+								break;
+							}
+						}
+						break;
+					}
+				}
+				break;
+			}
+		}
+%>
+                        <tr> 
+                          <td width="143"> 
+                            <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
+                              <tr> 
+                                <td width="23"> 
+                                  <input type="checkbox" name="AppCat" value="<%= category.getApplianceCategoryID() %>"
+								  onclick="changeCategory(this, <%= i %>)" <% if (program != null) out.print("checked"); %>>
+								  <input type="hidden" name="CatID" value="<% if (program != null) out.print(category.getApplianceCategoryID()); %>">
+								  <input type="hidden" name="ProgID" value="<% if (program != null) out.print(program.getProgramID()); %>">
+								  <input type="hidden" name="DefProgID" value="<%= category.getStarsEnrLMProgram(0).getProgramID() %>">
+                                </td>
+                                <td width="84" class="TableCell"><%= category.getStarsWebConfig().getAlternateDisplayName() %></td>
+                              </tr>
+                            </table>
+<%
+		if (category.getStarsEnrLMProgramCount() > 1) {
+			/* If more than one program under this category, show the program list */
+%>
+                            <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
+<%
+			for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
+				StarsEnrLMProgram prog = category.getStarsEnrLMProgram(j);
+				/* Each row is a program in this category */
+%>
+                              <tr> 
+                                <td width="37"> 
+                                  <div align="right"> 
+                                    <input type="radio" name="Program<%= i %>" value="<%= prog.getProgramID() %>" onclick="changeProgram(this, <%= i %>)"
+									<% if (program != null && prog.getProgramID() == program.getProgramID()) out.print("checked"); %>>
+                                  </div>
+                                </td>
+                                <td width="70" class="TableCell"><%= prog.getStarsWebConfig().getAlternateDisplayName() %></td>
+                              </tr>
+<%
+			}	// End of program
+%>
+                            </table>
+<%
+		}	// End of program list
+%>
+                          </td>
+                          <td width="132" valign="top" class="TableCell"> 
+                            <div align="center"><%= programStatus %></div>
+                          </td>
+                        </tr>
+<%
+	}
+%>
                   </table>
-                  </b>
-                  <br><form action = "ChangeForm.jsp"><table width="50%" border="0">
+                  <br><table width="50%" border="0">
                     <tr>
                       <td align = "right">
                         <input type="submit" name="Submit" value="Submit">
@@ -176,8 +224,8 @@
                         <input type="button" name="Cancel" value="Cancel">
                       </td>
                     </tr>
-                  </table></form>
-              
+                  </table>
+              </form>
                 </td>
               </tr>
             </table>

@@ -57,7 +57,7 @@
               <b><span class="Main">CONSUMER ENERGY SERVICES SIGN UP<br>
               </span> <br>
               </b> 
-              <form name="form2" method="post" action="">
+              <form method="post" action="Wizard2.jsp">
                 <table width="317" border="1" cellspacing="0" cellpadding="3" height="63">
                   <tr> 
                     <td class="Main" width="362"><b>Account Number</b></td>
@@ -69,23 +69,21 @@
                           <td align = "right" class = "TableCell" width="46%">Enter 
                             your account number:</td>
                           <td width="54%"> 
-                            <input type="text" name="textfield">
+                            <input type="text" name="AcctNo">
                           </td>
                         </tr>
                       </table>
                     </td>
                   </tr>
                 </table>
-              </form>
               <br>
-              <form name="form1" method="post" action="Wizard2.jsp">
                 <table width="150" border="0" cellpadding = "0" cellspacing = "0">
                   <tr> 
                     <td align = "center"> 
                       <input type="submit" name="Submit" value="Submit">
                     </td>
                     <td> 
-                      <input type="button" name="cancel" value="Cancel">
+                      <input type="button" name="cancel" value="Cancel" onclick="location='ProgramsNew.jsp'">
                     </td>
                   </tr>
                 </table>

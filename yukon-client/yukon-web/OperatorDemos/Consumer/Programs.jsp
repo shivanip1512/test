@@ -6,14 +6,18 @@
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
 <script language="JavaScript">
 <!--
-var text = ["<b>CYCLE AC<br> Light, Medium</b> - When controlled, your air conditioning compressor will be interrupted for 10 minutes out of every half hour if you sign up for the light program and interrupted for 15 minutes out of every half hour if you sign up for the medium program.",
-			"<b>WATER HEATER<br>4Hr, 8Hr</b> - When controlled, power to your water heater’s heating elements is turned off for up to 4 hours or 8 hours depending on the program you choose. The hot water in the tank will still be available for you to use.<br><br>  <b>ETS</b> - Your Electric Thermal Storage water heater’s heating elements are interrupted on a daily 12-hour on, 12-hour off cycle. The hot water stored in the tank will supply your hot water needs.",
-			"<b>DUAL FUEL <br> Limited 4hr, Unlimited</b> - When controlled, electric power to your home’s heating system will be switched off, and your non-electric heat source will provide for your home’s heating needs. Control is limited to four hours consecutively when signed up for the limited program. While usually limited to a few hours, control could be for an extended period if signed up for the unlimited program.",
-			"<b>ETS</b><br>Your Electric Thermal Storage heating system’s heating elements are interrupted on a daily 12-hour on, 12-hour off cycle. The heat stored will supply your home needs.",
-			"<b>POOL PUMP</b><br>When controlled, power to your pool pump is interrupted. Interruptions usually last for 4 hours or less.",
-			"<b>HOT TUB</b><br>When controlled, power to your hot tub’s water heating elements are interrupted. Interruptions usually last for four hours or less." ];
+var text = [
+<%
+	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
+		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
+%>
+			"<%= category.getStarsWebConfig().getDescription() %>",
+<%
+	}
+%>
+			""];
 
-function toolTipAppear(event, divId, index, w, h) {
+function toolTipAppear(event, divId, index, w, text) {
 
 	var coordx = getLeftCoordinate();
 	var coordy = getTopCoordinate();
@@ -24,12 +28,10 @@ function toolTipAppear(event, divId, index, w, h) {
       source = event.target;
 	
 	source.onmouseout = closeToolTip;
-	
-	
+		
 	var element = document.getElementById(divId);
 	element.innerHTML = text[index]; 
 	element.style.width = w;
-	element.style.height = h;
 	element.style.left = coordx + 'px';
 	element.style.top = coordy + 'px';
 	element.style.visibility = 'visible';
@@ -217,7 +219,7 @@ function changeProgram(radioBtn, index) {
 		}
 %>
                 <tr>
-                  <td width="83" align = "center"><img id="<%= i %>" src="<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59" onclick = "toolTipAppear(event, 'tool', <%= i %>, 350, 150)"> 
+                  <td width="83" align = "center"><img id="<%= i %>" src="<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59" onclick = "toolTipAppear(event, 'tool', <%= i %>, 350)"> 
                     <br>
                     <span class = "TableCell">Click 
                     Above</span></td>
@@ -229,19 +231,19 @@ function changeProgram(radioBtn, index) {
 						  onclick="changeCategory(this, <%= i %>)" <% if (program != null) out.print("checked"); %>>
 						  <input type="hidden" name="CatID" value="<% if (program != null) out.print(category.getApplianceCategoryID()); %>">
 						  <input type="hidden" name="ProgID" value="<% if (program != null) out.print(program.getProgramID()); %>">
-						  <input type="hidden" name="DefProgID" value="<%= category.getStarsEnrollmentLMProgram(0).getProgramID() %>">
+						  <input type="hidden" name="DefProgID" value="<%= category.getStarsEnrLMProgram(0).getProgramID() %>">
                         </td>
                         <td width="84" class="TableCell"><%= category.getStarsWebConfig().getAlternateDisplayName() %></td>
                       </tr>
                     </table>
 <%
-		if (category.getStarsEnrollmentLMProgramCount() > 1) {
+		if (category.getStarsEnrLMProgramCount() > 1) {
 			/* If more than one program under this category, show the program list */
 %>
                     <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
 <%
-			for (int j = 0; j < category.getStarsEnrollmentLMProgramCount(); j++) {
-				StarsEnrollmentLMProgram prog = category.getStarsEnrollmentLMProgram(j);
+			for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
+				StarsEnrLMProgram prog = category.getStarsEnrLMProgram(j);
 				/* Each row is a program in this category */
 %>
                       <tr> 

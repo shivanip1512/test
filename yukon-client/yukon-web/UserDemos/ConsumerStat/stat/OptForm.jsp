@@ -1,3 +1,4 @@
+<%@ include file="StarsHeader.jsp" %>
 <html>
 <head>
 <title>Consumer Energy Services</title>
@@ -92,7 +93,11 @@ function MM_popupMsg(msg) { //v1.0
                 </table>
                 <p class="Main">Please complete the following form to opt out 
                   of your program:</p>
-                  <form method="post" action="OptOut.jsp">
+                  <form method="post" action="/servlet/SOAPClient">
+					<input type="hidden" name="action" value="DisableService">
+					<input type="hidden" name="OptOutPeriod" value="<%= request.getParameter("OptOutPeriod") %>">
+					<input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerStat/stat/Enrollment.jsp">
+					<input type="hidden" name="REFERRER" value="/UserDemos/ConsumerStat/stat/OptOut.jsp">
                   <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">
                     <tr> 
                       <td class="TableCell"> 
@@ -140,7 +145,7 @@ function MM_popupMsg(msg) { //v1.0
                   </table>
                   <p align="center"> 
                     <input type="submit" name="Submit" value="Submit">
-                    <input type="submit" name="Input" value="Cancel">
+                    <input type="button" name="Cancel" value="Cancel" onclick="location='OptOut.jsp'">
                 </form>
 				  
                 <p><span class="TableCell">* This field must be completed.</span></p>

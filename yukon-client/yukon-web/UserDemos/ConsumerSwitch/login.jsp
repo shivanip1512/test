@@ -121,8 +121,9 @@
 <%
 	if (session.getAttribute("ENROLLMENT_PROGRAMS") == null) {
 %>
-					    <input type="hidden" name="action" value="GetEnrollmentPrograms">
+					    <input type="hidden" name="action" value="GetEnrPrograms">
 						<input type="hidden" name="CompanyID" value="1">
+						<input type="hidden" name="Category" value="Switch">
 						<input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerSwitch/ProgramsNew.jsp">
 						<input type="hidden" name="REFERRER" value="/UserDemos/ConsumerSwitch/login.jsp">
 <%

@@ -86,6 +86,8 @@ function confirmSubmit(form) { //v1.0
                     </div>
 				  <form name="form1" method="post" action="OptForm.jsp" onsubmit = "return confirmSubmit(this)">
 				  	<input type="hidden" name="action" value="DisableService">
+					<input type="hidden" name="REDIRECT" value="/OperatorDemos/Consumer/Programs.jsp">
+					<input type="hidden" name="REFERRER" value="/OperatorDemos/Consumer/OptOut.jsp">
                     <table width="180" border="0" cellspacing="0" cellpadding="0" align="center">
                       <tr> 
                         <td width="180" align="center"> 
@@ -152,6 +154,8 @@ function confirmSubmit(form) { //v1.0
                   <td align="center">
 				  <form method="POST" action="/servlet/SOAPClient">
 				    <input type="hidden" name="action" value="EnableService"> 
+					<input type="hidden" name="REDIRECT" value="/OperatorDemos/Consumer/Programs.jsp">
+					<input type="hidden" name="REFERRER" value="/OperatorDemos/Consumer/OptOut.jsp">
                     <input type="submit" name="Re-enable" value="Re-enable">
 				  </form>
                   </td>

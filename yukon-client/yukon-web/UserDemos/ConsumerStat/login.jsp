@@ -66,10 +66,11 @@
                           If you are currently enrolled in a program, enter your 
                           account number and password.</div>
                         <form name="form1" method="post" action="/servlet/SOAPClient">
-                          <input type="hidden" name="action" value="StarsLogin">
-                          <input type="hidden" name="homeURL" value="/stat/ProgramHist.jsp">
-						  
-						  <input type="hidden" name="DATABASEALIAS" value="yukon">
+                     	<input type="hidden" name="action" value="UserLogin">
+						<input type="hidden" name="CompanyID" value="1">
+						<input type="hidden" name="DATABASEALIAS" value="yukon">
+				  		<input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerStat/stat/ProgramHist.jsp">
+				  		<input type="hidden" name="REFERRER" value="/UserDemos/ConsumerStat/login.jsp">
                           <table width="200" border="0" cellspacing="0" cellpadding="3" align="center">
                             <tr> 
                               <td width="83" class = "Main"> 
@@ -99,11 +100,33 @@
                         </form>
                       </td>
                       <td width="555" valign = "bottom" bgcolor="#FFFFFF"class = "TableCell" height="25" align = "center"><img src="YourLogo.gif" width="202" height="58"></td>
-                      <form method="get" action="Consumer/Update.jsp">
-                      </form>
                     </tr>
                     <tr>
-                      <td width="555" bgcolor="#FFFFFF" class = "TableCell3"><form action = "ProgramsNew.jsp">
+                      <td width="555" bgcolor="#FFFFFF" class = "TableCell3">
+<%
+	String formMethod = null;
+	String formAction = null;
+	if (session.getAttribute("ENROLLMENT_PROGRAMS") != null) {
+		formMethod = "get";
+		formAction = "ProgramsNew.jsp";
+	}
+	else {
+		formMethod = "post";
+		formAction = "/servlet/SOAPClient";
+	}
+%>
+					  <form method="<%= formMethod %>" action="<%= formAction %>">
+<%
+	if (session.getAttribute("ENROLLMENT_PROGRAMS") == null) {
+%>
+					    <input type="hidden" name="action" value="GetEnrPrograms">
+						<input type="hidden" name="CompanyID" value="1">
+						<input type="hidden" name="Category" value="Thermostat">
+						<input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerStat/ProgramsNew.jsp">
+						<input type="hidden" name="REFERRER" value="/UserDemos/ConsumerStat/login.jsp">
+<%
+	}
+%>
                         <table width="154" border="0" cellspacing="0" cellpadding="10" align="center" class = "Main" height="97">
                           <tr> 
                             <td> 

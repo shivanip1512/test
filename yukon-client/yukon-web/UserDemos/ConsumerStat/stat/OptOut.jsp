@@ -1,3 +1,4 @@
+<%@ include file="StarsHeader.jsp" %>
 <html>
 <head>
 <title>Consumer Energy Services</title>
@@ -5,8 +6,9 @@
 <link rel="stylesheet" href="../../demostyle.css" type="text/css">
 <script language="JavaScript">
 <!--
-function MM_popupMsg(msg) { //v1.0
-  return confirm(msg);
+function confirmSubmit(form) { //v1.0
+  if (form.OptOutPeriod.value == 0) return false;
+  return confirm('Are you sure you would like to temporarily opt out of all programs?');
 }
 //-->
 </script>
@@ -121,7 +123,7 @@ function MM_popupMsg(msg) { //v1.0
                       </form>
                       <br>
                
-                    <form method="get" action="OptForm.jsp" onsubmit = " return MM_popupMsg('Are you sure you would like to temporarily opt out of all programs?')">
+					<form method="post" action="OptForm.jsp" onsubmit="return confirmSubmit(this)">
                       <table width="200" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >
                         <tr> 
                           <td align = "center"> 
@@ -132,13 +134,13 @@ function MM_popupMsg(msg) { //v1.0
                             <table width="180" border="0" cellspacing="0" cellpadding="0" align="center">
                               <tr> 
                                 <td width="180" align="center"> 
-                                  <select name="select7">
-                                    <option>&lt;none&gt;</option>
-                                    <option>One Day</option>
-                                    <option>Two Days</option>
-                                    <option>Three Days</option>
-                                    <option>One Week</option>
-                                    <option>Two Weeks</option>
+                                  <select name="OptOutPeriod">
+									<option value="0">&lt;none&gt;</option>
+									<option value="1">One Day</option>
+									<option value="2">Two Days</option>
+									<option value="3">Three Days</option>
+									<option value="7">One Week</option>
+									<option value="14">Two Weeks</option>
                                   </select>
                                 </td>
                                 <td width="180" align="center"> 

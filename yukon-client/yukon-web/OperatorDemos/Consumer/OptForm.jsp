@@ -80,6 +80,8 @@ function MM_popupMsg(msg) { //v1.0
 			<form method="post" action="/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="<%= request.getParameter("action") %>">
 			  <input type="hidden" name="OptOutPeriod" value="<%= request.getParameter("OptOutPeriod") %>">
+			  <input type="hidden" name="REDIRECT" value="<%= request.getParameter("REDIRECT") %>">
+			  <input type="hidden" name="REFERRER" value="<%= request.getParameter("REFERRER") %>">
                 <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">
                   <tr> 
                     <td class="TableCell"> 

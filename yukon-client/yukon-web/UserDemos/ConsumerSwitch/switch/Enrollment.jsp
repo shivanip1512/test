@@ -118,7 +118,7 @@ function changeProgram(radioBtn, index) {
                           corresponding radio button of the programs you would 
                           like to be enrolled in. <br>
                           <br>
-                          <input type="submit" name="Details" value="Program Details" onclick="location='ProgramDetails'">
+                          <input type="button" name="Details" value="Program Details" onclick="location='ProgramDetails.jsp'">
                           </span><br><br>
                         
                       </div>
@@ -150,7 +150,7 @@ function changeProgram(radioBtn, index) {
 						StarsLMProgramHistory progHist = program.getStarsLMProgramHistory();
 						programStatus = "Out of Service";
 						
-						for (int l = 0; l < progHist.getLMProgramEventCount(); l++) {
+						for (int l = progHist.getLMProgramEventCount() - 1; l >= 0 ; l--) {
 							LMProgramEvent event = progHist.getLMProgramEvent(l);
 							if (event.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED )) {
 								programStatus = "In Service";
@@ -177,19 +177,19 @@ function changeProgram(radioBtn, index) {
 								  onclick="changeCategory(this, <%= i %>)" <% if (program != null) out.print("checked"); %>>
 								  <input type="hidden" name="CatID" value="<% if (program != null) out.print(category.getApplianceCategoryID()); %>">
 								  <input type="hidden" name="ProgID" value="<% if (program != null) out.print(program.getProgramID()); %>">
-								  <input type="hidden" name="DefProgID" value="<%= category.getStarsEnrollmentLMProgram(0).getProgramID() %>">
+								  <input type="hidden" name="DefProgID" value="<%= category.getStarsEnrLMProgram(0).getProgramID() %>">
                                 </td>
                                 <td width="84" class="TableCell"><%= category.getStarsWebConfig().getAlternateDisplayName() %></td>
                               </tr>
                             </table>
 <%
-		if (category.getStarsEnrollmentLMProgramCount() > 1) {
+		if (category.getStarsEnrLMProgramCount() > 1) {
 			/* If more than one program under this category, show the program list */
 %>
                             <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
 <%
-			for (int j = 0; j < category.getStarsEnrollmentLMProgramCount(); j++) {
-				StarsEnrollmentLMProgram prog = category.getStarsEnrollmentLMProgram(j);
+			for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
+				StarsEnrLMProgram prog = category.getStarsEnrLMProgram(j);
 				/* Each row is a program in this category */
 %>
                               <tr> 

@@ -6,8 +6,9 @@
 <link rel="stylesheet" href="../../demostyle.css" type="text/css">
 <script language="JavaScript">
 <!--
-function MM_popupMsg(msg) { //v1.0
-  return confirm(msg);
+function confirmSubmit(form) { //v1.0
+  if (form.OptOutPeriod.value == 0) return false;
+  return confirm('Are you sure you would like to temporarily opt out of all programs?');
 }
 //-->
 </script>
@@ -133,15 +134,15 @@ function MM_popupMsg(msg) { //v1.0
                           </div>
                           <table width="180" border="0" cellspacing="0" cellpadding="0" align="center">
                             <tr> 
-                              <form method="get" action="OptForm.jsp" onsubmit = "return MM_popupMsg('Are you sure you would like to temporarily opt out of all programs?')">
+                              <form method="post" action="OptForm.jsp" onsubmit="return confirmSubmit(this)">
                                 <td width="180" align="center"> 
-                                  <select name="select7">
-                                    <option>&lt;none&gt;</option>
-                                    <option>One Day</option>
-                                    <option>Two Days</option>
-                                    <option>Three Days</option>
-                                    <option>One Week</option>
-                                    <option>Two Weeks</option>
+                                  <select name="OptOutPeriod">
+									<option value="0">&lt;none&gt;</option>
+									<option value="1">One Day</option>
+									<option value="2">Two Days</option>
+									<option value="3">Three Days</option>
+									<option value="7">One Week</option>
+									<option value="14">Two Weeks</option>
                                   </select>
                                 </td>
                                 <td width="180" align="center"> 
@@ -160,18 +161,25 @@ function MM_popupMsg(msg) { //v1.0
                         <td class="HeaderCell">Date</td>
                         <td class="HeaderCell">Duration</td>
                       </tr>
+<%
+	CommonUtils.ProgramHistory[] progHist = (CommonUtils.ProgramHistory[]) user.getAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY" );
+	if (progHist == null) {
+		progHist = CommonUtils.createProgramHistory( programs );
+		user.setAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY", progHist );
+	}
+	
+	for (int i = progHist.length - 1; i >= 0; i--) {
+		if (progHist[i].getDuration() == null) continue;
+%>
                       <tr> 
-                        <td class="TableCell">12/15/00</td>
-                        <td class="TableCell">3 Days</td>
+                        <td class="TableCell"><%= dateFormat.format(progHist[i].getDate()) %></td>
+                        <td class="TableCell"><%= progHist[i].getDuration() %></td>
                       </tr>
-                      <tr> 
-                        <td class="TableCell">07/17/01</td>
-                        <td class="TableCell">1 Day</td>
-                      </tr>
+<%
+	}
+%>
                     </table>
                   </td>
-                  <form name="form1" method="get" action="ProgramDetails.jsp" >
-                  </form>
                 </tr>
               </table>
               <br>

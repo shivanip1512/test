@@ -1,3 +1,4 @@
+<%@ include file="StarsHeader.jsp" %>
 <html>
 <head>
 <title>Consumer Energy Services</title>
@@ -163,7 +164,7 @@
                           <table width="80" border="0" cellspacing="0" cellpadding="5">
                             <tr> 
                               <td> 
-                                <div align="center"><img src="../SetBack.gif" width="60" height="59"></div>
+                                <div align="center"><img src="../Setback.gif" width="60" height="59"></div>
                               </td>
                             </tr>
                             <tr> 
@@ -194,7 +195,7 @@
                           <table width="80" border="0" cellspacing="0" cellpadding="5">
                             <tr> 
                               <td> 
-                                <div align="center"><img src="../SetBack.gif" width="60" height="59"></div>
+                                <div align="center"><img src="../Setback.gif" width="60" height="59"></div>
                               </td>
                             </tr>
                             <tr> 

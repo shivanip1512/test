@@ -53,7 +53,24 @@
           <td  valign="top" width="101">&nbsp; </td>
           <td width="1" bgcolor="#000000"><img src="switch/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <form method="post" action="login.jsp"> <div align="center"><br>
+            <form method="post" action="/servlet/SOAPClient" onsubmit="return checkPassword(this)">
+			  <input type="hidden" name="action" value="ProgramSignUp">
+			  <input type="hidden" name="CompanyID" value="1">
+			  <input type="hidden" name="AcctNo" value="<%= request.getParameter("AcctNo") %>">
+<%
+	String[] catIDs = request.getParameterValues("CatID");
+	String[] progIDs = request.getParameterValues("ProgID");
+	if (progIDs != null)
+		for (int i = 0; i < progIDs.length; i++) {
+%>
+			  <input type="hidden" name="CatID" value="<%= catIDs[i] %>">
+			  <input type="hidden" name="ProgID" value="<%= progIDs[i] %>">
+<%
+		}
+%>
+			  <input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerStat/login.jsp">
+			  <input type="hidden" name="REFERRER" value="/UserDemos/ConsumerStat/ProgramsNew.jsp">
+			  <div align="center"><br>
               <b><span class="Main">SIGN UP WIZARD<br>
               <br>
               </span></b> 
@@ -69,7 +86,7 @@
                         <tr> 
                           <td align = "right" class = "TableCell" width="38%">User ID:</td>
                           <td width="62%"> 
-                            <input type="text" name="textfield23">
+                            <input type="text" name="UserName">
                           </td>
                         </tr>
                       </table>
@@ -81,13 +98,13 @@
                         <tr> 
                           <td align = "right" class = "TableCell" width="38%">Password:</td>
                           <td width="62%"> 
-                            <input type="password" name="textfield2">
+                            <input type="password" name="Password">
                           </td>
                         </tr>
                         <tr> 
                           <td align = "right" class = "TableCell" width="38%">Confirm Password:</td>
                           <td width="62%"> 
-                            <input type="password" name="textfield22">
+                            <input type="password" name="Password2">
                           </td>
                         </tr>
                       </table>
@@ -100,7 +117,7 @@
                       <input type="submit" name="Submit" value="Submit">
                     </td>
                     <td>
-                      <input type="button" name="cancel" value="Cancel">
+                      <input type="button" name="cancel" value="Cancel" onclick="history.back()">
                     </td>
                   </tr>
                 </table>
