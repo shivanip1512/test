@@ -15,8 +15,9 @@
         <echo message=" clean      - clean the slate"/>
         <echo message=" all        - do a clean then a build"/>
         <echo message=" install    - installs a build to your YUKON_HOME directory"/>
-        <echo message=" uninstall  - remove the install at YUKON_HOME"/>
+        <echo message=" uninstall  - remove the install at YUKON_HOME"/>        
         <echo message=" [jar name] - builds only the specified jar"/>
+        <echo message=" sign jars - sign all jars"/>
     </target>
             
     <target name="all">
@@ -157,12 +158,18 @@
         <ant dir="${filename}" target="${dotarget}"/>
     </target>
 
-
 	<!--Added build option for copying the needed jar files into the WEB-INF directory of yukon-web. SN-->
 	<target name="webbuild" depends="build,webcopy"/>
 
     <target name="webcopy">
         <ant dir="${yukon-web}" target="webcopy"/> 
     </target>
-     
+
+	<target name="sign">
+		<signjar alias="${jarsign.alias}" storepass="${jarsign.storepass}">
+			<fileset dir="${yukon.lib}">
+				<include name="*.jar"/>
+			</fileset>
+		</signjar>
+	</target>    
 </project>
