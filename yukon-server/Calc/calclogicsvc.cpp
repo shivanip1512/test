@@ -466,6 +466,7 @@ void CtiCalcLogicService::Run( )
         {
             delete _conxion;
         }
+        _conxion = NULL;
     }
     catch( RWxmsg &msg )
     {
