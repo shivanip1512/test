@@ -1077,6 +1077,13 @@ CodeSequence
 insert into YukonRoleProperty values(-10010, -100,'z_optional_product_dev','00000000','This feature is for development purposes only');
 insert into YukonGroupRole values(-1010,-2,-100,-10010,'00000000');
 
+create   index Indx_DYNV_TIME on DynamicVerification (
+TimeArrival
+);
+go
+
+
+
 
 
 
