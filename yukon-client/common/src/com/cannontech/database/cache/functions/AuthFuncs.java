@@ -111,19 +111,16 @@ public class AuthFuncs {
 	 * @param roleProperty
 	 * @return String
 	 */
-	public static String getRolePropValueGroup(LiteYukonGroup group_, int rolePropertyID, String defaultValue) 
+	public static String getRolePropValueGroup(LiteYukonGroup group_, int roleID, int rolePropertyID, String defaultValue) 
 	{
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized(cache) 
 		{
 			Map lookupMap = cache.getYukonGroupRolePropertyMap();
-			Map propMap = (Map) lookupMap.get( group_ );
-			if(propMap != null) {
-				Pair p = (Pair) propMap.get(new Integer(rolePropertyID));
-				if(p != null) {
-					return (String) p.second;
-				}
-			}	
+			Map roleMap = (Map) lookupMap.get( group_ );
+			Map propMap = (Map) roleMap.get( getRole(roleID) );
+			String value = (String) propMap.get( getRoleProperty(rolePropertyID) );
+			if (value != null) return value;
 		}
 		return defaultValue;	
 	}
