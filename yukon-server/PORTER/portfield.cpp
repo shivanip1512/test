@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.85 $
-* DATE         :  $Date: 2003/12/09 20:57:35 $
+* REVISION     :  $Revision: 1.86 $
+* DATE         :  $Date: 2003/12/16 17:36:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1469,7 +1469,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         trx.setInCountActual( &bytesReceived );
 
                         transdata.reinitalize();
-//                        transdata.recvOutbound( OutMessage );
+
 
                         while( !transdata.isTransactionComplete() )
                         {
@@ -1491,7 +1491,6 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         retMsg->PointData().append( new CtiPointDataMsg() );
                         VanGoghConnection.WriteConnQue( retMsg );
 
-//                        transdata.processDispatchReturnMessage( VanGoghConnection );
                         markv->processDispatchReturnMessage( VanGoghConnection );
 
                         //send the billing data back to scanner
