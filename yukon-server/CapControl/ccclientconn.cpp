@@ -89,6 +89,16 @@ BOOL CtiCCClientConnection::isValid() const
 }
 
 /*---------------------------------------------------------------------------
+    getConnectionName
+
+    Closes the connection
+---------------------------------------------------------------------------*/
+RWSockAddr CtiCCClientConnection::getConnectionName()
+{
+    return ((RWSocketPortal*)_portal)->socket().getsockname();
+}
+
+/*---------------------------------------------------------------------------
     close
     
     Closes the connection

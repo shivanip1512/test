@@ -22,6 +22,7 @@
  
 #include <rw/thr/countptr.h> 
 #include <rw/thr/thrfunc.h> 
+#include <rw/toolpro/sockaddr.h>
 
 #include "ctdpcptrq.h"
 #include "observe.h"
@@ -37,6 +38,8 @@ public:
     void close();
 
     void write(RWCollectable* msg);
+
+    RWSockAddr getConnectionName();
 
 protected:
     RWPCPtrQueue< RWCollectable > _queue;
