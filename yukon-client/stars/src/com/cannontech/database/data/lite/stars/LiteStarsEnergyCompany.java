@@ -2461,7 +2461,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		// Remove the customer account from cache
-		getCustAccountInfoMap().remove( new Integer(liteAcctInfo.getAccountID()) );
+		Hashtable custAcctMap = getCustAccountInfoMap();
+		synchronized (custAcctMap) {
+			custAcctMap.remove( new Integer(liteAcctInfo.getAccountID()) );
+		}
 	}
 	
 	/**
