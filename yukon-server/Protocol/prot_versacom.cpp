@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2004/04/29 20:11:39 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2004/09/20 14:43:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2032,8 +2032,7 @@ bool CtiProtocolVersacom::isConfig63Valid(LONG sn) const
 {
     bool bstatus = false;
 
-
-    if(sn > gConfigParms.getValueAsULong("VERSACOM_CONFIG63_BASE", 400000000L ))
+    if(getTransmitterType() != TYPE_TCU5000 && sn > gConfigParms.getValueAsULong("VERSACOM_CONFIG63_BASE", 400000000L ))
     {
         bstatus = true;
     }
@@ -2045,7 +2044,7 @@ bool CtiProtocolVersacom::isConfigFullAddressValid(LONG sn) const
 {
     bool bstatus = false;
 
-    if( sn != 0 )
+    if( getTransmitterType() != TYPE_TCU5000 && sn != 0 )
     {
         RWCString vcrangestr = gConfigParms.getValueAsString("VERSACOM_FULL_ADDRESS_SERIAL_RANGES");
 
