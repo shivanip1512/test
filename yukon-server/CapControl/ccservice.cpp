@@ -219,7 +219,7 @@ void CtiCCService::Run()
     if( _CC_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Starting up the controller thread..." << endl;
+        dout << RWTime() << " - Starting cap controller thread..." << endl;
     }
     CtiCapController* controller = CtiCapController::getInstance();
     controller->start();
@@ -229,15 +229,15 @@ void CtiCCService::Run()
     if( _CC_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Starting up the client connection thread..." << endl;
+        dout << RWTime() << " - Starting client listener thread..." << endl;
     }
     CtiCCClientListener* clientListener = CtiCCClientListener::getInstance();
     clientListener->start();
 
-    {
+    /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Cap Control started and initialized." << endl;
-    }
+        dout << RWTime() << " - Cap Control started." << endl;
+    }*/
 
     SetStatus(SERVICE_RUNNING, 0, 0,
               SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
