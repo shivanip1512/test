@@ -15,6 +15,7 @@ public interface DBEditorDefines
 	public static final String BAUD_4800 = "4800";
 	public static final String BAUD_9600 = "9600";
 	public static final String BAUD_14400 = "14400";
+	public static final String BAUD_28800 = "28800";
 	public static final String BAUD_38400 = "38400";
 	public static final String BAUD_57600 = "57600";
 	public static final String BAUD_115200 = "115200";

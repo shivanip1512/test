@@ -385,17 +385,16 @@ private void initialize() {
 	getPhysicalPortComboBox().addItem("com15");
 	getPhysicalPortComboBox().addItem("com16");
 	
-	getBaudRateComboBox().addItem(new Integer(300) );
-	getBaudRateComboBox().addItem(new Integer(1200) );
-	getBaudRateComboBox().addItem(new Integer(2400) );
-	getBaudRateComboBox().addItem(new Integer(4800) );
-	getBaudRateComboBox().addItem(new Integer(9600) );
-	getBaudRateComboBox().addItem(new Integer(14400) );
-	getBaudRateComboBox().addItem(new Integer(19200) );
-	getBaudRateComboBox().addItem(new Integer(38400) );
-	getBaudRateComboBox().addItem(new Integer(57600) );
-	getBaudRateComboBox().addItem(new Integer(115200) );
-	getBaudRateComboBox().setSelectedItem(new Integer(1200) );
+	ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_300 );
+	ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_1200 );
+	ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_2400 );
+	ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_4800 );
+	ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_9600 );
+	ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_14400 );
+	ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_38400 );
+	ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_57600 );
+	ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_115200 );
+	getBaudRateComboBox().setSelectedItem(com.cannontech.common.version.DBEditorDefines.BAUD_1200);
 	// user code end
 }
 /**
