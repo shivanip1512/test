@@ -136,7 +136,7 @@ vgsrctest.exe:  $(TESTOBJS) makeexe.mak
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
-$(TESTOBJS) -link $(RWLIBS) $(TESTLIBS)
+$(TESTOBJS) -link $(BOOSTLIBS) $(RWLIBS) $(TESTLIBS) 
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
