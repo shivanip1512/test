@@ -357,8 +357,9 @@ public void setValue(Object o)
 
 public boolean isInputValid() 
 {
-	if( getJTextFieldDisconnectAddress().getText() == null
-		 || getJTextFieldDisconnectAddress().getText().length() < 1 )
+	if( getJCheckBoxEnableDisconnect().isSelected() 
+		&& (getJTextFieldDisconnectAddress().getText() == null
+		 || getJTextFieldDisconnectAddress().getText().length() < 1 ))
 	{
 		setErrorString("You have enabled disconnect.  Please specify an address.");
 		return false;
