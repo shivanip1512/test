@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:35:32 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/05/19 14:56:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,6 +53,16 @@ int main(int argc, char* argv[] )
    dout.setToStdOut(true);
    dout.setWriteInterval(15000);
 
+   slog.start();     // fire up the logger thread
+   slog.setOutputPath(gLogDirectory.data());
+   slog.setOutputFile("simulate");
+   slog.setToStdOut(true);
+   slog.setWriteInterval(15000);
+
+   {
+       CtiLockGuard<CtiLogger> doubt_guard(slog);
+       slog << RWTime() << " **** Simulator Started **** " << endl;
+   }
 
    if( SetConsoleTitle("Port Control") ) // We are a console application
    {
