@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/09/04 14:08:09 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/10/23 21:11:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,6 +70,7 @@
 
 #include "logger.h"
 #include "guard.h"
+#include "utility.h"
 
 static CtiStatisticsSet_t   gDeviceStatSet;
 static bool                 gDeviceStatDirty = false;
@@ -710,31 +711,27 @@ VOID PerfUpdateThread (PVOID Arg)
     /* set the priority of this guy high */
     CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
 
-
-    if(gConfigParms.isOpt("PORTER_DEVICESTATUPDATERATE"))
-    {
-        if(!(PerfUpdateRate = atol(gConfigParms.getValueAsString("PORTER_DEVICESTATUPDATERATE").data())))
-        {
-            PerfUpdateRate = 3600L;
-        }
-    }
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " PerfUpdateThread started as TID:   " << CurrentTID() << " recording stats every " << PerfUpdateRate << " seconds." << endl;
-    }
-
     try
     {
         /* do this as long as we are running */
         for(;!PorterQuit;)
         {
-            /* Update Stats on a five minute basis but not on the hour mark.*/
+            if(gConfigParms.isOpt("PORTER_DEVICESTATUPDATERATE"))
+            {
+                if(!(PerfUpdateRate = atol(gConfigParms.getValueAsString("PORTER_DEVICESTATUPDATERATE").data())))
+                {
+                    PerfUpdateRate = 3600L;
+                }
+            }
+
             now = now.now();
 
-            if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 1000L * (PerfUpdateRate - (now.seconds() % PerfUpdateRate))) )
+            RWTime nextTime = nextScheduledTimeAlignedOnRate(now, PerfUpdateRate);
+
+            if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 1000L * (nextTime.seconds() - now.seconds())) )
             {
                PorterQuit = TRUE;
+               break;
             }
 
             now = now.now();
@@ -750,8 +747,6 @@ VOID PerfUpdateThread (PVOID Arg)
                     dout << RWTime() << " " << delay << " seconds to update statistics." << endl;
                 }
             }
-
-            Sleep(1000);                // Make sure we don't get a runaway.
         }
 
         statisticsRecord();
@@ -983,11 +978,13 @@ void statisticsRecord()
 
                 if(conn.isValid())
                 {
+                    RWDBStatus dbstat;
+
                     conn.beginTransaction();
                     for(dstatitr = dirtyStatSet.begin(); dstatitr != dirtyStatSet.end(); dstatitr++)
                     {
                         CtiStatistics &dStats = *dstatitr;
-                        dStats.Update(conn);
+                        dbstat = dStats.Update(conn);
                     }
                     conn.commitTransaction();
                 }
