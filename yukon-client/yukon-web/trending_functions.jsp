@@ -7,6 +7,7 @@
 <jsp:setProperty name="graphBean" property="viewType" param="view"/>
 <jsp:setProperty name="graphBean" property="option" param="option"/>
 <jsp:setProperty name="graphBean" property="format" param="format"/>
+<jsp:setProperty name="graphBean" property="page" param="page"/>
 
 <SCRIPT> <!--trend/view menu items-->
 //view types
@@ -21,12 +22,6 @@ var SUMMARY = parseInt(<%=TrendModelType.SUMMARY_VIEW%>);
 //options
 var BASIC = parseInt(<%=TrendModelType.BASIC_MASK%>); 
 var LD = parseInt(<%=TrendModelType.LOAD_DURATION_MASK%>); 
-var MULT = parseInt(<%=TrendModelType.GRAPH_MULTIPLIER%>); 
-var MIN_MAX = parseInt(<%=com.cannontech.graph.model.TrendModelType.PLOT_MIN_MAX_MASK%>);
-
-//legend
-var LEGEND_MIN_MAX = parseInt(<%=TrendModelType.LEGEND_MIN_MAX_MASK%>);
-var LEGEND_LOAD_FACTOR = parseInt(<%=TrendModelType.LEGEND_LOAD_FACTOR_MASK%>);
 
 //Global variables
 var viewType = parseInt(<%=graphBean.getViewType()%>);
@@ -38,7 +33,6 @@ var loadDur = false;
 function init()
 {
 	initViewMenu();
-	initOptions();
 }
 
 
@@ -68,62 +62,21 @@ function initViewMenu()
 			document.getElementById('SUMMARYID').innerHTML =  "&nbsp;&#149;&nbsp;<%=TrendModelType.SUMMARY_VIEW_STRING%>";
 		break;
 	}
-}
-
-function initOptions()
-{
-	var leg_min_max;
-	var leg_load_factor;
+	
+	//This is actually an option but it appears on the viewMenu
 	var currentMask = parseInt(document.MForm.option.value);
-	if  ((currentMask & MIN_MAX) != 0) 
-		document.otherOptions.min_max.checked = true;
 	if ((currentMask & LD ) !=0)
 	{
 		document.getElementById('LDID').innerHTML = "&nbsp;&#149;&nbsp;Load Duration";
 		loadDur = true;
 	}
-	if ((currentMask & MULT) != 0) 
-		document.otherOptions.mult.checked = true;
-	if ((currentMask & LEGEND_MIN_MAX) != 0 )
-	{
-		leg_min_max = true;
-		document.otherOptions.legend_min_max.checked = true;
-	}
-	if ((currentMask & LEGEND_LOAD_FACTOR) != 0)
-	{
-		document.otherOptions.legend_load_factor.checked = true;
-		leg_load_factor = true;
-	}	
+	
 }
 
 function changeView(viewType)
 {
 	document.MForm.view.value = viewType;
 	submitMForm();
-}
-
-function showMinMax()
-{
-	if (document.otherOptions.legend_min_max.checked == true)
-	{
-		setMask(LEGEND_MIN_MAX, true);
-	}
-	else
-	{
-		setMask(LEGEND_MIN_MAX, false);
-	}
-}
-
-function showLoadFactor()
-{
-	if (document.otherOptions.legend_load_factor.checked == true)
-	{
-		setMask(LEGEND_LOAD_FACTOR, true);
-	}
-	else
-	{
-		setMask(LEGEND_LOAD_FACTOR, false);
-	}
 }
 
 function changeLD ()
@@ -141,29 +94,6 @@ function changeLD ()
 		loadDur = true;
 	}
 	document.MForm.submit();
-}
-
-function changeMinMax()
-{
-	if (document.otherOptions.min_max.checked == true)
-	{
-		setMask(MIN_MAX, true);
-	}
-	else
-	{
-		setMask(MIN_MAX, false);
-	}
-}
-function changeMult()
-{
-	if (document.otherOptions.mult.checked == true)
-	{
-		setMask(MULT, true);
-	}
-	else
-	{
-		setMask(MULT, false);
-	}
 }
 
 function submitMForm()
@@ -259,5 +189,19 @@ function menuAppear(event, divId)
 			event.preventDefault();
 		}
 	}
+}
+
+function changeFormat(format)
+{
+	document.exportForm.format.value = format;
+	document.exportForm.submit();
+}
+
+function exportData(extension)
+{
+	changeFormat(extension);
+	document.exportForm.action="/servlet/Download?";
+	document.exportForm.method="post";
+	document.exportForm.submit();
 }
 </SCRIPT> <!--end javascript for trend/view menus-->
