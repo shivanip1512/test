@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/04/15 15:19:36 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/04/15 22:16:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1066,13 +1066,11 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, RWTPtrSlist
                 FLOAT PartHour = (FLOAT)(getLastFreezeTime().seconds() - getPrevFreezeTime().seconds());
                 PartHour /= (3600.0);
 
-                /* Calculate in units/hour */
-                PValue = (FLOAT) Value * pAccumPoint->getMultiplier(); // PointRecord.Multiplier;
                 /* to convert to units */
                 PValue /= PartHour;
 
-                /* Apply offset */
-                PValue += pAccumPoint->getDataOffset();
+                //  apply multiplier and offset
+                PValue = pAccumPoint->computeValueForUOM(PValue);
 
                 pData = new CtiPointDataMsg(pAccumPoint->getPointID(),
                                             PValue, NormalQuality,
