@@ -75,7 +75,7 @@ function dispStatusMsg(msgStr) { //v1.0
 		if( Boolean.valueOf(temp).booleanValue() )
 			retMsg += "<span class=\"MainText\">* Saved SERVER properties successfully</span><br>";
 		else
-			retMsg += "<span class=\"ErrorMsg\">* Unable to save SERVER propertie changes</span><br>";
+			retMsg += "<span class=\"ErrorMsg\">* Unable to save SERVER properties changes</span><br>";
 	}
 
 	if( (temp = request.getParameter("disp")) != null) 
