@@ -147,9 +147,11 @@ public class SOAPClient extends HttpServlet {
 	public static void initSOAPServer(HttpServletRequest req) {
 		if (isServerLocal() && SOAPServer.getInstance() == null) {
 			// SOAPServer not initiated yet, let's wake it up!
-			String reqURL = req.getRequestURL().toString();
-			SOAP_SERVER_URL = reqURL.substring( 0, reqURL.lastIndexOf("/servlet") ) + "/servlet/SOAPServer";
-			CTILogger.info( "SOAP Server resides locally at " + SOAP_SERVER_URL );
+			if (SOAP_SERVER_URL == null) {
+				String reqURL = req.getRequestURL().toString();
+				SOAP_SERVER_URL = reqURL.substring( 0, reqURL.lastIndexOf("/servlet") ) + "/servlet/SOAPServer";
+				CTILogger.info( "SOAP Server resides locally at " + SOAP_SERVER_URL );
+			}
         	
 			StarsOperation respOper = sendRecvOperation( new StarsOperation() );
 			if (respOper == null)	// This is not good!
