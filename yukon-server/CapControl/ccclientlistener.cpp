@@ -198,22 +198,26 @@ void CtiCCClientListener::_listen()
                 ULONG secondsFrom1901 = RWDBDateTime().seconds();
                 CtiCCExecutorFactory f;
                 CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-                CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*store->getCCSubstationBuses(secondsFrom1901)));
-                try
                 {
-                    executor->Execute();
-                    delete executor;
-                    executor = f.createExecutor(new CtiCCCapBankStatesMsg(*store->getCCCapBankStates(secondsFrom1901)));
-                    executor->Execute();
-                    delete executor;
-                    executor = f.createExecutor(new CtiCCGeoAreasMsg(*store->getCCGeoAreas(secondsFrom1901)));
-                    executor->Execute();
-                    delete executor;
-                }
-                catch(...)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+                    CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*store->getCCSubstationBuses(secondsFrom1901)));
+                    try
+                    {
+                        executor->Execute();
+                        delete executor;
+                        executor = f.createExecutor(new CtiCCCapBankStatesMsg(*store->getCCCapBankStates(secondsFrom1901)));
+                        executor->Execute();
+                        delete executor;
+                        executor = f.createExecutor(new CtiCCGeoAreasMsg(*store->getCCGeoAreas(secondsFrom1901)));
+                        executor->Execute();
+                        delete executor;
+                    }
+                    catch(...)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    }
                 }
             }
         }

@@ -187,32 +187,21 @@ void CtiCCService::Run()
         if ( trouble )
             Sleep(1000);
 
-        CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-        RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+        {
+            CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+            RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-        if ( !store->isValid() )
-        {
-            trouble = true;
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Unable to obtain connection to database...will keep trying." << endl;
-        }
-        else
-        {
-            if( _CC_DEBUG )
+            RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+            if ( !store->isValid() )
             {
+                trouble = true;
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Figuring initial estimated var values." << endl;
+                dout << RWTime() << " - Unable to obtain connection to database...will keep trying." << endl;
             }
-
-            for(ULONG i=0;i<ccSubstationBuses.entries();i++)
+            else
             {
-                CtiCCSubstationBus* current = (CtiCCSubstationBus*)ccSubstationBuses[i];
-                //if( current->getEstimatedVarLoadPointId() > 0 )
-                //{
-                current->figureEstimatedVarLoadPointValue();
-                //}
+                trouble = false;
             }
-            trouble = false;
         }
     }
     while ( trouble );
