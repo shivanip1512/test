@@ -222,9 +222,15 @@
             </td>
           </tr>
         </table>
-        <center>
-          <%= checker.getError("formaterror") %> 
-        </center>
+        <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
+          <tr>
+            <td width = "100%" class="TableCell" valign="top">
+              <p align="center"><%=checker.getError("amounterror")%>
+                <%= checker.getError("formaterror") %>
+                <%=checker.getError("nooffer")%>
+            </td>
+          </tr>
+        </table>
         <table width="640" border="0" cellspacing="0" cellpadding="5" align="center">
           <tr> 
             
@@ -249,7 +255,7 @@
                         <td width="61" class="TableCell"><struts:text property="prices" size="6" pattern="@real" value="<%= newPriceStrs[i] %>"/> 
                         </td>
                         <td width="61" class="TableCell"><%= amountStrs[i] %></td>
-                        <td width="61" class="TableCell"><struts:text property="amount" size="6" pattern="@real" value="<%= newAmountStrs[i] %>"/> 
+                        <td width="61" class="TableCell"><struts:text property="amount" size="6" pattern="@real" value="<%= newAmountStrs[i] %>"/><span class="TableCell"><%=checker.getError("amounterror"+String.valueOf(i))%></span></td>
                         </td>
                       </tr>
                       <%
@@ -278,7 +284,7 @@
                         <td width="61" class="TableCell"><struts:text property="prices" size="6" pattern="@real" value="<%= newPriceStrs[i] %>"/> 
                         </td>
                         <td width="61" class="TableCell"><%= amountStrs[i] %></td>
-                        <td width="61" class="TableCell"><struts:text property="amount" size="6" pattern="@real" value="<%= newAmountStrs[i] %>"/> 
+                        <td width="61" class="TableCell"><struts:text property="amount" size="6" pattern="@real" value="<%= newAmountStrs[i] %>"/><span class="TableCell"><%=checker.getError("amounterror"+String.valueOf(i))%></span></td>
                         </td>
                       </tr>
                       <%

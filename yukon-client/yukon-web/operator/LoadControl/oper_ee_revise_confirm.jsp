@@ -203,6 +203,9 @@
             </td>
           </tr>
         </table>
+        <center>
+          <%=checker.getError("offertooearly")%>        
+        </center>
         <table width="580"
     border="0" cellspacing="0" cellpadding="4" height="10" align="center">
           <tr> 

@@ -39,7 +39,6 @@ function confirm_form(f) {
                     <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
-                
               </tr>
             </table>
           </td>
@@ -89,142 +88,138 @@ function confirm_form(f) {
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-<table width="657" border="0" cellspacing="0" cellpadding="0" align="left">
-<struts:form name="checker" type="com.cannontech.validate.PageBean" action="oper_ee.jsp?tab=new" onSubmit="return confirm_form(this)">
-    <tr> 
-    <td width="650" class="Main" valign="top"> 
-      <p align="center"><br>
- 
-        <input type=hidden name="submitted" value="true">
-        <input type=hidden name="programname">
-        <b><cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - NEW OFFER</b></p>
-       
-        <table
-    width="600" border="0" cellspacing="0" cellpadding="5" align="center">
-          <tr> 
-                      <td width="21%" class="MainHeader" valign = "top"> 
-                        <p align=RIGHT><b>Program:</b> 
-                      </td>
-                      <td width="12%" class="MainHeader" valign = "top"><cti:select name="program" selectValues="<%= programIds %>" selectNames="<%= programNames %>" selectedValue="<%= checker.get(\"program\") %>"/></td>
-                      <td width="21%" class="MainHeader" valign = "top"> 
-                        <p align=RIGHT><b>Notify Date:</b> 
-                      </td>
-                      <td width="12%" class="MainHeader" valign = "top"><struts:text property="notifydate" size="10" pattern="@date"/><span class = "TableCell"><%= checker.getError("notifydate") %></span></td>
-                      <td width="21%" class="MainHeader" valign = "top"> 
-                        <p align=RIGHT><b>Notify Time:</b>&nbsp; 
-                      </td>
-                      <td width="12%" class="MainHeader" valign = "top"><struts:text property="notifytime" size="10" pattern="@time"/><span class = "TableCell"><%= checker.getError("notifytime") %></span></td>
-                      <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
-                      </td>
-          </tr> 
-          <tr> 
-                      <td width="21%" class="MainHeader" valign = "top"> 
-                        <p align=RIGHT><b>Control Date:</b> 
-                      </td>
-                      <td width="12%" class="MainHeader" valign = "top"><struts:text property="date" size="10" pattern="@date"/><span class = "TableCell"><%= checker.getError("date") %></span></td>
-                      <td width="21%" class="MainHeader" valign = "top"> 
-                        <p align=RIGHT><b>Expire Date:</b> 
-                      </td>
-                      <td width="12%" class="MainHeader" valign = "top"><struts:text property="expiredate" size="10" pattern="@date"/><span class = "TableCell"><%= checker.getError("expiredate") %></span></td>
-                      <td width="21%" class="MainHeader" valign = "top"> 
-                        <p align=RIGHT><b>Expire Time:</b>&nbsp; 
-                      </td>
-                      <td width="12%" class="MainHeader" valign = "top"><struts:text property="expiretime" size="10" pattern="@time"/><span class = "TableCell"><%= checker.getError("expiretime") %></span></td>
-                      <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
-                      </td>
-          </tr>
-        </table>
-        <%= checker.getError("formaterror") %>
-        <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
-          <tr> 
-            <td width="50%"> 
-              <p> 
-              <center>
-                <table width="310" border="1" cellspacing="0" cellpadding="2">
-                  <tr> 
-                    <td width="90" valign="TOP" class="HeaderCell">Hour Ending</td>
-                              <td width="110" valign="TOP" class="HeaderCell">Offer 
-                                Price in $ per kWh</td>
-                              <td width="110" valign="TOP" class="HeaderCell">Target 
-                                in kW</td>
-                  </tr>
-                  <%
-				for (int i = 0; i < 12; i++) {
-					String endingHourStr = String.valueOf(i+1) + ":00";
-			%>
-                  <tr> 
-                    <td width="90" valign="TOP" class="TableCell"><%= endingHourStr %></td>
-                    <td width="110" valign="TOP" class="TableCell">
-                      <struts:text property="prices" size="8" pattern="@real" value="<%= priceStrs[i] %>"/> </td>
-                    <td width="110" valign="TOP" class="TableCell">
-                      <struts:text property="amount" size="8" pattern="@real" value="<%= amountStrs[i] %>"/></td>
-                  </tr>
-                  <%
-				}
-			%>
-                </table>
-              </center>
-            </td>
-            <td width="50%"> 
-              <p> 
-              <center>
-                <table width="310" border="1" cellspacing="0" cellpadding="2">
-                  <tr> 
-                    <td width="90" valign="TOP" class="HeaderCell">Hour 
-                      Ending</td>
-                              <td width="110" valign="TOP" class="HeaderCell">Offer 
-                                Price in $ per kWh</td>
-                              <td width="110" valign="TOP" class="HeaderCell">Target 
-                                in kW</td>
-                  </tr>
-                  <%
-				for (int i = 12; i < 24; i++) {
-					String endingHourStr = String.valueOf(i+1) + ":00";
-			%>
-                  <tr> 
-                    <td width="90" valign="TOP" class="TableCell"><%= endingHourStr %></td>
-                    <td width="110" valign="TOP" class="TableCell">
-                      <struts:text property="prices" size="8" pattern="@real" value="<%= priceStrs[i] %>"/></td>
-                    <td width="110" valign="TOP" class="TableCell">
-                      <struts:text property="amount" size="8" pattern="@real" value="<%= amountStrs[i] %>"/></td>
-                  </tr>
-                  <%
-				}
-			%>
-                </table>
-              </center>
-            </td>
-          </tr>
-        </table>
-        <table
-    width="600" border="0" cellspacing="0" cellpadding="4" height="10" align="center">
-          <tr> 
-            <td width="385" height="10"> 
-              <p align=RIGHT> 
-                <!-- <img src="DittoButton.gif" width="73" height="22" alt="Ditto Button">&nbsp; -->
-            </td>
-            <td width="211" valign="TOP" height="10"> 
-              <div align="right"> 
-                <input type="submit" value="Confirm" border="0" name="image">
-              </div>
-            </td>
-            <td width="80" valign="TOP" height="10"> 
-              <div align="right"><input type = "button" value="Cancel" name = "cancel" onclick = "goBack()"></div>
-            </td>
-          </tr>
-        </table>
-        <p>&nbsp;</p>
-      </td>
-    </tr>
-  </table>
-  
- </struts:form>
-              </td>
-        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-    </tr>
+            <table width="657" border="0" cellspacing="0" cellpadding="0" align="left">
+              <struts:form name="checker" type="com.cannontech.validate.PageBean" action="oper_ee.jsp?tab=new" onSubmit="return confirm_form(this)">
+                <tr> 
+                  <td width="650" class="Main" valign="top"> 
+                    <p align="center"><br>
+                    <input type=hidden name="submitted" value="true">
+                    <input type=hidden name="programname">
+                    <b><cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - NEW OFFER</b></p>
+                    <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
+                      <tr> 
+                        <td width="21%" class="MainHeader" valign = "top"> 
+                          <p align=RIGHT><b>Program:</b> 
+                        </td>
+                        <td width="12%" class="MainHeader" valign = "top"><cti:select name="program" selectValues="<%= programIds %>" selectNames="<%= programNames %>" selectedValue="<%= checker.get(\"program\") %>"/></td>
+                        <td width="21%" class="MainHeader" valign = "top"> 
+                          <p align=RIGHT><b>Notify Date:</b> 
+                        </td>
+                        <td width="12%" class="MainHeader" valign = "top"><struts:text property="notifydate" size="10" pattern="@date"/>
+                          <span class = "TableCell"><%= checker.getError("notifydate")%></span>
+                        </td>
+                        <td width="21%" class="MainHeader" valign = "top"> 
+                          <p align=RIGHT><b>Notify Time:</b>&nbsp; 
+                        </td>
+                        <td width="12%" class="MainHeader" valign = "top"><struts:text property="notifytime" size="10" pattern="@time"/>
+                          <span class = "TableCell"><%= checker.getError("notifytime") %></span>
+                        </td>
+                        <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %></td>
+                      </tr> 
+                      <tr> 
+                        <td width="21%" class="MainHeader" valign = "top"> 
+                          <p align=RIGHT><b>Control Date:</b> 
+                        </td>
+                        <td width="12%" class="MainHeader" valign = "top"><struts:text property="date" size="10" pattern="@date"/>
+                          <span class = "TableCell"><%= checker.getError("date") %></span>
+                        </td>
+                        <td width="21%" class="MainHeader" valign = "top"> 
+                          <p align=RIGHT><b>Expire Date:</b> 
+                        </td>
+                        <td width="12%" class="MainHeader" valign = "top"><struts:text property="expiredate" size="10" pattern="@date"/>
+                          <span class = "TableCell"><%= checker.getError("expiredate") %></span>
+                        </td>
+                        <td width="21%" class="MainHeader" valign = "top"> 
+                          <p align=RIGHT><b>Expire Time:</b>&nbsp; 
+                        </td>
+                        <td width="12%" class="MainHeader" valign = "top"><struts:text property="expiretime" size="10" pattern="@time"/>
+                          <span class = "TableCell"><%= checker.getError("expiretime") %></span>
+                        </td>
+                        <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %></td>
+                      </tr>
+                    </table>
+                    <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
+                      <tr>
+                        <td width = "100%" class="TableCell" valign="top">
+            	          <p align="center"><%=checker.getError("amounterror")%>
+                            <%= checker.getError("formaterror") %>
+                            <%=checker.getError("nooffer")%>
+                        </td>
+                      </tr>
+                    </table>
+                    <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
+                      <tr> 
+                        <td width="50%"> 
+                          <p><center>
+                            <table width="310" border="1" cellspacing="0" cellpadding="2">
+                              <tr> 
+                                <td width="90" valign="TOP" class="HeaderCell">Hour Ending</td>
+                                <td width="110" valign="TOP" class="HeaderCell">Offer Price in $ per kWh</td>
+                                <td width="110" valign="TOP" class="HeaderCell">Target in kW</td>
+                              </tr>
+                              <%
+                              for (int i = 0; i < 12; i++) {
+                                String endingHourStr = String.valueOf(i+1) + ":00";
+                              %>
+                                <tr> 
+                                  <td width="90" valign="TOP" class="TableCell"><%= endingHourStr %></td>
+                                  <td width="110" valign="TOP" class="TableCell"><struts:text property="prices" size="8" pattern="@real" value="<%= priceStrs[i] %>"/></td>
+                                  <td width="110" valign="TOP" class="TableCell"><struts:text property="amount" size="8" pattern="@real" value="<%= amountStrs[i] %>"/><span class="TableCell"><%=checker.getError("amounterror"+String.valueOf(i))%></span></td>
+                                </tr>
+                              <% } %>
+                            </table>
+                          </center>
+                        </td>
+                        <td width="50%"> 
+                          <p><center>
+                            <table width="310" border="1" cellspacing="0" cellpadding="2">
+                              <tr> 
+                                <td width="90" valign="TOP" class="HeaderCell">Hour Ending</td>
+                                <td width="110" valign="TOP" class="HeaderCell">Offer Price in $ per kWh</td>
+                                <td width="110" valign="TOP" class="HeaderCell">Target in kW</td>
+                              </tr>
+                              <%
+                              for (int i = 12; i < 24; i++) {
+                                String endingHourStr = String.valueOf(i+1) + ":00";
+                              %>
+                                <tr> 
+                                  <td width="90" valign="TOP" class="TableCell"><%= endingHourStr %></td>
+                                  <td width="110" valign="TOP" class="TableCell"><struts:text property="prices" size="8" pattern="@real" value="<%= priceStrs[i] %>"/></td>
+                                  <td width="110" valign="TOP" class="TableCell"><struts:text property="amount" size="8" pattern="@real" value="<%= amountStrs[i] %>"/><span class="TableCell"><%=checker.getError("amounterror"+String.valueOf(i))%></span></td>
+                                </tr>
+                              <% } %>
+                            </table>
+                          </center>
+                        </td>
+                      </tr>
+                    </table>
+                    <table width="600" border="0" cellspacing="0" cellpadding="4" height="10" align="center">
+                      <tr> 
+                        <td width="385" height="10"> 
+                          <p align=RIGHT> 
+                            <!-- <img src="DittoButton.gif" width="73" height="22" alt="Ditto Button">&nbsp; -->
+                        </td>
+                        <td width="211" valign="TOP" height="10"> 
+                          <div align="right"> 
+                            <input type="submit" value="Confirm" border="0" name="image">
+                          </div>
+                        </td>
+                        <td width="80" valign="TOP" height="10"> 
+                          <div align="right"><input type = "button" value="Cancel" name = "cancel" onclick = "goBack()"></div>
+                        </td>
+                      </tr>
+                    </table>
+                    <p>&nbsp;</p>
+                  </td>
+                </tr>
+              </table>
+            </struts:form>
+          </td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+        </tr>
       </table>
     </td>
-	</tr>
+  </tr>
 </table>
 <br>
 </body>

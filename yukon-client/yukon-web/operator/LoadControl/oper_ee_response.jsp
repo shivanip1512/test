@@ -182,8 +182,7 @@
                 <%= customer.getCompanyName() %></b><br>
               </p>
             </div> 
-            <table width="600" border="0" cellspacing="0"
-    cellpadding="5" align="center">
+            <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
           <tr> 
             <td width="75" class="MainHeader"> 
                   <p align=RIGHT>&nbsp;<b>Offer ID: </b>
@@ -235,7 +234,7 @@
                   if( offer != null )
                   {
 					    double priceVal = ((LMEnergyExchangeHourlyOffer) revision.getEnergyExchangeHourlyOffers().elementAt(h)).getPrice().doubleValue() / 100;
-                        price = String.valueOf(priceVal);  
+                        price = priceFormat.format(priceVal);  
                   }
 
                   if( reply != null && reply.getEnergyExchangeHourlyCustomer() != null &&
@@ -282,7 +281,7 @@
                   if( offer != null )
                   {
 					  double priceVal = ((LMEnergyExchangeHourlyOffer) revision.getEnergyExchangeHourlyOffers().elementAt(h)).getPrice().doubleValue() / 100;
-					  price = String.valueOf(priceVal);  
+					  price = priceFormat.format(priceVal);  
                   }
 
                   if( reply != null && reply.getEnergyExchangeHourlyCustomer() != null &&

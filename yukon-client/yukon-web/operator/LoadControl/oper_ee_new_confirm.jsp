@@ -204,8 +204,8 @@
               </td>
             </tr>
           </table>
-          <table width="580"
-    border="0" cellspacing="0" cellpadding="4" height="10">
+          <%=checker.getError("offertooearly")%>
+          <table width="580" border="0" cellspacing="0" cellpadding="4" height="10">
             <tr> 
                         <td width="50%" height="10" valign="top"> 
                           <p align=RIGHT> 

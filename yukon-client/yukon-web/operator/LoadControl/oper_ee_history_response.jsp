@@ -214,8 +214,8 @@
 %>
                   <tr> 
                     <td width="110" class="TableCell"><%= time %></td>
-                    <td width="110" class="TableCell"><%= prices[i] %></td>
-                    <td width="110" class="TableCell"><%= amount[i] %></td>
+                    <td width="110" class="TableCell"><%= priceFormat.format(prices[i]) %></td>
+                    <td width="110" class="TableCell"><%= numberFormat.format(amount[i]) %></td>
                   </tr>
                   <%
 	}
@@ -238,8 +238,8 @@
 %>
                   <tr> 
                     <td width="110" class="TableCell"><%= time %></td>
-                    <td width="110" class="TableCell"><%= prices[i] %></td>
-                    <td width="110" class="TableCell"><%= amount[i] %></td>
+                    <td width="110" class="TableCell"><%= priceFormat.format(prices[i]) %></td>
+                    <td width="110" class="TableCell"><%= numberFormat.format(amount[i]) %></td>
                   </tr>
                   <%
 	}
@@ -249,7 +249,7 @@
             </tr>
           </table>
         </div>
-            <p align="center" class="MainHeader"><b>TOTAL: <%= totalCommitted %> 
+            <p align="center" class="MainHeader"><b>TOTAL: <%= numberFormat.format(totalCommitted) %> 
               kWh</b></p>
             <p align="center" class="MainHeader"><a href="<%= referrer %>" class="Link1"><b>Back</b></a><br><br>
           </td>

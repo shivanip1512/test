@@ -48,7 +48,8 @@
 	java.text.SimpleDateFormat eeDateFormat = new java.text.SimpleDateFormat("MM/dd/yy");
 	java.text.SimpleDateFormat eeTimeFormat = new java.text.SimpleDateFormat("HH:mm");
 	java.text.SimpleDateFormat eeDateTimeFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
-	java.text.DecimalFormat priceFormat = new java.text.DecimalFormat("#,##0.00");
+	java.text.DecimalFormat priceFormat = new java.text.DecimalFormat("$#,##0.00");
+	java.text.DecimalFormat priceFormat_NoDollar = new java.text.DecimalFormat("#,##0.00");
 	java.text.DecimalFormat numberFormat = new java.text.DecimalFormat("#,###");	//Value can only be in whole KW, therefore decimal places are not needed	
 
 	eeDateFormat.setTimeZone(tz);
@@ -135,59 +136,95 @@
 			amountStrs = (String[]) newAmountStrs.clone();
 			priceStrs = (String[]) newPriceStrs.clone();
 
+			boolean isTooSmall = false;
 			double totAmount = 0;
+			int startOfferHour = -1;
+			
 			for (int i = 0; i < 24; i++)
 			{
 				try {
+					if( newAmountStrs[i].length() == 0)
+						newAmountStrs[i] = "0";
+					if( newPriceStrs[i].length() == 0)
+						newPriceStrs[i] = "0";
 					double amountVal = numberFormat.parse(newAmountStrs[i]).doubleValue();
 					double priceVal = 0;
 					if( !newPriceStrs[i].equalsIgnoreCase("0"))
-					  priceVal = priceFormat.parse(newPriceStrs[i]).doubleValue();
+					{
+						try{
+						  priceVal = priceFormat_NoDollar.parse(newPriceStrs[i]).doubleValue();
+						}
+						catch (java.text.ParseException e) {
+						  priceVal = priceFormat.parse(newPriceStrs[i]).doubleValue();
+						}
+					}
+					
 					totAmount += amountVal;
 
 					if (amountVal == 0)
 						amountStrs[i] = "----";
-					else
+					else {
+						if( amountVal < 500 ){
+							isTooSmall = true;
+							checker.setError("amounterror" + String.valueOf(i), "");
+						}
 						amountStrs[i] = numberFormat.format(amountVal);
+					}
 					if (priceVal == 0)
 						priceStrs[i] = "----";
 					else
+					{
 						priceStrs[i] = priceFormat.format(priceVal);
+											
+						//We have a price, lets save this start offer hour
+						if( startOfferHour < 0)
+							startOfferHour = i;
+					}
 				}
 				catch (NumberFormatException ne) {
 					checker.setError("formaterror", "Some of the values below have invalid format");
 					response.sendRedirect("oper_ee.jsp?tab=new&error=true");
 					return;
 				}
+				catch (java.text.ParseException pe) {
+					checker.setError("formaterror", "Some of the values below have invalid format or characters");
+					response.sendRedirect("oper_ee.jsp?tab=new&error=true");
+					return;
+				}
 			}
+
 			totAmountStr = String.valueOf(totAmount);
-		}
-		else {
-			com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg msg =
-				new com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg();
-            msg.setCommand(new Integer( com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg.NEW_OFFER ));
-            msg.setYukonID(new Integer( request.getParameter("program") ));
-			msg.setAdditionalInfo("(none)");
-System.out.println("offerDateStr: " + request.getParameter("date") + " 00:00");
-System.out.println("notifyDateTimeStr: " + request.getParameter("notifydate") + " " + request.getParameter("notifytime"));
-System.out.println("expireDateTimeStr: " + request.getParameter("expiredate") + " " + request.getParameter("expiretime"));
-			
-			String offerDateStr = request.getParameter("date");
-			String notifyDateTimeStr = request.getParameter("notifydate") + " " + request.getParameter("notifytime");
-			String expireDateTimeStr = request.getParameter("expiredate") + " " + request.getParameter("expiretime");
-			
-			java.util.Date offerDate = ServletUtil.parseDateStringLiberally(offerDateStr);
-			java.util.Date notifyDateTime = eeDateTimeFormat.parse(notifyDateTimeStr);
-			java.util.Date expireDateTime = eeDateTimeFormat.parse(expireDateTimeStr);
-			
-System.out.println("sending: " + offerDate);
-System.out.println("sending: " + notifyDateTime);
-System.out.println("sending: " + expireDateTime);
+
+			if( isTooSmall){
+				checker.setError("amounterror", "Offer amount(s) must be equal to or greater than 500kW");
+				response.sendRedirect("oper_ee.jsp?tab=new&error=true");
+				return;
+			}
+			if( startOfferHour < 0){
+				checker.setError("nooffer", "No hourly prices greater than $0.00 were found");
+				response.sendRedirect("oper_ee.jsp?tab=new&error=true");
+				return;
+			}			
+
+			java.util.Date offerDate = ServletUtil.parseDateStringLiberally(dateStr + " 00:00");
+			java.util.Date notifyDateTime = eeDateTimeFormat.parse(notifyDateStr +" " + notifyTimeStr);
+			java.util.Date expireDateTime = eeDateTimeFormat.parse(expireDateStr +" " + expireTimeStr);
 			
 			java.util.Calendar offerCal = java.util.Calendar.getInstance();
 			offerCal.setTime(offerDate);
+			offerCal.set(java.util.Calendar.HOUR_OF_DAY, startOfferHour);
+			java.util.Date startOfferDateTime = offerCal.getTime();
+			
+			offerCal = java.util.Calendar.getInstance();
+			offerCal.setTime(offerDate);
 			offerCal.add(java.util.Calendar.DATE, 1);
 			java.util.Date endOfOfferDate = offerCal.getTime();
+
+System.out.println("sending- Offer Date  : " + offerDate);
+System.out.println("sending- Notify Date : " + notifyDateTime);
+System.out.println("sending- Expire Date : " + expireDateTime);
+System.out.println("sending- Start Offer Date : " + startOfferDateTime);
+System.out.println("sending- EndOf Offer Date : " + endOfOfferDate);
 
 			if (!notifyDateTime.before(expireDateTime))
 			{
@@ -201,44 +238,86 @@ System.out.println("sending: " + expireDateTime);
 			}
 			else if (!expireDateTime.before(endOfOfferDate))
 			{
-				if (checker == null)
+				if (checker == null) {
 					response.sendRedirect("oper_ee.jsp");
+                    return;
+                }
 				checker.setError("expiretime", "Expiration time must be earlier than the end of offer day");
 				response.sendRedirect("oper_ee.jsp?tab=new&error=true");
 				return;
 			}
-			else {
-                
-                msg.setOfferID(new Integer(0) ); //irrelevant
-				msg.setOfferDate( offerDate );
-				msg.setNotificationDateTime( notifyDateTime );
-				msg.setExpirationDateTime( expireDateTime );
+			else if (!notifyDateTime.before(startOfferDateTime))
+			{
+				if (checker == null) {
+					response.sendRedirect("oper_ee.jsp");
+                    return;
+                }
+				checker.setError("offertoearly", "Warning: First hourly offer is earlier than the notification time");
+			}			
+		}
+		else {
+			com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg msg =
+				new com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg();
+            msg.setCommand(new Integer( com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg.NEW_OFFER ));
+            msg.setYukonID(new Integer( request.getParameter("program") ));
+			msg.setAdditionalInfo("(none)");
 
-				amountStrs = request.getParameterValues("amount");
-				priceStrs = request.getParameterValues("prices");
+			java.util.Date offerDate = ServletUtil.parseDateStringLiberally(request.getParameter("date") + " 00:00");
+			java.util.Date notifyDateTime = eeDateTimeFormat.parse(request.getParameter("notifydate") + " " + request.getParameter("notifytime"));
+			java.util.Date expireDateTime = eeDateTimeFormat.parse(request.getParameter("expiredate") + " " + request.getParameter("expiretime"));
+			
+System.out.println("sending- Offer Date  : " + offerDate);
+System.out.println("sending- Notify Date : " + notifyDateTime);
+System.out.println("sending- Expire Date : " + expireDateTime);
 
-				Double[] amount = new Double[24];
-				Integer[] prices = new Integer[24];
-				for (int i = 0; i < 24; i++)
-				{
+            msg.setOfferID(new Integer(0) ); //irrelevant
+			msg.setOfferDate( offerDate );
+			msg.setNotificationDateTime( notifyDateTime );
+			msg.setExpirationDateTime( expireDateTime );
+
+			amountStrs = request.getParameterValues("amount");
+			priceStrs = request.getParameterValues("prices");
+
+			Double[] amount = new Double[24];
+			Integer[] prices = new Integer[24];
+			for (int i = 0; i < 24; i++)
+			{
+				try{
 					amount[i] = new Double(numberFormat.parse(amountStrs[i]).doubleValue());
 					int centVal = 0;
 					if( !priceStrs[i].equalsIgnoreCase("0"))
-					  centVal = (int) (priceFormat.parse(priceStrs[i]).doubleValue() * 100);
+					{
+						try{
+						  centVal = (int) (priceFormat.parse(priceStrs[i]).doubleValue() * 100);
+						}
+						catch (java.text.ParseException e) {
+						  centVal = (int) (priceFormat_NoDollar.parse(priceStrs[i]).doubleValue() * 100);
+						}
+					}
 					prices[i] = new Integer(centVal);
 				}
-
-				msg.setAmountRequested(amount);
-				msg.setPricesOffered(prices);
-
-				com.cannontech.loadcontrol.LoadControlClientConnection conn = cs.getConnection();
-				conn.write(msg);
-
-				if (checker != null)
-					checker.clear();
-				response.sendRedirect("oper_ee.jsp?pending=new");
-				return;
+				catch (NumberFormatException ne) {
+					checker.setError("formaterror", "Some of the values below have an invalid format or invalid characters.");
+					response.sendRedirect("oper_ee.jsp?tab=new&error=true");
+					return;
+				}
+				catch (java.text.ParseException pe) {
+					checker.setError("formaterror", "Some of the values below have invalid format or characters");
+					response.sendRedirect("oper_ee.jsp?tab=new&error=true");
+					return;
+				}
 			}
+
+			msg.setAmountRequested(amount);
+			msg.setPricesOffered(prices);
+
+			com.cannontech.loadcontrol.LoadControlClientConnection conn = cs.getConnection();
+			conn.write(msg);
+
+			if (checker != null)
+				checker.clear();
+			response.sendRedirect("oper_ee.jsp?pending=new");
+				return;
 		}
 	}
 	else if (tab.equalsIgnoreCase("revise"))
@@ -300,55 +379,91 @@ System.out.println("sending: " + expireDateTime);
 			priceStrs = (String[]) newPriceStrs.clone();
 
 			double totAmount = 0;
+			boolean isTooSmall = false;
+			int startOfferHour = -1;
+			
 			for (int i = 0; i < 24; i++)
 			{
 				try {
+					if( newAmountStrs[i].length() == 0)
+						newAmountStrs[i] = "0";
+					if( newPriceStrs[i].length() == 0)
+						newPriceStrs[i] = "0";
 					double amountVal = numberFormat.parse(newAmountStrs[i]).doubleValue();
-					
 					double priceVal = 0;
 					if( !newPriceStrs[i].equalsIgnoreCase("0"))
-					  priceVal = priceFormat.parse(newPriceStrs[i]).doubleValue();
+					{
+						try{
+						  priceVal = priceFormat.parse(newPriceStrs[i]).doubleValue();
+						}
+						catch (java.text.ParseException e) {
+						  priceVal = priceFormat_NoDollar.parse(newPriceStrs[i]).doubleValue();
+						}
+					}
 
 					totAmount += amountVal;
 
 					if (amountVal == 0)
 						amountStrs[i] = "----";
 					else
+						if( amountVal < 500){
+							isTooSmall = true;
+							checker.setError("amounterror" + String.valueOf(i), "");
+						}
 						amountStrs[i] = numberFormat.format(amountVal);
 					if (priceVal == 0)
 						priceStrs[i] = "----";
-					else
+					else{
 						priceStrs[i] = priceFormat.format(priceVal);
+
+						//We have a price, lets save this start offer hour
+						if( startOfferHour < 0)
+							startOfferHour = i;
+					}
 				}
 				catch (NumberFormatException ne) {
 					checker.setError("formaterror", "Some of the values below have invalid format");
 					response.sendRedirect("oper_ee.jsp?tab=revise&prog=" + checker.get("prog") + "&offer=" + checker.get("offer") + "&rev=" + checker.get("rev") + "&error=true");
 					return;
 				}
-			}
-			totAmountStr = String.valueOf(totAmount);
-		}
-		else {
-			com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg msg =
-				new com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg();
-            msg.setCommand(new Integer( com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg.OFFER_REVISION ));
-            msg.setYukonID(new Integer( request.getParameter("prog") ));            
-			msg.setAdditionalInfo("(none)");
+				catch (java.text.ParseException pe) {
+					checker.setError("formaterror", "Some of the values below have invalid format or characters");
+					response.sendRedirect("oper_ee.jsp?tab=revise&prog=" + checker.get("prog") + "&offer=" + checker.get("offer") + "&rev=" + checker.get("rev") + "&error=true");
+					return;
+				}
 
-			String offerDateStr = request.getParameter("date") + " 00:00";
-			//String endOfOfferDateStr = request.getParameter("date") + " 23:59";
-			String notifyDateTimeStr = request.getParameter("notifydate") + " " + request.getParameter("notifytime");
-			String expireDateTimeStr = request.getParameter("expiredate") + " " + request.getParameter("expiretime");
+			}
 			
-			java.util.Date offerDate = eeDateTimeFormat.parse(offerDateStr);
-			//java.util.Date endOfOfferDate = new java.util.Date(endOfOfferDateStr);			
-			java.util.Date notifyDateTime = eeDateTimeFormat.parse(notifyDateTimeStr);
-			java.util.Date expireDateTime = eeDateTimeFormat.parse(expireDateTimeStr);
+			totAmountStr = String.valueOf(totAmount);
+			if( isTooSmall){
+				checker.setError("amounterror", "Offer amount(s) must be equal to or greater than 500kW");
+				response.sendRedirect("oper_ee.jsp?tab=revise&prog=" + checker.get("prog") + "&offer=" + checker.get("offer") + "&rev=" + checker.get("rev") + "&error=true");
+				return;
+			}
+			if( startOfferHour < 0){
+				checker.setError("nooffer", "No hourly prices greater than $0.00 were found");
+				response.sendRedirect("oper_ee.jsp?tab=revise&prog=" + checker.get("prog") + "&offer=" + checker.get("offer") + "&rev=" + checker.get("rev") + "&error=true");
+				return;
+			}			
+			java.util.Date offerDate = ServletUtil.parseDateStringLiberally(dateStr + " 00:00");
+			java.util.Date notifyDateTime = eeDateTimeFormat.parse(notifyDateStr +" " + notifyTimeStr);
+			java.util.Date expireDateTime = eeDateTimeFormat.parse(expireDateStr +" " + expireTimeStr);
 			
 			java.util.Calendar offerCal = java.util.Calendar.getInstance();
 			offerCal.setTime(offerDate);
+			offerCal.set(java.util.Calendar.HOUR_OF_DAY, startOfferHour);
+			java.util.Date startOfferDateTime = offerCal.getTime();
+			
+			offerCal = java.util.Calendar.getInstance();
+			offerCal.setTime(offerDate);
 			offerCal.add(java.util.Calendar.DATE, 1);
 			java.util.Date endOfOfferDate = offerCal.getTime();
+
+System.out.println("sending- Offer Date  : " + offerDate);
+System.out.println("sending- Notify Date : " + notifyDateTime);
+System.out.println("sending- Expire Date : " + expireDateTime);
+System.out.println("sending- Start Offer Date : " + startOfferDateTime);
+System.out.println("sending- EndOf Offer Date : " + endOfOfferDate);
 
 			if (!notifyDateTime.before(expireDateTime))
 			{
@@ -364,43 +479,80 @@ System.out.println("sending: " + expireDateTime);
 			{
 				if (checker == null) {
 					response.sendRedirect("oper_ee.jsp");
-					return;
-				}
+                    return;
+                }
 				checker.setError("expiretime", "Expiration time must be earlier than the end of offer day");
 				response.sendRedirect("oper_ee.jsp?tab=new&error=true");
 				return;
 			}
-			else {
-                msg.setOfferID(new Integer(checker.getObject("offer").toString()));
-				msg.setOfferDate( offerDate );
-				msg.setNotificationDateTime( notifyDateTime );
-				msg.setExpirationDateTime( expireDateTime );
+			else if (!notifyDateTime.before(startOfferDateTime))
+			{
+				if (checker == null) {
+					response.sendRedirect("oper_ee.jsp");
+                    return;
+                }
+				checker.setError("offertooearly", "Warning: First hourly offer is earlier than the notification time");
+			}			
+		}
+		else {
+			com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg msg =
+				new com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg();
+            msg.setCommand(new Integer( com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg.OFFER_REVISION ));
+            msg.setYukonID(new Integer( request.getParameter("prog") ));            
+			msg.setAdditionalInfo("(none)");
 
-				amountStrs = request.getParameterValues("amount");
-				priceStrs = request.getParameterValues("prices");
+			java.util.Date offerDate = eeDateTimeFormat.parse(request.getParameter("date") + " 00:00");
+			java.util.Date notifyDateTime = eeDateTimeFormat.parse(request.getParameter("notifydate") + " " + request.getParameter("notifytime"));
+			java.util.Date expireDateTime = eeDateTimeFormat.parse(request.getParameter("expiredate") + " " + request.getParameter("expiretime"));
+			
+            msg.setOfferID(new Integer(checker.getObject("offer").toString()));
+			msg.setOfferDate( offerDate );
+			msg.setNotificationDateTime( notifyDateTime );
+			msg.setExpirationDateTime( expireDateTime );
 
-				Double[] amount = new Double[24];
-				Integer[] prices = new Integer[24];
-				for (int i = 0; i < 24; i++)
-				{
+			amountStrs = request.getParameterValues("amount");
+			priceStrs = request.getParameterValues("prices");
+
+			Double[] amount = new Double[24];
+			Integer[] prices = new Integer[24];
+			for (int i = 0; i < 24; i++)
+			{
+				try{
 					amount[i] = new Double(numberFormat.parse(amountStrs[i]).doubleValue());
 					int centVal = 0;
 					if( !priceStrs[i].equalsIgnoreCase("0"))
-					  centVal = (int) Math.rint(priceFormat.parse(priceStrs[i]).doubleValue() * 100);
+					{
+						try{
+						  centVal = (int) (priceFormat.parse(priceStrs[i]).doubleValue() * 100);						
+						}
+						catch (java.text.ParseException e) {
+						  centVal = (int) (priceFormat_NoDollar.parse(priceStrs[i]).doubleValue() * 100);
+						}
+					}
 					prices[i] = new Integer(centVal);
 				}
-
-				msg.setAmountRequested(amount);
-				msg.setPricesOffered(prices);
-
-				com.cannontech.loadcontrol.LoadControlClientConnection conn = cs.getConnection();
-				conn.write(msg);
-               
-				if (checker != null)
-					checker.clear();
-				response.sendRedirect("oper_ee.jsp?pending=revise");
-				return;
+				catch (NumberFormatException ne) {
+					checker.setError("formaterror", "Some of the values below have an invalid format or invalid characters.");
+					response.sendRedirect("oper_ee.jsp?tab=new&error=true");
+					return;
+				}
+				catch (java.text.ParseException pe) {
+					checker.setError("formaterror", "Some of the values below have invalid format or characters");
+					response.sendRedirect("oper_ee.jsp?tab=new&error=true");
+					return;
+				}
 			}
+
+			msg.setAmountRequested(amount);
+			msg.setPricesOffered(prices);
+
+			com.cannontech.loadcontrol.LoadControlClientConnection conn = cs.getConnection();
+			conn.write(msg);
+               
+			if (checker != null)
+				checker.clear();
+			response.sendRedirect("oper_ee.jsp?pending=revise");
+			return;
 		}
 	}
 	else if (tab.equalsIgnoreCase("close"))
