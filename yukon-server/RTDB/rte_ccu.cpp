@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/05/23 22:11:23 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/07/14 18:26:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,7 +36,10 @@ using namespace std;
 #include "prot_versacom.h"
 #include "prot_emetcon.h"
 
-static INT NoQueing = FALSE;
+#include "cparms.h"
+
+static INT NoQueingVersacom = gConfigParms.getValueAsInt("VERSACOM_CCU_NOQUEUE", FALSE);
+static INT NoQueingDLC;
 
 INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                 CtiCommandParser               &parse,
@@ -117,6 +120,11 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
     OutMessage->Remote         = Device->getAddress();
     if(!OutMessage->Retry)     OutMessage->Retry = 2;
 
+    if( parse.getiValue("type") == ProtocolVersacomType && parse.isKeyValid("noqueue") )
+    {
+        OutMessage->EventCode |= DTRAN;
+    }
+
     /*
      * From this point on the OutMessage will be an EMETCON type.
      * Do not use the VSt struct from it
@@ -189,37 +197,32 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
                 memcpy (BSt.Message, VSt.Message + 3, BSt.Length);
             }
             else
+            {
                 BSt.Length = 0;
+            }
 
             /* Things are now ready to go */
             switch( Device->getType() )
             {
-            case TYPE_CCU700:
-            case TYPE_CCU710:
+                case TYPE_CCU700:
+                case TYPE_CCU710:
                 {
                     NewOutMessage->EventCode &= ~QUEUED;
                     NewOutMessage->EventCode |= (DTRAN | BWORD);
 
                     /***** FALL THROUGH ** FALL THROUGH *****/
                 }
-            case TYPE_CCU711:
+                case TYPE_CCU711:
                 {
                     /* check if queing is allowed */
-                    if(NoQueing)
+                    if(NoQueingVersacom)
                     {
                         NewOutMessage->EventCode &= ~QUEUED;
                         NewOutMessage->EventCode |= (DTRAN | BWORD);
                     }
                     else
                     {
-                        // ACH FIX FIX FIX 051001 CGP: Must allow for queueing!
-
-#if 0
                         NewOutMessage->EventCode |= BWORD;
-#else
-                        NewOutMessage->EventCode &= ~QUEUED;
-                        NewOutMessage->EventCode |= (DTRAN | BWORD);
-#endif
                     }
 
                     if(NewOutMessage->EventCode & DTRAN)
@@ -235,9 +238,9 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
                         BPreamble (NewOutMessage->Buffer.OutMessage+PREIDLEN, BSt, cwordCount);
 
                         /* Calculate the length of the message */
-                        NewOutMessage->OutLength = PREAMLEN + (cwordCount + 1) * BWORDLEN + 3;
+                        NewOutMessage->OutLength  = PREAMLEN + (cwordCount + 1) * BWORDLEN + 3;
                         NewOutMessage->EventCode |= DTRAN & BWORD;
-                        NewOutMessage->TimeOut   = TIMEOUT + BSt.DlcRoute.Stages * (cwordCount + 1);
+                        NewOutMessage->TimeOut    = TIMEOUT + BSt.DlcRoute.Stages * (cwordCount + 1);
 
                         /* load the IDLC specific stuff for DTRAN */
                         NewOutMessage->Source                = 0;
@@ -252,6 +255,7 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
                         /* Load up the B word stuff */
                         NewOutMessage->Buffer.BSt = BSt;
                     }
+
                     break;
                 }
             }
@@ -314,40 +318,7 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
         /* Load up the hunks of the B structure that we know/need */
         OutMessage->Buffer.BSt.Port                = Device->getPortID();
         OutMessage->Buffer.BSt.Remote              = Device->getAddress();
-        if( Device != NULL )
-        {
-            switch( ((CtiDeviceIDLC *)Device)->getIDLC().getCCUAmpUseType() )
-            {
-                default:
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-                case RouteAmpAlternating:
-                case RouteAmpAltFail:
-                case RouteAmpDefault1Fail2:
-                case RouteAmp1:
-                    OutMessage->Buffer.BSt.DlcRoute.Amp = 0;
-                    break;
-
-                case RouteAmpDefault2Fail1:
-                case RouteAmp2:
-                    OutMessage->Buffer.BSt.DlcRoute.Amp = 1;
-                    break;
-
-            }
-        }
-        else
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Device == NULL, defaulting to amp card 1" << endl;
-            }
-
-            OutMessage->Buffer.BSt.DlcRoute.Amp        = 0; // Carrier.getAmpUseType();
-        }
-
+        OutMessage->Buffer.BSt.DlcRoute.Amp        = ((CtiDeviceIDLC *)Device)->getIDLC().getAmp();
         OutMessage->Buffer.BSt.DlcRoute.Feeder     = Carrier.getBus();
         OutMessage->Buffer.BSt.DlcRoute.RepVar     = Carrier.getCCUVarBits();
         OutMessage->Buffer.BSt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
@@ -400,7 +371,7 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
             case TYPE_CCU711:
                 {
                     /* check if queing is allowed */
-                    if(NoQueing)
+                    if(NoQueingDLC)
                     {
                         NewOutMessage->EventCode &= ~QUEUED;
                         NewOutMessage->EventCode |= (DTRAN  | BWORD);
