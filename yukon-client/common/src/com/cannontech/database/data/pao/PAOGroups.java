@@ -512,6 +512,39 @@ public final static int getPAOClass( String category, String paoClass )
 /**
  * This method was created in VisualAge.
  * @return int
+ * @param classString java.lang.String
+ */
+public final static String getPAOClass( int category, int paoClass )
+{
+
+	//Maybe change the DeviceClass to PAOClasses and have every PaoClass int be unique
+	if( category == CAT_CAPCONTROL )
+	{
+		return PAOGroups.STRING_CAT_CAPCONTROL;
+	}
+	if( category == CAT_DEVICE
+		 || category == CAT_LOADCONTROL )
+	{
+		return DeviceClasses.getClass( paoClass );
+	}
+	else if( category == CAT_ROUTE )
+	{
+		return PAOGroups.STRING_CAT_ROUTE;
+	}
+	else if( category == CAT_PORT )
+	{
+		return PAOGroups.STRING_CAT_PORT;
+	}
+	else if( category == CAT_CUSTOMER )
+	{
+		return PAOGroups.STRING_CAT_CUSTOMER;
+	}
+	else
+		return STRING_INVALID;
+}
+/**
+ * This method was created in VisualAge.
+ * @return int
  */
 public final static int getPAOType( String category, String paoType )
 {

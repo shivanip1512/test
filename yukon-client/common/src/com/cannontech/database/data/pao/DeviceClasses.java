@@ -79,6 +79,49 @@ public final static int getClass(String classString) {
 	else
 		return INVALID;
 }
+
+/**
+ * This method was created in VisualAge.
+ * @return int
+ * @param classString java.lang.String
+ */
+public final static String getClass(int classInt)
+{
+	switch( classInt )
+	{
+		case RTU:
+			return STRING_CLASS_RTU;
+
+		case TRANSMITTER:
+			return STRING_CLASS_TRANSMITTER;
+
+		case METER:
+			return STRING_CLASS_METER;
+
+		case CARRIER:
+			return STRING_CLASS_CARRIER;
+
+		case IED:
+			return STRING_CLASS_IED;
+
+		case GROUP:
+			return STRING_CLASS_GROUP;
+
+		case SYSTEM:
+			return STRING_CLASS_SYSTEM;
+
+		case VIRTUAL:
+			return STRING_CLASS_VIRTUAL;
+
+		case LOADMANAGEMENT:
+			return STRING_CLASS_LOADMANAGER;
+			
+		default:
+			return PAOGroups.STRING_INVALID;
+	}
+
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (1/10/2001 5:08:54 PM)
