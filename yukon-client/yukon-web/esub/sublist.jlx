@@ -1,0 +1,48 @@
+JLoox 3.0.0
+"UTF8"
+A "NCS" 0 1 0 0 ffffffff 1 ! 0
+!
+"Default" 0 32
+0 0 001
+1
+"0" 1
+
+5
+
+com.cannontech.esub.element.DrawingMetaElement
+! 111101100 0;0;18.640625;2.03125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C $ 0 0
+0 0
+"Default" 0 32 "_"
+1 1024 768 -1
+
+com.cannontech.esub.element.StaticText
+! 110101100 20;20;283.269531;22.234375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 24 "Esubstation Test Display"
+1 "Arial Bold" 24 255 255 255 !
+
+com.cannontech.esub.element.StaticText
+! 110101100 20;50;281.666016;13.140625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 14 "If you made it here esubstation is working!"
+1 "Arial Bold" 14 255 255 255 !
+
+com.cannontech.esub.element.StaticText
+! 110101100 208;152;595.646484;11.265625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "To get started creating new displays you might want to start by editing this file in the Esubstation Editor."
+1 "Arial Bold" 12 255 255 255 !
+
+com.cannontech.esub.element.StaticText
+! 110101100 208;168;546.357422;11.265625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "You can normally find this file on the Yukon server in c:\yukon\server\web\webapps\yukon\esub"
+1 "Arial Bold" 12 255 255 255 !
+
+
+0
