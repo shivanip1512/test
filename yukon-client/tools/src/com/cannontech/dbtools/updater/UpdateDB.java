@@ -165,6 +165,45 @@ public class UpdateDB
 	}
 
 	/**
+	 * Handles any include statements by reading in the included file
+	 * @param token
+	 * @param file
+	 * @return
+	 */	
+	private UpdateLine[] handleIncludeMeta( final String token, final File file )
+	{
+		UpdateLine[] starsLines = null;
+
+		if( token.indexOf(DBMSDefines.STARS_INC) > 0 
+			 && starsExists() )
+		{
+			try
+			{
+				//d:/eclipse/head/yukon-database/dbupdates/sqlserver
+				File starsFile = new File( file.getParent() + "/stars/" +
+					file.getName().substring(0, file.getName().length()-4) + "-stars.sql" );
+					
+				getIMessageFrame().addOutput( "<-=======================================->" );
+				getIMessageFrame().addOutput( "    Starting STARS updates" );
+
+				UpdateDB newUp = new UpdateDB( getIMessageFrame() );
+				starsLines = newUp.readFile( starsFile );
+						
+				getIMessageFrame().addOutput( "    Done with STARS updates" );
+				getIMessageFrame().addOutput( "<-=======================================->" );
+			}
+			catch( DBUpdateException e )
+			{
+				getIMessageFrame().addOutput("--------- CAUGHT EXCEPTION with STARS Update ---------");
+				getIMessageFrame().addOutput("    " + e.getMessage() );
+			}
+
+		}
+		
+		return starsLines;
+	}
+
+	/**
 	* Insert the method's description here.
 	* Creation date: (3/31/2001 11:31:42 AM)
 	* @return 
@@ -193,7 +232,17 @@ public class UpdateDB
 					{
 						if( token.startsWith(DBMSDefines.COMMENT_BEGIN) )
 						{
-							handleComment( token, updLine );
+							if( token.indexOf(DBMSDefines.META_TAG + DBMSDefines.META_INCLUDE) > 0 )
+							{
+								UpdateLine[] extraLines = handleIncludeMeta( token, file );
+
+								//if we have lines from the include, add them to our VALIDs list
+								if( extraLines != null )
+									for( int i = 0; i < extraLines.length; i++ )
+										validLines.add( extraLines[i] );
+							}							
+							else
+								handleComment( token, updLine );
 						}
 						else
 						{
@@ -214,7 +263,6 @@ public class UpdateDB
 				}	
 
 				fileReader.close();
-
 
 				//file open/closed and read successfully
 				UpdateLine[] cmds = new UpdateLine[ validLines.size() ];
@@ -277,6 +325,15 @@ public class UpdateDB
 		}				
 
 		return dbVersion;					
+	}
+	
+	/**
+	 * Check to see if a common STARS table is in the DB
+	 * @return boolean
+	 */
+	public static boolean starsExists()
+	{
+		return VersionTools.tableExists("CustomerResidence");
 	}
 
 	public static double getFileVersion( File file_ )

@@ -266,7 +266,6 @@ public class DBUpdater extends MessageFrameAdaptor
 			}
 		}
 		
-
 	}
 
 	private void processLine( UpdateLine line_, Connection conn ) throws SQLException
@@ -382,8 +381,7 @@ public class DBUpdater extends MessageFrameAdaptor
 		getIMessageFrame().addOutput("");
 		getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");
 		getIMessageFrame().addOutput("Valid SQL strings LOADED (" + validLines.length + ")" );
-		getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");		
-
+		getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");
 	}
 
 
