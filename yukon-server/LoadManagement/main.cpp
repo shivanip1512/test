@@ -24,8 +24,6 @@ int main(int argc, char* argv[] )
     LPTSTR szServiceName = "Load Management";
     LPTSTR szDisplayName = "Yukon Load Management Service";
     HANDLE hExclusion;
-
-    date today(2002, Jan, 10);
     
     /*{
         RWMutexLock::LockGuard guard(coutMux);
