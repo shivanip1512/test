@@ -196,7 +196,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		SOAPServer.clientLocal = clientLocal;
 	}
     
-	public static YC getYC() {
+	public synchronized static YC getYC() {
 		if (yc == null) {
 			yc = new YC();
 			yc.addObserver( new java.util.Observer() {
@@ -218,7 +218,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     /*
      * Start implementation of class functions
      */
-    public static ArrayList getAllEnergyCompanies() {
+    public synchronized static ArrayList getAllEnergyCompanies() {
     	if (energyCompanies == null) {
     		energyCompanies = new ArrayList();
 	    	java.sql.Connection conn = null;
@@ -253,7 +253,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	return energyCompanies;
     }
     
-    public static ArrayList getAllWebConfigurations() {
+    public synchronized static ArrayList getAllWebConfigurations() {
     	if (webConfigList == null) {
     		webConfigList = new ArrayList();
     		
