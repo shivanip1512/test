@@ -1,0 +1,10 @@
+@include MCT-BASE.txt
+@include /custom/MCT-318L.txt
+Get Internal Mult Num2 = getconfig mult kyz 2
+Get Internal Mult Num3 = getconfig mult kyz 3
+Read Info-Load Profile = getstatus lp
+Read Current Time = getconfig time
+Read Last TSync = getconfig time sync
+Read Status Points = getstatus external
+Control Open = control open
+Control Close = control close

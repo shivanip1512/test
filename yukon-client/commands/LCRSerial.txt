@@ -1,0 +1,15 @@
+@include /custom/LCRSerial.txt
+Shed 5-min Load 1= control shed 5m relay 1
+Shed 5-min Load 2= control shed 5m relay 2
+Shed 5-min Load 3= control shed 5m relay 3
+Cycle 50%/30min Load 1= control cycle 50 period 30 count 4 relay 1
+Terminate Cycle Load 1= control cycle terminate relay 1
+Terminate Cycle Load 2= control cycle terminate relay 2
+Terminate Cycle Load 3= control cycle terminate relay 3
+Restore Load 1 = control restore relay 1
+Restore Load 2 = control restore relay 2
+Restore Load 3 = control restore relay 3
+Set to Out-of-Service = putconfig service out
+Set to In-of-Service = putconfig service in
+Set All Lights ON = putconfig led yyy
+

@@ -1,0 +1,8 @@
+@include MCT-BASE.txt
+@include /custom/MCT-248.txt
+Read Info-Load Profile = getstatus lp
+Read Current Time = getconfig time
+Read Last TSync = getconfig time sync
+Read Status = getstatus external
+Control Open = control open
+Control Close = control close

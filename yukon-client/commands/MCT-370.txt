@@ -1,0 +1,13 @@
+@include MCT-BASE.txt
+@include /custom/MCT-370.txt
+Read KWH Rate A (Siemens) = getvalue ied kwh rate a
+Read KWH Rate C (Alpha) = getvalue ied kwh rate c
+Reset Demand = putvalue ied reset
+Set Current Period (Alpha) = putconfig emetcon ied class 72 1
+Set Previous Period (Alpha) = putconfig emetcon ied class 72 2
+Set Current Period (Siemens) = putconfig emetcon ied class 0 0
+Set Previous Period (Siemens) = putconfig emetcon ied class 72 1
+Read IED Link Status = getstatus ied link
+Read Status Points = getstatus external
+Control Open = control open
+Control Close = control close

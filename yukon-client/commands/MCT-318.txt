@@ -1,0 +1,7 @@
+@include MCT-BASE.txt
+@include /custom/MCT-318.txt
+Get Internal Mult Num2 = getconfig mult kyz 2
+Get Internal Mult Num3 = getconfig mult kyz 3
+Read Status Points = getstatus external
+Control Open = control open
+Control Close = control close

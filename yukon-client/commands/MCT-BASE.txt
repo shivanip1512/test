@@ -1,0 +1,7 @@
+@include /custom/MCT-BASE.txt
+Read Energy = getvalue kwh
+Read Current Demand = getvalue demand
+Read Powerfail = getvalue powerfail
+Read General Info = getstatus internal
+Read Options = getconfig model
+Get Internal Mult Num1 = getconfig mult kyz 1
