@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinet.cpp-arc  $
-*    REVISION     :  $Revision: 1.10 $
-*    DATE         :  $Date: 2004/09/29 17:47:47 $
+*    REVISION     :  $Revision: 1.11 $
+*    DATE         :  $Date: 2004/12/21 17:40:56 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,8 +23,14 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrinet.cpp,v $
-      Revision 1.10  2004/09/29 17:47:47  dsutton
-      Updated all interfaces to default the db reload rate to once a day (86400)
+      Revision 1.11  2004/12/21 17:40:56  dsutton
+      Bug in the connect code when Yukon acts as the client.  INET was trying to
+      connect to port 0 instead of port 1000.  Bug was introduced when updates
+      were made to RCCS for Progress and they needed separate listen and
+      connect port numbers
+
+      Revision 1.9.2.1  2004/09/28 21:05:02  dsutton
+      Finally updated the default reload rate to 86400
 
       Revision 1.9  2003/12/12 21:58:32  dsutton
       Sending of status points was following Yukon values 0,1 instead of DSM2
@@ -726,6 +732,10 @@ int CtiFDR_Inet::readConfig( void )
     {
         setPortNumber (INET_PORTNUMBER);
     }
+    // since inet and rccs are the only interfaces that intiate the connection, we must make sure we set the
+    // connect port number also  
+    setConnectPortNumber (getPortNumber());
+
 
     tempStr = getCparmValueAsString(KEY_TIMESTAMP_WINDOW);
     if (tempStr.length() > 0)
@@ -1244,7 +1254,7 @@ bool  CtiFDR_Inet::findAndInitializeClients( void )
                 if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Initialization failed for " << iClientList[x] << endl;
+                    dout << RWTime() << " Initialization failed for " << iClientList[x] << " client layer would not initialize" << endl;
                 }
                 delete layer;
             }

@@ -314,6 +314,12 @@ int CtiFDRSocketLayer::init ()
         {
             addr.sin_addr = *((LPIN_ADDR)*entry->h_addr_list);
 
+            if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Attempting to connect to "<< iName << " at " <<  RWCString (inet_ntoa(addr.sin_addr)) << endl;
+            }
+
             // must be in this order because we need address info from server
             iOutBoundConnection = new CtiFDRClientConnection (addr,this);
             retVal = iOutBoundConnection->init();
