@@ -20,8 +20,15 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
+		<buildCommand>
+			<name>com.ibm.etools.validation.validationbuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
+		<nature>com.ibm.etools.java.JavaMOFNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>com.ibm.etools.beaninfo.BeaninfoNature</nature>
 	</natures>
 </projectDescription>

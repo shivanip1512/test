@@ -14,6 +14,7 @@ yukon-client/common/.cvsignore
 yukon-client/common/bin
 yukon-client/common/build
 yukon-client/cttp/bin
+yukon-client/cttp/build
 yukon-client/custom/.cvsignore
 yukon-client/custom/bin
 yukon-client/custom/build
@@ -39,12 +40,14 @@ yukon-client/macs/build
 yukon-client/monitor/bin
 yukon-client/monitor/build
 yukon-client/notification/bin
+yukon-client/notification/build
 yukon-client/palm/.cvsignore
 yukon-client/palm/bin
 yukon-client/palm/build
 yukon-client/report/bin
 yukon-client/report/build
 yukon-client/services/bin
+yukon-client/services/build
 yukon-client/servlet/.cvsignore
 yukon-client/servlet/bin
 yukon-client/servlet/build
