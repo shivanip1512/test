@@ -1,20 +1,4 @@
 <%@ include file="include/StarsHeader.jsp" %>
-<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
-<%
-	int invNo = Integer.parseInt(request.getParameter("InvNo"));
-	StarsMCT mct = inventories.getStarsMCT(invNo - inventories.getStarsLMHardwareCount());
-	// Stacey, here are the fields useful to you:
-	int deviceID = mct.getDeviceID();
-	String deviceName = mct.getDeviceName();
-%>
-<html>
-<head>
-<title>Energy Services Operations Center</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
-
-</head>
 <%@ page import="com.cannontech.database.data.lite.LiteDeviceMeterNumber" %>
 <%@ page import="com.cannontech.database.Transaction"%>
 <%@ page import="com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase"%>
@@ -24,8 +8,13 @@
 <%@ page import="com.cannontech.database.data.pao.YukonPAObject"%>
 <%@ page import="com.cannontech.database.cache.functions.PAOFuncs"%>
 <%@ page import="com.cannontech.database.data.device.CarrierBase"%>
-<%
-	int deviceID = 31;
+
+<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } 
+	int invNo = Integer.parseInt(request.getParameter("InvNo"));
+	StarsMCT starsMCT = inventories.getStarsMCT(invNo - inventories.getStarsLMHardwareCount());
+	// Stacey, here are the fields useful to you:
+	int deviceID = starsMCT.getDeviceID();
+
   	//create a liteDeviceMeterNumber using deviceID
 	LiteDeviceMeterNumber liteDevMeterNum = new LiteDeviceMeterNumber(deviceID);
 	liteDevMeterNum.retrieve(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
@@ -71,15 +60,24 @@
 		};
 	LiteYukonPAObject[] validRoutes = PAOFuncs.getRoutesByType(validRouteTypes);
 %>
+
+<html>
+<head>
+<title>Energy Services Operations Center</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+
+</head>
 <body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="150" height="102" background="../../WebConfig/MomWide.jpg">&nbsp;</td>
+          <td width="102" height="102" background="ConsumerImage.jpg">&nbsp;</td>
           <td valign="bottom" height="102"> 
-            <table width="609" cellspacing="0"  cellpadding="0" border="0">
+            <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
@@ -108,8 +106,8 @@
         </tr>
         <tr> 
           <td  valign="top" width="101"> 
-            <% String pageName = "ConfigMeter.jsp?deviceid=" + 16; //TEMP - FIX!!%>
-            <%@ include file="include/nav.jsp" %>
+            <% String pageName = "ConfigMeter.jsp?invNo=" + deviceID;%>
+            <%@ include file="include/Nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
@@ -122,14 +120,14 @@
 			    </tr>
 			  </table>
               
-              <% String errorMsg = null;%>
+  
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>              
 
 			  <form name="invForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
                 <input type="hidden" name="action" value="UpdateMeterConfig">
-                <input type="hidden" name="deviceID" value="<%= 16 %>"> <% // FIX ME!%>
-				<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/ConfigMeter.jsp?deviceid=<%= 16 %>"> <% //FIX ME %>
-				<input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/ConfigMeter.jsp?deviceid=<%= 16 %>"> <% //FIX ME %>
+                <input type="hidden" name="invNo" value="<%=deviceID%>">
+				<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/ConfigMeter.jsp?invNo=<%=deviceID %>">
+				<input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/ConfigMeter.jsp?invNo=<%= deviceID %>">
                 <table width="350" border="0" cellspacing="0" cellpadding="3">
                   <tr> 
                     <td width="30%" class="SubtitleHeader" height="2" align="right">Meter 

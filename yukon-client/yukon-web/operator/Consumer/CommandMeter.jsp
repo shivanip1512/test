@@ -2,10 +2,10 @@
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
-	StarsMCT mct = inventories.getStarsMCT(invNo - inventories.getStarsLMHardwareCount());
+	StarsMCT starsMCT = inventories.getStarsMCT(invNo - inventories.getStarsLMHardwareCount());
 	// Stacey, here are the fields useful to you:
-	int deviceID = mct.getDeviceID();
-	String deviceName = mct.getDeviceName();
+	int deviceID = starsMCT.getDeviceID();
+	String deviceName = starsMCT.getDeviceName();
 %>
 <html>
 <head>
@@ -20,9 +20,9 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="150" height="102" background="../../WebConfig/MomWide.jpg">&nbsp;</td>
+          <td width="102" height="102" background="ConsumerImage.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
-            <table width="609" cellspacing="0"  cellpadding="0" border="0">
+            <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
@@ -44,15 +44,15 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
         <tr> 
-          <td width="150" bgcolor="#000000" height="1"></td>
+          <td width="102" bgcolor="#000000" height="1"></td>
           <td width="1" bgcolor="#000000" height="1"></td>
-          <td width="609" bgcolor="#000000" height="1"></td>
+          <td width="657" bgcolor="#000000" height="1"></td>
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
           <td  valign="top" width="101"> 
-            <% String pageName = "CommandMeter.jsp?deviceid=" + 16; //FIX ME ccu-710A %>
-            <%@ include file="include/nav.jsp" %>
+            <% String pageName = "CommandMeter.jsp?invNo=" + deviceID;%>
+            <%@ include file="include/Nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
@@ -64,15 +64,14 @@
 			      <td align="center" class="TitleHeader"><%= header %></td>
 			    </tr>
 			  </table>
-              
-              <% String errorMsg = null;%>
+
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
 			  <form name="invForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
                 <input type="hidden" name="action" value="CommandMeter">
-                <input type="hidden" name="deviceid" value="<%= 16 %>"> <% //FIX ME %>
-				<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/CommandMeter.jsp?deviceid=<%= 16%>"><% //FIX ME %>
-				<input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/CommandMeter.jsp?deviceid=<%= 16%>"><% //FIX ME %>
+                <input type="hidden" name="invNo" value="<%= deviceID %>">
+				<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/CommandMeter.jsp?invNo=<%= deviceID%>">
+				<input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/CommandMeter.jsp?invNo=<%= deviceID%>">
 				
                 <table width="575" border="0" cellspacing="0" cellpadding="3">
                   <tr> 
