@@ -218,6 +218,32 @@ public class DBDeletionFuncs
 		return STATUS_ALLOW;
 	}
 	
+	private static byte createDeleteStringForSeasonSchedule(int seasonSchID) throws java.sql.SQLException
+	{
+		if( LMProgramConstraint.usesSeasonSchedule(seasonSchID, CtiUtilities.getDatabaseAlias()) )
+		{
+			theWarning.delete(0, theWarning.length());
+			theWarning.append(CR_LF + "because it is in use by a Constraint.");
+			return STATUS_DISALLOW;
+		}
+	
+		//this object is deleteable
+		return STATUS_ALLOW;
+	}
+	
+	private static byte createDeleteStringForHolidaySchedule(int holSchID) throws java.sql.SQLException
+	{
+		if( LMProgramConstraint.usesHolidaySchedule(holSchID, CtiUtilities.getDatabaseAlias()) )
+		{
+			theWarning.delete(0, theWarning.length());
+			theWarning.append(CR_LF + "because it is in use by a Constraint.");
+			return STATUS_DISALLOW;
+		}
+	
+		//this object is deleteable
+		return STATUS_ALLOW;
+	}
+	
 	private static byte createDeleteStringForTag(int tagID) throws java.sql.SQLException
 	{
 		theWarning.delete(0, theWarning.length());
@@ -516,10 +542,10 @@ public class DBDeletionFuncs
 	
 			else if(type == PORT_TYPE)
 				return createDeleteStringForCommPort(anID);
-	
+			
 			else if(type == DEVICE_TYPE)
 				return createDeleteStringForDevice(anID);
-	
+			
 			else if(type == CONTACT_TYPE)
 				return createDeleteStringForContact(anID);
 				
@@ -537,12 +563,17 @@ public class DBDeletionFuncs
 
 			else if(type == LOGIN_TYPE)
 				return createDeleteStringForLogin(anID);
+			
+			else if(type == SEASON_SCHEDULE)	
+				return createDeleteStringForSeasonSchedule(anID);
+				
+			else if(type == HOLIDAY_SCHEDULE)	
+				return createDeleteStringForHolidaySchedule(anID);
 	
 			else if( type == CUSTOMER_TYPE
 						 || type == PAO_TYPE 
-						 || type == HOLIDAY_SCHEDULE
-						 || type == LOGIN_GRP_TYPE
-						 || type == SEASON_SCHEDULE )
+						 || type == LOGIN_GRP_TYPE )
+
 			{
 				return STATUS_CONFIRM;
 			}

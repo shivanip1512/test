@@ -140,6 +140,42 @@ public final static boolean inUseByProgram(int constrID, String databaseAlias) t
 	}
 }
 
+public final static boolean usesSeasonSchedule(int seasonSchID, String databaseAlias) throws java.sql.SQLException 
+{
+	SqlStatement stmt =	new SqlStatement(
+		"SELECT * FROM " + TABLE_NAME +
+		" WHERE SeasonScheduleID = " + seasonSchID,
+		databaseAlias );
+
+	try
+	{
+		stmt.execute();
+		return (stmt.getRowCount() > 0 );
+	}
+	catch( Exception e )
+	{
+		return false;
+	}
+}
+
+public final static boolean usesHolidaySchedule(int holSchID, String databaseAlias) throws java.sql.SQLException 
+{
+	SqlStatement stmt =	new SqlStatement(
+		"SELECT * FROM " + TABLE_NAME +
+		" WHERE HolidayScheduleID = " + holSchID,
+		databaseAlias );
+
+	try
+	{
+		stmt.execute();
+		return (stmt.getRowCount() > 0 );
+	}
+	catch( Exception e )
+	{
+		return false;
+	}
+}
+
 public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
 {
 	com.cannontech.message.dispatch.message.DBChangeMsg[] msgs =
