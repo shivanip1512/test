@@ -586,13 +586,12 @@ INT CtiPortDirect::close(INT trace)
 {
     INT status = NORMAL;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " " << getName() << " releasing port handle" << endl;
-    }
-
     if(getHandle() != NULL)
     {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " " << getName() << " releasing port handle" << endl;
+        }
         status = CTIClose(getHandle());
     }
     _lastBaudRate = 0;
