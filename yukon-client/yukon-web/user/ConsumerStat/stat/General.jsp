@@ -38,7 +38,7 @@
                   <td width="429" valign="top" align="center"> 
                     <table width="400" border="0" cellspacing="3" cellpadding="0">
                       <tr> 
-                        <td valign="bottom" class="TitleHeader">
+                        <td valign="bottom" class="GeneralHeader">
                           <div align="center"><br>
                             <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TITLE_GENERAL %>"/><br>
                             <br>
