@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2002/10/03 16:15:53 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2002/11/13 19:37:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,31 +66,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 
 void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager );
-
-void DumpOutMessage(void *Mess)
-{
-    OUTMESS  *Om = (OUTMESS*)(Mess);
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "  Device ID:          " << Om->DeviceID << endl;
-        dout << "  Target ID:          " << Om->TargetID << endl;
-        dout << "  Port:               " << Om->Port << endl;
-        dout << "  Remote:             " << Om->Remote << endl;
-        dout << "  Sequence:           " << Om->Sequence << endl;
-        dout << "  Priority:           " << Om->Priority << endl;
-        dout << "  TimeOut:            " << Om->TimeOut << endl;
-        dout << "  Retry:              " << Om->Retry << endl;
-        dout << "  OutLength:          " << Om->OutLength << endl;
-        dout << "  InLength:           " << Om->InLength << endl;
-        dout << "  Source:             " << Om->Source << endl;
-        dout << "  Destination:        " << Om->Destination << endl;
-        dout << "  Command:            " << Om->Command << endl;
-        dout << "  Function:           " << Om->Function << endl;
-        dout << "  EventCode:          " << Om->EventCode << endl;
-    }
-}
+extern IM_EX_CTIBASE void DumpOutMessage(void *Mess);
 
 
 /* global variable for scanner function */

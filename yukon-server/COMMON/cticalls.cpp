@@ -1377,29 +1377,31 @@ void IM_EX_CTIBASE DisplayError(DWORD Error, DWORD Line, char* FileName, char *F
    return;
 }
 
-void IM_EX_CTIBASE    DumpOutMessage(void *Mess)
+void IM_EX_CTIBASE DumpOutMessage(void *Mess)
 {
-   OUTMESS  *Om = (OUTMESS*)(Mess);
+    OUTMESS  *Om = (OUTMESS*)(Mess);
 
-   {
-      RWMutexLock::LockGuard guard(coutMux);
-      fprintf(stderr,"Device ID:          %d\n",Om->DeviceID);
-      fprintf(stderr,"Port:               %d\n",Om->Port);
-      fprintf(stderr,"Remote:             %d\n",Om->Remote);
-      fprintf(stderr,"Sequence:           %d\n",Om->Sequence);
-      fprintf(stderr,"Priority:           %d\n",Om->Priority);
-      fprintf(stderr,"TimeOut:            %d\n",Om->TimeOut);
-      fprintf(stderr,"Retry:              %d\n",Om->Retry);
-      fprintf(stderr,"OutLength:          %d\n",Om->OutLength);
-      fprintf(stderr,"InLength:           %d\n",Om->InLength);
-      fprintf(stderr,"Source:             %d\n",Om->Source);
-      fprintf(stderr,"Destination:        %d\n",Om->Destination);
-      fprintf(stderr,"Command:            %d\n",Om->Command);
-      fprintf(stderr,"Function:           %d\n",Om->Function);
-      fprintf(stderr,"EventCode:          %d\n",Om->EventCode);
-
-   }
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "  Device ID:          " << Om->DeviceID << endl;
+        dout << "  Target ID:          " << Om->TargetID << endl;
+        dout << "  Port:               " << Om->Port << endl;
+        dout << "  Remote:             " << Om->Remote << endl;
+        dout << "  Sequence:           " << Om->Sequence << endl;
+        dout << "  Priority:           " << Om->Priority << endl;
+        dout << "  TimeOut:            " << Om->TimeOut << endl;
+        dout << "  Retry:              " << Om->Retry << endl;
+        dout << "  OutLength:          " << Om->OutLength << endl;
+        dout << "  InLength:           " << Om->InLength << endl;
+        dout << "  Source:             " << Om->Source << endl;
+        dout << "  Destination:        " << Om->Destination << endl;
+        dout << "  Command:            " << Om->Command << endl;
+        dout << "  Function:           " << Om->Function << endl;
+        dout << "  EventCode:          " << Om->EventCode << endl;
+    }
 }
+
 
 
 /*
