@@ -2,6 +2,7 @@
 	// Table of [link, label, page name(optional)]
 	String linkTable[][] = {{"SOList.jsp", "Show All"},
 						  {"CreateOrder.jsp", "New Order"},
+						  {"Report.jsp", "Report"}
 						 };
 
 	String bulletImg = "<img src='../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif") + "' width='9' height='9'>";
@@ -40,6 +41,12 @@
           <tr> 
             <td width="10"><%= ((String[]) links.get("CreateOrder.jsp"))[0] %></td>
             <td style="padding:1"><%= ((String[]) links.get("CreateOrder.jsp"))[1] %></td>
+          </tr>
+</cti:checkProperty>
+<cti:checkProperty propertyid="<%= WorkOrderRole.WORK_ORDER_REPORT %>">
+          <tr> 
+            <td width="10"><%= ((String[]) links.get("Report.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("Report.jsp"))[1] %></td>
           </tr>
 </cti:checkProperty>
         </table>

@@ -18,6 +18,7 @@ public class WorkOrderRole {
 	public static final int ROLEID = OperatorRoleDefs.WORK_ORDER_ROLEID;
 	
 	public static final int WORK_ORDER_SHOW_ALL = OperatorRoleDefs.WORK_ORDER_PROPERTYID_BASE;
-	public static final int WORK_ORDER_CREATE_NEW = OperatorRoleDefs.WORK_ORDER_PROPERTYID_BASE - 1; 
+	public static final int WORK_ORDER_CREATE_NEW = OperatorRoleDefs.WORK_ORDER_PROPERTYID_BASE - 1;
+	public static final int WORK_ORDER_REPORT = OperatorRoleDefs.WORK_ORDER_PROPERTYID_BASE - 2; 
 
 }

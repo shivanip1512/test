@@ -1588,6 +1588,7 @@ insert into YukonListEntry values (1245,1049,5,'5 Days',5);
 insert into YukonListEntry values (1246,1049,6,'6 Days',6);
 insert into YukonListEntry values (1247,1049,7,'7 Days',7);
 
+insert into YukonRoleProperty values(-21002,-210,'Work Order Report','true','Controls whether to allow reporting on work orders');
 
 
 

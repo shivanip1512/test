@@ -158,9 +158,26 @@ function init() {
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101">
-            <div align="center" class="TableCell1"><br>
-              <a href="ServiceSummary.jsp" class="Link2" onclick="return warnUnsavedChanges()">Back to List</a></div>
+          <td  valign="top" width="101"><br>
+            <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell1">
+              <tr>
+                <td width="5">&nbsp;</td>
+                <td><a href="ServiceSummary.jsp" class="Link2">[Back to List]</a></td>
+              </tr>
+              <tr>
+                <td width="5">&nbsp;</td>
+                <td><a href="" onclick="document.rptForm.submit(); return false;" class="Link2">Printable Version</a></td>
+              </tr>
+            </table>
+			<form name="rptForm" method="post" action="<%= request.getContextPath() %>/servlet/ReportGenerator">
+			  <input type="hidden" name="ACTION" value="DownloadReport">
+			  <input type="hidden" name="type" value="<%= com.cannontech.analysis.ReportTypes.EC_WORK_ORDER_DATA %>">
+			  <input type="hidden" name="fileName" value="WorkOrder">
+			  <input type="hidden" name="NoCache">
+			  <input type="hidden" name="OrderID" value="<%= order.getOrderID() %>">
+			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?OrderNo=<%= orderNo %>">
+			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?OrderNo=<%= orderNo %>">
+			</form>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
