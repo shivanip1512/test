@@ -14,6 +14,7 @@ import com.cannontech.cbc.data.SubBus;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
 import com.cannontech.cbc.tablemodelevents.StateTableModelEvent;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
 
 public class SubBusTableModel extends javax.swing.table.AbstractTableModel implements java.util.Observer, com.cannontech.tdc.alarms.gui.AlarmTableModel, com.cannontech.common.gui.util.SortableTableModel
@@ -81,9 +82,18 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
 	{
 		public int compare(Object o1, Object o2)
 		{
-			String thisVal = ((SubBus)o1).getCcArea();
-			String anotherVal = ((SubBus)o2).getCcArea();
-			return( thisVal.compareToIgnoreCase(anotherVal) );
+			try
+			{
+				String thisVal = ((SubBus)o1).getCcArea();
+				String anotherVal = ((SubBus)o2).getCcArea();
+				return( thisVal.compareToIgnoreCase(anotherVal) );
+			}
+			catch( Exception e )
+			{
+				CTILogger.error( "Something went wrong with sorting, ignoring sorting rules", e );
+				return 0; 
+			}
+			
 		}
 	};
 
