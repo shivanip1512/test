@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/03/13 19:35:41 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/04/01 19:58:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1230,7 +1230,7 @@ void CtiProtocolION::decodeEventLogRead( void )
                     //  MAGIC NUMBER WARNING:  subtract 1 because it's a look-ahead counter
                     _eventLogCurrentPosition = _dsIn[0]->getNumericValue() - 1;
 
-                    if( _eventLogLastPosition == 0 && _eventLogDepth == 0 )
+                    if( _eventLogLastPosition == 0 || _eventLogDepth == 0 )
                     {
                         _ionState = State_RequestEventLogDepth;
                     }
@@ -1650,6 +1650,7 @@ int CtiProtocolION::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
     ion_pointdata_struct         *points;
     CtiIONDataStream              tmpDS;
 
+    //  clear out the data vectors
     _pointData.clear();
 
     while( !_eventLogs.empty() )
@@ -1657,6 +1658,9 @@ int CtiProtocolION::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
         delete _eventLogs.back();
         _eventLogs.pop_back();
     }
+
+
+    _eventLogsComplete = true;
 
     if( InMessage != NULL )
     {
@@ -1839,6 +1843,8 @@ int CtiProtocolION::sendCommResult( INMESS *InMessage )
             dout << "Not sending!!" << endl;
         }
 
+        InMessage->InLength = 0;
+
         //  oh well, closest thing to reality - not enough room in outmess
         retVal = MemoryError;
     }
@@ -1916,6 +1922,16 @@ void CtiProtocolION::putResult( unsigned char *buf )
 
             offset += (*e_itr)->getSerializedLength();
         }
+    }
+
+    //  clear out the data vectors
+    _pointData.clear();
+
+    while( !_eventLogs.empty() )
+    {
+        delete _eventLogs.back();
+
+        _eventLogs.pop_back();
     }
 }
 
