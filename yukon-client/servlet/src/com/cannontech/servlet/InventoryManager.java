@@ -404,8 +404,8 @@ public class InventoryManager extends HttpServlet {
 	
 	/**
 	 * Check the inventory for hardware with the specified device type and serial # (device name).
-	 * If inventory checking is set to false, save the request parameters and redirect to SOAPClient.
-	 * Otherwise, show the result in CheckInv.jsp. 
+	 * If inventory checking is set to false, add the hardware to the customer account;
+	 * Otherwise, show the result of inventory checking in CheckInv.jsp. 
 	 */
 	private void checkInventory(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
@@ -1203,14 +1203,21 @@ public class InventoryManager extends HttpServlet {
 	}
 	
 	private void createLMHardware(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany member = null;
+		if (req.getParameter("Member") != null)
+			member = StarsDatabaseCache.getInstance().getEnergyCompany( Integer.parseInt(req.getParameter("Member")) );
+		else
+			member = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+		
+		ServletUtils.saveRequest(req, session, new String[] {
+			"Member", "DeviceType", "SerialNo", "DeviceLabel", "AltTrackNo", "ReceiveDate", "Voltage", "ServiceCompany", "Notes", "Route"});
 		
 		try {
 			StarsCreateLMHardware createHw = new StarsCreateLMHardware();
-			InventoryManagerUtil.setStarsInv( createHw, req, energyCompany );
+			InventoryManagerUtil.setStarsInv( createHw, req, member );
 			
 			try {
-				LiteInventoryBase existingHw = energyCompany.searchForLMHardware(
+				LiteInventoryBase existingHw = member.searchForLMHardware(
 						createHw.getDeviceType().getEntryID(), createHw.getLMHardware().getManufacturerSerialNumber() );
 				if (existingHw != null)
 					throw new WebClientException("Cannot create hardware: serial # already exists.");
@@ -1219,12 +1226,17 @@ public class InventoryManager extends HttpServlet {
 				throw new WebClientException("Cannot create hardware: serial # already exists in the inventory list of <i>" + e.getEnergyCompany().getName() + "</i>.");
 			}
 			
-			LiteInventoryBase liteInv = CreateLMHardwareAction.addInventory( createHw, null, energyCompany );
+			LiteInventoryBase liteInv = CreateLMHardwareAction.addInventory( createHw, null, member );
 			
 			if (req.getParameter("UseHardwareAddressing") != null) {
 				StarsLMConfiguration starsCfg = new StarsLMConfiguration();
 				InventoryManagerUtil.setStarsLMConfiguration( starsCfg, req );
-				UpdateLMHardwareConfigAction.updateLMConfiguration( starsCfg, (LiteStarsLMHardware)liteInv, energyCompany );
+				UpdateLMHardwareConfigAction.updateLMConfiguration( starsCfg, (LiteStarsLMHardware)liteInv, member );
+			}
+			
+			if (member.getLiteID() != user.getEnergyCompanyID()) {
+				StarsAdmin.switchContext( user, req, session, member.getLiteID() );
+				session = req.getSession( false );
 			}
 			
 			// Append inventory ID to the redirect URL
@@ -1241,13 +1253,25 @@ public class InventoryManager extends HttpServlet {
 	}
 	
 	private void createMCT(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany member = null;
+		if (req.getParameter("Member") != null)
+			member = StarsDatabaseCache.getInstance().getEnergyCompany( Integer.parseInt(req.getParameter("Member")) );
+		else
+			member = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+		
+		ServletUtils.saveRequest(req, session, new String[] {
+			"Member", "MCTType", "DeviceName", "PhysicalAddr", "MeterNumber", "MCTRoute", "DeviceLabel", "AltTrackNo", "ReceiveDate", "Voltage", "ServiceCompany", "Notes"});
 		
 		try {
 			StarsCreateLMHardware createHw = new StarsCreateLMHardware();
-			InventoryManagerUtil.setStarsInv( createHw, req, energyCompany );
+			InventoryManagerUtil.setStarsInv( createHw, req, member );
 			
-			LiteInventoryBase liteInv = CreateLMHardwareAction.addInventory( createHw, null, energyCompany );
+			LiteInventoryBase liteInv = CreateLMHardwareAction.addInventory( createHw, null, member );
+			
+			if (member.getLiteID() != user.getEnergyCompanyID()) {
+				StarsAdmin.switchContext( user, req, session, member.getLiteID() );
+				session = req.getSession( false );
+			}
 			
 			// Append inventory ID to the redirect URL
 			redirect += String.valueOf( liteInv.getInventoryID() );
@@ -1255,9 +1279,9 @@ public class InventoryManager extends HttpServlet {
 			// Make the "Back to List" link on the inventory details page default to Inventory.jsp
 			session.removeAttribute( ServletUtils.ATT_REFERRER2 );
 		}
-		catch (Exception e) {
+		catch (WebClientException e) {
 			CTILogger.error( e.getMessage(), e );
-			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to create the new MCT" );
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
 			redirect = referer;
 		}
 	}

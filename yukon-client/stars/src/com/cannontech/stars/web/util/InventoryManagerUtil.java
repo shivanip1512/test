@@ -77,6 +77,7 @@ public class InventoryManagerUtil {
 	public static final String SN_RANGE_TO_CONFIG = "SN_RANGE_TO_CONFIG";
 	public static final String INVENTORY_SELECTED = "INVENTORY_SELECTED";
 	public static final String DEVICE_SELECTED = "DEVICE_SELECTED";
+	public static final String HARDWARE_ADDRESSING = "HARDWARE_ADDRESSING";
 	
 	public static final String[] MCT_TYPES = {
 		PAOGroups.STRING_MCT_410IL[0],

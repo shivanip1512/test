@@ -531,9 +531,10 @@ public class CreateLMHardwareAction implements ActionBase {
 			return liteInv;
 		}
 		catch (Exception e) {
-			CTILogger.error( e.getMessage(), e );
 			if (e instanceof WebClientException)
 				throw (WebClientException)e;
+			else if (liteAcctInfo != null)
+				throw new WebClientException( "Failed to add the hardware to the customer account", e );
 			else
 				throw new WebClientException( "Failed to create the hardware", e );
 		}
