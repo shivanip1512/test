@@ -254,7 +254,8 @@ public void functionComboBox_ActionPerformed(java.awt.event.ActionEvent actionEv
 
 	if( ((String)getOperationFunctionComboBox().getSelectedItem()).equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION) )
 	{
-
+		getSelectBaselineComboBox().removeAllItems();
+		
 		for(int i = 0; i < getBasilHolder().size(); i++)
 		{
 			getSelectBaselineComboBox().addItem(getBasilHolder().elementAt(i));
