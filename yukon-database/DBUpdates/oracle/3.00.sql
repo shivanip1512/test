@@ -335,12 +335,6 @@ insert into yukongrouprole values ( 986, -302, -306, -30601, 'true)');
 insert into yukongrouprole values ( 987, -302, -306, -30602, 'true');
 insert into yukongrouprole values ( 988, -302, -306, -30603, 'true');
 
-/*Add the user-control properties to the user */
-insert into yukonuserrole values ( 985, -1, -306, -30600, '(none)');
-insert into yukonuserrole values ( 986, -1, -306, -30601, 'true)');
-insert into yukonuserrole values ( 987, -1, -306, -30602, 'true');
-insert into yukonuserrole values ( 988, -1, -306, -30603, 'true');
-
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
