@@ -481,4 +481,39 @@ ripple.obj:	os2_2w32.h dlldefs.h types.h cticalls.h connection.h \
 		pt_dyn_base.h tbl_pt_base.h slctpnt.h mgr_device.h slctdev.h \
 		mgr_port.h smartmap.h slctprt.h
 traceset.obj:	dlldefs.h
+verifier.obj:	cticalls.h os2_2w32.h dlldefs.h types.h ctitypes.h \
+		cparms.h dsm2.h mutex.h guard.h connection.h exchange.h \
+		dllbase.h logger.h thread.h message.h ctidbgmem.h \
+		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h \
+		mgr_device.h rtdb.h hashkey.h dev_base.h cmdparse.h \
+		parsevalue.h rte_base.h dbmemobject.h ctibase.h ctinexus.h \
+		tbl_pao.h tbl_rtcomm.h dbaccess.h sema.h resolvers.h \
+		pointtypes.h db_entry_defines.h desolvers.h tbl_base.h \
+		tbl_2way.h tbl_stats.h tbl_scanrate.h tbl_paoexclusion.h \
+		queues.h utility.h slctdev.h mgr_port.h smartmap.h \
+		port_base.h tbl_port_base.h xfer.h dialup.h \
+		tbl_port_statistics.h slctprt.h pt_base.h pt_dyn_base.h \
+		tbl_pt_base.h msg_cmd.h pilserver.h server_b.h con_mgr.h \
+		cmdopts.h msg_pcrequest.h mgr_route.h repeaterrole.h \
+		portglob.h tcpsup.h porter.h dsm2err.h devicetypes.h \
+		statistics.h counter.h
+verifier_thread.obj:	verifier_thread.h cticalls.h os2_2w32.h dlldefs.h \
+		types.h ctitypes.h cparms.h dsm2.h mutex.h guard.h \
+		connection.h exchange.h dllbase.h logger.h thread.h message.h \
+		ctidbgmem.h collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h \
+		mgr_device.h rtdb.h hashkey.h dev_base.h cmdparse.h \
+		parsevalue.h rte_base.h dbmemobject.h ctibase.h ctinexus.h \
+		tbl_pao.h tbl_rtcomm.h dbaccess.h sema.h resolvers.h \
+		pointtypes.h db_entry_defines.h desolvers.h tbl_base.h \
+		tbl_2way.h tbl_stats.h tbl_scanrate.h tbl_paoexclusion.h \
+		queues.h utility.h slctdev.h mgr_port.h smartmap.h \
+		port_base.h tbl_port_base.h xfer.h dialup.h \
+		tbl_port_statistics.h slctprt.h pt_base.h pt_dyn_base.h \
+		tbl_pt_base.h msg_cmd.h pilserver.h server_b.h con_mgr.h \
+		cmdopts.h msg_pcrequest.h mgr_route.h repeaterrole.h \
+		portglob.h tcpsup.h porter.h dsm2err.h devicetypes.h \
+		statistics.h counter.h verification_work.h verification.h \
+		verification_report.h
 #ENDUPDATE#
