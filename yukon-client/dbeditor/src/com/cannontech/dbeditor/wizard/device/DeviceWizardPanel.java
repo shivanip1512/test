@@ -255,9 +255,16 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 			 || DeviceTypesFuncs.isMCT(devType) )
 		{
 			getDeviceMeterNumberPanel().setValue(null);
-			if( DeviceTypesFuncs.isMCTiORMCT2XX(devType) || DeviceTypesFuncs.isMCT410KWHONLY(devType) )
+			getDeviceMeterNumberPanel().setIs410(false);
+			if( DeviceTypesFuncs.isMCTiORMCT2XX(devType) )
 			{
 				getDeviceMeterNumberPanel().setDefaultMeterNumber(getDeviceNameAddressPanel().getAddress());
+			}
+			
+			if(DeviceTypesFuncs.isMCT410KWHONLY(devType))
+			{
+				getDeviceMeterNumberPanel().setDefaultMeterNumber(getDeviceNameAddressPanel().getAddress());
+				getDeviceMeterNumberPanel().setIs410(true);
 			}
 			
 			return getDeviceMeterNumberPanel();

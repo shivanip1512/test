@@ -16,6 +16,8 @@ public class DeviceMeterNumberPanel extends com.cannontech.common.gui.util.DataI
 	private javax.swing.JPanel ivjJPanel1 = null;
 	private javax.swing.JLabel ivjMeterNumberLabel = null;
 	private javax.swing.JTextField ivjMeterNumberTextField = null;
+	
+	private boolean is410 = false;
 /**
  * Constructor
  */
@@ -130,7 +132,7 @@ private javax.swing.JTextField getMeterNumberTextField() {
 			ivjMeterNumberTextField.setColumns(12);
 			// user code begin {1}
 			ivjMeterNumberTextField.setDocument(
-				new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_DEVICE_NAME_LENGTH));
+				new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_METER_NUMBER_LENGTH));
 				
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -228,6 +230,14 @@ public boolean isInputValid() {
 		setErrorString("The Meter Number text field must be filled in");
 		return false;
 	}
+	
+	if(is410 && getMeterNumberTextField().getText().length() < 7)
+	{
+		setErrorString("The Meter Number text field must contain 7 digits for a 410 meter");
+		return false;
+	}
+	
+	
 
 	return true;
 }
@@ -265,6 +275,11 @@ public void setValue(Object val)
 {
 	getMeterNumberTextField().setText( 
 			new String(com.cannontech.common.util.CtiUtilities.STRING_DEFAULT) );
+}
+
+public void setIs410(boolean truth)
+{
+	is410 = truth;
 }
 
 /**
