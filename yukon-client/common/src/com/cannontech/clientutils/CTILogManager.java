@@ -136,6 +136,7 @@ public class CTILogManager implements ILogging
    public static synchronized void setLogProperties(Properties props) 
    {
        logProps = props;
+	   loadLogging( logProps );
    }
 
    protected static void init()
