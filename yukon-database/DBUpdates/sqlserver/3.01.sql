@@ -449,6 +449,8 @@ update YukonListEntry set YukonDefinitionID=1306 where EntryID=1053;
 update YukonListEntry set YukonDefinitionID=1307 where EntryID=1054;
 update YukonListEntry set YukonDefinitionID=1308 where EntryID=1055;
 
+update yukonuserrole set value = 'true' where userroleid = -107;
+
 
 
 
