@@ -73,6 +73,11 @@ public class SVGGenerator {
 		scriptElem.setAttributeNS(null, "type", "text/ecmascript");
 		scriptElem.setAttributeNS(null, "xlink:href", "refresh.js");
 		svgRoot.appendChild(scriptElem);
+		
+		Element scriptElem2 = doc.createElementNS(null, "script");
+		scriptElem2.setAttributeNS(null, "type", "text/ecmascript");
+		scriptElem2.setAttributeNS(null, "xlink:href", "edit.js");
+		svgRoot.appendChild(scriptElem2);
 	
 		Element backRect = doc.createElementNS(svgNS, "rect");
 		backRect.setAttributeNS(null, "width", "100%");
@@ -170,6 +175,11 @@ public class SVGGenerator {
 		textElem.setAttributeNS(null, "x", Integer.toString(x));
 		textElem.setAttributeNS(null, "y", Integer.toString(y));
 		textElem.setAttributeNS(null, "style", "fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";");
+		
+		//if (text.isEditable()) { 
+		//textElem.setAttributeNS(null, "onclick", "editValue(evt)");	
+		//}
+		
 		
 		Text theText = doc.createTextNode(text.getText());
 		textElem.insertBefore(theText, null);
