@@ -134,7 +134,7 @@ insert into YukonListEntry values (1014,1005,0,'LCR-4000',1302);
 insert into YukonListEntry values (1015,1005,0,'LCR-3000',1302);
 insert into YukonListEntry values (1016,1005,0,'LCR-2000',1302);
 insert into YukonListEntry values (1017,1005,0,'LCR-1000',1302);
-insert into YukonListEntry values (1018,1005,0,'Thermostat',1301);
+insert into YukonListEntry values (1018,1005,0,'ExpressStat',1301);
 insert into YukonListEntry values (1019,1007,0,'Air Conditioner',1401);
 insert into YukonListEntry values (1020,1007,0,'Water Heater',1402);
 insert into YukonListEntry values (1021,1007,0,'Storage Heat',1403);
@@ -203,6 +203,7 @@ insert into YukonListEntry values (1119,1010,0,'Cancelled',1504);
 insert into YukonListEntry values (1120,1003,0,'MCT',1203);
 insert into YukonListEntry values (1121,1007,0,'(Default)',1400);
 insert into YukonListEntry values (1122,1005,0,'MCT',1303);
+insert into YukonListEntry values (1123,1005,0,'Commercial ExpressStat',1304);
 
 insert into YukonListEntry values (1201,1050,0,'Last Updated Time',3201);
 insert into YukonListEntry values (1202,1050,0,'Setpoint',3202);
