@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2002/05/15 18:35:20 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2002/05/15 18:43:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -757,11 +757,11 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
     {
         {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << " - Usage:  importcommandfile filename [/export][/perinterval:#][/interval:#]" << endl;
+            dout << " - Usage:  importcommandfile filename [/export][/cmdsperexecution:#]" << endl;
             dout << "           optional parameters: " << endl;
             dout << "                 /export - export commands sent to file export\\sent-mm-dd.txt" << endl;
             dout << "                 /cmdsperexecution:# - number of commands sent each execution (default to all)" << endl;
-            dout << "                 /dsm2 - import dsm2 vconfig.dat type commands" << endl;
+            dout << "                 /dsm2 - import dsm2 vconfig.dat type commands (not valid with other options)" << endl;
         }
 
         retVal = TCL_ERROR;
@@ -788,7 +788,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                     }
                     rename = true;
                 }
-
+                // left in here to support Nevada Power
                 if(RWCString(argv[i]).contains (RWCString ("/perinterval"),RWCString::ignoreCase))
                 {
                     int colon = RWCString(argv[i]).first(':');
@@ -803,6 +803,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                     }
                 }
 
+                // left in here to support Nevada Power
                 if(RWCString(argv[i]).contains (RWCString ("/interval"),RWCString::ignoreCase))
                 {
                     int colon = RWCString(argv[i]).first(':');
