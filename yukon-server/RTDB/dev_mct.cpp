@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2002/12/12 17:39:30 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2003/02/04 18:08:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,7 +40,9 @@ set< CtiDLCCommandStore > CtiDeviceMCT::_commandStore;
 CtiDeviceMCT::CtiDeviceMCT() :
     _magicNumber(0),
     _lpIntervalSent(0)
-    {  }
+{
+    resetMCTScansPending();
+}
 
 CtiDeviceMCT::CtiDeviceMCT(const CtiDeviceMCT& aRef)
 {
@@ -186,6 +188,31 @@ LONG CtiDeviceMCT::getDemandInterval() const
 }
 
 
+void CtiDeviceMCT::resetMCTScansPending( void )
+{
+    _scanGeneralPending     = false;
+    _scanIntegrityPending   = false;
+    _scanAccumulatorPending = false;
+}
+
+void CtiDeviceMCT::setMCTScanPending(int scantype, bool pending)
+{
+    switch(scantype)
+    {
+        case ScanRateGeneral:   _scanGeneralPending     = pending;  break;
+        case ScanRateIntegrity: _scanIntegrityPending   = pending;  break;
+        case ScanRateAccum:     _scanAccumulatorPending = pending;  break;
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+}
+
 bool CtiDeviceMCT::clearedForScan(int scantype)
 {
     bool status = false;
@@ -194,17 +221,17 @@ bool CtiDeviceMCT::clearedForScan(int scantype)
     {
         case ScanRateGeneral:
         {
-            status = ( !isScanPending() );
+            status = !_scanGeneralPending;
             break;
         }
         case ScanRateIntegrity:
         {
-            status = ( !isScanPending() );
+            status = !_scanIntegrityPending;
             break;
         }
         case ScanRateAccum:
         {
-            status = true; // CGP 032101  (!isScanFreezePending()  && !isScanResetting());
+            status = !_scanAccumulatorPending;  //  MSKF 2003-01-31 true; // CGP 032101  (!isScanFreezePending()  && !isScanResetting());
             break;
         }
         case ScanRateLoadProfile:
@@ -228,6 +255,8 @@ void CtiDeviceMCT::resetForScan(int scantype)
         case ScanRateIntegrity:
         case ScanRateAccum:
         {
+            setMCTScanPending(scantype, false);
+
             if(isScanFreezePending())
             {
                 resetScanFreezePending();
@@ -691,7 +720,6 @@ INT CtiDeviceMCT::GeneralScan(CtiRequestMsg *pReq,
 
     if(OutMessage != NULL)
     {
-        if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2142,7 +2170,6 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
 
 
         multbytes  = (unsigned long)(parse.getdValue("multiplier") * 100.0);
-        multbytes -= multbytes % 10;
 
         if( multbytes == 100 )
         {
