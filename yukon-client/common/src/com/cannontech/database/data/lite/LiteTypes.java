@@ -31,7 +31,6 @@ public final class LiteTypes
 	public final static int CONFIG					= 24;
 	public final static int CUSTOMER				= 25;
 	public final static int LMCONSTRAINT			= 26;
-	public final static int LMSCENARIO				= 27;
 
 	
 	// Stars lite types
