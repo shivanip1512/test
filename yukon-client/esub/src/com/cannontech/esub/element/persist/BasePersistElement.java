@@ -11,7 +11,7 @@ import com.loox.jloox.LxSaveUtils;
  * @author aaron
  */
 public abstract class BasePersistElement implements PersistElement {
-	// implement these!
+	// implement these!	
 	protected abstract void readFromJLX(DrawingElement drawingElem, InputStream in, int version) 
 		throws IOException;
 	protected abstract void saveAsJLX(DrawingElement drawingElem, OutputStream out, int version)

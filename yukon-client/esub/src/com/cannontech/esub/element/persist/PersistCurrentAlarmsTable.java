@@ -14,11 +14,26 @@ import com.loox.jloox.LxSaveUtils;
  * @author aaron
  */
 public class PersistCurrentAlarmsTable extends BasePersistElement {
-		
+	
+	// Only create one of these	
+	private static PersistElement  instance = null;
+	
+	public static synchronized PersistElement getInstance() {
+		if(instance ==  null) {
+			instance = new PersistCurrentAlarmsTable();	
+		}
+		return instance;
+	}
+	
 	 public void readFromJLX(DrawingElement drawingElem, InputStream in, int version) throws IOException  {
 	 		
 	 		CurrentAlarmsTable elem = (CurrentAlarmsTable) drawingElem;
 	 		switch(version) {
+	 			
+	 			case 0: {
+	 					elem.setDeviceID(LxSaveUtils.readInt(in));
+	 			}
+	 			break;
 	 			
 	 			case 1: {
 	 					// We now store an array of device ids instead of a single id

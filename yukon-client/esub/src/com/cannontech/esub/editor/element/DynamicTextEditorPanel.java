@@ -10,6 +10,7 @@ import javax.swing.event.TreeSelectionEvent;
 
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.*;
+import com.cannontech.esub.element.DynamicText;
 import com.cannontech.esub.util.Util;
 
 /**

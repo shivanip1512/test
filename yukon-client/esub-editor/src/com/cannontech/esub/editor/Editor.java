@@ -26,9 +26,9 @@ import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.editor.PropertyPanelListener;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.esub.editor.element.CurrentAlarmsTable;
-import com.cannontech.esub.editor.element.DrawingElement;
-import com.cannontech.esub.editor.element.DynamicGraphElement;
+import com.cannontech.esub.element.CurrentAlarmsTable;
+import com.cannontech.esub.element.DrawingElement;
+import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.util.DrawingUpdater;
 
 import com.loox.jloox.LxComponent;
@@ -418,10 +418,10 @@ public class Editor extends JPanel {
 	 * @param elem com.loox.jloox.LxElement
 	 */
 	void setBehavior(LxComponent elem) {
-		if (elem instanceof com.cannontech.esub.editor.element.DynamicText
-			|| elem instanceof com.cannontech.esub.editor.element.StateImage
-			|| elem instanceof com.cannontech.esub.editor.element.StaticImage
-			|| elem instanceof com.cannontech.esub.editor.element.StaticText ) {				
+		if (elem instanceof com.cannontech.esub.element.DynamicText
+			|| elem instanceof com.cannontech.esub.element.StateImage
+			|| elem instanceof com.cannontech.esub.element.StaticImage
+			|| elem instanceof com.cannontech.esub.element.StaticText ) {				
 			elem.setUserResizable(false);
 			elem.removeDefaultDoubleClickBehavior();
 			elem.removeMouseListener(editElementMouseListener);

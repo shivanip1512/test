@@ -5,6 +5,7 @@ import java.util.Iterator;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.esub.element.CurrentAlarmsTable;
 
 /**
  * Insert the type's description here.

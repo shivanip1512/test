@@ -8,6 +8,7 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.dbeditor.wizard.state.YukonImagePanel;
+import com.cannontech.esub.element.StaticImage;
 
 /**
  * Creation date: (1/22/2002 10:23:18 AM)

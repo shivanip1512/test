@@ -1,5 +1,6 @@
 package com.cannontech.esub.editor.element;
 
+import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.util.ServletUtil;
 

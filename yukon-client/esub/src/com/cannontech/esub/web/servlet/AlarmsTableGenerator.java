@@ -15,7 +15,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
 import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.esub.editor.element.CurrentAlarmsTable;
+import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.model.PointAlarmTableModel;
 
 /**

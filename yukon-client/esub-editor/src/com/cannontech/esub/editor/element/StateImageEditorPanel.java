@@ -6,6 +6,7 @@ import javax.swing.event.TreeSelectionListener;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.util.Util;
 
 /**

@@ -14,8 +14,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.esub.editor.element.CurrentAlarmsTable;
-import com.cannontech.esub.editor.element.DynamicGraphElement;
+import com.cannontech.esub.element.CurrentAlarmsTable;
+import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.util.Util;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.loox.jloox.LxAbstractAction;
@@ -424,8 +424,8 @@ class EditorActions {
 
 		public void processAction(java.awt.event.ActionEvent e) {
 
-			com.cannontech.esub.editor.element.StaticImage image =
-				new com.cannontech.esub.editor.element.StaticImage();
+			com.cannontech.esub.element.StaticImage image =
+				new com.cannontech.esub.element.StaticImage();
 
 			image.setDrawing(editor.getDrawing());
 
@@ -447,8 +447,8 @@ class EditorActions {
 
 		public void processAction(java.awt.event.ActionEvent e) {
 
-			com.cannontech.esub.editor.element.DynamicText text =
-				new com.cannontech.esub.editor.element.DynamicText();
+			com.cannontech.esub.element.DynamicText text =
+				new com.cannontech.esub.element.DynamicText();
 
 			text.setDrawing(editor.getDrawing());
 
@@ -485,8 +485,8 @@ class EditorActions {
 
 		public void processAction(java.awt.event.ActionEvent e) {
 
-			com.cannontech.esub.editor.element.StateImage si =
-				new com.cannontech.esub.editor.element.StateImage();
+			com.cannontech.esub.element.StateImage si =
+				new com.cannontech.esub.element.StateImage();
 
 			si.setDrawing(editor.getDrawing());
 
@@ -508,8 +508,8 @@ class EditorActions {
 
 		public void processAction(java.awt.event.ActionEvent e) {
 
-			com.cannontech.esub.editor.element.StaticText text =
-				new com.cannontech.esub.editor.element.StaticText();
+			com.cannontech.esub.element.StaticText text =
+				new com.cannontech.esub.element.StaticText();
 
 			text.setDrawing(editor.getDrawing());
 

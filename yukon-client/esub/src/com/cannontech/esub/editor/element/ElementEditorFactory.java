@@ -1,6 +1,13 @@
 package com.cannontech.esub.editor.element;
 
 import com.cannontech.common.editor.PropertyPanel;
+import com.cannontech.esub.element.CurrentAlarmsTable;
+import com.cannontech.esub.element.DrawingMetaElement;
+import com.cannontech.esub.element.DynamicGraphElement;
+import com.cannontech.esub.element.DynamicText;
+import com.cannontech.esub.element.StateImage;
+import com.cannontech.esub.element.StaticImage;
+import com.cannontech.esub.element.StaticText;
 
 /**
  * Creation date: (12/18/2001 12:53:50 PM)

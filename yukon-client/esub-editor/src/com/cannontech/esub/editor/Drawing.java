@@ -5,8 +5,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 
-import com.cannontech.esub.editor.element.DrawingElement;
-import com.cannontech.esub.editor.element.DrawingMetaElement;
+import com.cannontech.esub.element.DrawingElement;
+import com.cannontech.esub.element.DrawingMetaElement;
 import com.cannontech.esub.util.HTMLGenerator;
 import com.cannontech.esub.util.SVGGenerator;
 import com.loox.jloox.LxComponent;
@@ -132,7 +132,7 @@ public class Drawing implements Serializable {
 			lxView.lassoSetDisplayed(false);
 			lxView.setBackground(java.awt.Color.black);
 			lxView.setMagneticGridColor(java.awt.Color.gray);
-			lxView.setMagneticGridEnabled(true);
+			lxView.setMagneticGridEnabled(false);
 			lxView.setMagneticGridVisible(true);
 			lxView.setMagneticGridSize(10);
 			lxView.setLocation(0,0); 

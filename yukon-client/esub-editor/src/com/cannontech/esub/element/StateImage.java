@@ -12,6 +12,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.element.persist.PersistStateImage;
 import com.cannontech.esub.util.Util;
 import com.loox.jloox.LxAbstractImage;
 import com.loox.jloox.LxSaveUtils;
@@ -147,17 +148,10 @@ public void setPoint(com.cannontech.database.data.lite.LitePoint newPoint) {
 public synchronized void readFromJLX(InputStream in, String version) throws IOException
 {
         super.readFromJLX(in, version);
-
-        //restore point id
-        LitePoint lp = PointFuncs.getLitePoint( LxSaveUtils.readInt(in));
-        setPoint(lp);
-                                
-        //restore link
-        setLinkTo(LxSaveUtils.readString(in));        
-        LxSaveUtils.readEndOfPart(in);
-        
+		PersistStateImage.getInstance().readFromJLX(this,in);
         updateImage();
 }
+
 /**
  * Creation date: (12/17/2001 3:49:44 PM)
  * @param out java.io.OutputStream
@@ -165,23 +159,8 @@ public synchronized void readFromJLX(InputStream in, String version) throws IOEx
 public synchronized void saveAsJLX(OutputStream out) throws IOException 
 {
         super.saveAsJLX(out);
-
-        // save point id
-        LitePoint lp = getPoint();
-        int pointID = -1;
-        
-        if( lp != null ) {
-                pointID = lp.getPointID();
-        }        
-
-        LxSaveUtils.writeInt(out, pointID);
-        
-        //save link
-        LxSaveUtils.writeString(out, getLinkTo());
-        
-        LxSaveUtils.writeEndOfPart(out);
+		PersistStateImage.getInstance().saveAsJLX(this,out);
 }
-
 
 	/**
 	 * Returns the linkTo.

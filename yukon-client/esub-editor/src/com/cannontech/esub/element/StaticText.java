@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.util.Properties;
 
 import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.element.persist.PersistStaticText;
 import com.loox.jloox.LxAbstractText;
 import com.loox.jloox.LxSaveUtils;
 
@@ -86,25 +87,9 @@ public void setFont(String name, int size) {
 public synchronized void readFromJLX(InputStream in, String version) throws IOException
 {
         super.readFromJLX(in, version);
-
-        String fontName = LxSaveUtils.readString(in);
-        int fontSize = LxSaveUtils.readInt(in);
-        
-        setFont(fontName, fontSize);
-
-        //read color
-        int r = LxSaveUtils.readInt(in);
-        int g = LxSaveUtils.readInt(in);
-        int b = LxSaveUtils.readInt(in);
-
-        Color c = new Color(r, g, b);
-        setPaint(c);
-        
-        //restore link
-        setLinkTo( LxSaveUtils.readString(in) );
-                
-        LxSaveUtils.readEndOfPart(in);
+		PersistStaticText.getInstance().readFromJLX(this,in);
 }
+
 /**
  * Creation date: (12/17/2001 3:49:44 PM)
  * @param out java.io.OutputStream
@@ -112,22 +97,7 @@ public synchronized void readFromJLX(InputStream in, String version) throws IOEx
 public synchronized void saveAsJLX(OutputStream out) throws IOException 
 {
         super.saveAsJLX(out);
-
-        java.awt.Font f = getFont();
-        
-        LxSaveUtils.writeString(out, f.getFontName() );
-        LxSaveUtils.writeInt(out, f.getSize() );
-
-        //save color
-        Color textColor = (Color) getPaint();
-        LxSaveUtils.writeInt(out, textColor.getRed());
-        LxSaveUtils.writeInt(out, textColor.getGreen());
-        LxSaveUtils.writeInt(out, textColor.getBlue());
-        
-        //save link
-        LxSaveUtils.writeString(out, getLinkTo() );
-        
-        LxSaveUtils.writeEndOfPart(out);
+		PersistStaticText.getInstance().saveAsJLX(this,out);
 }
 
 	/**

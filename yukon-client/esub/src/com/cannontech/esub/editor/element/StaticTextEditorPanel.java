@@ -6,6 +6,7 @@ import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.esub.element.StaticText;
 
 /**
  * Creation date: (1/22/2002 10:23:18 AM)

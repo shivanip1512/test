@@ -7,6 +7,7 @@ import java.util.Properties;
 
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.editor.EditorPrefs;
+import com.cannontech.esub.element.persist.PersistDrawingMetaElement;
 import com.loox.jloox.LxAbstractText;
 import com.loox.jloox.LxSaveUtils;
 
@@ -45,12 +46,7 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 	 */
 	public void readFromJLX(InputStream in, String version) throws IOException {
 		super.readFromJLX(in, version);
-		
-		setVersion(LxSaveUtils.readInt(in));
-		setDrawingWidth(LxSaveUtils.readInt(in));
-		setDrawingHeight(LxSaveUtils.readInt(in));
-		setRoleID(LxSaveUtils.readInt(in));
-		LxSaveUtils.readEndOfPart(in);
+		PersistDrawingMetaElement.getInstance().readFromJLX(this,in);
 	}
 
 	/**
@@ -58,12 +54,7 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 	 */
 	public void saveAsJLX(OutputStream out) throws IOException {
 		super.saveAsJLX(out);
-	
-		LxSaveUtils.writeInt(out, getVersion());
-		LxSaveUtils.writeInt(out, getDrawingWidth());
-		LxSaveUtils.writeInt(out, getDrawingHeight());
-		LxSaveUtils.writeInt(out, getRoleID());
-		LxSaveUtils.writeEndOfPart(out);
+		PersistDrawingMetaElement.getInstance().saveAsJLX(this,out);
 	}
 
 	/**

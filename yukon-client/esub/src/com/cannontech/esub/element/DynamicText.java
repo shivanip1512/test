@@ -15,6 +15,7 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.PointAttributes;
 import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.element.persist.PersistDynamicText;
 import com.loox.jloox.LxAbstractText;
 import com.loox.jloox.LxContainer;
 import com.loox.jloox.LxSaveUtils;
@@ -25,11 +26,13 @@ import com.loox.jloox.LxSaveUtils;
  * @author: 
  */
 public class DynamicText extends LxAbstractText implements DrawingElement, Serializable {
+	public static final int INVALID_POINT = -1;	
+	
 	private static final int CURRENT_VERSION = 1;
 	
 	static final Font DEFAULT_FONT = new java.awt.Font("arial", java.awt.Font.BOLD, 12);
 	static final Color DEFAULT_COLOR = java.awt.Color.white;
-	static final int INVALID_POINT = -1;	
+
 	
 	private com.cannontech.database.data.lite.LitePoint point;	
 	private int displayAttribs = 0x00;
@@ -217,14 +220,7 @@ public void setPointID(int newPointID) {
 public void readFromJLX(InputStream in, String version) throws IOException
 {  
         super.readFromJLX(in, version);
-        
-        setPointID(LxSaveUtils.readInt(in));
-        setDisplayAttribs(LxSaveUtils.readInt(in));        
-                
-        //read link
-        setLinkTo( LxSaveUtils.readString(in));
-        
-        LxSaveUtils.readEndOfPart(in);
+		PersistDynamicText.getInstance().readFromJLX(this,in);
 }
 /**
  * Creation date: (12/17/2001 3:49:44 PM)
@@ -233,16 +229,8 @@ public void readFromJLX(InputStream in, String version) throws IOException
 public void saveAsJLX(OutputStream out) throws IOException 
 {
         super.saveAsJLX(out);
-        
-        LxSaveUtils.writeInt(out, getPointID());
-        LxSaveUtils.writeInt(out, getDisplayAttribs());
-   
-        //save link
-        LxSaveUtils.writeString(out, getLinkTo() );
-        
-        LxSaveUtils.writeEndOfPart(out);
+ 		PersistDynamicText.getInstance().saveAsJLX(this,out);
 }
-
 
 	/**
 	 * Returns the linkTo.

@@ -14,6 +14,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.GraphFuncs;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.element.persist.PersistDynamicGraphElement;
 import com.cannontech.graph.Graph;
 import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.util.ServletUtil;
@@ -363,18 +364,8 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
          */
         public void readFromJLX(InputStream in, String version) throws IOException {
                 super.readFromJLX(in, version);
-        
-                setGraphDefinitionID(LxSaveUtils.readInt(in));
-                setTrendType(LxSaveUtils.readInt(in));
-                setDisplayPeriod(LxSaveUtils.readString(in));
-                
-                /* KEEP THIS AFTER SWITCH TO PERSIST STUFF!!!*/
+        		PersistDynamicGraphElement.getInstance().readFromJLX(this,in);
                 resetDisplayRange();
-                
-                //read link
-                //setLinkTo( LxSaveUtils.readString(in));
-        
-                LxSaveUtils.readEndOfPart(in);
         }
 
         /**
@@ -382,18 +373,8 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
          */
         public void saveAsJLX(OutputStream out) throws IOException {
                 super.saveAsJLX(out);
-        
-                LxSaveUtils.writeInt(out, getGraphDefinitionID());
-                LxSaveUtils.writeInt(out, getTrendType());
-                LxSaveUtils.writeString(out, getDisplayPeriod());
-                
-                //save link
-                //LxSaveUtils.writeString(out, getLinkTo() );
-        
-                LxSaveUtils.writeEndOfPart(out);
+				PersistDynamicGraphElement.getInstance().saveAsJLX(this,out);        
         }
-
-
 
 	/**
 	 * Returns the displayPeriod.

@@ -10,6 +10,7 @@ import java.util.Properties;
 
 import com.cannontech.esub.EsubConstants;
 import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.element.persist.PersistCurrentAlarmsTable;
 import com.cannontech.esub.model.PointAlarmTableModel;
 import com.cannontech.esub.table.Table;
 import com.loox.jloox.LxAbstractRectangle;
@@ -20,7 +21,7 @@ import com.loox.jloox.LxSaveUtils;
  */
 public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingElement {	
 	
-	private static final int CURRENT_VERSION = 1;
+	private static final int CURRENT_VERSION = 0;
 	
 	private static final String TABLE_TITLE = "Current Alarms";
 	private static final int DEFAULT_WIDTH = 1000;
@@ -109,10 +110,8 @@ public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingEl
      */
     public void readFromJLX(InputStream in, String version) throws IOException {
             super.readFromJLX(in, version);
-    		
-        setDeviceID(LxSaveUtils.readInt(in));    
-		LxSaveUtils.readEndOfPart(in);
-    }
+    		PersistCurrentAlarmsTable.getInstance().readFromJLX(this,in);
+     }
 
 
 	/**
@@ -120,8 +119,7 @@ public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingEl
      */
     public void saveAsJLX(OutputStream out) throws IOException {
         super.saveAsJLX(out);    
-        LxSaveUtils.writeInt(out,getDeviceID());
-   		LxSaveUtils.writeEndOfPart(out);
+        PersistCurrentAlarmsTable.getInstance().saveAsJLX(this,out);
     }
 
 	/**

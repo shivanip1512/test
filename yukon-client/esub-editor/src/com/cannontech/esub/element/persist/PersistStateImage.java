@@ -15,6 +15,16 @@ import com.loox.jloox.LxSaveUtils;
  */
 public class PersistStateImage extends BasePersistElement {
 
+	// Only create one of these
+	private static PersistElement instance = null;
+	
+	public static synchronized PersistElement getInstance() {
+		if(instance == null) {
+			instance = new PersistStateImage();
+		}
+		return instance;
+	}
+	
 	/**
 	 * @see com.cannontech.esub.element.persist.PersistElement#readFromJLX(DrawingElement, InputStream)
 	 */

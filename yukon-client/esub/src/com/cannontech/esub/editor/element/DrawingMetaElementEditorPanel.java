@@ -10,6 +10,7 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonRole;
+import com.cannontech.esub.element.DrawingMetaElement;
 
 /**
  * Insert the type's description here.
