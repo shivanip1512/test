@@ -214,7 +214,7 @@ public class UpdateLoginAction implements ActionBase {
 	public static void deleteLogin(int userID, LiteContact liteContact)
 	throws CommandExecutionException {
 		if (liteContact != null) {
-	        liteContact.setLoginID( com.cannontech.user.UserUtils.USER_NONE_ID );
+	        liteContact.setLoginID( com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID );
 	        com.cannontech.database.data.customer.Contact contact =
 	        		(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
 	        Transaction.createTransaction(Transaction.UPDATE, contact.getContact()).execute();
@@ -238,7 +238,7 @@ public class UpdateLoginAction implements ActionBase {
 		String password = updateLogin.getPassword();
 	    	
 		if (userID == com.cannontech.user.UserUtils.USER_YUKON_ID ||
-			userID == com.cannontech.user.UserUtils.USER_NONE_ID)
+			userID == com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID)
 		{
 			// Create new customer login
 			if (username.trim().length() == 0 || password.trim().length() == 0)

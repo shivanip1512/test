@@ -366,7 +366,7 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 				}
 				
 				if (energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_YUKON_ID &&
-					energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_NONE_ID)
+					energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID)
 				{
 					com.cannontech.database.data.user.YukonUser yukonUser =
 							new com.cannontech.database.data.user.YukonUser();

@@ -1882,7 +1882,7 @@ public class ImportManager extends HttpServlet {
 	{
 		LiteContact liteContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
 		if ((liteContact.getLoginID() == UserUtils.USER_YUKON_ID ||
-			liteContact.getLoginID() == UserUtils.USER_NONE_ID)
+			liteContact.getLoginID() == UserUtils.USER_STARS_DEFAULT_ID)
 			&& fields[IDX_USERNAME].trim().length() == 0)
 			return;
 		

@@ -147,7 +147,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	private String name = null;
 	private int primaryContactID = CtiUtilities.NONE_ID;
-	private int userID = com.cannontech.user.UserUtils.USER_NONE_ID;
+	private int userID = com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID;
 	
 	private ArrayList custAccountInfos = null;	// List of LiteStarsCustAccountInformation
 	private ArrayList addresses = null;			// List of LiteAddress
