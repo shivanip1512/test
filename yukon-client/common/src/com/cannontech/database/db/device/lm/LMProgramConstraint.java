@@ -14,10 +14,16 @@ public class LMProgramConstraint extends com.cannontech.database.db.DBPersistent
 	private Integer constraintID;
 	private String constraintName;
 	private String availableWeekdays = "YYYYYYNN";
+
+	//store in DB as seconds
 	private Integer maxHoursDaily = new Integer(0);
+	//store in DB as seconds	
 	private Integer maxHoursMonthly = new Integer(0);
+	//store in DB as seconds
 	private Integer maxHoursSeasonal = new Integer(0);
+	//store in DB as seconds
 	private Integer maxHoursAnnually = new Integer(0);
+
 	private Integer minActivateTime = new Integer(0);
 	private Integer minRestartTime = new Integer(0);
 	private Integer maxDailyOps = new Integer(0);
@@ -70,9 +76,12 @@ public void add() throws java.sql.SQLException
 	Object addValues[] = 
 	{ 
 		getConstraintID(), getConstraintName(),  
-		getAvailableWeekdays(), getMaxHoursDaily(), getMaxHoursMonthly(), 
-		getMaxHoursSeasonal(), getMaxHoursAnnually(), getMinActivateTime(), 
-		getMinRestartTime(), getMaxDailyOps(), getMaxActivateTime(), 
+		getAvailableWeekdays(),
+		new Integer(getMaxHoursDaily().intValue()*3600),
+		new Integer(getMaxHoursMonthly().intValue()*3600),
+		new Integer(getMaxHoursSeasonal().intValue()*3600),
+		new Integer(getMaxHoursAnnually().intValue()*3600),
+		getMinActivateTime(), getMinRestartTime(), getMaxDailyOps(), getMaxActivateTime(), 
 		getHolidayScheduleID(), getSeasonScheduleID()
 		
 	};
@@ -213,10 +222,11 @@ public void retrieve()
 		{
 			setConstraintName( (String) results[1] );
 			setAvailableWeekdays( (String) results[2] );
-			setMaxHoursDaily( (Integer) results[3] );
-			setMaxHoursMonthly( (Integer) results[4] );
-			setMaxHoursSeasonal( (Integer) results[5] );
-			setMaxHoursAnnually( (Integer) results[6] );
+			setMaxHoursDaily( new Integer( ((Integer)results[3]).intValue()/3600) );
+			setMaxHoursMonthly( new Integer( ((Integer)results[4]).intValue()/3600) );
+			setMaxHoursSeasonal( new Integer( ((Integer)results[5]).intValue()/3600) );
+			setMaxHoursAnnually( new Integer( ((Integer)results[6]).intValue()/3600) );
+			
 			setMinActivateTime( (Integer) results[7] );
 			setMinRestartTime( (Integer) results[8] );
 			setMaxDailyOps( (Integer) results[9] );
@@ -291,16 +301,19 @@ public void setSeasonScheduleID(Integer newID) {
 
 public void update() 
 {
-	Object setValues[] =
+	Object setValues[] = 
 	{ 
-		getConstraintID(), getConstraintName(), 
-		getAvailableWeekdays(), getMaxHoursDaily(), getMaxHoursMonthly(), 
-		getMaxHoursSeasonal(), getMaxHoursAnnually(), getMinActivateTime(), 
-		getMinRestartTime(), getMaxDailyOps(), getMaxActivateTime(), 
+		getConstraintID(), getConstraintName(),  
+		getAvailableWeekdays(),
+		new Integer(getMaxHoursDaily().intValue()*3600),
+		new Integer(getMaxHoursMonthly().intValue()*3600),
+		new Integer(getMaxHoursSeasonal().intValue()*3600),
+		new Integer(getMaxHoursAnnually().intValue()*3600),
+		getMinActivateTime(), getMinRestartTime(), getMaxDailyOps(), getMaxActivateTime(), 
 		getHolidayScheduleID(), getSeasonScheduleID()
 		
 	};
-	
+
 	Object constraintValues[] = { getConstraintID() };
 	
 	try
