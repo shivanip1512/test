@@ -77,8 +77,8 @@
               </td>
             </tr>
           </table>
-          <input name="USERNAME" value="cti2" type="hidden">
-          <input name="PASSWORD" value="cti2" type="hidden">
+          <input name="USERNAME" value="cti" type="hidden">
+          <input name="PASSWORD" value="cti" type="hidden">
           <input name="ACTION" value="LOGIN" type="hidden">
           <input name="DATABASEALIAS" value="yukon" type="hidden">
           <input name="REDIRECT" type="hidden" value="/user/CILC/user_trending.jsp">
