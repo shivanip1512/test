@@ -10,8 +10,9 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.database.data.point.CTIPointQuailtyException;
+import com.cannontech.database.data.point.PointLogicalGroups;
 import com.cannontech.database.data.point.PointQualities;
-import com.cannontech.database.db.point.SOELog;
+import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.database.db.point.TAGLog;
 import com.cannontech.message.dispatch.message.Signal;
@@ -104,29 +105,53 @@ public class ViewCreator
 	}
 	
 	/**
-	 * SOE event log generator
+	 * SOE event log generator derived from the SystemLog table
 	 * @param sql java.lang.String
 	 */
 	public synchronized int createRowsForSOELogView(Date date, int page) 
 	{
 		tableModel.setCurrentDate( date );
 
-		String rowCountQuery = "select min(s.logid), max(s.logid)" +
-						  " from " + SOELog.TABLE_NAME + " s" +
-						  " where s.soedatetime >= ?" +
-						  " and s.soedatetime < ?";
+//		String rowCountQuery = "select min(s.logid), max(s.logid)" +
+//						  " from " + SOELog.TABLE_NAME + " s" +
+//						  " where s.soedatetime >= ?" +
+//						  " and s.soedatetime < ?";
 
+//		String rowQuery = 
+//				"select s.soedatetime, y.PAOName, p.pointname, s.description, " +
+//				" s.additionalinfo, s.millis, s.pointid " +
+//				" from " + SOELog.TABLE_NAME + " s, YukonPAObject y, point p " +
+//				" where s.pointid=p.pointid and y.PAObjectID=p.PAObjectID " +
+//				" and s.soedatetime >= ? " +
+//				" and s.soedatetime < ? " +
+//				" and s.logid >= ? " +
+//				" and s.logid <= ? " +
+//				" order by s.soedatetime, s.millis";
+
+
+
+		String rowCountQuery = "select min(s.logid), max(s.logid)" +
+						  " from " + SystemLog.TABLE_NAME + " s, " + Point.TABLE_NAME + " p " +
+						  " where s.datetime >= ?" +
+						  " and s.datetime < ? " +
+						  " and p.LogicalGroup = '" + PointLogicalGroups.LGRP_STRS[PointLogicalGroups.LGRP_SOE] +"' " +
+						  " and s.pointid=p.pointid";
+
+		//only get the SOE points
 		String rowQuery = 
-				"select s.soedatetime, y.PAOName, p.pointname, s.description, " +
-				" s.additionalinfo, s.millis, s.pointid " +
-				" from " + SOELog.TABLE_NAME + " s, YukonPAObject y, point p " +
-				" where s.pointid=p.pointid and y.PAObjectID=p.PAObjectID " +
-				" and s.soedatetime >= ? " +
-				" and s.soedatetime < ? " +
+				"select s.datetime, y.PAOName, p.pointname, s.description, s.action, " +
+				" s.millis, s.pointid " +
+				" from " + SystemLog.TABLE_NAME + " s, YukonPAObject y, point p " +
+				" where p.LogicalGroup = '" + PointLogicalGroups.LGRP_STRS[PointLogicalGroups.LGRP_SOE] +"' " +
+				" and s.pointid=p.pointid and y.PAObjectID=p.PAObjectID " +
+				" and s.datetime >= ? " +
+				" and s.datetime < ? " +
 				" and s.logid >= ? " +
 				" and s.logid <= ? " +
-				" order by s.soedatetime, s.millis";
-   
+				" order by s.datetime, s.millis";
+
+
+
 		GregorianCalendar lowerCal = new GregorianCalendar();
 		lowerCal.setTime( date );
 		lowerCal.set( lowerCal.HOUR_OF_DAY, 0 );
