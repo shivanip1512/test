@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2002/06/24 21:05:03 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2002/07/09 20:12:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -754,7 +754,7 @@ int  CtiVanGogh::commandMsgHandler(const CtiCommandMsg *Cmd)
                         {
                             if(pDyn->getDispatch().getTags() & TAG_UNACKNOWLEDGED_ALARM)
                             {
-                                if(pDyn->getDispatch().isDirty()) // Oh, someone has already set this, make sure it gets written.
+                                if(pDyn->getDispatch().isDirty())
                                 {
                                     pDyn->getDispatch().Update();
                                 }
@@ -1253,7 +1253,7 @@ void CtiVanGogh::VGTimedOperationThread()
         dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    updateRuntimeDispatchTable();
+    updateRuntimeDispatchTable(true);
     doPendingOperations();
 
 
@@ -1283,7 +1283,7 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
 
             if(pDyn != NULL)
             {
-                if( aPD.getTime() >= pDyn->getDispatch().getTimeStamp().rwtime() || (aPD.getTags() & TAG_POINT_FORCE_UPDATE) )
+                if( aPD.getTime() >= pDyn->getTimeStamp() || (aPD.getTags() & TAG_POINT_FORCE_UPDATE) )
                 {
                     if( pDyn->getDispatch().getTags() & (MASK_ANY_SERVICE_DISABLE | MASK_ANY_CONTROL_DISABLE) )
                     {
@@ -2183,7 +2183,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
                                 }
 
                                 // Make the time match the entered time
-                                pDat->setTime( pDyn->getDispatch().getTimeStamp().rwtime() );
+                                pDat->setTime( pDyn->getTimeStamp() );
                                 pMulti->getData().insert(pDat);
                             }
                         }
@@ -2823,15 +2823,17 @@ void CtiVanGogh::purifyClientConnectionList()
  *          PointMgr's monitor.
  *          db connection mutex.
  */
-void CtiVanGogh::updateRuntimeDispatchTable()
+void CtiVanGogh::updateRuntimeDispatchTable(bool force)
 {
     static UINT callCounter = 0;
 
     try
     {
-        if(!(callCounter % UPDATERTDB_RATE) )    // Only chase the queue once per CONFRONT_RATE seconds.
+        if(force || !(callCounter % UPDATERTDB_RATE) )    // Only chase the queue once per CONFRONT_RATE seconds.
         {
-            CtiLockGuard<CtiMutex> server_guard(server_mux, 2500);      // Get a lock on it.
+            unsigned long delay = force ? 20000 : 2500;
+
+            CtiLockGuard<CtiMutex> server_guard(server_mux, delay);      // Get a lock on it.
 
             if(server_guard.isAcquired())
             {
@@ -3168,6 +3170,7 @@ INT CtiVanGogh::markPointNonUpdated(CtiPointBase &point, CtiMultiWrapper &aWrap)
                 }
 
                 CtiPointDataMsg *pDat = new CtiPointDataMsg(point.getID(), pDyn->getValue(), pDyn->getQuality(), point.getType(), "Non Updated", pDyn->getDispatch().getTags());
+                pDat->setTime(pDyn->getTimeStamp());
 
                 aWrap.getMulti()->insert( pDat );
             }
@@ -4247,7 +4250,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
             {
                 CtiLockGuard<CtiMutex> guard(server_mux, 1000);
 
-                while(!guard.tryAcquire(5000))
+                while(!guard.isAcquired() && !guard.tryAcquire(5000))
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -4255,27 +4258,38 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                     }
                 }
 
-                // We will own that mutex following at this point.
-                if(pChg->getDatabase() == ChangeNotificationGroupDb)
+                if(guard.isAcquired())
                 {
-                    // Group or destinations have changed!
-                    CtiNotificationGroupSet_t::iterator git;
-
-                    for(git = _notificationGroupSet.begin(); git != _notificationGroupSet.end(); git++ )
+                    // We will own that mutex following at this point.
+                    if(pChg->getDatabase() == ChangeNotificationGroupDb)
                     {
-                        CtiTableNotificationGroup &theGroup = *git;
-                        theGroup.setDirty(true);
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Notification Groups will be reloaded on next usage." << endl;
+                        }
+                        // Group or destinations have changed!
+                        CtiNotificationGroupSet_t::iterator git;
+
+                        for(git = _notificationGroupSet.begin(); git != _notificationGroupSet.end(); git++ )
+                        {
+                            CtiTableNotificationGroup &theGroup = *git;
+                            theGroup.setDirty(true);
+                        }
                     }
-                }
-                else if(pChg->getDatabase() == ChangeNotificationRecipientDb )
-                {
-                    // Recipients have changed
-                    CtiRecipientSet_t::iterator rit;
-
-                    for(rit = _recipientSet.begin(); rit != _recipientSet.end(); rit++ )
+                    else if(pChg->getDatabase() == ChangeNotificationRecipientDb )
                     {
-                        CtiTableGroupRecipient &theRecip = *rit;
-                        theRecip.setDirty(true);
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Notification Recipients will be reloaded on next usage." << endl;
+                        }
+                        // Recipients have changed
+                        CtiRecipientSet_t::iterator rit;
+
+                        for(rit = _recipientSet.begin(); rit != _recipientSet.end(); rit++ )
+                        {
+                            CtiTableGroupRecipient &theRecip = *rit;
+                            theRecip.setDirty(true);
+                        }
                     }
                 }
             }
@@ -4616,6 +4630,15 @@ CtiTableGroupRecipient* CtiVanGogh::getRecipient( LONG locid )
     {
         // rit should be an iterator which represents the recipient now!
         pRecipient = &(*rit);
+
+        if(pRecipient->isDirty())
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Reloading Notification Recipient " << pRecipient->getRecipientName() << endl;
+            }
+            pRecipient->Restore();      // Reload the recipient.  Someone says it has changed!
+        }
     }
 
     return pRecipient;
@@ -4667,11 +4690,9 @@ void CtiVanGogh::sendSignalToGroup(LONG ngid, CtiSignalMsg sig)
 
         if(theGroup.isDirty())
         {
-
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  Restoring a changed (dirty) Notification Group" << endl;
+                dout << RWTime() << "  Reloading Notification Group " << theGroup.getGroupName() << endl;
             }
             theGroup.Restore();     // Clean the thing then!
         }
@@ -4721,6 +4742,15 @@ void CtiVanGogh::sendEmailToGroup(LONG ngid, CtiEmailMsg email)
     {
         // git should be an iterator which represents the group now!
         CtiTableNotificationGroup &theGroup = *git;
+
+        if(theGroup.isDirty())
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Reloading Notification Group " << theGroup.getGroupName() << endl;
+            }
+            theGroup.Restore();     // Clean the thing then!
+        }
 
         vector<int> recipients = theGroup.getRecipientVector();
         vector<int>::iterator r_iter;

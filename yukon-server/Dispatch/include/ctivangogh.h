@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/06/14 21:07:32 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/07/09 20:12:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -193,7 +193,7 @@ public:
 
     INT   loadPendingSignals();
     void  purifyClientConnectionList();
-    void  updateRuntimeDispatchTable();
+    void  updateRuntimeDispatchTable(bool force = false);
     void  writeLMControlHistoryToDB(bool justdoit = false);
     void  writeCommErrorHistoryToDB(bool justdoit = false);
     void  writeArchiveDataToDB(bool justdoit = false);
