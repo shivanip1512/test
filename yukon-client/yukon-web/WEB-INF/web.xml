@@ -243,7 +243,6 @@
 	</servlet>
 
     <!-- Start JNLP servlets -->
-<!--    
     <servlet>
         <servlet-name>DynamicJNLPServlet</servlet-name>
         <servlet-class>com.cannontech.servlet.DynamicJNLPServlet</servlet-class>
@@ -257,7 +256,6 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
--->
     <!-- END JNLP servlets -->
 	
 	<servlet-mapping>
@@ -281,12 +279,10 @@
 		<url-pattern>/cttp/</url-pattern>
 	</servlet-mapping>
 
-<!--
 	<servlet-mapping>
 	    <servlet-name>DynamicJNLPServlet</servlet-name>
 		<url-pattern>*.jnlp</url-pattern>
 	</servlet-mapping>
--->
 
 	<session-config>
 		<session-timeout>60</session-timeout>
