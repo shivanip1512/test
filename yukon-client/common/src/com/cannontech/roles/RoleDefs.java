@@ -17,10 +17,12 @@ interface RoleDefs {
 	static final int APPLICATION_ROLEID_BASE = -100;
 	static final int OPERATOR_ROLEID_BASE = -200;
 	static final int CICUSTOMER_ROLEID_BASE = -300;
-	static final int CONSUMER_ROLEID_BASE = -400;
-	
+	static final int CONSUMER_ROLEID_BASE = -400;	
 	static final int AMR_ROLEID_BASE = -500;
 	static final int ANALYSIS_ROLEID_BASE = -600;
+	static final int CBC_ROLEID_BASE = -700;
+	
+	
 	/*
 	 * The base rolepropertyids for each category
 	*/ 
@@ -32,4 +34,5 @@ interface RoleDefs {
 	
 	static final int AMR_PROPERTYID_BASE = -50000;
 	static final int ANALYSIS_PROPERTYID_BASE = -60000;
+	static final int CBC_PROPERTYID_BASE = -70000;
 }
