@@ -85,9 +85,9 @@
 	else if (tab.equalsIgnoreCase("newconfirm")) {	
 		if (request.getParameter("confirmed") == null) {	// not confirmed yet
 			programStr = checker.get("program");
-			notifyDateStr = mandDateFormat.format( ServletUtil.parseDateStringLiberally(checker.get("notifydate"), tz));
+			notifyDateStr = mandDateFormat.format( ServletUtil.parseDateStringLiberally(checker.get("notifydate"),tz));
 			notifyTimeStr = mandTimeFormat.format( ServletUtil.parseDateStringLiberally(checker.get("notifytime"), tz));
-			curtailDateStr = mandDateFormat.format( ServletUtil.parseDateStringLiberally(checker.get("curtaildate"), tz));
+			curtailDateStr = mandDateFormat.format( ServletUtil.parseDateStringLiberally(checker.get("curtaildate"),tz));
 			curtailTimeStr = mandTimeFormat.format( ServletUtil.parseDateStringLiberally(checker.get("curtailtime"), tz));
 			String commentStr = checker.get("comments");
 			if (commentStr == null || commentStr.length() == 0)
@@ -127,12 +127,12 @@
 			java.util.GregorianCalendar stopCal = new java.util.GregorianCalendar();
 			java.util.GregorianCalendar timeCal = new java.util.GregorianCalendar();
 			
-			notifyCal.setTime( ServletUtil.parseDateStringLiberally(checker.get("notifydate"), tz) );
+			notifyCal.setTime( ServletUtil.parseDateStringLiberally(checker.get("notifydate")) );
 			timeCal.setTime( ServletUtil.parseDateStringLiberally(checker.get("notifytime"), tz) );
 			notifyCal.set(Calendar.HOUR, timeCal.get(Calendar.HOUR_OF_DAY));
 			notifyCal.set(Calendar.MINUTE, timeCal.get(Calendar.MINUTE));
 			
-			startCal.setTime( ServletUtil.parseDateStringLiberally(checker.get("curtaildate"), tz) );
+			startCal.setTime( ServletUtil.parseDateStringLiberally(checker.get("curtaildate")) );
 			timeCal.setTime( ServletUtil.parseDateStringLiberally(checker.get("curtailtime"), tz) );
 			startCal.set(Calendar.HOUR, timeCal.get(Calendar.HOUR_OF_DAY));
 			startCal.set(Calendar.MINUTE, timeCal.get(Calendar.MINUTE));

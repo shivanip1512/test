@@ -161,14 +161,21 @@
             msg.setCommand(new Integer( com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg.NEW_OFFER ));
             msg.setYukonID(new Integer( request.getParameter("program") ));
 			msg.setAdditionalInfo("(none)");
-
-			String offerDateStr = request.getParameter("date") + " 00:00";
+System.out.println("offerDateStr: " + request.getParameter("date") + " 00:00");
+System.out.println("notifyDateTimeStr: " + request.getParameter("notifydate") + " " + request.getParameter("notifytime"));
+System.out.println("expireDateTimeStr: " + request.getParameter("expiredate") + " " + request.getParameter("expiretime"));
+			
+			String offerDateStr = request.getParameter("date");
 			String notifyDateTimeStr = request.getParameter("notifydate") + " " + request.getParameter("notifytime");
 			String expireDateTimeStr = request.getParameter("expiredate") + " " + request.getParameter("expiretime");
 			
-			java.util.Date offerDate = eeDateTimeFormat.parse(offerDateStr);
+			java.util.Date offerDate = ServletUtil.parseDateStringLiberally(offerDateStr);
 			java.util.Date notifyDateTime = eeDateTimeFormat.parse(notifyDateTimeStr);
 			java.util.Date expireDateTime = eeDateTimeFormat.parse(expireDateTimeStr);
+			
+System.out.println("sending: " + offerDate);
+System.out.println("sending: " + notifyDateTime);
+System.out.println("sending: " + expireDateTime);
 			
 			java.util.Calendar offerCal = java.util.Calendar.getInstance();
 			offerCal.setTime(offerDate);

@@ -16,7 +16,9 @@
        Integer offerID
        Integer revisionNumber
     */
-                                                 
+                                       
+    /* keep this in server timezone */                                                 
+    java.text.SimpleDateFormat responseDateFormat = new java.text.SimpleDateFormat("MM/dd/yy");
                                                  
     //Now locate the specific offer and revision
     LMProgramEnergyExchange[] programs = cache.getEnergyCompanyEnergyExchangePrograms(energyCompanyID);
@@ -176,7 +178,7 @@
           <td width="657" valign="top" bgcolor="#FFFFFF">
             <div align="center"> 
               <p class="Main"><br>
-                <b>  - CUSTOMER SUMMARY<br>
+                <b> <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - CUSTOMER SUMMARY<br>
                 <%= customer.getCompanyName() %></b><br>
               </p>
             </div> 
@@ -190,7 +192,7 @@
             <td width="75" class="MainHeader"> 
                   <p align=RIGHT><b>Date: </b>
                 </td>
-            <td width="75" class="MainHeader"><%= eeDateFormat.format( offer.getOfferDate() ) %>
+            <td width="75" class="MainHeader"><%= responseDateFormat.format( offer.getOfferDate() ) %>
             </td>
             <td width="75" class="MainHeader"> 
                   <p align=RIGHT><b>Expires: </b>
