@@ -18,6 +18,7 @@ public class CommandPanel extends javax.swing.JPanel
 	private javax.swing.JButton stopButton = null;
 
 	private javax.swing.JSeparator separator = null;
+	private com.cannontech.common.gui.util.RoundButton roundButton = null;
 /**
  * CommandPanel constructor comment.
  */
@@ -40,7 +41,7 @@ public javax.swing.JComboBox getAvailableCommandsComboBox()
 			availableCommandsComboBox.setName("AvailableCommandsComboBox");
 			availableCommandsComboBox.setToolTipText("Select a common command from the drop down list.");
 			//availableCommandsComboBox.setPreferredSize(new java.awt.Dimension(130, 24));
-			//availableCommandsComboBox.setMinimumSize(new java.awt.Dimension(126, 24));
+			//availableCommandsComboBox.setMinimumSize(new j-ava.awt.Dimension(126, 24));
 			//availableCommandsComboBox.setMaximumSize(new java.awt.Dimension(32767, 24));
 			//availableCommandsComboBox.addItemListener(this);
 		}
@@ -214,6 +215,21 @@ public javax.swing.JButton getStopButton()
 	}
 	return stopButton;
 }
+
+public com.cannontech.common.gui.util.RoundButton getRoundButton()
+{
+	if (roundButton == null)
+	{
+		roundButton = new com.cannontech.common.gui.util.RoundButton("");
+		roundButton.setMaximumSize(new java.awt.Dimension(12, 12));
+		roundButton.setPreferredSize(new java.awt.Dimension(12, 12));
+		roundButton.setMinimumSize(new java.awt.Dimension(12, 12));
+		roundButton.setEnabled(false);
+		roundButton.setBackground(java.awt.Color.green);
+	}
+	return roundButton;
+}
+			
 /**
  * Insert the method's description here.
  * Creation date: (10/5/2001 3:31:04 PM)
@@ -230,6 +246,13 @@ private void initialize()
 		constraintsExecuteCommandLabel.anchor = java.awt.GridBagConstraints.NORTHWEST;
 		constraintsExecuteCommandLabel.insets = new java.awt.Insets(0, 12, 5, 0);
 		this.add(getExecuteCommandLabel(), constraintsExecuteCommandLabel);
+
+
+//		java.awt.GridBagConstraints constraintsColorIcon = new java.awt.GridBagConstraints();
+//		constraintsColorIcon.gridx = 3; constraintsColorIcon.gridy = 0;
+//		constraintsColorIcon.anchor = java.awt.GridBagConstraints.EAST;
+//		constraintsColorIcon.insets = new java.awt.Insets(0, 0, 0, 5);
+//		this.add(getRoundButton(), constraintsColorIcon);
 
 		java.awt.GridBagConstraints constraintsExecuteButton = new java.awt.GridBagConstraints();
 		constraintsExecuteButton.gridx = 2; constraintsExecuteButton.gridy = 1;
