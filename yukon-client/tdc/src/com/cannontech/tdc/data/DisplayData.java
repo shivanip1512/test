@@ -1,9 +1,7 @@
 package com.cannontech.tdc.data;
 
-import java.util.ArrayList;
-import java.util.StringTokenizer;
+import java.io.IOException;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 
 /**
@@ -25,12 +23,17 @@ public class DisplayData implements java.io.Externalizable
 	private int prop4 = -1;
 	private int prop5 = -1;
 
-
 	//never let this guy be null
-	private ColumnData[] columnData = new ColumnData[0];
+	// [0][x] - First table columnData
+	// [1][x] - Second table columnData
+	// [2][x] - Third table columnData ....etc.
+	private ColumnData[][] columnData = new ColumnData[0][0];
 
 
-	private static final String FD = String.valueOf( (char)16 );
+	private static final String AS = String.valueOf( (char)0x1C );  //application seperator delimitor
+	private static final String TS = String.valueOf( (char)0x1D );  //table seperator delimitor
+	private static final String CS = String.valueOf( (char)0x1E );  //column seperator delimitor
+
 
 	/**
 	 * Keep this guy public for reflection sake!
@@ -41,7 +44,7 @@ public class DisplayData implements java.io.Externalizable
 	}
 
 
-	public DisplayData( long displayNumber_, int filterID_, ColumnData[] colData_ )
+	public DisplayData( long displayNumber_, int filterID_, ColumnData[][] colData_ )
 	{
 		this();
 		setDisplayNumber( displayNumber_ );
@@ -54,46 +57,54 @@ public class DisplayData implements java.io.Externalizable
 	 * Creation date: (1/30/2002 3:31:06 PM)
 	 * @param oi java.io.ObjectInput
 	 */
-	public void readExternal(java.io.ObjectInput oIn)
+	public void readExternal(java.io.ObjectInput oIn) throws IOException
 	{
-		try
+		int length = oIn.readInt();
+		byte[] data = new byte[length];
+
+		oIn.read( data );
+		String dataStr = new String(data);
+
+		String[] mainTokenizer = dataStr.split( AS );
+
+		setDisplayNumber( Long.parseLong(mainTokenizer[0]) );
+		setFilterID( Integer.parseInt(mainTokenizer[1]) );
+		setProp0( Integer.parseInt(mainTokenizer[2]) );
+		setProp1( Integer.parseInt(mainTokenizer[3]) );
+		setProp2( Integer.parseInt(mainTokenizer[4]) );
+		setProp3( Integer.parseInt(mainTokenizer[5]) );
+		setProp4( Integer.parseInt(mainTokenizer[6]) );
+		setProp5( Integer.parseInt(mainTokenizer[7]) );
+
+
+		// name1CS ord1CS wid1CS name2CS ord2CS wid2CS TS tb2name1CS tb2ordCS...CS TS
+		if( mainTokenizer.length > 8 )
 		{
-			int length = oIn.readInt();
-			byte[] data = new byte[length];
-
-			oIn.read( data );
-
-			StringTokenizer statTokenizer = new StringTokenizer( new String(data), FD );
-
-			setDisplayNumber( Long.parseLong(statTokenizer.nextToken()) );
-			setFilterID( Integer.parseInt(statTokenizer.nextToken()) );
-			
-
-			setProp0( Integer.parseInt(statTokenizer.nextToken()) );
-			setProp1( Integer.parseInt(statTokenizer.nextToken()) );
-			setProp2( Integer.parseInt(statTokenizer.nextToken()) );
-			setProp3( Integer.parseInt(statTokenizer.nextToken()) );
-			setProp4( Integer.parseInt(statTokenizer.nextToken()) );
-			setProp5( Integer.parseInt(statTokenizer.nextToken()) );
-
-			ArrayList tmpList = new ArrayList(16);			
-			while( statTokenizer.hasMoreTokens() )
+			String[] tableToks = mainTokenizer[8].split(TS);
+					
+			columnData = new ColumnData[tableToks.length][0];
+	
+			for( int i = 0; i < tableToks.length; i++ )
 			{
-				tmpList.add( 
-					new ColumnData(
-						statTokenizer.nextToken(),
-						Integer.parseInt(statTokenizer.nextToken()),
-						Integer.parseInt(statTokenizer.nextToken())) );
+				String singleTable = tableToks[i];
+				if( singleTable.length() <= 0 )
+					continue;
+	
+				String[] realColsTok = singleTable.split( CS );
+				ColumnData[] colsData = new ColumnData[ realColsTok.length / 3 ];
+	
+				for( int j = 0, k = 0; j < colsData.length; j++ )
+				{
+					colsData[j] =
+						new ColumnData(
+							realColsTok[k++],
+							Integer.parseInt(realColsTok[k++]),
+							Integer.parseInt(realColsTok[k++]));
+				}
+				
+				columnData[i] = colsData;
 			}
-			
-			columnData = new ColumnData[tmpList.size()];			
-			tmpList.toArray(columnData);
 		}
-		catch( Exception e)
-		{
-			CTILogger.error( e.getMessage(), e );
-		}
-
 	}
 
 	/**
@@ -101,42 +112,40 @@ public class DisplayData implements java.io.Externalizable
 	 * Creation date: (1/30/2002 3:30:46 PM)
 	 * @param oo java.io.ObjectOutput
 	 */
-	public void writeExternal(java.io.ObjectOutput oOut)
+	public void writeExternal(java.io.ObjectOutput oOut) throws IOException
 	{
-		try
-		{
-			StringBuffer buf = new StringBuffer();
-			buf.append( getDisplayNumber() + FD );
-			buf.append( getFilterID() + FD );
+		StringBuffer buf = new StringBuffer();
+		buf.append( getDisplayNumber() + AS );
+		buf.append( getFilterID() + AS );
 
-			buf.append( getProp0() + FD );
-			buf.append( getProp1() + FD );
-			buf.append( getProp2() + FD );
-			buf.append( getProp3() + FD );
-			buf.append( getProp4() + FD );
-			buf.append( getProp5() + FD );
-			
-			for( int i = 0; getColumnData() != null && i < getColumnData().length; i++ )
+		buf.append( getProp0() + AS );
+		buf.append( getProp1() + AS );
+		buf.append( getProp2() + AS );
+		buf.append( getProp3() + AS );
+		buf.append( getProp4() + AS );
+		buf.append( getProp5() + AS );
+		
+		for( int i = 0; getColumnData() != null && i < getColumnData().length; i++ )
+		{
+			ColumnData[] colData = getColumnData()[i];
+			for( int j = 0; colData != null && j < colData.length; j++ )
 			{
-				buf.append( getColumnData()[i].getColumnName() + FD );
-				buf.append( getColumnData()[i].getOrdering() + FD );
-				buf.append( getColumnData()[i].getWidth() + FD );
+				buf.append( colData[j].getColumnName() + CS );
+				buf.append( colData[j].getOrdering() + CS );
+				buf.append( colData[j].getWidth() + CS );
 			}
 
-			oOut.writeInt( buf.length() );
-			oOut.writeBytes( buf.toString() );
-		}
-		catch( Exception e)
-		{
-			CTILogger.error( e.getMessage(), e );
+			buf.append( TS );
 		}
 
+		oOut.writeInt( buf.length() );
+		oOut.writeBytes( buf.toString() );
 	}
 	
 	/**
 	 * @return
 	 */
-	public ColumnData[] getColumnData()
+	public ColumnData[][] getColumnData()
 	{
 		return columnData;
 	}
@@ -160,11 +169,11 @@ public class DisplayData implements java.io.Externalizable
 	/**
 	 * @param datas
 	 */
-	public void setColumnData(ColumnData[] datas)
+	public void setColumnData(ColumnData[][] datas)
 	{
 		//never let this guy be null
 		if( datas == null )
-			columnData = new ColumnData[0];
+			columnData = new ColumnData[0][0];
 		else
 			columnData = datas;
 	}

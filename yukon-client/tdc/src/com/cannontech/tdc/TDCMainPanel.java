@@ -843,7 +843,13 @@ private void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObjec
 	}
 	
 	//set our display with the last format
-	formatDisplayColumns();
+	try {
+		formatDisplayColumns();
+	}
+	catch( Exception ex )
+	{
+		CTILogger.warn( "Unable to format table columns from last values", ex );
+	}
 
 	// tell the MAIN FRAME we just changed displays
 	if( !(newEvent.getSource() instanceof TDCMainFrame)
@@ -3395,54 +3401,39 @@ protected void processDBChangeMsg( DBChangeMsg msg )
 private HashMap readAllDisplayColumnData() 
 {
 	HashMap map = null;
+	java.io.File file = null;
 
 	try
 	{
-		java.io.File file = new java.io.File( TDCDefines.DISPLAY_OUT_FILE_NAME );
+		file = new java.io.File( TDCDefines.DISPLAY_OUT_FILE_NAME );
 
 		if( file.exists() )
 		{	
 			java.io.ObjectInputStream in = new java.io.ObjectInputStream(
 								new java.io.FileInputStream( file ) );
-			
 
-			Object o = null;
-			try
+			Object o = in.readObject();
+			if( o instanceof HashMap )
 			{
-				while( (o = in.readObject()) != null )
+				map = (HashMap)o;										
+
+				for( int j = 0; j < getAllDisplays().length; j++ )
 				{
-					if( o instanceof HashMap )
+					DisplayData dd = (DisplayData)map.get(
+						new Integer(getAllDisplays()[j].getDisplayNumber()) );
+
+					if( dd != null )
 					{
-						map = (HashMap)o;
-												
-
-						for( int j = 0; j < getAllDisplays().length; j++ )
-						{
-							DisplayData dd = (DisplayData)map.get(
-								new Integer(getAllDisplays()[j].getDisplayNumber()) );
-
-							if( dd != null )
-							{
-								getAllDisplays()[j].setDisplayData( dd );
-							}
-						}
-
-							
+						getAllDisplays()[j].setDisplayData( dd );
 					}
 				}
 			}
-			catch( java.io.EOFException eof )
-			{  /*this will not be an error*/ }
 			
 			in.close();
 		}
 
 	}
-	catch ( java.io.IOException e )
-	{
-		handleException( e );
-	}
-	catch ( ClassNotFoundException e )
+	catch ( Exception e )
 	{
 		handleException( e );
 	}
@@ -3961,32 +3952,40 @@ private void showRowEditor( Object source )
  */
 public void updateDisplayColumnData() 
 {
-	javax.swing.JTable table = ( isClientDisplay() 
-				? getCurrentSpecailChild().getJTables()[0]
-				: getDisplayTable() );
+	javax.swing.JTable[] tables = ( isClientDisplay() 
+				? getCurrentSpecailChild().getJTables()
+				: new javax.swing.JTable[] {getDisplayTable()} );
 
 	//we do not want to update the display column data if we
 	//  do not have a display
 	if( getCurrentDisplay() != null )
 	{
-		ColumnData[] cols = new ColumnData[table.getColumnCount()];
-
-		for( int i = 0; i < cols.length; i++ )
-		{	
-			TableColumn col = table.getColumnModel().getColumn(i);
+		ColumnData[][] columnData = new ColumnData[tables.length][0];
+		for( int i = 0; i < tables.length; i++ )
+		{
+			javax.swing.JTable table = tables[i];
+			//ArrayList tmpList = new ArrayList(16);
+			ColumnData[] cols = new ColumnData[table.getColumnCount()];
+	
+			for( int j = 0; j < table.getColumnCount(); j++ )
+			{
+				TableColumn col = table.getColumnModel().getColumn(j);
+				//tmpList.add(
+				cols[j] =
+					new ColumnData(
+						col.getHeaderValue().toString(),
+						j,
+						col.getWidth());
+			}
 				
-			ColumnData cd = new ColumnData(
-					col.getHeaderValue().toString(),
-					i,
-					col.getWidth() );
-
-			cols[i] = cd;
+			columnData[i] = cols;
+				//(ColumnData[])tmpList.toArray(new ColumnData[tmpList.size()]);
 		}
 
 		DisplayData dd = new DisplayData(
 				getCurrentDisplay().getDisplayNumber(),
 				getCurrentDisplay().getTdcFilter().getFilterID(),
-				cols );
+				columnData );
 
 
 
@@ -4023,7 +4022,7 @@ public void updateDisplayColumnData()
  * Insert the method's description here.
  * Creation date: (1/24/2002 11:45:40 AM)
  */
-private void formatDisplayColumns()
+private void formatDisplayColumns() throws Exception
 {
 	if( getCurrentDisplay() == null
 		 || getCurrentDisplay().getDisplayData() == null )
@@ -4031,14 +4030,48 @@ private void formatDisplayColumns()
 
 
 
+	javax.swing.JTable[] tables = ( isClientDisplay() 
+				? getCurrentSpecailChild().getJTables()
+				: new javax.swing.JTable[]{getDisplayTable()} );
+
+	for( int k = 0; k < tables.length; k++ )
+	{
+		javax.swing.JTable table = tables[k];
+
+		for( int i = 0; i < getCurrentDisplay().getDisplayData().getColumnData()[k].length; i++ )
+		{
+			ColumnData singlCol = getCurrentDisplay().getDisplayData().getColumnData()[k][i];
+
+			for( int j = 0; j < table.getColumnCount(); j++ )
+			{
+				if( table.getColumnName(j).equalsIgnoreCase(singlCol.getColumnName()) )
+				{
+					//found the column, lets reformat its appearance
+					TableColumn tc = table.getColumnModel().getColumn(j);
+	
+					tc.setWidth( singlCol.getWidth() );
+					tc.setPreferredWidth( singlCol.getWidth() );	
+	
+					//make sure the table has the column index!!
+					table.moveColumn( j, 
+					   (singlCol.getOrdering() >= table.getColumnCount()
+						 ? table.getColumnCount() - 1
+						 : singlCol.getOrdering() ) );
+	             
+					break;
+				}
+				
+			}
+		}
+	}
+
+/*	
 	for( int i = 0; i < getCurrentDisplay().getDisplayData().getColumnData().length; i++ )
 	{	
-		ColumnData cd = getCurrentDisplay().getDisplayData().getColumnData()[i];
+		ColumnData[] cd = getCurrentDisplay().getDisplayData().getColumnData()[i];
 
-		javax.swing.JTable table = ( isClientDisplay() 
-					? getCurrentSpecailChild().getJTables()[0]
-					: getDisplayTable() );
-			
+
+
 		for( int j = 0; j < table.getColumnCount(); j++ )
 		{
 			if( table.getColumnName(j).equalsIgnoreCase(cd.getColumnName()) )
@@ -4051,17 +4084,18 @@ private void formatDisplayColumns()
 
             //make sure the table has the column index!!
 				table.moveColumn( j, 
-               ( cd.getOrdering() >= table.getColumnCount()
-                 ? table.getColumnCount() - 1
-                 : cd.getOrdering() ) );
+	               ( cd.getOrdering() >= table.getColumnCount()
+	                 ? table.getColumnCount() - 1
+	                 : cd.getOrdering() ) );
              
 				break;
 			}
 			
 		}
-			
+					
 	}
-	
+	}	
+*/
 	
 	//set any display properties needed for TDC clients
 	if( getCurrentSpecailChild() != null )
@@ -4094,7 +4128,7 @@ public void writeAllDisplayColumnData()
 	if( allDisplays == null )
 		return;
 
-	HashMap map = null;
+	HashMap map = new HashMap( getAllDisplays().length );
 
 	try
 	{
@@ -4102,9 +4136,6 @@ public void writeAllDisplayColumnData()
 				new java.io.File( TDCDefines.DISPLAY_OUT_FILE_NAME ) );
 		
 		java.io.ObjectOutputStream o = new java.io.ObjectOutputStream(fileOut);
-
-		if( map == null )
-			map = new HashMap( getAllDisplays().length );
 
 		for( int i = 0; i < getAllDisplays().length; i++ )
 		{
