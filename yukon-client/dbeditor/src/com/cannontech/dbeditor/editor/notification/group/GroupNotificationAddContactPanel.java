@@ -5,6 +5,8 @@ import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.db.notification.NotificationDestination;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.database.data.lite.LiteComparators;
+import java.util.Collections;
 
 /**
  * Insert the type's description here.
@@ -316,6 +318,7 @@ public void setValue(Object val)
 	{
 		//locations
 		java.util.List cntctNotifs = ContactFuncs.getAllContactNotifications();
+		Collections.sort( cntctNotifs, LiteComparators.liteStringComparator );
 
 		for(int i = 0; i < destinationVector.size(); i++)
 		{
@@ -356,8 +359,9 @@ public void setValue(Object val)
 			
 		}
 	}
-
-		
+	
+	Collections.sort( assignedLocations, LiteComparators.liteStringComparator );
+	Collections.sort( availableLocations, LiteComparators.liteStringComparator );	
 	getAddRemovePanel().rightListSetListData( assignedLocations );
 	getAddRemovePanel().leftListSetListData( availableLocations );
 }
