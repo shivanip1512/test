@@ -101,7 +101,7 @@ public class ImportFuncs
 				String altGrp = rset.getString(6);
 				String templateName = rset.getString(7);
 				String errorMsg = rset.getString(8);
-				Date dateTime = rset.getDate(9);
+	     		Date dateTime = rset.getTimestamp(9);
 
 				ImportFail fail = new ImportFail( address, name,
 									routeName, meterNumber, collectionGrp, altGrp,  
