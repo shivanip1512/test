@@ -106,22 +106,30 @@ public class UpdateApplianceAction implements ActionBase {
 			appliance.setYearManufactured( req.getParameter("ManuYear") );
 			appliance.setNotes( req.getParameter("Notes") );
 			appliance.setModelNumber( req.getParameter("ModelNo") );
-			if (req.getParameter("KWCapacity").trim().length() > 0)
-				appliance.setKWCapacity( Integer.parseInt(req.getParameter("KWCapacity")) );
-			if (req.getParameter("EffRating").trim().length() > 0)
-				appliance.setEfficiencyRating( Integer.parseInt(req.getParameter("EffRating")) );
 			
-			Manufacturer manu = (Manufacturer) StarsFactory.newStarsCustListEntry(
+			try {
+				appliance.setKWCapacity( Integer.parseInt(req.getParameter("KWCapacity")) );
+			}
+			catch (NumberFormatException nfe) {
+				appliance.setKWCapacity( 0 );
+			}
+			
+			try {
+				appliance.setEfficiencyRating( Integer.parseInt(req.getParameter("EffRating")) );
+			}
+			catch (NumberFormatException nfe) {
+				appliance.setEfficiencyRating( 0 );
+			}
+			
+			appliance.setManufacturer( (Manufacturer)StarsFactory.newStarsCustListEntry(
 					ServletUtils.getStarsCustListEntryByID(
 						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER, Integer.parseInt(req.getParameter("Manufacturer"))),
-					Manufacturer.class );
-			appliance.setManufacturer( manu );
+					Manufacturer.class) );
 			
-			Location loc = (Location) StarsFactory.newStarsCustListEntry(
+			appliance.setLocation( (Location)StarsFactory.newStarsCustListEntry(
 					ServletUtils.getStarsCustListEntryByID(
 						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION, Integer.parseInt(req.getParameter("Location"))),
-					Location.class );
-			appliance.setLocation( loc );
+					Location.class) );
 			
 			if (appliance.getAirConditioner() != null) {
 				AirConditioner ac = appliance.getAirConditioner();
