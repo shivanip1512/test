@@ -17,7 +17,20 @@ public class LMManualControlRequest extends LMMessage
 	private int startPriority = 0;
 	private String addditionalInfo = new String();
 	private boolean overrideConstraints = false;
+	private boolean coerceStartStopTimes = false;
 	
+	/**
+	 * @return Returns the coerceStartStopTimes.
+	 */
+	public boolean isCoerceStartStopTimes() {
+		return coerceStartStopTimes;
+	}
+	/**
+	 * @param coerceStartStopTimes The coerceStartStopTimes to set.
+	 */
+	public void setCoerceStartStopTimes(boolean coerceStartStopTimes) {
+		this.coerceStartStopTimes = coerceStartStopTimes;
+	}
 	//The following are the different commands that
 	//can be applied to control area, trigger, or program and map into the C++ side
   public static final int SCHEDULED_START = 0;

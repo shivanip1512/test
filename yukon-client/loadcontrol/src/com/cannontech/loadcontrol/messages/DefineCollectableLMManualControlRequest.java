@@ -66,7 +66,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	super.restoreGuts( obj, vstr, polystr );
 	throw new java.lang.Error("LMManualControlRequest restoreGuts should never be receieved by the client" );
 }
-/**
+/** 
  * saveGuts method comment.
  */
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
@@ -84,5 +84,6 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertUnsignedInt( (long) lmManualControlMsg.getStartPriority() );
 	vstr.saveObject( lmManualControlMsg.getAddditionalInfo(), SimpleMappings.CString );	
 	vstr.insertUnsignedInt( (lmManualControlMsg.isOverrideConstraints() ? 1 : 0) );
+	vstr.insertUnsignedInt( (lmManualControlMsg.isCoerceStartStopTimes() ? 1 : 0) );	
 }
 }
