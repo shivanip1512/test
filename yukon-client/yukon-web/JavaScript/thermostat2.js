@@ -46,13 +46,13 @@ function showTimeSleep() {
 
 function showTimeOccupied() {
   var s = document.getElementById('MovingLayer1');
-  var txt = document.getElementById('time4');
+  var txt = document.getElementById('time1');
   showTime(s,txt,1);
 }
 
 function showTimeUnoccupied() {
   var s = document.getElementById('MovingLayer4');
-  var txt = document.getElementById('time1');
+  var txt = document.getElementById('time4');
   showTime(s,txt,4);
 }
 

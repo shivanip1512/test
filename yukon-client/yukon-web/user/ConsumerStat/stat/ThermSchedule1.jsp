@@ -139,8 +139,6 @@
 // Set global variable in thermostat2.js
 thermMode = '<%= isCooling ? "C" : "H" %>';
 tempUnit = '<%= tempUnit %>';
-timeFields = ['','time4','time2','time3','time1'];
-tempFields = ['','temp4','temp2','temp3','temp1'];
 
 function updateLayout(hour1, min1, temp1C, temp1H, hour2, min2, temp2C, temp2H, hour3, min3, temp3C, temp3H, hour4, min4, temp4C, temp4H) {
 	moveLayer(1, hour1, min1);
@@ -208,20 +206,20 @@ function setToDefault() {
 	}
 	
 	updateLayout(
-		<%= dftSchedule.getTime4().getHour() %>,<%= dftSchedule.getTime4().getMinute() %>,temp4C,temp4H,
+		<%= dftSchedule.getTime1().getHour() %>,<%= dftSchedule.getTime1().getMinute() %>,temp1C,temp1H,
 		<%= dftSchedule.getTime2().getHour() %>,<%= dftSchedule.getTime2().getMinute() %>,temp2C,temp2H,
 		<%= dftSchedule.getTime3().getHour() %>,<%= dftSchedule.getTime3().getMinute() %>,temp3C,temp3H,
-		<%= dftSchedule.getTime1().getHour() %>,<%= dftSchedule.getTime1().getMinute() %>,temp1C,temp1H
+		<%= dftSchedule.getTime4().getHour() %>,<%= dftSchedule.getTime4().getMinute() %>,temp4C,temp4H
 	);
 	setChanged();
 }
 
 function init() {
 	updateLayout(
-		<%= schedule.getTime4().getHour() %>,<%= schedule.getTime4().getMinute() %>,<%= coolSched.getTemperature4() %>,<%= heatSched.getTemperature4() %>,
+		<%= schedule.getTime1().getHour() %>,<%= schedule.getTime1().getMinute() %>,<%= coolSched.getTemperature1() %>,<%= heatSched.getTemperature1() %>,
 		<%= schedule.getTime2().getHour() %>,<%= schedule.getTime2().getMinute() %>,<%= coolSched.getTemperature2() %>,<%= heatSched.getTemperature2() %>,
 		<%= schedule.getTime3().getHour() %>,<%= schedule.getTime3().getMinute() %>,<%= coolSched.getTemperature3() %>,<%= heatSched.getTemperature3() %>,
-		<%= schedule.getTime1().getHour() %>,<%= schedule.getTime1().getMinute() %>,<%= coolSched.getTemperature1() %>,<%= heatSched.getTemperature1() %>
+		<%= schedule.getTime4().getHour() %>,<%= schedule.getTime4().getMinute() %>,<%= coolSched.getTemperature4() %>,<%= heatSched.getTemperature4() %>
 	);
 	document.getElementById('MovingLayer1').style.display = "";
 	document.getElementById('MovingLayer4').style.display = "";
@@ -388,7 +386,7 @@ MM_reloadPage(true);
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
-                                    <div id="temp4" class="TableCell2" onChange="setChanged()"><%= schedule.getTemperature4() %>&deg;<%= tempUnit %></div>
+                                    <div id="temp1" class="TableCell2" onChange="setChanged()"><%= schedule.getTemperature1() %>&deg;<%= tempUnit %></div>
                                   </td>
                                 </tr>
                                 <tr> 
@@ -475,7 +473,7 @@ MM_reloadPage(true);
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
-                                    <div id="temp1" class="TableCell2" onChange="setChanged()"><%= schedule.getTemperature1() %>&deg;<%= tempUnit %></div>
+                                    <div id="temp4" class="TableCell2" onChange="setChanged()"><%= schedule.getTemperature4() %>&deg;<%= tempUnit %></div>
                                   </td>
                                 </tr>
                                 <tr> 
@@ -516,7 +514,7 @@ MM_reloadPage(true);
                             <div align="right">Start At:</div>
                           </td>
                           <td class = "TableCell" width="35%"> 
-                            <input id="time4" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime4().toDate()) %>" name="time4" onchange="Javascript:setChanged();timeChange(this,1);">
+                            <input id="time1" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime1().toDate()) %>" name="time1" onchange="Javascript:setChanged();timeChange(this,1);">
                           </td>
 						  <input id="time2" type="hidden" name="time2" value="" disabled>
 						  <input id="time3" type="hidden" name="time3" value="" disabled>
@@ -524,7 +522,7 @@ MM_reloadPage(true);
                             <div align="right">Start At: </div>
                           </td>
                           <td class = "TableCell" width="35%"> 
-                            <input id="time1" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime1().toDate()) %>" name="time1" onchange="Javascript:setChanged();timeChange(this,4);">
+                            <input id="time4" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime4().toDate()) %>" name="time4" onchange="Javascript:setChanged();timeChange(this,4);">
                           </td>
                         </tr>
                       </table>
@@ -535,7 +533,7 @@ MM_reloadPage(true);
                             <div align="right">Temp: </div>
                           </td>
                           <td width="35%"> 
-                            <input id="temp4" type="text" size="3" name="temp4" onchange="setChanged()" value="<%= schedule.getTemperature4() %>">
+                            <input id="temp1" type="text" size="3" name="temp1" onchange="setChanged()" value="<%= schedule.getTemperature1() %>">
                           </td>
 						  <input id="temp2" type="hidden" name="temp2" value="<%= schedule.getTemperature2() %>">
 						  <input id="temp3" type="hidden" name="temp3" value="<%= schedule.getTemperature3() %>">
@@ -543,7 +541,7 @@ MM_reloadPage(true);
                             <div align="right">Temp: </div>
                           </td>
                           <td width="35%"> 
-                            <input id="temp1" type="text" size="3" name="temp1" onchange="setChanged()" value="<%= schedule.getTemperature1() %>">
+                            <input id="temp4" type="text" size="3" name="temp4" onchange="setChanged()" value="<%= schedule.getTemperature4() %>">
                           </td>
                         </tr>
                       </table>
