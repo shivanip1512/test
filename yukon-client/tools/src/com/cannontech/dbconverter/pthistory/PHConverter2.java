@@ -350,12 +350,14 @@ private void writePointData(int id, float multiplier, DSM2PointData[] data)
 				continue;
 				
 			java.sql.Timestamp timestamp = new java.sql.Timestamp( (long) data[i].time*1000L);
-			double value = data[i].value * multiplier;
+
+			// We only want two decimal places so we'll do a little trick	
+			double value = (double) Math.round(data[i].value*multiplier*100.0) / 100.0;
 			int quality = getQuality(data[i].quality);
-				
+
 			if(timestamp.getTime() <= lastTimestamp)	
 				continue;
-				
+
 			pstmt.setInt(1, changeID++);
 			pstmt.setInt(2, id);			
 			pstmt.setTimestamp(3, timestamp);

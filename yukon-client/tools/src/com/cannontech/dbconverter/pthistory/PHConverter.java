@@ -172,7 +172,7 @@ public void convert(String dsm2Root) throws Exception {
  * @param id int
  */
 private static float getAccumulatorMultiplier(int id)
-{
+{ 
 	float multiplier = -1.0f;
 	
     java.sql.Connection conn = null;
