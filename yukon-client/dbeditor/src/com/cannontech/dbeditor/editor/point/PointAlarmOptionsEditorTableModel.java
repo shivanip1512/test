@@ -11,16 +11,16 @@ public class PointAlarmOptionsEditorTableModel extends javax.swing.table.Abstrac
 {
 	public final static int CONDITION_COLUMN = 0;
 	public final static int CATEGORY_COLUMN = 1;
-	public final static int EXNOTIFY_COLUMN = 2;
+	public final static int NOTIFY_COLUMN = 2;
 	
 	private String[] COLUMN_NAMES = 
 	{
 		"Condition", 
 		"Category", 
-		"Ex Notify"
+		"Notify"
 	};
 
-	private Class[] COLUMN_CLASSES = {String.class, String.class, Boolean.class};
+	private Class[] COLUMN_CLASSES = {String.class, String.class, String.class};
 	
 	private Vector rows = null;
 
@@ -28,14 +28,14 @@ public class PointAlarmOptionsEditorTableModel extends javax.swing.table.Abstrac
 	{
 		private String alarm = null;
 		private String generate = null;
-		private boolean disable = false;
+		private String excludeNotify = null;
 		
-		public RowValue(String alarm, String generate, boolean disable )
+		public RowValue(String alarm, String generate, String notify )
 		{
 			super();
 			this.alarm = alarm;
 			this.generate = generate;
-			this.disable = disable;
+			this.excludeNotify = notify;
 		}
 
 		// All getters
@@ -45,8 +45,8 @@ public class PointAlarmOptionsEditorTableModel extends javax.swing.table.Abstrac
 		public String getGenerate()
 		{ return generate; }
 		
-		public boolean getDisable()
-		{ return disable; }
+		public String getExcludeNotify()
+		{ return excludeNotify; }
 
 
 		// All setters
@@ -56,8 +56,8 @@ public class PointAlarmOptionsEditorTableModel extends javax.swing.table.Abstrac
 		public void setGenerate(String val)
 		{ generate = val; }
 
-		public void setDisable(boolean val)
-		{ disable = val; }
+		public void setExcludeNotify(String val)
+		{ excludeNotify = val; }
 		
 	}
 	
@@ -74,7 +74,7 @@ public PointAlarmOptionsEditorTableModel() {
  * @param generate boolean
  * @param notify boolean
  */
-public void addRowValue(String alarm, String generate, boolean notify) 
+public void addRowValue(String alarm, String generate, String notify) 
 {
 	getRows().addElement( new RowValue(alarm, generate, notify) );
 }
@@ -118,17 +118,17 @@ public String getColumnName(int index) {
 /**
  * getValueAt method comment.
  */
-public boolean getDisableAt(int row ) 
+public String getExcludeNotifyAt(int row ) 
 {
 	if( getRows() == null )
-		return false;
+		return null;
 
 	if( row <= getRows().size() )
 	{
-		return ((RowValue)getRows().elementAt(row)).getDisable();
+		return ((RowValue)getRows().elementAt(row)).getExcludeNotify();
 	}
 	else
-		return false;
+		return null;
 }
 /**
  * getValueAt method comment.
@@ -183,8 +183,8 @@ public Object getValueAt(int row, int col)
 		 	case CATEGORY_COLUMN:
 				return rowVal.getGenerate();
 	
-			case EXNOTIFY_COLUMN:
-				return new Boolean(rowVal.getDisable());
+			case NOTIFY_COLUMN:
+				return rowVal.getExcludeNotify();
 				
 			default:
 				return null;
@@ -227,7 +227,7 @@ public void removeRowValue(int rowNumber )
  * @param generate boolean
  * @param notify boolean
  */
-public void setRowValue(int rowNumber, String alarm, String generate, boolean notify) 
+public void setRowValue(int rowNumber, String alarm, String generate, String notify) 
 {
 	if( rowNumber >=0 && rowNumber < getRowCount() )
 	{
@@ -254,8 +254,8 @@ public void setValueAt(Object value, int row, int col)
 				((RowValue)getRows().elementAt(row)).setGenerate(value.toString());
 				break;
 				
-			case EXNOTIFY_COLUMN:
-				((RowValue)getRows().elementAt(row)).setDisable( ((Boolean)value).booleanValue() );
+			case NOTIFY_COLUMN:
+				((RowValue)getRows().elementAt(row)).setExcludeNotify( value.toString() );
 				break;
 				
 			default:

@@ -9,7 +9,10 @@ public class PointAlarming extends com.cannontech.database.db.DBPersistent
 {
 	public static final int NONE_NOTIFICATIONID = 1;
 //	public static final int NONE_LOCATIONID = 0;
-	public static final String NONE_VALUE_STRING = "None";
+	public static final String NONE_VALUE_STRING = "(none)";
+	public static final String EXCLUDE_NOTIFY_VALUE_STRING = "Exclude Notify";
+	public static final String AUTO_ACK_VALUE_STRING = "Auto Ack";
+	public static final String BOTH_OPTIONS_VALUE_STRING = "Exclude Notify & Auto Ack";
 	public static final String DEFAULT_EXCLUDE_NOTIFY = "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN";
 	private static String tmp = new String();
 
