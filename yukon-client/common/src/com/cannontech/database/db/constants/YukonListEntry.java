@@ -1,7 +1,6 @@
 package com.cannontech.database.db.constants;
 
 import java.sql.SQLException;
-import java.util.Vector;
 
 import com.cannontech.common.util.CtiUtilities;
 
@@ -109,14 +108,14 @@ public class YukonListEntry extends com.cannontech.database.db.DBPersistent
 			rset.next();
 		    return new Integer( rset.getInt(1) );
 		}
-		catch (java.sql.SQLException e) {
+		catch (SQLException e) {
 		    e.printStackTrace();
 		}
 		finally {
 		    try {
 				if ( stmt != null) stmt.close();
 		    }
-		    catch (java.sql.SQLException e2) {
+		    catch (SQLException e2) {
 				e2.printStackTrace();
 		    }
 		}
@@ -133,7 +132,7 @@ public class YukonListEntry extends com.cannontech.database.db.DBPersistent
 			stmt.setInt(1, listID.intValue());
 			stmt.execute();
 		}
-		catch (Exception e) {
+		catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
