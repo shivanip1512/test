@@ -1,10 +1,10 @@
 package com.cannontech.database.cache.functions;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LitePointLimit;
 /**
  * Insert the type's description here.
  * Creation date: (3/26/2001 9:40:33 AM)
@@ -121,6 +121,27 @@ public static LitePoint[] getLitePointsByUOMID(int[] uomIDs)
 				}							
 			}
 		}
+		
+		return null;
+	}
+	
+	/**
+	 * Finds the lite point limit given a point id
+	 * @param pointID
+	 * @return LitePointLimit
+	 */
+	public static LitePointLimit getPointLimit(int pointID) {
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		
+		synchronized(cache) {
+			Iterator iter = cache.getAllPointLimits().iterator();
+			while(iter.hasNext()) {
+				LitePointLimit lpl = (LitePointLimit) iter.next();
+				if( lpl.getPointID() == pointID ) {
+					return lpl;
+				}
+			}
+		}	
 		
 		return null;
 	}
