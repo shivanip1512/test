@@ -572,6 +572,7 @@ constraintsJPanelProperties.gridheight = 2;
 	// user code begin {2}
 
 	initConnections();
+	updateSelectionCountNodes();
 	// user code end
 }
 
@@ -592,8 +593,13 @@ private String getRoleValue( int rolePropID_, String defValue_ )
 				rolePropID_,
 				defValue_ );
 	}
+	else if( getRoleContainer() == null )
+	{
+		return defValue_;
+	}
 	else
-		throw new IllegalArgumentException("Unrecognized role container: " + getRoleContainer().getClass().getName() );
+		throw new IllegalArgumentException("Unrecognized role container: " + 
+				( getRoleContainer() == null ? "(null)" : getRoleContainer().getClass().getName()) );
 	
 }
 
@@ -741,7 +747,7 @@ public static void main(java.lang.String[] args) {
 	{
 		if( o == null )
 			return;
-	
+		
 		IYukonRoleContainer rc = (IYukonRoleContainer)o;
 
 		//be sure the rest of the panel knows what user we are dealing with
@@ -789,7 +795,6 @@ public static void main(java.lang.String[] args) {
 
 
 		}
-
 
 		getJTreeModel().reload();							
 		

@@ -582,6 +582,10 @@ private void displayAWizardPanel(JMenuItem item)
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.user.YukonUserWizardPanel());
 	}
+	else if (item == systemCreateMenu.loginGrpMenuItem)
+	{
+		showWizardPanel(new com.cannontech.dbeditor.wizard.user.LoginGroupWizardPanel());
+	}
 	else if (item == systemCreateMenu.holidayMenuItem)
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.holidayschedule.HolidayScheduleWizardPanel());
@@ -2724,6 +2728,7 @@ private void showWizardPanel(WizardPanel wizard) {
 	
 	javax.swing.JInternalFrame f = new javax.swing.JInternalFrame();
 	
+	f.setResizable( true );
 	f.setContentPane( wizard );
 	f.setSize( (int)wizard.getActualSize().getWidth(),
 		  		  (int)wizard.getActualSize().getHeight());//410,470);

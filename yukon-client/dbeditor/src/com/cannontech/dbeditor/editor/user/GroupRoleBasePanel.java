@@ -26,7 +26,16 @@ public class GroupRoleBasePanel extends com.cannontech.common.gui.util.DataInput
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 public GroupRoleBasePanel() {
+	this(true);
+}
+
+/**
+ * Constructor
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+public GroupRoleBasePanel(boolean showMembers_) {
 	super();
+	getJPanelMembers().setVisible( showMembers_ );
 	initialize();
 }
 

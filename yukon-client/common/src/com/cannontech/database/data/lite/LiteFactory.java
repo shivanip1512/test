@@ -238,6 +238,15 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 		
 		((LiteYukonGroup)returnLite).setGroupDescription( ((YukonGroup)val).getGroupDescription() );
 	}	
+	else if( val instanceof com.cannontech.database.data.user.YukonGroup )
+	{
+		returnLite = new LiteYukonGroup(
+			((com.cannontech.database.data.user.YukonGroup)val).getGroupID().intValue(),
+			((com.cannontech.database.data.user.YukonGroup)val).getYukonGroup().getGroupName() );
+		
+		((LiteYukonGroup)returnLite).setGroupDescription( 
+			((com.cannontech.database.data.user.YukonGroup)val).getYukonGroup().getGroupDescription() );
+	}	
 
 
 	/* TODO add SystemRole,YukonRoleProperty */

@@ -21,7 +21,7 @@ public class DBDeletionFuncs
    //types of delete
 	public static final int POINT_TYPE				= 1;
 	public static final int NOTIF_GROUP_TYPE		= 2;
-	public static final int STATEGROUP_TYPE			= 3;
+	public static final int STATEGROUP_TYPE		= 3;
 	public static final int PORT_TYPE				= 4;
 	public static final int DEVICE_TYPE				= 5;
 	public static final int PAO_TYPE					= 6;
@@ -29,6 +29,7 @@ public class DBDeletionFuncs
 	public static final int CUSTOMER_TYPE			= 8;
 	public static final int LOGIN_TYPE				= 9;
 	public static final int HOLIDAY_SCHEDULE		= 10;
+	public static final int LOGIN_GRP_TYPE			= 11;
 
 
    //the return types of each possible delete
@@ -360,6 +361,13 @@ public class DBDeletionFuncs
 			anID = ((com.cannontech.database.data.user.YukonUser) toDelete).getUserID().intValue();
 			deletionType = DBDeletionFuncs.LOGIN_TYPE;
 		}
+		else if (toDelete instanceof com.cannontech.database.data.user.YukonGroup)
+		{
+			message.append("Are you sure you want to permanently delete '" + nodeName + "'?");
+			unableDel.append("You cannot delete the login group '" + nodeName + "'");
+			anID = ((com.cannontech.database.data.user.YukonGroup) toDelete).getGroupID().intValue();
+			deletionType = DBDeletionFuncs.LOGIN_GRP_TYPE;
+		}
 		else if (toDelete instanceof HolidaySchedule)
 			{
 		 message.append("Are you sure you want to permanently delete '" + nodeName + "'?");
@@ -414,7 +422,8 @@ public class DBDeletionFuncs
 	
 			else if( type == CUSTOMER_TYPE
 						 || type == PAO_TYPE 
-						 || type == HOLIDAY_SCHEDULE )
+						 || type == HOLIDAY_SCHEDULE
+						 || type == LOGIN_GRP_TYPE )
 			{
 				return STATUS_CONFIRM;
 			}
