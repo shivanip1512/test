@@ -24,7 +24,7 @@ protected:
     virtual void DeInit();
     virtual void ParseArgs(DWORD argc, LPTSTR* argv);
 
-    void readCalcPoints( CtiCalculateThread *calcThread );
+    bool readCalcPoints( CtiCalculateThread *calcThread );
     BOOL parseMessage( RWCollectable *message, CtiCalculateThread *calcThread );
 
 private:

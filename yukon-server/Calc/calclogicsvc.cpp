@@ -323,7 +323,27 @@ void CtiCalcLogicService::Run( )
             }
 
             calcThread = new CtiCalculateThread;
-            readCalcPoints( calcThread );
+            if( !readCalcPoints( calcThread ) )
+            {
+                if( attempts % 300 == 0 )
+                {//only say we can't load any calc points every 5 minutes
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " No Calc Points Loaded" << endl;
+                }
+                attempts++;
+
+                // try it again
+                delete calcThread;
+
+                Sleep(1000);   // sleep for 1 second
+
+                continue;
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << calcThread->numberOfLoadedCalcPoints() << " Calc Points Loaded" << endl;
+            }
 
             //  validate the connection before we attempt to send anything across
             //    (note that the above database read delays this check long enough to allow the
@@ -710,10 +730,12 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
 }
 
 
-void CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
+bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
 {
+    bool returnBool = true;
+
     // should be collection but not now
-    long pointIdList[1000];
+    long pointIdList[2000];
     long CalcCount = 0;
 
     try
@@ -835,6 +857,13 @@ void CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
+
+    if( calcThread->numberOfLoadedCalcPoints() <= 0 )
+    {
+        returnBool = false;
+    }
+
+    return returnBool;
 }
 
 
