@@ -285,15 +285,17 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			}
 			
 			// Delete all customer FAQs
-			currentAction = "Deleting customer FAQs";
-			
-			for (int i = 0; i < energyCompany.getAllCustomerFAQs().size(); i++) {
-				LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) energyCompany.getAllCustomerFAQs().get(i);
-				com.cannontech.database.db.stars.CustomerFAQ faq =
-						new com.cannontech.database.db.stars.CustomerFAQ();
-				faq.setQuestionID( new Integer(liteFAQ.getQuestionID()) );
+			if (energyCompany.getCustomerFAQs() != null) {
+				currentAction = "Deleting customer FAQs";
 				
-				Transaction.createTransaction( Transaction.DELETE, faq ).execute();
+				for (int i = 0; i < energyCompany.getCustomerFAQs().size(); i++) {
+					LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) energyCompany.getCustomerFAQs().get(i);
+					com.cannontech.database.db.stars.CustomerFAQ faq =
+							new com.cannontech.database.db.stars.CustomerFAQ();
+					faq.setQuestionID( new Integer(liteFAQ.getQuestionID()) );
+					
+					Transaction.createTransaction( Transaction.DELETE, faq ).execute();
+				}
 			}
 			
 			// Delete customer selection lists

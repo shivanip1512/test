@@ -1334,6 +1334,8 @@ public class StarsAdmin extends HttpServlet {
 				// Nothing need to be done is the list is already an inherited list
 				if (cList == null) return;
 				
+				StarsAdminUtil.updateListEntryReferences( energyCompany, energyCompany.getParent().getYukonSelectionList(listName) );
+				
 				try {
 					com.cannontech.database.data.constants.YukonSelectionList list =
 							new com.cannontech.database.data.constants.YukonSelectionList();
@@ -1379,6 +1381,7 @@ public class StarsAdmin extends HttpServlet {
 							Transaction.createTransaction( Transaction.UPDATE, listDB ).execute();
 					
 					StarsLiteFactory.setConstantYukonSelectionList( cList, listDB );
+					StarsAdminUtil.updateYukonListEntries( cList, entryData, energyCompany );
 				}
 				else {
 					// Create a new selection list
@@ -1407,9 +1410,10 @@ public class StarsAdmin extends HttpServlet {
 						for (int i = 0; i < entryData.length; i++)
 							entryData[i][0] = new Integer(0);
 					}
+					
+					StarsAdminUtil.updateYukonListEntries( cList, entryData, energyCompany );
+					StarsAdminUtil.updateListEntryReferences( energyCompany, cList );
 				}
-				
-				StarsAdminUtil.updateYukonListEntries( cList, entryData, energyCompany );
 			}
 			
 			ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
@@ -1580,23 +1584,15 @@ public class StarsAdmin extends HttpServlet {
 				throw new WebClientException( "Username of second operator login already exists" );
 			
 			// Create a privilege group with EnergyCompany and Administrator role
-			String adminGroupName = operGroup.getGroupName() + " Admin Grp";
-			if (AuthFuncs.getGroup( adminGroupName ) != null) {
-				int num = 2;
-				while (true) {
-					String groupName = adminGroupName + num;
-					if (AuthFuncs.getGroup( groupName ) == null) {
-						adminGroupName = groupName;
-						break;
-					}
-					num++;
-				}
-			}
-			
 			Hashtable rolePropMap = new Hashtable();
 			rolePropMap.put( new Integer(EnergyCompanyRole.OPERATOR_GROUP_IDS), operGroupIDs );
 			rolePropMap.put( new Integer(EnergyCompanyRole.CUSTOMER_GROUP_IDS), custGroupIDs );
-			rolePropMap.put( new Integer(AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY), StarsAdminUtil.FIRST_TIME );
+			if (req.getParameter("AddMember") == null)
+				rolePropMap.put( new Integer(AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY), StarsAdminUtil.FIRST_TIME );
+			else
+				rolePropMap.put( new Integer(AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY), CtiUtilities.TRUE_STRING );
+			
+			String adminGroupName = req.getParameter("CompanyName") + " Admin Grp";
 			LiteYukonGroup liteAdminGrp = StarsAdminUtil.createOperatorAdminGroup( adminGroupName, rolePropMap );
 			
 			// Create the default operator login

@@ -652,12 +652,12 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				Hashtable rolePropMap = new Hashtable();
 				rolePropMap.put( new Integer(EnergyCompanyRole.OPERATOR_GROUP_IDS), operGroupIDs );
 				rolePropMap.put( new Integer(EnergyCompanyRole.CUSTOMER_GROUP_IDS), "" );
-				
-				String adminGrpName = energyCompany.getOperatorAdminGroup().getGroupName() + " - " + coopName;
-				allGroups[allGroups.length - 1] = StarsAdminUtil.createOperatorAdminGroup(adminGrpName, rolePropMap);
-				
+				rolePropMap.put( new Integer(AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY), CtiUtilities.TRUE_STRING );
 				// For testing, turn on the "delete energy company" property
-				StarsAdminUtil.updateGroupRoleProperty(allGroups[allGroups.length - 1], AdministratorRole.ROLEID, AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY, CtiUtilities.TRUE_STRING);
+				rolePropMap.put( new Integer(AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY), CtiUtilities.TRUE_STRING );
+				
+				String adminGrpName = coopName + " Admin Grp";
+				allGroups[allGroups.length - 1] = StarsAdminUtil.createOperatorAdminGroup(adminGrpName, rolePropMap);
 				
 				// Create the default operator login
 				LiteYukonUser liteUser = StarsAdminUtil.createOperatorLogin(
