@@ -177,6 +177,8 @@ public class ServletUtils {
      * In the original string, each segment between adjacent "-" above must be consecutive
      */
     public static String formatPhoneNumber(String phoneNo) throws ServletException {
+    	if (phoneNo.trim().equals("")) return "";
+    	
     	StringBuffer formatedPhoneNo = new StringBuffer();
     	int n = phoneNo.length() - 1;	// position of digit counted from the last
     	
