@@ -20,16 +20,15 @@ public class PointAlarmTableModel extends AbstractTableModel {
 	private static final String DEVICENAME_COL = "Device Name";
 	private static final String POINTNAME_COL = "Point Name";
 	private static final String TEXTMESSAGE_COL = "Text Message";
-	//private static final String USERNAME_COL = "Username";
 		
 	private static final String[] columnNames = {
-		TIMESTAMP_COL, DEVICENAME_COL, POINTNAME_COL, TEXTMESSAGE_COL/*, USERNAME_COL*/
+		TIMESTAMP_COL, DEVICENAME_COL, POINTNAME_COL, TEXTMESSAGE_COL
 	};
 	
 	private static final int NUM_COLUMNS = columnNames.length;
 		
-	//show alarms for device
-	private int deviceID = -1;
+	//show alarms for these devices
+	private int[] deviceIDs = new int[] { -1 };
 		
 	//internal representation - rows contains ArrayLists
 	private ArrayList rows = new ArrayList();
@@ -60,7 +59,6 @@ public class PointAlarmTableModel extends AbstractTableModel {
 	 * @see javax.swing.table.TableModel#getValueAt(int, int)
 	 */
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		//return "test";
 		return ((ArrayList) rows.get(rowIndex)).get(columnIndex);
 	}
 
@@ -71,13 +69,17 @@ public class PointAlarmTableModel extends AbstractTableModel {
 		rows = new ArrayList();
 		
 		PointChangeCache cache = PointChangeCache.getPointChangeCache();		
-		LitePoint[] points = PAOFuncs.getLitePointsForPAObject(getDeviceID());
-
-		for(int i = 0; i < points.length; i++) {
-			Signal s = cache.getSignal(points[i].getPointID());
-			if(s != null) {
-				addSignal(s);
-			}			
+		
+		for(int i = 0; i < deviceIDs.length; i++) {
+			int deviceID = deviceIDs[i];
+			LitePoint[] points = PAOFuncs.getLitePointsForPAObject(deviceID);
+	
+			for(int j = 0; j < points.length; j++) {
+				Signal s = cache.getSignal(points[j].getPointID());
+				if(s != null) {
+					addSignal(s);
+				}			
+			}
 		}
 	}	
 	
@@ -107,7 +109,7 @@ public class PointAlarmTableModel extends AbstractTableModel {
 	 * @return int
 	 */
 	public int getDeviceID() {
-		return deviceID;
+		return getDeviceIDs()[0];
 	}
 
 	/**
@@ -115,7 +117,21 @@ public class PointAlarmTableModel extends AbstractTableModel {
 	 * @param deviceID The deviceID to set
 	 */
 	public void setDeviceID(int deviceID) {
-		this.deviceID = deviceID;
+		setDeviceIDs(new int[] { deviceID } );
 	}
 
+	/**
+	 * Returns the array of device IDs
+	 * @return int[]
+	 */
+	public int[] getDeviceIDs() {
+		return deviceIDs;
+	}
+	
+	/** Sets the array of deviceIDs
+	 * @param deviceIDs the array of deviceIDs
+	 */
+	public void setDeviceIDs(int[] deviceIDs) {
+		this.deviceIDs = deviceIDs;
+	}
 }
