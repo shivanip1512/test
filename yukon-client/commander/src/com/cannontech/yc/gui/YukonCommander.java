@@ -1449,8 +1449,10 @@ private void restoreCurrentTree()
 	{
 		com.cannontech.database.data.lite.LiteBase lb = (com.cannontech.database.data.lite.LiteBase) item;
 
-		tvp.selectLiteBase( new javax.swing.tree.TreePath ( tvp.getTree().getModel().getRoot() ),
-						lb.getLiteType() , lb.getLiteID() );
+		tvp.selectLiteBase( 
+				new javax.swing.tree.TreePath ( tvp.getTree().getModel().getRoot() ),
+				lb );
+				//lb.getLiteType() , lb.getLiteID() );
 
 	}
 	else if( item instanceof String)
