@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2002/08/28 16:21:06 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2002/09/03 20:56:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -174,7 +174,7 @@ using namespace std;
 
 #define DOUT_OUT TRUE
 
-ULONG TimeSyncRate;
+ULONG TimeSyncRate = 3600L;
 
 void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, bool consume);
 void LoadPorterGlobals(void);
@@ -691,7 +691,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
         if(omc > 10 && nowTime > nextTime)
         {
-            nextTime = nowTime - (nowTime.seconds() % 30) + 30;
+            nextTime = nowTime.seconds() - (nowTime.seconds() % 30) + 30;
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Porter's OM Count = " << omc << endl;
         }
@@ -1376,10 +1376,6 @@ void LoadPorterGlobals(void)
     {
         PorterRefreshRate = atoi(Temp.data());
     }
-    else
-    {
-        PorterRefreshRate = 300;
-    }
 
     if( !(Temp = gConfigParms.getValueAsString("PIL_QUEUE_SIZE")).isNull())
     {
@@ -1552,10 +1548,6 @@ void LoadPorterGlobals(void)
             /* Unable to convert so assume "NOT EVER" */
             TimeSyncRate = 0L;
         }
-    }
-    else
-    {
-        TimeSyncRate = 3600L;
     }
 
 
