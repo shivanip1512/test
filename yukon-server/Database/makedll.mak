@@ -95,6 +95,8 @@ tbl_stats.obj \
 tbl_tag.obj \
 tbl_taglog.obj \
 tbl_unitmeasure.obj \
+tbl_lmg_sa_simple.obj \
+tbl_lmg_sa_205105.obj \
 
 
 
