@@ -98,7 +98,7 @@ public class SOAPClient extends HttpServlet {
 		SOAP_SERVER_URL = RoleFuncs.getGlobalPropertyValue( SystemRole.STARS_SOAP_SERVER );
 		
 		//keep the URL string null if it is not set
-		if( SOAP_SERVER_URL.equals(CtiUtilities.STRING_NONE) )
+		if( SOAP_SERVER_URL != null && SOAP_SERVER_URL.equals(CtiUtilities.STRING_NONE) )
 			SOAP_SERVER_URL = null;
 		
 		if (SOAP_SERVER_URL != null) {

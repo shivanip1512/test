@@ -280,7 +280,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 					custFieldsList.add( custFields );
 					
 					if (hwFile == null && hwColIdx[COL_SERIAL_NO] != -1) {
-						hwFieldsList = new ArrayList();
+						if (hwFieldsList == null) hwFieldsList = new ArrayList();
 						String[] hwFields = ImportManager.prepareFields( ImportManager.NUM_INV_FIELDS );
 						hwFields[ImportManager.IDX_LINE_NUM] = String.valueOf( custLineNo );
 						setHardwareFields( hwFields, columns, hwColIdx );
