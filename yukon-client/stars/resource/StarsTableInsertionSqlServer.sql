@@ -33,6 +33,7 @@ INSERT INTO AccountSite VALUES (0,0,'(none)',0,'(none)');
 INSERT INTO CustomerAccount VALUES (0,0,'(none)',-1,0,'(none)',-1);
 
 /* InventoryBase */
+INSERT INTO InventoryBase VALUES (0,0,0,0,'01-JAN-70','01-JAN-70','01-JAN-70','(none)',0,'(none)',0,'(none)');
 INSERT INTO InventoryBase VALUES (-1,0,0,0,'01-JAN-70','01-JAN-70','01-JAN-70','(none)',0,'Default Thermostat',0,'(none)');
 INSERT INTO LMHardwareBase VALUES (-1,'0',0);
 
