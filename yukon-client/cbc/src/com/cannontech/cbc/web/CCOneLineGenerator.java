@@ -32,7 +32,7 @@ public class CCOneLineGenerator {
 	private static final Font DEFAULT_FONT = new java.awt.Font("arial", java.awt.Font.BOLD, 12);
 	
 	public static Drawing generateSVGFileFromSubBus(SubBus subBus) {
-		return generateSVGFileFromSubBus(subBus,"../AllSubs.jsp");
+		return generateSVGFileFromSubBus(subBus,"../subs.jsp");
 	}
 	public static Drawing generateSVGFileFromSubBus(SubBus subBus, String allSubsJSP) {
 		
