@@ -6,17 +6,14 @@ package com.cannontech.calchist;
  * @author: 
  */
 
+import java.util.GregorianCalendar;
+import java.util.Vector;
+
+import com.cannontech.database.data.point.PointQualities;
+import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
-import java.util.Vector;
-import java.util.GregorianCalendar;
-import com.cannontech.database.db.point.RawPointHistory;
-import com.cannontech.database.data.lite.LitePoint;
-import java.awt.event.WindowListener;
-import java.awt.event.WindowEvent;
-import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Command;
-import com.cannontech.database.data.point.PointQualities;
 //import com.cannontech.database.data.point.PointTypes;
 
 public final class CalcHistorical
@@ -220,7 +217,7 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 			else
 			{
 				logEvent("Can not determine the Constant in CalcHistorical::figurePointDataMsgValue()", com.cannontech.common.util.LogWriter.ERROR);
-				System.out.println("Can not determine the Operation in CalcHistorical::figurePointDataMsgValue()");
+				System.out.println("Can not determine the Function in CalcHistorical::figurePointDataMsgValue()");
 				return null;
 			}
 		}
@@ -256,7 +253,7 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 				}
 			}
 
-			else if( ((CalcComponent)calcComponentVector.get(i)).getOperation().equalsIgnoreCase(CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION) )
+			else if( ((CalcComponent)calcComponentVector.get(i)).getFunctionName().equalsIgnoreCase(CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION) )
 			{
 				if( powerFactor == null)
 				{
@@ -277,7 +274,7 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 						powerFactor.kq_value = ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
 				}
 			}
-			else if( ((CalcComponent)calcComponentVector.get(i)).getOperation().equalsIgnoreCase(CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION) )
+			else if( ((CalcComponent)calcComponentVector.get(i)).getFunctionName().equalsIgnoreCase(CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION) )
 			{
 				if( powerFactor == null)
 				{
@@ -301,10 +298,15 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 			//For this to ever work the query in getCalcComponentPoints(...)
 			// must be changed at the spot of != 'Function'
 //			System.out.println("Can not handle ComponentType of Function yet CalcHistorical::figurePointDataMsgValue()");
+			else if( ((CalcComponent)calcComponentVector.get(i)).getFunctionName().equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION) )
+			{
+				//This is handled in main, not here!
+				return null;
+			}
 			else
 			{
 				logEvent("Can not determine the Function in CalcHistorical::figurePointDataMsgValue()", com.cannontech.common.util.LogWriter.ERROR);
-				System.out.println("Can not determine the Operation in CalcHistorical::figurePointDataMsgValue()");
+				System.out.println("Can not determine the Function in CalcHistorical::figurePointDataMsgValue()");
 				return null;
 			}
 		}
