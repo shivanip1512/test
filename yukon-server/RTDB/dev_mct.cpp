@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2003/08/11 20:12:49 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2003/10/27 22:04:18 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -116,6 +116,7 @@ bool CtiDeviceMCT::sspecIsValid( int sspec )
     mct_sspec.insert(make_pair(TYPEMCT370,    218));
     mct_sspec.insert(make_pair(TYPEMCT370,   1007));  //  new Grand Unification sspec
 
+    //mct_sspec.insert(make_pair(TYPEMCT410,   XXXX));  //  add this later when it's necessary
 
     reported = make_pair(getType(), sspec);
 
@@ -1093,6 +1094,7 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
                         case TYPEMCT318L:
                         case TYPEMCT360:
                         case TYPEMCT370:
+                        case TYPEMCT410:
                             insertPointFail( InMessage, retMsg, ScanRateStatus, 8, StatusPointType );
                             insertPointFail( InMessage, retMsg, ScanRateStatus, 7, StatusPointType );
                             insertPointFail( InMessage, retMsg, ScanRateStatus, 6, StatusPointType );
@@ -3838,7 +3840,7 @@ bool CtiDeviceMCT::getOperation( const UINT &cmd, USHORT &function, USHORT &leng
       initCommandStore();
    }
 
-   CTICMDSET::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
+   DLCCommandSet::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
 
    if( itr != _commandStore.end() )    // It's prego!
    {
