@@ -732,12 +732,6 @@ public class StarsAdmin extends HttpServlet {
 				com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
 						energyCompany.getEnergyCompanyID(), programID );
 				
-				// Delete all control history of this program
-				if (liteProg.getGroupIDs() != null) {
-					for (int j = 0; j < liteProg.getGroupIDs().length; j++)
-						energyCompany.deleteStarsLMControlHistory( liteProg.getGroupIDs()[j] );
-				}
-				
 				// Unenroll the program from all customers currently enrolled in it
 				int[] accountIDs = com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAccountIDsWithProgram(
 						programID, energyCompany.getEnergyCompanyID() );
@@ -857,12 +851,6 @@ public class StarsAdmin extends HttpServlet {
 						// Delete all program events
 						com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
 								energyCompany.getEnergyCompanyID(), new Integer(programIDs[j]) );
-						
-						// Delete all program control history
-						if (programs[j].getGroupIDs() != null) {
-							for (int k = 0; k < programs[j].getGroupIDs().length; k++)
-								energyCompany.deleteStarsLMControlHistory( programs[j].getGroupIDs()[k] );
-						}
 					}
 					Arrays.sort( programIDs );
 				}

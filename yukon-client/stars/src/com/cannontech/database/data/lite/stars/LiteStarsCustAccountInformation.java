@@ -29,7 +29,6 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	private ArrayList serviceRequestHistory = null;	// List of IDs of LiteWorkOrderBase
 	private ArrayList thermostatSchedules = null;	// List of LiteLMThermostatSchedule
 	
-	private long lastLoginTime = 0;
 	private boolean extended = false;
 	
 	public LiteStarsCustAccountInformation() {
@@ -233,22 +232,6 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 */
 	public void setCustomerResidence(LiteCustomerResidence customerResidence) {
 		this.customerResidence = customerResidence;
-	}
-
-	/**
-	 * Returns the lastLoginTime.
-	 * @return long
-	 */
-	public long getLastLoginTime() {
-		return lastLoginTime;
-	}
-
-	/**
-	 * Sets the lastLoginTime.
-	 * @param lastLoginTime The lastLoginTime to set
-	 */
-	public void setLastLoginTime(long lastLoginTime) {
-		this.lastLoginTime = lastLoginTime;
 	}
 
 	/**

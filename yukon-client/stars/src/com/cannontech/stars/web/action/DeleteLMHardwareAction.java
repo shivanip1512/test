@@ -287,17 +287,6 @@ public class DeleteLMHardwareAction implements ActionBase {
 				}
     			
 				liteAcctInfo.getInventories().remove( new Integer(liteInv.getInventoryID()) );
-    			
-				// Remove the account from two-way thermostat account list if necessary
-				if (liteInv instanceof LiteStarsLMHardware &&
-					((LiteStarsLMHardware) liteInv).isTwoWayThermostat() &&
-					!liteAcctInfo.hasTwoWayThermostat(energyCompany))
-				{
-					ArrayList accountList = energyCompany.getAccountsWithGatewayEndDevice();
-					synchronized (accountList) {
-						accountList.remove( liteAcctInfo );
-					}
-				}
 			}
 		}
 		catch (Exception e) {

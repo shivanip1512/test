@@ -21,11 +21,9 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteLMControlHistory;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -147,7 +145,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 			connToDispatch.connectWithoutWait();
 		}
 		catch ( Exception e ) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 	}
     
@@ -261,7 +259,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 			    }
     		}
     		catch (Exception e) {
-    			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				CTILogger.error( e.getMessage(), e );
     		}
     		finally {
     			try {
@@ -400,22 +398,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		synchronized (starsUsers) { starsUsers.remove( new Integer(userID) ); }
 	}
 	
-	public static void updateLMControlHistory(LiteStarsLMControlHistory liteCtrlHist) {
-		ArrayList ctrlHist = liteCtrlHist.getLmControlHistory();
 		
-		int lastCtrlHistID = 0;
-		if (ctrlHist.size() > 0)
-			lastCtrlHistID = ((LiteLMControlHistory) ctrlHist.get(ctrlHist.size() - 1)).getLmCtrlHistID();
-			
-		com.cannontech.database.db.pao.LMControlHistory[] ctrlHists = com.cannontech.stars.util.LMControlHistoryUtil.getLMControlHistory(
-				new Integer(liteCtrlHist.getGroupID()), new Integer(lastCtrlHistID) );
-		if (ctrlHists != null) {
-			for (int i= 0; i < ctrlHists.length; i++)
-				ctrlHist.add( (LiteLMControlHistory) StarsLiteFactory.createLite(ctrlHists[i]) );
-		}
-	}
-
-
 	public void handleDBChangeMsg(DBChangeMsg msg, LiteBase lBase)
 	{
 		if (msg.getSource().equals(com.cannontech.common.util.CtiUtilities.DEFAULT_MSG_SOURCE))

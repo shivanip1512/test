@@ -2,7 +2,6 @@ package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -10,6 +9,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 
 /**
  * @author yao
@@ -21,9 +21,10 @@ import com.cannontech.stars.web.servlet.SOAPServer;
  */
 public class RefreshTimerTask extends StarsTimerTask {
 	
-	private static final long TIMER_PERIOD = 1000 * 60 * 1;	// 5 minutes
+	private static final long TIMER_PERIOD = 1000 * 60 * 1;	// 1 minutes
 	
-	private static final long GED_EXPIRATION_TIME = 1000 * 60 * 60;	// Expiration time for updating a GatewayEndDevice
+	// Length of time without any action from the client to consider an account inactive
+	private static final long INACTIVE_INTERVAL = 1000 * 60 * 30;
 
 	/**
 	 * @see com.cannontech.stars.util.timertask.StarsTimerTask#isFixedRate()
@@ -54,40 +55,32 @@ public class RefreshTimerTask extends StarsTimerTask {
 		
 		ArrayList companies = SOAPServer.getAllEnergyCompanies();
 		
-		// Update from LMControlHistory
 		for (int i = 0; i < companies.size(); i++) {
-    		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
 			if (ECUtils.isDefaultEnergyCompany( company )) continue;
 			
+			// Update the control history
 			ArrayList ctrlHistList = company.getAllLMControlHistory();
 			for (int j = 0; j < ctrlHistList.size(); j++) {
 				LiteStarsLMControlHistory liteCtrlHist = (LiteStarsLMControlHistory) ctrlHistList.get(j);
-				SOAPServer.updateLMControlHistory( liteCtrlHist );
-				company.updateStarsLMControlHistory( liteCtrlHist );
+				company.updateLMControlHistory( liteCtrlHist );
 			}
-		}
-		
-		// Update from GatewayEndDevice
-		long now = System.currentTimeMillis();
-		for (int i = 0; i < companies.size(); i++) {
-    		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
-			if (ECUtils.isDefaultEnergyCompany( company )) continue;
 			
-			ArrayList accountList = company.getAccountsWithGatewayEndDevice();
-			
-			// Remove all the "expired" customer accounts
-			synchronized (accountList) {
-				Iterator it = accountList.iterator();
-				while (it.hasNext()) {
-					LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) it.next();
-					if (now - liteAcctInfo.getLastLoginTime() > GED_EXPIRATION_TIME)
-						it.remove();
+			// Update the real-time data for EnergyPro thermostats
+			ArrayList activeAccounts = new ArrayList( company.getActiveAccounts() );
+			for (int j = 0; j < activeAccounts.size(); j++) {
+				StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation) activeAccounts.get(j);
+				
+				// If account is no longer active, remove it from the active account list
+				if (System.currentTimeMillis() - starsAcctInfo.getLastActiveTime().getTime() > INACTIVE_INTERVAL) {
+					company.unregisterActiveAccount( starsAcctInfo );
+					continue;
 				}
-			}
-			
-			for (int j = 0; j < accountList.size(); j++) {
-				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) accountList.get(j);
-				ECUtils.updateThermostatSettings( liteAcctInfo, company );
+				
+				LiteStarsCustAccountInformation liteAcctInfo = company.getCustAccountInformation(
+						starsAcctInfo.getStarsCustomerAccount().getAccountID(), false );
+				if (liteAcctInfo != null)
+					company.updateThermostatSettings( liteAcctInfo );
 			}
 		}
 		

@@ -163,7 +163,7 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 					if (liteHw.isExtended()) {
 						liteHw.updateThermostatType();
 						if (liteHw.isThermostat())
-							liteHw.setThermostatSettings( ECUtils.getThermostatSettings(liteHw, energyCompany) );
+							liteHw.setThermostatSettings( energyCompany.getThermostatSettings(liteHw) );
 						else
 							liteHw.setThermostatSettings( null );
 					}

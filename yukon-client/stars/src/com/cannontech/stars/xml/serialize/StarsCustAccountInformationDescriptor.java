@@ -58,6 +58,38 @@ public class StarsCustAccountInformationDescriptor extends org.exolab.castor.xml
         setCompositorAsSequence();
         //-- initialize attribute descriptors
         
+        //-- _lastActiveTime
+        desc = new XMLFieldDescriptorImpl(java.util.Date.class, "_lastActiveTime", "lastActiveTime", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCustAccountInformation target = (StarsCustAccountInformation) object;
+                return target.getLastActiveTime();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCustAccountInformation target = (StarsCustAccountInformation) object;
+                    target.setLastActiveTime( (java.util.Date) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new java.util.Date();
+            }
+        } );
+        desc.setHandler( new DateFieldHandler(handler));
+        desc.setImmutable(true);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _lastActiveTime
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
         //-- initialize element descriptors
         
         //-- _starsCustomerAccount

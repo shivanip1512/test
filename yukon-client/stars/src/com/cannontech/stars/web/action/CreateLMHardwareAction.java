@@ -388,14 +388,6 @@ public class CreateLMHardwareAction implements ActionBase {
 				if (liteInv instanceof LiteStarsLMHardware) {
 					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
 					
-					// If this is a two-way thermostat, set the account for receiving dynamic data
-					if (liteHw.isTwoWayThermostat()) {
-						java.util.ArrayList accountList = energyCompany.getAccountsWithGatewayEndDevice();
-						synchronized (accountList) {
-							if (!accountList.contains( liteAcctInfo )) accountList.add( liteAcctInfo );
-						}
-					}
-					
 					for (int i = 0; i < createHw.getLMHardware().getStarsLMHardwareConfigCount(); i++) {
 						StarsLMHardwareConfig starsConfig = createHw.getLMHardware().getStarsLMHardwareConfig(i);
 						if (starsConfig.getGroupID() == 0) continue;

@@ -204,7 +204,7 @@ public class StarsLiteFactory {
 		if (liteInv instanceof LiteStarsLMHardware) {
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
 			if (liteHw.isThermostat())
-				liteHw.setThermostatSettings( ECUtils.getThermostatSettings(liteHw, energyCompany) );
+				liteHw.setThermostatSettings( energyCompany.getThermostatSettings(liteHw) );
 		}
 		
 		liteInv.setExtended( true );

@@ -9,7 +9,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -103,16 +102,9 @@ public class GetCustAccountAction implements ActionBase {
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            liteAcctInfo.setLastLoginTime( System.currentTimeMillis() );	// Update the last login time
-            
             if (liteAcctInfo.hasTwoWayThermostat(energyCompany)) {
-            	// Get up-to-date thermostat settings and register the account
-            	ECUtils.updateThermostatSettings( liteAcctInfo, energyCompany );
-            	
-	            java.util.ArrayList accountList = energyCompany.getAccountsWithGatewayEndDevice();
-	            synchronized (accountList) {
-	            	if (!accountList.contains( liteAcctInfo )) accountList.add( liteAcctInfo );
-	            }
+            	// Get up-to-date thermostat settings
+				energyCompany.updateThermostatSettings( liteAcctInfo );
             }
             
 			session.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );

@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
+import java.util.Date;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -31,6 +32,8 @@ public class StarsCustAccountInformation implements java.io.Serializable {
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
+
+    private java.util.Date _lastActiveTime;
 
     private StarsCustomerAccount _starsCustomerAccount;
 
@@ -63,6 +66,16 @@ public class StarsCustAccountInformation implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'lastActiveTime'.
+     * 
+     * @return the value of field 'lastActiveTime'.
+    **/
+    public java.util.Date getLastActiveTime()
+    {
+        return this._lastActiveTime;
+    } //-- java.util.Date getLastActiveTime() 
 
     /**
      * Returns the value of field 'starsAppliances'.
@@ -190,6 +203,16 @@ public class StarsCustAccountInformation implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'lastActiveTime'.
+     * 
+     * @param lastActiveTime the value of field 'lastActiveTime'.
+    **/
+    public void setLastActiveTime(java.util.Date lastActiveTime)
+    {
+        this._lastActiveTime = lastActiveTime;
+    } //-- void setLastActiveTime(java.util.Date) 
 
     /**
      * Sets the value of field 'starsAppliances'.

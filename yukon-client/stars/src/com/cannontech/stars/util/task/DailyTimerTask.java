@@ -67,6 +67,9 @@ public class DailyTimerTask extends StarsTimerTask {
 			catch (WebClientException e) {
 				CTILogger.debug( e.getMessage() );
 			}
+			
+			// Clear all the *active* information
+			company.clearActiveAccounts();
 		}
 		
 		CTILogger.debug( "*** Daily timer task stop ***" );

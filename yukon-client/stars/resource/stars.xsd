@@ -504,6 +504,7 @@
 					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
+			<xs:attribute name="lastActiveTime" type="xs:dateTime"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-SearchCustomerAccount">

@@ -393,9 +393,11 @@ public class ProgramSignUpAction implements ActionBase {
 					if (invIDs[idx] > 0)
 						liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invIDs[idx], true );
         			
+					LiteStarsAppliance liteApp = null;
+					com.cannontech.database.data.stars.appliance.ApplianceBase app = null;
+					
 					// Find appliance attached to this hardware or not attached to any hardware, and assigned to this program or another program of the same category.
 					// Priority: same hardware & same program > same hardware & same category > no hardware & same program > no hardware & same category
-					LiteStarsAppliance liteApp = null;
 					for (int j = 0; j < appList.size(); j++) {
 						LiteStarsAppliance lApp = (LiteStarsAppliance) appList.get(j);
 						
@@ -438,8 +440,7 @@ public class ProgramSignUpAction implements ActionBase {
 							
 							liteApp.setLmProgramID( program.getProgramID() );
 							
-							com.cannontech.database.data.stars.appliance.ApplianceBase app =
-									(com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
+							app = (com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
 							app = (com.cannontech.database.data.stars.appliance.ApplianceBase)
 									Transaction.createTransaction( Transaction.UPDATE, app ).execute();
 						}
@@ -452,6 +453,10 @@ public class ProgramSignUpAction implements ActionBase {
 								if (!hwsToConfig.contains( liteHw ))
 									hwsToConfig.add( liteHw );
 								
+								app = (com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
+								app = (com.cannontech.database.data.stars.appliance.ApplianceBase)
+										Transaction.createTransaction( Transaction.UPDATE, app ).execute();
+								
 								if (liteInv != null) {
 									for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
 										LiteStarsAppliance lApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
@@ -461,6 +466,10 @@ public class ProgramSignUpAction implements ActionBase {
 											LiteStarsLMHardware lHw = (LiteStarsLMHardware) energyCompany.getInventory( lApp.getInventoryID(), true );
 											if (!hwsToConfig.contains( lHw ))
 												hwsToConfig.add( lHw );
+											
+											app = (com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( lApp );
+											app = (com.cannontech.database.data.stars.appliance.ApplianceBase)
+													Transaction.createTransaction( Transaction.UPDATE, app ).execute();
 										}
 									}
 								}
@@ -475,7 +484,7 @@ public class ProgramSignUpAction implements ActionBase {
 						if (!progEnrollList.contains(progID)) progEnrollList.add( progID );
 		        		
 						// Create a new appliance for the program
-						com.cannontech.database.data.stars.appliance.ApplianceBase app = new com.cannontech.database.data.stars.appliance.ApplianceBase();
+						app = new com.cannontech.database.data.stars.appliance.ApplianceBase();
 						com.cannontech.database.db.stars.appliance.ApplianceBase appDB = app.getApplianceBase();
 		        		
 						appDB.setAccountID( accountID );
