@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/05/24 13:49:46 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/06/23 13:16:58 $
 *
 * HISTORY      :
 * $Log: dev_grp_golay.cpp,v $
+* Revision 1.4  2004/06/23 13:16:58  cplender
+* Added control_interval and control_reduction to the grp so the protocol doesn't need to set it.
+*
 * Revision 1.3  2004/05/24 13:49:46  cplender
 * Set retries to 0 for all but 205 commands.
 *
@@ -188,6 +191,11 @@ INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     else
     {
         parse.setValue("shed", _loadGroup.getNominalTimeout());
+
+        // Set these here in case they are not set elsewhere.
+        parse.setValue("control_interval", _loadGroup.getNominalTimeout() );
+        parse.setValue("control_reduction", 100 );
+
         parse.setValue("sa_codesimple", _loadGroup.getOperationalAddress());
         if(!parse.isKeyValid("sa_function"))
             parse.setValue("sa_function", 1 );      // This may need a peek CGP // _loadGroup.getFunction(control));
