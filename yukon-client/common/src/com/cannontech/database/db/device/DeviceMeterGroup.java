@@ -13,8 +13,7 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"CollectionGroup", "TestCollectionGroup", "MeterNumber",
-		"BillingGroup"
+		"CollectionGroup", "TestCollectionGroup", "MeterNumber", "BillingGroup"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
@@ -44,7 +43,9 @@ public void add() throws java.sql.SQLException
  */
 public void delete() throws java.sql.SQLException {
 
-	delete( "DeviceMeterGroup", "DeviceID", getDeviceID() );
+	Object values [] = {getDeviceID()};
+	
+	delete( this.TABLE_NAME, CONSTRAINT_COLUMNS, values);
 }
 /**
  * Insert the method's description here.

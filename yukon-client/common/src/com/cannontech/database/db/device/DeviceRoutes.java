@@ -8,7 +8,10 @@ public class DeviceRoutes extends com.cannontech.database.db.DBPersistent {
 	private Integer deviceID = null;
 	private Integer routeID = null;
 
-	private final String tableName = "DeviceRoutes";
+	public static final String SETTER_COLUMNS[] = { "RouteID" };
+
+	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
+	private final String TABLE_NAME = "DeviceRoutes";
 /**
  * DeviceRoutes constructor comment.
  */
@@ -30,17 +33,15 @@ public void add() throws java.sql.SQLException {
 
 	Object addValues[] = { getDeviceID(), getRouteID() };
 
-	add( this.tableName, addValues ); 
+	add( this.TABLE_NAME, addValues ); 
 }
 /**
  * delete method comment.
  */
 public void delete() throws java.sql.SQLException {
 
-	String deleteColumns[] = { "DeviceID" };
-	Object deleteValues[] = { getDeviceID() };
-	
-	delete( this.tableName, deleteColumns, deleteValues );
+	Object values[] = { getDeviceID() };
+	delete( this.TABLE_NAME, CONSTRAINT_COLUMNS, values);
 }
 /**
  * This method was created in VisualAge.
@@ -71,14 +72,11 @@ public void initialize(Integer devID, Integer rtID ) {
  */
 public void retrieve() throws java.sql.SQLException {
 
-	String selectColumns[] = { "RouteID" };
-
-	String constraintColumns[] = { "DeviceID" };
 	Object constraintValues[] = { getDeviceID() };
 
-	Object results[] = retrieve( selectColumns, this.tableName, constraintColumns, constraintValues );
+	Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 
-	if( results.length == selectColumns.length )
+	if( results.length == SETTER_COLUMNS.length )
 	{
 		setRouteID( (Integer) results[0] );
 	}
@@ -101,13 +99,10 @@ public void setRouteID(Integer newValue) {
  * update method comment.
  */
 public void update() throws java.sql.SQLException {
-
-	String setColumns[] = { "RouteID" };
+	
 	Object setValues[] = { getRouteID() };
-
-	String constraintColumns[] = { "DeviceID" };
 	Object constraintValues[] = { getDeviceID() };
 
-	update( this.tableName, setColumns, setValues, constraintColumns, constraintValues );
+	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
 }
