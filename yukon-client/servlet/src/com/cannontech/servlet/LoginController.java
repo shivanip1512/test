@@ -2,7 +2,6 @@ package com.cannontech.servlet;
 
 /**
  * See com.cannontech.common.constants.LoginController for a list of parameters and usage info
- * TODO: Pull out contstant strings HOME_URL and YUKON_USER 
  * 
  * Creation date: (12/7/99 9:46:12 AM)
  * @author:	Aaron Lauinger 
@@ -13,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -40,6 +38,8 @@ public class LoginController extends javax.servlet.http.HttpServlet {
 	private static final String YUKON_USER = com.cannontech.common.constants.LoginController.YUKON_USER;
 	private static final String SAVED_YUKON_USER = com.cannontech.common.constants.LoginController.SAVED_YUKON_USER;
 		
+	private static final String LOGIN_URL_COOKIE = com.cannontech.common.constants.LoginController.LOGIN_URL_COOKIE;
+	
 /**
  * Handles login authentication, logout.
  * TODO: add change of password
@@ -53,7 +53,8 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 {
 	String action = req.getParameter(ACTION).toString();
 	String nextURI = req.getParameter(REDIRECT);
-		
+	String referer = req.getHeader("referer");
+	
 	if(LOGIN.equalsIgnoreCase(action)) {
 		String username = req.getParameter(USERNAME);
 		String password = req.getParameter(PASSWORD);
@@ -67,12 +68,11 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 				initSession(user, session);
 				
 				// Remember where they came from								
-				nextURI = AuthFuncs.getRolePropertyValue(user, WebClientRole.LOG_OFF_URL, "");
-				if(nextURI.length() > 0 && !nextURI.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
-					Cookie c = new Cookie(Integer.toString(WebClientRole.LOG_OFF_URL), nextURI);
+				if(referer != null && referer.length() > 0) {
+					Cookie c = new Cookie(LOGIN_URL_COOKIE, referer);
 					c.setPath("/");
 					resp.addCookie(c);
-				}				
+				}
 			} catch(TransactionException e) {
 				session.invalidate();
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -90,13 +90,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 	if(LOGOUT.equalsIgnoreCase(action)) {
 		HttpSession session = req.getSession();
 		if(session != null) {
-			LiteYukonUser user = (LiteYukonUser) session.getAttribute(YUKON_USER);
-			if (user != null && nextURI == null) {
-				nextURI = AuthFuncs.getRolePropertyValue(user, WebClientRole.LOG_OFF_URL, "");
-				if (nextURI.length() == 0 || nextURI.equalsIgnoreCase(CtiUtilities.STRING_NONE))
-					nextURI = LOGIN_URI;
-			}
-			
+			LiteYukonUser user = (LiteYukonUser) session.getAttribute(YUKON_USER);			
 			LiteYukonUser savedUser = (LiteYukonUser) session.getAttribute(SAVED_YUKON_USER);
 			session.invalidate();
 			if (savedUser != null && !savedUser.equals(user)) {
@@ -106,6 +100,17 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 			}
 		}
 
+		//Try to send them back to where they logged in from
+		Cookie[] cookies = req.getCookies();
+		if(cookies != null) {		
+			for(int i = 0; i < cookies.length; i++) {
+				Cookie c = cookies[i];
+				if(c.getName().equalsIgnoreCase(LOGIN_URL_COOKIE)) {
+					nextURI = c.getValue();
+				}
+			}
+		}					
+		
 		if (nextURI == null) nextURI = LOGIN_URI;
 		if (nextURI.charAt(0) == '/')
 			nextURI = req.getContextPath() + nextURI;

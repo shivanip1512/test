@@ -4,7 +4,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.cannontech.roles.application.WebClientRole;
+import com.cannontech.common.constants.LoginController;
+
 /**
  * Creation date: (11/14/2001 1:04:09 PM)
  * @author: 
@@ -49,11 +50,13 @@ public int doStartTag() throws javax.servlet.jsp.JspException {
 	
 		String redirectURL = "/login.jsp";
 		Cookie[] cookies = request.getCookies();
-		for(int i = 0; cookies != null && i < cookies.length; i++) {
-			Cookie c = cookies[i];
-			System.out.println(c.getName());
-			if(c.getName().equalsIgnoreCase(Integer.toString(WebClientRole.LOG_OFF_URL))) {
-				redirectURL = c.getValue();
+		if(cookies != null) {		
+			for(int i = 0; i < cookies.length; i++) {
+				Cookie c = cookies[i];
+				System.out.println(c.getName());
+				if(c.getName().equalsIgnoreCase(LoginController.LOGIN_URL_COOKIE)) {
+					redirectURL = c.getValue();
+				}
 			}
 		}
 		
