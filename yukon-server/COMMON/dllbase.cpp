@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/02 17:02:19 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/09/06 18:56:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -68,6 +68,8 @@ IM_EX_CTIBASE INT             Double = {FALSE};
 IM_EX_CTIBASE INT             useVersacomTypeFourControl = 0;  // Jeesh if you can't figure this out...
 IM_EX_CTIBASE INT             ModemConnectionTimeout = 60;     // Modem Connection Timeout in seconds (60 def.)
 IM_EX_CTIBASE int             gMaxDBConnectionCount = 5;       // Maximum number of DB connections to allow to remain open.
+IM_EX_CTIBASE bool            gIDLCEchoSuppression  = false;   // Eat up IDLC echoes on the comm channel (usually from satellite, etc)
+
 
 /*
  *  These are global to the ctibase, but
