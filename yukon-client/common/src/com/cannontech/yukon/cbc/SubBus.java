@@ -1,11 +1,6 @@
 package com.cannontech.yukon.cbc;
 
-import com.cannontech.clientutils.CommonUtils;
-import com.cannontech.clientutils.commonutils.ModifiedDate;
-import com.cannontech.common.login.ClientSession;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
-import com.cannontech.roles.application.TDCRole;
 
 /**
  * Insert the type's description here.
@@ -63,10 +58,10 @@ public class SubBus extends StreamableCapObject
 	private Boolean waiveControlFlag = null;
 	private String additionalFlags = null;
 
-
 	//should only contain objects of type Feeder
-	private java.util.Vector ccFeeders = null;
-
+	private java.util.Vector ccFeeders = null;	
+	
+	
 	// Possible values for ControlMethod
 	//com.cannontech.database.db.capcontrol.CapControlSubstationBus.CNTRL_INDIVIDUAL_FEEDER;
 	//com.cannontech.database.db.capcontrol.CapControlSubstationBus.CNTRL_SUBSTATION_BUS;
@@ -825,332 +820,52 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 
 	public String getRenderName()
 	{
-		return getCcName();
+		return 
+			CBC_DISPLAY.getSubBusValueAt(this, CBCDisplay.SUB_NAME_COLUMN).toString();
 	}
 	
 	public Object getRenderWatts()
 	{
-		if( getCurrentWattLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
-			return DASH_LINE;
-		else
-		{
-			if( getDecimalPlaces().intValue() == 0 )
-					return new Integer( CommonUtils.formatDecimalPlaces( 
-				   getCurrentWattLoadPointValue().doubleValue(), getDecimalPlaces().intValue() ) );             
-			else
-				 return new Double( CommonUtils.formatDecimalPlaces( 
-					  getCurrentWattLoadPointValue().doubleValue(), getDecimalPlaces().intValue() ) );
-		 }
+		return
+			CBC_DISPLAY.getSubBusValueAt(this, CBCDisplay.SUB_WATTS_COLUMN);		
 	}
 	
 	public Object getRenderTimeStamp()
 	{
-		if( getLastCurrentVarPointUpdateTime().getTime() <= 
-			com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
-			return DASH_LINE;
-		else
-			return new ModifiedDate( getLastCurrentVarPointUpdateTime().getTime(), ModifiedDate.FRMT_NOSECS );
+		return
+			CBC_DISPLAY.getSubBusValueAt(this, CBCDisplay.SUB_TIME_STAMP_COLUMN);		
 	}
 
 	public String getRenderPF()
 	{
-		return getPowerFactorText( getPowerFactorValue().doubleValue(), true )
-			+ " / " +
-			getPowerFactorText( getEstimatedPFValue().doubleValue(), true );
+		return
+			CBC_DISPLAY.getSubBusValueAt(this, CBCDisplay.SUB_POWER_FACTOR_COLUMN).toString();		
 	}
 
 	public String getRenderState()
 	{
-		String state = null;
-                
-		if( getCcDisableFlag().booleanValue() )
-		{
-			state = "DISABLED";
-		}
-		else if( getRecentlyControlledFlag().booleanValue() )
-		{
-			state = getSubBusPendingState();
-                    
-			if( state == null )
-			{
-				state = "PENDING"; //we only know its pending for sure
-			}
-                    
-		}
-		else
-			state = "ENABLED";
-
-
-		//show waived with a W at the end of the state
-		if( getWaiveControlFlag().booleanValue() )
-			state += "-W";
-
-		return state;
+		return
+			CBC_DISPLAY.getSubBusValueAt(this, CBCDisplay.SUB_CURRENT_STATE_COLUMN).toString();		
 	}
 	
 	public String getRenderDailyOps()
 	{
-		return new String(getCurrentDailyOperations() + " / " + 
-				(getMaxDailyOperation().intValue() <= 0 
-					? STR_NA 
-					: getMaxDailyOperation().toString()) );
+		return
+			CBC_DISPLAY.getSubBusValueAt(this, CBCDisplay.SUB_DAILY_OPERATIONS_COLUMN).toString();		
 	}
 	
 	public String getRenderTarget()
 	{
-		// decide which set Point we are to use
-		if( isPowerFactorControlled() )
-		{
-			return getPowerFactorText(getPeakSetPoint().doubleValue(), false);
-		}
-		else if( getLowerBandWidth().doubleValue() == 0
-					 && getUpperBandWidth().doubleValue() == 0 )
-		{
-			return STR_NA;
-		}
-		else if( getPeakTimeFlag().booleanValue() )
-		{
-			return
-				CommonUtils.formatDecimalPlaces(getPeakSetPoint().doubleValue() - getLowerBandWidth().doubleValue(), 0) +
-				" to " + 
-				CommonUtils.formatDecimalPlaces(getUpperBandWidth().doubleValue() + getPeakSetPoint().doubleValue(), 0) + 
-				" Pk";
-		}
-		else
-		{
-			return
-				CommonUtils.formatDecimalPlaces(getOffPeakSetPoint().doubleValue() - getLowerBandWidth().doubleValue(), 0) +
-				" to " + 
-				CommonUtils.formatDecimalPlaces(getUpperBandWidth().doubleValue() + getOffPeakSetPoint().doubleValue(), 0) + 
-				" OffPk";
-		}
+		return
+			CBC_DISPLAY.getSubBusValueAt(this, CBCDisplay.SUB_TARGET_COLUMN).toString();		
 	}
 
 	public String getRenderVarLoad()
 	{
-		String retVal = DASH_LINE; //default just in case
-
-		if( getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
-		   retVal = DASH_LINE;
-		else 
-		{                        
-			if( getDecimalPlaces().intValue() == 0 )
-					retVal =  CommonUtils.formatDecimalPlaces( 
-				  getCurrentVarLoadPointValue().doubleValue(), getDecimalPlaces().intValue() );             
-			else
-					retVal = CommonUtils.formatDecimalPlaces( 
-				  getCurrentVarLoadPointValue().doubleValue(), getDecimalPlaces().intValue() );
-		}
-                
-		retVal += " / ";
-
-		if( getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
-			retVal += DASH_LINE;
-		else 
-		{               
-			if( getDecimalPlaces().intValue() == 0 )
-					retVal += CommonUtils.formatDecimalPlaces( 
-				  getEstimatedVarLoadPointValue().doubleValue(), getDecimalPlaces().intValue() );           
-			else
-					retVal += CommonUtils.formatDecimalPlaces( 
-						getEstimatedVarLoadPointValue().doubleValue(), getDecimalPlaces().intValue() );
-		}
-                
-		return retVal;
+		return
+			CBC_DISPLAY.getSubBusValueAt(this, CBCDisplay.SUB_VAR_LOAD_COLUMN).toString();		
 	}
 
-	private String getPowerFactorText( double value, boolean compute )
-	{   
-	   int decPlaces = 1;
-	   try
-	   {
-		  decPlaces = 
-			 Integer.parseInt(
-					ClientSession.getInstance().getRolePropertyValue(
-				   TDCRole.PFACTOR_DECIMAL_PLACES, 
-				   "1") );
-	   }
-	   catch( Exception e)
-	   {}
-        
-	   if( value <= CapControlConst.PF_INVALID_VALUE )
-		  return STR_NA;
-	   else
-		  return CommonUtils.formatDecimalPlaces(
-				value * (compute ? 100 : 1), decPlaces ) + "%"; //get percent   
-	}
-
-	/**
-	 * Discovers if the given SubBus is in any Pending state
-	 *
-	 */
-	private String getSubBusPendingState() 
-	{
-/*		
-		for( int i = 0; i < getCcFeeders().size(); i++ )
-		{
-			com.cannontech.yukon.cbc.Feeder feeder =
-				(com.cannontech.yukon.cbc.Feeder)getCcFeeders().get(i);
-
-			int size = feeder.getCcCapBanks().size();
-			for( int j = 0; j < size; j++ )
-			{
-				CapBankDevice capBank = ((CapBankDevice)feeder.getCcCapBanks().elementAt(j));
-                
-				if( capBank.getControlStatus().intValue() == CapControlConst.BANK_CLOSE_PENDING )
-					return CapBankTableModel.getStateNames()[CapControlConst.BANK_CLOSE_PENDING];
-                    
-				if( capBank.getControlStatus().intValue() == CapControlConst.BANK_OPEN_PENDING )
-					return CapBankTableModel.getStateNames()[CapControlConst.BANK_OPEN_PENDING];
-			}
-
-		}
-*/
-		// we are not pending
-		return null;
-	}
-/*
-	case SubBusTableModel.SUB_NAME_COLUMN:
-	{
-		return subBus.getCcName();
-	}
-
-	case SubBusTableModel.AREA_NAME_COLUMN:
-	{
-		return subBus.getCcArea();
-	}
-
-	case SubBusTableModel.CURRENT_STATE_COLUMN:
-	{
-		String state = null;
-                
-		if( subBus.getCcDisableFlag().booleanValue() )
-		{
-			state = "DISABLED";
-		}
-		else if( subBus.getRecentlyControlledFlag().booleanValue() )
-		{
-			state = getSubBusPendingState( subBus );
-                    
-			if( state == null )
-			{
-				state = "PENDING"; //we only know its pending for sure
-			}
-                    
-		}
-		else
-			state = "ENABLED";
-
-
-		//show waived with a W at the end of the state
-		if( subBus.getWaiveControlFlag().booleanValue() )
-			state += "-W";
-
-		return state;
-
-	}
-
-	case SubBusTableModel.TARGET_COLUMN:
-	{
-		// decide which set Point we are to use
-		if( subBus.isPowerFactorControlled() )
-		{
-			return getPowerFactorText(subBus.getPeakSetPoint().doubleValue(), false);
-		}
-		else if( subBus.getLowerBandWidth().doubleValue() == 0
-					 && subBus.getUpperBandWidth().doubleValue() == 0 )
-		{
-			return STR_NA;
-		}
-		else if( subBus.getPeakTimeFlag().booleanValue() )
-		{
-			return
-				CommonUtils.formatDecimalPlaces(subBus.getPeakSetPoint().doubleValue() - subBus.getLowerBandWidth().doubleValue(), 0) +
-				" to " + 
-				CommonUtils.formatDecimalPlaces(subBus.getUpperBandWidth().doubleValue() + subBus.getPeakSetPoint().doubleValue(), 0) + 
-				" Pk";
-		}
-		else
-		{
-			return
-				CommonUtils.formatDecimalPlaces(subBus.getOffPeakSetPoint().doubleValue() - subBus.getLowerBandWidth().doubleValue(), 0) +
-				" to " + 
-				CommonUtils.formatDecimalPlaces(subBus.getUpperBandWidth().doubleValue() + subBus.getOffPeakSetPoint().doubleValue(), 0) + 
-				" OffPk";
-		}
-	}
-                
-	case SubBusTableModel.DAILY_OPERATIONS_COLUMN:
-	{
-		return new String(subBus.getCurrentDailyOperations() + " / " + 
-				(subBus.getMaxDailyOperation().intValue() <= 0 
-					? STR_NA 
-					: subBus.getMaxDailyOperation().toString()) );
-	}
-
-	case SubBusTableModel.VAR_LOAD_COLUMN:
-	{
-		String retVal = DASH_LINE; //default just in case
-
-		if( subBus.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
-		   retVal = DASH_LINE;
-		else 
-		{                        
-			if( subBus.getDecimalPlaces().intValue() == 0 )
-					retVal =  CommonUtils.formatDecimalPlaces( 
-				  subBus.getCurrentVarLoadPointValue().doubleValue(), subBus.getDecimalPlaces().intValue() );             
-			else
-					retVal = CommonUtils.formatDecimalPlaces( 
-				  subBus.getCurrentVarLoadPointValue().doubleValue(), subBus.getDecimalPlaces().intValue() );
-		}
-                
-		retVal += " / ";
-
-		if( subBus.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
-			retVal += DASH_LINE;
-		else 
-		{               
-			if( subBus.getDecimalPlaces().intValue() == 0 )
-					retVal += CommonUtils.formatDecimalPlaces( 
-				  subBus.getEstimatedVarLoadPointValue().doubleValue(), subBus.getDecimalPlaces().intValue() );           
-			else
-					retVal += CommonUtils.formatDecimalPlaces( 
-						subBus.getEstimatedVarLoadPointValue().doubleValue(), subBus.getDecimalPlaces().intValue() );
-		}
-                
-		return retVal;
-	}
-          
-	case SubBusTableModel.POWER_FACTOR_COLUMN:
-	{
-		return getPowerFactorText( subBus.getPowerFactorValue().doubleValue(), true )
-			+ " / " +
-			getPowerFactorText( subBus.getEstimatedPFValue().doubleValue(), true );
-	}
-
-	case SubBusTableModel.WATTS_COLUMN:
-	{
-		if( subBus.getCurrentWattLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
-			return DASH_LINE;
-		 else {
-			if( subBus.getDecimalPlaces().intValue() == 0 )
-					return new Integer( CommonUtils.formatDecimalPlaces( 
-				   subBus.getCurrentWattLoadPointValue().doubleValue(), subBus.getDecimalPlaces().intValue() ) );             
-			else
-				 return new Double( CommonUtils.formatDecimalPlaces( 
-					  subBus.getCurrentWattLoadPointValue().doubleValue(), subBus.getDecimalPlaces().intValue() ) );
-		 }
-	}
-            
-	case SubBusTableModel.TIME_STAMP_COLUMN:
-	{
-		if( subBus.getLastCurrentVarPointUpdateTime().getTime() <= 
-			com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
-			return DASH_LINE;
-		else
-			return new ModifiedDate( subBus.getLastCurrentVarPointUpdateTime().getTime(), ModifiedDate.FRMT_NOSECS );
-	}
-*/
 	/**
 	 * @return
 	 */

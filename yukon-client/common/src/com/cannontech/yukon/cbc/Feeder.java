@@ -15,8 +15,7 @@ public class Feeder extends StreamableCapObject
 	private Integer currentWattLoadPointID = null;
 	private Double currentWattLoadPointValue = null;
 	private Integer mapLocationID = null;
-   
-   private Double lowerBandWidth = null;
+	private Double lowerBandWidth = null;
    
 	private Integer displayOrder = null;
 	private Boolean newPointDataReceivedFlag = null;
@@ -33,17 +32,17 @@ public class Feeder extends StreamableCapObject
 	private Double varValueBeforeControl = null;
 	private Integer lastCapBankControlledDeviceID= null;
 
-   private Double powerFactorValue = null;
-
-   private Double kVarSolution = null;
-   private Double estimatedPFValue = null;
-   
-   private Integer currentVarPtQuality = null;
+	private Double powerFactorValue = null;
+	private Double kVarSolution = null;
+	private Double estimatedPFValue = null;   
+	private Integer currentVarPtQuality = null;
 	private Boolean waiveControlFlag = null;
    
 
 	//should only contain objects of type CapBankDevice
 	private java.util.Vector ccCapBanks = null;
+	
+	
 /**
  * CapBankDevice constructor comment.
  */
@@ -525,6 +524,57 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	public void setWaiveControlFlag(Boolean boolean1)
 	{
 		waiveControlFlag = boolean1;
+	}
+	
+	
+	
+	
+	public String getRenderName()
+	{
+		return
+			CBC_DISPLAY.getFeederValueAt(this, CBCDisplay.FDR_NAME_COLUMN, null).toString();
+	}
+	
+	public Object getRenderWatts()
+	{
+		return
+			CBC_DISPLAY.getFeederValueAt(this, CBCDisplay.FDR_WATTS_COLUMN, null);
+	}
+	
+	public Object getRenderTimeStamp()
+	{
+		return
+			CBC_DISPLAY.getFeederValueAt(this, CBCDisplay.FDR_TIME_STAMP_COLUMN, null);
+	}
+
+	public String getRenderPF()
+	{
+		return
+			CBC_DISPLAY.getFeederValueAt(this, CBCDisplay.FDR_POWER_FACTOR_COLUMN, null).toString();
+	}
+
+	public String getRenderState()
+	{
+		return
+			CBC_DISPLAY.getFeederValueAt(this, CBCDisplay.FDR_CURRENT_STATE_COLUMN, null).toString();
+	}
+	
+	public String getRenderDailyOps()
+	{
+		return
+			CBC_DISPLAY.getFeederValueAt(this, CBCDisplay.FDR_DAILY_OPERATIONS_COLUMN, null).toString();
+	}
+	
+	public String getRenderTarget()
+	{
+		return
+			CBC_DISPLAY.getFeederValueAt(this, CBCDisplay.FDR_TARGET_COLUMN, null).toString();
+	}
+
+	public String getRenderVarLoad()
+	{
+		return
+			CBC_DISPLAY.getFeederValueAt(this, CBCDisplay.FDR_VAR_LOAD_COLUMN, null).toString();
 	}
 
 }

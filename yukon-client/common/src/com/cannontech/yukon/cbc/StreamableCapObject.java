@@ -7,8 +7,11 @@ package com.cannontech.yukon.cbc;
  */
 public abstract class StreamableCapObject 
 {
-	public static final String STR_NA = "  NA";
-	public static final String DASH_LINE = "  ----";
+	//non-serialized objects
+	public static final transient String STR_NA = "  NA";
+	public static final transient String DASH_LINE = "  ----";
+	public static final transient CBCDisplay CBC_DISPLAY = new CBCDisplay();
+
 	
 	private Integer ccId = null;
 	private String ccCategory = null;

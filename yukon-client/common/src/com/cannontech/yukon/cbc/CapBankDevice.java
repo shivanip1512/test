@@ -443,8 +443,8 @@ public class CapBankDevice extends StreamableCapObject
 	
 	public String getRenderParentFeeder()
 	{
-		return
-			CBC_DISPLAY.getCapBankValueAt(this, CBCDisplay.CB_OP_COUNT_COLUMN).toString();
+		return "";
+			//CBC_DISPLAY.getCapBankValueAt(this, CBCDisplay.CB_OP_COUNT_COLUMN).toString();
 	}
 
 
