@@ -57,6 +57,7 @@ extern unsigned gMccmdDebugLevel;
 extern "C" {
 #endif
 
+typedef map< long, CtiReturnMsg*, less<long> > PILReturnMap;
 
 /* Registers MACS commands with the interpreter
    and registers MCCmd as a package */
@@ -118,15 +119,15 @@ static int DoTwoWayRequest(Tcl_Interp* interp, RWCString& cmd_line);
 
 static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool two_way);
 
-static void HandleReturnMessage(const CtiReturnMsg& msg,
-                         set<long, less<long> >& good_set,
-                         set<long, less<long> >& bad_set,
-                         set<long, less<long> >& device_set );
+static void HandleReturnMessage(CtiReturnMsg* msg,
+				PILReturnMap& good_map,
+				PILReturnMap& bad_map,
+				PILReturnMap& device_map);
 
-static void HandleMessage(const RWCollectable& msg,
-                         set<long, less<long> >& good_set,
-                         set<long, less<long> >& bad_set,
-                         set<long, less<long> >& device_set );
+static void HandleMessage(RWCollectable* msg,
+			  PILReturnMap& good_map,
+			  PILReturnMap& bad_map,
+			  PILReturnMap& device_map);
 
 /* Retrieves the id of a notification group given its name */
 static long GetNotificationGroupID( const RWCString& name );

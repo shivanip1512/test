@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2002/11/13 19:38:16 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2003/02/19 16:03:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,6 +34,7 @@
 #include "pointtypes.h"
 #include "numstr.h"
 #include "mgr_holiday.h"
+#include "dsm2err.h"
 
 #include "wpsc.h"
 #include "xcel.h"
@@ -55,6 +56,7 @@ const RWCRExpr   re_select_list("select[ ]+list[ ]+");
 char* SelectedVariable = "Selected";
 char* GoodListVariable = "SuccessList";
 char* BadListVariable  = "MissedList";
+char* BadStatusVariable = "ErrorList";
 char* ScheduleIDVariable = "ScheduleID";
 char* HolidayScheduleIDVariable = "HolidayScheduleID";
 char* PILRequestPriorityVariable = "MessagePriority";
@@ -1322,9 +1324,10 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
 
     long start = time(NULL);
 
-    set< long, less<long> > device_set;
-    set< long, less<long> > good_set;
-    set< long, less<long> > bad_set;
+    // Some structures to sort the responses
+    PILReturnMap device_map;
+    PILReturnMap good_map;
+    PILReturnMap bad_map;
 
     RWCollectable* msg = NULL;
     RWWaitStatus status;
@@ -1342,19 +1345,19 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
 
                 CtiReturnMsg* ret_msg = (CtiReturnMsg*) msg;
                 DumpReturnMessage(*ret_msg);
-                HandleReturnMessage(*ret_msg, good_set, bad_set, device_set);
+                HandleReturnMessage(ret_msg, good_map, bad_map, device_map);
 
                 // have we received everything expected?
-                if( device_set.size() == 0 )
+                if( device_map.size() == 0 )
                     break;
             }
             else
             {
-                RWCString err("Received unknown message __LINE__, __FILE__");
-                WriteOutput(err.data());
+	      delete msg;
+              RWCString err("Received unknown message __LINE__, __FILE__");
+              WriteOutput(err.data());
             }
 
-            delete msg;
             msg = NULL;
         }
 
@@ -1372,7 +1375,6 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
             WriteOutput(info);
             break;
         }
-
     } while(true);
 
     delete msg;
@@ -1380,40 +1382,49 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
     // set up good and bad tcl lists
     Tcl_Obj* good_list = Tcl_NewListObj(0,NULL);
     Tcl_Obj* bad_list = Tcl_NewListObj(0,NULL);
+    Tcl_Obj* status_list = Tcl_NewListObj(0,NULL);
+
     Tcl_SetVar2Ex(interp, GoodListVariable, NULL, good_list, 0 );
     Tcl_SetVar2Ex(interp, BadListVariable, NULL, bad_list, 0 );
+    Tcl_SetVar2Ex(interp, BadStatusVariable, NULL, status_list, 0);
 
-    set< long, less<long> >::iterator s_iter;
+    PILReturnMap::iterator m_iter;
+    RWCString dev_name;
 
-    for( s_iter = good_set.begin();
-       s_iter != good_set.end();
-       s_iter++ )
+    for( m_iter = good_map.begin();
+         m_iter != good_map.end();
+         m_iter++ )
     {
-        RWCString dev_name;
-        GetDeviceName(*s_iter,dev_name);
+        GetDeviceName(m_iter->first,dev_name);
+	delete m_iter->second;
         Tcl_ListObjAppendElement(interp, good_list, Tcl_NewStringObj(dev_name, -1));
     }
 
-    for( s_iter = bad_set.begin();
-       s_iter != bad_set.end();
-       s_iter++ )
+    for( m_iter = bad_map.begin();
+         m_iter != bad_map.end();
+         m_iter++ )
     {
-        RWCString dev_name;
-        GetDeviceName(*s_iter,dev_name);
+        GetDeviceName(m_iter->first,dev_name);
+	
         Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name, -1));
+	Tcl_ListObjAppendElement(interp, status_list, 
+				 Tcl_NewStringObj(FormatError(m_iter->second->Status()),-1));
+	delete m_iter->second;
     }
 
     // any device id's left in this set must have timed out
-    if( device_set.size() > 0 )
+    if( device_map.size() > 0 )
     {
-
-        for( s_iter = device_set.begin();
-           s_iter != device_set.end();
-           s_iter++ )
+        for( m_iter = device_map.begin();
+             m_iter != device_map.end();
+             m_iter++ )
         {
-            RWCString dev_name;
-            GetDeviceName( *s_iter,dev_name);
+            GetDeviceName(m_iter->first,dev_name);
+
             Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name, -1));
+	    Tcl_ListObjAppendElement(interp, status_list, 
+				     Tcl_NewStringObj(FormatError(m_iter->second->Status()),-1));
+       	    delete m_iter->second;
         }
     }
 
@@ -1430,40 +1441,40 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
 /***
     Handles the sorting of an incoming message form PIL
 ****/
-void HandleMessage(const RWCollectable& msg,
-                   set<long, less<long> >& good_set,
-                   set<long, less<long> >& bad_set,
-                   set<long, less<long> >& device_set )
+void HandleMessage(RWCollectable* msg,
+		   PILReturnMap& good_map,
+		   PILReturnMap& bad_map,
+		   PILReturnMap& device_map )
 {
-    if( msg.isA() == MSG_PCRETURN )
+    if( msg->isA() == MSG_PCRETURN )
     {
-        HandleReturnMessage( (CtiReturnMsg&) msg, good_set, bad_set, device_set);
+        HandleReturnMessage( (CtiReturnMsg*) msg, good_map, bad_map, device_map);
     }
-    if( msg.isA() == MSG_MULTI )
+    if( msg->isA() == MSG_MULTI )
     {
-        CtiMultiMsg& multi_msg = (CtiMultiMsg&) msg;
+        CtiMultiMsg* multi_msg = (CtiMultiMsg*) msg;
 
-        for( unsigned i = 0; i < multi_msg.getData( ).entries( ); i++ )
+        for( unsigned i = 0; i < multi_msg->getData( ).entries( ); i++ )
         {
-            HandleMessage( *(multi_msg.getData()[i]), good_set, bad_set, device_set);
+            HandleMessage( multi_msg->getData()[i], good_map, bad_map, device_map);
         }
     }
     else
     {
         RWCString warn("received an unkown message with class id: ");
-        warn += CtiNumStr(msg.isA());
+        warn += CtiNumStr(msg->isA());
         WriteOutput(warn);
     }
 }
 
-void HandleReturnMessage(const CtiReturnMsg& msg,
-                         set<long, less<long> >& good_set,
-                         set<long, less<long> >& bad_set,
-                         set<long, less<long> >& device_set )
+void HandleReturnMessage(CtiReturnMsg* msg,
+			 PILReturnMap& good_map,
+			 PILReturnMap& bad_map,
+			 PILReturnMap& device_map )
 {
-    long dev_id = msg.DeviceId();
+    long dev_id = msg->DeviceId();
 
-    if( good_set.find(dev_id) != good_set.end() )
+    if( good_map.find(dev_id) != good_map.end() )
     {
         RWCString warn("received a message for a device already in the good list, id: ");
         warn += CtiNumStr(dev_id);
@@ -1471,24 +1482,33 @@ void HandleReturnMessage(const CtiReturnMsg& msg,
     }
     else
     {
-        if( msg.ExpectMore() )
+        if( msg->ExpectMore() )
         {
-            device_set.insert(dev_id);
+	  device_map.insert(PILReturnMap::value_type(dev_id, msg));
         }
         else
         {
-            if( msg.Status() == 0 )
+	  PILReturnMap::iterator pos;
+            if( msg->Status() == 0 )
             {
-                if( bad_set.erase(dev_id) > 0 )
+	        pos = bad_map.find(dev_id);
+                if(pos != bad_map.end())
                 {
                     RWCString warn("moved device from bad list to good list, id: ");
                     warn += CtiNumStr(dev_id);
                     WriteOutput(warn);
+		    delete pos->second;
+		    bad_map.erase(pos);
                 }
 
-                device_set.erase(dev_id);
+		pos = device_map.find(dev_id);
+		if(pos != device_map.end())
+		{
+		  delete pos->second;
+		  device_map.erase(pos);
+		}
 
-                if( !good_set.insert(dev_id).second )
+                if( !good_map.insert(PILReturnMap::value_type(dev_id,msg)).second )
                 {
                     RWCString warn("device already in good list, id: ");
                     warn += CtiNumStr(dev_id);
@@ -1497,9 +1517,14 @@ void HandleReturnMessage(const CtiReturnMsg& msg,
             }
             else
             {
-                device_set.erase(dev_id);
+	      pos = device_map.find(dev_id);
+	      if(pos != device_map.end())
+	      {
+		delete pos->second;
+		device_map.erase(pos);
+	      }
 
-                if( !bad_set.insert(dev_id).second)
+                if( !bad_map.insert(PILReturnMap::value_type(dev_id,msg)).second)
                 {
                     RWCString warn("device already in bad list, id: ");
                     warn += CtiNumStr(dev_id);
