@@ -1,7 +1,6 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.cache.functions.EnergyCompanyFuncs" %>
 <%@ page import="com.cannontech.database.cache.functions.YukonUserFuncs" %>
-<%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
 <%
 	if (request.getParameter("failed") != null)
 		errorMsg = "Failed to log into member energy company";

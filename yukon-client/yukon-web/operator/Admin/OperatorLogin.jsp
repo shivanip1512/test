@@ -1,5 +1,4 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
 <%@ page import="com.cannontech.user.UserUtils" %>
 <%
 	int userID = -1;

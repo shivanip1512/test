@@ -1,6 +1,5 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.bean.InventoryBean" %>
-<%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
 <%
 	boolean inWizard = ((String) session.getAttribute(ServletUtils.ATT_REFERRER)).indexOf("Wizard=true") >= 0;
 	if (!inWizard && accountInfo == null) {
