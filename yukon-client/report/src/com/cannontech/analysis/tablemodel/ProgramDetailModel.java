@@ -61,7 +61,7 @@ public class ProgramDetailModel extends ReportModelBase
 	public ProgramDetailModel(long stopTime_)
 	{
 		//use the stop (max) time for both date entries.
-		super(ReportTypes.EC_ACTIVITY_LOG_DATA, stopTime_, stopTime_);//default type
+		super(Long.MIN_VALUE, stopTime_);//default type
 	}
 
 	/**
@@ -70,16 +70,7 @@ public class ProgramDetailModel extends ReportModelBase
 	 */
 	public ProgramDetailModel()
 	{
-		this(ReportTypes.EC_ACTIVITY_LOG_DATA);//default report type
-	}
-	/**
-	 * Constructor class
-	 * @param statType_ DynamicPaoStatistics.StatisticType
-	 */
-	public ProgramDetailModel(int reportType_)
-	{
-		super();//default type
-		setReportType(reportType_);		
+		super();
 	}
 	/**
 	 * Constructor class
@@ -87,7 +78,7 @@ public class ProgramDetailModel extends ReportModelBase
 	 */
 	public ProgramDetailModel(int [] ecIDs_)
 	{
-		this(ReportTypes.EC_ACTIVITY_LOG_DATA);//default type
+		this();
 		setECIDs(ecIDs_);
 	}
 	/**

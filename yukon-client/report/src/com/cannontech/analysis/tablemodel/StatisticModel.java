@@ -1,9 +1,6 @@
 package com.cannontech.analysis.tablemodel;
 
-
-
 import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.data.statistic.StatisticData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -31,11 +28,11 @@ public class StatisticModel extends ReportModelBase
 	protected final int NUMBER_COLUMNS = 5;
 	
 	/** Enum values for column representation */
-	private static final int PAO_NAME_COLUMN = 0;
-	private static final int TOTAL_ATTEMPTS_COLUMN = 1;
-	private static final int DLC_ATTEMPTS_OR_ERRORS_COLUMN = 2;
-	private static final int DLC_OR_PORT_OR_COMMERR_PERCENT_COLUMN = 3;
-	private static final int SUCC_COMM_PERC_COLUMN = 4;
+	public static final int PAO_NAME_COLUMN = 0;
+	public static final int TOTAL_ATTEMPTS_COLUMN = 1;
+	public static final int DLC_ATTEMPTS_OR_ERRORS_COLUMN = 2;
+	public static final int DLC_OR_PORT_OR_COMMERR_PERCENT_COLUMN = 3;
+	public static final int SUCC_COMM_PERC_COLUMN = 4;
 
 	/** String values for column representation */
 	//Carrier
@@ -62,47 +59,53 @@ public class StatisticModel extends ReportModelBase
 	/** YukonPaobject.category value criteria, null results in all categories */
 	private String category = null;
 	
+	public static final int STAT_CARRIER_COMM_DATA = 0;
+	public static final int STAT_COMM_CHANNEL_DATA = 1;
+	public static final int STAT_DEVICE_COMM_DATA = 2;
+	public static final int STAT_TRANS_COMM_DATA = 3;
+	private int statType = STAT_CARRIER_COMM_DATA;
+
 	/** DynamicPaoStatistics.statisticalType value critera, null results in all? */
 	/** valid types are: Daily | Yesterday | Monthly | LastMonth | HourXX  */
-	public static String DAILY_STAT_TYPE_STRING = "Daily";
-	public static String YESTERDAY_STAT_TYPE_STRING = "Yesterday";
-	public static String MONTHLY_STAT_TYPE_STRING = "Monthly";
-	public static String LASTMONTH_STAT_TYPE_STRING = "LastMonth";
-	private String statType = null;	
+	public static String DAILY_STAT_PERIOD_TYPE_STRING = "Daily";
+	public static String YESTERDAY_STAT_PERIOD_TYPE_STRING = "Yesterday";
+	public static String MONTHLY_STAT_PERIOD_TYPE_STRING = "Monthly";
+	public static String LASTMONTH_STAT_PERIOD_TYPE_STRING = "LastMonth";
+	private String statPeriodType = null;	
 
 	//Valid REPORTTYPE values are: CARRIER_COMM_DATA, COMM_CHANNEL_DATA, DEVICE_COMM_DATA, TRANS_COMM_DATA
 	
 	/**
 	 * Constructor class
-	 * @param statType_ DynamicPaoStatistics.StatisticType
+	 * @param statPeriodType_ DynamicPaoStatistics.StatisticType
 	 */
 	
 	public StatisticModel()
 	{
-		this(DAILY_STAT_TYPE_STRING, ReportTypes.STAT_CARRIER_COMM_DATA);//default type		
+		this(DAILY_STAT_PERIOD_TYPE_STRING, STAT_CARRIER_COMM_DATA);//default type		
 	}
 
-	public StatisticModel(String statType_)
+	public StatisticModel(String statPeriodType_)
 	{
-		this(statType_, ReportTypes.STAT_CARRIER_COMM_DATA);//default type		
+		this(statPeriodType_, STAT_CARRIER_COMM_DATA);//default type		
 	}
 	
-	public StatisticModel(int reportType_)
+	public StatisticModel(int statType_)
 	{
-		this(DAILY_STAT_TYPE_STRING, reportType_);//default type		
+		this(DAILY_STAT_PERIOD_TYPE_STRING, statType_);//default type		
 	}
 	
 	/**
 	 * Constructor class
 	 * @param category_ YukonPaobject.category
 	 * @param paoClass_ YukonPaobject.paoClass
-	 * @param statType_ DynamicPaoStatistics.StatisticType
+	 * @param statPeriodType_ DynamicPaoStatistics.StatisticType
 	 */
-	public StatisticModel(String statType_, int reportType_)
+	public StatisticModel(String statPeriodType_, int statType_)
 	{
 		super();
+		setStatPeriodType(statPeriodType_);
 		setStatType(statType_);
-		setReportType(reportType_);		
 	}
 
 	/* (non-Javadoc)
@@ -188,8 +191,8 @@ public class StatisticModel extends ReportModelBase
 			sql.append(" AND PAOCLASS = '" + getPaoClass() +"' ");
 		if (getCategory() != null)
 			sql.append(" AND PAO.CATEGORY = '" + getCategory() + "' "); 
-		if (getStatType() != null )
-			sql.append(" AND DPS.STATISTICTYPE='" + getStatType() + "' ");
+		if (getStatPeriodType() != null )
+			sql.append(" AND DPS.STATISTICTYPE='" + getStatPeriodType() + "' ");
 			
 		
 		sql.append(" AND (STARTDATETIME >= ? ) ORDER BY PAO.PAOName");
@@ -230,18 +233,18 @@ public class StatisticModel extends ReportModelBase
 	{
 		if( category == null )
 		{
-			switch (getReportType())
+			switch (getStatType())
 			{
-				case ReportTypes.STAT_CARRIER_COMM_DATA:
+				case STAT_CARRIER_COMM_DATA:
 					category = PAOGroups.STRING_CAT_DEVICE;
 					break;
-				case ReportTypes.STAT_COMM_CHANNEL_DATA:
+				case STAT_COMM_CHANNEL_DATA:
 					category = PAOGroups.STRING_CAT_PORT;
 					break;
-				case ReportTypes.STAT_DEVICE_COMM_DATA:
+				case STAT_DEVICE_COMM_DATA:
 					category = PAOGroups.STRING_CAT_DEVICE;
 					break;
-				case ReportTypes.STAT_TRANS_COMM_DATA:
+				case STAT_TRANS_COMM_DATA:
 					category = PAOGroups.STRING_CAT_DEVICE;
 					break;
 				default:
@@ -259,18 +262,18 @@ public class StatisticModel extends ReportModelBase
 	{
 		if (paoClass == null)
 		{
-			switch (getReportType())
+			switch (getStatType())
 			{
-				case ReportTypes.STAT_CARRIER_COMM_DATA:
+				case STAT_CARRIER_COMM_DATA:
 					paoClass = DeviceClasses.STRING_CLASS_CARRIER;
 					break;
-				case ReportTypes.STAT_COMM_CHANNEL_DATA:
+				case STAT_COMM_CHANNEL_DATA:
 					paoClass = PAOGroups.STRING_CAT_PORT;
 					break;
-				case ReportTypes.STAT_DEVICE_COMM_DATA:
+				case STAT_DEVICE_COMM_DATA:
 					paoClass = null;
 					break;					
-				case ReportTypes.STAT_TRANS_COMM_DATA:
+				case STAT_TRANS_COMM_DATA:
 					paoClass = DeviceClasses.STRING_CLASS_TRANSMITTER;
 					break;
 				default:
@@ -281,12 +284,12 @@ public class StatisticModel extends ReportModelBase
 	}
 
 	/**
-	 * Return the statType (DynamicPaoStatistics.statisticType)
-	 * @return String statType
+	 * Return the statPeriodType (DynamicPaoStatistics.statisticType)
+	 * @return String statPeriodType
 	 */
-	public String getStatType()
+	public String getStatPeriodType()
 	{
-		return statType;
+		return statPeriodType;
 	}
 
 	/**
@@ -308,13 +311,13 @@ public class StatisticModel extends ReportModelBase
 	}
 
 	/**
-	 * Set the statType
+	 * Set the statPeriodType
 	 * Also sets the startTime and stopTime based on the statisticType.
-	 * @param String statType_
+	 * @param String statPeriodType_
 	 */
-	public void setStatType(String statType_)
+	public void setStatPeriodType(String statPeriodType_)
 	{
-		if( statType_.equalsIgnoreCase(DAILY_STAT_TYPE_STRING))
+		if( statPeriodType_.equalsIgnoreCase(DAILY_STAT_PERIOD_TYPE_STRING))
 		{
 			java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 			cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
@@ -326,7 +329,7 @@ public class StatisticModel extends ReportModelBase
 			cal.add(java.util.Calendar.DATE, 1);
 			setStopTime(cal.getTime().getTime());
 		}
-		else if (statType_.equalsIgnoreCase(MONTHLY_STAT_TYPE_STRING))
+		else if (statPeriodType_.equalsIgnoreCase(MONTHLY_STAT_PERIOD_TYPE_STRING))
 		{
 			java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 			cal.set(java.util.Calendar.DAY_OF_MONTH, 1);
@@ -339,7 +342,7 @@ public class StatisticModel extends ReportModelBase
 			setStopTime(cal.getTime().getTime());
 			
 		}
-		else if (statType_.equalsIgnoreCase(YESTERDAY_STAT_TYPE_STRING))
+		else if (statPeriodType_.equalsIgnoreCase(YESTERDAY_STAT_PERIOD_TYPE_STRING))
 		{
 			java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 			cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
@@ -351,7 +354,7 @@ public class StatisticModel extends ReportModelBase
 			cal.add(java.util.Calendar.DATE, 1);
 			setStopTime(cal.getTime().getTime());
 		}
-		else if (statType_.equalsIgnoreCase(LASTMONTH_STAT_TYPE_STRING))
+		else if (statPeriodType_.equalsIgnoreCase(LASTMONTH_STAT_PERIOD_TYPE_STRING))
 		{
 			java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 			cal.set(java.util.Calendar.DAY_OF_MONTH, 1);
@@ -365,7 +368,7 @@ public class StatisticModel extends ReportModelBase
 			setStopTime(cal.getTime().getTime());
 	
 		}		
-		statType = statType_;
+		statPeriodType = statPeriodType_;
 	}
 	
 	/* (non-Javadoc)
@@ -373,22 +376,22 @@ public class StatisticModel extends ReportModelBase
 	 */
 	public String getDateRangeString()
 	{
-		if( getStatType().equalsIgnoreCase(DAILY_STAT_TYPE_STRING))
+		if( getStatPeriodType().equalsIgnoreCase(DAILY_STAT_PERIOD_TYPE_STRING))
 		{
 			java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM dd, yyyy");
 			return "Daily: " + format.format(new java.util.Date(getStartTime()));
 		}
-		else if( getStatType().equalsIgnoreCase(YESTERDAY_STAT_TYPE_STRING))
+		else if( getStatPeriodType().equalsIgnoreCase(YESTERDAY_STAT_PERIOD_TYPE_STRING))
 		{
 			java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM dd, yyyy");
 			return "Yesterday: " + format.format(new java.util.Date(getStartTime()));
 		}
-		else if( getStatType().equalsIgnoreCase(MONTHLY_STAT_TYPE_STRING))
+		else if( getStatPeriodType().equalsIgnoreCase(MONTHLY_STAT_PERIOD_TYPE_STRING))
 		{
 			java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMMMM yyyy");
 			return "Monthly: " + format.format(new java.util.Date(getStartTime()));
 		}
-		else if( getStatType().equalsIgnoreCase(LASTMONTH_STAT_TYPE_STRING))
+		else if( getStatPeriodType().equalsIgnoreCase(LASTMONTH_STAT_PERIOD_TYPE_STRING))
 		{
 			java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMMMM yyyy");
 			return "Previous Month: " + format.format(new java.util.Date(getStartTime()));
@@ -413,23 +416,25 @@ public class StatisticModel extends ReportModelBase
 					return statData.getAttempts();
 
 				case DLC_ATTEMPTS_OR_ERRORS_COLUMN:
-					if( getReportType() == ReportTypes.STAT_CARRIER_COMM_DATA)
+					if( getStatType() == STAT_CARRIER_COMM_DATA)
 						return statData.getDlcAttempts();
 						
-					else if( getReportType() == ReportTypes.STAT_COMM_CHANNEL_DATA ||  getReportType() == ReportTypes.STAT_TRANS_COMM_DATA)
+					else if( getStatType() == STAT_COMM_CHANNEL_DATA ||  
+							getStatType() == STAT_TRANS_COMM_DATA)
 						return statData.getCommErrors();
 						
-					else if( getReportType() == ReportTypes.STAT_DEVICE_COMM_DATA)
+					else if( getStatType() == STAT_DEVICE_COMM_DATA)
 						return statData.getTotalErrs();
 					break;
 				case DLC_OR_PORT_OR_COMMERR_PERCENT_COLUMN:
-					if( getReportType() == ReportTypes.STAT_CARRIER_COMM_DATA)
+					if( getStatType() == STAT_CARRIER_COMM_DATA)
 						return statData.getDlcPercent();
 		
-					else if( getReportType() == ReportTypes.STAT_COMM_CHANNEL_DATA ||  getReportType() == ReportTypes.STAT_TRANS_COMM_DATA)
+					else if( getStatType() == STAT_COMM_CHANNEL_DATA ||  
+							getStatType() == STAT_TRANS_COMM_DATA)
 						return statData.getPortPercent();
 		
-					else if( getReportType() == ReportTypes.STAT_DEVICE_COMM_DATA)
+					else if( getStatType() == STAT_DEVICE_COMM_DATA)
 						return statData.getCommErrPercent();
 					break;
 				case SUCC_COMM_PERC_COLUMN:
@@ -446,9 +451,9 @@ public class StatisticModel extends ReportModelBase
 	{
 		if( columnNames == null)
 		{
-			switch (getReportType())
+			switch (getStatType())
 			{
-				case ReportTypes.STAT_CARRIER_COMM_DATA:
+				case STAT_CARRIER_COMM_DATA:
 					columnNames = new String[]{
 						MCT_NAME_STRING,
 						TOTAL_ATTEMPTS_STRING,
@@ -457,7 +462,7 @@ public class StatisticModel extends ReportModelBase
 						SUCC_COMM_PERC_STRING
 					};				
 					break;
-				case ReportTypes.STAT_COMM_CHANNEL_DATA:
+				case STAT_COMM_CHANNEL_DATA:
 					columnNames = new String[]{
 					   PORT_NAME_STRING,
 					   TOTAL_ATTEMPTS_STRING,
@@ -466,7 +471,7 @@ public class StatisticModel extends ReportModelBase
 					   SUCC_COMM_PERC_STRING
 					};
 					break;
-				case ReportTypes.STAT_DEVICE_COMM_DATA:
+				case STAT_DEVICE_COMM_DATA:
 					columnNames = new String[]{
 						DEVICE_NAME_STRING,
 						TOTAL_ATTEMPTS_STRING,
@@ -475,7 +480,7 @@ public class StatisticModel extends ReportModelBase
 						SUCC_COMM_PERC_STRING
 					};
 					break;
-				case ReportTypes.STAT_TRANS_COMM_DATA:
+				case STAT_TRANS_COMM_DATA:
 					columnNames = new String[]{
 						TRANSMITTER_NAME_STRING,
 						TOTAL_ATTEMPTS_STRING,
@@ -496,12 +501,12 @@ public class StatisticModel extends ReportModelBase
 	{
 		if( columnTypes == null)
 		{
-			switch (getReportType())
+			switch (getStatType())
 			{
-				case ReportTypes.STAT_CARRIER_COMM_DATA:
-				case ReportTypes.STAT_DEVICE_COMM_DATA:
-				case ReportTypes.STAT_COMM_CHANNEL_DATA:
-				case ReportTypes.STAT_TRANS_COMM_DATA:			
+				case STAT_CARRIER_COMM_DATA:
+				case STAT_DEVICE_COMM_DATA:
+				case STAT_COMM_CHANNEL_DATA:
+				case STAT_TRANS_COMM_DATA:			
 					columnTypes = new Class[]{
 						String.class,
 						Integer.class,
@@ -522,27 +527,18 @@ public class StatisticModel extends ReportModelBase
 	{
 		if( columnProperties == null)
 		{
-			switch (getReportType())
+			switch (getStatType())
 			{
-				case ReportTypes.STAT_CARRIER_COMM_DATA:
-				case ReportTypes.STAT_DEVICE_COMM_DATA:
+				case STAT_CARRIER_COMM_DATA:
+				case STAT_DEVICE_COMM_DATA:
+				case STAT_COMM_CHANNEL_DATA:
+				case STAT_TRANS_COMM_DATA:
 					columnProperties = new ColumnProperties[]{
-						//posX, posY, width, height, numberFormatString
-						new ColumnProperties(0, 1, 210, 20, null),
-						new ColumnProperties(210, 1, 60, 20, "#,##0"),
-						new ColumnProperties(270, 1, 60, 20, "#,##0"),
-						new ColumnProperties(330, 1, 60, 20, "##0.00%"),
-						new ColumnProperties(390, 1, 110, 20, "##0.00%")
-					};
-					break;
-				case ReportTypes.STAT_COMM_CHANNEL_DATA:
-				case ReportTypes.STAT_TRANS_COMM_DATA:
-					columnProperties = new ColumnProperties[]{
-						new ColumnProperties(0, 1, 175, 20, null),
-						new ColumnProperties(175, 1, 75, 20, "#,##0"),
-						new ColumnProperties(240, 1, 50, 20, "#,##0"),
-						new ColumnProperties(305, 1, 50, 20, "##0.00%"),
-						new ColumnProperties(370, 1, 110, 20, "##0.00%")
+						new ColumnProperties(0, 1, 200, 18, null),
+						new ColumnProperties(200, 1, 80, 18, "#,##0"),
+						new ColumnProperties(280, 1, 80, 18, "#,##0"),
+						new ColumnProperties(360, 1, 90, 18, "##0.00%"),
+						new ColumnProperties(450, 1, 100, 18, "##0.00%")
 					};
 					break;
 			}
@@ -555,18 +551,18 @@ public class StatisticModel extends ReportModelBase
 	 */
 	public String getTitleString()
 	{
-		switch (getReportType())
+		switch (getStatType())
 		{
-			case ReportTypes.STAT_CARRIER_COMM_DATA :
+			case STAT_CARRIER_COMM_DATA :
 				title = "CARRIER COMMUNICATION STATISTICS";
 				break;
-			case ReportTypes.STAT_COMM_CHANNEL_DATA:
+			case STAT_COMM_CHANNEL_DATA:
 				title = "COMMUNICATION CHANNEL STATISTICS";
 				break;
-			case ReportTypes.STAT_DEVICE_COMM_DATA:
+			case STAT_DEVICE_COMM_DATA:
 				title = "DEVICE COMMUNICATION STATISTICS";
 				break;
-			case ReportTypes.STAT_TRANS_COMM_DATA:
+			case STAT_TRANS_COMM_DATA:
 				title = "TRANSMITTER COMMUNICATION STATISTICS";
 				break;
 			default :
@@ -574,4 +570,20 @@ public class StatisticModel extends ReportModelBase
 		}
 		return title;
 	}
+	/**
+	 * @return
+	 */
+	public int getStatType()
+	{
+		return statType;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setStatType(int i)
+	{
+		statType = i;
+	}
+
 }

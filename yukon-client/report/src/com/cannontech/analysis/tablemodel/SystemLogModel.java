@@ -1,12 +1,17 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.analysis.ReportTypes;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.point.SystemLog;
 
 /**
@@ -14,7 +19,7 @@ import com.cannontech.database.db.point.SystemLog;
  * SystemLogModel TableModel object
  * Innerclass object for row data is SystemLog: 
  *  java.util.Date dateTime	- SystemLog.dateTime
- *  Integer pointID 		- SystemLog.pointID
+ *  String pointName 		- SystemLog.pointID
  *  Integer priority 		- SystemLog.priority
  *  String action 			- SystemLog.action
  *  String description 		- SystemLog.description
@@ -30,15 +35,17 @@ public class SystemLogModel extends ReportModelBase
 	public final static int DATE_COLUMN = 0;
 	public final static int TIME_COLUMN = 1;
 	public final static int POINT_ID_COLUMN = 2;
-	public final static int PRIORITY_COLUMN = 3;
-	public final static int ACTION_COLUMN = 4;
-	public final static int DESCRIPTION_COLUMN = 5;	
-	public final static int USERNAME_COLUMN = 6;
+	public final static int POINT_NAME_COLUMN = 3;
+	public final static int PRIORITY_COLUMN = 4;
+	public final static int USERNAME_COLUMN = 5;
+	public final static int ACTION_COLUMN = 6;
+	public final static int DESCRIPTION_COLUMN = 7;	
 
 	/** String values for column representation */
 	public final static String DATE_STRING = "Date";
 	public final static String TIME_STRING = "Time";
 	public final static String POINT_ID_STRING = "PointID";
+	public final static String POINT_NAME_STRING = "Point";
 	public final static String PRIORITY_STRING = "Priority";
 	public final static String ACTION_STRING = "Action";
 	public final static String DESCRIPTION_STRING = "Description";
@@ -70,7 +77,7 @@ public class SystemLogModel extends ReportModelBase
 	 */
 	public SystemLogModel(long startTime_, long stopTime_)
 	{
-		this(startTime_, stopTime_, null, null, ReportTypes.SYSTEM_LOG_DATA);
+		this(startTime_, stopTime_, null, null);
 	}	
 	/**
 	 * Constructor class
@@ -80,8 +87,16 @@ public class SystemLogModel extends ReportModelBase
 	 */
 	public SystemLogModel(long startTime_, long stopTime_, Integer logType_)
 	{
-		this(startTime_, stopTime_, logType_, null, ReportTypes.SYSTEM_LOG_DATA);
+		this(startTime_, stopTime_, logType_, null);
 	}
+	/**
+	 * Constructor class
+	 * @param logType_ SYSTEMLOG.pointID
+	 */
+	public SystemLogModel()
+	{
+		super();
+	}	
 	/**
 	 * Constructor class
 	 * @param startTime_ SYSTEMLOG.dateTime
@@ -91,33 +106,12 @@ public class SystemLogModel extends ReportModelBase
 	 */
 	public SystemLogModel(long startTime_, long stopTime_, Integer logType_, Integer pointID_)
 	{
-		this(startTime_, stopTime_, logType_, pointID_ , ReportTypes.SYSTEM_LOG_DATA);
-	}
-	/**
-	 * Constructor class
-	 * @param logType_ SYSTEMLOG.pointID
-	 */
-	public SystemLogModel()
-	{
-		super();
-		setReportType(ReportTypes.SYSTEM_LOG_DATA);
-	}	
-	/**
-	 * Constructor class
-	 * @param startTime_ SYSTEMLOG.dateTime
-	 * @param stopTime_ SYSTEMLOG.dateTime
-	 * @param pointID_ SYSTEM.pointID
-	 * @param logType_ SYSTEMLOG.type
-	 */
-	public SystemLogModel(long startTime_, long stopTime_, Integer logType_, Integer pointID_, int reportType_)
-	{
 		super();
 		setStartTime(startTime_);
 		setStopTime(stopTime_);
 		if( logType_!= null)
 			setLogType(logType_.intValue());
 		setPointID(pointID_);
-		setReportType(reportType_);
 	}
 	/**
 	 * Add SystemLog objects to data, retrieved from rset.
@@ -166,7 +160,7 @@ public class SystemLogModel extends ReportModelBase
 			// rather than the SYSTEMLOG.type value == 3 (LOADMANAGMENT)	SN / COREY
 			if(this instanceof LMControlLogModel)
 			{
-				sql.append(" AND PAOCLASS = 'GROUP' ");
+				sql.append(" AND PAOCLASS = '" + DeviceClasses.STRING_CLASS_GROUP + "' ");
 				if( getPaoIDs() != null)
 				{
 					sql.append(" AND PAO.PAOBJECTID IN (" + getPaoIDs()[0]);
@@ -283,20 +277,6 @@ public class SystemLogModel extends ReportModelBase
 	 */
 	public int[] getLogTypes()
 	{
-		if( logTypes == null )
-		{
-			switch (getReportType())
-			{
-				case ReportTypes.SYSTEM_LOG_DATA:
-					setLogTypes(null);
-					break;
-				case ReportTypes.LM_CONTROL_LOG_DATA:
-					setLogType(SystemLog.TYPE_LOADMANAGEMENT);
-					break;
-				default:
-					return logTypes;
-			}	
-		}
 		return logTypes;
 	}
 
@@ -357,19 +337,30 @@ public class SystemLogModel extends ReportModelBase
 			switch( columnIndex)
 			{
 				case DATE_COLUMN:
-					return sl.getDateTime();
+				{
+					//Set the date to the begining of the day so we can "group" by date
+					GregorianCalendar cal = new GregorianCalendar();
+					cal.setTime(sl.getDateTime());
+					cal.set(Calendar.HOUR, 0);
+					cal.set(Calendar.MINUTE, 0);
+					cal.set(Calendar.SECOND, 0);
+					cal.set(Calendar.MILLISECOND, 0);
+					return cal.getTime();
+				}
 				case TIME_COLUMN:
 					return sl.getDateTime();
 				case POINT_ID_COLUMN:
 					return sl.getPointID();
+				case POINT_NAME_COLUMN:
+					return PointFuncs.getPointName(sl.getPointID().intValue());
 				case PRIORITY_COLUMN:
 					return sl.getPriority();
+				case USERNAME_COLUMN:
+					return sl.getUserName();
 				case ACTION_COLUMN:
 					return sl.getAction();					
 				case DESCRIPTION_COLUMN:
 					return sl.getDescription();
-				case USERNAME_COLUMN:
-					return sl.getUserName();
 			}
 		}
 		return null;
@@ -385,10 +376,11 @@ public class SystemLogModel extends ReportModelBase
 				DATE_STRING,
 				TIME_STRING,
 				POINT_ID_STRING,
+				POINT_NAME_STRING,
 				PRIORITY_STRING,
+				USERNAME_STRING,
 				ACTION_STRING,
-				DESCRIPTION_STRING,
-				USERNAME_STRING
+				DESCRIPTION_STRING
 			};
 		}
 		return columnNames;
@@ -404,6 +396,7 @@ public class SystemLogModel extends ReportModelBase
 				java.util.Date.class,
 				java.util.Date.class,
 				Integer.class,
+				String.class,
 				Integer.class,
 				String.class,
 				String.class,
@@ -422,13 +415,14 @@ public class SystemLogModel extends ReportModelBase
 		{
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(100, 1, 100, 18, "MMMMM dd, yyyy"),
+				new ColumnProperties(0, 1, 100, 18, "MMMMM dd, yyyy"),
 				new ColumnProperties(0, 1, 50, 18, "hh:mm:ss"),
-				new ColumnProperties(50, 1, 50, 18, null),
-				new ColumnProperties(100, 1, 50, 18, null),
-				new ColumnProperties(150, 1, 200, 18, null),
-				new ColumnProperties(350, 1, 200, 18, null),
-				new ColumnProperties(550, 1, 65, 18, null)
+				new ColumnProperties(50, 1, 100, 18, "#"),
+				new ColumnProperties(50, 1, 100, 18, null),
+				new ColumnProperties(150, 1, 40, 18, "#"),
+				new ColumnProperties(190, 1, 90, 18, null),
+				new ColumnProperties(280, 1, 200, 18, null),
+				new ColumnProperties(480, 1, 230, 18, null)
 			};				
 		}
 		return columnProperties;

@@ -1,7 +1,6 @@
 package com.cannontech.analysis.tablemodel;
 
 import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.analysis.ReportTypes;
 import com.cannontech.database.db.point.SystemLog;
 
 /**
@@ -45,7 +44,7 @@ public class LMControlLogModel extends SystemLogModel
 	 */
 	public LMControlLogModel(long startTime_, long stopTime_)
 	{
-		super(startTime_, stopTime_, null, null, ReportTypes.LM_CONTROL_LOG_DATA);
+		super(startTime_, stopTime_, null, null);
 	}	
 	/**
 	 * Constructor class
@@ -55,8 +54,16 @@ public class LMControlLogModel extends SystemLogModel
 	 */
 	public LMControlLogModel(long startTime_, long stopTime_, Integer logType_)
 	{
-		this(startTime_, stopTime_, logType_, null, ReportTypes.LM_CONTROL_LOG_DATA);
+		this(startTime_, stopTime_, logType_, null);
 	}
+	/**
+	 * Constructor class
+	 * @param logType_ SYSTEMLOG.pointID
+	 */
+	public LMControlLogModel()
+	{
+		super();
+	}	
 	/**
 	 * Constructor class
 	 * @param startTime_ SYSTEMLOG.dateTime
@@ -66,27 +73,7 @@ public class LMControlLogModel extends SystemLogModel
 	 */
 	public LMControlLogModel(long startTime_, long stopTime_, Integer logType_, Integer pointID_)
 	{
-		this(startTime_, stopTime_, logType_, pointID_ , ReportTypes.LM_CONTROL_LOG_DATA);
-	}
-	/**
-	 * Constructor class
-	 * @param logType_ SYSTEMLOG.pointID
-	 */
-	public LMControlLogModel()
-	{
-		super();
-		setReportType(ReportTypes.LM_CONTROL_LOG_DATA);
-	}	
-	/**
-	 * Constructor class
-	 * @param startTime_ SYSTEMLOG.dateTime
-	 * @param stopTime_ SYSTEMLOG.dateTime
-	 * @param pointID_ SYSTEM.pointID
-	 * @param logType_ SYSTEMLOG.type
-	 */
-	public LMControlLogModel(long startTime_, long stopTime_, Integer logType_, Integer pointID_, int reportType_)
-	{
-		super(startTime_, stopTime_, logType_, pointID_, reportType_);
+		super(startTime_, stopTime_, logType_, pointID_);
 	}
 
 	/* (non-Javadoc)

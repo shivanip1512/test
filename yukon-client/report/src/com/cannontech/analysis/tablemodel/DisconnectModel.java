@@ -2,9 +2,9 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.util.Date;
 
 import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.data.device.Disconnect;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -47,15 +47,19 @@ public class DisconnectModel extends ReportModelBase
 	private static String title = "Disconnect Status By Collection Group";
 	
 	/** Rawpointhistory.value critera, null results in current disconnect state? */
-	/** valid types are:  Disconnected | Connected | History | Current  */
+	/** valid types are:  Disconnected | Connected | Intermediate | Invalid */
 	public static String DISCONNECTED_STRING = "Disconnected";
 	public static String CONNECTED_STRING = "Connected";
-	public static String HISTORY_STRING = "History";
-	public static String CURRENT_STRING = "Current";
 	public static String INTERMEDIATE_STRING = "Intermediate";
 	public static String INVALID_STRING = "Invalid";
 	 
-	private String disconnectType = null;
+	//flag for displaying all connected disconnect meters
+	private boolean showConnected = true;
+	//flag for displaying all disconnected disconnect meters
+	private boolean showDisconnected = true;
+	//flag for displaying the history of disconnect meters
+	private boolean showHistory = false;
+
 	/**
 	 * Constructor class
 	 * @param statType_ DynamicPaoStatistics.StatisticType
@@ -63,25 +67,19 @@ public class DisconnectModel extends ReportModelBase
 	
 	public DisconnectModel()
 	{
-		this("Current", ReportTypes.DISCONNECT_DATA);//default type		
-	}
-	
-	
-	public DisconnectModel(String disconnectType_)
-	{
-		this(disconnectType_, ReportTypes.DISCONNECT_DATA);//default type		
-	}
-	/**
-	 * Constructor class
-	 * @param disconnectType_ Rawpointhistory.value 
-	 	 */
-	public DisconnectModel(String disconnectType_, int reportType_)
-	{
-		super();
-		setDisconnectType(disconnectType_);
-		setReportType(reportType_);		
+		this(false);		
 	}
 
+	/**
+	 * When ShowHist is true, then disconnect/connected does NOT matter.
+	 * They only matter when !showHist, or rather when showing only CURRENT  
+	 * @param showHist
+	 */
+	public DisconnectModel(boolean showHist)
+	{
+		super();
+		setShowHistory(showHist);
+	}
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
 	 */
@@ -108,7 +106,7 @@ public class DisconnectModel extends ReportModelBase
 			else
 			{
 				pstmt = conn.prepareStatement(sql.toString());
-				if( getDisconnectType().equalsIgnoreCase(HISTORY_STRING))
+				if( isShowHistory())
 				{
 					pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime() ));
 					pstmt.setTimestamp(2, new java.sql.Timestamp( getStopTime() ));
@@ -174,19 +172,22 @@ public class DisconnectModel extends ReportModelBase
 			sql.append(")");
 		}
 
-		if( getDisconnectType().equalsIgnoreCase(HISTORY_STRING))
+		if( isShowHistory())
 		{
 			sql.append(" AND RPH1.TIMESTAMP > ? AND RPH1.TIMESTAMP <= ? ORDER BY PAO.PAONAME" );
 		}
 		else		
 		{
-			if (getDisconnectType().equalsIgnoreCase(CONNECTED_STRING))
+			if( !isShowAll())	//limit the RPH value accepted
 			{
-				sql.append(" AND RPH1.VALUE = 1.0 ");
-			}
-			else if (getDisconnectType().equalsIgnoreCase(DISCONNECTED_STRING))
-			{
-				sql.append(" AND RPH1.VALUE = 0.0 ");
+				if (isShowConnected())
+				{
+					sql.append(" AND RPH1.VALUE = 1.0 ");
+				}
+				else if (isShowDisconnected())
+				{
+					sql.append(" AND RPH1.VALUE = 0.0 ");
+				}
 			}
 			sql.append(" AND RPH1.TIMESTAMP = ( SELECT MAX(RPH2.TIMESTAMP) FROM RAWPOINTHISTORY RPH2 " + 
 							" WHERE RPH1.POINTID = RPH2.POINTID) " );
@@ -210,17 +211,8 @@ public class DisconnectModel extends ReportModelBase
 			Timestamp timestamp = rset.getTimestamp(4);
 			double value = rset.getDouble(5);
 			
-			String valueString = null;
-			if(value == 0)
-				valueString = DISCONNECTED_STRING;
-			else if(value == 1)
-				valueString = CONNECTED_STRING;	
-			else if(value == 2)
-				valueString = INTERMEDIATE_STRING;	
-			else if (value == -1)
-				valueString = INVALID_STRING;
-
-			Disconnect disconnect = new Disconnect(collGrp, paoName, pointName, new java.util.Date(timestamp.getTime()), valueString);
+			String valueString = getRPHValueString(value);
+			Disconnect disconnect = new Disconnect(collGrp, paoName, pointName, new Date(timestamp.getTime()), valueString);
 			getData().add(disconnect);
 		}
 		catch(java.sql.SQLException e)
@@ -229,22 +221,16 @@ public class DisconnectModel extends ReportModelBase
 		}
 	}
 
-	/**
-	 * valid types are:  Disconnected | Connected | History | Current
-	 * @return disconnectType
-	 */
-	public String getDisconnectType()
+	private String getRPHValueString(double value)
 	{
-		return disconnectType;
-	}
-
-	/**
-	 * Set the disconnectType
-	 * @param String disconnectType_
-	 */
-	public void setDisconnectType(String disconnectType_)
-	{
-		disconnectType = disconnectType_;
+		if(value == 0)
+			return DISCONNECTED_STRING;
+		else if(value == 1)
+			return CONNECTED_STRING;	
+		else if(value == 2)
+			return INTERMEDIATE_STRING;	
+		else //if (value == -1)
+			return INVALID_STRING;
 	}
 	
 	/* (non-Javadoc)
@@ -335,11 +321,11 @@ public class DisconnectModel extends ReportModelBase
 		{
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 100, 18, null),  //Collection Group
-				new ColumnProperties(0, 1, 200, 18, null),	//MCT
-				new ColumnProperties(15, 1, 150, 18, null),	//Point
-				new ColumnProperties(155, 1, 100, 18, "MM/dd/yyyy HH:MM:SS"),   //Timestamp
-				new ColumnProperties(260, 1, 100, 18, null)   // Rawpointhistory.value
+				new ColumnProperties(0, 1, 100, 10, null),  //Collection Group
+				new ColumnProperties(10, 1, 200, 10, null),	//MCT
+				new ColumnProperties(20, 1, 150, 10, null),	//Point
+				new ColumnProperties(175, 1, 100, 10, "MM/dd/yyyy HH:MM:SS"),   //Timestamp
+				new ColumnProperties(280, 1, 100, 10, null)   // Rawpointhistory.value
 			};
 		}
 		return columnProperties;
@@ -351,14 +337,80 @@ public class DisconnectModel extends ReportModelBase
 	 */
 	public String getTitleString()
 	{
-		if( getDisconnectType().equalsIgnoreCase(DISCONNECT_STATUS_STRING) ||
-			getDisconnectType().equalsIgnoreCase(CONNECTED_STRING))
-			return getDisconnectType() + " Status Report";
-
-		else if (getDisconnectType().equalsIgnoreCase(HISTORY_STRING) ||
-				getDisconnectType().equalsIgnoreCase(CURRENT_STRING))
-			return "Disconnect - " + getDisconnectType() + " Report";
-		
-		return title = "Disconnect Status Report";
+		if( isShowHistory())
+			title = "Disconnect Meter History Report";
+		else 
+		{
+			if( isShowAll())
+				title = "All Disconnect - ";
+			else if (isShowConnected())
+				title = "Connected - ";
+			else if (isShowDisconnected())
+				title = "Disconnected - ";
+				
+			title += "Current Status Report";
+		}
+		return title;
 	}
+	/**
+	 * @return
+	 */
+	public boolean isShowConnected()
+	{
+		return showConnected;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isShowAll()
+	{
+		//Return true if CONNECTED AND DISCONNECTED are True OR if both are False
+		return !(isShowConnected() ^ isShowDisconnected()); 
+	}
+
+	/**
+	 * Only used when showHistory is false.
+	 * Valid only with "current" data
+	 * @return
+	 */
+	public boolean isShowDisconnected()
+	{
+		return showDisconnected;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isShowHistory()
+	{
+		return showHistory;
+	}
+
+	/**
+	 * Only used when showHistory is false.
+	 * Valid only with "current" data
+	 * @param b
+	 */
+	public void setShowConnected(boolean b)
+	{
+		showConnected = b;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setShowDisconnected(boolean b)
+	{
+		showDisconnected = b;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setShowHistory(boolean b)
+	{
+		showHistory = b;
+	}
+
 }

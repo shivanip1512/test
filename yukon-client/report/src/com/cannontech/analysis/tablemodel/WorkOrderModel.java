@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.data.stars.WorkOrder;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -224,12 +223,7 @@ public class WorkOrderModel extends ReportModelBase {
 	};
 	
 	public WorkOrderModel() {
-		this( ReportTypes.EC_WORK_ORDER_DATA );	// default report type
-	}
-	
-	public WorkOrderModel(int reportType) {
 		super();
-		setReportType( reportType );
 	}
 	
 	public WorkOrderModel(Integer ecID) {
@@ -417,7 +411,9 @@ public class WorkOrderModel extends ReportModelBase {
 				}
 			}
 			else {
-				woList.addAll( ec.loadAllWorkOrders(true) );
+				ArrayList allWOs = ec.loadAllWorkOrders(true);
+				if( allWOs != null)
+					woList.addAll( allWOs );
 			}
 			
 			if (getServiceStatus() != null && getServiceStatus().intValue() > 0) {

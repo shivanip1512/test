@@ -47,7 +47,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	protected java.util.Vector data = new java.util.Vector(100);
 
 	/** The report type, valid types are in com.cannontech.analysis.data.ReportTypes*/
-	protected int reportType;
+//	protected int reportType;
 	
 	/** Start time for query in millis */
 	private long startTime = Long.MIN_VALUE;
@@ -69,10 +69,10 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	/**
 	 * Default Constructor
 	 */
-	public ReportModelBase(int reportType_, long startTime_, long stopTime_)
+	public ReportModelBase(long startTime_, long stopTime_)
 	{
 		this();
-		setReportType(reportType_);
+//		setReportType(reportType_);
 		setStartTime(startTime_);
 		setStopTime(stopTime_);
 	}	
@@ -185,18 +185,18 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	/**
 	 * @return
 	 */
-	public int getReportType()
-	{
-		return reportType;
-	}
+//	public int getReportType()
+//	{
+//		return reportType;
+//	}
 
 	/**
 	 * @param i
 	 */
-	public void setReportType(int i)
-	{
-		reportType = i;
-	}
+//	public void setReportType(int i)
+//	{
+//		reportType = i;
+//	}
 	
 	/**
 	 * Returns the startTime in millis

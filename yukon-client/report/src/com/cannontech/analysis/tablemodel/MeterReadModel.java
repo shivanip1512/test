@@ -3,7 +3,6 @@ package com.cannontech.analysis.tablemodel;
 import java.sql.ResultSet;
 
 import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.data.device.MeterData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -41,30 +40,39 @@ public class MeterReadModel extends ReportModelBase
 	/** A string for the title of the data */
 	private static String title = "Meter Data By Collection Group";	
 	/** Class fields */
-
+	public final static int MISSED_METER_READ_TYPE = 2;
+	public  final static int SUCCESS_METER_READ_TYPE = 1;
+	private int meterReadType = MISSED_METER_READ_TYPE;
 	/**
 	 * 
 	 */
 	public MeterReadModel()
 	{
-		this(ReportTypes.MISSED_METER_DATA);
+		this(MISSED_METER_READ_TYPE);
 	}
 	
 	/**
-	 * 
+	 * Valid read types are MeterReadModel.SUCCESS_METER_READ_TYPE, MISSED_METER_READ_TYPE
 	 */
-	public MeterReadModel(int reportType_)
+	public MeterReadModel(int readType)
 	{
-		super();
-		setReportType(reportType_);
+		this(readType, Long.MIN_VALUE);
 	}
 	/**
 	 * 
 	 */
-	public MeterReadModel(int reportType_, long startTime_)
+	public MeterReadModel(long startTime_)
 	{
 		//Long.MIN_VALUE is the default (null) value for time
-		super(reportType_, startTime_, Long.MIN_VALUE);
+		this(MISSED_METER_READ_TYPE, Long.MIN_VALUE);
+	}	
+	/**
+	 * 
+	 */
+	public MeterReadModel(int readType_, long startTime_)
+	{
+		//Long.MIN_VALUE is the default (null) value for time
+		super(startTime_, Long.MIN_VALUE);
 	}
 	/**
 	 * Add MissedMeter objects to data, retrieved from rset.
@@ -196,12 +204,14 @@ public class MeterReadModel extends ReportModelBase
 	 
 	 private String getInclusiveSQLString()
 	 {
-	 	if (getReportType() == ReportTypes.MISSED_METER_DATA)
-	 		return " NOT IN ";
-	 	else if( getReportType() == ReportTypes.SUCCESS_METER_DATA)
-	 		return " IN ";
-	 	else
-	 		return " IN ";
+	 	switch (getMeterReadType())
+		{
+			case SUCCESS_METER_READ_TYPE:
+				return " IN ";
+			case MISSED_METER_READ_TYPE:
+			default :
+				return " NOT IN";
+		}
 	 }
 
 	/* (non-Javadoc)
@@ -278,11 +288,11 @@ public class MeterReadModel extends ReportModelBase
 		{
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 100, 18, null),
-				new ColumnProperties(100, 1, 100, 18, null),
-				new ColumnProperties(200, 1, 100, 18, null),
-				new ColumnProperties(300, 1, 100, 18, null),
-				new ColumnProperties(400, 1, 100, 18, null)
+				new ColumnProperties(0, 1, 200, 18, null),
+				new ColumnProperties(0, 1, 200, 18, null),
+				new ColumnProperties(200, 1, 150, 18, null),
+				new ColumnProperties(200, 1, 150, 18, null),
+				new ColumnProperties(350, 1, 150, 18, null)
 			};
 		}
 		return columnProperties;
@@ -295,4 +305,20 @@ public class MeterReadModel extends ReportModelBase
 	{
 		return title;
 	}
+	/**
+	 * @return
+	 */
+	public int getMeterReadType()
+	{
+		return meterReadType;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setMeterReadType(int i)
+	{
+		meterReadType = i;
+	}
+
 }

@@ -3,7 +3,6 @@ package com.cannontech.analysis.tablemodel;
 import java.sql.ResultSet;
 
 import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.data.lm.LGAccounting;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -71,7 +70,6 @@ public class LoadGroupModel extends ReportModelBase
 	public LoadGroupModel()
 	{
 		super();
-		setReportType(ReportTypes.LG_ACCOUNTING_DATA);
 	}	
 
 	/**
@@ -83,18 +81,8 @@ public class LoadGroupModel extends ReportModelBase
 	 */
 	public LoadGroupModel(long startTime_, long stopTime_)
 	{
-		this(null, startTime_, stopTime_, ReportTypes.LG_ACCOUNTING_DATA);
+		this(null, startTime_, stopTime_);
 	}	
-	/**
-	 * Constructor class
-	 * @param loadGroup_ YukonPaobject.paobjectID (of array of load groups)
-	 * @param startTime_ LMControlHistory.startDateTime
-	 * @param stopTime_ LMControlHistory.stopDateTiem
-	 */
-	public LoadGroupModel(int[] paoIDs_,long startTime_, long stopTime_ )
-	{		
-		this(paoIDs_,startTime_, stopTime_, ReportTypes.LG_ACCOUNTING_DATA);
-	}
 	
 	/**
 	 * Constructor class
@@ -102,9 +90,9 @@ public class LoadGroupModel extends ReportModelBase
 	 * @param startTime_ LMControlHistory.startDateTime
 	 * @param stopTime_ LMControlHistory.stopDateTime
 	 */
-	public LoadGroupModel( int[] paoIDs_,long startTime_, long stopTime_, int reportType_)
+	public LoadGroupModel( int[] paoIDs_,long startTime_, long stopTime_)
 	{
-		super(reportType_, startTime_, stopTime_);
+		super(startTime_, stopTime_);
 		setPaoIDs(paoIDs_);
 	}	
 		
@@ -340,16 +328,16 @@ public class LoadGroupModel extends ReportModelBase
 		{
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 55, 18, null),
-				new ColumnProperties(0, 1, 65, 18, "MM/dd/yyyy"),
-				new ColumnProperties(65, 1, 55, 18, "hh:mm:ss"),
-				new ColumnProperties(120, 1, 55, 18, "hh:mm:ss"),
-				new ColumnProperties(175, 1, 55, 18, null),
-				new ColumnProperties(230, 1, 80, 18, null),
-				new ColumnProperties(310, 1, 55, 18, null),
-				new ColumnProperties(365, 1, 55, 18, null),
-				new ColumnProperties(420, 1, 55, 18, null),
-				new ColumnProperties(475, 1, 55, 18, null)
+				new ColumnProperties(0, 1, 130, 10, null),
+				new ColumnProperties(0, 1, 65, 10, "MM/dd/yyyy"),
+				new ColumnProperties(65, 1, 55, 10, "hh:mm:ss"),
+				new ColumnProperties(120, 1, 55, 10, "hh:mm:ss"),
+				new ColumnProperties(175, 1, 55, 10, null),
+				new ColumnProperties(230, 1, 80, 10, null),
+				new ColumnProperties(310, 1, 55, 10, null),
+				new ColumnProperties(365, 1, 55, 10, null),
+				new ColumnProperties(420, 1, 55, 10, null),
+				new ColumnProperties(475, 1, 55, 10, null)
 			};
 		}
 		return columnProperties;

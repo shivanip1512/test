@@ -3,7 +3,6 @@ package com.cannontech.analysis.tablemodel;
 import java.sql.ResultSet;
 
 import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.data.device.CarrierRouteMacro;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -42,7 +41,7 @@ public class RouteMacroModel extends ReportModelBase
 	public final static String MACRO_ROUTE_NAME_STRING = "Route Macro Name";
 	public final static String ROUTE_NAME_STRING = "Route Name";
 	public final static String TRANSMITTER_NAME_STRING  = "Transmitter Name";
-	public final static String CCU_BUS_NUMBER_STRING = "CCU Bus Number";
+	public final static String CCU_BUS_NUMBER_STRING = "CCU Bus";
 	public final static String AMP_USE_STRING = "AMP Use";
 	public final static String FIXED_BITS_STRING = "Fixed Bits";
 	public final static String VARIABLE_BITS_STRING = "Variable Bits";
@@ -60,26 +59,17 @@ public class RouteMacroModel extends ReportModelBase
 	 */
 	public RouteMacroModel()
 	{
-		this(DeviceClasses.STRING_CLASS_CARRIER, ReportTypes.CARRIER_ROUTE_MACRO_DATA);
+		this(DeviceClasses.STRING_CLASS_CARRIER);
 	}
+
 	/**
 	 * Constructor.
 	 * @param paoClass_ = YukonPaobject.paoClass
 	 */
 	public RouteMacroModel(String paoClass_)
 	{
-		this(paoClass_, ReportTypes.CARRIER_ROUTE_MACRO_DATA);
-	}	
-
-	/**
-	 * Constructor.
-	 * @param paoClass_ = YukonPaobject.paoClass
-	 */
-	public RouteMacroModel(String paoClass_, int reportType_)
-	{
 		super();
 		setPaoClass(paoClass_);
-		setReportType(reportType_);
 	}	
 		
 	/**
@@ -318,14 +308,14 @@ public class RouteMacroModel extends ReportModelBase
 			columnProperties = new ColumnProperties[]
 			{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 20, 20, null),
-				new ColumnProperties(20, 1, 85, 20, "#,##0"),
-				new ColumnProperties(110, 1, 85, 20, "#,##0"),
-				new ColumnProperties(205, 1, 35, 20, "##0.00%"),
-				new ColumnProperties(250, 1, 50, 20, "##0.00%"),
-				new ColumnProperties(310, 1, 50, 20, "##0.00%"),
-				new ColumnProperties(365, 1, 50, 20, "##0.00%"),
-				new ColumnProperties(430, 1, 50, 20, "##0.00%")
+				new ColumnProperties(0, 1, 130, 18, null),
+				new ColumnProperties(0, 1, 130, 18, null),
+				new ColumnProperties(130, 1, 125, 18, null),
+				new ColumnProperties(255, 1, 55, 18, null),
+				new ColumnProperties(310, 1, 55, 18, null),
+				new ColumnProperties(365, 1, 55, 18, null),
+				new ColumnProperties(420, 1, 65, 18, null),
+				new ColumnProperties(485, 1, 120, 18, null)
 			};
 		}
 		return columnProperties;

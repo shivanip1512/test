@@ -3,7 +3,6 @@ package com.cannontech.analysis.tablemodel;
 import java.sql.ResultSet;
 
 import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.data.device.PowerFail;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -47,16 +46,15 @@ public class PowerFailModel extends ReportModelBase
 	 */
 	public PowerFailModel()
 	{
-		this(ReportTypes.POWER_FAIL_DATA);
+		super();
 	}
 	
 	/**
 	 * 
 	 */
-	public PowerFailModel(int reportType_)
+	public PowerFailModel(long startTime_)
 	{
-		super();
-		setReportType(ReportTypes.POWER_FAIL_DATA);
+		super(startTime_, Long.MIN_VALUE);
 	}
 	/**
 	 * Add MissedMeter objects to data, retrieved from rset.
@@ -255,8 +253,8 @@ public class PowerFailModel extends ReportModelBase
 				new ColumnProperties(0, 1, 100, 18, null),
 				new ColumnProperties(100, 1, 100, 18, null),
 				new ColumnProperties(200, 1, 100, 18, null),
-				new ColumnProperties(300, 1, 100, 18, null),
-				new ColumnProperties(400, 1, 100, 18, null)
+				new ColumnProperties(300, 1, 100, 18, "#"),
+				new ColumnProperties(400, 1, 100, 18, "#")
 			};
 		}
 		return columnProperties;
