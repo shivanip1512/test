@@ -1081,9 +1081,12 @@ private com.jrefinery.chart.ChartPanel getFreeChartPanel()
 	{
 		freeChartPanel = new com.jrefinery.chart.ChartPanel(getFreeChart());
 		freeChartPanel.setVisible(true);
-		freeChartPanel.setHorizontalZoom(true);
-		freeChartPanel.setVerticalZoom(true);
 	}
+
+	// turn all zoom on
+	freeChartPanel.setHorizontalZoom(true);
+	freeChartPanel.setVerticalZoom(true);
+	
 	return freeChartPanel;
 }
 /**
