@@ -114,6 +114,7 @@ public class ServletUtils {
     
 	public static String formatDate(Date date, java.text.SimpleDateFormat format, String emptyStr) {
 		if (date == null) return emptyStr;
+		if (date.getTime() < ServerUtils.VERY_EARLY_TIME) return emptyStr;
 		return format.format( date );
 	}
 

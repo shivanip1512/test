@@ -757,7 +757,7 @@ public class ImportManager extends HttpServlet {
 	private String redirect = null;
 	
 
-	private static void setStarsCustAccount(StarsCustAccount account, String[] fields, LiteStarsEnergyCompany energyCompany) throws WebClientException {
+	private static void setStarsCustAccount(StarsCustAccount account, String[] fields, LiteStarsEnergyCompany energyCompany, ImportProblem problem) {
 	    account.setAccountNumber( fields[IDX_ACCOUNT_NO] );
 	    account.setIsCommercial( fields[IDX_CUSTOMER_TYPE].equalsIgnoreCase("COM") );
 	    account.setCompany( fields[IDX_COMPANY_NAME] );
@@ -816,8 +816,20 @@ public class ImportManager extends HttpServlet {
 	    PrimaryContact primContact = new PrimaryContact();
 	    primContact.setLastName( fields[IDX_LAST_NAME] );
 	    primContact.setFirstName( fields[IDX_FIRST_NAME] );
-		primContact.setHomePhone( ServletUtils.formatPhoneNumber(fields[IDX_HOME_PHONE]) );
-		primContact.setWorkPhone( ServletUtils.formatPhoneNumber(fields[IDX_WORK_PHONE]) + fields[IDX_WORK_PHONE_EXT] );
+	    try {
+			primContact.setHomePhone( ServletUtils.formatPhoneNumber(fields[IDX_HOME_PHONE]) );
+	    }
+	    catch (WebClientException e) {
+			primContact.setHomePhone( "" );
+			if (problem != null) problem.appendProblem( e.getMessage() );
+	    }
+	    try {
+			primContact.setWorkPhone( ServletUtils.formatPhoneNumber(fields[IDX_WORK_PHONE]) + fields[IDX_WORK_PHONE_EXT] );
+	    }
+	    catch (WebClientException e) {
+			primContact.setWorkPhone( "" );
+			if (problem != null) problem.appendProblem( e.getMessage() );
+	    }
 	    
 	    Email email = new Email();
 	    email.setNotification( fields[IDX_EMAIL] );
@@ -827,13 +839,13 @@ public class ImportManager extends HttpServlet {
 	}
 
 	public static LiteStarsCustAccountInformation newCustomerAccount(String[] fields, StarsYukonUser user,
-		LiteStarsEnergyCompany energyCompany, boolean checkConstraint) throws Exception
+		LiteStarsEnergyCompany energyCompany, boolean checkConstraint, ImportProblem problem) throws Exception
 	{
 		// Build the request message
 		StarsNewCustomerAccount newAccount = new StarsNewCustomerAccount();
 		
 		StarsCustomerAccount account = new StarsCustomerAccount();
-		ImportManager.setStarsCustAccount( account, fields, energyCompany );
+		setStarsCustAccount( account, fields, energyCompany, problem );
 		newAccount.setStarsCustomerAccount( account );
 		
 		if (fields[IDX_USERNAME].trim().length() > 0) {
@@ -851,11 +863,11 @@ public class ImportManager extends HttpServlet {
 		return NewCustAccountAction.newCustomerAccount(newAccount, user, energyCompany, checkConstraint);
 	}
 
-	public static void updateCustomerAccount(String[] fields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
-		throws Exception
+	public static void updateCustomerAccount(String[] fields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany,
+		ImportProblem problem) throws Exception
 	{
 	    StarsUpdateCustomerAccount updateAccount = new StarsUpdateCustomerAccount();
-	    ImportManager.setStarsCustAccount( updateAccount, fields, energyCompany );
+	    setStarsCustAccount( updateAccount, fields, energyCompany, problem );
 	    
 	    UpdateCustAccountAction.updateCustomerAccount( updateAccount, liteAcctInfo, energyCompany );
 	}
@@ -897,7 +909,7 @@ public class ImportManager extends HttpServlet {
 		return -1;
 	}
 
-	private static void setStarsInventory(StarsInv inv, String[] fields, LiteStarsEnergyCompany energyCompany) throws WebClientException {
+	private static void setStarsInventory(StarsInv inv, String[] fields, LiteStarsEnergyCompany energyCompany, ImportProblem problem) {
 		if (fields[IDX_ALT_TRACK_NO].length() > 0)
 			inv.setAltTrackingNumber( fields[IDX_ALT_TRACK_NO] );
 		if (fields[IDX_INV_NOTES].length() > 0)
@@ -911,8 +923,8 @@ public class ImportManager extends HttpServlet {
 			}
 			catch (java.text.ParseException e) {}
 			
-			if (inv.getReceiveDate() == null)
-				throw new WebClientException("Invalid receive date format: " + fields[IDX_RECEIVE_DATE]);
+			if (inv.getReceiveDate() == null && problem != null)
+				problem.appendProblem( "Invalid receive date format '" + fields[IDX_RECEIVE_DATE] + "'" );
 		}
 		
 		if (fields[IDX_INSTALL_DATE].length() > 0) {
@@ -926,16 +938,16 @@ public class ImportManager extends HttpServlet {
 				catch (java.text.ParseException e) {}
 			}
 			
-			if (inv.getInstallDate() == null)
-				throw new WebClientException("Invalid install date format: " + fields[IDX_INSTALL_DATE]);
+			if (inv.getInstallDate() == null && problem != null)
+				problem.appendProblem( "Invalid install date format '" + fields[IDX_INSTALL_DATE] + "'" );
 		}
 		
 		if (fields[IDX_REMOVE_DATE].length() > 0) {
 			inv.setRemoveDate( ServletUtil.parseDateStringLiberally(
 					fields[IDX_REMOVE_DATE], energyCompany.getDefaultTimeZone()) );
 			
-			if (inv.getRemoveDate() == null)
-				throw new WebClientException("Invalid remove date format: " + fields[IDX_REMOVE_DATE]);
+			if (inv.getRemoveDate() == null && problem != null)
+				problem.appendProblem( "Invalid remove date format '" + fields[IDX_REMOVE_DATE] + "'" );
 		}
 		
 		if (fields[IDX_DEVICE_VOLTAGE].length() > 0) {
@@ -1007,7 +1019,7 @@ public class ImportManager extends HttpServlet {
 	}
 
 	public static LiteInventoryBase insertLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteStarsEnergyCompany energyCompany, boolean checkConstraint) throws Exception
+		LiteStarsEnergyCompany energyCompany, boolean checkConstraint, ImportProblem problem) throws Exception
 	{
 		// Check inventory and build request message
 		int devTypeID = getDeviceTypeID( energyCompany, fields[IDX_DEVICE_TYPE] );
@@ -1045,13 +1057,13 @@ public class ImportManager extends HttpServlet {
 		
 		createHw.setInstallDate( new java.util.Date(0) );
 		fields[IDX_DEVICE_TYPE] = String.valueOf( devTypeID );
-		ImportManager.setStarsInventory( createHw, fields, energyCompany );
+		setStarsInventory( createHw, fields, energyCompany, problem );
 	    
 	    return CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany );
 	}
 
 	public static LiteInventoryBase updateLMHardware(String[] fields, LiteInventoryBase liteInv,
-		LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany) throws Exception
+		LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, ImportProblem problem) throws Exception
 	{
 		// Check inventory and build request message
 		int devTypeID = getDeviceTypeID( energyCompany, fields[IDX_DEVICE_TYPE] );
@@ -1065,14 +1077,14 @@ public class ImportManager extends HttpServlet {
 		updateHw.setInstallationNotes( "" );
 		
 		fields[IDX_DEVICE_TYPE] = String.valueOf( devTypeID );
-		ImportManager.setStarsInventory( updateHw, fields, energyCompany );
+		setStarsInventory( updateHw, fields, energyCompany, problem );
 		
 		UpdateLMHardwareAction.updateInventory( updateHw, liteInv, energyCompany );
 		return energyCompany.getInventory( liteInv.getInventoryID(), true );
 	}
 
 	public static void removeLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteStarsEnergyCompany energyCompany) throws Exception
+		LiteStarsEnergyCompany energyCompany, ImportProblem problem) throws Exception
 	{
 		// Check if the hardware to be deleted exists
 		LiteStarsLMHardware liteHw = null;
@@ -1095,6 +1107,9 @@ public class ImportManager extends HttpServlet {
 		if (fields[IDX_REMOVE_DATE].length() > 0) {
 			deleteHw.setRemoveDate( ServletUtil.parseDateStringLiberally(
 					fields[IDX_REMOVE_DATE], energyCompany.getDefaultTimeZone()) );
+			
+			if (deleteHw.getRemoveDate() == null && problem != null)
+				problem.appendProblem( "Invalid remove date format '" + fields[IDX_REMOVE_DATE] + "'" );
 		}
 		
 		DeleteLMHardwareAction.removeInventory( deleteHw, liteAcctInfo, energyCompany );
@@ -1103,10 +1118,10 @@ public class ImportManager extends HttpServlet {
 	/**
 	 * @param programs Array of (ProgramID, ApplianceCategoryID, GroupID).
 	 * The ApplianceCategoryID and GroupID are optional, set them to -1 if you don't want to privide the value.
-	 * @param invID ID of the hardware the programs are attached to
+	 * @param liteInv The hardware the programs are attached to
 	 */
 	public static void programSignUp(int[][] programs, LiteStarsCustAccountInformation liteAcctInfo,
-		Integer invID, LiteStarsEnergyCompany energyCompany) throws Exception
+		LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) throws Exception
 	{
 		// Build request message
 		StarsSULMPrograms suPrograms = new StarsSULMPrograms();
@@ -1117,15 +1132,13 @@ public class ImportManager extends HttpServlet {
 				suProg.setApplianceCategoryID( programs[i][1] );
 			if (programs[i][2] != -1)
 				suProg.setAddressingGroupID( programs[i][2] );
-			if (invID != null)
-				suProg.setInventoryID( invID.toString() );
 			suPrograms.addSULMProgram( suProg );
 		}
 		
 		StarsProgramSignUp progSignUp = new StarsProgramSignUp();
 		progSignUp.setStarsSULMPrograms( suPrograms );
 	    
-	    ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, energyCompany );
+	    ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteInv, energyCompany );
 	}
 	
 	private static int getApplianceCategoryID(LiteStarsEnergyCompany energyCompany, String appType) {
@@ -1395,7 +1408,7 @@ public class ImportManager extends HttpServlet {
 	}
 
 	public static void newServiceRequest(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteStarsEnergyCompany energyCompany, boolean checkConstraint) throws Exception
+		LiteStarsEnergyCompany energyCompany, boolean checkConstraint, ImportProblem problem) throws Exception
 	{
 		StarsCreateServiceRequest createOrder = new StarsCreateServiceRequest();
 		createOrder.setOrderNumber( fields[IDX_ORDER_NO] );
@@ -1415,6 +1428,9 @@ public class ImportManager extends HttpServlet {
 				createOrder.setDateReported( ServerUtils.starsDateFormat.parse(fields[IDX_DATE_REPORTED]) );
 			}
 			catch (java.text.ParseException e) {}
+			
+			if (createOrder.getDateReported() == null && problem != null)
+				problem.appendProblem( "Invalid report date format '" + fields[IDX_DATE_REPORTED] + "'" );
 		}
 		
 		if (fields[IDX_DATE_COMPLETED].length() > 0) {
@@ -1422,6 +1438,9 @@ public class ImportManager extends HttpServlet {
 				createOrder.setDateCompleted( ServerUtils.starsDateFormat.parse(fields[IDX_DATE_COMPLETED]) );
 			}
 			catch (java.text.ParseException e) {}
+			
+			if (createOrder.getDateCompleted() == null && problem != null)
+				problem.appendProblem( "Invalid complete date format '" + fields[IDX_DATE_COMPLETED] + "'" );
 		}
 		
 		if (fields[IDX_DATE_SCHEDULED].length() > 0) {
@@ -1444,6 +1463,9 @@ public class ImportManager extends HttpServlet {
 					createOrder.setDateScheduled( datePart );
 			}
 			catch (java.text.ParseException e) {}
+			
+			if (createOrder.getDateScheduled() == null && problem != null)
+				problem.appendProblem( "Invalid schedule date format '" + fields[IDX_TIME_SCHEDULED] + "'" );
 		}
 		
 		ServiceType type = new ServiceType();
@@ -2652,6 +2674,10 @@ public class ImportManager extends HttpServlet {
 						String[] invFields = (String[]) invIDFields.get( fields[IDX_INV_ID] );
 						
 						if (invFields != null) {
+							// Use hardware action field as a marker of whether an entry in the
+							// inventory file has a corresponding entry in the receiver or meter file
+							invFields[IDX_HARDWARE_ACTION] = "Receiver";
+							
 							for (int j = 0; j < invFields.length; j++) {
 								if (fields[j].length() > 0) {
 									if (j == IDX_INV_NOTES && invFields[j].length() > 0)
@@ -2682,6 +2708,8 @@ public class ImportManager extends HttpServlet {
 					String[] invFields = (String[]) invIDFields.get( fields[IDX_INV_ID] );
 					
 					if (invFields != null) {
+						invFields[IDX_HARDWARE_ACTION] = "Meter";
+						
 						for (int j = 0; j < invFields.length; j++) {
 							if (fields[j].length() > 0) {
 								if (j == IDX_INV_NOTES && invFields[j].length() > 0)
@@ -2691,6 +2719,15 @@ public class ImportManager extends HttpServlet {
 							}
 						}
 					}
+				}
+			}
+			
+			java.util.Iterator it = invFieldsList.iterator();
+			while (it.hasNext()) {
+				String[] fields = (String[]) it.next();
+				if (fields[IDX_HARDWARE_ACTION].equals("")) {
+					it.remove();
+					invIDFields.remove( fields[IDX_INV_ID] );
 				}
 			}
 			
@@ -2705,6 +2742,8 @@ public class ImportManager extends HttpServlet {
 						continue;
 					
 					String[] fields = parseStarsLoadInfo( loadInfoLines[i], userLabels );
+					if (fields[IDX_APP_DESC].equals("")) continue;
+					
 					fields[IDX_LINE_NUM] = String.valueOf(i + 1);
 					appFieldsList.add( fields );
 					appIDFields.put( fields[IDX_APP_ID], fields );

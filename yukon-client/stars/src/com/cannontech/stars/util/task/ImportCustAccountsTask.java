@@ -17,6 +17,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
+import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -121,7 +122,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 	File custFile = null;
 	File hwFile = null;
 	
-	boolean processingImportFile = false;
+	String position = null;
 	
 	int numAcctTotal = 0;
 	int numAcctImported = 0;
@@ -163,21 +164,23 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 	 */
 	public String getProgressMsg() {
 		if (status != STATUS_NOT_INIT) {
-			if (processingImportFile) {
+			if (position == null) {
 				return "Processing import file(s)";
 			}
 			else {
 				String msg = "";
 				if (numAcctTotal > 0) {
-					msg += (status == STATUS_FINISHED)?
-							numAcctImported + " customer accounts imported successfully" :
-							numAcctImported + " of " + numAcctTotal + " customer accounts imported";
+					if (numAcctImported == numAcctTotal)
+						msg += numAcctImported + " customer accounts imported successfully";
+					else
+						msg += numAcctImported + " of " + numAcctTotal + " customer accounts imported";
 					msg += " (" + numAcctAdded + " added, " + numAcctUpdated + " updated, " + numAcctRemoved + " removed)" + LINE_SEPARATOR;
 				}
 				if (numHwTotal > 0) {
-					msg += (status == STATUS_FINISHED)?
-							numHwImported + " hardwares imported successfully" :
-							numHwImported + " of " + numHwTotal + " hardwares imported";
+					if (numHwImported == numHwTotal)
+						msg += numHwImported + " hardwares imported successfully";
+					else
+						msg += numHwImported + " of " + numHwTotal + " hardwares imported";
 					msg += " (" + numHwAdded + " added, " + numHwUpdated + " updated, " + numHwRemoved + " removed)";
 				}
 				return msg;
@@ -206,13 +209,10 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
         
         status = STATUS_RUNNING;
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-		processingImportFile = true;
 		
 		ArrayList custFieldsList = null;
 		ArrayList hwFieldsList = null;
 		ArrayList appFieldsList = null;
-		int custLineNo = 0;
-		int hwLineNo = 0;
 		
 		int[] custColIdx = new int[ CUST_COLUMNS.length ];
 		int[] hwColIdx = new int [ HW_COLUMNS.length ];
@@ -224,6 +224,11 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 		for (int i = 0; i < HW_COLUMNS.length; i++)
 			hwColIdx[i] = -1;
 		
+		ArrayList warnings = new ArrayList();
+		ArrayList stackTrace = null;
+		
+		long startTime = System.currentTimeMillis();
+		
 		try {
         	if (custFile != null) {
 				String[] custLines = ServerUtils.readFile( custFile );
@@ -233,8 +238,11 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 					return;
 				}
 				
+				int startLineNo = 0;
+				
 				if (custLines.length > 0 && custLines[0].startsWith( COL_NAME_LABEL )) {
-					custLineNo++;
+					startLineNo = 1;
+					position = "customer file line #1";
 					
 					String[] labels = ServerUtils.splitString( custLines[0].substring(COL_NAME_LABEL.length()), "," );
 					numCustCol = labels.length;
@@ -268,8 +276,8 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 				
 				custFieldsList = new ArrayList();
 				
-				for (int i = custLineNo; i < custLines.length; i++) {
-					custLineNo++;
+				for (int i = startLineNo; i < custLines.length; i++) {
+					position = "customer file line #" + String.valueOf(i + 1);
 					if (custLines[i].trim().equals("") || custLines[i].charAt(0) == '#')
 						continue;
 					
@@ -278,15 +286,16 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 						throw new WebClientException( "Incorrect number of fields" );
 					
 					String[] custFields = ImportManager.prepareFields( ImportManager.NUM_ACCOUNT_FIELDS );
-					custFields[ImportManager.IDX_LINE_NUM] = String.valueOf( custLineNo );
+					custFields[ImportManager.IDX_LINE_NUM] = String.valueOf(i + 1);
 					setCustomerFields( custFields, columns, custColIdx );
 					custFieldsList.add( custFields );
 					
 					if (hwFile == null && hwColIdx[COL_SERIAL_NO] != -1) {
 						if (hwFieldsList == null) hwFieldsList = new ArrayList();
+						
 						String[] hwFields = ImportManager.prepareFields( ImportManager.NUM_INV_FIELDS );
 						setHardwareFields( hwFields, columns, hwColIdx );
-						hwFields[ImportManager.IDX_LINE_NUM] = String.valueOf( custLineNo );
+						hwFields[ImportManager.IDX_LINE_NUM] = String.valueOf(i + 1);
 						hwFields[ImportManager.IDX_HARDWARE_ACTION] = "";	// Let the program determine which hardware action should be taken
 						hwFieldsList.add( hwFields );
 						
@@ -310,8 +319,11 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 					return;
 				}
 				
+				int startLineNo = 0;
+				
 				if (hwLines.length > 0 && hwLines[0].startsWith( COL_NAME_LABEL )) {
-					hwLineNo++;
+					startLineNo++;
+					position = "hardware file line #1";
 					
 					String[] labels = ServerUtils.splitString( hwLines[0].substring(COL_NAME_LABEL.length()), "," );
 					numHwCol = labels.length;
@@ -343,8 +355,8 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 				hwFieldsList = new ArrayList();
 				if (hwColIdx[COL_APP_TYPE] != -1) appFieldsList = new ArrayList();
 				
-				for (int i = hwLineNo; i < hwLines.length; i++) {
-					hwLineNo++;
+				for (int i = startLineNo; i < hwLines.length; i++) {
+					position = "hardware file line #" + String.valueOf(i + 1);
 					if (hwLines[i].trim().equals("") || hwLines[i].charAt(0) == '#')
 						continue;
 					
@@ -353,7 +365,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 						throw new WebClientException( "Incorrect number of fields" );
 					
 					String[] hwFields = ImportManager.prepareFields( ImportManager.NUM_INV_FIELDS );
-					hwFields[ImportManager.IDX_LINE_NUM] = String.valueOf( hwLineNo );
+					hwFields[ImportManager.IDX_LINE_NUM] = String.valueOf(i + 1);
 					setHardwareFields( hwFields, columns, hwColIdx );
 					hwFieldsList.add( hwFields );
 					
@@ -367,8 +379,6 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 				numHwTotal = hwFieldsList.size();
 			}
 			
-			processingImportFile = false;
-			
 			if (custFile != null) {
 				for (int i = 0; i < numAcctTotal; i++) {
 					String[] custFields = (String[]) custFieldsList.get(i);
@@ -376,7 +386,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 					String[] appFields = null;
 					int[][] programs = null;
 					
-					custLineNo = Integer.parseInt( custFields[ImportManager.IDX_LINE_NUM] );
+					position = "customer file line #" + custFields[ImportManager.IDX_LINE_NUM];
 					
 					if (hwFile == null && hwFieldsList != null) {
 						hwFields = (String[]) hwFieldsList.get(i);
@@ -395,15 +405,17 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 							action = "UPDATE";
 					}
 					
+					ImportProblem problem = new ImportProblem();
+					
 					if (action.equalsIgnoreCase( "INSERT" )) {
 						if (liteAcctInfo != null)
 							throw new WebClientException( "Cannot insert customer account: account #" + custFields[ImportManager.IDX_ACCOUNT_NO] + " already exists" );
-						liteAcctInfo = ImportManager.newCustomerAccount( custFields, user, energyCompany, false );
+						liteAcctInfo = ImportManager.newCustomerAccount( custFields, user, energyCompany, false, problem );
 					}
 					else if (action.equalsIgnoreCase( "UPDATE" )) {
 						if (liteAcctInfo == null)
 							throw new WebClientException( "Cannot update customer account: account #" + custFields[ImportManager.IDX_ACCOUNT_NO] + " doesn't exist" );
-						ImportManager.updateCustomerAccount( custFields, liteAcctInfo, energyCompany );
+						ImportManager.updateCustomerAccount( custFields, liteAcctInfo, energyCompany, problem );
 					}
 					else if (action.equalsIgnoreCase( "REMOVE" )) {
 						if (liteAcctInfo == null)
@@ -413,8 +425,14 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 					else
 						throw new WebClientException( "Unrecognized action type '" + action + "'" );
 					
+					if (problem.getProblem() != null)
+						warnings.add( "WARNING at " + position + ": " + problem.getProblem() );
+					
 					if (!action.equals("REMOVE") && hwFields != null && !hwFields[ImportManager.IDX_SERIAL_NO].trim().equals("")) {
-						LiteInventoryBase liteInv = importHardware( hwFields, liteAcctInfo, energyCompany );
+						ImportProblem problem2 = new ImportProblem();
+						LiteInventoryBase liteInv = importHardware( hwFields, liteAcctInfo, energyCompany, problem2 );
+						if (problem2.getProblem() != null)
+							warnings.add( "WARNING at " + position + ": " + problem2.getProblem() );
 						
 						if (programs != null)
 							programSignUp( programs, appFields, liteAcctInfo, liteInv, energyCompany );
@@ -441,7 +459,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 					String[] appFields = null;
 					int[][] programs = null;
 					
-					hwLineNo = Integer.parseInt( hwFields[ImportManager.IDX_LINE_NUM] );
+					position = "hardware file line #" +  hwFields[ImportManager.IDX_LINE_NUM];
 					
 					if (appFieldsList != null) appFields = (String[]) appFieldsList.get(i);
 					if (!hwFields[ImportManager.IDX_PROGRAM_NAME].trim().equals(""))
@@ -451,7 +469,10 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 					if (liteAcctInfo == null)
 						throw new WebClientException( "Account #" + hwFields[ImportManager.IDX_ACCOUNT_ID] + " doesn't exist" );
 					
-					LiteInventoryBase liteInv = importHardware( hwFields, liteAcctInfo, energyCompany );
+					ImportProblem problem = new ImportProblem();
+					LiteInventoryBase liteInv = importHardware( hwFields, liteAcctInfo, energyCompany, problem );
+					if (problem.getProblem() != null)
+						warnings.add( "WARNING at " + position + ": " + problem.getProblem() );
 					
 					if (!hwFields[ImportManager.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE") && programs != null)
 						programSignUp( programs, appFields, liteAcctInfo, liteInv, energyCompany );
@@ -466,17 +487,106 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 			status = STATUS_FINISHED;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			status = STATUS_ERROR;
-			
-			if (custLineNo > 0)
-				errorMsg = "Error encountered when processing customer file line #" + custLineNo;
-			else if (hwLineNo > 0)
-				errorMsg = "Error encountered when processing hardware file line #" + hwLineNo;
+			if (status == STATUS_CANCELED) {
+				errorMsg = "Operation is canceled by user";
+				if (position != null)
+					errorMsg += " after " + position + " is processed";
+			}
+			else {
+				e.printStackTrace();
+				status = STATUS_ERROR;
+				
+				stackTrace = new ArrayList();
+				stackTrace.add( "\t" + e.toString() );
+				for (int i = 0; i < e.getStackTrace().length; i++)
+					stackTrace.add( "\tat " + e.getStackTrace()[i].toString() );
+				
+				if (position != null)
+					errorMsg = "Error at " + position;
+				else
+					errorMsg = "Failed to import customer accounts";
+				if (e instanceof WebClientException)
+					errorMsg += ": " + e.getMessage();
+			}
+		}
+		
+		long stopTime = System.currentTimeMillis();
+		
+		if (numAcctImported > 0 || numHwImported > 0) {
+			int minutes = (int) ((stopTime - startTime) * 0.001 / 60 + 0.5);
+			int hourTaken = minutes / 60;
+			int minTaken = minutes % 60;
+			String timeTaken = "";
+			if (hourTaken > 1)
+				timeTaken += hourTaken + " hours ";
+			else if (hourTaken == 1)
+				timeTaken += hourTaken + " hour ";
+			if (minTaken > 1)
+				timeTaken += minTaken + " minutes";
 			else
-				errorMsg = "Failed to import customer accounts";
-			if (e instanceof WebClientException)
-				errorMsg += ": " + e.getMessage();
+				timeTaken += minTaken + " minute";
+			
+			ArrayList logMsg = new ArrayList();
+			logMsg.add("Start Time: " + ServerUtils.formatDate( new java.util.Date(startTime), java.util.TimeZone.getDefault() ));
+			logMsg.add("Time Taken: " + timeTaken);
+			logMsg.add("");
+			
+			if (errorMsg != null) {
+				logMsg.add(errorMsg);
+				if (stackTrace != null) logMsg.addAll(stackTrace);
+				logMsg.add("");
+			}
+			
+			if (numAcctTotal > 0) {
+				String msg = null;
+				if (numAcctImported == numAcctTotal)
+					msg = numAcctImported + " customer accounts imported successfully";
+				else
+					msg = numAcctImported + " of " + numAcctTotal + " customer accounts imported";
+				msg += " (" + numAcctAdded + " added, " + numAcctUpdated + " updated, " + numAcctRemoved + " removed)" + LINE_SEPARATOR;
+				logMsg.add( msg );
+			}
+			if (numHwTotal > 0) {
+				String msg = null;
+				if (numHwImported == numHwTotal)
+					msg = numHwImported + " hardwares imported successfully";
+				else
+					msg = numHwImported + " of " + numHwTotal + " hardwares imported";
+				msg += " (" + numHwAdded + " added, " + numHwUpdated + " updated, " + numHwRemoved + " removed)";
+				logMsg.add( msg );
+			}
+			
+			if (warnings.size() > 0) {
+				logMsg.add("");
+				logMsg.addAll( warnings );
+			}
+			
+			File importFile = (custFile != null)? custFile : hwFile;
+			String logFileName = importFile.getName();
+			int extPos = logFileName.lastIndexOf('.');
+			if (extPos >= 0)
+				logFileName = logFileName.substring(0, extPos);
+			logFileName += ".log";
+			
+			File logFile = new File( importFile.getParent(), logFileName );
+			
+			try {
+				String[] log = new String[ logMsg.size() ];
+				logMsg.toArray( log );
+				ServerUtils.writeFile( logFile, log );
+			}
+			catch (java.io.IOException e) {
+				logFile = null;
+				
+				if (errorMsg != null)
+					errorMsg += LINE_SEPARATOR;
+				else
+					errorMsg = "";
+				errorMsg += "Failed to write log file";
+			}
+			
+			if ((status == STATUS_ERROR || status == STATUS_CANCELED) && logFile != null)
+				errorMsg += LINE_SEPARATOR + "For detailed information, view log file '" + logFile.getPath() + "'";
 		}
 	}
 	
@@ -587,7 +697,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 		throw new WebClientException( "Program '" + fields[ImportManager.IDX_PROGRAM_NAME] + "' is not found in the published programs" );
 	}
 	
-	private LiteInventoryBase importHardware(String[] hwFields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
+	private LiteInventoryBase importHardware(String[] hwFields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, ImportProblem problem)
 		throws Exception
 	{
 		LiteInventoryBase liteInv = null;
@@ -609,15 +719,15 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 		} 
 		
 		if (action.equalsIgnoreCase( "INSERT" )) {
-			liteInv = ImportManager.insertLMHardware( hwFields, liteAcctInfo, energyCompany, true );
+			liteInv = ImportManager.insertLMHardware( hwFields, liteAcctInfo, energyCompany, true, problem );
 			numHwAdded++;
 		}
 		else if (action.equalsIgnoreCase( "UPDATE" )) {
-			liteInv = ImportManager.updateLMHardware( hwFields, liteInv, liteAcctInfo, energyCompany );
+			liteInv = ImportManager.updateLMHardware( hwFields, liteInv, liteAcctInfo, energyCompany, problem );
 			numHwUpdated++;
 		}
 		else if (action.equalsIgnoreCase( "REMOVE" )) {
-			ImportManager.removeLMHardware( hwFields, liteAcctInfo, energyCompany );
+			ImportManager.removeLMHardware( hwFields, liteAcctInfo, energyCompany, problem );
 			numHwRemoved++;
 		}
 		else
@@ -636,7 +746,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 				return;
 		}
 		
-		ImportManager.programSignUp( programs, liteAcctInfo, new Integer(liteInv.getInventoryID()), energyCompany );
+		ImportManager.programSignUp( programs, liteAcctInfo, liteInv, energyCompany );
 		
 		if (appFields != null && !appFields[ImportManager.IDX_APP_TYPE].trim().equals("")) {
 			int appID = -1;

@@ -155,7 +155,7 @@ public class ProgramSignUpAction implements ActionBase {
 					progEnrBefore += ", " + liteProg.getLmProgram().getProgramName();
 			}
 	        
-			ArrayList hwsToConfig = updateProgramEnrollment( progSignUp, liteAcctInfo, energyCompany );
+			ArrayList hwsToConfig = updateProgramEnrollment( progSignUp, liteAcctInfo, null, energyCompany );
 			
 			// Send out the config/disable command
 			StarsInventories starsInvs = new StarsInventories();
@@ -336,7 +336,7 @@ public class ProgramSignUpAction implements ActionBase {
 	}
 	
 	public static ArrayList updateProgramEnrollment(StarsProgramSignUp progSignUp, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteStarsEnergyCompany energyCompany) throws WebClientException
+		LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) throws WebClientException
 	{
 		StarsSULMPrograms programs = progSignUp.getStarsSULMPrograms();
 		ArrayList hwsToConfig = new ArrayList();
@@ -382,7 +382,11 @@ public class ProgramSignUpAction implements ActionBase {
 				int[] invIDs = new int[1];
 				invIDs[0] = 0;
         		
-				if (program.getInventoryID() != null) {
+				if (liteInv != null) {
+					// Update program enrollment for the specifed hardware only
+					invIDs[0] = liteInv.getInventoryID();
+				}
+				else if (program.getInventoryID() != null) {
 					// Inventory ID(s) is specified in the request
 					String[] invIDStr = program.getInventoryID().split(",");
 					invIDs = new int[ invIDStr.length ];
@@ -522,30 +526,54 @@ public class ProgramSignUpAction implements ActionBase {
 				}
 			}
 			
-			// Remove enrolled program for all the remaining appliances
+			// Remove enrolled programs for all the remaining appliances
+			// (if liteInv is not null, only remove programs assigned to the specified hardware)
 			for (int i = 0; i < appList.size(); i++) {
 				LiteStarsAppliance liteApp = (LiteStarsAppliance) appList.get(i);
     			
 				if (liteApp.getLmProgramID() != 0) {
 					Integer progID = new Integer( liteApp.getLmProgramID() );
-					if (!progUnenrollList.contains(progID)) progUnenrollList.add( progID );
 					
-					if (liteApp.getInventoryID() > 0) {
-						LiteInventoryBase liteHw = energyCompany.getInventory( liteApp.getInventoryID(), true );
-						if (!hwsToConfig.contains( liteHw ))
-							hwsToConfig.add( liteHw );
+					if (liteInv == null || liteApp.getInventoryID() == liteInv.getInventoryID()) {
+						if (!progUnenrollList.contains(progID)) progUnenrollList.add( progID );
+						
+						if (liteApp.getInventoryID() > 0) {
+							LiteInventoryBase liteHw = energyCompany.getInventory( liteApp.getInventoryID(), true );
+							if (!hwsToConfig.contains( liteHw ))
+								hwsToConfig.add( liteHw );
+						}
+						
+						liteApp.setInventoryID( 0 );
+						liteApp.setLmProgramID( 0 );
+						liteApp.setAddressingGroupID( 0 );
+		    			
+						com.cannontech.database.data.stars.appliance.ApplianceBase app =
+								(com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
+						app = (com.cannontech.database.data.stars.appliance.ApplianceBase)
+								Transaction.createTransaction( Transaction.UPDATE, app ).execute();
+						
+						com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.deleteLMHardwareConfiguration( app.getApplianceBase().getApplianceID() );
 					}
-					
-					liteApp.setInventoryID( 0 );
-					liteApp.setLmProgramID( 0 );
-					liteApp.setAddressingGroupID( 0 );
-	    			
-					com.cannontech.database.data.stars.appliance.ApplianceBase app =
-							(com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
-					app = (com.cannontech.database.data.stars.appliance.ApplianceBase)
-							Transaction.createTransaction( Transaction.UPDATE, app ).execute();
-					
-					com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.deleteLMHardwareConfiguration( app.getApplianceBase().getApplianceID() );
+					else {
+						boolean progInNewList = false;
+						for (int j = 0; j < newProgList.size(); j++) {
+							LiteStarsLMProgram liteStarsProg = (LiteStarsLMProgram) newProgList.get(j);
+							if (liteStarsProg.getLmProgram().getProgramID() == progID.intValue()) {
+								progInNewList = true;
+								break;
+							}
+						}
+						
+						if (!progInNewList) {
+							for (int j = 0; j < progList.size(); j++) {
+								LiteStarsLMProgram liteStarsProg = (LiteStarsLMProgram) progList.get(j);
+								if (liteStarsProg.getLmProgram().getProgramID() == progID.intValue()) {
+									newProgList.add( liteStarsProg );
+									break;
+								}
+							}
+						}
+					}
 				}
     			
 				newAppList.add( liteApp );

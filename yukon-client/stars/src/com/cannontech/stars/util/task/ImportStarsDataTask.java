@@ -41,6 +41,7 @@ import com.cannontech.stars.web.servlet.SOAPServer;
 public class ImportStarsDataTask implements TimeConsumingTask {
 
 	private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
+	private static final int WARNING_NUM_LIMIT = 100;
 	
 	int status = STATUS_NOT_INIT;
 	boolean isCanceled = false;
@@ -81,7 +82,6 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 	
 	int numNoDeviceName = 0;
 	int numDeviceNameNotFound = 0;
-	int numNoLoadDescription = 0;
 	
 	long startTime = 0;
 	long stopTime = 0;
@@ -131,7 +131,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					msg += LINE_SEPARATOR;
 				}
 				if (invFieldsCnt > 0) {
-					if (numInvAdded  == invFieldsCnt)
+					if (numInvAdded + numNoDeviceName + numDeviceNameNotFound  == invFieldsCnt)
 						msg += numInvAdded + " hardwares imported successfully";
 					else
 						msg += numInvAdded + " of " + invFieldsCnt + " hardwares imported";
@@ -224,9 +224,10 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 		String path = (String) preprocessedData.get( "CustomerFilePath" );
 		
 		String position = null;
-		ArrayList logMsg = new ArrayList();
 		java.io.PrintWriter fw = null;
 		ArrayList stackTrace = null;
+		ArrayList warnings = new ArrayList();
+		ArrayList warnings2 = new ArrayList();
 		
 		startTime = System.currentTimeMillis();
 		
@@ -242,7 +243,14 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				
 				// To save database lookup time, only check for constraint for
 				// the first import entry, then assume there won't be any problem
-				LiteStarsCustAccountInformation liteAcctInfo = ImportManager.newCustomerAccount(fields, user, energyCompany, first);
+				ImportProblem problem = new ImportProblem();
+				LiteStarsCustAccountInformation liteAcctInfo = ImportManager.newCustomerAccount(fields, user, energyCompany, first, problem);
+				if (problem.getProblem() != null) {
+					warnings.add( "WARNING at " + position + ": " + problem.getProblem() );
+					if (warnings.size() > WARNING_NUM_LIMIT)
+						throw new WebClientException( "Too many warnings, please check the import file(s)" );
+				}
+				
 				first = false;
 				
 				acctIDMap.put( Integer.valueOf(fields[ImportManager.IDX_ACCOUNT_ID]), liteAcctInfo );
@@ -295,7 +303,13 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				
 				LiteInventoryBase liteInv = null;
 				try {
-					liteInv = ImportManager.insertLMHardware( fields, liteAcctInfo, energyCompany, first );
+					ImportProblem problem = new ImportProblem();
+					liteInv = ImportManager.insertLMHardware( fields, liteAcctInfo, energyCompany, first, problem );
+					if (problem.getProblem() != null) {
+						warnings.add( "WARNING at " + position + ": " + problem.getProblem() );
+						if (warnings.size() > WARNING_NUM_LIMIT)
+							throw new WebClientException( "Too many warnings, please check the import file(s)" );
+					}
 				}
 				catch (WebClientException e) {
 					if (e.getMessage().equals( ImportProblem.NO_DEVICE_NAME )) {
@@ -323,8 +337,8 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 							Integer deviceID = (Integer) devCarrSettings.get( fields[ImportManager.IDX_SERIAL_NO] );
 							if (deviceID != null) {
 								LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( deviceID.intValue() );
-								logMsg.add("Meter (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",import_acct_id=" + fields[ImportManager.IDX_ACCOUNT_ID] + ",dev_name=" + fields[ImportManager.IDX_DEVICE_NAME] + ",serial_no=" + fields[ImportManager.IDX_SERIAL_NO] + ") "
-										+ "matches Yukon device (dev_id=" + deviceID + ",dev_name=" + litePao.getPaoName() + ") by serial number");
+								warnings2.add("Meter (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",import_acct_id=" + fields[ImportManager.IDX_ACCOUNT_ID] + ",dev_name=" + fields[ImportManager.IDX_DEVICE_NAME] + ",serial_no=" + fields[ImportManager.IDX_SERIAL_NO]
+										+ ") matches Yukon device (dev_id=" + deviceID + ",dev_name=" + litePao.getPaoName() + ") by serial number");
 							}
 						}
 						
@@ -340,9 +354,9 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				
 				for (int i = 0; i < 3; i++) {
 					if (fields[ImportManager.IDX_R1_STATUS + i].equals("1"))
-						logMsg.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ",serial_no=" + fields[ImportManager.IDX_SERIAL_NO] + ") relay " + (i+1) + " is out of service");
+						warnings2.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ",serial_no=" + fields[ImportManager.IDX_SERIAL_NO] + ") relay " + (i+1) + " is out of service");
 					else if (fields[ImportManager.IDX_R1_STATUS + i].equals("2"))
-						logMsg.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ",serial_no=" + fields[ImportManager.IDX_SERIAL_NO] + ") relay " + (i+1) + " was out before switch placed out");
+						warnings2.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ",serial_no=" + fields[ImportManager.IDX_SERIAL_NO] + ") relay " + (i+1) + " was out before switch placed out");
 				}
 				
 				if (liteAcctInfo != null) {
@@ -385,7 +399,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					if (progList.size() > 0) {
 						int[][] programs = new int[ progList.size() ][];
 						progList.toArray( programs );
-						ImportManager.programSignUp( programs, liteAcctInfo, new Integer(liteInv.getInventoryID()), energyCompany );
+						ImportManager.programSignUp( programs, liteAcctInfo, liteInv, energyCompany );
 						
 						int[] appIDs = new int[3];
 						for (int i = 0; i < 3; i++) {
@@ -430,11 +444,6 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			while (it.hasNext()) {
 				String[] fields = (String[]) it.next();
 				position = "loadinfo file line #" + fields[ImportManager.IDX_LINE_NUM];
-				
-				if (fields[ImportManager.IDX_APP_DESC].equals("") || fields[ImportManager.IDX_APP_DESC].equals("0")) {
-					numNoLoadDescription++;
-					continue;
-				}
 				
 				Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
 				LiteStarsCustAccountInformation liteAcctInfo = null;
@@ -526,7 +535,14 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 						throw new WebClientException("Cannot find customer account with id=" + acctID.intValue());
 				}
 				
-				ImportManager.newServiceRequest(fields, liteAcctInfo, energyCompany, first);
+				ImportProblem problem = new ImportProblem();
+				ImportManager.newServiceRequest(fields, liteAcctInfo, energyCompany, first, problem);
+				if (problem.getProblem() != null) {
+					warnings.add( "WARNING at " + position + ": " + problem.getProblem() );
+					if (warnings.size() > WARNING_NUM_LIMIT)
+						throw new WebClientException( "Too many warnings, please check the import file(s)" );
+				}
+				
 				first = false;
 				
 				numOrderAdded++;
@@ -626,6 +642,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 		else
 			timeTaken += minTaken + " minute";
 		
+		ArrayList logMsg = new ArrayList();
 		logMsg.add("Start Time: " + ServerUtils.formatDate( new Date(startTime), java.util.TimeZone.getDefault() ));
 		logMsg.add("Time Taken: " + timeTaken);
 		logMsg.add("");
@@ -644,7 +661,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 		}
 		if (invFieldsCnt > 0) {
 			String msg = null;
-			if (numInvAdded  == invFieldsCnt)
+			if (numInvAdded + numNoDeviceName + numDeviceNameNotFound  == invFieldsCnt)
 				msg = numInvAdded + " hardwares imported successfully";
 			else
 				msg = numInvAdded + " of " + invFieldsCnt + " hardwares imported";
@@ -672,9 +689,6 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					numDFImported + " df," +
 					numGenlImported + " genl)";
 			logMsg.add(msg);
-			
-			if (numNoLoadDescription > 0)
-				logMsg.add(numNoLoadDescription + " appliances ignored because load description is empty");
 		}
 		if (orderFieldsCnt > 0) {
 			if (numOrderAdded == orderFieldsCnt)
@@ -688,7 +702,16 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			else
 				logMsg.add(numResAdded + " of " + resFieldsCnt + " residence information imported");
 		}
-		logMsg.add("");
+		
+		if (warnings.size() > 0) {
+			logMsg.add("");
+			logMsg.addAll( warnings );
+		}
+		
+		if (warnings2.size() > 0) {
+			logMsg.add("");
+			logMsg.addAll( warnings2 );
+		}
 		
 		Date logDate = new Date();
 		String logFileName = "import_" + ServerUtils.starsDateFormat.format(logDate) +

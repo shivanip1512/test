@@ -36,20 +36,20 @@ import org.apache.commons.fileupload.FileItem;
 public class ServerUtils {
     
 	public static final String AUTO_GEN_NUM_PREC = "##";
-
-	// Increment this for every message
-	private static long userMessageIDCounter = 1;
     
 	// If date in database is earlier than this, than the date is actually empty
-	private static long VERY_EARLY_TIME = 1000 * 3600 * 24;
-	
-	private static final java.text.SimpleDateFormat dateTimeFormat =
-			new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
+	public static long VERY_EARLY_TIME = 1000 * 3600 * 24;
     
 	public static final java.text.SimpleDateFormat starsDateFormat =
 			new java.text.SimpleDateFormat( "yyyyMMdd" );
 	public static final java.text.SimpleDateFormat starsTimeFormat =
 			new java.text.SimpleDateFormat( "HHmm" );
+
+	// Increment this for every message
+	private static long userMessageIDCounter = 1;
+	
+	private static final java.text.SimpleDateFormat dateTimeFormat =
+			new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
 	
 	// Directory to store all the uploaded files
 	private static final String UPLOAD_PATH = "C:/yukon/upload";

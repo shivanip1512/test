@@ -12,9 +12,26 @@ package com.cannontech.stars.util;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public interface ImportProblem {
+public class ImportProblem {
 	
 	public static final String NO_DEVICE_NAME = "No device name";
 	public static final String DEVICE_NAME_NOT_FOUND = "Device name not found in Yukon";
+	
+	private String problem = null;
+	
+	public void setProblem(String s) {
+		problem = s;
+	}
+	
+	public void appendProblem(String s) {
+		if (problem == null)
+			problem = s;
+		else
+			problem += ", " + s;
+	}
+	
+	public String getProblem() {
+		return problem;
+	}
 	
 }

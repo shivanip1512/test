@@ -800,7 +800,7 @@ public class StarsAdmin extends HttpServlet {
 						
 						// Delete all program control history
 						if (programs[j].getGroupIDs() != null) {
-							for (int k = 0; i < programs[j].getGroupIDs().length; k++)
+							for (int k = 0; k < programs[j].getGroupIDs().length; k++)
 								energyCompany.deleteStarsLMControlHistory( programs[j].getGroupIDs()[k] );
 						}
 					}
