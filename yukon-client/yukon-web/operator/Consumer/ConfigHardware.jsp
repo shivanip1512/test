@@ -1,5 +1,4 @@
 <%@ include file="include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.stars.util.ECUtils" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
@@ -35,6 +34,9 @@
 		StarsLMProgram program = programs.getStarsLMProgram(i);
 		if (!attachedProgs.contains(program)) unattachedProgs.add(program);
 	}
+	
+	String trackHwAddr = liteEC.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
+	boolean useHardwareAddressing = trackHwAddr != null && Boolean.valueOf(trackHwAddr).booleanValue();
 %>
 
 <html>
@@ -69,8 +71,8 @@ function saveConfigOnly(form) {
 
 function changeProgSelection(chkBox) {
 	var grpList = document.getElementById('Group_Prog' + chkBox.value);
+	if (grpList != null) grpList.disabled = !chkBox.checked;
 	var loadList = document.getElementById('Load_Prog' + chkBox.value);
-	grpList.disabled = !chkBox.checked;
 	loadList.disabled = !chkBox.checked;
 }
 </script>
@@ -116,7 +118,9 @@ function changeProgSelection(chkBox) {
                   <tr> 
                     <td width="5%" class="HeaderCell">&nbsp; </td>
                     <td width="35%" class="HeaderCell">Program</td>
+<% if (!useHardwareAddressing) { %>
                     <td width="35%" class="HeaderCell">Assigned Group</td>
+<% } %>
                     <td width="25%" class="HeaderCell">Relay</td>
                   </tr>
 <%
@@ -138,6 +142,7 @@ function changeProgSelection(chkBox) {
                       <input type="checkbox" name="ProgID" value="<%= program.getProgramID() %>" checked onclick="changeProgSelection(this)">
                     </td>
                     <td width="35%" class="TableCell" height="2"><%= program.getProgramName() %></td>
+<% if (!useHardwareAddressing) { %>
                     <td width="35%" height="2"> 
                       <select id="Group_Prog<%= program.getProgramID() %>" name="GroupID">
 <%
@@ -151,11 +156,15 @@ function changeProgSelection(chkBox) {
 %>
                       </select>
                     </td>
+<% } else { %>
+                    <input type="hidden" name="GroupID" value="0">
+<% } %>
                     <td width="25%" height="2">
                       <select id="Load_Prog<%= program.getProgramID() %>" name="LoadNo">
                         <option value="0">(none)</option>
 <%
-		for (int ln = 1; ln <= 8; ln++) {
+		int numRelays = (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM)? 8 : 4;
+		for (int ln = 1; ln <= numRelays; ln++) {
 			String selected = (ln == loadNo)? "selected" : "";
 %>
                         <option value="<%= ln %>" <%= selected %>><%= ln %></option>
@@ -177,6 +186,7 @@ function changeProgSelection(chkBox) {
                       <input type="checkbox" name="ProgID" value="<%= program.getProgramID() %>" onclick="changeProgSelection(this)">
                     </td>
                     <td width="35%" class="TableCell" height="2"><%= program.getProgramName() %></td>
+<% if (!useHardwareAddressing) { %>
                     <td width="35%" height="2"> 
                       <select id="Group_Prog<%= program.getProgramID() %>" name="GroupID" disabled="true">
 <%
@@ -189,6 +199,9 @@ function changeProgSelection(chkBox) {
 %>
                       </select>
                     </td>
+<% } else { %>
+                    <input type="hidden" name="GroupID" value="0">
+<% } %>
                     <td width="25%" height="2">
                       <select id="Load_Prog<%= program.getProgramID() %>" name="LoadNo" disabled="true">
                         <option value="0">(none)</option>
@@ -207,10 +220,7 @@ function changeProgSelection(chkBox) {
 	}
 %>
                 </table>
-<%
-	String trackHwAddr = liteEC.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
-	if (trackHwAddr != null && Boolean.valueOf(trackHwAddr).booleanValue()) {
-%>
+<% if (useHardwareAddressing) { %>
                 <br>
 				<input type="hidden" name="UseHardwareAddressing" value="true">
                 <table width="500" border="0" cellspacing="0" cellpadding="10">
@@ -223,9 +233,7 @@ function changeProgSelection(chkBox) {
                     </td>
                   </tr>
                 </table>
-<%
-	}
-%>
+<% } %>
                 <br>
                 <table width="400" border="0" cellspacing="0" cellpadding="0">
                   <tr>

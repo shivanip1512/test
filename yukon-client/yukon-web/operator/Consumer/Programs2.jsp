@@ -43,6 +43,9 @@
 		}
 	}
 	if (suPrograms == null) suPrograms = new StarsSULMPrograms();
+	
+	String trackHwAddr = liteEC.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
+	boolean useHardwareAddressing = trackHwAddr != null && Boolean.valueOf(trackHwAddr).booleanValue();
 %>
 <html>
 <head>
@@ -140,7 +143,9 @@ function prepareSubmit(form) {
                 <table width="80%" border="1" cellspacing="0" cellpadding="3">
                   <tr align="center"> 
                     <td class="HeaderCell" width="25%">Enrolled Program</td>
+<% if (!useHardwareAddressing) { %>
                     <td class="HeaderCell" width="25%">Group Assigned</td>
+<% } %>
                     <td class="HeaderCell" width="50%">Hardware(s) Assigned</td>
                   </tr>
                   <%
@@ -179,6 +184,7 @@ function prepareSubmit(form) {
                     <input type="hidden" name="InvIDs" value="">
                     <input type="hidden" name="LoadNos" value="">
                     <td width="25%" class="TableCell"><%= ServletUtils.getProgramDisplayNames(enrProg)[0] %></td>
+<% if (!useHardwareAddressing) { %>
                     <td width="25%" class="TableCell"> 
                       <select name="GroupID">
                         <%
@@ -192,6 +198,9 @@ function prepareSubmit(form) {
 %>
                       </select>
                     </td>
+<% } else { %>
+                    <input type="hidden" name="GroupID" value="0">
+<% } %>
                     <td width="50%" class="TableCell"> 
                       <table width="100%" border="0" cellspacing="0" cellpadding="1" class="TableCell">
                         <%
@@ -225,10 +234,12 @@ function prepareSubmit(form) {
                           </td>
                           <td width="50%"><%= label %></td>
                           <td width="45%">Relay
-<select name="LoadNo<%= i %>" <%= (checked)?"":"disabled" %>>
+                            <select name="LoadNo<%= i %>" <%= (checked)?"":"disabled" %>>
                               <option value="0">(none)</option>
 <%
-			for (int ln = 1; ln <= 8; ln++) {
+			int hwConfigType = ECUtils.getHardwareConfigType(hardware.getDeviceType().getEntryID());
+			int numRelays = (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM)? 8 : 4;
+			for (int ln = 1; ln <= numRelays; ln++) {
 				String selected = (ln == loadNo)? "selected" : "";
 %>
                               <option value="<%= ln %>" <%= selected %>><%= ln %></option>
