@@ -1462,20 +1462,31 @@ public Object getValue(Object o)
 		String rateHierarchy = getJTextFieldRateHierarchy().getText();
 		 	
 		threeOhFive.getLMGroupSA305().setUtilityAddress(new Integer(utilityAddress));
-		if(groupAddress.compareTo("") != 0)
+		if(groupAddress.compareTo("") == 0)
+			threeOhFive.getLMGroupSA305().setGroupAddress(new Integer(-1));
+		else
 			threeOhFive.getLMGroupSA305().setGroupAddress(new Integer(groupAddress));
-		if(divisionAddress.compareTo("") != 0)
+		if(divisionAddress.compareTo("") == 0)
+			threeOhFive.getLMGroupSA305().setDivisionAddress(new Integer(-1));
+		else
 			threeOhFive.getLMGroupSA305().setDivisionAddress(new Integer(divisionAddress));
-		if(subAddress.compareTo("") != 0)
+		if(subAddress.compareTo("") == 0)
+			threeOhFive.getLMGroupSA305().setSubstationAddress(new Integer(-1));
+		else
 			threeOhFive.getLMGroupSA305().setSubstationAddress(new Integer(subAddress));
 		threeOhFive.getLMGroupSA305().setIndividualAddress(getJTextFieldIndividualAddress().getText());
-		if(rateFamily.compareTo("") != 0)
+		if(rateFamily.compareTo("") == 0)
+			threeOhFive.getLMGroupSA305().setRateFamily(new Integer(-1));
+		else
 			threeOhFive.getLMGroupSA305().setRateFamily(new Integer(rateFamily));
-		if(rateMember.compareTo("") != 0)
+		if(rateMember.compareTo("") == 0)
+			threeOhFive.getLMGroupSA305().setRateMember(new Integer(-1));
+		else
 			threeOhFive.getLMGroupSA305().setRateMember(new Integer(rateMember));
-		if(rateHierarchy.compareTo("") != 0)
+		if(rateHierarchy.compareTo("") == 0)
+			threeOhFive.getLMGroupSA305().setRateHierarchy(new Integer(-1));
+		else
 			threeOhFive.getLMGroupSA305().setRateHierarchy(new Integer(rateHierarchy));
-		
 		
 		StringBuffer addressUsage = new StringBuffer();
 		addressUsage.append('U');
@@ -1686,19 +1697,47 @@ public void setValue(Object o)
 	{
 		LMGroupSA305 threeOhFive = (LMGroupSA305) o;
 		
-		getJTextFieldUtilityAddress().setText(threeOhFive.getLMGroupSA305().getUtilityAddress().toString());	
-		getJTextFieldGroupAddress().setText(threeOhFive.getLMGroupSA305().getGroupAddress().toString());
-		getJTextDivisionAddress().setText(threeOhFive.getLMGroupSA305().getDivisionAddress().toString());
-		getJTextFieldSubAddress().setText(threeOhFive.getLMGroupSA305().getSubstationAddress().toString());
+		Integer utilAdd = threeOhFive.getLMGroupSA305().getUtilityAddress();
+		if(utilAdd.intValue() == -1)
+			getJTextFieldUtilityAddress().setText("");
+		else
+			getJTextFieldUtilityAddress().setText(utilAdd.toString());
+		Integer groupAdd = 	threeOhFive.getLMGroupSA305().getGroupAddress();
+		if(groupAdd.intValue() == -1)
+			getJTextFieldGroupAddress().setText("");
+		else
+			getJTextFieldGroupAddress().setText(groupAdd.toString());		
+		Integer divAdd = threeOhFive.getLMGroupSA305().getDivisionAddress();
+		if(divAdd.intValue() == -1)
+			getJTextDivisionAddress().setText("");
+		else
+			getJTextDivisionAddress().setText(divAdd.toString());
+		Integer subAdd = threeOhFive.getLMGroupSA305().getSubstationAddress();
+		if(subAdd.intValue() == -1)
+			getJTextFieldSubAddress().setText("");
+		else
+			getJTextFieldSubAddress().setText(subAdd.toString());
 		getJTextFieldIndividualAddress().setText(threeOhFive.getLMGroupSA305().getIndividualAddress());
 		//make sure the panel correctly reflects the use of individual address instead of other addresses
 		if(threeOhFive.getLMGroupSA305().getIndividualAddress().compareTo(" ") != 0)
 		{
 			this.getJCheckBoxSerial().doClick();
 		}
-		getJTextFieldRateFamily().setText(threeOhFive.getLMGroupSA305().getRateFamily().toString());
-		getJTextFieldRateMember().setText(threeOhFive.getLMGroupSA305().getRateMember().toString());
-		getJTextFieldRateHierarchy().setText(threeOhFive.getLMGroupSA305().getRateHierarchy().toString());
+		Integer rateFam = threeOhFive.getLMGroupSA305().getRateFamily();
+		if(rateFam.intValue() == -1)
+			getJTextFieldRateFamily().setText("");
+		else
+			getJTextFieldRateFamily().setText(rateFam.toString());
+		Integer rateMem = threeOhFive.getLMGroupSA305().getRateMember();
+		if(rateMem.intValue() == -1)
+			getJTextFieldRateMember().setText("");
+		else
+			getJTextFieldRateMember().setText(rateMem.toString());
+		Integer rateHier = threeOhFive.getLMGroupSA305().getRateHierarchy();
+		if(rateHier.intValue() == -1)
+			getJTextFieldRateHierarchy().setText("");
+		else
+			getJTextFieldRateHierarchy().setText(rateHier.toString());
 		
 		String addressUsage = threeOhFive.getLMGroupSA305().getAddressUsage();
 		if(addressUsage.indexOf('G') != -1 )
