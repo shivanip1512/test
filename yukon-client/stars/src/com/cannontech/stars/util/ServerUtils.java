@@ -1,5 +1,6 @@
 package com.cannontech.stars.util;
 
+import java.util.ArrayList;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -251,6 +252,55 @@ public class ServerUtils {
 		
 		if (addr.length() == 0) addr.append("Address N/A");
 		return addr.toString();
+	}
+	
+	public static ArrayList readFile(File file, boolean addLineNo) {
+		if (file.exists()) {
+			try {
+				java.io.BufferedReader fr = new java.io.BufferedReader(
+						new java.io.FileReader(file) );
+				
+				ArrayList lines = new ArrayList();
+				String line = null;
+				int lineNo = 0;
+				
+				while ((line = fr.readLine()) != null) {
+					lineNo++;
+					if (line.charAt(0) == '#') continue;
+					
+					if (line.length() > 0)
+						if (addLineNo) line = lineNo + "," + line;
+					
+					lines.add(line);
+				}
+				
+				fr.close();
+				return lines;
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+				CTILogger.error("Failed to read file \"" + file.getPath() + "\"");
+			}
+		}
+		else {
+			CTILogger.error("Unable to find file \"" + file.getPath() + "\"");
+		}
+		
+		return null;
+	}
+	
+	public static ArrayList readFile(File file) {
+		return readFile( file, false );
+	}
+	
+	public static void writeFile(File file, ArrayList lines) throws IOException {
+		java.io.PrintWriter fw = new java.io.PrintWriter(
+				new java.io.BufferedWriter( new java.io.FileWriter(file) ));
+		
+		for (int i = 0; i < lines.size(); i++)
+			fw.println( (String)lines.get(i) );
+		
+		fw.close();
 	}
 
 }
