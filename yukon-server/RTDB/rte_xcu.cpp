@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2004/05/05 15:31:43 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2004/05/19 14:55:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -849,11 +849,13 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
             {
                 OutMessage->EventCode = RESULT | ENCODED;
 
-                OutMessage->OutLength = 0;
-                prot.getBuffer(OutMessage->Buffer.OutMessage, OutMessage->OutLength);
-                prot.appendVariableLengthTimeSlot(OutMessage->Buffer.OutMessage, OutMessage->OutLength);
+                OutMessage->Buffer.SASt = prot.getSAData();
+                OutMessage->OutLength = prot.getSABufferLen();
 
-                outList.insert( CTIDBG_new OUTMESS( *OutMessage ) );
+                CtiOutMessage *NewOutMessage = CTIDBG_new OUTMESS( *OutMessage );
+                strncpy(NewOutMessage->Request.CommandStr, parse.getCommandStr() ,COMMAND_STR_SIZE);
+
+                outList.insert( NewOutMessage );
                 break;
             }
         case TYPE_WCTP:
@@ -947,9 +949,8 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
             {
                 OutMessage->EventCode = RESULT | ENCODED;
 
-                OutMessage->OutLength = 0;
-                prot.getBuffer(OutMessage->Buffer.OutMessage, OutMessage->OutLength);
-                prot.appendVariableLengthTimeSlot(OutMessage->Buffer.OutMessage, OutMessage->OutLength);
+                OutMessage->Buffer.SASt = prot.getSAData();
+                OutMessage->OutLength = prot.getSABufferLen();
 
                 outList.insert( CTIDBG_new OUTMESS( *OutMessage ) );
 
