@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/10/19 20:24:53 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/10/22 20:58:55 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -588,7 +588,7 @@ void CtiPorterVerification::pruneEntries(const ptime::time_duration_type &age)
     RWDBDeleter deleter = table.deleter();
     RWDBStatus::ErrorCode e;
 
-    unsigned long earliest = ::std::time(0) - age.total_seconds();
+    unsigned long earliest = ::time(0) - age.total_seconds();
 
     deleter.where(table["datetime"] < RWDBDateTime(RWTime(earliest + rwEpoch)));
 

@@ -284,7 +284,7 @@ void CtiCCSubstationBusStore::reset()
                     {
                         _ccGeoAreas->clearAndDestroy();
                     }
-    
+
                     RWDBDateTime currentDateTime;
                     RWDBDatabase db = getDatabase();
                     RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
@@ -292,7 +292,7 @@ void CtiCCSubstationBusStore::reset()
                     RWDBTable pointTable = db.table("point");
                     RWDBTable pointUnitTable = db.table("pointunit");
                     RWDBTable dynamicCCSubstationBusTable = db.table("dynamicccsubstationbus");
-    
+
                     {
                         RWDBSelector selector = db.selector();
                         selector << yukonPAObjectTable["paobjectid"]
@@ -347,22 +347,22 @@ void CtiCCSubstationBusStore::reset()
                                  << pointTable["pointid"]
                                  << pointTable["pointoffset"]
                                  << pointTable["pointtype"];
-    
+
                         selector.from(yukonPAObjectTable);
                         selector.from(capControlSubstationBusTable);
                         selector.from(pointUnitTable);
                         selector.from(dynamicCCSubstationBusTable);
                         selector.from(pointTable);
-    
+
                         selector.where(yukonPAObjectTable["paobjectid"]==capControlSubstationBusTable["substationbusid"] &&
                                        capControlSubstationBusTable["currentvarloadpointid"].leftOuterJoin(pointUnitTable["pointid"]) &&
                                        capControlSubstationBusTable["substationbusid"].leftOuterJoin(dynamicCCSubstationBusTable["substationbusid"]) &&
                                        capControlSubstationBusTable["substationbusid"].leftOuterJoin(pointTable["paobjectid"]) );
-    
+
                         selector.orderBy(yukonPAObjectTable["description"]);
                         selector.orderBy(yukonPAObjectTable["paoname"]);
                         selector.orderBy(pointTable["pointoffset"]);
-    
+
                         if( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -373,9 +373,9 @@ void CtiCCSubstationBusStore::reset()
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - " << selector.asString().data() << endl;
                         }
-    
+
                         RWDBReader rdr = selector.reader(conn);
-    
+
                         CtiCCSubstationBus* currentCCSubstationBus = NULL;
                         RWDBNullIndicator isNull;
                         while ( rdr() )
@@ -443,7 +443,7 @@ void CtiCCSubstationBusStore::reset()
                     RWDBTable ccFeederSubAssignmentTable = db.table("ccfeedersubassignment");
                     RWDBTable capControlFeederTable = db.table("capcontrolfeeder");
                     RWDBTable dynamicCCFeederTable = db.table("dynamicccfeeder");
-    
+
                     if( _ccSubstationBuses->entries() > 0 )
                     {
                         RWDBSelector selector = db.selector();
@@ -484,30 +484,30 @@ void CtiCCSubstationBusStore::reset()
                                  << pointTable["pointid"]
                                  << pointTable["pointoffset"]
                                  << pointTable["pointtype"];
-    
+
                         selector.from(yukonPAObjectTable);
                         selector.from(capControlFeederTable);
                         selector.from(ccFeederSubAssignmentTable);
                         selector.from(dynamicCCFeederTable);
                         selector.from(pointTable);
-    
+
                         selector.where( yukonPAObjectTable["paobjectid"]==ccFeederSubAssignmentTable["feederid"] &&
                                         capControlFeederTable["feederid"]==ccFeederSubAssignmentTable["feederid"] &&
                                         capControlFeederTable["feederid"].leftOuterJoin(dynamicCCFeederTable["feederid"]) &&
                                         capControlFeederTable["feederid"].leftOuterJoin(pointTable["paobjectid"]) );
-    
+
                         selector.orderBy(ccFeederSubAssignmentTable["substationbusid"]);
                         selector.orderBy(ccFeederSubAssignmentTable["displayorder"]);
                         selector.orderBy(pointTable["pointoffset"]);
-    
+
                         if( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - " << selector.asString().data() << endl;
                         }
-    
+
                         RWDBReader rdr = selector.reader(conn);
-    
+
                         CtiCCFeeder* currentCCFeeder = NULL;
                         RWDBNullIndicator isNull;
                         while ( rdr() )
@@ -560,7 +560,7 @@ void CtiCCSubstationBusStore::reset()
                             else
                             {
                                 currentCCFeeder = new CtiCCFeeder(rdr);
-    
+
                                 /************************************************************
                                 *******  Inserting Feeder into the correct Bus        *******
                                 ************************************************************/
@@ -577,7 +577,7 @@ void CtiCCSubstationBusStore::reset()
                                 }
                             }
                         }
-    
+
                         /*{
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - Done loading Feeder, now loading Cap Banks" << endl;
@@ -590,7 +590,7 @@ void CtiCCSubstationBusStore::reset()
                             RWDBTable capBankTable = db.table("capbank");
                             RWDBTable dynamicCCCapBankTable = db.table("dynamiccccapbank");
                             RWDBTable ccFeederBankListTable = db.table("ccfeederbanklist");
-    
+
                             {
                                 RWDBSelector selector = db.selector();
                                 selector << yukonPAObjectTable["paobjectid"]
@@ -623,7 +623,7 @@ void CtiCCSubstationBusStore::reset()
                                          << pointTable["pointid"]
                                          << pointTable["pointoffset"]
                                          << pointTable["pointtype"];
-    
+
                                 selector.from(yukonPAObjectTable);
                                 selector.from(deviceTable);
                                 selector.from(capBankTable);
@@ -631,26 +631,26 @@ void CtiCCSubstationBusStore::reset()
                                 selector.from(pointTable);
                                 selector.from(ccFeederSubAssignmentTable);
                                 selector.from(ccFeederBankListTable);
-    
+
                                 selector.where(deviceTable["deviceid"]==capBankTable["deviceid"] &&
                                                yukonPAObjectTable["paobjectid"]==deviceTable["deviceid"] &&
                                                ccFeederSubAssignmentTable["feederid"]==ccFeederBankListTable["feederid"] &&
                                                capBankTable["deviceid"]==ccFeederBankListTable["deviceid"] &&
                                                capBankTable["deviceid"].leftOuterJoin(dynamicCCCapBankTable["capbankid"]) &&
                                                capBankTable["deviceid"].leftOuterJoin(pointTable["paobjectid"]) );
-    
+
                                 selector.orderBy(ccFeederSubAssignmentTable["substationbusid"]);
                                 selector.orderBy(ccFeederSubAssignmentTable["displayorder"]);
                                 selector.orderBy(ccFeederBankListTable["controlorder"]);
-    
+
                                 if( _CC_DEBUG & CC_DEBUG_DATABASE )
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << RWTime() << " - " << selector.asString().data() << endl;
                                 }
-    
+
                                 RWDBReader rdr = selector.reader(conn);
-    
+
                                 CtiCCCapBank* currentCCCapBank = NULL;
                                 RWDBNullIndicator isNull;
                                 while ( rdr() )
@@ -695,7 +695,7 @@ void CtiCCSubstationBusStore::reset()
                                     else
                                     {
                                         currentCCCapBank = new CtiCCCapBank(rdr);
-    
+
                                         /************************************************************
                                         *******  Inserting Cap Bank into the correct Feeder   *******
                                         ************************************************************/
@@ -735,60 +735,60 @@ void CtiCCSubstationBusStore::reset()
                         {
                             _ccCapBankStates->clearAndDestroy();
                         }
-    
+
                         RWDBTable stateTable = db.table("state");
-    
+
                         RWDBSelector selector = db.selector();
                         selector << stateTable["text"]
                                  << stateTable["foregroundcolor"]
                                  << stateTable["backgroundcolor"];
-    
+
                         selector.from(stateTable);
-    
+
                         selector.where(stateTable["stategroupid"]==3 && stateTable["rawstate"]>=0);
-    
+
                         selector.orderBy(stateTable["rawstate"]);
-    
+
                         if( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - " << selector.asString().data() << endl;
                         }
-    
+
                         RWDBReader rdr = selector.reader(conn);
-    
+
                         while ( rdr() )
                         {
                             CtiCCState* ccState = new CtiCCState(rdr);
                             _ccCapBankStates->insert( ccState );
                         }
                     }
-    
+
                     {
                         if( _ccGeoAreas->entries() > 0 )
                         {
                             _ccGeoAreas->clearAndDestroy();
                         }
-    
+
                         RWDBSelector selector = db.selector();
                         selector.distinct();
                         selector << yukonPAObjectTable["description"];
-    
+
                         selector.from(yukonPAObjectTable);
                         selector.from(capControlSubstationBusTable);
-    
+
                         selector.where(yukonPAObjectTable["paobjectid"]==capControlSubstationBusTable["substationbusid"]);
-    
+
                         selector.orderBy(yukonPAObjectTable["description"]);
-    
+
                         if( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - " << selector.asString().data() << endl;
                         }
-    
+
                         RWDBReader rdr = selector.reader(conn);
-    
+
                         while ( rdr() )
                         {
                             RWCollectableString* areaString = NULL;
@@ -1042,91 +1042,91 @@ void CtiCCSubstationBusStore::handleAMFMChanges(RWDBReader& rdr)
     {
         rdr["circt_id_current"] >> circt_id_current;
     }
-    
+
     rdr["circt_name_current"] >> isNull;
     if( !isNull )
     {
         rdr["circt_name_current"] >> circt_name_current;
     }
-    
+
     rdr["switch_datetime"] >> isNull;
     if( !isNull )
     {
         rdr["switch_datetime"] >> switch_datetime;
     }
-    
+
     rdr["owner"] >> isNull;
     if( !isNull )
     {
         rdr["owner"] >> owner;
     }
-    
+
     rdr["capacitor_name"] >> isNull;
     if( !isNull )
     {
         rdr["capacitor_name"] >> capacitor_name;
     }
-    
+
     rdr["kvar_rating"] >> isNull;
     if( !isNull )
     {
         rdr["kvar_rating"] >> kvar_rating;
     }
-    
+
     rdr["cap_fs"] >> isNull;
     if( !isNull )
     {
         rdr["cap_fs"] >> cap_fs;
     }
-    
+
     rdr["cbc_model"] >> isNull;
     if( !isNull )
     {
         rdr["cbc_model"] >> cbc_model;
     }
-    
+
     rdr["serial_no"] >> isNull;
     if( !isNull )
     {
         rdr["serial_no"] >> serial_no;
     }
-    
+
     rdr["location"] >> isNull;
     if( !isNull )
     {
         rdr["location"] >> location;
     }
-    
+
     rdr["switching_seq"] >> isNull;
     if( !isNull )
     {
         rdr["switching_seq"] >> switching_seq;
     }
-    
+
     rdr["cap_disable_flag"] >> isNull;
     if( !isNull )
     {
         rdr["cap_disable_flag"] >> cap_disable_flag;
     }
-    
+
     rdr["cap_disable_type"] >> isNull;
     if( !isNull )
     {
         rdr["cap_disable_type"] >> cap_disable_type;
     }
-    
+
     rdr["inoperable_bad_order_equipnote"] >> isNull;
     if( !isNull )
     {
         rdr["inoperable_bad_order_equipnote"] >> inoperable_bad_order_equipnote;
     }
-    
+
     rdr["open_tag_note"] >> isNull;
     if( !isNull )
     {
         rdr["open_tag_note"] >> open_tag_note;
     }
-    
+
     rdr["cap_change_type"] >> isNull;
     if( !isNull )
     {
@@ -1159,7 +1159,7 @@ void CtiCCSubstationBusStore::handleAMFMChanges(RWDBReader& rdr)
     }
 
     feederReconfigureM3IAMFM( capacitor_id_string, circt_id_normal, circt_nam_normal, circt_id_current, circt_name_current,
-                              switch_datetime, owner, capacitor_name, kvar_rating, cap_fs, cbc_model, serial_no,                      
+                              switch_datetime, owner, capacitor_name, kvar_rating, cap_fs, cbc_model, serial_no,
                               location, switching_seq, cap_disable_flag, cap_disable_type,
                               inoperable_bad_order_equipnote, open_tag_note, cap_change_type );
 }
@@ -1416,7 +1416,7 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( RWCString& capacitor_id_
         dout << RWTime() << " - Cap Bank not found MapLocationId: " << capacitor_id << " in: " << __FILE__ << " at: " << __LINE__ << endl;
     }
 }
-                                                        
+
 
 /*---------------------------------------------------------------------------
     capBankMovedToDifferentFeeder
@@ -1912,7 +1912,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
             }
             setDatabaseParams(1,dbDll,dbName,dbUser,dbPassword);
 
-            time_t start = ::std::time(NULL);
+            time_t start = time(NULL);
 
             RWDBDateTime currenttime = RWDBDateTime();
             ULONG tempsum = (currenttime.seconds()-(currenttime.seconds()%refreshrate))+(2*refreshrate);

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/logger.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/09/24 14:57:48 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/10/22 20:58:53 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,8 @@
 #include "dllbase.h"
 #include "logger.h"
 #include "numstr.h"
+
+
 
 IM_EX_CTIBASE CtiLogger   dout;           // Global log
 IM_EX_CTIBASE CtiLogger   slog;           // Global instance. Simulator log
@@ -265,11 +267,11 @@ string CtiLogger::getTodaysFileName() const
 {
     time_t ltime;
     // convert the day of the month into a string
-    ::std::time(&ltime);
+    time(&ltime);
 
     ostringstream itos_buffer;
 
-    int daynum = ::std::localtime(&ltime)->tm_mday;
+    int daynum = localtime(&ltime)->tm_mday;
 
     if( daynum < 10 )
         itos_buffer << "0" << daynum;
@@ -309,11 +311,11 @@ bool CtiLogger::tryOpenOutputFile(ofstream& strm, const string& file)
     time_t ltime;
     struct _stat file_stat;
 
-    ::std::time( &ltime );
-    cur_month = ::std::localtime(&ltime)->tm_mon;
+    time( &ltime );
+    cur_month = localtime(&ltime)->tm_mon;
 
     if( _stat(file.data(), &file_stat) != -1 &&
-        ::std::localtime(&file_stat.st_mtime)->tm_mon == cur_month )
+        localtime(&file_stat.st_mtime)->tm_mon == cur_month )
     {
         //the file exists and was last modified this month
         //open to append

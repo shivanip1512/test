@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2004/09/20 16:02:47 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2004/10/22 20:58:53 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,7 +38,8 @@
 #include "tbl_dv_scandata.h"
 #include "tbl_dv_wnd.h"
 #include "prot_base.h"
-#include "verification_objects.h"
+//#include "verification_objects.h"
+class CtiVerificationBase;  //  this is so boost_time.h isn't included via verification_objects.h - for now
 
 
 /*

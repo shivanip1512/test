@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2004/10/12 20:18:44 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2004/10/22 20:58:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,6 +48,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "pointtypes.h"
 #include "msg_notif_email.h"
 #include "msg_notif_email_attachment.h"
+#include "thread_monitor.h"
 #include "thread_register_data.h"
 
 BOOL bQuit = FALSE;

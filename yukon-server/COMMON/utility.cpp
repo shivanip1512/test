@@ -681,8 +681,8 @@ int SendMailMessage( SENDMAIL *pMail )
     VERIFY_RET_VAL( Receive( s, szBuff, MAX_LINE_SIZE, 0, "354" ); )
 
 // construct date string
-    tTime = ::std::time( NULL );
-    ptm   = ::std::localtime( &tTime );
+    tTime = time( NULL );
+    ptm   = localtime( &tTime );
 
     strftime( szTime, MAX_NAME_SIZE, "%a, %d %b %Y %H:%M:%S %Z", ptm );
 

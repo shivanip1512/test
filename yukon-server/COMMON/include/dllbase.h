@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/dllbase.h-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2004/10/08 15:03:49 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2004/10/22 20:58:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,7 +29,6 @@ using namespace std;
 #include "cticalls.h"
 #include "dsm2.h"
 #include "dlldefs.h"
-#include "thread_monitor.h"
 
 #define SCANNERSEM "SCANNER.SEM"
 
@@ -58,7 +57,6 @@ using namespace std;
 
 IM_EX_CTIBASE extern CTINEXUS          PorterNexus;
 IM_EX_CTIBASE extern RWMutexLock       coutMux;
-IM_EX_CTIBASE extern CtiThreadMonitor  ThreadMonitor;
 
 IM_EX_CTIBASE extern RWCString      dbDll;
 IM_EX_CTIBASE extern RWCString      dbName;

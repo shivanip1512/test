@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/09/24 14:59:40 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/10/22 20:58:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,6 +38,8 @@
 #include "ctinexus.h"
 #include "logger.h"
 #include "utility.h"
+
+#include "thread_monitor.h"
 
 extern VOID PortPipeCleanup (ULONG Reason);
 extern void freeUCTMemory(void);

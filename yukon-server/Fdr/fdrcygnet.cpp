@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive$
-*    REVISION     :  $Revision: 1.6 $
-*    DATE         :  $Date: 2004/09/29 17:47:47 $
+*    REVISION     :  $Revision: 1.7 $
+*    DATE         :  $Date: 2004/10/22 20:58:54 $
 *
 *
 *    AUTHOR: Ben Wallace
@@ -22,8 +22,11 @@
 *                 and headers provide access to their API.
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
       $Log: fdrcygnet.cpp,v $
+      Revision 1.7  2004/10/22 20:58:54  mfisher
+      localized boost ptime references to restore some semblance of sanity to build times
+
       Revision 1.6  2004/09/29 17:47:47  dsutton
       Updated all interfaces to default the db reload rate to once a day (86400)
 
@@ -60,10 +63,10 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include <stdio.h>
 
-/* -----------------------------------     
+/* -----------------------------------
 | CygNet include files & define
-| 
-| 
+|
+|
 | they handle packing and
 | cdecl for calls
 --------------------------------------
@@ -119,7 +122,7 @@ const CHAR * CtiFDRCygnet::KEY_DB_RELOAD_RATE = "FDR_CYGNET_DB_RELOAD_RATE";
 CtiFDRCygnet::CtiFDRCygnet()
 : CtiFDRInterface(RWCString("CYGNET")),
 iHiReasonabilityFilter(0.0)
-{   
+{
     init();
 }
 
@@ -164,7 +167,7 @@ BOOL CtiFDRCygnet::init( void )
         loadTranslationLists();
 
         // create a Cygnet Get Data thread object
-        iThreadGetCygnetData = rwMakeThreadFunction(*this, 
+        iThreadGetCygnetData = rwMakeThreadFunction(*this,
                                                     &CtiFDRCygnet::threadFunctionGetDataFromCygnet);
 
     }
@@ -240,7 +243,7 @@ CtiFDRCygnet & CtiFDRCygnet::setHiReasonabilityFilter(const double myValue)
 * Function Name: CtiFDRCygnet::run()
 *
 * Description: runs the interface
-* 
+*
 **************************************************
 */
 BOOL CtiFDRCygnet::run( void )
@@ -263,8 +266,8 @@ BOOL CtiFDRCygnet::run( void )
 /*************************************************
 * Function Name: CtiFDRCygnet::stop()
 *
-* Description: stops all threads 
-* 
+* Description: stops all threads
+*
 **************************************************
 */
 BOOL CtiFDRCygnet::stop( void )
@@ -273,7 +276,7 @@ BOOL CtiFDRCygnet::stop( void )
     // FIXFIXFIX  - may need to add exception handling here
     //
 
-    iThreadGetCygnetData.requestCancellation();    
+    iThreadGetCygnetData.requestCancellation();
 
     // stop the base class
     Inherited::stop();
@@ -286,11 +289,11 @@ BOOL CtiFDRCygnet::stop( void )
 * Function Name: CtiFDRCygnet::config()
 *
 * Description: loads cparm config values
-* 
+*
 **************************************************
 */
 int CtiFDRCygnet::readConfig( void )
-{    
+{
     int         successful = TRUE;
     RWCString   tempStr;
 
@@ -378,7 +381,7 @@ int CtiFDRCygnet::readConfig( void )
 * Function Name: CtiFDRCygnet::getDataFromCygnetThreadFunction( void )
 *
 * Description: thread that get the periodic triggers getting data
-* 
+*
 ***************************************************************************
 */
 void CtiFDRCygnet::threadFunctionGetDataFromCygnet( void )
@@ -395,7 +398,7 @@ void CtiFDRCygnet::threadFunctionGetDataFromCygnet( void )
 
             //  while i'm not getting anything
             nextScanTime = calculateNextSendTime();
-            ::std::time (&timeNow);
+            ::time (&timeNow);
 
             do
             {
@@ -403,7 +406,7 @@ void CtiFDRCygnet::threadFunctionGetDataFromCygnet( void )
                 pSelf.sleep(1000);
 
                 // get now
-                ::std::time (&timeNow);
+                ::time (&timeNow);
 
             } while ( timeNow < nextScanTime );
 
@@ -439,9 +442,9 @@ void CtiFDRCygnet::threadFunctionGetDataFromCygnet( void )
 /**************************************************************************
 * Function Name: CtiFDRCygnet::sendMessageToForeignSys ()
 *
-* Description: We do not send data to Cygnet but we must provide this 
+* Description: We do not send data to Cygnet but we must provide this
 *              function for all FDR Interfaces.
-* 
+*
 ***************************************************************************
 */
 bool CtiFDRCygnet::sendMessageToForeignSys ( CtiMessage *aMessage )
@@ -453,10 +456,10 @@ bool CtiFDRCygnet::sendMessageToForeignSys ( CtiMessage *aMessage )
 /**************************************************************************
 * Function Name: CtiFDRCygnet::processMessageFromForeignSystem ()
 *
-* Description: Cygnet doesn't initiate data output on its own, we must request it 
-*               from the system.  Because of this, 
+* Description: Cygnet doesn't initiate data output on its own, we must request it
+*               from the system.  Because of this,
 *               We must provide this function for all FDR Interfaces.
-* 
+*
 ***************************************************************************
 */
 INT CtiFDRCygnet::processMessageFromForeignSystem (CHAR *data)
@@ -467,8 +470,8 @@ INT CtiFDRCygnet::processMessageFromForeignSystem (CHAR *data)
 * Function Name: CtiFDRCygnet::connectToAnalogService()
 *
 * Description: Connect the Cygnet Analog Service (call their API)
-* 
-* 
+*
+*
 *************************************************************************
 */
 bool CtiFDRCygnet::connectToAnalogService()
@@ -562,8 +565,8 @@ bool CtiFDRCygnet::connectToAnalogService()
 * Function Name: CtiFDRCygnet::connectToStatusService()
 *
 * Description: Connect the Cygnet Status Service (call their API)
-* 
-* 
+*
+*
 *************************************************************************
 */
 bool CtiFDRCygnet::connectToStatusService()
@@ -663,7 +666,7 @@ bool CtiFDRCygnet::connectToStatusService()
 *
 * Description: Retrieve all Analog Points from the Cygnet Service
 *              using their API and Send to Dispatch.
-* 
+*
 *************************************************************************
 */
 bool CtiFDRCygnet::retreiveAnalogPoints()
@@ -696,7 +699,7 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
     RWCString myAnalogServ(getAnalogServiceName());
     myHiReasonabilityFilter = getHiReasonabilityFilter();
 
-    // loop through all analog points    
+    // loop through all analog points
     CtiLockGuard<CtiMutex> guard(getReceiveFromList().getMutex());
     CtiFDRManager::CTIFdrPointIterator  myIterator(getReceiveFromList().getPointList()->getMap());
     int x;
@@ -737,7 +740,7 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
                     CygnetRequest.header.type = RT_GET_NAMED_REC;
 
                     // copy Cynget point ID to the array (element 0 only for now)
-                    strcpy(CygnetRequest.names[0], point->getDestinationList()[x].getTranslation()); 
+                    strcpy(CygnetRequest.names[0], point->getDestinationList()[x].getTranslation());
 
                     // set the number of points (36 is max)
                     CygnetRequest.header.count = 1;
@@ -756,7 +759,7 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
                         //returnValue = 1;  // test Nonupdated block
 
                         // fake time
-                        ::std::time(&CygnetResponse.recs[0].time);
+                        time(&CygnetResponse.recs[0].time);
 
                         CygnetResponse.header.err = 0;
                         CygnetResponse.header.count = 1;
@@ -767,10 +770,10 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
                     else
                     {
                         // need to get our data before continuing
-                        returnValue = DclCall(myAnalogServ, 
-                                              &CygnetRequest, 
-                                              sizeof(RT_GET_NAMED_REC_REQ), 
-                                              &CygnetResponse, 
+                        returnValue = DclCall(myAnalogServ,
+                                              &CygnetRequest,
+                                              sizeof(RT_GET_NAMED_REC_REQ),
+                                              &CygnetResponse,
                                               sizeof(RT_GET_NAMED_REC_RESP),
                                               &bytesReceived);
                     }
@@ -826,10 +829,10 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
                                     dout << " New Time: " << myNewTime << endl;
                                 }
 
-                                pData = new CtiPointDataMsg(point->getPointID(), 
-                                                            myNewValue, 
-                                                            NormalQuality, 
-                                                            AnalogPointType, 
+                                pData = new CtiPointDataMsg(point->getPointID(),
+                                                            myNewValue,
+                                                            NormalQuality,
+                                                            AnalogPointType,
                                                             desc);
 
                                 pData->setTime(myNewTime);
@@ -954,7 +957,7 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
 *
 * Description: Retrieve all Status Points from the Cygnet Service
 *              using their API and Send to Dispatch.
-* 
+*
 *************************************************************************
 */
 bool CtiFDRCygnet::retreiveStatusPoints()
@@ -984,7 +987,7 @@ bool CtiFDRCygnet::retreiveStatusPoints()
 
     RWCString myStatusServ(getStatusServiceName());
 
-    // loop through all analog points    
+    // loop through all analog points
     CtiLockGuard<CtiMutex> guard(getReceiveFromList().getMutex());
     CtiFDRManager::CTIFdrPointIterator  myIterator(getReceiveFromList().getPointList()->getMap());
     int x;
@@ -1022,7 +1025,7 @@ bool CtiFDRCygnet::retreiveStatusPoints()
                 CygnetRequest.header.type = RT_GET_NAMED_REC;
 
                 // copy Cynget point ID to the array (element 0 only for now)
-                strcpy(CygnetRequest.names[0], point->getDestinationList()[x].getTranslation()); 
+                strcpy(CygnetRequest.names[0], point->getDestinationList()[x].getTranslation());
 
                 // set the number of points (36 is max)
                 CygnetRequest.header.count = 1;
@@ -1043,7 +1046,7 @@ bool CtiFDRCygnet::retreiveStatusPoints()
                     CygnetResponse.header.count = 1;
 
                     // fake time
-                    ::std::time(&CygnetResponse.recs[0].time);
+                    time(&CygnetResponse.recs[0].time);
 
                     //CygnetResponse.recs[0].time -= 300;  // test 5 minutes behind
 
@@ -1061,10 +1064,10 @@ bool CtiFDRCygnet::retreiveStatusPoints()
                 else
                 {
                     // need to get our data before continuing
-                    returnValue = DclCall(myStatusServ, 
-                                          &CygnetRequest, 
-                                          sizeof(RT_GET_NAMED_REC_REQ), 
-                                          &CygnetResponse, 
+                    returnValue = DclCall(myStatusServ,
+                                          &CygnetRequest,
+                                          sizeof(RT_GET_NAMED_REC_REQ),
+                                          &CygnetResponse,
                                           sizeof(RT_GET_NAMED_REC_RESP),
                                           &bytesReceived);
                 }
@@ -1074,12 +1077,12 @@ bool CtiFDRCygnet::retreiveStatusPoints()
                     // time stamp from CygNet
 
                     //myNewTime = RWTime((long)(((long)CygnetResponse.recs[0].time) + rwEpoch) );
-                    
+
                     // do not check time stamp on status points - always send to Dispatch
 
                     /*  fill in the value..
-                        cygnet open   is a 0   	Yukon open   is a 0 but be safe and use define
-                        cygnet closed is a 1	   Yukon closed is a 1 but be safe and use define
+                        cygnet open   is a 0    Yukon open   is a 0 but be safe and use define
+                        cygnet closed is a 1       Yukon closed is a 1 but be safe and use define
                     */
                     memcpy(&charValue, &CygnetResponse.recs[0].val, sizeof(CygnetResponse.recs[0].val));
                     charValue[sizeof(CygnetResponse.recs[0].val)] = '\0';
@@ -1130,10 +1133,10 @@ bool CtiFDRCygnet::retreiveStatusPoints()
 
                     if (sendNoneUpdate == false)
                     {
-                        pData = new CtiPointDataMsg(point->getPointID(), 
-                                                    myNewValue, 
-                                                    NormalQuality, 
-                                                    StatusPointType, 
+                        pData = new CtiPointDataMsg(point->getPointID(),
+                                                    myNewValue,
+                                                    NormalQuality,
+                                                    StatusPointType,
                                                     desc);
 
                         pData->setTime(myNewTime);
@@ -1265,7 +1268,7 @@ bool CtiFDRCygnet::loadTranslationLists()
 *
 * Description: Creates a seperate collection of Status and Analog Point
 *              IDs and Cygnet IDs for translation.
-* 
+*
 *************************************************************************
 */
 bool CtiFDRCygnet::loadLists(CtiFDRPointList &aList)
@@ -1283,12 +1286,12 @@ bool CtiFDRCygnet::loadLists(CtiFDRPointList &aList)
     try
     {
         // make a list with all received points
-        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), 
+        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(),
                                                        RWCString (FDR_INTERFACE_RECEIVE));
 
         if (pointList->loadPointList().errorCode() == (RWDBStatus::ok))
         {
-            CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());  
+            CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());
             if (aList.getPointList() != NULL)
             {
                 aList.deletePointList();
@@ -1390,9 +1393,9 @@ bool CtiFDRCygnet::loadLists(CtiFDRPointList &aList)
 /************************************************************************
 * Function Name: CtiFDRCygnet::calculateNextSendTime()
 *
-* Description: Calculate when we should do our next download 
+* Description: Calculate when we should do our next download
 *              of all Analog and Status values
-* 
+*
 *************************************************************************
 */
 ULONG CtiFDRCygnet::calculateNextSendTime()
@@ -1403,7 +1406,7 @@ ULONG CtiFDRCygnet::calculateNextSendTime()
 
     ULONG    tempTime;
     // get now
-    ::std::time (&timeNow);
+    ::time (&timeNow);
 
     // check where we sit
     secondsPastHour = timeNow % 3600L;
@@ -1414,7 +1417,7 @@ ULONG CtiFDRCygnet::calculateNextSendTime()
     }
     else
     {
-        // calcuates next  on interval time and adds one interval	
+        // calcuates next  on interval time and adds one interval
         tempTime =  timeNow + (interval - (secondsPastHour % interval));
     }
 
@@ -1426,8 +1429,8 @@ ULONG CtiFDRCygnet::calculateNextSendTime()
 
 /****************************************************************************************
 *
-*      Here Starts some C functions that are used to Start the 
-*      Interface and Stop it from the Main() of FDR.EXE.  
+*      Here Starts some C functions that are used to Start the
+*      Interface and Stop it from the Main() of FDR.EXE.
 *
 */
 
@@ -1438,11 +1441,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int RunInterface(void)
 *
-* Description: This is used to Start the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Start the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function creates a global FDRCygnet Object and then
 *              calls its run method to cank it up.
-* 
+*
 *************************************************************************
 */
 
@@ -1459,11 +1462,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int StopInterface(void)
 *
-* Description: This is used to Stop the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Stop the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function stops a global FDRCygnet Object and then
 *              deletes it.
-* 
+*
 *************************************************************************
 */
     DLLEXPORT int StopInterface( void )

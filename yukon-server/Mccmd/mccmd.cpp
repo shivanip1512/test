@@ -1,6 +1,3 @@
-#include <stdio.h>
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   mccmd
@@ -9,11 +6,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2004/09/24 14:36:54 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2004/10/22 20:58:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
+
+#include <stdio.h>
 
 #include <tcl.h>
 
@@ -402,7 +402,7 @@ int Mccmd_Reset(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[
 int Mccmd_Init(Tcl_Interp* interp)
 {
     /* Register MACS commands with the interpreter */
-    
+
     Tcl_CreateCommand( interp, "PILStartup", Mccmd_Connect, NULL, NULL );
     Tcl_CreateCommand( interp, "PILSTARTUP", Mccmd_Connect, NULL, NULL );
     Tcl_CreateCommand( interp, "pilstartup", Mccmd_Connect, NULL, NULL );
@@ -414,7 +414,7 @@ int Mccmd_Init(Tcl_Interp* interp)
     Tcl_CreateCommand( interp, "MCCMDReset", Mccmd_Reset, NULL, NULL );
     Tcl_CreateCommand( interp, "MCCMDRESET", Mccmd_Reset, NULL, NULL );
     Tcl_CreateCommand( interp, "mccmdreset", Mccmd_Reset, NULL, NULL );
-    
+
     Tcl_CreateCommand( interp, "Command", Command, NULL, NULL );
     Tcl_CreateCommand( interp, "command", Command, NULL, NULL );
     Tcl_CreateCommand( interp, "COMMAND", Command, NULL, NULL );
@@ -974,7 +974,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                         CtiLockGuard< CtiLogger > guard(dout);
                         dout << RWTime() << " - Will export " << commandLimit << " commands from " << file << " per interval " <<endl;;
                     }
-                    
+
                 }
 
                 // left in here to support Nevada Power
@@ -1006,7 +1006,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                         CtiLockGuard< CtiLogger > guard(dout);
                         dout << RWTime() << " - Will export " << commandsPerTime << " commands from " << file << " every execution " <<endl;;
                     }
-                    
+
                 }
 
                 if(RWCString(argv[i]).contains (RWCString ("/dsm2"),RWCString::ignoreCase))
@@ -1053,7 +1053,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                     else
                     {
                         protocol = TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL;
-                        
+
                         if( gMccmdDebugLevel > 0 )
                         {
                             CtiLockGuard< CtiLogger > guard(dout);
@@ -1149,7 +1149,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
 
 int isHoliday(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    time_t t = ::std::time(NULL);
+    time_t t = time(NULL);
     int id = 0;
 
     if( argc >= 2 )
@@ -1172,7 +1172,7 @@ int isHoliday(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     }
 
     CtiHolidayManager& mgr = CtiHolidayManager::getInstance();
-    if( mgr.isHoliday(RWDate(::std::localtime(&t)), id) )
+    if( mgr.isHoliday(RWDate(localtime(&t)), id) )
     {
         Tcl_SetResult(interp, "true", NULL );
         return TCL_OK;
@@ -1318,9 +1318,9 @@ int Wait(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     }
 
     long delay = atol(argv[1]);
-    time_t start = ::std::time(NULL);
+    time_t start = time(NULL);
 
-    while( start + delay > ::std::time(NULL) )
+    while( start + delay > time(NULL) )
     {
         //Check for cancellation
         if( Tcl_DoOneEvent( TCL_ALL_EVENTS | TCL_DONT_WAIT) == 1 )
@@ -1469,7 +1469,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
     if( timeout == 0 ) // Not waiting for responses so we're done
         return TCL_OK;
 
-    long start = ::std::time(NULL);
+    long start = time(NULL);
 
     // Some structures to sort the responses
     PILReturnMap device_map;
@@ -1488,7 +1488,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
             if( msg->isA() == MSG_PCRETURN )
             {
                 // received a message, reset the timeout
-                start = ::std::time(NULL);
+                start = ::time(NULL);
 
                 CtiReturnMsg* ret_msg = (CtiReturnMsg*) msg;
                 DumpReturnMessage(*ret_msg);
@@ -1515,7 +1515,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
             break;
         }
 
-        if( ::std::time(NULL) > start + timeout )
+        if( ::time(NULL) > start + timeout )
         {
             RWCString info("timed out: ");
             info += cmd_line;

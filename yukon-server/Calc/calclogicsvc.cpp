@@ -435,7 +435,7 @@ void CtiCalcLogicService::Run( )
 
 
             // get time now
-            ::std::time(&nextCheckTime);
+            time(&nextCheckTime);
 
             //FIXFIXFIX - move CHECK_RATE_SECONDS to a CParm in the future
             //
@@ -478,7 +478,7 @@ void CtiCalcLogicService::Run( )
 
                 rwSleep( 1000 );
 
-                ::std::time (&timeNow);
+                ::time (&timeNow);
                 if( timeNow > nextCheckTime )
                 {
 

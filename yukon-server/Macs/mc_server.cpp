@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2004/09/24 14:36:54 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2004/10/22 20:58:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,7 +55,7 @@ void CtiMCServer::run()
 {
     CtiMessage* msg = NULL;
     unsigned long delay = 0; // how long to wait to wait up again max, in seconds
-    
+
     try
     {
         if( init() )
@@ -64,8 +64,8 @@ void CtiMCServer::run()
             /* Main Loop */
             while(true)
             {
-	        // Workaround for bug in vc6 debug heap
-	        ResetBreakAlloc();
+            // Workaround for bug in vc6 debug heap
+            ResetBreakAlloc();
 
                 if( (msg =_main_queue.getQueue(delay*1000)) != NULL )
                 {
@@ -86,7 +86,7 @@ void CtiMCServer::run()
                         unsigned long next = secondsToTime(nextTime);
                         if( next < delay ) delay = next;
                     }
-                   
+
                     continue;
                 }
 
@@ -105,7 +105,7 @@ void CtiMCServer::run()
                 // Check to see if the next event is ready to go.
 
                 _scheduler.getEvents( RWTime::now(), work_around );
-                   
+
                 for( work_around_iter = work_around.begin();
                      work_around_iter != work_around.end();
                      work_around_iter++ )
@@ -121,7 +121,7 @@ void CtiMCServer::run()
 
             // force stop any schedules with completed scripts
             checkRunningScripts();
-             
+
             delay = secondsToNextMinute();
             RWTime nextTime = _scheduler.getNextEventTime();
             if( nextTime.isValid() ) {
@@ -131,7 +131,7 @@ void CtiMCServer::run()
 
             if( gMacsDebugLevel & MC_DEBUG_EVENTS )
             {
-	        CtiLockGuard<CtiLogger> guard(dout);
+            CtiLockGuard<CtiLogger> guard(dout);
                 _scheduler.dumpEventQueue();
                 dout << RWTime() << " Sleeping for " << delay << " millis" << endl;
             }
@@ -212,7 +212,7 @@ void CtiMCServer::logEvent(const string& user, const string& text) const
   Executes the start command for the given schedule in a tcl interpreter
   synchronously
 ----------------------------------------------------------------------------*/
-void CtiMCServer::executeCommand(const string& command, const string& target) 
+void CtiMCServer::executeCommand(const string& command, const string& target)
 {
     const char* selectPrefix = "Select name \"";
     string to_send;
@@ -243,7 +243,7 @@ void CtiMCServer::executeCommand(const string& command, const string& target)
     interp->evaluate("MCCMDReset");
 
     interp->evaluate( to_send, false ); //no blocking
-    
+
     _executing_commands.push_back(interp);
 }
 
@@ -319,7 +319,7 @@ bool CtiMCServer::init()
 
    /* start up connections to other services */
    CtiInterpreter* interp = _interp_pool.acquireInterpreter();
-   interp->evaluate("pilstartup", true ); 
+   interp->evaluate("pilstartup", true );
    _interp_pool.releaseInterpreter(interp);
 
     }
@@ -381,9 +381,9 @@ void CtiMCServer::executeScript(const CtiMCSchedule& sched)
         //Acquire an interpreter to use
         CtiInterpreter* interp = _interp_pool.acquireInterpreter();
 
-	// reset mccmd for this script
-	interp->evaluate("MCCMDReset");
-	
+    // reset mccmd for this script
+    interp->evaluate("MCCMDReset");
+
         // init the correct schedule id and holiday schedule id
         string init_id("set ScheduleID ");
         init_id += CtiNumStr( sched.getScheduleID() );
@@ -395,10 +395,10 @@ void CtiMCServer::executeScript(const CtiMCSchedule& sched)
 
         interp->evaluate(init_id, true);
 
-	// (re)set some variables
-	interp->evaluate("set ScheduleName \"" + sched.getScheduleName() + "\"");
+    // (re)set some variables
+    interp->evaluate("set ScheduleName \"" + sched.getScheduleName() + "\"");
 
-        {        
+        {
             CtiLockGuard< CtiLogger > guard(dout);
             dout << RWTime() << " [" << interp->getID() << "] " << script.getScriptName() << endl;
         }
@@ -487,10 +487,10 @@ void CtiMCServer::stopScript(long sched_id)
     Releases any interpreters that were evaluating simple commands but have
     finished
 */
-void CtiMCServer::releaseInterpreters() 
+void CtiMCServer::releaseInterpreters()
 {
     deque< CtiInterpreter* >::iterator iter = _executing_commands.begin();
-    while( iter != _executing_commands.end() ) 
+    while( iter != _executing_commands.end() )
     {
         CtiInterpreter* interp = *iter;
         if( !interp->isEvaluating() )
@@ -515,7 +515,7 @@ void CtiMCServer::releaseInterpreters()
 void CtiMCServer::checkRunningScripts()
 {
     RWTime now( stripSeconds(RWTime::now()) );
-    
+
     map< long, CtiInterpreter* >::iterator iter;
     for( iter = _running_scripts.begin();
          iter != _running_scripts.end();
@@ -587,9 +587,9 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
             CtiMCSchedule* new_sched = NULL;
             if( (new_sched = _schedule_manager.addSchedule( add_msg->getSchedule() )) != NULL )
             {
-                
+
                  _scheduler.initEvents( stripSeconds( RWTime::now()), *new_sched );
-                
+
                  _client_listener.BroadcastMessage( new_sched->replicateMessage() );
 
                  string event_text("Created Schedule:  \\\"");
@@ -620,7 +620,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                 RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
 
                 CtiMCUpdateSchedule* update_msg = (CtiMCUpdateSchedule*) msg;
-            
+
                 if( _schedule_manager.updateSchedule( update_msg->getSchedule() ) )
                 {
                     CtiMCSchedule* updated_sched = _schedule_manager.findSchedule( update_msg->getSchedule().getScheduleID() );
@@ -637,7 +637,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                          CtiMCScript script_to_write;
                          script_to_write.setScriptName( update_msg->getSchedule().getCommandFile() );
                          script_to_write.setContents( update_msg->getScript() );
-    
+
                          if( !script_to_write.writeContents() )
                          {
                              errorMsg = new CtiMCInfo();
@@ -648,7 +648,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
 
                     _scheduler.removeEvents(updated_sched->getScheduleID());
                     _scheduler.initEvents( stripSeconds( RWTime::now()), *updated_sched );
-                    
+
                     _client_listener.BroadcastMessage( updated_sched->replicateMessage() );
 
                     string event_text("Updated Schedule: \\\"");
@@ -729,32 +729,32 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                 // so we can log it's name
                 string sched_name;
 
-                {                
+                {
                     RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
-                    
+
                     CtiMCSchedule* sched = _schedule_manager.findSchedule(id);
-    
+
                     if( sched != NULL )
                     {
                         sched_name = sched->getScheduleName();
                     }
-                    
+
                     if( _schedule_manager.deleteSchedule( id ) )
                     {
                         // there can be no more events for this schedule
                         _scheduler.removeEvents( id );
                         _client_listener.BroadcastMessage( delete_msg->replicateMessage() );
-    
+
                         string event_text("Deleted Schedule:  \\\"");
                         event_text += sched_name;
                         event_text += "\\\"";
-    
+
                         logEvent( string(delete_msg->getUser().data()), event_text );
-    
+
                         ret_val = deleted = true;
                     }
                 }
-                
+
                 if( !deleted)
                 {
                     errorMsg = new CtiMCInfo();
@@ -882,7 +882,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
 
                         // must be disabled for this to make sense
                         if( sched->getCurrentState() == CtiMCSchedule::Disabled )
-                        {                            
+                        {
                             sched->setCurrentState( CtiMCSchedule::Waiting );
 
                             //reschedule it
@@ -904,10 +904,10 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
 
                             if( sched->getCurrentState() == CtiMCSchedule::Running )
                             {
-                            
+
                                 real_time = stripSeconds(RWTime::now());
                                 sched->setManualStopTime(real_time);
-    
+
                                 _scheduler.scheduleManualStop( stripSeconds(RWTime::now()), *sched);
                             }
 
@@ -937,7 +937,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
 
 
                     if( sched != NULL && _schedule_manager.updateSchedule( *sched ) )
-                    {                        
+                    {
                         _client_listener.BroadcastMessage( sched->replicateMessage() );
                         logEvent( string(msg->getUser().data()), event_text );
                         ret_val = true;
@@ -949,10 +949,10 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
 
             case MSG_MC_VERIFY_SCRIPT:
             {
-                
-                
+
+
             }
-            break;  
+            break;
    }
 
    if( errorMsg != NULL )
@@ -1166,8 +1166,8 @@ unsigned long CtiMCServer::secondsToNextMinute() const
 {
     struct tm* b_time;
 
-    time_t now = ::std::time(NULL);
-    b_time = ::std::localtime(&now);
+    time_t now = time(NULL);
+    b_time = localtime(&now);
     return (60 - b_time->tm_sec);
 }
 
@@ -1178,7 +1178,7 @@ unsigned long CtiMCServer::secondsToTime(const RWTime& t) const
 
     return ( t_secs < now_secs ?
              0 :
-             (t_secs - now_secs) );    
+             (t_secs - now_secs) );
 }
 
 void CtiMCServer::dumpRunningScripts()

@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __THREAD_MONITOR_H__
-#define __THREAD_MONITOR_H__
-
 /*---------------------------------------------------------------------------------*
 *
 * File:   thread_monitor
@@ -14,11 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/10/07 12:27:52 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/10/22 20:58:54 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
+#ifndef __THREAD_MONITOR_H__
+#define __THREAD_MONITOR_H__
 
 #include <map>
 using namespace std;
@@ -30,14 +28,14 @@ using namespace std;
 class IM_EX_CTIBASE CtiThreadMonitor : public CtiThread
 {
 
-public:                                                             
+public:
 
    typedef map < int, CtiThreadRegData > ThreadData;
 
    CtiThreadMonitor();
    virtual ~CtiThreadMonitor();
 
-   void tickle( const CtiThreadRegData *in ); 
+   void tickle( const CtiThreadRegData *in );
    void dump( void );
 
 protected:
@@ -60,4 +58,9 @@ private:
    ThreadData                                               _threadData;
 
 };
+
+//  included here instead of dllbase.h because ptimes are fat as of 2004-oct-22;
+//    include thread_monitor.h if you want to use the thread monitor in your code
+IM_EX_CTIBASE extern CtiThreadMonitor  ThreadMonitor;
+
 #endif // #ifndef __THREAD_MONITOR_H__
