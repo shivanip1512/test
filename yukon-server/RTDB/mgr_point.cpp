@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/05/02 17:02:23 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/07/03 20:21:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -557,316 +557,314 @@ void CtiPointManager::RefreshPoints(RWDBReader& rdr, BOOL (*testFunc)(CtiPointBa
             else
             {
 #if DEBUG10
-                { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << endl << endl <<
-                    "DELETEing an unwanted POINT" <<
-                    endl << endl;
-                    Sleep(3000L);
+                { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << endl << endl << "DELETEing an unwanted POINT" << endl << endl;}
+                Sleep(3000L);
 #endif
-                    delete pTempCtiPoint;                         // I don't want it!
-                }
+                delete pTempCtiPoint;                         // I don't want it!
             }
         }
     }
+}
 
-    void CtiPointManager::RefreshPointLimits(RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg)
+void CtiPointManager::RefreshPointLimits(RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg)
+{
+    LONG        lTemp = 0;
+    CtiPoint*   pTempCtiPoint = NULL;
+
+    LockGuard  guard(monitor());
+
+    while( rdr() )
     {
-        LONG        lTemp = 0;
-        CtiPoint*   pTempCtiPoint = NULL;
+        rdr["pointid"] >> lTemp;            // get the PointID
+        CtiHashKey key(lTemp);
 
-        LockGuard  guard(monitor());
-
-        while( rdr() )
+        if( Map.entries() > 0 && ((pTempCtiPoint = Map.findValue(&key)) != NULL) )
         {
-            rdr["pointid"] >> lTemp;            // get the PointID
-            CtiHashKey key(lTemp);
+            /*
+             *  The point just returned from the rdr already was in my list.  We need to
+             *  update my list entry to the new limit settings!
+             */
 
-            if( Map.entries() > 0 && ((pTempCtiPoint = Map.findValue(&key)) != NULL) )
-            {
-                /*
-                 *  The point just returned from the rdr already was in my list.  We need to
-                 *  update my list entry to the new limit settings!
-                 */
-
-                ((CtiPointNumeric*)pTempCtiPoint)->DecodeLimitsDatabaseReader(rdr);        // Fills himself in from the reader
-            }
+            ((CtiPointNumeric*)pTempCtiPoint)->DecodeLimitsDatabaseReader(rdr);        // Fills himself in from the reader
         }
     }
+}
 
-    void CtiPointManager::RefreshCalcElements(RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg)
-    {
-        LONG        lTemp = 0;
-        CtiPoint*   pTempCtiPoint = NULL;
+void CtiPointManager::RefreshCalcElements(RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg)
+{
+    LONG        lTemp = 0;
+    CtiPoint*   pTempCtiPoint = NULL;
 
 #if 0
-        while( rdr() )
+    while( rdr() )
+    {
+        rdr["pointid"] >> lTemp;            // get the PointID
+        CtiHashKey key(lTemp);
+
+        if( Map.entries() > 0 && ((pTempCtiPoint = Map.findValue(&key)) != NULL) )
         {
-            rdr["pointid"] >> lTemp;            // get the PointID
-            CtiHashKey key(lTemp);
+            /*
+             *  The point just returned from the rdr already was in my list.  We need to
+             *  update my list entry to the new limit settings!
+             */
 
-            if( Map.entries() > 0 && ((pTempCtiPoint = Map.findValue(&key)) != NULL) )
-            {
-                /*
-                 *  The point just returned from the rdr already was in my list.  We need to
-                 *  update my list entry to the new limit settings!
-                 */
-
-                ((CtiPointCalculated*)pTempCtiPoint)->DecodeCalcElementsDatabaseReader(rdr);        // Fills himself in from the reader
-            }
+            ((CtiPointCalculated*)pTempCtiPoint)->DecodeCalcElementsDatabaseReader(rdr);        // Fills himself in from the reader
         }
+    }
 #endif
 
-    }
+}
 
-    CtiPoint* CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offset, INT Type)
-    {
-        CtiPoint *p    = NULL;
-        CtiPoint *pRet = NULL;
+CtiPoint* CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offset, INT Type)
+{
+    CtiPoint *p    = NULL;
+    CtiPoint *pRet = NULL;
 
-        try
-        {
-            LockGuard  guard(monitor());
-            CtiRTDBIterator itr(Map);
-
-            for(;itr() && !pRet;)
-            {
-                p = itr.value();
-
-                if(pao == p->getDeviceID() && p->getType() == Type)
-                {
-                    switch(Type)
-                    {
-                    case StatusPointType:
-                        {
-                            if(!(p->isPseudoPoint()) && ((CtiPointStatus*)p)->getPointOffset() == Offset)
-                            {
-                                if(p->getUpdatedFlag())
-                                {
-                                    pRet = p;
-                                }
-                                else
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " " << p->getName() << " point is non-updated" << endl;
-                                }
-                            }
-                            break;
-                        }
-                    case AnalogPointType:
-                        {
-                            if(((CtiPointAnalog*)p)->getPointOffset() == Offset)
-                            {
-                                if(p->getUpdatedFlag())
-                                {
-                                    pRet = p;
-                                }
-                                else
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " " << p->getName() << " point is non-updated" << endl;
-                                }
-                            }
-                            break;
-                        }
-                    case PulseAccumulatorPointType:
-                    case DemandAccumulatorPointType:
-                        {
-                            if(((CtiPointAccumulator*)p)->getPointOffset() == Offset)
-                            {
-                                if(p->getUpdatedFlag())
-                                {
-                                    pRet = p;
-                                }
-                                else
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " " << p->getName() << " point is non-updated" << endl;
-                                }
-                            }
-                            break;
-                        }
-                    case SystemPointType:
-                        {
-                            if(p->getPointOffset() == Offset)
-                            {
-                                if(p->getUpdatedFlag())
-                                {
-                                    pRet = p;
-                                }
-                                else
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " " << p->getName() << " point is non-updated" << endl;
-                                }
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        catch(RWExternalErr e )
-        {
-            //Make sure the list is cleared
-            { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Attempting to clear point list..." << __FILE__ << " " << __LINE__ << endl;}
-
-            Map.clearAndDestroy();
-
-            RWTHROW(e);
-        }
-
-        return pRet;
-    }
-
-    CtiPoint* CtiPointManager::getEqual (LONG Pt)
-    {
-        CtiHashKey key(Pt);
-        return Map.findValue(&key);
-
-    }
-
-    CtiPoint* CtiPointManager::getEqualByName(LONG pao, RWCString pname)
-    {
-        CtiPoint *p    = NULL;
-        CtiPoint *pRet = NULL;
-
-        try
-        {
-            LockGuard  guard(monitor());
-            CtiRTDBIterator itr(Map);
-
-            for(;itr() && !pRet;)
-            {
-                p = itr.value();
-
-                if(pao == p->getDeviceID())
-                {
-                    RWCString ptname = p->getName();
-                    ptname.toLower();
-                    pname.toLower();
-
-                    if(ptname == pname)
-                    {
-                        if(p->getUpdatedFlag())
-                        {
-                            pRet = p;
-                        }
-                        else
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << p->getName() << " point is non-updated" << endl;
-                        }
-                    }
-                }
-            }
-        }
-        catch(RWExternalErr e )
-        {
-            //Make sure the list is cleared
-            { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Attempting to clear point list..." << __FILE__ << " " << __LINE__ << endl;}
-
-            Map.clearAndDestroy();
-
-            RWTHROW(e);
-        }
-
-        return pRet;
-    }
-
-
-    CtiPointManager::CtiPointManager() {}
-    CtiPointManager::~CtiPointManager() {}
-
-
-    void CtiPointManager::DeleteList(void)
-    {
-        LockGuard guard(monitor());
-        Map.clearAndDestroy();
-    }
-
-    CtiPoint* CtiPointManager::getControlOffsetEqual(LONG pao, INT Offset)
-    {
-        CtiPoint *p    = NULL;
-        CtiPoint *pRet = NULL;
-
-        try
-        {
-            LockGuard  guard(monitor());
-            CtiRTDBIterator itr(Map);
-
-            for(;itr() && !pRet;)
-            {
-                p = itr.value();
-
-                if(pao == p->getDeviceID() && p->getType() == StatusPointType)
-                {
-                    CtiPointStatus *pCont = (CtiPointStatus*)p;
-
-                    if(pCont->getPointStatus().getControlOffset() == Offset)
-                    {
-                        if(p->getUpdatedFlag())
-                        {
-                            pRet = p;
-                        }
-                        else
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << p->getName() << " point is non-updated" << endl;
-                        }
-                    }
-                }
-            }
-        }
-        catch(RWExternalErr e)
-        {
-            //Make sure the list is cleared
-            { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Attempting to clear point list..." << __FILE__ << " " << __LINE__ << endl;}
-
-            Map.clearAndDestroy();
-
-            RWTHROW(e);
-        }
-
-        return pRet;
-    }
-
-    void CtiPointManager::RefreshAlarming()
+    try
     {
         LockGuard  guard(monitor());
+        CtiRTDBIterator itr(Map);
 
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-
-        RWDBDatabase   db       = conn.database();
-        RWDBSelector   selector = conn.database().selector();
-        RWDBTable      keyTable;
-        RWDBReader     rdr;
-
-
-        CtiTablePointAlarming::getSQL( db, keyTable, selector );
-        rdr = selector.reader( conn );
-
-        if(setErrorCode(rdr.status().errorCode()) != RWDBStatus::ok)
+        for(;itr() && !pRet;)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << selector.asString() << endl;
-        }
+            p = itr.value();
 
-        LONG pID;
-        CtiPointBase *pPt;
-
-        while( rdr() ) // there better be Only one in there!
-        {
-            rdr["pointid"] >> pID;
-
-            // Find it in our list and decode it.
-            pPt = getMap().findValue(&CtiHashKey(pID));
-            if(pPt != 0 && pPt->hasAlarming())
+            if(pao == p->getDeviceID() && p->getType() == Type)
             {
-                pPt->DecodeAlarmingDatabaseReader(rdr);
+                switch(Type)
+                {
+                case StatusPointType:
+                    {
+                        if(!(p->isPseudoPoint()) && ((CtiPointStatus*)p)->getPointOffset() == Offset)
+                        {
+                            if(p->getUpdatedFlag())
+                            {
+                                pRet = p;
+                            }
+                            else
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " " << p->getName() << " point is non-updated" << endl;
+                            }
+                        }
+                        break;
+                    }
+                case AnalogPointType:
+                    {
+                        if(((CtiPointAnalog*)p)->getPointOffset() == Offset)
+                        {
+                            if(p->getUpdatedFlag())
+                            {
+                                pRet = p;
+                            }
+                            else
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " " << p->getName() << " point is non-updated" << endl;
+                            }
+                        }
+                        break;
+                    }
+                case PulseAccumulatorPointType:
+                case DemandAccumulatorPointType:
+                    {
+                        if(((CtiPointAccumulator*)p)->getPointOffset() == Offset)
+                        {
+                            if(p->getUpdatedFlag())
+                            {
+                                pRet = p;
+                            }
+                            else
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " " << p->getName() << " point is non-updated" << endl;
+                            }
+                        }
+                        break;
+                    }
+                case SystemPointType:
+                    {
+                        if(p->getPointOffset() == Offset)
+                        {
+                            if(p->getUpdatedFlag())
+                            {
+                                pRet = p;
+                            }
+                            else
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " " << p->getName() << " point is non-updated" << endl;
+                            }
+                        }
+                        break;
+                    }
+                }
             }
         }
     }
+    catch(RWExternalErr e )
+    {
+        //Make sure the list is cleared
+        { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Attempting to clear point list..." << __FILE__ << " " << __LINE__ << endl;}
+
+        Map.clearAndDestroy();
+
+        RWTHROW(e);
+    }
+
+    return pRet;
+}
+
+CtiPoint* CtiPointManager::getEqual (LONG Pt)
+{
+    CtiHashKey key(Pt);
+    return Map.findValue(&key);
+
+}
+
+CtiPoint* CtiPointManager::getEqualByName(LONG pao, RWCString pname)
+{
+    CtiPoint *p    = NULL;
+    CtiPoint *pRet = NULL;
+
+    try
+    {
+        LockGuard  guard(monitor());
+        CtiRTDBIterator itr(Map);
+
+        for(;itr() && !pRet;)
+        {
+            p = itr.value();
+
+            if(pao == p->getDeviceID())
+            {
+                RWCString ptname = p->getName();
+                ptname.toLower();
+                pname.toLower();
+
+                if(ptname == pname)
+                {
+                    if(p->getUpdatedFlag())
+                    {
+                        pRet = p;
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << p->getName() << " point is non-updated" << endl;
+                    }
+                }
+            }
+        }
+    }
+    catch(RWExternalErr e )
+    {
+        //Make sure the list is cleared
+        { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Attempting to clear point list..." << __FILE__ << " " << __LINE__ << endl;}
+
+        Map.clearAndDestroy();
+
+        RWTHROW(e);
+    }
+
+    return pRet;
+}
 
 
-    
+CtiPointManager::CtiPointManager() {}
+CtiPointManager::~CtiPointManager() {}
+
+
+void CtiPointManager::DeleteList(void)
+{
+    LockGuard guard(monitor());
+    Map.clearAndDestroy();
+}
+
+CtiPoint* CtiPointManager::getControlOffsetEqual(LONG pao, INT Offset)
+{
+    CtiPoint *p    = NULL;
+    CtiPoint *pRet = NULL;
+
+    try
+    {
+        LockGuard  guard(monitor());
+        CtiRTDBIterator itr(Map);
+
+        for(;itr() && !pRet;)
+        {
+            p = itr.value();
+
+            if(pao == p->getDeviceID() && p->getType() == StatusPointType)
+            {
+                CtiPointStatus *pCont = (CtiPointStatus*)p;
+
+                if(pCont->getPointStatus().getControlOffset() == Offset)
+                {
+                    if(p->getUpdatedFlag())
+                    {
+                        pRet = p;
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << p->getName() << " point is non-updated" << endl;
+                    }
+                }
+            }
+        }
+    }
+    catch(RWExternalErr e)
+    {
+        //Make sure the list is cleared
+        { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Attempting to clear point list..." << __FILE__ << " " << __LINE__ << endl;}
+
+        Map.clearAndDestroy();
+
+        RWTHROW(e);
+    }
+
+    return pRet;
+}
+
+void CtiPointManager::RefreshAlarming()
+{
+    LockGuard  guard(monitor());
+
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWDBDatabase   db       = conn.database();
+    RWDBSelector   selector = conn.database().selector();
+    RWDBTable      keyTable;
+    RWDBReader     rdr;
+
+
+    CtiTablePointAlarming::getSQL( db, keyTable, selector );
+    rdr = selector.reader( conn );
+
+    if(setErrorCode(rdr.status().errorCode()) != RWDBStatus::ok)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << selector.asString() << endl;
+    }
+
+    LONG pID;
+    CtiPointBase *pPt;
+
+    while( rdr() ) // there better be Only one in there!
+    {
+        rdr["pointid"] >> pID;
+
+        // Find it in our list and decode it.
+        pPt = getMap().findValue(&CtiHashKey(pID));
+        if(pPt != 0 && pPt->hasAlarming())
+        {
+            pPt->DecodeAlarmingDatabaseReader(rdr);
+        }
+    }
+}
+
+
+
