@@ -10,8 +10,11 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.Properties;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.GraphFuncs;
+import com.cannontech.database.data.graph.GraphDefinition;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.element.persist.PersistDynamicGraphElement;
@@ -217,12 +220,13 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	}
 	
 	public void updateGraph() {
-		
-		if( getGraphDefinitionID() == INVALID_GRAPH_DEFINITION ) 
+		LiteGraphDefinition lGDef = GraphFuncs.getLiteGraphDefinition(getGraphDefinitionID());		
+		if(lGDef == null) {
+			CTILogger.info(getClass().getName() + "::updateGraph() - Couldn't find a graph in the cache with graphdefinitionid: " + getGraphDefinitionID() + ", perhaps it has been deleted?");
 			return;
-		
-		com.cannontech.database.data.graph.GraphDefinition gDef = new com.cannontech.database.data.graph.GraphDefinition();
-		gDef.getGraphDefinition().setGraphDefinitionID(new Integer(getGraphDefinitionID()));
+		}
+
+		GraphDefinition gDef = (GraphDefinition) LiteFactory.createDBPersistent(lGDef);
 		
 		java.sql.Connection conn = null;
 			try
