@@ -217,7 +217,7 @@ if( isValidConn )
 	{
 %>
 				<tr>
-              <td width="200" class="redMsg" align="right" onMouseOver="dispStatusMsg('For security reasons, eneter the password for the admin account');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">
+              <td width="200" class="redMsg" align="right" onMouseOver="dispStatusMsg('For security reasons, enter the password for the admin account');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">
 				  <%= admin.getUsername() %> password:</td>
               <td width="435" valign="bottom" class="MainText">
                 <input type="password" name="admin_password">
