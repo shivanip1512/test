@@ -91,39 +91,7 @@ function confirmSubmit(form) { //v1.0
               <table  border="0" cellspacing="0" cellpadding="0">
                 <tr align = "center"> 
                   <td width="304" valign="top" align = "center"> 
-                 
-                      <form method="get" action=""><br>
-                        
-                      <table width="182" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >
-                        <tr> 
-                            <td height="58"> 
-                              <p align="center" class="TableCell"></p>
-                              <table width="190" border="0" cellspacing="0" cellpadding="0" align="center">
-                                <tr> 
-                                  <td class="HeaderCell"> 
-                                    <input type="checkbox" name="checkbox3" value="checkbox">
-                                    I would like to be notified by <br>
-                                    e-mail prior to control. My e-mail address 
-                                    is:</td>
-                                </tr>
-                              </table>
-                              <table width="190" border="0" cellspacing="0" cellpadding="2">
-                                <tr> 
-                                  <td> 
-                                    <input type="text" name="textfield2" maxlength="8" size="14">
-                                  </td>
-                                  <td> 
-                                    <input type="submit" name="Submit22" value="Submit">
-                                  </td>
-                                </tr>
-                              </table>
-                            </td>
-                          </tr>
-                        </table>
-                      </form>
-                      <br>
-               
-					<form method="post" action="OptForm.jsp" onsubmit="return confirmSubmit(this)">
+                  <form method="post" action="OptForm.jsp" onsubmit="return confirmSubmit(this)">
                       <table width="200" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >
                         <tr> 
                           <td align = "center"> 
