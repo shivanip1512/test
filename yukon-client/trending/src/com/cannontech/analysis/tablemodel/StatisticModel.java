@@ -44,8 +44,7 @@ public class StatisticModel extends ReportModelBase
 	 */
 	public StatisticModel(String statType_)
 	{
-		super();
-		setStatType(statType_);		
+		this(statType_, ReportTypes.CARRIER_COMM_DATA);//default type		
 	}
 	/**
 	 * Constructor class

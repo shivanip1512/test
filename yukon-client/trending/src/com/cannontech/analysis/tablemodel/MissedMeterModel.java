@@ -2,6 +2,7 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 
+import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.data.device.MissedMeter;
 
 /**
@@ -22,6 +23,22 @@ public class MissedMeterModel extends ReportModelBase
 	/** Stop time for query in millis */
 	private long stopTime = Long.MIN_VALUE;
 
+	/**
+	 * 
+	 */
+	public MissedMeterModel()
+	{
+		this(ReportTypes.MISSED_METER_DATA);
+	}
+	
+	/**
+	 * 
+	 */
+	public MissedMeterModel(int reportType_)
+	{
+		super();
+		setReportType(ReportTypes.MISSED_METER_DATA);
+	}
 	/**
 	 * Add MissedMeter objects to data, retrieved from rset.
 	 * @param ResultSet rset

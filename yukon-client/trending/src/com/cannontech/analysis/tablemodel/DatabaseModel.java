@@ -2,6 +2,7 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 
+import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.data.device.Carrier;
 
 /**
@@ -26,7 +27,7 @@ public class DatabaseModel extends ReportModelBase
 	 */
 	public DatabaseModel()
 	{
-		this("CARRIER");
+		this("CARRIER", ReportTypes.CARRIER_DATA);
 	}	
 	/**
 	 * Constructor.
@@ -34,10 +35,20 @@ public class DatabaseModel extends ReportModelBase
 	 */
 	public DatabaseModel(String paoClass_)
 	{
+		this(paoClass_, ReportTypes.CARRIER_DATA);
+	}	
+
+	/**
+	 * Constructor.
+	 * @param paoClass_ = YukonPaobject.paoClass
+	 */
+	public DatabaseModel(String paoClass_, int reportType_)
+	{
 		super();
 		setPaoClass(paoClass_);
+		setReportType(reportType_);
 	}	
-	
+		
 	/**
 	 * Add CarrierData objects to data, retrieved from rset.
 	 * @param ResultSet rset

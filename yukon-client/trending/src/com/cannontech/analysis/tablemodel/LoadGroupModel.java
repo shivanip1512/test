@@ -2,6 +2,7 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 
+import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.data.lm.LGAccounting;
 
 /**
@@ -36,7 +37,7 @@ public class LoadGroupModel extends ReportModelBase
 	
 	public LoadGroupModel()
 	{
-		super();
+		this(null, Long.MIN_VALUE, Long.MAX_VALUE, ReportTypes.LG_ACCOUNTING_DATA);
 	}	
 
 	
@@ -49,9 +50,7 @@ public class LoadGroupModel extends ReportModelBase
 	 */
 	public LoadGroupModel(long startTime_, long stopTime_)
 	{
-		super();
-		setStartTime(startTime_);
-		setStopTime(stopTime_);		
+		this(null, startTime_, stopTime_, ReportTypes.LG_ACCOUNTING_DATA);
 	}	
 	/**
 	 * Constructor class
@@ -59,12 +58,10 @@ public class LoadGroupModel extends ReportModelBase
 	 * @param startTime_ LMControlHistory.startDateTime
 	 * @param stopTime_ LMControlHistory.stopDateTiem
 	 */
-	public LoadGroupModel(String loadGroup_, long startTime_, long stopTime_)
+	public LoadGroupModel(long startTime_, long stopTime_, String loadGroup_ )
 	{
-		super();
-		setLoadGroups(loadGroup_);
-		setStartTime(startTime_);
-		setStopTime(stopTime_);		
+		this( null, startTime_, stopTime_, ReportTypes.LG_ACCOUNTING_DATA);
+		setLoadGroups(loadGroup_);	//Must add here after the constructor called.
 	}
 	/**
 	 * Constructor class
@@ -74,11 +71,22 @@ public class LoadGroupModel extends ReportModelBase
 	 */
 	public LoadGroupModel(java.util.Vector loadGroups_, long startTime_, long stopTime_)
 	{
-		super();
-		setLoadGroups(loadGroups_);
-		setStartTime(startTime_);
-		setStopTime(stopTime_);		
+		this(loadGroups_, startTime_, stopTime_, ReportTypes.LG_ACCOUNTING_DATA);
 	}
+	/**
+	 * Constructor class
+	 * @param loadGroups_ (Vector of)YukonPaobject.paoName (of single load group)
+	 * @param startTime_ LMControlHistory.startDateTime
+	 * @param stopTime_ LMControlHistory.stopDateTiem
+	 */
+	public LoadGroupModel(java.util.Vector loadGroups_, long startTime_, long stopTime_, int reportType_)
+	{
+		super();
+		setStartTime(startTime_);
+		setStopTime(stopTime_);
+		setLoadGroups(loadGroups_);
+		setReportType(reportType_);
+	}	
 	
 	/**
 	 * Add LGAccounting objects to data, retrieved from rset.
@@ -258,5 +266,4 @@ public class LoadGroupModel extends ReportModelBase
 		loadGroups = new java.util.Vector(1);
 		loadGroups.add(loadGroup_);
 	}
-
 }
