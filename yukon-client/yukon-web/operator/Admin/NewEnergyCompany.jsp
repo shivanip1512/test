@@ -65,12 +65,18 @@ function validate(form) {
                         <td width="15%" align="right" class="TableCell" valign="top">Step 
                           1:</td>
                         <td width="85%" class="TableCell"> <span class="ConfirmMsg">Enter 
-                          the energy company name:</span> 
+                          the energy company information:</span> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                             <tr> 
                               <td width="25%" align="right">Company Name:</td>
                               <td width="75%"> 
                                 <input type="text" name="CompanyName" size="30">
+                              </td>
+                            </tr>
+                            <tr> 
+                              <td width="25%" align="right">Email:</td>
+                              <td width="75%">
+                                <input type="text" name="Email" size="30">
                               </td>
                             </tr>
                           </table>
