@@ -442,10 +442,14 @@ public static void main(String[] args)
 				"   mailhost = The address of the smtp out server.\r\n" +
 				"   toaddress = Email address to send the email to.\r\n" +
 				"   fromaddress = Email address that will appear in the From.\r\n" +
-				"   MailUserName = [Optional] User name if the smtp server requires it.\r\n" +
-				"   MailPassword = [Optional] Password if the smtp server requires it.\r\n" +
+            "   MailUserName = [Optional] User name if the smtp server requires it.\r\n" +
+            "   MailPassword = [Optional] Password if the smtp server requires it.\r\n" +
 				"   type = [Optional] qmail or javamail, defaults to javamail.\r\n" +
-				"   test = [Optional] Y if you want to send a test message.\r\n" );
+				"   test = [Optional] Y if you want to send a test message.\r\n" +
+            " \r\n" +
+            " \r\n" +
+            "Example: " + Rat.class.getName() + " mailhost=65.165.200.66 toaddress=ryan@cannontech.com " +
+            "fromaddress=rat@ratter.com type=qmail test=y");
 
 			return;
 		}
