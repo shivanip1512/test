@@ -80,7 +80,7 @@ public static boolean deleteDeviceScanRates(Integer deviceID, String databaseAli
 	}
 	catch(Exception e)
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		return false;
 	}
 
@@ -127,7 +127,7 @@ public static DeviceScanRate[] getDeviceScanRates(Integer deviceID, String datab
 	}
 	catch( Exception e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	
 	DeviceScanRate retVal[] = new DeviceScanRate[stmt.getRowCount()];

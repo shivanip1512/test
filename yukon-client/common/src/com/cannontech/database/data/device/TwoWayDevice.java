@@ -154,7 +154,7 @@ public void retrieve() throws java.sql.SQLException{
 	}
 	catch(java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
 
@@ -178,7 +178,7 @@ public void retrieve() throws java.sql.SQLException{
 	}
 	catch(java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 */
 

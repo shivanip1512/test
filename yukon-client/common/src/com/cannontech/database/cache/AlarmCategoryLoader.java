@@ -53,7 +53,7 @@ timerStart = new java.util.Date();
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -66,7 +66,7 @@ timerStart = new java.util.Date();
 		}
 		catch( java.sql.SQLException e )
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 //temp code
 timerStop = new java.util.Date();

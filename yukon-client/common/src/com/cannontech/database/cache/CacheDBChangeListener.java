@@ -114,7 +114,7 @@ public void run()
 	catch( Exception e )
 	{
 		com.cannontech.clientutils.CTILogger.info( "**** " + this.getClass().getName() + " had an unexpected Thread death");
-		e.printStackTrace( System.out );
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	
 }

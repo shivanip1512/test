@@ -41,7 +41,7 @@ public final static int countLines(java.io.File file) {
 	}
 	catch( Exception e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
 	return count;

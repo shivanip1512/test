@@ -89,7 +89,7 @@ public static LitePoint[] getLitePointsByUOMID(int[] uomIDs)
       }
       catch( java.sql.SQLException sq )
       {         
-         sq.printStackTrace( System.out );
+         com.cannontech.clientutils.CTILogger.error( sq.getMessage(), sq );
       }
       
    }

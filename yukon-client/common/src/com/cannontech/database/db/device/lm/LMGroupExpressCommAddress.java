@@ -168,7 +168,7 @@ public final static LMGroupExpressCommAddress[] getAllExpressCommAddress( String
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -178,7 +178,7 @@ public final static LMGroupExpressCommAddress[] getAllExpressCommAddress( String
 		} 
 		catch( java.sql.SQLException e2 )
 		{
-			e2.printStackTrace();//something is up
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
 		}	
 	}
 
@@ -237,7 +237,7 @@ public final static LMGroupExpressCommAddress[] getAllExpressCommAddressWithName
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -248,7 +248,7 @@ public final static LMGroupExpressCommAddress[] getAllExpressCommAddressWithName
 		} 
 		catch( java.sql.SQLException e2 )
 		{
-			e2.printStackTrace();//something is up
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
 		}	
 	}
 
@@ -284,7 +284,7 @@ public final static int getNextAddressID( java.sql.Connection conn )
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -294,7 +294,7 @@ public final static int getNextAddressID( java.sql.Connection conn )
 		} 
 		catch( java.sql.SQLException e2 )
 		{
-			e2.printStackTrace();//something is up
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
 		}	
 	}
 

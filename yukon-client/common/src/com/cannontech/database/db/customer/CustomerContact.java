@@ -148,7 +148,7 @@ com.cannontech.clientutils.CTILogger.info( "		LOGINDELETESTRING = " + loginStrin
 	}
 	catch(Exception e)
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		return false;
 	}
 
@@ -177,7 +177,7 @@ public static boolean deleteCustomerGraphList(Integer customerID, java.sql.Conne
 	}
 	catch(Exception e)
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		return false;
 	}
 
@@ -233,7 +233,7 @@ public static final CustomerContact[] getAllCustomerContacts(Integer deviceID, j
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -244,7 +244,7 @@ public static final CustomerContact[] getAllCustomerContacts(Integer deviceID, j
 		} 
 		catch( java.sql.SQLException e2 )
 		{
-			e2.printStackTrace();//something is up
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
 		}	
 	}
 
@@ -348,7 +348,7 @@ public static final CustomerContact getCustomerContact(Integer loginID, String d
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -359,7 +359,7 @@ public static final CustomerContact getCustomerContact(Integer loginID, String d
 		} 
 		catch( java.sql.SQLException e2 )
 		{
-			e2.printStackTrace();//something is up
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
 		}	
 	}
 
@@ -426,7 +426,7 @@ public final Integer getNextContactID()
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -437,7 +437,7 @@ public final Integer getNextContactID()
 		} 
 		catch( java.sql.SQLException e2 )
 		{
-			e2.printStackTrace(); //something is up
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); //something is up
 		}	
 	}
 

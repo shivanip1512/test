@@ -65,7 +65,7 @@ public void actionPerformed(java.awt.event.ActionEvent newEvent) {
 	}
 	catch(Exception e)
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -231,7 +231,7 @@ public Object getValue(Object o)
 	}
 	catch( java.io.IOException e )
 	{
-		e.printStackTrace( System.out );
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	
 	return o;

@@ -105,7 +105,7 @@ public static Integer[] getAllPortNumbers(String databaseAlias) throws SQLExcept
 	}
 	catch( Exception e )
 	{	
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 															
 	return retVal;

@@ -45,7 +45,7 @@ public void valueChanged(TreeSelectionEvent event) {
 	}
 	catch( CommandExecutionException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 		
 }

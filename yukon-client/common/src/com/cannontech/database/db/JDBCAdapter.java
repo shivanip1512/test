@@ -253,7 +253,7 @@ public void setColumnLabel( int whichColumn, String label) {
 			// statement.executeQuery(query);
 		}
 		catch (SQLException e) {
-			//     e.printStackTrace();
+			//     com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			System.err.println("Update failed");
 		}
 		Vector dataRow = (Vector)rows.elementAt(row);

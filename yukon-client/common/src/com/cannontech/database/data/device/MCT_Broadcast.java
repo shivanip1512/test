@@ -229,13 +229,13 @@ public final com.cannontech.common.util.NativeIntVector getAllMCTsIDList(Integer
     	
      catch( java.sql.SQLException e )
      {
-     	e.printStackTrace();
+     	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
      	return null;
      }
      
      finally
      {   //make sure to close the connection
-          try { if( conn != null ) conn.close(); } catch(java.sql.SQLException e2 ) { e2.printStackTrace(); };
+          try { if( conn != null ) conn.close(); } catch(java.sql.SQLException e2 ) { com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); };
      }
 
     

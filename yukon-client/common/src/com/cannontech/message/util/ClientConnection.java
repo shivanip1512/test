@@ -85,7 +85,7 @@ private void cleanUp()
 	}
 	catch( java.io.IOException ex )
 	{
-		ex.printStackTrace( System.out );
+		com.cannontech.clientutils.CTILogger.error( ex.getMessage(), ex );
 	}
 }
 /**
@@ -103,7 +103,7 @@ public void connect() throws java.io.IOException
 	}
 	catch( InterruptedException e )
 	{
-		//e.printStackTrace();
+		//com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		com.cannontech.clientutils.CTILogger.info("InterruptedException in " + this.getClass().getName() + ".connect() : " + e.getMessage());
 	}
 }

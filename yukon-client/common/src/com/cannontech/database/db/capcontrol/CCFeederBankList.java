@@ -81,7 +81,7 @@ public static boolean deleteCapBanksFromFeederList(Integer feederId, Integer cap
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		return false;
 	}
 	finally
@@ -93,7 +93,7 @@ public static boolean deleteCapBanksFromFeederList(Integer feederId, Integer cap
 		} 
 		catch( java.sql.SQLException e2 )
 		{
-			e2.printStackTrace();//something is up
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
 		}	
 	}
 
@@ -139,7 +139,7 @@ public static java.util.Vector getCapBanksOnFeederList(Integer feederId, java.sq
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -149,7 +149,7 @@ public static java.util.Vector getCapBanksOnFeederList(Integer feederId, java.sq
 		} 
 		catch( java.sql.SQLException e2 )
 		{
-			e2.printStackTrace();//something is up
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
 		}	
 	}
 

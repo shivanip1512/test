@@ -50,7 +50,7 @@ public void run()
 	}
 	catch (java.sql.SQLException e)
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -63,7 +63,7 @@ public void run()
 		}
 		catch (java.sql.SQLException e)
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 
 		com.cannontech.clientutils.CTILogger.info( ((System.currentTimeMillis() - timer)*.001) + " Secs for DeviceMeterGroupLoader");

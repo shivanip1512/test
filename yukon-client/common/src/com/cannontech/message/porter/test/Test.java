@@ -30,9 +30,9 @@ public static void main(String[] args)
 			com.cannontech.clientutils.CTILogger.info(r);
 		}
 	}
-	catch (java.io.IOException ioe)
+	catch (java.io.IOException e)
 	{
-		ioe.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 }
 }

@@ -82,11 +82,11 @@ public java.lang.String[][] getKeysAndValues() {
 		com.cannontech.clientutils.CTILogger.info("*** File Not Found Exception:");
 		com.cannontech.clientutils.CTILogger.info( this.getClass().getName() + ".getKeysAndValues()" );
 		com.cannontech.clientutils.CTILogger.info("  " + fnfe.getMessage());
-		fnfe.printStackTrace(System.out);
+		com.cannontech.clientutils.CTILogger.error( fnfe.getMessage(), fnfe );
 	}
 	catch( java.io.IOException ioe )
 	{
-		ioe.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( ioe.getMessage(), ioe );
 	}
 
 	if( keys.size() != values.size() )

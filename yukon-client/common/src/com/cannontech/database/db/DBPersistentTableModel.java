@@ -42,7 +42,7 @@ public void executeQuery() throws SQLException
 	if( getQuery() == null )
 	{
 		Error e = new Error("SQL Query String cannot be null");
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		throw e;
 	}
 	

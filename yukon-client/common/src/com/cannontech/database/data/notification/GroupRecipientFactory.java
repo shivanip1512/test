@@ -58,7 +58,7 @@ public final static NotificationRecipient getNotificationRecipient(Integer locat
 	}
 	catch (Exception e)
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	
 	return returnRecipient;

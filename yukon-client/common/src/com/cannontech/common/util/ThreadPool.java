@@ -111,7 +111,7 @@ public void join()
 	}
 	catch( InterruptedException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 }
 /**
@@ -165,7 +165,7 @@ public static void main(String[] args)
 	}
 	catch( Throwable t )
 	{
-		t.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
 	}
 
 

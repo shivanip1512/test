@@ -123,7 +123,7 @@ public static final com.cannontech.database.db.graph.GraphCustomerList[] getAllG
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -134,7 +134,7 @@ public static final com.cannontech.database.db.graph.GraphCustomerList[] getAllG
 		} 
 		catch( java.sql.SQLException e2 )
 		{
-			e2.printStackTrace();//something is up
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
 		}	
 	}
 
@@ -193,7 +193,7 @@ public static synchronized Integer getCustomerAddressID( Integer customerID, jav
 	}
 	catch( Exception e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -206,7 +206,7 @@ public static synchronized Integer getCustomerAddressID( Integer customerID, jav
 		}
 		catch(java.sql.SQLException e )
 		{
-			e.printStackTrace(System.out);
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 	}
 
@@ -268,7 +268,7 @@ com.cannontech.clientutils.CTILogger.info(GET_CUSTOMER_FROM_CONTACT_SQL);
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -279,7 +279,7 @@ com.cannontech.clientutils.CTILogger.info(GET_CUSTOMER_FROM_CONTACT_SQL);
 		} 
 		catch( java.sql.SQLException e2 )
 		{
-			e2.printStackTrace();//something is up
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
 		}	
 	}
 

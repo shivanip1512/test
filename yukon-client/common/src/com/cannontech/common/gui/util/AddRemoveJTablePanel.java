@@ -378,7 +378,7 @@ protected AddRemoveJTableModel getJTableModel()
 	}
 	catch( ClassCastException e )
 	{
-		e.printStackTrace( System.out );
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		throw new Error("AddRemoveJTablePanel should only have JTable models that are AddRemoveJTableModel!!");
 	}
 	
@@ -399,7 +399,7 @@ private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	exception.printStackTrace(System.out);
+	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initializes connections

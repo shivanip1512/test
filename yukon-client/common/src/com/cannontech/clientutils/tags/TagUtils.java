@@ -68,7 +68,7 @@ public static boolean isAlarmAcked(int tags)
 	}
 	catch( IllegalAlarmSateException e )
 	{
-		e.printStackTrace(System.out);
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		return false;
 	}
 
@@ -89,7 +89,7 @@ public static boolean isAlarm(int tags)
 	}
 	catch( IllegalAlarmSateException e )
 	{
-		e.printStackTrace(System.out);
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		return false;
 	}
 }

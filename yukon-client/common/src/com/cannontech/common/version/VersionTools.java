@@ -42,7 +42,7 @@ public final static com.cannontech.database.db.version.CTIDatabase getDatabaseVe
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace( System.out );
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -56,7 +56,7 @@ public final static com.cannontech.database.db.version.CTIDatabase getDatabaseVe
 		}
 		catch( java.sql.SQLException e )
 		{
-			e.printStackTrace( System.out );
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 	}
 		

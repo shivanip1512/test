@@ -289,7 +289,7 @@ public synchronized java.util.List getAllGraphTaggedPoints()
 		  }
 		  catch( java.sql.SQLException e )
 		  {
-			   e.printStackTrace();
+			   com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		  }
 		  finally
 		  {
@@ -302,7 +302,7 @@ public synchronized java.util.List getAllGraphTaggedPoints()
 			   }
 			   catch( java.sql.SQLException e )
 			   {
-					e.printStackTrace();
+					com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			   }
 
 			   //temp code
@@ -573,7 +573,7 @@ public synchronized java.util.List getAllUnusedCCDevices()
 		}
 		catch( java.sql.SQLException e )
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		finally
 		{
@@ -586,7 +586,7 @@ public synchronized java.util.List getAllUnusedCCDevices()
 			}
 			catch( java.sql.SQLException e )
 			{
-				e.printStackTrace();
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			}
 		}
 

@@ -69,7 +69,7 @@ public static final void deleteAllPWOowners( Integer paoID, java.sql.Connection 
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -79,7 +79,7 @@ public static final void deleteAllPWOowners( Integer paoID, java.sql.Connection 
 		} 
 		catch( java.sql.SQLException e2 )
 		{
-			e2.printStackTrace();//something is up
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
 		}	
 	}
 
@@ -125,7 +125,7 @@ public static final PAOowner[] getAllMetersCustomerList(Integer ownerID, java.sq
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -135,7 +135,7 @@ public static final PAOowner[] getAllMetersCustomerList(Integer ownerID, java.sq
 		} 
 		catch( java.sql.SQLException e2 )
 		{
-			e2.printStackTrace();//something is up
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
 		}	
 	}
 

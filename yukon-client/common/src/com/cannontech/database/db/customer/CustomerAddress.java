@@ -116,7 +116,7 @@ public static synchronized Integer getNextAddressID()
 	}
 	catch( Exception e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
 	return new Integer(value);

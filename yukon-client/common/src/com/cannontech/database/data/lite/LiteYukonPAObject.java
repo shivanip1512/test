@@ -156,7 +156,7 @@ public void retrieve(String dbalias)
 	}
 	catch( Exception e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -171,7 +171,7 @@ public void retrieve(String dbalias)
 		}
 		catch(java.sql.SQLException e )
 		{
-			e.printStackTrace(System.out);
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 	}
 
@@ -189,7 +189,7 @@ public void retrieve(String dbalias)
 	}
 	catch( com.cannontech.database.TransactionException e )
 	{
-		e.printStackTrace(System.out);
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
 }	

@@ -153,7 +153,7 @@ public static Object[][] executeSQL(String dbAlias, String query) {
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -274,7 +274,7 @@ public static Object[][] executeSQL(String dbAlias, String query, Class[] types)
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -384,7 +384,7 @@ public static Object[][] executeSQL(javax.servlet.http.HttpSession session, Stri
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -529,7 +529,7 @@ public static Object[][] executeSQL(javax.servlet.http.HttpSession session, Stri
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{

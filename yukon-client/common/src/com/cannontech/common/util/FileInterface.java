@@ -88,14 +88,14 @@ public void run()
 							{
 								in.close();
 							}
-							catch( java.io.IOException ioe ) { ioe.printStackTrace(); };
+							catch( java.io.IOException ioe ) { com.cannontech.clientutils.CTILogger.error( ioe.getMessage(), ioe ); };
 							
 							files[i].delete();
 						}
-						catch( java.io.FileNotFoundException fnfe )
+						catch( java.io.FileNotFoundException e )
 						{
 							//could happen if the file was moved or delete at _just_ the right time
-							fnfe.printStackTrace();
+							com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 						}
 					}
 					

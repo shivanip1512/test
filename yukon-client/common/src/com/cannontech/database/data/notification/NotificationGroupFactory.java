@@ -57,7 +57,7 @@ public final static GroupNotification getGroupNotification(Integer notificationG
 	}
 	catch (Exception e)
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	
 	return returnGroupNotif;

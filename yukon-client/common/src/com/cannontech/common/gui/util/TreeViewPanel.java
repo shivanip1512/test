@@ -397,7 +397,7 @@ java.util.Date timerStart = new java.util.Date();
 		}
 		catch( Exception e )
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}		
 
 		getTree().setModel(model);

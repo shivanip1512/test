@@ -102,7 +102,7 @@ public final static String[] getDeviceCollectionGroups(String databaseAlias) thr
 	}
 	catch( Exception e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}	
 
  	return retVal;
@@ -139,7 +139,7 @@ public final static Integer[] getDeviceIDs_CollectionGroups(String databaseAlias
 	}
 	catch( Exception e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}	
 
  	return retVal;
@@ -169,7 +169,7 @@ public final static Integer[] getDeviceIDs_TestCollectionGroups(String databaseA
 	}
 	catch( Exception e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}	
 
  	return retVal;
@@ -205,7 +205,7 @@ public final static String[] getDeviceTestCollectionGroups(String databaseAlias)
 	}
 	catch( Exception e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}	
 
  	return retVal;

@@ -62,9 +62,9 @@ public void actionPerformed(java.awt.event.ActionEvent event) {
 		{
 			this.commandToExecute.execute();
 		}
-		catch(CommandExecutionException c )
+		catch(CommandExecutionException e )
 		{
-			c.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 	}
 }

@@ -92,7 +92,7 @@ public static void deleteAllGraphDataSeries(Long graphDefinitionID, String datab
 	}
 	catch( com.cannontech.common.util.CommandExecutionException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
 	return;
@@ -124,7 +124,7 @@ public static GraphDataSeries[] getAllGraphDataSeries(Long graphDefinitionID, St
 	}
 	catch( com.cannontech.common.util.CommandExecutionException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
 	java.util.Vector temp = new java.util.Vector();
@@ -241,7 +241,7 @@ public static synchronized Long getNextID(String databaseAlias) {
 	}
 	catch( Exception e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
 	if( returnVal == null )

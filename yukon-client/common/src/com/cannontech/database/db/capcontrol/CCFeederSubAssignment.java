@@ -84,7 +84,7 @@ public static boolean deleteCCFeedersFromSubList(Integer subId, Integer feederID
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		return false;
 	}
 	finally
@@ -96,7 +96,7 @@ public static boolean deleteCCFeedersFromSubList(Integer subId, Integer feederID
 		} 
 		catch( java.sql.SQLException e2 )
 		{
-			e2.printStackTrace();//something is up
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
 		}	
 	}
 
@@ -142,7 +142,7 @@ public static java.util.Vector getCCFeedersOnSub(Integer subId, java.sql.Connect
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -152,7 +152,7 @@ public static java.util.Vector getCCFeedersOnSub(Integer subId, java.sql.Connect
 		} 
 		catch( java.sql.SQLException e2 )
 		{
-			e2.printStackTrace();//something is up
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
 		}	
 	}
 

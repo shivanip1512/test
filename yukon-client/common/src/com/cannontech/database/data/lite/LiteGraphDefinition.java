@@ -77,7 +77,7 @@ public void retrieve(String databaseAlias)
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -90,7 +90,7 @@ public void retrieve(String databaseAlias)
 		}
 		catch( java.sql.SQLException e )
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 
 	}

@@ -68,7 +68,7 @@ private void initialize( Frame f, String imgName, String displayText, Font displ
 	   tracker.waitForAll(); 
 	   }
 	 catch (Exception e) {
-	   e.printStackTrace();
+	   com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	   }
 	 imgWidth = result.getWidth(this);
 	 imgHeight = result.getHeight(this);

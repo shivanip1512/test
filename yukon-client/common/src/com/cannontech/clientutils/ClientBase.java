@@ -142,11 +142,11 @@ public PointRegistration getPointRegistration( Long[] ptIDs )
  * Version: <version>
  * @param exc java.lang.Exception
  */
-private void handleException(Throwable exc)
+private void handleException(Throwable e)
 {
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	com.cannontech.clientutils.CTILogger.info("---------------- EXCEPTION ----------------" + this.getClass());
-	exc.printStackTrace(System.out);
+	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 }
 /**
  * This method was created in VisualAge.

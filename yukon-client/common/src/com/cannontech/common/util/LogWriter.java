@@ -78,7 +78,7 @@ public class LogWriter
    {
 	  StringWriter sw = new StringWriter();
 	  PrintWriter pw = new PrintWriter(sw);
-	  e.printStackTrace(pw);
+	  com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	  pw.flush();
 	  return sw.toString();
    }

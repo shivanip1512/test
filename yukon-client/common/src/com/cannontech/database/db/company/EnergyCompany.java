@@ -102,7 +102,7 @@ public static final EnergyCompany[] getEnergyCompanies(java.sql.Connection conn)
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -112,7 +112,7 @@ public static final EnergyCompany[] getEnergyCompanies(java.sql.Connection conn)
 		} 
 		catch( java.sql.SQLException e2 )
 		{
-			e2.printStackTrace();//something is up
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
 		}	
 	}
 
@@ -161,7 +161,7 @@ public static final Integer getNextEnergyCompanyID()
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -172,7 +172,7 @@ public static final Integer getNextEnergyCompanyID()
 		} 
 		catch( java.sql.SQLException e2 )
 		{
-			e2.printStackTrace(); //something is up
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); //something is up
 		}	
 	}
 

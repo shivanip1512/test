@@ -63,12 +63,12 @@ private void loadProperties() {
 			load(propIn);
 		}
 		catch (java.io.IOException e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		finally { //clean up the streams
 			try {
 			if( propIn != null ) propIn.close();
-			} catch( java.io.IOException e2 ) { e2.printStackTrace(); };
+			} catch( java.io.IOException e2 ) { com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); };
 		}
 	}
 }

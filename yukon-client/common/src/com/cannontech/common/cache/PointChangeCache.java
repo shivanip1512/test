@@ -122,9 +122,9 @@ public synchronized void connect()
 	{
 		conn.connectWithoutWait();
 	}
-	catch( java.io.IOException io )
+	catch( java.io.IOException e )
 	{
-		io.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		logger.warning("An error occured connecting with dispatch");
 	}
 
@@ -147,7 +147,7 @@ public synchronized void disconnect()
 	}
 	catch( java.io.IOException io )
 	{
-		io.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( io.getMessage(), io );
 		logger.warning("An error occured connecting with dispatch");
 	}
 
@@ -162,7 +162,7 @@ public synchronized void disconnect()
 		}
 		catch( InterruptedException ie )
 		{
-			ie.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( ie.getMessage(), ie );
 		}
 		
 		runner = null;
@@ -323,7 +323,7 @@ private synchronized String retrieveState(int pointid, double value, String dbAl
 	}
 	catch( java.sql.SQLException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{

@@ -185,7 +185,7 @@ private String getToken( String value, String location )
 private void handleException(Throwable t) 
 {
 	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	t.printStackTrace(System.out);
+	com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
 }
 /**
  * Insert the method's description here.

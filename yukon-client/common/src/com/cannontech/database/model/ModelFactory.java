@@ -90,11 +90,11 @@ public static DBTreeModel create(int type) {
 		}
 		catch( IllegalAccessException e1 )
 		{
-			e1.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e1.getMessage(), e1 );
 		}
 		catch( InstantiationException e2 )
 		{
-			e2.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
 		}
 	
 	}
