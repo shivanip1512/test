@@ -184,4 +184,11 @@ public class LiteEnergyCompany extends LiteBase
 		ciCustumerIDs = vector;
 	}
 
+	/**
+	 * This method was created by Cannon Technologies Inc.
+	 */
+	public String toString() 
+	{
+		return getName();
+	}
 }
