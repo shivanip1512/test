@@ -38,19 +38,34 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 		resp.setHeader("Pragma","no-cache"); 		//HTTP 1.0
 	 	resp.setDateHeader ("Expires", 0); 			//prevents caching at the proxy server
 
+//		java.util.Enumeration enum = req.getParameterNames();
+//		while(enum.hasMoreElements())
+//		{
+//			String x = enum.nextElement();
+//			out.println(x + ", ");
+//		}
 		com.cannontech.graph.GraphBean localBean = (com.cannontech.graph.GraphBean)session.getAttribute("graphBean");
 		if(localBean == null)
 		{
 			System.out.println("!!! BEAN IS NULL !!! ");
 			session.setAttribute("graphBean", new com.cannontech.graph.GraphBean());
+			localBean = (com.cannontech.graph.GraphBean)session.getAttribute("graphBean");
 		}
-			
+
 		localBean.updateCurrentPane();
 		javax.servlet.ServletOutputStream out = null;
 		try
 		{	
 	    	out = resp.getOutputStream();
-			localBean.getGraph().encodePng(out);
+			if( localBean.getFormat().equalsIgnoreCase("gif") )								
+				localBean.getGraph().encodeGif(out);
+			else if( localBean.getFormat().equalsIgnoreCase("png") )
+				localBean.getGraph().encodePng(out);
+			else if( localBean.getFormat().equalsIgnoreCase("jpg") )
+				;//localBean.getGraph().encodeJPG(out);
+			else if( localBean.getFormat().equalsIgnoreCase("svg") )
+				localBean.getGraph().encodeSVG(out);
+    	
 			out.flush();
 		}
 		catch( java.io.IOException ioe )
