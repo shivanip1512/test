@@ -784,10 +784,10 @@ CtiLMControlAreaMsg::CtiLMControlAreaMsg(RWOrdered& contAreas) : CtiLMMessage("C
     }*/
 }
 
-/*CtiLMControlAreaMsg::CtiLMControlAreaMsg(const CtiLMControlAreaMsg& contAreaMsg) : CtiLMMessage("ControlArea")
+CtiLMControlAreaMsg::CtiLMControlAreaMsg(const CtiLMControlAreaMsg& contAreaMsg) : CtiLMMessage("ControlArea"), _controlAreas(NULL)
 {
     operator=( contAreaMsg );
-}*/
+}
 
 /*---------------------------------------------------------------------------
     Destructor
@@ -808,10 +808,10 @@ CtiLMControlAreaMsg::~CtiLMControlAreaMsg()
 ---------------------------------------------------------------------------*/
 CtiMessage* CtiLMControlAreaMsg::replicateMessage() const
 {
-    //return new CtiLMControlAreaMsg(*this);
-    CtiLockGuard<CtiLogger> logger_guard(dout);
+    return new CtiLMControlAreaMsg(*this);
+    /*CtiLockGuard<CtiLogger> logger_guard(dout);
     dout << RWTime() << " - Do not call me!!! " << __FILE__ << __LINE__ << endl;
-    return NULL;
+    return NULL;*/
 }
 
 /*---------------------------------------------------------------------------
@@ -830,7 +830,7 @@ CtiLMControlAreaMsg& CtiLMControlAreaMsg::operator=(const CtiLMControlAreaMsg& r
         _controlAreas = new RWOrdered((right.getControlAreas())->entries());
         for(int i=0;i<(right.getControlAreas())->entries();i++)
         {
-            _controlAreas->insert(((CtiLMControlArea*)(*right.getControlAreas())[i]));
+            _controlAreas->insert(((CtiLMControlArea*)(*right.getControlAreas())[i])->replicate());
         }
     }
 

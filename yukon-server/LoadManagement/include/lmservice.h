@@ -8,7 +8,7 @@
 #include "loadmanager.h"
 #include "lmcontrolareastore.h"
 #include "executor.h"
-#include "lmserver.h"
+#include "clistener.h"
 #include "dllBase.h"
 
 class CtiLMService : public CService
@@ -33,7 +33,7 @@ private:
     RWCString _config_file;
 
     CtiLoadManager* manager;
-    CtiLMServer* server;
+    CtiLMClientListener* clientListener;
 };
 #endif
 

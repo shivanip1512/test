@@ -15,11 +15,11 @@
 #ifndef CTICCSERVICE_H
 #define CTICCSERVICE_H
 
+#include "ccclientlistener.h"
 #include "cservice.h"
 #include "capcontroller.h"
 #include "ccsubstationbusstore.h"
 #include "ccexecutor.h"
-#include "ccserver.h"
 #include "dllBase.h"
 
 class CtiCCService : public CService
@@ -44,7 +44,7 @@ private:
     RWCString _config_file;
 
     CtiCapController* controller;
-    CtiCCServer* server;
+    CtiCCClientListener* clientListener;
 };
 #endif
 

@@ -12,7 +12,7 @@
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 #include "executor.h"
-#include "lmserver.h"
+#include "clistener.h"
 #include "lmcontrolareastore.h"
 #include "loadmanager.h"
 #include "lmid.h"
@@ -1614,7 +1614,7 @@ void CtiLMControlAreaMsgExecutor::Execute()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
-    CtiLMServer::getInstance()->Broadcast(((CtiMessage*)_controlAreaMsg));
+    CtiLMClientListener::getInstance()->BroadcastMessage(((CtiMessage*)_controlAreaMsg));
 }
 
 
@@ -1933,7 +1933,7 @@ void CtiLMShutdownExecutor::Execute()
             dout << RWTime() << " - Shutting down client connection thread..." << endl;
         }*/
     
-        CtiLMServer::getInstance()->stop();
+        CtiLMClientListener::getInstance()->stop();
     }
     catch(...)
     {

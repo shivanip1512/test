@@ -237,7 +237,7 @@ public:
     static ULONG numberOfReferences;
 
     CtiLMControlAreaMsg(RWOrdered& contAreas);
-    //CtiLMControlAreaMsg(const CtiLMControlAreaMsg& contAreaMsg);
+    CtiLMControlAreaMsg(const CtiLMControlAreaMsg& contAreaMsg);
 
     virtual ~CtiLMControlAreaMsg();
 

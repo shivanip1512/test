@@ -20,9 +20,9 @@
 #include <rw/thr/recursiv.h>
 
 #include "clientconn.h"
-#include "observe.h"
+#include "lmmessage.h"
 
-class CtiLMClientListener : public CtiObservable, public CtiObserver
+class CtiLMClientListener
 {
 public:
     CtiLMClientListener(UINT port);
@@ -31,13 +31,14 @@ public:
     virtual void start();
     virtual void stop();
 
-    //Inherited from CtiObserver
-    void update(CtiObservable& observable);
+    void BroadcastMessage(CtiMessage* msg);
+
+    static CtiLMClientListener* getInstance();
 
 protected:
 
 private:
-    RWSocketListener* _listener;
+    RWSocketListener* _socketListener;
 
     UINT _port;   
     RWThread _listenerthr;
@@ -45,6 +46,8 @@ private:
 
     RWTPtrSlist<CtiLMConnection> _connections;
     RWRecursiveLock<RWMutexLock> _connmutex;
+
+    static CtiLMClientListener* _instance;
 
     bool _doquit;
 

@@ -2,7 +2,6 @@
 
 #include <io.h>
 
-#include "lmserver.h"
 #include "lmservice.h"
 #include "eventlog.h"
 #include "configparms.h"
@@ -277,8 +276,8 @@ void CtiLMService::Run()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime().asString() << " - Starting up the client connection thread..." << endl;
         }
-        CtiLMServer* server = CtiLMServer::getInstance();
-        server->start();
+        CtiLMClientListener* clientListener = CtiLMClientListener::getInstance();
+        clientListener->start();
 
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);

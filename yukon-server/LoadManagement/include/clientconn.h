@@ -24,9 +24,8 @@
 #include <rw/thr/thrfunc.h> 
 
 #include "ctdpcptrq.h"
-#include "observe.h"
     
-class CtiLMConnection : public CtiObserver
+class CtiLMConnection
 {
 public:
     CtiLMConnection(RWPortal portal);
@@ -36,8 +35,7 @@ public:
 
     void close();
 
-    //Inherited from CtiObserver
-    void update(CtiObservable& observable);
+    void write(RWCollectable* msg);
 
 protected:
     RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > _queue;

@@ -198,6 +198,14 @@ void CtiCCSubstationBusStore::reset()
                         _ccSubstationBuses->clearAndDestroy();
                         wasAlreadyRunning = true;
                     }
+                    if( _ccCapBankStates->entries() > 0 )
+                    {
+                        _ccCapBankStates->clearAndDestroy();
+                    }
+                    if( _ccGeoAreas->entries() > 0 )
+                    {
+                        _ccGeoAreas->clearAndDestroy();
+                    }
     
                     RWDBDateTime currentDateTime;
                     RWDBDatabase db = getDatabase();
@@ -262,7 +270,7 @@ void CtiCCSubstationBusStore::reset()
                         selector.from(pointTable);
     
                         selector.where(yukonPAObjectTable["paobjectid"]==capControlSubstationBusTable["substationbusid"] &&
-                                       capControlSubstationBusTable["currentvarloadpointid"]==pointUnitTable["pointid"] &&
+                                       capControlSubstationBusTable["currentvarloadpointid"].leftOuterJoin(pointUnitTable["pointid"]) &&
                                        capControlSubstationBusTable["substationbusid"].leftOuterJoin(dynamicCCSubstationBusTable["substationbusid"]) &&
                                        capControlSubstationBusTable["substationbusid"].leftOuterJoin(pointTable["paobjectid"]) );
     
@@ -697,15 +705,14 @@ void CtiCCSubstationBusStore::reset()
             dumpAllDynamicData();
         }
         CtiCCExecutorFactory f;
-        RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
         CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*_ccSubstationBuses));
-        executor->Execute(queue);
+        executor->Execute();
         delete executor;
-        executor = f.createExecutor(new CtiCCCapBankStatesMsg(_ccCapBankStates));
-        executor->Execute(queue);
+        executor = f.createExecutor(new CtiCCCapBankStatesMsg(*_ccCapBankStates));
+        executor->Execute();
         delete executor;
-        executor = f.createExecutor(new CtiCCGeoAreasMsg(_ccGeoAreas));
-        executor->Execute(queue);
+        executor = f.createExecutor(new CtiCCGeoAreasMsg(*_ccGeoAreas));
+        executor->Execute();
         delete executor;
     }
     catch(...)
@@ -1269,6 +1276,10 @@ void CtiCCSubstationBusStore::shutdown()
     dumpAllDynamicData();
     _ccSubstationBuses->clearAndDestroy();
     delete _ccSubstationBuses;
+    _ccCapBankStates->clearAndDestroy();
+    delete _ccCapBankStates;
+    _ccGeoAreas->clearAndDestroy();
+    delete _ccGeoAreas;
 
     //if( _CC_DEBUG )
     {

@@ -14,17 +14,56 @@
 #include "ccclientlistener.h"
 #include "ccmessage.h"
 #include "ccsubstationbusstore.h"
-#include "ccserver.h"
+#include "configparms.h"
 #include "ctibase.h"
 #include "ccexecutor.h"
 #include "logger.h"
 
 #include <rw/toolpro/inetaddr.h>
 
+extern BOOL _CC_DEBUG;
+
+CtiCCClientListener* CtiCCClientListener::_instance = NULL;
+
+/*------------------------------------------------------------------------
+    getInstance
+    
+    Returns a pointer to the singleton instance of the client listener.
+---------------------------------------------------------------------------*/
+CtiCCClientListener* CtiCCClientListener::getInstance()
+{
+    if ( _instance == NULL )
+    {
+        RWCString str;
+        char var[128];
+        UINT capcontrolclientsport = CAPCONTROLNEXUS;
+
+        strcpy(var, "CAP_CONTROL_PORT");
+        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+        {
+            UINT capcontrolclientsport = atoi(str.data());
+            if( _CC_DEBUG )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << var << ":  " << capcontrolclientsport << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+        _instance = new CtiCCClientListener(capcontrolclientsport);
+    }
+
+    return _instance;
+}
+
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiCCClientListener::CtiCCClientListener(UINT port) : _port(port), _listener(0), _doquit(FALSE)
+CtiCCClientListener::CtiCCClientListener(UINT port) : _port(port), _doquit(FALSE), _socketListener(NULL)
 {  
 }
 
@@ -33,7 +72,11 @@ CtiCCClientListener::CtiCCClientListener(UINT port) : _port(port), _listener(0),
 ---------------------------------------------------------------------------*/
 CtiCCClientListener::~CtiCCClientListener()
 {
-    stop();
+    if( _instance != NULL )
+    {
+        delete _instance;
+        _instance = NULL;
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -63,33 +106,50 @@ void CtiCCClientListener::stop()
     try
     {
         _doquit = TRUE;
-
-        if ( _listener != NULL )
+        if ( _socketListener != NULL )
         {
-            delete _listener;
-            _listener = NULL;
+            delete _socketListener;
+            _socketListener = NULL;
 
             _listenerthr.join();
             _checkthr.join();
         }
-
-    } catch ( RWxmsg& msg)
+    }
+    catch(RWxmsg& msg)
     {
         cerr << msg.why() << endl;
     }
 }
-/*---------------------------------------------------------------------------
-    update
-    
-    Inherited from CtiObserver, update is called when a CtiObservable that
-    self is registered with notifies its observers of and update.
-    
----------------------------------------------------------------------------*/
-void CtiCCClientListener::update(CtiObservable& observable)
+
+void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
 {
-    //Propagate the update to our observers
-    setChanged();
-    notifyObservers();
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
+
+    try
+    {
+        for( int i = 0; i < _connections.entries(); i++ )
+        {
+            // replicate message makes a deep copy
+            if( _connections[i]->isValid() )
+            {
+                CtiMessage* replicated_msg = msg->replicateMessage();
+
+                /*if( _CC_DEBUG )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " Broadcasting classID:  " << replicated_msg->isA() << endl;
+                }*/
+                _connections[i]->write(replicated_msg);
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard< CtiLogger > g(dout);
+        dout << RWTime() << __FILE__ << " (" << __LINE__ <<
+             ")  An unknown exception has occurred." << endl;
+    }
+    delete msg;
 }
 
 /*---------------------------------------------------------------------------
@@ -101,7 +161,7 @@ void CtiCCClientListener::update(CtiObservable& observable)
 ---------------------------------------------------------------------------*/
 void CtiCCClientListener::_listen()
 {  
-    _listener = new RWSocketListener( RWInetAddr( (int) _port )  );
+    _socketListener = new RWSocketListener( RWInetAddr( (int) _port )  );
 
     do
     {
@@ -113,15 +173,9 @@ void CtiCCClientListener::_listen()
             }*/
 
             {
-                RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-
-                RWPortal portal = (*_listener)();
+                RWPortal portal = (*_socketListener)();
 
                 CtiCCClientConnection* conn = new CtiCCClientConnection(portal);
-
-                //Register the connection with us
-                //so that it is notified of updates
-                CtiCCServer::getInstance()->addObserver( *conn );
 
                 {
                     RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
@@ -131,25 +185,24 @@ void CtiCCClientListener::_listen()
 
                 ULONG secondsFrom1901 = RWDBDateTime().seconds();
                 CtiCCExecutorFactory f;
-                RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
                 CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-                CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*(store->getCCSubstationBuses(secondsFrom1901))));
+                CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*store->getCCSubstationBuses(secondsFrom1901)));
                 try
                 {
-                    executor->Execute(queue);
+                    executor->Execute();
                     delete executor;
-                    executor = f.createExecutor(new CtiCCCapBankStatesMsg(store->getCCCapBankStates(secondsFrom1901)));
-                    executor->Execute(queue);
+                    executor = f.createExecutor(new CtiCCCapBankStatesMsg(*store->getCCCapBankStates(secondsFrom1901)));
+                    executor->Execute();
                     delete executor;
-                    executor = f.createExecutor(new CtiCCGeoAreasMsg(store->getCCGeoAreas(secondsFrom1901)));
-                    executor->Execute(queue);
+                    executor = f.createExecutor(new CtiCCGeoAreasMsg(*store->getCCGeoAreas(secondsFrom1901)));
+                    executor->Execute();
+                    delete executor;
                 }
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
-                delete executor;
             }
         }
         catch(RWSockErr& msg)
@@ -166,8 +219,6 @@ void CtiCCClientListener::_listen()
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << "CtiCCClientListener hickup: " << msg.errorNumber() << endl;
                 }
-                delete _listener;
-                _listener = new RWSocketListener( RWInetAddr( (int) _port )  );
             }
         }
         catch(RWxmsg& msg)
@@ -208,11 +259,8 @@ void CtiCCClientListener::_check()
                             dout << RWTime()  << " - CtiCCListener::check - deleting connection addr:  " << _connections[i] << endl;
                         }*/
 
-                        //Remove the connection from the server observer list
-                        CtiCCServer::getInstance()->deleteObserver( *(_connections[i]) );
-
-                        delete _connections[i];
-                        _connections.removeAt(i);
+                        CtiCCClientConnection* toDelete = _connections.removeAt(i);
+                        delete toDelete;
                         break;
                     }
                 }
@@ -234,17 +282,8 @@ void CtiCCClientListener::_check()
             dout << RWTime()  << " - CtiCCClientListener::_listen() - closing " << _connections.entries() << " connections..." << endl;
         }*/
 
-        //Before we exit try to close all the connections
-        for ( int j = 0; j < _connections.entries(); j++ )
-        {
-            //Remove the connection from the server observer list
-             CtiCCServer::getInstance()->deleteObserver( *(_connections[j]) );
-
-            _connections[j]->close();
-            delete _connections[j];
-        }
+        _connections.clearAndDestroy();
     }
-
 
     /*{    
         CtiLockGuard<CtiLogger> logger_guard(dout);

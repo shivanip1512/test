@@ -79,6 +79,11 @@ CtiCapController::CtiCapController()
 ---------------------------------------------------------------------------*/
 CtiCapController::~CtiCapController()
 {
+    if( _instance != NULL )
+    {
+        delete _instance;
+        _instance = NULL;
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -155,9 +160,9 @@ void CtiCapController::controlLoop()
         store->verifySubBusAndFeedersStates();
 
         RWDBDateTime currentDateTime;
+        RWOrdered substationBusChanges;
         CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
         CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
-        CtiCCSubstationBusMsg* substationBusMsg = new CtiCCSubstationBusMsg();
         while(TRUE)
         {
             currentDateTime.now();
@@ -166,7 +171,7 @@ void CtiCapController::controlLoop()
 
             if(_CC_DEBUG)
             {
-                if( (secondsFromBeginningOfDay%1800) == 0 )
+                if( (secondsFrom1901%1800) == 0 )
                 {//every thirty minutes tell the user if the control thread is still alive
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -207,7 +212,6 @@ void CtiCapController::controlLoop()
 
             RWOrdered& pointChanges = multiDispatchMsg->getData();
             RWOrdered& pilMessages = multiPilMsg->getData();
-            RWOrdered& substationBusChanges = substationBusMsg->getCCSubstationBuses();
             for(UINT i=0;i<ccSubstationBuses.entries();i++)
             {
                 CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
@@ -288,7 +292,7 @@ void CtiCapController::controlLoop()
                     //accumulate all buses with any changes into msg for all clients
                     if( currentSubstationBus->getBusUpdatedFlag() )
                     {
-                        substationBusChanges.insert(currentSubstationBus->replicate());
+                        substationBusChanges.insert(currentSubstationBus);
                         currentSubstationBus->setBusUpdatedFlag(FALSE);
                     }
                 }
@@ -338,12 +342,19 @@ void CtiCapController::controlLoop()
                     //send the substation bus changes to all cap control clients
                     store->dumpAllDynamicData();
                     CtiCCExecutorFactory f;
-                    RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
-                    CtiCCExecutor* executor = f.createExecutor(substationBusMsg);
-                    executor->Execute(queue);
+                    CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(substationBusChanges));
+                    try
+                    {
+                        executor->Execute();
+                    }
+                    catch(...)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    }
                     delete executor;
 
-                    substationBusMsg = new CtiCCSubstationBusMsg();
+                    substationBusChanges.clear();
                 }
             }
             catch(...)

@@ -71,10 +71,10 @@ void CtiCCServer::start()
 
         func.start();
 
-        if ( _listener == NULL )
-            _listener = new CtiCCClientListener( _capcontrolclientsport );
+        if ( _clientListener == NULL )
+            _clientListener = new CtiCCClientListener( _capcontrolclientsport );
 
-        _listener->start();
+        _clientListener->start();
     }
 }
 
@@ -118,7 +118,6 @@ void CtiCCServer::Broadcast(CtiMessage* message)
 
     setChanged();
     notifyObservers();
-    delete message;
 }
 
 /*---------------------------------------------------------------------------
@@ -128,6 +127,8 @@ void CtiCCServer::Broadcast(CtiMessage* message)
 ---------------------------------------------------------------------------*/
 CtiMessage* CtiCCServer::getBroadcastMessage()
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_broadcastmutex);
+
     return _currentmessage;
 }
 
@@ -149,11 +150,11 @@ void CtiCCServer::_checkstatus()
     }
     catch ( RWxmsg& msg )
     {
-        if ( _listener != NULL )
+        if ( _clientListener != NULL )
         {
-            _listener->stop();
-            delete _listener;
-            _listener = NULL;
+            _clientListener->stop();
+            delete _clientListener;
+            _clientListener = NULL;
 
             /*{
                 RWMutexLock::LockGuard guard(coutMux);

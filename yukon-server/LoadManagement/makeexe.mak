@@ -67,7 +67,6 @@ lmprogramcurtailment.obj \
 lmprogramdirect.obj \
 lmprogramdirectgear.obj \
 lmprogramenergyexchange.obj \
-lmserver.obj \
 lmservice.obj \
 loadmanager.obj \
 main.obj

@@ -37,10 +37,10 @@ public:
     static CtiCCServer* getInstance();
 
 private:
-    CtiCCServer() : _listener(0), _running(FALSE), _dostop(FALSE) { };
+    CtiCCServer() : _clientListener(0), _running(FALSE), _dostop(FALSE), _currentmessage(NULL) { };
     virtual ~CtiCCServer() { };
 
-    CtiCCClientListener* _listener;
+    CtiCCClientListener* _clientListener;
 
     bool _running;
     bool _dostop;

@@ -49,7 +49,6 @@ ccexecutor.obj \
 ccfeeder.obj \
 ccmain.obj \
 ccmessage.obj \
-ccserver.obj \
 ccservice.obj \
 ccstate.obj \
 ccsubstationbus.obj \

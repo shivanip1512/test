@@ -2622,7 +2622,15 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     rdr["maplocationid"] >> _maplocationid;
     rdr["lowerbandwidth"] >> _lowerbandwidth;
     rdr["controlunits"] >> _controlunits;
-    rdr["decimalplaces"] >> _decimalplaces;
+    rdr["decimalplaces"] >> isNull;
+    if( !isNull )
+    {
+        rdr["decimalplaces"] >> _decimalplaces;
+    }
+    else
+    {
+        _decimalplaces = 2;
+    }
 
     setEstimatedVarLoadPointId(0);
     setStatusesReceivedFlag(FALSE);

@@ -19,10 +19,9 @@
 #include <rw/thr/thread.h>
 
 #include "ccclientconn.h"
-#include "observe.h"
 #include "ccstate.h"
 
-class CtiCCClientListener : public CtiObservable, public CtiObserver
+class CtiCCClientListener
 {
 public:
     CtiCCClientListener(UINT port);
@@ -31,13 +30,14 @@ public:
     virtual void start();
     virtual void stop();
 
-    //Inherited from CtiObserver
-    void update(CtiObservable& observable);
+    void BroadcastMessage(CtiMessage* msg);
+
+    static CtiCCClientListener* getInstance();
 
 protected:
 
 private:
-    RWSocketListener* _listener;
+    RWSocketListener* _socketListener;
 
     UINT _port;   
     RWThread _listenerthr;
@@ -45,6 +45,8 @@ private:
 
     RWTPtrSlist<CtiCCClientConnection> _connections;
     RWRecursiveLock<RWMutexLock> _connmutex;
+
+    static CtiCCClientListener* _instance;
 
     bool _doquit;
 

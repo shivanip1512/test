@@ -27,7 +27,7 @@ class CtiCCExecutor
 public:
     virtual ~CtiCCExecutor() {};
 
-    virtual void Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results) {};
+    virtual void Execute() {};
 
 protected:
     CtiCCExecutor() {};
@@ -37,9 +37,9 @@ class CtiCCSubstationBusMsgExecutor : public CtiCCExecutor
 {
 public:
     CtiCCSubstationBusMsgExecutor(CtiCCSubstationBusMsg* busMsg) : _ccSubstationBusesMsg(busMsg){};
-    virtual ~CtiCCSubstationBusMsgExecutor(){delete _ccSubstationBusesMsg;};
+    virtual ~CtiCCSubstationBusMsgExecutor(){};
 
-    virtual void Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    virtual void Execute();
 
 private:
 
@@ -51,9 +51,9 @@ class CtiCCCapBankStatesMsgExecutor : public CtiCCExecutor
 {
 public:
     CtiCCCapBankStatesMsgExecutor(CtiCCCapBankStatesMsg* stateMsg) : _ccCapBankStatesMsg(stateMsg){};
-    virtual ~CtiCCCapBankStatesMsgExecutor(){delete _ccCapBankStatesMsg;};
+    virtual ~CtiCCCapBankStatesMsgExecutor(){};
 
-    virtual void Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    virtual void Execute();
 
 private:
 
@@ -65,9 +65,9 @@ class CtiCCGeoAreasMsgExecutor : public CtiCCExecutor
 {
 public:
     CtiCCGeoAreasMsgExecutor(CtiCCGeoAreasMsg* ccGeoAreasMsg) : _ccGeoAreasMsg(ccGeoAreasMsg){};
-    virtual ~CtiCCGeoAreasMsgExecutor(){delete _ccGeoAreasMsg;};
+    virtual ~CtiCCGeoAreasMsgExecutor(){};
 
-    virtual void Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    virtual void Execute();
 
 private:
 
@@ -81,20 +81,20 @@ public:
     CtiCCCommandExecutor(CtiCCCommand* command) : _command(command) {};
     virtual ~CtiCCCommandExecutor() { delete _command;};
 
-    virtual void Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    virtual void Execute();
 
 private:
-    void EnableSubstationBus(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void DisableSubstationBus(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void EnableFeeder(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void DisableFeeder(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void EnableCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void DisableCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void OpenCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void CloseCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void ConfirmOpen(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void ConfirmClose(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void SendAllSubstationBuses(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    void EnableSubstationBus();
+    void DisableSubstationBus();
+    void EnableFeeder();
+    void DisableFeeder();
+    void EnableCapBank();
+    void DisableCapBank();
+    void OpenCapBank();
+    void CloseCapBank();
+    void ConfirmOpen();
+    void ConfirmClose();
+    void SendAllSubstationBuses();
 
     CtiCCCommand* _command;
     RWRecursiveLock<RWMutexLock> _mutex;
@@ -106,7 +106,7 @@ public:
     CtiCCPointDataMsgExecutor(CtiPointDataMsg* pointMsg) : _pointDataMsg(pointMsg) {};
     virtual ~CtiCCPointDataMsgExecutor() { delete _pointDataMsg;};
 
-    virtual void Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    virtual void Execute();
 
 private:
     CtiPointDataMsg* _pointDataMsg;
@@ -119,7 +119,7 @@ public:
     CtiCCForwardMsgToDispatchExecutor(CtiMessage* ctiMsg) : _ctiMessage(ctiMsg) {};
     virtual ~CtiCCForwardMsgToDispatchExecutor() { delete _ctiMessage;};
 
-    virtual void Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    virtual void Execute();
 
 private:
     CtiMessage* _ctiMessage;
@@ -132,7 +132,7 @@ public:
     CtiCCMultiMsgExecutor(CtiMultiMsg* multiMsg) : _multiMsg(multiMsg) {};
     virtual ~CtiCCMultiMsgExecutor() { delete _multiMsg;};
 
-    virtual void Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    virtual void Execute();
 
 private:
     CtiMultiMsg* _multiMsg;
@@ -145,7 +145,7 @@ public:
     CtiCCShutdownExecutor() {};
     virtual ~CtiCCShutdownExecutor() {};
 
-    virtual void Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    virtual void Execute();
 };
 
 class CtiCCExecutorFactory

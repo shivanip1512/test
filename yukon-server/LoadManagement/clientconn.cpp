@@ -15,7 +15,6 @@
 #include "lmmessage.h"
 #include "executor.h"
 #include "lmcontrolareastore.h"
-#include "lmserver.h"
 #include "ctibase.h"
 #include "logger.h"
 
@@ -90,17 +89,20 @@ bool CtiLMConnection::isValid() const
 void CtiLMConnection::close()
 {
     //do not try to close again
-    if( _valid == false )
+    if( _portal == NULL )
         return;
 
-    _valid = false;
-                                                  
     delete sinbuf;
     delete soubuf;
     delete oStream;
     delete iStream;
-
     delete _portal;
+
+    sinbuf = NULL;
+    soubuf = NULL;
+    oStream = NULL;
+    iStream = NULL;
+    _portal = NULL;
 
     _recvrunnable.requestCancellation();
     _sendrunnable.requestCancellation();
@@ -122,16 +124,13 @@ void CtiLMConnection::close()
 }
 
 /*---------------------------------------------------------------------------
-    update
-    
-    Inherited from CtiObserver - called when an observable that self is 
-    registered with is updated.
----------------------------------------------------------------------------*/
-void CtiLMConnection::update(CtiObservable& observable)
-{
-    CtiMessage* ctiMessage = ((CtiLMServer&)observable).BroadcastMessage();
+    write
 
-    _queue->write( (RWCollectable*)ctiMessage );
+    Writes a message into the queue which will be sent to the client.
+---------------------------------------------------------------------------*/
+void CtiLMConnection::write(RWCollectable* msg)
+{
+    _queue->write( (RWCollectable*) msg );
 }
 
 /*---------------------------------------------------------------------------
@@ -142,7 +141,7 @@ void CtiLMConnection::update(CtiObservable& observable)
 ---------------------------------------------------------------------------*/    
 void CtiLMConnection::_sendthr()
 {
-    RWCollectable* c;
+    RWCollectable* out;
 
     try
     {     
@@ -150,16 +149,21 @@ void CtiLMConnection::_sendthr()
         {
             rwRunnable().serviceCancellation();
 
-            RWWaitStatus status = _queue->read(c, 50);
+            out = _queue->read();
 
-            if ( status == RW_THR_TIMEOUT  )
+            try
             {
-                //_ostrm << beat;
-                //_ostrm.flush();
-            } else
+                if( out != NULL )
+                {
+                    *oStream << out;
+                    oStream->vflush();
+                    delete out;
+                }
+            }
+            catch(...)
             {
-                *oStream << c;
-                oStream->vflush();
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
         }
         while ( isValid() && oStream->good() );
@@ -234,7 +238,7 @@ void CtiLMConnection::_recvthr()
                 /*CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Why did I get here? in: " << __FILE__ << " at:" << __LINE__ << endl;*/
 
-                _valid = FALSE;
+                //_valid = FALSE;
             }
 
         }

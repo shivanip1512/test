@@ -14,17 +14,56 @@
 #include "clistener.h"
 #include "lmmessage.h"
 #include "lmcontrolareastore.h"
-#include "lmserver.h"
+#include "configparms.h"
 #include "ctibase.h"
 #include "executor.h"
 #include "logger.h"
 
 #include <rw/toolpro/inetaddr.h>
 
+extern BOOL _LM_DEBUG;
+
+CtiLMClientListener* CtiLMClientListener::_instance = NULL;
+
+/*------------------------------------------------------------------------
+    getInstance
+    
+    Returns a pointer to the singleton instance of the client listener.
+---------------------------------------------------------------------------*/
+CtiLMClientListener* CtiLMClientListener::getInstance()
+{
+    if ( _instance == NULL )
+    {
+        RWCString str;
+        char var[128];
+        UINT loadmanagementclientsport = LOADMANAGEMENTNEXUS;
+
+        strcpy(var, "LOAD_MANAGEMENT_PORT");
+        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+        {
+            UINT loadmanagementclientsport = atoi(str.data());
+            if( _LM_DEBUG )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << var << ":  " << loadmanagementclientsport << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+        _instance = new CtiLMClientListener(loadmanagementclientsport);
+    }
+
+    return _instance;
+}
+
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiLMClientListener::CtiLMClientListener(UINT port) : _port(port), _listener(0), _doquit(FALSE)
+CtiLMClientListener::CtiLMClientListener(UINT port) : _port(port), _doquit(FALSE), _socketListener(NULL)
 {  
 }
 
@@ -33,7 +72,11 @@ CtiLMClientListener::CtiLMClientListener(UINT port) : _port(port), _listener(0),
 ---------------------------------------------------------------------------*/
 CtiLMClientListener::~CtiLMClientListener()
 {
-    stop();
+    if( _instance != NULL )
+    {
+        delete _instance;
+        _instance = NULL;
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -63,34 +106,50 @@ void CtiLMClientListener::stop()
     try
     {
         _doquit = TRUE;
-
-        if ( _listener != NULL )
+        if ( _socketListener != NULL )
         {
-            delete _listener;
-            _listener = NULL;
+            delete _socketListener;
+            _socketListener = NULL;
 
             _listenerthr.join();
             _checkthr.join();
         }
-
     }
-    catch ( RWxmsg& msg)
+    catch(RWxmsg& msg)
     {
         cerr << msg.why() << endl;
     }
 }
-/*---------------------------------------------------------------------------
-    update
-    
-    Inherited from CtiObserver, update is called when a CtiObservable that
-    self is registered with notifies its observers of and update.
-    
----------------------------------------------------------------------------*/
-void CtiLMClientListener::update(CtiObservable& observable)
+
+void CtiLMClientListener::BroadcastMessage(CtiMessage* msg)
 {
-    //Propagate the update to our observers
-    setChanged();
-    notifyObservers();
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
+
+    try
+    {
+        for( int i = 0; i < _connections.entries(); i++ )
+        {
+            // replicate message makes a deep copy
+            if( _connections[i]->isValid() )
+            {
+                CtiMessage* replicated_msg = msg->replicateMessage();
+
+                /*if( _CC_DEBUG )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " Broadcasting classID:  " << replicated_msg->isA() << endl;
+                }*/
+                _connections[i]->write(replicated_msg);
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard< CtiLogger > g(dout);
+        dout << RWTime() << __FILE__ << " (" << __LINE__ <<
+             ")  An unknown exception has occurred." << endl;
+    }
+    delete msg;
 }
 
 /*---------------------------------------------------------------------------
@@ -105,7 +164,7 @@ void CtiLMClientListener::_listen()
 
     try
     {
-        _listener = new RWSocketListener( RWInetAddr( (int) _port )  );
+        _socketListener = new RWSocketListener( RWInetAddr( (int) _port )  );
         /*{    
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime()  << " - Listening for clients..." << endl;
@@ -116,15 +175,9 @@ void CtiLMClientListener::_listen()
             try
             {
                 {
-                    RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-    
-                    RWPortal portal = (*_listener)();
+                    RWPortal portal = (*_socketListener)();
     
                     CtiLMConnection* conn = new CtiLMConnection(portal);
-    
-                    //Register the connection with us
-                    //so that it is notified of updates
-                    CtiLMServer::getInstance()->addObserver( *conn );
     
                     {
                         RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
@@ -160,8 +213,8 @@ void CtiLMClientListener::_listen()
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << "CtiLMClientListener hickup: " << msg.errorNumber() << endl;
                     }
-                    delete _listener;
-                    _listener = new RWSocketListener( RWInetAddr( (int) _port )  );
+                    delete _socketListener;
+                    _socketListener = new RWSocketListener( RWInetAddr( (int) _port )  );
                 }
             }
             catch(RWxmsg& msg)
@@ -212,10 +265,8 @@ void CtiLMClientListener::_check()
                             }*/
         
                             //Remove the connection from the server observer list
-                            CtiLMServer::getInstance()->deleteObserver( *(_connections[i]) );
-        
-                            delete _connections[i];
-                            _connections.removeAt(i);
+                            CtiLMConnection* toDelete = _connections.removeAt(i);
+                            delete toDelete;
                             break;
                         }
                     }
@@ -238,14 +289,7 @@ void CtiLMClientListener::_check()
             }*/
     
             //Before we exit try to close all the connections
-            for ( int j = 0; j < _connections.entries(); j++ )
-            {
-                //Remove the connection from the server observer list
-                 CtiLMServer::getInstance()->deleteObserver( *(_connections[j]) );
-    
-                _connections[j]->close();
-                delete _connections[j];
-            }
+            _connections.clearAndDestroy();
         }
     
     

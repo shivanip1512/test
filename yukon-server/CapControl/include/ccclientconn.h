@@ -26,7 +26,7 @@
 #include "ctdpcptrq.h"
 #include "observe.h"
     
-class CtiCCClientConnection : public CtiObserver
+class CtiCCClientConnection
 {
 public:
     CtiCCClientConnection(RWPortal portal);
@@ -36,8 +36,7 @@ public:
 
     void close();
 
-    //Inherited from CtiObserver
-    void update(CtiObservable& observable);
+    void write(RWCollectable* msg);
 
 protected:
     RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > _queue;

@@ -16,7 +16,6 @@
 #include "ccmessage.h"
 #include "ccexecutor.h"
 #include "ccsubstationbusstore.h"
-#include "ccserver.h"
 #include "ctibase.h"
 #include "logger.h"
 
@@ -84,17 +83,20 @@ BOOL CtiCCClientConnection::isValid() const
 void CtiCCClientConnection::close()
 {
     //do not try to close again
-    if( _valid == FALSE )
+    if( _portal == NULL )
         return;
 
-    _valid = FALSE;
-                                                  
     delete sinbuf;
     delete soubuf;
     delete oStream;
     delete iStream;
-
     delete _portal;
+
+    sinbuf = NULL;
+    soubuf = NULL;
+    oStream = NULL;
+    iStream = NULL;
+    _portal = NULL;
 
     _recvrunnable.requestCancellation();
     _sendrunnable.requestCancellation();
@@ -116,16 +118,13 @@ void CtiCCClientConnection::close()
 }
 
 /*---------------------------------------------------------------------------
-    update
-    
-    Inherited from CtiObserver - called when an observable that self is 
-    registered with is updated.
----------------------------------------------------------------------------*/
-void CtiCCClientConnection::update(CtiObservable& observable)
-{
-    CtiMessage* ctiMessage = ((CtiCCServer&)observable).getBroadcastMessage();
+    write
 
-    _queue->write( (RWCollectable*) ctiMessage->replicateMessage() );
+    Writes a message into the queue which will be sent to the client.
+---------------------------------------------------------------------------*/
+void CtiCCClientConnection::write(RWCollectable* msg)
+{
+    _queue->write( (RWCollectable*) msg );
 }
 
 /*---------------------------------------------------------------------------
@@ -136,7 +135,7 @@ void CtiCCClientConnection::update(CtiObservable& observable)
 ---------------------------------------------------------------------------*/    
 void CtiCCClientConnection::_sendthr()
 {
-    RWCollectable* c;
+    RWCollectable* out;
 
     try
     {     
@@ -144,17 +143,21 @@ void CtiCCClientConnection::_sendthr()
         {
             rwRunnable().serviceCancellation();
 
-            RWWaitStatus status = _queue->read(c, 50);
+            out = _queue->read();
 
-            if ( status == RW_THR_TIMEOUT  )
+            try
             {
-                //_ostrm << beat;
-                //_ostrm.flush();
-            } else
+                if( out != NULL )
+                {
+                    *oStream << out;
+                    oStream->vflush();
+                    delete out;
+                }
+            }
+            catch(...)
             {
-                *oStream << c;
-                oStream->vflush();
-                delete c;
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
         }
         while ( isValid() && oStream->good() );
@@ -196,9 +199,8 @@ void CtiCCClientConnection::_recvthr()
     RWRunnable runnable;
 
     RWCollectable* current = NULL;
-    CtiCCExecutor* saved = NULL;
 
-    CtiCCExecutorFactory factory;
+    CtiCCExecutorFactory f;
 
     try
     {
@@ -213,49 +215,23 @@ void CtiCCClientConnection::_recvthr()
 
             if ( current != NULL )
             {
-
+                CtiCCExecutor* executor = f.createExecutor( (CtiMessage*) current );
                 try
                 {
-                    if ( saved != NULL )
-                    {
-                        runnable.requestCancellation();
-                        delete saved;
-                        saved = NULL;
-                    }
-                } catch ( RWxmsg& msg )
-                {
-                    /*{    
-                        RWMutexLock::LockGuard guard(coutMux);
-                        cout << "CtiCCClientConnection::_recvthr - " << msg.why() << endl;
-                    }*/
+                    executor->Execute();
                 }
-
-                CtiCCExecutor* executor = factory.createExecutor( (CtiMessage*) current );
-
-                RWThreadFunction thr_func  = rwMakeThreadFunction( *executor, &CtiCCExecutor::Execute, _queue );
-
-                runnable = thr_func;
-
-                thr_func.start();
-
-                saved = executor;
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
+                delete executor;
             } else
             {
-                /*{    
-                    RWMutexLock::LockGuard guard(coutMux);
-                    cout << RWTime()  << "waiting for thread and then exiting in_thr" << endl;
-                }*/
+                /*CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - Why did I get here? in: " << __FILE__ << " at:" << __LINE__ << endl;*/
 
-                if ( saved != NULL )
-                {
-                    if( runnable.isValid() )
-                        runnable.requestCancellation();
-
-                    delete saved;
-                    saved = NULL;
-                }
-
-                _valid = FALSE;
+                //_valid = FALSE;
             }
 
         }

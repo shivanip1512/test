@@ -177,16 +177,16 @@ RWDEFINE_COLLECTABLE( CtiCCSubstationBusMsg, CTICCSUBSTATIONBUS_MSG_ID )
 /*---------------------------------------------------------------------------
     Constuctors
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(RWOrdered& buses) : CtiCCMessage("CCSubstationBuses")
+CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(RWOrdered& buses) : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL)
 {
-    _ccSubstationBuses.clearAndDestroy();
-    for(UINT i=0;i<buses.entries();i++)
+    _ccSubstationBuses = new RWOrdered(buses.entries());
+    for(int i=0;i<buses.entries();i++)
     {
-        _ccSubstationBuses.insert(((CtiCCSubstationBus*)buses[i])->replicate());
+        _ccSubstationBuses->insert(((CtiCCSubstationBus*)buses[i])->replicate());
     }
 }
 
-CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(const CtiCCSubstationBusMsg& substationBusMsg) : CtiCCMessage("CCSubstationBuses")
+CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(const CtiCCSubstationBusMsg& substationBusMsg) : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL)
 {
     operator=(substationBusMsg);
 }
@@ -196,7 +196,8 @@ CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(const CtiCCSubstationBusMsg& substa
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBusMsg::~CtiCCSubstationBusMsg()
 {
-    _ccSubstationBuses.clearAndDestroy();
+    _ccSubstationBuses->clearAndDestroy();
+    delete _ccSubstationBuses;
 }
 
 /*---------------------------------------------------------------------------
@@ -205,6 +206,9 @@ CtiCCSubstationBusMsg::~CtiCCSubstationBusMsg()
 CtiMessage* CtiCCSubstationBusMsg::replicateMessage() const
 {
     return new CtiCCSubstationBusMsg(*this);
+    /*CtiLockGuard<CtiLogger> logger_guard(dout);
+    dout << RWTime() << " - Do not call me!!! " << __FILE__ << __LINE__ << endl;
+    return NULL;*/
 }
 
 /*---------------------------------------------------------------------------
@@ -214,10 +218,16 @@ CtiCCSubstationBusMsg& CtiCCSubstationBusMsg::operator=(const CtiCCSubstationBus
 {
     if( this != &right )
     {
-        _ccSubstationBuses.clearAndDestroy();
-        for(UINT i=0;i<right._ccSubstationBuses.entries();i++)
+        if( _ccSubstationBuses != NULL &&
+            _ccSubstationBuses->entries() > 0 )
         {
-            _ccSubstationBuses.insert(((CtiCCSubstationBus*)right._ccSubstationBuses[i])->replicate());
+            _ccSubstationBuses->clearAndDestroy();
+            delete _ccSubstationBuses;
+        }
+        _ccSubstationBuses = new RWOrdered((right.getCCSubstationBuses())->entries());
+        for(int i=0;i<(right.getCCSubstationBuses())->entries();i++)
+        {
+            _ccSubstationBuses->insert(((CtiCCSubstationBus*)(*right.getCCSubstationBuses())[i])->replicate());
         }
     }
 
@@ -256,16 +266,16 @@ RWDEFINE_COLLECTABLE( CtiCCCapBankStatesMsg, CTICCCAPBANKSTATES_MSG_ID )
 /*---------------------------------------------------------------------------
     Constuctors
 ---------------------------------------------------------------------------*/
-CtiCCCapBankStatesMsg::CtiCCCapBankStatesMsg(RWOrdered* ccCapBankStates) : CtiCCMessage("CCCapBankStates")
+CtiCCCapBankStatesMsg::CtiCCCapBankStatesMsg(RWOrdered& ccCapBankStates) : CtiCCMessage("CCCapBankStates"), _ccCapBankStates(NULL)
 {
-    _ccCapBankStates.clearAndDestroy();
-    for(UINT i=0;i<ccCapBankStates->entries();i++)
+    _ccCapBankStates = new RWOrdered(ccCapBankStates.entries());
+    for(int i=0;i<ccCapBankStates.entries();i++)
     {
-        _ccCapBankStates.insert(((CtiCCState*)((*ccCapBankStates)[i]))->replicate());
+        _ccCapBankStates->insert(((CtiCCState*)ccCapBankStates[i])->replicate());
     }
 }
 
-CtiCCCapBankStatesMsg::CtiCCCapBankStatesMsg(const CtiCCCapBankStatesMsg& ccCapBankStatesMsg) : CtiCCMessage("CCCapBankStates")
+CtiCCCapBankStatesMsg::CtiCCCapBankStatesMsg(const CtiCCCapBankStatesMsg& ccCapBankStatesMsg) : CtiCCMessage("CCCapBankStates"), _ccCapBankStates(NULL)
 {
     operator=(ccCapBankStatesMsg);
 }
@@ -275,7 +285,8 @@ CtiCCCapBankStatesMsg::CtiCCCapBankStatesMsg(const CtiCCCapBankStatesMsg& ccCapB
 ---------------------------------------------------------------------------*/
 CtiCCCapBankStatesMsg::~CtiCCCapBankStatesMsg()
 {
-    _ccCapBankStates.clearAndDestroy();
+    _ccCapBankStates->clearAndDestroy();
+    delete _ccCapBankStates;
 }
 
 /*---------------------------------------------------------------------------
@@ -284,6 +295,9 @@ CtiCCCapBankStatesMsg::~CtiCCCapBankStatesMsg()
 CtiMessage* CtiCCCapBankStatesMsg::replicateMessage() const
 {
     return new CtiCCCapBankStatesMsg(*this);
+    /*CtiLockGuard<CtiLogger> logger_guard(dout);
+    dout << RWTime() << " - Do not call me!!! " << __FILE__ << __LINE__ << endl;
+    return NULL;*/
 }
 
 /*---------------------------------------------------------------------------
@@ -293,10 +307,16 @@ CtiCCCapBankStatesMsg& CtiCCCapBankStatesMsg::operator=(const CtiCCCapBankStates
 {
     if( this != &right )
     {
-        _ccCapBankStates.clearAndDestroy();
-        for(UINT i=0;i<right._ccCapBankStates.entries();i++)
+        if( _ccCapBankStates != NULL &&
+            _ccCapBankStates->entries() > 0 )
         {
-            _ccCapBankStates.insert(((CtiCCState*)right._ccCapBankStates[i])->replicate());
+            _ccCapBankStates->clearAndDestroy();
+            delete _ccCapBankStates;
+        }
+        _ccCapBankStates = new RWOrdered((right.getCCCapBankStates())->entries());
+        for(int i=0;i<(right.getCCCapBankStates())->entries();i++)
+        {
+            _ccCapBankStates->insert(((CtiCCState*)(*right.getCCCapBankStates())[i])->replicate());
         }
     }
 
@@ -335,19 +355,19 @@ RWDEFINE_COLLECTABLE( CtiCCGeoAreasMsg, CTICCGEOAREAS_MSG_ID )
 /*---------------------------------------------------------------------------
     Constuctors
 ---------------------------------------------------------------------------*/
-CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(RWOrdered* ccGeoAreas) : CtiCCMessage("CCGeoAreas")
+CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(RWOrdered& ccGeoAreas) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL)
 {
-    _ccGeoAreas.clearAndDestroy();
-    for(UINT i=0;i<ccGeoAreas->entries();i++)
+    _ccGeoAreas = new RWOrdered(ccGeoAreas.entries());
+    for(int i=0;i<ccGeoAreas.entries();i++)
     {
         RWCollectableString* tempStringPtr = new RWCollectableString();
-        RWCollectableString* tempStringPtr2 = (RWCollectableString*)((*ccGeoAreas)[i]);
+        RWCollectableString* tempStringPtr2 = (RWCollectableString*)(ccGeoAreas[i]);
         *tempStringPtr = *tempStringPtr2;
-        _ccGeoAreas.insert(tempStringPtr);
+        _ccGeoAreas->insert(tempStringPtr);
     }
 }
 
-CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreasMsg) : CtiCCMessage("CCGeoAreas")
+CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreasMsg) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL)
 {
     operator=(ccGeoAreasMsg);
 }
@@ -357,7 +377,8 @@ CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreasMsg) : CtiC
 ---------------------------------------------------------------------------*/
 CtiCCGeoAreasMsg::~CtiCCGeoAreasMsg()
 {
-    _ccGeoAreas.clearAndDestroy();
+    _ccGeoAreas->clearAndDestroy();
+    delete _ccGeoAreas;
 }
 
 /*---------------------------------------------------------------------------
@@ -366,6 +387,9 @@ CtiCCGeoAreasMsg::~CtiCCGeoAreasMsg()
 CtiMessage* CtiCCGeoAreasMsg::replicateMessage() const
 {
     return new CtiCCGeoAreasMsg(*this);
+    /*CtiLockGuard<CtiLogger> logger_guard(dout);
+    dout << RWTime() << " - Do not call me!!! " << __FILE__ << __LINE__ << endl;
+    return NULL;*/
 }
 
 /*---------------------------------------------------------------------------
@@ -375,13 +399,19 @@ CtiCCGeoAreasMsg& CtiCCGeoAreasMsg::operator=(const CtiCCGeoAreasMsg& right)
 {
     if( this != &right )
     {
-        _ccGeoAreas.clearAndDestroy();
-        for(UINT i=0;i<right._ccGeoAreas.entries();i++)
+        if( _ccGeoAreas != NULL &&
+            _ccGeoAreas->entries() > 0 )
+        {
+            _ccGeoAreas->clearAndDestroy();
+            delete _ccGeoAreas;
+        }
+        _ccGeoAreas = new RWOrdered((right.getCCGeoAreas())->entries());
+        for(int i=0;i<(right.getCCGeoAreas())->entries();i++)
         {
             RWCollectableString* tempStringPtr = new RWCollectableString();
-            RWCollectableString* tempStringPtr2 = (RWCollectableString*)(right._ccGeoAreas[i]);
+            RWCollectableString* tempStringPtr2 = (RWCollectableString*)((*right.getCCGeoAreas())[i]);
             *tempStringPtr = *tempStringPtr2;
-            _ccGeoAreas.insert(tempStringPtr);
+            _ccGeoAreas->insert(tempStringPtr);
         }
     }
 

@@ -88,15 +88,14 @@ class CtiCCSubstationBusMsg : public CtiCCMessage
 RWDECLARE_COLLECTABLE( CtiCCSubstationBusMsg )
 
 public:
-    CtiCCSubstationBusMsg() : CtiCCMessage("CCSubstationBuses"){};
     CtiCCSubstationBusMsg(RWOrdered& buses);
     CtiCCSubstationBusMsg(const CtiCCSubstationBusMsg& substationBusesMsg);
 
     virtual ~CtiCCSubstationBusMsg();
 
-    const RWOrdered& getCCSubstationBuses() const     { return _ccSubstationBuses; }
-    RWOrdered& getCCSubstationBuses()                 { return _ccSubstationBuses; }
-    CtiCCSubstationBusMsg& setCCSubstationBuses(const RWOrdered& buses);
+    RWOrdered* getCCSubstationBuses() const     { return _ccSubstationBuses; }
+    //RWOrdered& getCCSubstationBuses()                 { return _ccSubstationBuses; }
+    //CtiCCSubstationBusMsg& setCCSubstationBuses(const RWOrdered& buses);
     virtual CtiMessage* replicateMessage() const;
 
     void restoreGuts( RWvistream& );
@@ -104,8 +103,9 @@ public:
 
     CtiCCSubstationBusMsg& operator=(const CtiCCSubstationBusMsg& right);
 private:
+    CtiCCSubstationBusMsg() : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL){};
     
-    RWOrdered _ccSubstationBuses;
+    RWOrdered* _ccSubstationBuses;
 };
 
 class CtiCCCapBankStatesMsg : public CtiCCMessage
@@ -113,15 +113,14 @@ class CtiCCCapBankStatesMsg : public CtiCCMessage
 RWDECLARE_COLLECTABLE( CtiCCCapBankStatesMsg )
 
 public:
-    CtiCCCapBankStatesMsg() : CtiCCMessage("CCCapBankStates"){};
-    CtiCCCapBankStatesMsg(RWOrdered* ccCapBankStates);
+    CtiCCCapBankStatesMsg(RWOrdered& ccCapBankStates);
     CtiCCCapBankStatesMsg(const CtiCCCapBankStatesMsg& ccCapBankStatesMsg);
 
     virtual ~CtiCCCapBankStatesMsg();
 
-    const RWOrdered& getCCCapBankStates() const     { return _ccCapBankStates; }
-    RWOrdered& getCCCapBankStates()                 { return _ccCapBankStates; }
-    CtiCCCapBankStatesMsg& setCCCapBankStates(const RWOrdered& ccCapBankStates);
+    RWOrdered* getCCCapBankStates() const     { return _ccCapBankStates; }
+    //RWOrdered& getCCCapBankStates()                 { return _ccCapBankStates; }
+    //CtiCCCapBankStatesMsg& setCCCapBankStates(const RWOrdered& ccCapBankStates);
     virtual CtiMessage* replicateMessage() const;
 
     void restoreGuts( RWvistream& );
@@ -129,8 +128,9 @@ public:
 
     CtiCCCapBankStatesMsg& operator=(const CtiCCCapBankStatesMsg& right);
 private:
+    CtiCCCapBankStatesMsg() : CtiCCMessage("CCCapBankStates"), _ccCapBankStates(NULL){};
     
-    RWOrdered _ccCapBankStates;
+    RWOrdered* _ccCapBankStates;
 };
 
 class CtiCCGeoAreasMsg : public CtiCCMessage
@@ -138,15 +138,14 @@ class CtiCCGeoAreasMsg : public CtiCCMessage
 RWDECLARE_COLLECTABLE( CtiCCGeoAreasMsg )
 
 public:
-    CtiCCGeoAreasMsg() : CtiCCMessage("CCGeoAreas"){};
-    CtiCCGeoAreasMsg(RWOrdered* areaList);
+    CtiCCGeoAreasMsg(RWOrdered& areaList);
     CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreas);
 
     virtual ~CtiCCGeoAreasMsg();
 
-    const RWOrdered& getCCGeoAreas() const     { return _ccGeoAreas; }
-    RWOrdered& getCCGeoAreas()                 { return _ccGeoAreas; }
-    CtiCCGeoAreasMsg& setCCGeoAreas(const RWOrdered& ccGeoAreas);
+    RWOrdered* getCCGeoAreas() const     { return _ccGeoAreas; }
+    //RWOrdered& getCCGeoAreas()                 { return _ccGeoAreas; }
+    //CtiCCGeoAreasMsg& setCCGeoAreas(const RWOrdered& ccGeoAreas);
     virtual CtiMessage* replicateMessage() const;
 
     void restoreGuts( RWvistream& );
@@ -154,8 +153,9 @@ public:
 
     CtiCCGeoAreasMsg& operator=(const CtiCCGeoAreasMsg& right);
 private:
+    CtiCCGeoAreasMsg() : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL){};
     
-    RWOrdered _ccGeoAreas;
+    RWOrdered* _ccGeoAreas;
 };
 
 class CtiCCShutdown : public CtiCCMessage

@@ -10,8 +10,8 @@
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
 -----------------------------------------------------------------------------*/
 
+#include "ccclientlistener.h"
 #include "ccexecutor.h"
-#include "ccserver.h"
 #include "ccsubstationbusstore.h"
 #include "capcontroller.h"
 #include "ccid.h"
@@ -30,52 +30,52 @@ extern BOOL _CC_DEBUG;
     Executes the command and places any resulting messages on the result
     queue.
 ---------------------------------------------------------------------------*/
-void CtiCCCommandExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiCCCommandExecutor::Execute()
 {
     switch ( _command->getCommand() )
     {
     case CtiCCCommand::DISABLE_SUBSTATION_BUS:
-        DisableSubstationBus(results);
+        DisableSubstationBus();
         break;
 
     case CtiCCCommand::ENABLE_SUBSTATION_BUS:
-        EnableSubstationBus(results);
+        EnableSubstationBus();
         break;
 
     case CtiCCCommand::DISABLE_FEEDER:
-        DisableFeeder(results);
+        DisableFeeder();
         break;
 
     case CtiCCCommand::ENABLE_FEEDER:
-        EnableFeeder(results);
+        EnableFeeder();
         break;
 
     case CtiCCCommand::DISABLE_CAPBANK:
-        DisableCapBank(results);
+        DisableCapBank();
         break;
 
     case CtiCCCommand::ENABLE_CAPBANK:
-        EnableCapBank(results);
+        EnableCapBank();
         break;
 
     case CtiCCCommand::OPEN_CAPBANK:
-        OpenCapBank(results);
+        OpenCapBank();
         break;
 
     case CtiCCCommand::CLOSE_CAPBANK:
-        CloseCapBank(results);
+        CloseCapBank();
         break;
 
     case CtiCCCommand::CONFIRM_OPEN:
-        ConfirmOpen(results);
+        ConfirmOpen();
         break;
 
     case CtiCCCommand::CONFIRM_CLOSE:
-        ConfirmClose(results);
+        ConfirmClose();
         break;
 
     case CtiCCCommand::REQUEST_ALL_SUBSTATION_BUSES:
-        SendAllSubstationBuses(results);
+        SendAllSubstationBuses();
         break;
 
     default:
@@ -91,7 +91,7 @@ void CtiCCCommandExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWColl
 /*---------------------------------------------------------------------------
     EnableSubstation
 ---------------------------------------------------------------------------*/    
-void CtiCCCommandExecutor::EnableSubstationBus(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiCCCommandExecutor::EnableSubstationBus()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     
@@ -119,7 +119,7 @@ void CtiCCCommandExecutor::EnableSubstationBus(RWCountedPointer< CtiCountedPCPtr
 /*---------------------------------------------------------------------------
     DisableSubstation
 ---------------------------------------------------------------------------*/    
-void CtiCCCommandExecutor::DisableSubstationBus(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiCCCommandExecutor::DisableSubstationBus()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -147,7 +147,7 @@ void CtiCCCommandExecutor::DisableSubstationBus(RWCountedPointer< CtiCountedPCPt
 /*---------------------------------------------------------------------------
     EnableFeeder
 ---------------------------------------------------------------------------*/    
-void CtiCCCommandExecutor::EnableFeeder(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiCCCommandExecutor::EnableFeeder()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     
@@ -185,7 +185,7 @@ void CtiCCCommandExecutor::EnableFeeder(RWCountedPointer< CtiCountedPCPtrQueue<R
 /*---------------------------------------------------------------------------
     DisableFeeder
 ---------------------------------------------------------------------------*/    
-void CtiCCCommandExecutor::DisableFeeder(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiCCCommandExecutor::DisableFeeder()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     
@@ -223,7 +223,7 @@ void CtiCCCommandExecutor::DisableFeeder(RWCountedPointer< CtiCountedPCPtrQueue<
 /*---------------------------------------------------------------------------
     EnableCapBank
 ---------------------------------------------------------------------------*/    
-void CtiCCCommandExecutor::EnableCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiCCCommandExecutor::EnableCapBank()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     
@@ -279,7 +279,7 @@ void CtiCCCommandExecutor::EnableCapBank(RWCountedPointer< CtiCountedPCPtrQueue<
 /*---------------------------------------------------------------------------
     DisableCapBank
 ---------------------------------------------------------------------------*/    
-void CtiCCCommandExecutor::DisableCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiCCCommandExecutor::DisableCapBank()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     
@@ -335,7 +335,7 @@ void CtiCCCommandExecutor::DisableCapBank(RWCountedPointer< CtiCountedPCPtrQueue
 /*---------------------------------------------------------------------------
     OpenCapBank
 ---------------------------------------------------------------------------*/    
-void CtiCCCommandExecutor::OpenCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiCCCommandExecutor::OpenCapBank()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     
@@ -507,7 +507,7 @@ void CtiCCCommandExecutor::OpenCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RW
 /*---------------------------------------------------------------------------
     CloseCapBank
 ---------------------------------------------------------------------------*/    
-void CtiCCCommandExecutor::CloseCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiCCCommandExecutor::CloseCapBank()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     
@@ -680,7 +680,7 @@ void CtiCCCommandExecutor::CloseCapBank(RWCountedPointer< CtiCountedPCPtrQueue<R
 /*---------------------------------------------------------------------------
     ConfirmOpen
 ---------------------------------------------------------------------------*/    
-void CtiCCCommandExecutor::ConfirmOpen(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiCCCommandExecutor::ConfirmOpen()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     
@@ -851,7 +851,7 @@ void CtiCCCommandExecutor::ConfirmOpen(RWCountedPointer< CtiCountedPCPtrQueue<RW
 /*---------------------------------------------------------------------------
     ConfirmClose
 ---------------------------------------------------------------------------*/    
-void CtiCCCommandExecutor::ConfirmClose(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiCCCommandExecutor::ConfirmClose()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     
@@ -1024,15 +1024,14 @@ void CtiCCCommandExecutor::ConfirmClose(RWCountedPointer< CtiCountedPCPtrQueue<R
 /*---------------------------------------------------------------------------
     SendAllSubstationBuses
 ---------------------------------------------------------------------------*/    
-void CtiCCCommandExecutor::SendAllSubstationBuses(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiCCCommandExecutor::SendAllSubstationBuses()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
     CtiCCExecutorFactory f;
-    RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*(store->getCCSubstationBuses(RWDBDateTime().seconds()))));
-    executor->Execute(queue);
+    executor->Execute();
     delete executor;
 }
 
@@ -1043,10 +1042,10 @@ void CtiCCCommandExecutor::SendAllSubstationBuses(RWCountedPointer< CtiCountedPC
 /*---------------------------------------------------------------------------
     Execute
 ---------------------------------------------------------------------------*/    
-void CtiCCSubstationBusMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiCCSubstationBusMsgExecutor::Execute()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-    CtiCCServer::getInstance()->Broadcast(_ccSubstationBusesMsg->replicateMessage());
+    CtiCCClientListener::getInstance()->BroadcastMessage(_ccSubstationBusesMsg);
 }
 
 
@@ -1056,10 +1055,10 @@ void CtiCCSubstationBusMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQue
 /*---------------------------------------------------------------------------
     Execute
 ---------------------------------------------------------------------------*/    
-void CtiCCCapBankStatesMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiCCCapBankStatesMsgExecutor::Execute()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-    CtiCCServer::getInstance()->Broadcast(_ccCapBankStatesMsg->replicateMessage());
+    CtiCCClientListener::getInstance()->BroadcastMessage(_ccCapBankStatesMsg);
 }
 
 
@@ -1069,10 +1068,10 @@ void CtiCCCapBankStatesMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQue
 /*---------------------------------------------------------------------------
     Execute
 ---------------------------------------------------------------------------*/    
-void CtiCCGeoAreasMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiCCGeoAreasMsgExecutor::Execute()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-    CtiCCServer::getInstance()->Broadcast(_ccGeoAreasMsg->replicateMessage());
+    CtiCCClientListener::getInstance()->BroadcastMessage(_ccGeoAreasMsg);
 }
 
 
@@ -1082,7 +1081,7 @@ void CtiCCGeoAreasMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RW
 /*---------------------------------------------------------------------------
     Execute
 ---------------------------------------------------------------------------*/    
-void CtiCCForwardMsgToDispatchExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiCCForwardMsgToDispatchExecutor::Execute()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     CtiCapController::getInstance()->sendMessageToDispatch(_ctiMessage->replicateMessage());
@@ -1095,7 +1094,7 @@ void CtiCCForwardMsgToDispatchExecutor::Execute(RWCountedPointer< CtiCountedPCPt
 /*---------------------------------------------------------------------------
     Execute
 ---------------------------------------------------------------------------*/    
-void CtiCCPointDataMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiCCPointDataMsgExecutor::Execute()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -1213,7 +1212,7 @@ void CtiCCPointDataMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<R
 /*---------------------------------------------------------------------------
     Execute
 ---------------------------------------------------------------------------*/    
-void CtiCCMultiMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiCCMultiMsgExecutor::Execute()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -1221,12 +1220,11 @@ void CtiCCMultiMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCol
     RWOrdered& messages = _multiMsg->getData();
     while(messages.entries( )>0)
     {
-        RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
         CtiMessage* message = (CtiMessage*)(messages.pop());
         if( message != NULL )
         {
             CtiCCExecutor* executor = f.createExecutor(message);
-            executor->Execute(queue);
+            executor->Execute();
             delete executor;
         }
         else
@@ -1246,7 +1244,7 @@ void CtiCCMultiMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCol
     
     Executes a shutdown on the server
 ---------------------------------------------------------------------------*/
-void CtiCCShutdownExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results )
+void CtiCCShutdownExecutor::Execute()
 {
     /*if( _CC_DEBUG )
     {
@@ -1254,7 +1252,7 @@ void CtiCCShutdownExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCol
         dout << RWTime() << " - Shutting down client connection thread..." << endl;
     }*/
 
-    CtiCCServer::getInstance()->stop();
+    CtiCCClientListener::getInstance()->stop();
 
     /*if( _CC_DEBUG )
     {

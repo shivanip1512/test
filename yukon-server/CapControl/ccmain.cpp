@@ -17,7 +17,6 @@
 #include <rw/thr/thrutil.h>
 #include <rw/collstr.h>
 
-#include "ccserver.h"
 #include "ccsubstationbusstore.h"
 #include "capcontroller.h"
 #include "dbaccess.h"

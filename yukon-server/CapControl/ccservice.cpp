@@ -11,7 +11,6 @@
 -----------------------------------------------------------------------------*/
 #include <io.h>
 
-#include "ccserver.h"
 #include "ccservice.h"
 #include "eventlog.h"
 #include "configparms.h"
@@ -153,9 +152,8 @@ void CtiCCService::OnStop()
 
     //Time to quit - send a shutdown message through the system
     CtiCCExecutorFactory f;
-    RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
     CtiCCExecutor* executor = f.createExecutor(new CtiCCShutdown());
-    executor->Execute(queue);
+    executor->Execute();
 
     SetStatus(SERVICE_STOP_PENDING, 50, 5000 );
 
@@ -233,8 +231,8 @@ void CtiCCService::Run()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Starting up the client connection thread..." << endl;
     }
-    CtiCCServer* server = CtiCCServer::getInstance();
-    server->start();
+    CtiCCClientListener* clientListener = CtiCCClientListener::getInstance();
+    clientListener->start();
 
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
