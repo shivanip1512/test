@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2002/10/14 13:20:32 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2002/11/05 19:38:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4558,9 +4558,9 @@ void CtiVanGogh::loadDeviceLites(LONG id)
  */
 void CtiVanGogh::loadDeviceNames()
 {
-    CtiLockGuard<CtiMutex> guard(server_mux);
+    CtiLockGuard<CtiMutex> guard(server_mux, 10000);
 
-    if(!_deviceLiteSet.empty())
+    if(guard.isAcquired() && !_deviceLiteSet.empty())
     {
         CtiDeviceLiteSet_t::iterator dnit;
         bool reloadFailed = false;
