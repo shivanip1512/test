@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct310.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/02/11 05:04:35 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/04/14 17:16:58 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,14 +99,14 @@ protected:
         MCT3XX_GroupAddrPos     = 0x10,
         MCT3XX_GroupAddrLen     =    5,
 
+        MCT3XX_UniqAddrPos             = 0x0A,
+        MCT3XX_UniqAddrLen             =    6
         MCT3XX_GroupAddrBronzePos      = 0x10,
         MCT3XX_GroupAddrBronzeLen      =    1,
         MCT3XX_GroupAddrLeadPos        = 0x11,
         MCT3XX_GroupAddrLeadLen        =    3,
         MCT3XX_GroupAddrGoldSilverPos  = 0x14,
         MCT3XX_GroupAddrGoldSilverLen  =    1,
-        MCT3XX_UniqAddrPos             = 0x1A,
-        MCT3XX_UniqAddrLen             =    6
     };
 
 public:
