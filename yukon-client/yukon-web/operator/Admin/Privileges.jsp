@@ -89,7 +89,7 @@
                   <form name="form1" method="get" action="">
                   <td width="194"> 
                       <div align="left"> 
-                        <input type="reset" name="Cancel" value="Cancel">
+                        <input type="reset" name="Reset" value="Reset">
                       </div>
                   </td>
 				  </form>

@@ -717,7 +717,7 @@ function showAdditionalAppInfo(index)
                     <input type="submit" name="Submit" value="Save">
                   </td>
                   <td> 
-                    <input type="reset" name="Cancel" value="Cancel">
+                    <input type="reset" name="Reset" value="Reset">
                   </td>
                 </tr>
               </table><br>

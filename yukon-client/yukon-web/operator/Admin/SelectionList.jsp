@@ -433,7 +433,7 @@ function init() {
                     <input type="submit" name="Submit" value="Submit">
                   </td>
                   <td width="205"> 
-                    <input type="reset" name="Cancel" value="Cancel">
+                    <input type="reset" name="Reset" value="Reset">
                   </td>
                   <td width="75" align="right"> 
                     <input type="button" name="Done" value="Done" onclick="location.href='AdminTest.jsp'">

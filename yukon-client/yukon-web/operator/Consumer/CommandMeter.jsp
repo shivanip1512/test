@@ -134,6 +134,7 @@ function disableButton(x)
                   	  		out.print("SELECTED");
                	  		out.println(">" + keysAndVals.getKeys()[i] + "</option>");
                  	  }%>
+					</select>
                     <input type="submit" name="execute" value="Execute" onClick="disableButton(this)">
                   </td>
                 </tr>

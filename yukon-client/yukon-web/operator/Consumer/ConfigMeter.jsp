@@ -260,7 +260,7 @@ if (request.getParameter("Submit") != null)
                     <td width="30%" class="SubtitleHeader" height="2" align="right">&nbsp; 
                     </td>
                     <td width="70%" height="2">
-                      <input type="reset" name="Reset" value="Restore">
+                      <input type="reset" name="Reset" value="Reset">
                       <input type="submit" name="Submit" value="Submit">
                     </td>
                   </tr>

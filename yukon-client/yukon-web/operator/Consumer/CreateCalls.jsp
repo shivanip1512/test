@@ -108,7 +108,7 @@ function checkCallNo(form) {
                     <input type="submit" name="Submit" value="Save" onclick="return checkCallNo(this.form)">
                   </td>
                   <td width = "50%"> 
-                    <input type="reset" name="Submit2" value="Cancel" >
+                    <input type="reset" name="Reset" value="Reset" >
                   </td>
                 </tr>
               </table><br>

@@ -332,7 +332,7 @@ function validate(form) {
                     </td>
                     <td width="15%"> 
                       <div align="center">
-                        <input type="reset" name="Cancel" value="Cancel">
+                        <input type="reset" name="Reset" value="Reset">
                       </div>
                     </td>
                     <td width="42%"> 

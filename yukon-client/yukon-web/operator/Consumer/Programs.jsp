@@ -369,7 +369,7 @@ function resendNotEnrolled(form) {
                     <td width="194"> 
                       <div align="left"> 
 <% if (request.getParameter("Wizard") == null) { %>
-                        <input type="reset" name="Cancel" value="Cancel">
+                        <input type="reset" name="Reset" value="Reset">
 <% } else { %>
                         <input type="button" name="Cancel" value="Cancel" onclick="location.href = '../Operations.jsp'">
 <% } %>

@@ -874,7 +874,7 @@ function deleteAppliance(form) {
                   </td>
                     <td width="33%" align = "center"> 
                       <div>
-                        <input type="button" name="Cancel" value="Cancel" onclick="document.form1.reset()">
+                        <input type="button" name="Reset" value="Reset" onclick="document.form1.reset()">
                       </div>
                     </td>
                     <td width="33%"> 

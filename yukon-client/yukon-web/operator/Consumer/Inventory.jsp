@@ -328,9 +328,9 @@ function changeSerialNo() {
                   </td>
                   <td width="15%" align="center"> 
                   <% if (invChanged) { %>
-                    <input type="button" name="Cancel" value="Reset" onclick="location.href = 'Inventory.jsp?InvNo=<%= invNo %>'">
+                    <input type="button" name="Reset" value="Reset" onclick="location.href = 'Inventory.jsp?InvNo=<%= invNo %>'">
                   <% } else { %>
-                    <input type="reset" name="Cancel" value="Reset">
+                    <input type="reset" name="Reset" value="Reset">
                   <% } %>
                   </td>
                   <td width="43%" align="left"> 

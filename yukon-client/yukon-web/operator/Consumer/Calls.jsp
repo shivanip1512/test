@@ -125,13 +125,13 @@ function init() {
                       </div>
                     </td>
 					<td width="15%">
-					  <div align="center">
-					    <input type="button" name="Delete" value="Delete" onclick="deleteCall(this.form)">
-					  </div>
+					  <div align="center"> 
+                        <input type="reset" name="Reset" value="Reset">
+                      </div>
 					</td>
                     <td width="42%"> 
-                      <div align="left"> 
-                        <input type="reset" name="Cancel" value="Cancel">
+                      <div align="left">
+                        <input type="button" name="Delete" value="Delete" onClick="deleteCall(this.form)">
                       </div>
                     </td>
                   </tr>

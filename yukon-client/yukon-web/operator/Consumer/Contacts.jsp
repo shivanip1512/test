@@ -276,7 +276,7 @@ function saveChanges() {
                   </td>
                   <td width="50%"> 
                     <div align="left"> 
-                      <input type="reset" name="Cancel" value="Cancel">
+                      <input type="reset" name="Reset" value="Reset">
                     </div>
                   </td>
                 </tr>

@@ -99,7 +99,7 @@ document.location = "Update.jsp";
                       <input type="submit" name="Submit" value="Create">
                     </td>
                     <td> 
-                      <input type="button" name="Submit2" value="Cancel" onClick = "goBack()">
+                      <input type="button" name="Cancel" value="Cancel" onClick = "goBack()">
                     </td>
                   </tr>
                 </table>

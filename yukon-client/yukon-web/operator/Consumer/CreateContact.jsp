@@ -212,7 +212,7 @@
                     <input type="submit" name="Submit" value="Save">
                   </td>
                   <td> 
-                    <input type="button" name="Submit2" value="Cancel" onclick = "goBack()">
+                    <input type="button" name="Cancel" value="Cancel" onclick = "goBack()">
                   </td>
                 </tr>
               </table><br>
