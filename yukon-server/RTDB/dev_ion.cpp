@@ -122,8 +122,6 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                     {
                         //  post-control scan
                         _ion.setCommand(CtiProtocolION::Command_ExceptionScanPostControl);
-
-                        _postControlScanCount++;
                     }
                     else
                     {
@@ -178,21 +176,53 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
         case ControlRequest:
         {
+            bool has_offset = false;
             unsigned int offset;
+            CtiPointBase *point;
 
-            if( parse.getFlags() & CMD_FLAG_OFFSET &&
-                parse.getFlags() & CMD_FLAG_CTL_CLOSE )
+            if( parse.getiValue("point") > 0 )
+            {
+                if( (point = getDevicePointEqual(parse.getiValue("point"))) != NULL && point->isStatus() )
+                {
+                    if( ((CtiPointStatus *)point)->getPointStatus().getControlType() == NormalControlType )
+                    {
+                        offset = ((CtiPointStatus *)point)->getPointStatus().getControlOffset();
+                        has_offset = true;
+                    }
+                }
+            }
+            else if( parse.getFlags() & CMD_FLAG_OFFSET )
             {
                 offset = parse.getiValue("offset");
+                has_offset = true;
+            }
 
-                if( offset > 0 )
+            if( parse.getFlags() & CMD_FLAG_CTL_CLOSE && has_offset )
+            {
+                if( gConfigParms.getValueAsString("DUKE_ISSG").compareTo("true", RWCString::ignoreCase) == 0 )
                 {
-                    _ion.setCommand(CtiProtocolION::Command_ExternalPulseTrigger, offset);
+                    if( offset == 20 )
+                    {
+                        pReq->setCommandString(pReq->CommandString() + " duke_issg_start");
 
-                    _postControlScanCount = 0;
+                        //  call propageteRequest to put the command string into
+                        //    pReq again.
+                        //  is this a bit hairy?  i think it's okay, but...
+                        propagateRequest(OutMessage, pReq);
+                    }
+                    else if( offset == 22 )
+                    {
+                        pReq->setCommandString(pReq->CommandString() + " duke_issg_stop");
 
-                    found = true;
+                        propagateRequest(OutMessage, pReq);
+                    }
                 }
+
+                _ion.setCommand(CtiProtocolION::Command_ExternalPulseTrigger, offset);
+
+                _postControlScanCount = 0;
+
+                found = true;
             }
 
             break;
@@ -212,7 +242,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
     }
 
 
-    if( nRet == NoError )
+    if( found )
     {
         OutMessage->Port     = getPortID();
         OutMessage->DeviceID = getID();
@@ -484,133 +514,219 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
     resetScanPending();
 
-    _ion.recvCommResult(InMessage, outList);
-
-    switch( _ion.getCommand() )
+    if( !ErrReturn && !_ion.recvCommResult(InMessage, outList) )
     {
-        case CtiProtocolION::Command_ExternalPulseTrigger:
+        if( _ion.hasInboundData() )
         {
-            if( getDebugLevel() && DEBUGLEVEL_LUDICROUS )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            CtiRequestMsg newReq(getID(),
-                                 "scan general post_control",
-                                 InMessage->Return.UserID,
-                                 InMessage->Return.TrxID,
-                                 InMessage->Return.RouteID,
-                                 InMessage->Return.MacroOffset,
-                                 InMessage->Return.Attempt);
-
-            newReq.setMessagePriority(15);
-
-            newReq.setConnectionHandle((void *)InMessage->Return.Connection);
-
-            CtiCommandParser parse(newReq.CommandString());
-
-            CtiDeviceBase::ExecuteRequest(&newReq, parse, vgList, retList, outList);
-
-            break;
+            _ion.getInboundData(pointData, eventData);
         }
 
-        case CtiProtocolION::Command_ExceptionScanPostControl:
+        processInboundData(InMessage, TimeNow, vgList, retList, outList, pointData, eventData);
+
+        pointData.clear();
+        eventData.clear();
+
+        switch( _ion.getCommand() )
         {
-            RWCString retryStr = gConfigParms.getValueAsString("DUKE_ISSG");
-
-            if( retryStr.compareTo("true", RWCString::ignoreCase) == 0 )
+            case CtiProtocolION::Command_ExternalPulseTrigger:
             {
-                CtiCommandParser parse(InMessage->Return.CommandStr);
+                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
 
+                CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
+                                                                 "scan general post_control",
+                                                                 InMessage->Return.UserID,
+                                                                 InMessage->Return.TrxID,
+                                                                 InMessage->Return.RouteID,
+                                                                 InMessage->Return.MacroOffset,
+                                                                 InMessage->Return.Attempt);
+
+                RWCString commandStr(InMessage->Return.CommandStr);
+
+                if( commandStr.contains("duke_issg_start", RWCString::ignoreCase) )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    newReq->setCommandString(newReq->CommandString() + " duke_issg_start");
+                }
+                else if( commandStr.contains("duke_issg_stop", RWCString::ignoreCase) )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    newReq->setCommandString(newReq->CommandString() + " duke_issg_stop");
+                }
+
+                newReq->setMessagePriority(15);
+
+                newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+
+                CtiCommandParser parse(newReq->CommandString());
+
+                CtiDeviceBase::ExecuteRequest(newReq, parse, vgList, retList, outList);
+
+                delete newReq;
+
+                break;
+            }
+
+            case CtiProtocolION::Command_ExceptionScanPostControl:
+            {
                 if( _postControlScanCount < IONPostControlScanMax )
                 {
-                    if( parse.getFlags() & CMD_FLAG_OFFSET && parse.getFlags() & CMD_FLAG_CTL_CLOSE )
+                    RWCString commandStr(InMessage->Return.CommandStr);
+
+                    if( commandStr.contains("duke_issg_start", RWCString::ignoreCase) )
                     {
-                        if( parse.getiValue("offset") == 22 )
                         {
-                            if( _ion.hasPointUpdate(StatusPointType, 1) && _ion.getPointUpdateValue(StatusPointType, 1) != 0 ||
-                                _ion.hasPointUpdate(StatusPointType, 2) && _ion.getPointUpdateValue(StatusPointType, 2) != 0 )
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        if( _ion.hasPointUpdate(StatusPointType, 1) && _ion.getPointUpdateValue(StatusPointType, 1) == 0 &&
+                            _ion.hasPointUpdate(StatusPointType, 2) && _ion.getPointUpdateValue(StatusPointType, 2) == 0 )
+                        {
                             {
-                                CtiRequestMsg newReq(getID(),
-                                                     "scan general post_control",
-                                                     InMessage->Return.UserID,
-                                                     InMessage->Return.TrxID,
-                                                     InMessage->Return.RouteID,
-                                                     InMessage->Return.MacroOffset,
-                                                     InMessage->Return.Attempt);
-
-                                newReq.setMessagePriority(15);
-
-                                newReq.setConnectionHandle((void *)InMessage->Return.Connection);
-
-                                CtiCommandParser parse(newReq.CommandString());
-
-                                CtiDeviceBase::ExecuteRequest(&newReq, parse, vgList, retList, outList);
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
+
+                            CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
+                                                                             "scan general post_control duke_issg_start",
+                                                                             InMessage->Return.UserID,
+                                                                             InMessage->Return.TrxID,
+                                                                             InMessage->Return.RouteID,
+                                                                             InMessage->Return.MacroOffset,
+                                                                             InMessage->Return.Attempt);
+
+                            newReq->setMessagePriority(15);
+
+                            newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+
+                            CtiCommandParser parse(newReq->CommandString());
+
+                            CtiDeviceBase::ExecuteRequest(newReq, parse, vgList, retList, outList);
+
+                            ++_postControlScanCount;
+
+                            delete newReq;
+                        }
+                    }
+                    else if( commandStr.contains("duke_issg_stop", RWCString::ignoreCase) )
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        if( _ion.hasPointUpdate(StatusPointType, 1) && _ion.getPointUpdateValue(StatusPointType, 1) != 0 ||
+                            _ion.hasPointUpdate(StatusPointType, 2) && _ion.getPointUpdateValue(StatusPointType, 2) != 0 )
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+
+                            CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
+                                                                             "scan general post_control duke_issg_stop",
+                                                                             InMessage->Return.UserID,
+                                                                             InMessage->Return.TrxID,
+                                                                             InMessage->Return.RouteID,
+                                                                             InMessage->Return.MacroOffset,
+                                                                             InMessage->Return.Attempt);
+
+                            newReq->setMessagePriority(15);
+
+                            newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+
+                            CtiCommandParser parse(newReq->CommandString());
+
+                            CtiDeviceBase::ExecuteRequest(newReq, parse, vgList, retList, outList);
+
+                            ++_postControlScanCount;
+
+                            delete newReq;
                         }
                     }
                 }
+
+                break;
             }
 
-            break;
-        }
-
-        case CtiProtocolION::Command_EventLogRead:
-        {
-            if( !_ion.areEventLogsComplete() )
+            case CtiProtocolION::Command_EventLogRead:
             {
+                if( !_ion.areEventLogsComplete() )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - submitting request for additional event logs **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - submitting request for additional event logs **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
+                                                                     "getstatus eventlogs",
+                                                                     InMessage->Return.UserID,
+                                                                     InMessage->Return.TrxID,
+                                                                     InMessage->Return.RouteID,
+                                                                     InMessage->Return.MacroOffset,
+                                                                     InMessage->Return.Attempt);
+
+                    newReq->setMessagePriority(15);
+
+                    newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+
+                    CtiCommandParser parse(newReq->CommandString());
+
+                    CtiDeviceBase::ExecuteRequest(newReq, parse, vgList, retList, outList);
+
+                    delete newReq;
                 }
+    /*            else
+                {
+                    setIONScanPending(ScanRateAccum, false);
+                }*/
 
-                CtiRequestMsg newReq(getID(),
-                                     "getstatus eventlogs",
-                                     InMessage->Return.UserID,
-                                     InMessage->Return.TrxID,
-                                     InMessage->Return.RouteID,
-                                     InMessage->Return.MacroOffset,
-                                     InMessage->Return.Attempt);
-
-                newReq.setMessagePriority(15);
-
-                newReq.setConnectionHandle((void *)InMessage->Return.Connection);
-
-                CtiCommandParser parse(newReq.CommandString());
-
-                CtiDeviceBase::ExecuteRequest(&newReq, parse, vgList, retList, outList);
+                break;
             }
-/*            else
+
+    /*        case CtiProtocolION::Command_ExceptionScan:
             {
-                setIONScanPending(ScanRateAccum, false);
+                setIONScanPending(ScanRateGeneral, false);
+
+                break;
+            }
+
+            case CtiProtocolION::Command_IntegrityScan:
+            {
+                setIONScanPending(ScanRateIntegrity, false);
+
+                break;
             }*/
-
-            break;
         }
 
-/*        case CtiProtocolION::Command_ExceptionScan:
-        {
-            setIONScanPending(ScanRateGeneral, false);
-
-            break;
-        }
-
-        case CtiProtocolION::Command_IntegrityScan:
-        {
-            setIONScanPending(ScanRateIntegrity, false);
-
-            break;
-        }*/
+        _ion.clearInboundData();
     }
-
-    if( _ion.hasInboundData() )
+    else
     {
-        _ion.getInboundData(pointData, eventData);
+        CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
+                                                       RWCString(InMessage->Return.CommandStr),
+                                                       getName() + " / operation failed",
+                                                       InMessage->EventCode & 0x7fff,
+                                                       InMessage->Return.RouteID,
+                                                       InMessage->Return.MacroOffset,
+                                                       InMessage->Return.Attempt,
+                                                       InMessage->Return.TrxID,
+                                                       InMessage->Return.UserID);
 
-        processInboundData(InMessage, TimeNow, vgList, retList, outList, pointData, eventData);
+        retList.append(retMsg);
     }
-
 
     return ErrReturn;
 }
@@ -620,6 +736,8 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
                                        RWTPtrSlist<CtiPointDataMsg> &points, RWTPtrSlist<CtiSignalMsg> &events )
 {
     CtiReturnMsg *retMsg, *vgMsg;
+    RWTPtrSlist<CtiPointDataMsg>::iterator pt_iter;
+    RWTPtrSlist<CtiSignalMsg>::iterator    ev_iter;
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
@@ -629,7 +747,7 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
     retMsg->setUserMessageId(InMessage->Return.UserID);
     vgMsg->setUserMessageId (InMessage->Return.UserID);
 
-    while( !points.isEmpty() )
+    for( pt_iter = points.begin();  pt_iter != points.end(); ++pt_iter )
     {
         CtiPointDataMsg *tmpMsg;
         CtiPointBase    *point;
@@ -637,7 +755,7 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
         RWCString        resultString;
         bool             mustArchive;
 
-        tmpMsg = points.removeFirst();
+        tmpMsg = *pt_iter;
 
         //  !!! tmpMsg->getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
         if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId(), tmpMsg->getType())) != NULL )
@@ -683,31 +801,35 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
 
             retMsg->PointData().append(tmpMsg);
         }
-        else
-        {
-            delete tmpMsg;
-        }
     }
 
-    while( !events.isEmpty() )
+    for( ev_iter = events.begin(); ev_iter != events.end();  ++ev_iter )
     {
         CtiSignalMsg *tmpSignal;
         CtiPointBase *point;
 
-        tmpSignal = events.removeFirst();
+        tmpSignal = *ev_iter;
 
         if( (point = getDevicePointOffsetTypeEqual(tmpSignal->getId(), AnalogPointType)) != NULL )
         {
             tmpSignal->setId(point->getID());
-        }
 
-        //  only send to Dispatch
-        vgList.append(tmpSignal->replicateMessage());
+            //  only send to Dispatch
+            vgList.append(tmpSignal->replicateMessage());
+        }
     }
 
-    if( !_ion.areEventLogsComplete() )
+    //  not too kosher, but gets the job done
+    if( parse.getCommandStr().contains("eventlog", RWCString::ignoreCase) )
     {
-        retMsg->setExpectMore(true);
+        if( !_ion.areEventLogsComplete() )
+        {
+            retMsg->setExpectMore(true);
+        }
+        else
+        {
+            retMsg->setResultString("Event log collection complete.");
+        }
     }
 
     retList.append(retMsg);
@@ -720,15 +842,7 @@ INT CtiDeviceION::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< C
     INT retCode = NORMAL;
 
     CtiCommandParser  parse(InMessage->Return.CommandStr);
-    CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                              RWCString(InMessage->Return.CommandStr),
-                                              RWCString(),
-                                              InMessage->EventCode & 0x7fff,
-                                              InMessage->Return.RouteID,
-                                              InMessage->Return.MacroOffset,
-                                              InMessage->Return.Attempt,
-                                              InMessage->Return.TrxID,
-                                              InMessage->Return.UserID);
+    CtiReturnMsg     *pPIL;
     CtiPointDataMsg  *commFailed;
     CtiPointBase     *commPoint;
 
@@ -736,6 +850,16 @@ INT CtiDeviceION::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< C
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
+
+    pPIL = CTIDBG_new CtiReturnMsg(getID(),
+                                   RWCString(InMessage->Return.CommandStr),
+                                   RWCString(),
+                                   InMessage->EventCode & 0x7fff,
+                                   InMessage->Return.RouteID,
+                                   InMessage->Return.MacroOffset,
+                                   InMessage->Return.Attempt,
+                                   InMessage->Return.TrxID,
+                                   InMessage->Return.UserID);
 
     if( pPIL != NULL )
     {
@@ -750,12 +874,6 @@ INT CtiDeviceION::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< C
         {
             delete pPIL;
         }
-        pPIL = NULL;
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return retCode;
@@ -764,16 +882,8 @@ INT CtiDeviceION::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< C
 
 void CtiDeviceION::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    //RWDBSelector tmpSelector;
-
     Inherited::getSQL(db, keyTable, selector);
     CtiTableDeviceDNP::getSQL(db, keyTable, selector);
-
-    //  this will remain commented out until it is needed...
-    //CtiTableDeviceMeterGroup::getSQL(db, keyTable, tmpSelector);
-
-    //selector << tmpSelector;
-    //selector.where( selector.where() && selector.where().leftOuterJoin(tmpSelector.where()) );
 }
 
 
@@ -781,7 +891,6 @@ void CtiDeviceION::DecodeDatabaseReader(RWDBReader &rdr)
 {
    Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
    _address.DecodeDatabaseReader(rdr);
-   //MeterGroup.DecodeDatabaseReader(rdr);
 
    if( getDebugLevel() & 0x0800 )
    {
