@@ -81,7 +81,6 @@ public class DateComboBox extends JComboBox
    
    public synchronized void setDateFormat(SimpleDateFormat dateFormat)
    {
-   	com.cannontech.clientutils.CTILogger.info(" SET DATE  FORMAT ? = " + dateFormat);
       if( dateFormat != null )
       {         
          java.util.Date currSel = getSelectedDate();
