@@ -105,6 +105,7 @@ function init() {
 <%
 	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
+		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) continue;
 %>
                               <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
 <%
