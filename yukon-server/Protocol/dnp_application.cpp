@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/05/30 15:11:25 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/06/11 21:14:03 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,10 @@
 #include "logger.h"
 #include "dnp_application.h"
 
-CtiDNPApplication::CtiDNPApplication()  { }
+CtiDNPApplication::CtiDNPApplication()
+{
+    _ioState = Uninitialized;
+}
 
 CtiDNPApplication::CtiDNPApplication(const CtiDNPApplication &aRef) { }
 
@@ -31,124 +34,164 @@ CtiDNPApplication &CtiDNPApplication::operator=(const CtiDNPApplication &aRef)
 }
 
 
-void CtiDNPApplication::reset( void )
+/*---  Scanner-side Functions  ---*/
+
+void CtiDNPApplication::setCommand( AppFuncCode func, unsigned short dstAddr, unsigned short srcAddr )
 {
-    memset( &_appBuf, 0, sizeof(_appBuf) );
-    _transport.reset();
+    _dstAddr = dstAddr;
+    _srcAddr = srcAddr;
 
-    //  reset the apparent appbuf size
-    _appbufBytesUsed = 0;
+    _appBufReqBytesUsed = 0;
 
-    _hasPoints = false;
-}
+    memset( &_appBufReq, 0, sizeof(_appBufReq) );
 
+    //  don't set the state here - only matters on the porter side
 
-void CtiDNPApplication::setCommand( AppFuncCode func )
-{
-    reset();
-    _appBuf.req.func_code = func;
-}
-
-
-void CtiDNPApplication::initForOutput( void )
-{
     //  these values aren't necessarially static...  just likely to be so in our infantile requests
-    _appBuf.req.ctrl.first       = 1;
-    _appBuf.req.ctrl.final       = 1;
-    _appBuf.req.ctrl.app_confirm = 0;
-    _appBuf.req.ctrl.unsolicited = 0;
+    //  ACH: eh
+    _appBufReq.ctrl.first       = 1;
+    _appBufReq.ctrl.final       = 1;
+    _appBufReq.ctrl.app_confirm = 0;
+    _appBufReq.ctrl.unsolicited = 0;
 
     _seqno = 0;
-    _appBuf.req.ctrl.seq = _seqno;
+    _appBufReq.ctrl.seq = _seqno;
 
-    _transport.initForOutput((unsigned char *)(&_appBuf), _appbufBytesUsed);
+    _appBufReq.func_code = (unsigned char)func;
 }
 
-
-void CtiDNPApplication::initForInput( void )
+void CtiDNPApplication::addData( unsigned char *data, int len )
 {
-    reset();
-    _transport.initForInput();
-}
+    //  ACH:  complain if generated size > sizeof(OUTMESS.Buffer)
 
-
-void CtiDNPApplication::addPoint( dnp_point_descriptor *point )
-{
-    int toCopy;
-
-    toCopy = 3;
-
-    //  figure out the range size (anywhere from 0 to 8)
-    switch( point->qual_code )
+    if( len > 0 )
     {
-        case 2:
-            toCopy += 8;
-            break;
-
-        case 1:
-        case 9:
-            toCopy += 4;
-            break;
-
-        case 0:
-        case 8:
-            toCopy += 2;
-            break;
-
-        case 7:
-            toCopy += 1;
-            break;
-
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 11:
-            //  += 0
-            break;
-
-        default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Unknown DNPPoint->qual_code, cannot append to DNPApplication message - ignoring (may cause mangling)" << endl;
-            }
-
-            toCopy = 0;
-        }
-    }
-
-    if( toCopy > 0 )
-    {
-        //  copy the point over
-        memcpy( &(_appBuf.req.buf[_appbufBytesUsed]), point, toCopy );
-        _appbufBytesUsed += toCopy;
+        //  copy the data in
+        memcpy( &(_appBufReq.buf[_appBufReqBytesUsed]), data, len );
+        _appBufReqBytesUsed += len;
     }
 }
 
 
-int CtiDNPApplication::commOut( OUTMESS *OutMessage, RWTPtrSlist< OUTMESS > &outList )
+int CtiDNPApplication::getLengthReq( void )
 {
-    _transport.commOut(OutMessage, outList);
+    return _appBufReqBytesUsed + ReqHeaderSize;
+}
 
-    if( _transport.sendComplete() )
-    {
-        initForInput();
-    }
+void CtiDNPApplication::serializeReq( unsigned char *buf )
+{
+    unsigned char *src;
+    int srcLen;
+
+    src    = (unsigned char *)(&_appBufReq);
+    srcLen = getLengthReq();
+
+    //  add on the addressing bytes that sit in front of the _appBufReq struct...
+    //    kind of a hack, but it has to be passed layer to layer
+    src    -= 2 * (sizeof(short));
+    srcLen += 2 * (sizeof(short));
+
+    //  copy the packet (and addresses) into the buffer
+    memcpy(buf, src, srcLen );
+}
+
+
+void CtiDNPApplication::restoreRsp( unsigned char *buf, int len )
+{
+    //  copy the buffer into the packet
+    memcpy(&_appBufRsp, buf, len);
+    //  and compute the length
+    _appBufRspBytesUsed = len - RspHeaderSize;
+}
+
+
+/*---  Porter-side functions  --*/
+
+void CtiDNPApplication::restoreReq( unsigned char *buf, int len )
+{
+    unsigned char *src;
+    int srcLen;
+
+    //  move the restore point to the address vars that sit in front of the _appBufReq struct...
+    src    = (unsigned char *)(&_appBufReq);
+    src    -= 2 * (sizeof(short));
+
+    srcLen = len;
+
+    //  copy the buffer into the packet
+    memcpy(src, buf, len);
+
+    //  and compute the length
+    //    knock off the address byte length
+    srcLen  -= 2 * (sizeof(short));
+    _appBufReqBytesUsed = srcLen - ReqHeaderSize;
+
+    _ioState = Output;
+
+    //  wipe out the state of the underlying layer - its data has just changed
+    _transport.initForOutput((unsigned char *)&_appBufReq, getLengthReq(), _dstAddr, _srcAddr);
+}
+
+
+int CtiDNPApplication::getLengthRsp( void )
+{
+    return _appBufRspBytesUsed + RspHeaderSize;
+}
+
+
+void CtiDNPApplication::serializeRsp( unsigned char *buf )
+{
+    //  copy the packet into the buffer
+    memcpy(buf, &_appBufRsp, getLengthRsp() );
+}
+
+//  reply is always expected...  this code is deprecated, soon to be removed
+/*
+bool CtiDNPApplication::isReplyExpected( void )
+{
+    bool reply = false;
+
+    if( _appBufReq.func_code == RequestRead ) // || app layer confirm, eventually
+        reply = true;
+
+    return reply;
+}
+*/
+
+bool CtiDNPApplication::isTransactionComplete( void )
+{
+    bool complete;
+
+    //  will always receive Application Layer ack/status (two bytes of indications)
+    complete = _transport.sendComplete() && _transport.recvComplete();
+
+    //  ACH:  add code to allow fragmented application layer packets to be sent and received
+    //    ...will be on Scanner side...
+
+    return complete;
+}
+
+
+int CtiDNPApplication::generate( CtiXfer &xfer )
+{
+    _transport.generate(xfer);
 
     return 0;
 }
 
 
-int CtiDNPApplication::commIn( INMESS *InMessage, RWTPtrSlist< OUTMESS > &outList )
+int CtiDNPApplication::decode( CtiXfer &xfer, int status )
 {
-    _transport.commIn(InMessage, outList);
+    _transport.decode(xfer, status);
 
-    if( _transport.inputComplete() )
+    if( _transport.sendComplete() )
     {
-        _appbufBytesUsed = _transport.bufferSize() - RspHeaderSize;
-        _transport.retrieveBuffer((unsigned char *)&_appBuf);
+        _transport.initForInput((unsigned char *)&_appBufRsp);
+    }
+
+    if( _transport.recvComplete() )
+    {
+        _appBufRspBytesUsed = _transport.getInputSize() - RspHeaderSize;
         processInput();
     }
 
@@ -158,14 +201,14 @@ int CtiDNPApplication::commIn( INMESS *InMessage, RWTPtrSlist< OUTMESS > &outLis
 
 void CtiDNPApplication::processInput( void )
 {
-    if( _appBuf.rsp.func_code == ResponseResponse )
+    if( _appBufRsp.func_code == ResponseResponse )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-            for( int i = 0; i < _appbufBytesUsed + RspHeaderSize; i++ )
+            for( int i = 0; i < _appBufRspBytesUsed + RspHeaderSize; i++ )
             {
-                dout << " " << hex << ((unsigned char *)&_appBuf)[i];
+                dout << " " << hex << ((unsigned char *)&_appBufRsp)[i];
 
             }
         }
@@ -173,9 +216,9 @@ void CtiDNPApplication::processInput( void )
 }
 
 
-bool CtiDNPApplication::hasPoints( void )
+bool CtiDNPApplication::inHasPoints( void )
 {
-    return _hasPoints;
+    return _inHasPoints;
 }
 
 
@@ -183,4 +226,30 @@ void CtiDNPApplication::sendPoints( RWTPtrSlist< CtiMessage > &vgList, RWTPtrSli
 {
 
 }
+
+
+
+
+/*
+void CtiDNPApplication::initForOutput( void )
+{
+    unsigned char *src;
+    int srcLen;
+
+    src    = (unsigned char *)(&_appBufReq);
+    srcLen = _appBufReqBytesUsed + ReqHeaderSize;
+
+    //  ACH:  initialization error codes
+    _transport.initForOutput( src, srcLen, _dstAddr, _srcAddr );
+}
+
+
+void CtiDNPApplication::initForInput( void )
+{
+    _appBufRspBytesUsed = 0;
+    _inHasPoints = false;
+
+    memset( &_appBufRsp, 0, sizeof(_appBufRsp) );
+}
+*/
 

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/05/30 15:11:25 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/06/11 21:14:03 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,56 +22,67 @@
 
 CtiDNPTransport::CtiDNPTransport()
 {
+    _ioState     = Uninitialized;
+    _outAppLayer = NULL;
+    _inAppLayer  = NULL;
 }
 
 CtiDNPTransport::CtiDNPTransport(const CtiDNPTransport &aRef)
 {
+    *this = aRef;
 }
 
 CtiDNPTransport::~CtiDNPTransport()
 {
-
 }
 
 CtiDNPTransport &CtiDNPTransport::operator=(const CtiDNPTransport &aRef)
 {
+    if( this != &aRef )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
     return *this;
 }
 
 void CtiDNPTransport::reset( void )
 {
-    if( _appLayer != NULL )
-    {
-        delete [] _appLayer;
-        _appLayerLen = 0;
-    }
 }
 
 
-int CtiDNPTransport::initForOutput(unsigned char *buf, int len)
+int CtiDNPTransport::initForOutput(unsigned char *buf, int len, unsigned short dstAddr, unsigned short srcAddr)
 {
-    reset();
+    int retVal = NoError;
+
+//    reset();
+
+    _srcAddr = srcAddr;
+    _dstAddr = dstAddr;
 
     if( len > 0 )
     {
-        _appLayer = new unsigned char[len];
+        _outAppLayer     = buf;
+        _outAppLayerLen  = len;
+        _outAppLayerSent = 0;
 
-        if( _appLayer != NULL )
-        {
-            memcpy(buf, _appLayer, len);
-        }
-        else
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Can't allocate memory for Transport layer copy of Application layer data" << endl;
-            }
-            len = 0;
-        }
+        _seq = 0;
+
+        _ioState = Output;
+
+        _datalink.reset();
     }
     else
     {
+        _outAppLayer    = NULL;
+        _outAppLayerLen = 0;
+        _ioState = Uninitialized;
+
+        //  maybe set error return... ?
+
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -79,51 +90,168 @@ int CtiDNPTransport::initForOutput(unsigned char *buf, int len)
         }
     }
 
-    return (len > 0);
+    return retVal;
 }
 
 
-int CtiDNPTransport::initForInput(void)
+int CtiDNPTransport::initForInput(unsigned char *buf)
 {
-    reset();
+    int retVal = NoError;
 
-    _appLayer = new unsigned char[CtiProtocolDNP::MaxAppLayerSize];
+//    reset();
 
-    return (_appLayer != NULL);
+    _inAppLayer     = buf;
+    _inAppLayerLen  = 0;
+    _inAppLayerRecv = 0;
+
+    _ioState = Input;
+
+    return retVal;
 }
 
 
-int CtiDNPTransport::commOut( OUTMESS *OutMessage, RWTPtrSlist< OUTMESS > &outList )
+int CtiDNPTransport::generate( CtiXfer &xfer )
 {
-    return 0;
+    int retVal = NoError;
+    int dataLen, packetLen, first, final;
+
+    if( _datalink.isTransactionComplete() )
+    {
+        switch( _ioState )
+        {
+            case Output:
+            {
+                //  prepare transport layer buf dude here man like and stuff for y'all
+
+                first = !(_outAppLayerSent > 0);
+
+                dataLen = _outAppLayerLen - _outAppLayerSent;
+
+                if( dataLen > 254 )
+                {
+                    dataLen = 254;
+                    final = 0;
+                }
+                else
+                {
+                    final = 1;
+                }
+
+                //  add on the header byte
+                packetLen = dataLen + 1;
+
+                //  set up the transport header
+                _outPacket.header.first = first;
+                _outPacket.header.final = final;
+                _outPacket.header.seq   = _seq;
+
+                //  copy the app layer chunk in - leave room for the transport header
+                memcpy( (void *)_outPacket.data, (void *)&(_outAppLayer[_outAppLayerSent]), dataLen );
+
+                _datalink.setToOutput((unsigned char *)&_outPacket, packetLen, _dstAddr, _srcAddr);
+
+                retVal = _datalink.generate(xfer);
+
+                //  datalink layer guarantees transmission, so we take it for granted
+                _seq++;
+                _outAppLayerSent += dataLen;
+
+                break;
+            }
+
+            case Input:
+            {
+                //  ACH: generate ACK for previous packet (or does it do that automagically?)
+
+                _datalink.setToInput();
+
+                retVal = _datalink.generate(xfer);
+
+                break;
+            }
+
+            default:
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+        }
+    }
+
+    return retVal;
 }
 
 
-int CtiDNPTransport::commIn( INMESS *InMessage, RWTPtrSlist< OUTMESS > &outList )
+int CtiDNPTransport::decode( CtiXfer &xfer, int status )
 {
-    return 0;
+    int retVal;
+
+    retVal = _datalink.decode(xfer, status);
+
+    if( _datalink.isTransactionComplete() )
+    {
+        switch( _ioState )
+        {
+            case Output:
+            {
+                //  ACH: verify secondary ACK (or will datalink layer do that?)
+
+                //  ???: do we always expect a response?
+                if( _outAppLayerLen == _outAppLayerSent )
+                {
+                    _ioState = Input;
+                }
+
+                break;
+            }
+
+            case Input:
+            {
+                if( _datalink.isTransactionComplete() )
+                {
+                    //  copy out the data
+                }
+
+                break;
+            }
+
+            default:
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+
+    return retVal;
 }
 
 
 bool CtiDNPTransport::sendComplete( void )
 {
-    return false;
+    bool retVal = false;
+
+    if( _outAppLayerLen == _outAppLayerSent || _ioState != Output /* mildly redundant */ )
+        retVal = true;
+
+    return retVal;
 }
 
 
-bool CtiDNPTransport::inputComplete( void )
+bool CtiDNPTransport::recvComplete( void )
 {
-    return false;
+    bool retVal = false;
+
+    if( _ioState == Complete )
+        retVal = true;
+
+    return retVal;
 }
 
 
-int CtiDNPTransport::bufferSize( void )
+int CtiDNPTransport::getInputSize( void )
 {
-    return 0;
+    return _inAppLayerLen;
 }
-
-
-void CtiDNPTransport::retrieveBuffer( unsigned char *buf )
-{
-}
-

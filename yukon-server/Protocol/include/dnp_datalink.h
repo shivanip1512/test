@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/05/30 15:11:26 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/06/11 21:14:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,11 +22,17 @@
 #include <rw/tpslist.h>
 
 #include "dsm2.h"
+#include "xfer.h"
 
 class CtiDNPDatalink
 {
 protected:
     unsigned short computeCRC(unsigned char *buf, int len);
+
+    enum
+    {
+        DNPDatalinkHeaderLen = 10
+    };
 
 private:
     #pragma pack( push, 1 )
@@ -35,26 +41,28 @@ private:
         unsigned char framing[2];
         unsigned char len;
 
-        union
+        union _control
         {
-            unsigned char functionCode  : 4;
-
             union
             {
-                struct
+                struct _primary
                 {
-                    unsigned char fcv       : 1;
-                    unsigned char fcb       : 1;
-                    unsigned char primary   : 1;
+                    unsigned char functionCode  : 4;
+                    unsigned char fcv           : 1;
+                    unsigned char fcb           : 1;
+                    unsigned char primary       : 1;
+                    unsigned char direction     : 1;
                 } p;
-                struct
+                struct _secondary
                 {
-                    unsigned char dfc       : 1;
-                    unsigned char zpad      : 2;
+                    unsigned char functionCode  : 4;
+                    unsigned char dfc           : 1;
+                    unsigned char zpad          : 1;
+                    unsigned char primary       : 1;
+                    unsigned char direction     : 1;
                 } s;
             };
 
-            unsigned char direction     : 1;
 
         } control;
 
@@ -76,9 +84,21 @@ private:
     {
         struct _dnp_datalink_header header;
         struct _dnp_datalink_data   data;
-    } _packet;
+    } _outPacket, _inPacket;
 
-    int _fcbExpected;
+    enum DatalinkIOState
+    {
+        Uninitialized = 0,
+        Output,
+        Input,
+        Failed,
+        Complete
+    } _ioState;
+
+    unsigned long _outLen, _outSent, _inRecv, _inExpected, _inActual;  //  would be ints, but i have to use inLen with the trx InCountExpected
+    int _bytesIn;
+    bool _fcbExpected;
+
     #pragma pack( pop )
 
 public:
@@ -93,22 +113,22 @@ public:
 
     CtiDNPDatalink &operator=(const CtiDNPDatalink &aRef);
 
-    unsigned short getSourceAddress(void);
-    void           setSourceAddress(unsigned short addr);
+    void reset( void );
 
-    unsigned short getDestinationAddress(void);
-    void           setDestinationAddress(unsigned short addr);
+    int getOutLength( void );
+    int setToOutput ( unsigned char *buf, unsigned int len, short dstAddr, short srcAddr );
+    int setToInput  ( void );
 
-    unsigned short getLength(void);
+    int getInPayload( unsigned char *buf );
+    int getInLength ( void );
 
-    unsigned char *getMessage(void);
-    int            setMessage(unsigned char *buf, unsigned char len);
+    int generate( CtiXfer &xfer );
+    int decode  ( CtiXfer &xfer, int status );
 
-    int commOut( RWTPtrSlist< OUTMESS > &outList, OUTMESS *OutMessage );
-    int commIn ( INMESS *InMessage, RWTPtrSlist< OUTMESS > &outList );
+    bool isTransactionComplete(void);
 
-    DatalinkError  isValid(void);
-    int            areCRCsValid(void);
+    DatalinkError  validateInPacket(void);
+    bool           areInPacketCRCsValid(void);
 
     enum ControlFunction
     {

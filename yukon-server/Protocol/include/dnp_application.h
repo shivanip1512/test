@@ -1,4 +1,3 @@
-
 #pragma warning( disable : 4786)
 #ifndef __DNP_APPLICATION_H__
 #define __DNP_APPLICATION_H__
@@ -14,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/05/30 15:11:26 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/06/11 21:14:03 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,16 +31,18 @@ class CtiDNPApplication
 protected:
     CtiDNPTransport _transport;
 
-private:
-    void reset( void );
-
     enum
     {
         ReqHeaderSize = 2,
         RspHeaderSize = 4
     };
+/*
+    void initForOutput( void );
+    void initForInput ( void );
+*/
+private:
+    void reset( void );
 
-#pragma pack( push, 1 )
     struct _dnp_app_control
     {
         unsigned char seq         : 4;
@@ -70,30 +71,38 @@ private:
         unsigned short reserved     : 2;
     };
 
-    struct appBuf
-    {
-        union
-        {
-            struct _req
-            {
-                _dnp_app_control ctrl;
-                unsigned char func_code;
-                unsigned char buf[DNP_APP_BUF_SIZE - sizeof(_dnp_app_control) - 1];
-            } req;
-            struct _rsp
-            {
-                _dnp_app_control ctrl;
-                unsigned char func_code;
-                _dnp_app_indications ind;
-                unsigned char buf[DNP_APP_BUF_SIZE - sizeof(_dnp_app_control) - 1 - sizeof(_dnp_app_indications)];
-            } rsp;
-        };
-    } _appBuf;
+#pragma pack( push, 1 )
 
-    int _seqno;
-    int _appbufBytesUsed;
-    bool _hasPoints;
+    short _dstAddr, _srcAddr;
+    struct appBufReq
+    {
+        _dnp_app_control ctrl;
+        unsigned char func_code;
+        unsigned char buf[DNP_APP_BUF_SIZE/* - sizeof(_dnp_app_control) - 1*/];
+    } _appBufReq;
+
+    struct appBufRsp
+    {
+        _dnp_app_control ctrl;
+        unsigned char func_code;
+        _dnp_app_indications ind;
+        unsigned char buf[DNP_APP_BUF_SIZE/* - sizeof(_dnp_app_control) - 1 - sizeof(_dnp_app_indications)*/];
+    } _appBufRsp;
+
 #pragma pack( pop )
+
+    int _seqno, _replyExpected;
+    int _appBufReqBytesUsed, _appBufRspBytesUsed;
+    bool _inHasPoints;
+
+    enum ApplicationIOState
+    {
+        Uninitialized = 0,
+        Output,
+        Input,
+        Failed,
+        Complete
+    } _ioState;
 
 public:
     enum AppFuncCode;
@@ -106,18 +115,37 @@ public:
 
     CtiDNPApplication &operator=(const CtiDNPApplication &aRef);
 
-    void setCommand( AppFuncCode func );
-    void initForOutput( void );
-    void initForInput ( void );
-    void addPoint( dnp_point_descriptor *point );
 
-    int commOut( OUTMESS *OutMessage, RWTPtrSlist< OUTMESS > &outList );
-    int commIn ( INMESS *InMessage, RWTPtrSlist< OUTMESS > &outList );
+    //  initialization functions
+    void setCommand( AppFuncCode func, unsigned short dstAddr, unsigned short srcAddr );
+    void addData( unsigned char *data, int len );
 
+
+    //  these six functions are for the Out/InMess Scanner/Porter/Pil interactions
+    int  getLengthReq( void );
+    void serializeReq( unsigned char *buf );
+    void restoreReq  ( unsigned char *buf, int len );
+
+    int  getLengthRsp( void );
+    void serializeRsp( unsigned char *buf );
+    void restoreRsp  ( unsigned char *buf, int len );
+
+
+    //  comm functions
+    int generate( CtiXfer &xfer );
+    int decode  ( CtiXfer &xfer, int status );
+
+
+    //  checking completion
+    bool isTransactionComplete( void );
+    //bool isReplyExpected( void );
+
+
+    //  post-completion processing
     void processInput( void );
-
-    bool hasPoints( void );
+    bool inHasPoints( void );
     void sendPoints( RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList );
+
 
     enum AppFuncCode
     {

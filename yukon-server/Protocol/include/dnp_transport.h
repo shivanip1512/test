@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/05/30 15:11:26 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/06/11 21:14:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,18 +25,35 @@
 
 class CtiDNPTransport
 {
-protected:
-    CtiDNPDatalink _datalink;
-    unsigned char *_appLayer;
-    int            _appLayerLen;
-
 private:
+    CtiDNPDatalink _datalink;
+    unsigned char *_outAppLayer,     *_inAppLayer;
+    unsigned int   _outAppLayerLen,   _inAppLayerLen,
+                   _outAppLayerSent,  _inAppLayerRecv,
+                   _seq;
+    unsigned short _srcAddr, _dstAddr;
+
+    enum TransportIOState
+    {
+        Uninitialized = 0,
+        Output,
+        Input,
+        Failed,
+        Complete
+    } _ioState;
+
     struct _transport_header_t
     {
-        unsigned char sequence  : 6;
-        unsigned char first     : 1;
-        unsigned char final     : 1;
+        unsigned char seq   : 6;
+        unsigned char first : 1;
+        unsigned char final : 1;
     };
+
+    struct _transport_packet_t
+    {
+        _transport_header_t header;
+        unsigned char data[254];
+    } _inPacket, _outPacket;
 
 public:
     CtiDNPTransport();
@@ -48,17 +65,16 @@ public:
     CtiDNPTransport &operator=(const CtiDNPTransport &aRef);
 
     void reset( void );
-    int initForOutput(unsigned char *buf, int len);
-    int initForInput(void);
+    int initForOutput(unsigned char *buf, int len, unsigned short dstAddr, unsigned short srcAddr);
+    int initForInput(unsigned char *buf);
 
-    int commOut( OUTMESS *OutMessage, RWTPtrSlist< OUTMESS > &outList );
-    int commIn ( INMESS *InMessage, RWTPtrSlist< OUTMESS > &outList );
+    int generate( CtiXfer &xfer );
+    int decode  ( CtiXfer &xfer, int status );
 
     bool sendComplete( void );
-    bool inputComplete( void );
+    bool recvComplete( void );
 
-    int bufferSize( void );
-    void retrieveBuffer( unsigned char *buf );
+    int  getInputSize( void );
 };
 
 #endif // #ifndef __DNP_TRANSPORT_H__
