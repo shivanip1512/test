@@ -2088,11 +2088,58 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
                     if(!(token = CmdStr.match("offhours +[0-9]+")).isNull())
                     {
-                        str = token.match("[0-9]+");
-                        int offtimeinhours = atoi(str.data());
+                        bool offhourssupported = false;
+                        int serialnumber = getiValue("serial", 0);
 
-                        _cmd["vctexservice"] = CtiParseValue( TRUE );
-                        _cmd["vctservicetime"] = CtiParseValue( offtimeinhours > 65535 ? 65535 : offtimeinhours );  // Must be passed as half seconds for VCOM
+                        if( serialnumber != 0 )
+                        {
+                            RWCString vcrangestr = gConfigParms.getValueAsString("LCR_VERSACOM_EXTENDED_TSERVICE_RANGES");
+
+                            if(!vcrangestr.isNull())
+                            {
+                                while(!vcrangestr.isNull())
+                                {
+                                    RWCString rstr = vcrangestr.match("[0-9]*-[0-9]*,?");
+
+                                    if(!rstr.isNull())
+                                    {
+                                        char *chptr;
+                                        RWCString startstr = rstr.match("[0-9]*");
+                                        RWCString stopstr = rstr.match(" *- *[0-9]* *,? *");
+                                        stopstr = stopstr.strip(RWCString::both, ' ');
+                                        stopstr = stopstr.strip(RWCString::leading, '-');
+                                        stopstr = stopstr.strip(RWCString::trailing, ',');
+                                        stopstr = stopstr.strip(RWCString::both, ' ');
+
+                                        UINT startaddr = strtoul( startstr.data(), &chptr, 10 );
+                                        UINT stopaddr = strtoul( stopstr.data(), &chptr, 10 );
+
+                                        if(startaddr <= serialnumber && serialnumber <= stopaddr)
+                                        {
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << " Range " << startaddr << " to " << stopaddr << " found and recorded for VersaCom Extended Addressing" << endl;
+                                            }
+
+                                            // This is a supported versacom switch and we can continue!
+                                            offhourssupported = true;
+                                            break;
+                                        }
+                                    }
+
+                                    vcrangestr.replace("[0-9]*-[0-9]*,?", "");
+                                }
+                            }
+                        }
+
+                        if(offhourssupported)
+                        {
+                            str = token.match("[0-9]+");
+                            int offtimeinhours = atoi(str.data());
+
+                            _cmd["vctexservice"] = CtiParseValue( TRUE );
+                            _cmd["vctservicetime"] = CtiParseValue( offtimeinhours > 65535 ? 65535 : offtimeinhours );  // Must be passed as half seconds for VCOM
+                        }
                     }
                 }
 
@@ -2588,20 +2635,81 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
             }
             else
             {
-                int xcom_base = gConfigParms.getValueAsInt("LCR_EXPRESSCOM_SERIAL_BASE", -1);
+                int serialnumber = getiValue("serial", 0);
 
-                if(xcom_base >= 0)
+                RWCString xcrangestr = gConfigParms.getValueAsString("LCR_EXPRESSCOM_RANGES");
+                RWCString vcrangestr = gConfigParms.getValueAsString("LCR_VERSACOM_RANGES");
+
+                if(!vcrangestr.isNull() || !xcrangestr.isNull())
                 {
-                    if( getiValue("serial", 0) >= xcom_base )
+                    while(!vcrangestr.isNull())
                     {
-                        _cmd["type"] = CtiParseValue( "expresscom", ProtocolExpresscomType );
+                        RWCString str = vcrangestr.match("[0-9]*-[0-9]*,?");
+
+                        if(!str.isNull())
+                        {
+                            char *chptr;
+                            RWCString startstr = str.match("[0-9]*");
+                            RWCString stopstr = str.match(" *- *[0-9]* *,? *");
+                            stopstr = stopstr.strip(RWCString::both, ' ');
+                            stopstr = stopstr.strip(RWCString::leading, '-');
+                            stopstr = stopstr.strip(RWCString::trailing, ',');
+                            stopstr = stopstr.strip(RWCString::both, ' ');
+
+                            UINT startaddr = strtoul( startstr.data(), &chptr, 10 );
+                            UINT stopaddr = strtoul( stopstr.data(), &chptr, 10 );
+
+                            if(startaddr <= serialnumber && serialnumber <= stopaddr)
+                            {
+                                // This is a versacom switch and we can continue!
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << " Range " << startaddr << " to " << stopaddr << " found and recorded for VersaCom" << endl;
+                                }
+
+                                _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
+                                break;
+                            }
+                        }
+
+                        vcrangestr.replace("[0-9]*-[0-9]*,?", "");
                     }
-                    else
+
+                    while(!isKeyValid("type") && !xcrangestr.isNull())
                     {
-                        _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
+                        RWCString str = xcrangestr.match("[0-9]*-[0-9]*,?");
+
+                        if(!str.isNull())
+                        {
+                            char *chptr;
+                            RWCString startstr = str.match("[0-9]*");
+                            RWCString stopstr = str.match(" *- *[0-9]* *,? *");
+                            stopstr = stopstr.strip(RWCString::both, ' ');
+                            stopstr = stopstr.strip(RWCString::leading, '-');
+                            stopstr = stopstr.strip(RWCString::trailing, ',');
+                            stopstr = stopstr.strip(RWCString::both, ' ');
+
+                            UINT startaddr = strtoul( startstr.data(), &chptr, 10 );
+                            UINT stopaddr = strtoul( stopstr.data(), &chptr, 10 );
+
+                            if(startaddr <= serialnumber && serialnumber <= stopaddr)
+                            {
+                                // This is a versacom switch and we can continue!
+
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << " Range " << startaddr << " to " << stopaddr << " found and recorded for ExpressCom" << endl;
+                                }
+                                _cmd["type"] = CtiParseValue( "expresscom", ProtocolExpresscomType );
+                                break;
+                            }
+                        }
+
+                        xcrangestr.replace("[0-9]*-[0-9]*,?", "");
                     }
                 }
-                else
+
+                if(!isKeyValid("type"))
                 {
                     _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
                 }
