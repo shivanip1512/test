@@ -11,4 +11,7 @@ void JButtonAddAction_actionPerformed(java.util.EventObject newEvent);
  * @param newEvent java.util.EventObject
  */
 void JButtonRemoveAction_actionPerformed(java.util.EventObject newEvent);
+
+
+void MouseTableAction_actionPerformed(java.util.EventObject newEvent);
 }

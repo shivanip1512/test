@@ -48,6 +48,11 @@ public void JButtonRemoveAction_actionPerformed(java.util.EventObject newEvent) 
 	((com.cannontech.common.gui.util.AddRemoveJTablePanelListener)a).JButtonRemoveAction_actionPerformed(newEvent);
 	((com.cannontech.common.gui.util.AddRemoveJTablePanelListener)b).JButtonRemoveAction_actionPerformed(newEvent);
 }
+
+public void MouseTableAction_actionPerformed(java.util.EventObject newEvent) {
+	((com.cannontech.common.gui.util.AddRemoveJTablePanelListener)a).MouseTableAction_actionPerformed(newEvent);
+	((com.cannontech.common.gui.util.AddRemoveJTablePanelListener)b).MouseTableAction_actionPerformed(newEvent);
+}
 /**
  * 
  * @return java.util.EventListener

@@ -57,6 +57,20 @@ private void connEtoC2(java.util.EventObject arg1) {
 		handleException(ivjExc);
 	}
 }
+
+private void connEtoC3(java.util.EventObject arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
 /**
  * Return the AddRemoveJTablePanel property value.
  * @return com.cannontech.common.gui.util.AddRemoveJTablePanel
@@ -155,6 +169,7 @@ private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
 	// user code end
 	getAddRemoveJTablePanel().addAddRemoveJTablePanelListener(this);
+	
 }
 /**
  * Initialize the class.
@@ -237,6 +252,11 @@ public void JButtonRemoveAction_actionPerformed(java.util.EventObject newEvent) 
 		connEtoC2(newEvent);
 	// user code begin {2}
 	// user code end
+}
+
+public void MouseTableAction_actionPerformed(java.util.EventObject newEvent) {
+	if (newEvent.getSource() == getAddRemoveJTablePanel()) 
+			connEtoC3(newEvent);
 }
 /**
  * main entrypoint - starts the part when it is run as an application
