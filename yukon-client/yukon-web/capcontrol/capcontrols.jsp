@@ -326,25 +326,26 @@
 
 
 	<form name="form1" method="POST" action="<%=request.getContextPath()%>/servlet/CBCConnServlet" >
+	
+<%			    if( CapControlWebAnnex.CMD_SUB.equals(controlType)
+  	                 || CapControlWebAnnex.CMD_CAPBANK.equals(controlType) )
+                { %>
 				  <table width="600" border="1" align="center" cellpadding="0" cellspacing="0">
                     <tr> 
                       <td> 
                         <table width="600" border="0" cellspacing="0" cellpadding="0">
-                          <tr height=32> 
-                            <td class="HeaderCell" align="center">&nbsp;&nbsp;Available Controls for : 
-                            	<span class="SchedText"> <%= label %> </span> </td>
+                          <tr height=20> 
+                            <td class="HeaderCell" align="center">&nbsp;&nbsp;Available Field Commands
+                            </td>
                           </tr>
                         </table>
                       </td>
                     </tr>
                   </table>
+<%              } %>
 
                   <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
                     <tr class="HeaderCell"> 
-                      <td width="16%" align="center"> 
-                        <input type="radio" name="cmdID" value="<%= enableID %>">Enable</td>
-                      <td width="16%" align="center"> 
-                        <input type="radio" name="cmdID" value="<%= disableID %>">Disable</td>
 
 <%                    if( CapControlWebAnnex.CMD_SUB.equals(controlType)
   	                  	  || CapControlWebAnnex.CMD_CAPBANK.equals(controlType) )
@@ -354,6 +355,15 @@
                         <input type="radio" name="cmdID" value="<%= CBCCommand.CONFIRM_CLOSE %>">Confirm</td>
 <%                     } %>
 
+<%                    if( CapControlWebAnnex.CMD_CAPBANK.equals(controlType) )
+                       { %>
+					<cti:checkProperty propertyid="<%= TDCRole.CBC_ALLOW_OVUV %>"> 
+                      <td width="16%" align="center"> 
+                        <input type="radio" name="cmdID" value="<%= CBCCommand.BANK_ENABLE_OVUV %>">Enable OV/UV</td>
+                      <td width="16%" align="center">	 
+                        <input type="radio" name="cmdID" value="<%= CBCCommand.BANK_DISABLE_OVUV %>">Disable OV/UV</td>
+					</cti:checkProperty>
+<%                     } %>
 
 <%                    if( CapControlWebAnnex.CMD_CAPBANK.equals(controlType) )
                        { %>
@@ -367,6 +377,29 @@
                         <input type="radio" name="cmdID" value="<%= CBCCommand.CLOSE_CAPBANK %>">Close Bank</td>
 <%                     } %>
 
+                    </tr>
+                  </table>				  
+
+				  <table width="600" border="1" align="center" cellpadding="0" cellspacing="0">
+                    <tr height=10><td></td></tr>				  
+                    <tr>
+                      <td> 
+                        <table width="600" border="0" cellspacing="0" cellpadding="0">
+                          <tr height=20> 
+                            <td class="HeaderCell" align="center">&nbsp;&nbsp;Available Local Commands 
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
+                    <tr class="HeaderCell"> 
+                      <td width="16%" align="center"> 
+                        <input type="radio" name="cmdID" value="<%= enableID %>">Enable Control</td>
+                      <td width="16%" align="center"> 
+                        <input type="radio" name="cmdID" value="<%= disableID %>">Disable Control</td>
 
 <%                    if( CapControlWebAnnex.CMD_CAPBANK.equals(controlType) )
                        { %>
@@ -386,6 +419,8 @@
 
                     </tr>
                   </table>				  
+
+
 
                   <p>
                     <input name="cmdExecute" type="submit" value="Submit">

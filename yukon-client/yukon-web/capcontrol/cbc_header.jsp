@@ -3,6 +3,7 @@
 <%@ taglib uri="../WEB-INF/cti.tld" prefix="cti" %>
 
 <%@ page import="com.cannontech.roles.application.WebClientRole"%>
+<%@ page import="com.cannontech.roles.application.TDCRole" %>
 <%@ page import="com.cannontech.cbc.gui.SubBusTableModel" %>
 <%@ page import="com.cannontech.cbc.gui.FeederTableModel" %>
 <%@ page import="com.cannontech.cbc.gui.CapBankTableModel" %>
