@@ -8,12 +8,11 @@ import com.jrefinery.data.TimeSeriesCollection;
 
 public class TrendModel implements com.cannontech.graph.GraphDataFormats
 {
-	private java.text.SimpleDateFormat minSecFormat = new java.text.SimpleDateFormat("mmss");
-	private java.text.SimpleDateFormat hourFormat = new java.text.SimpleDateFormat("HH");
-	private java.text.SimpleDateFormat dayInYearFormat = new java.text.SimpleDateFormat("D");
-	private int optionsMaskSettings = 0x00;
+    private java.text.SimpleDateFormat TITLE_DATE_FORMAT = new java.text.SimpleDateFormat("EEE MMMMM dd, yyyy");
+    private static java.text.DecimalFormat LF_FORMAT = new java.text.DecimalFormat("###.000%");
+    private static java.text.DecimalFormat MIN_MAX_FORMAT = new java.text.DecimalFormat("0.000");
 	
-
+	private int optionsMaskSettings = 0x00;
 	private com.jrefinery.data.AbstractSeriesDataset dataset = null;
     private TrendSerie trendSeries[] = null;
     private java.util.Date startDate = null;
@@ -24,13 +23,8 @@ public class TrendModel implements com.cannontech.graph.GraphDataFormats
     private Character autoScaleLeft = new Character('Y');
     private Double leftScaleMin = new Double(0.0);
     private Double leftScaleMax = new Double(0.0);
-    private String chartName = "Yukon Trending";
-    private java.text.SimpleDateFormat TITLE_DATE_FORMAT = new java.text.SimpleDateFormat("EEE MMMMM dd, yyyy");
-    private static java.text.DecimalFormat LF_FORMAT = new java.text.DecimalFormat("###.000%");
-    private static java.text.DecimalFormat MIN_MAX_FORMAT = new java.text.DecimalFormat("0.000");
     
-    private java.util.Date compareStartDate = null;
-    private java.util.Date	compareStopDate = null;
+    private String chartName = "Yukon Trending";
     
     private Integer peakPointId = null;
 
@@ -41,7 +35,7 @@ public class TrendModel implements com.cannontech.graph.GraphDataFormats
 
 public TrendModel(com.cannontech.database.data.graph.GraphDefinition newGraphDef, int optionsMask)
 {
-	optionsMaskSettings = optionsMask;
+	setOptionsMask(optionsMask);
 	
 	// Inititialize chart properties
 	setStartDate(newGraphDef.getGraphDefinition().getStartDate());
@@ -67,6 +61,11 @@ public TrendModel(com.cannontech.database.data.graph.GraphDefinition newGraphDef
 		serie.setColor( com.cannontech.common.gui.util.Colors.getColor(gds.getColor().intValue()));
 		serie.setLabel(gds.getLabel().toString());
 		serie.setType(gds.getType().toString());
+		serie.setTypeMask(gds.getTypeMask());
+		if( ((getOptionsMaskSettings() & TrendModelType.GRAPH_MULTIPLIER) == TrendModelType.GRAPH_MULTIPLIER))
+		{
+			serie.setMultiplier(gds.getMultiplier());
+		}
 		dsVector.add(serie);
 	}
 
@@ -74,8 +73,8 @@ public TrendModel(com.cannontech.database.data.graph.GraphDefinition newGraphDef
 	{
 		trendSeries = new TrendSerie[dsVector.size()];
 		dsVector.toArray(trendSeries);
-		hitDatabase_Basic();
-		hitDatabase_Yesterday();
+		hitDatabase_Basic(GraphDataSeries.NORMAL_QUERY_MASK);
+		hitDatabase_Basic(GraphDataSeries.YESTERDAY_MASK);
 	}
 	else
 	{
@@ -100,7 +99,7 @@ public TrendModel(java.util.Date newStartDate, java.util.Date newStopDate, Strin
 		tempSerie.setColor(com.cannontech.common.gui.util.Colors.getColor(i));	//some distinct color (valid 1-10 only)
 		trendSeries[i] = tempSerie;
 	}		
-	hitDatabase_Basic();
+	hitDatabase_Basic(GraphDataSeries.NORMAL_QUERY_MASK);
 }
 
 public Character getAutoScaleLeft()
@@ -143,31 +142,12 @@ private java.awt.Color [] getDatasetColors(com.jrefinery.data.AbstractSeriesData
 		for( int i = 0; i < trendSeries.length; i++)
 		{
 			TrendSerie serie = trendSeries[i];
-			if( serie != null && (serie.getType().equalsIgnoreCase(GraphDataSeries.GRAPH_SERIES)||
-					serie.getType().equalsIgnoreCase(GraphDataSeries.YESTERDAY_SERIES)) && serie.getColor() != null)
+			if( serie != null && ((serie.getTypeMask() & GraphDataSeries.VALID_INTERVAL_MASK) == serie.getTypeMask()))
 			{
-				/*
-				if( (getOptionsMaskSettings() & TrendModelType.PLOT_YESTERDAY_MASK) == TrendModelType.PLOT_YESTERDAY_MASK)
-				{
-					java.awt.Color tempColor = new java.awt.Color(serie.getColor().getRed(),
-									serie.getColor().getGreen(), 
-									serie.getColor().getBlue(), 100);
-					colors[colorCount++] = tempColor;
-				}
-//				if( (OPTIONS_MASK_SETTINGS & TrendModelType.SHOW_MINMAX_MASK) == TrendModelType.SHOW_MINMAX_MASK)
-				{
-//					java.awt.Color tempColor = java.awt.Color.black;
-//					colors[colorCount++] = tempColor;
-				}
-				*/
-				colors[colorCount++] = serie.getColor();
+				if(serie.getColor() != null)
+					colors[colorCount++] = serie.getColor();
 			}
 		}
-//		for( int i = 0; i < colors.length; i++)
-//		{
-//			if( colors[i] == null)
-//				colors[i] = java.awt.Color.black;
-//		}
 	}
 	return colors;
 }
@@ -185,9 +165,9 @@ private com.jrefinery.chart.DateAxis getHorizontalDateAxis()
 {
 	com.jrefinery.chart.DateAxis domainAxis = new com.jrefinery.chart.HorizontalDateAxis("Date/Time");
 	domainAxis.setAutoRange(true);
-//	domainAxis.setAutoRange(false);
-//	domainAxis.setMaximumDate(getStopDate());
-//	domainAxis.setMinimumDate(getStartDate());
+	domainAxis.setAutoRange(false);
+	domainAxis.setMaximumDate(getStopDate());
+	domainAxis.setMinimumDate(getStartDate());
 	domainAxis.setTickMarksVisible(true);	
 	((com.jrefinery.chart.HorizontalDateAxis)domainAxis).setVerticalTickLabels(false);
 	return domainAxis;
@@ -203,34 +183,13 @@ private com.jrefinery.chart.NumberAxis getHorizontalPercentAxis()
 	return domainAxis;
 }
 	
-private StringBuffer getSQLQueryString()
-{
-	StringBuffer sql = new StringBuffer("SELECT DISTINCT POINTID, TIMESTAMP, VALUE "
-	+ "FROM RAWPOINTHISTORY WHERE POINTID IN (");
-
-	sql.append( trendSeries[0].getPointId() );
-	for ( int i = 1; i < trendSeries.length; i ++)
-	{
-		sql.append(", " + ( trendSeries[i].getPointId()));
-
-	}
-	sql.append(")  AND ((TIMESTAMP > ? AND TIMESTAMP <= ? ) ");
-
-//	if( (getOptionsMaskSettings() & TrendModelType.PLOT_MULTIPLE_DAY_MASK) == TrendModelType.PLOT_MULTIPLE_DAY_MASK)
-//		sql.append(" OR ( TIMESTAMP > ? AND TIMESTAMP <= ? )");	
-
-	sql.append(" ) ORDER BY POINTID, TIMESTAMP");
-	
-	return sql;	
-}
-
-private StringBuffer getSQLQueryString(String seriesType)
+private StringBuffer getSQLQueryString(int seriesTypeMask)
 {
 	
 	java.util.Vector validIDs = new java.util.Vector(trendSeries.length);	//guess on max capacity
 	for (int i = 0; i < trendSeries.length; i++)
 	{
-		if(trendSeries[i].getType().equalsIgnoreCase(seriesType))
+		if( (trendSeries[i].getTypeMask() & seriesTypeMask) == trendSeries[i].getTypeMask())
 			validIDs.add(trendSeries[i].getPointId());
 	}
 
@@ -246,12 +205,7 @@ private StringBuffer getSQLQueryString(String seriesType)
 		sql.append(", " + ( (Integer)validIDs.get(i)));
 	}
 	sql.append(")  AND ((TIMESTAMP > ? AND TIMESTAMP <= ? ) ");
-
-//	if( (getOptionsMaskSettings() & TrendModelType.PLOT_MULTIPLE_DAY_MASK) == TrendModelType.PLOT_MULTIPLE_DAY_MASK)
-//		sql.append(" OR ( TIMESTAMP > ? AND TIMESTAMP <= ? )");	
-
 	sql.append(" ) ORDER BY POINTID, TIMESTAMP");
-	System.out.println(sql.toString());
 	return sql;	
 }
 
@@ -333,29 +287,6 @@ public java.util.Date getStopDate()
 {
 	return stopDate;
 }
-
-public java.util.Date getCompareStartDate()
-{
-	if( compareStartDate == null)
-	{
-		compareStartDate = com.cannontech.util.ServletUtil.getYesterday();
-		return compareStartDate;
-	}
-	return compareStartDate;
-//	return (new java.util.Date(startDate.getTime() - ( 86400000 * 5)));
-}
-
-public java.util.Date getCompareStopDate()
-{
-	if( compareStopDate == null)
-	{
-		compareStopDate = com.cannontech.util.ServletUtil.getToday();
-		return compareStopDate;
-	}
-	return compareStopDate;
-//	return (new java.util.Date(startDate.getTime() - ( 86400000 * 4)));
-}
-
 private java.util.ArrayList getTitleList()
 {
 	//Chart Titles
@@ -366,39 +297,6 @@ private java.util.ArrayList getTitleList()
     titleList.add(chartTitle);
     return titleList;
 }
-/*
-public TrendSerie getTrendSerie(int pointId)
-{
-	for (int i = 0; i < trendSeries.length; i++)
-	{
-		if( trendSeries[i].getPointId().intValue() == pointId)
-			return trendSeries[i];
-	}
-	return null;	//failed...pointId not found!!!
-}
-
-public TrendSerie[] getTrendSeries(int pointId)
-{
-	java.util.Vector trendSerieVector = new java.util.Vector(trendSeries.length); 
-	for (int i = 0; i < trendSeries.length; i++)
-	{
-		if( trendSeries[i].getPointId().intValue() == pointId)
-			trendSerieVector.add(trendSeries);
-//			return trendSeries[i];
-	}
-	
-	if( trendSerieVector != null)
-	{
-		TrendSerie [] commonTrendSeries = new TrendSerie[trendSerieVector.size()];
-		for (int i = 0; i < trendSerieVector.size(); i++)
-		{
-			commonTrendSeries[i] = (TrendSerie)trendSerieVector.get(i);
-		}
-		return commonTrendSeries;
-	}
-	return null;	//failed...pointId not found!!!
-}
-*/
 
 public TrendSerie[] getTrendSeries()
 {
@@ -437,191 +335,16 @@ private com.jrefinery.chart.NumberAxis getVerticalNumberAxis3D()
 	return rangeAxis;
 }
 /**
- * Get all data series with valid "graph" types.
- * Return type: Vector (of graphDataSeries)
- * Creation date: (10/3/00 5:53:52 PM)
- */
-/*
-private Vector getGraphDataSeriesVector()
-{ 
-	Vector dsVector = new Vector(5);	//some small initial capactiy
-
-	for (int i = 0; i < (gDef.getGraphDataSeries().size()); i++)
-	{
-		GraphDataSeries gds = (GraphDataSeries)gDef.getGraphDataSeries().get(i);
-		if( gds.getType().equalsIgnoreCase("graph"))
-			dsVector.add(gds);
-	}
-	return dsVector;
-}
-*/
-/**
  * Retrieves the data for the given point list for the date
  * range indicated in the startDate and endDate.
  * Creation date: (10/3/00 5:53:52 PM)
  */
-private TrendSerie[] hitDatabase_Basic() 
+private TrendSerie[] hitDatabase_Basic(int seriesTypeMask) 
 {
 	if( trendSeries == null)
 		return null;
 
-	StringBuffer sql = getSQLQueryString();
-	java.sql.Connection conn = null;
-	java.sql.PreparedStatement pstmt = null;
-	java.sql.ResultSet rset = null;
-	try
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-
-		if( conn == null )
-		{
-			com.cannontech.clientutils.CTILogger.info(":  Error getting database connection.");
-			return null;
-		}
-		else
-		{
-			/* (Remove) MULTIPLIER setup //
-			java.util.HashMap ptMultHashMap = null;
-			if( (getOptionsMaskSettings() & TrendModelType.MULTIPLIER_MASK) == TrendModelType.MULTIPLIER_MASK)		
-			{
-				com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-				synchronized(cache)
-				{
-					ptMultHashMap = cache.getAllPointidMultiplierHashMap();
-				}
-			}	*/
-			
-			pstmt = conn.prepareStatement(sql.toString());
-			
-			// Show YESTERDAY setup //
-			/*
-			long day = 0;			
-			if( (getOptionsMaskSettings() & TrendModelType.PLOT_YESTERDAY_MASK) == TrendModelType.PLOT_YESTERDAY_MASK)
-			{
-				day = 86400000;
-				setCompareStartDate( new java.util.Date (getStartDate().getTime()  - day));
-				setCompareStopDate( new java.util.Date (getStopDate().getTime()  - day));
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getCompareStartDate().getTime()) );
-				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime()) );
-			}
-			else*/
-			{
-				setCompareStartDate( new java.util.Date (getStartDate().getTime()));
-				setCompareStopDate( new java.util.Date (getStopDate().getTime()));
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime()) );
-				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime()) );
-			}
-/*
-			if( (getOptionsMaskSettings() & TrendModelType.PLOT_MULTIPLE_DAY_MASK) == TrendModelType.PLOT_MULTIPLE_DAY_MASK)
-			{
-				pstmt.setTimestamp(3, new java.sql.Timestamp( getCompareStartDate().getTime() ));
-				pstmt.setTimestamp(4, new java.sql.Timestamp( getCompareStopDate().getTime()));
-			}
-*/
-			rset = pstmt.executeQuery();
-			
-			com.cannontech.clientutils.CTILogger.info("Executing:  " + sql.toString() );
-
-			com.jrefinery.data.TimeSeriesDataPair dataPair = null;
-
-			java.util.Vector dataPairVector = new java.util.Vector(0);			
-			int lastPointId = -1;
-			
-			while( rset.next() )
-			{
-				int pointID = rset.getInt(1);
-				
-				if( pointID != lastPointId)
-				{
-					if( lastPointId != -1)	//not the first one!
-					{
-						//Save the data you've collected into the array of models (chartmodelsArray).
-						com.jrefinery.data.TimeSeriesDataPair[] dataPairArray =
-							new com.jrefinery.data.TimeSeriesDataPair[dataPairVector.size()];
-						dataPairVector.toArray(dataPairArray);
-						dataPairVector.clear();
-						
-						for (int i = 0; i < getTrendSeries().length; i++)
-						{
-							if( trendSeries[i].getPointId().intValue() == lastPointId)
-								trendSeries[i].setDataPairArray(dataPairArray);
-						}
-					}
-					lastPointId = pointID;
-				}
-				
-				//new pointid in rset.
-				//init everything, a new freechartmodel will be created with the change of pointid.
-				java.sql.Timestamp ts = rset.getTimestamp(2);
-				com.jrefinery.data.TimePeriod tp = new com.jrefinery.data.Second(new java.util.Date(ts.getTime()));
-				double val = rset.getDouble(3);
-				
-				/* take out multiplier if necessary.//
-				if( ptMultHashMap != null)
-				{
-					Double multiplier = (Double)ptMultHashMap.get(new Integer(pointID));
-					if( multiplier != null)
-					{
-						val = val / multiplier.doubleValue();
-					}
-				}	*/
-				
-				dataPair = new com.jrefinery.data.TimeSeriesDataPair(tp, val);
-				dataPairVector.add(dataPair);
-								
-			}
-
-			if( !dataPairVector.isEmpty())
-			{
-				com.jrefinery.data.TimeSeriesDataPair[] dataPairArray = 
-					new com.jrefinery.data.TimeSeriesDataPair[dataPairVector.size()];
-				dataPairVector.toArray(dataPairArray);
-				dataPairVector.clear();			
-
-				for (int i = 0; i < getTrendSeries().length; i++)
-				{
-					if( trendSeries[i].getPointId().intValue() == lastPointId)
-						trendSeries[i].setDataPairArray(dataPairArray);
-				}
-			}
-			else 
-			{
-				return null;
-			}
-		}
-	}
-	catch( java.sql.SQLException e )
-	{
-		e.printStackTrace();
-	}
-	finally
-	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			e2.printStackTrace();//sometin is up
-			return null;
-		}	
-	}
-	return trendSeries;
-}
-
-/**
- * Retrieves the data for the given point list for the date
- * range indicated in the startDate and endDate.
- * Creation date: (10/3/00 5:53:52 PM)
- */
-private TrendSerie[] hitDatabase_Yesterday() 
-{
-	if( trendSeries == null)
-		return null;
-
-	StringBuffer sql = getSQLQueryString(GraphDataSeries.YESTERDAY_SERIES);
-	
+	StringBuffer sql = getSQLQueryString(seriesTypeMask);
 	if( sql == null)
 		return null;
 	java.sql.Connection conn = null;
@@ -638,20 +361,20 @@ private TrendSerie[] hitDatabase_Yesterday()
 		}
 		else
 		{
-		
+			com.cannontech.clientutils.CTILogger.info("Executing:  " + sql.toString() );			
 			pstmt = conn.prepareStatement(sql.toString());
 			
-			// Show YESTERDAY setup //
-			long day = 86400000;
+			// YESTERDAY series type //
+			long day = 0;			
+			if ((seriesTypeMask & GraphDataSeries.YESTERDAY_MASK) == GraphDataSeries.YESTERDAY_MASK)
+				day = 86400000;
+
 			pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() - day) );
 			pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() - day) );
 
 			rset = pstmt.executeQuery();
 			
-			com.cannontech.clientutils.CTILogger.info("Executing:  " + sql.toString() );
-
 			com.jrefinery.data.TimeSeriesDataPair dataPair = null;
-
 			java.util.Vector dataPairVector = new java.util.Vector(0);			
 			int lastPointId = -1;
 			
@@ -671,10 +394,11 @@ private TrendSerie[] hitDatabase_Yesterday()
 						
 						for (int i = 0; i < getTrendSeries().length; i++)
 						{
-							if( trendSeries[i].getPointId().intValue() == lastPointId
-								&& trendSeries[i].getType().equalsIgnoreCase(GraphDataSeries.YESTERDAY_SERIES))
+							if( trendSeries[i].getPointId().intValue() == lastPointId 
+								&& (trendSeries[i].getTypeMask() & seriesTypeMask) == trendSeries[i].getTypeMask())
 								trendSeries[i].setDataPairArray(dataPairArray);
 						}
+		
 					}
 					lastPointId = pointID;
 				}
@@ -684,16 +408,6 @@ private TrendSerie[] hitDatabase_Yesterday()
 				java.sql.Timestamp ts = rset.getTimestamp(2);
 				com.jrefinery.data.TimePeriod tp = new com.jrefinery.data.Second(new java.util.Date(ts.getTime() + day));
 				double val = rset.getDouble(3);
-				
-				/* take out multiplier if necessary.//
-				if( ptMultHashMap != null)
-				{
-					Double multiplier = (Double)ptMultHashMap.get(new Integer(pointID));
-					if( multiplier != null)
-					{
-						val = val / multiplier.doubleValue();
-					}
-				}	*/
 				
 				dataPair = new com.jrefinery.data.TimeSeriesDataPair(tp, val);
 				dataPairVector.add(dataPair);
@@ -710,7 +424,7 @@ private TrendSerie[] hitDatabase_Yesterday()
 				for (int i = 0; i < getTrendSeries().length; i++)
 				{
 					if( trendSeries[i].getPointId().intValue() == lastPointId
-							&& trendSeries[i].getType().equalsIgnoreCase(GraphDataSeries.YESTERDAY_SERIES))
+							&& (trendSeries[i].getTypeMask() & seriesTypeMask) == trendSeries[i].getTypeMask())
 						trendSeries[i].setDataPairArray(dataPairArray);
 				}
 			}
@@ -739,8 +453,6 @@ private TrendSerie[] hitDatabase_Yesterday()
 	}
 	return trendSeries;
 }
-
-
 
 /**
  * Starting point for the demonstration application.
@@ -801,23 +513,6 @@ protected void setChartName(String newChartName)
 protected void setStartDate(java.util.Date newStartDate)
 {
 	startDate = newStartDate;
-}
-
-/**
- * Insert the method's description here.
- * Creation date: (6/20/2002 8:01:46 AM)
- */
-protected void setCompareStopDate(java.util.Date newStopDate)
-{
-	compareStopDate = newStopDate;
-}
-/**
- * Insert the method's description here.
- * Creation date: (6/20/2002 8:01:46 AM)
- */
-protected void setCompareStartDate(java.util.Date newStartDate)
-{
-	compareStartDate = newStartDate;
 }
 
 public void setOptionsMask(int newOptionsMask)
