@@ -189,7 +189,7 @@ function confirmDeleteAllCompanies() {
 		if (category.getStarsEnrLMProgramCount() == 0) continue;
 %>
                             <tr> 
-                              <td width="100" align = "center"><img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" width="60"><br>
+                              <td width="100" align = "center"><img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"><br>
                               </td>
                               <td width="186" align = "center"> 
                                 <table width="110" border="0" cellspacing="0" cellpadding="1" align="center">
@@ -287,7 +287,7 @@ function confirmDeleteAllCompanies() {
 		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
 %>
                                   <tr> 
-                                    <td width="15%" class="TableCell" align="center"><img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" width="60"></td>
+                                    <td width="15%" class="TableCell" align="center"><img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"></td>
                                     <td width="60%" class="TableCell" valign="top"><%= category.getDescription() %> 
 <%		if (!category.getStarsWebConfig().getAlternateDisplayName().equals( category.getDescription() )) { %>
                                       (<%= category.getStarsWebConfig().getAlternateDisplayName() %>) 

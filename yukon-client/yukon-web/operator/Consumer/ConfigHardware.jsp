@@ -269,7 +269,7 @@ function changeAppSelection(chkBox) {
                   <td width="104" class="TableCell"> <%= starsApps[i].getDescription() %></td>
                   <td width="100" class="TableCell"><%= program.getStatus() %></td>
                   <td width="120"> 
-                    <div align="center"> <img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>
+                    <div align="center"> <img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"><br>
                       <span class="TableCell"><%= program.getProgramName() %></span> 
                     </div>
                   </td>

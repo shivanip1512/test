@@ -90,7 +90,7 @@
                     <td width="200" class="TableCell" align="center" style="border-right:none"> 
                       <table width="200" border="0" cellspacing="0" cellpadding="0">
                         <tr> 
-                          <td width="64"><img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"></td>
+                          <td width="64"><img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"></td>
                           <td width="136"> 
                             <table width="136" border="0" cellspacing="0" cellpadding="3">
                               <%

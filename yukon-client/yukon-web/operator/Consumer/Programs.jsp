@@ -254,7 +254,7 @@ function resendNotEnrolled(form) {
 		}
 %>
                   <tr> 
-                    <td width="81" align = "center"><img id="<%= i %>" src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" onClick = "toolTipAppear(event, 'tool', <%= i %>, 350, text)"><br>
+                    <td width="81" align = "center"><img id="<%= i %>" src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" onClick = "toolTipAppear(event, 'tool', <%= i %>, 350, text)"><br>
                       <span class = "TableCell">Click for description</span></td>
                     <td width="155" align = "center"> 
                       <table width="110" border="0" cellspacing="0" cellpadding="1" align="center">

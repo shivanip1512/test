@@ -166,7 +166,7 @@ function confirmSubmit(form) {
                         <td width="175">
 						  <table width="185" border="0" cellspacing="0" cellpadding="0">
                             <tr>
-                              <td><img src="../../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"></td>
+                              <td><img src="../../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"></td>
                               <td>
                                 <table width="110" border="0" cellspacing="0" cellpadding="1" align="center">
                                   <input type="hidden" name="CatID" value="<% if (program != null) out.print(category.getApplianceCategoryID()); %>">

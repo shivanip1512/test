@@ -406,7 +406,7 @@ function prepareSubmit(form) {
                                 <input type="text" name="IconName" size="20" value="<%= category.getStarsWebConfig().getLogoLocation() %>">
                                 <input type="button" name="Preview" value="Preview" onClick="changeIcon(this.form)">
                               </td>
-                              <td width="50%"> <img id="CategoryIcon" src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" align="middle"></td>
+                              <td width="50%"> <img id="CategoryIcon" src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" align="middle"></td>
                             </tr>
                           </table>
                         </td>
