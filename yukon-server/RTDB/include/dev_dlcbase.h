@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dlcbase.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/12/07 17:56:01 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/01/18 19:12:26 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,7 +23,7 @@
 #include "tbl_carrier.h"
 #include "dlldefs.h"
 #include "rte_base.h"
-#include "mgr_route.h"
+// #include "mgr_route.h"
 #include "logger.h"
 #include "prot_emetcon.h"
 
