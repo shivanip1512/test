@@ -1,6 +1,8 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonGroup" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
+<%@ page import="com.cannontech.roles.yukon.EnergyCompanyRole" %>
 <%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
 <%
 	String action = request.getParameter("action");
@@ -24,7 +26,6 @@
 		ecTemp.setMainFaxNumber( request.getParameter("FaxNo") );
 		ecTemp.setEmail( request.getParameter("Email") );
 		ecTemp.setTimeZone( request.getParameter("TimeZone") );
-		ecTemp.setRouteID( Integer.parseInt(request.getParameter("Route")) );
 		
 		response.sendRedirect("Address.jsp?referer=EnergyCompany.jsp");
 		return;
@@ -35,6 +36,15 @@
 	
 	String address = ServletUtils.getOneLineAddress(ec.getCompanyAddress());
 	if (address.length() == 0) address = "(none)";
+	
+	LiteYukonGroup[] operGroups = liteEC.getWebClientOperatorGroups();
+	LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
+	String operGroup = "";
+	String custGroup = "";
+	for (int i = 0; i < operGroups.length; i++)
+		operGroup += operGroups[i].getGroupName() + ",";
+	for (int i = 0; i < custGroups.length; i++)
+		custGroup += custGroups[i].getGroupName() + ",";
 %>
 <html>
 <head>
@@ -78,6 +88,7 @@ function editAddress(form) {
             </div>
 			
 			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
+              <input type="hidden" name="action" value="UpdateEnergyCompany">
               <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
                 <tr> 
                   <td class="HeaderCell">Edit Energy Company Information</td>
@@ -85,7 +96,6 @@ function editAddress(form) {
                 <tr> 
                   <td height="67"> 
                     <table width="100%" border="0" cellspacing="0" cellpadding="5">
-                      <input type="hidden" name="action" value="UpdateEnergyCompany">
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Company 
                           Name:</td>
@@ -127,10 +137,22 @@ function editAddress(form) {
                           </table>
                         </td>
                       </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              <br>
+              <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
+                <tr> 
+                  <td class="HeaderCell">Edit Energy Company Settings</td>
+                </tr>
+                <tr> 
+                  <td height="67"> 
+                    <table width="100%" border="0" cellspacing="0" cellpadding="5">
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Time Zone:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="TimeZone" value="<%= ec.getTimeZone() %>">
+                          <input type="text" name="TimeZone" value="<%= ec.getTimeZone() %>" size="14">
                         </td>
                       </tr>
                       <tr> 
@@ -138,23 +160,45 @@ function editAddress(form) {
                           Route:</td>
                         <td width="75%" class="TableCell"> 
                           <select name="Route">
-						    <option value="-1">(none)</option>
-<%
+                            <option value="-1">(none)</option>
+                            <%
 	LiteYukonPAObject[] routes = liteEC.getAllRoutes();
 	for (int i = 0; i < routes.length; i++) {
 		String selected = (routes[i].getYukonID() == liteEC.getDefaultRouteID())? "selected" : "";
 %>
-						    <option value="<%= routes[i].getYukonID() %>" <%= selected %>><%= routes[i].getPaoName() %></option>
-<%
+                            <option value="<%= routes[i].getYukonID() %>" <%= selected %>><%= routes[i].getPaoName() %></option>
+                            <%
 	}
 %>
-						  </select>
+                          </select>
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="25%" align="right" class="TableCell">Operator 
+                          Groups: </td>
+                        <td width="75%" class="TableCell"> 
+                          <input type="text" name="OperatorGroup" size="50" value="<%= operGroup %>">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="25%" align="right" class="TableCell">Res. Customer 
+                          Groups:</td>
+                        <td width="75%" class="TableCell"> 
+                          <input type="text" name="CustomerGroup" size="50" value="<%= custGroup %>">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="25%" align="right" class="TableCell">Opt out 
+                          Notif. Recipients:</td>
+                        <td width="75%" class="TableCell"> 
+                          <input type="text" name="OptOutNotif" size="50" value="<%= liteEC.getEnergyCompanySetting(EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS) %>">
                         </td>
                       </tr>
                     </table>
                   </td>
                 </tr>
               </table>
+              <br>
               <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
                 <tr>
                   <td width="290" align="right"> 

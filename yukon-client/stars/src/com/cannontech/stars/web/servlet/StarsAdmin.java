@@ -605,8 +605,13 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Energy company information updated successfully");
 		}
 		catch (Exception e) {
-			CTILogger.error( e.getMessage(), e );
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update energy company information");
+			if (e instanceof WebClientException) {
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
+			}
+			else {
+				CTILogger.error( e.getMessage(), e );
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update energy company information");
+			}
 			redirect = referer;
 		}
 	}
