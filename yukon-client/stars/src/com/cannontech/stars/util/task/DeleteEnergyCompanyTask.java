@@ -6,6 +6,8 @@
  */
 package com.cannontech.stars.util.task;
 
+import java.util.ArrayList;
+
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.util.CtiUtilities;
@@ -153,104 +155,72 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 					}
 				}
 				
-				// Delete all from inventory
+				// Delete all inventory
 				currentAction = "Deleting inventory";
 				
-				String sql = "SELECT COUNT(InventoryID) FROM ECToInventoryMapping WHERE EnergyCompanyID = ?";
+				String sql = "SELECT InventoryID FROM ECToInventoryMapping WHERE EnergyCompanyID = ?";
 				java.sql.PreparedStatement stmt = conn.prepareStatement( sql );
 				stmt.setInt(1, user.getEnergyCompanyID());
 				java.sql.ResultSet rset = stmt.executeQuery();
 				
-				if (rset.next())
-					numInventory = rset.getInt(1);
+				ArrayList invIDs = new ArrayList();
+				while (rset.next())
+					invIDs.add( new Integer(rset.getInt(1)) );
+				numInventory = invIDs.size();
 				
 				rset.close();
 				stmt.close();
 				
-				if (numInventory > 0) {
-					sql = "SELECT InventoryID FROM ECToInventoryMapping WHERE EnergyCompanyID = ?";
-					stmt = conn.prepareStatement( sql );
-					stmt.setInt(1, user.getEnergyCompanyID());
-					rset = stmt.executeQuery();
+				for (int i = 0; i < invIDs.size(); i++) {
+					int inventoryID = ((Integer) invIDs.get(i)).intValue();
+					currentAction = "Deleting inventory id = " + inventoryID;
 					
-					java.sql.Connection conn2 = null;
-					try {
-						conn2 = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-						
-						while (rset.next()) {
-							int inventoryID = rset.getInt(1);
-							currentAction = "Deleting inventory id = " + inventoryID;
-							
-							com.cannontech.database.data.stars.hardware.InventoryBase inventory =
-									new com.cannontech.database.data.stars.hardware.InventoryBase();
-							inventory.setInventoryID( new Integer(inventoryID) );
-							inventory.setDbConnection( conn2 );
-							inventory.delete();
-							
-							numInvDeleted++;
-							if (isCanceled) {
-								status = STATUS_CANCELED;
-								energyCompany.clear();
-								return;
-							}
-						}
-					}
-					finally {
-						if (conn2 != null) conn2.close();
-					}
+					com.cannontech.database.data.stars.hardware.InventoryBase inventory =
+							new com.cannontech.database.data.stars.hardware.InventoryBase();
+					inventory.setInventoryID( new Integer(inventoryID) );
+					inventory.setDbConnection( conn );
+					inventory.delete();
 					
-					rset.close();
-					stmt.close();
+					numInvDeleted++;
+					if (isCanceled) {
+						status = STATUS_CANCELED;
+						energyCompany.clear();
+						return;
+					}
 				}
 				
 				// Delete all work orders that don't belong to any account
 				currentAction = "Deleting work orders";
 				
-				sql = "SELECT COUNT(WorkOrderID) FROM ECToWorkOrderMapping WHERE EnergyCompanyID = ?";
+				sql = "SELECT WorkOrderID FROM ECToWorkOrderMapping WHERE EnergyCompanyID = ?";
 				stmt = conn.prepareStatement( sql );
 				stmt.setInt(1, user.getEnergyCompanyID());
 				rset = stmt.executeQuery();
 				
-				if (rset.next())
-					numWorkOrder = rset.getInt(1);
+				ArrayList orderIDs = new ArrayList();
+				while (rset.next())
+					orderIDs.add( new Integer(rset.getInt(1)) );
+				numWorkOrder = orderIDs.size();
 				
 				rset.close();
 				stmt.close();
 				
-				if (numWorkOrder > 0) {
-					sql = "SELECT WorkOrderID FROM ECToWorkOrderMapping WHERE EnergyCompanyID = ?";
-					stmt = conn.prepareStatement( sql );
-					stmt.setInt(1, user.getEnergyCompanyID());
-					rset = stmt.executeQuery();
+				for (int i = 0; i < orderIDs.size(); i++) {
+					int orderID = ((Integer) orderIDs.get(i)).intValue();
+					currentAction = "Deleting work order id = " + orderID;
 					
-					java.sql.Connection conn2 = null;
-					try {
-						conn2 = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-						
-						while (rset.next()) {
-							int orderID = rset.getInt(1);
-							currentAction = "Deleting work order id = " + orderID;
-							
-							com.cannontech.database.data.stars.report.WorkOrderBase order =
-									new com.cannontech.database.data.stars.report.WorkOrderBase();
-							order.setOrderID( new Integer(orderID) );
-							order.setDbConnection( conn2 );
-							order.delete();
-							
-							numOrderDeleted++;
-							if (isCanceled) {
-								status = STATUS_CANCELED;
-								energyCompany.clear();
-								return;
-							}
-						}
-					}
-					finally {
-						if (conn2 != null) conn2.close();
-					}
+					com.cannontech.database.data.stars.report.WorkOrderBase order =
+							new com.cannontech.database.data.stars.report.WorkOrderBase();
+					order.setOrderID( new Integer(orderID) );
+					order.setDbConnection( conn );
+					order.delete();
 					
-					rset.close();
-					stmt.close();
+					numOrderDeleted++;
+					if (isCanceled) {
+						status = STATUS_CANCELED;
+						energyCompany.clear();
+						return;
+					}
 				}
 				
 				// Delete all substations, CANNOT cancel the operation from now on
@@ -357,29 +327,25 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 				stmt.setInt(1, energyCompany.getLiteID());
 				rset = stmt.executeQuery();
 				
-				java.sql.Connection conn2 = null;
-				try {
-					conn2 = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-					
-					while (rset.next()) {
-						int userID = rset.getInt(1);
-						if (userID == energyCompany.getUserID()) continue;
-						
-						com.cannontech.database.data.user.YukonUser yukonUser =
-								new com.cannontech.database.data.user.YukonUser();
-						yukonUser.setUserID( new Integer(userID) );
-						yukonUser.setDbConnection( conn2 );
-						yukonUser.deleteOperatorLogin();
-						
-						ServerUtils.handleDBChange( YukonUserFuncs.getLiteYukonUser(userID), DBChangeMsg.CHANGE_TYPE_DELETE );
-					}
-				}
-				finally {
-					if (conn2 != null) conn2.close();
-				}
+				ArrayList userIDs = new ArrayList();
+				while (rset.next())
+					userIDs.add( new Integer(rset.getInt(1)) );
 				
 				rset.close();
 				stmt.close();
+				
+				for (int i = 0; i < userIDs.size(); i++) {
+					int userID = ((Integer) userIDs.get(i)).intValue();
+					if (userID == energyCompany.getUserID()) continue;
+					
+					com.cannontech.database.data.user.YukonUser yukonUser =
+							new com.cannontech.database.data.user.YukonUser();
+					yukonUser.setUserID( new Integer(userID) );
+					yukonUser.setDbConnection( conn );
+					yukonUser.deleteOperatorLogin();
+					
+					ServerUtils.handleDBChange( YukonUserFuncs.getLiteYukonUser(userID), DBChangeMsg.CHANGE_TYPE_DELETE );
+				}
 				
 				// Delete the energy company!
 				currentAction = "Deleting the energy company";
