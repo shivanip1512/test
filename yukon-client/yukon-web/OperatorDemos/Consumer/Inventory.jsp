@@ -132,7 +132,7 @@
                                 <div align="right">Receive Date: </div>
                               </td>
                               <td width="200"> 
-                                <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= dateFormat.format(hardware.getReceiveDate()) %>">
+                                <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= datePart.format(hardware.getReceiveDate()) %>">
                               </td>
                             </tr>
                             <tr> 
@@ -140,7 +140,7 @@
                                 <div align="right">Remove Date: </div>
                               </td>
                               <td width="200"> 
-                                <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= dateFormat.format(hardware.getRemoveDate()) %>">
+                                <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= datePart.format(hardware.getRemoveDate()) %>">
                               </td>
                             </tr>
                             <tr> 
@@ -224,7 +224,7 @@
                                   <div align="right">Date Installed: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= dateFormat.format(hardware.getInstallDate()) %>">
+                                  <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= datePart.format(hardware.getInstallDate()) %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -287,12 +287,11 @@
                                 <td width="100" class="HeaderCell">Action</td>
                               </tr>
 <%
-	StarsLMHardwareHistory hwHist = hardware.getStarsLMHardwareHistory();
 	for (int i = 0; i < hwHist.getLMHardwareEventCount(); i++) {
 		LMHardwareEvent event = hwHist.getLMHardwareEvent(i);
 %>
 							  <tr valign="top"> 
-							    <td width="104" class="TableCell" bgcolor="#FFFFFF"><%= dateFormat.format(event.getEventDateTime()) %></td>
+							    <td width="104" class="TableCell" bgcolor="#FFFFFF"><%= datePart.format(event.getEventDateTime()) %></td>
 							    <td width="100" class="TableCell" bgcolor="#FFFFFF"><%= event.getEventAction() %></td>
 							  </tr>
 <%
@@ -375,7 +374,7 @@
 		}
 %>
                 <tr bgcolor="#FFFFFF" valign="top"> 
-                  <td width="104" class="TableCell"> <%= starsApps[i].getCategoryDescription() %></td>
+                  <td width="104" class="TableCell"> <%= starsApps[i].getCategoryName() %></td>
                   <td width="100" class="TableCell"> In Service</td>
                   <td width="120"> 
                     <div align="center"> <img src="<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>

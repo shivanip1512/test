@@ -107,7 +107,7 @@ function getCurrentDateFormatted() {
                         <tr> 
                           <td width = "50%" align = "right">Date:</td>
                           <td width="50%" > 
-                            <input type="text" name="CallDate" size = "10" value="<%= dateFormat.format(Calendar.getInstance().getTime()) %>">
+                            <input type="text" name="CallDate" size = "10" value="<%= datePart.format(Calendar.getInstance().getTime()) %>">
                             <a href="javascript:show_calendar('MForm.date')"
 						onMouseOver="window.status='Pop Calendar';return true;"
 						onMouseOut="window.status='';return true;"> <img src="StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a> 

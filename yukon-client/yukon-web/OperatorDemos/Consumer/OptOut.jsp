@@ -129,7 +129,7 @@ function confirmSubmit(form) { //v1.0
 	for (int i = progHist.length - 1; i >= 0; i--) {
 %>
                   <tr> 
-                    <td class="TableCell" width="100" ><%= dateFormat.format(progHist[i].getDate()) %></td>
+                    <td class="TableCell" width="100" ><%= datePart.format(progHist[i].getDate()) %></td>
                     <td class="TableCell" width="100" ><%= progHist[i].getAction() %>
 					<% if (progHist[i].getDuration() != null) { %> - <%= progHist[i].getDuration() %><% } %>
 					</td>

@@ -1,6 +1,6 @@
-<html>
-<%@ include file="../oper_header.jsp" %>
+<%@ include file="StarsHeader.jsp" %>
 <%@ include file="../oper_trendingheader.jsp" %>
+<html>
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
 <head>
 <title>Energy Services Operations Center</title>

@@ -4,9 +4,10 @@
 <%@ page import="com.cannontech.stars.web.util.CommonUtils" %>
 
 <%
+    java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
+    java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
+    java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
 	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
-	java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM/dd/yyyy");
-    java.text.SimpleDateFormat dateTimeFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
 	
 	StarsOperator operator = null;
 	try {

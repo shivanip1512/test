@@ -82,7 +82,7 @@
                             <div align="right">Date Reported:</div>
                           </td>
                           <td width="210"> 
-                            <input type="text" name="DateAssigned" size="14" value="<%= dateFormat.format(Calendar.getInstance().getTime()) %>">
+                            <input type="text" name="DateAssigned" size="14" value="<%= datePart.format(Calendar.getInstance().getTime()) %>">
                           </td>
                         </tr>
                         <tr> 

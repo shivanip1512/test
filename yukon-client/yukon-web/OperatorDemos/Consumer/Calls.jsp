@@ -79,7 +79,7 @@
 %>
                   <tr> 
                     <td class="TableCell" width="61"><%= callHist.getCallNumber() %></td>
-                    <td class="TableCell" width="65"><%= dateFormat.format( callHist.getCallDate() ) %></td>
+                    <td class="TableCell" width="65"><%= datePart.format( callHist.getCallDate() ) %></td>
                     <td class="TableCell" width="69"><%= callHist.getCallType().getContent() %></td>
                     <td class="TableCell" width="217"> 
                       <textarea name="textarea" rows="3"" wrap="soft" cols="50" class = "TableCell"><%= callHist.getDescription() %></textarea>
