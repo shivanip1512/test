@@ -1,4 +1,4 @@
-package com.cannontech.database.data.point;
+ package com.cannontech.database.data.point;
 
 /**
  * @author rneuharth
@@ -56,6 +56,19 @@ public final class PointUnits
    public static final int UOMID_VOLTS_V2H = 41;
    public static final int UOMID_AMPS_V2H = 42;
    
+	public static final int UOMID_TAP = 43;
+	public static final int UOMID_MILES = 44;
+	public static final int UOMID_MS = 45;
+	public static final int UOMID_PPM = 46;
+	public static final int UOMID_MPH = 47;
+	public static final int UOMID_INCHES = 48;
+	public static final int UOMID_KPH = 49;
+	public static final int UOMID_MILIBARS = 50;
+	public static final int UOMID_KH_H = 51;
+	public static final int UOMID_M_S = 52;
+	public static final int UOMID_KV = 53;
+	public static final int UOMID_UNDEF = 54;
+	public static final int UOMID_A = 55;
 
 
    public static final int[] CAP_CONTROL_VAR_UOMIDS =
