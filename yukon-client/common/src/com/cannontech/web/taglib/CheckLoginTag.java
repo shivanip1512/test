@@ -47,7 +47,7 @@ public int doStartTag() throws javax.servlet.jsp.JspException {
 			(javax.servlet.http.HttpServletRequest) pageContext.getRequest();
 		javax.servlet.http.HttpServletResponse response = 
 			(javax.servlet.http.HttpServletResponse) pageContext.getResponse();
-	
+		
 		String redirectURL = "/login.jsp";
 		Cookie[] cookies = request.getCookies();
 		if(cookies != null) {		
@@ -56,11 +56,15 @@ public int doStartTag() throws javax.servlet.jsp.JspException {
 				System.out.println(c.getName());
 				if(c.getName().equalsIgnoreCase(LoginController.LOGIN_URL_COOKIE)) {
 					redirectURL = c.getValue();
+					break;
 				}
 			}
 		}
 		
-		response.sendRedirect(request.getContextPath() + redirectURL);
+		if (redirectURL.startsWith("/"))
+			redirectURL = request.getContextPath() + redirectURL;
+		
+		response.sendRedirect(redirectURL);
 	}
 	catch(Exception e ) {
 		throw new JspException(e.getMessage());
