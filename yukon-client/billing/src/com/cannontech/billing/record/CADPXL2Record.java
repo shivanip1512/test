@@ -83,21 +83,21 @@ public String dataToString()
 		
 	StringBuffer writeToFile = new StringBuffer();
 
-	int acctNumLength = getAccountNumber().length();
-	
-	for(int i=0;i<(10-acctNumLength);i++)
+	String tempAcctNumber = getAccountNumber();
+	if( tempAcctNumber.length() > 10)
+		tempAcctNumber = tempAcctNumber.substring(0, 10);	//only keep 10 characters
+	for(int i = 0; i < (10-tempAcctNumber.length()); i++)
 	{
-		writeToFile.append("0");
+		writeToFile.append("0");	//add 0s to end of string if less than 10 chars
 	}
-	
-	writeToFile.append(getAccountNumber());
+	writeToFile.append(tempAcctNumber);
 
 	writeToFile.append(getImportType());
 
 	writeToFile.append(getServiceGroup());
 	for(int i=0;i<(5-getServiceGroup().length());i++)
 	{
-		writeToFile.append(" ");
+		writeToFile.append(" ");	//add blanks to end of string if less than 5 chars
 	}
 
 	writeToFile.append(getPaymentSign());
