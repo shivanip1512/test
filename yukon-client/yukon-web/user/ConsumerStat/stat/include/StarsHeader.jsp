@@ -63,7 +63,7 @@
 		actions.parse(reqMsg, respMsg, session);
 	}
 	
-	StarsGetEnergyCompanySettingsResponse ecSettings = (StarsGetEnergyCompanySettingsResponse)
+	StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
 			user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 	StarsEnergyCompany energyCompany = ecSettings.getStarsEnergyCompany();
 	StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
@@ -109,6 +109,7 @@
 			userLogin = new StarsUser();
 			userLogin.setUsername( "" );
 			userLogin.setPassword( "" );
+			userLogin.setStatus(StarsLoginStatus.DISABLED);
 		}
 	}
 	

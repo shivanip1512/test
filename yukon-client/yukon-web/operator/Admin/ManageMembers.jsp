@@ -1,7 +1,6 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.cache.functions.EnergyCompanyFuncs" %>
 <%@ page import="com.cannontech.database.cache.functions.YukonUserFuncs" %>
-<%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
 <%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
 <%
 	LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
@@ -24,30 +23,7 @@ function memberLogin(userID) {
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
-        <tr> 
-          <td width="102" height="102" background="../../WebConfig/yukon/AdminImage.jpg">&nbsp;</td>
-          <td valign="bottom" height="102"> 
-            <table width="657" cellspacing="0"  cellpadding="0" border="0">
-              <tr> 
-                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
-              </tr>
-              <tr> 
-                  <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Administration</td>
-                  
-                <td width="253" valign="middle">&nbsp;</td>
-                  <td width="58" valign="middle"> 
-                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
-                  </td>
-                  <td width="57" valign="middle"> 
-                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
-                  </td>
-              </tr>
-            </table>
-          </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-          </tr>
-      </table>
+      <%@ include file="include/HeaderBar.jsp" %>
     </td>
   </tr>
   <tr>
@@ -79,7 +55,7 @@ function memberLogin(userID) {
 			    <input type="hidden" name="action" value="MemberLogin">
 				<input type="hidden" name="UserID" value="-1">
 				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?LoginFailed=true">
-                <table width="40%" border="0" cellspacing="0" cellpadding="5" class="MainText">
+                <table width="50%" border="0" cellspacing="0" cellpadding="5" class="MainText">
                   <%
 	for (int i = 0; i < liteEC.getChildren().size(); i++) {
 		LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) liteEC.getChildren().get(i);
@@ -93,13 +69,13 @@ function memberLogin(userID) {
 		}
 %>
                   <tr> 
-                    <td>
-<%		if (memberLogin != null) { %>
-					  <a href="" class="Link1" onclick="memberLogin(<%= memberLogin.getUserID() %>); return false;"><%= member.getName() %></a>
-<%		} else { %>
-					  <%= member.getName() %>
-<%		} %>
-					</td>
+                    <td align="center"> 
+                      <% if (memberLogin != null) { %>
+                      <a href="" class="Link1" onclick="memberLogin(<%= memberLogin.getUserID() %>); return false;"><%= member.getName() %></a> 
+                      <% } else { %>
+                      <%= member.getName() %> 
+                      <% } %>
+                    </td>
                   </tr>
 <%
 	}

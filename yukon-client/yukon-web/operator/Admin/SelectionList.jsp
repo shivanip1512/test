@@ -1,7 +1,6 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionList" %>
 <%@ page import="com.cannontech.common.constants.YukonListEntry" %>
-<%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
 <%
 	String listName = request.getParameter("List");
 	LiteStarsEnergyCompany ec = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
@@ -245,30 +244,7 @@ function init() {
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
-        <tr> 
-          <td width="102" height="102" background="../../WebConfig/yukon/AdminImage.jpg">&nbsp;</td>
-          <td valign="bottom" height="102"> 
-            <table width="657" cellspacing="0"  cellpadding="0" border="0">
-              <tr> 
-                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
-              </tr>
-              <tr> 
-                  <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Administration</td>
-                  
-                <td width="253" valign="middle">&nbsp;</td>
-                  <td width="58" valign="middle"> 
-                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
-                  </td>
-                  <td width="57" valign="middle"> 
-                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
-                  </td>
-              </tr>
-            </table>
-          </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-          </tr>
-      </table>
+      <%@ include file="include/HeaderBar.jsp" %>
     </td>
   </tr>
   <tr>

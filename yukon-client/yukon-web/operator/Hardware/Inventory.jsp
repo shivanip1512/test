@@ -1,6 +1,5 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.bean.InventoryBean" %>
-<%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
 <%
 	LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
 %>
@@ -11,7 +10,7 @@
 	<jsp:setProperty name="inventoryBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>"/>
 	<jsp:setProperty name="inventoryBean" property="sortOrder" value="<%= InventoryBean.SORT_ORDER_ASCENDING %>"/>
 	<jsp:setProperty name="inventoryBean" property="filterBy" value="0"/>
-	<jsp:setProperty name="inventoryBean" property="subEnergyCompany" value="<%= user.getEnergyCompanyID() %>"/>
+	<jsp:setProperty name="inventoryBean" property="member" value="<%= user.getEnergyCompanyID() %>"/>
 </jsp:useBean>
 
 <% if (request.getParameter("page") == null) { %>
@@ -30,7 +29,7 @@
 <jsp:setProperty name="inventoryBean" property="addressingGroup" param="AddressingGroup"/>
 <jsp:setProperty name="inventoryBean" property="deviceStatus" param="DeviceStatus"/>
 <jsp:setProperty name="inventoryBean" property="page" param="page"/>
-<jsp:setProperty name="inventoryBean" property="subEnergyCompany" param="SubEnergyCompany"/>
+<jsp:setProperty name="inventoryBean" property="member" param="Member"/>
 
 <html>
 <head>
@@ -64,32 +63,7 @@ function showAll(form) {
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
-        <tr> 
-          <td width="102" height="102" background="../../WebConfig/yukon/InventoryImage.jpg">&nbsp;</td>
-          <td valign="bottom" height="102"> 
-            <table width="657" cellspacing="0"  cellpadding="0" border="0">
-              <tr> 
-                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
-              </tr>
-              <tr> 
-                <td width="310" height="28" class="PageHeader">&nbsp;&nbsp;&nbsp;Hardware 
-                  Inventory </td>
-                <td width="235" height = "30" valign="middle">&nbsp;</td>
-                <form method="post" action="../Operations.jsp">
-                  <td width="58" valign="middle"> 
-                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
-                  </td>
-                  <td width="57" valign="middle"> 
-                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
-                  </td>
-                </form>
-              </tr>
-            </table>
-          </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-          </tr>
-      </table>
+      <%@ include file="include/HeaderBar.jsp" %>
     </td>
   </tr>
   <tr>
@@ -250,12 +224,12 @@ function showAll(form) {
                               </select>
                             </div>
                             <div id="DivEnergyCompany" style="display:none"> 
-                              <select name="SubEnergyCompany">
+                              <select name="Member">
                                 <%
-	ArrayList subCompanies = com.cannontech.stars.util.ECUtils.getAllDescendants(liteEC);
-	for (int i = 0; i < subCompanies.size(); i++) {
-		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) subCompanies.get(i);
-		String selected = (company.getLiteID() == inventoryBean.getSubEnergyCompany())? "selected" : "";
+	ArrayList descendants = com.cannontech.stars.util.ECUtils.getAllDescendants(liteEC);
+	for (int i = 0; i < descendants.size(); i++) {
+		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+		String selected = (company.getLiteID() == inventoryBean.getMember())? "selected" : "";
 %>
                                 <option value="<%= company.getLiteID() %>" <%= selected %>><%= company.getName() %></option>
                                 <%
