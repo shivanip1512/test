@@ -6,7 +6,7 @@ using namespace std;
 
 #include "cparms.h"
 
-IM_EX_CPARM RWCString DefaultMasterConfigFileName("\\yukon\\config\\master.cfg");
+IM_EX_CPARM RWCString DefaultMasterConfigFileName("..\\config\\master.cfg");
 IM_EX_CPARM RWCString ConfKeyRefreshRate("CONFIG_REFRESHRATE");
 
 //The location and name of the configuration file is
@@ -41,6 +41,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
          else
          {
             cout << "Unable to open subkey " << lpSubKey << endl;
+            cout << " Configuration file is " << DefaultMasterConfigFileName << endl;
          }
 
          gConfigParms.setConfigFile(DefaultMasterConfigFileName).RefreshConfigParameters();
