@@ -133,8 +133,8 @@
 		if (valid)
 		{		
 			//Send the message to loadmanagement	           
-            com.cannontech.loadcontrol.messages.LMManualControlMsg msg = new com.cannontech.loadcontrol.messages.LMManualControlMsg();
-        	msg.setCommand(com.cannontech.loadcontrol.messages.LMManualControlMsg.SCHEDULED_START);
+            com.cannontech.loadcontrol.messages.LMManualControlRequest msg = new com.cannontech.loadcontrol.messages.LMManualControlRequest();
+        	msg.setCommand(com.cannontech.loadcontrol.messages.LMManualControlRequest.SCHEDULED_START);
 	        msg.setYukonID(programID);
 	        msg.setStartGear(gearIndex);
                        

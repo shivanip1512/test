@@ -83,8 +83,8 @@
 		}
 	   		    
 
-            com.cannontech.loadcontrol.messages.LMManualControlMsg msg = new com.cannontech.loadcontrol.messages.LMManualControlMsg();
-        	msg.setCommand(com.cannontech.loadcontrol.messages.LMManualControlMsg.SCHEDULED_STOP);
+            com.cannontech.loadcontrol.messages.LMManualControlRequest msg = new com.cannontech.loadcontrol.messages.LMManualControlRequest();
+        	msg.setCommand(com.cannontech.loadcontrol.messages.LMManualControlRequest.SCHEDULED_STOP);
 	        msg.setYukonID(programID);
 	        msg.setStartGear(1);
                         
