@@ -77,12 +77,12 @@ private PointRegistration getPtRegMsg()
 		displayName = caller.getCurrentDisplay().getName();
 		
 	//Register for points
-	if( Display.isAlarmDisplay(callerModel.getCurrentDisplayNumber()) )
+	if( Display.isAlarmDisplay(callerModel.getCurrentDisplay().getDisplayNumber()) )
 	{
 		TDCMainFrame.messageLog.addMessage("Registering display " + displayName + " for ALARMS", MessageBoxFrame.INFORMATION_MSG);
 		pReg.setRegFlags( PointRegistration.REG_ALARMS );
 	}
-	else if( Display.isReadOnlyDisplay(callerModel.getCurrentDisplayNumber()) )	
+	else if( Display.isReadOnlyDisplay(callerModel.getCurrentDisplay().getDisplayNumber()) )
 	{
 		TDCMainFrame.messageLog.addMessage("Registering display " + displayName + " for ALARMS, EVENTS and NO_UPLOAD", MessageBoxFrame.INFORMATION_MSG);
 		pReg.setRegFlags( PointRegistration.REG_EVENTS | 
@@ -125,7 +125,7 @@ public boolean isLastReceptionValid() {
 public void receivedDBChangMsg( DBChangeMsg msg ) 
 {
 	String display = caller.getCurrentDisplay().getName() != null ? 
-			caller.getCurrentDisplay().getName() : "#" + caller.getCurrentDisplayNumber();
+			caller.getCurrentDisplay().getName() : "#" + caller.getCurrentDisplay().getDisplayNumber();
 
 	CTILogger.info("DATABASE CHANGE RECEIVED = " + msg.toString() + " Display = " + display );
 	
@@ -157,7 +157,7 @@ public void receivedNullMsg()
 public void receivedPointData( PointData point ) 
 {
 	String display = caller.getCurrentDisplay().getName() != null ? 
-			caller.getCurrentDisplay().getName() : "#" + caller.getCurrentDisplayNumber();
+			caller.getCurrentDisplay().getName() : "#" + caller.getCurrentDisplay().getDisplayNumber();
 			
 	CTILogger.info("POINTDATA RECEIVED -- PointID = " + point.getId() +
 		" Value = " + point.getValue() + " Tags(hex) = " + Long.toHexString(point.getTags()) +
@@ -176,7 +176,7 @@ public void receivedPointData( PointData point )
 public void receivedSignal( Signal signal ) 
 {
 	String display = caller.getCurrentDisplay().getName() != null ? 
-			caller.getCurrentDisplay().getName() : "#" + caller.getCurrentDisplayNumber();
+			caller.getCurrentDisplay().getName() : "#" + caller.getCurrentDisplay().getDisplayNumber();
 
 	CTILogger.info(
 		"SIGNAL RECEIVED for PtID="+ signal.getPointID() + ",AlarmStateID="+ signal.getCategoryID() + ",Tags(hex)=" + Integer.toHexString(signal.getTags()) +

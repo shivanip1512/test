@@ -73,7 +73,7 @@ class TDCDBChangeHandler
 
 		
 		if( !tdcPan.isClientDisplay() 
-			 && !Display.isReadOnlyDisplay(tdcPan.getTableDataModel().getCurrentDisplayNumber()) )
+			 && !Display.isReadOnlyDisplay(tdcPan.getTableDataModel().getCurrentDisplay().getDisplayNumber()) )
 		{
          if( msg.getDatabase() == DBChangeMsg.CHANGE_ALARM_CATEGORY_DB )
          {

@@ -86,7 +86,7 @@ class SignalAlarmHandler
 
       boolean foundSig = false;
       int prevAlrmCnt = getAlarmVector().size();//alarmCount;
-      boolean addAlarm = TagUtils.isAnyAlarm(sig.getTags());
+      boolean addAlarm = TagUtils.isAlarmUnacked(sig.getTags());
    
       for( int i = 0; i < getAlarmVector().size(); i++ )
       {

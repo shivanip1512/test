@@ -6,7 +6,9 @@ package com.cannontech.tdc;
  * @author: 
  */
 import java.util.Date;
+import java.util.HashMap;
 
+import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
@@ -16,15 +18,9 @@ public class PointValues
 	//pointData can NOT be null
 	private PointData pointData = null;
 
-	//signal can be null 
-	private Signal signal = null;
+	//signals can be null 
+	private HashMap signalHash = null;
 
-	private int pointID = -1;
-	private Date timeStamp = null;
-	private int soeTag = 0;
-	private long tags = 0;
-	private String pointType = null;
-	
 
 	//device data
 	private String deviceName = null;
@@ -142,7 +138,7 @@ public PointValues( PointValues point, String[] colors, String[] messages,
 	pointName = point.getPointName();
 	decimalPlaces = point.getDecimalPlaces();
 	
-	setSignal( point.getSignal() );
+	getSignalHash().putAll( point.getSignalHash() );
 }
 
 /**
@@ -163,7 +159,7 @@ public PointValues( Signal signal_, int ptType, String ptName, String[] colors,
 	getPointData().setTime( new java.util.Date() );
 	getPointData().setTags( signal_.getTags() );
 	
-	setSignal( signal_ );
+	updateSignal( signal_ );
 }
 
 /**
@@ -516,23 +512,6 @@ public String toString()
 		return getPointData().getType();
 	}
 
-	public long getSignalCategory()
-	{
-		if( getSignal() == null )
-			return -1; //we are not alarming
-		else
-			return getSignal().getCategoryID();
-	}
-
-	public int getCondition()
-	{
-		if( getSignal() == null )
-			return -1; //we are not alarming
-		else
-			return getSignal().getCondition();
-	}
-
-
 	public void setSOETag( int newTag_ ) 
 	{
 		getPointData().setSOE_Tag( newTag_ );
@@ -543,45 +522,51 @@ public String toString()
 		getPointData().setTime( newDate_ );
 	}
 
-	/** 
-	 * START ----------- Setters that overlap PointData and Signal
-	 **/
-	public void setTags( long newTag_ ) 
+	public boolean containsSignal( Signal signal_ )
 	{
-		getPointData().setTags( newTag_ );
-
-		//keep the data structures in sink
-		if( getSignal() != null )
-			getSignal().setTags( newTag_ );
-	}
-
-	/** 
-	 * END ----------- Setters that overlap PointData and Signal
-	 **/
-
-	public boolean signalEquals( Signal signal_ )
-	{
-		if( signal_ == null )
-			return false;
-			
-		return signal_.equals( getSignal() );
+		return ( getSignalHash().get(signal_) != null );
 	}
 	
 
 	/**
 	 * @return
 	 */
-	private Signal getSignal()
+	private HashMap getSignalHash()
 	{
-		return signal;
+		if( signalHash == null )
+			signalHash = new HashMap(16);
+
+		return signalHash;
+	}
+
+
+	/**
+	 * Gets an array of the signals
+	 * @return a Zero length array of no signals are present.
+	 */
+	public Signal[] getAllSignals()
+	{
+		Signal[] sigs = new Signal[ getSignalHash().values().size() ];
+		return (Signal[])getSignalHash().values().toArray( sigs );
 	}
 
 	/**
 	 * @param signal
+	 * deny our EVENT signals from being in here
 	 */
-	public void setSignal(Signal signal)
+	public void updateSignal(Signal signal)
 	{
-		this.signal = signal;
+		if( signal != null && signal.getCondition() >= IAlarmDefs.MIN_CONDITION_ID )
+			getSignalHash().put( signal, signal );
+	}
+		
+	/**
+	 * @param signal
+	 * get that signal gone
+	 */
+	public void removeSignal(Signal signal)
+	{
+		getSignalHash().remove( signal );
 	}
 
 }

@@ -5,29 +5,39 @@ package com.cannontech.tdc;
  * Creation date: (1/20/00 11:43:56 AM)
  * @author: 
  */
+import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.parametersfile.ParametersFile;
+import com.cannontech.clientutils.tags.AlarmUtils;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.NativeIntVector;
+import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.graph.Graph;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.tdc.commandevents.AckAlarm;
 import com.cannontech.tdc.data.ColumnData;
 import com.cannontech.tdc.data.Display;
+import com.cannontech.tdc.filter.ITDCFilter;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.roweditor.AnalogPanel;
 import com.cannontech.tdc.roweditor.EditorDialogData;
@@ -55,7 +65,7 @@ public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.t
 	private int pageNumber = 1;
 	private int totalPages = 1;
 	private SpecialTDCChild currentSpecailChild = null;
-	private AlarmToolBar alarmToolBar = null;
+	private AlarmToolBar frameAlarmToolBar = null;
 	private SortTableModelWrapper sorterModelWrapper = null;
 	/* START -Display atrributes */
 	private Display[] lastDisplays = new Display[Display.DISPLAY_TYPES.length];  // holds a last display for EVERY display type that exists
@@ -80,7 +90,7 @@ public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.t
 	private javax.swing.JLabel ivjJLabelDisplayTitle = null;
 	private javax.swing.JScrollPane ivjScrollPaneDisplayTable = null;
 	protected transient com.cannontech.tdc.TDCMainPanelListener fieldTDCMainPanelListenerEventMulticaster = null;
-	private javax.swing.JMenuItem ivjJMenuItemPopUpAckAlarm = null;
+	private javax.swing.JMenu ivjJMenuPopUpAckAlarm = null;
 	private javax.swing.JMenuItem ivjJMenuItemPopUpClear = null;
 	private javax.swing.JMenuItem ivjJMenuItemPopUpManualEntry = null;
 	private javax.swing.JRadioButtonMenuItem ivjJRadioButtonMenuItemDisableDev = null;
@@ -144,8 +154,6 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code end
 	if (e.getSource() == getJComboCurrentDisplay()) 
 		connEtoC2(e);
-	if (e.getSource() == getJMenuItemPopUpAckAlarm()) 
-		connEtoC5(e);
 	if (e.getSource() == getJMenuItemPopUpManualEntry()) 
 		connEtoC9(e);
 	if (e.getSource() == getJMenuItemPageForward()) 
@@ -465,24 +473,6 @@ private void connEtoC4(javax.swing.event.PopupMenuEvent arg1) {
 		handleException(ivjExc);
 	}
 }
-/**
- * connEtoC5:  (JMenuItemPopUpAckAlarm.action.actionPerformed(java.awt.event.ActionEvent) --> TDCMainPanel.jMenuItemPopUpAckAlarm_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC5(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.jMenuItemPopUpAckAlarm_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
 
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC7(java.awt.event.ActionEvent arg1) {
@@ -557,12 +547,12 @@ private ManualEntryJPanel createManualEditorPanel(int selectedRow, Object source
 		{
 			tableModel.setObservedRow( tableModel.getRowNumber( new Long(pt.getPointID()).longValue() ) );
 
-			if( tableModel.isRowInAlarmVector(selectedRow) )
-				return new AnalogPanel( data, 
-										tableModel.getObservedRow(), 
-										currentValue, 
-										tableModel.getAlarmingRowVector().getAlarmingRow(selectedRow).getSignal() );
-			else
+//			if( tableModel.isRowInAlarmVector(selectedRow) )
+//				return new AnalogPanel( data, 
+//										tableModel.getObservedRow(), 
+//										currentValue, 
+//										tableModel.getAlarmingRowVector().getAlarmingRow(selectedRow).getSignal() );
+//			else
 				return new AnalogPanel( data, 
 										tableModel.getObservedRow(), 
 										currentValue);
@@ -582,12 +572,12 @@ private ManualEntryJPanel createManualEditorPanel(int selectedRow, Object source
 		{			
 			tableModel.setObservedRow( tableModel.getRowNumber( new Long(pt.getPointID()).longValue() ) );
 
-			if( tableModel.isRowInAlarmVector(selectedRow) )
-				return new StatusPanelManualEntry( data, 
-										tableModel.getObservedRow(), 
-										currentValue, 
-										tableModel.getAlarmingRowVector().getAlarmingRow(selectedRow).getSignal() );
-			else
+//			if( tableModel.isRowInAlarmVector(selectedRow) )
+//				return new StatusPanelManualEntry( data, 
+//										tableModel.getObservedRow(), 
+//										currentValue, 
+//										tableModel.getAlarmingRowVector().getAlarmingRow(selectedRow).getSignal() );
+//			else
 				return new StatusPanelManualEntry( data, 
 										tableModel.getObservedRow(), 
 										currentValue);
@@ -704,8 +694,8 @@ public void executeDateChange( Date newDate )
 
 	try
 	{
-		if( Display.isTodaysDisplay(newDate)
-			 && !Display.isAlarmDisplay(getCurrentDisplayNumber()) )
+		if( Display.isTodaysDisplay(newDate) )
+			 //&& !Display.isAlarmDisplay(getCurrentDisplay().getDisplayNumber()) )
 		{
 			//we are looking at today
 			setDisplayTitle( getCurrentDisplay().getName(), null );
@@ -716,10 +706,10 @@ public void executeDateChange( Date newDate )
 		}
 	
 		
-		//only accepet the change if we are looking at the event viewer
+		//only accept the change if we are looking at the event viewer
 		//  and there is at least a 1 minute difference between the new date and the old date
-		if( (Display.isHistoryDisplay(getTableDataModel().getCurrentDisplayNumber())
-			 || getTableDataModel().isInactiveAlarms())
+		if( (Display.isHistoryDisplay(getCurrentDisplay().getDisplayNumber())
+			 || getCurrentDisplay().getTdcFilter().getConditions().get(ITDCFilter.COND_HISTORY) )
 			 && (int)(newDate.getTime() / 600000) != (int)(getPreviousDate().getTime() / 600000) )
 		{		
 			getTableDataModel().clearSystemViewerDisplay( true );
@@ -758,9 +748,9 @@ private void fire_SelectClientBookMark(final String bookMark)
 			for( int o = 0; o < waitSecs ; o++)
 			{	
 				for( int i = 0; i < getJComboCurrentDisplay().getItemCount(); i++ )
-					if( getJComboCurrentDisplay().getItemAt(i).equals(bookMark) )
+					if( getJComboCurrentDisplay().getItemAt(i).toString().equals(bookMark) )
 					{
-						getJComboCurrentDisplay().setSelectedItem( bookMark );
+						getJComboCurrentDisplay().setSelectedIndex(i);
 						return;
 						//break;
 					}
@@ -832,7 +822,7 @@ public void fireBookMarkSelected( Object source )
 			try
 			{
 				if( getLastDisplays()[ Display.getDisplayTitle(currentDisplayTitle) ] != null )
-					getJComboCurrentDisplay().setSelectedItem( getLastDisplays()[ Display.getDisplayTitle(currentDisplayTitle) ].getName() );
+					getJComboCurrentDisplay().setSelectedItem( getLastDisplays()[Display.getDisplayTitle(currentDisplayTitle)] );
 				else
 				{
 					if( getJComboCurrentDisplay().getItemCount() > 0 )
@@ -878,14 +868,14 @@ public void fireBookMarkSelected( Object source )
 			else
 			{
 				for( int i = 0; i < getJComboCurrentDisplay().getItemCount(); i++ )
-					if( getJComboCurrentDisplay().getItemAt(i).equals(bookMark) )
+					if( getJComboCurrentDisplay().getItemAt(i).toString().equals(bookMark) )
 					{						
-						getJComboCurrentDisplay().setSelectedItem( bookMark );
+						getJComboCurrentDisplay().setSelectedIndex(i);
 						
 						//set the date to today for all Alarm bookmarks and to the active alarms display
-						if( Display.isAlarmDisplay(getCurrentDisplayNumber()) )
+						if( Display.isAlarmDisplay(getCurrentDisplay().getDisplayNumber()) )
 						{
-							parentFrame.setToActiveAlarms();
+							parentFrame.resetFilter();
 						}
 						
 						
@@ -899,9 +889,6 @@ public void fireBookMarkSelected( Object source )
 			throw new IllegalArgumentException("A JMenuItem or JRadioButtonMenuItem was not found to be the cause of a bookmark event");
 		}
 
-
-		//set our display with the last format
-		//updateDisplayColumnFormat();
 	}
 	finally
 	{
@@ -1052,10 +1039,10 @@ public Display getCurrentDisplay()
  * Creation date: (2/28/00 4:52:53 PM)
  * @return int
  */
-public long getCurrentDisplayNumber() 
-{
-	return getTableDataModel().getCurrentDisplayNumber();
-}
+//public long getCurrentDisplayNumber() 
+//{
+//	return getTableDataModel().getCurrentDisplayNumber();
+//}
 /**
  * Insert the method's description here.
  * Creation date: (12/12/00 11:19:33 AM)
@@ -1362,23 +1349,20 @@ private javax.swing.JMenuItem getJMenuItemPageForward() {
  * Return the JMenuItem1 property value.
  * @return javax.swing.JMenuItem
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JMenuItem getJMenuItemPopUpAckAlarm() {
-	if (ivjJMenuItemPopUpAckAlarm == null) {
+private javax.swing.JMenu getJMenuPopUpAckAlarm() {
+	if (ivjJMenuPopUpAckAlarm == null) {
 		try {
-			ivjJMenuItemPopUpAckAlarm = new javax.swing.JMenuItem();
-			ivjJMenuItemPopUpAckAlarm.setName("JMenuItemPopUpAckAlarm");
-			ivjJMenuItemPopUpAckAlarm.setMnemonic('A');
-			ivjJMenuItemPopUpAckAlarm.setText("Ack Alarm");
-			// user code begin {1}
-			// user code end
+			ivjJMenuPopUpAckAlarm = new javax.swing.JMenu();
+			ivjJMenuPopUpAckAlarm.setName("JMenuPopUpAckAlarm");
+			ivjJMenuPopUpAckAlarm.setMnemonic('A');
+			ivjJMenuPopUpAckAlarm.setText("Ack Alarm");
+
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
+
 			handleException(ivjExc);
 		}
 	}
-	return ivjJMenuItemPopUpAckAlarm;
+	return ivjJMenuPopUpAckAlarm;
 }
 /**
  * Return the JMenuItemPopUpManualControl property value.
@@ -1480,7 +1464,7 @@ private javax.swing.JPopupMenu getJPopupMenuManual() {
 		try {
 			ivjJPopupMenuManual = new javax.swing.JPopupMenu();
 			ivjJPopupMenuManual.setName("JPopupMenuManual");
-			ivjJPopupMenuManual.add(getJMenuItemPopUpAckAlarm());
+			ivjJPopupMenuManual.add(getJMenuPopUpAckAlarm());
 			ivjJPopupMenuManual.add(getJMenuItemPopUpManualEntry());
 			ivjJPopupMenuManual.add(getJMenuItemPopUpManualControl());
 			ivjJPopupMenuManual.add(getJMenuTags());
@@ -1740,25 +1724,25 @@ private void getHistoryDisplayData( Date date )
 
 	try
 	{
-		if( getCurrentDisplayNumber() == Display.RAW_POINT_HISTORY_VIEWER_DISPLAY_NUMBER ) 
+		if( getCurrentDisplay().getDisplayNumber() == Display.RAW_POINT_HISTORY_VIEWER_DISPLAY_NUMBER ) 
 		{
 			totalPages = getTableDataModel().createRowsForRawPointHistoryView( date, pageNumber );
 		}
-		else if( getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
+		else if( getCurrentDisplay().getDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
 		{		
 			totalPages = getTableDataModel().createRowsForHistoricalView( date, pageNumber );
 		}
-		else if( Display.isAlarmDisplay(getCurrentDisplayNumber()) )
+		else if( Display.isAlarmDisplay(getCurrentDisplay().getDisplayNumber()) )
 		{		
 			totalPages = getTableDataModel().createRowsForHistoricalAlarmView( 
 						date,
 						pageNumber,
-						(int)getCurrentDisplayNumber() );
+						getCurrentDisplay().getDisplayNumber() );
 		}
 				
 
 		//see if we need to add paging capability here
-		if( Display.isHistoryDisplay(getTableDataModel().getCurrentDisplayNumber()) )
+		if( Display.isHistoryDisplay(getCurrentDisplay().getDisplayNumber()) )
 		{
 			getJRadioButtonPage1().setSelected( true );
 			
@@ -1956,7 +1940,7 @@ private void initClientDisplays()
 			JPanel p = getCurrentSpecailChild().getMainJPanel();
 			
 			add(p, getScrollPaneGridBagConstraints() );
-			alarmToolBar.setCurrentComponents( getCurrentSpecailChild().getJButtons() );
+			frameAlarmToolBar.setCurrentComponents( getCurrentSpecailChild().getJButtons() );
 			getCurrentSpecailChild().setTableFont( getDisplayTable().getFont() );
 			getCurrentSpecailChild().setGridLines( getDisplayTable().getShowHorizontalLines(), 
 											  getDisplayTable().getShowVerticalLines() );
@@ -2014,7 +1998,7 @@ public boolean initComboCurrentDisplay()
 	allDisplays = null;
 
    //reinit our display number
-	getTableDataModel().setCurrentDisplayNumber( Display.UNKNOWN_DISPLAY_NUMBER );
+	getTableDataModel().setCurrentDisplay( Display.UNKNOWN_DISPLAY );
 
 	
 	// get the data for the majority of our displays
@@ -2075,7 +2059,7 @@ public boolean initComboCurrentDisplay()
 			if( getCurrentDisplay() != null )
 			{
 				if( getCurrentDisplay().getType().equalsIgnoreCase(getAllDisplays()[i].getType()) )
-					getJComboCurrentDisplay().addItem( getAllDisplays()[i].getName() );
+					getJComboCurrentDisplay().addItem( getAllDisplays()[i] );
 			}
 			else if( initOnce 
 						&& getCurrentDisplay() == null 
@@ -2083,7 +2067,7 @@ public boolean initComboCurrentDisplay()
 			{
 				// we must not have a currentDisplay set yet, set it to the EVENT VIEWER
 				setCurrentDisplay( getAllDisplays()[i] );
-				getJComboCurrentDisplay().addItem( getAllDisplays()[i].getName() );
+				getJComboCurrentDisplay().addItem( getAllDisplays()[i] );
 			}
 			
 		}
@@ -2130,7 +2114,6 @@ private void initConnections() throws java.lang.Exception {
 	getDisplayTable().addMouseListener(this);
 	getJComboCurrentDisplay().addActionListener(this);
 	getJPopupMenuManual().addPopupMenuListener(this);
-	getJMenuItemPopUpAckAlarm().addActionListener(this);
 	getJMenuItemPopUpManualEntry().addActionListener(this);
 	getJLabelDisplayTitle().addMouseListener(this);
 	getJRadioButtonMenuItemDisableDev().addItemListener(this);
@@ -2155,7 +2138,7 @@ private void initDisplays( Object[][] query, int index )
 	Display display = new Display();
 	
 	display.setName( query[index][0].toString() );
-	display.setDisplayNumber( Long.parseLong(query[index][1].toString()) );
+	display.setDisplayNumber( Integer.parseInt(query[index][1].toString()) );
 	
 	if ( query[index][2] == null )
 		display.setTitle(" ");
@@ -2354,9 +2337,8 @@ protected void initCoreDisplays()
 		setDisplayTitle( getCurrentDisplay().getName(), newDate );
 	}
 
-
-	if( Display.isHistoryDisplay(getTableDataModel().getCurrentDisplayNumber()) 
-		 || getTableDataModel().isInactiveAlarms() )
+	if( Display.isHistoryDisplay(getCurrentDisplay().getDisplayNumber()) 
+		 || getCurrentDisplay().getTdcFilter().getConditions().get(ITDCFilter.COND_HISTORY) )
 	{			
 		getHistoryDisplayData( newDate );
 	}
@@ -2372,7 +2354,7 @@ public boolean isClientDisplay()
 
 	return ( !Display.isCoreType(getCurrentDisplay().getType()) 
 		 		&& !Display.isUserDefinedType(getCurrentDisplay().getType()) 
-		 		&& currentDisplay != null 
+		 		&& getCurrentDisplay() != null 
 		 		&& getCurrentSpecailChild() != null );
 }
 
@@ -2594,16 +2576,46 @@ public void jMenuItemPageForward_ActionPerformed(java.awt.event.ActionEvent acti
 /**
  * Comment
  */
-public void jMenuItemPopUpAckAlarm_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+public void jMenuItemPopUpAckAlarm_ActionPerformed(java.awt.event.ActionEvent ae ) 
 {
-//	int pointid = (int)getTableDataModel().getPointID( getDisplayTable().getSelectedRow() );
-	if( getDisplayTable().getSelectedRow() >= 0 )
+	if( ae.getSource() instanceof JMenuItem )
 	{
-		PointValues pv = getTableDataModel().getPointValue( getDisplayTable().getSelectedRow() );
+		JMenuItem item = (JMenuItem)ae.getSource();
+
+		Object obj = item.getClientProperty( "com.cannontech.tdc.AlarmValues" );
+		if( obj instanceof PointValues )
+		{
+			PointValues ptValues = (PointValues)obj;
+
+			Signal[] sigs = ptValues.getAllSignals();
+			NativeIntVector ptIDs = new NativeIntVector( sigs.length );
+			NativeIntVector ptConds = new NativeIntVector( sigs.length );
+			for( int j = 0; j < sigs.length; j++ )
+			{
+				ptIDs.addElement( sigs[j].getPointID() );
+				ptConds.addElement( sigs[j].getCondition() );
+			}
+			
+			if( ptIDs.size() > 0 )
+			{
+				TDCMainFrame.messageLog.addMessage(
+						"An ACK ALARM message was sent for ALL ALARMS on pointid " + ptValues.getPointID(), MessageBoxFrame.INFORMATION_MSG );
+
+				AckAlarm.send( ptIDs.toArray(), ptConds.toArray() );
+			}
+			
+		}
+		else if( obj instanceof Signal )
+		{
+			Signal sig = (Signal)obj;
+			TDCMainFrame.messageLog.addMessage(
+					"An ACK ALARM message was sent for pointid " + sig.getPointID(), MessageBoxFrame.INFORMATION_MSG );
 	
-		AckAlarm.send( pv.getPointID(), pv.getCondition() );
+			AckAlarm.send( sig.getPointID(), sig.getCondition() );
+		}
+
 	}
-		
+
 	return;
 }
 /**
@@ -2693,6 +2705,29 @@ public void jMenuItemPopUpManualEntry_ActionPerformed(java.awt.event.ActionEvent
 	
 	return;
 }
+
+private JMenuItem createAckAlarmJMenuItem( String text, Color bg, Object alarmValue_ )
+{
+	JMenuItem it = new JMenuItem( text );
+	
+	if( bg != null )
+		it.setBackground( bg );
+
+	//store the PointValues object in the JMenuItem so we can access the alarms if the
+	// user ACKs an alarm
+	it.putClientProperty( "com.cannontech.tdc.AlarmValues", alarmValue_ );
+
+	it.addActionListener( new ActionListener()
+	{
+		public void actionPerformed( ActionEvent ae )
+		{
+			jMenuItemPopUpAckAlarm_ActionPerformed( ae );
+		}
+	});
+	
+	return it;
+}
+
 /**
  * Comment
  */
@@ -2704,11 +2739,41 @@ public void jPopupMenu_PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEve
 	{
 		int selectedRow = getDisplayTable().getSelectedRow();
 			
-		getJMenuItemPopUpAckAlarm().setEnabled( 
-				getTableDataModel().isAlarmRowUnAcked(selectedRow) );
+		//init our ACK ALARM JMenu
+		getJMenuPopUpAckAlarm().removeAll();
+		PointValues pv = getTableDataModel().getPointValue( selectedRow );
+		
+		Signal[] sigs = pv.getAllSignals();
+		for( int i = 0; i < sigs.length; i++ )
+		{
+			if( TagUtils.isAlarmUnacked(sigs[i].getTags()) )
+			{
+				LitePoint lPoint = PointFuncs.getLitePoint( pv.getPointID() );
+				
+				//if there is more than one alarm, add the all alarms ack to the top
+				if( i == 1 )
+				{
+					JMenuItem it = createAckAlarmJMenuItem("(ACK ALL)", null, pv );
+					getJMenuPopUpAckAlarm().add( it, 0 );					
+				}
+
+				JMenuItem it = createAckAlarmJMenuItem(
+					"Condition: " +
+					AlarmUtils.getAlarmConditionText( 
+						sigs[i].getCondition(), lPoint.getPointType(), lPoint.getPointID() ) +
+					" (" + sigs[i].getDescription() + ")",
+					Colors.getColor(getTableDataModel().getAlarmColor((int)sigs[i].getCategoryID()) ),
+					sigs[i] );
+								
+	
+				getJMenuPopUpAckAlarm().add( it );
+			}
+		}
+		
+		getJMenuPopUpAckAlarm().setEnabled( getJMenuPopUpAckAlarm().getItemCount() > 0 );
+				
 
 		setAblementPopUpItems( selectedRow );
-
 
 
 		// we cant enter a manual entry from a system display
@@ -2966,7 +3031,7 @@ public void jRadioButtonPage_ActionPerformed(java.awt.event.ActionEvent actionEv
 
 	try
 	{
-		if( Display.isHistoryDisplay(getTableDataModel().getCurrentDisplayNumber()) )
+		if( Display.isHistoryDisplay(getCurrentDisplay().getDisplayNumber()) )
 		{
 			getTableDataModel().clearSystemViewerDisplay( false );
 
@@ -2981,24 +3046,24 @@ public void jRadioButtonPage_ActionPerformed(java.awt.event.ActionEvent actionEv
 			//Always add 1 milleseconds less than 1 day (86399999L) to see the current day
 			final int MILLI_OFFSET = 86399999;
 			
-			if( getTableDataModel().getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
+			if( getCurrentDisplay().getDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
 			{
 				totalPages = getTableDataModel().createRowsForHistoricalView( 
 								new Date(getPreviousDate().getTime() + MILLI_OFFSET),
 								pageNumber );
 			}
-			else if( getCurrentDisplayNumber() == Display.RAW_POINT_HISTORY_VIEWER_DISPLAY_NUMBER )
+			else if( getCurrentDisplay().getDisplayNumber() == Display.RAW_POINT_HISTORY_VIEWER_DISPLAY_NUMBER )
 			{
 				totalPages = getTableDataModel().createRowsForRawPointHistoryView( 
 								new Date(getPreviousDate().getTime() + MILLI_OFFSET),
 								pageNumber );
 			}
-			else if( Display.isAlarmDisplay(getCurrentDisplayNumber()) )
+			else if( Display.isAlarmDisplay(getCurrentDisplay().getDisplayNumber()) )
 			{
 				totalPages = getTableDataModel().createRowsForHistoricalAlarmView( 
 								new Date(getPreviousDate().getTime() + MILLI_OFFSET),
 								pageNumber,
-								(int)getCurrentDisplayNumber() );
+								getCurrentDisplay().getDisplayNumber() );
 			}
 			
 			
@@ -3229,7 +3294,7 @@ public void readAllDisplayColumnData()
 			{
 				while( (o = in.readObject()) != null )
 				{
-					if( o instanceof com.cannontech.tdc.data.ColumnData[] )
+					if( o instanceof ColumnData[] )
 					{
 						ColumnData[] cd = (ColumnData[])o;
 
@@ -3295,7 +3360,7 @@ protected void resetMainPanel()
 	{
 		getCurrentSpecailChild().removeActionListenerFromJComponent( getJComboCurrentDisplay() );		
 		getCurrentSpecailChild().getMainJPanel().setVisible( false );
-		alarmToolBar.setOriginalButtons();
+		frameAlarmToolBar.setOriginalButtons();
 		getJLabelDisplayName().setText("Display");
 
 		getCurrentSpecailChild().destroy();
@@ -3463,17 +3528,16 @@ private void setDisplayTitle(String title, Date date )
 		GregorianCalendar calendar = new GregorianCalendar();
 		calendar.setTime( date );
 
-      title += " (" + 
-      		CommonUtils.formatMonthString( calendar.get( calendar.MONTH ) ) + " " +
-            calendar.get( calendar.DAY_OF_MONTH ) + ", " +
-            calendar.get( calendar.YEAR ) + ")";
+		if( (getCurrentDisplay().getTdcFilter().getConditions().isEmpty() 
+		      && !Display.isAlarmDisplay(getCurrentDisplay().getDisplayNumber()) )
+			 || getCurrentDisplay().getTdcFilter().getConditions().get(ITDCFilter.COND_HISTORY) )
+		{
+	      title += " (" + 
+	      		CommonUtils.formatMonthString( calendar.get( calendar.MONTH ) ) + " " +
+	            calendar.get( calendar.DAY_OF_MONTH ) + ", " +
+	            calendar.get( calendar.YEAR ) + ")";
+		}
 	}
-	else if( Display.isAlarmDisplay(getTableDataModel().getCurrentDisplayNumber()) 
-				 && !getTableDataModel().isInactiveAlarms() )
-	{
-		//an ActiveAlarm display
-		title = "ACTIVE: " + title;		
-	}	
 	
 	
 	if( totalPages > 1 )
@@ -3488,7 +3552,7 @@ private void setDisplayTitle(String title, Date date )
 		{	public void run()
 			{
 				getJLabelDisplayTitle().setText( titleString );
-			}				
+			}
 		}			
 	);	
 }
@@ -3549,8 +3613,13 @@ private void setStartUpDisplay( ParametersFile pf, TDCMainFrame parentFrame )
 			parentFrame.setSelectedViewType( 
 					pf.getParameterValue("ViewType", Display.DISPLAY_TYPES[0]) );
 
-			getJComboCurrentDisplay().setSelectedItem(
-					pf.getParameterValue("DisplayName", "") );
+			String dispName = pf.getParameterValue("DisplayName", "");
+			for( int i = 0; i < getJComboCurrentDisplay().getItemCount(); i++ )
+				if( dispName.equalsIgnoreCase(getJComboCurrentDisplay().getItemAt(i).toString()) )
+				{
+					getJComboCurrentDisplay().setSelectedIndex(i);
+					break;
+				}
 		}
 
 		// manually fire the event
@@ -3641,7 +3710,7 @@ public void setTdcClient(TDCClient newTdcClient) {
 public void setToolBar(javax.swing.JToolBar toolBar) 
 {
 	if( toolBar instanceof AlarmToolBar )
-		alarmToolBar = (AlarmToolBar)toolBar;
+		frameAlarmToolBar = (AlarmToolBar)toolBar;
 	
 }
 /**
@@ -3683,7 +3752,7 @@ public void setUpTable()
 				else
 					setDisplayTitle( displayName, null );
 					
-				getTableDataModel().setCurrentDisplayNumber( getCurrentDisplay().getDisplayNumber() );
+				getTableDataModel().setCurrentDisplay( getCurrentDisplay() );
 				getTableDataModel().makeTable();				
 				setColumnWidths();				
 			}
@@ -3691,7 +3760,7 @@ public void setUpTable()
 			{
 				// Set up the column names and Display Title
 				setDisplayTitle( getCurrentDisplay().getTitle(), null );
-				getTableDataModel().setCurrentDisplayNumber( getCurrentDisplay().getDisplayNumber() );
+				getTableDataModel().setCurrentDisplay( getCurrentDisplay() );
 				getTableDataModel().makeTable();
 				setColumnWidths();				
 			}
@@ -3785,18 +3854,18 @@ public void updateDisplayColumnData()
 	if( getCurrentDisplay() != null 
 		 && !columnDataAlreadyUpdated )
 	{
-		com.cannontech.tdc.data.ColumnData[] cols = new com.cannontech.tdc.data.ColumnData[table.getColumnCount()];
+		ColumnData[] cols = new ColumnData[table.getColumnCount()];
 
 		for( int i = 0; i < cols.length; i++ )
 		{	
 			javax.swing.table.TableColumn col = table.getColumnModel().getColumn(i);
 				
-			com.cannontech.tdc.data.ColumnData cd =
-				new com.cannontech.tdc.data.ColumnData(
+			ColumnData cd = new ColumnData(
 					getCurrentDisplay().getDisplayNumber(),
 					col.getHeaderValue().toString(),
 					i,
-					col.getWidth() );
+					col.getWidth(),
+					getCurrentDisplay().getTdcFilter().getFilterID() );
 
 			cols[i] = cd;
 		}
@@ -3826,7 +3895,7 @@ private void updateDisplayColumnFormat()
 
 	for( int i = 0; i < getCurrentDisplay().getColumnData().length; i++ )
 	{	
-		com.cannontech.tdc.data.ColumnData cd = getCurrentDisplay().getColumnData()[i];
+		ColumnData cd = getCurrentDisplay().getColumnData()[i];
 
 		javax.swing.JTable table = ( isClientDisplay() 
 					? getCurrentSpecailChild().getJTables()[0]
@@ -3847,7 +3916,7 @@ private void updateDisplayColumnFormat()
                ( cd.getOrdering() >= table.getColumnCount()
                  ? table.getColumnCount() - 1
                  : cd.getOrdering() ) );
-                 
+             
 				break;
 			}
 			

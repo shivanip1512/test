@@ -31,7 +31,7 @@ public class CapBankTableModel extends javax.swing.table.AbstractTableModel impl
 	private int subBusRowSelected = -1;
 	private int feederRowSelected = -1;
 	
-	private RowBlinker currenBlinkingAlarms = null;
+	private RowBlinker currentBlinkingAlarms = null;
 	
 	private boolean muted = false;
 	
@@ -109,10 +109,10 @@ public void clear()
 
 	currentRowBGColors = null;
 	
-	if( currenBlinkingAlarms != null )
-		currenBlinkingAlarms.destroy();
+	if( currentBlinkingAlarms != null )
+		currentBlinkingAlarms.destroy();
 		
-	currenBlinkingAlarms = null;
+	currentBlinkingAlarms = null;
 	getAlarmingRowVector().removeAllElements();
 	//getRows().removeAllElements();
 	rows = null;
@@ -518,10 +518,10 @@ public void reInitTable()
 {
 	getAlarmingRowVector().removeAllElements();
 
-	if( currenBlinkingAlarms != null )
-		currenBlinkingAlarms.destroy();
+	if( currentBlinkingAlarms != null )
+		currentBlinkingAlarms.destroy();
 	
-	currenBlinkingAlarms = null;
+	currentBlinkingAlarms = null;
 		
 	currentRowBGColors = null;
 	//getCurrentRowBGColors(0);
@@ -705,18 +705,28 @@ private void setRowAlarmed( int rowNumber )
 		{
 			if( !getAlarmingRowVector().contains( new Integer(rowNumber) ) )
 			{
-				getAlarmingRowVector().addElement( new AlarmingRow(
-								rowNumber,
-								Colors.getColorID( CapControlTableModel.DEFAULT_ALARMCOLOR),  // use this for every alarm for now
-								getCurrentRowBGColors(rowNumber),
-								sig) );
+				AlarmingRow alRow = new AlarmingRow(
+													rowNumber,
+													Colors.getColorID( CapControlTableModel.DEFAULT_ALARMCOLOR),  // use this for every alarm for now
+													getCurrentRowBGColors(rowNumber) );
+
+				alRow.updateSignal( sig );
+
+				getAlarmingRowVector().addElement( alRow );
+			}
+			else
+			{
+				getAlarmingRowVector().getAlarmingRow(rowNumber).updateSignal( sig );
 			}
 	
 	
-			if( currenBlinkingAlarms == null )
+			if( currentBlinkingAlarms == null )
 			{
 				if( showingAlarms )
-					currenBlinkingAlarms = new RowBlinker( this, getAlarmingRowVector() );
+				{
+					currentBlinkingAlarms = new RowBlinker( this, getAlarmingRowVector() );
+					currentBlinkingAlarms.start();
+				}
 				else
 					toggleAlarms( false ); //we should just kill any possible alarm blinkers
 													// if they are present
@@ -756,8 +766,8 @@ public void setRowUnAlarmed( Integer rowNumber )
 
 		if( getAlarmingRowVector().size() == 0 )
 		{
-			currenBlinkingAlarms.destroy();
-			currenBlinkingAlarms = null;
+			currentBlinkingAlarms.destroy();
+			currentBlinkingAlarms = null;
 		}
 
 	}
@@ -882,17 +892,21 @@ public void toggleAlarms( boolean toggle )
 		synchronized( getAlarmingRowVector() )
 		{
 			if( getAlarmingRowVector().size() > 0 )
-				if( currenBlinkingAlarms == null )
-					currenBlinkingAlarms = new RowBlinker( this, getAlarmingRowVector() );
+				if( currentBlinkingAlarms == null )
+				{
+					currentBlinkingAlarms = new RowBlinker( this, getAlarmingRowVector() );
+					currentBlinkingAlarms.start();
+				}
+
 		}
 		
 	}
 	else //turn any alarms off
 	{
-		if( currenBlinkingAlarms != null )
-			currenBlinkingAlarms.destroy();
+		if( currentBlinkingAlarms != null )
+			currentBlinkingAlarms.destroy();
 		
-		currenBlinkingAlarms = null;
+		currentBlinkingAlarms = null;
 	}
 
 }

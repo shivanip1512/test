@@ -27,13 +27,14 @@ public class Signal extends com.cannontech.message.util.Message
 	private long tags = 0;
 
 	// Identifies the condition this signal is responsible for
-	private int condition = 0;  //valid values 0 - 31
+	private int condition = SIGNAL_COND;  //valid values -1 to 31
 
 
 
 	// Signals (alarms & events)
 	public static final int ALARM_SIGNAL = 255; // 1-255 are alarms
 	public static final int EVENT_SIGNAL = 1;
+	public static final int SIGNAL_COND = -1;
 	public static final int MAX_DISPLAYABLE_ALARM_SIGNAL = 11;
 
 	// TAGS to be read from Dispatch
@@ -202,16 +203,11 @@ public void setTags(long newTags) {
  */
 public String toString() 
 {
-	String retStr = "com.cannontech.message.dispatch.message.Signal:\n";
-	
-	retStr += "PointID:  " + getPointID() + "\n";
-	retStr += "Log Type:  " + getLogType() + "\n";	
-	retStr += "Category:  " + getCategoryID() + "\n";
-	retStr += "Description:  " + getDescription() + "\n";
-	retStr += "Action:  " + getAction() + "\n";
-	retStr += "Tags:  " + getTags() + "\n";
-	retStr += "UserName:  " + getUserName() + "\n";
-	retStr += "Condition:  " + getCondition() + "\n";
+	String retStr =
+		"PtID:" + getPointID() + " " +
+		"Description:" + getDescription() + " " +
+		"Action:" + getAction() + " " +
+		"Condition:" + getCondition();
 
 	return retStr;
 }

@@ -17,6 +17,7 @@ import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
+import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
@@ -35,6 +36,7 @@ import com.cannontech.tdc.alarms.gui.AlarmingRowVector;
 import com.cannontech.tdc.alarms.gui.RowBlinker;
 import com.cannontech.tdc.custom.CustomDisplay;
 import com.cannontech.tdc.data.Display;
+import com.cannontech.tdc.filter.ITDCFilter;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.roweditor.ObservedPointDataChange;
 import com.cannontech.tdc.utils.DataBaseInteraction;
@@ -43,7 +45,6 @@ import com.cannontech.tdc.utils.TDCDefines;
 public class Display2WayDataAdapter extends AbstractTableModel implements com.cannontech.tdc.alarms.gui.AlarmTableModel, com.cannontech.common.gui.util.SortableTableModel
 {
 	private boolean muted = false;
-	private boolean inactiveAlarms = false;
 	private Date currentDate = new Date(); //today
 		
 	private RowBlinker currentBlinkingAlarms = null;
@@ -80,12 +81,11 @@ public class Display2WayDataAdapter extends AbstractTableModel implements com.ca
 			Priority6  5
 			Priority7  3
 			Priority8  2
-			Priority9  6
+			Priority9  10
 			Priority10 9
 		*/
 	private int[] alarmColors = null;
 
-	private long currentDisplayNumber = Display.UNKNOWN_DISPLAY_NUMBER;
 		
 	private class BlankLine
 	{
@@ -103,6 +103,8 @@ public class Display2WayDataAdapter extends AbstractTableModel implements com.ca
 
 	};
 
+	private Display currentDisplay = Display.UNKNOWN_DISPLAY;
+	//	private long currentDisplayNumber = Display.UNKNOWN_DISPLAY_NUMBER;
 
 	private final static String[] WHITE_COLOR = {"2"};
 	private final static String[] DUMMY_TEXT = {"DUMMY"};
@@ -201,7 +203,6 @@ private boolean buildRowQuery()
 	java.util.Date timerStop = null;
 	timerStart = new java.util.Date();
 
-
 	// Init our Rows in their correct order (Use a SQL-92 compliant query now, aka: 8-6-2003)
 	String query = new String
 		("select d.pointid, d.pointtype, d.pointname, d.devicename, d.pointstate, " +
@@ -221,9 +222,10 @@ private boolean buildRowQuery()
 
 		 		
 	Object[] objs = new Object[1];
-	objs[0] = new Long( currentDisplayNumber );
-	Object[][] pointData = DataBaseInteraction.queryResults( query, objs );
+	objs[0] = new Integer( getCurrentDisplay().getDisplayNumber() );
 
+
+	Object[][] pointData = DataBaseInteraction.queryResults( query, objs );
 
 	if ( pointData != null && pointData.length > 0 ) // is there any points?
 	{		
@@ -261,21 +263,19 @@ private boolean buildRowQuery()
 			}
 		}
 
-		
+
 		pointValues = new Vector( realPoints.size() );
 		
 		createPointValues( realPoints );
-			
+
 
 		timerStop = new java.util.Date();
-		CTILogger.debug("========= QUERY START ========");
-		CTILogger.debug( query );
-		CTILogger.debug("========= QUERY END ========");
 		CTILogger.debug( 
 			 (timerStop.getTime() - timerStart.getTime())*.001 + 
-				" secs for Custom Created display DB hit" );
-			
-		return true;//createSqlString( colString.toString() );
+				" secs for Custom Created display DB hit for full display (Loaded " + 
+				pointValues.size() + " real points)" );
+
+		return true;
 
 	}
 	
@@ -290,7 +290,7 @@ private void checkForLimboPoints(Vector existingPoints)
 {
 	String query = "select pointid from display2waydata where displaynum = ? order by pointid";
 	Object[] objs = new Object[1];
-	objs[0] = new Long( currentDisplayNumber );
+	objs[0] = new Integer( getCurrentDisplay().getDisplayNumber() );
 	Object[][] displayPoints = DataBaseInteraction.queryResults( query, objs );
 
 	for( int i = 0; i < displayPoints.length; i++ )
@@ -333,7 +333,7 @@ private void checkRowExceedance()
 	if( getRowCount() >= totalMax )
 	{
 		// remove the bottom row
-		removeRow( getRowCount() - 1, false );
+		removeRow( getRowCount() - 1 );
 		
 		if( exceededMaxMsg ) // for the message to only print once
 		{
@@ -350,13 +350,13 @@ private void checkRowExceedance()
 public void clearSystemViewerDisplay( boolean forceRepaint )
 {
 	// FOR NOW, ONLY CLEAR THE EVENT VIEWER AND HISTORICAL VIEWERS
-	if( Display.isHistoryDisplay(getCurrentDisplayNumber()) )
+	if( Display.isHistoryDisplay(getCurrentDisplay().getDisplayNumber()) )
 	{
 		// remove all alarms if any exists
 		synchronized ( getAlarmingRowVector() )
 		{
 			getAlarmingRowVector().removeAllElements();
-			currentBlinkingAlarms = null;
+			killRowBlinker();
 		}
 
 		// remove the nonviewable and viewable data 
@@ -413,6 +413,7 @@ private void createDummyPointValue( long id, long timeStamp, String deviceName, 
  */
 private void createPointValues( Vector realPoints )
 {
+/*
 	String query = "select distinct point.pointid, state.foregroundcolor," + 
 			" state.text, state.rawstate,state.backgroundcolor,state.imageid " +
 			" from state, point, display2waydata " +
@@ -420,8 +421,17 @@ private void createPointValues( Vector realPoints )
 			" and point.pointid in " +
 			" (select pointid from display2waydata where displaynum = ?) " +
 			" order by point.pointid, state.rawstate";
+*/
+
+	String query = 			
+		"select p.pointid, s.foregroundcolor, s.text, s.rawstate, s.backgroundcolor, s.imageid " +
+		"from display2waydata d, state s, point p " +
+		"where d.pointid=p.pointid and p.stategroupid=s.stategroupid " +
+		"and d.displaynum = ? and s.rawstate >= 0 " +
+		"order by p.pointid, s.rawstate";
+			
 	Object[] objs = new Object[1];
-	objs[0] = new Long( currentDisplayNumber );
+	objs[0] = new Integer( getCurrentDisplay().getDisplayNumber() );
 	Object[][] pointStatment = DataBaseInteraction.queryResults( query, objs );
 
 	
@@ -972,7 +982,7 @@ private void deleteRowFromDataBase( long pointid )
 
 
 	Object[] objs = new Object[2];
-	objs[0] = new Long(currentDisplayNumber);
+	objs[0] = new Integer(getCurrentDisplay().getDisplayNumber());
 	objs[1] = new Long(pointid);
 	DataBaseInteraction.updateDataBase( query, objs );	
 }
@@ -1277,15 +1287,6 @@ public String getColumnTypeName( int index )
 }
 /**
  * Insert the method's description here.
- * Creation date: (1/20/00 4:47:45 PM)
- * @param val int
- */
-public long getCurrentDisplayNumber() 
-{
-	return currentDisplayNumber;	
-}
-/**
- * Insert the method's description here.
  * Creation date: (3/10/00 6:00:44 PM)
  * @return com.cannontech.tdc.ObservableVector
  */
@@ -1457,6 +1458,23 @@ public int getRowNumber( final long pointid )
 /**
  * This method was created in VisualAge.
  */
+private boolean signalInTable( Signal signal_ ) 
+{
+	if( pointValues != null )
+	{
+		for ( int i = 0; i < pointValues.size(); i++ )
+		{
+			if( ((PointValues)pointValues.elementAt( i )).containsSignal(signal_) )
+				return true;
+		}
+	}
+	
+	return false;
+}
+
+/**
+ * This method was created in VisualAge.
+ */
 public int getRowNumber( final Signal signal_ ) 
 {
 	if( pointValues != null )
@@ -1465,7 +1483,7 @@ public int getRowNumber( final Signal signal_ )
 		{
 			PointValues pv = (PointValues)pointValues.elementAt( i );
 
-			if( pv.signalEquals(signal_) )
+			if( pv.containsSignal(signal_) )
 			{
 				return ( i );
 			}
@@ -1504,34 +1522,48 @@ private void handleAlarm(Signal signal)
 	if( TagUtils.isAnyAlarm(signal.getTags()) )
 	{
 		//find out what type of alarm signal this is  (0100)
-		if( TagUtils.isAlarmUnacked(signal.getTags()) )  // we need to flash
+		if( TagUtils.isAlarmUnacked(signal.getTags()) )// we need to flash
 		{
-			if( Display.isAlarmDisplay(getCurrentDisplayNumber()) )
+			if( Display.isAlarmDisplay(getCurrentDisplay().getDisplayNumber()) )
 				insertAlarmDisplayAlarmedRow( signal );
-			else if( Display.isReadOnlyDisplay(currentDisplayNumber) )
+			else if( Display.isReadOnlyDisplay(getCurrentDisplay().getDisplayNumber()) )
 				addColumnDefinedRow( signal );
-			else if( !Display.isHistoryDisplay(currentDisplayNumber) )
+			else if( !Display.isHistoryDisplay(getCurrentDisplay().getDisplayNumber()) )
+			{
+				int rNum = getRowNumber(signal.getPointID());
+				getPointValue(rNum).updateSignal( signal );
+				
 				setRowAlarmed( signal );
+			}
+
 		}
-		else if( TagUtils.isAlarmActive(signal.getTags()) )
+		else if( TagUtils.isAlarmActive(signal.getTags()) )		
 		{	// we need to only show the row (1000),
 			// check if we need to stop the flashing of the alarm
-			if( Display.isAlarmDisplay(getCurrentDisplayNumber()) )
+			if( Display.isAlarmDisplay(getCurrentDisplay().getDisplayNumber()) )
 				insertAlarmDisplayAlarmedRow( signal );
-			else if( !Display.isHistoryDisplay(currentDisplayNumber) )
-				setRowUnAlarmed( signal );
+			else if( !Display.isHistoryDisplay(getCurrentDisplay().getDisplayNumber()) )
+				setRowUnalarmed( signal, null );
 		}
 			
 	}
 	else  // clear the alarm row from the display
 	{
-		if( Display.isAlarmDisplay(getCurrentDisplayNumber()) )
+		if( Display.isAlarmDisplay(getCurrentDisplay().getDisplayNumber()) )
 		{			
 			if( isSignalAlarmed(signal) )
-				removeRow( getRowNumber(signal), false );
+			{
+				int rNum = setRowUnalarmed( signal, null );
+				
+				//every row in an alarm display must have at least one signal if we got this far
+				if( getPointValue(rNum).getAllSignals().length <= 0 )
+					removeRow(rNum);
+			}
+
 		}
-		else if( currentDisplayNumber >= Display.PRECANNED_USER_DISPLAY_NUMBER )
-			setRowUnAlarmed( signal ); // if we have a user display, just make sure the row is not flashing
+		else if( getCurrentDisplay().getDisplayNumber() >= Display.PRECANNED_USER_DISPLAY_NUMBER )
+			setRowUnalarmed( signal, null ); // if we have a user display, just make sure the row is not flashing
+
 	}
 	
 }
@@ -1630,13 +1662,13 @@ private void initAlarmColors()
  */
 private void initColumns() 
 {	
-	if ( currentDisplayNumber <= Display.UNKNOWN_DISPLAY_NUMBER )
+	if ( getCurrentDisplay().getDisplayNumber() <= Display.UNKNOWN_DISPLAY_NUMBER )
 	 	return;
 
 	synchronized( getAlarmingRowVector() )
 	{
-		currentBlinkingAlarms = null;
 		getAlarmingRowVector().removeAllElements();
+		killRowBlinker();
 	}
 	
 	rows.removeAllElements();
@@ -1657,7 +1689,7 @@ private void initColumns()
 		 " and columntype.typenum = displaycolumns.typenum "+
 		 " order by displaycolumns.ordering");
 	Object[] objs = new Object[1];
-	objs[0] = new Long(currentDisplayNumber);
+	objs[0] = new Integer(getCurrentDisplay().getDisplayNumber());
 	Object[][] values = DataBaseInteraction.queryResults( query, objs );
 
 	
@@ -1738,10 +1770,11 @@ private void insertAlarmDisplayAlarmedRow( Signal signal )
 	if( signal.getCategoryID() > Signal.EVENT_SIGNAL && signal.getCategoryID() <= Signal.MAX_DISPLAYABLE_ALARM_SIGNAL )
 		alarmPage = Display.GLOBAL_ALARM_DISPLAY + (signal.getCategoryID() - Signal.EVENT_SIGNAL);
 	else if( signal.getCategoryID() == Signal.EVENT_SIGNAL ) //if we have a Signal.EVENT_SIGNAL, then we want every display possibly handle this Signal
-		alarmPage = currentDisplayNumber;
+		alarmPage = getCurrentDisplay().getDisplayNumber();
 
 	// all alarms display	
-	if( (currentDisplayNumber == Display.GLOBAL_ALARM_DISPLAY || alarmPage == currentDisplayNumber) 
+	if( (getCurrentDisplay().getDisplayNumber() == Display.GLOBAL_ALARM_DISPLAY 
+	       || alarmPage == getCurrentDisplay().getDisplayNumber()) 
 		 && isValidAlarm(signal.getCategoryID()) )
 	{
 		synchronized( getAlarmingRowVector() )
@@ -1759,11 +1792,11 @@ private void insertAlarmDisplayAlarmedRow( Signal signal )
 					}
 
 
-					getAlarmingRowVector().getAlarmingRow(rNum).setSignal( signal );
+					getAlarmingRowVector().getAlarmingRow(rNum).updateSignal( signal );
 					
 					//set all the signal stuff
 					getPointValue(rNum).setTime( signal.getTimeStamp() );
-					getPointValue(rNum).setSignal( signal );
+					getPointValue(rNum).updateSignal( signal );
 
 
 					rows.setElementAt( 
@@ -1858,57 +1891,6 @@ public boolean isSignalAlarmed( Signal signal_ )
 	return getAlarmingRowVector().containsSignal( signal_ );
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (3/30/00 9:29:03 AM)
- * Version: <version>
- * @return boolean
- * @param rowNumber int
- */
-public boolean isPointAlarmed( int rowNumber_ )
-{
-	return getAlarmingRowVector().contains( new Integer(rowNumber_) );
-}
-
-/**
- * Insert the method's description here.
- * Creation date: (3/30/00 9:29:03 AM)
- * Version: <version>
- * @return boolean
- * @param rowNumber int
- */
-public boolean isAlarmRowUnAcked( int rowNumber )
-{
-	if( isRowInAlarmVector(rowNumber) )
-	{
-		// we need to only show the row
-		return TagUtils.isAlarmUnacked(
-				getAlarmingRowVector().getAlarmingRow(rowNumber).getSignal().getTags() ); 
-	}
-	else
-		return false;  //not alarmed so treat it like it has been ACKED
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/30/00 9:29:03 AM)
- * Version: <version>
- * @return boolean
- * @param rowNumber int
- */
-/*public boolean isRowAlarmUnCleared( int rowNumber )
-{	
-	long tags = getPointValue(rowNumber).getTags();
-	
-	// see if we have an alarm AND it has been ACKED
-	if( ((tags & Signal.MASK_ANY_ALARM) != 0) &&
-		   TagUtils.isAlarmActive( (int)tags) )
-	{
-			return true;
-	}
-	
-	return false;
-}
-*/
 /**
  * Insert the method's description here.
  * Creation date: (3/30/00 9:29:03 AM)
@@ -2036,7 +2018,7 @@ public boolean pointExists(String ptID)
 public synchronized void processDBChangeMessage( DBChangeMsg msg ) 
 {
 
-	if( Display.isReadOnlyDisplay(getCurrentDisplayNumber())  )
+	if( Display.isReadOnlyDisplay(getCurrentDisplay().getDisplayNumber())  )
 	{
 		return;  // do nothing
 	}
@@ -2061,9 +2043,11 @@ public synchronized void processDBChangeMessage( DBChangeMsg msg )
 public synchronized void processPointDataReceived( PointData point )
 {
 	// make sure we have a PointData and the display is a user defined one
-	if ( point == null || pointValues == null || pointValues.size() < 1 || 
-		 currentDisplayNumber < Display.PRECANNED_USER_DISPLAY_NUMBER )
+	if ( point == null || pointValues == null || pointValues.size() < 1 
+		||	getCurrentDisplay().getDisplayNumber() < Display.PRECANNED_USER_DISPLAY_NUMBER )
+	{
 		return;
+	}
 
 	int rowLocation = -1;
 	if ( (rowLocation = getRowNumber(point.getId())) >= 0)
@@ -2092,15 +2076,37 @@ public synchronized void processPointDataReceived( PointData point )
 	
 }
 
-public void setIsInactiveAlarms( boolean inactive )
-{
-	inactiveAlarms = inactive;
-}
+private boolean checkFilter( Signal signal )
+{	
+	if( signal == null ) 
+		return false;
 
-//Must be a alarm display all the time!
-public boolean isInactiveAlarms()
-{
-	return inactiveAlarms && Display.isAlarmDisplay(getCurrentDisplayNumber());
+	//if we don't care about filters OR we already have added the signal to the table
+	if( getCurrentDisplay().getTdcFilter().getConditions().isEmpty() )
+		return true;
+
+
+
+	boolean retValue = false;
+
+	retValue |=
+		TagUtils.isAlarmUnacked(signal.getTags()) // we need to flash
+		&& getCurrentDisplay().getTdcFilter().getConditions().get(ITDCFilter.COND_UNACKED_ALARMS);
+		 
+	retValue |=
+		TagUtils.isAlarmActive(signal.getTags())
+		&& getCurrentDisplay().getTdcFilter().getConditions().get(ITDCFilter.COND_ACTIVE_ALARMS);	
+
+
+
+	retValue &=
+		!getCurrentDisplay().getTdcFilter().getConditions().get(ITDCFilter.COND_INACTIVE_ALARMS);
+
+
+//	retValue &=
+//		!getCurrentDisplay().getTdcFilter().getConditions().get(ITDCFilter.COND_HISTORY);
+
+	return retValue;
 }
 
 /**
@@ -2112,11 +2118,11 @@ public boolean isInactiveAlarms()
 public synchronized void processSignalReceived( Signal signal )
 {
 	// make sure we have a point and we are not looking at historical data
-	if( signal == null 
-		 || isInactiveAlarms() )
+	if( !checkFilter(signal) && !signalInTable(signal)  )
 	{
 		return;
 	}
+
 
 	int location = getRowNumber(signal);
 
@@ -2130,16 +2136,12 @@ public synchronized void processSignalReceived( Signal signal )
 
 
 
-	if( Display.isReadOnlyDisplay(getCurrentDisplayNumber())  )
+	if( Display.isReadOnlyDisplay(getCurrentDisplay().getDisplayNumber()) )  
 	{
+		//just add the raw columns to the display
 		addColumnDefinedRow( signal );
-
-		int rNum = getRowNumber(signal);
-		//the new row has been added, lets set its signl instance
-		getPointValue(rNum).setSignal( signal );
-		getPointValue(rNum).setTags( signal.getTags() );
 	}
-	else
+	else if( signal.getCondition() >= IAlarmDefs.MIN_CONDITION_ID )
 	{
 		handleDisablity( signal );
 		handleAlarm( signal );
@@ -2150,9 +2152,7 @@ public synchronized void processSignalReceived( Signal signal )
 			int rNum = getRowNumber(signal);
 
 			//the new row has been added, lets set its signl instance
-			getPointValue(rNum).setSignal( signal );
-			getPointValue(rNum).setTags( signal.getTags() );
-
+			getPointValue(rNum).updateSignal( signal );
 
 			//update the tables view of the data
 			setCorrectRowValue(
@@ -2160,11 +2160,13 @@ public synchronized void processSignalReceived( Signal signal )
 					signal.getTimeStamp(),
 					rNum );
 		}
-		
 	}
 
-	
+
+	if( !checkFilter(signal) )
+		removeRow( getRowNumber(signal) );
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (4/5/00 1:16:57 PM)
@@ -2183,20 +2185,17 @@ public void removeAllRows()
  * Version: <version>
  * @param rowNumber int
  */
-public void removeRow(int rowNumber, boolean deleteFromDataBase ) 
+public void removeRow( int rowNumber ) 
 {
 	if( pointValues == null || rowNumber < 0 || rowNumber >= getRowCount() )
 		return;
 
-	setRowUnAlarmed( new Integer( rowNumber ) );
+	setRowUnalarmed( null, new Integer(rowNumber) );
 
 	// just in case the rows below this one are alarming
 	if( getAlarmingRowVector().areRowNumbersGreaterAlarming( rowNumber ) )
 		decrementAlarmedRowsPosition( 1, rowNumber );
 
-	
-	if( deleteFromDataBase )
-		deleteRowFromDataBase( getPointID( rowNumber ) );
 	
 	pointValues.removeElementAt( rowNumber );
 	rows.removeElementAt( rowNumber );
@@ -2233,7 +2232,7 @@ public void reset()
 		
 	getAlarmingRowVector().removeAllElements();
 
-	currentDisplayNumber = Display.UNKNOWN_DISPLAY_NUMBER;
+	setCurrentDisplay( Display.UNKNOWN_DISPLAY );
 
 	forcePaintTableDataChanged();
 }
@@ -2441,16 +2440,29 @@ private void setCorrectRowValue( PointValues point, Date timeStamp, int location
  * Creation date: (1/20/00 4:47:45 PM)
  * @param val int
  */
-public void setCurrentDisplayNumber(long val) 
+public void setCurrentDisplay( Display display_ ) 
 {
    //do this if there was a change in displays
-   if( currentDisplayNumber != val )
+   if( currentDisplay != display_ )
    {
+		getAlarmingRowVector().removeAllElements();
       killRowBlinker();
    }
 
-  currentDisplayNumber = val;
+  currentDisplay = display_;
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (1/20/00 4:47:45 PM)
+ * @param val int
+ */
+public Display getCurrentDisplay() 
+{
+	return currentDisplay;	
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (2/24/00 10:59:27 AM)
@@ -2498,38 +2510,45 @@ public void setRowAlarmed( Signal signal )
 
 	
 	//first try to find the alarm by the signal object, then by the pointID
-	int rowLocation = getRowNumber(signal);
-	if( rowLocation < 0 )
-		rowLocation = getRowNumber(signal.getPointID());
+	int rowLoc = getRowNumber(signal);
+	if( rowLoc < 0 )
+		rowLoc = getRowNumber(signal.getPointID());
 
 
 	// see if the point is in our display
-	if( rowLocation >= 0 )
+	if( rowLoc >= 0 )
 	{
 		synchronized( getAlarmingRowVector() )
 		{
-			if( !getAlarmingRowVector().containsSignal(signal) )
+			if( !getAlarmingRowVector().contains( new Integer(rowLoc) ) )
 			{
-				getAlarmingRowVector().addElement( new AlarmingRow(
-						rowLocation, 
-						getAlarmColor((int)signal.getCategoryID()), 
-						getRowBackgroundColor(rowLocation),
-						signal) );
+				AlarmingRow alRow = new AlarmingRow( 
+										rowLoc,
+										getAlarmColor((int)signal.getCategoryID()), 
+										getRowBackgroundColor(rowLoc) );
+
+				alRow.updateSignal( signal );
+
+				getAlarmingRowVector().addElement( alRow );
 			}
 			else
 			{
-				getAlarmingRowVector().getAlarmingRow(rowLocation).setAlarmColor( 
+				getAlarmingRowVector().getAlarmingRow(rowLoc).setAlarmColor( 
 						getAlarmColor((int)signal.getCategoryID()) );
 				
-				getAlarmingRowVector().getAlarmingRow(rowLocation).setSignal( signal );
+				getAlarmingRowVector().getAlarmingRow(rowLoc).updateSignal( signal );
 			}
 			
 			if( currentBlinkingAlarms == null )
+			{
 				currentBlinkingAlarms = new RowBlinker( this, getAlarmingRowVector() );
+				currentBlinkingAlarms.start();
+			}
+
 
 		} //end synch
 		
-		fireTableRowsUpdated( rowLocation, rowLocation );
+		fireTableRowsUpdated( rowLoc, rowLoc );
 	}
 
 
@@ -2587,42 +2606,45 @@ private Vector setRowForEventViewer( Signal signal )
 }
 
 /**
- * Tells a row that contains the given Signal or the given Signals PointID to UnAlarm.
+ * Allows the deletion of an alarm from a table by its Signal or RowNumber.
+ * 
+ * @return the row number affected 
  * Creation date: (3/29/00 2:23:38 PM)
  */
-public void setRowUnAlarmed( Signal signal ) 
+private int setRowUnalarmed( Signal signal_, Integer rowNum_ ) 
 {
-	//first try to look for the signal, then by the pointID
-	int rNum = getRowNumber(signal);	
-	if( rNum < 0 )
-		rNum = getRowNumber( signal.getPointID() );
-		
-	setRowUnAlarmed( new Integer(rNum) );
-}
-
-/**
- * Insert the method's description here.
- * Creation date: (3/29/00 2:23:38 PM)
- * Version: <version>
- */
-public void setRowUnAlarmed( Integer rowNumber ) 
-{
-	// make sure our display has the point in it
-	if( rowNumber.intValue() >= 0 )
+	//first try to look for the signal, then look by the pointID
+	if( rowNum_ == null )
 	{
-		synchronized ( getAlarmingRowVector() )
-		{
-			if( getAlarmingRowVector().contains( rowNumber ) )	
-				getAlarmingRowVector().removeElement( rowNumber );
-			else
-				return;
+		int rNum = getRowNumber(signal_);	
+		if( rNum < 0 && signal_ != null )
+			rNum = getRowNumber( signal_.getPointID() );
+		
+		rowNum_ = new Integer(rNum);
+	}
+	
+	getPointValue( rowNum_.intValue() ).removeSignal( signal_ );
 
-			if( getAlarmingRowVector().size() == 0 )
-				currentBlinkingAlarms = null;
+	synchronized ( getAlarmingRowVector() )
+	{
+		if( getAlarmingRowVector().contains(rowNum_) )
+		{
+			AlarmingRow alRow = getAlarmingRowVector().getAlarmingRow( rowNum_.intValue() );
+			alRow.removeSignal( signal_ );
+	
+			if( !alRow.isBlinking() || signal_ == null )
+			{
+				getAlarmingRowVector().removeElement(rowNum_);
+
+				if( getAlarmingRowVector().size() == 0 )
+					killRowBlinker();
+			}
 		}
 	}
-
+	
+	return rowNum_.intValue();
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (4/14/00 11:33:17 AM)
@@ -2634,14 +2656,12 @@ public void setAlarmMute( boolean mute )
 	muted = mute;
 }
 
-private void killRowBlinker()
+private synchronized void killRowBlinker()
 {
    if( currentBlinkingAlarms != null )
    {
-      synchronized(currentBlinkingAlarms)
-      {
-         currentBlinkingAlarms.destroy();
-      }      
+      currentBlinkingAlarms.destroy();
+		currentBlinkingAlarms = null;
    }
 
 }

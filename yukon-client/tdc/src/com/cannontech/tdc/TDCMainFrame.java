@@ -9,12 +9,16 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.clientutils.AlarmFileWatchDog;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
+import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.tdc.removedisplay.RemoveDisplayDialog;
+import com.cannontech.tdc.removedisplay.RemoveDisplayPanel;
 import com.cannontech.tdc.spawn.SpawnTDCMainFrameEvent;
 import com.cannontech.tdc.bookmark.BookMarkBase;
 import javax.swing.UIManager;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
+import com.cannontech.tdc.filter.ITDCFilter;
 import com.cannontech.tdc.fonteditor.*;
 
 import java.awt.Color;
@@ -27,6 +31,7 @@ import com.klg.jclass.page.awt.*;
 import com.klg.jclass.page.*;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.createdisplay.ColumnEditorDialog;
+import com.cannontech.tdc.createdisplay.RemoveTemplateDialog;
 import com.cannontech.tdc.utils.DateTimeUserQuery;
 import com.cannontech.tdc.utils.TDCDefines;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
@@ -37,6 +42,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import com.cannontech.tdc.editdisplay.EditDisplayDialog;
 import com.cannontech.tdc.exportdata.ExportCreatedDisplay;
 import com.cannontech.tdc.commandevents.AckAlarm;
 import com.cannontech.tdc.aboutbox.AboutBoxDialog;
@@ -310,8 +316,13 @@ public void alarmToolBar_JToolBarButtonAckViewableAction_actionPerformed(java.ut
 			PointValues pv = getMainPanel().getTableDataModel().getPointValue(
 						Integer.parseInt(rowNumbers.get(i).toString()) );
 
-			ptIDs.addElement( pv.getPointID() );
-			ptConds.addElement( pv.getCondition() );
+			Signal[] sigs = pv.getAllSignals();
+			for( int j = 0; j < sigs.length; j++ )
+			{
+				ptIDs.addElement( pv.getPointID() );
+				ptConds.addElement( sigs[j].getCondition() );
+			}
+			
 		}
 
 		if( ptIDs != null && ptIDs.size() > 0 )
@@ -1370,7 +1381,7 @@ private static void getBuilderData() {
  */
 public long getCurrentDisplayNumber() 
 {
-	return getMainPanel().getCurrentDisplayNumber();
+	return getMainPanel().getCurrentDisplay().getDisplayNumber();
 }
 
 
@@ -3159,7 +3170,7 @@ public void jMenuItemCreate_ActionPerformed(java.awt.event.ActionEvent actionEve
 		com.cannontech.tdc.createdisplay.CreateDisplayDialog createDisplay = 
 								new com.cannontech.tdc.createdisplay.CreateDisplayDialog( this );
 								
-		Object previousItem = getMainPanel().getJComboCurrentDisplay().getSelectedItem();
+		String previousItem = getMainPanel().getJComboCurrentDisplay().getSelectedItem().toString();
 
 		setCursor( original );
 		createDisplay.setModal(true);
@@ -3196,7 +3207,11 @@ public void jMenuItemCreateTemplate_ActionPerformed(java.awt.event.ActionEvent a
 	if ( !checkDataBaseConnection() )
 		return;
 
-	ColumnEditorDialog editor = new ColumnEditorDialog( this, "Create Template", ColumnEditorDialog.DISPLAY_NAME_ONLY, getMainPanel().getCurrentDisplayNumber() );
+	ColumnEditorDialog editor = 
+			new ColumnEditorDialog( 
+				this, "Create Template",
+				ColumnEditorDialog.DISPLAY_NAME_ONLY,
+				getCurrentDisplayNumber() );
 	
 	editor.setModal( true );
 	editor.setLocationRelativeTo( this );
@@ -3224,12 +3239,12 @@ public void jMenuItemEdit_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	
 	try
 	{
-		Object previousItem = getMainPanel().getJComboCurrentDisplay().getSelectedItem();
+		String previousItem = getMainPanel().getJComboCurrentDisplay().getSelectedItem().toString();
 
-		com.cannontech.tdc.editdisplay.EditDisplayDialog display = 
-					new com.cannontech.tdc.editdisplay.EditDisplayDialog( this, previousItem.toString() );
+		EditDisplayDialog display = 
+					new EditDisplayDialog( this, previousItem );
 
-		setCursor( original );							
+		setCursor( original );
 		display.setModal(true);
 		display.setLocationRelativeTo( this );	
 		display.show();
@@ -3261,7 +3276,11 @@ public void jMenuItemEditTemplate_ActionPerformed(java.awt.event.ActionEvent act
 		return;
 
 	java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame( this );
-	ColumnEditorDialog editor = new ColumnEditorDialog( owner, "Edit Template", ColumnEditorDialog.DISPLAY_COMBO_ONLY, getMainPanel().getCurrentDisplayNumber() );
+	ColumnEditorDialog editor = 
+			new ColumnEditorDialog(
+					owner, "Edit Template",
+					ColumnEditorDialog.DISPLAY_COMBO_ONLY,
+					getCurrentDisplayNumber() );
 	
 	editor.setModal( true );
 	editor.setLocationRelativeTo( this );
@@ -3299,7 +3318,7 @@ public void jMenuItemExportCreatedDisplay_ActionPerformed(java.awt.event.ActionE
 		return;
 		
 	ExportCreatedDisplay export = new ExportCreatedDisplay( 
-			getMainPanel().getCurrentDisplayNumber(),
+			getCurrentDisplayNumber(),
 			this,
 			getMainPanel().getJComboCurrentDisplay().getSelectedItem().toString() );
 
@@ -3318,10 +3337,10 @@ public void jMenuItemExportDataSet_ActionPerformed(java.awt.event.ActionEvent ac
 		return;
 	}
 
-	if ( getMainPanel().getCurrentDisplayNumber() <= 0 )
+	if ( getCurrentDisplayNumber() <= 0 )
 		return;
 	
-	Object previousItem = getMainPanel().getJComboCurrentDisplay().getSelectedItem();
+	Object previousItem = getMainPanel().getJComboCurrentDisplay().getSelectedItem().toString();
 		
 	com.cannontech.tdc.exportdata.ExportOptionDialog exportDisplay = 
 				new com.cannontech.tdc.exportdata.ExportOptionDialog(
@@ -3433,10 +3452,10 @@ public void jMenuItemMakeCopy_ActionPerformed(java.awt.event.ActionEvent actionE
 
 	try
 	{
-		Object previousItem = getMainPanel().getJComboCurrentDisplay().getSelectedItem();
+		String previousItem = getMainPanel().getJComboCurrentDisplay().getSelectedItem().toString();
 		
-		com.cannontech.tdc.editdisplay.EditDisplayDialog display = 
-								new com.cannontech.tdc.editdisplay.EditDisplayDialog( 
+		EditDisplayDialog display = 
+								new EditDisplayDialog( 
 								this, previousItem.toString() );
 								
 		setCursor( original );							
@@ -3678,10 +3697,10 @@ public void jMenuItemRemove_ActionPerformed(java.awt.event.ActionEvent actionEve
 	
 	try
 	{
-	 	Object previousItem = getMainPanel().getJComboCurrentDisplay().getSelectedItem();
+	 	String previousItem = getMainPanel().getJComboCurrentDisplay().getSelectedItem().toString();
 
-	 	com.cannontech.tdc.removedisplay.RemoveDisplayDialog display = 
-							new com.cannontech.tdc.removedisplay.RemoveDisplayDialog( this, previousItem.toString() );
+	 	RemoveDisplayDialog display = 
+							new RemoveDisplayDialog( this, previousItem );
 							
 		setCursor( original );
 		display.setModal(true);
@@ -3700,13 +3719,10 @@ public void jMenuItemRemove_ActionPerformed(java.awt.event.ActionEvent actionEve
 			for( int i = 0; i < display.getDisplayPanel().getRemovedDisplays().length; i++ )
 				getBookmarks().removeBookmark( display.getDisplayPanel().getRemovedDisplays()[i]  );
 
-			getMainPanel().getJComboCurrentDisplay().setSelectedItem( previousItem );
-			
-			if ( getMainPanel().getJComboCurrentDisplay().getItemCount() > 0 )
-				getMainPanel().setUpTable();
-			else
-				getMainPanel().resetTable();
+
+			setUpMainFrame( previousItem ); // return to the main Frame
 		}
+
 	}
 	finally
 	{
@@ -3764,8 +3780,10 @@ public void jMenuItemRemoveSingleDisplay_ActionPerformed1(java.awt.event.ActionE
 			// just in case its also a bookmark
 			getBookmarks().removeBookmark( displayToRemove  );
 				
-			com.cannontech.tdc.removedisplay.RemoveDisplayPanel display =
-				new com.cannontech.tdc.removedisplay.RemoveDisplayPanel( displayToRemove, String.valueOf( getMainPanel().getCurrentDisplayNumber() ) );			
+			RemoveDisplayPanel display =
+				new RemoveDisplayPanel( 
+						displayToRemove, 
+						String.valueOf(getCurrentDisplayNumber()) );			
 			
 			getMainPanel().initComboCurrentDisplay();
 			getMainPanel().setUpTable();
@@ -3795,10 +3813,8 @@ public void jMenuItemRemoveTemplate_ActionPerformed(java.awt.event.ActionEvent a
 
 	try
 	{
-	 	Object previousItem = getMainPanel().getJComboCurrentDisplay().getSelectedItem();
-
-	 	com.cannontech.tdc.createdisplay.RemoveTemplateDialog display = 
-							new com.cannontech.tdc.createdisplay.RemoveTemplateDialog( this );
+	 	RemoveTemplateDialog display = 
+				new RemoveTemplateDialog( this );
 							
 		setCursor( original );
 		display.setModal(true);
@@ -3956,34 +3972,19 @@ public void JToolBarButtonSilenceAlarmsAction_actionPerformed(java.util.EventObj
  * Method to handle events for the AlarmToolBarListener interface.
  * @param newEvent java.util.EventObject
  */
-public void JToolBarButtonActiveAlarms_actionPerformed(java.util.EventObject newEvent) 
+public void JToolBarFilter_actionPerformed(java.util.EventObject newEvent) 
 {
 	if( newEvent.getSource() == getAlarmToolBar() )
 	{
-		String str = getAlarmToolBar().getJToolBarButtonActiveAlarms().getText();
-
-		if( "Inactive Alarms".equalsIgnoreCase(str) )
-			getAlarmToolBar().getJToolBarButtonActiveAlarms().setText("Active Alarms");
-		else
-			getAlarmToolBar().getJToolBarButtonActiveAlarms().setText("Inactive Alarms");
-
-		//make this active
-		str = getAlarmToolBar().getJToolBarButtonActiveAlarms().getText();		
-		getMainPanel().getTableDataModel().setIsInactiveAlarms(
-					!"Inactive Alarms".equalsIgnoreCase(str) );
+		ITDCFilter filter = getAlarmToolBar().getSelectedFilter();
+		
+		getMainPanel().getCurrentDisplay().setTdcFilter( filter );
 
 		//refresh the display we are looking at			
 		getMainPanel().fireJComboCurrentDisplayAction_actionPerformed( 
 				new java.util.EventObject( getMainPanel() ) );
 	}
 
-}
-
-public void setToActiveAlarms()
-{
-	getAlarmToolBar().getJToolBarButtonActiveAlarms().setText("Active Alarms");
-
-	getAlarmToolBar().getJToolBarButtonActiveAlarms().doClick();
 }
 
 /**
@@ -4056,7 +4057,8 @@ public void mainPanel_JComboCurrentDisplayAction_actionPerformed(java.util.Event
 		return;
 
 	TDCMainPanel source = (TDCMainPanel)newEvent.getSource();
-		
+
+
 	if( source.isClientDisplay() )
 	{
 		// do nothing for now if we are viewing a special display
@@ -4066,25 +4068,22 @@ public void mainPanel_JComboCurrentDisplayAction_actionPerformed(java.util.Event
 
 		// enable/disable the correct corresponding buttons for the the current view
 		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMP_INDX_CLEAR,
-			Display.isHistoryDisplay(source.getTableDataModel().getCurrentDisplayNumber())  );
+			Display.isHistoryDisplay(source.getCurrentDisplay().getDisplayNumber()) );
 			
 		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMP_INDX_ACKALL,
-			Display.isAlarmDisplay(source.getTableDataModel().getCurrentDisplayNumber())  );
+			Display.isAlarmDisplay(source.getCurrentDisplay().getDisplayNumber()) );
 		
 		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMP_INDX_ACTIVCEALARMS,
-			Display.isAlarmDisplay(source.getTableDataModel().getCurrentDisplayNumber())  );
-		
+			Display.isAlarmDisplay(source.getCurrentDisplay().getDisplayNumber()) );
+
+
 		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMP_INDX_DATELABEL,
-			Display.isHistoryDisplay(source.getTableDataModel().getCurrentDisplayNumber())
-			|| 
-			(Display.isAlarmDisplay(source.getTableDataModel().getCurrentDisplayNumber())
-			 && source.getTableDataModel().isInactiveAlarms())  );
+			Display.isHistoryDisplay(source.getCurrentDisplay().getDisplayNumber())
+			|| source.getCurrentDisplay().getTdcFilter().getConditions().get(ITDCFilter.COND_HISTORY) );
 
 		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMP_INDX_DATE,
-			Display.isHistoryDisplay(source.getTableDataModel().getCurrentDisplayNumber())
-			|| 
-			(Display.isAlarmDisplay(source.getTableDataModel().getCurrentDisplayNumber())
-			 && source.getTableDataModel().isInactiveAlarms())  );
+			Display.isHistoryDisplay(source.getCurrentDisplay().getDisplayNumber())
+			|| source.getCurrentDisplay().getTdcFilter().getConditions().get(ITDCFilter.COND_HISTORY) );
 
 		
 		setTitleFromDisplay();				
@@ -4093,8 +4092,22 @@ public void mainPanel_JComboCurrentDisplayAction_actionPerformed(java.util.Event
 		
 	//JMenuItems disabling needs to go here
 	getJMenuItemPrint().setEnabled(
-			Display.isHistoryDisplay(source.getTableDataModel().getCurrentDisplayNumber())  );
-		
+			Display.isHistoryDisplay(source.getCurrentDisplay().getDisplayNumber())  );
+
+
+	//we may need to update the filter we have selected
+	if( source.getCurrentDisplay().getColumnData() != null && source.getCurrentDisplay().getColumnData().length > 0 )
+	{
+		//we only need one filterID
+		getAlarmToolBar().setSelectedFilter(
+				source.getCurrentDisplay().getColumnData()[0].getFilterID() );
+	}
+	else
+		getAlarmToolBar().setSelectedFilter( CtiUtilities.NONE_ID );
+
+	TDCMainFrame.messageLog.addMessage( 
+			"Current Filter is " + source.getCurrentDisplay().getTdcFilter(), MessageBoxFrame.INFORMATION_MSG );
+
 	return;
 }
 
@@ -4316,9 +4329,9 @@ public void setMainPanelCombo(Object value)
 {
 	for( int i = 0; i < getMainPanel().getJComboCurrentDisplay().getItemCount(); i++)
 	{
-		if( getMainPanel().getJComboCurrentDisplay().getItemAt(i).equals( value ) )
+		if( getMainPanel().getJComboCurrentDisplay().getItemAt(i).toString().equals( value ) )
 		{
-			getMainPanel().getJComboCurrentDisplay().setSelectedItem( value );
+			getMainPanel().getJComboCurrentDisplay().setSelectedIndex(i);
 			return;
 		}
 	}
@@ -4388,17 +4401,30 @@ private void setTitleFromDisplay()
 
 }
 
+public void resetFilter()
+{
+	if( getAlarmToolBar().getJComboBoxFilter().getItemCount() > 0 )
+		getAlarmToolBar().getJComboBoxFilter().setSelectedIndex( 0 );
+}
 
 /**
  * Insert the method's description here.
  * Creation date: (2/2/00 11:47:44 AM)
  */
-private void setUpMainFrame( Object previousItem ) 
+private void setUpMainFrame( String previousItem )
 {
 	getMainPanel().initComboCurrentDisplay();
 
 	if( previousItem != null )
-		getMainPanel().getJComboCurrentDisplay().setSelectedItem( previousItem );
+	{
+		for( int i = 0; i < getMainPanel().getJComboCurrentDisplay().getItemCount(); i++ )
+			if( getMainPanel().getJComboCurrentDisplay().getItemAt(i).toString().equalsIgnoreCase(previousItem) )
+			{
+				getMainPanel().getJComboCurrentDisplay().setSelectedIndex(i);
+				break;
+			}
+	}
+
 
 	// doesnt fire the getMainPanel().jComboCurrentDisplay_ActionPerformed() if
 	// the new previousItem is at index 0, so I do it manually
@@ -4487,7 +4513,7 @@ private void writeParameters()
 		final String[] paramValues =
 		{
 			(getMainPanel().getJComboCurrentDisplay().getSelectedItem() == null
-			 				? "" : getMainPanel().getJComboCurrentDisplay().getSelectedItem().toString()),
+			 	? "" : getMainPanel().getJComboCurrentDisplay().getSelectedItem().toString()),
 
 			getSelectedViewType(),
 			String.valueOf(getX()),
