@@ -1,3 +1,11 @@
+<%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.database.data.lite.stars.*" %>
+<%
+	int invID = Integer.parseInt(request.getParameter("InvId"));
+	LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
+	LiteStarsLMHardware liteHw = liteEC.getBriefLMHardware(invID, true);
+	StarsLMHardware hardware = StarsLiteFactory.createStarsLMHardware(liteHw, liteEC);
+%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -5,6 +13,15 @@
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 
+<script language="JavaScript">
+function validate(form) {
+	if (form.SerialNo.value == "") {
+		alert("Serial # cannot be empty");
+		return false;
+	}
+	return true;
+}
+</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -49,23 +66,19 @@
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101">
-            <table width="101" border="0" cellspacing="0" cellpadding="0" height="200">
-              <tr> 
-                <td height="20" valign="top" align="center" class = "TableCell1"><br><a class = "Link3" href ="AddSN.jsp">Add 
-                  SN Range</a> </td>
-              </tr>
-            </table>
-          </td>
+          <td  valign="top" width="101">&nbsp;</td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center">
+            <div align="center"> 
               <% String header = "INVENTORY DETAIL"; %>
               <%@ include file="include/SearchBar.jsp" %>
-              <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
-                <tr>
-				<form name="form6" method="get" action=""> 
-                  <td width="300" valign="top" bgcolor="#FFFFFF"> 
+			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+			  
+              <form name="invForm" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager" onsubmit="return validate(this)">
+                <input type="hidden" name="InvID" value="<%= hardware.getInventoryID() %>">
+                <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
+                  <tr> 
+                    <td width="300" valign="top" bgcolor="#FFFFFF"> 
                       <table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
                         <tr> 
                           <td><span class="SubtitleHeader">DEVICE</span> 
@@ -73,35 +86,37 @@
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr> 
                                 <td width="88" class="TableCell"> 
-                                  <div align="right">Serial #:</div>
+                                  <div align="right">Type:</div>
                                 </td>
                                 <td width="210"> 
-                                  <select name="select2">
-                                    <option>12345</option>
-                                    <option>67890</option>
+                                  <select name="DeviceType">
+                                    <%
+	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
+	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
+		String selected = (entry.getEntryID() == hardware.getLMDeviceType().getEntryID())? "selected" : "";
+%>
+                                    <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
+                                    <%
+	}
+%>
                                   </select>
                                 </td>
                               </tr>
                               <tr> 
                                 <td width="88" class="TableCell"> 
-                                  <div align="right"> Type:</div>
+                                  <div align="right"> Serial #:</div>
                                 </td>
                                 <td width="210"> 
-                                  <select name="select5">
-                                    <option>LCR 1000</option>
-                                    <option>LCR 2000</option>
-                                    <option>LCR 3000</option>
-                                    <option>LCR 4000</option>
-                                    <option>LCR 5000</option>
-                                  </select>
+                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= hardware.getManufactureSerialNumber() %>">
                                 </td>
                               </tr>
                               <tr> 
                                 <td width="88" class="TableCell"> 
-                                  <div align="right">Date Installed:</div>
+                                  <div align="right"> Label:</div>
                                 </td>
                                 <td width="210"> 
-                                  <input type="text" name="textfield32232" maxlength="30" size="24">
+                                  <input type="text" name="DeviceLabel" maxlength="30" size="24" value="<%= hardware.getDeviceLabel() %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -109,7 +124,7 @@
                                   <div align="right">Alt Tracking #:</div>
                                 </td>
                                 <td width="210"> 
-                                  <input type="text" name="textfield32232" maxlength="30" size="24">
+                                  <input type="text" name="AltTrackNo" maxlength="30" size="24" value="<%= hardware.getAltTrackingNumber() %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -117,7 +132,15 @@
                                   <div align="right">Date Received:</div>
                                 </td>
                                 <td width="210"> 
-                                  <input type="text" name="textfield32234" maxlength="30" size="24">
+                                  <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(hardware.getReceiveDate(), datePart) %>">
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="88" class="TableCell"> 
+                                  <div align="right">Date Removed:</div>
+                                </td>
+                                <td width="210"> 
+                                  <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(hardware.getRemoveDate(), datePart) %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -125,7 +148,53 @@
                                   <div align="right">Voltage:</div>
                                 </td>
                                 <td width="210"> 
-                                  <input type="text" name="textfield32236" maxlength="30" size="24">
+                                  <select name="Voltage">
+                                    <%
+	StarsCustSelectionList voltageList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE );
+	for (int i = 0; i < voltageList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = voltageList.getStarsSelectionListEntry(i);
+		String selected = (entry.getEntryID() == hardware.getVoltage().getEntryID())? "selected" : "";
+%>
+                                    <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
+                                    <%
+	}
+%>
+                                  </select>
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="88" class="TableCell"> 
+                                  <div align="right">Status:</div>
+                                </td>
+                                <td width="210"> 
+                                  <input type="text" name="Status" maxlength="30" size="24" value="<%= hardware.getDeviceStatus().getContent() %>">
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="88" class="TableCell"> 
+                                  <div align="right">Notes:</div>
+                                </td>
+                                <td width="210"> 
+                                  <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= hardware.getNotes() %></textarea>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                    <td width="300" valign="top" bgcolor="#FFFFFF"> 
+                      <table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
+                        <tr> 
+                          <td><span class="SubtitleHeader">INSTALL</span> 
+                            <hr>
+                            <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
+                              <tr> 
+                                <td width="88" class="TableCell"> 
+                                  <div align="right">Date Installed:</div>
+                                </td>
+                                <td width="210"> 
+                                  <input type="text" name="InstallDate2" maxlength="30" size="24" value="<%= ServletUtils.formatDate(hardware.getInstallDate(), datePart) %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -133,8 +202,16 @@
                                   <div align="right">Service Company:</div>
                                 </td>
                                 <td width="210"> 
-                                  <select name="select6">
-                                    <option>ACME Company</option>
+                                  <select name="select">
+                                    <%
+	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
+		StarsServiceCompany company = companies.getStarsServiceCompany(i);
+		String selectedStr = (company.getCompanyID() == hardware.getInstallationCompany().getEntryID()) ? "selected" : "";
+%>
+                                    <option value="<%= company.getCompanyID() %>" <%= selectedStr %>><%= company.getCompanyName() %></option>
+                                    <%
+	}
+%>
                                   </select>
                                 </td>
                               </tr>
@@ -143,87 +220,81 @@
                                   <div align="right">Notes:</div>
                                 </td>
                                 <td width="210"> 
-                                  <textarea name="textarea2" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
+                                  <textarea name="InstallNotes" rows="3 wrap="soft" cols="28" class = "TableCell"><%= hardware.getInstallationNotes() %></textarea>
                                 </td>
                               </tr>
                             </table>
-                           </td>
-                        </tr>
-                      </table>
-                  </td>
-				  </form>
-				  <form name="form7" method="post" action="">
-                    <td width="300" valign="top" bgcolor="#FFFFFF"> 
-                      <table width="300" border="0" cellspacing="0" cellpadding="0">
-                        <tr> 
-                          <td><span class="SubtitleHeader">LAST KNOWN LOCATION</span>
-<hr>
-                            <table width="300" border="0" cellspacing="0">
-                              <tr>
-                                <td class="TableCell" width="67">Location:</td>
-                                <td width="229"> 
-                                  <select name="select4">
-                                    <option>Customer</option>
-                                    <option>Warehouse</option>
-                                    </select>
-                                </td>
-                              </tr>
-                            </table>
-                            <table width="300" border="0" cellspacing="0" cellpadding="3" align="center">
-                              <tr> 
-                                <td class="TableCell"> Account # 12345 </td>
-                              </tr>
-                              <tr> 
-                                <td class="TableCell"> Acme Company </td>
-                              </tr>
-                              <tr> 
-                                <td class="TableCell"> Last Name, First Name</td>
-                              </tr>
-                              <tr> 
-                                <td class="TableCell"> Home #: 800-555-1212 </td>
-                              </tr>
-                              <tr> 
-                                <td class="TableCell"> Work #: 800-555-2121 </td>
-                              </tr>
-                            </table>
-                            <table width="300" border="0" cellspacing="0" cellpadding="3" align="center">
-                              <tr> 
-                                <td class="TableCell"> 1234 Main Street, Floor 
-                                  3 </td>
-                              </tr>
-                              <tr> 
-                                <td class="TableCell"> Golden Valley, MN 55427</td>
-                              </tr>
-                              <tr> 
-                                <td class="TableCell"> Map # 3A </td>
-                              </tr>
-                              </table>
                           </td>
                         </tr>
                       </table>
-                      
+                      <br>
+                      <table width="300" border="0" cellspacing="0" cellpadding="0">
+                        <tr> 
+                          <td><span class="SubtitleHeader">LAST KNOWN LOCATION</span> 
+                            <hr>
+                            <table width="300" border="0" cellspacing="0" cellpadding="3" align="center">
+                              <tr> 
+                                <td class="MainText">Location: 
+<% if (liteHw.getAccountID() == 0) { %>
+                                  Warehouse
+<% } else { %>
+                                  <a href="" onclick="document.cusForm.submit(); return false;">Customer</a>
+<% } %>
+                                </td>
+                              </tr>
+<%
+	if (liteHw.getAccountID() > 0) {
+		LiteStarsCustAccountInformation liteAcctInfo = liteEC.getBriefCustAccountInfo(liteHw.getAccountID(), true);
+		LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
+		LiteCustomerContact liteContact = liteEC.getCustomerContact(liteAcctInfo.getCustomer().getPrimaryContactID());
+		LiteAddress liteAddr = liteEC.getAddress(liteAccount.getBillingAddressID());
+		String mapNo = ServerUtils.forceNotNone(liteAcctInfo.getAccountSite().getSiteNumber());
+%>
+                              <tr>
+                                <td class="TableCell">
+                                  Account # <%= liteAccount.getAccountNumber() %><br>
+                                  <%= ServerUtils.getFormattedName(liteContact) %><br>
+                                  <% if (liteContact.getHomePhone() != null) { %>Home #: <%= liteContact.getHomePhone() %><br><% } %>
+                                  <% if (liteContact.getWorkPhone() != null) { %>Work #: <%= liteContact.getWorkPhone() %><br><% } %>
+                                  <%= ServerUtils.getFormattedAddress(liteAddr) %><br>
+                                  <% if (mapNo.length() > 0) { %>Map # <%= mapNo %><% } %>
+                                </td>
+                              </tr>
+<%	} %>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
                     </td>
-				  </form>
-                </tr>
-              </table>
-              <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
-                <tr> 
-                  <form name="form3" method="post" action="InventoryDetail.jsp">
-				  <td width="186"> 
+                  </tr>
+                </table>
+                <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
+                  <tr> 
+                    <td width="42%"> 
                       <div align="right"> 
-                        <input type="submit" name="" value="Save">
+                        <input type="submit" name="Save" value="Save">
                       </div>
-                  </td>
-				  </form>
-				  <form name="form4" method="get" action="">
-                  <td width="194"> 
+                    </td>
+                    <td width="15%"> 
+                      <div align="center"> 
+                        <input type="reset" name="Cancel" value="Cancel">
+                      </div>
+                    </td>
+                    <td width="43%"> 
                       <div align="left"> 
-                        <input type="reset" name="Cancel2" value="Cancel">
+                        <input type="button" name="Back" value="Back" onclick="history.back()">
                       </div>
-                  </td>
-				    </form>
-                </tr>
-              </table><br>
+                    </td>
+                  </tr>
+                </table>
+              </form>
+              <form name="cusForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
+                <input type="hidden" name="action" value="GetCustAccount">
+                <input type="hidden" name="AccountID" value="<%= liteHw.getAccountID() %>">
+                <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Update.jsp">
+                <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Hardware/InventoryDetail.jsp">
+              </form>
+              <br>
               </div>
           </td>
         <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
