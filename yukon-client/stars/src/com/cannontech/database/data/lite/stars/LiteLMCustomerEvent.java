@@ -11,7 +11,7 @@ import com.cannontech.database.data.lite.LiteTypes;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class LiteLMCustomerEvent extends LiteBase {
+public abstract class LiteLMCustomerEvent extends LiteBase {
 	
 	private int eventTypeID = com.cannontech.database.db.stars.CustomerListEntry.NONE_INT;
 	private int actionID = com.cannontech.database.db.stars.CustomerListEntry.NONE_INT;

@@ -28,6 +28,7 @@ public class LiteWorkOrderBase extends LiteBase {
 	
 	public LiteWorkOrderBase() {
 		super();
+		setLiteType( LiteTypes.STARS_WORK_ORDER_BASE );
 	}
 	
 	public LiteWorkOrderBase(int orderID) {

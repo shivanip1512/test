@@ -11,6 +11,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsCustListEntryFactory;
 import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.StarsServiceRequestFactory;
@@ -47,7 +48,7 @@ public class CreateServiceRequestAction implements ActionBase {
 		try {
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 			if (operator == null) return null;
-			Hashtable selectionLists = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+			Hashtable selectionLists = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LISTS" );
 
 			StarsCreateServiceRequest createOrder = new StarsCreateServiceRequest();
 
@@ -124,7 +125,10 @@ public class CreateServiceRequestAction implements ActionBase {
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
-            		
+            
+            Integer energyCompanyID = new Integer((int) operator.getEnergyCompanyID());
+            Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
+            
             StarsCreateServiceRequest createOrder = reqOper.getStarsCreateServiceRequest();
             com.cannontech.database.data.stars.report.WorkOrderBase workOrder = new com.cannontech.database.data.stars.report.WorkOrderBase();
             com.cannontech.database.db.stars.report.WorkOrderBase workOrderDB = workOrder.getWorkOrderBase();
@@ -139,11 +143,14 @@ public class CreateServiceRequestAction implements ActionBase {
             workOrder = (com.cannontech.database.data.stars.report.WorkOrderBase)transaction.execute();
             
             LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) StarsLiteFactory.createLite( workOrderDB );
-            com.cannontech.stars.web.servlet.SOAPServer.getAllWorkOrders( new Integer((int) operator.getEnergyCompanyID()) ).add( liteOrder );
+            com.cannontech.stars.web.servlet.SOAPServer.getAllWorkOrders( energyCompanyID ).add( liteOrder );
             accountInfo.getServiceRequestHistory().add( 0, new Integer(liteOrder.getOrderID()) );
             
-            StarsSuccess success = new StarsSuccess();
-            respOper.setStarsSuccess( success );
+            StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, selectionLists );
+            StarsCreateServiceRequestResponse resp = new StarsCreateServiceRequestResponse();
+            resp.setStarsServiceRequest( starsOrder );
+
+            respOper.setStarsCreateServiceRequestResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -167,7 +174,7 @@ public class CreateServiceRequestAction implements ActionBase {
 			StarsServiceRequest order = resp.getStarsServiceRequest();
 			
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) operator.getAttribute( "CUSTOMER_ACCOUNT_INFORMATION" );
+			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) operator.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION" );
 			if (accountInfo == null)
 				return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 				

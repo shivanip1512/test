@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsEnableServiceDescriptor.java,v 1.14 2002/11/14 16:13:19 zyao Exp $
+ * $Id: StarsEnableServiceDescriptor.java,v 1.15 2002/11/20 20:48:39 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.14 $ $Date: 2002/11/14 16:13:19 $
+ * @version $Revision: 1.15 $ $Date: 2002/11/20 20:48:39 $
 **/
 public class StarsEnableServiceDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -53,61 +53,30 @@ public class StarsEnableServiceDescriptor extends org.exolab.castor.xml.util.XML
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        
-        //-- set grouping compositor
-        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
-        //-- _enableDateTime
-        desc = new XMLFieldDescriptorImpl(java.util.Date.class, "_enableDateTime", "enableDateTime", NodeType.Attribute);
+        //-- _inventoryID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_inventoryID", "inventoryID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsEnableService target = (StarsEnableService) object;
-                return target.getEnableDateTime();
+                if(!target.hasInventoryID())
+                    return null;
+                return new Integer(target.getInventoryID());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsEnableService target = (StarsEnableService) object;
-                    target.setEnableDateTime( (java.util.Date) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new java.util.Date();
-            }
-        } );
-        desc.setHandler( new DateFieldHandler(handler));
-        desc.setImmutable(true);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _enableDateTime
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
-        //-- initialize element descriptors
-        
-        //-- _serialNumberList
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_serialNumberList", "SerialNumber", NodeType.Element);
-        desc.setImmutable(true);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsEnableService target = (StarsEnableService) object;
-                return target.getSerialNumber();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsEnableService target = (StarsEnableService) object;
-                    target.addSerialNumber( (java.lang.String) value);
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteInventoryID();
+                        return;
+                    }
+                    target.setInventoryID( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -118,18 +87,17 @@ public class StarsEnableServiceDescriptor extends org.exolab.castor.xml.util.XML
             }
         } );
         desc.setHandler(handler);
-        desc.setMultivalued(true);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _serialNumberList
+        //-- validation code for: _inventoryID
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(0);
         { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
         }
         desc.setValidator(fieldValidator);
+        
+        //-- initialize element descriptors
         
     } //-- com.cannontech.stars.xml.serialize.StarsEnableServiceDescriptor()
 

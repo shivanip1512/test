@@ -63,12 +63,16 @@ public class LMCustomerEventBase extends DBPersistent {
 	 */
 	public void retrieve() throws SQLException {
 		getLMCustomerEventBase().retrieve();
-		
+
+/*
+ * Commented out since cache is used now
+ * 		
 		getEventType().setEntryID( getLMCustomerEventBase().getEventTypeID() );
 		getEventType().retrieve();
 		
 		getAction().setEntryID( getLMCustomerEventBase().getActionID() );
 		getAction().retrieve();
+*/
 	}
 
 	/**

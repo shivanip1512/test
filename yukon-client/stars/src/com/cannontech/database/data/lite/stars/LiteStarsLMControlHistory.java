@@ -71,17 +71,17 @@ public class LiteStarsLMControlHistory extends LiteBase {
 			int curIndex2 = curIndex;
 			while (curIndex2 >= 0) {
 				LiteLMControlHistory ctrlHist = (LiteLMControlHistory) lmControlHistory.get( curIndex2 );
-				if (ctrlHist.getStartDateTime() < limitCal.getTimeInMillis()) {
-					currentDayStartIndex = curIndex2 + 1;
+				if (ctrlHist.getStartDateTime() < limitCal2.getTimeInMillis()) {
+					currentWeekStartIndex = curIndex2 + 1;
 					break;
 				}
 				curIndex2--;
 			}
-			if (curIndex < 0) currentWeekStartIndex = 0;
+			if (curIndex2 < 0) currentWeekStartIndex = 0;
 		}
 		
 		// Set the time limit to the beginning of the month
-		limitCal.set(Calendar.DAY_OF_MONTH, 0);
+		limitCal.set(Calendar.DAY_OF_MONTH, 1);
 		if (oldCal.after(limitCal)) return;
 		
 		while (curIndex >= 0) {

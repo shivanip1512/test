@@ -20,6 +20,7 @@ public class LiteCustomerContact extends LiteBase {
 	
 	public LiteCustomerContact() {
 		super();
+		setLiteType( LiteTypes.STARS_CUSTOMER_CONTACT );
 	}
 	
 	public LiteCustomerContact(int contactID) {

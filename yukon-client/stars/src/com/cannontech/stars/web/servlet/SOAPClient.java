@@ -13,25 +13,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.servlet.PILConnectionServlet;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
-import com.cannontech.stars.web.action.ActionBase;
-import com.cannontech.stars.web.action.CallTrackingAction;
-import com.cannontech.stars.web.action.CreateApplianceAction;
-import com.cannontech.stars.web.action.CreateCallAction;
-import com.cannontech.stars.web.action.CreateLMHardwareAction;
-import com.cannontech.stars.web.action.CreateServiceRequestAction;
-import com.cannontech.stars.web.action.GetAllCustAccountsAction;
-import com.cannontech.stars.web.action.GetCustAccountAction;
-import com.cannontech.stars.web.action.GetCustSelListsAction;
-import com.cannontech.stars.web.action.GetEnrollmentProgramsAction;
-import com.cannontech.stars.web.action.GetLMCtrlHistAction;
-import com.cannontech.stars.web.action.GetServiceHistoryAction;
-import com.cannontech.stars.web.action.LoginAction;
-import com.cannontech.stars.web.action.MultiAction;
-import com.cannontech.stars.web.action.NewCustAccountAction;
-import com.cannontech.stars.web.action.ProgramSignUpAction;
-import com.cannontech.stars.web.action.SearchCustAccountAction;
-import com.cannontech.stars.web.action.UpdateCustAccountAction;
-import com.cannontech.stars.web.action.YukonSwitchCommandAction;
+import com.cannontech.stars.web.action.*;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.util.SOAPMessenger;
 import com.cannontech.stars.xml.util.SOAPUtil;
@@ -119,6 +101,16 @@ public class SOAPClient extends HttpServlet {
             clientAction = new UpdateCustAccountAction();
             destURL = "/OperatorDemos/Consumer/Update.jsp";
         }
+        else if (action.equalsIgnoreCase("OptOutProgram")) {
+        	clientAction = new ProgramOptOutAction();
+            destURL = req.getParameter("REDIRECT");
+            nextURL = errorURL = req.getParameter("REFERRER");
+        }
+        else if (action.equalsIgnoreCase("ReenableProgram")) {
+        	clientAction = new ProgramReenableAction();
+            destURL = req.getParameter("REDIRECT");
+            nextURL = errorURL = req.getParameter("REFERRER");
+        }
         else if (action.equalsIgnoreCase("DisableService") || action.equalsIgnoreCase("EnableService")) {
             clientAction = new YukonSwitchCommandAction();
             destURL = req.getParameter("REDIRECT");
@@ -126,9 +118,7 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("GetLMCtrlHist")) {
             clientAction = new GetLMCtrlHistAction();
-            destURL = req.getParameter("REDIRECT")
-            		+ "?prog=" + req.getParameter("prog")
-                    + "&REFERRER=" + req.getParameter("REFERRER");
+            destURL = req.getParameter("REDIRECT") + "&REFERRER=" + java.net.URLEncoder.encode( req.getParameter("REFERRER"), "UTF-8" );
         }
         else if (action.equalsIgnoreCase("CreateCall")) {
         	StarsOperator operator = (StarsOperator) session.getAttribute( "OPERATOR" );

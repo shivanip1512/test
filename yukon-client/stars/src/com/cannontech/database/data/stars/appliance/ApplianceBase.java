@@ -55,14 +55,18 @@ public class ApplianceBase extends DBPersistent {
     public void retrieve() throws java.sql.SQLException {
         getApplianceBase().retrieve();
 
-        getApplianceCategory().setApplianceCategoryID( getApplianceBase().getApplianceCategoryID() );
-        getApplianceCategory().retrieve();
-
         setLMHardwareConfig( com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.getLMHardwareConfiguration(
                     getApplianceBase().getApplianceID(), getDbConnection()) );
 
+/*
+ * Commented out since cache is used now
+ * 
+        getApplianceCategory().setApplianceCategoryID( getApplianceBase().getApplianceCategoryID() );
+        getApplianceCategory().retrieve();
+
         getLMProgram().setPAObjectID( getApplianceBase().getLMProgramID() );
         getLMProgram().retrieve();
+*/
     }
 
     public com.cannontech.database.db.stars.appliance.ApplianceBase getApplianceBase() {

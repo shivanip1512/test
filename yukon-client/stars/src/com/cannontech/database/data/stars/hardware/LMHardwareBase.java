@@ -57,9 +57,13 @@ public class LMHardwareBase extends InventoryBase {
     public void retrieve() throws java.sql.SQLException {
         super.retrieve();
         getLMHardwareBase().retrieve();
-        
+
+/*
+ * Commented out since cache is used now
+ *         
         getLMHardwareType().setEntryID( getLMHardwareBase().getLMHardwareTypeID() );
         getLMHardwareType().retrieve();
+*/
     }
 
     public com.cannontech.database.db.stars.hardware.LMHardwareBase getLMHardwareBase() {

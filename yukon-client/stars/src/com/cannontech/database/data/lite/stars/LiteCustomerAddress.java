@@ -21,6 +21,7 @@ public class LiteCustomerAddress extends LiteBase {
 	
 	public LiteCustomerAddress() {
 		super();
+		setLiteType( LiteTypes.STARS_CUSTOMER_ADDRESS );
 	}
 	
 	public LiteCustomerAddress(int addressID) {

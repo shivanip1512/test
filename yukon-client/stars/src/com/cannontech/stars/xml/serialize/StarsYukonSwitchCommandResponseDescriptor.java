@@ -60,8 +60,8 @@ public class StarsYukonSwitchCommandResponseDescriptor extends org.exolab.castor
         
         //-- initialize element descriptors
         
-        //-- _starsLMHardwareHistoryList
-        desc = new XMLFieldDescriptorImpl(StarsLMHardwareHistory.class, "_starsLMHardwareHistoryList", "stars-LMHardwareHistory", NodeType.Element);
+        //-- _starsLMHardwareHistory
+        desc = new XMLFieldDescriptorImpl(StarsLMHardwareHistory.class, "_starsLMHardwareHistory", "stars-LMHardwareHistory", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -74,7 +74,7 @@ public class StarsYukonSwitchCommandResponseDescriptor extends org.exolab.castor
             {
                 try {
                     StarsYukonSwitchCommandResponse target = (StarsYukonSwitchCommandResponse) object;
-                    target.addStarsLMHardwareHistory( (StarsLMHardwareHistory) value);
+                    target.setStarsLMHardwareHistory( (StarsLMHardwareHistory) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -85,45 +85,13 @@ public class StarsYukonSwitchCommandResponseDescriptor extends org.exolab.castor
             }
         } );
         desc.setHandler(handler);
-        desc.setMultivalued(true);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsLMHardwareHistoryList
+        //-- validation code for: _starsLMHardwareHistory
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(0);
-        desc.setValidator(fieldValidator);
-        
-        //-- _starsLMProgramHistoryList
-        desc = new XMLFieldDescriptorImpl(StarsLMProgramHistory.class, "_starsLMProgramHistoryList", "stars-LMProgramHistory", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsYukonSwitchCommandResponse target = (StarsYukonSwitchCommandResponse) object;
-                return target.getStarsLMProgramHistory();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsYukonSwitchCommandResponse target = (StarsYukonSwitchCommandResponse) object;
-                    target.addStarsLMProgramHistory( (StarsLMProgramHistory) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsLMProgramHistory();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(true);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsLMProgramHistoryList
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(0);
+        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsYukonSwitchCommandResponseDescriptor()

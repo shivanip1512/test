@@ -76,7 +76,10 @@ public class LMProgramEvent extends LMCustomerEventBase {
     	
     	return null;
     }
-    
+
+/*
+ * Commented out since cache is used now
+ *     
     public static StarsLMProgramHistory getStarsLMProgramHistory(Integer accountID, Integer programID) {
     	java.sql.Connection conn = null;
 
@@ -113,7 +116,7 @@ public class LMProgramEvent extends LMCustomerEventBase {
     	
     	return null;
     }
-    
+*/    
     public static LMProgramEvent getLastProgramEvent(Integer accountID, Integer programID) {
     	java.sql.Connection conn = null;
 

@@ -66,6 +66,9 @@ public class InventoryBase extends DBPersistent {
     public void retrieve() throws java.sql.SQLException {
         getInventoryBase().retrieve();
 
+/*
+ * Commented out since cache is used now
+ * 
         getInstallationCompany().setCompanyID( getInventoryBase().getInstallationCompanyID() );
         getInstallationCompany().retrieve();
         
@@ -74,6 +77,7 @@ public class InventoryBase extends DBPersistent {
         
         getVoltage().setEntryID( getInventoryBase().getVoltageID() );
         getVoltage().retrieve();
+*/
     }
 
     public com.cannontech.database.db.stars.hardware.InventoryBase getInventoryBase() {

@@ -20,6 +20,7 @@ public class LiteAccountSite extends LiteBase {
 	
 	public LiteAccountSite() {
 		super();
+		setLiteType( LiteTypes.STARS_ACCOUNT_SITE );
 	}
 	
 	public LiteAccountSite(int accountSiteID) {

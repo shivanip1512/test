@@ -220,7 +220,7 @@ public class LMControlHistory {
                 public int compare(Object o1, Object o2) {
                     com.cannontech.database.db.pao.LMControlHistory ctrlHist1 = (com.cannontech.database.db.pao.LMControlHistory) o1;
                     com.cannontech.database.db.pao.LMControlHistory ctrlHist2 = (com.cannontech.database.db.pao.LMControlHistory) o2;
-                    return (ctrlHist2.getStartDateTime().compareTo( ctrlHist1.getStartDateTime() ));
+                    return (ctrlHist1.getStartDateTime().compareTo( ctrlHist2.getStartDateTime() ));
                 }
             });
 

@@ -38,7 +38,7 @@ public class StarsServiceRequestFactory {
 	}
 	
 	public static void setWorkOrderBase(WorkOrderBase orderDB, StarsSrvReq order) {
-		orderDB.setOrderID( new Integer(order.getOrderID()) );
+		//orderDB.setOrderID( new Integer(order.getOrderID()) );
 		orderDB.setOrderNumber( order.getOrderNumber() );
 		orderDB.setWorkTypeID( new Integer(order.getServiceType().getEntryID()) );
 		orderDB.setDateReported( order.getDateReported() );

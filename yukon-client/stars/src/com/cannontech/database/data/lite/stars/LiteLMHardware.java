@@ -28,6 +28,7 @@ public class LiteLMHardware extends LiteBase {
 	
 	public LiteLMHardware() {
 		super();
+		setLiteType( LiteTypes.STARS_LMHARDWARE );
 	}
 	
 	public LiteLMHardware(int invID) {

@@ -17,7 +17,9 @@ import com.cannontech.database.db.stars.*;
  * Window>Preferences>Java>Code Generation.
  */
 public class StarsCustAccountInformationFactory {
-
+/*
+ * Commented out since cache is used now
+ * 
 	public static StarsCustAccountInformation getStarsCustAccountInfo(CustomerAccount account, Hashtable selectionLists) {
 		try {
             StarsCustAccountInformation accountInfo = new StarsCustAccountInformation();
@@ -284,5 +286,5 @@ public class StarsCustAccountInformationFactory {
 		}
 		
 		return null;
-	}
+	}*/
 }

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.14 2002/11/14 16:13:17 zyao Exp $
+ * $Id: StarsOperation.java,v 1.15 2002/11/20 20:48:35 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.14 $ $Date: 2002/11/14 16:13:17 $
+ * @version $Revision: 1.15 $ $Date: 2002/11/20 20:48:35 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -72,6 +72,14 @@ public class StarsOperation implements java.io.Serializable {
      * Update the LM programs for a customer account
     **/
     private StarsUpdateLMPrograms _starsUpdateLMPrograms;
+
+    private StarsProgramOptOut _starsProgramOptOut;
+
+    private StarsProgramOptOutResponse _starsProgramOptOutResponse;
+
+    private StarsProgramReenable _starsProgramReenable;
+
+    private StarsProgramReenableResponse _starsProgramReenableResponse;
 
     private StarsYukonSwitchCommand _starsYukonSwitchCommand;
 
@@ -430,6 +438,46 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsNewCustomerAccountResponse;
     } //-- StarsNewCustomerAccountResponse getStarsNewCustomerAccountResponse() 
+
+    /**
+     * Returns the value of field 'starsProgramOptOut'.
+     * 
+     * @return the value of field 'starsProgramOptOut'.
+    **/
+    public StarsProgramOptOut getStarsProgramOptOut()
+    {
+        return this._starsProgramOptOut;
+    } //-- StarsProgramOptOut getStarsProgramOptOut() 
+
+    /**
+     * Returns the value of field 'starsProgramOptOutResponse'.
+     * 
+     * @return the value of field 'starsProgramOptOutResponse'.
+    **/
+    public StarsProgramOptOutResponse getStarsProgramOptOutResponse()
+    {
+        return this._starsProgramOptOutResponse;
+    } //-- StarsProgramOptOutResponse getStarsProgramOptOutResponse() 
+
+    /**
+     * Returns the value of field 'starsProgramReenable'.
+     * 
+     * @return the value of field 'starsProgramReenable'.
+    **/
+    public StarsProgramReenable getStarsProgramReenable()
+    {
+        return this._starsProgramReenable;
+    } //-- StarsProgramReenable getStarsProgramReenable() 
+
+    /**
+     * Returns the value of field 'starsProgramReenableResponse'.
+     * 
+     * @return the value of field 'starsProgramReenableResponse'.
+    **/
+    public StarsProgramReenableResponse getStarsProgramReenableResponse()
+    {
+        return this._starsProgramReenableResponse;
+    } //-- StarsProgramReenableResponse getStarsProgramReenableResponse() 
 
     /**
      * Returns the value of field 'starsProgramSignUp'.
@@ -879,6 +927,50 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsNewCustomerAccountResponse = starsNewCustomerAccountResponse;
     } //-- void setStarsNewCustomerAccountResponse(StarsNewCustomerAccountResponse) 
+
+    /**
+     * Sets the value of field 'starsProgramOptOut'.
+     * 
+     * @param starsProgramOptOut the value of field
+     * 'starsProgramOptOut'.
+    **/
+    public void setStarsProgramOptOut(StarsProgramOptOut starsProgramOptOut)
+    {
+        this._starsProgramOptOut = starsProgramOptOut;
+    } //-- void setStarsProgramOptOut(StarsProgramOptOut) 
+
+    /**
+     * Sets the value of field 'starsProgramOptOutResponse'.
+     * 
+     * @param starsProgramOptOutResponse the value of field
+     * 'starsProgramOptOutResponse'.
+    **/
+    public void setStarsProgramOptOutResponse(StarsProgramOptOutResponse starsProgramOptOutResponse)
+    {
+        this._starsProgramOptOutResponse = starsProgramOptOutResponse;
+    } //-- void setStarsProgramOptOutResponse(StarsProgramOptOutResponse) 
+
+    /**
+     * Sets the value of field 'starsProgramReenable'.
+     * 
+     * @param starsProgramReenable the value of field
+     * 'starsProgramReenable'.
+    **/
+    public void setStarsProgramReenable(StarsProgramReenable starsProgramReenable)
+    {
+        this._starsProgramReenable = starsProgramReenable;
+    } //-- void setStarsProgramReenable(StarsProgramReenable) 
+
+    /**
+     * Sets the value of field 'starsProgramReenableResponse'.
+     * 
+     * @param starsProgramReenableResponse the value of field
+     * 'starsProgramReenableResponse'.
+    **/
+    public void setStarsProgramReenableResponse(StarsProgramReenableResponse starsProgramReenableResponse)
+    {
+        this._starsProgramReenableResponse = starsProgramReenableResponse;
+    } //-- void setStarsProgramReenableResponse(StarsProgramReenableResponse) 
 
     /**
      * Sets the value of field 'starsProgramSignUp'.

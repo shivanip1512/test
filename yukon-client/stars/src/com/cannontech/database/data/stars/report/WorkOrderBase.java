@@ -65,13 +65,16 @@ public class WorkOrderBase extends DBPersistent {
 
     public void retrieve() throws java.sql.SQLException {
         getWorkOrderBase().retrieve();
-        
+
+/*
+ * Commented out since cache is used now
+ *         
         getWorkType().setEntryID( getWorkOrderBase().getWorkTypeID() );
         getWorkType().retrieve();
         
         getCurrentState().setEntryID( getWorkOrderBase().getCurrentStateID() );
         getCurrentState().retrieve();
-        
+*/        
         if (getSite() == null) {
         	site = new com.cannontech.database.data.stars.customer.AccountSite();
         	site.setAccountSiteID( getWorkOrderBase().getSiteID() );

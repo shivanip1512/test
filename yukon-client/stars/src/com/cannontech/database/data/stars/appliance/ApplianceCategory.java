@@ -51,11 +51,15 @@ public class ApplianceCategory extends DBPersistent {
     public void retrieve() throws java.sql.SQLException {
         getApplianceCategory().retrieve();
         
+/*
+ * Commented out since cached is used now
+ * 
         getCategory().setEntryID( getApplianceCategory().getCategoryID() );
         getCategory().retrieve();
         
         getWebConfiguration().setConfigurationID( getApplianceCategory().getWebConfigurationID() );
         getWebConfiguration().retrieve();
+*/
     }
 
     public com.cannontech.database.db.stars.appliance.ApplianceCategory getApplianceCategory() {

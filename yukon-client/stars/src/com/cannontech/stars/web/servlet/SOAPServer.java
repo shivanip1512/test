@@ -12,141 +12,16 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.database.db.company.EnergyCompany;
-import com.cannontech.database.db.stars.CustomerSelectionList;
-import com.cannontech.database.db.stars.CustomerListEntry;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.servlet.PILConnectionServlet;
 
 import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.timertask.*;
 import com.cannontech.stars.xml.*;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 import com.cannontech.stars.xml.util.XMLUtil;
-
-/*
- * Class of the reenable check timer task
- */
-class ReenableCheckTask extends TimerTask {
-	public void run() {
-		try {
-			CTILogger.debug( "*** Start running reenable check task ***" );
-			
-			EnergyCompany[] companies = SOAPServer.getAllEnergyCompanies();
-			if (companies == null) return;
-			
-			for (int i = 0; i < companies.length; i++) {
-				Hashtable selectionLists = SOAPServer.getAllSelectionLists( companies[i].getEnergyCompanyID() );
-				if (selectionLists == null) continue;
-				
-				int reenableActionID = StarsCustListEntryFactory.getStarsCustListEntry(
-						(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
-						CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION ).getEntryID();
-				int completeActionID = StarsCustListEntryFactory.getStarsCustListEntry(
-						(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
-						CustomerListEntry.YUKONDEF_ACT_COMPLETED ).getEntryID();
-				int programEventID = StarsCustListEntryFactory.getStarsCustListEntry(
-						(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_LMCUSTOMEREVENT),
-						CustomerListEntry.YUKONDEF_LMPROGRAMEVENT ).getEntryID();
-				int hardwareEventID = StarsCustListEntryFactory.getStarsCustListEntry(
-						(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_LMCUSTOMEREVENT),
-						CustomerListEntry.YUKONDEF_LMHARDWAREEVENT ).getEntryID();
-				
-				com.cannontech.database.db.stars.event.LMCustomerEventBase[] hwEvents =
-						com.cannontech.database.db.stars.event.LMCustomerEventBase.getAllCustomerEvents( hardwareEventID, reenableActionID );
-				com.cannontech.database.db.stars.event.LMCustomerEventBase[] progEvents =
-						com.cannontech.database.db.stars.event.LMCustomerEventBase.getAllCustomerEvents( programEventID, reenableActionID );
-						
-				for (int j = 0; j < hwEvents.length; j++) {
-					if (hwEvents[j].getEventDateTime().before( new Date() )) {
-						// Send yukon switch command to enable the LM hardware
-						com.cannontech.database.db.stars.event.LMHardwareEvent hwEvent = new com.cannontech.database.db.stars.event.LMHardwareEvent();
-						hwEvent.setEventID( hwEvents[i].getEventID() );
-						hwEvent = (com.cannontech.database.db.stars.event.LMHardwareEvent)
-								Transaction.createTransaction( Transaction.RETRIEVE, hwEvent ).execute();
-								
-						com.cannontech.database.db.stars.hardware.LMHardwareBase hw = new com.cannontech.database.db.stars.hardware.LMHardwareBase();
-						hw.setInventoryID( hwEvent.getInventoryID() );
-						hw = (com.cannontech.database.db.stars.hardware.LMHardwareBase)
-								Transaction.createTransaction( Transaction.RETRIEVE, hw ).execute();
-								
-						String cmd = "putconfig service in serial " + hw.getManufacturerSerialNumber();
-						ServerUtils.sendCommand( cmd, ServerUtils.getClientConnection() );
-						
-						CTILogger.debug( "*** Send service in command to serial " + hw.getManufacturerSerialNumber() );
-						
-						// Update the customer event table
-						hwEvents[j].setActionID( new Integer(completeActionID) );
-						hwEvents[j].setEventDateTime( new Date() );
-						hwEvents[j] = (com.cannontech.database.db.stars.event.LMCustomerEventBase)
-								Transaction.createTransaction( Transaction.UPDATE, hwEvents[j] ).execute();
-						
-						// Update the lite object
-						LiteLMHardware liteHw = SOAPServer.getLMHardware( companies[i].getEnergyCompanyID(), hw.getInventoryID(), false );
-						if (liteHw != null) {
-							ArrayList hwHist = liteHw.getLmHardwareHistory();
-							if (hwHist != null) {
-								for (int k = hwHist.size() - 1; k >= 0; k--) {
-									LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) hwHist.get(k);
-									if (liteEvent.getEventID() == hwEvents[j].getEventID().intValue()) {
-										StarsLiteFactory.setLiteLMCustomerEvent( liteEvent, hwEvents[j] );
-										break;
-									}
-								}
-							}
-						}
-					}
-				}
-						
-				for (int j = 0; j < progEvents.length; j++) {
-					Date now = new Date();
-					if (progEvents[j].getEventDateTime().before( now )) {
-						progEvents[j].setActionID( new Integer(completeActionID) );
-						progEvents[j].setEventDateTime( now );
-						progEvents[j] = (com.cannontech.database.db.stars.event.LMCustomerEventBase)
-								Transaction.createTransaction( Transaction.UPDATE, progEvents[j] ).execute();
-						
-						// Update the lite object
-						com.cannontech.database.db.stars.event.LMProgramEvent progEvent = new com.cannontech.database.db.stars.event.LMProgramEvent();
-						progEvent.setEventID( progEvents[j].getEventID() );
-						progEvent = (com.cannontech.database.db.stars.event.LMProgramEvent)
-								Transaction.createTransaction( Transaction.RETRIEVE, progEvent ).execute();
-								
-						ArrayList liteAcctInfoList = SOAPServer.getAllCustAccountInformation( companies[i].getEnergyCompanyID() );
-						for (int k = 0; k < liteAcctInfoList.size(); k++) {
-							LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) liteAcctInfoList.get(k);
-							if (liteAcctInfo.getCustomerAccount().getAccountID() != progEvent.getAccountID().intValue()) continue;
-							
-							ArrayList programs = liteAcctInfo.getLmPrograms();
-							if (programs != null) {
-								for (int l = 0; l < programs.size(); l++) {
-									LiteStarsLMProgram liteProg = (LiteStarsLMProgram) programs.get(l);
-									if (liteProg.getLmProgramID() != progEvent.getLMProgramID().intValue()) continue;
-									
-									ArrayList progHist = liteProg.getProgramHistory();
-									if (progHist != null) {
-										for (int m = progHist.size() - 1; m >= 0; m--) {
-											LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) progHist.get(m);
-											if (liteEvent.getEventID() == progEvent.getEventID().intValue()) {
-												StarsLiteFactory.setLiteLMCustomerEvent( liteEvent, progEvents[j] );
-												break;
-											}
-										}
-									}
-									break;
-								}
-							}
-							break;
-						}
-					}
-				}
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-}
 
 /**
  * <p>Title: </p>
@@ -165,8 +40,9 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     // Timer object for periodical tasks
     private static Timer timer = new Timer();
     
-    // Period in milliseconds between reenable checks
-    private static final long REENABLE_CHECK_PERIOD = 1000 * 3600 * 24;
+    private static StarsTimerTask[] timerTasks = {
+    	new DailyTimerTask()
+    };
 	
 	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
 	
@@ -368,14 +244,23 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	}
     
     void startTimers() {
-    	/* Right now, we just have the reenable check timer */
-    	// Timer is set to run at midnight every day
-    	Calendar startTime = Calendar.getInstance();
-    	startTime.set( Calendar.SECOND, 0 );
-    	startTime.set( Calendar.MINUTE, 0 );
-    	startTime.set( Calendar.HOUR, 0 );
-    	
-    	timer.schedule( new ReenableCheckTask(), startTime.getTime(), REENABLE_CHECK_PERIOD );
+    	for (int i = 0; i < timerTasks.length; i++) {
+    		if (timerTasks[i].getInitialDelay() >= 0) {
+    			long initRunTime = System.currentTimeMillis() + timerTasks[i].getInitialDelay();
+    			long startTime = timerTasks[i].getNextScheduledTime().getTime();
+    			if (initRunTime < startTime) {
+    				try {
+    					StarsTimerTask initTask = (StarsTimerTask) timerTasks[i].getClass().newInstance();
+	    				timer.schedule( initTask, timerTasks[i].getInitialDelay() );
+    				}
+    				catch (Exception e) {
+    					e.printStackTrace();
+    				}
+    			}
+    		}
+    		
+    		timer.schedule( timerTasks[i], timerTasks[i].getNextScheduledTime(), timerTasks[i].getTimerPeriod() );
+    	}
     }
     
     public static EnergyCompany[] getAllEnergyCompanies() {
@@ -533,7 +418,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	        // Get substation list
 	        LiteCustomerSelectionList subList = new LiteCustomerSelectionList();
 	        subList.setListID( -1 );
-	        subList.setListName( "Substation" );
+	        subList.setListName( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION );
 	        
 	        com.cannontech.database.db.stars.Substation[] subs =
 	        		com.cannontech.database.db.stars.Substation.getAllSubstations( energyCompanyID );
@@ -551,7 +436,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	        // Get service company list
 	        LiteCustomerSelectionList companyList = new LiteCustomerSelectionList();
 	        companyList.setListID( -1 );
-	        companyList.setListName( "ServiceCompany" );
+	        companyList.setListName( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY );
 	        
 	        com.cannontech.database.db.stars.report.ServiceCompany[] companies =
 	        		com.cannontech.database.db.stars.report.ServiceCompany.getAllServiceCompanies( energyCompanyID );
@@ -632,6 +517,19 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		return ctrlHist;
 	}
 	
+	
+	public static LiteApplianceCategory getApplianceCategory(Integer energyCompanyID, Integer applianceCategoryID) {
+		ArrayList appCats = getAllApplianceCategories( energyCompanyID );
+		
+		LiteApplianceCategory appCat = null;
+		for (int i = 0; i < appCats.size(); i++) {
+			appCat = (LiteApplianceCategory) appCats.get(i);
+			if (appCat.getApplianceCategoryID() == applianceCategoryID.intValue())
+				return appCat;
+		}
+		
+		return null;
+	}
 	
 	public static LiteCustomerContact getCustomerContact(Integer energyCompanyID, Integer contactID) {
 		ArrayList custContactList = getAllCustomerContacts( energyCompanyID );
@@ -847,31 +745,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
         return null;
 	}
 	
-	public static StarsAppliance addAppliance(Integer energyCompanyID, com.cannontech.database.data.stars.appliance.ApplianceBase app) {
-		ArrayList custAcctInfoList = getAllCustAccountInformation( energyCompanyID );
-		
-		Hashtable selectionLists = (Hashtable) getAllSelectionLists( energyCompanyID);
-		
-        StarsAppliance starsApp = new StarsAppliance();
-        starsApp.setApplianceID( app.getApplianceBase().getApplianceID().intValue() );
-        starsApp.setApplianceCategoryID( app.getApplianceBase().getApplianceCategoryID().intValue() );
-        if (app.getLMHardwareConfig() != null)
-        	starsApp.setInventoryID( app.getLMHardwareConfig().getInventoryID().intValue() );
-        if (app.getLMProgram() != null)
-        	starsApp.setLmProgramID( app.getLMProgram().getPAObjectID().intValue() );
-        starsApp.setCategoryName( StarsCustListEntryFactory.getStarsCustListEntry(
-        		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_APPLIANCECATEGORY),
-        		app.getApplianceCategory().getCategoryID().intValue()).getContent() );
-        starsApp.setManufacturer( "" );
-        starsApp.setManufactureYear( "" );
-        starsApp.setLocation( "" );
-        starsApp.setServiceCompany( new ServiceCompany() );
-        starsApp.setNotes( app.getApplianceBase().getNotes() );
-        
-        return starsApp;
-	}
-	
-	public static LiteStarsCustAccountInformation getCustAccountInformation(Integer energyCompanyID, Integer accountID) {
+	public static LiteStarsCustAccountInformation getCustAccountInformation(Integer energyCompanyID, Integer accountID, boolean autoLoad) {
 		ArrayList custAcctInfoList = getAllCustAccountInformation( energyCompanyID );
 		
 		LiteStarsCustAccountInformation accountInfo = null;
@@ -881,16 +755,18 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				return accountInfo;
 		}
 		
-		try {
-			com.cannontech.database.data.stars.customer.CustomerAccount account = new com.cannontech.database.data.stars.customer.CustomerAccount();
-			account.setAccountID( accountID );
-			account = (com.cannontech.database.data.stars.customer.CustomerAccount)
-					Transaction.createTransaction( Transaction.RETRIEVE, account ).execute();
-					
-			return addCustAccountInformation( energyCompanyID, account );
-		}
-		catch (Exception e) {
-			e.printStackTrace();
+		if (autoLoad) {
+			try {
+				com.cannontech.database.data.stars.customer.CustomerAccount account = new com.cannontech.database.data.stars.customer.CustomerAccount();
+				account.setAccountID( accountID );
+				account = (com.cannontech.database.data.stars.customer.CustomerAccount)
+						Transaction.createTransaction( Transaction.RETRIEVE, account ).execute();
+						
+				return addCustAccountInformation( energyCompanyID, account );
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
 		return null;
@@ -964,30 +840,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
             for (int i = 0; i < applianceVector.size(); i++) {
                 com.cannontech.database.data.stars.appliance.ApplianceBase appliance =
                             (com.cannontech.database.data.stars.appliance.ApplianceBase) applianceVector.elementAt(i);
-                com.cannontech.database.db.stars.appliance.ApplianceCategory category = appliance.getApplianceCategory();
-                com.cannontech.database.db.stars.hardware.LMHardwareConfiguration config = appliance.getLMHardwareConfig();
-
-                StarsAppliance starsApp = new StarsAppliance();
-                starsApp.setApplianceID( appliance.getApplianceBase().getApplianceID().intValue() );
-                starsApp.setApplianceCategoryID( category.getApplianceCategoryID().intValue() );
-                if (config.getInventoryID() != null)
-                    starsApp.setInventoryID( config.getInventoryID().intValue() );
-                else
-                    starsApp.setInventoryID( -1 );
-                starsApp.setLmProgramID( appliance.getApplianceBase().getLMProgramID().intValue() );
-                starsApp.setCategoryName( StarsCustListEntryFactory.getStarsCustListEntry(
-                		(LiteCustomerSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_APPLIANCECATEGORY ),
-                		category.getCategoryID().intValue()).getContent() );
-                starsApp.setManufacturer( "" );
-                starsApp.setManufactureYear( "" );
-                starsApp.setLocation( "" );
-                starsApp.setServiceCompany( new ServiceCompany() );
-                if (appliance.getApplianceBase().getNotes() != null)
-                    starsApp.setNotes( appliance.getApplianceBase().getNotes() );
-                else
-                    starsApp.setNotes( "" );
-
-                accountInfo.getAppliances().add( starsApp );
+                accountInfo.getAppliances().add( StarsLiteFactory.createStarsAppliance(appliance, energyCompanyID) );
             }
 
             Vector inventoryVector = account.getInventoryVector();
@@ -1011,15 +864,15 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
             for (int i = 0; i < applianceVector.size(); i++) {
                 com.cannontech.database.data.stars.appliance.ApplianceBase appliance =
                         (com.cannontech.database.data.stars.appliance.ApplianceBase) applianceVector.elementAt(i);
-                com.cannontech.database.data.device.lm.LMProgramBase program = appliance.getLMProgram();
-                if (program.getPAObjectID().intValue() == 0) continue;
+                int progID = appliance.getApplianceBase().getLMProgramID().intValue();
+                if (progID == 0) continue;
                 
                 LiteStarsLMProgram liteProg = new LiteStarsLMProgram();
-                liteProg.setLmProgramID( program.getPAObjectID().intValue() );
+                liteProg.setLmProgramID( progID );
                 liteProg.setGroupID( appliance.getLMHardwareConfig().getAddressingGroupID().intValue() );
                 
                 com.cannontech.database.data.stars.event.LMProgramEvent[] events =
-                		com.cannontech.database.data.stars.event.LMProgramEvent.getAllLMProgramEvents( accountDB.getAccountID(), program.getPAObjectID() );
+                		com.cannontech.database.data.stars.event.LMProgramEvent.getAllLMProgramEvents( accountDB.getAccountID(), new Integer(progID) );
                 if (events != null) {
                 	liteProg.setProgramHistory( new ArrayList() );
                 	for (int j = 0; j < events.length; j++) {

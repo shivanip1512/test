@@ -84,28 +84,47 @@ public class ServletUtils {
     		for (int j = 0; j < starsProgHist.getStarsLMProgramEventCount(); j++) {
     			StarsLMProgramEvent event = starsProgHist.getStarsLMProgramEvent(j);
     			
-	    		ProgramHistory progHist = (ProgramHistory) progHistMap.get( event.getEventDateTime() );
-	    		if (progHist == null) {
-	    			progHist = new ProgramHistory();
-	    			progHist.date = event.getEventDateTime();
-	    			progHist.action = event.getEventAction();
-	    			progHistMap.put( event.getEventDateTime(), progHist );
-	    		}
-	    			
+    			ProgramHistory progHist = new ProgramHistory();
+    			progHist.date = event.getEventDateTime();
+    			progHist.action = event.getEventAction();
+    			progHist.programList.add( program.getProgramName() );
+    			
     			if (event.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_TEMPTERMINATION )) {
-    				// Getting opt out duration by looking at the next program event,
-    				// the next event must be 'FutureAction' or 'Completed'
-    				if (++j >= starsProgHist.getStarsLMProgramEventCount()) return null;
-    				StarsLMProgramEvent event2 = starsProgHist.getStarsLMProgramEvent(j);
-    				if (!event2.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION )
-    					&& !event2.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED ))
-    					return null;
+    				// Getting opt out duration by looking at the next "Future Activation" event,
+    				boolean foundDuration = false;
+    				while (j < starsProgHist.getStarsLMProgramEventCount() - 1) {
+	    				StarsLMProgramEvent event2 = starsProgHist.getStarsLMProgramEvent(++j);
+	    				if (event2.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION )
+	    					|| event2.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED ))
+	    				{
+	    					progHist.duration = getDurationString( event.getEventDateTime(), event2.getEventDateTime() );
+	    					foundDuration = true;
+	    					break;
+	    				}
+	    				if (!event2.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_TEMPTERMINATION ))
+	    					return null;
+    				}
     				
-    				if (progHist.duration == null)	
-	    				progHist.duration = getDurationString( event.getEventDateTime(), event2.getEventDateTime() );
+    				if (!foundDuration) return null;
     			}
     			
-	    		progHist.programList.add( program.getProgramName() );
+	    		ProgramHistory progHist2 = (ProgramHistory) progHistMap.get( progHist.date );
+	    		if (progHist2 == null)	// No other events happened at the same time
+	    			progHistMap.put( progHist.date, progHist );
+	    		else {	// Found events happened at the same time
+	    			if (!progHist2.action.equals( progHist.action ))	// Not the same action
+	    				progHistMap.put( progHist.date, progHist );
+		    		else {	// Same event action
+		    			if (progHist.duration == null)	// Not Temporary opt out action
+		    				progHist2.programList.add( program.getProgramName() );
+		    			else {	// Temporary opt out action
+		    				if (progHist.duration.equals( progHist2.duration ))	// Same duration
+		    					progHist2.programList.add( program.getProgramName() );
+		    				else	// Different duration
+		    					progHistMap.put( progHist.date, progHist );
+		    			}
+		    		}
+	    		}
     		}
     	}
     	

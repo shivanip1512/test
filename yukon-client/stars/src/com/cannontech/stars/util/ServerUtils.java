@@ -1,6 +1,9 @@
 package com.cannontech.stars.util;
 
+import java.util.*;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.StarsCustListEntryFactory;
 import com.cannontech.servlet.PILConnectionServlet;
@@ -40,4 +43,91 @@ public class ServerUtils {
     	
     	return connContainer.getConnection();
     }
+	
+	public static void processFutureActivation(ArrayList custEventHist, Integer futureActEntryID, Integer actCompEntryID) {
+		try {
+			ArrayList eventToBeRemoved = new ArrayList();
+			
+			for (int i = 0; i < custEventHist.size(); i++) {
+				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) custEventHist.get(i);
+				if (liteEvent.getActionID() == futureActEntryID.intValue()) {
+					com.cannontech.database.data.stars.event.LMCustomerEventBase event = (com.cannontech.database.data.stars.event.LMCustomerEventBase)
+							StarsLiteFactory.createDBPersistent( liteEvent );
+					com.cannontech.database.db.stars.event.LMCustomerEventBase eventDB = event.getLMCustomerEventBase();
+							
+					if (liteEvent.getEventDateTime() < new Date().getTime()) {
+						// Future activation time earlier than current time, change the entry to "Activation Completed"
+						eventDB = (com.cannontech.database.db.stars.event.LMCustomerEventBase)
+								Transaction.createTransaction( Transaction.RETRIEVE, eventDB ).execute();
+						eventDB.setActionID( actCompEntryID );
+						eventDB = (com.cannontech.database.db.stars.event.LMCustomerEventBase)
+								Transaction.createTransaction( Transaction.UPDATE, eventDB ).execute();
+								
+						liteEvent.setActionID( actCompEntryID.intValue() );
+					}
+					else {
+						// Future activation time not reached yet, delete the entry
+						Transaction.createTransaction( Transaction.DELETE, event ).execute();
+						eventToBeRemoved.add( liteEvent );
+					}
+				}
+			}
+			
+			for (int i = 0; i < eventToBeRemoved.size(); i++)
+				custEventHist.remove( eventToBeRemoved.get(i) );
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void removeFutureActivation(ArrayList custEventHist, Integer futureActEntryID) {
+		try {
+			ArrayList eventToBeRemoved = new ArrayList();
+			
+			for (int i = 0; i < custEventHist.size(); i++) {
+				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) custEventHist.get(i);
+				if (liteEvent.getActionID() == futureActEntryID.intValue()) {
+					com.cannontech.database.data.stars.event.LMCustomerEventBase event = (com.cannontech.database.data.stars.event.LMCustomerEventBase)
+							StarsLiteFactory.createDBPersistent( liteEvent );
+					Transaction.createTransaction( Transaction.DELETE, event ).execute();
+					
+					eventToBeRemoved.add( liteEvent );
+				}
+			}
+			
+			for (int i = 0; i < eventToBeRemoved.size(); i++)
+				custEventHist.remove( eventToBeRemoved.get(i) );
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static boolean isInService(ArrayList progHist, Integer futureActEntryID, Integer actCompEntryID) {
+		for (int i = progHist.size() - 1; i >= 0 ; i--) {
+			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) progHist.get(i);
+			if (liteEvent.getActionID() == futureActEntryID.intValue())
+				return false;
+			if (liteEvent.getActionID() == actCompEntryID.intValue())
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public static StarsSelectionListEntry getInventoryCategory(StarsCustListEntry deviceType, Hashtable selectionLists) {
+		LiteCustomerSelectionList invCatList = (LiteCustomerSelectionList)
+				selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_INVENTORYCATEGORY );
+				
+		if (deviceType.getContent().startsWith("LCR")) {	// LCR-XXXX
+			for (int i = 0; i < invCatList.getListEntries().length; i++) {
+				StarsSelectionListEntry entry = invCatList.getListEntries()[i];
+				if (entry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_INVCAT_ONEWAYREC ))
+					return entry;
+			}
+		}
+		
+		return null;
+	}
 }

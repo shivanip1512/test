@@ -5,9 +5,10 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsAppFactory;
 import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.util.*;
@@ -30,7 +31,7 @@ public class CreateApplianceAction implements ActionBase {
 		try {
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 			if (operator == null) return null;
-			java.util.Hashtable selectionLists = (java.util.Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+			java.util.Hashtable selectionLists = (java.util.Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LISTS" );
 
 			StarsCreateAppliance newApp = new StarsCreateAppliance();
 			
@@ -96,28 +97,30 @@ public class CreateApplianceAction implements ActionBase {
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
+        	
+        	Integer energyCompanyID = new Integer( (int) operator.getEnergyCompanyID() );
             
             StarsCreateAppliance newApp = reqOper.getStarsCreateAppliance();
             com.cannontech.database.data.stars.appliance.ApplianceBase app = new com.cannontech.database.data.stars.appliance.ApplianceBase();
             com.cannontech.database.db.stars.appliance.ApplianceBase appDB = app.getApplianceBase();
             
             appDB.setAccountID( new Integer(accountInfo.getCustomerAccount().getAccountID()) );
-            java.util.ArrayList appCats = com.cannontech.stars.web.servlet.SOAPServer.getAllApplianceCategories(
-            		new Integer((int) operator.getEnergyCompanyID()) );
+            appDB.setLMProgramID( new Integer(0) );
+            appDB.setNotes( newApp.getNotes() );
+            
+            java.util.ArrayList appCats = SOAPServer.getAllApplianceCategories(	energyCompanyID );
             if (appCats == null || appCats.size() == 0)
             	appDB.setApplianceCategoryID( new Integer(com.cannontech.database.db.stars.appliance.ApplianceCategory.NONE_INT) );
             else {
             	// Find the first appliance category that's in the specified "category"
             	for (int i = 0; i < appCats.size(); i++) {
-            		StarsApplianceCategory appCat = (StarsApplianceCategory) appCats.get(i);
+            		LiteApplianceCategory appCat = (LiteApplianceCategory) appCats.get(i);
             		if (appCat.getCategoryID() == newApp.getApplianceCategoryID()) {
             			appDB.setApplianceCategoryID( new Integer(appCat.getApplianceCategoryID()) );
             			break;
             		}
             	}
             }
-            appDB.setLMProgramID( new Integer(0) );
-            appDB.setNotes( newApp.getNotes() );
             
             app = (com.cannontech.database.data.stars.appliance.ApplianceBase) Transaction.createTransaction( Transaction.INSERT, app ).execute();
             

@@ -120,9 +120,9 @@ public class GetCustSelListsAction implements ActionBase {
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 			StarsUser user = (StarsUser) session.getAttribute("USER");
 			if (operator != null)
-	            operator.setAttribute( "CUSTOMER_SELECTION_LIST", selectionListTable );
+	            operator.setAttribute( "CUSTOMER_SELECTION_LISTS", selectionListTable );
 	        else
-	            user.setAttribute( "CUSTOMER_SELECTION_LIST", selectionListTable );
+	            user.setAttribute( "CUSTOMER_SELECTION_LISTS", selectionListTable );
             
             return 0;
         }

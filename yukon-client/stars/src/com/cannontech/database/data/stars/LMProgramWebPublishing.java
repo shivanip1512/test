@@ -55,7 +55,10 @@ public class LMProgramWebPublishing extends DBPersistent {
 	 */
 	public void retrieve() throws SQLException {
 		getLMProgramWebPublishing().retrieve();
-		
+
+/*
+ * Commented out since cached is used now
+ * 		
 		getWebConfiguration().setConfigurationID( getLMProgramWebPublishing().getWebSettingsID() );
 		getWebConfiguration().retrieve();
 		
@@ -64,6 +67,7 @@ public class LMProgramWebPublishing extends DBPersistent {
 		
 		getLMProgram().setPAObjectID( getLMProgramWebPublishing().getLMProgramID() );
 		getLMProgram().retrieve();
+*/
 	}
 
 	/**

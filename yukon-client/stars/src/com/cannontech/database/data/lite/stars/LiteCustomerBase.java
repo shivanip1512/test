@@ -19,6 +19,7 @@ public class LiteCustomerBase extends LiteBase {
 
 	public LiteCustomerBase() {
 		super();
+		setLiteType( LiteTypes.STARS_CUSTOMER_BASE );
 	}
 	
 	public LiteCustomerBase(int customerID) {

@@ -16,7 +16,7 @@ public class Substation extends DBPersistent {
 
     private com.cannontech.database.db.stars.Substation substation = null;
     
-    private com.cannontech.database.data.company.EnergyCompanyBase energyCompanyBase = null;
+    private Integer energyCompanyID = null;
 
     public Substation() {
         super();
@@ -39,20 +39,18 @@ public class Substation extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
-    	if (getEnergyCompanyBase() == null)
-    		throw new java.sql.SQLException("Add: setEnergyCompanyBase() must be called before this function");
+    	if (getEnergyCompanyID() == null)
+    		throw new java.sql.SQLException("Add: setEnergyCompanyID() must be called before this function");
     		
         getSubstation().add();
         
-        if (getEnergyCompanyBase().getEnergyCompany() != null) {
-        	// Add to mapping table
-        	Object[] addValues = {
-        		getEnergyCompanyBase().getEnergyCompany().getEnergyCompanyID(),
-        		getSubstation().getSubstationID(),
-        		getSubstation().TABLE_NAME
-        	};
-        	add("ECToGenericMapping", addValues);
-        }
+    	// Add to mapping table
+    	Object[] addValues = {
+    		getEnergyCompanyID(),
+    		getSubstation().getSubstationID(),
+    		getSubstation().TABLE_NAME
+    	};
+    	add("ECToGenericMapping", addValues);
     }
 
     public void update() throws java.sql.SQLException {
@@ -83,20 +81,19 @@ public class Substation extends DBPersistent {
 	}
 
 	/**
-	 * Returns the energyCompanyBase.
-	 * @return com.cannontech.database.data.company.EnergyCompanyBase
+	 * Returns the energyCompanyID.
+	 * @return Integer
 	 */
-	public com.cannontech.database.data.company.EnergyCompanyBase getEnergyCompanyBase() {
-		return energyCompanyBase;
+	public Integer getEnergyCompanyID() {
+		return energyCompanyID;
 	}
 
 	/**
-	 * Sets the energyCompanyBase.
-	 * @param energyCompanyBase The energyCompanyBase to set
+	 * Sets the energyCompanyID.
+	 * @param energyCompanyID The energyCompanyID to set
 	 */
-	public void setEnergyCompanyBase(
-		com.cannontech.database.data.company.EnergyCompanyBase energyCompanyBase) {
-		this.energyCompanyBase = energyCompanyBase;
+	public void setEnergyCompanyID(Integer energyCompanyID) {
+		this.energyCompanyID = energyCompanyID;
 	}
 
 }

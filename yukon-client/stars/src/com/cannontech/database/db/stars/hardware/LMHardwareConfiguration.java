@@ -35,7 +35,6 @@ public class LMHardwareConfiguration extends DBPersistent {
 
         java.sql.PreparedStatement pstmt = null;
         java.sql.ResultSet rset = null;
-        LMHardwareConfiguration config = null;
 
         try
         {
@@ -50,11 +49,13 @@ public class LMHardwareConfiguration extends DBPersistent {
                 rset = pstmt.executeQuery();
 
                 if (rset.next()) {
-                    config = new LMHardwareConfiguration();
+                    LMHardwareConfiguration config = new LMHardwareConfiguration();
 
                     config.setInventoryID( new Integer(rset.getInt("InventoryID")) );
                     config.setApplianceID( new Integer(rset.getInt("ApplianceID")) );
                     config.setAddressingGroupID( new Integer(rset.getInt("AddressingGroupID")) );
+                    
+                    return config;
                 }
             }
         }
@@ -75,7 +76,7 @@ public class LMHardwareConfiguration extends DBPersistent {
             }
         }
 
-        return config;
+        return null;
     }
 
     public static LMHardwareConfiguration[] getALLHardwareConfigs(Integer inventoryID, java.sql.Connection conn) {

@@ -21,6 +21,7 @@ public class LiteSiteInformation extends LiteBase {
 	
 	public LiteSiteInformation() {
 		super();
+		setLiteType( LiteTypes.STARS_SITE_INFORMATION );
 	}
 	
 	public LiteSiteInformation(int siteID) {

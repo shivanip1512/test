@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsDisableService.java,v 1.14 2002/11/14 16:13:14 zyao Exp $
+ * $Id: StarsDisableService.java,v 1.15 2002/11/20 20:48:31 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -15,9 +15,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Vector;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -26,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Disable programs of a customer account
  * 
- * @version $Revision: 1.14 $ $Date: 2002/11/14 16:13:14 $
+ * @version $Revision: 1.15 $ $Date: 2002/11/20 20:48:31 $
 **/
 public class StarsDisableService implements java.io.Serializable {
 
@@ -35,9 +32,12 @@ public class StarsDisableService implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private java.util.Date _reEnableDateTime;
+    private int _inventoryID;
 
-    private java.util.Vector _serialNumberList;
+    /**
+     * keeps track of state for field: _inventoryID
+    **/
+    private boolean _has_inventoryID;
 
 
       //----------------/
@@ -46,7 +46,6 @@ public class StarsDisableService implements java.io.Serializable {
 
     public StarsDisableService() {
         super();
-        _serialNumberList = new Vector();
     } //-- com.cannontech.stars.xml.serialize.StarsDisableService()
 
 
@@ -55,79 +54,28 @@ public class StarsDisableService implements java.io.Serializable {
     //-----------/
 
     /**
-     * 
-     * 
-     * @param vSerialNumber
     **/
-    public void addSerialNumber(java.lang.String vSerialNumber)
-        throws java.lang.IndexOutOfBoundsException
+    public void deleteInventoryID()
     {
-        _serialNumberList.addElement(vSerialNumber);
-    } //-- void addSerialNumber(java.lang.String) 
+        this._has_inventoryID= false;
+    } //-- void deleteInventoryID() 
 
     /**
+     * Returns the value of field 'inventoryID'.
      * 
-     * 
-     * @param index
-     * @param vSerialNumber
+     * @return the value of field 'inventoryID'.
     **/
-    public void addSerialNumber(int index, java.lang.String vSerialNumber)
-        throws java.lang.IndexOutOfBoundsException
+    public int getInventoryID()
     {
-        _serialNumberList.insertElementAt(vSerialNumber, index);
-    } //-- void addSerialNumber(int, java.lang.String) 
+        return this._inventoryID;
+    } //-- int getInventoryID() 
 
     /**
     **/
-    public java.util.Enumeration enumerateSerialNumber()
+    public boolean hasInventoryID()
     {
-        return _serialNumberList.elements();
-    } //-- java.util.Enumeration enumerateSerialNumber() 
-
-    /**
-     * Returns the value of field 'reEnableDateTime'.
-     * 
-     * @return the value of field 'reEnableDateTime'.
-    **/
-    public java.util.Date getReEnableDateTime()
-    {
-        return this._reEnableDateTime;
-    } //-- java.util.Date getReEnableDateTime() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public java.lang.String getSerialNumber(int index)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        //-- check bounds for index
-        if ((index < 0) || (index > _serialNumberList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        
-        return (String)_serialNumberList.elementAt(index);
-    } //-- java.lang.String getSerialNumber(int) 
-
-    /**
-    **/
-    public java.lang.String[] getSerialNumber()
-    {
-        int size = _serialNumberList.size();
-        java.lang.String[] mArray = new java.lang.String[size];
-        for (int index = 0; index < size; index++) {
-            mArray[index] = (String)_serialNumberList.elementAt(index);
-        }
-        return mArray;
-    } //-- java.lang.String[] getSerialNumber() 
-
-    /**
-    **/
-    public int getSerialNumberCount()
-    {
-        return _serialNumberList.size();
-    } //-- int getSerialNumberCount() 
+        return this._has_inventoryID;
+    } //-- boolean hasInventoryID() 
 
     /**
     **/
@@ -167,63 +115,15 @@ public class StarsDisableService implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'inventoryID'.
+     * 
+     * @param inventoryID the value of field 'inventoryID'.
     **/
-    public void removeAllSerialNumber()
+    public void setInventoryID(int inventoryID)
     {
-        _serialNumberList.removeAllElements();
-    } //-- void removeAllSerialNumber() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public java.lang.String removeSerialNumber(int index)
-    {
-        java.lang.Object obj = _serialNumberList.elementAt(index);
-        _serialNumberList.removeElementAt(index);
-        return (String)obj;
-    } //-- java.lang.String removeSerialNumber(int) 
-
-    /**
-     * Sets the value of field 'reEnableDateTime'.
-     * 
-     * @param reEnableDateTime the value of field 'reEnableDateTime'
-    **/
-    public void setReEnableDateTime(java.util.Date reEnableDateTime)
-    {
-        this._reEnableDateTime = reEnableDateTime;
-    } //-- void setReEnableDateTime(java.util.Date) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vSerialNumber
-    **/
-    public void setSerialNumber(int index, java.lang.String vSerialNumber)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        //-- check bounds for index
-        if ((index < 0) || (index > _serialNumberList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        _serialNumberList.setElementAt(vSerialNumber, index);
-    } //-- void setSerialNumber(int, java.lang.String) 
-
-    /**
-     * 
-     * 
-     * @param serialNumberArray
-    **/
-    public void setSerialNumber(java.lang.String[] serialNumberArray)
-    {
-        //-- copy array
-        _serialNumberList.removeAllElements();
-        for (int i = 0; i < serialNumberArray.length; i++) {
-            _serialNumberList.addElement(serialNumberArray[i]);
-        }
-    } //-- void setSerialNumber(java.lang.String) 
+        this._inventoryID = inventoryID;
+        this._has_inventoryID = true;
+    } //-- void setInventoryID(int) 
 
     /**
      * 

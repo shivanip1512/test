@@ -12,32 +12,14 @@ import com.cannontech.database.data.lite.LiteTypes;
  */
 public class LiteLMHardwareEvent extends LiteLMCustomerEvent {
 	
-	private int inventoryID = com.cannontech.database.db.stars.hardware.InventoryBase.NONE_INT;
-	
 	public LiteLMHardwareEvent() {
 		super();
+		setLiteType( LiteTypes.STARS_LMHARDWARE_EVENT );
 	}
 	
 	public LiteLMHardwareEvent(int eventID) {
-		super();
-		setEventID( eventID );
+		super( eventID );
 		setLiteType( LiteTypes.STARS_LMHARDWARE_EVENT );
 	}
-
-	/**
-	 * Returns the inventoryID.
-	 * @return int
-	 */
-	public int getInventoryID() {
-		return inventoryID;
-	}
-
-	/**
-	 * Sets the inventoryID.
-	 * @param inventoryID The inventoryID to set
-	 */
-	public void setInventoryID(int inventoryID) {
-		this.inventoryID = inventoryID;
-	}
-
+	
 }

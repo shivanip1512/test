@@ -21,6 +21,7 @@ public class LiteCustomerAccount extends LiteBase {
 	
 	public LiteCustomerAccount() {
 		super();
+		setLiteType( LiteTypes.STARS_CUSTOMER_ACCOUNT );
 	}
 	
 	public LiteCustomerAccount(int accountID) {

@@ -11,7 +11,9 @@ import com.cannontech.stars.xml.serialize.*;
  * Window>Preferences>Java>Code Generation.
  */
 public class StarsGetEnrollmentProgramsResponseFactory {
-
+/*
+ * Commented out since cache is used now
+ * 
 	public static StarsGetEnrollmentProgramsResponse getStarsGetEnrollmentProgramsResponse(Integer energyCompanyID, String category) {
 		try {
             StarsGetEnrollmentProgramsResponse response = new StarsGetEnrollmentProgramsResponse();
@@ -102,5 +104,5 @@ public class StarsGetEnrollmentProgramsResponseFactory {
 
         return null;
 	}
-	
+*/	
 }

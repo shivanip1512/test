@@ -75,7 +75,7 @@ public class GetCustAccountAction implements ActionBase {
 
             StarsGetCustomerAccount getAccount = reqOper.getStarsGetCustomerAccount();
             LiteStarsCustAccountInformation liteAcctInfo = com.cannontech.stars.web.servlet.SOAPServer.getCustAccountInformation(
-            		new Integer(user.getEnergyCompanyID()), new Integer(getAccount.getAccountID()) );
+            		new Integer(user.getEnergyCompanyID()), new Integer(getAccount.getAccountID()), true );
             if (liteAcctInfo == null) {
                 respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
                 		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Cannot find customer account information") );

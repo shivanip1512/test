@@ -5,7 +5,10 @@ import java.util.*;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.stars.CustomerSelectionList;
+import com.cannontech.database.db.stars.CustomerListEntry;
 import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.serialize.types.*;
 import com.cannontech.stars.xml.StarsCustListEntryFactory;
@@ -36,11 +39,11 @@ public class StarsLiteFactory {
 			setLiteLMHardware( (LiteLMHardware) lite, (com.cannontech.database.data.stars.hardware.LMHardwareBase) db );
 		}
 		else if (db instanceof com.cannontech.database.data.stars.event.LMHardwareEvent) {
-			lite = new LiteLMCustomerEvent();
+			lite = new LiteLMHardwareEvent();
 			setLiteLMCustomerEvent( (LiteLMCustomerEvent) lite, ((com.cannontech.database.data.stars.event.LMHardwareEvent) db).getLMCustomerEventBase() );
 		}
 		else if (db instanceof com.cannontech.database.data.stars.event.LMProgramEvent) {
-			lite = new LiteLMCustomerEvent();
+			lite = new LiteLMProgramEvent();
 			setLiteLMCustomerEvent( (LiteLMCustomerEvent) lite, ((com.cannontech.database.data.stars.event.LMProgramEvent) db).getLMCustomerEventBase() );
 		}
 		else if (db instanceof com.cannontech.database.db.stars.report.WorkOrderBase) {
@@ -85,6 +88,7 @@ public class StarsLiteFactory {
 	}
 	
 	public static void setLiteLMHardware(LiteLMHardware liteHw, com.cannontech.database.data.stars.hardware.LMHardwareBase hw) {
+		liteHw.setInventoryID( hw.getInventoryBase().getInventoryID().intValue() );
 		liteHw.setCategoryID( hw.getInventoryBase().getCategoryID().intValue() );
 		liteHw.setInstallationCompanyID( hw.getInventoryBase().getInstallationCompanyID().intValue() );
 		liteHw.setReceiveDate( hw.getInventoryBase().getReceiveDate().getTime() );
@@ -197,9 +201,13 @@ public class StarsLiteFactory {
 				db = new com.cannontech.database.db.stars.customer.SiteInformation();
 				((com.cannontech.database.db.stars.customer.SiteInformation) db).setSiteID( new Integer(lite.getLiteID()) );
 				break;
-			case LiteTypes.STARS_LMCUSTOMER_EVENT:
-				db = new com.cannontech.database.db.stars.event.LMCustomerEventBase();
-				((com.cannontech.database.db.stars.event.LMCustomerEventBase) db).setEventID( new Integer(lite.getLiteID()) );
+			case LiteTypes.STARS_LMHARDWARE_EVENT:
+				db = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+				((com.cannontech.database.data.stars.event.LMHardwareEvent) db).setEventID( new Integer(lite.getLiteID()) );
+				break;
+			case LiteTypes.STARS_LMPROGRAM_EVENT:
+				db = new com.cannontech.database.data.stars.event.LMProgramEvent();
+				((com.cannontech.database.data.stars.event.LMProgramEvent) db).setEventID( new Integer(lite.getLiteID()) );
 				break;
 		}
 		
@@ -221,6 +229,16 @@ public class StarsLiteFactory {
 		starsAddr.setCity( liteAddr.getCityName() );
 		starsAddr.setState( liteAddr.getStateCode() );
 		starsAddr.setZip( liteAddr.getZipCode() );
+	}
+	
+	public static void setStarsLMCustomerEvent(StarsLMCustomerEvent starsEvent, LiteLMCustomerEvent liteEvent, Hashtable selectionLists) {
+		StarsSelectionListEntry entry = StarsCustListEntryFactory.getStarsCustListEntry(
+				(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
+				liteEvent.getActionID() );
+		starsEvent.setEventAction( entry.getContent() );
+		starsEvent.setEventDateTime( new Date(liteEvent.getEventDateTime()) );
+		starsEvent.setNotes( liteEvent.getNotes() );
+		starsEvent.setYukonDefinition( entry.getYukonDefinition() );
 	}
 	
 	public static StarsSiteInformation createStarsSiteInformation(LiteSiteInformation liteSite, Hashtable selectionLists) {
@@ -247,7 +265,7 @@ public class StarsLiteFactory {
 		
 		starsHw.setInventoryID( liteHw.getInventoryID() );
 		starsHw.setCategory( StarsCustListEntryFactory.getStarsCustListEntry(
-				(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_INVENTORYCATEGORY),
+				(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_INVENTORYCATEGORY),
 				liteHw.getCategoryID()).getContent() );
 				
 		InstallationCompany company = new InstallationCompany();
@@ -265,7 +283,7 @@ public class StarsLiteFactory {
 		Voltage volt = new Voltage();
 		volt.setEntryID( liteHw.getVoltageID() );
 		volt.setContent( StarsCustListEntryFactory.getStarsCustListEntry(
-				(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_INVENTORYVOLTAGE),
+				(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_INVENTORYVOLTAGE),
 				liteHw.getVoltageID()).getContent() );
 		starsHw.setVoltage( volt );
 		
@@ -275,14 +293,14 @@ public class StarsLiteFactory {
 		LMDeviceType hwType = new LMDeviceType();
 		hwType.setEntryID( liteHw.getLmHardwareTypeID() );
 		hwType.setContent( StarsCustListEntryFactory.getStarsCustListEntry(
-				(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICETYPE),
+				(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_DEVICETYPE),
 				liteHw.getLmHardwareTypeID()).getContent() );
 		starsHw.setLMDeviceType( hwType );
 		starsHw.setInstallationNotes( "" );
 		
 		DeviceStatus hwStatus = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry(
 				StarsCustListEntryFactory.getStarsCustListEntry(
-					(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS),
+					(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_DEVICESTATUS),
 					com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_DEVSTAT_UNAVAIL ),
 				DeviceStatus.class );
 		starsHw.setDeviceStatus( hwStatus );
@@ -291,7 +309,8 @@ public class StarsLiteFactory {
 			StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
 			for (int i = 0; i < liteHw.getLmHardwareHistory().size(); i++) {
 				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) liteHw.getLmHardwareHistory().get(i);
-				StarsLMHardwareEvent starsEvent = (StarsLMHardwareEvent) createStarsLMCustomerEvent( liteEvent, StarsLMHardwareEvent.class, selectionLists );
+				StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
+				setStarsLMCustomerEvent( starsEvent, liteEvent, selectionLists );
 				hwHist.addStarsLMHardwareEvent( starsEvent );
 			}
 			starsHw.setStarsLMHardwareHistory( hwHist );
@@ -301,16 +320,16 @@ public class StarsLiteFactory {
 				if (hwHist.getStarsLMHardwareEvent(i).getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_CONFIG)) {
 					hwStatus = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry(
 							StarsCustListEntryFactory.getStarsCustListEntry(
-								(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS),
-								com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_DEVSTAT_AVAIL ),
+								(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_DEVICESTATUS),
+								CustomerListEntry.YUKONDEF_DEVSTAT_AVAIL ),
 							DeviceStatus.class );
 					starsHw.setDeviceStatus( hwStatus );
 				}
 				else if (hwHist.getStarsLMHardwareEvent(i).getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED )) {
 					hwStatus = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry(
 							StarsCustListEntryFactory.getStarsCustListEntry(
-								(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS),
-								com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_DEVSTAT_AVAIL ),
+								(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_DEVICESTATUS),
+								CustomerListEntry.YUKONDEF_DEVSTAT_AVAIL ),
 							DeviceStatus.class );
 					starsHw.setDeviceStatus( hwStatus );
 					break;
@@ -318,8 +337,8 @@ public class StarsLiteFactory {
 				else if (hwHist.getStarsLMHardwareEvent(i).getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_TEMPTERMINATION )) {
 					hwStatus = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry(
 							StarsCustListEntryFactory.getStarsCustListEntry(
-								(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS),
-								com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_DEVSTAT_TEMPUNAVAIL ),
+								(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_DEVICESTATUS),
+								CustomerListEntry.YUKONDEF_DEVSTAT_TEMPUNAVAIL ),
 							DeviceStatus.class );
 					starsHw.setDeviceStatus( hwStatus );
 					break;
@@ -346,7 +365,7 @@ public class StarsLiteFactory {
 		ServiceType servType = new ServiceType();
 		servType.setEntryID( liteOrder.getWorkTypeID() );
 		servType.setContent( StarsCustListEntryFactory.getStarsCustListEntry(
-				(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICETYPE),
+				(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_SERVICETYPE),
 				liteOrder.getWorkTypeID()).getContent() );
 		starsOrder.setServiceType( servType );
 		
@@ -367,7 +386,7 @@ public class StarsLiteFactory {
 		CurrentState status = new CurrentState();
 		status.setEntryID( liteOrder.getCurrentStateID() );
 		status.setContent( StarsCustListEntryFactory.getStarsCustListEntry(
-				(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICESTATUS),
+				(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_SERVICESTATUS),
 				liteOrder.getCurrentStateID()).getContent() );
 		starsOrder.setCurrentState( status );
 		
@@ -376,7 +395,6 @@ public class StarsLiteFactory {
 	
 	public static StarsLMControlHistory createStarsLMControlHistory(LiteStarsLMControlHistory liteCtrlHist, StarsCtrlHistPeriod period, boolean getSummary) {
         StarsLMControlHistory starsCtrlHist = new StarsLMControlHistory();
-        LiteLMControlHistory lastCtrlHist = null;
         
         int startIndex = 0;
         if (period.getType() == StarsCtrlHistPeriod.PASTDAY_TYPE)
@@ -396,49 +414,31 @@ public class StarsLiteFactory {
             hist.setStartDateTime( new Date(lmCtrlHist.getStartDateTime()) );
             hist.setControlDuration( (int) lmCtrlHist.getControlDuration() );
             starsCtrlHist.addControlHistory( hist );
-
-            if (lastCtrlHist == null || lastCtrlHist.getLmCtrlHistID() < lmCtrlHist.getLmCtrlHistID())
-                lastCtrlHist = lmCtrlHist;
         }
 
         if (getSummary) {
             ControlSummary summary = new ControlSummary();
-            summary.setDailyTime(0);
-            summary.setMonthlyTime(0);
-            summary.setSeasonalTime(0);
-            summary.setAnnualTime(0);
-
-            if (lastCtrlHist != null) {
-                summary.setDailyTime( (int) lastCtrlHist.getCurrentDailyTime() );
-                summary.setMonthlyTime( (int) lastCtrlHist.getCurrentMonthlyTime() );
-                summary.setSeasonalTime( (int) lastCtrlHist.getCurrentSeasonalTime() );
-                summary.setAnnualTime( (int) lastCtrlHist.getCurrentAnnualTime() );
+            int dailyTime = 0;
+            int monthlyTime = 0;
+            int seasonalTime = 0;
+            int annualTime = 0;
+            
+            for (int i = liteCtrlHist.getCurrentYearStartIndex(); i < liteCtrlHist.getLmControlHistory().size(); i++) {
+	        	LiteLMControlHistory lmCtrlHist = (LiteLMControlHistory) liteCtrlHist.getLmControlHistory().get(i);
+	        	
+	        	annualTime += lmCtrlHist.getControlDuration();
+	        	seasonalTime += lmCtrlHist.getControlDuration();	// Seasonal is the same as annual for now, need to revisit this
+	        	if (i >= liteCtrlHist.getCurrentMonthStartIndex())
+	        		monthlyTime += lmCtrlHist.getControlDuration();
+	        	if (i >= liteCtrlHist.getCurrentDayStartIndex())
+	        		dailyTime += lmCtrlHist.getControlDuration();
             }
-            else {
-            	// No control history in the specified period, get the control summary from the last LiteLMControlHistory
-            	int size = liteCtrlHist.getLmControlHistory().size();
-            	if (size > 0) {
-	                lastCtrlHist = (LiteLMControlHistory) liteCtrlHist.getLmControlHistory().get( size - 1 );
-
-                    Calendar nowCal = Calendar.getInstance();
-                    Calendar lastCal = Calendar.getInstance();
-                    lastCal.setTimeInMillis( lastCtrlHist.getStartDateTime() );
-
-                    if (lastCal.get(Calendar.YEAR) == nowCal.get(Calendar.YEAR)) {
-                        summary.setAnnualTime( (int) lastCtrlHist.getCurrentAnnualTime() );
-                        // Don't quite know how to deal with season yet, so just let it go with year now
-                        summary.setSeasonalTime( (int) lastCtrlHist.getCurrentSeasonalTime() );
-
-                        if (lastCal.get(Calendar.MONTH) == nowCal.get(Calendar.MONTH)) {
-                            summary.setMonthlyTime( (int) lastCtrlHist.getCurrentMonthlyTime() );
-
-                            if (lastCal.get(Calendar.DAY_OF_MONTH) == nowCal.get(Calendar.DAY_OF_MONTH))
-                                summary.setDailyTime( (int) lastCtrlHist.getCurrentDailyTime() );
-                        }
-                    }
-                }
-            }
-
+            
+            summary.setDailyTime( dailyTime );
+            summary.setMonthlyTime( monthlyTime );
+            summary.setSeasonalTime( seasonalTime );
+            summary.setAnnualTime( annualTime );
+            
             starsCtrlHist.setControlSummary( summary );
         }
 
@@ -462,9 +462,8 @@ public class StarsLiteFactory {
 		starsAccount.setAccountNumber( liteAccount.getAccountNumber() );
 		
 		int custTypeCommID = StarsCustListEntryFactory.getStarsCustListEntry(
-				(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CUSTOMERTYPE),
-				com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_CUSTTYPE_COMM
-				).getEntryID();
+				(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_CUSTOMERTYPE),
+				CustomerListEntry.YUKONDEF_CUSTTYPE_COMM ).getEntryID();
 		starsAccount.setIsCommercial( liteCustomer.getCustomerTypeID() == custTypeCommID );
 		
 		starsAccount.setCompany( "" );
@@ -524,10 +523,24 @@ public class StarsLiteFactory {
 						StarsLMProgramHistory progHist = new StarsLMProgramHistory();
 						for (int k = 0; k < liteProg.getProgramHistory().size(); k++) {
 							LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) liteProg.getProgramHistory().get(k);
-							StarsLMProgramEvent starsEvent = (StarsLMProgramEvent) createStarsLMCustomerEvent( liteEvent, StarsLMProgramEvent.class, selectionLists );
+							StarsLMProgramEvent starsEvent = new StarsLMProgramEvent();
+							setStarsLMCustomerEvent( starsEvent, liteEvent, selectionLists );
 							progHist.addStarsLMProgramEvent( starsEvent );
 						}
 						starsProg.setStarsLMProgramHistory( progHist );
+						
+						if (ServerUtils.isInService(
+								liteProg.getProgramHistory(),
+								new Integer(StarsCustListEntryFactory.getStarsCustListEntry(
+									(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
+									CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION).getEntryID()),
+								new Integer(StarsCustListEntryFactory.getStarsCustListEntry(
+									(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
+									CustomerListEntry.YUKONDEF_ACT_COMPLETED).getEntryID())
+							))
+							starsProg.setStatus( "In Service" );
+						else
+							starsProg.setStatus( "Out of Service" );
 					}
 					
 					starsProgs.addStarsLMProgram( starsProg );
@@ -632,26 +645,30 @@ public class StarsLiteFactory {
 		return starsAppCat;
 	}
 	
-	public static StarsLMCustomerEvent createStarsLMCustomerEvent(LiteLMCustomerEvent liteEvent, Class type, Hashtable selectionLists) {
-		try {
-			StarsLMCustomerEvent starsEvent = (StarsLMCustomerEvent) type.newInstance();
-			
-			StarsSelectionListEntry entry = StarsCustListEntryFactory.getStarsCustListEntry(
-					(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
-					liteEvent.getActionID() );
-			starsEvent.setEventAction( entry.getContent() );
-			starsEvent.setEventDateTime( new Date(liteEvent.getEventDateTime()) );
-			starsEvent.setNotes( liteEvent.getNotes() );
-			starsEvent.setYukonDefinition( entry.getYukonDefinition() );
-			
-			return starsEvent;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return null;
+	
+	public static StarsAppliance createStarsAppliance(com.cannontech.database.data.stars.appliance.ApplianceBase app, Integer energyCompanyID) {
+        StarsAppliance starsApp = new StarsAppliance();
+        
+        starsApp.setApplianceID( app.getApplianceBase().getApplianceID().intValue() );
+        starsApp.setApplianceCategoryID( app.getApplianceBase().getApplianceCategoryID().intValue() );
+        if (app.getLMHardwareConfig().getInventoryID() != null)
+        	starsApp.setInventoryID( app.getLMHardwareConfig().getInventoryID().intValue() );
+    	starsApp.setLmProgramID( app.getApplianceBase().getLMProgramID().intValue() );
+        starsApp.setManufacturer( "" );
+        starsApp.setManufactureYear( "" );
+        starsApp.setLocation( "" );
+        starsApp.setServiceCompany( new ServiceCompany() );
+        starsApp.setNotes( app.getApplianceBase().getNotes() );
+        
+        LiteApplianceCategory liteAppCat = SOAPServer.getApplianceCategory( energyCompanyID, app.getApplianceBase().getApplianceCategoryID() );
+        if (liteAppCat != null)
+	        starsApp.setCategoryName( liteAppCat.getDescription() );
+	    else
+	    	starsApp.setCategoryName( "(Unknown)" );
+        
+        return starsApp;
 	}
+	
 	
 	public static boolean isIdentical(LiteBase lite, Object obj) {
 		if (lite instanceof LiteCustomerContact) {

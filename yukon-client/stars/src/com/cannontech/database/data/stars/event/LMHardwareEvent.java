@@ -88,7 +88,10 @@ public class LMHardwareEvent extends LMCustomerEventBase {
     	
     	return null;
     }
-    
+
+/*
+ * Commented out since cache is used now
+ *     
     public static StarsLMHardwareHistory getStarsLMHardwareHistory(Integer invID) {
     	java.sql.Connection conn = null;
 
@@ -125,7 +128,7 @@ public class LMHardwareEvent extends LMCustomerEventBase {
     	
     	return null;
     }
-    
+*/    
     public static LMHardwareEvent getLastLMHardwareEvent(Integer invID) {
     	java.sql.Connection conn = null;
 

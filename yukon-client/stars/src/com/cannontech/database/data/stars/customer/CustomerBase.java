@@ -152,37 +152,17 @@ public class CustomerBase extends DBPersistent {
 
         getPrimaryContact().setContactID( getCustomerBase().getPrimaryContactID() );
         getPrimaryContact().retrieve();
-        
+
+/*
+ * Commented out since cache is used now        
+ * 
         getCustomerType().setEntryID( getCustomerBase().getCustomerTypeID() );
         getCustomerType().retrieve();
-
+*/
         com.cannontech.database.db.customer.CustomerContact[] contacts =
             	getCustomerBase().getAllCustomerContacts( getDbConnection() );
         for (int i = 0; i < contacts.length; i++)
             getCustomerContactVector().addElement( contacts[i] );
-/*
-        if (getEnergyCompanyBase() == null) {
-            // retrieve EnergyCompanyBase
-            String[] setterColumns = {
-                "EnergyCompanyID"
-            };
-            String[] constraintColumns = {
-                "CustomerID"
-            };
-            Object[] constraintValues = {
-                getCustomerBase().getCustomerID()
-            };
-            Object[] results = retrieve( setterColumns, "EnergyCompanyCustomerBaseList", constraintColumns, constraintValues );
-
-            if (results.length == 1) {
-                com.cannontech.database.data.company.EnergyCompanyBase energyCompany = new com.cannontech.database.data.company.EnergyCompanyBase();
-                energyCompany.setEnergyCompanyID( (Integer) results[0] );
-                energyCompany.setDbConnection( getDbConnection() );
-                energyCompany.retrieve();
-
-                setEnergyCompanyBase( energyCompany );
-            }
-        }*/
     }
     
     public static com.cannontech.database.db.customer.CustomerContact addContact(

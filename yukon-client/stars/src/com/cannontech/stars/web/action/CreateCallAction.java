@@ -45,7 +45,7 @@ public class CreateCallAction implements ActionBase {
 		try {
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 			if (operator == null) return null;
-			Hashtable selectionLists = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+			Hashtable selectionLists = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LISTS" );
 			
 			StarsCreateCallReport createCall = new StarsCreateCallReport();			
 			createCall.setCallNumber( req.getParameter("CallNumber") );
