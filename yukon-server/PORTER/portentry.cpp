@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2003/01/10 16:16:37 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2003/01/13 18:24:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -552,7 +552,6 @@ VOID RouterThread (VOID *TPNumber)
 
             Type = RemoteRecord->getType();
             RemoteRecord->setType(TYPE_REMOTE);
-            RemoteInitialize (NULL, RemoteRecord, (void*)&PortRecord);
             RemoteRecord->setType(Type);
         }
 
@@ -847,26 +846,8 @@ INT ValidateRemote(OUTMESS *&OutMessage)
 {
     INT                  status            = NORMAL;
     CtiDeviceBase        *TransmitterDev   = DeviceManager.getEqual(OutMessage->DeviceID);
-    CtiTransmitterInfo   *pInfo            = NULL;
 
-    if(TransmitterDev != NULL)
-    {
-        if(TransmitterDev->hasTrxInfo())
-        {
-            pInfo = TransmitterDev->getTrxInfo();
-
-            if(pInfo == NULL)    // This device has not been initialized as of yet!
-            {
-                CtiPortSPtr Port = PortManager.PortGetEqual(OutMessage->Port);
-
-                if(Port)
-                {
-                    RemoteInitialize(TransmitterDev, Port);             /* This is a CTIDBG_new one so initialize it */
-                }
-            }
-        }
-    }
-    else // This device is not currently in the RTDB.
+    if(TransmitterDev == NULL)
     {
         /* This is a unknown remote so shun it */
         {
@@ -1444,12 +1425,10 @@ INT RemoteComm(OUTMESS *&OutMessage)
     /* Now check if we know about the remote */
     if(OutMessage->Remote != 0xffff)
     {
-        if((status = ValidateRemote(OutMessage)) != NORMAL)
+        if((status = ValidateRemote(OutMessage)) == NORMAL)
         {
-            return status;
+            status = ExecuteGoodRemote(OutMessage);   // Does a WriteQueue eventually if all is OK.
         }
-
-        status = ExecuteGoodRemote(OutMessage);   // Does a WriteQueue eventually if all is OK.
     }
     else
     {

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2003/01/07 21:18:23 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2003/01/13 18:24:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,7 +32,7 @@
         stolen from dsm2's portport.c
 
     The following procedures are contained in this module:
-        PortThread              RemoteInitialize
+        PortThread
         RemoteReset
 
     Initial Date:
@@ -460,39 +460,6 @@ VOID PortThread(void *pid)
 
 }
 
-void RemoteInitialize (CtiDeviceBase *&Device, CtiPortSPtr pPort)
-{
-    ULONG i;
-    CtiTransmitterInfo *pInfo = NULL;
-
-    if(Device->hasTrxInfo() && !Device->isInhibited())
-    {
-        if(pPort->getPortID() == Device->getPortID())
-        {
-            if( 0 <= Device->getAddress() && Device->getAddress() < MAXIDLC )
-            {
-                if( (pInfo = Device->getTrxInfo()) == NULL )
-                {
-                    pInfo = Device->initTrxInfo();
-
-                    if(Device->getAddress() > 0)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Enabling P: " << Device->getPortID() << " D: " << Device->getID() << " / " << Device->getName() << ". DLC ID: " << Device->getAddress() << endl;
-                    }
-                    else
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Enabling P: " << Device->getPortID() << " D: " << Device->getID() << " / " << Device->getName() << endl;
-                    }
-
-                    pInfo->SetStatus( NEEDSRESET );
-                }
-            }
-        }
-    }
-}
-
 /* Routine to initialize a remote based on it's type */
 void RemoteReset(CtiDeviceBase *&Device, CtiPortSPtr Port)
 {
@@ -693,15 +660,16 @@ INT ResetCommsChannel(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
             {
                 /* Report which devices are available and set queues for those using IDLC*/
                 {
-                    CtiPortManager::LockGuard  prt_guard(PortManager.getMux());         //
-                    RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       //
-
+                    RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
                     CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr_dev(DeviceManager.getMap());
 
                     for(; ++itr_dev ;)
                     {
                         CtiDeviceBase *RemoteDevice = itr_dev.value();
-                        RemoteInitialize(RemoteDevice, Port);
+                        if(RemoteDevice->hasTrxInfo())
+                        {
+                            RemoteDevice->getTrxInfo(); // Prime the TRXInfo Onject
+                        }
                     }
                 }
 
@@ -2540,18 +2508,10 @@ INT ValidateDevice(CtiPortSPtr Port, CtiDevice *Device)
             CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
 
             /* Before we do anything else make damn sure we are not a protection violation */
-            if(pInfo == NULL)
+            if(pInfo != NULL && pInfo->GetStatus(NEEDSRESET))
             {
                 /* Go Ahead an start this one up */
-                RemoteInitialize(Device, Port);
                 RemoteReset(Device, Port);
-            }
-            else
-            {
-                if(pInfo->GetStatus(NEEDSRESET))
-                {
-                    RemoteReset(Device, Port);
-                }
             }
         }
     }
