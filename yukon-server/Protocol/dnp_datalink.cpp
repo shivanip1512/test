@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/03/13 19:35:36 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/06/02 18:14:16 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -78,9 +78,9 @@ void CtiDNPDatalink::setToOutput(unsigned char *buf, unsigned int len)
     //  if it's too big or there's nothing to copy, set our buffer to zip
     if( len > Packet_MaxPayloadLen || buf == NULL )
     {
-        _out_data_len  = 0;
-        _io_state      = State_IO_Failed;
-        _control_state = State_Control_Ready;
+        _out_data_len   = 0;
+        _io_state       = State_IO_Failed;
+        _control_state  = State_Control_Ready;
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -89,7 +89,7 @@ void CtiDNPDatalink::setToOutput(unsigned char *buf, unsigned int len)
     }
     else
     {
-        _io_state      = State_IO_Output;
+        _io_state       = State_IO_Output;
 
         if( _dl_confirm & !_reset_sent )
         {
@@ -113,9 +113,9 @@ void CtiDNPDatalink::setToOutput(unsigned char *buf, unsigned int len)
 
 void CtiDNPDatalink::setToInput( void )
 {
-    _io_state = State_IO_Input;
+    _io_state       = State_IO_Input;
 
-    _control_state = State_Control_Ready;
+    _control_state  = State_Control_Ready;
 
     _in_recv     = 0;
     _in_expected = 0;
@@ -171,7 +171,7 @@ int CtiDNPDatalink::generate( CtiXfer &xfer )
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                _io_state = State_IO_Failed;
+                _io_state       = State_IO_Failed;
 
                 xfer.setOutBuffer(NULL);
                 xfer.setOutCount(0);
@@ -201,112 +201,123 @@ int CtiDNPDatalink::decode( CtiXfer &xfer, int status )
             case PORTREAD:
             default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
-
-        if( ++_comm_errors >= CommRetryCount )
-        {
-            _io_state = State_IO_Failed;
-            retVal    = status;
-        }
-    }
-
-    if( isControlPending() )
-    {
-        decodeControl(xfer, status);
-    }
-    else
-    {
-        //  ACH:  unified packet input/output/error checking...  um yeah.
-        //          another layer, perhaps... ?  but a local, internal-ish one.
-
-        switch( _io_state )
-        {
-            case State_IO_Input:
-            {
-                //  ACH:  this is dumb...  i don't like this variable floating around...
-                //          we should only be dealing with whole packets
-                _in_recv += _in_actual;
-
-                if( isEntirePacket(_packet, _in_recv) )
-                {
-                    //  check to see if the packet is okay
-                    if( processControl(_packet) )
-                    {
-                        putPacketPayload(_packet, _in_data, &_in_data_len);
-
-                        _io_state = State_IO_Complete;
-                    }
-                    else
-                    {
-                        //  we'll count this as an error, even though we might've just gotten a data link reset -
-                        //    we don't want to get stuck in a loop
-                        _protocol_errors++;
-
-                        //  then start us listening all over again
-                        _in_recv = 0;
-                    }
-                }
-
-                break;
-            }
-
-            case State_IO_Output:
-            {
-                //  if we sent the whole packet okay
-                if( !status )
-                {
-                    if( _dl_confirm )
-                    {
-                        _io_state = State_IO_OutputRecvAck;
-                        _in_recv  = 0;
-                    }
-                    else
-                    {
-                        _io_state = State_IO_Complete;
-                    }
-                }
-
-                //  otherwise, we'll regenerate and send again
-
-                break;
-            }
-
-            case State_IO_OutputRecvAck:
-            {
-                _in_recv += _in_actual;
-
-                if( isEntirePacket(_packet, _in_recv) )
-                {
-                    //  check to see if there's a control message that needs to be worked on
-                    if( processControl(_packet) )
-                    {
-                        _io_state = State_IO_Complete;
-                    }
-                    else
-                    {
-                        //  we'll count this as an error, even though we might've just gotten a data link reset -
-                        //    we don't want to get stuck in a loop
-                        _protocol_errors++;
-
-                        //  then try the send again
-                        _io_state = State_IO_Output;
-                    }
-                }
-
-                break;
-            }
-
-            default:
-            {
+                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
+            }
+        }
 
-                break;
+        //if( ++_comm_errors >= CommRetryCount )
+        //{
+            _io_state       = State_IO_Failed;
+
+            retVal    = status;
+        //}
+    }
+    else
+    {
+        if( isControlPending() )
+        {
+            decodeControl(xfer, status);
+        }
+        else
+        {
+            //  ACH:  unified packet input/output/error checking...  um yeah.
+            //          another layer, perhaps... ?  but a local, internal-ish one.
+
+            switch( _io_state )
+            {
+                case State_IO_Input:
+                {
+                    //  ACH:  this is dumb...  i don't like this variable floating around...
+                    //          we should only be dealing with whole packets
+                    _in_recv += _in_actual;
+
+                    if( isEntirePacket(_packet, _in_recv) )
+                    {
+                        //  check to see if the packet is okay
+                        if( processControl(_packet) )
+                        {
+                            putPacketPayload(_packet, _in_data, &_in_data_len);
+
+                            _io_state = State_IO_Complete;
+                        }
+                        else
+                        {
+                            //  we'll count this as an error, even though we might've just gotten a data link reset -
+                            //    we don't want to get stuck in a loop
+                            _protocol_errors++;
+
+                            //  then start us listening all over again
+                            _in_recv = 0;
+                        }
+                    }
+
+                    break;
+                }
+
+                case State_IO_Output:
+                {
+                    //  if we sent the whole packet okay
+                    //  !!!  this is pointless, this will always evaluate true !!!
+                    if( !status )
+                    {
+                        if( _dl_confirm )
+                        {
+                            _io_state = State_IO_OutputRecvAck;
+                            _in_recv  = 0;
+                        }
+                        else
+                        {
+                            _io_state = State_IO_Complete;
+                        }
+                    }
+                    else
+                    {
+                        _comm_errors++;
+                    }
+
+                    //  otherwise, we'll regenerate and send again
+
+                    break;
+                }
+
+                case State_IO_OutputRecvAck:
+                {
+                    _in_recv += _in_actual;
+
+                    if( isEntirePacket(_packet, _in_recv) )
+                    {
+                        //  check to see if there's a control message that needs to be worked on
+                        if( processControl(_packet) )
+                        {
+                            _io_state = State_IO_Complete;
+                        }
+                        else
+                        {
+                            //  we'll count this as an error, even though we might've just gotten a data link reset -
+                            //    we don't want to get stuck in a loop
+                            _protocol_errors++;
+
+                            //  then try the send again
+                            _io_state = State_IO_Output;
+                        }
+                    }
+
+                    break;
+                }
+
+                default:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    break;
+                }
             }
         }
     }
@@ -820,17 +831,21 @@ void CtiDNPDatalink::decodeControl( CtiXfer &xfer, int status )
             }
 
             case State_Control_Reply_ResetLink:
+            {
+                _fcb_in = true;
+
+                _in_recv       = 0;
+                _control_state = State_Control_Ready;
+
+                break;
+            }
+
             case State_Control_Reply_Ack:
             {
-                if( _control_state == State_Control_Reply_ResetLink )
-                {
-                    _fcb_in = true;
-                }
-                else
-                {
-                    _fcb_in = !_fcb_in;
-                }
-
+                _fcb_in = !_fcb_in;
+            }
+            case State_Control_Reply_NonFCBAck:
+            {
                 _in_recv       = 0;
                 _control_state = State_Control_Ready;
 
@@ -838,14 +853,6 @@ void CtiDNPDatalink::decodeControl( CtiXfer &xfer, int status )
             }
 
             case State_Control_Reply_Nack:
-            {
-                _in_recv       = 0;
-                _control_state = State_Control_Ready;
-
-                break;
-            }
-
-            case State_Control_Reply_NonFCBAck:
             {
                 _in_recv       = 0;
                 _control_state = State_Control_Ready;
