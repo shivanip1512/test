@@ -1,7 +1,7 @@
 package com.cannontech.esub.editor.element;
 
+import com.cannontech.database.db.graph.GraphRenderers;
 import com.cannontech.esub.element.DynamicGraphElement;
-import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.util.ServletUtil;
 
 /**
@@ -558,21 +558,21 @@ public Object getValue(Object o) {
 	DynamicGraphElement graph = getDynamicGraphElement();
 	graph.setGraphDefinition(getGraphDefinitionSelectionPanel().getSelectedGraphDefinition());
 	
-	int trendType = TrendModelType.LINE_VIEW;
+	int trendType = GraphRenderers.LINE;
 	if( getLineRadioButton().isSelected() ) {
-		trendType = TrendModelType.LINE_VIEW;
+		trendType = GraphRenderers.LINE;
 	}
 	else
 	if( getBarRadioButton().isSelected() ) {
-		trendType = TrendModelType.BAR_VIEW;
+		trendType = GraphRenderers.BAR;
 	}
 	else
 	if( getStepLineRadioButton().isSelected() ) {
-		trendType = TrendModelType.STEP_VIEW;
+		trendType = GraphRenderers.STEP;
 	}
 	else
 	if( getThreeDBarRadioButton().isSelected() ) {
-		trendType = TrendModelType.BAR_3D_VIEW;
+		trendType = GraphRenderers.BAR_3D;
 	}
 	
 	graph.setTrendType(trendType);
@@ -719,20 +719,20 @@ public void setValue(Object o) {
 	
 	switch(trendType) {
 		
-		case TrendModelType.BAR_VIEW:
+		case GraphRenderers.BAR:
 			getBarRadioButton().setSelected(true);
 		break;
 		
-		case TrendModelType.STEP_VIEW:
+		case GraphRenderers.STEP:
 			getStepLineRadioButton().setSelected(true);
 		break;
 		
-		case TrendModelType.BAR_3D_VIEW:
+		case GraphRenderers.BAR_3D:
 			getThreeDBarRadioButton().setSelected(true);
 		break;
 		
 		default:
-		case TrendModelType.LINE_VIEW:
+		case GraphRenderers.LINE:
 			getLineRadioButton().setSelected(true);
 		break;
 		
