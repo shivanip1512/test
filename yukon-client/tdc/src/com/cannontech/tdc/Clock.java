@@ -20,7 +20,7 @@ public Clock( TDCMainPanel origin ) {
 
 	caller = origin;
 	
-	timer = new Thread( this, "TDCClock" );
+	timer = new Thread( this ); //, "TDCClock" );
 	timer.setDaemon( true );
 	timer.start();
 }
