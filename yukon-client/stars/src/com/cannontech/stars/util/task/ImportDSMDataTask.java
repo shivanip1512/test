@@ -213,14 +213,14 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 	private SimpleDateFormat dateParser = new SimpleDateFormat("MMM dd yyyy hh:mm:ss:SSSa");
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 	
-	private Hashtable coopMap = null;
-	private Hashtable substationMap = null;
-	private Hashtable customerMap = null;
-	private Hashtable receiverMap = null;
-	private Hashtable routeMap = null;
-	private Hashtable receiverTypeMap = null;
-	private Hashtable controlTypeMap = null;
-	private Hashtable loadTypeMap = null;
+	private Hashtable coopMap = null;	// Map from DSM coop_id (Integer) to STARS EnergyCompanyID (Integer)
+	private Hashtable substationMap = null;	// Map from DSM cp_substation_id (Integer) to STARS SubstationID (Integer)
+	private Hashtable customerMap = null;	// Map from DSM customer (CustomerPK) to STARS CustomerID (Integer)
+	private Hashtable receiverMap = null;	// Map from DSM serial_no (String) to STARS InventoryID (Integer)
+	private Hashtable routeMap = null;	// Map from DSM coop_id (Integer) to STARS default route ID (Integer)
+	private Hashtable receiverTypeMap = null;	// Map from DSM receiver type (ReceiverType) to STARS device type ID (Integer)
+	private Hashtable controlTypeMap = null;	// Map from DSM control type (ControlType) to STARS LM program ID (Integer)
+	private Hashtable loadTypeMap = null;	// Map from DSM load_id (Integer) to Object[] {DSM load type (String), STARS appliance category ID (Integer)}
 	
 	public ImportDSMDataTask(LiteStarsEnergyCompany energyCompany, File importDir) {
 		this.energyCompany = energyCompany;
@@ -739,19 +739,20 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 			for (int i = 0; i < lines.length; i++) {
 				String[] fields = StarsUtils.splitString( lines[i], "," );
 				
+				Integer appCatID = null;
 				if (fields[2].length() > 0) {
-					Integer appCatID = null;
 					for (int j = 0; j < appCats.size(); j++) {
 						LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(j);
 						if (liteAppCat.getDescription().equalsIgnoreCase( fields[2] )) {
 							appCatID = new Integer(liteAppCat.getApplianceCategoryID());
-							loadTypeMap.put( Integer.valueOf(fields[0]), appCatID );
 							break;
 						}
 					}
 					if (appCatID == null)
 						throw new WebClientException( "Appliance category \"" + fields[2] + "\" was undefined in STARS" );
 				}
+				
+				loadTypeMap.put( Integer.valueOf(fields[0]), new Object[] {fields[1], appCatID} );
 			}
 		}
 		return loadTypeMap;
@@ -1680,21 +1681,30 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 						progID = ((LiteLMProgramWebPublishing) appCatWH.getPublishedPrograms().get(0)).getProgramID();
 				}
 				else {
-					Integer appCatID = null;
+					int loadID = 0;
+					Object[] loadType = null;
 					try {
-						Integer loadID = Integer.valueOf( fields[1].trim() );
-						appCatID = (Integer) getLoadTypeMap().get( loadID );
+						loadID = Integer.parseInt( fields[1].trim() );
+						loadType = (Object[]) getLoadTypeMap().get( new Integer(loadID) );
 					}
 					catch (NumberFormatException e) {}
 					
 					LiteApplianceCategory liteAppCat = null;
-					if (appCatID != null) {
-						app.setApplianceCategoryID( appCatID.intValue() );
-						liteAppCat = energyCompany.getApplianceCategory( appCatID.intValue() );
+					if (loadType != null) {
+						notes += "Load type: " + loadType[0];
+						
+						if (loadType[1] != null) {
+							int appCatID = ((Integer)loadType[1]).intValue();
+							app.setApplianceCategoryID( appCatID );
+							liteAppCat = energyCompany.getApplianceCategory( appCatID );
+						}
+						else
+							liteAppCat = appCatDft;
 					}
 					else {
 						liteAppCat = appCatDft;
-						importLog.println(errorLocation + ": unknown load type \"" + fields[1].trim() + "\", assign to the generic appliance category.");
+						if (loadID > 0)
+							importLog.println(errorLocation + ": unknown load type \"" + loadID + "\", assign to the generic appliance category.");
 					}
 					
 					if (liteAppCat.getPublishedPrograms().size() > 0)
