@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/08/01 22:16:03 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/08/28 14:54:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -737,7 +737,24 @@ INT ValidateOutMessage(OUTMESS *&OutMessage)
 
     if(OutMessage != NULL)
     {
-        if((OutMessage->DeviceID <= 0 && OutMessage->TargetID <= 0) || OutMessage->Remote > MAXIDLC)
+        if(OutMessage->HeadFrame[0] != 0x02 ||
+           OutMessage->HeadFrame[1] != 0xe0 ||
+           OutMessage->TailFrame[0] != 0xea ||
+           OutMessage->TailFrame[1] != 0x03)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " !!!! OutMessage Misalignment !!!! " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << " Head bytes " << hex << (int)OutMessage->HeadFrame[0] << " " << hex << (int)OutMessage->HeadFrame[1] << dec << endl;
+                dout << " Tail bytes " << hex << (int)OutMessage->TailFrame[0] << " " << hex << (int)OutMessage->TailFrame[1] << dec << endl;
+            }
+
+            delete(OutMessage);
+            OutMessage = NULL;
+
+            nRet = CtiInvalidRequest;
+        }
+        else if((OutMessage->DeviceID <= 0 && OutMessage->TargetID <= 0) || OutMessage->Remote > MAXIDLC)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
 
