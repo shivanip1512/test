@@ -623,7 +623,7 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessag
         /* Remember when we started writing */
         MilliTime (&StartWrite);
 
-        setPortWriteTimeOut( (10000L * ByteCount) / getTablePortSettings().getBaudRate() + 500 );
+        setPortWriteTimeOut( (10000L * Xfer.getOutCount()) / getTablePortSettings().getBaudRate() + 500 );
 
         if(CTIWrite (getHandle(), Xfer.getOutBuffer(), Xfer.getOutCount(), &Written) || Written != Xfer.getOutCount())
         {
