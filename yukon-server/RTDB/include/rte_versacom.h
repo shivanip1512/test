@@ -1,8 +1,3 @@
-#pragma warning (disable: 4786)
-
-#ifndef __RTE_VERSACOM_H__
-#define __RTE_VERSACOM_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   rte_versacom
@@ -15,11 +10,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_versacom.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:47:20 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/03/13 19:36:17 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __RTE_VERSACOM_H__
+#define __RTE_VERSACOM_H__
+
+
 #include <rw/tpslist.h>
 
 #include "dsm2.h"

@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __PROT_ANSI_H__
-#define __PROT_ANSI_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   prot_ansi
@@ -14,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/11/15 20:41:33 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/03/13 19:35:48 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __PROT_ANSI_H__
+#define __PROT_ANSI_H__
+#pragma warning( disable : 4786)
+
 
 #include <windows.h>
 #include <rw\cstring.h>

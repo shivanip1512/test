@@ -1,5 +1,3 @@
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_mct3XX
@@ -15,6 +13,9 @@
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+
+#pragma warning( disable : 4786)
+
 
 #include <windows.h>
 #include "device.h"

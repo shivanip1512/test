@@ -1,5 +1,3 @@
-#pragma warning( disable : 4786 )
-
 /*-----------------------------------------------------------------------------*
  *
  * File:   dev_quantum.cpp
@@ -13,6 +11,9 @@
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
+
+#pragma warning( disable : 4786 )
+
 
 #include <rw/rwtime.h>
 #include <rw/rwdate.h>

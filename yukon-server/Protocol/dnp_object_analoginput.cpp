@@ -1,5 +1,3 @@
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dnp_object_analoginput
@@ -8,11 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/01/17 16:27:14 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/03/13 19:35:36 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
+
 
 #include "dnp_object_analoginput.h"
 #include "logger.h"

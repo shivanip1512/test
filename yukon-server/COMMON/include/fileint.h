@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786 )
 /*-----------------------------------------------------------------------------
     Filename:  fileint.h
 
@@ -19,9 +18,10 @@
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
 -----------------------------------------------------------------------------*/
-
 #ifndef CTIFILEINTERFACE_H
 #define CTIFILEINTREFACE_H
+#pragma warning( disable : 4786 )
+
 
 #include <iostream>
 using namespace std;
@@ -38,11 +38,11 @@ class IM_EX_CTIBASE CtiFileInterface
 public:
     CtiFileInterface(const RWCString& dirtowatch, const RWCString& extension);
     virtual ~CtiFileInterface();
-    
+
     const RWCString& getDirectory() const;
     const RWCString& getExtension() const;
     bool getDeleteOnStart() const;
-    
+
     CtiFileInterface& setDirectory(const RWCString& dir);
     CtiFileInterface& setExtension(const RWCString& ext);
     CtiFileInterface& setDeleteOnStart(bool del);

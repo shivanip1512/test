@@ -1,6 +1,3 @@
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_mct22X
@@ -11,11 +8,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct22X.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/02/04 18:09:31 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/03/13 19:35:56 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+
+#pragma warning( disable : 4786)
+
 
 #include "devicetypes.h"
 #include "dev_mct22X.h"

@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786 )
 /*-----------------------------------------------------------------------------*
 *
 * File:   device
@@ -7,11 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/device.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:10 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/03/13 19:36:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+
+#pragma warning( disable : 4786 )
 
 
 #include "dev_carrier.h"

@@ -1,5 +1,3 @@
-
-#pragma warning( disable : 4786 )
 /*-----------------------------------------------------------------------------
     Filename:
          port_direct.cpp
@@ -15,6 +13,9 @@
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
 -----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786 )
+
+
 #include <windows.h>
 #include <iostream>
 #include <iomanip>

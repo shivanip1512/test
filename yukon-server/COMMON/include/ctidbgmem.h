@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __CTIDBGMEM_H__
-#define __CTIDBGMEM_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   ctidbgmem
@@ -13,11 +8,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/11/15 17:10:24 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/03/13 19:35:26 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __CTIDBGMEM_H__
+#define __CTIDBGMEM_H__
+#pragma warning( disable : 4786)
+
 #define _CRTDBG_MAP_ALLOC
 
 #include <windows.h>

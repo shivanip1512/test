@@ -1,6 +1,3 @@
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   desolvers
@@ -11,11 +8,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/03/06 18:04:24 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/03/13 19:35:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
+
 
 #include <rw/db/db.h>
 #include <rw\cstring.h>

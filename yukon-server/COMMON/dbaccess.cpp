@@ -1,6 +1,3 @@
-#pragma warning( disable : 4786 )
-
-
 /*-----------------------------------------------------------------------------
     Filename:
          dbaccess.cpp
@@ -16,6 +13,8 @@
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
 -----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786 )
+
 
 #include <windows.h>
 #include "ctidbgmem.h"      // defines CTIDBG_new for memory tracking!

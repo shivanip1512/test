@@ -1,7 +1,3 @@
-
-
-#pragma warning (disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   RIPPLE
@@ -10,11 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/02/07 14:59:43 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/03/13 19:35:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning (disable : 4786)
+
 
 #pragma title ( "Ripple Routines" )
 #pragma subtitle ( "CTI Copyright (c) 1990-1993" )

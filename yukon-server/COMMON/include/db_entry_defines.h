@@ -1,6 +1,3 @@
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   db_entry_defines
@@ -11,11 +8,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/db_entry_defines.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:26 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/03/13 19:35:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
+
 
 #define SCANRATE_GENERAL      "general"
 #define SCANRATE_ACCUM        "accumulator"
@@ -36,10 +35,10 @@
 #define AMPUSE_AMPONE         "amp 1"
 #define AMPUSE_AMPTWO         "amp 2"
 
-#define DEVICE_WINDOW_TYPE_SCAN 				"scan"
-#define DEVICE_WINDOW_TYPE_PEAK 				"peak"
+#define DEVICE_WINDOW_TYPE_SCAN                 "scan"
+#define DEVICE_WINDOW_TYPE_PEAK                 "peak"
 #define DEVICE_WINDOW_TYPE_ALTERNATE_RATE "alternate rate"
-#define DEVICE_WINDOW_TYPE_INVALID			"invalid"
+#define DEVICE_WINDOW_TYPE_INVALID          "invalid"
 
 
 

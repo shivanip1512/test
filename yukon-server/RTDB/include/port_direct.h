@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __PORT_DIRECT_H__
-#define __PORT_DIRECT_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   port_direct
@@ -14,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_direct.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/03/06 18:04:34 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/03/13 19:36:16 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __PORT_DIRECT_H__
+#define __PORT_DIRECT_H__
+#pragma warning( disable : 4786)
+
 
 #include "port_serial.h"
 #include "port_dialable.h"

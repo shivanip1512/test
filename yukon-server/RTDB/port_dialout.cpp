@@ -1,7 +1,3 @@
-
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   port_dialout
@@ -11,11 +7,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/03/06 18:04:30 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/03/13 19:36:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
+
 
 #include "dsm2.h"
 #include "logger.h"

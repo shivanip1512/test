@@ -1,6 +1,3 @@
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   scanmain
@@ -9,13 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/11/05 19:33:42 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/03/13 19:36:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+
 
 #include <windows.h>
 #include <iostream>

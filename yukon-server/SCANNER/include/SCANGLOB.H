@@ -1,6 +1,3 @@
-/* Global definitions for the scanner */
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   SCANGLOB
@@ -9,12 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/INCLUDE/SCANGLOB.H-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/02/07 14:59:10 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/03/13 19:36:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
 
+
+/* Global definitions for the scanner */
 
 #include "dlldefs.h"
 

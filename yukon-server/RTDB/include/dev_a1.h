@@ -1,8 +1,3 @@
-#pragma warning( disable : 4786 )
-
-#ifndef __DEV_ALPHAA1_H__
-#define __DEV_ALPHAA1_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_alphaA1
@@ -14,6 +9,11 @@
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_ALPHAA1_H__
+#define __DEV_ALPHAA1_H__
+#pragma warning( disable : 4786 )
+
+
 #include <windows.h>
 #include <iostream>
 #include <vector>

@@ -1,7 +1,3 @@
-
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   expresscom
@@ -11,11 +7,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/03/06 18:05:38 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/03/13 19:35:38 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
+
 
 #include <rw\ctoken.h>
 #include <rw\re.h>

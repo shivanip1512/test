@@ -1,6 +1,3 @@
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   mgr_holiday
@@ -9,14 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_holiday.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:29 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/03/13 19:36:15 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
 #ifndef __MGR_HOLIDAY_H__
 #define __MGR_HOLIDAY_H__
+#pragma warning( disable : 4786)
+
 
 #include <map>
 
@@ -36,9 +34,9 @@ public:
     void refresh();
 
     static CtiHolidayManager& getInstance();
-    
+
 private:
-            
+
     struct holiday
     {
         unsigned month;
@@ -47,15 +45,15 @@ private:
     };
 
     typedef multimap<long,holiday,less<long> > hSchedMap;
-    
+
     hSchedMap _hsched_map;
 
     static CtiMutex _mux;
     static CtiHolidayManager* _instance;
-    
+
     CtiHolidayManager();
     ~CtiHolidayManager() { };
-    
+
 };
 #endif
 

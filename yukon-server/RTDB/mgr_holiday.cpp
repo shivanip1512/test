@@ -1,6 +1,3 @@
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   mgr_holiday
@@ -9,11 +6,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_holiday.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/11/15 14:08:20 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/03/13 19:36:03 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+
+#pragma warning( disable : 4786)
+
 
 #include "ctidbgmem.h"  // CTIDBG_new
 #include "mgr_holiday.h"

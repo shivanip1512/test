@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __PROT_FPCBC_H__
-#define __PROT_FPCBC_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   prot_fpcbc
@@ -14,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_fpcbc.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/11/15 14:08:08 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/03/13 19:35:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __PROT_FPCBC_H__
+#define __PROT_FPCBC_H__
+#pragma warning( disable : 4786)
+
 
 #include "cmdparse.h"
 #include "dsm2.h"

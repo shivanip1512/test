@@ -1,8 +1,3 @@
-#pragma warning( disable : 4786 )
-
-#ifndef __ION_VALUE_STRUCT_TYPES_H__
-#define __ION_VALUE_STRUCT_TYPES_H__
-
 /*-----------------------------------------------------------------------------*
  *
  * File:   ion_value_struct_types.h
@@ -18,6 +13,9 @@
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
+#ifndef __ION_VALUE_STRUCT_TYPES_H__
+#define __ION_VALUE_STRUCT_TYPES_H__
+#pragma warning( disable : 4786 )
 
 
 #include "ion_value_struct.h"

@@ -1,8 +1,3 @@
-#pragma warning( disable : 4786 )
-
-#ifndef __ION_VALUE_VARIABLE_BOOLEAN_H__
-#define __ION_VALUE_VARIABLE_BOOLEAN_H__
-
 /*-----------------------------------------------------------------------------*
  *
  * File:   ion_valuevariable_boolean.h
@@ -14,6 +9,10 @@
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
+#ifndef __ION_VALUE_VARIABLE_BOOLEAN_H__
+#define __ION_VALUE_VARIABLE_BOOLEAN_H__
+#pragma warning( disable : 4786 )
+
 
 #include "ion_value_variable.h"
 #include "ion_value_variable_fixedarray_element.h"

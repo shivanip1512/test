@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786)
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_macro
@@ -9,11 +8,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/12/12 17:35:23 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/03/13 19:35:56 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+
+#pragma warning( disable : 4786)
+
 
 #include <rw/db/reader.h>
 

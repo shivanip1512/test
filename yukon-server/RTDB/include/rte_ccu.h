@@ -1,7 +1,3 @@
-
-#ifndef __RTE_CCU_H__
-#define __RTE_CCU_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   rte_ccu
@@ -13,11 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_ccu.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:47:19 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/03/13 19:36:17 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __RTE_CCU_H__
+#define __RTE_CCU_H__
+
 #include <rw/tpslist.h>
 
 #include <rw/tvordvec.h>

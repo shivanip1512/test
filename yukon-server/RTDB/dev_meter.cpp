@@ -1,5 +1,3 @@
-#pragma warning( disable : 4786 )
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_meter
@@ -10,12 +8,15 @@
 * Author: Corey Plender
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $  $
-* REVISION     :  $  $
-* DATE         :  $  $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/03/13 19:35:58 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+
+#pragma warning( disable : 4786 )
+
 
 #include "dev_meter.h"
 

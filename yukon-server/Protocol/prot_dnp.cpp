@@ -1,5 +1,3 @@
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   prot_dnp
@@ -10,11 +8,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/03/05 23:54:48 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/03/13 19:35:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
+
 
 #include "logger.h"
 #include "utility.h"

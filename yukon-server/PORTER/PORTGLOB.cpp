@@ -1,6 +1,3 @@
-#include <windows.h>
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   PORTGLOB
@@ -9,12 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTGLOB.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/10/23 21:10:29 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/03/13 19:35:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
 
+
+#include <windows.h>
 #include <process.h>
 
 #include <stdlib.h>

@@ -1,4 +1,3 @@
-#pragma warning (disable : 4786)
 /*-----------------------------------------------------------------------------*
 *
 * File:   slctprt
@@ -7,11 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctprt.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/03/06 18:04:33 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/03/13 19:36:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning (disable : 4786)
 
 
 #include <rw/db/db.h>

@@ -1,7 +1,3 @@
-#pragma warning( disable : 4786)
-#ifndef __DNP_OBJECT_ANALOGINPUT_H__
-#define __DNP_OBJECT_ANALOGINPUT_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dnp_object_analoginput
@@ -13,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/09/18 21:25:40 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/03/13 19:35:45 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DNP_OBJECT_ANALOGINPUT_H__
+#define __DNP_OBJECT_ANALOGINPUT_H__
+#pragma warning( disable : 4786)
+
 
 #include "dnp_objects.h"
 #include "dnp_object_time.h"

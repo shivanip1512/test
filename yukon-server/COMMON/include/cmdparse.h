@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __CMDPARSE_H__
-#define __CMDPARSE_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   cmdparse
@@ -14,6 +9,11 @@
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __CMDPARSE_H__
+#define __CMDPARSE_H__
+#pragma warning( disable : 4786)
+
+
 #include <windows.h>
 #include <iomanip>
 #include <functional>

@@ -1,7 +1,3 @@
-
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   port_dialin
@@ -12,10 +8,12 @@
 *
 * CVS KEYWORDS:
 * REVISION     :  $Revision $
-* DATE         :  $Date: 2003/03/06 18:04:29 $
+* DATE         :  $Date: 2003/03/13 19:36:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
+
 
 #include "dsm2.h"
 #include "logger.h"

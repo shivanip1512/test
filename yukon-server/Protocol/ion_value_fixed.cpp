@@ -1,8 +1,6 @@
-#pragma warning( disable : 4786 )
-
 /*-----------------------------------------------------------------------------*
  *
- * File:   ion_va;ue_fixed.cpp
+ * File:   ion_value_fixed.cpp
  *
  * Class:  CtiIONValueFixed
  * Date:   07/13/2001
@@ -11,6 +9,8 @@
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786 )
+
 
 #include "ctidbgmem.h" // defines CTIDBG_new
 

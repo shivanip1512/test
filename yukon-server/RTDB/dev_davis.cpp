@@ -1,5 +1,3 @@
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_davis
@@ -7,11 +5,14 @@
 * Date:   6/17/2002
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/11/15 14:08:10 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/03/13 19:35:53 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+
+#pragma warning( disable : 4786)
+
 
 #include <windows.h>
 

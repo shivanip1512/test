@@ -1,5 +1,3 @@
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   yukon
@@ -8,14 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/03/06 18:04:25 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/03/13 19:35:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
 #ifndef __YUKON_H__
 #define __YUKON_H__
+#pragma warning( disable : 4786)
+
 
 #include "ctidbgmem.h"      // defines CTIDBG_new for memory tracking!
 

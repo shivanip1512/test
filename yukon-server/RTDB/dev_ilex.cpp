@@ -1,8 +1,3 @@
-
-
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_ilex
@@ -10,11 +5,14 @@
 * Date:   2/15/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/01/13 18:23:24 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/03/13 19:35:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+
+#pragma warning( disable : 4786)
+
 
 #include <windows.h>
 

@@ -1,7 +1,3 @@
-
-#ifndef __WORDBUILDER_H__
-#define __WORDBUILDER_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   wordbuilder
@@ -13,6 +9,8 @@
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __WORDBUILDER_H__
+#define __WORDBUILDER_H__
 
 
 

@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __REPEATERROLE_H__
-#define __REPEATERROLE_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   repeaterrole
@@ -13,11 +8,16 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/07/01 17:53:54 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/03/13 19:35:27 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __REPEATERROLE_H__
+#define __REPEATERROLE_H__
+#pragma warning( disable : 4786)
+
+
 #include "dlldefs.h"
 
 class IM_EX_CTIBASE CtiDeviceRepeaterRole

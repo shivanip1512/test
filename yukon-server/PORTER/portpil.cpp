@@ -1,5 +1,3 @@
-#pragma warning (disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   portpil
@@ -8,11 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/12 21:12:19 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/03/13 19:35:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning (disable : 4786)
+
 
 #pragma title ( "PIL Server Routines" )
 #pragma subtitle ( "CTI Copyright (c) 1999-2000" )

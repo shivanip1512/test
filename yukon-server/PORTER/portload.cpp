@@ -1,4 +1,3 @@
-#pragma warning (disable : 4786)
 /*-----------------------------------------------------------------------------*
 *
 * File:   portload
@@ -7,11 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portload.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/11/15 14:08:01 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/03/13 19:35:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning (disable : 4786)
 
 #pragma title ( "CCU-711 DLC Algorithm Load Routines" )
 #pragma subtitle ( "CTI Copyright (c) 1990-1993" )

@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __PORT_DIALIN_H__
-#define __PORT_DIALIN_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   port_dialin
@@ -13,11 +8,16 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/12/19 20:30:13 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/03/13 19:36:15 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __PORT_DIALIN_H__
+#define __PORT_DIALIN_H__
+#pragma warning( disable : 4786)
+
+
 #include <windows.h>
 #include <iostream>
 using namespace std;

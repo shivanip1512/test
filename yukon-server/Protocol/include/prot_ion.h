@@ -1,7 +1,3 @@
-#pragma warning( disable : 4786)
-#ifndef __PROT_ION_H__
-#define __PROT_ION_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   prot_ion
@@ -13,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/03/12 21:52:38 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/03/13 19:35:49 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __PROT_ION_H__
+#define __PROT_ION_H__
+#pragma warning( disable : 4786)
+
 
 #include "dlldefs.h"
 #include "pointtypes.h"

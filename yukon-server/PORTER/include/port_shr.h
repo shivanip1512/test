@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __PORT_SHR_H__
-#define __PORT_SHR_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   port_shr
@@ -14,11 +9,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/port_shr.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/07/18 16:22:51 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/03/13 19:35:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __PORT_SHR_H__
+#define __PORT_SHR_H__
+#pragma warning( disable : 4786)
+
+
 #include "ctinexus.h"
 #include "dlldefs.h"
 #include "thread.h"

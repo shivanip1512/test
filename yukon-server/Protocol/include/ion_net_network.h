@@ -1,8 +1,3 @@
-#pragma warning( disable : 4786 )
-
-#ifndef __ION_NET_NETWORK_H__
-#define __ION_NET_NETWORK_H__
-
 /*-----------------------------------------------------------------------------*
  *
  * File:    ion_net_network.h
@@ -16,6 +11,10 @@
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
+#ifndef __ION_NET_NETWORK_H__
+#define __ION_NET_NETWORK_H__
+#pragma warning( disable : 4786 )
+
 
 #include <vector>
 

@@ -1,13 +1,13 @@
-#ifndef __PT_STATUS_H__
-#define __PT_STATUS_H__
 /*
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_status.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/06/10 20:46:55 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/03/13 19:36:17 $
 *
 */
+#ifndef __PT_STATUS_H__
+#define __PT_STATUS_H__
 
 #include <rw\cstring.h>
 #include "dlldefs.h"

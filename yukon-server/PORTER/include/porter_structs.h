@@ -1,6 +1,3 @@
-#ifndef __PORTER_STRUCTS_H__
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   porter_structs
@@ -9,13 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/porter_structs.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:42 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/03/13 19:35:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
+#ifndef __PORTER_STRUCTS_H__
 #define __PORTER_STRUCTS_H__
+#pragma warning( disable : 4786)
+
 
 /* Data structures used to access Btrieve records */
 typedef struct _PORT {

@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __DEV_BASE_LITE_H__
-#define __DEV_BASE_LITE_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_base_lite
@@ -14,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base_lite.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/10/02 19:20:03 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/03/13 19:36:10 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_BASE_LITE_H__
+#define __DEV_BASE_LITE_H__
+#pragma warning( disable : 4786)
+
 
 #include <windows.h>
 //using namespace std;

@@ -1,6 +1,3 @@
-
-#pragma warning (disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   PORTPERF
@@ -9,11 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/11/15 14:08:02 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/03/13 19:35:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning (disable : 4786)
+
 
 #pragma title ( "Periodic Statistic Update Routines" )
 #pragma subtitle ( "CTI Copyright (c) 1990-1993" )

@@ -1,5 +1,3 @@
-#ifndef __MGR_DEVICE_H__
-#define __MGR_DEVICE_H__
 /*************************************************************************
  *
  * mgr_route.h      7/7/99
@@ -13,14 +11,16 @@
  *
  *
  * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.11 $
- * DATE         :  $Date: 2002/10/11 14:08:06 $
+ * REVISION     :  $Revision: 1.12 $
+ * DATE         :  $Date: 2003/03/13 19:36:15 $
  *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
  *
  ************************************************************************/
+#ifndef __MGR_DEVICE_H__
+#define __MGR_DEVICE_H__
 
 #include <rw/db/connect.h>
 

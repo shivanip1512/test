@@ -1,6 +1,3 @@
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------
     Filename:  thread.h
 
@@ -12,12 +9,14 @@
 
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/thread.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:51:21 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/03/13 19:35:25 $
 *
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2000
 -----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
+
 #include <iostream>
 using namespace std;
 

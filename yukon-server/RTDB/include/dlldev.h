@@ -1,8 +1,3 @@
-#pragma warning( disable : 4786 )
-
-#ifndef __DLLDEV_H__
-#define __DLLDEV_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dllyukon
@@ -13,11 +8,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dlldev.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:28 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/03/13 19:36:15 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DLLDEV_H__
+#define __DLLDEV_H__
+#pragma warning( disable : 4786 )
+
 
 #include "mgr_device.h"
 #include "mgr_route.h"

@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __PT_DYN_BASE_H__
-#define __PT_DYN_BASE_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   pt_dyn_base
@@ -14,11 +9,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_dyn_base.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/11/15 14:08:24 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/03/13 19:36:17 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __PT_DYN_BASE_H__
+#define __PT_DYN_BASE_H__
+#pragma warning( disable : 4786)
+
+
 #include <rw/thr/monitor.h>
 #include <rw/thr/recursiv.h>
 #include <rw\thr\mutex.h>

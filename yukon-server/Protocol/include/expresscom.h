@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __EXPRESSCOM_H__
-#define __EXPRESSCOM_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   expresscom
@@ -13,11 +8,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/02/21 20:32:48 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/03/13 19:35:46 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __EXPRESSCOM_H__
+#define __EXPRESSCOM_H__
+#pragma warning( disable : 4786)
+
 
 #include <windows.h>
 #include <vector>

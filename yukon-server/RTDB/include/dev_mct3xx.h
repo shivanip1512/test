@@ -1,7 +1,3 @@
-#pragma warning( disable : 4786)
-#ifndef __DEV_MCT3XX_H__
-#define __DEV_MCT3XX_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_mct3XX
@@ -12,12 +8,16 @@
 * Author: Matthew Fisher
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  
-* REVISION     :  
-* DATE         :  
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct31X.h-arc  $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/03/13 19:36:13 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_MCT3XX_H__
+#define __DEV_MCT3XX_H__
+#pragma warning( disable : 4786)
+
 
 #include "dev_mct.h"
 

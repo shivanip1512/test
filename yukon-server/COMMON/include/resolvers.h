@@ -1,8 +1,3 @@
-#ifndef __RESOLVERS_H__
-#define __RESOLVERS_H__
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   resolvers
@@ -11,11 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/resolvers.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/10/08 20:14:12 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/03/13 19:35:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __RESOLVERS_H__
+#define __RESOLVERS_H__
+#pragma warning( disable : 4786)
+
 
 #include "types.h"
 #include "pointtypes.h"

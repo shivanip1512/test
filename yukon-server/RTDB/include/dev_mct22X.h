@@ -1,8 +1,3 @@
-#pragma warning( disable : 4786)
-
-#ifndef __DEV_MCT22X_H__
-#define __DEV_MCT22X_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_mct22X
@@ -14,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct22X.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/12/18 20:52:22 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/03/13 19:36:12 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_MCT22X_H__
+#define __DEV_MCT22X_H__
+#pragma warning( disable : 4786)
+
 
 #include "dev_mct2xx.h"
 

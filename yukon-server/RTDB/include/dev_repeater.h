@@ -1,8 +1,3 @@
-#ifndef __DEV_REPEATER_H__
-#define __DEV_REPEATER_H__
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_repeater
@@ -14,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_repeater.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/07/01 17:54:56 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/03/13 19:36:14 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_REPEATER_H__
+#define __DEV_REPEATER_H__
+#pragma warning( disable : 4786)
+
 
 #include <rw\cstring.h>
 #include "dev_dlcbase.h"

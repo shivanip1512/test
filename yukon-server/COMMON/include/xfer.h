@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __XFER_H__
-#define __XFER_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   xfer
@@ -14,6 +9,10 @@
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __XFER_H__
+#define __XFER_H__
+#pragma warning( disable : 4786)
+
 
 // IM_EX_YUKONDB
 

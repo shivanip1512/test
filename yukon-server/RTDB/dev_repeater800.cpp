@@ -1,5 +1,3 @@
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_repeater800
@@ -10,11 +8,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/11/20 22:28:40 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/03/13 19:35:59 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+
+#pragma warning( disable : 4786)
+
 
 #include <windows.h>
 #include "device.h"

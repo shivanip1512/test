@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786 )
 /*-----------------------------------------------------------------------------*
 *
 * File:   mgr_route
@@ -7,11 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_route.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/11/15 14:08:21 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/03/13 19:36:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786 )
 
 
 #include <rw/db/db.h>

@@ -1,7 +1,3 @@
-
-#pragma title ( "PORTER -- Port Control Program" )
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   porter
@@ -10,12 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2003/03/06 18:07:27 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2003/03/13 19:35:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
 
+
+#pragma title ( "PORTER -- Port Control Program" )
 #pragma subtitle ( "CTI Copyright (c) 1990-1999" )
 /*---------------------------------------------------------------------
     Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.

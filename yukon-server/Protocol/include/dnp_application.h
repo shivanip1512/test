@@ -1,7 +1,3 @@
-#pragma warning( disable : 4786)
-#ifndef __DNP_APPLICATION_H__
-#define __DNP_APPLICATION_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dnp_application
@@ -13,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/02/12 01:16:10 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/03/13 19:35:45 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DNP_APPLICATION_H__
+#define __DNP_APPLICATION_H__
+#pragma warning( disable : 4786)
+
 
 #include <vector>
 

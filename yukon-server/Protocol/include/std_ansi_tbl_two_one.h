@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __STD_ANSI_TBL_TWO_ONE_H__
-#define __STD_ANSI_TBL_TWO_ONE_H__
-
 /*---------------------------------------------------------------------------------*
 *
 * File:   std_ansi_tbl_two_one
@@ -14,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/11/15 20:41:35 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/03/13 19:35:50 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
+#ifndef __STD_ANSI_TBL_TWO_ONE_H__
+#define __STD_ANSI_TBL_TWO_ONE_H__
+#pragma warning( disable : 4786)
+
 
 #include "dlldefs.h"
 #include "dsm2.h"

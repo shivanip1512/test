@@ -1,8 +1,3 @@
-#ifndef __DEVICETYPES_H__
-#define __DEVICETYPES_H__
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   devicetypes
@@ -11,11 +6,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/devicetypes.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/03/05 23:54:01 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/03/13 19:35:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEVICETYPES_H__
+#define __DEVICETYPES_H__
+#pragma warning( disable : 4786)
 
 
 #define TYPE_REMOTE                             0

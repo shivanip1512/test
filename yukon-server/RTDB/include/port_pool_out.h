@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   port_pool_out
@@ -9,15 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/03/06 18:03:14 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/03/13 19:36:16 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
 #ifndef __PORT_POOL_OUT_H__
 #define __PORT_POOL_OUT_H__
+#pragma warning( disable : 4786)
 
 #include "port_base.h"
 

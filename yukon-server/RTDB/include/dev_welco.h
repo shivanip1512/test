@@ -1,8 +1,3 @@
-#pragma warning( disable : 4786 )
-
-#ifndef __DEV_WELCO_H__
-#define __DEV_WELCO_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_welco
@@ -14,11 +9,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_welco.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/10/02 19:20:05 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/03/13 19:36:15 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_WELCO_H__
+#define __DEV_WELCO_H__
+#pragma warning( disable : 4786 )
+
+
 #include <windows.h>
 #include "ctitypes.h"
 #include "types.h"

@@ -1,8 +1,3 @@
-#pragma warning( disable : 4786)
-
-#ifndef __DEV_DCT501_H__
-#define __DEV_DCT501_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_dct501
@@ -14,11 +9,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dct501.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:22 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/03/13 19:36:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_DCT501_H__
+#define __DEV_DCT501_H__
+#pragma warning( disable : 4786)
+
+
 #include "dev_mct24x.h"
 
 class IM_EX_DEVDB CtiDeviceDCT501 : public CtiDeviceMCT24X

@@ -1,7 +1,3 @@
-#pragma warning( disable : 4786 )
-#ifndef __COUNTER_H__
-#define __COUNTER_H__
-
 /*-----------------------------------------------------------------------------*
  *
  * File:   counter.h
@@ -13,11 +9,15 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive:     $
- * REVISION     :  $Revision: 1.5 $
- * DATE         :  $Date: 2002/06/03 20:24:10 $
+ * REVISION     :  $Revision: 1.6 $
+ * DATE         :  $Date: 2003/03/13 19:35:26 $
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
+#ifndef __COUNTER_H__
+#define __COUNTER_H__
+#pragma warning( disable : 4786 )
+
 
 #include <map>
 using namespace std;

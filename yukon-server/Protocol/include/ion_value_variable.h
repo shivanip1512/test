@@ -1,7 +1,3 @@
-#pragma warning( disable : 4786)
-#ifndef __ION_VALUE_VARIABLE_H__
-#define __ION_VALUE_VARIABLE_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   ion_value_variable
@@ -13,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/02/21 22:28:25 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/03/13 19:35:47 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __ION_VALUE_VARIABLE_H__
+#define __ION_VALUE_VARIABLE_H__
+#pragma warning( disable : 4786)
+
 
 #include "ion_value.h"
 #include "ion_value_numeric.h"

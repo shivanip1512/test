@@ -1,8 +1,3 @@
-#ifndef __RTDB_H__
-#define __RTDB_H__
-
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
 /*************************************************************************
  *
  * rtdb.h      7/7/99
@@ -21,6 +16,11 @@
  * All Rights Reserved
  *
  ************************************************************************/
+#ifndef __RTDB_H__
+#define __RTDB_H__
+#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+
+
 #include <windows.h>
 #include <iostream>
 #include <functional>

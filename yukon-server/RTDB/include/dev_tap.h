@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __DEV_TAP_H__
-#define __DEV_TAP_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_tap
@@ -15,11 +10,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tap.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/06/05 17:42:03 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/03/13 19:36:14 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_TAP_H__
+#define __DEV_TAP_H__
+#pragma warning( disable : 4786)
+
 
 #include <rw\cstring.h>
 #include <rw\thr\mutex.h>

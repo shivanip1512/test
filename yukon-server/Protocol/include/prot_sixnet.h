@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __PROT_SIXNET_H__
-#define __PROT_SIXNET_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   prot_sixnet
@@ -14,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_sixnet.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:55 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/03/13 19:35:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __PROT_SIXNET_H__
+#define __PROT_SIXNET_H__
+#pragma warning( disable : 4786)
+
 
 #include <windows.h>
 #include <rw\cstring.h>

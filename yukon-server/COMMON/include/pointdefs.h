@@ -1,7 +1,3 @@
-#pragma warning( disable : 4786)
-#ifndef __POINTDEFS_H__
-#define __POINTDEFS_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   pointdefs
@@ -13,6 +9,10 @@
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __POINTDEFS_H__
+#define __POINTDEFS_H__
+#pragma warning( disable : 4786)
+
 
 
 #define DAILYCONTROLHISTOFFSET      2500

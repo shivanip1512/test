@@ -1,5 +1,3 @@
-
-#pragma warning( disable : 4786 )
 /*-----------------------------------------------------------------------------*
 *
 * File:   dlldev
@@ -8,12 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dlldev.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/09/16 13:49:10 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/03/13 19:36:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
+#pragma warning( disable : 4786 )
 
 #include <windows.h>
 #include <iostream>

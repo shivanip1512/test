@@ -9,10 +9,10 @@
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2000
 -----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
 #ifndef __CTIMUTEX_H__
 #define __CTIMUTEX_H__
+#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+
 
 #ifdef _WINDOWS
     #include <windows.h>

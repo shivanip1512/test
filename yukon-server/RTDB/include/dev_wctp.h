@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __DEV_WCTP_H__
-#define __DEV_WCTP_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_wctp
@@ -14,6 +9,10 @@
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_WCTP_H__
+#define __DEV_WCTP_H__
+#pragma warning( disable : 4786)
+
 
 #include <rw\cstring.h>
 #include <rw\thr\mutex.h>

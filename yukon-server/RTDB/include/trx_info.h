@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __TRX_INFO_H__
-#define __TRX_INFO_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   trx_info
@@ -14,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/trx_info.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/11/15 14:08:24 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/03/13 19:36:18 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __TRX_INFO_H__
+#define __TRX_INFO_H__
+#pragma warning( disable : 4786)
+
 #include <windows.h>
 
 #include "logger.h"

@@ -1,7 +1,3 @@
-
-#ifndef __DEV_REMOTE_H__
-#define __DEV_REMOTE_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_remote
@@ -13,11 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_remote.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/12/19 20:28:06 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/03/13 19:36:13 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_REMOTE_H__
+#define __DEV_REMOTE_H__
+
 
 #include <ctype.h>
 

@@ -1,14 +1,3 @@
-
-#ifndef __UTILITY_H__
-#define __UTILITY_H__
-
-#pragma warning( disable : 4786)
-#include <rw\cstring.h>
-#include <rw\rwtime.h>
-
-#include "dsm2.h"
-#include "dlldefs.h"
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   utility
@@ -18,11 +7,22 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/12/11 21:49:46 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/03/13 19:35:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __UTILITY_H__
+#define __UTILITY_H__
+#pragma warning( disable : 4786)
+
+
+#include <rw\cstring.h>
+#include <rw\rwtime.h>
+
+#include "dsm2.h"
+#include "dlldefs.h"
+
 
 IM_EX_CTIBASE LONG GetMaxLMControl(long pao);
 IM_EX_CTIBASE LONG LMControlHistoryIdGen(bool force = false);

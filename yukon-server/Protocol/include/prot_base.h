@@ -1,7 +1,3 @@
-#pragma warning( disable : 4786)
-#ifndef __PROT_BASE_H__
-#define __PROT_BASE_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   prot_base
@@ -13,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/10/09 19:16:49 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/03/13 19:35:48 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __PROT_BASE_H__
+#define __PROT_BASE_H__
+#pragma warning( disable : 4786)
+
 
 #include "dlldefs.h"
 #include "msg_pdata.h"

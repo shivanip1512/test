@@ -1,7 +1,3 @@
-#pragma warning( disable : 4786 )
-
-#ifndef __MGR_POINT_H__
-#define __MGR_POINT_H__
 /*************************************************************************
  *
  * mgr_route.h      7/7/99
@@ -16,13 +12,17 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/09/30 14:52:44 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/03/13 19:36:15 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
  *
  ************************************************************************/
+#ifndef __MGR_POINT_H__
+#define __MGR_POINT_H__
+#pragma warning( disable : 4786 )
+
 
 #include <rw/db/connect.h>
 

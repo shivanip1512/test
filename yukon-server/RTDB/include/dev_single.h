@@ -1,8 +1,3 @@
-#pragma warning( disable : 4786 )
-
-#ifndef __DEV_SINGLE_H__
-#define __DEV_SINGLE_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_single
@@ -14,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/10/02 19:20:05 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/03/13 19:36:14 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_SINGLE_H__
+#define __DEV_SINGLE_H__
+#pragma warning( disable : 4786 )
+
 
 #include <rw\cstring.h>
 #include <rw\thr\mutex.h>

@@ -1,7 +1,3 @@
-#pragma warning( disable : 4786)
-#ifndef __DEV_DNP_H__
-#define __DEV_DNP_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_dnp
@@ -13,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/05 23:54:47 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/03/13 19:36:11 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_DNP_H__
+#define __DEV_DNP_H__
+#pragma warning( disable : 4786)
+
 
 #include "dev_remote.h"
 #include "prot_dnp.h"

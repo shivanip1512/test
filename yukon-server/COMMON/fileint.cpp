@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786 )
 /*-----------------------------------------------------------------------------
     Filename:  fileint.cpp
 
@@ -10,6 +9,7 @@
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
 -----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786 )
 
 #include "fileint.h"
 #include "dllbase.h"
@@ -44,16 +44,16 @@ const RWCString& CtiFileInterface::getExtension() const
     return _extension;
 }
 
-bool CtiFileInterface::getDeleteOnStart() const 
+bool CtiFileInterface::getDeleteOnStart() const
 {
     return _delete_on_start;
 }
 
 CtiFileInterface& CtiFileInterface::setDirectory(const RWCString& dir)
 {
-    
+
    _dir = dir;
-    
+
    return *this;
 }
 
@@ -63,7 +63,7 @@ CtiFileInterface& CtiFileInterface::setExtension(const RWCString& ext)
     return *this;
 }
 
-CtiFileInterface& CtiFileInterface::setDeleteOnStart(bool del) 
+CtiFileInterface& CtiFileInterface::setDeleteOnStart(bool del)
 {
     _delete_on_start = del;
     return *this;
@@ -140,7 +140,7 @@ void CtiFileInterface::_watch()
     HANDLE dwChangeHandle;
 
     try
-    {        
+    {
         //The find functions work in the current directory
         //Lets hope there are no conflicts with others!
 
@@ -157,12 +157,12 @@ void CtiFileInterface::_watch()
             }
             return;
         }
-        
+
         // flag indicates we need to delete
         // all matching files on startup, don't allow these to be handled
         // if this is set true
         bool do_delete = _delete_on_start;
-        
+
         while (TRUE)
         {
             WIN32_FIND_DATA FileData;
@@ -176,11 +176,11 @@ void CtiFileInterface::_watch()
                 rwRunnable().serviceCancellation();
                 rwRunnable().sleep(1000);
 
-                if( do_delete ) 
+                if( do_delete )
                 {
                     do_delete = false;
                     _valid = true;
-                }  
+                }
                 continue;
             }
 
@@ -188,12 +188,12 @@ void CtiFileInterface::_watch()
             {
                 if( !do_delete)
                 {
-                    //Actually handle the file in some child class                
+                    //Actually handle the file in some child class
                     {
                         RWMutexLock::LockGuard guard(coutMux);
                         cout << RWTime()  << " File Interface: handling file " << FileData.cFileName << endl;
                     }
-                    
+
                     handleFile( FileData.cFileName );
                 }
                 else
@@ -210,7 +210,7 @@ void CtiFileInterface::_watch()
             while ( FindNextFile( hSearch, &FileData ) );
 
             FindClose(hSearch);
-                                   
+
         }
     } catch (RWCancellation&)
     {

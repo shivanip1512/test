@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   portfield
@@ -7,14 +6,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2003/03/12 21:12:19 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2003/03/13 19:35:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
-
 #pragma warning(disable : 4786)
+
+
 #pragma title ( "Higher Level Port Handshake Routines" )
 #pragma subtitle ( "CTI Copyright (c) 1990-1999" )
 /*---------------------------------------------------------------------

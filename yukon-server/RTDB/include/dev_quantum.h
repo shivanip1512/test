@@ -1,8 +1,3 @@
-#pragma warning( disable : 4786 )
-
-#ifndef __DEV_QUANTUM_H__
-#define __DEV_QUANTUM_H__
-
 /*-----------------------------------------------------------------------------*
  *
  * File:   dev_quantum.h
@@ -16,6 +11,10 @@
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
+#ifndef __DEV_QUANTUM_H__
+#define __DEV_QUANTUM_H__
+#pragma warning( disable : 4786 )
+
 
 #include <windows.h>
 #include "ctitypes.h"

@@ -1,8 +1,3 @@
-#pragma warning( disable : 4786 )
-
-#ifndef __ION_NET_DATALINK_H__
-#define __ION_NET_DATALINK_H__
-
 /*-----------------------------------------------------------------------------*
  *
  * File:    ion_net_datalink.h
@@ -16,6 +11,10 @@
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
+#ifndef __ION_NET_DATALINK_H__
+#define __ION_NET_DATALINK_H__
+#pragma warning( disable : 4786 )
+
 
 #include <vector>
 

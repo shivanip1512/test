@@ -1,8 +1,3 @@
-#pragma warning( disable : 4786 )
-
-#ifndef __ION_VALUE_H__
-#define __ION_VALUE_H__
-
 /*-----------------------------------------------------------------------------*
  *
  * File:   ion_value.h
@@ -14,6 +9,10 @@
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
+#ifndef __ION_VALUE_H__
+#define __ION_VALUE_H__
+#pragma warning( disable : 4786 )
+
 
 #include <vector>
 using namespace std;

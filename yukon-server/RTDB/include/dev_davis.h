@@ -1,8 +1,3 @@
-#pragma warning( disable : 4786 )
-
-#ifndef __DEV_DAVIS_H__
-#define __DEV_DAVIS_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_davis
@@ -13,11 +8,16 @@
 * Author: Corey G. Plender
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/06/18 15:49:19 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/03/13 19:36:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_DAVIS_H__
+#define __DEV_DAVIS_H__
+#pragma warning( disable : 4786 )
+
+
 #include <windows.h>
 #include "dev_ied.h"
 #include "mgr_point.h"

@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __STATISTICS_H__
-#define __STATISTICS_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   statistics
@@ -13,11 +8,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/09/04 14:08:10 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/03/13 19:35:28 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __STATISTICS_H__
+#define __STATISTICS_H__
+#pragma warning( disable : 4786)
+
 
 #include <rw/rwtime.h>
 #include <rw/db/status.h>

@@ -1,9 +1,3 @@
-
-#pragma warning( disable : 4786)
-
-#ifndef __PROT_VERSACOM_H__
-#define __PROT_VERSACOM_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   prot_versacom
@@ -12,11 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/01/22 19:48:52 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/03/13 19:35:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __PROT_VERSACOM_H__
+#define __PROT_VERSACOM_H__
+#pragma warning( disable : 4786)
+
 
 #include <rw/tpslist.h>
 

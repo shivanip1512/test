@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __DLLBASE_H__
-#define __DLLBASE_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dllbase
@@ -11,11 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/dllbase.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/01/09 18:09:25 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/03/13 19:35:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DLLBASE_H__
+#define __DLLBASE_H__
+#pragma warning( disable : 4786)
+
 
 
 #include <windows.h>

@@ -1,5 +1,3 @@
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   portpool
@@ -9,13 +7,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/03/06 18:03:09 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/03/13 19:35:33 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
 #pragma warning( disable : 4786)
+
 
 #include "connection.h"
 #include "mgr_device.h"

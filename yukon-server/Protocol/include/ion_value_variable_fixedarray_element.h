@@ -1,8 +1,3 @@
-#pragma warning( disable : 4786 )
-
-#ifndef __ION_VALUE_VARIABLE_FIXEDARRAY_ELEMENT_H__
-#define __ION_VALUE_VARIABLE_FIXEDARRAY_ELEMENT_H__
-
 /*-----------------------------------------------------------------------------*
  *
  * File:   ion_value_variable_fixedarray_element.h
@@ -14,6 +9,9 @@
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
+#ifndef __ION_VALUE_VARIABLE_FIXEDARRAY_ELEMENT_H__
+#define __ION_VALUE_VARIABLE_FIXEDARRAY_ELEMENT_H__
+#pragma warning( disable : 4786 )
 
 
 //  this definition is here so the elements can make proper friends

@@ -1,9 +1,3 @@
-
-#ifndef __SMARTMAP_H__
-#define __SMARTMAP_H__
-
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
 /*************************************************************************
  *
  * smartmap.h      7/10/2002
@@ -22,6 +16,11 @@
  * All Rights Reserved
  *
  ************************************************************************/
+#ifndef __SMARTMAP_H__
+#define __SMARTMAP_H__
+#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+
+
 #include <windows.h>
 #include <iostream>
 #include <functional>

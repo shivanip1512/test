@@ -1,7 +1,3 @@
-#pragma warning( disable : 4786)
-#ifndef __DNP_OBJECT_TIME_H__
-#define __DNP_OBJECT_TIME_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dnp_object_time
@@ -13,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/09/18 21:19:45 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/03/13 19:35:45 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DNP_OBJECT_TIME_H__
+#define __DNP_OBJECT_TIME_H__
+#pragma warning( disable : 4786)
+
 
 #include "dnp_objects.h"
 

@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __STDEXCEPTHDLR_H__
-#define __STDEXCEPTHDLR_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   stdexcepthdlr
@@ -14,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/stdexcepthdlr.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:30 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/03/13 19:35:28 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __STDEXCEPTHDLR_H__
+#define __STDEXCEPTHDLR_H__
+#pragma warning( disable : 4786)
+
 
 #include <stdio.h>
 #include <windows.h>

@@ -1,7 +1,3 @@
-
-#ifndef __DEV_TCU_H__
-#define __DEV_TCU_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_tcu
@@ -13,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tcu.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/12 16:41:04 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/03/13 19:36:14 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_TCU_H__
+#define __DEV_TCU_H__
+
+
 #include <windows.h>
 
 #include <rw/tpslist.h>

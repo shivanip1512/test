@@ -1,7 +1,3 @@
-
-#ifndef __DEV_CARRIER_H__
-#define __DEV_CARRIER_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_carrier
@@ -13,11 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_carrier.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/20 15:08:20 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/03/13 19:36:10 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_CARRIER_H__
+#define __DEV_CARRIER_H__
+
 
 #include <rw\cstring.h>
 #include <rw\thr\mutex.h>

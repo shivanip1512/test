@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __DEV_KV2_H__
-#define __DEV_KV2_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_kv2
@@ -14,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/11/15 20:43:23 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/03/13 19:36:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_KV2_H__
+#define __DEV_KV2_H__
+#pragma warning( disable : 4786)
+
 
 #include "dev_meter.h"
 #include "dlldefs.h"

@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __PROT_EMETCON_H__
-#define __PROT_EMETCON_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   prot_emetcon
@@ -14,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/02/21 20:30:32 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/03/13 19:35:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __PROT_EMETCON_H__
+#define __PROT_EMETCON_H__
+#pragma warning( disable : 4786)
+
 
 #include <utility>
 using namespace std;

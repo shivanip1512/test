@@ -1,7 +1,3 @@
-
-#ifndef __DEV_GRP_EMETCON_H__
-#define __DEV_GRP_EMETCON_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_grp_emetcon
@@ -13,11 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_grp_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:47:16 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/03/13 19:36:11 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_GRP_EMETCON_H__
+#define __DEV_GRP_EMETCON_H__
+
 
 #include <rw/tpslist.h>
 

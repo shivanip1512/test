@@ -1,7 +1,3 @@
-#pragma warning( disable : 4786)
-#ifndef __DEV_BASE_H__
-#define __DEV_BASE_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_base
@@ -13,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2003/03/12 16:41:04 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2003/03/13 19:36:09 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_BASE_H__
+#define __DEV_BASE_H__
+#pragma warning( disable : 4786)
+
 
 #include <rw\cstring.h>
 #include <rw\thr\mutex.h>

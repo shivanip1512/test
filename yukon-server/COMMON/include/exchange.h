@@ -1,8 +1,3 @@
-#pragma warning( disable : 4786)
-
-#ifndef __EXCHANGE_H__
-#define __EXCHANGE_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   exchange
@@ -11,11 +6,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/exchange.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/09/30 14:51:12 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/03/13 19:35:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __EXCHANGE_H__
+#define __EXCHANGE_H__
+#pragma warning( disable : 4786)
+
+
 
 #include <iostream>
 using namespace std;

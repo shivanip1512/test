@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __TRX_711_H__
-#define __TRX_711_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   trx_711
@@ -14,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/trx_711.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/11/15 14:08:24 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/03/13 19:36:18 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __TRX_711_H__
+#define __TRX_711_H__
+#pragma warning( disable : 4786)
+
 
 #include "trx_info.h"
 

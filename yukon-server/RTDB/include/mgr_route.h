@@ -1,5 +1,3 @@
-#ifndef __ROUTE_MGR_H__
-#define __ROUTE_MGR_H__
 /*************************************************************************
  *
  * mgr_route.h      7/7/99
@@ -14,13 +12,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_route.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/09/30 14:55:31 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/03/13 19:36:15 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
  *
  ************************************************************************/
+#ifndef __ROUTE_MGR_H__
+#define __ROUTE_MGR_H__
 
 #include <rw/db/connect.h>
 #include <rw/db/db.h>

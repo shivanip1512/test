@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __DEV_GRP_EXPRESSCOM_H__
-#define __DEV_GRP_EXPRESSCOM_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_grp_expresscom
@@ -13,11 +8,16 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/10/08 20:14:12 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/03/13 19:36:11 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_GRP_EXPRESSCOM_H__
+#define __DEV_GRP_EXPRESSCOM_H__
+#pragma warning( disable : 4786)
+
+
 #include <rw/tpslist.h>
 
 #include "dev_base.h"

@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __PARSEVALUE_H__
-#define __PARSEVALUE_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   parsevalue
@@ -14,6 +9,10 @@
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __PARSEVALUE_H__
+#define __PARSEVALUE_H__
+#pragma warning( disable : 4786)
+
 
 #include <limits.h>
 

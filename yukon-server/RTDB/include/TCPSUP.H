@@ -1,6 +1,3 @@
-#ifndef TCPSUP_H
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   TCPSUP
@@ -9,19 +6,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/TCPSUP.H-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:21 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/03/13 19:36:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
+#ifndef TCPSUP_H
 #define TCPSUP_H
-/******************************************************************************
- * PVCS KEYWORDS:
- * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/TCPSUP.H-arc  $
- * REVISION     :  $Revision: 1.3 $
- * DATE         :  $Date: 2002/04/16 16:00:21 $
- ******************************************************************************/
+#pragma warning( disable : 4786)
 
 #include "ctinexus.h"
 

@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __POINTTYPES_H__
-#define __POINTTYPES_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   pointtypes
@@ -14,6 +9,10 @@
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __POINTTYPES_H__
+#define __POINTTYPES_H__
+#pragma warning( disable : 4786)
+
 
 // #define SYS_DID_SYSTEM        0    // A catchall for any op which needs an ID
 #define SYS_PID_SYSTEM                    0        // Catch all

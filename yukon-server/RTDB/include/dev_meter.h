@@ -1,7 +1,3 @@
-
-#ifndef __DEV_METER_H__
-#define __DEV_METER_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_meter
@@ -13,11 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_meter.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:47:17 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/03/13 19:36:13 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_METER_H__
+#define __DEV_METER_H__
+
 
 #include <rw\cstring.h>
 #include <rw\thr\mutex.h>

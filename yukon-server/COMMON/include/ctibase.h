@@ -1,7 +1,3 @@
-
-#ifndef __CTIBASE_H__
-#define __CTIBASE_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   ctibase
@@ -12,6 +8,9 @@
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __CTIBASE_H__
+#define __CTIBASE_H__
+
 
 #include <rw\thr\mutex.h>
 #include <rw/thr/guard.h>

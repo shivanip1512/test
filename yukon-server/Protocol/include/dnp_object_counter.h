@@ -1,7 +1,3 @@
-#pragma warning( disable : 4786)
-#ifndef __DNP_OBJECT_COUNTER_H__
-#define __DNP_OBJECT_COUNTER_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dnp_object_counter
@@ -13,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/05 23:54:49 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/03/13 19:35:45 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DNP_OBJECT_COUNTER_H__
+#define __DNP_OBJECT_COUNTER_H__
+#pragma warning( disable : 4786)
+
 
 #include "dnp_objects.h"
 

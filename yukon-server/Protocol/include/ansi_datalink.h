@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __ANSI_DATALINK_H__
-#define __ANSI_DATALINK_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   ansi_datalink
@@ -14,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/11/15 20:41:33 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/03/13 19:35:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __ANSI_DATALINK_H__
+#define __ANSI_DATALINK_H__
+#pragma warning( disable : 4786)
+
 
 #include "xfer.h"
 

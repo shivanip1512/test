@@ -1,8 +1,3 @@
-#ifndef __DEV_REPEATER800_H__
-#define __DEV_REPEATER800_H__
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_repeater
@@ -19,6 +14,10 @@
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_REPEATER800_H__
+#define __DEV_REPEATER800_H__
+#pragma warning( disable : 4786)
+
 
 #include <rw\cstring.h>
 

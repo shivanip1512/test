@@ -1,7 +1,3 @@
-
-#include <iostream>
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   rte_versacom
@@ -10,12 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/01/22 19:48:52 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/03/13 19:36:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
 
+
+#include <iostream>
 #include <iomanip>
 using namespace std;
 

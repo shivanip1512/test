@@ -1,5 +1,3 @@
-#ifndef __PORT_MGR_H__
-#define __PORT_MGR_H__
 /*************************************************************************
  *
  * mgr_port.h      7/7/99
@@ -14,13 +12,15 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_port.h-arc  $
- * REVISION     :  $Revision: 1.9 $
- * DATE         :  $Date: 2003/03/06 18:04:33 $
+ * REVISION     :  $Revision: 1.10 $
+ * DATE         :  $Date: 2003/03/13 19:36:15 $
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
  *
  ************************************************************************/
+#ifndef __PORT_MGR_H__
+#define __PORT_MGR_H__
 
 #include <rw/db/connect.h>
 

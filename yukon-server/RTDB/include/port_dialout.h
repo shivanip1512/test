@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __PORT_DIALOUT_H__
-#define __PORT_DIALOUT_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   port_dialout
@@ -13,11 +8,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/12/19 20:30:14 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/03/13 19:36:16 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __PORT_DIALOUT_H__
+#define __PORT_DIALOUT_H__
+#pragma warning( disable : 4786)
+
 
 #include <windows.h>
 #include <iostream>

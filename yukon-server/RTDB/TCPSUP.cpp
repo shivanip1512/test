@@ -1,6 +1,3 @@
-#pragma warning (disable : 4786)
-#pragma title ( "Low Level TCP Terminal Routines" )
-#pragma subtitle ( "CTI Copyright (c) 1990-1996" )
 /*---------------------------------------------------------------------
     Copyright (c) 1990-1996 Cannon Technologies, Inc. All rights reserved.
 
@@ -24,6 +21,11 @@
     Revision History:
 
    -------------------------------------------------------------------- */
+#pragma warning (disable : 4786)
+#pragma title ( "Low Level TCP Terminal Routines" )
+#pragma subtitle ( "CTI Copyright (c) 1990-1996" )
+
+
 #include <windows.h>       // These next few are required for Win32
 #include <winsock.h>
 #include <process.h>

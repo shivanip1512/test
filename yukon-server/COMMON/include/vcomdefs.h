@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __VCOMDEFS_H__
-#define __VCOMDEFS_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   vcomdefs
@@ -14,6 +9,10 @@
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __VCOMDEFS_H__
+#define __VCOMDEFS_H__
+#pragma warning( disable : 4786)
+
 
 
 #define U_MASK       0x00000008

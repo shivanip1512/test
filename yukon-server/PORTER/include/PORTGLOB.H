@@ -1,6 +1,3 @@
-#include <rw/tpsldict.h>
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   PORTGLOB
@@ -9,12 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/PORTGLOB.H-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/03/12 21:12:20 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/03/13 19:35:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
 
+
+#include <rw/tpsldict.h>
 #include <set>
 using namespace std;
 

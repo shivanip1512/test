@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_mct_broadcast
@@ -9,15 +8,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/02/21 23:12:24 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/03/13 19:36:13 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786)
 #ifndef __DEV_MCT_BROADCAST_H__
 #define __DEV_MCT_BROADCAST_H__
+#pragma warning( disable : 4786)
+
 
 #include <set>
 #include <utility>

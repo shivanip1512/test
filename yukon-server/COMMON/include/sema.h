@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __SEMA_H__
-#define __SEMA_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   sema
@@ -13,11 +8,16 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/05/02 17:03:11 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/03/13 19:35:28 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __SEMA_H__
+#define __SEMA_H__
+#pragma warning( disable : 4786)
+
+
 #include <windows.h>
 #include <assert.h>
 #include "dlldefs.h"

@@ -1,7 +1,3 @@
-#pragma warning( disable : 4786)
-#ifndef __NUMSTR_H__
-#define __NUMSTR_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:
@@ -13,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/02/21 22:28:25 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/03/13 19:35:27 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __NUMSTR_H__
+#define __NUMSTR_H__
+#pragma warning( disable : 4786)
+
 
 #include "dlldefs.h"
 

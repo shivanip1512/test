@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __PORT_BASE_H__
-#define __PORT_BASE_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   port_base
@@ -14,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/03/12 16:41:04 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/03/13 19:36:15 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __PORT_BASE_H__
+#define __PORT_BASE_H__
+#pragma warning( disable : 4786)
+
 
 #include <windows.h>
 #include <iostream>

@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __DEV_IDLC_H__
-#define __DEV_IDLC_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_idlc
@@ -14,11 +9,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/03/12 16:41:04 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/03/13 19:36:11 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_IDLC_H__
+#define __DEV_IDLC_H__
+#pragma warning( disable : 4786)
+
+
 #include <windows.h>
 #include "ctitypes.h"
 #include "types.h"

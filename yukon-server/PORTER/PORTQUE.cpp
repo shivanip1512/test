@@ -1,5 +1,3 @@
-#pragma warning (disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   PORTQUE
@@ -8,11 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2003/02/07 15:03:36 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2003/03/13 19:35:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning (disable : 4786)
+
 
 #pragma title ( "Queing and Actin Message Builders" )
 #pragma subtitle ( "CTI Copyright (c) 1990-1993" )

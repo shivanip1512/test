@@ -1,8 +1,3 @@
-#pragma warning( disable : 4786 )
-
-#ifndef __DEV_ION_H__
-#define __DEV_ION_H__
-
 /*-----------------------------------------------------------------------------*
  *
  * File:   dev_ion.h
@@ -14,6 +9,10 @@
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
+#ifndef __DEV_ION_H__
+#define __DEV_ION_H__
+#pragma warning( disable : 4786 )
+
 
 #include <windows.h>
 #include "ctitypes.h"

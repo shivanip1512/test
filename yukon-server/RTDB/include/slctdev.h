@@ -1,9 +1,3 @@
-
-#ifndef __SLCTDEV_H__
-#define __SLCTDEV_H__
-
-#pragma warning (disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   selectors
@@ -15,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/slctdev.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/09/09 21:45:25 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/03/13 19:36:18 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __SLCTDEV_H__
+#define __SLCTDEV_H__
+#pragma warning (disable : 4786)
+
 #include <rw/db/db.h>
 
 #include "dlldefs.h"

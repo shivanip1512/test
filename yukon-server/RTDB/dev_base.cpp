@@ -1,5 +1,3 @@
-
-#pragma warning ( disable : 4786 )
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_base
@@ -8,11 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2003/03/06 18:05:14 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2003/03/13 19:35:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+
+#pragma warning ( disable : 4786 )
 
 
 #include <rw/tpslist.h>

@@ -9,14 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/portdecl.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/03/06 18:07:29 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/03/13 19:35:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
 #ifndef __PORTDECL_H__
 #define __PORTDECL_H__
+#pragma warning( disable : 4786)
 
 
 #include "dsm2err.h"

@@ -1,6 +1,3 @@
-
-#pragma warning ( disable : 4786 )
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_single
@@ -8,11 +5,13 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2002/12/12 17:41:12 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2003/03/13 19:36:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+
+#pragma warning ( disable : 4786 )
 
 
 #include <vector>

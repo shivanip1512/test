@@ -1,7 +1,3 @@
-#pragma warning( disable : 4786)
-#ifndef __DEV_GRP_MACRO_H__
-#define __DEV_GRP_MACRO_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_grp_macro
@@ -13,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/22 19:47:17 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/03/13 19:36:12 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DEV_GRP_MACRO_H__
+#define __DEV_GRP_MACRO_H__
+#pragma warning( disable : 4786)
+
 
 #include "dev_base.h"
 #include "dev_grp.h"

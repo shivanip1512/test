@@ -1,6 +1,3 @@
-#pragma warning( disable : 4786)
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   DSM2
@@ -9,14 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/11/20 22:03:59 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/03/13 19:35:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
 #ifndef DSM2_H
 #define DSM2_H
+#pragma warning( disable : 4786)
+
 
 #include <windows.h>
 

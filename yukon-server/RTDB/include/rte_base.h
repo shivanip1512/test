@@ -1,7 +1,3 @@
-
-#ifndef __RTE_BASE_H__
-#define __RTE_BASE_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   rte_base
@@ -13,11 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_base.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/09/03 14:33:51 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/03/13 19:36:17 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __RTE_BASE_H__
+#define __RTE_BASE_H__
+
 #include "boost/shared_ptr.hpp"
 using boost::shared_ptr;
 using namespace std;

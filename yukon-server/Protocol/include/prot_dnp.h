@@ -1,7 +1,3 @@
-#pragma warning( disable : 4786)
-#ifndef __PROT_DNP_H__
-#define __PROT_DNP_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   prot_dnp
@@ -13,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/02/12 01:16:10 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/03/13 19:35:48 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __PROT_DNP_H__
+#define __PROT_DNP_H__
+#pragma warning( disable : 4786)
+
 
 #include "dlldefs.h"
 #include "pointtypes.h"

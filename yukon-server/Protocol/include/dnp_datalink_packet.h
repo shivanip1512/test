@@ -1,7 +1,3 @@
-#pragma warning( disable : 4786)
-#ifndef __DNP_DATALINK_PACKET_H__
-#define __DNP_DATALINK_PACKET_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dnp_datalink_packet
@@ -12,11 +8,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/03/05 23:54:49 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/03/13 19:35:45 $
 *
 * Copyright (c) 2003 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __DNP_DATALINK_PACKET_H__
+#define __DNP_DATALINK_PACKET_H__
+#pragma warning( disable : 4786)
+
 
 #pragma pack( push, 1 )
 
