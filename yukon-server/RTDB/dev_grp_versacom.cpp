@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/12/01 20:12:50 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/01/27 17:50:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -107,25 +107,7 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
         OutMessage->EventCode    = VERSACOM | NORESULT;
         OutMessage->Retry        = 2;                      // Default to two tries per route!
 
-        /*
-         * OK, these are the items we are about to set out to perform..  Any additional signals will
-         * be added into the list upon completion of the Execute!
-         */
-        if(parse.getActionItems().entries())
-        {
-            for(size_t offset = 0 ; offset < parse.getActionItems().entries(); offset++)
-            {
-                RWCString actn = parse.getActionItems()[offset];
-                RWCString desc = getDescription(parse);
-
-                _lastCommand = actn;    // This might just suck!  I guess I am expecting only one (today) and building for the future..?
-
-                CtiPointStatus *pControlStatus = (CtiPointStatus*)getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS );
-                LONG pid = ( (pControlStatus != 0) ? pControlStatus->getPointID() : SYS_PID_LOADMANAGEMENT );
-
-                vgList.insert(CTIDBG_new CtiSignalMsg(pid, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
-            }
-        }
+        reportActionItemsToDispatch(pReq, parse, vgList);
 
         /*
          *  Form up the reply here since the ExecuteRequest funciton will consume the

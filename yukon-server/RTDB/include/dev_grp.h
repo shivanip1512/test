@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/01/18 19:11:03 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/01/27 17:50:44 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,9 @@
 
 #define GRP_CONTROL_STATUS      1       // status point which can intiate control on the group.  Also indicates control status.
 
+#include "cparms.h"
 #include "msg_lmcontrolhistory.h"
+#include "msg_pcrequest.h"
 #include "msg_pdata.h"
 #include "msg_multi.h"
 #include "pt_status.h"
@@ -37,6 +39,8 @@ protected:
     RWCString _lastCommand;
 
 private:
+
+    ULONG _lastCommandExpiration;
 
 public:
 
@@ -74,6 +78,48 @@ public:
     virtual void DecodeDatabaseReader(RWDBReader &rdr)
     {
         Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
+    }
+
+    void reportActionItemsToDispatch(CtiRequestMsg *pReq, CtiCommandParser &parse, RWTPtrSlist< CtiMessage > &vgList)
+    {
+        RWTime now;
+        RWCString prevLastAction = _lastCommand;    // Save a temp copy.
+        _lastCommand = RWCString();                 // Blank it!
+
+        //
+        // OK, these are the items we are about to set out to perform..  Any additional signals will
+        // be added into the list upon completion of the Execute!
+        //
+        if(parse.getActionItems().entries())
+        {
+            bool reducelogs = !gConfigParms.getValueAsString("REDUCE_CONTROL_REPORTS_TO_SYSTEM_LOG").compareTo("true", RWCString::ignoreCase);
+
+            for(size_t offset = 0 ; offset < parse.getActionItems().entries(); offset++)
+            {
+                RWCString actn = parse.getActionItems()[offset];
+                RWCString desc = getDescription(parse);
+
+                _lastCommand += actn + " / ";
+
+                // Check if this is a repeat of a previous control.  We should suppress repeats.
+                if( !reducelogs || now.seconds() > _lastCommandExpiration || !prevLastAction.contains(actn) )
+                {
+                    CtiPointStatus *pControlStatus = (CtiPointStatus*)getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS );
+                    LONG pid = ( (pControlStatus != 0) ? pControlStatus->getPointID() : SYS_PID_LOADMANAGEMENT );
+
+                    vgList.insert(CTIDBG_new CtiSignalMsg(pid, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << getName() << " command repeated. Not logged to systemlog: " << desc << " / " << actn << endl;
+                    }
+                }
+            }
+        }
+
+        _lastCommandExpiration = now.seconds() + parse.getiValue("control_interval", 0);
     }
 
     void reportControlStart(int isshed, int shedtime, int reductionratio, RWTPtrSlist< CtiMessage >  &vgList, RWCString cmd = RWCString("") )

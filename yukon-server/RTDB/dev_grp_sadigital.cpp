@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/12/02 22:15:14 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/01/27 17:50:44 $
 *
 * HISTORY      :
 * $Log: dev_grp_sadigital.cpp,v $
+* Revision 1.8  2005/01/27 17:50:44  cplender
+* Added method reportActionItemsToDispatch()
+*
 * Revision 1.7  2004/12/02 22:15:14  cplender
 * Added OM-ExpirationTime to the device queue processing.
 *
@@ -215,25 +218,7 @@ INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
             OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
             OutMessage->ExpirationTime = RWTime().seconds() + parse.getiValue("control_interval", 300); // Time this out in 5 minutes or the setting.
 
-            //
-            // OK, these are the items we are about to set out to perform..  Any additional signals will
-            // be added into the list upon completion of the Execute!
-            //
-            if(parse.getActionItems().entries())
-            {
-                for(size_t offset = 0 ; offset < parse.getActionItems().entries(); offset++)
-                {
-                    RWCString actn = parse.getActionItems()[offset];
-                    RWCString desc = getDescription(parse);
-
-                    _lastCommand = actn;    // This might just suck!  I guess I am expecting only one (today) and building for the future..?
-
-                    CtiPointStatus *pControlStatus = (CtiPointStatus*)getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS );
-                    LONG pid = ( (pControlStatus != 0) ? pControlStatus->getPointID() : SYS_PID_LOADMANAGEMENT );
-
-                    vgList.insert(CTIDBG_new CtiSignalMsg(pid, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
-                }
-            }
+            reportActionItemsToDispatch(pReq, parse, vgList);
 
             //
             //  Form up the reply here since the ExecuteRequest function will consume the

@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/12/01 20:12:50 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/01/27 17:50:44 $
 *
 * HISTORY      :
 * $Log: dev_grp_sa305.cpp,v $
+* Revision 1.10  2005/01/27 17:50:44  cplender
+* Added method reportActionItemsToDispatch()
+*
 * Revision 1.9  2004/12/01 20:12:50  cplender
 * Default "control_reduction" is 100, not -1.
 *
@@ -219,25 +222,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
 
         int serial = (int)(getLoadGroup().getIndividual());
 
-        /*
-         * OK, these are the items we are about to set out to perform..  Any additional signals will
-         * be added into the list upon completion of the Execute!
-         */
-        if(parse.getActionItems().entries())
-        {
-            for(size_t offset = 0 ; offset < parse.getActionItems().entries(); offset++)
-            {
-                RWCString actn = parse.getActionItems()[offset];
-                RWCString desc = getDescription(parse);
-
-                _lastCommand = actn;    // This might just suck!  I guess I am expecting only one (today) and building for the future..?
-
-                CtiPointStatus *pControlStatus = (CtiPointStatus*)getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS );
-                LONG pid = ( (pControlStatus != 0) ? pControlStatus->getPointID() : SYS_PID_LOADMANAGEMENT );
-
-                vgList.insert(CTIDBG_new CtiSignalMsg(pid, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
-            }
-        }
+        reportActionItemsToDispatch(pReq, parse, vgList);
 
         /*
          *  Form up the reply here since the ExecuteRequest function will consume the

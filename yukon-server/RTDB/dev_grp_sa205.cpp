@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/12/02 22:15:14 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/01/27 17:50:44 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -188,25 +188,7 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         OutMessage->Retry = gConfigParms.getValueAsInt("PORTER_SA_REPEATS", 1);
         OutMessage->ExpirationTime = RWTime().seconds() + parse.getiValue("control_interval", 300); // Time this out in 5 minutes or the setting.
 
-        //
-        // OK, these are the items we are about to set out to perform..  Any additional signals will
-        // be added into the list upon completion of the Execute!
-        //
-        if(parse.getActionItems().entries())
-        {
-            for(size_t offset = 0 ; offset < parse.getActionItems().entries(); offset++)
-            {
-                RWCString actn = parse.getActionItems()[offset];
-                RWCString desc = getDescription(parse);
-
-                _lastCommand = actn;    // This might just suck!  I guess I am expecting only one (today) and building for the future..?
-
-                CtiPointStatus *pControlStatus = (CtiPointStatus*)getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS );
-                LONG pid = ( (pControlStatus != 0) ? pControlStatus->getPointID() : SYS_PID_LOADMANAGEMENT );
-
-                vgList.insert(CTIDBG_new CtiSignalMsg(pid, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
-            }
-        }
+        reportActionItemsToDispatch(pReq, parse, vgList);
 
         //
         //  Form up the reply here since the ExecuteRequest function will consume the
