@@ -1,5 +1,6 @@
 package com.cannontech.crypto;
 
+import java.security.Security;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.KeySpec;
 
@@ -23,8 +24,8 @@ import sun.misc.BASE64Encoder;
 public class CtiCipher
 {
 	private static CtiCipher localCipher = null;
-	private static Cipher ENC_CIPHER_1 = null;
-	private static Cipher DEC_CIPHER_1 = null;
+	private Cipher ENC_CIPHER_1 = null;
+	private Cipher DEC_CIPHER_1 = null;
 	//private static SecretKey key = null;
 
 
@@ -50,9 +51,27 @@ public class CtiCipher
 		super();
 
 		try
-		{			
+		{
+			//fix for untrusted sign jar error: rename sunjce_provider.jar extension,
+			//run app, rename jar back to original name
+
+//			System.out.println("   ");
+//			Provider[] p = Security.getProviders();
+//			for( int i = 0; i < p.length; i++ )
+//			{
+//				System.out.println( p[i].getName() );
+//				System.out.println( "prop=" + p[i].getProperty("SecretKeyFactory.PBEWithMD5AndDES") );
+//				
+//				Iterator it = p[i].entrySet().iterator();
+//				while( it.hasNext() )
+//					System.out.println( "   " + it.next().toString() );
+//			}
+//			System.out.println("   ");
+
+
 			SecretKey key = SecretKeyFactory.getInstance(
-					"PBEWithMD5AndDES").generateSecret(keySpec);
+					"PBEWithMD5AndDES",
+					Security.getProvider("SunJCE")).generateSecret(keySpec);
 			
 			//PBEWithMD5AndDES
 			if( DEC_CIPHER_1 == null )
