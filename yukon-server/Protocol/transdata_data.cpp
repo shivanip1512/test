@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/10/30 15:02:50 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/12/02 15:48:11 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,6 @@
 #include <rw/rwdate.h>
 
 #include "logger.h"
-
 #include "transdata_data.h"
 
 //=====================================================================================================================

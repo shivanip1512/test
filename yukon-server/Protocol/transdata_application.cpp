@@ -11,14 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/10/30 15:02:50 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/12/02 15:48:11 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "logger.h"
-
 #include "transdata_application.h"
 
 //=====================================================================================================================
@@ -42,38 +41,68 @@ CtiTransdataApplication::~CtiTransdataApplication()
 
 bool CtiTransdataApplication::generate( CtiXfer &xfer )
 {
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " app gen" << endl;
-   }
-
    _finished = false;
-
+   
    switch( _lastState )
    {
    case doLogOn:
-      _tracker.logOn( xfer );
+      {
+         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+         {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " case doLogOn" << endl;
+         }
+         _tracker.logOn( xfer );
+      }
       break;
 
    case doTalk:
-      _tracker.general( xfer );    //this should have other *things* it can do...  ie load profile
+      {
+         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+         {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " case doTalk" << endl;
+         }
+         switch( _command )   
+         {
+         case GENERAL:
+            {
+               if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+               {
+                  CtiLockGuard<CtiLogger> doubt_guard(dout);
+                  dout << RWTime() << " case _command=GENERAL" << endl;
+               }
+               _tracker.billing( xfer );    
+            }
+            break;
+
+         case LOADPROFILE:
+            {
+               if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+               {
+                  CtiLockGuard<CtiLogger> doubt_guard(dout);
+                  dout << RWTime() << " case _command=LOADPROFILE" << endl;
+               }
+               _tracker.loadProfile( xfer );    
+            }
+            break;
+         }
+      }
       break;
 
    case doLogOff:
-      _tracker.logOff( xfer );
+      {
+         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+         {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " case doLogOff" << endl;
+         }
+         _tracker.logOff( xfer );
+      }
       break;
    }
 
    return( true );
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-bool CtiTransdataApplication::isTransactionComplete( void )
-{
-   return( _finished );
 }
 
 //=====================================================================================================================
@@ -86,6 +115,7 @@ bool CtiTransdataApplication::decode( CtiXfer &xfer, int status )
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << RWTime() << " app decode" << endl;
    }
+
    _tracker.decode( xfer, status );
 
    if( _tracker.isTransactionComplete() )
@@ -93,12 +123,19 @@ bool CtiTransdataApplication::decode( CtiXfer &xfer, int status )
       if( _tracker.goodCRC() )
       {
          if( _storage )
+         {
             _numBytes = _tracker.retreiveData( _storage );
+            _finished = true;
+         }
       }
+      
+      if( _lastState == doLogOn )
+         _connected = true;
       
       if( _lastState == doLogOff )
          _finished = true;
-
+      
+      
       setNextState();
    }
 
@@ -121,6 +158,18 @@ void CtiTransdataApplication::setNextState( void )
    if( _lastState == doLogOff )
    {
       _lastState = doLogOn;
+   }
+   else if( _lastState == doTalk )
+   {
+      if( _getLoadProfile )
+      {
+         _command = LOADPROFILE;
+         _getLoadProfile = false;
+      }
+      else
+      {
+         _lastState++;
+      }
    }
    else
    {
@@ -162,8 +211,9 @@ void CtiTransdataApplication::reinitalize( void )
    
    _tracker.reinitalize();
 
-   _lastState     = 0;
+   _lastState     = doLogOn;
    _numBytes      = 0;
+   _connected     = false;
    _finished      = true;
    _storage       = new BYTE[4000];
 }
@@ -180,8 +230,22 @@ int CtiTransdataApplication::retreiveData( BYTE *data )
    return( temp );
 }
 
+//=====================================================================================================================
+//=====================================================================================================================
 
+void CtiTransdataApplication::setCommand( int cmd, bool getAll )
+{
+   _command = cmd;
+   _getLoadProfile = getAll;
+}
 
+//=====================================================================================================================
+//=====================================================================================================================
+
+bool CtiTransdataApplication::isTransactionComplete( void )
+{
+   return( _finished );
+}
 
 
 
@@ -533,3 +597,42 @@ vector<CtiTransdataData> CtiTransdataApplication::getConverted( void )
          }
 */
 
+/*
+bool CtiTransdataApplication::generate( CtiXfer &xfer )
+{
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " app gen" << endl;
+   }
+
+   _finished = false;
+
+   switch( _lastState )
+   {
+   case doLogOn:
+      _tracker.logOn( xfer );
+      break;
+
+   case doTalk:
+      {
+         switch( _talkState )
+         {
+         case doBilling:
+            _tracker.billing( xfer );    
+            break;
+
+         case doLoadProfile:
+            _tracker.loadProfile( xfer );    
+            break;
+         }
+      }
+      break;
+
+   case doLogOff:
+      _tracker.logOff( xfer );
+      break;
+   }
+
+   return( true );
+} */

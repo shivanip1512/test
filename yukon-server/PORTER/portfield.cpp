@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.82 $
-* DATE         :  $Date: 2003/11/10 18:20:55 $
+* REVISION     :  $Revision: 1.83 $
+* DATE         :  $Date: 2003/12/02 15:47:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1412,7 +1412,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         ansi.reinitialize();
                         break;
                     }
-
+/*
                 case TYPE_TDMARKV:
                     {
                         BYTE  inBuffer[5000];
@@ -1421,7 +1421,9 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         CtiDeviceMarkV       *markv = ( CtiDeviceMarkV *)Device;
                         CtiProtocolTransdata &transdata = markv->getProtocol();
-
+                        
+                        transdata.recvOutbound( OutMessage );
+   
                         trx.setInBuffer( inBuffer );
                         trx.setOutBuffer( outBuffer );
                         trx.setInCountActual( &bytesReceived );
@@ -1447,6 +1449,53 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         status = transdata.sendCommResult( InMessage );
 
 //                     transdata.reinitalize();
+                        transdata.destroy();
+                        break;
+                    }
+*/
+                case TYPE_TDMARKV:
+                    {
+                       extern CtiConnection VanGoghConnection;
+                        BYTE  inBuffer[5000];
+                        BYTE  outBuffer[5000];
+                        ULONG bytesReceived = 0;
+
+                        CtiDeviceMarkV       *markv = ( CtiDeviceMarkV *)Device;
+                        CtiProtocolTransdata &transdata = markv->getProtocol();
+                        
+                        transdata.recvOutbound( OutMessage );
+   
+                        trx.setInBuffer( inBuffer );
+                        trx.setOutBuffer( outBuffer );
+                        trx.setInCountActual( &bytesReceived );
+
+                        transdata.reinitalize();
+                        
+                        while( !transdata.isTransactionComplete() )
+                        {
+                           transdata.generate( trx );
+                           
+                           status = Port->outInMess( trx, Device, traceList );
+                           
+                           transdata.decode( trx, status );
+                           
+                           if( trx.doTrace( status ))
+                           {
+                             Port->traceXfer( trx, traceList, Device, status );
+                           }
+                           
+                           DisplayTraceList( Port, traceList, true );
+                        }
+
+                        CtiReturnMsg *retMsg = new CtiReturnMsg();
+                        retMsg->PointData().append( new CtiPointDataMsg() );
+                        VanGoghConnection.WriteConnQue( retMsg );
+
+                        transdata.processDispatchReturnMessage( VanGoghConnection );
+                        
+                        //send the billing data back to scanner
+                        status = transdata.sendCommResult( InMessage );
+
                         transdata.destroy();
                         break;
                     }

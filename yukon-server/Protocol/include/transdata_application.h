@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/10/30 15:02:50 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/12/02 15:48:11 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -27,6 +27,9 @@
 #include "transdata_tracker.h"
 #include "transdata_data.h"
 
+#define GENERAL      0
+#define LOADPROFILE  1
+
 class IM_EX_PROT CtiTransdataApplication
 {
    enum
@@ -35,48 +38,48 @@ class IM_EX_PROT CtiTransdataApplication
       doTalk,
       doLogOff
    };
-/*
-   struct Channel
-   {
-      FLOAT    totalUsage_A;
-      FLOAT    totalUsage_B;
-      FLOAT    totalUsage_C;
-      FLOAT    totalUsage_D;
-      FLOAT    totalUsage_All;
-      ULONG    currentDemand;
-      ULONG    peakDemand;
-      ULONG    timeOfPeak;
-      ULONG    dateOfPeak;
-      ULONG    previousDemand;
-   };
 
-
-   struct Real
-   {
-      //
-      // put some of the stuff from the orig (end of doc) back in later.....
-      //
-      Channel                       channel[8];
-
-      CHAR                          deviceID[15];
-
-      USHORT                        powerOutages;
-
-      DOUBLE                        prevIntervalDemand;
-
-      ULONG                         serialNumber;
-
-      FLOAT                         kFactor;
-      USHORT                        demandInterval;
-
-      DOUBLE                        maxkM3;
-      FLOAT                         powerFactorAtMaxkM3;
-      DOUBLE                        coincidentkM3atMaxDemand;
-      DOUBLE                        totalkMh3;
-
-   };
-*/
    enum
+   {
+      doBilling = 0,
+      doLoadProfile
+   };
+
+   
+public:
+
+      CtiTransdataApplication();
+      ~CtiTransdataApplication();
+
+      bool generate( CtiXfer &xfer );
+      bool decode( CtiXfer &xfer, int status );
+      bool isTransactionComplete( void );
+      void injectData( RWCString str );
+      void setNextState( void );
+      int getError( void );
+      void destroy( void );
+      void reinitalize( void );
+      int retreiveData( BYTE *data );
+      void setCommand( int cmd, bool lp );
+
+
+   protected:
+
+   private:
+
+      CtiTransdataTracker  _tracker;
+
+      int                  _lastState;
+      int                  _numBytes;
+      int                  _command;
+
+      bool                 _finished;
+      bool                 _connected;
+      bool                 _getLoadProfile;
+      BYTE                 *_storage;
+};
+
+/*   enum
    {
       powerFactor    = 71,
       phaseAVoltage  = 505,
@@ -211,41 +214,6 @@ class IM_EX_PROT CtiTransdataApplication
       ch4_TimeOfPead_C     = 167,
       ch4_TimeOfPead_D     = 191,
    };
-
-
-   public:
-
-      CtiTransdataApplication();
-      ~CtiTransdataApplication();
-
-      bool generate( CtiXfer &xfer );
-      bool decode( CtiXfer &xfer, int status );
-
-      bool isTransactionComplete( void );
-      void injectData( RWCString str );
-
-      void setNextState( void );
-//      bool processData( BYTE *data, int numBytes );
-
-      int getError( void );
-      void destroy( void );
-      void reinitalize( void );
-
-      int retreiveData( BYTE *data );
-
-   protected:
-
-   private:
-
-      CtiTransdataTracker  _tracker;
-
-      int                  _lastState;
-      int                  _numBytes;
-
-      bool                 _finished;
-
-      BYTE                 *_storage;
-};
-
+*/
 #endif // #ifndef __TRANSDATA_APPLICATION_H__
 

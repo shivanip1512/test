@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/10/30 15:02:51 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/12/02 15:48:11 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -28,22 +28,40 @@ class IM_EX_PROT CtiTransdataTracker
 {
    enum
    {
-      doTest      = 0,
-      doTest2,
-      doPassword,
+      //connect
+      doPassword  = 0,
       doIdentify,
-//      doEnabledChannels,
+      
+      //billing
       doScroll,
       doPullBuffer,
-      doStartProt,
+      doStartProt1,
+      doEndProt1,
+      
+      //loadprofile
+      doEnabledChannels,
+      doIntervalSize,
+      doRecordDump,
+      doRecordNumber,
+      doProt1,
+      doProt2,
+      doProt3,
+      
+      //disconnect
       doLogoff
-
    };
 
    enum
    {
       working     = 0,
       failed
+   };
+
+   struct mark_v_lp
+   {
+      bool  enabledChannels[8];
+      int   lpFormat[3];
+      BYTE  lpData[2000];
    };
 
    public:
@@ -54,11 +72,19 @@ class IM_EX_PROT CtiTransdataTracker
       void setXfer( CtiXfer &xfer, RWCString dataOut, int bytesIn, bool block, ULONG time );
 
       bool logOn( CtiXfer &xfer );
-      bool general( CtiXfer &xfer );
+      bool billing( CtiXfer &xfer );
+      bool loadProfile( CtiXfer &xfer );
       bool logOff( CtiXfer &xfer );
       bool decode( CtiXfer &xfer, int status );
-      bool processData( BYTE *data );
+      bool decodeYModem( CtiXfer &xfer, int status );
+      bool decodeLink( CtiXfer &xfer, int status );
+      bool processComms( BYTE *data, int bytes );
+      bool processData( BYTE *data, int bytes );
       bool isTransactionComplete( void );
+      bool gotValidResponse( const BYTE *data, int length );
+      bool gotRetry( const BYTE *data, int length );
+      bool grabChannels( BYTE *data, int bytes );
+      bool grabFormat( BYTE *data, int bytes );
 
       void injectData( RWCString str );
       void setNextState( void );
@@ -117,6 +143,7 @@ class IM_EX_PROT CtiTransdataTracker
       const char *const    _good_return;
       const char *const    _prot_message;
       const char *const    _retry;
+      const char *const    _dump;
 
       RWCString            _password;
 
@@ -125,16 +152,24 @@ class IM_EX_PROT CtiTransdataTracker
       bool                 _finished;
       bool                 _goodCRC;
       bool                 _ymodemsTurn;
+      bool                 _first;
+      bool                 _sec;
+      bool                 _hold;
+      bool                 _dataIsExpected;
+//      bool                 _enabledChannels[8];
 
       int                  _lastState;
       int                  _bytesReceived;
       int                  _meterBytes;
       int                  _failCount;
       int                  _error;
+//      int                  _lpFormat[3];
 
       BYTE                 *_storage;
       BYTE                 *_meterData;
       BYTE                 *_lastCommandSent;
+
+      mark_v_lp            *_lp;
 
       CtiTransdataDatalink _datalink;
       CtiProtocolYmodem    _ymodem;

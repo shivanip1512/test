@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/10/30 15:02:49 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/12/02 15:47:59 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *
@@ -69,19 +69,18 @@ void CtiProtocolYmodem::reinitalize( void )
    _lastState     = doStart;
    _bytesReceived = 0;
    _finished      = false;
-   _gotData       = false;
    _storage       = new BYTE[4000];
 }
 
 //=====================================================================================================================
 //=====================================================================================================================
 
-bool CtiProtocolYmodem::generate( CtiXfer &xfer )
+bool CtiProtocolYmodem::generate( CtiXfer &xfer, int bytesWanted, int timeToWait )
 {
    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ymodem gen" << endl;
+      dout << RWTime() << " ymodem generate" << endl;
    }
 
    if( _lastState == doAck )
@@ -89,30 +88,45 @@ bool CtiProtocolYmodem::generate( CtiXfer &xfer )
       if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " ymodem set ack" << endl;
+         dout << RWTime() << " ymodem set ACK" << endl;
       }
       
-      _bytesExpected = 0;
+      _bytesExpected = bytesWanted;
       _lastState = doStart;
-      setXfer( xfer, Ack, _bytesExpected, false, 0 );
-      
-      if( _gotData )
-      {
-         _finished = true;
-      }
+      setXfer( xfer, Ack, _bytesExpected, false, timeToWait ); //false, 0?
    }
    else
    {
       if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " ymodem set crcnak" << endl;
+         dout << RWTime() << " ymodem set NAK" << endl;
       }
-      _bytesExpected = 1029;
+      
+      _bytesExpected = bytesWanted;
       _lastState = doAck;
-      setXfer( xfer, Crcnak, _bytesExpected, false, 5 );
+      setXfer( xfer, Crcnak, _bytesExpected, false, timeToWait );
    }
 
+   return( false );
+}
+
+//=====================================================================================================================
+//real temp quick hack
+//=====================================================================================================================
+
+bool CtiProtocolYmodem::stopAck( CtiXfer &xfer, int bytesWanted, int timeToWait )
+{
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " ymodem stopack" << endl;
+   }
+
+   _bytesExpected = bytesWanted;
+   _lastState = doStart;
+   setXfer( xfer, Ack, _bytesExpected, false, timeToWait ); 
+      
    return( false );
 }
 
@@ -129,15 +143,13 @@ bool CtiProtocolYmodem::decode( CtiXfer &xfer, int status )
    
    if( xfer.getInCountActual() >= _bytesExpected )
    {
-      _bytesExpected = 333;
-   }
-
-   if( xfer.getInCountActual() >= 1000 )
-   {
-      memcpy( _storage, xfer.getInBuffer(), xfer.getInCountActual() );
-
-      _bytesReceived = xfer.getInCountActual();
-      _gotData = true;
+      if( _bytesExpected )
+      {
+         memcpy( _storage, xfer.getInBuffer(), xfer.getInCountActual() );
+         _bytesReceived = xfer.getInCountActual();
+      }
+      
+      _finished = true;
    }
 
    return( false );
@@ -164,8 +176,6 @@ void CtiProtocolYmodem::retreiveData( BYTE *data, int *bytes )
       memset( _storage, '\0', sizeof( _storage ));
 
       _bytesReceived = 0;
-
-      //////////////////
       _finished = false;
    }
 }
@@ -254,3 +264,96 @@ void CtiProtocolYmodem::setXfer( CtiXfer &xfer, BYTE dataOut, int bytesIn, bool 
 }
 
 
+/*bool CtiProtocolYmodem::generate( CtiXfer &xfer )      ///11/12/03
+{
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " ymodem generate" << endl;
+   }
+
+   if( _lastState == doAck )
+   {
+      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      {
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << RWTime() << " ymodem set ACK" << endl;
+      }
+      
+      _bytesExpected = 1029;  //0
+      _lastState = doStart;
+      setXfer( xfer, Ack, _bytesExpected, false, 10 ); //false, 0?
+      
+      if( _gotData )
+      {
+         _finished = true;
+      }
+   }
+   else
+   {
+      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      {
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << RWTime() << " ymodem set NAK" << endl;
+      }
+      
+      _bytesExpected = 1029;
+      _lastState = doAck;
+      setXfer( xfer, Crcnak, _bytesExpected, false, 5 );
+   
+      ///////
+      if( _gotData )
+      {
+         _finished = true;
+      }
+      ////////
+   }
+
+   return( false );
+}
+*/
+/*
+
+//bool CtiProtocolYmodem::generate( CtiXfer &xfer )
+bool generate( CtiXfer &xfer, int bytesWanted, int timeToWait );
+{
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " ymodem gen" << endl;
+   }
+
+   if( _lastState == doAck )
+   {
+      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      {
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << RWTime() << " ymodem set ack" << endl;
+      }
+      
+      _bytesExpected = 0;
+      _lastState = doStart;
+      setXfer( xfer, Ack, _bytesExpected, false, 0 );
+      
+      if( _gotData )
+      {
+         _finished = true;
+      }
+   }
+   else
+   {
+      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      {
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << RWTime() << " ymodem set crcnak" << endl;
+      }
+
+      _bytesExpected = 1029;
+      _lastState = doAck;
+      setXfer( xfer, Crcnak, _bytesExpected, false, 5 );
+   }
+
+   return( false );
+}
+
+*/

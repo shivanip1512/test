@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/10/30 14:56:20 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/12/02 15:47:58 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -65,6 +65,7 @@ class IM_EX_DEVDB CtiDeviceMarkV : public CtiDeviceMeter
       CH4_OFFSET       = 350
    };
 
+
 protected:
 
 private:
@@ -99,6 +100,22 @@ public:
                            RWTPtrSlist< OUTMESS >     &outList,
                            INT                        ScanPriority=MAXPRIORITY-4);
 
+   virtual INT LoadProfileScan(CtiRequestMsg              *pReq,
+                              CtiCommandParser           &parse,
+                              OUTMESS                    *&OutMessage,
+                              RWTPtrSlist< CtiMessage >  &vgList,
+                              RWTPtrSlist< CtiMessage >  &retList,
+                              RWTPtrSlist< OUTMESS >     &outList,
+                              INT                        ScanPriority=MAXPRIORITY-4);
+   
+   virtual INT ExecuteRequest(CtiRequestMsg              *pReq,
+                              CtiCommandParser           &parse,
+                              OUTMESS                    *&OutMessage,
+                              RWTPtrSlist< CtiMessage >  &vgList,
+                              RWTPtrSlist< CtiMessage >  &retList,
+                              RWTPtrSlist< OUTMESS >     &outList,
+                              INT                        ScanPriority=MAXPRIORITY-4);
+   
    virtual INT ResultDecode(INMESS                    *InMessage,
                             RWTime                    &TimeNow,
                             RWTPtrSlist< CtiMessage > &vgList,

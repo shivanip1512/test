@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/10/30 15:02:49 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/12/02 15:47:45 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,14 +42,39 @@ CtiDeviceMarkV::~CtiDeviceMarkV()
 //=====================================================================================================================
 //=====================================================================================================================
 
-INT CtiDeviceMarkV::GeneralScan( CtiRequestMsg              *pReq,
-                                 CtiCommandParser           &parse,
-                                 OUTMESS                    *&OutMessage,
-                                 RWTPtrSlist< CtiMessage >  &vgList,
-                                 RWTPtrSlist< CtiMessage >  &retList,
-                                 RWTPtrSlist< OUTMESS >     &outList,
-                                 INT                        ScanPriority)
+INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg             *pReq, 
+                                     CtiCommandParser          &parse, 
+                                     OUTMESS                   *&OutMessage, 
+                                     RWTPtrSlist< CtiMessage > &vgList, 
+                                     RWTPtrSlist< CtiMessage > &retList, 
+                                     RWTPtrSlist< OUTMESS >    &outList,
+                                     INT                       ScanPriority )
 {
+   CtiProtocolTransdata::mkv   *ptr = NULL;
+
+   switch( parse.getCommand() )
+   {
+       case ScanRequest:
+       {
+           switch(parse.getiValue("scantype"))
+           {
+            case ScanRateGeneral:
+              {
+                 _transdataProtocol.setCommand( GENERAL, true );  //the bool is temp to force LP collection
+                                                                  //it will be seperable later
+              }
+            break;
+
+           case  ScanRateLoadProfile:
+              {
+                 _transdataProtocol.setCommand( LOADPROFILE, false ); 
+              }
+              break;
+           }
+       }
+       break;
+   }
+   
    if( OutMessage != NULL )
    {
       setCurrentCommand( CmdScanData );
@@ -60,22 +85,82 @@ INT CtiDeviceMarkV::GeneralScan( CtiRequestMsg              *pReq,
       OutMessage->TargetID  = getID();
       OutMessage->Port      = getPortID();
       OutMessage->Remote    = getAddress();
+      OutMessage->Buffer.DUPReq.LP_Time = getLastLPTime().seconds();
       OutMessage->TimeOut   = 2;
       OutMessage->EventCode = RESULT | ENCODED;
       OutMessage->Sequence  = 0;
       OutMessage->Retry     = 3;
 
+      ptr = ( CtiProtocolTransdata::mkv *)OutMessage->Buffer.OutMessage;
+      ptr->command = _transdataProtocol.getCommand();
+      ptr->getLP = _transdataProtocol.getAction();
+      
+      outList.insert( OutMessage );
+      
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Inserting OutMessage" << endl;
+         dout << RWTime() << " ----Execution In Progress----" << endl;
       }
-
-      outList.insert( OutMessage );
+   
    }
    else
    {
       return MEMORY;
    }
+
+   return( 1 );
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+INT CtiDeviceMarkV::GeneralScan( CtiRequestMsg              *pReq,
+                                 CtiCommandParser           &parse,
+                                 OUTMESS                    *&OutMessage,
+                                 RWTPtrSlist< CtiMessage >  &vgList,
+                                 RWTPtrSlist< CtiMessage >  &retList,
+                                 RWTPtrSlist< OUTMESS >     &outList,
+                                 INT                        ScanPriority)
+{
+   INT status = NORMAL;
+   CtiCommandParser newParse("scan general");
+
+   ULONG lastLPTime = getLastLPTime().seconds();
+   pReq->setCommandString("scan general");
+   
+   status = ExecuteRequest( pReq, newParse, OutMessage, vgList, retList, outList );
+
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " General Scan" << endl;
+   }
+
+   return NoError;
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+INT CtiDeviceMarkV::LoadProfileScan( CtiRequestMsg              *pReq,
+                                     CtiCommandParser           &parse,
+                                     OUTMESS                    *&OutMessage,
+                                     RWTPtrSlist< CtiMessage >  &vgList,
+                                     RWTPtrSlist< CtiMessage >  &retList,
+                                     RWTPtrSlist< OUTMESS >     &outList,
+                                     INT                        ScanPriority)
+{
+   INT status = NORMAL;
+   CtiCommandParser newParse("scan loadprofile");
+   
+   pReq->setCommandString("scan loadprofile");
+   
+   status = ExecuteRequest( pReq, newParse, OutMessage, vgList, retList, outList );
+
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " Load Profile Scan" << endl;
+   }
+
    return NoError;
 }
 
@@ -88,24 +173,33 @@ INT CtiDeviceMarkV::ResultDecode( INMESS                    *InMessage,
                                   RWTPtrSlist< CtiMessage > &retList,
                                   RWTPtrSlist< OUTMESS >    &outList)
 {
-   int                           index;
    vector<CtiTransdataData *>    transVector;
    
+
+   if( _transdataProtocol.getCommand() == GENERAL )
    {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ResultDecode" << endl;
-   }
-
-   transVector = _transdataProtocol.resultDecode( InMessage );
-
-   if( transVector.size() )
-   {
-      decodeResultScan( InMessage,TimeNow, vgList, retList, transVector );
-
-//      _transVector.erase( _transVector.begin(), _transVector.end() );
-      for( int count = 0; count < transVector.size() - 1; count++ )    //matt say use iterator!
       {
-         delete transVector[count];
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << RWTime() << " Decode Billing" << endl;
+      }
+      
+      transVector = _transdataProtocol.resultDecode( InMessage );
+
+      if( transVector.size() )
+      {
+         decodeResultScan( InMessage,TimeNow, vgList, retList, transVector );
+
+         for( int count = 0; count < transVector.size() - 1; count++ )    //matt say use iterator!
+         {
+            delete transVector[count];
+         }
+      }
+   }
+   else //LOADPROFILE
+   {
+      {
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << RWTime() << " Decode LoadProfile" << endl;
       }
    }
 
@@ -122,14 +216,6 @@ INT CtiDeviceMarkV::ErrorDecode( INMESS                     *InMessage,
                                  RWTPtrSlist< OUTMESS >     &outList)
 {
    return( 1 );
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-CtiProtocolTransdata & CtiDeviceMarkV::getProtocol( void )
-{
-   return _transdataProtocol;
 }
 
 //=====================================================================================================================
@@ -164,6 +250,9 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
       {
          switch( transVector[index]->getID() )
          {
+
+            //setLastLPTime (lastIntervalTS.seconds());  //lp thing
+
          case 5:
             {
                pPoint = getDevicePointOffsetTypeEqual( CH1_OFFSET + TOTAL_USAGE, AnalogPointType );
@@ -474,8 +563,7 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
                }
             }
             break;
-         
-
+                 
          case 109:
             {
                pPoint = getDevicePointOffsetTypeEqual( CH2_OFFSET + RATEA_USAGE, AnalogPointType );
@@ -869,6 +957,15 @@ RWTime CtiDeviceMarkV::getMsgTime( int timeID, int dateID, vector<CtiTransdataDa
 
 //=====================================================================================================================
 //=====================================================================================================================
+
+CtiProtocolTransdata & CtiDeviceMarkV::getProtocol( void )
+{
+   return _transdataProtocol;
+}
+
+
+//=====================================================================================================================
+//=====================================================================================================================
 /*
 void CtiDeviceMarkV::DecodeDatabaseReader( RWDBReader &rdr )
 {
@@ -882,4 +979,53 @@ void CtiDeviceMarkV::DecodeDatabaseReader( RWDBReader &rdr )
 
    getProtocol().injectData( getIED().getPassword() );
 }
+*/
+
+/*
+INT CtiDeviceMarkV::GeneralScan( CtiRequestMsg              *pReq,
+                                 CtiCommandParser           &parse,
+                                 OUTMESS                    *&OutMessage,
+                                 RWTPtrSlist< CtiMessage >  &vgList,
+                                 RWTPtrSlist< CtiMessage >  &retList,
+                                 RWTPtrSlist< OUTMESS >     &outList,
+                                 INT                        ScanPriority)
+{
+   INT status = NORMAL;
+   CtiCommandParser newParse("scan general");
+
+   ULONG lastLPTime = getLastLPTime().seconds();
+
+   if( OutMessage != NULL )
+   {
+      setCurrentCommand( CmdScanData );
+      EstablishOutMessagePriority( OutMessage, ScanPriority );
+
+      // Load all the other stuff that is needed
+      OutMessage->DeviceID  = getID();
+      OutMessage->TargetID  = getID();
+      OutMessage->Port      = getPortID();
+      OutMessage->Remote    = getAddress();
+      OutMessage->Buffer.DUPReq.LP_Time = getLastLPTime().seconds();
+//      OutMessage->Buffer.DUPReq.LastFileTime = getLastLPTime().seconds();
+      OutMessage->TimeOut   = 2;
+      OutMessage->EventCode = RESULT | ENCODED;
+      OutMessage->Sequence  = 0;
+      OutMessage->Retry     = 3;
+
+      pReq->setCommandString("scan general");
+      
+      {
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << RWTime() << " General Scan" << endl;
+      }
+
+//      outList.insert( OutMessage );
+   }
+   else
+   {
+      return MEMORY;
+   }
+   return NoError;
+}
+
 */

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/10/30 15:02:50 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/12/02 15:48:10 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -55,7 +55,8 @@ class IM_EX_PROT CtiProtocolYmodem
       CtiProtocolYmodem();
       ~CtiProtocolYmodem();
 
-      bool generate( CtiXfer &xfer );
+      bool generate( CtiXfer &xfer, int bytesWanted, int timeToWait );
+      bool stopAck( CtiXfer &xfer, int bytesWanted, int timeToWait );
       bool decode( CtiXfer &xfer, int status );
       void setXfer( CtiXfer &xfer, BYTE dataOut, int bytesIn, bool block, ULONG time );
 
@@ -74,12 +75,12 @@ class IM_EX_PROT CtiProtocolYmodem
    private:
 
       bool        _finished;
-      bool        _gotData;
+
       int         _lastState;
       int         _bytesReceived;
       int         _bytesExpected;
+      
       BYTE        *_storage;
-
 };
 
 #endif // #ifndef __PROT_YMODEM_H__
