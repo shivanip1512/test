@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/08/29 16:31:11 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/09/11 21:27:32 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -63,6 +63,56 @@ CtiProtocolDNP &CtiDeviceDNP::getProtocol( void )
 }
 
 
+INT CtiDeviceDNP::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+{
+    INT status = NORMAL;
+    CtiCommandParser newParse("scan general");
+
+    if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    pReq->setCommandString("scan general");
+
+    status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
+
+    if(OutMessage)
+    {
+        delete OutMessage;
+        OutMessage = 0;
+    }
+
+    return status;
+}
+
+
+INT CtiDeviceDNP::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+{
+    INT status = NORMAL;
+    CtiCommandParser newParse("scan integrity");
+
+    if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    pReq->setCommandString("scan integrity");
+
+    status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
+
+    if(OutMessage)
+    {
+        delete OutMessage;
+        OutMessage = 0;
+    }
+
+    return status;
+}
+
+
 INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT nRet = NoMethod;
@@ -70,117 +120,136 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     switch( parse.getCommand() )
     {
         case ControlRequest:
+        {
+            int offset;
+            CtiDNPBinaryOutputControl::ControlCode controltype;
+
+            if( parse.getFlags() & CMD_FLAG_OFFSET )
             {
-                int offset;
-                CtiDNPBinaryOutputControl::ControlCode controltype;
+                offset = parse.getiValue("offset");
 
-                if( parse.getFlags() & CMD_FLAG_OFFSET )
+                if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
                 {
-                    offset = parse.getiValue("offset");
-
-                    if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
-                    {
-                        controltype = CtiDNPBinaryOutputControl::PulseOff;
-                    }
-                    else
-                    {
-                        controltype = CtiDNPBinaryOutputControl::PulseOn;
-                    }
-
-                    CtiProtocolDNP::dnp_output_point controlout;
-
-                    controlout.type   = CtiProtocolDNP::DigitalOutput;
-                    controlout.offset = offset;
-
-                    controlout.dout.control    = controltype;
-                    controlout.dout.trip_close = CtiDNPBinaryOutputControl::NUL;
-                    controlout.dout.on_time    = 0;
-                    controlout.dout.off_time   = 0;
-                    controlout.dout.count      = 1;
-                    controlout.dout.queue      = false;
-                    controlout.dout.clear      = false;
-
-                    _dnp.setCommand(CtiProtocolDNP::DNP_SetDigitalOut, &controlout, 1);
-
-                    nRet = NoError;
+                    controltype = CtiDNPBinaryOutputControl::PulseOff;
                 }
-                //  implied
-                /*else
+                else
                 {
-                    nRet = NoMethod;
-                }*/
+                    controltype = CtiDNPBinaryOutputControl::PulseOn;
+                }
 
-                break;
+                CtiProtocolDNP::dnp_output_point controlout;
+
+                controlout.type   = CtiProtocolDNP::DigitalOutput;
+                controlout.offset = offset;
+
+                controlout.dout.control    = controltype;
+                controlout.dout.trip_close = CtiDNPBinaryOutputControl::NUL;
+                controlout.dout.on_time    = 0;
+                controlout.dout.off_time   = 0;
+                controlout.dout.count      = 1;
+                controlout.dout.queue      = false;
+                controlout.dout.clear      = false;
+
+                _dnp.setCommand(CtiProtocolDNP::DNP_SetDigitalOut, &controlout, 1);
+
+                nRet = NoError;
             }
+            //  implied
+            /*else
+            {
+                nRet = NoMethod;
+            }*/
+
+            break;
+        }
 
         case ScanRequest:
+        {
+            switch( parse.getiValue("scantype") )
             {
-                switch( parse.getiValue("scantype") )
+                case ScanRateStatus:
                 {
-                    case ScanRateStatus:
-                        break;
-
-                    case ScanRateGeneral:
-                        _dnp.setCommand(CtiProtocolDNP::DNP_Class123Read);
-                        break;
-
-                    case ScanRateAccum:
-                        break;
-
-                    case ScanRateIntegrity:
-                        _dnp.setCommand(CtiProtocolDNP::DNP_Class0Read);
-                        break;
+                    nRet = NoMethod;
+                    break;
                 }
 
-                nRet = NoError;
+                case ScanRateGeneral:
+                {
+                    _dnp.setCommand(CtiProtocolDNP::DNP_Class123Read);
+                    nRet = NoError;
+                    break;
+                }
 
-                break;
+                case ScanRateAccum:
+                {
+                    nRet = NoMethod;
+                    break;
+                }
+
+                case ScanRateIntegrity:
+                {
+                    _dnp.setCommand(CtiProtocolDNP::DNP_Class0Read);
+                    nRet = NoError;
+                    break;
+                }
             }
+
+
+            break;
+        }
 
         case PutValueRequest:
+        {
+            int offset;
+
+            if( parse.getFlags() & CMD_FLAG_PV_ANALOG )
             {
-                int offset;
+                CtiProtocolDNP::dnp_output_point controlout;
 
-                if( parse.getFlags() & CMD_FLAG_PV_ANALOG )
-                {
-                    CtiProtocolDNP::dnp_output_point controlout;
+                controlout.type = CtiProtocolDNP::AnalogOutput;
 
-                    controlout.type = CtiProtocolDNP::AnalogOutput;
+                controlout.aout.value = parse.getiValue("analogvalue");
+                controlout.offset     = parse.getiValue("analogoffset");
 
-                    controlout.aout.value = parse.getiValue("analogvalue");
-                    controlout.offset     = parse.getiValue("analogoffset");
-
-                    _dnp.setCommand(CtiProtocolDNP::DNP_SetAnalogOut, &controlout, 1);
-                }
-
-                nRet = NoError;
-
-                break;
+                _dnp.setCommand(CtiProtocolDNP::DNP_SetAnalogOut, &controlout, 1);
             }
+
+            nRet = NoError;
+
+            break;
+        }
 
         case GetValueRequest:
         case GetStatusRequest:
-            {
+        {
 
-            }
+        }
         case PutStatusRequest:
         case GetConfigRequest:
         case PutConfigRequest:
         case LoopbackRequest:
         default:
+        {
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
+        }
     }
 
     OutMessage->Port = getPortID();
     OutMessage->DeviceID = getID();
     OutMessage->TargetID = getID();
 
-    _dnp.commOut( OutMessage, outList );
+    if( nRet == NoError )
+    {
+        _dnp.commOut( OutMessage, outList );
+    }
+    else
+    {
+        delete OutMessage;
+        OutMessage = NULL;
+    }
 
     return nRet;
 }
@@ -193,27 +262,40 @@ INT CtiDeviceDNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
 
     _dnp.commIn(InMessage, outList);
 
+    resetScanPending();
+
     if( _dnp.hasInboundPoints() )
     {
         _dnp.getInboundPoints(dnpPoints);
 
-        while( !dnpPoints.isEmpty() )
-        {
-            CtiPointDataMsg *tmpMsg = dnpPoints.removeFirst();
-            CtiPointBase *point;
-
-            //  !!! getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
-            if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId(), tmpMsg->getType())) != NULL )
-            {
-                tmpMsg->setId(point->getID());
-
-                retList.append(tmpMsg);
-            }
-        }
+        processInboundPoints(dnpPoints, TimeNow, vgList, retList, outList);
     }
 
     return ErrReturn;
 }
+
+
+void CtiDeviceDNP::processInboundPoints(RWTPtrSlist<CtiPointDataMsg> &points, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
+{
+    while( !points.isEmpty() )
+    {
+        CtiPointDataMsg *tmpMsg = points.removeFirst();
+        CtiPointBase *point;
+
+        //  !!! tmpMsg->getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
+        if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId(), tmpMsg->getType())) != NULL )
+        {
+            tmpMsg->setId(point->getID());
+
+            retList.append(tmpMsg);
+        }
+        else
+        {
+            delete tmpMsg;
+        }
+    }
+}
+
 
 INT CtiDeviceDNP::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
