@@ -360,7 +360,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 									throw new WebClientException("Cannot find appliance with RelayNum = " + (i+1));
 							}
 							
-							appIDMap.put( new Integer(fields[ImportManager.IDX_INV_ID]), appIDs );
+							appIDMap.put( Integer.valueOf(fields[ImportManager.IDX_INV_ID]), appIDs );
 							fw.println(fields[ImportManager.IDX_INV_ID] + "," + appIDs[0] + "," + appIDs[1] + "," + appIDs[2]);
 							
 							numAppAdded += programs.size();
