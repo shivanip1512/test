@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.util.TimerTask;
 
 import com.cannontech.common.cache.PointChangeCache;
+import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
@@ -55,7 +56,7 @@ public class DrawingUpdater extends TimerTask {
 		synchronized (drawing) {			
 			try {
 				// keep track if we changed anything
-				boolean change = false;
+				boolean change = false; 
 								
 				PointChangeCache pcc = PointChangeCache.getPointChangeCache();
 
@@ -66,16 +67,53 @@ public class DrawingUpdater extends TimerTask {
 
 						if (comp[i] instanceof DynamicText) {
 							DynamicText dt = (DynamicText) comp[i];
-
-							PointData pData = pcc.getValue(dt.getPointID());
-
-							if (pData != null) {
-								DecimalFormat f = new DecimalFormat();
-								f.setMaximumFractionDigits(2);
-								String newText = f.format(pData.getValue());
-								if( !dt.getText().equals(newText) ) {
-									dt.setText(newText);
+							String text = "";
+							int att = dt.getDisplayAttribs();
+							if( (att & DynamicText.VALUE) != 0 ) {
+								PointData pData = pcc.getValue(dt.getPointID());
+	
+								if (pData != null) {
+									DecimalFormat f = new DecimalFormat();
+									f.setMaximumFractionDigits(2);
+									text = f.format(pData.getValue());
 									change = true;
+
+								}
+							}
+							
+							if( (att & DynamicText.UOFM) != 0 ) {
+								if( change ) 
+									text += " ";
+								text += "UOFM";
+								change = true;
+							}
+							
+							if( (att & DynamicText.NAME) != 0 ) {
+								if( change ) 
+									text += " ";
+								text += dt.getPoint().getPointName();								
+								change = true;
+							}
+							
+							if( (att & DynamicText.PAO) != 0 ) {
+								if( change ) 
+									text += " ";
+								//find the pao for this point
+								text += PAOFuncs.getYukonPAOName(dt.getPoint().getPaobjectID());
+								change = true;
+							}
+							
+							if( (att & DynamicText.LAST_UPDATE) != 0 ) {
+								PointData pData = pcc.getValue(dt.getPointID());
+								if( change ) 
+									text += " ";
+								text += pData.getPointDataTimeStamp();
+								change = true;
+							}
+							
+							if( change ) {
+								if( !text.equals(dt.getText()) ) {
+									dt.setText(text);
 								}
 							}
 						}
