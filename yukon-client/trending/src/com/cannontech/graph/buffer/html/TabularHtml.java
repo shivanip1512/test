@@ -279,18 +279,22 @@ public class TabularHtml extends HTMLBuffer
 				validDecimalPlaces.add(new Integer(serie.getDecimalPlaces()));
 				
 				//Sort each dataItemArray. (no primary point coincidentals)
-				Object [] dataItemsArray = serie.getDataItemsMap().values().toArray();
-				java.util.Arrays.sort(dataItemsArray, timeSeriesDataItemValueComparator);
-	
 				String timeString = "";
 				String valueString = "";
-				for (int j = 0; j < dataItemsArray.length; j++)
+				if (serie.getDataItemsMap() != null )
 				{
-					TimeSeriesDataItem item = (TimeSeriesDataItem)dataItemsArray[j];
-					long ts = item.getPeriod().getStart().getTime();
-					Double value = (Double)item.getValue();
-					timeString += tabularTimeFormat.format(new java.util.Date(ts)) + "<br>";
-					valueString += valueFormat.format(value) + "<br>";
+					Object [] dataItemsArray = serie.getDataItemsMap().values().toArray();
+				
+					java.util.Arrays.sort(dataItemsArray, timeSeriesDataItemValueComparator);
+		
+					for (int j = 0; j < dataItemsArray.length; j++)
+					{
+						TimeSeriesDataItem item = (TimeSeriesDataItem)dataItemsArray[j];
+						long ts = item.getPeriod().getStart().getTime();
+						Double value = (Double)item.getValue();
+						timeString += tabularTimeFormat.format(new java.util.Date(ts)) + "<br>";
+						valueString += valueFormat.format(value) + "<br>";
+					}
 				}
 				buf.append("<td width=\"80\"><font size=\"-1\" face=\"arial\"><span class=\"tablecell\">\n");
 				buf.append(timeString.toString());
