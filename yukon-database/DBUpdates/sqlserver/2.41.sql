@@ -97,6 +97,8 @@ constraint PK_SEASONSCHEDULE primary key  (ScheduleID)
 );
 go
 
+insert into SeasonSchedule values(0,'Default Season Schedule',3,15,5,1,8,15,11,1);
+
 /* @error ignore */
 alter table EnergyCompany drop constraint FK_EnCmpRt;
 go
@@ -283,8 +285,6 @@ go
 
 insert into billingfileformats values( 12, 'SEDC 5.4');
 go
-
-insert into SeasonSchedule values(0,'Default Season Schedule',3,15,5,1,8,15,11,1);
 
 /**** Role, Groups and YukonUser major changes (All Roles and Groups must be recreated) ****/
 delete from YukonGroupRole;

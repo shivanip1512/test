@@ -68,6 +68,7 @@ create table SeasonSchedule  (
    WinterDay            NUMBER                           not null,
    constraint PK_SEASONSCHEDULE primary key (ScheduleID)
 );
+insert into SeasonSchedule values(0,'Default Season Schedule',3,15,5,1,8,15,11,1);
 
 /* @error ignore */
 alter table EnergyCompany drop constraint FK_EnCmpRt;
@@ -197,9 +198,6 @@ insert into fdrinterfaceoption values (13,'Point ID',1,'Text','(none)');
 insert into FDRInterfaceOption values(14, 'Point', 1, 'Text', '(none)' );
 
 insert into billingfileformats values( 12, 'SEDC 5.4');
-
-insert into SeasonSchedule values(0,'Default Season Schedule',3,15,5,1,8,15,11,1);
-
 
 /**** Role, Groups and YukonUser major changes (All Roles and Groups must be recreated) ****/
 delete from YukonGroupRole;
