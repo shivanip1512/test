@@ -381,16 +381,16 @@ updateLayout(
                       </tr>
                       <tr> 
                         <td width="25%" class = "TableCell"> Start At: 
-                          <input id="time1" type="text" size="5" value="<%= timePart.format(schedule.getTime1().toDate()) %>" name="time1" onchange="Javascript:setScheduleChanged();timeChange(this, 'MovingLayer1', 'time2', null);">
+                          <input id="time1" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime1().toDate()) %>" name="time1" onchange="Javascript:setScheduleChanged();timeChange(this, 'MovingLayer1', 'time2', null);">
                         </td>
                         <td class = "TableCell" width="25%"> Start At: 
-                          <input id="time2" type="text" size="5" value="<%= timePart.format(schedule.getTime2().toDate()) %>" name="time2" onchange="Javascript:setScheduleChanged();timeChange(this, 'MovingLayer2', 'time3', 'time1');">
+                          <input id="time2" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime2().toDate()) %>" name="time2" onchange="Javascript:setScheduleChanged();timeChange(this, 'MovingLayer2', 'time3', 'time1');">
                         </td>
                         <td class = "TableCell" width="25%"> Start At: 
-                          <input id="time3" type="text" size="5" value="<%= timePart.format(schedule.getTime3().toDate()) %>" name="time3" onchange="Javascript:setScheduleChanged();timeChange(this, 'MovingLayer3', 'time4', 'time2');">
+                          <input id="time3" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime3().toDate()) %>" name="time3" onchange="Javascript:setScheduleChanged();timeChange(this, 'MovingLayer3', 'time4', 'time2');">
                         </td>
                         <td width="25%" class = "TableCell"> Start At: 
-                          <input id="time4" type="text" size="5" value="<%= timePart.format(schedule.getTime4().toDate()) %>" name="time4" onchange="Javascript:setScheduleChanged();timeChange(this, 'MovingLayer4', null, 'time3');">
+                          <input id="time4" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime4().toDate()) %>" name="time4" onchange="Javascript:setScheduleChanged();timeChange(this, 'MovingLayer4', null, 'time3');">
                         </td>
                       </tr>
                     </table><noscript><table width="100%" border="0" class = "TableCell">
