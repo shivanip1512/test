@@ -145,9 +145,6 @@ sp_rename 'CustomerAddress', 'Address'
 go
 alter table Address add County varchar(30) not null DEFAULT '(none)'
 go
-/* No big deal if this fails, just insure a row is there */
-insert into contact values ( 0, '(none)', '(none)', -1, 0 )
-go
 
 
 
