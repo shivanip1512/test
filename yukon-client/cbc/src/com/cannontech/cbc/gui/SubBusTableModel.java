@@ -364,18 +364,29 @@ public Object getValueAt(int row, int col)
       {
          if( sub.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
             return DASH_LINE;
-         else               
-				return new Double( CommonUtils.formatDecimalPlaces( 
-               sub.getCurrentVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() ) );
+         else {                        
+         	if( sub.getDecimalPlaces().intValue() == 0 )
+					return new Integer( CommonUtils.formatDecimalPlaces( 
+	               sub.getCurrentVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() ) );         	
+         	else
+					return new Double( CommonUtils.formatDecimalPlaces( 
+	               sub.getCurrentVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() ) );
+         }
+         
       }
       	
 		case ESTIMATED_VARS_COLUMN:
       {
          if( sub.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
             return DASH_LINE;
-         else               
-				return new Double( CommonUtils.formatDecimalPlaces( 
-					sub.getEstimatedVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() ) );
+         else {               
+         	if( sub.getDecimalPlaces().intValue() == 0 )
+					return new Integer( CommonUtils.formatDecimalPlaces( 
+	               sub.getEstimatedVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() ) );         	
+         	else
+					return CommonUtils.formatDecimalPlaces( 
+						sub.getEstimatedVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() );
+      	}
       }
       
 		case POWER_FACTOR_COLUMN:
@@ -389,9 +400,14 @@ public Object getValueAt(int row, int col)
       {
          if( sub.getCurrentWattLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
             return DASH_LINE;
-         else               
-	         return new Double( CommonUtils.formatDecimalPlaces( 
-                  sub.getCurrentWattLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() ) );
+         else {
+         	if( sub.getDecimalPlaces().intValue() == 0 )
+					return new Integer( CommonUtils.formatDecimalPlaces( 
+	               sub.getCurrentWattLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() ) );         	
+         	else
+		         return new Double( CommonUtils.formatDecimalPlaces( 
+	                  sub.getCurrentWattLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() ) );
+         }
       }
       	
 		case TIME_STAMP_COLUMN:
