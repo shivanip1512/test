@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/01/08 23:17:25 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/01/16 22:44:29 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -136,7 +136,8 @@ public:
    void processDispatchReturnMessage( CtiReturnMsg *msgPtr );
    int sendCommResult( INMESS *InMessage );
    int checkQuality( int yyMap, int lpValue );
-   int correctValue( CtiTransdataTracker::lpRecord rec );
+//   int correctValue( CtiTransdataTracker::lpRecord rec );
+   void CtiDeviceMarkV::correctValue( CtiTransdataTracker::lpRecord rec, int yyMap, int &value, int &quality );
    int getChannelOffset( int index );
 
    CtiProtocolTransdata & getProtocol( void );

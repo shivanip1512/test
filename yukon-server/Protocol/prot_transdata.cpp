@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2004/01/08 23:19:24 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/01/16 22:44:29 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,7 +26,10 @@
 //=====================================================================================================================
 //=====================================================================================================================
 
-CtiProtocolTransdata::CtiProtocolTransdata()
+CtiProtocolTransdata::CtiProtocolTransdata():
+   _storage( NULL ),
+   _billingBytes( NULL ),
+   _lpBytes( NULL )
 {
    reinitalize();
 }
@@ -139,7 +142,11 @@ int CtiProtocolTransdata::recvOutbound( OUTMESS *OutMessage )
 
    ptr = ( mkv *)OutMessage->Buffer.OutMessage;
    
-   setCommand( ptr->command, ptr->getLP );
+   if( ptr != NULL )
+   {
+      setCommand( ptr->command, ptr->getLP );
+      ptr = NULL;
+   }
 
    return( 1 );
 }
@@ -167,15 +174,15 @@ int CtiProtocolTransdata::sendCommResult( INMESS *InMessage )
 
 vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( INMESS *InMessage )
 {
-   CtiTransdataData           *converted;
-   BYTE                       *ptr;
+   CtiTransdataData           *converted = NULL;
+   BYTE                       *ptr = NULL;
    vector<CtiTransdataData *> transVector;
 
    ptr = ( unsigned char*)( InMessage->Buffer.InMessage );
 
    while( *ptr != NULL )
    {
-      converted = new CtiTransdataData( ptr );
+      converted = CTIDBG_new CtiTransdataData( ptr );
 
       // Do we need to NULL the converted ptr??? 
 
@@ -187,6 +194,10 @@ vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( INMESS *InMessage
          ptr++;
       }
    }
+
+   //we're done with this guy
+   if( ptr != NULL )
+      ptr = NULL;
 
    return( transVector );
 }
@@ -225,9 +236,25 @@ void CtiProtocolTransdata::reinitalize( void )
    _lpDone = false;
    _reallyDidProcessLP = false;
 
-   _storage = new BYTE[Storage_size];
-   _lpBytes = new BYTE[Loadprofile_size];
-   _billingBytes = new BYTE[Billing_size];
+   //could probably get away with using destroy()
+   if( _storage != NULL )
+   {
+      delete [] _storage;
+   }
+
+   if( _lpBytes != NULL )
+   {
+      delete [] _lpBytes;
+   }
+
+   if( _billingBytes != NULL )
+   {
+      delete [] _billingBytes;
+   }
+   
+   _storage = CTIDBG_new BYTE[Storage_size];
+   _lpBytes = CTIDBG_new BYTE[Loadprofile_size];
+   _billingBytes = CTIDBG_new BYTE[Billing_size];
 }
 
 //=====================================================================================================================
@@ -237,19 +264,19 @@ void CtiProtocolTransdata::destroy( void )
 {
    _application.destroy();
 
-   if( _storage )
+   if( _storage != NULL )
    {
       delete [] _storage;
       _storage = NULL;
    }
    
-   if( _billingBytes )
+   if( _billingBytes != NULL )
    {
       delete [] _billingBytes;
       _billingBytes = NULL;
    }
    
-   if( _lpBytes )
+   if( _lpBytes != NULL )
    {
       delete [] _lpBytes;
       _lpBytes = NULL;

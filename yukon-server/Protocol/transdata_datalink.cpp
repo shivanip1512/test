@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2004/01/08 23:19:24 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2004/01/16 22:44:29 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,7 +24,8 @@
 //=====================================================================================================================
 //=====================================================================================================================
 
-CtiTransdataDatalink::CtiTransdataDatalink()
+CtiTransdataDatalink::CtiTransdataDatalink():
+   _storage( NULL )
 {
    reinitalize();
 }
@@ -42,7 +43,7 @@ CtiTransdataDatalink::~CtiTransdataDatalink()
 
 void CtiTransdataDatalink::destroy( void )
 {
-   if( _storage )
+   if( _storage != NULL )
    {
       delete [] _storage;
       _storage = NULL;
@@ -61,7 +62,11 @@ void CtiTransdataDatalink::reinitalize( void )
 
    _finished            = false;
 
-   _storage             = new BYTE[Storage_size];
+   if( _storage != NULL )
+   {
+      delete [] _storage;
+   }
+   _storage             = CTIDBG_new BYTE[Storage_size];
 }
 
 //=====================================================================================================================

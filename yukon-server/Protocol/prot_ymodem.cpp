@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2004/01/07 16:45:38 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/01/16 22:44:29 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *
@@ -30,7 +30,8 @@
 //=====================================================================================================================
 //=====================================================================================================================
 
-CtiProtocolYmodem::CtiProtocolYmodem()
+CtiProtocolYmodem::CtiProtocolYmodem():
+   _storage( NULL )
 {
    reinitalize();
 }
@@ -48,7 +49,7 @@ CtiProtocolYmodem::~CtiProtocolYmodem()
 
 void CtiProtocolYmodem::destroy( void )
 {
-   if( _storage )
+   if( _storage != NULL )
    {
       delete [] _storage;
       _storage = NULL;
@@ -70,11 +71,15 @@ void CtiProtocolYmodem::reinitalize( void )
    _finished      = false;
    _start         = true;
 
-   _storage       = new BYTE[Storage_size];
+   if( _storage != NULL )
+   {
+      delete [] _storage;
+   }
+
+   _storage       = CTIDBG_new BYTE[Storage_size];
 }
 
 //=====================================================================================================================
-//
 //=====================================================================================================================
 
 bool CtiProtocolYmodem::generate( CtiXfer &xfer, int reqAcks )
