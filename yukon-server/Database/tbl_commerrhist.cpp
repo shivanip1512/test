@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_commerrhist.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/02 17:02:31 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/08/06 18:52:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -273,10 +273,24 @@ RWDBStatus CtiTableCommErrorHistory::Insert()
 
 RWDBStatus CtiTableCommErrorHistory::Insert(RWDBConnection &conn)
 {
-
-
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBInserter inserter = table.inserter();
+
+
+    if(getCommand().length() > MAX_COMMAND_LENGTH)
+    {
+        _command.resize(MAX_COMMAND_LENGTH-1);
+    }
+
+    if(getOutMessage().length() > MAX_OUTMESS_LENGTH)
+    {
+        _outMessage.resize(MAX_OUTMESS_LENGTH - 1);
+    }
+
+    if(getInMessage().length() > MAX_INMESS_LENGTH)
+    {
+        _inMessage.resize(MAX_INMESS_LENGTH - 1);
+    }
 
     inserter <<
     getCommErrorID() <<
