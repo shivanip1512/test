@@ -43,6 +43,9 @@
 #include "cparms.h"
 #include "numstr.h"
 
+using namespace Cti;  //  in preparation for moving devices to their own namespace
+
+
 CtiDeviceION::CtiDeviceION()
 {
 //    resetIONScansPending();
@@ -86,9 +89,9 @@ void CtiDeviceION::setMeterGroupData( const RWCString &collectionGroup, const RW
 }
 
 
-CtiProtocolBase *CtiDeviceION::getProtocol( void ) const
+Protocol::Interface *CtiDeviceION::getProtocol( void )
 {
-    return (CtiProtocolBase *)&_ion;
+    return (Protocol::Interface *)&_ion;
 }
 
 
