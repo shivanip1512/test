@@ -2,12 +2,14 @@ package com.cannontech.database.db.pao;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointTypes;
+import java.util.Vector;
+import com.cannontech.database.db.NestedDBPersistent;
 
 /**
  * This type was created in VisualAge.
  */
 
-public class PAOExclusion extends com.cannontech.database.db.DBPersistent
+public class PAOExclusion extends NestedDBPersistent
 {
 	private Integer exclusionID = null;
 	private Integer paoID = null; //new Integer(CtiUtilities.NONE_ID);
@@ -35,6 +37,12 @@ public class PAOExclusion extends com.cannontech.database.db.DBPersistent
 			"FuncName, FuncRequeue, FuncParams " +
 			"FROM " + TABLE_NAME + 
 			" WHERE PaoID= ?";
+			
+	private static final String ALL_EXCL_REF_OTHER_PAOS_SQL = 
+			"SELECT ExclusionID, PaoID, ExcludedPaoID, PointID, Value, FunctionID," +
+			"FuncName, FuncRequeue, FuncParams " +
+			"FROM " + TABLE_NAME + 
+			" WHERE ExcludedPAOID= ?";
 
 
 	/**
@@ -123,9 +131,9 @@ public class PAOExclusion extends com.cannontech.database.db.DBPersistent
 	 * @return PAOExclusion[]
 	 * @param Integer, Connection
 	 */
-	public static final PAOExclusion[] getAllPAOExclusions(int paoID, java.sql.Connection conn) throws java.sql.SQLException
+	public static final Vector getAllPAOExclusions(int paoID, java.sql.Connection conn) throws java.sql.SQLException
 	{
-		java.util.ArrayList tmpList = new java.util.ArrayList(30);
+		Vector tmpList = new Vector();
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
 	
@@ -179,11 +187,66 @@ public class PAOExclusion extends com.cannontech.database.db.DBPersistent
 		}
 	
 	
-		PAOExclusion retVal[] = new PAOExclusion[ tmpList.size() ];
-		tmpList.toArray( retVal );
-		
-		return retVal;
+		return tmpList;
 	}
+	
+	public static final Vector getAdditionalExcludedPAOs(int paoID, java.sql.Connection conn, Vector exclusionVector) throws java.sql.SQLException
+		{
+			java.sql.PreparedStatement pstmt = null;
+			java.sql.ResultSet rset = null;
+	
+			try
+			{		
+				if( conn == null )
+				{
+					throw new IllegalStateException("Database connection should not be null.");
+				}
+				else
+				{
+					pstmt = conn.prepareStatement( ALL_EXCL_REF_OTHER_PAOS_SQL );
+					pstmt.setInt( 1, paoID );
+				
+					rset = pstmt.executeQuery();							
+		
+					while( rset.next() )
+					{
+						PAOExclusion item = new PAOExclusion();
+	
+						item.setExclusionID( new Integer(rset.getInt(1)) );
+						item.setPaoID( new Integer(rset.getInt(2)) );
+						item.setExcludedPaoID( new Integer(rset.getInt(3)) );
+						item.setPointID( new Integer(rset.getInt(4)) );
+						item.setValue( new Integer(rset.getInt(5)) );
+						item.setFunctionID( new Integer(rset.getInt(6)) );
+						item.setFuncName( rset.getString(7) );
+						item.setFuncRequeue( new Integer(rset.getInt(8)) );
+						item.setFuncParams( new String(rset.getString(9)) );
+
+						exclusionVector.add( item );
+					}
+						
+				}		
+			}
+			catch( java.sql.SQLException e )
+			{
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			}
+			finally
+			{
+				try
+				{
+					if( pstmt != null ) pstmt.close();
+					if( rset != null ) rset.close();
+				} 
+				catch( java.sql.SQLException e2 )
+				{
+					com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
+				}	
+			}
+	
+	
+			return exclusionVector;
+		}
 
 
 

@@ -4,6 +4,8 @@ import java.util.Vector;
 
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.pao.PAOExclusion;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.db.NestedDBPersistent;
 
 /**
  * This type was created in VisualAge.
@@ -229,12 +231,12 @@ public void retrieve() throws java.sql.SQLException
 {
 	getYukonPAObject().retrieve();
 	
-	PAOExclusion[] exc =
+	Vector exc =
 		PAOExclusion.getAllPAOExclusions( getPAObjectID().intValue(), getDbConnection() );
 	
 	getPAOExclusionVector().removeAllElements();
-	for( int i = 0; i < exc.length; i++ )
-		getPAOExclusionVector().add( exc[i] );	
+	for( int i = 0; i < exc.size(); i++ )
+		getPAOExclusionVector().add( exc.elementAt(i) );	
 }
 
 /**
@@ -317,11 +319,24 @@ public String toString()
 public void update() throws java.sql.SQLException 
 {
 	getYukonPAObject().update();
+	
+	//grab all the previous PAOExclusion entries for this object
+	java.util.Vector oldPAOExclusion = PAOExclusion.getAllPAOExclusions(getPAObjectID().intValue(), getDbConnection());
+	
+	//also grab all exclusion entries that reference this PAObject as an excluded device
+	oldPAOExclusion = PAOExclusion.getAdditionalExcludedPAOs(getPAObjectID().intValue(), getDbConnection(), oldPAOExclusion);
+	
+	//unleash the power of the NestedDBPersistent
+	Vector exclusionVector = CtiUtilities.NestedDBPersistentComparator(oldPAOExclusion, getPAOExclusionVector());
 
+	//throw the PAOExclusions into the Db
+	for( int i = 0; i < exclusionVector.size(); i++ )
+	{
+		((NestedDBPersistent)exclusionVector.elementAt(i)).setDbConnection(getDbConnection());
+		((NestedDBPersistent)exclusionVector.elementAt(i)).executeNestedOp();
 
-	PAOExclusion.deleteAllPAOExclusions( getPAObjectID().intValue(), getDbConnection() );
-	for( int i = 0; i < getPAOExclusionVector().size(); i++ )
-		((DBPersistent)getPAOExclusionVector().get(i)).add();
+	}
+
 }
 
 	/**
