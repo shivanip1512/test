@@ -50,7 +50,10 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 
 		try
 		{
-			String extension = localBean.getFormat();
+			String extension = req.getParameter("ext");
+			if (extension == null)
+				extension = "png";	//default
+				
 			out = resp.getOutputStream();
 			com.cannontech.graph.Graph graph = localBean.getGraph();
 			
@@ -92,19 +95,20 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 				resp.setContentType("image/x-png");
 				graph.encodePng(out);
 			}
+			out.flush();
 		}
 		catch (java.io.IOException ioe)
 		{
 			ioe.printStackTrace();
 		}
-		finally
+/*		finally
 		{
 			try
 			{
 				if( out != null )
 				{
 					out.flush();
-					out.close();
+//					out.close();
 				}
 			} 
 			catch( java.io.IOException ioe )
@@ -112,6 +116,7 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 				ioe.printStackTrace();
 			}
 		}//end finally
+		*/
 	}
 	catch (Throwable t)
 	{
