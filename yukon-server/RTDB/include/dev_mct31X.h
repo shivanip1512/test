@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct31X.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/07/07 19:56:30 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/08/11 20:13:47 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +27,7 @@ class IM_EX_DEVDB CtiDeviceMCT31X : public CtiDeviceMCT310
 protected:
 
     static CTICMDSET _commandStore;
+    static const double MCT360_GEKV_KWHMultiplier;
 
 private:
 
@@ -55,10 +56,10 @@ public:
         MCT360_IEDLinkLen        =    5,
 
         MCT360_IEDTimePos        = 0xaa,
-        MCT360_IEDTimeLen        =    9,
+        MCT360_IEDTimeLen        =   11,
 
         MCT360_IEDScanPos        = 0x74,
-        MCT360_IEDScanLen        =    6,
+        MCT360_IEDScanLen        =    8,
 
         MCT360_IEDClassPos       = 0x76,
         MCT360_IEDClassLen       =    4,
@@ -67,11 +68,16 @@ public:
         MCT360_AlphaResetLen     =    2,
         MCT360_LGS4ResetPos      = 0xc0,
         MCT360_LGS4ResetLen      =    3,
+        MCT360_GEKVResetPos      = 0xc1,
+        MCT360_GEKVResetLen      =    6,
 
-        MCT360_LGS4_VoltsPhaseA_PointOffset = 41,
-        MCT360_LGS4_VoltsPhaseB_PointOffset = 42,
-        MCT360_LGS4_VoltsPhaseC_PointOffset = 43,
-        MCT360_LGS4_VoltsNeutralCurrent_PointOffset = 44
+        MCT360_LGS4ResetID       =    3,
+        MCT360_GEKVResetID       =    4,
+
+        MCT360_IED_VoltsPhaseA_PointOffset = 41,
+        MCT360_IED_VoltsPhaseB_PointOffset = 42,
+        MCT360_IED_VoltsPhaseC_PointOffset = 43,
+        MCT360_IED_VoltsNeutralCurrent_PointOffset = 44
     };
 
     typedef CtiDeviceMCT310 Inherited;
@@ -90,7 +96,7 @@ public:
 
     ULONG calcNextLPScanTime( void );
     INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
-    virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
+    virtual bool calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
 
     virtual void DecodeDatabaseReader( RWDBReader &rdr );
 
