@@ -66,7 +66,7 @@
 	<jsp:useBean id="graphBean" class="com.cannontech.graph.GraphBean" scope="session">
 		<%-- this body is executed only if the bean is created --%>
 	<jsp:setProperty name="graphBean" property="viewType" value="<%=TrendModelType.LINE_VIEW%>"/>
-	<jsp:setProperty name="graphBean" property="startStr" value="<%=datePart.format(com.cannontech.util.ServletUtil.getToday())%>"/>
+	<jsp:setProperty name="graphBean" property="start" value="<%=datePart.format(com.cannontech.util.ServletUtil.getToday())%>"/>
 	<jsp:setProperty name="graphBean" property="tab" value="graph"/>
 	<jsp:setProperty name="graphBean" property="period" value="<%=com.cannontech.util.ServletUtil.historicalPeriods[0]%>"/>
 	<jsp:setProperty name="graphBean" property="gdefid" value="-1"/>	
