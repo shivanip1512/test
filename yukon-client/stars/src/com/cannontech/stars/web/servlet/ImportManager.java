@@ -2516,26 +2516,29 @@ public class ImportManager extends HttpServlet {
 		StarsYukonUser user = (StarsYukonUser)
 				session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		
-		boolean isMultiPart = false;
+		boolean isMultiPart = DiskFileUpload.isMultipartContent( req );
 		List items = null;
+		String action = null;
 		
-		String action = req.getParameter( "action" );
-		if (action == null) {
+		if (isMultiPart) {
 			try {
 				DiskFileUpload upload = new DiskFileUpload();
 				items = upload.parseRequest( req );
 				action = ServerUtils.getFormField( items, "action" );
-				isMultiPart = true;
+				redirect = ServerUtils.getFormField( items, ServletUtils.ATT_REDIRECT );
 			}
 			catch (FileUploadException e) {
 				e.printStackTrace();
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to parse the form data");
 			}
 		}
+		else {
+			action = req.getParameter( "action" );
+			redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
+		}
+		
 		if (action == null) action = "";
-    	
 		referer = req.getHeader( "referer" );
-		redirect = (isMultiPart)? ServerUtils.getFormField(items, ServletUtils.ATT_REDIRECT)
-				: req.getParameter(ServletUtils.ATT_REDIRECT);
 		if (redirect == null) redirect = referer;
 		
 		if (action.equalsIgnoreCase("PreprocessImportData"))
