@@ -235,9 +235,9 @@ private javax.swing.JComboBox getJComboBoxOperationalState() {
 			ivjJComboBoxOperationalState = new javax.swing.JComboBox();
 			ivjJComboBoxOperationalState.setName("JComboBoxOperationalState");
 			// user code begin {1}
-
 			ivjJComboBoxOperationalState.addItem( LMProgramBase.OPSTATE_AUTOMATIC );
 			ivjJComboBoxOperationalState.addItem( LMProgramBase.OPSTATE_MANUALONLY );
+			ivjJComboBoxOperationalState.addItem( LMProgramBase.OPSTATE_TIMED);
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

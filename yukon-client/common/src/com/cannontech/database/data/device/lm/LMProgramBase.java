@@ -21,7 +21,7 @@ public abstract class LMProgramBase extends com.cannontech.database.data.pao.Yuk
 
 	public static final String OPSTATE_AUTOMATIC = "Automatic";
 	public static final String OPSTATE_MANUALONLY = "ManualOnly";
-	public static final String OPSTATE_TIMEDONLY = "TimedOnly";
+	public static final String OPSTATE_TIMED = "Timed";
 /**
  * LMProgramBase constructor comment.
  */
