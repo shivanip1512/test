@@ -8,7 +8,7 @@ import com.cannontech.common.util.CtiUtilities;
 public class DeviceDialupSettings extends com.cannontech.database.db.DBPersistent 
 {
 	private Integer deviceID = null;
-	private String phoneNumber = "0";
+	private String phoneNumber = null;
 	private Integer minConnectTime = new Integer(CtiUtilities.NONE_ID);
 	private Integer maxConnectTime = new Integer(10);
 	private String lineSettings = "8N1";
