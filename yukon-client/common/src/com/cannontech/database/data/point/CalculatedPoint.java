@@ -28,7 +28,13 @@ public void add() throws java.sql.SQLException
 	//add a DynamicClacHistorical row for this new calc point
 	DynamicCalcHistorical d = new DynamicCalcHistorical();
 	d.setPointID( getPoint().getPointID() );
-	d.setLastUpdate( com.cannontech.common.util.CtiUtilities.get1990GregCalendar() );
+   	
+   java.util.GregorianCalendar gc = new java.util.GregorianCalendar();
+   gc.setTime( new java.util.Date() );
+   gc.set( gc.DAY_OF_YEAR, (gc.get(gc.DAY_OF_YEAR) - 30) );
+   d.setLastUpdate(gc);
+   
+   
 	d.setDbConnection( getDbConnection() );
 	d.add();
 
