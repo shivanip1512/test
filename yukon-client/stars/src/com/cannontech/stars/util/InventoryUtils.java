@@ -31,6 +31,7 @@ public class InventoryUtils {
 	public static final int HW_CONFIG_TYPE_VERSACOM = 2;
 	public static final int HW_CONFIG_TYPE_SA205 = 3;
 	public static final int HW_CONFIG_TYPE_SA305 = 4;
+	public static final int HW_CONFIG_TYPE_SA_SIMPLE = 5;
 	
 	public static int getInventoryCategoryID(int deviceTypeID, LiteStarsEnergyCompany energyCompany) {
 		YukonListEntry entry = YukonListFuncs.getYukonListEntry( deviceTypeID );
@@ -43,7 +44,8 @@ public class InventoryUtils {
 			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT ||
 			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT ||
 			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA205 ||
-			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA305)
+			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA305 ||
+			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA_SIMPLE)
 		{
 			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC).getEntryID();
 		}
@@ -86,6 +88,8 @@ public class InventoryUtils {
 			return HW_CONFIG_TYPE_SA205;
 		else if (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA305)
 			return HW_CONFIG_TYPE_SA305;
+		else if (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA_SIMPLE)
+			return HW_CONFIG_TYPE_SA_SIMPLE;
 		
 		return 0;
 	}
@@ -96,9 +100,15 @@ public class InventoryUtils {
 			|| hwConfigType == HW_CONFIG_TYPE_VERSACOM;
 	}
 	
+	public static boolean supportConfiguration(int devTypeID) {
+		int devTypeDefID = YukonListFuncs.getYukonListEntry( devTypeID ).getYukonDefID();
+		return (devTypeDefID != YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA_SIMPLE);
+	}
+	
 	public static boolean isAdditionalProtocol(int devTypeDefID) {
 		return (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA205
-			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA305);
+			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA305
+			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA_SIMPLE);
 	}
 	
 	/**

@@ -4,7 +4,30 @@ Required variables:
 	configuration: StarsLMConfiguration
 --%>
 <%
-	if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) {
+	if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA_SIMPLE) {
+		SASimple simple = null;
+		if (configuration != null) simple = configuration.getSASimple();
+		if (simple == null) {
+			simple = new SASimple();
+			simple.setOperationalAddress("");
+		}
+%>
+<table width="180" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC">
+  <tr> 
+    <td class="TitleHeader" align="center">Operational Address<br>
+      <table width="80%" border="0" cellspacing="3" cellpadding="0">
+        <tr> 
+          <td width="60%" align="center"> 
+            <input type="text" name="Simple_Address" value="<%= simple.getOperationalAddress() %>" size="15" maxlength="15" onchange="setContentChanged(true)">
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<%
+	}
+	else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) {
 		SA205 sa205 = null;
 		if (configuration != null) sa205 = configuration.getSA205();
 		if (sa205 == null) {
@@ -19,7 +42,7 @@ Required variables:
 %>
 <table width="180" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC">
   <tr> 
-    <td class="TitleHeader" align="center"> Slot Addresses<br>
+    <td class="TitleHeader" align="center">Slot Addresses<br>
       <table width="80%" border="0" cellspacing="3" cellpadding="0">
         <tr> 
           <td width="60%" align="center"> 

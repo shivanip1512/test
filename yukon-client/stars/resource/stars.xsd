@@ -812,8 +812,8 @@
 	<xs:element name="stars-LMConfiguration">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="ColdLoadPickup" type="xs:string"/>
-				<xs:element name="TamperDetect" type="xs:string"/>
+				<xs:element name="ColdLoadPickup" type="xs:string" minOccurs="0"/>
+				<xs:element name="TamperDetect" type="xs:string" minOccurs="0"/>
 				<xs:element name="SA205" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>
@@ -860,6 +860,13 @@
 							<xs:element name="UserAddress" type="xs:int"/>
 							<xs:element name="Program" type="xs:string"/>
 							<xs:element name="Splinter" type="xs:string"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="SASimple" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="OperationalAddress" type="xs:string"/>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>

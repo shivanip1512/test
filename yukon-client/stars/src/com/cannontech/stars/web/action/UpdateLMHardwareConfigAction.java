@@ -216,7 +216,29 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 				configDB.setTamperDetect( CtiUtilities.STRING_NONE );
 		}
 		
-		if (starsHwConfig.getSA205() != null) {
+		if (starsHwConfig.getExpressCom() != null) {
+			com.cannontech.database.db.stars.hardware.LMConfigurationExpressCom xcom =
+					new com.cannontech.database.db.stars.hardware.LMConfigurationExpressCom();
+			xcom.setServiceProvider( new Integer(starsHwConfig.getExpressCom().getServiceProvider()) );
+			xcom.setGEO( new Integer(starsHwConfig.getExpressCom().getGEO()) );
+			xcom.setSubstation( new Integer(starsHwConfig.getExpressCom().getSubstation()) );
+			xcom.setFeeder( new Integer(starsHwConfig.getExpressCom().getFeeder()) );
+			xcom.setZip( new Integer(starsHwConfig.getExpressCom().getZip()) );
+			xcom.setUserAddress( new Integer(starsHwConfig.getExpressCom().getUserAddress()) );
+			xcom.setProgram( starsHwConfig.getExpressCom().getProgram() );
+			xcom.setSplinter( starsHwConfig.getExpressCom().getSplinter() );
+			config.setExpressCom( xcom );
+		}
+		else if (starsHwConfig.getVersaCom() != null) {
+			com.cannontech.database.db.stars.hardware.LMConfigurationVersaCom vcom =
+					new com.cannontech.database.db.stars.hardware.LMConfigurationVersaCom();
+			vcom.setUtilityID( new Integer(starsHwConfig.getVersaCom().getUtility()) );
+			vcom.setSection( new Integer(starsHwConfig.getVersaCom().getSection()) );
+			vcom.setClassAddress( new Integer(starsHwConfig.getVersaCom().getClassAddress()) );
+			vcom.setDivisionAddress( new Integer(starsHwConfig.getVersaCom().getDivision()) );
+			config.setVersaCom( vcom );
+		}
+		else if (starsHwConfig.getSA205() != null) {
 			com.cannontech.database.db.stars.hardware.LMConfigurationSA205 sa205 =
 					new com.cannontech.database.db.stars.hardware.LMConfigurationSA205();
 			sa205.setSlot1( new Integer(starsHwConfig.getSA205().getSlot1()) );
@@ -239,27 +261,11 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 			sa305.setRateHierarchy( new Integer(starsHwConfig.getSA305().getRateHierarchy()) );
 			config.setSA305( sa305 );
 		}
-		else if (starsHwConfig.getVersaCom() != null) {
-			com.cannontech.database.db.stars.hardware.LMConfigurationVersaCom vcom =
-					new com.cannontech.database.db.stars.hardware.LMConfigurationVersaCom();
-			vcom.setUtilityID( new Integer(starsHwConfig.getVersaCom().getUtility()) );
-			vcom.setSection( new Integer(starsHwConfig.getVersaCom().getSection()) );
-			vcom.setClassAddress( new Integer(starsHwConfig.getVersaCom().getClassAddress()) );
-			vcom.setDivisionAddress( new Integer(starsHwConfig.getVersaCom().getDivision()) );
-			config.setVersaCom( vcom );
-		}
-		else if (starsHwConfig.getExpressCom() != null) {
-			com.cannontech.database.db.stars.hardware.LMConfigurationExpressCom xcom =
-					new com.cannontech.database.db.stars.hardware.LMConfigurationExpressCom();
-			xcom.setServiceProvider( new Integer(starsHwConfig.getExpressCom().getServiceProvider()) );
-			xcom.setGEO( new Integer(starsHwConfig.getExpressCom().getGEO()) );
-			xcom.setSubstation( new Integer(starsHwConfig.getExpressCom().getSubstation()) );
-			xcom.setFeeder( new Integer(starsHwConfig.getExpressCom().getFeeder()) );
-			xcom.setZip( new Integer(starsHwConfig.getExpressCom().getZip()) );
-			xcom.setUserAddress( new Integer(starsHwConfig.getExpressCom().getUserAddress()) );
-			xcom.setProgram( starsHwConfig.getExpressCom().getProgram() );
-			xcom.setSplinter( starsHwConfig.getExpressCom().getSplinter() );
-			config.setExpressCom( xcom );
+		else if (starsHwConfig.getSASimple() != null) {
+			com.cannontech.database.db.stars.hardware.LMConfigurationSASimple simple =
+					new com.cannontech.database.db.stars.hardware.LMConfigurationSASimple();
+			simple.setOperationalAddress( starsHwConfig.getSASimple().getOperationalAddress() );
+			config.setSASimple( simple );
 		}
 		
 		try {
@@ -285,7 +291,15 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 				config.setConfigurationID( new Integer(liteHw.getConfigurationID()) );
 				
 				// Check to see if the configuration is in both the parent and the child table
-				if (config.getSA205() != null && liteHw.getLMConfiguration().getSA205() == null) {
+				if (config.getExpressCom() != null && liteHw.getLMConfiguration().getExpressCom() == null) {
+					Transaction.createTransaction( Transaction.INSERT, config.getExpressCom() ).execute();
+					Transaction.createTransaction( Transaction.UPDATE, configDB ).execute();
+				}
+				else if (config.getVersaCom() != null && liteHw.getLMConfiguration().getVersaCom() == null) {
+					Transaction.createTransaction( Transaction.INSERT, config.getVersaCom() ).execute();
+					Transaction.createTransaction( Transaction.UPDATE, configDB ).execute();
+				}
+				else if (config.getSA205() != null && liteHw.getLMConfiguration().getSA205() == null) {
 					Transaction.createTransaction( Transaction.INSERT, config.getSA205() ).execute();
 					Transaction.createTransaction( Transaction.UPDATE, configDB ).execute();
 				}
@@ -293,12 +307,8 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 					Transaction.createTransaction( Transaction.INSERT, config.getSA305() ).execute();
 					Transaction.createTransaction( Transaction.UPDATE, configDB ).execute();
 				}
-				else if (config.getVersaCom() != null && liteHw.getLMConfiguration().getVersaCom() == null) {
-					Transaction.createTransaction( Transaction.INSERT, config.getVersaCom() ).execute();
-					Transaction.createTransaction( Transaction.UPDATE, configDB ).execute();
-				}
-				else if (config.getExpressCom() != null && liteHw.getLMConfiguration().getExpressCom() == null) {
-					Transaction.createTransaction( Transaction.INSERT, config.getExpressCom() ).execute();
+				else if (config.getSASimple() != null && liteHw.getLMConfiguration().getSASimple() == null) {
+					Transaction.createTransaction( Transaction.INSERT, config.getSASimple() ).execute();
 					Transaction.createTransaction( Transaction.UPDATE, configDB ).execute();
 				}
 				else {

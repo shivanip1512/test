@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: ContactNotification.java,v 1.6 2005/01/04 20:45:05 yao Exp $
+ * $Id: ContactNotification.java,v 1.7 2005/01/20 00:37:06 yao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.6 $ $Date: 2005/01/04 20:45:05 $
+ * @version $Revision: 1.7 $ $Date: 2005/01/20 00:37:06 $
 **/
 public class ContactNotification extends StarsContactNotification 
 implements java.io.Serializable

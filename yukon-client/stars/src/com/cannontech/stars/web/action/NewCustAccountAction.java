@@ -9,6 +9,8 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CommandExecutionException;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
@@ -220,7 +222,7 @@ public class NewCustAccountAction implements ActionBase {
 			LiteStarsCustAccountInformation liteAcctInfo = null;
             
 			try {
-				liteAcctInfo = newCustomerAccount( newAccount, user, energyCompany );
+				liteAcctInfo = newCustomerAccount( newAccount, energyCompany );
 				session.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
 			}
 			catch (WebClientException e) {
@@ -285,7 +287,7 @@ public class NewCustAccountAction implements ActionBase {
 		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	public static LiteStarsCustAccountInformation newCustomerAccount(StarsNewCustomerAccount newAccount, StarsYukonUser user,
+	public static LiteStarsCustAccountInformation newCustomerAccount(StarsNewCustomerAccount newAccount,
 		LiteStarsEnergyCompany energyCompany, boolean checkConstraint) throws WebClientException
 	{
 		try {
@@ -295,10 +297,9 @@ public class NewCustAccountAction implements ActionBase {
 			if (checkConstraint) {
 				// Check to see if the account number has duplicates
 				String sql = "SELECT 1 FROM CustomerAccount acct, ECToAccountMapping map "
-						   + "WHERE acct.AccountID = map.AccountID AND map.EnergyCompanyID = " + user.getEnergyCompanyID()
+						   + "WHERE acct.AccountID = map.AccountID AND map.EnergyCompanyID = " + energyCompany.getEnergyCompanyID()
 						   + " AND UPPER(acct.AccountNumber) = UPPER('" + starsAccount.getAccountNumber() + "')";
-				com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-						sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
 				
 				if (stmt.getRowCount() > 0)
@@ -445,10 +446,10 @@ public class NewCustAccountAction implements ActionBase {
 		}
 	}
 	
-	public static LiteStarsCustAccountInformation newCustomerAccount(StarsNewCustomerAccount newAccount, StarsYukonUser user, LiteStarsEnergyCompany energyCompany)
+	public static LiteStarsCustAccountInformation newCustomerAccount(StarsNewCustomerAccount newAccount, LiteStarsEnergyCompany energyCompany)
 		throws WebClientException
 	{
-		return newCustomerAccount(newAccount, user, energyCompany, true);
+		return newCustomerAccount(newAccount, energyCompany, true);
 	}
 
 }

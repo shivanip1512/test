@@ -426,8 +426,12 @@ public class CreateApplianceAction implements ActionBase {
 		if (newApp.hasEfficiencyRating())
 			appDB.setEfficiencyRating( new Integer(newApp.getEfficiencyRating()) );
         
-		app = (com.cannontech.database.data.stars.appliance.ApplianceBase) Transaction.createTransaction(Transaction.INSERT, app).execute();
-		LiteStarsAppliance liteApp = null;
+		app = (com.cannontech.database.data.stars.appliance.ApplianceBase)
+				Transaction.createTransaction(Transaction.INSERT, app).execute();
+		
+		LiteStarsAppliance liteApp = new LiteStarsAppliance();
+		StarsLiteFactory.setLiteStarsAppliance( liteApp, app );
+		liteAcctInfo.getAppliances().add( liteApp );
         
 		if (newApp.getAirConditioner() != null) {
 			ApplianceAirConditioner appAC = new ApplianceAirConditioner();
@@ -532,11 +536,6 @@ public class CreateApplianceAction implements ActionBase {
 			liteApp.setIrrigation( new LiteStarsAppliance.Irrigation() );
 			StarsLiteFactory.setLiteAppIrrigation( liteApp.getIrrigation(), appIrr );
 		}
-		else
-			liteApp = new LiteStarsAppliance();
-	    
-		StarsLiteFactory.setLiteStarsAppliance( liteApp, app );
-		liteAcctInfo.getAppliances().add( liteApp );
 		
 		return liteApp;
 	}

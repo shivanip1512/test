@@ -407,10 +407,30 @@ public class LiteLMConfiguration extends LiteBase {
 		}
 	}
 	
+	public static class SASimple {
+		private String operationalAddress = null;
+		
+		/**
+		 * @return
+		 */
+		public String getOperationalAddress() {
+			return operationalAddress;
+		}
+
+		/**
+		 * @param i
+		 */
+		public void setOperationalAddress(String s) {
+			operationalAddress = s;
+		}
+
+	}
+	
 	private int configurationID = CtiUtilities.NONE_ZERO_ID;
 	private String coldLoadPickup = null;
 	private String tamperDetect = null;
 	
+	private SASimple simple_ = null;
 	private SA205 sa205_ = null;
 	private SA305 sa305_ = null;
 	private ExpressCom xcom_ = null;
@@ -505,6 +525,20 @@ public class LiteLMConfiguration extends LiteBase {
 	 */
 	public void setExpressCom(ExpressCom com) {
 		xcom_ = com;
+	}
+
+	/**
+	 * @return
+	 */
+	public SASimple getSASimple() {
+		return simple_;
+	}
+
+	/**
+	 * @param simple
+	 */
+	public void setSASimple(SASimple simple) {
+		simple_ = simple;
 	}
 
 }

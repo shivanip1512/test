@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsDefaultThermostatSchedulesDescriptor.java,v 1.21 2005/01/20 00:37:07 yao Exp $
+ * $Id: SASimpleDescriptor.java,v 1.1 2005/01/20 00:37:07 yao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.21 $ $Date: 2005/01/20 00:37:07 $
+ * @version $Revision: 1.1 $ $Date: 2005/01/20 00:37:07 $
 **/
-public class StarsDefaultThermostatSchedulesDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class SASimpleDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,9 +47,9 @@ public class StarsDefaultThermostatSchedulesDescriptor extends org.exolab.castor
      //- Constructors -/
     //----------------/
 
-    public StarsDefaultThermostatSchedulesDescriptor() {
+    public SASimpleDescriptor() {
         super();
-        xmlName = "stars-DefaultThermostatSchedules";
+        xmlName = "SASimple";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -60,41 +60,47 @@ public class StarsDefaultThermostatSchedulesDescriptor extends org.exolab.castor
         
         //-- initialize element descriptors
         
-        //-- _starsThermostatProgramList
-        desc = new XMLFieldDescriptorImpl(StarsThermostatProgram.class, "_starsThermostatProgramList", "stars-ThermostatProgram", NodeType.Element);
+        //-- _operationalAddress
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_operationalAddress", "OperationalAddress", NodeType.Element);
+        desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsDefaultThermostatSchedules target = (StarsDefaultThermostatSchedules) object;
-                return target.getStarsThermostatProgram();
+                SASimple target = (SASimple) object;
+                return target.getOperationalAddress();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsDefaultThermostatSchedules target = (StarsDefaultThermostatSchedules) object;
-                    target.addStarsThermostatProgram( (StarsThermostatProgram) value);
+                    SASimple target = (SASimple) object;
+                    target.setOperationalAddress( (java.lang.String) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsThermostatProgram();
+                return null;
             }
         } );
         desc.setHandler(handler);
-        desc.setMultivalued(true);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsThermostatProgramList
+        //-- validation code for: _operationalAddress
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(0);
-        fieldValidator.setMaxOccurs(3);
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
         desc.setValidator(fieldValidator);
         
-    } //-- com.cannontech.stars.xml.serialize.StarsDefaultThermostatSchedulesDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.SASimpleDescriptor()
 
 
       //-----------/
@@ -126,7 +132,7 @@ public class StarsDefaultThermostatSchedulesDescriptor extends org.exolab.castor
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsDefaultThermostatSchedules.class;
+        return com.cannontech.stars.xml.serialize.SASimple.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

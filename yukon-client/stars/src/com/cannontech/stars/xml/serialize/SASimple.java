@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsUpdateCallReportResponse.java,v 1.36 2005/01/20 00:37:04 yao Exp $
+ * $Id: SASimple.java,v 1.1 2005/01/20 00:37:07 yao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,25 +23,25 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.36 $ $Date: 2005/01/20 00:37:04 $
+ * @version $Revision: 1.1 $ $Date: 2005/01/20 00:37:07 $
 **/
-public class StarsUpdateCallReportResponse implements java.io.Serializable {
+public class SASimple implements java.io.Serializable {
 
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
 
-    private StarsCallReport _starsCallReport;
+    private java.lang.String _operationalAddress;
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public StarsUpdateCallReportResponse() {
+    public SASimple() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsUpdateCallReportResponse()
+    } //-- com.cannontech.stars.xml.serialize.SASimple()
 
 
       //-----------/
@@ -49,14 +49,14 @@ public class StarsUpdateCallReportResponse implements java.io.Serializable {
     //-----------/
 
     /**
-     * Returns the value of field 'starsCallReport'.
+     * Returns the value of field 'operationalAddress'.
      * 
-     * @return the value of field 'starsCallReport'.
+     * @return the value of field 'operationalAddress'.
     **/
-    public StarsCallReport getStarsCallReport()
+    public java.lang.String getOperationalAddress()
     {
-        return this._starsCallReport;
-    } //-- StarsCallReport getStarsCallReport() 
+        return this._operationalAddress;
+    } //-- java.lang.String getOperationalAddress() 
 
     /**
     **/
@@ -96,25 +96,26 @@ public class StarsUpdateCallReportResponse implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'starsCallReport'.
+     * Sets the value of field 'operationalAddress'.
      * 
-     * @param starsCallReport the value of field 'starsCallReport'.
+     * @param operationalAddress the value of field
+     * 'operationalAddress'.
     **/
-    public void setStarsCallReport(StarsCallReport starsCallReport)
+    public void setOperationalAddress(java.lang.String operationalAddress)
     {
-        this._starsCallReport = starsCallReport;
-    } //-- void setStarsCallReport(StarsCallReport) 
+        this._operationalAddress = operationalAddress;
+    } //-- void setOperationalAddress(java.lang.String) 
 
     /**
      * 
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsUpdateCallReportResponse unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.SASimple unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsUpdateCallReportResponse) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsUpdateCallReportResponse.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsUpdateCallReportResponse unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.SASimple) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.SASimple.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.SASimple unmarshal(java.io.Reader) 
 
     /**
     **/

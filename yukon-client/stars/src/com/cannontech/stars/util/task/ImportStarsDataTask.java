@@ -656,7 +656,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 			timeTaken += minTaken + " minute";
 		
 		ArrayList logMsg = new ArrayList();
-		logMsg.add("Start Time: " + StarsUtils.formatDate( new Date(startTime), java.util.TimeZone.getDefault() ));
+		logMsg.add("Start Time: " + StarsUtils.formatDate( new Date(startTime), energyCompany.getDefaultTimeZone() ));
 		logMsg.add("Time Taken: " + timeTaken);
 		logMsg.add("");
 		

@@ -571,7 +571,7 @@ public class ImportManagerUtil {
 		if (fields[IDX_USERNAME].trim().length() > 0)
 			newAccount.setStarsUpdateLogin( createStarsUpdateLogin(fields, energyCompany) );
 		
-		return NewCustAccountAction.newCustomerAccount(newAccount, user, energyCompany, checkConstraint);
+		return NewCustAccountAction.newCustomerAccount(newAccount, energyCompany, checkConstraint);
 	}
 	
 	public static void updateCustomerAccount(String[] fields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany,

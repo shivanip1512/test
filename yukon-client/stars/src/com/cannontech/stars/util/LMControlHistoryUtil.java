@@ -443,6 +443,17 @@ public class LMControlHistoryUtil {
 					groupIDs.add( new Integer(groupID) );
 				}
 			}
+			else if (liteCfg.getSASimple() != null) {
+				String sql = "SELECT GroupID FROM LMGroupSASimple " +
+					"WHERE OperationalAddress = '" + liteCfg.getSASimple().getOperationalAddress() + "'";
+				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+				stmt.execute();
+				
+				for (int i = 0; i < stmt.getRowCount(); i++) {
+					int groupID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+					groupIDs.add( new Integer(groupID) );
+				}
+			}
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );

@@ -46,6 +46,7 @@ import com.cannontech.stars.xml.serialize.LMHardware;
 import com.cannontech.stars.xml.serialize.MCT;
 import com.cannontech.stars.xml.serialize.SA205;
 import com.cannontech.stars.xml.serialize.SA305;
+import com.cannontech.stars.xml.serialize.SASimple;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInv;
 import com.cannontech.stars.xml.serialize.StarsInventory;
@@ -242,72 +243,21 @@ public class InventoryManagerUtil {
 		String[] clps = req.getParameterValues( "ColdLoadPickup" );
 		String[] tds = req.getParameterValues( "TamperDetect" );
 		
-		String clp = "";
-		if (clps != null) {
-			if (clps.length > 0) clp += clps[0];
+		if (clps != null && clps.length > 0) {
+			String clp = clps[0];
 			for (int i = 1; i < clps.length; i++)
 				clp += "," + clps[i];
+			starsCfg.setColdLoadPickup( clp );
 		}
-		starsCfg.setColdLoadPickup( clp );
 		
-		String td = "";
-		if (tds != null) {
-			if (tds.length > 0) td += tds[0];
+		if (tds != null && tds.length > 0) {
+			String td = tds[0];
 			for (int i = 1; i < tds.length; i++)
 				td += "," + tds[i];
+			starsCfg.setTamperDetect( td );
 		}
-		starsCfg.setTamperDetect( td );
 		
-		if (req.getParameter("SA205_Slot1") != null) {
-			SA205 sa205 = new SA205();
-			
-			sa205.setSlot1( ServletUtils.parseNumber(req.getParameter("SA205_Slot1"), 0, 4095, 0, "Slot Address") );
-			sa205.setSlot2( ServletUtils.parseNumber(req.getParameter("SA205_Slot2"), 0, 4095, 0, "Slot Address") );
-			sa205.setSlot3( ServletUtils.parseNumber(req.getParameter("SA205_Slot3"), 0, 4095, 0, "Slot Address") );
-			sa205.setSlot4( ServletUtils.parseNumber(req.getParameter("SA205_Slot4"), 0, 4095, 0, "Slot Address") );
-			sa205.setSlot5( ServletUtils.parseNumber(req.getParameter("SA205_Slot5"), 0, 4095, 0, "Slot Address") );
-			sa205.setSlot6( ServletUtils.parseNumber(req.getParameter("SA205_Slot6"), 0, 4095, 0, "Slot Address") );
-			
-			starsCfg.setSA205( sa205 );
-		}
-		else if (req.getParameter("SA305_Utility") != null) {
-			SA305 sa305 = new SA305();
-			
-			sa305.setUtility( ServletUtils.parseNumber(req.getParameter("SA305_Utility"), 0, 15, "Utility") );
-			sa305.setGroup( ServletUtils.parseNumber(req.getParameter("SA305_Group"), 0, 63, 0, "Group") );
-			sa305.setDivision( ServletUtils.parseNumber(req.getParameter("SA305_Division"), 0, 63, 0, "Division") );
-			sa305.setSubstation( ServletUtils.parseNumber(req.getParameter("SA305_Substation"), 0, 1023, 0, "Substation") );
-			sa305.setRateFamily( ServletUtils.parseNumber(req.getParameter("SA305_RateFamily"), 0, 7, "Rate Family") );
-			sa305.setRateMember( ServletUtils.parseNumber(req.getParameter("SA305_RateMember"), 0, 15, "Rate Member") );
-			sa305.setRateHierarchy( ServletUtils.parseNumber(req.getParameter("SA305_RateHierarchy"), 0, 1, "Rate Hierarchy") );
-			
-			starsCfg.setSA305( sa305 );
-		}
-		else if (req.getParameter("VCOM_Utility") != null) {
-			VersaCom vcom = new VersaCom();
-			
-			vcom.setUtility( ServletUtils.parseNumber(req.getParameter("VCOM_Utility"), 0, 255, "Utility") );
-			vcom.setSection( ServletUtils.parseNumber(req.getParameter("VCOM_Section"), 1, 254, 0, "Section") );
-			
-			String[] classAddrs = req.getParameterValues( "VCOM_Class" );
-			int classAddr = 0;
-			if (classAddrs != null) {
-				for (int i = 0; i < classAddrs.length; i++)
-					classAddr += Integer.parseInt( classAddrs[i] );
-			}
-			vcom.setClassAddress( classAddr );
-			
-			String[] divisions = req.getParameterValues( "VCOM_Division" );
-			int division = 0;
-			if (divisions != null) {
-				for (int i = 0; i < divisions.length; i++)
-					division += Integer.parseInt( divisions[i] );
-			}
-			vcom.setDivision( division );
-			
-			starsCfg.setVersaCom( vcom );
-		}
-		else if (req.getParameter("XCOM_SPID") != null) {
+		if (req.getParameter("XCOM_SPID") != null) {
 			ExpressCom xcom = new ExpressCom();
 			
 			xcom.setServiceProvider( ServletUtils.parseNumber(req.getParameter("XCOM_SPID"), 0, 65534, "SPID") );
@@ -343,6 +293,60 @@ public class InventoryManagerUtil {
 			xcom.setSplinter( splinter );
 			
 			starsCfg.setExpressCom( xcom );
+		}
+		else if (req.getParameter("VCOM_Utility") != null) {
+			VersaCom vcom = new VersaCom();
+			
+			vcom.setUtility( ServletUtils.parseNumber(req.getParameter("VCOM_Utility"), 0, 255, "Utility") );
+			vcom.setSection( ServletUtils.parseNumber(req.getParameter("VCOM_Section"), 1, 254, 0, "Section") );
+			
+			String[] classAddrs = req.getParameterValues( "VCOM_Class" );
+			int classAddr = 0;
+			if (classAddrs != null) {
+				for (int i = 0; i < classAddrs.length; i++)
+					classAddr += Integer.parseInt( classAddrs[i] );
+			}
+			vcom.setClassAddress( classAddr );
+			
+			String[] divisions = req.getParameterValues( "VCOM_Division" );
+			int division = 0;
+			if (divisions != null) {
+				for (int i = 0; i < divisions.length; i++)
+					division += Integer.parseInt( divisions[i] );
+			}
+			vcom.setDivision( division );
+			
+			starsCfg.setVersaCom( vcom );
+		}
+		else if (req.getParameter("SA205_Slot1") != null) {
+			SA205 sa205 = new SA205();
+			
+			sa205.setSlot1( ServletUtils.parseNumber(req.getParameter("SA205_Slot1"), 0, 4095, 0, "Slot Address") );
+			sa205.setSlot2( ServletUtils.parseNumber(req.getParameter("SA205_Slot2"), 0, 4095, 0, "Slot Address") );
+			sa205.setSlot3( ServletUtils.parseNumber(req.getParameter("SA205_Slot3"), 0, 4095, 0, "Slot Address") );
+			sa205.setSlot4( ServletUtils.parseNumber(req.getParameter("SA205_Slot4"), 0, 4095, 0, "Slot Address") );
+			sa205.setSlot5( ServletUtils.parseNumber(req.getParameter("SA205_Slot5"), 0, 4095, 0, "Slot Address") );
+			sa205.setSlot6( ServletUtils.parseNumber(req.getParameter("SA205_Slot6"), 0, 4095, 0, "Slot Address") );
+			
+			starsCfg.setSA205( sa205 );
+		}
+		else if (req.getParameter("SA305_Utility") != null) {
+			SA305 sa305 = new SA305();
+			
+			sa305.setUtility( ServletUtils.parseNumber(req.getParameter("SA305_Utility"), 0, 15, "Utility") );
+			sa305.setGroup( ServletUtils.parseNumber(req.getParameter("SA305_Group"), 0, 63, 0, "Group") );
+			sa305.setDivision( ServletUtils.parseNumber(req.getParameter("SA305_Division"), 0, 63, 0, "Division") );
+			sa305.setSubstation( ServletUtils.parseNumber(req.getParameter("SA305_Substation"), 0, 1023, 0, "Substation") );
+			sa305.setRateFamily( ServletUtils.parseNumber(req.getParameter("SA305_RateFamily"), 0, 7, "Rate Family") );
+			sa305.setRateMember( ServletUtils.parseNumber(req.getParameter("SA305_RateMember"), 0, 15, "Rate Member") );
+			sa305.setRateHierarchy( ServletUtils.parseNumber(req.getParameter("SA305_RateHierarchy"), 0, 1, "Rate Hierarchy") );
+			
+			starsCfg.setSA305( sa305 );
+		}
+		else if (req.getParameter("Simple_Address") != null) {
+			SASimple simple = new SASimple();
+			simple.setOperationalAddress( req.getParameter("Simple_Address") );
+			starsCfg.setSASimple( simple );
 		}
 	}
 	

@@ -218,7 +218,27 @@ public class StarsLiteFactory {
 		liteCfg.setColdLoadPickup( cfg.getLMConfigurationBase().getColdLoadPickup() );
 		liteCfg.setTamperDetect( cfg.getLMConfigurationBase().getTamperDetect() );
 		
-		if (cfg.getSA205() != null) {
+		if (cfg.getExpressCom() != null) {
+			LiteLMConfiguration.ExpressCom xcom = new LiteLMConfiguration.ExpressCom();
+			xcom.setServiceProvider( cfg.getExpressCom().getServiceProvider().intValue() );
+			xcom.setGEO( cfg.getExpressCom().getGEO().intValue() );
+			xcom.setSubstation( cfg.getExpressCom().getSubstation().intValue() );
+			xcom.setFeeder( cfg.getExpressCom().getFeeder().intValue() );
+			xcom.setZip( cfg.getExpressCom().getZip().intValue() );
+			xcom.setUserAddress( cfg.getExpressCom().getUserAddress().intValue() );
+			xcom.setProgram( cfg.getExpressCom().getProgram() );
+			xcom.setSplinter( cfg.getExpressCom().getSplinter() );
+			liteCfg.setExpressCom( xcom );
+		}
+		else if (cfg.getVersaCom() != null) {
+			LiteLMConfiguration.VersaCom vcom = new LiteLMConfiguration.VersaCom();
+			vcom.setUtilityID( cfg.getVersaCom().getUtilityID().intValue() );
+			vcom.setSection( cfg.getVersaCom().getSection().intValue() );
+			vcom.setClassAddress( cfg.getVersaCom().getClassAddress().intValue() );
+			vcom.setDivisionAddress( cfg.getVersaCom().getDivisionAddress().intValue() );
+			liteCfg.setVersaCom( vcom );
+		}
+		else if (cfg.getSA205() != null) {
 			LiteLMConfiguration.SA205 sa205 = new LiteLMConfiguration.SA205();
 			sa205.setSlot1( cfg.getSA205().getSlot1().intValue() );
 			sa205.setSlot2( cfg.getSA205().getSlot2().intValue() );
@@ -239,25 +259,10 @@ public class StarsLiteFactory {
 			sa305.setRateHierarchy( cfg.getSA305().getRateHierarchy().intValue() );
 			liteCfg.setSA305( sa305 );
 		}
-		else if (cfg.getExpressCom() != null) {
-			LiteLMConfiguration.ExpressCom xcom = new LiteLMConfiguration.ExpressCom();
-			xcom.setServiceProvider( cfg.getExpressCom().getServiceProvider().intValue() );
-			xcom.setGEO( cfg.getExpressCom().getGEO().intValue() );
-			xcom.setSubstation( cfg.getExpressCom().getSubstation().intValue() );
-			xcom.setFeeder( cfg.getExpressCom().getFeeder().intValue() );
-			xcom.setZip( cfg.getExpressCom().getZip().intValue() );
-			xcom.setUserAddress( cfg.getExpressCom().getUserAddress().intValue() );
-			xcom.setProgram( cfg.getExpressCom().getProgram() );
-			xcom.setSplinter( cfg.getExpressCom().getSplinter() );
-			liteCfg.setExpressCom( xcom );
-		}
-		else if (cfg.getVersaCom() != null) {
-			LiteLMConfiguration.VersaCom vcom = new LiteLMConfiguration.VersaCom();
-			vcom.setUtilityID( cfg.getVersaCom().getUtilityID().intValue() );
-			vcom.setSection( cfg.getVersaCom().getSection().intValue() );
-			vcom.setClassAddress( cfg.getVersaCom().getClassAddress().intValue() );
-			vcom.setDivisionAddress( cfg.getVersaCom().getDivisionAddress().intValue() );
-			liteCfg.setVersaCom( vcom );
+		else if (cfg.getSASimple() != null) {
+			LiteLMConfiguration.SASimple simple = new LiteLMConfiguration.SASimple();
+			simple.setOperationalAddress( cfg.getSASimple().getOperationalAddress() );
+			liteCfg.setSASimple( simple );
 		}
 	}
 	
@@ -1571,7 +1576,27 @@ public class StarsLiteFactory {
 		starsCfg.setColdLoadPickup( StarsUtils.forceNotNone(liteCfg.getColdLoadPickup()) );
 		starsCfg.setTamperDetect( StarsUtils.forceNotNone(liteCfg.getTamperDetect()) );
 		
-		if (liteCfg.getSA205() != null) {
+		if (liteCfg.getExpressCom() != null) {
+			ExpressCom xcom = new ExpressCom();
+			xcom.setServiceProvider( liteCfg.getExpressCom().getServiceProvider() );
+			xcom.setGEO( liteCfg.getExpressCom().getGEO() );
+			xcom.setSubstation( liteCfg.getExpressCom().getSubstation() );
+			xcom.setFeeder( liteCfg.getExpressCom().getFeeder() );
+			xcom.setZip( liteCfg.getExpressCom().getZip() );
+			xcom.setUserAddress( liteCfg.getExpressCom().getUserAddress() );
+			xcom.setProgram( liteCfg.getExpressCom().getProgram() );
+			xcom.setSplinter( liteCfg.getExpressCom().getSplinter() );
+			starsCfg.setExpressCom( xcom );
+		}
+		else if (liteCfg.getVersaCom() != null) {
+			VersaCom vcom = new VersaCom();
+			vcom.setUtility( liteCfg.getVersaCom().getUtilityID() );
+			vcom.setSection( liteCfg.getVersaCom().getSection() );
+			vcom.setClassAddress( liteCfg.getVersaCom().getClassAddress() );
+			vcom.setDivision( liteCfg.getVersaCom().getDivisionAddress() );
+			starsCfg.setVersaCom( vcom );
+		}
+		else if (liteCfg.getSA205() != null) {
 			SA205 sa205 = new SA205();
 			sa205.setSlot1( liteCfg.getSA205().getSlot1() );
 			sa205.setSlot2( liteCfg.getSA205().getSlot2() );
@@ -1592,25 +1617,10 @@ public class StarsLiteFactory {
 			sa305.setRateHierarchy( liteCfg.getSA305().getRateHierarchy() );
 			starsCfg.setSA305( sa305 );
 		}
-		else if (liteCfg.getExpressCom() != null) {
-			ExpressCom xcom = new ExpressCom();
-			xcom.setServiceProvider( liteCfg.getExpressCom().getServiceProvider() );
-			xcom.setGEO( liteCfg.getExpressCom().getGEO() );
-			xcom.setSubstation( liteCfg.getExpressCom().getSubstation() );
-			xcom.setFeeder( liteCfg.getExpressCom().getFeeder() );
-			xcom.setZip( liteCfg.getExpressCom().getZip() );
-			xcom.setUserAddress( liteCfg.getExpressCom().getUserAddress() );
-			xcom.setProgram( liteCfg.getExpressCom().getProgram() );
-			xcom.setSplinter( liteCfg.getExpressCom().getSplinter() );
-			starsCfg.setExpressCom( xcom );
-		}
-		else if (liteCfg.getVersaCom() != null) {
-			VersaCom vcom = new VersaCom();
-			vcom.setUtility( liteCfg.getVersaCom().getUtilityID() );
-			vcom.setSection( liteCfg.getVersaCom().getSection() );
-			vcom.setClassAddress( liteCfg.getVersaCom().getClassAddress() );
-			vcom.setDivision( liteCfg.getVersaCom().getDivisionAddress() );
-			starsCfg.setVersaCom( vcom );
+		else if (liteCfg.getSASimple() != null) {
+			SASimple simple = new SASimple();
+			simple.setOperationalAddress( StarsUtils.forceNotNull(liteCfg.getSASimple().getOperationalAddress()) );
+			starsCfg.setSASimple( simple );
 		}
 		
 		return starsCfg;

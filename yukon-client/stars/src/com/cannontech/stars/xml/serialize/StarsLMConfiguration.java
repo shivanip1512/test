@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMConfiguration.java,v 1.12 2005/01/04 20:45:06 yao Exp $
+ * $Id: StarsLMConfiguration.java,v 1.13 2005/01/20 00:37:06 yao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.12 $ $Date: 2005/01/04 20:45:06 $
+ * @version $Revision: 1.13 $ $Date: 2005/01/20 00:37:06 $
 **/
 public class StarsLMConfiguration implements java.io.Serializable {
 
@@ -43,6 +43,8 @@ public class StarsLMConfiguration implements java.io.Serializable {
     private VersaCom _versaCom;
 
     private ExpressCom _expressCom;
+
+    private SASimple _SASimple;
 
 
       //----------------/
@@ -97,6 +99,16 @@ public class StarsLMConfiguration implements java.io.Serializable {
     {
         return this._SA305;
     } //-- SA305 getSA305() 
+
+    /**
+     * Returns the value of field 'SASimple'.
+     * 
+     * @return the value of field 'SASimple'.
+    **/
+    public SASimple getSASimple()
+    {
+        return this._SASimple;
+    } //-- SASimple getSASimple() 
 
     /**
      * Returns the value of field 'tamperDetect'.
@@ -194,6 +206,16 @@ public class StarsLMConfiguration implements java.io.Serializable {
     {
         this._SA305 = SA305;
     } //-- void setSA305(SA305) 
+
+    /**
+     * Sets the value of field 'SASimple'.
+     * 
+     * @param SASimple the value of field 'SASimple'.
+    **/
+    public void setSASimple(SASimple SASimple)
+    {
+        this._SASimple = SASimple;
+    } //-- void setSASimple(SASimple) 
 
     /**
      * Sets the value of field 'tamperDetect'.

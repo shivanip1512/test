@@ -14,11 +14,14 @@ Required variables:
 	Arrays.fill(splinter, "");
 	
 	if (configuration != null) {
-		String[] clp = configuration.getColdLoadPickup().split(",");
-		String[] td = configuration.getTamperDetect().split(",");
-		System.arraycopy(clp, 0, coldLoadPickup, 0, clp.length);
-		System.arraycopy(td, 0, tamperDetect, 0, td.length);
-		
+		if (configuration.getColdLoadPickup() != null) {
+			String[] clp = configuration.getColdLoadPickup().split(",");
+			System.arraycopy(clp, 0, coldLoadPickup, 0, clp.length);
+		}
+		if (configuration.getTamperDetect() != null) {
+			String[] td = configuration.getTamperDetect().split(",");
+			System.arraycopy(td, 0, tamperDetect, 0, td.length);
+		}
 		if (configuration.getExpressCom() != null) {
 			String[] prog = configuration.getExpressCom().getProgram().split(",");
 			String[] splt = configuration.getExpressCom().getSplinter().split(",");
@@ -26,6 +29,11 @@ Required variables:
 			System.arraycopy(splt, 0, splinter, 0, splt.length);
 		}
 	}
+	
+	boolean hasTamperDetect = hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205
+			|| hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305
+			|| hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA_SIMPLE;
+	boolean hasProgramSplinter = hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM;
 %>
 <table border="1" cellspacing="0" cellpadding="0" bgcolor="#CCCCCC">
   <tr> 
@@ -33,13 +41,13 @@ Required variables:
       <table border="0" cellspacing="3" cellpadding="0">
         <tr class="TitleHeader" valign="top" align="center"> 
           <td width="30" class="HeaderCell">Relay</td>
-          <td width="65" class="HeaderCell">Cold Load 
+          <td width="<%= hasProgramSplinter?65:130 %>" class="HeaderCell">Cold Load 
             Pickup (seconds)</td>
-<% if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205 || hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) { %>
+<% if (hasTamperDetect) { %>
           <td width="65" class="HeaderCell">Tamper 
             Detect</td>
 <% } %>
-<% if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) { %>
+<% if (hasProgramSplinter) { %>
           <td width="65" class="HeaderCell">Program</td>
           <td width="65" class="HeaderCell">Splinter</td>
 <% } %>
@@ -50,15 +58,15 @@ Required variables:
 %>
         <tr align="center"> 
           <td width="30" class="HeaderCell"><%= i+1 %></td>
-          <td width="65"> 
+          <td width="<%= hasProgramSplinter?65:130 %>"> 
             <input type="text" name="ColdLoadPickup" value="<%= coldLoadPickup[i] %>" size="4" maxlength="10" onchange="setContentChanged(true)">
           </td>
-<% if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205 || hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) { %>
+<% if (hasTamperDetect) { %>
           <td width="65"> 
             <input type="text" name="TamperDetect" value="<%= tamperDetect[i] %>" size="4" maxlength="10" onchange="setContentChanged(true)">
           </td>
 <% } %>
-<% if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) { %>
+<% if (hasProgramSplinter) { %>
           <td width="65"> 
             <input type="text" name="XCOM_Program" value="<%= program[i] %>" size="4" maxlength="10" onchange="setContentChanged(true)">
           </td>

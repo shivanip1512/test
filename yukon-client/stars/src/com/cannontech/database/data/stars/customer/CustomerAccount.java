@@ -43,9 +43,6 @@ public class CustomerAccount extends DBPersistent {
     }
 
     public void delete() throws java.sql.SQLException {
-        // delete from the mapping table
-        delete( "ECToAccountMapping", "AccountID", getCustomerAccount().getAccountID() );
-    	
 		for (int i = 0; i < getInventoryVector().size(); i++) {
 			Integer invID = (Integer) getInventoryVector().get(i);
 			
@@ -66,7 +63,7 @@ public class CustomerAccount extends DBPersistent {
 		}
 		
 		// Delete program events
-        com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
+        com.cannontech.database.data.stars.event.LMProgramEvent.deleteLMProgramEvents(
 				getCustomerAccount().getAccountID().intValue() );
     	
     	// hardware configuration has already been deleted, so we just need to use the DB object here
@@ -93,6 +90,9 @@ public class CustomerAccount extends DBPersistent {
         com.cannontech.database.data.stars.hardware.LMThermostatSchedule.deleteAllThermostatSchedules(
         		getCustomerAccount().getAccountID().intValue() );
         
+		// delete from the mapping table
+		delete( "ECToAccountMapping", "AccountID", getCustomerAccount().getAccountID() );
+    	
         getCustomerAccount().delete();
         getAccountSite().delete();
         getBillingAddress().delete();

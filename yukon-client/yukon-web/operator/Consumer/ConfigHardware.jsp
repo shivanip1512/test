@@ -21,6 +21,7 @@
 	
 	String trackHwAddr = liteEC.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
 	boolean useHardwareAddressing = trackHwAddr != null && Boolean.valueOf(trackHwAddr).booleanValue();
+	boolean configurable = InventoryUtils.supportConfiguration(inventory.getDeviceType().getEntryID());
 %>
 
 <html>
@@ -32,7 +33,8 @@
 
 <script language="JavaScript">
 function init() {
-	document.getElementById("Reenable").value = '<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_REENABLE %>" format="all_capital"/>';
+	if (document.getElementById("Reenable") != null)
+		document.getElementById("Reenable").value = '<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_REENABLE %>" format="all_capital"/>';
 }
 
 function sendCommand(cmd) {
@@ -155,8 +157,7 @@ function changeProgSelection(chkBox) {
                     <input type="hidden" name="GroupID" value="0">
 <% } %>
                     <td width="25%" height="2">
-                      <select id="Load_Prog<%= program.getProgramID() %>" name="LoadNo" onchange="setContentChanged(true)"
-                      <% if (!assigned) out.print("disabled"); %>>
+                      <select id="Load_Prog<%= program.getProgramID() %>" name="LoadNo" onchange="setContentChanged(true)" <% if (!assigned) out.print("disabled"); %>>
                         <option value="0">(none)</option>
 <%
 			int numRelays = (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM)? 8 : 4;
@@ -193,12 +194,15 @@ function changeProgSelection(chkBox) {
                 <table width="400" border="0" cellspacing="0" cellpadding="0">
                   <tr>
                     <td align="center"> 
+<% if (configurable) { %>
                       <input type="submit" name="Config" value="Config">
                       <input type="button" name="SaveBatch" value="Save To Batch" onclick="saveToBatch(this.form)">
+<% } %>
 					  <input type="button" name="SaveConfig" value="Save Config Only" onclick="saveConfigOnly(this.form)">
                     </td>
                   </tr>
                 </table>
+<% if (configurable) { %>
                 <br>
                 <table width="300" border="0" cellspacing="0" cellpadding="0">
                   <tr> 
@@ -208,6 +212,7 @@ function changeProgSelection(chkBox) {
                     </td>
                   </tr>
                 </table>
+<% } %>
               </form>
             </div>
             <hr>

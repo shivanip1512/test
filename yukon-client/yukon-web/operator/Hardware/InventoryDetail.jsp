@@ -61,9 +61,11 @@ function deleteHardware(form) {
 <% } %>
 <% if (isMCT) { %>
 	form.attributes["action"].value = "DeleteInv.jsp";
-<% } else if (liteInv.getAccountID() == 0) { %>
+<% } else { %>
+<%  if (liteInv.getAccountID() == 0) { %>
 	if (!confirm("Are you sure you want to delete the hardware from inventory?"))
 		return;
+<%  } %>
 	form.action.value = "DeleteInventory";
 <% } %>
 	form.REDIRECT.value = "<%= request.getContextPath() %>/operator/Hardware/Inventory.jsp";
@@ -404,6 +406,7 @@ function validate(form) {
 			  </form>
 <%
 	if (inventory.getLMHardware() != null) {
+		boolean configurable = InventoryUtils.supportConfiguration(inventory.getDeviceType().getEntryID());
 %>
 			  <form name="cfgForm" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager" onsubmit="return <%= !viewOnly %>">
 			    <input type="hidden" name="action" value="ConfigLMHardware">
@@ -422,7 +425,7 @@ function validate(form) {
                 <input type="hidden" name="UseHardwareAddressing" value="true">
                 <table width="610" border="0" cellspacing="0" cellpadding="10">
                   <tr> 
-                    <td valign="top"> 
+                    <td valign="top" align="center"> 
                       <table width="300" border="0" cellspacing="0" cellpadding="0">
                         <tr> 
                           <td> <span class="SubtitleHeader">ADDRESSING</span> 
@@ -436,7 +439,8 @@ function validate(form) {
                         </tr>
                       </table>
                     </td>
-                    <td valign="top"> 
+<% if (configurable) { %>
+                    <td valign="top" align="center"> 
                       <table width="300" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                           <td><span class="SubtitleHeader">RELAYS</span> 
@@ -450,14 +454,17 @@ function validate(form) {
                         </tr>
                       </table>
                     </td>
+<% } %>
                   </tr>
                 </table>
 <% if (!viewOnly) { %>
                 <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                   <tr> 
                     <td align="center"> 
+<% if (configurable) { %>
                       <input type="submit" name="Config" value="Config">
                       <input type="button" name="SaveBatch" value="Save To Batch" onclick="saveToBatch(this.form)">
+<% } %>
                       <input type="button" name="SaveConfig" value="Save Config Only" onclick="saveConfigOnly(this.form)">
                     </td>
                   </tr>
@@ -465,7 +472,7 @@ function validate(form) {
 <% } %>
 <%
 		}
-		else if (liteInv.getAccountID() > 0 && !viewOnly) {
+		else if (liteInv.getAccountID() > 0 && !viewOnly && configurable) {
 %>
                 <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                   <tr> 

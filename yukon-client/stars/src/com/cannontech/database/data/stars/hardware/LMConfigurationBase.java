@@ -18,6 +18,7 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.stars.hardware.LMConfigurationExpressCom;
 import com.cannontech.database.db.stars.hardware.LMConfigurationSA205;
 import com.cannontech.database.db.stars.hardware.LMConfigurationSA305;
+import com.cannontech.database.db.stars.hardware.LMConfigurationSASimple;
 import com.cannontech.database.db.stars.hardware.LMConfigurationVersaCom;
 import com.cannontech.stars.util.InventoryUtils;
 
@@ -30,6 +31,7 @@ import com.cannontech.stars.util.InventoryUtils;
 public class LMConfigurationBase extends DBPersistent {
 	
 	private com.cannontech.database.db.stars.hardware.LMConfigurationBase lmConfigBase_ = null;
+	private LMConfigurationSASimple simple_ = null;
 	private LMConfigurationSA205 sa205_ = null;
 	private LMConfigurationSA305 sa305_ = null;
 	private LMConfigurationExpressCom xcom_ = null;
@@ -38,26 +40,30 @@ public class LMConfigurationBase extends DBPersistent {
 	public void setDbConnection(java.sql.Connection conn) {
 		super.setDbConnection( conn );
 		getLMConfigurationBase().setDbConnection( conn );
-		if (getSA205() != null)
-			getSA205().setDbConnection( conn );
-		if (getSA305() != null)
-			getSA305().setDbConnection( conn );
 		if (getExpressCom() != null)
 			getExpressCom().setDbConnection( conn );
-		if (getVersaCom() != null)
+		else if (getVersaCom() != null)
 			getVersaCom().setDbConnection( conn );
+		else if (getSA205() != null)
+			getSA205().setDbConnection( conn );
+		else if (getSA305() != null)
+			getSA305().setDbConnection( conn );
+		else if (getSASimple() != null)
+			getSASimple().setDbConnection( conn );
 	}
 	
 	public void setConfigurationID(Integer configID) {
 		getLMConfigurationBase().setConfigurationID( configID );
-		if (getSA205() != null)
-			getSA205().setConfigurationID( configID );
-		if (getSA305() != null)
-			getSA305().setConfigurationID( configID );
 		if (getExpressCom() != null)
 			getExpressCom().setConfigurationID( configID );
-		if (getVersaCom() != null)
+		else if (getVersaCom() != null)
 			getVersaCom().setConfigurationID( configID );
+		else if (getSA205() != null)
+			getSA205().setConfigurationID( configID );
+		else if (getSA305() != null)
+			getSA305().setConfigurationID( configID );
+		else if (getSASimple() != null)
+			getSASimple().setConfigurationID( configID );
 	}
 
 	/* (non-Javadoc)
@@ -66,7 +72,15 @@ public class LMConfigurationBase extends DBPersistent {
 	public void add() throws SQLException {
 		getLMConfigurationBase().add();
 		
-		if (getSA205() != null) {
+		if (getExpressCom() != null) {
+			getExpressCom().setConfigurationID( getLMConfigurationBase().getConfigurationID() );
+			getExpressCom().add();
+		}
+		else if (getVersaCom() != null) {
+			getVersaCom().setConfigurationID( getLMConfigurationBase().getConfigurationID() );
+			getVersaCom().add();
+		}
+		else if (getSA205() != null) {
 			getSA205().setConfigurationID( getLMConfigurationBase().getConfigurationID() );
 			getSA205().add();
 		}
@@ -74,13 +88,8 @@ public class LMConfigurationBase extends DBPersistent {
 			getSA305().setConfigurationID( getLMConfigurationBase().getConfigurationID() );
 			getSA305().add();
 		}
-		else if (getExpressCom() != null) {
-			getExpressCom().setConfigurationID( getLMConfigurationBase().getConfigurationID() );
-			getExpressCom().add();
-		}
-		else if (getVersaCom() != null) {
-			getVersaCom().setConfigurationID( getLMConfigurationBase().getConfigurationID() );
-			getVersaCom().add();
+		else if (getSASimple() != null) {
+			getSASimple().setConfigurationID( getLMConfigurationBase().getConfigurationID() );
 		}
 	}
 
@@ -89,10 +98,11 @@ public class LMConfigurationBase extends DBPersistent {
 	 */
 	public void delete() throws SQLException {
 		// Delete from tables of each hardware type
-		delete( "LMConfigurationSA205", "ConfigurationID", getLMConfigurationBase().getConfigurationID() );
-		delete( "LMConfigurationSA305", "ConfigurationID", getLMConfigurationBase().getConfigurationID() );
-		delete( "LMConfigurationExpressCom", "ConfigurationID", getLMConfigurationBase().getConfigurationID() );
-		delete( "LMConfigurationVersaCom", "ConfigurationID", getLMConfigurationBase().getConfigurationID() );
+		delete( LMConfigurationExpressCom.TABLE_NAME, "ConfigurationID", getLMConfigurationBase().getConfigurationID() );
+		delete( LMConfigurationVersaCom.TABLE_NAME, "ConfigurationID", getLMConfigurationBase().getConfigurationID() );
+		delete( LMConfigurationSA205.TABLE_NAME, "ConfigurationID", getLMConfigurationBase().getConfigurationID() );
+		delete( LMConfigurationSA305.TABLE_NAME, "ConfigurationID", getLMConfigurationBase().getConfigurationID() );
+		delete( LMConfigurationSASimple.TABLE_NAME, "ConfigurationID", getLMConfigurationBase().getConfigurationID() );
 		
 		getLMConfigurationBase().delete();
 	}
@@ -103,14 +113,16 @@ public class LMConfigurationBase extends DBPersistent {
 	public void retrieve() throws SQLException {
 		getLMConfigurationBase().retrieve();
 		
-		if (getSA205() != null)
-			getSA205().retrieve();
-		else if (getSA305() != null)
-			getSA305().retrieve();
-		else if (getExpressCom() != null)
+		if (getExpressCom() != null)
 			getExpressCom().retrieve();
 		else if (getVersaCom() != null)
 			getVersaCom().retrieve();
+		else if (getSA205() != null)
+			getSA205().retrieve();
+		else if (getSA305() != null)
+			getSA305().retrieve();
+		else if (getSASimple() != null)
+			getSASimple().retrieve();
 	}
 
 	/* (non-Javadoc)
@@ -119,14 +131,16 @@ public class LMConfigurationBase extends DBPersistent {
 	public void update() throws SQLException {
 		getLMConfigurationBase().update();
 		
+		if (getExpressCom() != null)
+			getExpressCom().update();
+		else if (getVersaCom() != null)
+			getVersaCom().update();
 		if (getSA205() != null)
 			getSA205().update();
 		else if (getSA305() != null)
 			getSA305().update();
-		else if (getExpressCom() != null)
-			getExpressCom().update();
-		else if (getVersaCom() != null)
-			getVersaCom().update();
+		else if (getSASimple() != null)
+			getSASimple().update();
 	}
 	
 	public static LMConfigurationBase getLMConfiguration(int configID, int hwTypeID) {
@@ -135,7 +149,29 @@ public class LMConfigurationBase extends DBPersistent {
 		
 		try {
 			int hwConfigType = InventoryUtils.getHardwareConfigType( hwTypeID );
-			if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) {
+			if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
+				String sql = "SELECT ConfigurationID FROM LMConfigurationExpressCom WHERE ConfigurationID = " + configID;
+				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+				stmt.execute();
+				
+				if (stmt.getRowCount() > 0) {
+					LMConfigurationExpressCom xcom = new LMConfigurationExpressCom();
+					xcom.setConfigurationID( config.getLMConfigurationBase().getConfigurationID() );
+					config.setExpressCom( xcom );
+				}
+			}
+			else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) {
+				String sql = "SELECT ConfigurationID FROM LMConfigurationVersaCom WHERE ConfigurationID = " + configID;
+				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+				stmt.execute();
+				
+				if (stmt.getRowCount() > 0) {
+					LMConfigurationVersaCom vcom = new LMConfigurationVersaCom();
+					vcom.setConfigurationID( config.getLMConfigurationBase().getConfigurationID() );
+					config.setVersaCom( vcom );
+				}
+			}
+			else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) {
 				String sql = "SELECT ConfigurationID FROM LMConfigurationSA205 WHERE ConfigurationID = " + configID;
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
@@ -157,26 +193,15 @@ public class LMConfigurationBase extends DBPersistent {
 					config.setSA305( sa305 );
 				}
 			}
-			else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
-				String sql = "SELECT ConfigurationID FROM LMConfigurationExpressCom WHERE ConfigurationID = " + configID;
+			else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA_SIMPLE) {
+				String sql = "SELECT ConfigurationID FROM LMConfigurationSASimple WHERE ConfigurationID = " + configID;
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
 				
 				if (stmt.getRowCount() > 0) {
-					LMConfigurationExpressCom xcom = new LMConfigurationExpressCom();
-					xcom.setConfigurationID( config.getLMConfigurationBase().getConfigurationID() );
-					config.setExpressCom( xcom );
-				}
-			}
-			else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) {
-				String sql = "SELECT ConfigurationID FROM LMConfigurationVersaCom WHERE ConfigurationID = " + configID;
-				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-				stmt.execute();
-				
-				if (stmt.getRowCount() > 0) {
-					LMConfigurationVersaCom vcom = new LMConfigurationVersaCom();
-					vcom.setConfigurationID( config.getLMConfigurationBase().getConfigurationID() );
-					config.setVersaCom( vcom );
+					LMConfigurationSASimple simple = new LMConfigurationSASimple();
+					simple.setConfigurationID( config.getLMConfigurationBase().getConfigurationID() );
+					config.setSASimple( simple );
 				}
 			}
 		}
@@ -247,6 +272,20 @@ public class LMConfigurationBase extends DBPersistent {
 	 */
 	public void setExpressCom(com.cannontech.database.db.stars.hardware.LMConfigurationExpressCom xcom) {
 		xcom_ = xcom;
+	}
+
+	/**
+	 * @return
+	 */
+	public LMConfigurationSASimple getSASimple() {
+		return simple_;
+	}
+
+	/**
+	 * @param simple
+	 */
+	public void setSASimple(LMConfigurationSASimple simple) {
+		simple_ = simple;
 	}
 
 }

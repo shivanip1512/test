@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMConfigurationDescriptor.java,v 1.12 2005/01/04 20:45:04 yao Exp $
+ * $Id: StarsLMConfigurationDescriptor.java,v 1.13 2005/01/20 00:37:04 yao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.12 $ $Date: 2005/01/04 20:45:04 $
+ * @version $Revision: 1.13 $ $Date: 2005/01/20 00:37:04 $
 **/
 public class StarsLMConfigurationDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -86,13 +86,11 @@ public class StarsLMConfigurationDescriptor extends org.exolab.castor.xml.util.X
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _coldLoadPickup
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             StringValidator sv = new StringValidator();
             sv.setWhiteSpace("preserve");
@@ -126,13 +124,11 @@ public class StarsLMConfigurationDescriptor extends org.exolab.castor.xml.util.X
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _tamperDetect
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             StringValidator sv = new StringValidator();
             sv.setWhiteSpace("preserve");
@@ -265,6 +261,38 @@ public class StarsLMConfigurationDescriptor extends org.exolab.castor.xml.util.X
         addFieldDescriptor(desc);
         
         //-- validation code for: _expressCom
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _SASimple
+        desc = new XMLFieldDescriptorImpl(SASimple.class, "_SASimple", "SASimple", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsLMConfiguration target = (StarsLMConfiguration) object;
+                return target.getSASimple();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsLMConfiguration target = (StarsLMConfiguration) object;
+                    target.setSASimple( (SASimple) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new SASimple();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _SASimple
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         

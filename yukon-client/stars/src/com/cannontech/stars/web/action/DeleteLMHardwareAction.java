@@ -156,7 +156,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 		delHw.setInventoryID( Integer.parseInt(req.getParameter("InvID")) );
 		
 		String delAction = req.getParameter("DeleteAction");
-		if (delAction.equalsIgnoreCase("DeleteFromInventory")) {
+		if (delAction == null || delAction.equalsIgnoreCase("DeleteFromInventory")) {
 			delHw.setDeleteFromInventory( true );
 		}
 		else if (delAction.equalsIgnoreCase("DeleteFromYukon")) {
