@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_base.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:57 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/10/02 19:25:02 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -124,10 +124,16 @@ void CtiTableDeviceBase::DecodeDatabaseReader(RWDBReader &rdr)
 
     rdr["alarminhibit"] >> rwsTemp;
     rwsTemp.toLower();
-    _alarmInhibit = ((rwsTemp == 'y') ? TRUE : FALSE);
+    if(rwsTemp.length() > 0)
+    {
+        _alarmInhibit = ((rwsTemp[(size_t)0] == 'y') ? TRUE : FALSE);
+    }
 
     rdr["controlinhibit"] >> rwsTemp;
     rwsTemp.toLower();
-    _controlInhibit = ((rwsTemp == 'y') ? TRUE : FALSE);
+    if(rwsTemp.length() > 0)
+    {
+        _controlInhibit = ((rwsTemp[(size_t)0] == 'y') ? TRUE : FALSE);
+    }
 }
 
