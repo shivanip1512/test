@@ -58,9 +58,13 @@ public static DirectPort createPort( int typeOfPort ) throws java.sql.SQLExcepti
 			break;
 			
 		case PortTypes.LOCAL_DIALUP:
+		case PortTypes.LOCAL_DIALBACK:
 			LocalDialupPort ldp = new LocalDialupPort();
 
-			ldp.setPortType( PortTypes.STRING_LOCAL_DIALUP );
+			if( typeOfPort ==  PortTypes.LOCAL_DIALUP )
+				ldp.setPortType( PortTypes.STRING_LOCAL_DIALUP );
+			else if( typeOfPort == PortTypes.LOCAL_DIALBACK )
+				ldp.setPortType( PortTypes.STRING_LOCAL_DIALBACK );
 			
 			ldp.getPortTiming().setPreTxWait(new Integer(25));
 			ldp.getPortTiming().setRtsToTxWait(new Integer(0));
@@ -71,20 +75,6 @@ public static DirectPort createPort( int typeOfPort ) throws java.sql.SQLExcepti
 			port = ldp;
 			break;
 
-		case PortTypes.LOCAL_DIALBACK:
-			PortDialBack pdb = new PortDialBack();
-
-			pdb.setPortType( PortTypes.STRING_LOCAL_DIALBACK );
-			
-			pdb.getPortTiming().setPreTxWait(new Integer(25));
-			pdb.getPortTiming().setRtsToTxWait(new Integer(0));
-			pdb.getPortTiming().setPostTxWait(new Integer(0));
-			pdb.getPortTiming().setReceiveDataWait(new Integer(0));
-			pdb.getPortTiming().setExtraTimeOut(new Integer(0));
-			
-			port = pdb;
-			break;			
-			
 		case PortTypes.TSERVER_DIRECT:
 		    TerminalServerDirectPort tdp = new TerminalServerDirectPort();
 		    tdp.setPortType( PortTypes.STRING_TERM_SERVER_DIRECT );

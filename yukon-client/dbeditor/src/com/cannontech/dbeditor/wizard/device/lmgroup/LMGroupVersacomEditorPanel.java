@@ -376,6 +376,10 @@ private javax.swing.JCheckBox getDivisionAddressCheckBox() {
 			ivjDivisionAddressCheckBox.setName("DivisionAddressCheckBox");
 			ivjDivisionAddressCheckBox.setText("Division Address");
 			// user code begin {1}
+			
+			ivjDivisionAddressCheckBox.setPreferredSize(new java.awt.Dimension(139, 22));
+			ivjDivisionAddressCheckBox.setMinimumSize(new java.awt.Dimension(139, 22));
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -833,6 +837,10 @@ private javax.swing.JCheckBox getSectionAddressCheckBox() {
 			ivjSectionAddressCheckBox.setName("SectionAddressCheckBox");
 			ivjSectionAddressCheckBox.setText("Section Address");
 			// user code begin {1}
+
+			ivjSectionAddressCheckBox.setPreferredSize(new java.awt.Dimension(139, 22));
+			ivjSectionAddressCheckBox.setMinimumSize(new java.awt.Dimension(139, 22));
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}

@@ -4,10 +4,11 @@ package com.cannontech.dbeditor.editor.port;
  * This type was created in VisualAge.
  */
 
- import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.port.LocalDialupPort;
+import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.port.LocalSharedPort;
-import com.cannontech.database.data.port.PortDialBack;
 import com.cannontech.database.data.port.TerminalServerDialupPort;
 import com.cannontech.database.db.port.PortDialupModem;
  
@@ -477,13 +478,15 @@ public Object getValue(Object val)
 		pdm.setPrefixNumber( prefixString );
 		pdm.setSuffixNumber( suffixString );		
 	}
-	else if( val instanceof PortDialBack )
+/*
+ 	else if( val instanceof PortDialBack )
 	{		
 		PortDialBack pdb = (PortDialBack)val;
 		
 		pdb.getPortDialback().setModemType( modemType );
 		pdb.getPortDialback().setInitializationString( initString );
 	}
+*/
 	else  //the thing that should not be!
 		throw new Error("Unrecognized port type instance, unknown instance is = " 
 								+ val.getClass().getName() );
@@ -564,8 +567,8 @@ private void initialize() {
 	// user code begin {2}
 	getModemTypeComboBox().addItem( "U.S. Robotics Sportster" );
 	getModemTypeComboBox().addItem( "U.S. Robotics Courier" );
-	getModemTypeComboBox().addItem("Telenetics");
 	getModemTypeComboBox().addItem("Motorola");
+	getModemTypeComboBox().addItem("Telenetics");
 	// user code end
 }
 /**
@@ -609,7 +612,12 @@ public void setValue(Object val)
 		getSuffixNumberTextField().setText( pdm.getSuffixNumber() );
 						
 		modemType = pdm.getModemType();
-		initString = pdm.getInitializationString();		
+		initString = pdm.getInitializationString();	
+
+		//do not show dial properties if we are dial back
+		getDialingPropertiesPanel().setVisible( 
+			!((DirectPort)val).getPAOType().equalsIgnoreCase(
+					PAOGroups.STRING_LOCAL_DIALBACK) );
 	}	
 	else if( val instanceof TerminalServerDialupPort )
 	{
@@ -621,6 +629,7 @@ public void setValue(Object val)
 		modemType = pdm.getModemType();
 		initString = pdm.getInitializationString();		
 	}	
+/*
 	else if( val instanceof PortDialBack )
 	{		
 		modemType = ((PortDialBack)val).getPortDialback().getModemType();
@@ -628,6 +637,7 @@ public void setValue(Object val)
 		
 		getDialingPropertiesPanel().setVisible( false );		
 	}
+*/	
 	else  //the thing that should not be!
 		throw new Error("Unrecognized port type instance, unknown instance is = " 
 								+ val.getClass().getName() );

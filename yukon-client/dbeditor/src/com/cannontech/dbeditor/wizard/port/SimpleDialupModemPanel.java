@@ -7,7 +7,6 @@ package com.cannontech.dbeditor.wizard.port;
 import java.awt.Dimension;
 
 import com.cannontech.database.data.port.LocalDialupPort;
-import com.cannontech.database.data.port.PortDialBack;
 import com.cannontech.database.data.port.TerminalServerDialupPort;
   
 public class SimpleDialupModemPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
@@ -134,10 +133,12 @@ public Object getValue(Object val) {
 	{
 		((TerminalServerDialupPort) val).getPortDialupModem().setModemType( modemType );
 	}
+/*	
 	else if( val instanceof com.cannontech.database.data.port.PortDialBack )
 	{
 		((PortDialBack) val).getPortDialback().setModemType( modemType );
 	}
+*/
 	else
 		throw new Error("Unrecognized port type instance, unknown instance is = " 
 								+ val.getClass().getName() );
@@ -196,8 +197,8 @@ private void initialize() {
 	// user code begin {2}
 	getModemTypeComboBox().addItem("U.S. Robotics Sportster");
 	getModemTypeComboBox().addItem("U.S. Robotics Courier");
-	getModemTypeComboBox().addItem("Motorola");
 	getModemTypeComboBox().addItem("Telenetics");
+	getModemTypeComboBox().addItem("Motorola");
 	getModemTypeComboBox().setSelectedIndex(0);
 	// user code end
 }
