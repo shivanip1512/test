@@ -83,7 +83,6 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	lmDirectGroup.setCurrentHoursMonthly( new Integer( (int)vstr.extractUnsignedInt() ) );
 	lmDirectGroup.setCurrentHoursSeasonal( new Integer( (int)vstr.extractUnsignedInt() ) );
 	lmDirectGroup.setCurrentHoursAnnually( new Integer( (int)vstr.extractUnsignedInt() ) );
-
 	
 	java.util.GregorianCalendar lastControlSent = new java.util.GregorianCalendar();
 	lastControlSent.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
@@ -91,7 +90,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	
 	lmDirectGroup.setControlStartTime( (Date)vstr.restoreObject( SimpleMappings.Time ) );
 	lmDirectGroup.setControlCompleteTime( (Date)vstr.restoreObject( SimpleMappings.Time ) );
-	
+	lmDirectGroup.setNextControlTime( (Date)vstr.restoreObject( SimpleMappings.Time ));
+	lmDirectGroup.setInternalState( (int) vstr.extractUnsignedInt());	
 
 }
 /**

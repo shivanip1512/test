@@ -59,8 +59,19 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	Integer lastGroupControlled = new Integer( (int)vstr.extractUnsignedInt() );
 	java.util.GregorianCalendar directStartTime = new java.util.GregorianCalendar();
 	directStartTime.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
+
 	java.util.GregorianCalendar directStopTime = new java.util.GregorianCalendar();
 	directStopTime.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );	
+	
+	Integer dailyOps = new Integer( (int) vstr.extractUnsignedInt() );
+	
+	java.util.GregorianCalendar notifyTime = new java.util.GregorianCalendar();
+	notifyTime.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time) );
+	
+	java.util.GregorianCalendar startedRampingOutTime = new java.util.GregorianCalendar(); 
+	startedRampingOutTime.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time) );
+
+	
 	java.util.Vector directGearVector = (java.util.Vector) vstr.restoreObject( polystr );	
 	java.util.Vector groupVector = (java.util.Vector) vstr.restoreObject( polystr );
 
@@ -69,6 +80,10 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	lmProgramDirect.setLastGroupControlled(lastGroupControlled);
 	lmProgramDirect.setDirectStartTime( directStartTime );
 	lmProgramDirect.setDirectStopTime( directStopTime );
+	lmProgramDirect.setDailyOps( dailyOps );
+	lmProgramDirect.setNotifyTime( notifyTime );
+	lmProgramDirect.setStartedRampingOut( startedRampingOutTime );
+	
 	lmProgramDirect.setDirectGearVector(directGearVector);
 	lmProgramDirect.setLoadControlGroupVector( groupVector );
 }

@@ -1,6 +1,7 @@
 package com.cannontech.loadcontrol.data;
 
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import com.cannontech.common.util.CtiUtilities;
 
@@ -11,6 +12,9 @@ import com.cannontech.common.util.CtiUtilities;
  */
 public abstract class LMDirectGroupBase extends LMGroupBase implements ILMGroup 
 {
+	private static final int GROUP_RAMPING_IN = 0x00000001;
+	private static final int GROUP_RAMPING_OUT = 0x00000002;
+	
 	private Integer childOrder = null;	
 	private Boolean alarmInhibit = null;
 	private Boolean controlInhibit = null;
@@ -19,11 +23,14 @@ public abstract class LMDirectGroupBase extends LMGroupBase implements ILMGroup
 	private Integer currentHoursMonthly = null;
 	private Integer currentHoursSeasonal = null;
 	private Integer currentHoursAnnually = null;
-	private java.util.GregorianCalendar lastControlSent = null;
-
+    private GregorianCalendar lastControlSent = null;
+	
 	private Date controlStartTime = null;
 	private Date controlCompleteTime = null;
+	private Date nextControlTime = null;	
 
+	private int internalState = 0x0000000;
+	
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (1/14/2002 12:59:51 PM)
@@ -252,4 +259,41 @@ public abstract class LMDirectGroupBase extends LMGroupBase implements ILMGroup
 		this.controlStartTime = controlStartTime;
 	}
 
+	/**
+	 * @return
+	 */
+	public Date getNextControlTime() {
+		return nextControlTime;
+	}
+
+	/**
+	 * @param date
+	 */
+	public void setNextControlTime(Date date) {
+		nextControlTime = date;
+	}
+	
+	public boolean isRampingIn() {
+		return (internalState & GROUP_RAMPING_IN) != 0;
+	}
+	
+	public boolean isRampingOut() {
+		return (internalState & GROUP_RAMPING_OUT) != 0;
+	}
+
+	public void setRampingIn(boolean b) {
+		internalState = (b ?
+							internalState | GROUP_RAMPING_IN :
+							internalState & ~GROUP_RAMPING_IN);
+	}
+	
+	public void setRampingOut(boolean b) {
+		internalState = (b ?
+							internalState | GROUP_RAMPING_OUT :
+							internalState & ~GROUP_RAMPING_OUT);		
+	}
+	
+	void setInternalState(int s) {
+		internalState = s;
+	}
 }

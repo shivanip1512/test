@@ -29,6 +29,11 @@ public class LMProgramDirectGear
 	private String groupSelectionMethod = null;
 	private String methodOptionType = null;
 	private Integer methodOptionMax = null;
+	private Integer rampInInterval = null;
+	private Integer rampInPercent = null;
+	private Integer rampOutInterval = null;
+	private Integer rampOutPercent = null;
+	
 	// String constants that represent the various
 	// states a strategy can be in
 /*	public static final String STATE_ENABLED = "Enabled";
@@ -340,4 +345,60 @@ public void setYukonID(java.lang.Integer newYukonID) {
 public String toString() {
 	return getGearName();
 }
+	/**
+	 * @return
+	 */
+	public Integer getRampInInterval() {
+		return rampInInterval;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getRampInPercent() {
+		return rampInPercent;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getRampOutInterval() {
+		return rampOutInterval;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getRampOutPercent() {
+		return rampOutPercent;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setRampInInterval(Integer integer) {
+		rampInInterval = integer;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setRampInPercent(Integer integer) {
+		rampInPercent = integer;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setRampOutInterval(Integer integer) {
+		rampOutInterval = integer;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setRampOutPercent(Integer integer) {
+		rampOutPercent = integer;
+	}
+
 }

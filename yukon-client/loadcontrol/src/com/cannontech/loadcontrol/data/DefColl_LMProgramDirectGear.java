@@ -86,7 +86,10 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	String groupSelectionMethod = (String) vstr.restoreObject( SimpleMappings.CString );
 	String methodOptionType = (String) vstr.restoreObject( SimpleMappings.CString );
 	Integer methodOptionMax = new Integer( (int)vstr.extractUnsignedInt() );
-
+	Integer rampInInterval = new Integer( (int) vstr.extractUnsignedInt() );
+	Integer rampInPercent = new Integer ( (int) vstr.extractUnsignedInt() );
+	Integer rampOutInterval = new Integer( (int) vstr.extractUnsignedInt() );
+	Integer rampOutPercent = new Integer( (int) vstr.extractUnsignedInt() );
 
 	lmProgramDirectGear.setYukonID(yukonID);
 	lmProgramDirectGear.setGearName(gearName);
@@ -106,6 +109,10 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	lmProgramDirectGear.setGroupSelectionMethod(groupSelectionMethod);
 	lmProgramDirectGear.setMethodOptionType( methodOptionType );
 	lmProgramDirectGear.setMethodOptionMax( methodOptionMax );
+	lmProgramDirectGear.setRampInInterval( rampInInterval );
+	lmProgramDirectGear.setRampInPercent( rampInPercent );
+	lmProgramDirectGear.setRampOutInterval( rampOutInterval );
+	lmProgramDirectGear.setRampOutPercent( rampOutPercent );
 }
 /**
  * saveGuts method comment.

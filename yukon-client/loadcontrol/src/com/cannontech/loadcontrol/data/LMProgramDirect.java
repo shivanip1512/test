@@ -13,7 +13,10 @@ public class LMProgramDirect extends LMProgramBase implements IGearProgram
 	private Integer lastGroupControlled = null;
 	private java.util.GregorianCalendar directStartTime = null;
 	private java.util.GregorianCalendar directStopTime = null;
-
+	private Integer dailyOps = null;
+	private java.util.GregorianCalendar notifyTime = null;
+	private java.util.GregorianCalendar startedRampingOut = null;
+	
 	private java.util.Vector directGearVector = null;
 
 
@@ -129,7 +132,7 @@ public java.util.Vector getDirectGearVector() {
  * Insert the method's description here.
  * Creation date: (4/25/2001 10:57:20 AM)
  * @return java.util.GregorianCalendar
- */
+// */
 public java.util.GregorianCalendar getDirectStartTime() {
 	return directStartTime;
 }
@@ -207,4 +210,46 @@ public void setDirectStopTime(java.util.GregorianCalendar newDirectStopTime) {
 public void setLastGroupControlled(java.lang.Integer newLastGroupControlled) {
 	lastGroupControlled = newLastGroupControlled;
 }
+	/**
+	 * @return
+	 */
+	public java.util.GregorianCalendar getStartedRampingOut() {
+		return startedRampingOut;
+	}
+
+	/**
+	 * @param calendar
+	 */
+	public void setStartedRampingOut(java.util.GregorianCalendar calendar) {
+		startedRampingOut = calendar;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getDailyOps() {
+		return dailyOps;
+	}
+
+	/**
+	 * @return
+	 */
+	public java.util.GregorianCalendar getNotifyTime() {
+		return notifyTime;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setDailyOps(Integer integer) {
+		dailyOps = integer;
+	}
+
+	/**
+	 * @param calendar
+	 */
+	public void setNotifyTime(java.util.GregorianCalendar calendar) {
+		notifyTime = calendar;
+	}
+
 }
