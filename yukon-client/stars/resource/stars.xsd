@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v2004 rel. 3 U (http://www.xmlspy.com) by Josh Wolberg (Cannon Technologies) -->
 <!-- edited with XML Spy v4.3 U (http://www.xmlspy.com) by Zhihong Yao (CTI) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:simpleType name="stars-PhoneNumber">
@@ -121,7 +122,7 @@
 	<xs:complexType name="stars-Inv">
 		<xs:sequence>
 			<xs:element name="Category" type="xs:string" minOccurs="0"/>
-			<xs:element name="DeviceType" minOccurs="0" type="stars-CustListEntry"/>
+			<xs:element name="DeviceType" type="stars-CustListEntry" minOccurs="0"/>
 			<xs:element name="DeviceLabel" type="xs:string" minOccurs="0"/>
 			<xs:element name="InstallationCompany" type="stars-CustListEntry" minOccurs="0"/>
 			<xs:element name="ReceiveDate" type="xs:dateTime" minOccurs="0"/>
@@ -140,6 +141,7 @@
 						<xs:element ref="stars-LMHardwareConfig" minOccurs="0" maxOccurs="unbounded"/>
 						<xs:element ref="stars-ThermostatSettings" minOccurs="0"/>
 					</xs:sequence>
+					<xs:attribute name="routeID" type="xs:int"/>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="MCT" minOccurs="0">
@@ -155,7 +157,7 @@
 	</xs:complexType>
 	<xs:complexType name="stars-App">
 		<xs:sequence>
-			<xs:element name="YearManufactured" type="xs:string"/>
+			<xs:element name="YearManufactured" type="xs:int" minOccurs="0"/>
 			<xs:element name="Manufacturer" type="stars-CustListEntry"/>
 			<xs:element name="Location" type="stars-CustListEntry"/>
 			<xs:element name="ServiceCompany" type="stars-CustListEntry" minOccurs="0"/>
@@ -258,8 +260,8 @@
 	</xs:complexType>
 	<xs:complexType name="stars-CallRprt">
 		<xs:sequence>
-			<xs:element name="CallNumber" minOccurs="0" type="xs:string"/>
-			<xs:element name="CallDate" minOccurs="0" type="xs:dateTime"/>
+			<xs:element name="CallNumber" type="xs:string" minOccurs="0"/>
+			<xs:element name="CallDate" type="xs:dateTime" minOccurs="0"/>
 			<xs:element name="CallType" type="stars-CustListEntry" minOccurs="0"/>
 			<xs:element name="TakenBy" type="xs:string" minOccurs="0"/>
 			<xs:element name="Description" type="xs:string" minOccurs="0"/>
@@ -268,7 +270,7 @@
 	</xs:complexType>
 	<xs:complexType name="stars-SrvReq">
 		<xs:sequence>
-			<xs:element name="OrderNumber" minOccurs="0" type="xs:string"/>
+			<xs:element name="OrderNumber" type="xs:string" minOccurs="0"/>
 			<xs:element name="ServiceType" type="stars-CustListEntry" minOccurs="0"/>
 			<xs:element name="DateReported" type="xs:dateTime" minOccurs="0"/>
 			<xs:element name="ServiceCompany" type="stars-CustListEntry" minOccurs="0"/>
@@ -311,7 +313,7 @@
 		<xs:sequence>
 			<xs:element name="Username" type="xs:string"/>
 			<xs:element name="Password" type="xs:string"/>
-			<xs:element name="Status" minOccurs="0" type="stars-LoginStatus"/>
+			<xs:element name="Status" type="stars-LoginStatus" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="userID" type="xs:int"/>
 		<xs:attribute name="groupID" type="xs:int"/>
@@ -452,7 +454,7 @@
 				<xs:element ref="stars-LMPrograms" minOccurs="0"/>
 				<xs:element ref="stars-Appliances" minOccurs="0"/>
 				<xs:element ref="stars-Inventories" minOccurs="0"/>
-				<xs:element name="Description" minOccurs="0" type="xs:string"/>
+				<xs:element name="Description" type="xs:string" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -514,7 +516,7 @@
 		<xs:complexType>
 			<xs:choice>
 				<xs:element ref="stars-CustAccountInformation"/>
-				<xs:element maxOccurs="unbounded" name="AccountID" type="xs:int"/>
+				<xs:element name="AccountID" type="xs:int" maxOccurs="unbounded"/>
 				<xs:element ref="stars-Failure"/>
 			</xs:choice>
 		</xs:complexType>
@@ -568,7 +570,7 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="LMProgram" minOccurs="0" maxOccurs="unbounded" type="stars-CustListEntry"/>
+				<xs:element name="LMProgram" type="stars-CustListEntry" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -591,14 +593,14 @@
 	<xs:element name="stars-Success">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="Description" minOccurs="0" type="xs:string"/>
+				<xs:element name="Description" type="xs:string" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-Failure">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="Description" minOccurs="0" type="xs:string"/>
+				<xs:element name="Description" type="xs:string" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="statusCode" type="xs:int"/>
 		</xs:complexType>
@@ -672,7 +674,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="GroupID" type="xs:int"/>
-				<xs:element name="Period" minOccurs="0" type="stars-CtrlHistPeriod"/>
+				<xs:element name="Period" type="stars-CtrlHistPeriod" minOccurs="0"/>
 				<xs:element name="GetSummary" type="xs:boolean" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
@@ -773,7 +775,7 @@
 	<xs:element name="stars-LMProgramHistory">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="stars-LMProgramEvent"/>
+				<xs:element ref="stars-LMProgramEvent" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -781,7 +783,7 @@
 	<xs:element name="stars-LMHardwareHistory">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="stars-LMHardwareEvent"/>
+				<xs:element ref="stars-LMHardwareEvent" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="inventoryID" type="xs:int" use="optional"/>
 		</xs:complexType>
@@ -807,7 +809,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="Description" type="xs:string"/>
-				<xs:element ref="stars-WebConfig" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="stars-WebConfig" minOccurs="0"/>
 				<xs:element ref="stars-EnrLMProgram" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="applianceCategoryID" type="xs:int"/>
@@ -819,8 +821,8 @@
 			<xs:sequence>
 				<xs:element name="ProgramName" type="xs:string" minOccurs="0"/>
 				<xs:element ref="stars-WebConfig" minOccurs="0"/>
-				<xs:element name="AddressingGroup" minOccurs="0" maxOccurs="unbounded" type="stars-CustListEntry"/>
-				<xs:element name="ChanceOfControl" minOccurs="0" type="stars-CustListEntry"/>
+				<xs:element name="AddressingGroup" type="stars-CustListEntry" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="ChanceOfControl" type="stars-CustListEntry" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="programID" type="xs:int"/>
 		</xs:complexType>
@@ -908,8 +910,6 @@
 	</xs:element>
 	<xs:element name="stars-ThermostatSettings" type="stars-ThermoSettings"/>
 	<xs:element name="stars-DefaultThermostatSettings" type="stars-ThermoSettings"/>
-
-
 	<xs:element name="stars-ThermostatManualEvent">
 		<xs:complexType>
 			<xs:complexContent>
@@ -932,9 +932,9 @@
 				<xs:element name="CoolSetpoint" type="xs:int" minOccurs="0"/>
 				<xs:element name="HeatSetpoint" type="xs:int" minOccurs="0"/>
 				<xs:element name="SetpointHold" type="xs:boolean" minOccurs="0"/>
-				<xs:element name="LowerCoolSetpointLimit" minOccurs="0" type="xs:int"/>
-				<xs:element name="UpperHeatSetpointLimit" minOccurs="0" type="xs:int"/>
-				<xs:element name="InfoString" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+				<xs:element name="LowerCoolSetpointLimit" type="xs:int" minOccurs="0"/>
+				<xs:element name="UpperHeatSetpointLimit" type="xs:int" minOccurs="0"/>
+				<xs:element name="InfoString" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -985,7 +985,7 @@
 			<xs:sequence>
 				<xs:element ref="stars-LMProgramHistory" minOccurs="0"/>
 				<xs:element ref="stars-LMHardwareHistory" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element name="Description" minOccurs="0" type="xs:string"/>
+				<xs:element name="Description" type="xs:string" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -1001,7 +1001,7 @@
 			<xs:sequence>
 				<xs:element ref="stars-LMProgramHistory" minOccurs="0"/>
 				<xs:element ref="stars-LMHardwareHistory" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element name="Description" minOccurs="0" type="xs:string"/>
+				<xs:element name="Description" type="xs:string" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -1086,15 +1086,15 @@
 				<xs:element name="MainFaxNumber" type="xs:string"/>
 				<xs:element name="Email" type="xs:string"/>
 				<xs:element name="CompanyAddress" type="stars-CustomerAddress" minOccurs="0"/>
-				<xs:element name="TimeZone" minOccurs="0" type="xs:string"/>
+				<xs:element name="TimeZone" type="xs:string" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-GetEnergyCompanySettings">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="EnergyCompanyID" minOccurs="0" type="xs:int"/>
-				<xs:element name="ProgramCategory" minOccurs="0" type="xs:string"/>
+				<xs:element name="EnergyCompanyID" type="xs:int" minOccurs="0"/>
+				<xs:element name="ProgramCategory" type="xs:string" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
