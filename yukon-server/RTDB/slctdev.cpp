@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2005/02/10 23:24:03 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2005/02/21 21:43:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,6 +64,7 @@
 #include "dev_mct310.h"
 #include "dev_mct31X.h"
 #include "dev_mct410.h"
+#include "dev_mct470.h"
 #include "dev_mct_lmt2.h"
 #include "dev_mct_broadcast.h"
 #include "dev_kv2.h"
@@ -216,6 +217,11 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
     case TYPEMCT410:
         {
             Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCT410;
+            break;
+        }
+    case TYPEMCT470:
+        {
+            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCT470;
             break;
         }
     case TYPE_REPEATER800:
@@ -550,6 +556,7 @@ DLLEXPORT RWBoolean isCarrierLPDevice(CtiDeviceSPtr &pDevice)
     case TYPEMCT310IL:
     case TYPEMCT318L:
     case TYPEMCT410:
+    case TYPEMCT470:
         result = TRUE;
         break;
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2005/02/10 23:23:44 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2005/02/21 21:43:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -360,6 +360,10 @@ RWCString desolveDeviceType( INT aType )
    else if(aType == TYPEMCT410)
    {
       Ret = "mct-410ile";
+   }
+   else if(aType == TYPEMCT470)
+   {
+      Ret = "mct-470";
    }
    else if(aType == TYPELMT2)
    {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/devicetypes.h-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2004/12/10 21:58:39 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/02/21 21:43:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,8 +45,9 @@
 #define TYPEMCT360                           75
 #define TYPEMCT370                           80
 #define TYPEMCT410                           85
+#define TYPEMCT470                           90
 
-#define TYPEDIALUP                           90
+#define TYPEDIALUP                           100
 
 
 #define TYPELMT100S                          200
