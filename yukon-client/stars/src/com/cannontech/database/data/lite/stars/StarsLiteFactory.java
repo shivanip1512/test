@@ -833,14 +833,14 @@ public class StarsLiteFactory {
 			startCal.set( Calendar.YEAR, Calendar.getInstance().get(Calendar.YEAR) );
 			starsSeason.setStartDate( new org.exolab.castor.types.Date(startCal.getTime()) );
 */			
-			if (liteSettings.getInventoryID() < 0) {	// Add thermostat season web configuration only to default settings
-				StarsWebConfig starsConfig = energyCompany.getStarsWebConfig( liteSeason.getWebConfigurationID() );
-				if (starsConfig.getAlternateDisplayName().equalsIgnoreCase("Summer"))
-					starsSeason.setMode( StarsThermoModeSettings.COOL );
-				else
-					starsSeason.setMode( StarsThermoModeSettings.HEAT );
+			StarsWebConfig starsConfig = energyCompany.getStarsWebConfig( liteSeason.getWebConfigurationID() );
+			if (starsConfig.getAlternateDisplayName().equalsIgnoreCase("Summer"))
+				starsSeason.setMode( StarsThermoModeSettings.COOL );
+			else
+				starsSeason.setMode( StarsThermoModeSettings.HEAT );
+				
+			if (liteSettings.getInventoryID() < 0)	// Add thermostat season web configuration only to default settings
 				starsSeason.setStarsWebConfig( starsConfig );
-			}
 			
 			Hashtable towTable = new Hashtable();
 			for (int j = 0; j < liteSeason.getSeasonEntries().size(); j++) {
