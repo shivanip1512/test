@@ -825,6 +825,7 @@ void CtiLMCommandExecutor::EnableGroup()
 
                     if( currentLMGroup->getPAOId() == groupID )
                     {
+                        if( !found )
                         {
                             char tempchar[80];
                             RWCString text = RWCString("Enabling Group: ");
@@ -841,19 +842,17 @@ void CtiLMCommandExecutor::EnableGroup()
                         }
 
                         currentLMGroup->setDisableFlag(FALSE);
-                        CtiLMControlAreaStore::getInstance()->UpdateGroupDisableFlagInDB(currentLMGroup);
+                        if( !found )
+                        {
+                            CtiLMControlAreaStore::getInstance()->UpdateGroupDisableFlagInDB(currentLMGroup);
+                        }
                         ((CtiLMControlArea*)controlAreas[i])->setUpdatedFlag(TRUE);
 
                         found = TRUE;
-                        break;
                     }
                 }
-                if( found )
-                    break;
             }
         }
-        if( found )
-            break;
     }
 }
 
