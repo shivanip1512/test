@@ -13,7 +13,7 @@
 
 <SCRIPT LANGUAGE="JavaScript">
 //variable options mapped to com.cannontech.database.db.graph.GraphRenderers options.
-var MULT = parseInt(<%=GraphRenderers.GRAPH_MULTIPLIER%>); 
+var MULT = parseInt(<%=GraphRenderers.GRAPH_MULTIPLIER_MASK%>); 
 var MIN_MAX = parseInt(<%=GraphRenderers.PLOT_MIN_MAX_MASK%>);
 var LEGEND_MIN_MAX = parseInt(<%=GraphRenderers.LEGEND_MIN_MAX_MASK%>);
 var LEGEND_LOAD_FACTOR = parseInt(<%=GraphRenderers.LEGEND_LOAD_FACTOR_MASK%>);
