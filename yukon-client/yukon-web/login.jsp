@@ -85,8 +85,8 @@
         </form>
       </td>
       <td width="350" valign="top"> 
-        <FORM METHOD="POST" ACTION="/servlet/SOAPClient">
-		  <input type="hidden" name="action" value="OperatorLogin">
+        <FORM METHOD="POST" ACTION="/servlet/LoginController">
+		  <input type="hidden" name="ACTION" value="LOGIN">
           <p align="center"> <input type="image" src="demos/ESOC.gif" border="0"></p>
           <table width="290" border="0" cellspacing="0" cellpadding="0" align="center">
             <tr valign="top"> 
