@@ -13,6 +13,7 @@ import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.database.db.point.SystemLog;
+import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
 
 public class PointBase extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange, com.cannontech.common.editor.EditorPanel
@@ -67,7 +68,7 @@ public void addPartial() throws java.sql.SQLException {
  * delete method comment.
  */
 public void delete() throws java.sql.SQLException 
-{
+{		
 	//ADD TABLES THAT HAVE A REFERENCE TO THE POINT TABLE AND THAT
 	// NEED TO BE DELETED WHEN A POINT ROW IS DELETED (CASCADE DELETE)
 	delete(FDRTranslation.TABLE_NAME, "PointID", getPoint().getPointID());
@@ -75,6 +76,7 @@ public void delete() throws java.sql.SQLException
 	delete(DynamicAccumulator.TABLE_NAME, "PointID", getPoint().getPointID());
 	delete(GraphDataSeries.tableName, "PointID", getPoint().getPointID());
 	delete("DynamicPointAlarming", "PointID", getPoint().getPointID());
+	delete(CalcComponent.TABLENAME, "ComponentPointID", getPoint().getPointID());
 	//delete(PointControl.TABLE_NAME, "PointID", getPoint().getPointID());
 
 	//A TDC Table that does not have a DBPersistant
