@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2002/11/15 14:08:00 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2002/12/03 17:57:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -354,20 +354,26 @@ static void applyPortQueuePurge(const long unusedid, CtiPortSPtr ptPort, void *u
                 if(pInfo != NULL)
                 {
                     QueryQueue(pInfo->QueueHandle, &QueEntCnt);
+                    if(QueEntCnt)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << QueEntCnt << " queue queue entries" << endl;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << QueEntCnt << " queue queue entries" << endl;
+                        }
+                        CleanQueue(pInfo->QueueHandle, NULL, findAllQueueEntries, cleanupOrphanOutMessages);
+                        // PurgeQueue(pInfo->QueueHandle);
                     }
-                    CleanQueue(pInfo->QueueHandle, NULL, findAllQueueEntries, cleanupOrphanOutMessages);
-                    // PurgeQueue(pInfo->QueueHandle);
 
                     QueryQueue(pInfo->ActinQueueHandle, &QueEntCnt);
+                    if(QueEntCnt)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << QueEntCnt << " actin queue entries" << endl;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << QueEntCnt << " actin queue entries" << endl;
+                        }
+                        CleanQueue(pInfo->ActinQueueHandle, NULL, findAllQueueEntries, cleanupOrphanOutMessages);
+                        //PurgeQueue(pInfo->ActinQueueHandle);
                     }
-                    CleanQueue(pInfo->ActinQueueHandle, NULL, findAllQueueEntries, cleanupOrphanOutMessages);
-                    //PurgeQueue(pInfo->ActinQueueHandle);
                 }
             }
         }
