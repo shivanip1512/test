@@ -156,18 +156,37 @@ public class SystemLogModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer("SELECT DATETIME, POINTID, PRIORITY, ACTION, DESCRIPTION, USERNAME "+
-			" FROM SYSTEMLOG "+
-			" WHERE (DATETIME > ?) AND (DATETIME <= ?)");
-			if( getLogTypes() != null)
+		StringBuffer sql = new StringBuffer("SELECT DATETIME, SL.POINTID, PRIORITY, ACTION, SL.DESCRIPTION, USERNAME "+ 
+			" FROM SYSTEMLOG SL, POINT P, YUKONPAOBJECT PAO ");
+			sql.append(" WHERE (DATETIME > ?) AND (DATETIME <= ?)" + 
+						" AND P.POINTID = SL.POINTID " + 
+						" AND P.PAOBJECTID = PAO.PAOBJECTID ");
+			
+			//if LMControlLog model, let's trust the YUKONPAOBJECT.class value = 'GROUP'
+			// rather than the SYSTEMLOG.type value == 3 (LOADMANAGMENT)	SN / COREY
+			if(this instanceof LMControlLogModel)
 			{
-				sql.append(" AND TYPE IN (" + getLogTypes()[0]);
-				for (int i = 1; i < getLogTypes().length; i++)
-					sql.append(" , " + getLogTypes()[i]);
-				sql.append(" )");					
+				sql.append(" AND PAOCLASS = 'GROUP' ");
+				if( getPaoIDs() != null)
+				{
+					sql.append(" AND PAO.PAOBJECTID IN (" + getPaoIDs()[0]);
+					for (int i = 1; i < getPaoIDs().length; i++)
+						sql.append(" , " + getPaoIDs()[i]);
+					sql.append(" )");					
+				}
 			}
-			if( getPointID() != null)
-				sql.append(" AND POINTID = " + getPointID().intValue());
+			else 
+			{
+				if( getLogTypes() != null)
+				{
+					sql.append(" AND SL.TYPE IN (" + getLogTypes()[0]);
+					for (int i = 1; i < getLogTypes().length; i++)
+						sql.append(" , " + getLogTypes()[i]);
+					sql.append(" )");
+				}
+				if( getPointID() != null)
+					sql.append(" AND SL.POINTID = " + getPointID().intValue());
+			}
 			sql.append(" ORDER BY DATETIME " + getOrderByString());
 		return sql;
 	}
