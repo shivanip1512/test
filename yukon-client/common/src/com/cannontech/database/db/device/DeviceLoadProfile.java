@@ -3,11 +3,27 @@ package com.cannontech.database.db.device;
 /**
  * This type was created by Cannon Technologies Inc.
  */
-public class DeviceLoadProfile extends com.cannontech.database.db.DBPersistent {
+public class DeviceLoadProfile extends com.cannontech.database.db.DBPersistent
+{
 	private Integer deviceID = null;
 	private Integer lastIntervalDemandRate = new Integer(300);
 	private Integer loadProfileDemandRate = new Integer(300);
 	private String loadProfileCollection = "NNNN";
+	private Integer voltageDmdInterval = new Integer(60);
+	private Integer voltageDmdRate = new Integer(300);
+
+
+	public static final String SETTER_COLUMNS[] = 
+	{ 
+		"LastIntervalDemandRate", "LoadProfileDemandRate",
+		"LoadProfileCollection", "VoltageDmdInterval", "VoltageDmdRate"
+	};
+
+	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
+   
+	public static final String TABLE_NAME = "DeviceLoadProfile";
+	
+
 /**
  * DeviceLoadProfile constructor comment.
  */
@@ -20,16 +36,20 @@ public DeviceLoadProfile() {
  */
 public void add() throws java.sql.SQLException {
 
-	Object addValues[] = { getDeviceID(), getLastIntervalDemandRate(), getLoadProfileDemandRate(), getLoadProfileCollection() };
+	Object addValues[] =
+	{
+		getDeviceID(), getLastIntervalDemandRate(), getLoadProfileDemandRate(),
+		getLoadProfileCollection(), getVoltageDmdInterval(), getVoltageDmdRate()
+	};
 
-	add( "DeviceLoadProfile", addValues );
+	add( TABLE_NAME, addValues );
 }
 /**
  * delete method comment.
  */
 public void delete() throws java.sql.SQLException {
 
-	delete( "DeviceLoadProfile", "DeviceID", getDeviceID() );
+	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getDeviceID() );
 }
 /**
  * This method was created in VisualAge.
@@ -63,22 +83,22 @@ public Integer getLoadProfileDemandRate() {
 /**
  * retrieve method comment.
  */
-public void retrieve() throws java.sql.SQLException {
-
-	String selectColumns[] = { "LastIntervalDemandRate", "LoadProfileDemandRate", "LoadProfileCollection" };
-	String constraintColumns[] = { "DeviceID" };
-
+public void retrieve() throws java.sql.SQLException
+{
 	Object constraintValues[] = { getDeviceID() };
 
-	Object results[] = retrieve( selectColumns, "DeviceLoadProfile", constraintColumns, constraintValues );
+	Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 
-	if( results.length == selectColumns.length )
+	if( results.length == SETTER_COLUMNS.length )
 	{
 		setLastIntervalDemandRate( (Integer) results[0] );
 		setLoadProfileDemandRate( (Integer) results[1] );
 		setLoadProfileCollection( (String) results[2] );
+		setVoltageDmdInterval( (Integer) results[3] );
+		setVoltageDmdRate( (Integer) results[4] );
 	}
 }
+
 /**
  * This method was created in VisualAge.
  * @param newValue java.lang.Integer
@@ -110,14 +130,48 @@ public void setLoadProfileDemandRate(Integer newValue) {
 /**
  * update method comment.
  */
-public void update() throws java.sql.SQLException {
+public void update() throws java.sql.SQLException
+{
+	Object setValues[] =
+	{ 
+		getLastIntervalDemandRate(), getLoadProfileDemandRate(),
+		getLoadProfileCollection(), getVoltageDmdInterval(), getVoltageDmdRate()
+	};
 
-	String setColumns[] = { "LastIntervalDemandRate", "LoadProfileDemandRate", "LoadProfileCollection" };
-	Object setValues[] = { getLastIntervalDemandRate(), getLoadProfileDemandRate(), getLoadProfileCollection() };
-
-	String constraintColumns[] = { "DeviceID" };
 	Object constraintValues[] = { getDeviceID() };
 
-	update( "DeviceLoadProfile", setColumns, setValues, constraintColumns, constraintValues );
+	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
+	/**
+	 * @return
+	 */
+	public Integer getVoltageDmdInterval()
+	{
+		return voltageDmdInterval;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getVoltageDmdRate()
+	{
+		return voltageDmdRate;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setVoltageDmdInterval(Integer integer)
+	{
+		voltageDmdInterval = integer;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setVoltageDmdRate(Integer integer)
+	{
+		voltageDmdRate = integer;
+	}
+
 }

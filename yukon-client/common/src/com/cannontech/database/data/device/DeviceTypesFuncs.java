@@ -330,6 +330,7 @@ public final static boolean isLoadProfile4Channel(int deviceType)
 	{	
 		case MCT318L:
 		case DCT_501:
+		case MCT410_KWH_ONLY:
 			return true;
 	
 		default:
@@ -355,6 +356,25 @@ public final static boolean isLoadProfile3Channel(int deviceType)
          return false;
    }
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (1/15/2001 1:46:22 PM)
+ * @return boolean
+ * @param deviceType int
+ */
+public final static boolean isLoadProfileVoltage(int deviceType) 
+{
+	switch(deviceType)
+	{  
+		case MCT410_KWH_ONLY:
+			return true;
+   
+		default:
+			return false;
+	}
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (1/15/2001 1:46:22 PM)

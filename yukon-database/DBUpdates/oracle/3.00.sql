@@ -974,6 +974,21 @@ insert into YukonGroupRole values (-417, -302, -304, -30403, '(none)');
 insert into YukonGroupRole values (-1132,-2, -304, -30402, '(none)');
 insert into YukonGroupRole values (-1133,-2, -304, -30403, '(none)');
 
+alter table DeviceLoadProfile add VoltageDmdInterval number;
+update DeviceLoadProfile set VoltageDmdInterval = 60;
+alter table DeviceLoadProfile modify VoltageDmdInterval not null;
+
+alter table DeviceLoadProfile add VoltageDmdRate number;
+update DeviceLoadProfile set VoltageDmdRate = 300;
+alter table DeviceLoadProfile modify VoltageDmdRate not null;
+
+
+
+
+
+
+
+
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */

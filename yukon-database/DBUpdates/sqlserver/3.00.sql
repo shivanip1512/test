@@ -1057,6 +1057,26 @@ insert into YukonGroupRole values (-417, -302, -304, -30403, '(none)');
 /* START the Admin role Group */
 insert into YukonGroupRole values (-1132,-2, -304, -30402, '(none)');
 insert into YukonGroupRole values (-1133,-2, -304, -30403, '(none)');
+
+
+alter table DeviceLoadProfile add VoltageDmdInterval numeric;
+go
+update DeviceLoadProfile set VoltageDmdInterval = 60;
+go
+alter table DeviceLoadProfile alter column VoltageDmdInterval numeric not null;
+go
+
+alter table DeviceLoadProfile add VoltageDmdRate numeric;
+go
+update DeviceLoadProfile set VoltageDmdRate = 300;
+go
+alter table DeviceLoadProfile alter column VoltageDmdRate numeric not null;
+go
+
+
+
+
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
