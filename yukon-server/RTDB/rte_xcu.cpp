@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2004/12/01 20:11:20 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2004/12/14 22:27:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -757,6 +757,7 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
                         byteString += (char)NewOutMessage->Buffer.TAPSt.Message[i];
                     }
                     byteString += "\n";
+                    byteString += prot305.getBitString() + "\n";
 
                     /* Now add it to the collection of outbound messages */
                     outList.insert( NewOutMessage );

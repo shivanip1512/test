@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2004/12/08 21:17:38 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2004/12/14 22:27:58 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.21  2004/12/14 22:27:58  cplender
+* Added 305
+*
 * Revision 1.20  2004/12/08 21:17:38  cplender
 * Expiration Code was shady.  Expired commands which had not set an expiration time...
 *
@@ -86,6 +89,7 @@
 #include "msg_cmd.h"
 #include "msg_lmcontrolhistory.h"
 #include "protocol_sa.h"
+#include "prot_sa305.h"
 #include "prot_sa3rdparty.h"
 #include "pt_base.h"
 #include "pt_numeric.h"
@@ -383,13 +387,19 @@ INT CtiDeviceRTC::queueRepeatToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
     INT status = NORMAL;
 
-    if(OutMessage->Buffer.SASt._groupType == SA205 || OutMessage->Buffer.SASt._groupType == SA105)
+    if(OutMessage->Buffer.SASt._groupType == SA205 || OutMessage->Buffer.SASt._groupType == SA305 || OutMessage->Buffer.SASt._groupType == SA105)
     {
         _millis += messageDuration(OutMessage->Buffer.SASt._groupType);
 
         OutMessage->MessageFlags |= MSGFLG_QUEUED_TO_DEVICE;
         _repeatList.push_back( make_pair(_repeatTime, OutMessage) );
 
+        if(OutMessage->Buffer.SASt._groupType == SA305)
+        {
+            CtiLockGuard<CtiLogger> slog_guard(slog);
+            slog << RWTime() << " "  << getName() << ": Requeued for " << _repeatTime << " repeat transmit. ACH... " << endl;
+        }
+        else
         {
             CtiLockGuard<CtiLogger> slog_guard(slog);
             slog << RWTime() << " "  << getName() << ": Requeued for " << _repeatTime << " repeat transmit: " << CtiProtocolSA3rdParty(OutMessage->Buffer.SASt).asString() << endl;
@@ -504,6 +514,11 @@ bool CtiDeviceRTC::getOutMessage(CtiOutMessage *&OutMessage)
         if(_millis < 0) _millis = 0;
     }
 
+    if(OutMessage)
+    {
+        incQueueProcessed(1, RWTime());
+    }
+
     return stat;
 }
 
@@ -552,13 +567,32 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
 
     try
     {
-        CtiProtocolSA3rdParty prot;
         char codestr[256];  //  needs to be able to hold -2000000000
 
-        prot.setSAData( OutMessage->Buffer.SASt );
+        switch(OutMessage->Buffer.SASt._groupType)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(slog);
-            slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
+        case SA305:
+            {
+                CtiProtocolSA305 prot;
+
+                //prot.setSAData( OutMessage->Buffer.SASt );
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(slog);
+                    slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
+                }
+                break;
+            }
+        default:
+            {
+                CtiProtocolSA3rdParty prot;
+
+                prot.setSAData( OutMessage->Buffer.SASt );
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(slog);
+                    slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
+                }
+                break;
+            }
         }
 
         // Any repeats that are generated here should be sent out in the next cycle, or 5 minutes from now!
@@ -580,14 +614,10 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
 
         if( OutMessage->Buffer.SASt._code305[0] != '\0' )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << OutMessage->TargetID << endl;
-            }
             memcpy((void*)codestr, (void*)(OutMessage->Buffer.SASt._code305), OutMessage->Buffer.SASt._bufferLen);
             codestr[OutMessage->Buffer.SASt._bufferLen + 1] = 0;
         }
-        if( OutMessage->Buffer.SASt._code205 )
+        else if( OutMessage->Buffer.SASt._code205 )
         {
             strncpy(codestr, CtiNumStr(OutMessage->Buffer.SASt._code205), 12);
             codestr[12] = 0;
@@ -608,7 +638,12 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                 rtcOutMessage->VerificationSequence = VerificationSequenceGen();
             }
 
-            if( rtcOutMessage->Buffer.SASt._code205 )
+            if( OutMessage->Buffer.SASt._code305[0] != '\0' )
+            {
+                strncpy(codestr, CtiNumStr(rtcOutMessage->Buffer.SASt._code305), OutMessage->Buffer.SASt._bufferLen);
+                codestr[OutMessage->Buffer.SASt._bufferLen + 1] = 0;
+            }
+            else if( rtcOutMessage->Buffer.SASt._code205 )
             {
                 strncpy(codestr, CtiNumStr(rtcOutMessage->Buffer.SASt._code205), 12);
                 codestr[12] = 0;
@@ -629,10 +664,30 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
 
             msgMillis += messageDuration(rtcOutMessage->Buffer.SASt._groupType);
 
-            prot.setSAData( rtcOutMessage->Buffer.SASt );
+            switch(rtcOutMessage->Buffer.SASt._groupType)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(slog);
-                slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
+            case SA305:
+                {
+                    CtiProtocolSA305 prot;
+
+                    //prot.setSAData( rtcOutMessage->Buffer.SASt );
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(slog);
+                        slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
+                    }
+                    break;
+                }
+            default:
+                {
+                    CtiProtocolSA3rdParty prot;
+
+                    prot.setSAData( rtcOutMessage->Buffer.SASt );
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(slog);
+                        slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
+                    }
+                    break;
+                }
             }
 
             if(rtcOutMessage->Retry-- > 0)
@@ -658,8 +713,12 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
             }
         }
 
-        prot.setTransmitterAddress(getAddress());
-        prot.appendVariableLengthTimeSlot(OutMessage->Buffer.OutMessage, OutMessage->OutLength);
+        CtiProtocolSA3rdParty().appendVariableLengthTimeSlot(getAddress(),
+                                                             OutMessage->Buffer.OutMessage,
+                                                             OutMessage->OutLength,
+                                                             OutMessage->Buffer.SASt._delayToTx,
+                                                             OutMessage->Buffer.SASt._maxTxTime,
+                                                             OutMessage->Buffer.SASt._lbt);
 
         getExclusion().setEvaluateNextAt((now + (msgMillis / 1000) + 1));
         {
@@ -696,6 +755,10 @@ ULONG CtiDeviceRTC::messageDuration(int groupType)
     if(groupType == SA205)
     {
         millitime = gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_205_CODE", 1000);
+    }
+    else if(groupType == SA305)
+    {
+        millitime = gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_305_CODE", 1000);
     }
     else
     {
