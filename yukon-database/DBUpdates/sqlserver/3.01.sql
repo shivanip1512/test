@@ -417,14 +417,14 @@ insert into yukongrouprole values (-2031,-303,-201,-20111,'(none)');
 insert into yukongrouprole values (-2032,-303,-201,-20112,'(none)');
 insert into yukongrouprole values (-2033,-303,-201,-20113,'(none)');
 insert into yukongrouprole values (-2034,-303,-201,-20114,'true');
-insert into yukongrouprole values (-2035,-303,-201,-20115,'(none)');
+insert into yukongrouprole values (-2035,-303,-201,-20115,'false');
 insert into yukongrouprole values (-2036,-303,-201,-20116,'(none)');
 insert into yukongrouprole values (-2037,-303,-201,-20117,'(none)');
 insert into yukongrouprole values (-2038,-303,-201,-20118,'(none)');
 
 insert into yukongrouprole values (-2050,-303,-201,-20150,'(none)');
 insert into yukongrouprole values (-2051,-303,-201,-20151,'(none)');
-insert into yukongrouprole values (-2052,-303,-201,-20152,'STARS');
+insert into yukongrouprole values (-2052,-303,-201,-20152,'(none)');
 insert into yukongrouprole values (-2053,-303,-201,-20153,'(none)');
 insert into yukongrouprole values (-2054,-303,-201,-20154,'(none)');
 insert into yukongrouprole values (-2055,-303,-201,-20155,'true');
