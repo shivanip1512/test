@@ -19,7 +19,7 @@ import org.exolab.castor.xml.Unmarshaller;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsOperatorLogin extends StarsLogin 
+public class ListEntry extends StarsCustListEntry 
 implements java.io.Serializable
 {
 
@@ -28,9 +28,9 @@ implements java.io.Serializable
      //- Constructors -/
     //----------------/
 
-    public StarsOperatorLogin() {
+    public ListEntry() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsOperatorLogin()
+    } //-- com.cannontech.stars.xml.serialize.ListEntry()
 
 
       //-----------/
@@ -79,11 +79,11 @@ implements java.io.Serializable
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsOperatorLogin unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.ListEntry unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsOperatorLogin) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsOperatorLogin.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsOperatorLogin unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.ListEntry) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.ListEntry.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.ListEntry unmarshal(java.io.Reader) 
 
     /**
     **/

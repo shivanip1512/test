@@ -284,10 +284,10 @@ public class SearchCustAccountAction implements ActionBase {
 					app.setCategoryDescription( hnwlApp.getDESCRIPTION() );
 					String category = HoneywellToYukonApplianceCategoryMapping.getYukonApplianceCategory( hnwlApp.getTYPE_CD() );
 					if ( category != null ) {
-						app.setApplianceCategory( category );
+						app.setCategoryDescription( category );
 					}
 					else { 
-						app.setApplianceCategory("(Unknown)");
+						app.setCategoryDescription("(Unknown)");
 					}
 					
 					StarsAppliances appliances = acctInfo.getStarsAppliances();
@@ -307,11 +307,11 @@ public class SearchCustAccountAction implements ActionBase {
 					lmHw.setCategory( "OneWayReceiver" );
 					lmHw.setInstallationCompany( hnwlHw.getINSTALLATIONCOMPANYNAME() );
 					if ( hnwlHw.getRECEIVEDATE() != null )
-						lmHw.setReceiveDate( new org.exolab.castor.types.Date(hnwlHw.getRECEIVEDATE()) );
+						lmHw.setReceiveDate( hnwlHw.getRECEIVEDATE() );
 					else if ( hnwlHw.getINSTALLDATE() != null )
-						lmHw.setInstallDate( new org.exolab.castor.types.Date(hnwlHw.getINSTALLDATE()) );
+						lmHw.setInstallDate( hnwlHw.getINSTALLDATE() );
 					else if ( hnwlHw.getREMOVEDATE() != null )
-						lmHw.setRemoveDate( new org.exolab.castor.types.Date(hnwlHw.getREMOVEDATE()) );
+						lmHw.setRemoveDate( hnwlHw.getREMOVEDATE() );
 					lmHw.setAltTrackingNumber( hnwlHw.getALTERNATETRACKINGNUMBER() );
 					lmHw.setVoltage( hnwlHw.getVOLTAGE() );
 					lmHw.setNotes( hnwlHw.getNOTES() );

@@ -14,8 +14,8 @@ package com.cannontech.stars.xml.serialize;
 import org.exolab.castor.xml.FieldValidator;
 import org.exolab.castor.xml.NodeType;
 import org.exolab.castor.xml.XMLFieldHandler;
+import org.exolab.castor.xml.handlers.DateFieldHandler;
 import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
-import org.exolab.castor.xml.validators.DateTimeValidator;
 import org.exolab.castor.xml.validators.StringValidator;
 
 /**
@@ -94,7 +94,7 @@ public class StarsCallReportDescriptor extends org.exolab.castor.xml.util.XMLCla
         //-- initialize element descriptors
         
         //-- _callDate
-        desc = new XMLFieldDescriptorImpl(org.exolab.castor.types.Date.class, "_callDate", "CallDate", NodeType.Element);
+        desc = new XMLFieldDescriptorImpl(java.util.Date.class, "_callDate", "CallDate", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -107,17 +107,18 @@ public class StarsCallReportDescriptor extends org.exolab.castor.xml.util.XMLCla
             {
                 try {
                     StarsCallReport target = (StarsCallReport) object;
-                    target.setCallDate( (org.exolab.castor.types.Date) value);
+                    target.setCallDate( (java.util.Date) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new org.exolab.castor.types.Date();
+                return new java.util.Date();
             }
         } );
-        desc.setHandler(handler);
+        desc.setHandler( new DateFieldHandler(handler));
+        desc.setImmutable(true);
         desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
@@ -125,10 +126,6 @@ public class StarsCallReportDescriptor extends org.exolab.castor.xml.util.XMLCla
         //-- validation code for: _callDate
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            DateTimeValidator dv = new DateTimeValidator();
-            fieldValidator.setValidator(dv);
-        }
         desc.setValidator(fieldValidator);
         
         //-- _callType

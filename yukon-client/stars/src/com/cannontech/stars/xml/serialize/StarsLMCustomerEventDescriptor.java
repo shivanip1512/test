@@ -96,6 +96,46 @@ public class StarsLMCustomerEventDescriptor extends org.exolab.castor.xml.util.X
         }
         desc.setValidator(fieldValidator);
         
+        //-- _yukonDefinition
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_yukonDefinition", "YukonDefinition", NodeType.Element);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsLMCustomerEvent target = (StarsLMCustomerEvent) object;
+                return target.getYukonDefinition();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsLMCustomerEvent target = (StarsLMCustomerEvent) object;
+                    target.setYukonDefinition( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _yukonDefinition
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+        
         //-- _eventDateTime
         desc = new XMLFieldDescriptorImpl(java.util.Date.class, "_eventDateTime", "EventDateTime", NodeType.Element);
         handler = (new XMLFieldHandler() {

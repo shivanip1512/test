@@ -29,13 +29,15 @@ public abstract class StarsServiceRequest implements java.io.Serializable {
 
     private ServiceType _serviceType;
 
-    private CurrentState _currentState;
+    private java.lang.String _currentState;
 
     private ServiceCompany _serviceCompany;
 
-    private java.util.Date _dateAssigned;
+    private java.util.Date _dateReported;
 
     private java.lang.String _description;
+
+    private java.util.Date _dateScheduled;
 
     private java.util.Date _dateCompleted;
 
@@ -70,20 +72,10 @@ public abstract class StarsServiceRequest implements java.io.Serializable {
      * 
      * @return the value of field 'currentState'.
     **/
-    public CurrentState getCurrentState()
+    public java.lang.String getCurrentState()
     {
         return this._currentState;
-    } //-- CurrentState getCurrentState() 
-
-    /**
-     * Returns the value of field 'dateAssigned'.
-     * 
-     * @return the value of field 'dateAssigned'.
-    **/
-    public java.util.Date getDateAssigned()
-    {
-        return this._dateAssigned;
-    } //-- java.util.Date getDateAssigned() 
+    } //-- java.lang.String getCurrentState() 
 
     /**
      * Returns the value of field 'dateCompleted'.
@@ -94,6 +86,26 @@ public abstract class StarsServiceRequest implements java.io.Serializable {
     {
         return this._dateCompleted;
     } //-- java.util.Date getDateCompleted() 
+
+    /**
+     * Returns the value of field 'dateReported'.
+     * 
+     * @return the value of field 'dateReported'.
+    **/
+    public java.util.Date getDateReported()
+    {
+        return this._dateReported;
+    } //-- java.util.Date getDateReported() 
+
+    /**
+     * Returns the value of field 'dateScheduled'.
+     * 
+     * @return the value of field 'dateScheduled'.
+    **/
+    public java.util.Date getDateScheduled()
+    {
+        return this._dateScheduled;
+    } //-- java.util.Date getDateScheduled() 
 
     /**
      * Returns the value of field 'description'.
@@ -179,20 +191,10 @@ public abstract class StarsServiceRequest implements java.io.Serializable {
      * 
      * @param currentState the value of field 'currentState'.
     **/
-    public void setCurrentState(CurrentState currentState)
+    public void setCurrentState(java.lang.String currentState)
     {
         this._currentState = currentState;
-    } //-- void setCurrentState(CurrentState) 
-
-    /**
-     * Sets the value of field 'dateAssigned'.
-     * 
-     * @param dateAssigned the value of field 'dateAssigned'.
-    **/
-    public void setDateAssigned(java.util.Date dateAssigned)
-    {
-        this._dateAssigned = dateAssigned;
-    } //-- void setDateAssigned(java.util.Date) 
+    } //-- void setCurrentState(java.lang.String) 
 
     /**
      * Sets the value of field 'dateCompleted'.
@@ -203,6 +205,26 @@ public abstract class StarsServiceRequest implements java.io.Serializable {
     {
         this._dateCompleted = dateCompleted;
     } //-- void setDateCompleted(java.util.Date) 
+
+    /**
+     * Sets the value of field 'dateReported'.
+     * 
+     * @param dateReported the value of field 'dateReported'.
+    **/
+    public void setDateReported(java.util.Date dateReported)
+    {
+        this._dateReported = dateReported;
+    } //-- void setDateReported(java.util.Date) 
+
+    /**
+     * Sets the value of field 'dateScheduled'.
+     * 
+     * @param dateScheduled the value of field 'dateScheduled'.
+    **/
+    public void setDateScheduled(java.util.Date dateScheduled)
+    {
+        this._dateScheduled = dateScheduled;
+    } //-- void setDateScheduled(java.util.Date) 
 
     /**
      * Sets the value of field 'description'.

@@ -27,7 +27,7 @@ public abstract class StarsCallReport implements java.io.Serializable {
 
     private java.lang.String _callNumber;
 
-    private org.exolab.castor.types.Date _callDate;
+    private java.util.Date _callDate;
 
     private CallType _callType;
 
@@ -54,10 +54,10 @@ public abstract class StarsCallReport implements java.io.Serializable {
      * 
      * @return the value of field 'callDate'.
     **/
-    public org.exolab.castor.types.Date getCallDate()
+    public java.util.Date getCallDate()
     {
         return this._callDate;
-    } //-- org.exolab.castor.types.Date getCallDate() 
+    } //-- java.util.Date getCallDate() 
 
     /**
      * Returns the value of field 'callNumber'.
@@ -133,10 +133,10 @@ public abstract class StarsCallReport implements java.io.Serializable {
      * 
      * @param callDate the value of field 'callDate'.
     **/
-    public void setCallDate(org.exolab.castor.types.Date callDate)
+    public void setCallDate(java.util.Date callDate)
     {
         this._callDate = callDate;
-    } //-- void setCallDate(org.exolab.castor.types.Date) 
+    } //-- void setCallDate(java.util.Date) 
 
     /**
      * Sets the value of field 'callNumber'.

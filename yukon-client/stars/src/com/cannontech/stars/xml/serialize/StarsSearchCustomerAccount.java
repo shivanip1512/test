@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsSearchCustomerAccount.java,v 1.4 2002/08/30 18:23:11 alauinger Exp $
+ * $Id: StarsSearchCustomerAccount.java,v 1.5 2002/09/06 22:37:17 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -15,9 +15,9 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
 /**
- * Search for existing customer account
  * 
- * @version $Revision: 1.4 $ $Date: 2002/08/30 18:23:11 $
+ * 
+ * @version $Revision: 1.5 $ $Date: 2002/09/06 22:37:17 $
 **/
 public class StarsSearchCustomerAccount implements java.io.Serializable {
 
@@ -26,7 +26,7 @@ public class StarsSearchCustomerAccount implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private com.cannontech.stars.xml.serialize.types.StarsSearchByType _searchBy;
+    private SearchBy _searchBy;
 
     private java.lang.String _searchValue;
 
@@ -49,10 +49,10 @@ public class StarsSearchCustomerAccount implements java.io.Serializable {
      * 
      * @return the value of field 'searchBy'.
     **/
-    public com.cannontech.stars.xml.serialize.types.StarsSearchByType getSearchBy()
+    public SearchBy getSearchBy()
     {
         return this._searchBy;
-    } //-- com.cannontech.stars.xml.serialize.types.StarsSearchByType getSearchBy() 
+    } //-- SearchBy getSearchBy() 
 
     /**
      * Returns the value of field 'searchValue'.
@@ -106,10 +106,10 @@ public class StarsSearchCustomerAccount implements java.io.Serializable {
      * 
      * @param searchBy the value of field 'searchBy'.
     **/
-    public void setSearchBy(com.cannontech.stars.xml.serialize.types.StarsSearchByType searchBy)
+    public void setSearchBy(SearchBy searchBy)
     {
         this._searchBy = searchBy;
-    } //-- void setSearchBy(com.cannontech.stars.xml.serialize.types.StarsSearchByType) 
+    } //-- void setSearchBy(SearchBy) 
 
     /**
      * Sets the value of field 'searchValue'.

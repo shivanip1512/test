@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsSubstation.java,v 1.3 2002/08/12 16:23:35 zyao Exp $
+ * $Id$
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -17,7 +17,7 @@ import org.exolab.castor.xml.Unmarshaller;
 /**
  * 
  * 
- * @version $Revision: 1.3 $ $Date: 2002/08/12 16:23:35 $
+ * @version $Revision$ $Date$
 **/
 public class StarsSubstation implements java.io.Serializable {
 

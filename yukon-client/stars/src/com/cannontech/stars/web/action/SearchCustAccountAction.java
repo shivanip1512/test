@@ -12,6 +12,7 @@ import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.xml.serialize.AdditionalContact;
 import com.cannontech.stars.xml.serialize.BillingAddress;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
+import com.cannontech.stars.xml.serialize.SearchBy;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsAppliances;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInfo;
@@ -27,7 +28,6 @@ import com.cannontech.stars.xml.serialize.StarsSearchCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsSearchCustomerAccountResponse;
 import com.cannontech.stars.xml.serialize.StarsSiteInformation;
 import com.cannontech.stars.xml.serialize.StreetAddress;
-import com.cannontech.stars.xml.serialize.types.StarsSearchByType;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -49,7 +49,9 @@ public class SearchCustAccountAction implements ActionBase {
     public SOAPMessage build(HttpServletRequest req, HttpSession session) {
         try {
             StarsSearchCustomerAccount searchAccount = new StarsSearchCustomerAccount();
-            searchAccount.setSearchBy( StarsSearchByType.valueOf(req.getParameter("SearchBy")) );
+            SearchBy searchBy = new SearchBy();
+            searchBy.setEntryID( Integer.parseInt(req.getParameter("SearchBy")) );
+            searchAccount.setSearchBy( searchBy );
             searchAccount.setSearchValue( req.getParameter("SearchValue") );
 
             StarsOperation operation = new StarsOperation();
@@ -87,10 +89,10 @@ public class SearchCustAccountAction implements ActionBase {
             }
 
             StarsSearchCustomerAccount searchAccount = reqOper.getStarsSearchCustomerAccount();
-            com.cannontech.database.data.starscustomer.CustomerAccount account = null;
+            com.cannontech.database.data.stars.customer.CustomerAccount account = null;
 
-            if (searchAccount.getSearchBy().getType() == StarsSearchByType.ACCOUNTNUMBER_TYPE) {
-                account = com.cannontech.database.data.starscustomer.CustomerAccount.searchByAccountNumber(
+            if (searchAccount.getSearchBy().getEntryID() == 22) {		// "Acct #"
+                account = com.cannontech.database.data.stars.customer.CustomerAccount.searchByAccountNumber(
                             energyCompanyID, searchAccount.getSearchValue() );
             }
 
@@ -107,21 +109,28 @@ public class SearchCustAccountAction implements ActionBase {
             else
             	session.setAttribute("CUSTOMER_ACCOUNT", account);
 
-            com.cannontech.database.db.starscustomer.CustomerAccount accountDB = account.getCustomerAccount();
-            com.cannontech.database.data.starscustomer.CustomerBase customer = account.getCustomerBase();
-            com.cannontech.database.db.starscustomer.CustomerBase customerDB = customer.getCustomerBase();
+            com.cannontech.database.db.stars.customer.CustomerAccount accountDB = account.getCustomerAccount();
+            com.cannontech.database.data.stars.customer.CustomerBase customer = account.getCustomerBase();
+            com.cannontech.database.db.stars.customer.CustomerBase customerDB = customer.getCustomerBase();
+            
+            Hashtable selectionList = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+            Integer custTypeCommID = com.cannontech.database.data.stars.CustomerListEntry.getListEntryID(
+		    		(Integer) selectionList.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CUSTOMERTYPE),
+		            com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_CUSTTYPE_COMM );
+		    if (custTypeCommID == null)
+		    	custTypeCommID = new Integer( com.cannontech.database.db.stars.CustomerListEntry.NONE_INT );
 
             StarsCustomerAccount starsAccount = new StarsCustomerAccount();
             starsAccount.setAccountNumber( accountDB.getAccountNumber() );
-            starsAccount.setIsCommercial( customerDB.getCustomerType().equalsIgnoreCase("Commercial") );
+            starsAccount.setIsCommercial( customerDB.getCustomerTypeID().intValue() == custTypeCommID.intValue() );
             starsAccount.setCompany( "" );
             if (accountDB.getAccountNotes() != null)
                 starsAccount.setAccountNotes( accountDB.getAccountNotes() );
             else
                 starsAccount.setAccountNotes( "" );
 
-            com.cannontech.database.data.starscustomer.AccountSite site = account.getAccountSite();
-            com.cannontech.database.db.starscustomer.AccountSite siteDB = site.getAccountSite();
+            com.cannontech.database.data.stars.customer.AccountSite site = account.getAccountSite();
+            com.cannontech.database.db.stars.customer.AccountSite siteDB = site.getAccountSite();
 
             starsAccount.setPropertyNumber( siteDB.getSiteNumber() );
             if (siteDB.getPropertyNotes() != null)
@@ -139,9 +148,9 @@ public class SearchCustAccountAction implements ActionBase {
             siteAddr.setZip( addr.getZipCode() );
             starsAccount.setStreetAddress( siteAddr );
 
-            com.cannontech.database.data.starscustomer.SiteInformation siteInfo = site.getSiteInformation();
-            com.cannontech.database.db.starscustomer.SiteInformation siteInfoDB = siteInfo.getSiteInformation();
-            com.cannontech.database.db.starscustomer.Substation substation = siteInfo.getSubstation();
+            com.cannontech.database.data.stars.customer.SiteInformation siteInfo = site.getSiteInformation();
+            com.cannontech.database.db.stars.customer.SiteInformation siteInfoDB = siteInfo.getSiteInformation();
+            com.cannontech.database.db.stars.Substation substation = siteInfo.getSubstation();
 
             StarsSiteInformation starsSiteInfo = new StarsSiteInformation();
             starsSiteInfo.setSubstationName( substation.getSubstationName() );
@@ -191,10 +200,10 @@ public class SearchCustAccountAction implements ActionBase {
             Vector applianceVector = account.getApplianceVector();
 
             for (int i = 0; i < applianceVector.size(); i++) {
-                com.cannontech.database.data.starsappliance.ApplianceBase appliance =
-                            (com.cannontech.database.data.starsappliance.ApplianceBase) applianceVector.elementAt(i);
-                com.cannontech.database.db.starsappliance.ApplianceCategory category = appliance.getApplianceCategory();
-                com.cannontech.database.db.starshardware.LMHardwareConfiguration config = appliance.getLMHardwareConfig();
+                com.cannontech.database.data.stars.appliance.ApplianceBase appliance =
+                            (com.cannontech.database.data.stars.appliance.ApplianceBase) applianceVector.elementAt(i);
+                com.cannontech.database.db.stars.appliance.ApplianceCategory category = appliance.getApplianceCategory();
+                com.cannontech.database.db.stars.hardware.LMHardwareConfiguration config = appliance.getLMHardwareConfig();
 
                 StarsAppliance starsApp = new StarsAppliance();
                 starsApp.setApplianceID( appliance.getApplianceBase().getApplianceID().intValue() );
@@ -203,7 +212,7 @@ public class SearchCustAccountAction implements ActionBase {
                 else
                     starsApp.setInventoryID( -1 );
                 starsApp.setLmProgramID( appliance.getApplianceBase().getLMProgramID().intValue() );
-                starsApp.setApplianceCategory( category.getCategory() );
+                starsApp.setApplianceCategoryID( category.getCategoryID().intValue() );
                 starsApp.setCategoryDescription( category.getDescription() );
 
                 if (appliance.getApplianceBase().getNotes() != null)
@@ -220,33 +229,33 @@ public class SearchCustAccountAction implements ActionBase {
             Vector inventoryVector = account.getInventoryVector();
 
             for (int i = 0; i < inventoryVector.size(); i++) {
-                com.cannontech.database.data.starshardware.InventoryBase inventory =
-                            (com.cannontech.database.data.starshardware.InventoryBase) inventoryVector.elementAt(i);
+                com.cannontech.database.data.stars.hardware.InventoryBase inventory =
+                            (com.cannontech.database.data.stars.hardware.InventoryBase) inventoryVector.elementAt(i);
 
-                if (inventory instanceof com.cannontech.database.data.starshardware.LMHardwareBase) {
+                if (inventory instanceof com.cannontech.database.data.stars.hardware.LMHardwareBase) {
                     // This is a LM hardware
-                    com.cannontech.database.data.starshardware.LMHardwareBase hardware =
-                                (com.cannontech.database.data.starshardware.LMHardwareBase) inventory;
+                    com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
+                                (com.cannontech.database.data.stars.hardware.LMHardwareBase) inventory;
 
                     StarsLMHardware starsHW = new StarsLMHardware();
                     starsHW.setInventoryID( hardware.getInventoryBase().getInventoryID().intValue() );
-                    starsHW.setCategory( hardware.getInventoryBase().getCategory() );
+                    starsHW.setCategory( hardware.getCategory().getEntryText() );
                     starsHW.setInstallationCompany( hardware.getInstallationCompany().getCompanyName() );
-                    starsHW.setReceiveDate( new org.exolab.castor.types.Date(hardware.getInventoryBase().getReceiveDate()) );
-                    starsHW.setInstallDate( new org.exolab.castor.types.Date(hardware.getInventoryBase().getInstallDate()) );
-                    starsHW.setRemoveDate( new org.exolab.castor.types.Date(hardware.getInventoryBase().getReceiveDate()) );
+                    starsHW.setReceiveDate( hardware.getInventoryBase().getReceiveDate() );
+                    starsHW.setInstallDate( hardware.getInventoryBase().getInstallDate() );
+                    starsHW.setRemoveDate( hardware.getInventoryBase().getReceiveDate() );
                     if (hardware.getInventoryBase().getAlternateTrackingNumber() != null)
                         starsHW.setAltTrackingNumber( hardware.getInventoryBase().getAlternateTrackingNumber() );
                     else
                         starsHW.setAltTrackingNumber( "" );
-                    starsHW.setVoltage( hardware.getInventoryBase().getVoltage() );
+                    starsHW.setVoltage( hardware.getVoltage().getEntryText() );
                     if (hardware.getInventoryBase().getNotes() != null)
                         starsHW.setNotes( hardware.getInventoryBase().getNotes() );
                     else
                         starsHW.setNotes( "" );
                     starsHW.setManufactureSerialNumber( hardware.getLMHardwareBase().getManufacturerSerialNumber() );
-                    starsHW.setLMDeviceType( hardware.getLMHardwareBase().getLMDeviceType() );
-                    starsHW.setStarsLMHardwareHistory( com.cannontech.database.data.starsevent.LMHardwareActivity.getStarsLMHardwareHistory(
+                    starsHW.setLMDeviceType( hardware.getLMHardwareType().getEntryText() );
+                    starsHW.setStarsLMHardwareHistory( com.cannontech.database.data.stars.event.LMHardwareEvent.getStarsLMHardwareHistory(
                     			hardware.getInventoryBase().getInventoryID()) );
 
                     inventories.addStarsLMHardware( starsHW );
@@ -258,10 +267,10 @@ public class SearchCustAccountAction implements ActionBase {
             Hashtable progTable = new Hashtable();
 
             for (int i = 0; i < applianceVector.size(); i++) {
-                com.cannontech.database.data.starsappliance.ApplianceBase appliance =
-                        (com.cannontech.database.data.starsappliance.ApplianceBase) applianceVector.elementAt(i);
+                com.cannontech.database.data.stars.appliance.ApplianceBase appliance =
+                        (com.cannontech.database.data.stars.appliance.ApplianceBase) applianceVector.elementAt(i);
                 com.cannontech.database.data.device.lm.LMProgramBase program = appliance.getLMProgram();
-                if (program.getPAObjectID().intValue() == com.cannontech.database.db.starsappliance.ApplianceBase.NONE_INT)
+                if (program.getPAObjectID().intValue() == com.cannontech.database.db.stars.appliance.ApplianceBase.NONE_INT)
                     continue;
 
                 StarsLMProgram starsProg = new StarsLMProgram();

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLogin.java,v 1.4 2002/08/30 18:23:20 alauinger Exp $
+ * $Id: StarsLogin.java,v 1.5 2002/09/06 22:37:23 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,14 +11,15 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
-
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.Unmarshaller;
 
 /**
  * 
  * 
- * @version $Revision: 1.4 $ $Date: 2002/08/30 18:23:20 $
+ * @version $Revision: 1.5 $ $Date: 2002/09/06 22:37:23 $
 **/
-public abstract class StarsLogin implements java.io.Serializable {
+public class StarsLogin implements java.io.Serializable {
 
 
       //--------------------------/
@@ -93,16 +94,24 @@ public abstract class StarsLogin implements java.io.Serializable {
      * 
      * @param out
     **/
-    public abstract void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+    public void marshal(java.io.Writer out)
+        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    {
+        
+        Marshaller.marshal(this, out);
+    } //-- void marshal(java.io.Writer) 
 
     /**
      * 
      * 
      * @param handler
     **/
-    public abstract void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+    public void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    {
+        
+        Marshaller.marshal(this, handler);
+    } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
      * Sets the value of field 'dbAlias'.
@@ -133,6 +142,17 @@ public abstract class StarsLogin implements java.io.Serializable {
     {
         this._username = username;
     } //-- void setUsername(java.lang.String) 
+
+    /**
+     * 
+     * 
+     * @param reader
+    **/
+    public static com.cannontech.stars.xml.serialize.StarsLogin unmarshal(java.io.Reader reader)
+        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    {
+        return (com.cannontech.stars.xml.serialize.StarsLogin) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsLogin.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsLogin unmarshal(java.io.Reader) 
 
     /**
     **/

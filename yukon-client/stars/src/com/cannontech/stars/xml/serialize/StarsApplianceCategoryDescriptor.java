@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsApplianceCategoryDescriptor.java,v 1.4 2002/08/30 18:23:17 alauinger Exp $
+ * $Id: StarsApplianceCategoryDescriptor.java,v 1.5 2002/09/06 22:37:18 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -15,12 +15,13 @@ import org.exolab.castor.xml.FieldValidator;
 import org.exolab.castor.xml.NodeType;
 import org.exolab.castor.xml.XMLFieldHandler;
 import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
+import org.exolab.castor.xml.validators.IntegerValidator;
 import org.exolab.castor.xml.validators.StringValidator;
 
 /**
  * 
  * 
- * @version $Revision: 1.4 $ $Date: 2002/08/30 18:23:17 $
+ * @version $Revision: 1.5 $ $Date: 2002/09/06 22:37:18 $
 **/
 public class StarsApplianceCategoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -48,24 +49,33 @@ public class StarsApplianceCategoryDescriptor extends org.exolab.castor.xml.util
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
-        //-- _category
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_category", "category", NodeType.Attribute);
-        desc.setImmutable(true);
+        //-- _applianceCategoryID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_applianceCategoryID", "applianceCategoryID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsApplianceCategory target = (StarsApplianceCategory) object;
-                return target.getCategory();
+                if(!target.hasApplianceCategoryID())
+                    return null;
+                return new Integer(target.getApplianceCategoryID());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsApplianceCategory target = (StarsApplianceCategory) object;
-                    target.setCategory( (java.lang.String) value);
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteApplianceCategoryID();
+                        return;
+                    }
+                    target.setApplianceCategoryID( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -78,53 +88,120 @@ public class StarsApplianceCategoryDescriptor extends org.exolab.castor.xml.util
         desc.setHandler(handler);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _category
+        //-- validation code for: _applianceCategoryID
         fieldValidator = new FieldValidator();
         { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
-        desc.setValidator(fieldValidator);
-        
-        //-- _description
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_description", "description", NodeType.Attribute);
-        desc.setImmutable(true);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsApplianceCategory target = (StarsApplianceCategory) object;
-                return target.getDescription();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsApplianceCategory target = (StarsApplianceCategory) object;
-                    target.setDescription( (java.lang.String) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _description
-        fieldValidator = new FieldValidator();
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
         }
         desc.setValidator(fieldValidator);
         
         //-- initialize element descriptors
+        
+        //-- _categoryName
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_categoryName", "CategoryName", NodeType.Element);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsApplianceCategory target = (StarsApplianceCategory) object;
+                return target.getCategoryName();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsApplianceCategory target = (StarsApplianceCategory) object;
+                    target.setCategoryName( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _categoryName
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsWebConfig
+        desc = new XMLFieldDescriptorImpl(StarsWebConfig.class, "_starsWebConfig", "stars-WebConfig", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsApplianceCategory target = (StarsApplianceCategory) object;
+                return target.getStarsWebConfig();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsApplianceCategory target = (StarsApplianceCategory) object;
+                    target.setStarsWebConfig( (StarsWebConfig) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsWebConfig();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsWebConfig
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsEnrollmentLMProgramList
+        desc = new XMLFieldDescriptorImpl(StarsEnrollmentLMProgram.class, "_starsEnrollmentLMProgramList", "stars-EnrollmentLMProgram", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsApplianceCategory target = (StarsApplianceCategory) object;
+                return target.getStarsEnrollmentLMProgram();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsApplianceCategory target = (StarsApplianceCategory) object;
+                    target.addStarsEnrollmentLMProgram( (StarsEnrollmentLMProgram) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsEnrollmentLMProgram();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(true);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsEnrollmentLMProgramList
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(0);
+        desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsApplianceCategoryDescriptor()
 

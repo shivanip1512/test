@@ -52,7 +52,7 @@ public class StarsOperator extends Operator {
 		try {
 			// Retrieve the next available call number from the database
 			sql = "SELECT CallNumber FROM CallReportBase WHERE CallID = "
-					   + "(SELECT MAX(CallReportID) FROM ECToServiceOrderMapping "
+					   + "(SELECT MAX(CallReportID) FROM ECToCallReportMapping "
 					   + "WHERE EnergyCompanyID = ?)";
 					   
 			pstmt = conn.prepareStatement( sql );

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsInventory.java,v 1.4 2002/08/30 18:23:17 alauinger Exp $
+ * $Id: StarsInventory.java,v 1.5 2002/09/06 22:37:18 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -16,7 +16,7 @@ package com.cannontech.stars.xml.serialize;
 /**
  * 
  * 
- * @version $Revision: 1.4 $ $Date: 2002/08/30 18:23:17 $
+ * @version $Revision: 1.5 $ $Date: 2002/09/06 22:37:18 $
 **/
 public abstract class StarsInventory implements java.io.Serializable {
 
@@ -36,11 +36,11 @@ public abstract class StarsInventory implements java.io.Serializable {
 
     private java.lang.String _installationCompany;
 
-    private org.exolab.castor.types.Date _receiveDate;
+    private java.util.Date _receiveDate;
 
-    private org.exolab.castor.types.Date _installDate;
+    private java.util.Date _installDate;
 
-    private org.exolab.castor.types.Date _removeDate;
+    private java.util.Date _removeDate;
 
     private java.lang.String _altTrackingNumber;
 
@@ -94,10 +94,10 @@ public abstract class StarsInventory implements java.io.Serializable {
      * 
      * @return the value of field 'installDate'.
     **/
-    public org.exolab.castor.types.Date getInstallDate()
+    public java.util.Date getInstallDate()
     {
         return this._installDate;
-    } //-- org.exolab.castor.types.Date getInstallDate() 
+    } //-- java.util.Date getInstallDate() 
 
     /**
      * Returns the value of field 'installationCompany'.
@@ -134,20 +134,20 @@ public abstract class StarsInventory implements java.io.Serializable {
      * 
      * @return the value of field 'receiveDate'.
     **/
-    public org.exolab.castor.types.Date getReceiveDate()
+    public java.util.Date getReceiveDate()
     {
         return this._receiveDate;
-    } //-- org.exolab.castor.types.Date getReceiveDate() 
+    } //-- java.util.Date getReceiveDate() 
 
     /**
      * Returns the value of field 'removeDate'.
      * 
      * @return the value of field 'removeDate'.
     **/
-    public org.exolab.castor.types.Date getRemoveDate()
+    public java.util.Date getRemoveDate()
     {
         return this._removeDate;
-    } //-- org.exolab.castor.types.Date getRemoveDate() 
+    } //-- java.util.Date getRemoveDate() 
 
     /**
      * Returns the value of field 'voltage'.
@@ -221,10 +221,10 @@ public abstract class StarsInventory implements java.io.Serializable {
      * 
      * @param installDate the value of field 'installDate'.
     **/
-    public void setInstallDate(org.exolab.castor.types.Date installDate)
+    public void setInstallDate(java.util.Date installDate)
     {
         this._installDate = installDate;
-    } //-- void setInstallDate(org.exolab.castor.types.Date) 
+    } //-- void setInstallDate(java.util.Date) 
 
     /**
      * Sets the value of field 'installationCompany'.
@@ -263,20 +263,20 @@ public abstract class StarsInventory implements java.io.Serializable {
      * 
      * @param receiveDate the value of field 'receiveDate'.
     **/
-    public void setReceiveDate(org.exolab.castor.types.Date receiveDate)
+    public void setReceiveDate(java.util.Date receiveDate)
     {
         this._receiveDate = receiveDate;
-    } //-- void setReceiveDate(org.exolab.castor.types.Date) 
+    } //-- void setReceiveDate(java.util.Date) 
 
     /**
      * Sets the value of field 'removeDate'.
      * 
      * @param removeDate the value of field 'removeDate'.
     **/
-    public void setRemoveDate(org.exolab.castor.types.Date removeDate)
+    public void setRemoveDate(java.util.Date removeDate)
     {
         this._removeDate = removeDate;
-    } //-- void setRemoveDate(org.exolab.castor.types.Date) 
+    } //-- void setRemoveDate(java.util.Date) 
 
     /**
      * Sets the value of field 'voltage'.

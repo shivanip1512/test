@@ -2,6 +2,7 @@ package com.cannontech.stars.web.action;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -154,16 +155,16 @@ public class YukonSwitchCommandAction implements ActionBase {
             /* This part is for consumer login, must be removed later */
             Integer energyCompanyID = (Integer) session.getAttribute("ENERGY_COMPANY_ID");
             StarsOperator operator = null;
-            com.cannontech.database.data.starscustomer.CustomerAccount account = null;
+            com.cannontech.database.data.stars.customer.CustomerAccount account = null;
 
             if (energyCompanyID == null) {
                 operator = (StarsOperator) session.getAttribute("OPERATOR");
                 if (operator != null)
-                	account = (com.cannontech.database.data.starscustomer.CustomerAccount)
+                	account = (com.cannontech.database.data.stars.customer.CustomerAccount)
                 			operator.getAttribute("CUSTOMER_ACCOUNT");
             }
             else {
-            	account = (com.cannontech.database.data.starscustomer.CustomerAccount)
+            	account = (com.cannontech.database.data.stars.customer.CustomerAccount)
                 		session.getAttribute("CUSTOMER_ACCOUNT");
             }
             
@@ -201,6 +202,10 @@ public class YukonSwitchCommandAction implements ActionBase {
             StarsSwitchCommand command = reqOper.getStarsSwitchCommand();
             StarsSwitchCommandResponse cmdResp = new StarsSwitchCommandResponse();
             
+            Hashtable selectionList = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+		    Integer actionListID = (Integer) selectionList.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION);
+		    Integer custEventListID = (Integer) selectionList.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMEREVENT);
+            
             if (command.getStarsDisableService() != null) {
                 StarsDisableService service = command.getStarsDisableService();
 
@@ -209,65 +214,107 @@ public class YukonSwitchCommandAction implements ActionBase {
                     sendCommand(cmd, conn);
                 }
                 
+    			com.cannontech.database.data.company.EnergyCompanyBase energyCompany = new com.cannontech.database.data.company.EnergyCompanyBase();
+        		if (operator == null)
+        			energyCompany.setEnergyCompanyID( energyCompanyID );
+        		else
+            		energyCompany.setEnergyCompanyID( new Integer((int) operator.getEnergyCompanyID()) );
+                
+                // Get list entry IDs
+                Integer hwEventEntryID = com.cannontech.database.data.stars.CustomerListEntry.getListEntryID(
+                		custEventListID, com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_LMHARDWAREEVENT );
+                Integer progEventEntryID = com.cannontech.database.data.stars.CustomerListEntry.getListEntryID(
+                		custEventListID, com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_LMPROGRAMEVENT );
+                Integer tempTermEntryID = null;
+                Integer futureActEntryID = null;
+                
+                com.cannontech.database.db.stars.CustomerListEntry[] actionListEntries =
+                		com.cannontech.database.data.stars.CustomerListEntry.getAllListEntries( actionListID );
+                for (int i = 0; i < actionListEntries.length; i++) {
+                	if (actionListEntries[i].getYukonDefinition().equals( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_TEMPTERMINATION ))
+                		tempTermEntryID = actionListEntries[i].getEntryID();
+                	else if (actionListEntries[i].getYukonDefinition().equals( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION ))
+                		futureActEntryID = actionListEntries[i].getEntryID();
+                }
+                
                 Vector invVct = account.getInventoryVector();
                 for (int j = 0; j < invVct.size(); j++) {
-                	com.cannontech.database.data.starshardware.LMHardwareBase hw =
-                			(com.cannontech.database.data.starshardware.LMHardwareBase) invVct.elementAt(j);
-                	com.cannontech.database.db.starshardware.LMHardwareBase hwDB = hw.getLMHardwareBase();
+                	com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
+                			(com.cannontech.database.data.stars.hardware.LMHardwareBase) invVct.elementAt(j);
+                	com.cannontech.database.db.stars.hardware.LMHardwareBase hwDB = hw.getLMHardwareBase();
                 			
                 	if (hwDB.getManufacturerSerialNumber().equalsIgnoreCase( service.getSerialNumber(j) )) {
                 		com.cannontech.database.data.multi.MultiDBPersistent multiDB =
                 				new com.cannontech.database.data.multi.MultiDBPersistent();
                 				
-                		com.cannontech.database.db.starsevent.LMHardwareActivity event =
-                				new com.cannontech.database.db.starsevent.LMHardwareActivity();
-                		event.setInventoryID( hwDB.getInventoryID() );
-                		event.setActionID( new Integer(com.cannontech.database.db.starscustomer.CustomerAction.TEMPORARY_TERMINATION) );
-                		event.setEventDateTime( new Date() );
-                		event.setNotes("");
+                		com.cannontech.database.data.stars.event.LMHardwareEvent event =
+                				new com.cannontech.database.data.stars.event.LMHardwareEvent();
+                		com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
+                		com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+                		
+                		eventDB.setInventoryID( hwDB.getInventoryID() );
+                		eventBase.setEventTypeID( hwEventEntryID );
+                		eventBase.setActionID( tempTermEntryID );
+                		eventBase.setEventDateTime( new Date() );
+                		
+                		event.setEnergyCompanyBase( energyCompany );
                 		multiDB.getDBPersistentVector().addElement( event );
 						
-                		event = new com.cannontech.database.db.starsevent.LMHardwareActivity();
-                		event.setInventoryID( hwDB.getInventoryID() );
-                		event.setActionID( new Integer(com.cannontech.database.db.starscustomer.CustomerAction.FUTURE_ACTIVATION) );
-                		event.setEventDateTime( service.getReEnableDateTime() );
-                		event.setNotes("");
+                		event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+                		eventDB = event.getLMHardwareEvent();
+                		eventBase = event.getLMCustomerEventBase();
+                		
+                		eventDB.setInventoryID( hwDB.getInventoryID() );
+                		eventBase.setEventTypeID( hwEventEntryID );
+                		eventBase.setActionID( futureActEntryID );
+                		eventBase.setEventDateTime( service.getReEnableDateTime() );
+                		
+                		event.setEnergyCompanyBase( energyCompany );
                 		multiDB.getDBPersistentVector().addElement( event );
                 		
 		                Vector appVct = account.getApplianceVector();
 		                for (int k = 0; k < appVct.size(); k++) {
-		                	com.cannontech.database.data.starsappliance.ApplianceBase app =
-		                			(com.cannontech.database.data.starsappliance.ApplianceBase) appVct.elementAt(k);
-			                com.cannontech.database.db.starshardware.LMHardwareConfiguration config = app.getLMHardwareConfig();
+		                	com.cannontech.database.data.stars.appliance.ApplianceBase app =
+		                			(com.cannontech.database.data.stars.appliance.ApplianceBase) appVct.elementAt(k);
+			                com.cannontech.database.db.stars.hardware.LMHardwareConfiguration config = app.getLMHardwareConfig();
 			                
 			                if (config.getInventoryID().intValue() == hwDB.getInventoryID().intValue()) {
 			                	com.cannontech.database.data.device.lm.LMProgramBase program = app.getLMProgram();
-					            if (program.getPAObjectID().intValue() == com.cannontech.database.db.starsappliance.ApplianceBase.NONE_INT)
-					                continue;
+					            if (program.getPAObjectID().intValue() == 0) continue;
 					                
-					            com.cannontech.database.db.starsevent.LMProgramCustomerActivity activity =
-					            		new com.cannontech.database.db.starsevent.LMProgramCustomerActivity();
-					            activity.setLMProgramID( program.getPAObjectID() );
-					            activity.setAccountID( account.getCustomerAccount().getAccountID() );
-					            activity.setActionID( new Integer(com.cannontech.database.db.starscustomer.CustomerAction.TEMPORARY_TERMINATION) );
-					            activity.setEventDateTime( new Date() );
-					            activity.setNotes("");
-					            multiDB.getDBPersistentVector().addElement( activity );
+					            com.cannontech.database.data.stars.event.LMProgramEvent event1 =
+					            		new com.cannontech.database.data.stars.event.LMProgramEvent();
+					            com.cannontech.database.db.stars.event.LMProgramEvent eventDB1 = event1.getLMProgramEvent();
+					            com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase1 = event1.getLMCustomerEventBase();
 					            
-					            activity = new com.cannontech.database.db.starsevent.LMProgramCustomerActivity();
-					            activity.setLMProgramID( program.getPAObjectID() );
-					            activity.setAccountID( account.getCustomerAccount().getAccountID() );
-					            activity.setActionID( new Integer(com.cannontech.database.db.starscustomer.CustomerAction.FUTURE_ACTIVATION) );
-					            activity.setEventDateTime( service.getReEnableDateTime() );
-					            activity.setNotes("");
-					            multiDB.getDBPersistentVector().addElement( activity );
+					            eventDB1.setLMProgramID( program.getPAObjectID() );
+					            eventDB1.setAccountID( account.getCustomerAccount().getAccountID() );
+					            eventBase1.setEventTypeID( progEventEntryID );
+					            eventBase1.setActionID( tempTermEntryID );
+					            eventBase1.setEventDateTime( new Date() );
+					            
+					            event1.setEnergyCompanyBase( energyCompany );
+					            multiDB.getDBPersistentVector().addElement( event1 );
+					            
+					            event1 = new com.cannontech.database.data.stars.event.LMProgramEvent();
+					            eventDB1 = event1.getLMProgramEvent();
+					            eventBase1 = event1.getLMCustomerEventBase();
+					            
+					            eventDB1.setLMProgramID( program.getPAObjectID() );
+					            eventDB1.setAccountID( account.getCustomerAccount().getAccountID() );
+					            eventBase1.setEventTypeID( progEventEntryID );
+					            eventBase1.setActionID( futureActEntryID );
+					            eventBase1.setEventDateTime( service.getReEnableDateTime() );
+					            
+					            event1.setEnergyCompanyBase( energyCompany );
+					            multiDB.getDBPersistentVector().addElement( event1 );
 			                }
 		                }
                 		
                 		Transaction transaction = Transaction.createTransaction( Transaction.INSERT, multiDB );
                 		transaction.execute();
                 		
-						StarsLMHardwareHistory hwHist = com.cannontech.database.data.starsevent.LMHardwareActivity.getStarsLMHardwareHistory( hwDB.getInventoryID() );
+						StarsLMHardwareHistory hwHist = com.cannontech.database.data.stars.event.LMHardwareEvent.getStarsLMHardwareHistory( hwDB.getInventoryID() );
 						cmdResp.setStarsLMHardwareHistory( hwHist );
 						
                 		break;
@@ -282,63 +329,102 @@ public class YukonSwitchCommandAction implements ActionBase {
                     sendCommand(cmd, conn);
                 }
                 
+    			com.cannontech.database.data.company.EnergyCompanyBase energyCompany = new com.cannontech.database.data.company.EnergyCompanyBase();
+        		if (operator == null)
+        			energyCompany.setEnergyCompanyID( energyCompanyID );
+        		else
+            		energyCompany.setEnergyCompanyID( new Integer((int) operator.getEnergyCompanyID()) );
+                
+                // Get list entry IDs
+                Integer hwEventEntryID = com.cannontech.database.data.stars.CustomerListEntry.getListEntryID(
+                		custEventListID, com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_LMHARDWAREEVENT );
+                Integer progEventEntryID = com.cannontech.database.data.stars.CustomerListEntry.getListEntryID(
+                		custEventListID, com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_LMPROGRAMEVENT );
+                Integer actCompEntryID = null;
+                Integer futureActEntryID = null;
+                
+                com.cannontech.database.db.stars.CustomerListEntry[] actionListEntries =
+                		com.cannontech.database.data.stars.CustomerListEntry.getAllListEntries( actionListID );
+                for (int i = 0; i < actionListEntries.length; i++) {
+                	if (actionListEntries[i].getYukonDefinition().equals( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED ))
+                		actCompEntryID = actionListEntries[i].getEntryID();
+                	else if (actionListEntries[i].getYukonDefinition().equals( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION ))
+                		futureActEntryID = actionListEntries[i].getEntryID();
+                }
+
                 Vector invVct = account.getInventoryVector();
                 for (int j = 0; j < invVct.size(); j++) {
-                	com.cannontech.database.data.starshardware.LMHardwareBase hw =
-                			(com.cannontech.database.data.starshardware.LMHardwareBase) invVct.elementAt(j);
-                	com.cannontech.database.db.starshardware.LMHardwareBase hwDB = hw.getLMHardwareBase();
+                	com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
+                			(com.cannontech.database.data.stars.hardware.LMHardwareBase) invVct.elementAt(j);
+                	com.cannontech.database.db.stars.hardware.LMHardwareBase hwDB = hw.getLMHardwareBase();
                 			
                 	if (hwDB.getManufacturerSerialNumber().equalsIgnoreCase( service.getSerialNumber(j) )) {
-                		com.cannontech.database.db.starsevent.LMHardwareActivity event =
-	                			com.cannontech.database.data.starsevent.LMHardwareActivity.getLastLMHardwareEvent( hwDB.getInventoryID() );
+                		// Determine to update the last entry, or insert a new entry into the database
+                		com.cannontech.database.data.stars.event.LMHardwareEvent lastHwEvent =
+	                			com.cannontech.database.data.stars.event.LMHardwareEvent.getLastLMHardwareEvent( hwDB.getInventoryID() );
                 		boolean update = false;
-	                	
-	                	if (event != null && event.getActionID().intValue() == com.cannontech.database.db.starscustomer.CustomerAction.FUTURE_ACTIVATION) {
+	                	if (lastHwEvent != null && lastHwEvent.getEventType().getEntryID().intValue() == futureActEntryID.intValue())
 	                		update = true;
-	                		event.setActionID( new Integer(com.cannontech.database.db.starscustomer.CustomerAction.ACTIVATION_COMPLETED) );
-	                		event.setEventDateTime( new Date() );
-	                		Transaction.createTransaction( Transaction.UPDATE, event ).execute();
-	                	}
-	                	else {
-	                		event = new com.cannontech.database.db.starsevent.LMHardwareActivity();
-	                		event.setInventoryID( hwDB.getInventoryID() );
-	                		event.setActionID( new Integer(com.cannontech.database.db.starscustomer.CustomerAction.ACTIVATION_COMPLETED) );
-	                		event.setEventDateTime( new Date() );
-	                		event.setNotes("");
+	                		
+                		if (update) {
+                			com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = lastHwEvent.getLMCustomerEventBase();
+                			eventBase.setActionID( actCompEntryID );
+	                		eventBase.setEventDateTime( new Date() );
+	                		Transaction.createTransaction( Transaction.UPDATE, lastHwEvent ).execute();
+                		}
+                		else {	
+	                		com.cannontech.database.data.stars.event.LMHardwareEvent event =
+	                				new com.cannontech.database.data.stars.event.LMHardwareEvent();
+	                		com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
+	                		com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+	                		
+	                		eventDB.setInventoryID( hwDB.getInventoryID() );
+	                		eventBase.setEventTypeID( hwEventEntryID );
+	                		eventBase.setActionID( actCompEntryID );
+	                		eventBase.setEventDateTime( new Date() );
+	                		
+                			event.setEnergyCompanyBase( energyCompany );
 	                		Transaction.createTransaction( Transaction.INSERT, event ).execute();
-	                	}
+                		}
                 		
 		                Vector appVct = account.getApplianceVector();
 		                for (int k = 0; k < appVct.size(); k++) {
-		                	com.cannontech.database.data.starsappliance.ApplianceBase app =
-		                			(com.cannontech.database.data.starsappliance.ApplianceBase) appVct.elementAt(k);
-			                com.cannontech.database.db.starshardware.LMHardwareConfiguration config = app.getLMHardwareConfig();
+		                	com.cannontech.database.data.stars.appliance.ApplianceBase app =
+		                			(com.cannontech.database.data.stars.appliance.ApplianceBase) appVct.elementAt(k);
+			                com.cannontech.database.db.stars.hardware.LMHardwareConfiguration config = app.getLMHardwareConfig();
 			                
 			                if (config.getInventoryID().intValue() == hwDB.getInventoryID().intValue()) {
 			                	com.cannontech.database.data.device.lm.LMProgramBase program = app.getLMProgram();
 					            if (program.getPAObjectID().intValue() == 0) continue;
 					            
-					            com.cannontech.database.db.starsevent.LMProgramCustomerActivity activity =
-					            		com.cannontech.database.data.starsevent.LMProgramCustomerActivity.getLastCustomerActivity( account.getCustomerAccount().getAccountID() );
+					            com.cannontech.database.data.stars.event.LMProgramEvent lastProgEvent =
+					            		com.cannontech.database.data.stars.event.LMProgramEvent.getLastProgramEvent( account.getCustomerAccount().getAccountID(), program.getPAObjectID() );
 					            
-					            if (update && activity != null) {
-						            activity.setActionID( new Integer(com.cannontech.database.db.starscustomer.CustomerAction.ACTIVATION_COMPLETED) );
-						            activity.setEventDateTime( new Date() );
-				                	Transaction.createTransaction( Transaction.UPDATE, activity ).execute();
+					            if (update && lastProgEvent != null) {
+		                			com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = lastProgEvent.getLMCustomerEventBase();
+						            eventBase.setActionID( actCompEntryID );
+						            eventBase.setEventDateTime( new Date() );
+				                	Transaction.createTransaction( Transaction.UPDATE, lastProgEvent ).execute();
 					            }
 					            else {
-					            	activity = new com.cannontech.database.db.starsevent.LMProgramCustomerActivity();
-						            activity.setLMProgramID( program.getPAObjectID() );
-						            activity.setAccountID( account.getCustomerAccount().getAccountID() );
-						            activity.setActionID( new Integer(com.cannontech.database.db.starscustomer.CustomerAction.TEMPORARY_TERMINATION) );
-						            activity.setEventDateTime( new Date() );
-						            activity.setNotes("");
-			                		Transaction.createTransaction( Transaction.INSERT, activity ).execute();
+						            com.cannontech.database.data.stars.event.LMProgramEvent event =
+						            		new com.cannontech.database.data.stars.event.LMProgramEvent();
+						            com.cannontech.database.db.stars.event.LMProgramEvent eventDB = event.getLMProgramEvent();
+						            com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+						            
+						            eventDB.setLMProgramID( program.getPAObjectID() );
+						            eventDB.setAccountID( account.getCustomerAccount().getAccountID() );
+						            eventBase.setEventTypeID( progEventEntryID );
+						            eventBase.setActionID( actCompEntryID );
+						            eventBase.setEventDateTime( new Date() );
+						            
+						            event.setEnergyCompanyBase( energyCompany );
+			                		Transaction.createTransaction( Transaction.INSERT, event ).execute();
 			                	}
 			                }
 		                }
                 		
-						StarsLMHardwareHistory hwHist = com.cannontech.database.data.starsevent.LMHardwareActivity.getStarsLMHardwareHistory( hwDB.getInventoryID() );
+						StarsLMHardwareHistory hwHist = com.cannontech.database.data.stars.event.LMHardwareEvent.getStarsLMHardwareHistory( hwDB.getInventoryID() );
 						cmdResp.setStarsLMHardwareHistory( hwHist );
 						
 						break;

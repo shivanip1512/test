@@ -27,6 +27,8 @@ public abstract class StarsLMCustomerEvent implements java.io.Serializable {
 
     private java.lang.String _eventAction;
 
+    private java.lang.String _yukonDefinition;
+
     private java.util.Date _eventDateTime;
 
     private java.lang.String _notes;
@@ -74,6 +76,16 @@ public abstract class StarsLMCustomerEvent implements java.io.Serializable {
     {
         return this._notes;
     } //-- java.lang.String getNotes() 
+
+    /**
+     * Returns the value of field 'yukonDefinition'.
+     * 
+     * @return the value of field 'yukonDefinition'.
+    **/
+    public java.lang.String getYukonDefinition()
+    {
+        return this._yukonDefinition;
+    } //-- java.lang.String getYukonDefinition() 
 
     /**
     **/
@@ -133,6 +145,16 @@ public abstract class StarsLMCustomerEvent implements java.io.Serializable {
     {
         this._notes = notes;
     } //-- void setNotes(java.lang.String) 
+
+    /**
+     * Sets the value of field 'yukonDefinition'.
+     * 
+     * @param yukonDefinition the value of field 'yukonDefinition'.
+    **/
+    public void setYukonDefinition(java.lang.String yukonDefinition)
+    {
+        this._yukonDefinition = yukonDefinition;
+    } //-- void setYukonDefinition(java.lang.String) 
 
     /**
     **/

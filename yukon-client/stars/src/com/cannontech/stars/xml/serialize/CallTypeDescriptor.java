@@ -12,18 +12,15 @@ package com.cannontech.stars.xml.serialize;
 //---------------------------------/
 
 import org.exolab.castor.xml.FieldValidator;
-import org.exolab.castor.xml.NodeType;
 import org.exolab.castor.xml.XMLFieldHandler;
 import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
-import org.exolab.castor.xml.validators.IntegerValidator;
-import org.exolab.castor.xml.validators.StringValidator;
 
 /**
  * 
  * 
  * @version $Revision$ $Date$
 **/
-public class CallTypeDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class CallTypeDescriptor extends StarsCustListEntryDescriptor {
 
 
       //--------------------------/
@@ -45,90 +42,12 @@ public class CallTypeDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
 
     public CallTypeDescriptor() {
         super();
+        setExtendsWithoutFlatten(new StarsCustListEntryDescriptor());
         xmlName = "CallType";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        //-- _content
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_content", "PCDATA", NodeType.Text);
-        desc.setImmutable(true);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                CallType target = (CallType) object;
-                return target.getContent();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    CallType target = (CallType) object;
-                    target.setContent( (java.lang.String) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _content
-        fieldValidator = new FieldValidator();
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
-        desc.setValidator(fieldValidator);
-        
         //-- initialize attribute descriptors
-        
-        //-- _typeID
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_typeID", "typeID", NodeType.Attribute);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                CallType target = (CallType) object;
-                if(!target.hasTypeID())
-                    return null;
-                return new Integer(target.getTypeID());
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    CallType target = (CallType) object;
-                    // if null, use delete method for optional primitives 
-                    if (value == null) {
-                        target.deleteTypeID();
-                        return;
-                    }
-                    target.setTypeID( ((Integer)value).intValue());
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _typeID
-        fieldValidator = new FieldValidator();
-        { //-- local scope
-            IntegerValidator iv = new IntegerValidator();
-            fieldValidator.setValidator(iv);
-        }
-        desc.setValidator(fieldValidator);
         
         //-- initialize element descriptors
         
@@ -150,13 +69,15 @@ public class CallTypeDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return null;
+        return super.getExtends();
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
+        if (identity == null)
+            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 

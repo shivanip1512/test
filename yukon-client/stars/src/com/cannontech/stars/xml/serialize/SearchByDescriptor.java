@@ -20,7 +20,7 @@ import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
  * 
  * @version $Revision$ $Date$
 **/
-public class SearchByDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class SearchByDescriptor extends StarsCustListEntryDescriptor {
 
 
       //--------------------------/
@@ -42,6 +42,7 @@ public class SearchByDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
 
     public SearchByDescriptor() {
         super();
+        setExtendsWithoutFlatten(new StarsCustListEntryDescriptor());
         xmlName = "SearchBy";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
@@ -68,13 +69,15 @@ public class SearchByDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return null;
+        return super.getExtends();
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
+        if (identity == null)
+            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 

@@ -14,15 +14,18 @@ import com.cannontech.stars.web.action.ActionBase;
 import com.cannontech.stars.web.action.CallTrackingAction;
 import com.cannontech.stars.web.action.CreateCallAction;
 import com.cannontech.stars.web.action.CreateServiceRequestAction;
+import com.cannontech.stars.web.action.GetEnrollmentProgramsAction;
 import com.cannontech.stars.web.action.GetLMCtrlHistAction;
 import com.cannontech.stars.web.action.GetServiceHistoryAction;
+import com.cannontech.stars.web.action.LoginAction;
+import com.cannontech.stars.web.action.MultiAction;
 import com.cannontech.stars.web.action.NewCustAccountAction;
-import com.cannontech.stars.web.action.OperatorLoginAction;
 import com.cannontech.stars.web.action.SearchCustAccountAction;
 import com.cannontech.stars.web.action.UpdateCustAccountAction;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.util.SOAPMessenger;
+import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 import com.cannontech.stars.xml.util.XMLUtil;
 
@@ -139,7 +142,11 @@ public class SOAPClient extends HttpServlet {
                     + "&BackURL=" + req.getParameter("BackURL");
         }
         else if (action.equalsIgnoreCase("OperatorLogin")) {
-        	clientAction = new OperatorLoginAction();
+        	MultiAction actions = new MultiAction();
+        	actions.getActionVector().addElement( new LoginAction() );
+        	actions.getActionVector().addElement( new GetEnrollmentProgramsAction() );
+        	
+        	clientAction = (ActionBase) actions;
         	destURL = homeURL;
         	nextURL = errorURL = loginURL;
         }
@@ -169,9 +176,11 @@ public class SOAPClient extends HttpServlet {
             reqMsg = clientAction.build(req, session);
 
             if (reqMsg != null) {
+            	SOAPUtil.logSOAPMsgForOperation( reqMsg, "*** Send Message *** " );
                 respMsg = clientAction.process(reqMsg, session);
 
                 if (respMsg != null) {
+                	SOAPUtil.logSOAPMsgForOperation( respMsg, "*** Receive Message *** " );
                 	int status = clientAction.parse(reqMsg, respMsg, session);
                 	
                     if (status == 0)	// Operation succeed

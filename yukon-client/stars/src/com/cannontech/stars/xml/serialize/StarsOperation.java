@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.4 2002/08/30 18:23:15 alauinger Exp $
+ * $Id: StarsOperation.java,v 1.5 2002/09/06 22:37:26 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -17,7 +17,7 @@ import org.exolab.castor.xml.Unmarshaller;
 /**
  * Root element
  * 
- * @version $Revision: 1.4 $ $Date: 2002/08/30 18:23:15 $
+ * @version $Revision: 1.5 $ $Date: 2002/09/06 22:37:26 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -26,7 +26,7 @@ public class StarsOperation implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private StarsOperatorLogin _starsOperatorLogin;
+    private StarsLogin _starsLogin;
 
     private StarsLogoff _starsLogoff;
 
@@ -39,9 +39,6 @@ public class StarsOperation implements java.io.Serializable {
     **/
     private StarsNewCustomerAccount _starsNewCustomerAccount;
 
-    /**
-     * Search for existing customer account
-    **/
     private StarsSearchCustomerAccount _starsSearchCustomerAccount;
 
     private StarsSearchCustomerAccountResponse _starsSearchCustomerAccountResponse;
@@ -78,6 +75,10 @@ public class StarsOperation implements java.io.Serializable {
     private StarsGetServiceRequestHistory _starsGetServiceRequestHistory;
 
     private StarsGetServiceRequestHistoryResponse _starsGetServiceRequestHistoryResponse;
+
+    private StarsGetEnrollmentPrograms _starsGetEnrollmentPrograms;
+
+    private StarsGetEnrollmentProgramsResponse _starsGetEnrollmentProgramsResponse;
 
 
       //----------------/
@@ -146,6 +147,28 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsGetCallReportHistoryResponse getStarsGetCallReportHistoryResponse() 
 
     /**
+     * Returns the value of field 'starsGetEnrollmentPrograms'.
+     * 
+     * @return the value of field 'starsGetEnrollmentPrograms'.
+    **/
+    public StarsGetEnrollmentPrograms getStarsGetEnrollmentPrograms()
+    {
+        return this._starsGetEnrollmentPrograms;
+    } //-- StarsGetEnrollmentPrograms getStarsGetEnrollmentPrograms() 
+
+    /**
+     * Returns the value of field
+     * 'starsGetEnrollmentProgramsResponse'.
+     * 
+     * @return the value of field
+     * 'starsGetEnrollmentProgramsResponse'.
+    **/
+    public StarsGetEnrollmentProgramsResponse getStarsGetEnrollmentProgramsResponse()
+    {
+        return this._starsGetEnrollmentProgramsResponse;
+    } //-- StarsGetEnrollmentProgramsResponse getStarsGetEnrollmentProgramsResponse() 
+
+    /**
      * Returns the value of field 'starsGetLMControlHistory'. The
      * field 'starsGetLMControlHistory' has the following
      * description: Get LM control history of a LM program
@@ -191,6 +214,16 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsGetServiceRequestHistoryResponse getStarsGetServiceRequestHistoryResponse() 
 
     /**
+     * Returns the value of field 'starsLogin'.
+     * 
+     * @return the value of field 'starsLogin'.
+    **/
+    public StarsLogin getStarsLogin()
+    {
+        return this._starsLogin;
+    } //-- StarsLogin getStarsLogin() 
+
+    /**
      * Returns the value of field 'starsLogoff'.
      * 
      * @return the value of field 'starsLogoff'.
@@ -213,19 +246,7 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsNewCustomerAccount getStarsNewCustomerAccount() 
 
     /**
-     * Returns the value of field 'starsOperatorLogin'.
-     * 
-     * @return the value of field 'starsOperatorLogin'.
-    **/
-    public StarsOperatorLogin getStarsOperatorLogin()
-    {
-        return this._starsOperatorLogin;
-    } //-- StarsOperatorLogin getStarsOperatorLogin() 
-
-    /**
-     * Returns the value of field 'starsSearchCustomerAccount'. The
-     * field 'starsSearchCustomerAccount' has the following
-     * description: Search for existing customer account
+     * Returns the value of field 'starsSearchCustomerAccount'.
      * 
      * @return the value of field 'starsSearchCustomerAccount'.
     **/
@@ -392,6 +413,29 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsGetCallReportHistoryResponse(StarsGetCallReportHistoryResponse) 
 
     /**
+     * Sets the value of field 'starsGetEnrollmentPrograms'.
+     * 
+     * @param starsGetEnrollmentPrograms the value of field
+     * 'starsGetEnrollmentPrograms'.
+    **/
+    public void setStarsGetEnrollmentPrograms(StarsGetEnrollmentPrograms starsGetEnrollmentPrograms)
+    {
+        this._starsGetEnrollmentPrograms = starsGetEnrollmentPrograms;
+    } //-- void setStarsGetEnrollmentPrograms(StarsGetEnrollmentPrograms) 
+
+    /**
+     * Sets the value of field
+     * 'starsGetEnrollmentProgramsResponse'.
+     * 
+     * @param starsGetEnrollmentProgramsResponse the value of field
+     * 'starsGetEnrollmentProgramsResponse'.
+    **/
+    public void setStarsGetEnrollmentProgramsResponse(StarsGetEnrollmentProgramsResponse starsGetEnrollmentProgramsResponse)
+    {
+        this._starsGetEnrollmentProgramsResponse = starsGetEnrollmentProgramsResponse;
+    } //-- void setStarsGetEnrollmentProgramsResponse(StarsGetEnrollmentProgramsResponse) 
+
+    /**
      * Sets the value of field 'starsGetLMControlHistory'. The
      * field 'starsGetLMControlHistory' has the following
      * description: Get LM control history of a LM program
@@ -439,6 +483,16 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsGetServiceRequestHistoryResponse(StarsGetServiceRequestHistoryResponse) 
 
     /**
+     * Sets the value of field 'starsLogin'.
+     * 
+     * @param starsLogin the value of field 'starsLogin'.
+    **/
+    public void setStarsLogin(StarsLogin starsLogin)
+    {
+        this._starsLogin = starsLogin;
+    } //-- void setStarsLogin(StarsLogin) 
+
+    /**
      * Sets the value of field 'starsLogoff'.
      * 
      * @param starsLogoff the value of field 'starsLogoff'.
@@ -462,20 +516,7 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsNewCustomerAccount(StarsNewCustomerAccount) 
 
     /**
-     * Sets the value of field 'starsOperatorLogin'.
-     * 
-     * @param starsOperatorLogin the value of field
-     * 'starsOperatorLogin'.
-    **/
-    public void setStarsOperatorLogin(StarsOperatorLogin starsOperatorLogin)
-    {
-        this._starsOperatorLogin = starsOperatorLogin;
-    } //-- void setStarsOperatorLogin(StarsOperatorLogin) 
-
-    /**
-     * Sets the value of field 'starsSearchCustomerAccount'. The
-     * field 'starsSearchCustomerAccount' has the following
-     * description: Search for existing customer account
+     * Sets the value of field 'starsSearchCustomerAccount'.
      * 
      * @param starsSearchCustomerAccount the value of field
      * 'starsSearchCustomerAccount'.

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsSearchCustomerAccountDescriptor.java,v 1.4 2002/08/30 18:23:19 alauinger Exp $
+ * $Id: StarsSearchCustomerAccountDescriptor.java,v 1.5 2002/09/06 22:37:21 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -14,14 +14,13 @@ package com.cannontech.stars.xml.serialize;
 import org.exolab.castor.xml.FieldValidator;
 import org.exolab.castor.xml.NodeType;
 import org.exolab.castor.xml.XMLFieldHandler;
-import org.exolab.castor.xml.handlers.EnumFieldHandler;
 import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
 import org.exolab.castor.xml.validators.StringValidator;
 
 /**
  * 
  * 
- * @version $Revision: 1.4 $ $Date: 2002/08/30 18:23:19 $
+ * @version $Revision: 1.5 $ $Date: 2002/09/06 22:37:21 $
 **/
 public class StarsSearchCustomerAccountDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -57,7 +56,7 @@ public class StarsSearchCustomerAccountDescriptor extends org.exolab.castor.xml.
         //-- initialize element descriptors
         
         //-- _searchBy
-        desc = new XMLFieldDescriptorImpl(com.cannontech.stars.xml.serialize.types.StarsSearchByType.class, "_searchBy", "SearchBy", NodeType.Element);
+        desc = new XMLFieldDescriptorImpl(SearchBy.class, "_searchBy", "SearchBy", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -70,18 +69,17 @@ public class StarsSearchCustomerAccountDescriptor extends org.exolab.castor.xml.
             {
                 try {
                     StarsSearchCustomerAccount target = (StarsSearchCustomerAccount) object;
-                    target.setSearchBy( (com.cannontech.stars.xml.serialize.types.StarsSearchByType) value);
+                    target.setSearchBy( (SearchBy) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
+                return new SearchBy();
             }
         } );
-        desc.setHandler( new EnumFieldHandler(com.cannontech.stars.xml.serialize.types.StarsSearchByType.class, handler));
-        desc.setImmutable(true);
+        desc.setHandler(handler);
         desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);

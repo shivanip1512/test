@@ -4,13 +4,18 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Iterator;
 
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.Name;
 import javax.xml.soap.SOAPBody;
+import javax.xml.soap.SOAPElement;
+import javax.xml.soap.SOAPEnvelope;
 import javax.xml.soap.SOAPHeader;
 import javax.xml.soap.SOAPMessage;
+
+import org.apache.commons.logging.Log;
 
 import com.cannontech.stars.xml.serialize.StarsOperation;
 
@@ -178,5 +183,46 @@ public class SOAPUtil {
         StringReader sr = new StringReader( operStr );
 
         return StarsOperation.unmarshal(sr);
+    }
+    
+    public static void mergeSOAPMsgOfOperation(SOAPMessage msg1, SOAPMessage msg2) throws Exception {
+    	SOAPEnvelope env1 = msg1.getSOAPPart().getEnvelope();
+    	Iterator it = env1.getBody().getChildElements( env1.createName(StarsConstants.STARS_OPERATION) );
+    	if (it.hasNext()) {
+    		SOAPElement operElmt1 = (SOAPElement) it.next();
+    		
+			SOAPEnvelope env2 = msg2.getSOAPPart().getEnvelope();
+			it = env2.getBody().getChildElements( env1.createName(StarsConstants.STARS_OPERATION) );
+			if (it.hasNext()) {
+				SOAPElement operElmt2 = (SOAPElement) it.next();
+				
+				it = operElmt2.getChildElements();
+				while (it.hasNext()) {
+					SOAPElement elmt = (SOAPElement) it.next();
+					
+					// Remove all the existing nodes with the same name first
+					Iterator it2 = operElmt2.getChildElements( elmt.getElementName() );
+					while (it2.hasNext()) {
+						SOAPElement elmt2 = (SOAPElement) it2.next();
+						elmt2.detachNode();
+					}
+					
+					operElmt1.addChildElement( elmt );
+				}
+			}
+    	}
+    }
+    
+    public static void logSOAPMsgForOperation(SOAPMessage msg, String leading) {
+    	try {
+	    	Log logger = XMLUtil.getLogger( SOAPUtil.class );
+	    	StarsOperation operation = parseSOAPMsgForOperation( msg );
+	    	StringWriter sw = new StringWriter();
+	    	operation.marshal( sw );
+	    	logger.debug( leading + sw.toString() );
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
     }
 }

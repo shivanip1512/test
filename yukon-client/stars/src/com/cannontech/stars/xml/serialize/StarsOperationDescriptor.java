@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperationDescriptor.java,v 1.4 2002/08/30 18:23:12 alauinger Exp $
+ * $Id: StarsOperationDescriptor.java,v 1.5 2002/09/06 22:37:19 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -19,7 +19,7 @@ import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
 /**
  * 
  * 
- * @version $Revision: 1.4 $ $Date: 2002/08/30 18:23:12 $
+ * @version $Revision: 1.5 $ $Date: 2002/09/06 22:37:19 $
 **/
 public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -47,45 +47,40 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        
-        //-- set grouping compositor
-        setCompositorAsChoice();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
         
-        //-- _starsOperatorLogin
-        desc = new XMLFieldDescriptorImpl(StarsOperatorLogin.class, "_starsOperatorLogin", "stars-OperatorLogin", NodeType.Element);
+        //-- _starsLogin
+        desc = new XMLFieldDescriptorImpl(StarsLogin.class, "_starsLogin", "stars-Login", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsOperation target = (StarsOperation) object;
-                return target.getStarsOperatorLogin();
+                return target.getStarsLogin();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsOperation target = (StarsOperation) object;
-                    target.setStarsOperatorLogin( (StarsOperatorLogin) value);
+                    target.setStarsLogin( (StarsLogin) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsOperatorLogin();
+                return new StarsLogin();
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsOperatorLogin
+        //-- validation code for: _starsLogin
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsLogoff
@@ -113,13 +108,11 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsLogoff
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsSuccess
@@ -147,13 +140,11 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsSuccess
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsFailure
@@ -181,13 +172,11 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsFailure
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsNewCustomerAccount
@@ -215,13 +204,11 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsNewCustomerAccount
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsSearchCustomerAccount
@@ -249,13 +236,11 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsSearchCustomerAccount
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsSearchCustomerAccountResponse
@@ -283,13 +268,11 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsSearchCustomerAccountResponse
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsUpdateCustomerAccount
@@ -317,13 +300,11 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsUpdateCustomerAccount
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsUpdateLMPrograms
@@ -351,13 +332,11 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsUpdateLMPrograms
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsSwitchCommand
@@ -385,13 +364,11 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsSwitchCommand
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsSwitchCommandResponse
@@ -419,13 +396,11 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsSwitchCommandResponse
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsGetLMControlHistory
@@ -453,13 +428,11 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsGetLMControlHistory
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsGetLMControlHistoryResponse
@@ -487,13 +460,11 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsGetLMControlHistoryResponse
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsCreateCallReport
@@ -521,13 +492,11 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsCreateCallReport
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsGetCallReportHistory
@@ -555,13 +524,11 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsGetCallReportHistory
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsGetCallReportHistoryResponse
@@ -589,13 +556,11 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsGetCallReportHistoryResponse
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsCreateServiceRequest
@@ -623,13 +588,11 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsCreateServiceRequest
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsGetServiceRequestHistory
@@ -657,13 +620,11 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsGetServiceRequestHistory
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsGetServiceRequestHistoryResponse
@@ -691,13 +652,75 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsGetServiceRequestHistoryResponse
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsGetEnrollmentPrograms
+        desc = new XMLFieldDescriptorImpl(StarsGetEnrollmentPrograms.class, "_starsGetEnrollmentPrograms", "stars-GetEnrollmentPrograms", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsOperation target = (StarsOperation) object;
+                return target.getStarsGetEnrollmentPrograms();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsOperation target = (StarsOperation) object;
+                    target.setStarsGetEnrollmentPrograms( (StarsGetEnrollmentPrograms) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsGetEnrollmentPrograms();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsGetEnrollmentPrograms
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsGetEnrollmentProgramsResponse
+        desc = new XMLFieldDescriptorImpl(StarsGetEnrollmentProgramsResponse.class, "_starsGetEnrollmentProgramsResponse", "stars-GetEnrollmentProgramsResponse", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsOperation target = (StarsOperation) object;
+                return target.getStarsGetEnrollmentProgramsResponse();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsOperation target = (StarsOperation) object;
+                    target.setStarsGetEnrollmentProgramsResponse( (StarsGetEnrollmentProgramsResponse) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsGetEnrollmentProgramsResponse();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsGetEnrollmentProgramsResponse
+        fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsOperationDescriptor()

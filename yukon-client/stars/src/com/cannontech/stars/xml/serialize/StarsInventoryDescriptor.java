@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsInventoryDescriptor.java,v 1.4 2002/08/30 18:23:12 alauinger Exp $
+ * $Id: StarsInventoryDescriptor.java,v 1.5 2002/09/06 22:37:20 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -14,15 +14,15 @@ package com.cannontech.stars.xml.serialize;
 import org.exolab.castor.xml.FieldValidator;
 import org.exolab.castor.xml.NodeType;
 import org.exolab.castor.xml.XMLFieldHandler;
+import org.exolab.castor.xml.handlers.DateFieldHandler;
 import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
-import org.exolab.castor.xml.validators.DateTimeValidator;
 import org.exolab.castor.xml.validators.IntegerValidator;
 import org.exolab.castor.xml.validators.StringValidator;
 
 /**
  * 
  * 
- * @version $Revision: 1.4 $ $Date: 2002/08/30 18:23:12 $
+ * @version $Revision: 1.5 $ $Date: 2002/09/06 22:37:20 $
 **/
 public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -180,7 +180,7 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         desc.setValidator(fieldValidator);
         
         //-- _receiveDate
-        desc = new XMLFieldDescriptorImpl(org.exolab.castor.types.Date.class, "_receiveDate", "ReceiveDate", NodeType.Element);
+        desc = new XMLFieldDescriptorImpl(java.util.Date.class, "_receiveDate", "ReceiveDate", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -193,17 +193,18 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
             {
                 try {
                     StarsInventory target = (StarsInventory) object;
-                    target.setReceiveDate( (org.exolab.castor.types.Date) value);
+                    target.setReceiveDate( (java.util.Date) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new org.exolab.castor.types.Date();
+                return new java.util.Date();
             }
         } );
-        desc.setHandler(handler);
+        desc.setHandler( new DateFieldHandler(handler));
+        desc.setImmutable(true);
         desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
@@ -211,14 +212,10 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- validation code for: _receiveDate
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            DateTimeValidator dv = new DateTimeValidator();
-            fieldValidator.setValidator(dv);
-        }
         desc.setValidator(fieldValidator);
         
         //-- _installDate
-        desc = new XMLFieldDescriptorImpl(org.exolab.castor.types.Date.class, "_installDate", "InstallDate", NodeType.Element);
+        desc = new XMLFieldDescriptorImpl(java.util.Date.class, "_installDate", "InstallDate", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -231,17 +228,18 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
             {
                 try {
                     StarsInventory target = (StarsInventory) object;
-                    target.setInstallDate( (org.exolab.castor.types.Date) value);
+                    target.setInstallDate( (java.util.Date) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new org.exolab.castor.types.Date();
+                return new java.util.Date();
             }
         } );
-        desc.setHandler(handler);
+        desc.setHandler( new DateFieldHandler(handler));
+        desc.setImmutable(true);
         desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
@@ -249,14 +247,10 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- validation code for: _installDate
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            DateTimeValidator dv = new DateTimeValidator();
-            fieldValidator.setValidator(dv);
-        }
         desc.setValidator(fieldValidator);
         
         //-- _removeDate
-        desc = new XMLFieldDescriptorImpl(org.exolab.castor.types.Date.class, "_removeDate", "RemoveDate", NodeType.Element);
+        desc = new XMLFieldDescriptorImpl(java.util.Date.class, "_removeDate", "RemoveDate", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -269,17 +263,18 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
             {
                 try {
                     StarsInventory target = (StarsInventory) object;
-                    target.setRemoveDate( (org.exolab.castor.types.Date) value);
+                    target.setRemoveDate( (java.util.Date) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new org.exolab.castor.types.Date();
+                return new java.util.Date();
             }
         } );
-        desc.setHandler(handler);
+        desc.setHandler( new DateFieldHandler(handler));
+        desc.setImmutable(true);
         desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
@@ -287,10 +282,6 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- validation code for: _removeDate
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            DateTimeValidator dv = new DateTimeValidator();
-            fieldValidator.setValidator(dv);
-        }
         desc.setValidator(fieldValidator);
         
         //-- _altTrackingNumber

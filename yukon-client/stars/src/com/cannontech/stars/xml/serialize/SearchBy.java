@@ -19,7 +19,9 @@ import org.exolab.castor.xml.Unmarshaller;
  * 
  * @version $Revision$ $Date$
 **/
-public class SearchBy implements java.io.Serializable {
+public class SearchBy extends StarsCustListEntry 
+implements java.io.Serializable
+{
 
 
       //----------------/

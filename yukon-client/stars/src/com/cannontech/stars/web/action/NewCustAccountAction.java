@@ -1,6 +1,7 @@
 package com.cannontech.stars.web.action;
 
 import java.util.Calendar;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,12 +9,12 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
+import com.cannontech.stars.xml.StarsCustomerAddressFactory;
+import com.cannontech.stars.xml.StarsCustomerContactFactory;
 import com.cannontech.stars.xml.serialize.AdditionalContact;
 import com.cannontech.stars.xml.serialize.BillingAddress;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
-import com.cannontech.stars.xml.serialize.StarsCustomerAddressFactory;
-import com.cannontech.stars.xml.serialize.StarsCustomerContactFactory;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsLMPrograms;
 import com.cannontech.stars.xml.serialize.StarsNewCustomerAccount;
@@ -121,10 +122,10 @@ public class NewCustAccountAction implements ActionBase {
 
             /* This part is for consumer side, must be removed later */
             Integer energyCompanyID = (Integer) session.getAttribute("ENERGY_COMPANY_ID");
-            com.cannontech.database.data.web.Operator operator = null;
+            com.cannontech.stars.web.StarsOperator operator = null;
 
             if (energyCompanyID == null) {
-                operator = (com.cannontech.database.data.web.Operator) session.getAttribute("OPERATOR");
+                operator = (com.cannontech.stars.web.StarsOperator) session.getAttribute("OPERATOR");
                 if (operator == null) {
                     StarsFailure failure = new StarsFailure();
                     failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
@@ -139,13 +140,13 @@ public class NewCustAccountAction implements ActionBase {
             StarsNewCustomerAccount newAccount = reqOper.getStarsNewCustomerAccount();
             StarsCustomerAccount starsAccount = newAccount.getStarsCustomerAccount();
 
-            com.cannontech.database.data.starscustomer.CustomerAccount account =
-                    new com.cannontech.database.data.starscustomer.CustomerAccount();
-            com.cannontech.database.db.starscustomer.CustomerAccount accountDB = account.getCustomerAccount();
+            com.cannontech.database.data.stars.customer.CustomerAccount account =
+                    new com.cannontech.database.data.stars.customer.CustomerAccount();
+            com.cannontech.database.db.stars.customer.CustomerAccount accountDB = account.getCustomerAccount();
             
-            com.cannontech.database.data.starscustomer.CustomerBase customer =
-            		new com.cannontech.database.data.starscustomer.CustomerBase();
-            com.cannontech.database.db.starscustomer.CustomerBase customerDB = customer.getCustomerBase();
+            com.cannontech.database.data.stars.customer.CustomerBase customer =
+            		new com.cannontech.database.data.stars.customer.CustomerBase();
+            com.cannontech.database.db.stars.customer.CustomerBase customerDB = customer.getCustomerBase();
             
             com.cannontech.database.db.customer.CustomerContact primContact = customer.getPrimaryContact();
             primContact.setContactID( primContact.getNextContactID() );
@@ -159,10 +160,17 @@ public class NewCustAccountAction implements ActionBase {
 	            contactVct.addElement( contact );
             }
             
+            Hashtable selectionList = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+            Integer custTypeID = com.cannontech.database.data.stars.CustomerListEntry.getListEntryID(
+		    		(Integer) selectionList.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CUSTOMERTYPE),
+		            com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_CUSTTYPE_RES );
+		    if (custTypeID == null)
+		    	custTypeID = new Integer( com.cannontech.database.db.stars.CustomerListEntry.NONE_INT );
+            
             customer.getEnergyCompanyBase().getEnergyCompany().setEnergyCompanyID( energyCompanyID );
             customerDB.setCustomerID( customerDB.getNextCustomerID() );
             customerDB.setPrimaryContactID( primContact.getContactID() );
-            customerDB.setCustomerType( "Residential" );
+            customerDB.setCustomerTypeID( custTypeID );
             customerDB.setTimeZone( Calendar.getInstance().getTimeZone().getID() );
             customerDB.setPaoID( new Integer(0) );
 
@@ -173,15 +181,15 @@ public class NewCustAccountAction implements ActionBase {
             billAddr.setAddressID( billAddr.getNextAddressID() );
             StarsCustomerAddressFactory.setCustomerAddress( billAddr, starsAccount.getBillingAddress() );
             
-            com.cannontech.database.data.starscustomer.AccountSite acctSite = account.getAccountSite();
-            com.cannontech.database.db.starscustomer.AccountSite acctSiteDB = acctSite.getAccountSite();
+            com.cannontech.database.data.stars.customer.AccountSite acctSite = account.getAccountSite();
+            com.cannontech.database.db.stars.customer.AccountSite acctSiteDB = acctSite.getAccountSite();
             
             com.cannontech.database.db.customer.CustomerAddress propAddr = acctSite.getStreetAddress();
             propAddr.setAddressID( propAddr.getNextAddressID() );
             StarsCustomerAddressFactory.setCustomerAddress( propAddr, starsAccount.getStreetAddress() );
 
-			com.cannontech.database.data.starscustomer.SiteInformation siteInfo = acctSite.getSiteInformation();            
-            com.cannontech.database.db.starscustomer.SiteInformation siteInfoDB = siteInfo.getSiteInformation();
+			com.cannontech.database.data.stars.customer.SiteInformation siteInfo = acctSite.getSiteInformation();            
+            com.cannontech.database.db.stars.customer.SiteInformation siteInfoDB = siteInfo.getSiteInformation();
             StarsSiteInformation starsSiteInfo = starsAccount.getStarsSiteInformation();
             
             siteInfoDB.setSiteID( siteInfoDB.getNextSiteID() );

@@ -44,9 +44,9 @@ public class CreateCallAction implements ActionBase {
 			if (callNumber == null || callNumber.equals("")) return null;
 			
 			createCall.setCallNumber( callNumber );
-			createCall.setCallDate( new org.exolab.castor.types.Date(new Date()) );
+			createCall.setCallDate( new Date() );
 			CallType callType = new CallType();
-			callType.setContent( req.getParameter("CallType") );
+			callType.setEntryID( Integer.parseInt(req.getParameter("CallType")) );
 			createCall.setCallType( callType );
 			createCall.setTakenBy( req.getParameter("TakenBy") );
 			createCall.setDescription( req.getParameter("Description") );
@@ -80,22 +80,21 @@ public class CreateCallAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            com.cannontech.database.data.starscustomer.CustomerAccount account =
-            		(com.cannontech.database.data.starscustomer.CustomerAccount) operator.getAttribute("CUSTOMER_ACCOUNT");
+            com.cannontech.database.data.stars.customer.CustomerAccount account =
+            		(com.cannontech.database.data.stars.customer.CustomerAccount) operator.getAttribute("CUSTOMER_ACCOUNT");
             
             StarsCreateCallReport createCall = reqOper.getStarsCreateCallReport();
-            com.cannontech.database.data.starsreport.CallReportBase callReport = new com.cannontech.database.data.starsreport.CallReportBase();
-            com.cannontech.database.db.starsreport.CallReportBase callReportDB = callReport.getCallReportBase();
+            com.cannontech.database.data.stars.report.CallReportBase callReport = new com.cannontech.database.data.stars.report.CallReportBase();
+            com.cannontech.database.db.stars.report.CallReportBase callReportDB = callReport.getCallReportBase();
             
             callReportDB.setCallNumber( createCall.getCallNumber() );
-            callReportDB.setCallType( createCall.getCallType().getContent() );
-            callReportDB.setDateTaken( createCall.getCallDate().toDate() );
+            callReportDB.setCallTypeID( new Integer(createCall.getCallType().getEntryID()) );
+            callReportDB.setDateTaken( createCall.getCallDate() );
             callReportDB.setDescription( createCall.getDescription() );
-            callReportDB.setActionItems( "" );
-            callReportDB.setRelatedToAccountNumber( account.getCustomerAccount().getAccountNumber() );
+            callReportDB.setAccountID( account.getCustomerAccount().getAccountID() );
             callReportDB.setCustomerID( account.getCustomerBase().getCustomerBase().getCustomerID() );
             
-            callReport.setCustomerBase( account.getCustomerBase() );
+            callReport.setCustomerAccount( account );
             callReport.setCallReportBase( callReportDB );
             
             Transaction transaction = Transaction.createTransaction( Transaction.INSERT, callReport );

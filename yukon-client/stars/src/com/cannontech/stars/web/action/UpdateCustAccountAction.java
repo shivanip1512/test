@@ -8,13 +8,13 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
 import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.xml.StarsCustAccountFactory;
+import com.cannontech.stars.xml.StarsCustomerAddressFactory;
+import com.cannontech.stars.xml.StarsCustomerContactFactory;
 import com.cannontech.stars.xml.serialize.BillingAddress;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
-import com.cannontech.stars.xml.serialize.StarsCustAccountFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInfo;
 import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
-import com.cannontech.stars.xml.serialize.StarsCustomerAddressFactory;
-import com.cannontech.stars.xml.serialize.StarsCustomerContactFactory;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSiteInformation;
@@ -48,7 +48,7 @@ public class UpdateCustAccountAction implements ActionBase {
 			else
 				accountInfo = (StarsCustAccountInfo) session.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
             if (accountInfo == null) return null;
-            
+
             StarsCustomerAccount account = accountInfo.getStarsCustomerAccount();
 
             account.setAccountNumber( req.getParameter("AcctNo") );
@@ -118,21 +118,13 @@ public class UpdateCustAccountAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            com.cannontech.database.data.starscustomer.CustomerAccount account =
-            		(com.cannontech.database.data.starscustomer.CustomerAccount) operator.getAttribute("CUSTOMER_ACCOUNT");
+            com.cannontech.database.data.stars.customer.CustomerAccount account =
+            		(com.cannontech.database.data.stars.customer.CustomerAccount) operator.getAttribute("CUSTOMER_ACCOUNT");
             StarsUpdateCustomerAccount starsAccount = reqOper.getStarsUpdateCustomerAccount();
 
-            com.cannontech.database.data.starscustomer.CustomerBase customer = account.getCustomerBase();
+            com.cannontech.database.data.stars.customer.CustomerBase customer = account.getCustomerBase();
 
-			/*
-			 * Delete the primary contact here, and it will be added later when CustomerBase is being updated
-			 * We need to do this because CustomerBase.update will always add the primary contact, not update
-			 * it, see CustomerContact.update for the reason
-			 */
             com.cannontech.database.db.customer.CustomerContact primContact = customer.getPrimaryContact();
-            Transaction transaction = Transaction.createTransaction( Transaction.DELETE, primContact );
-            transaction.execute();
-            
             StarsCustomerContactFactory.setCustomerContact(primContact, starsAccount.getPrimaryContact());
 
             Vector contactVct = new Vector();
@@ -143,18 +135,17 @@ public class UpdateCustAccountAction implements ActionBase {
             }
             customer.setCustomerContactVector( contactVct );
             
-            transaction = Transaction.createTransaction( Transaction.UPDATE, customer );
-            transaction.execute();
+            Transaction.createTransaction( Transaction.UPDATE, customer ).execute();
             
-            com.cannontech.database.db.starscustomer.CustomerAccount accountDB = account.getCustomerAccount();
+            com.cannontech.database.db.stars.customer.CustomerAccount accountDB = account.getCustomerAccount();
             accountDB.setAccountNumber( starsAccount.getAccountNumber() );
             accountDB.setAccountNotes( starsAccount.getAccountNotes() );
             
             com.cannontech.database.db.customer.CustomerAddress billAddr = account.getBillingAddress();
             StarsCustomerAddressFactory.setCustomerAddress( billAddr, starsAccount.getBillingAddress() );
             
-            com.cannontech.database.data.starscustomer.AccountSite acctSite = account.getAccountSite();
-            com.cannontech.database.db.starscustomer.AccountSite acctSiteDB = acctSite.getAccountSite();
+            com.cannontech.database.data.stars.customer.AccountSite acctSite = account.getAccountSite();
+            com.cannontech.database.db.stars.customer.AccountSite acctSiteDB = acctSite.getAccountSite();
             acctSiteDB.setSiteNumber( starsAccount.getPropertyNumber() );
             acctSiteDB.setPropertyNotes( starsAccount.getPropertyNotes() );
             
@@ -162,21 +153,22 @@ public class UpdateCustAccountAction implements ActionBase {
             StarsCustomerAddressFactory.setCustomerAddress( propAddr, starsAccount.getStreetAddress() );
             
             StarsSiteInformation starsSiteInfo = starsAccount.getStarsSiteInformation();
-            com.cannontech.database.data.starscustomer.SiteInformation siteInfo = acctSite.getSiteInformation();
+            com.cannontech.database.data.stars.customer.SiteInformation siteInfo = acctSite.getSiteInformation();
             
-            com.cannontech.database.db.starscustomer.SiteInformation siteInfoDB = siteInfo.getSiteInformation();
+            com.cannontech.database.db.stars.customer.SiteInformation siteInfoDB = siteInfo.getSiteInformation();
             siteInfoDB.setFeeder( starsSiteInfo.getFeeder() );
             siteInfoDB.setPole( starsSiteInfo.getPole() );
             siteInfoDB.setTransformerSize( starsSiteInfo.getTransformerSize() );
             siteInfoDB.setServiceVoltage( starsSiteInfo.getServiceVoltage() );
             
-            com.cannontech.database.db.starscustomer.Substation substation = siteInfo.getSubstation();
+            com.cannontech.database.db.stars.Substation substation = siteInfo.getSubstation();
             substation.setSubstationName( starsSiteInfo.getSubstationName() );
             
-            transaction = Transaction.createTransaction( Transaction.UPDATE, account );
-            transaction.execute();
+           Transaction.createTransaction( Transaction.UPDATE, account ).execute();
 
-            respOper.setStarsSuccess( new StarsSuccess() );
+			StarsSuccess success = new StarsSuccess();
+			success.setDescription( "Customer account information updated successfully" );
+            respOper.setStarsSuccess( success );
 
             return SOAPUtil.buildSOAPMessage( respOper );
         }

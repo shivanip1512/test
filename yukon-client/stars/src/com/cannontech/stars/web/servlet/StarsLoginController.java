@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.servlet.LoginController;
+import com.cannontech.stars.xml.serialize.StarsLogin;
 import com.cannontech.stars.xml.serialize.StarsOperation;
-import com.cannontech.stars.xml.serialize.StarsOperatorLogin;
 import com.cannontech.stars.xml.util.SOAPMessenger;
 import com.cannontech.stars.xml.util.XMLUtil;
 
@@ -36,11 +36,11 @@ public class StarsLoginController extends LoginController {
 
     public void service(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException {
         StarsOperation reqOper = new StarsOperation();
-        StarsOperatorLogin login = new StarsOperatorLogin();
+        StarsLogin login = new StarsLogin();
         login.setUsername( req.getParameter("USERNAME") );
         login.setPassword( req.getParameter("PASSWORD") );
         login.setDbAlias( req.getParameter("DATABASEALIAS") );
-        reqOper.setStarsOperatorLogin( login );
+        reqOper.setStarsLogin( login );
 
         try {
             StringWriter sw = new StringWriter();

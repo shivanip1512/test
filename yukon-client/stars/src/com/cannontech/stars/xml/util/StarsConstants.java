@@ -18,23 +18,19 @@ public class StarsConstants {
 	public static final int FAILURE_CODE_OPERATION_FAILED = 102;
 
     public static final String STARS_OPERATION = "stars-Operation";
-
     public static final String STARS_LOGIN = "stars-Login";
     public static final String STARS_LOGOFF = "stars-Logoff";
+    public static final String STARS_NEWCUSTACCOUNT = "stars-NewCustomerAccount";
+    public static final String STARS_SEARCHCUSTACCOUNT = "stars-SearchCustomerAccount";
+    public static final String STARS_UPDATECUSTACCOUNT = "stars-UpdateCustomerAccount";
+    public static final String STARS_SWITCHCOMMAND = "stars-SwitchCommand";
+    public static final String STARS_GETLMCTRLHIST = "stars-GetLMControlHistory";
+    public static final String STARS_CREATECALLREPORT = "stars-CreateCallReport";
+    public static final String STARS_GETCALLREPORTHIST = "stars-GetCallReportHistory";
+    public static final String STARS_CREATESERVICEREQ = "stars-CreateServiceRequest";
+    public static final String STARS_GETSERVICEREQHIST = "stars-GetServiceRequestHistory";
+    public static final String STARS_GETENROLLPROGRAMS = "stars-GetEnrollmentPrograms";
+    
     public static final String STARS_SUCCESS = "stars-Success";
     public static final String STARS_FAILURE = "stars-Failure";
-    public static final String STARS_NEWCUSTOMERACCOUNT = "stars-NewCustomerAccount";
-    public static final String STARS_SEARCHCUSTOMERACCOUNT = "stars-SearchCustomerAccount";
-    public static final String STARS_SEARCHCUSTOMERACCOUNTRESPONSE = "stars-SearchCustomerAccounteResponse";
-    public static final String STARS_UPDATECUSTOMERACCOUNT = "stars-UpdateCustomerAccount";
-    public static final String STARS_UPDATELMPROGRAMS = "stars-UpdateLMPrograms";
-
-    public static final String STARS_CUSTOMERACCOUNT = "stars-CustomerAccount";
-    public static final String STARS_SITEINFORMATION = "stars-SiteInformation";
-    public static final String STARS_LMPROGRAMS = "stars-LMPrograms";
-    public static final String STARS_LMPROGRAM = "stars-LMProgram";
-    public static final String STARS_APPLIANCES = "stars-Appliances";
-    public static final String STARS_APPLIANCE = "stars-Appliance";
-    public static final String STARS_INVENTORIES = "stars-Inventories";
-    public static final String STARS_LMHARDWARE = "stars-LMHardware";
 }

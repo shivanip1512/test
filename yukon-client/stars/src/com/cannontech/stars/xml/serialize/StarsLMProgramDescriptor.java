@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMProgramDescriptor.java,v 1.4 2002/08/30 18:23:12 alauinger Exp $
+ * $Id: StarsLMProgramDescriptor.java,v 1.5 2002/09/06 22:37:19 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -21,7 +21,7 @@ import org.exolab.castor.xml.validators.StringValidator;
 /**
  * 
  * 
- * @version $Revision: 1.4 $ $Date: 2002/08/30 18:23:12 $
+ * @version $Revision: 1.5 $ $Date: 2002/09/06 22:37:19 $
 **/
 public class StarsLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -206,13 +206,11 @@ public class StarsLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _status
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             StringValidator sv = new StringValidator();
             sv.setWhiteSpace("preserve");

@@ -12,6 +12,7 @@ package com.cannontech.stars.xml.serialize;
 //---------------------------------/
 
 import org.exolab.castor.xml.FieldValidator;
+import org.exolab.castor.xml.NodeType;
 import org.exolab.castor.xml.XMLFieldHandler;
 import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
 
@@ -20,7 +21,7 @@ import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsOperatorLoginDescriptor extends StarsLoginDescriptor {
+public class StarsCustSelectionListDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -40,18 +41,53 @@ public class StarsOperatorLoginDescriptor extends StarsLoginDescriptor {
      //- Constructors -/
     //----------------/
 
-    public StarsOperatorLoginDescriptor() {
+    public StarsCustSelectionListDescriptor() {
         super();
-        setExtendsWithoutFlatten(new StarsLoginDescriptor());
-        xmlName = "stars-OperatorLogin";
+        xmlName = "stars-CustSelectionList";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
         
-    } //-- com.cannontech.stars.xml.serialize.StarsOperatorLoginDescriptor()
+        //-- _listEntryList
+        desc = new XMLFieldDescriptorImpl(ListEntry.class, "_listEntryList", "ListEntry", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCustSelectionList target = (StarsCustSelectionList) object;
+                return target.getListEntry();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCustSelectionList target = (StarsCustSelectionList) object;
+                    target.addListEntry( (ListEntry) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new ListEntry();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(true);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _listEntryList
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(0);
+        desc.setValidator(fieldValidator);
+        
+    } //-- com.cannontech.stars.xml.serialize.StarsCustSelectionListDescriptor()
 
 
       //-----------/
@@ -69,15 +105,13 @@ public class StarsOperatorLoginDescriptor extends StarsLoginDescriptor {
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return super.getExtends();
+        return null;
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
-        if (identity == null)
-            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 
@@ -85,7 +119,7 @@ public class StarsOperatorLoginDescriptor extends StarsLoginDescriptor {
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsOperatorLogin.class;
+        return com.cannontech.stars.xml.serialize.StarsCustSelectionList.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

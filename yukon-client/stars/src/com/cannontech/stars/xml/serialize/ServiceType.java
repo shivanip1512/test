@@ -19,24 +19,9 @@ import org.exolab.castor.xml.Unmarshaller;
  * 
  * @version $Revision$ $Date$
 **/
-public class ServiceType implements java.io.Serializable {
-
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    /**
-     * internal content storage
-    **/
-    private java.lang.String _content = "";
-
-    private int _typeID;
-
-    /**
-     * keeps track of state for field: _typeID
-    **/
-    private boolean _has_typeID;
+public class ServiceType extends StarsCustListEntry 
+implements java.io.Serializable
+{
 
 
       //----------------/
@@ -45,48 +30,12 @@ public class ServiceType implements java.io.Serializable {
 
     public ServiceType() {
         super();
-        setContent("");
     } //-- com.cannontech.stars.xml.serialize.ServiceType()
 
 
       //-----------/
      //- Methods -/
     //-----------/
-
-    /**
-    **/
-    public void deleteTypeID()
-    {
-        this._has_typeID= false;
-    } //-- void deleteTypeID() 
-
-    /**
-     * Returns the value of field 'content'. The field 'content'
-     * has the following description: internal content storage
-     * 
-     * @return the value of field 'content'.
-    **/
-    public java.lang.String getContent()
-    {
-        return this._content;
-    } //-- java.lang.String getContent() 
-
-    /**
-     * Returns the value of field 'typeID'.
-     * 
-     * @return the value of field 'typeID'.
-    **/
-    public int getTypeID()
-    {
-        return this._typeID;
-    } //-- int getTypeID() 
-
-    /**
-    **/
-    public boolean hasTypeID()
-    {
-        return this._has_typeID;
-    } //-- boolean hasTypeID() 
 
     /**
     **/
@@ -124,28 +73,6 @@ public class ServiceType implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
-
-    /**
-     * Sets the value of field 'content'. The field 'content' has
-     * the following description: internal content storage
-     * 
-     * @param content the value of field 'content'.
-    **/
-    public void setContent(java.lang.String content)
-    {
-        this._content = content;
-    } //-- void setContent(java.lang.String) 
-
-    /**
-     * Sets the value of field 'typeID'.
-     * 
-     * @param typeID the value of field 'typeID'.
-    **/
-    public void setTypeID(int typeID)
-    {
-        this._typeID = typeID;
-        this._has_typeID = true;
-    } //-- void setTypeID(int) 
 
     /**
      * 

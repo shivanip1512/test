@@ -1,6 +1,7 @@
-package com.cannontech.stars.xml.serialize;
+package com.cannontech.stars.xml;
 
 import com.cannontech.database.db.customer.CustomerAddress;
+import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
 
 /**
  * <p>Title: </p>

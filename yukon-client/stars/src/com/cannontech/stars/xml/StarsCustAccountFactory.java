@@ -1,4 +1,6 @@
-package com.cannontech.stars.xml.serialize;
+package com.cannontech.stars.xml;
+
+import com.cannontech.stars.xml.serialize.StarsCustAccount;
 
 /**
  * <p>Title: </p>

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsAppliance.java,v 1.4 2002/08/30 18:23:12 alauinger Exp $
+ * $Id: StarsAppliance.java,v 1.5 2002/09/06 22:37:20 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -17,7 +17,7 @@ import org.exolab.castor.xml.Unmarshaller;
 /**
  * 
  * 
- * @version $Revision: 1.4 $ $Date: 2002/08/30 18:23:12 $
+ * @version $Revision: 1.5 $ $Date: 2002/09/06 22:37:20 $
 **/
 public class StarsAppliance implements java.io.Serializable {
 
@@ -47,7 +47,12 @@ public class StarsAppliance implements java.io.Serializable {
     **/
     private boolean _has_lmProgramID;
 
-    private java.lang.String _applianceCategory;
+    private int _applianceCategoryID;
+
+    /**
+     * keeps track of state for field: _applianceCategoryID
+    **/
+    private boolean _has_applianceCategoryID;
 
     private java.lang.String _categoryDescription;
 
@@ -66,6 +71,13 @@ public class StarsAppliance implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+    **/
+    public void deleteApplianceCategoryID()
+    {
+        this._has_applianceCategoryID= false;
+    } //-- void deleteApplianceCategoryID() 
 
     /**
     **/
@@ -89,14 +101,14 @@ public class StarsAppliance implements java.io.Serializable {
     } //-- void deleteLmProgramID() 
 
     /**
-     * Returns the value of field 'applianceCategory'.
+     * Returns the value of field 'applianceCategoryID'.
      * 
-     * @return the value of field 'applianceCategory'.
+     * @return the value of field 'applianceCategoryID'.
     **/
-    public java.lang.String getApplianceCategory()
+    public int getApplianceCategoryID()
     {
-        return this._applianceCategory;
-    } //-- java.lang.String getApplianceCategory() 
+        return this._applianceCategoryID;
+    } //-- int getApplianceCategoryID() 
 
     /**
      * Returns the value of field 'applianceID'.
@@ -147,6 +159,13 @@ public class StarsAppliance implements java.io.Serializable {
     {
         return this._notes;
     } //-- java.lang.String getNotes() 
+
+    /**
+    **/
+    public boolean hasApplianceCategoryID()
+    {
+        return this._has_applianceCategoryID;
+    } //-- boolean hasApplianceCategoryID() 
 
     /**
     **/
@@ -207,15 +226,16 @@ public class StarsAppliance implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'applianceCategory'.
+     * Sets the value of field 'applianceCategoryID'.
      * 
-     * @param applianceCategory the value of field
-     * 'applianceCategory'.
+     * @param applianceCategoryID the value of field
+     * 'applianceCategoryID'.
     **/
-    public void setApplianceCategory(java.lang.String applianceCategory)
+    public void setApplianceCategoryID(int applianceCategoryID)
     {
-        this._applianceCategory = applianceCategory;
-    } //-- void setApplianceCategory(java.lang.String) 
+        this._applianceCategoryID = applianceCategoryID;
+        this._has_applianceCategoryID = true;
+    } //-- void setApplianceCategoryID(int) 
 
     /**
      * Sets the value of field 'applianceID'.

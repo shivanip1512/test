@@ -36,15 +36,17 @@ public class CreateServiceRequestAction implements ActionBase {
 
 			String orderNumber = req.getParameter("OrderNumber");
 			if (orderNumber == null || orderNumber.equals("")) return null;
-			
 			createOrder.setOrderNumber( orderNumber );
+			
 			ServiceType servType = new ServiceType();
-			servType.setContent( req.getParameter("ServiceType") );
+			servType.setEntryID( Integer.parseInt(req.getParameter("ServiceType")) );
 			createOrder.setServiceType( servType );
-			createOrder.setDateAssigned( new Date() );
+			
 			ServiceCompany servCompany = new ServiceCompany();
-			servCompany.setContent( req.getParameter("ServiceCompany") );
+			servCompany.setEntryID( Integer.parseInt(req.getParameter("ServiceCompany")) );
 			createOrder.setServiceCompany( servCompany );
+			
+			createOrder.setDateReported( new Date() );
 			createOrder.setDescription( req.getParameter("Notes") );
 			
 			StarsOperation operation = new StarsOperation();
@@ -76,38 +78,23 @@ public class CreateServiceRequestAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            com.cannontech.database.data.starscustomer.CustomerAccount account =
-            		(com.cannontech.database.data.starscustomer.CustomerAccount) operator.getAttribute("CUSTOMER_ACCOUNT");
+            com.cannontech.database.data.stars.customer.CustomerAccount account =
+            		(com.cannontech.database.data.stars.customer.CustomerAccount) operator.getAttribute("CUSTOMER_ACCOUNT");
             		
             StarsCreateServiceRequest createOrder = reqOper.getStarsCreateServiceRequest();
-            com.cannontech.database.data.starsreport.WorkOrderBase workOrder = new com.cannontech.database.data.starsreport.WorkOrderBase();
-            com.cannontech.database.db.starsreport.WorkOrderBase workOrderDB = workOrder.getWorkOrderBase();
+            com.cannontech.database.data.stars.report.WorkOrderBase workOrder = new com.cannontech.database.data.stars.report.WorkOrderBase();
+            com.cannontech.database.db.stars.report.WorkOrderBase workOrderDB = workOrder.getWorkOrderBase();
             
-            workOrderDB.setOrderNumber( Integer.valueOf(createOrder.getOrderNumber()) );
-            workOrderDB.setWorkType( createOrder.getServiceType().getContent() );
-            workOrderDB.setCurrentState( "Open" );
-            workOrderDB.setDateAssigned( createOrder.getDateAssigned() );
+            workOrderDB.setOrderNumber( createOrder.getOrderNumber() );
+            workOrderDB.setWorkTypeID( new Integer(createOrder.getServiceType().getEntryID()) );
+            workOrderDB.setCurrentStateID( new Integer(19) );	// "To be scheduled"
+            workOrderDB.setCustomerID( account.getCustomerBase().getCustomerBase().getCustomerID() );
+            workOrderDB.setSiteID( account.getAccountSite().getAccountSite().getAccountSiteID() );
+            workOrderDB.setServiceCompanyID( new Integer(createOrder.getServiceCompany().getEntryID()) );
+            workOrderDB.setDateReported( createOrder.getDateReported() );
             workOrderDB.setDescription( createOrder.getDescription() );
-            workOrderDB.setServiceProviderName( createOrder.getServiceCompany().getContent() );
-            workOrderDB.setAccountNumber( account.getCustomerAccount().getAccountNumber() );
-            workOrderDB.setDateCompleted( new Date() );
-            workOrderDB.setActionTaken("");
-            workOrderDB.setSPContactFirstName("");
-            workOrderDB.setSPContactLastName("");
-            workOrderDB.setSPMainPhone("");
-            workOrderDB.setSPSecondPhone("");
-            workOrderDB.setAcctAddress1("");
-            workOrderDB.setAcctAddress2("");
-            workOrderDB.setAcctCity("");
-            workOrderDB.setAcctFirstName("");
-            workOrderDB.setAcctGridNumber("");
-            workOrderDB.setAcctLastName("");
-            workOrderDB.setAcctMainPhone("");
-            workOrderDB.setAcctSecondPhone("");
-            workOrderDB.setAcctState("");
-            workOrderDB.setAcctZip("");
             
-            workOrder.setEnergyCompanyBase( account.getCustomerBase().getEnergyCompanyBase() );
+            workOrder.setCustomerBase( account.getCustomerBase() );
             workOrder.setWorkOrderBase( workOrderDB );
             
             Transaction transaction = Transaction.createTransaction( Transaction.INSERT, workOrder );

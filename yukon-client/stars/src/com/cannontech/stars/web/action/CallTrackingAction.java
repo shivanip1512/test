@@ -1,5 +1,6 @@
 package com.cannontech.stars.web.action;
 
+import java.util.Hashtable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
@@ -62,29 +63,38 @@ public class CallTrackingAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            com.cannontech.database.data.starscustomer.CustomerAccount account =
-            		(com.cannontech.database.data.starscustomer.CustomerAccount) operator.getAttribute("CUSTOMER_ACCOUNT");
+            com.cannontech.database.data.stars.customer.CustomerAccount account =
+            		(com.cannontech.database.data.stars.customer.CustomerAccount) operator.getAttribute("CUSTOMER_ACCOUNT");
             
             conn = com.cannontech.database.PoolManager.getInstance().getConnection(
                         com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
             if (conn == null) return null;
             
-            com.cannontech.database.db.starsreport.CallReportBase[] calls =
-            		com.cannontech.database.db.starsreport.CallReportBase.getAllCallReports(
-            			account.getCustomerBase().getCustomerBase().getCustomerID(),
-            			account.getCustomerAccount().getAccountNumber(),
-            			conn );
+            com.cannontech.database.db.stars.report.CallReportBase[] calls =
+            		com.cannontech.database.db.stars.report.CallReportBase.getAllAccountCallReports(
+            			account.getCustomerAccount().getAccountID(), conn );
             if (calls == null) return null;
+            
+            Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+            com.cannontech.database.db.stars.CustomerListEntry[] callTypes =
+            		com.cannontech.database.data.stars.CustomerListEntry.getAllListEntries(
+            			(Integer) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CALLTYPE) );
             
             StarsGetCallReportHistoryResponse callTrackingResp = new StarsGetCallReportHistoryResponse();
             for (int i = 0; i < calls.length; i++) {
             	StarsCallReportHistory callHist = new StarsCallReportHistory();
             	
 				callHist.setCallNumber( calls[i].getCallNumber() );
-            	callHist.setCallDate( new org.exolab.castor.types.Date(calls[i].getDateTaken()) );
+            	callHist.setCallDate( calls[i].getDateTaken() );
+            	
             	CallType callType = new CallType();
-            	callType.setContent( calls[i].getCallType() );
+            	for (int j = 0; j < callTypes.length; j++)
+            		if (callTypes[j].getEntryID().intValue() == calls[i].getCallTypeID().intValue()) {
+            			callType.setEntryID( callTypes[j].getEntryID().intValue() );
+		            	callType.setContent( callTypes[j].getEntryText() );
+            		}
             	callHist.setCallType( callType );
+            	
             	callHist.setTakenBy( "" );
             	callHist.setDescription( calls[i].getDescription() );
             	

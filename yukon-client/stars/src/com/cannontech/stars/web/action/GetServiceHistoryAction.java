@@ -4,8 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.database.Transaction;
 import com.cannontech.stars.web.StarsOperator;
-import com.cannontech.stars.xml.serialize.CurrentState;
 import com.cannontech.stars.xml.serialize.ServiceCompany;
 import com.cannontech.stars.xml.serialize.ServiceType;
 import com.cannontech.stars.xml.serialize.StarsFailure;
@@ -64,36 +64,46 @@ public class GetServiceHistoryAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            com.cannontech.database.data.starscustomer.CustomerAccount account =
-            		(com.cannontech.database.data.starscustomer.CustomerAccount) operator.getAttribute("CUSTOMER_ACCOUNT");
+            com.cannontech.database.data.stars.customer.CustomerAccount account =
+            		(com.cannontech.database.data.stars.customer.CustomerAccount) operator.getAttribute("CUSTOMER_ACCOUNT");
             
             conn = com.cannontech.database.PoolManager.getInstance().getConnection(
                         com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
             if (conn == null) return null;
             
-            com.cannontech.database.db.starsreport.WorkOrderBase[] orders =
-            		com.cannontech.database.db.starsreport.WorkOrderBase.getAllWorkOrders(
-            			account.getCustomerBase().getCustomerBase().getCustomerID(), conn );
+            com.cannontech.database.db.stars.report.WorkOrderBase[] orders =
+            		com.cannontech.database.db.stars.report.WorkOrderBase.getAllSiteWorkOrders(
+            			account.getAccountSite().getAccountSite().getAccountSiteID(), conn );
             if (orders == null) return null;
             
             StarsGetServiceRequestHistoryResponse getServHistResp = new StarsGetServiceRequestHistoryResponse();
             for (int i = 0; i < orders.length; i++) {
             	StarsServiceRequestHistory servHist = new StarsServiceRequestHistory();
             	
-            	servHist.setOrderNumber( orders[i].getOrderNumber().toString() );
+            	com.cannontech.database.data.stars.report.WorkOrderBase order =
+            			new com.cannontech.database.data.stars.report.WorkOrderBase();
+            	order.setWorkOrderBase( orders[i] );
+            	order.setCustomerBase( account.getCustomerBase() );
+            	order.setSite( account.getAccountSite() );
+            	Transaction.createTransaction( Transaction.RETRIEVE, order ).execute();
+            	
             	ServiceType servType = new ServiceType();
-            	servType.setContent( orders[i].getWorkType() );
+            	servType.setEntryID( orders[i].getWorkTypeID().intValue() );
+            	servType.setContent( order.getWorkType().getEntryText() );
             	servHist.setServiceType( servType );
-            	CurrentState state = new CurrentState();
-            	state.setContent( orders[i].getCurrentState() );
-            	servHist.setCurrentState( state );
-            	servHist.setDateAssigned( orders[i].getDateAssigned() );
+            	
+            	ServiceCompany servCompany = new ServiceCompany();
+            	servCompany.setEntryID( orders[i].getServiceCompanyID().intValue() );
+            	servCompany.setContent( order.getServiceCompany().getServiceCompany().getCompanyName() );
+            	servHist.setServiceCompany( servCompany );
+            	
+            	servHist.setOrderNumber( orders[i].getOrderNumber().toString() );
+            	servHist.setCurrentState( order.getCurrentState().getEntryText() );
+            	servHist.setDateReported( orders[i].getDateReported() );
             	servHist.setDescription( orders[i].getDescription() );
+            	servHist.setDateScheduled( orders[i].getDateScheduled() );
             	servHist.setDateCompleted( orders[i].getDateCompleted() );
             	servHist.setActionTaken( orders[i].getActionTaken() );
-            	ServiceCompany servCompany = new ServiceCompany();
-            	servCompany.setContent( orders[i].getServiceProviderName() );
-            	servHist.setServiceCompany( servCompany );
             	
             	getServHistResp.addStarsServiceRequestHistory( servHist );
             }
