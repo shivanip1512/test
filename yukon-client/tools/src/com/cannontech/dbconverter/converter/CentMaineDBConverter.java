@@ -35,8 +35,27 @@ import com.cannontech.database.db.pao.PAOExclusion;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.database.db.port.CommPort;
+import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.dbtools.updater.MessageFrameAdaptor;
 import com.cannontech.tools.gui.*;
+
+import com.cannontech.database.data.capcontrol.CapBankController6510;
+import com.cannontech.database.data.device.CCUBase;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.IEDMeter;
+import com.cannontech.database.data.device.LCUBase;
+import com.cannontech.database.data.device.MCTBase;
+import com.cannontech.database.data.device.PagingTapTerminal;
+import com.cannontech.database.data.device.RTUBase;
+import com.cannontech.database.data.device.DNPBase;
+import com.cannontech.database.data.device.RepeaterBase;
+import com.cannontech.database.data.device.TCUBase;
+import com.cannontech.database.data.device.Series5Base;
+import com.cannontech.database.data.device.TwoWayDevice;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.device.DeviceScanRate;
+import com.cannontech.database.db.device.DeviceWindow;
 
 /**
  * A skeleton app that is created from the following files:
@@ -581,9 +600,9 @@ public boolean processRouteFile()
 		Integer busNum = null;
 		System.out.println("substring "+crtAdd.substring(4,6));
 		if((crtAdd).substring(4,6).equals("00")){
-			busNum = new Integer(0);
-		}else{
 			busNum = new Integer(1);
+		}else{
+			busNum = new Integer(2);
 		}
 		route.getCarrierRoute().setBusNumber(busNum);
 		route.setDefaultRoute("Y");
@@ -763,6 +782,7 @@ public boolean processMCTFile()
 		}else if(dType.equalsIgnoreCase("DCT501")){
 			deviceType = DeviceTypes.STRING_DCT_501[0];
 		}
+		
 		if(deviceType == DeviceTypes.STRING_DCT_501[0]){
 			// do something
 		}else{
@@ -780,6 +800,23 @@ public boolean processMCTFile()
 			device.setPAOName(devID);
 			
 			deviceIDsMap.put( device.getPAOName(), device.getPAObjectID());
+			
+			java.util.Vector newScanRateVector = new java.util.Vector(3);
+			
+			if (devID.substring(devID.length()-2,devID.length()).equalsIgnoreCase("KQ") 
+					|| devID.substring(devID.length()-2,devID.length()).equalsIgnoreCase("KW")){
+				
+				Integer altRate = new Integer(0);
+
+				Integer accumulatorGroup = new Integer(0);
+				
+				newScanRateVector.addElement(new DeviceScanRate(deviceID, DeviceScanRate.TYPE_ACCUMULATOR, new Integer(300), accumulatorGroup, altRate));
+	
+				Integer integrityGroup = new Integer(0);
+				altRate = new Integer(0);
+				newScanRateVector.addElement(new DeviceScanRate(deviceID, DeviceScanRate.TYPE_INTEGRITY, new Integer(300), integrityGroup, altRate));
+				device.setDeviceScanRateVector(newScanRateVector);
+			}
 			
 			// address,routeid,group1,group2,LsInt
 			// set the MCT address
