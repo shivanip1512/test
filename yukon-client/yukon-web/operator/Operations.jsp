@@ -4,18 +4,11 @@
 	 **/
 %>
 
-<%@ page import="com.cannontech.roles.application.WebClientRole" %>
-
 <%@ page import="com.cannontech.roles.analysis.ReportingRole" %>
-<%@ page import="com.cannontech.roles.operator.AdministratorRole" %>
-<%@ page import="com.cannontech.roles.operator.CommercialMeteringRole" %>
-<%@ page import="com.cannontech.roles.operator.ConsumerInfoRole" %>
 <%@ page import="com.cannontech.roles.operator.DirectCurtailmentRole" %>
 <%@ page import="com.cannontech.roles.operator.DirectLoadcontrolRole" %>
 <%@ page import="com.cannontech.roles.operator.EnergyBuybackRole" %>
 <%@ page import="com.cannontech.roles.operator.OddsForControlRole" %>
-<%@ page import="com.cannontech.roles.operator.InventoryRole" %>
-<%@ page import="com.cannontech.roles.operator.WorkOrderRole" %>
 
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 <%@ include file="Consumer/include/StarsHeader.jsp" %>
@@ -45,10 +38,7 @@ function confirmDelete() {
         </tr>
         <tr>
           <td align="right">
-<%
-	if (session.getAttribute(com.cannontech.common.constants.LoginController.SAVED_YUKON_USERS) == null
-		|| liteEC.getParent() == null) {
-%>
+<% if (session.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) == null) { %>
             <span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a></span>
 <% } else { %>
 			<span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Back to <%= liteEC.getParent().getName() %></a></span>
@@ -174,50 +164,48 @@ function confirmDelete() {
       <div align="left"></div>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
-          <td width="20%" >&nbsp;</td>
-          <td width="20%" >&nbsp;</td>
-          <td width="20%" >&nbsp;</td>
-          <td width="20%">&nbsp;</td>
-          <td width="20%">&nbsp;</td>
-          </tr>
+          <td width="25%">&nbsp;</td>
+          <td width="25%">&nbsp;</td>
+          <td width="25%">&nbsp;</td>
+          <td width="25%">&nbsp;</td>
+        </tr>
         <tr> 
           <!-- Changed direct control pages to use the 3 tier display instead of the 1tier (LoadControl/oper_direct.jsp) display-->
-            <td width="20%" class = "MainText">
-<cti:checkRole roleid="<%= DirectLoadcontrolRole.ROLEID %>">
-              <div align = "center" style = "border:solid 1px #666999;"> <a href = "LoadControl/oper_direct.jsp" class = "Link1" style = "text-decoration:none;">Direct</a></div>
+<cti:checkRole roleid="<%= DirectLoadcontrolRole.ROLEID %>"> 
+          <td width="25%" class = "MainText"> 
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "LoadControl/oper_direct.jsp" class = "Link1" style = "text-decoration:none;">Direct</a></div>
+          </td>
 </cti:checkRole>
-            </td>
 
-            <td width="20%" class = "MainText">
-<cti:checkRole roleid="<%= DirectLoadcontrolRole.ROLEID %>">
-              <div align = "center" style = "border:solid 1px #666999;"> <a href = "../loadmgmt/controlareas.jsp" class = "Link1" style = "text-decoration:none;">3-Tier Direct</a></div>			  
-</cti:checkRole>
-            </td>
-
-            <td width="20%" class = "MainText">
 <cti:checkRole roleid="<%= DirectCurtailmentRole.ROLEID %>"> 
-              <div align = "center" style = "border:solid 1px #666999;"> <a href = "LoadControl/oper_mand.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= DirectCurtailmentRole.CURTAILMENT_LABEL%>" defaultvalue="Notification"/></a></div>
+          <td width="25%" class = "MainText"> 
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "LoadControl/oper_mand.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= DirectCurtailmentRole.CURTAILMENT_LABEL%>" defaultvalue="Notification"/></a></div>
+          </td>
 </cti:checkRole>
-			</td>
 
-            <td width="20%" class = "MainText">
-<cti:checkRole roleid="<%= EnergyBuybackRole.ROLEID %>">
-              <div align = "center" style = "border:solid 1px #666999;"> <a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/></a></div>
+<cti:checkRole roleid="<%= EnergyBuybackRole.ROLEID %>"> 
+          <td width="25%" class = "MainText"> 
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/></a></div>
+          </td>
 </cti:checkRole>
-			</td>
 
-            <td width="20%" class = "MainText">
-<cti:checkRole roleid="<%= OddsForControlRole.ROLEID %>">
-              <div align = "center" style = "border:solid 1px #666999;"> <a href = "Consumer/Odds.jsp" class = "Link1" style = "text-decoration:none;">Odds for Control</a></div>
+<cti:checkRole roleid="<%= OddsForControlRole.ROLEID %>"> 
+          <td width="25%" class = "MainText"> 
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "Consumer/Odds.jsp" class = "Link1" style = "text-decoration:none;">Odds 
+              for Control</a></div>
+          </td>
 </cti:checkRole>
-			</td>
-          </tr>
-        <tr> 
-          <td width="20%" class = "MainText">&nbsp;</td>
-          <td width="20%" class = "MainText">&nbsp;</td>
-          <td width="20%" class = "MainText">&nbsp;</td>
-          <td width="20%">&nbsp;</td>
-          <td width="20%">&nbsp;</td>
+        </tr>
+        <tr>
+<cti:checkRole roleid="<%= DirectLoadcontrolRole.ROLEID %>"> 
+          <td width="25%" class = "MainText"> 
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "../loadmgmt/controlareas.jsp" class = "Link1" style = "text-decoration:none;">3-Tier 
+              Direct</a></div>
+          </td>
+</cti:checkRole>
+          <td width="25%" class = "MainText">&nbsp;</td>
+          <td width="25%" class = "MainText">&nbsp;</td>
+          <td width="25%" class = "MainText">&nbsp;</td>
         </tr>
       </table>
     </td>
@@ -226,6 +214,10 @@ function confirmDelete() {
 </cti:checkMultiRole>
 
 <cti:checkRole roleid="<%= InventoryRole.ROLEID %>">
+<%
+	// Start loading all inventory (if not yet) in the background
+	liteEC.init();
+%>
   <tr> 
     <td width="102" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
     <td width="555" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
@@ -373,28 +365,59 @@ function confirmDelete() {
           <td width="25%">&nbsp;</td>
           <td width="25%">&nbsp;</td>
         </tr>
+<cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY %>"> 
         <tr> 
-          <td align = "center" class = "MainText" width="25%"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY %>"> 
+          <form name="DeleteForm" method="post" action="<%= request.getContextPath() %>/servlet/StarsAdmin">
+            <input type="hidden" name="action" value="DeleteEnergyCompany">
+            <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/login.jsp">
+            <td align = "center" class="MainText" width="25%"> 
+              <div align = "center" style = "border:solid 1px #666999;"><span class="Clickable" style="text-decoration:none;" onClick="confirmDelete()">Delete 
+                Energy Company</span></div>
+            </td>
+          </form>
+        </tr>
+</cti:checkProperty>
+<cti:checkNoProperty propertyid="<%= AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY %>"> 
+        <tr>
+<cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY %>"> 
+          <td align = "center" class = "MainText" width="25%"> 
             <div align = "center" style = "border:solid 1px #666999;"><a href = "Admin/AdminTest.jsp" class = "Link1" style = "text-decoration:none;">Config 
               Energy Company</a></div>
-            </cti:checkProperty> </td>
-		  <form name="DeleteForm" method="post" action="<%= request.getContextPath() %>/servlet/StarsAdmin">
-		    <input type="hidden" name="action" value="DeleteEnergyCompany">
-		    <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/login.jsp">
-            <td align = "center" class="MainText" width="25%"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY %>"> 
-              <div align = "center" style = "border:solid 1px #666999;"><span class="Clickable" style="text-decoration:none;" onclick="confirmDelete()">Delete 
-                Energy Company</span></div>
-              </cti:checkProperty> </td>
-		  </form>
-          <td align = "center" class = "MainText" width="25%"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY %>"> 
+          </td>
+</cti:checkProperty>
+<cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_MANAGE_MEMBERS %>"> 
+          <td align = "center" class = "MainText" width="25%"> 
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "Admin/ManageMembers.jsp" class = "Link1" style = "text-decoration:none;"> 
+              Member<br>
+              Management</a></div>
+          </td>
+</cti:checkProperty>
+<cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY %>"> 
+          <td align = "center" class = "MainText" width="25%"> 
             <div align = "center" style = "border:solid 1px #666999;"><a href = "Admin/NewEnergyCompany.jsp" class = "Link1" style = "text-decoration:none;">New 
               Energy Company</a></div>
-            </cti:checkProperty> </td>
-          <td align = "center" class = "MainText" width="25%"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_MANAGE_MEMBERS %>"> 
-            <div align = "center" style = "border:solid 1px #666999;"><a href = "Admin/ManageMembers.jsp" class = "Link1" style = "text-decoration:none;"> 
-              Member Management</a></div>
-            </cti:checkProperty></td>
+          </td>
+</cti:checkProperty> 
+          <td align = "center" class = "MainText" width="25%">&nbsp;</td>
         </tr>
+        <tr>
+<cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS %>"> 
+          <td align = "center" class = "MainText" width="25%"> 
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "Admin/SwitchCommands.jsp" class = "Link1" style = "text-decoration:none;">View 
+              Batch Commands</a></div>
+          </td>
+</cti:checkProperty>
+<cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_VIEW_OPT_OUT_EVENTS %>"> 
+          <td align = "center" class = "MainText" width="25%"> 
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "Admin/OptOutEvents.jsp" class = "Link1" style = "text-decoration:none;">View 
+              Scheduled <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN %>" defaultvalue="opt out" format="all_capital"/> 
+              Events</a></div>
+          </td>
+</cti:checkProperty> 
+          <td align = "center" class = "MainText" width="25%">&nbsp;</td>
+          <td align = "center" class = "MainText" width="25%">&nbsp;</td>
+        </tr>
+</cti:checkNoProperty> 
       </table>
     </td>
     <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="16"></td>
