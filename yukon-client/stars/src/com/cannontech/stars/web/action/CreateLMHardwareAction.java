@@ -25,6 +25,7 @@ import com.cannontech.database.data.stars.hardware.LMThermostatSeason;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.InventoryManager;
 import com.cannontech.stars.web.servlet.SOAPServer;
@@ -261,8 +262,11 @@ public class CreateLMHardwareAction implements ActionBase {
 	 * from that account first, then add it to the new account. 
 	 */
 	public static LiteInventoryBase addInventory(StarsCreateLMHardware createHw, LiteStarsCustAccountInformation liteAcctInfo,
-			LiteStarsEnergyCompany energyCompany, java.sql.Connection conn) throws java.sql.SQLException
+		LiteStarsEnergyCompany energyCompany, java.sql.Connection conn) throws WebClientException, java.sql.SQLException
 	{
+		if (createHw.getLMHardware() != null && createHw.getLMHardware().getManufacturerSerialNumber().equals(""))
+			throw new WebClientException( "Serial # cannot be empty" );
+		
 		int categoryID = 0;
 		if (createHw.getLMHardware() != null)
 			categoryID = ECUtils.getInventoryCategoryID(createHw.getLMHardware().getLMHardwareType().getEntryID(), energyCompany);

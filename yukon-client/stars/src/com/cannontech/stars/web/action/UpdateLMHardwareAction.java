@@ -251,11 +251,11 @@ public class UpdateLMHardwareAction implements ActionBase {
 			String serialNo = updateHw.getLMHardware().getManufacturerSerialNumber();
 			
 			if (serialNo.equals(""))
-				throw new WebClientException( "Cannot update hardware information: serial # cannot be empty" );
+				throw new WebClientException( "Serial # cannot be empty" );
 			
 			if (!liteHw.getManufacturerSerialNumber().equals(serialNo) &&
 				energyCompany.searchForLMHardware(updateHw.getLMHardware().getLMHardwareType().getEntryID(), serialNo) != null)
-				throw new WebClientException( "Cannot update hardware information: serial # already exists" );
+				throw new WebClientException( "Serial # already exists" );
 			
 			com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
 					new com.cannontech.database.data.stars.hardware.LMHardwareBase();

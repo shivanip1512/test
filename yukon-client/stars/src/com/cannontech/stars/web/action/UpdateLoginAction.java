@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
@@ -18,6 +19,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
@@ -70,7 +72,8 @@ public class UpdateLoginAction implements ActionBase {
         
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-
+            StarsUpdateLogin updateLogin = reqOper.getStarsUpdateLogin();
+            
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             if (user == null) {
                 respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -78,68 +81,17 @@ public class UpdateLoginAction implements ActionBase {
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            int energyCompanyID = user.getEnergyCompanyID();
-			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
-            
+			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
             LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation)
             		user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-            if (liteAcctInfo == null) {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-            }
             
-            LiteContact liteContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
-	        int userID = liteContact.getLoginID();
-	        
-            StarsUpdateLogin updateLogin = reqOper.getStarsUpdateLogin();
-            String username = updateLogin.getUsername();
-            String password = updateLogin.getPassword();
-	        	
-            if (userID == com.cannontech.user.UserUtils.USER_YUKON_ID) {
-            	// Create new customer login
-		        if (username.trim().length() == 0 || password.trim().length() == 0) {
-	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Username and password cannot be empty") );
-	            	return SOAPUtil.buildSOAPMessage( respOper );
-		        }
-		        
-		        if (!checkLogin( updateLogin )) {
-	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Username already exists, please enter a different one") );
-	            	return SOAPUtil.buildSOAPMessage( respOper );
-		        }
-		        
-            	LiteYukonUser liteUser = createLogin( updateLogin, liteContact, energyCompany );
+            try {
+            	updateLogin( updateLogin, liteAcctInfo, energyCompany );
             }
-            else if (username.trim().length() == 0) {
-            	// Remove customer login
-		        if (password.trim().length() > 0) {
-	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Username is empty. To remove the login, clear both username and password") );
-	            	return SOAPUtil.buildSOAPMessage( respOper );
-		        }
-		        
-		        deleteLogin( userID, liteContact );
-            }
-            else {
-            	// Update customer login
-	        	LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( userID );
-		        if (!liteUser.getUsername().equalsIgnoreCase(username) && !checkLogin(updateLogin) ) {
-	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Username already exists, please enter a different one") );
-	            	return SOAPUtil.buildSOAPMessage( respOper );
-		        }
-
-		        com.cannontech.database.db.user.YukonUser dbUser = (com.cannontech.database.db.user.YukonUser)
-		        		StarsLiteFactory.createDBPersistent( liteUser );
-	            dbUser.setUsername( username );
-	            dbUser.setPassword( password );
-	            dbUser.setStatus( com.cannontech.user.UserUtils.STATUS_ENABLED );
-	            dbUser = (com.cannontech.database.db.user.YukonUser)
-	            		Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
-	            
-	            ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
+            catch (WebClientException e) {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_SESSION_INVALID, e.getMessage()) );
+				return SOAPUtil.buildSOAPMessage( respOper );
             }
             
             StarsSuccess success = new StarsSuccess();
@@ -224,7 +176,8 @@ public class UpdateLoginAction implements ActionBase {
         return true;
 	}
 	
-	public static LiteYukonUser createLogin(StarsUpdateLogin login, LiteContact liteContact, LiteStarsEnergyCompany energyCompany) throws Exception {
+	public static LiteYukonUser createLogin(StarsUpdateLogin login, LiteContact liteContact, LiteStarsEnergyCompany energyCompany)
+	throws CommandExecutionException {
         com.cannontech.database.data.user.YukonUser dataUser = new com.cannontech.database.data.user.YukonUser();
         com.cannontech.database.db.user.YukonUser dbUser = dataUser.getYukonUser();
         
@@ -258,7 +211,8 @@ public class UpdateLoginAction implements ActionBase {
         return liteUser;
 	}
 	
-	public static void deleteLogin(int userID, LiteContact liteContact) throws Exception {
+	public static void deleteLogin(int userID, LiteContact liteContact)
+	throws CommandExecutionException {
 		if (liteContact != null) {
 	        liteContact.setLoginID( com.cannontech.user.UserUtils.USER_YUKON_ID );
 	        com.cannontech.database.data.customer.Contact contact =
@@ -273,6 +227,49 @@ public class UpdateLoginAction implements ActionBase {
 		
 		SOAPServer.deleteStarsYukonUser( userID );
 		ServerUtils.handleDBChange( YukonUserFuncs.getLiteYukonUser(userID), DBChangeMsg.CHANGE_TYPE_DELETE );
+	}
+	
+	public static void updateLogin(StarsUpdateLogin updateLogin, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
+	throws WebClientException, CommandExecutionException {
+		LiteContact liteContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
+		int userID = liteContact.getLoginID();
+	    
+		String username = updateLogin.getUsername();
+		String password = updateLogin.getPassword();
+	    	
+		if (userID == com.cannontech.user.UserUtils.USER_YUKON_ID) {
+			// Create new customer login
+			if (username.trim().length() == 0 || password.trim().length() == 0)
+				throw new WebClientException( "Username and password cannot be empty" );
+		    
+			if (!checkLogin( updateLogin ))
+				throw new WebClientException( "Username already exists, please enter a different one" );
+		    
+			LiteYukonUser liteUser = createLogin( updateLogin, liteContact, energyCompany );
+		}
+		else if (username.trim().length() == 0) {
+			// Remove customer login
+			if (password.trim().length() > 0)
+				throw new WebClientException( "Username is empty. To remove the login, clear both username and password" );
+		    
+			deleteLogin( userID, liteContact );
+		}
+		else {
+			// Update customer login
+			LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( userID );
+			if (!liteUser.getUsername().equalsIgnoreCase(username) && !checkLogin(updateLogin) )
+				throw new WebClientException( "Username already exists, please enter a different one" );
+			
+			com.cannontech.database.db.user.YukonUser dbUser = (com.cannontech.database.db.user.YukonUser)
+					StarsLiteFactory.createDBPersistent( liteUser );
+			dbUser.setUsername( username );
+			dbUser.setPassword( password );
+			dbUser.setStatus( com.cannontech.user.UserUtils.STATUS_ENABLED );
+			dbUser = (com.cannontech.database.db.user.YukonUser)
+					Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
+	        
+			ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
+		}
 	}
 
 }

@@ -75,7 +75,6 @@ import com.cannontech.stars.web.action.DeleteCustAccountAction;
 import com.cannontech.stars.web.action.DeleteLMHardwareAction;
 import com.cannontech.stars.web.action.NewCustAccountAction;
 import com.cannontech.stars.web.action.ProgramSignUpAction;
-import com.cannontech.stars.web.action.SearchCustAccountAction;
 import com.cannontech.stars.web.action.UpdateCustAccountAction;
 import com.cannontech.stars.web.action.UpdateLMHardwareAction;
 import com.cannontech.stars.web.action.UpdateLoginAction;
@@ -96,7 +95,6 @@ import com.cannontech.stars.xml.serialize.MCT;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.QuestionType;
 import com.cannontech.stars.xml.serialize.SULMProgram;
-import com.cannontech.stars.xml.serialize.SearchBy;
 import com.cannontech.stars.xml.serialize.ServiceCompany;
 import com.cannontech.stars.xml.serialize.ServiceType;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
@@ -112,24 +110,24 @@ import com.cannontech.stars.xml.serialize.StarsCustomerFAQ;
 import com.cannontech.stars.xml.serialize.StarsCustomerFAQGroup;
 import com.cannontech.stars.xml.serialize.StarsCustomerFAQs;
 import com.cannontech.stars.xml.serialize.StarsDefaultThermostatSettings;
+import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
 import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
 import com.cannontech.stars.xml.serialize.StarsInv;
+import com.cannontech.stars.xml.serialize.StarsLMHardwareConfig;
 import com.cannontech.stars.xml.serialize.StarsLMPrograms;
 import com.cannontech.stars.xml.serialize.StarsNewCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
 import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
-import com.cannontech.stars.xml.serialize.StarsSearchCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsSiteInformation;
 import com.cannontech.stars.xml.serialize.StarsUpdateCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsUpdateLMHardware;
-import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsUpdateLogin;
 import com.cannontech.stars.xml.serialize.StarsUpdateThermostatSchedule;
 import com.cannontech.stars.xml.serialize.StarsUpdateThermostatScheduleResponse;
@@ -165,6 +163,7 @@ public class StarsAdmin extends HttpServlet {
 		{"DeviceVoltage", "Device Voltage"},
 		{"ServiceCompany", "Service Company"},
 		{"DeviceStatus", "Device Status"},
+		{"LoadGroup", "Load Group"},
 		{"ApplianceCategory", "Appliance Category"},
 		{"Manufacturer", "Manufacturer"},
 		{"ServiceStatus", "Service Status"},
@@ -214,7 +213,13 @@ public class StarsAdmin extends HttpServlet {
 	private static final int IDX_DEVICE_NAME = 12;
 	private static final int IDX_ADDR_GROUP = 13;
 	private static final int IDX_HARDWARE_ACTION = 14;
-	private static final int NUM_INV_FIELDS = 15;
+	private static final int IDX_R1_GROUP = 15;
+	private static final int IDX_R2_GROUP = 16;
+	private static final int IDX_R3_GROUP = 17;
+	private static final int IDX_R1_STATUS = 18;
+	private static final int IDX_R2_STATUS = 19;
+	private static final int IDX_R3_STATUS = 20;
+	private static final int NUM_INV_FIELDS = 21;
 	
 	// IDX_ACCOUNT_ID = 0
 	// IDX_INV_ID = 1;
@@ -779,7 +784,9 @@ public class StarsAdmin extends HttpServlet {
 		 * 3		INSTALL_DATE
 		 * 4-10		INV_NOTES
 		 * 11		DEVICE_STATUS
-		 * 12-20	INV_NOTES		
+		 * 12,15,18	R1_GROUP,R2_GROUP,R3_GROUP
+		 * 13,16,19	INV_NOTES
+		 * 14,17,20	R1_STATUS,R2_STATUS,R3_STATUS
 		 */
 		parsers.put("STARS Receiver", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
@@ -821,11 +828,19 @@ public class StarsAdmin extends HttpServlet {
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
 					fields[IDX_DEVICE_STATUS] = st.sval;
-				for (int i = 12; i <= 20; i++) {
+				for (int i = 0; i < 3; i++) {
+					if (st.ttype != ',') st.nextToken();
+					st.nextToken();
+					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+						fields[IDX_R1_GROUP + i] = st.sval.substring( "RX-GROUP:".length() );
 					if (st.ttype != ',') st.nextToken();
 					st.nextToken();
 					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
 						fields[IDX_INV_NOTES] += st.sval + ",";
+					if (st.ttype != ',') st.nextToken();
+					st.nextToken();
+					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+						fields[IDX_R1_STATUS + i] = st.sval.substring( "RX-STATUS:".length() );
 				}
 				
 				return fields;
@@ -1111,35 +1126,6 @@ public class StarsAdmin extends HttpServlet {
     	resp.sendRedirect( redirect );
 	}
 	
-	private LiteStarsCustAccountInformation searchCustomerAccount(String[] fields, StarsYukonUser user, LiteStarsEnergyCompany energyCompany, HttpSession session)
-		throws Exception
-	{
-        StarsSearchCustomerAccount searchAccount = new StarsSearchCustomerAccount();
-        SearchBy searchBy = new SearchBy();
-        searchBy.setEntryID( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ACCT_NO).getEntryID() );
-        searchAccount.setSearchBy( searchBy );
-        searchAccount.setSearchValue( fields[IDX_ACCOUNT_NO] );
-        
-        StarsOperation operation = new StarsOperation();
-        operation.setStarsSearchCustomerAccount( searchAccount );
-        SOAPMessage reqMsg = SOAPUtil.buildSOAPMessage( operation );
-        
-        SearchCustAccountAction action = new SearchCustAccountAction();
-		SOAPMessage respMsg = action.process( reqMsg, session );
-		
-		int status = action.parse( reqMsg, respMsg, session );
-		if (status != 0) {
-			if (status == StarsConstants.FAILURE_CODE_OPERATION_FAILED) {
-				session.removeAttribute( ServletUtils.ATT_ERROR_MESSAGE );
-				return null;
-			}
-			else
-				throw new Exception( "Failed to process response message for NewCustAccountAction" );
-		}
-		
-		return (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-	}
-	
 	private void setStarsCustAccount(StarsCustAccount account, String[] fields, LiteStarsEnergyCompany energyCompany) {
         account.setAccountNumber( fields[IDX_ACCOUNT_NO] );
         account.setIsCommercial( fields[IDX_CUSTOMER_TYPE].equalsIgnoreCase("COM") );
@@ -1200,7 +1186,7 @@ public class StarsAdmin extends HttpServlet {
         account.setPrimaryContact( primContact );
 	}
 	
-	private LiteStarsCustAccountInformation newCustomerAccount(String[] fields, StarsYukonUser user, LiteStarsEnergyCompany energyCompany, HttpSession session)
+	private LiteStarsCustAccountInformation newCustomerAccount(String[] fields, StarsYukonUser user, LiteStarsEnergyCompany energyCompany)
 		throws Exception
 	{
 		// Build the request message
@@ -1209,7 +1195,7 @@ public class StarsAdmin extends HttpServlet {
 		StarsCustomerAccount account = new StarsCustomerAccount();
 		setStarsCustAccount( account, fields, energyCompany );
 		newAccount.setStarsCustomerAccount( account );
-
+		
 		if (fields[IDX_USERNAME].trim().length() > 0) {
 			StarsUpdateLogin login = new StarsUpdateLogin();
 			login.setUsername( fields[IDX_USERNAME] );
@@ -1217,53 +1203,21 @@ public class StarsAdmin extends HttpServlet {
 			newAccount.setStarsUpdateLogin( login );
 		}
 		
-        StarsOperation operation = new StarsOperation();
-        operation.setStarsNewCustomerAccount( newAccount );
-		SOAPMessage reqMsg = SOAPUtil.buildSOAPMessage( operation );
+		LiteStarsCustAccountInformation liteAcctInfo = NewCustAccountAction.newCustomerAccount( newAccount, user, energyCompany );
 		
-		NewCustAccountAction action = new NewCustAccountAction();
-		SOAPMessage respMsg = action.process( reqMsg, session );
-		
-		int status = action.parse( reqMsg, respMsg, session );
-		if (status != 0) {
-			if (status == StarsConstants.FAILURE_CODE_OPERATION_FAILED) {
-				String errorMsg = (String) session.getAttribute( ServletUtils.ATT_ERROR_MESSAGE );
-				session.removeAttribute( ServletUtils.ATT_ERROR_MESSAGE );
-				throw new Exception( errorMsg );
-			}
-			else
-				throw new Exception( "Failed to process response message for NewCustAccountAction" );
-		}
-		
-		return (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+		return liteAcctInfo;
 	}
 	
-	private void updateCustomerAccount(String[] fields, LiteStarsEnergyCompany energyCompany, HttpSession session)
+	private void updateCustomerAccount(String[] fields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
 		throws Exception
 	{
         StarsUpdateCustomerAccount updateAccount = new StarsUpdateCustomerAccount();
         setStarsCustAccount( updateAccount, fields, energyCompany );
-
-        StarsOperation operation = new StarsOperation();
-        operation.setStarsUpdateCustomerAccount( updateAccount );
-        SOAPMessage reqMsg = SOAPUtil.buildSOAPMessage( operation );
         
-        UpdateCustAccountAction action = new UpdateCustAccountAction();
-		SOAPMessage respMsg = action.process( reqMsg, session );
-		
-		int status = action.parse( reqMsg, respMsg, session );
-		if (status != 0) {
-			if (status == StarsConstants.FAILURE_CODE_OPERATION_FAILED) {
-				String errorMsg = (String) session.getAttribute( ServletUtils.ATT_ERROR_MESSAGE );
-				session.removeAttribute( ServletUtils.ATT_ERROR_MESSAGE );
-				throw new Exception( errorMsg );
-			}
-			else
-				throw new Exception( "Failed to process response message for UpdateCustAccountAction" );
-		}
+        UpdateCustAccountAction.updateCustomerAccount( updateAccount, liteAcctInfo, energyCompany, conn );
 	}
 	
-	private void updateLogin(String[] fields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, HttpSession session)
+	private void updateLogin(String[] fields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
 		throws Exception
 	{
 		LiteContact liteContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
@@ -1279,24 +1233,7 @@ public class StarsAdmin extends HttpServlet {
         operation.setStarsUpdateLogin( updateLogin );
         SOAPMessage reqMsg = SOAPUtil.buildSOAPMessage( operation );
         
-		StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
-		StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-		user.setAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
-		user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
-        
-        UpdateLoginAction action = new UpdateLoginAction();
-		SOAPMessage respMsg = action.process( reqMsg, session );
-		
-		int status = action.parse( reqMsg, respMsg, session );
-		if (status != 0) {
-			if (status == StarsConstants.FAILURE_CODE_OPERATION_FAILED) {
-				String errorMsg = (String) session.getAttribute( ServletUtils.ATT_ERROR_MESSAGE );
-				session.removeAttribute( ServletUtils.ATT_ERROR_MESSAGE );
-				throw new Exception( errorMsg );
-			}
-			else
-				throw new Exception( "Failed to process response message for UpdateLoginAction" );
-		}
+        UpdateLoginAction.updateLogin( updateLogin, liteAcctInfo, energyCompany );
 	}
 	
 	private int getDeviceTypeID(LiteStarsEnergyCompany energyCompany, String deviceType) {
@@ -1393,11 +1330,13 @@ public class StarsAdmin extends HttpServlet {
 			LMHardware hw = new LMHardware();
 			LMHardwareType hwType = new LMHardwareType();
 			hwType.setEntryID( Integer.parseInt(fields[IDX_DEVICE_TYPE]) );
+			hw.setLMHardwareType( hwType );
 			hw.setManufacturerSerialNumber( fields[IDX_SERIAL_NO] );
 			
 			inv.setLMHardware( hw );
 		}
-		else {	// Now we only have meters
+		else {
+			// Now we only have meters
 			MCT mct = new MCT();
 			mct.setDeviceName( fields[IDX_DEVICE_NAME] );
 			
@@ -1406,22 +1345,19 @@ public class StarsAdmin extends HttpServlet {
 	}
 	
 	private void insertLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteStarsEnergyCompany energyCompany, HttpSession session) throws Exception
+		LiteStarsEnergyCompany energyCompany, java.sql.Connection conn) throws Exception
 	{
 		// Check inventory and build request message
 		int devTypeID = getDeviceTypeID( energyCompany, fields[IDX_DEVICE_TYPE] );
 		if (devTypeID == -1)
-			throw new Exception("Invalid device type \"" + fields[IDX_DEVICE_TYPE] + "\"");
-		
-		if (fields[IDX_SERIAL_NO].equals(""))
-			throw new Exception("Serial # cannot be empty");
+			throw new WebClientException("Invalid device type \"" + fields[IDX_DEVICE_TYPE] + "\"");
 		
 		StarsCreateLMHardware createHw = null;
 		LiteStarsLMHardware liteHw = energyCompany.searchForLMHardware( devTypeID, fields[IDX_SERIAL_NO] );
 		
 		if (liteHw != null) {
 			if (liteHw.getAccountID() == liteAcctInfo.getAccountID())
-				throw new Exception("Cannot insert hardware with serial # " + fields[IDX_SERIAL_NO] + " because it already exists");
+				throw new WebClientException("Cannot insert hardware with serial # " + fields[IDX_SERIAL_NO] + " because it already exists");
 			
 			createHw = new StarsCreateLMHardware();
 			StarsLiteFactory.setStarsInv( createHw, liteHw, energyCompany );
@@ -1433,42 +1369,22 @@ public class StarsAdmin extends HttpServlet {
 			createHw = (StarsCreateLMHardware) StarsFactory.newStarsInv(StarsCreateLMHardware.class);
 		}
 		
+		fields[IDX_DEVICE_TYPE] = String.valueOf( devTypeID );
 		setStarsInventory( createHw, fields, energyCompany );
-		
-		StarsOperation operation = new StarsOperation();
-		operation.setStarsCreateLMHardware( createHw );
-        SOAPMessage reqMsg = SOAPUtil.buildSOAPMessage( operation );
         
-		StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
-		StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-		user.setAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
-		user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
-        
-        CreateLMHardwareAction action = new CreateLMHardwareAction();
-        SOAPMessage respMsg = action.process( reqMsg, session );
-        
-        int status = action.parse( reqMsg, respMsg, session );
-		if (status != 0) {
-			if (status == StarsConstants.FAILURE_CODE_OPERATION_FAILED) {
-				String errorMsg = (String) session.getAttribute( ServletUtils.ATT_ERROR_MESSAGE );
-				session.removeAttribute( ServletUtils.ATT_ERROR_MESSAGE );
-				throw new Exception( errorMsg );
-			}
-			else
-				throw new Exception( "Failed to process response message for CreateLMHardwareAction" );
-		}
+        CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany, conn );
 	}
 	
 	private void updateLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteStarsEnergyCompany energyCompany, HttpSession session) throws Exception
+		LiteStarsEnergyCompany energyCompany, java.sql.Connection conn) throws Exception
 	{
 		if (liteAcctInfo.getInventories().size() != 1)
-			throw new Exception( "Cannot determine the hardware to be updated" );
+			throw new WebClientException( "More than one hardware in the account, cannot determine which one to be updated" );
 		
 		// Check inventory and build request message
 		int devTypeID = getDeviceTypeID( energyCompany, fields[IDX_DEVICE_TYPE] );
 		if (devTypeID == -1)
-			throw new Exception("Invalid device type \"" + fields[IDX_DEVICE_TYPE] + "\"");
+			throw new WebClientException("Invalid device type '" + fields[IDX_DEVICE_TYPE] + "'");
 		
 		StarsUpdateLMHardware updateHw = null;
 		LiteStarsLMHardware liteHw = energyCompany.searchForLMHardware( devTypeID, fields[IDX_SERIAL_NO] );
@@ -1484,16 +1400,13 @@ public class StarsAdmin extends HttpServlet {
 			updateHw = (StarsUpdateLMHardware) StarsFactory.newStarsInv(StarsUpdateLMHardware.class);
 		}
 		
+		fields[IDX_DEVICE_TYPE] = String.valueOf( devTypeID );
 		setStarsInventory( updateHw, fields, energyCompany );
 		
 		int invIDOld = ((Integer) liteAcctInfo.getInventories().get(0)).intValue();
-		LiteStarsLMHardware liteHwOld = (LiteStarsLMHardware) energyCompany.getInventory( invIDOld, true );
 		
-		StarsOperation operation = new StarsOperation();
-		operation.setStarsUpdateLMHardware( updateHw );
-		
-		// Remove the old hardware if necessary
-		if (!liteHwOld.getManufacturerSerialNumber().equals( fields[IDX_SERIAL_NO] )) {
+		if (liteHw == null || liteHw.getInventoryID() != invIDOld) {
+			// Update information doesn't match the old hardware, remove the old one
 			StarsDeleteLMHardware deleteHw = new StarsDeleteLMHardware();
 			deleteHw.setInventoryID( invIDOld );
 			deleteHw.setDeleteFromInventory( false );
@@ -1502,33 +1415,32 @@ public class StarsAdmin extends HttpServlet {
 						fields[IDX_REMOVE_DATE], energyCompany.getDefaultTimeZone()) );
 			}
 			
-			operation.setStarsDeleteLMHardware( deleteHw );
-		}
-		
-        SOAPMessage reqMsg = SOAPUtil.buildSOAPMessage( operation );
-        
-		StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
-		StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-		user.setAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
-		user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
-        
-        UpdateLMHardwareAction action = new UpdateLMHardwareAction();
-        SOAPMessage respMsg = action.process( reqMsg, session );
-        
-        int status = action.parse( reqMsg, respMsg, session );
-		if (status != 0) {
-			if (status == StarsConstants.FAILURE_CODE_OPERATION_FAILED) {
-				String errorMsg = (String) session.getAttribute( ServletUtils.ATT_ERROR_MESSAGE );
-				session.removeAttribute( ServletUtils.ATT_ERROR_MESSAGE );
-				throw new Exception( errorMsg );
+			// Build up request message for adding new hardware and preserving old hardware configuration
+			StarsCreateLMHardware createHw = (StarsCreateLMHardware)
+					StarsFactory.newStarsInv( updateHw, StarsCreateLMHardware.class );
+            
+			if (createHw.getLMHardware() != null) {
+				for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
+					LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
+					if (liteApp.getInventoryID() == deleteHw.getInventoryID()) {
+						StarsLMHardwareConfig starsConfig = new StarsLMHardwareConfig();
+						starsConfig.setApplianceID( liteApp.getApplianceID() );
+						starsConfig.setGroupID( liteApp.getAddressingGroupID() );
+						createHw.getLMHardware().addStarsLMHardwareConfig( starsConfig );
+					}
+				}
 			}
-			else
-				throw new Exception( "Failed to process response message for UpdateLMHardwareAction" );
+            
+			DeleteLMHardwareAction.removeInventory(deleteHw, liteAcctInfo, energyCompany, conn);
+			CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany, conn );
+		}
+		else {
+			UpdateLMHardwareAction.updateInventory(updateHw, liteHw, energyCompany, conn);
 		}
 	}
 	
 	private void removeLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteStarsEnergyCompany energyCompany, HttpSession session) throws Exception
+		LiteStarsEnergyCompany energyCompany, java.sql.Connection conn) throws Exception
 	{
 		// Check if the hardware to be deleted exists
 		LiteStarsLMHardware liteHw = null;
@@ -1543,7 +1455,7 @@ public class StarsAdmin extends HttpServlet {
 		}
 		
 		if (liteHw == null)
-			throw new Exception("Cannot remove hardware with serial # " + fields[IDX_SERIAL_NO] + " because it doesn't exist");
+			throw new WebClientException("Hardware with serial #" + fields[IDX_SERIAL_NO] + " doesn't exist");
 		
 		StarsDeleteLMHardware deleteHw = new StarsDeleteLMHardware();
 		deleteHw.setInventoryID( liteHw.getInventoryID() );
@@ -1553,32 +1465,11 @@ public class StarsAdmin extends HttpServlet {
 					fields[IDX_REMOVE_DATE], energyCompany.getDefaultTimeZone()) );
 		}
 		
-		StarsOperation operation = new StarsOperation();
-		operation.setStarsDeleteLMHardware( deleteHw );
-		SOAPMessage reqMsg = SOAPUtil.buildSOAPMessage( operation );
-        
-		StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
-		StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-		user.setAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
-		user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
-		
-		DeleteLMHardwareAction action = new DeleteLMHardwareAction();
-		SOAPMessage respMsg = action.process( reqMsg, session );
-        
-		int status = action.parse( reqMsg, respMsg, session );
-		if (status != 0) {
-			if (status == StarsConstants.FAILURE_CODE_OPERATION_FAILED) {
-				String errorMsg = (String) session.getAttribute( ServletUtils.ATT_ERROR_MESSAGE );
-				session.removeAttribute( ServletUtils.ATT_ERROR_MESSAGE );
-				throw new Exception( errorMsg );
-			}
-			else
-				throw new Exception( "Failed to process response message for DeleteLMHardwareAction" );
-		}
+		DeleteLMHardwareAction.removeInventory( deleteHw, liteAcctInfo, energyCompany, conn );
 	}
 	
 	private void programSignUp(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteStarsEnergyCompany energyCompany, HttpServletRequest req, HttpSession session)
+		LiteStarsEnergyCompany energyCompany, HttpServletRequest req, java.sql.Connection conn)
 		throws Exception
 	{
 		// Build request message
@@ -1615,29 +1506,8 @@ public class StarsAdmin extends HttpServlet {
 		
 		StarsProgramSignUp progSignUp = new StarsProgramSignUp();
 		progSignUp.setStarsSULMPrograms( programs );
-		
-		StarsOperation operation = new StarsOperation();
-		operation.setStarsProgramSignUp( progSignUp );
-        SOAPMessage reqMsg = SOAPUtil.buildSOAPMessage( operation );
         
-		StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
-		StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-		user.setAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
-		user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
-        
-        ProgramSignUpAction action = new ProgramSignUpAction();
-        SOAPMessage respMsg = action.process( reqMsg, session );
-        
-        int status = action.parse( reqMsg, respMsg, session );
-		if (status != 0) {
-			if (status == StarsConstants.FAILURE_CODE_OPERATION_FAILED) {
-				String errorMsg = (String) session.getAttribute( ServletUtils.ATT_ERROR_MESSAGE );
-				session.removeAttribute( ServletUtils.ATT_ERROR_MESSAGE );
-				throw new Exception( errorMsg );
-			}
-			else
-				throw new Exception( "Failed to process response message for ProgramSignUpAction" );
-		}
+        ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, energyCompany, conn );
 	}
 	
 	private void deleteCustomerAccounts(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
@@ -1712,6 +1582,7 @@ public class StarsAdmin extends HttpServlet {
 		int numAdded = 0;
 		int numUpdated = 0;
 		int lineNo = 0;
+		java.sql.Connection conn = null;
 		
 		try {
 			String importID = ServerUtils.forceNotNone(
@@ -1725,6 +1596,8 @@ public class StarsAdmin extends HttpServlet {
 			if (lines == null)
 				throw new WebClientException("Failed to read file '" + importFile + "'");
 			
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+			
 			for (lineNo = 1; lineNo <= lines.size(); lineNo++) {
 				String line = (String) lines.get(lineNo - 1);
 				
@@ -1732,66 +1605,73 @@ public class StarsAdmin extends HttpServlet {
 				String[] invFields = new String[ NUM_INV_FIELDS ];
 				System.arraycopy( custFields, NUM_ACCOUNT_FIELDS, invFields, 0, NUM_INV_FIELDS );
 				
-				LiteStarsCustAccountInformation liteAcctInfo = searchCustomerAccount(custFields, user, energyCompany, session);
+				LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchByAccountNumber( custFields[IDX_ACCOUNT_NO] );
 				
 				if (liteAcctInfo == null) {
-					liteAcctInfo = newCustomerAccount( custFields, user, energyCompany, session );
+					liteAcctInfo = newCustomerAccount( custFields, user, energyCompany );
 					if (!invFields[IDX_SERIAL_NO].equalsIgnoreCase(""))
-						insertLMHardware( invFields, liteAcctInfo, energyCompany, session );
-					programSignUp( invFields, liteAcctInfo, energyCompany, req, session );
+						insertLMHardware( invFields, liteAcctInfo, energyCompany, conn );
+					programSignUp( invFields, liteAcctInfo, energyCompany, req, conn );
 					
 					numAdded++;
 				}
 				else {
-					updateCustomerAccount( custFields, energyCompany, session );
+					updateCustomerAccount( custFields, liteAcctInfo, energyCompany, conn );
 					//updateLogin( fields, liteAcctInfo, energyCompany, session );
 					if (!invFields[IDX_SERIAL_NO].equalsIgnoreCase(""))
 					{
 						if (invFields[IDX_HARDWARE_ACTION].equalsIgnoreCase( HARDWARE_ACTION_INSERT ))
-							insertLMHardware( invFields, liteAcctInfo, energyCompany, session );
+							insertLMHardware( invFields, liteAcctInfo, energyCompany, conn );
 						else if (invFields[IDX_HARDWARE_ACTION].equalsIgnoreCase( HARDWARE_ACTION_UPDATE ))
-							updateLMHardware( invFields, liteAcctInfo, energyCompany, session );
+							updateLMHardware( invFields, liteAcctInfo, energyCompany, conn );
 						else if (invFields[IDX_HARDWARE_ACTION].equalsIgnoreCase( HARDWARE_ACTION_REMOVE ))
-							removeLMHardware( invFields, liteAcctInfo, energyCompany, session );
+							removeLMHardware( invFields, liteAcctInfo, energyCompany, conn );
 						else {	// Hardware action field not specified
 							if (liteAcctInfo.getInventories().size() == 0)
-								insertLMHardware( invFields, liteAcctInfo, energyCompany, session );
+								insertLMHardware( invFields, liteAcctInfo, energyCompany, conn );
 							else
-								updateLMHardware( invFields, liteAcctInfo, energyCompany, session );
+								updateLMHardware( invFields, liteAcctInfo, energyCompany, conn );
 						}
 					}
 					
 					if (liteAcctInfo.getInventories().size() > 0)
-						programSignUp( invFields, liteAcctInfo, energyCompany, req, session );
+						programSignUp( invFields, liteAcctInfo, energyCompany, req, conn );
 					
 					numUpdated++;
 				}
 			}
 		}
-		catch (WebClientException e) {
+		catch (Exception e) {
 			e.printStackTrace();
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
+			
+			String errorMsg = null;
+			if (lineNo > 0)
+				errorMsg = "Error encountered when processing line #" + lineNo;
+			else
+				errorMsg = "Failed to import customer accounts";
+			
+			if (e instanceof WebClientException)
+				errorMsg += ": " + e.getMessage();
+			
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, errorMsg);
 			redirect = referer;
 		}
-		catch (Exception e) {
-			if (numAdded + numUpdated > 0) {
-				StringBuffer confirmMsg = new StringBuffer();
-				if (numAdded > 0)
-					confirmMsg.append(numAdded).append(" customer accounts added");
-				if (numUpdated > 0) {
-					if (numAdded > 0) confirmMsg.append(", ");
-					confirmMsg.append(numUpdated).append(" customer accounts updated");
-				}
-				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, confirmMsg.toString());
+		finally {
+			try {
+				if (conn != null) conn.close();
 			}
-			
-			if (lineNo > 0)
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Error encountered when processing line #" + lineNo);
-			else
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to import customer accounts");
-			
-			e.printStackTrace();
-			redirect = referer;
+			catch (java.sql.SQLException e) {}
+		}
+		
+		if (numAdded + numUpdated > 0) {
+			StringBuffer confirmMsg = new StringBuffer();
+			if (numAdded > 0)
+				confirmMsg.append(numAdded).append(" customer accounts added");
+			if (numUpdated > 0) {
+				if (numAdded > 0) confirmMsg.append(", ");
+				confirmMsg.append(numUpdated).append(" customer accounts updated");
+			}
+			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, confirmMsg.toString());
 		}
 	}
 	
@@ -2000,6 +1880,10 @@ public class StarsAdmin extends HttpServlet {
 			if (devStatValueID == null) devStatValueID = new TreeMap();
 			int devStatValueCnt = devStatValueID.size();
 			
+			TreeMap loadGroupValueID = (TreeMap) preprocessedData.get("LoadGroup");
+			if (loadGroupValueID == null) loadGroupValueID = new TreeMap();
+			int loadGroupValueCnt = loadGroupValueID.size();
+			
 			TreeMap appTypeValueID = (TreeMap) preprocessedData.get("ApplianceCategory");
 			if (appTypeValueID == null) appTypeValueID = new TreeMap();
 			int appTypeValueCnt = appTypeValueID.size();
@@ -2020,6 +1904,7 @@ public class StarsAdmin extends HttpServlet {
 			
 			if (custLines != null) {
 				if (custFile.getName().equals("customer.map")) {
+					// customer.map file format: import_account_id,db_account_id
 					Hashtable acctIDMap = new Hashtable();
 					
 					for (int i = 0; i < custLines.size(); i++) {
@@ -2045,7 +1930,7 @@ public class StarsAdmin extends HttpServlet {
 			}
 			else {
 				if (preprocessedData.get("CustomerAccountMap") == null)
-					throw new WebClientException("No account information found, customer file cannot be empty");
+					throw new WebClientException("No customer information found. If you have already imported the customer file, enter the path of the generated 'customer.map' file in the 'Customer File' field");
 			}
 			
 			if (servInfoLines != null) {
@@ -2066,19 +1951,44 @@ public class StarsAdmin extends HttpServlet {
 			}
 			
 			if (invLines != null) {
-				ImportFileParser parser = (ImportFileParser) parsers.get("STARS Inventory");
-				
-				for (int i = 0; i < invLines.size(); i++) {
-					String[] fields = parser.populateFields( (String)invLines.get(i) );
-					if (!devTypeValueID.containsKey(fields[IDX_DEVICE_TYPE]))
-						devTypeValueID.put( fields[IDX_DEVICE_TYPE], zero );
-					if (!devVoltValueID.containsKey(fields[IDX_DEVICE_VOLTAGE]))
-						devVoltValueID.put( fields[IDX_DEVICE_VOLTAGE], zero );
-					if (!companyValueID.containsKey(fields[IDX_SERVICE_COMPANY]))
-						companyValueID.put( fields[IDX_SERVICE_COMPANY], zero );
+				if (invFile.getName().equals("hwconfig.map")) {
+					// hwconfig.map file format: import_inventory_id,relay_num,db_appliance_id
+					Hashtable appIDMap = new Hashtable();
 					
-					invFieldsList.add( fields );
-					invIDFields.put( fields[IDX_INV_ID], fields );
+					for (int i = 0; i < invLines.size(); i++) {
+						String[] fields = ((String) invLines.get(i)).split(",");
+						if (fields.length != 3)
+							throw new WebClientException("Invalid format of file '" + invFile.getPath() + "'");
+						
+						Integer invID = Integer.valueOf( fields[0] );
+						int relayNum = Integer.parseInt( fields[1] );
+						int appID = Integer.parseInt( fields[2] );
+						
+						int[] appIDs = (int[]) appIDMap.get( invID );
+						if (appIDs == null) {
+							appIDs = new int[3];
+							appIDMap.put( invID, appIDs );
+						}
+						appIDs[relayNum - 1] = appID;
+					}
+					
+					preprocessedData.put("HwConfigAppMap", appIDMap);
+				}
+				else {
+					ImportFileParser parser = (ImportFileParser) parsers.get("STARS Inventory");
+					
+					for (int i = 0; i < invLines.size(); i++) {
+						String[] fields = parser.populateFields( (String)invLines.get(i) );
+						if (!devTypeValueID.containsKey(fields[IDX_DEVICE_TYPE]))
+							devTypeValueID.put( fields[IDX_DEVICE_TYPE], zero );
+						if (!devVoltValueID.containsKey(fields[IDX_DEVICE_VOLTAGE]))
+							devVoltValueID.put( fields[IDX_DEVICE_VOLTAGE], zero );
+						if (!companyValueID.containsKey(fields[IDX_SERVICE_COMPANY]))
+							companyValueID.put( fields[IDX_SERVICE_COMPANY], zero );
+						
+						invFieldsList.add( fields );
+						invIDFields.put( fields[IDX_INV_ID], fields );
+					}
 				}
 			}
 			
@@ -2101,6 +2011,12 @@ public class StarsAdmin extends HttpServlet {
 						
 						if (!devStatValueID.containsKey(fields[IDX_DEVICE_STATUS]))
 							devStatValueID.put( fields[IDX_DEVICE_STATUS], zero );
+						if (!loadGroupValueID.containsKey(fields[IDX_R1_GROUP]))
+							loadGroupValueID.put( fields[IDX_R1_GROUP], zero );
+						if (!loadGroupValueID.containsKey(fields[IDX_R2_GROUP]))
+							loadGroupValueID.put( fields[IDX_R2_GROUP], zero );
+						if (!loadGroupValueID.containsKey(fields[IDX_R3_GROUP]))
+							loadGroupValueID.put( fields[IDX_R3_GROUP], zero );
 					}
 				}
 			}
@@ -2126,6 +2042,9 @@ public class StarsAdmin extends HttpServlet {
 			}
 			
 			if (loadInfoLines != null) {
+				if (invLines == null && preprocessedData.get("HwConfigAppMap") == null)
+					throw new WebClientException("No hardware config information found. If you have already imported the inventory file, enter the path of the generated 'hwconfig.map' file in the 'Inventory File' field");
+				
 				ImportFileParser parser = (ImportFileParser) parsers.get("STARS LoadInfo");
 				
 				for (int i = 0; i < loadInfoLines.size(); i++) {
@@ -2164,6 +2083,7 @@ public class StarsAdmin extends HttpServlet {
 			preprocessedData.put( "DeviceVoltage", devVoltValueID );
 			preprocessedData.put( "ServiceCompany", companyValueID );
 			preprocessedData.put( "DeviceStatus", devStatValueID );
+			preprocessedData.put( "LoadGroup", loadGroupValueID );
 			preprocessedData.put( "ApplianceCategory", appTypeValueID );
 			preprocessedData.put( "Manufacturer", appMfcValueID );
 			preprocessedData.put( "ServiceStatus", orderStatValueID );
@@ -2186,6 +2106,8 @@ public class StarsAdmin extends HttpServlet {
 				unassignedLists.put( "ServiceCompany", new Boolean(true) );
 			if (devStatValueID.size() > devStatValueCnt)
 				unassignedLists.put( "DeviceStatus", new Boolean(true) );
+			if (loadGroupValueID.size() > loadGroupValueCnt)
+				unassignedLists.put( "LoadGroup", new Boolean(true) );
 			if (appTypeValueID.size() > appTypeValueCnt)
 				unassignedLists.put( "ApplianceCategory", new Boolean(true) );
 			if (appMfcValueID.size() > appMfcValueCnt)
@@ -2418,12 +2340,13 @@ public class StarsAdmin extends HttpServlet {
 		TreeMap orderStatValueID = (TreeMap) preprocessedData.get("ServiceStatus");
 		TreeMap orderTypeValueID = (TreeMap) preprocessedData.get("ServiceType");
 		
-		// Map from account id(Integer) to lite object(LiteStarsCustAccountInformation)
 		Hashtable acctIDMap = (Hashtable) preprocessedData.get( "CustomerAccountMap" );
 		if (acctIDMap == null) {
 			acctIDMap = new Hashtable();
 			preprocessedData.put( "CustomerAccountMap", acctIDMap );
 		}
+		
+		Hashtable appIDMap = (Hashtable) preprocessedData.get( "HwConfigAppMap" );
 		
 		// Replace import values with ids assigned to them
 		for (int i = 0; i < acctFieldsList.size(); i++) {
@@ -2481,7 +2404,7 @@ public class StarsAdmin extends HttpServlet {
 			
 			for (lineNo = 1; lineNo <= acctFieldsList.size(); lineNo++) {
 				String[] fields = (String[]) acctFieldsList.get(lineNo - 1);
-				LiteStarsCustAccountInformation liteAcctInfo = newCustomerAccount( fields, user, energyCompany, session );
+				LiteStarsCustAccountInformation liteAcctInfo = newCustomerAccount( fields, user, energyCompany );
 				acctIDMap.put( Integer.valueOf(fields[IDX_ACCOUNT_ID]), liteAcctInfo );
 				
 				numAcctAdded++;
@@ -2535,7 +2458,7 @@ public class StarsAdmin extends HttpServlet {
 					if (liteAcctInfo == null)
 						throw new Exception("Cannot find customer account with id=" + acctID.intValue());
 					
-					insertLMHardware( fields, liteAcctInfo, energyCompany, session );
+					insertLMHardware( fields, liteAcctInfo, energyCompany, conn );
 				}
 				
 				numInvAdded++;
