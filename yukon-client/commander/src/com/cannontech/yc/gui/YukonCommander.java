@@ -5,7 +5,10 @@ package com.cannontech.yc.gui;
  */
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.print.Book;
+import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.util.Observable;
 import java.util.Vector;
 
@@ -27,7 +30,7 @@ import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.model.EditableLCRSerialModel;
+import com.cannontech.database.model.EditableTextModel;
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.roles.application.CommanderRole;
 import com.cannontech.roles.yukon.SystemRole;
@@ -48,8 +51,11 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		ModelFactory.CICUSTOMER,
 		ModelFactory.COLLECTIONGROUP,
 		ModelFactory.TESTCOLLECTIONGROUP,
-		ModelFactory.EDITABLELCRSERIAL,
-		
+		ModelFactory.EDITABLE_LCR_SERIAL,
+		ModelFactory.EDITABLE_SA305_SERIAL,
+		ModelFactory.EDITABLE_SA205_SERIAL,
+		ModelFactory.EDITABLE_EXPRESSCOM_SERIAL,
+		ModelFactory.EDITABLE_VERSACOM_SERIAL
 	};
 	//-----------------------------------------
 	private static final String YC_TITLE = "Commander";
@@ -411,7 +417,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	 */
 	private void deleteSerialNumber()
 	{
-		if(getModelType() == ModelFactory.EDITABLELCRSERIAL)
+		if(ModelFactory.isEditableSerial(getModelType()))
 		{
 			if (getTreeViewPanel().getSelectedItem() == null)
 				return;
@@ -421,10 +427,10 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 				if( getTreeViewPanel().getSelectedNode().getParent() == null)	// can't delete the parent node.
 					return;
 					
-				EditableLCRSerialModel.getSerialNumberVector().remove( getTreeViewPanel().getSelectedItem() );
-				
+				((EditableTextModel)getTreeViewPanel().getSelectedTreeModel()).getEntryVector().remove( getTreeViewPanel().getSelectedItem());
+					
 				// Update the selected getTreeViewPanel() model.
-				((EditableLCRSerialModel) getTreeViewPanel().getSelectedTreeModel()).update();
+				((EditableTextModel) getTreeViewPanel().getSelectedTreeModel()).update();
 				getSerialRoutePanel().getSerialTextField().setText("");
 			}
 		}	
@@ -1298,15 +1304,13 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 	
 		//serial and route panel visible only when first item in tree is Versacom Serial #
-		if (treeModels[0] != ModelFactory.EDITABLELCRSERIAL)
+		if (!ModelFactory.isEditableSerial(treeModels[0]))
 			enableSerialAndRoute(false);
 	
 		getTreeViewPanel().setTreeModels(models);
 			
 		setRouteModel(); //fill route combo box
 
-		com.cannontech.database.model.EditableLCRSerialModel.setSerialNumberVector( new Vector());
-		
 		com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeListener(this);
 	
 		addWindowListener(new java.awt.event.WindowAdapter(){
@@ -1315,6 +1319,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			};
 		});
 		getYC().addObserver(this);
+		getTreeViewPanel().getTree().setSelectionInterval(0,0);
 		// user code end
 	}
 	
@@ -1477,6 +1482,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			splash.setVisible( false );
 			splash.dispose();			
 			ycClient.show();
+//			ycClient.getTreeViewPanel().getTree().setSelectionInterval(1,1);
+			ycClient.getTreeViewPanel().getTree().requestFocusInWindow();
+
 		}
 		catch (Throwable exception)
 		{
@@ -1502,6 +1510,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 				pf.setOrientation(java.awt.print.PageFormat.PORTRAIT);
 //				paper.setImageableArea(30, 40, 552, 712);
 				pf.setPaper(paper);
+//				printTextPane.setPageFormat(pf);
 				pj.setPrintable(printTextPane, pf);
 				pj.print();
 			}
@@ -1511,6 +1520,32 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			}
 		}		
 	}
+	/**
+	 * Print the graphics from printTextPane.
+	 */
+/*	private void print(JTextPanePrintable printTextPane)
+	{
+		PrinterJob pj = PrinterJob.getPrinterJob();
+		
+		PageFormat pf = pj.defaultPage();
+		pf.setOrientation(PageFormat.PORTRAIT);
+//		printTextPane.setPageFormat(pf);		
+		Book book = new Book();
+		printTextPane.getVectorOfLines();
+		book.append(printTextPane, pf);//, printTextPane.getNumberOfPages());
+
+		if( pj.printDialog())
+		{
+			try{
+				pj.setPageable(book);
+				pj.print();
+			}
+			catch(PrinterException ex)
+			{
+				ex.printStackTrace();
+			}
+		}		
+	}*/
 	/**
 	 * Forces a reload of databaseCache.
 	 * Creation date: (9/10/2001 3:10:42 PM)
@@ -1624,12 +1659,12 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			t.getTree().getSelectionModel().setSelectionPath( null );
 			return;
 		}
-		else if(!com.cannontech.database.model.EditableLCRSerialModel.getSerialNumberVector().contains(tempSerialNumber) )
+		else if( !((EditableTextModel)getTreeViewPanel().getSelectedTreeModel()).getEntryVector().contains(tempSerialNumber) )
 		{	
-			com.cannontech.database.model.EditableLCRSerialModel.getSerialNumberVector().add(tempSerialNumber);
+			((EditableTextModel)getTreeViewPanel().getSelectedTreeModel()).getEntryVector().add(tempSerialNumber);
 	
 			// Refresh the tree selection.
-			((com.cannontech.database.model.EditableLCRSerialModel) t.getSelectedTreeModel()).update();
+			((EditableTextModel)t.getSelectedTreeModel()).update();
 	
 			// Clear serial number text field.
 			if( getSerialRoutePanel().getSerialTextField() instanceof javax.swing.JTextField )
@@ -1653,7 +1688,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	/**
 	 * Sets the ycClass.modelType
 	 * Valid types located in - com.cannontech.database.model.ModelFactory.DEVICE, DEVICE_METERNUMBER, 
-	 * MCTBROADCAST, LMGROUPS, CAPBANKCONTROLLER, CICUSTOMER, COLLECTIONGROUP, TESTCOLLECTIONGROUP, EDITABLELCRSERIAL
+	 * MCTBROADCAST, LMGROUPS, CAPBANKCONTROLLER, CICUSTOMER, COLLECTIONGROUP, TESTCOLLECTIONGROUP, EDITABLE_xxx
 	 * @param typeSelected int
 	 */
 	private void setModelType(int typeSelected)
@@ -1733,9 +1768,15 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			return;
 			
 		setModelType( treeModels[index] );
+		Object selectedItem = getTreeViewPanel().getSelectedItem();
 		
-		if (getModelType() == ModelFactory.EDITABLELCRSERIAL)
+		if (ModelFactory.isEditableSerial(getModelType()))
 		{
+			if(selectedItem != null && 
+				getTreeViewPanel().getSelectedNode().getParent() != null)
+				getSerialRoutePanel().setSerialNumberText(selectedItem.toString());
+			else
+				getSerialRoutePanel().setSerialNumberText("");
 			enableSerialAndRoute(true);
 			getSerialRoutePanel().getSerialTextField().requestFocus();
 		}
@@ -1747,7 +1788,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		getYCCommandMenu().locateRoute.setEnabled(false);	//init to false, will change below if valid state.
 		getYCCommandMenu().installAddressing.setEnabled(false);	//init to false, will change below if valid state.
 
-		Object selectedItem = getTreeViewPanel().getSelectedItem();
 		if (getModelType() == ModelFactory.DEVICE)
 		{
 			if( selectedItem instanceof LiteYukonPAObject)
@@ -1759,7 +1799,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 				}
 			}
 		}
-		else if( getModelType() == ModelFactory.EDITABLELCRSERIAL)
+		else if( ModelFactory.isEditableSerial(getModelType()))
 		{
 			getYCCommandMenu().installAddressing.setEnabled(true);
 		}
@@ -1847,17 +1887,28 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 				setTitle(displayTitle);
 			}
 		}
-		else if ( getModelType() == ModelFactory.EDITABLELCRSERIAL)
+		else if ( ModelFactory.isEditableSerial(getModelType()))
 		{
 			getYCCommandMenu().installAddressing.setEnabled(true);
 			setSerialNumber( (String)selectedItem);
 			getSerialRoutePanel().setSerialNumberText( getSerialNumber().toString() );
-			getYC().setCommandFileName(getYC().SERIALNUMBER_FILENAME);
+			
+			if( getModelType() == ModelFactory.EDITABLE_EXPRESSCOM_SERIAL)
+				getYC().setCommandFileName(getYC().EXPRESSCOM_SERIAL_FILENAME);
+			else if( getModelType() == ModelFactory.EDITABLE_VERSACOM_SERIAL)
+				getYC().setCommandFileName(getYC().VERSACOM_SERIAL_FILENAME);
+			else if( getModelType() == ModelFactory.EDITABLE_SA205_SERIAL)
+				getYC().setCommandFileName(getYC().SA205_SERIAL_FILENAME);
+			else if( getModelType() == ModelFactory.EDITABLE_SA305_SERIAL)
+				getYC().setCommandFileName(getYC().SA305_SERIAL_FILENAME);
+			else
+				getYC().setCommandFileName(getYC().SERIALNUMBER_FILENAME);
+			
 			if (!getYC().getKeysAndValuesFile().exists())
 			{
-				getCommandLogPanel().addLogElement(" *** The command file: " + getYC().getCommandFileName() + "     Does not exist.  Trying a backup - " + getYC().ALT_SERIALNUMBER_FILENAME + ".txt ***");
+				getCommandLogPanel().addLogElement(" *** The command file: " + getYC().getCommandFileName() + "     Does not exist.  Trying a backup - " + getYC().VERSACOM_SERIAL_FILENAME + ".txt ***");
 				//This is only temporary until all files have been changed from ALT_SERIALNUMBER_FILENAME to SERIALNUMBER_FILENAME.
-				getYC().setCommandFileName(getYC().ALT_SERIALNUMBER_FILENAME);
+				getYC().setCommandFileName(getYC().VERSACOM_SERIAL_FILENAME);
 			}
 
 			int extIndex = getYC().getCommandFileName().indexOf(getYC().getCommandFileExt());
