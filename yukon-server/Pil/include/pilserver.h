@@ -40,12 +40,11 @@ public:
 
    typedef CtiServer Inherited;
 
-   CtiPILServer(CtiDeviceManager *DM = NULL, CtiRouteManager *RM = NULL, int QueueSize = 1000) :
+   CtiPILServer(CtiDeviceManager *DM = NULL, CtiRouteManager *RM = NULL) :
       DeviceManager(DM),
       RouteManager(RM),
       ListenerAvailable(0),
-      bServerClosing(FALSE),
-      CtiServer(QueueSize)
+      bServerClosing(FALSE)
    {}
 
    virtual ~CtiPILServer()

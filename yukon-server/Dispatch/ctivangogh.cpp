@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2002/08/16 13:08:03 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2002/08/28 16:15:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -430,10 +430,6 @@ void CtiVanGogh::VGConnectionHandlerThread()
                 XChg                                = new CtiExchange(sock);
                 CtiVanGoghConnectionManager *ConMan = new CtiVanGoghConnectionManager(XChg, &MainQueue_);
 
-                ConMan->setBlockingWrites(TRUE);    // Writes must be blocking into the main queue
-
-#if 1       // 041802 CGP.
-
                 clientConnect( ConMan );
                 ConMan->ThreadInitiate();     // Kick off the connection's communication threads.
 
@@ -442,33 +438,6 @@ void CtiVanGogh::VGConnectionHandlerThread()
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " New connection established" << endl;
                 }
-
-#else
-                /*
-                 *  Need to inform VGMain of the "New Guy" so that he may control its destiny from
-                 *  now on.
-                 */
-
-                CmdMsg = new CtiCommandMsg(CtiCommandMsg::NewClient, 15);
-
-                if(CmdMsg != NULL)
-                {
-                    CmdMsg->setConnectionHandle((void*) ConMan);    // Mark it so MainThread knows who to respond to
-                    MainQueue_.putQueue(CmdMsg);
-                    ConMan->ThreadInitiate();                       // Kick off the connection's communication threads.
-
-                    if(gDispatchDebugLevel & DISPATCH_DEBUG_CONNECTIONS)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " New connection established" << endl;
-                    }
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " ERROR Starting new connection! " << rwThreadId() << endl;
-                }
-#endif
             }
 
             reportOnThreads();
@@ -4981,9 +4950,7 @@ int CtiVanGogh::mail(const CtiEmailMsg &aMail)
     return status;
 }
 
-CtiVanGogh::CtiVanGogh() :
-_signalMsgQueue(100),
-CtiServer(1000)
+CtiVanGogh::CtiVanGogh()
 {
     {
         CtiLockGuard<CtiMutex> guard(server_mux);
@@ -4993,21 +4960,6 @@ CtiServer(1000)
         }
     }
 }
-
-CtiVanGogh::CtiVanGogh(int QueueSize) :
-_signalMsgQueue(100),
-CtiServer(QueueSize)
-{
-    {
-        CtiLockGuard<CtiMutex> guard(server_mux);
-        for(int i = 0; i < MAX_ALARM_TRX; i++)
-        {
-            _alarmToDestInfo[i].grpid = 0; // Zero is invalid!
-        }
-    }
-}
-
-CtiVanGogh::~CtiVanGogh();
 
 void  CtiVanGogh::shutdown()
 {

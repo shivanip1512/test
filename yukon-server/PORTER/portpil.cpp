@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:40 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/08/28 16:20:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,7 +69,7 @@ VOID PorterInterfaceThread (VOID *Arg)
 
    try
    {
-      CtiPILServer PIL(&DeviceManager, &RouteManager, PILMaxQueueSize);
+      CtiPILServer PIL(&DeviceManager, &RouteManager);
 
       PIL.execute();
 

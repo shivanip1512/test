@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/06/03 20:18:17 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/08/28 16:18:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -181,7 +181,8 @@ void main(int argc, char **argv)
          Connect.WriteConnQue( PtRegMsg );
 
 
-         Connect.setBlockingWrites(TRUE);
+
+         Sleep(5000);
 
 #if 0
          CtiEmailMsg *pEmail = new CtiEmailMsg(1L, CtiEmailMsg::CICustomerEmailType);
@@ -270,7 +271,8 @@ void main(int argc, char **argv)
 
    }
    else
-   {
+    {
+      cout << " This is interesting " << endl;
       for(int i = 0; i < atoi(argv[3]); i++)
       {
          DoTheNasty(argc, argv);
@@ -306,7 +308,6 @@ void DoTheNasty(int argc, char **argv)
       pM->getData().insert(PtRegMsg);
 
       Connect.WriteConnQue( pM );
-      Connect.setBlockingWrites(TRUE);
 
       for(k = 0; k < atoi(argv[4]); k++ )
       {

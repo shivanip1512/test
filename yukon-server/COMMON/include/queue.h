@@ -23,17 +23,14 @@ template <class T,  class C>
 class IM_EX_CTIBASE CtiQueue : RWMonitor< RWMutexLock >
 {
 private:
-    RWCondition                slotAvailable;
     RWCondition                dataAvailable;
     RWTPtrSortedVector<T,C>    pvect_;
-    size_t                     maxEntries_;
 
     RWCString                  _name;
 public:
-    CtiQueue(size_t maxEntries = 100) :        // Default to 100 queue entries...
+
+    CtiQueue() :
     _name("Unnamed Queue"),
-    maxEntries_(maxEntries),
-    slotAvailable(mutex()),    // init with monitor mutex
     dataAvailable(mutex())     // init with monitor mutex
     {}
 
@@ -44,18 +41,6 @@ public:
             if(pt != NULL)
             {
                 LockGuard lock(monitor()); // acquire monitor mutex
-                while(!(pvect_.entries() < maxEntries_))
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Queue " << getName() << " is full.  Awaiting an opening."  << endl;
-                    }
-
-                    slotAvailable.wait();
-                    // mutex released automatically
-                    // thread must have been signalled AND mutex reacquired to reach here
-                }
-
                 pvect_.insert(pt);
                 dataAvailable.signal();
                 // mutex automatically released in LockGuard destructor
@@ -80,8 +65,6 @@ public:
                 //   mutex reacquired to reach here
             }
             pval = pvect_.removeFirst();
-            slotAvailable.signal();
-
             // cout << "Number of entries " << pvect_.entries() << endl;
         }
         catch(const RWxmsg& x)
@@ -110,7 +93,6 @@ public:
             if(wRes == RW_THR_COMPLETED)
             {
                 pval = pvect_.removeFirst();
-                slotAvailable.signal();
             }
 
             // mutex automatically released in LockGuard destructor
@@ -131,16 +113,6 @@ public:
             if(pt != NULL)
             {
                 LockGuard lock(monitor()); // acquire monitor mutex
-                RWWaitStatus wRes = RW_THR_COMPLETED;
-
-                if(!(pvect_.entries() < maxEntries_))
-                {
-                    wRes = slotAvailable.wait(time);
-                    // mutex released automatically
-                    // thread must have been signalled AND mutex reacquired to reach here
-                }
-
-                if(wRes == RW_THR_COMPLETED && (pvect_.entries() < maxEntries_))
                 {
                     pvect_.insert(pt);
                     dataAvailable.signal();
@@ -165,9 +137,6 @@ public:
 
             LockGuard lock(monitor());   // acquire monitor mutex
             pval = pvect_.remove(fn, d);
-
-            slotAvailable.signal();
-
             return pval;
             // mutex automatically released in LockGuard destructor
         }
@@ -178,75 +147,15 @@ public:
     }
 
     /*
-     *  Pluck off the lowest "sorted" messages from the queue...
-     */
-    size_t   tailPurge(size_t cnt = 1)
-    {
-        LockGuard lock(monitor());   // acquire monitor mutex
-
-        T *pval = NULL;
-        size_t   qcnt = pvect_.entries();
-
-        try
-        {
-            for(int i = 0 ; i < cnt && i < qcnt; i++)
-            {
-                pval = pvect_.removeLast();
-                slotAvailable.signal();
-
-                if(pval != NULL) delete pval;
-            }
-            // mutex automatically released in LockGuard destructor
-        }
-        catch(const RWxmsg& x)
-        {
-            cout << "Exception: " << x.why() << endl;
-            RWTHROW(x);
-        }
-
-        return pvect_.entries();
-    }
-
-    /*
      *  Allows us to shrink or grow the queue in question..
      */
     size_t   resize(size_t addition = 1)
     {
         LockGuard lock(monitor());   // acquire monitor mutex
-
-        T        *pval    = NULL;
-        size_t   oldsize  = maxEntries_;
-        size_t   qcnt     = pvect_.entries();      // This is the number of entries currently in the vector
-
-        try
         {
-            maxEntries_ += addition;
-
-            if(maxEntries_ < 1)      // Must have one slot minimum (even that is rediculous)
-            {
-                maxEntries_ = 1;
-            }
-
-            if(qcnt > maxEntries_ )  // We need to purge the tailed entries
-            {
-                for(int i = 0 ; i < maxEntries_ - qcnt; i++)
-                {
-                    pval = pvect_.removeLast();
-                    if(pval != NULL) delete pval;
-                }
-            }
-            else if(maxEntries_ > qcnt)
-            {
-                slotAvailable.signal();
-            }
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-        catch(const RWxmsg& x)
-        {
-            cout << "Exception: " << x.why() << endl;
-            RWTHROW(x);
-        }
-
-        // mutex automatically released in LockGuard destructor
         return pvect_.entries();
     }
 
@@ -260,13 +169,13 @@ public:
     size_t   size(void)        // how big may it be?
     {
         LockGuard lock(monitor());   // acquire monitor mutex
-        return maxEntries_;
+        return pvect_.entries();
     }
 
     BOOL  isFull(void)
     {
         LockGuard lock(monitor());   // acquire monitor mutex
-        return(maxEntries_ == pvect_.entries());
+        return(FALSE);
     }
 
     void     clearAndDestroy(void)      // Destroys pointed to objects as well.

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/08/08 23:22:12 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/08/28 16:15:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -135,7 +135,6 @@ public:
     typedef CtiServer Inherited;
 
     CtiVanGogh();
-    CtiVanGogh(int QueueSize);
     virtual ~CtiVanGogh();
 
     virtual void  clientShutdown(CtiConnectionManager *&CM);

@@ -79,7 +79,7 @@ int main(int argc, char **argv)
       attachRouteManagerToDevices(&DevMgr, &RteMgr);
       attachTransmitterDeviceToRoutes(&DevMgr, &RteMgr);
 
-      CtiPILServer PIL(&DevMgr, &RteMgr, 100);
+      CtiPILServer PIL(&DevMgr, &RteMgr);
 
       /*
        *  Initialization Code for PIL as a whole

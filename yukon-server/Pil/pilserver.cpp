@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2002/08/20 22:45:56 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2002/08/28 16:15:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -378,7 +378,6 @@ void CtiPILServer::connectionThread()
                     if(ConMan != NULL)
                     {
                         ConMan->setClientName("DEFAULT");
-                        ConMan->setBlockingWrites(TRUE);    // Writes must be blocking into the main queue
 
                         /*
                          *  Need to inform MainThread of the "New Guy" so that he may control its destiny from
