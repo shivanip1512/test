@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/09/18 21:32:34 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/10/29 17:21:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -532,13 +532,9 @@ INT CtiDeviceMCT31X::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         case CtiProtocolEmetcon::GetValue_Demand:
         {
             //  we only have status info if we're not getting the demand from the IED
-            if( getType() == TYPEMCT360 ||
-                getType() == TYPEMCT370 )
+            if( (getType() == TYPEMCT360 || getType() == TYPEMCT370) && getIEDPort().getRealTimeScanFlag() )
             {
-                if( getIEDPort().getRealTimeScanFlag() )
-                {
-                    status = decodeGetValueIED(InMessage, TimeNow, vgList, retList, outList);
-                }
+                status = decodeGetValueIED(InMessage, TimeNow, vgList, retList, outList);
             }
             else
             {
