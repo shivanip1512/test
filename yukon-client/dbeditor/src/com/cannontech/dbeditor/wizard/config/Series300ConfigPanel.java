@@ -554,6 +554,7 @@ public void equalsJButton1_ActionPerformed(java.awt.event.ActionEvent actionEven
 	getTimesLabel().setVisible(false);
 	getEqualsJButton1().setVisible(false);
 	getRecalculateJButton1().setVisible(true);
+	fireInputUpdate();
 	return;
 }
 /**
@@ -570,6 +571,7 @@ public void equalsJButton2_ActionPerformed(java.awt.event.ActionEvent actionEven
 	getTimesLabel2().setVisible(false);
 	getEqualsJButton2().setVisible(false);
 	getRecalculateJButton2().setVisible(true);
+	fireInputUpdate();
 	return;
 }
 /**
@@ -586,6 +588,7 @@ public void equalsJButton3_ActionPerformed(java.awt.event.ActionEvent actionEven
 	getTimesLabel3().setVisible(false);
 	getEqualsJButton3().setVisible(false);
 	getRecalculateJButton3().setVisible(true);
+	fireInputUpdate();
 	return;
 }
 /**

@@ -179,6 +179,7 @@ public void equalsJButton1_ActionPerformed(java.awt.event.ActionEvent actionEven
 	getTimesLabel().setVisible(false);
 	getEqualsJButton1().setVisible(false);
 	getRecalculateJButton().setVisible(true);
+	fireInputUpdate();
 return;
 }
 /**
