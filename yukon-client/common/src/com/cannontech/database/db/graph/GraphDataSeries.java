@@ -5,8 +5,10 @@ package com.cannontech.database.db.graph;
  * Creation date: (12/13/99 1:39:30 PM)
  * @author: 
  */
-public class GraphDataSeries extends com.cannontech.database.db.DBPersistent {
+import java.sql.Connection;
 
+public class GraphDataSeries extends com.cannontech.database.db.DBPersistent
+{
 	// GraphDataSeries valid types (public int's only)
 	// the private int's are for completeness only and are NOT valid GDS strings.
 	private static final String GRAPH_TYPE_STRING = "Graph Only";
@@ -167,7 +169,7 @@ public void add() throws java.sql.SQLException
 	{
 		if( getGraphDataSeriesID() == null )
 		{
-			setGraphDataSeriesID( getNextID( getDbConnection().toString() ) );
+			setGraphDataSeriesID(new Integer(getNextID( getDbConnection()) ));
 		}
 	
 		Object[] addValues =
@@ -356,41 +358,95 @@ public Double getMultiplier() {
  * Creation date: (12/14/99 10:31:33 AM)
  * @return java.lang.Long
  */
-public static synchronized Integer getNextID() {
+public static synchronized int getNextID() {
 	
-	return getNextID("yukon");
+	int retVal = 0;
+	java.sql.Connection conn = null;
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.ResultSet rset = null;
+		
+	try
+	{		
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection(
+								com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+
+		if( conn == null )
+		{
+			throw new IllegalStateException("Error getting database connection.");
+		}
+		else
+		{
+			pstmt = conn.prepareStatement("select max(graphdataseriesID) AS maxid from graphdataseries");
+			rset = pstmt.executeQuery();							
+
+			// Just one please
+			if( rset.next() )
+				retVal = rset.getInt("maxid") + 1;
+		}		
+	}
+	catch( java.sql.SQLException e )
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	}
+	finally
+	{
+		try
+		{
+			if( pstmt != null ) pstmt.close();
+			if( conn != null ) conn.close();
+		} 
+		catch( java.sql.SQLException e2 )
+		{
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
+		}	
+	}
+
+	return retVal;
 }
 /**
  * Insert the method's description here.
  * Creation date: (12/14/99 10:31:33 AM)
  * @return java.lang.Long
  */
-public static synchronized Integer getNextID(String databaseAlias) {
-	com.cannontech.database.SqlStatement stmt =
- 		new com.cannontech.database.SqlStatement("SELECT MAX(GraphDataSeriesID) FROM GraphDataSeries",
- 													databaseAlias );
-
-	Integer returnVal = null;
-														
+public static synchronized int getNextID(Connection conn)
+{
+	int retVal = 0;
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.ResultSet rset = null;
+		
 	try
-	{
-		stmt.execute();
-
-		if( stmt.getRowCount() > 0 )
+	{		
+		if( conn == null )
 		{
-			returnVal = new Integer( ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue() + 1);
-		}	
+			throw new IllegalStateException("Database connection can not be (null).");
+		}
+		else
+		{
+			pstmt = conn.prepareStatement("select max(graphdataseriesID) AS maxid from graphdataseries");
+			rset = pstmt.executeQuery();							
 
+			// Just one please
+			if( rset.next() )
+				retVal = rset.getInt("maxid") + 1;
+		}		
 	}
-	catch( Exception e )
+	catch( java.sql.SQLException e )
 	{
 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
+	finally
+	{
+		try
+		{
+			if( pstmt != null ) pstmt.close();
+		} 
+		catch( java.sql.SQLException e2 )
+		{
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
+		}	
+	}
 
-	if( returnVal == null )
-		returnVal = new Integer(1);
-		
-	return returnVal;
+	return retVal;
 }
 /**
  * Insert the method's description here.
