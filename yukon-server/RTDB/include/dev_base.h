@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2004/06/28 20:16:11 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2004/07/27 16:58:15 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -50,7 +50,6 @@ class CtiRouteManager;
 class CtiPointBase;
 class CtiPointManager;
 class CtiTransmitterInfo;
-class CtiProtocolBase;
 class CtiDeviceBase;
 
 #if VSLICK_TAG_WORKAROUND
@@ -110,8 +109,6 @@ public:
     virtual LONG getRouteID() const;
 
     virtual LONG getDemandInterval() const;
-
-    virtual CtiProtocolBase *getProtocol() const;
 
 
     virtual ULONG getUniqueIdentifier() const;
@@ -291,7 +288,6 @@ inline RWCString CtiDeviceBase::getPassword() const      { return RWCString();}
 inline RWCString CtiDeviceBase::getPhoneNumber() const   { return RWCString();}
 inline LONG CtiDeviceBase::getRouteID() const            { return -1;}
 inline LONG CtiDeviceBase::getDemandInterval() const     { return LONG_MAX;}
-inline CtiProtocolBase *CtiDeviceBase::getProtocol() const  { return NULL;}
 inline void CtiDeviceBase::invalidateScanRates()         { return;}
 inline void CtiDeviceBase::deleteNonUpdatedScanRates()   { return;}
 inline RWCString CtiDeviceBase::getMeterGroupName() const   { return RWCString();}
