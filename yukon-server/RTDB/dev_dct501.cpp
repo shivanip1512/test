@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dct501.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/05/19 16:33:49 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/06/27 20:59:50 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,13 +60,13 @@ bool CtiDeviceDCT501::initCommandStore()
 
     cs._cmd     = CtiProtocolEmetcon::Scan_Integrity;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)DCT_AnalogsAddr,
+    cs._funcLen = make_pair( (int)DCT_AnalogsPos,
                              (int)DCT_AnalogsLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetValue_Demand;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)DCT_AnalogsAddr,
+    cs._funcLen = make_pair( (int)DCT_AnalogsPos,
                              (int)DCT_AnalogsLen );
     _commandStore.insert( cs );
 

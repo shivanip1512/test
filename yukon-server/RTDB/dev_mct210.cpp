@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct210.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/03/13 19:35:56 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/06/27 21:00:17 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,55 +61,55 @@ bool CtiDeviceMCT210::initCommandStore()
     //  MCT 210 commands
     cs._cmd     = CtiProtocolEmetcon::GetValue_Default;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT210_MReadAddr,
+    cs._funcLen = make_pair( (int)MCT210_MReadPos,
                              (int)MCT210_MReadLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::Scan_Accum;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT210_MReadAddr,
+    cs._funcLen = make_pair( (int)MCT210_MReadPos,
                              (int)MCT210_MReadLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutValue_KYZ;
     cs._io      = IO_WRITE | Q_ARMC;
-    cs._funcLen = make_pair( (int)MCT210_PutMReadAddr,
+    cs._funcLen = make_pair( (int)MCT210_PutMReadPos,
                              (int)MCT210_PutMReadLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetValue_Demand;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT210_DemandAddr,
+    cs._funcLen = make_pair( (int)MCT210_DemandPos,
                              (int)MCT210_DemandLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::Scan_Integrity;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT210_DemandAddr,
+    cs._funcLen = make_pair( (int)MCT210_DemandPos,
                              (int)MCT210_DemandLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetStatus_Disconnect;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT210_StatusAddr,
+    cs._funcLen = make_pair( (int)MCT210_StatusPos,
                              (int)MCT210_StatusLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetStatus_Internal;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT210_GenStatAddr,
+    cs._funcLen = make_pair( (int)MCT210_GenStatPos,
                              (int)MCT210_GenStatLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutStatus_Reset;
     cs._io      = IO_WRITE | Q_ARMC;
-    cs._funcLen = make_pair( (int)MCT210_ResetAddr,
+    cs._funcLen = make_pair( (int)MCT210_ResetPos,
                              (int)MCT210_ResetLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_Multiplier;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT210_MultAddr,
+    cs._funcLen = make_pair( (int)MCT210_MultPos,
                              (int)MCT210_MultLen );
     _commandStore.insert( cs );
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct210.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:36:12 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/06/27 21:00:17 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,25 +27,25 @@ protected:
 
     enum
     {
-        MCT210_MReadAddr    = 0x12,
-        MCT210_MReadLen     =    3,  // 24 bit most recent (MREAD) copied from CUREAD value on interval boundary
-        MCT210_DemandAddr   = 0x0a,
-        MCT210_DemandLen    =    2,
-        MCT210_AccumAddr    = 0x0f,
-        MCT210_AccumLen     =    6,
-        MCT210_StatusAddr   = 0x36,
-        MCT210_StatusLen    =    2,
-        MCT210_PutMReadAddr = 0x0f,
-        MCT210_PutMReadLen  =    9,
+        MCT210_MReadPos    = 0x12,
+        MCT210_MReadLen    =    3,  // 24 bit most recent (MREAD) copied from CUREAD value on interval boundary
+        MCT210_DemandPos   = 0x0a,
+        MCT210_DemandLen   =    2,
+        MCT210_AccumPos    = 0x0f,
+        MCT210_AccumLen    =    6,
+        MCT210_StatusPos   = 0x36,
+        MCT210_StatusLen   =    2,
+        MCT210_PutMReadPos = 0x0f,
+        MCT210_PutMReadLen =    9,
 
-        MCT210_MultAddr     = 0x19,
-        MCT210_MultLen      =    2,
+        MCT210_MultPos     = 0x19,
+        MCT210_MultLen     =    2,
 
-        MCT210_GenStatAddr  = 0x30,
-        MCT210_GenStatLen   =    9,
+        MCT210_GenStatPos  = 0x30,
+        MCT210_GenStatLen  =    9,
 
-        MCT210_ResetAddr    = 0x36,
-        MCT210_ResetLen     =    3
+        MCT210_ResetPos    = 0x36,
+        MCT210_ResetLen    =    3
     };
 
 private:

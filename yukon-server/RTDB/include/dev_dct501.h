@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dct501.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/05/19 16:33:49 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/06/27 20:59:50 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,8 +27,8 @@ protected:
 
     enum
     {
-        DCT_AnalogsAddr = 0x67,
-        DCT_AnalogsLen  =    8
+        DCT_AnalogsPos = 0x67,
+        DCT_AnalogsLen =    8
     };
 
 private:
