@@ -780,6 +780,7 @@ void CtiLMGroupBase::dumpDynamicData()
                 /*if( getPAOId() == 4181 || getPAOId() == 4195 || getPAOId() == 4154 )
                 {//debug for MVEA only !!!
                     CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - " << updater.asString().data() << endl;
                     dout << RWTime() << " - " << __FILE__ << "(" << __LINE__ << ")" << endl;
                     dout << "PAOId-" << getPAOId() << "  GroupControlState-" << getGroupControlState() << endl;
                     dout << "CurrentHoursDaily-" << getCurrentHoursDaily() << "  CurrentHoursMonthly-" << getCurrentHoursMonthly() << endl;
@@ -817,6 +818,7 @@ void CtiLMGroupBase::dumpDynamicData()
                 /*if( getPAOId() == 4181 || getPAOId() == 4195 || getPAOId() == 4154 )
                 {//debug for MVEA only !!!
                     CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - " << inserter.asString().data() << endl;
                     dout << RWTime() << " - " << __FILE__ << "(" << __LINE__ << ")" << endl;
                     dout << "PAOId-" << getPAOId() << "  GroupControlState-" << getGroupControlState() << endl;
                     dout << "CurrentHoursDaily-" << getCurrentHoursDaily() << "  CurrentHoursMonthly-" << getCurrentHoursMonthly() << endl;
