@@ -15,7 +15,6 @@ import javax.swing.event.TreeSelectionEvent;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.JTextPanePrintable;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.common.util.CtiProperties;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.KeysAndValues;
 import com.cannontech.common.util.KeysAndValuesFile;
@@ -29,6 +28,7 @@ import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.model.EditableLCRSerialModel;
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.roles.application.CommanderRole;
+import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.yc.gui.menu.YCCommandMenu;
 import com.cannontech.yc.gui.menu.YCFileMenu;
 import com.cannontech.yc.gui.menu.YCHelpMenu;
@@ -632,9 +632,12 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			int port = 1510;
 			try
 			{
-	         host = CtiProperties.getInstance().getProperty(CtiProperties.KEY_DISPATCH_MACHINE, "127.0.0.1");
+				host = ClientSession.getInstance().getRolePropertyValue(
+							SystemRole.DISPATCH_MACHINE, "127.0.0.1" );
 	            
-				port = (new Integer(CtiProperties.getInstance().getProperty(CtiProperties.KEY_DISPATCH_PORT, "1510"))).intValue();			
+				port = (new Integer(
+					ClientSession.getInstance().getRolePropertyValue(
+						SystemRole.DISPATCH_PORT, "1510"))).intValue();			
 			}
 			catch( Exception e)
 			{

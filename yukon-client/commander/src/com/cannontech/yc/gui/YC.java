@@ -11,7 +11,7 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpSessionBindingEvent;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiProperties;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.KeysAndValues;
 import com.cannontech.common.util.KeysAndValuesFile;
@@ -29,6 +29,7 @@ import com.cannontech.message.porter.ClientConnection;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.MessageEvent;
+import com.cannontech.roles.yukon.SystemRole;
 
 public class YC extends Observable implements com.cannontech.message.util.MessageListener, javax.servlet.http.HttpSessionBindingListener
 {
@@ -339,10 +340,11 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 		int port = 1510;
 		try
 		{
-			host = CtiProperties.getInstance().getProperty(CtiProperties.KEY_PORTER_MACHINE, 
-                  "127.0.0.1");
-            
-			port = (new Integer( CtiProperties.getInstance().getProperty(CtiProperties.KEY_PORTER_PORT, 
+			host = ClientSession.getInstance().getRolePropertyValue(
+						SystemRole.PORTER_MACHINE, "127.0.0.1" );
+			
+			port = (new Integer( 
+						ClientSession.getInstance().getRolePropertyValue(SystemRole.PORTER_MACHINE, 
                   "1510"))).intValue();
 		}
 		catch( Exception e)
