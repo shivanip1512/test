@@ -14,10 +14,10 @@ import com.cannontech.database.db.point.PointStatus;
 /**
  * @author snebben
  *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * Creates all LoadGroup points for every LoadGroup in the database.
+ * There is currently no check to see if the point already exists
+ * for a load group paobject.
+ * 
  */
 public class LoadGroup_ControlPointCreate extends PointCreate
 {
@@ -44,8 +44,6 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 	public boolean create()
 	{
 		//Points are going to be added to every load group.
-		//There is currently no check to see if the point already exists for a load group paobject.
-
 		CTILogger.info("Starting Load Group Point creation process...");
 
 		java.util.Vector devicesVector = new java.util.Vector(20);
