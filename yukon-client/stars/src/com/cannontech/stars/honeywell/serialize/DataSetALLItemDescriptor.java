@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
  * $Id$
  */
@@ -23,6 +23,7 @@ import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
 import org.exolab.castor.xml.validators.*;
 
 /**
+ * 
  * 
  * @version $Revision$ $Date$
 **/
@@ -63,13 +64,13 @@ public class DataSetALLItemDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- _customerContact
         desc = new XMLFieldDescriptorImpl(CustomerContact.class, "_customerContact", "CustomerContact", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 DataSetALLItem target = (DataSetALLItem) object;
                 return target.getCustomerContact();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -80,7 +81,7 @@ public class DataSetALLItemDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new CustomerContact();
             }
         } );
@@ -98,13 +99,13 @@ public class DataSetALLItemDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- _customerInformation
         desc = new XMLFieldDescriptorImpl(CustomerInformation.class, "_customerInformation", "CustomerInformation", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 DataSetALLItem target = (DataSetALLItem) object;
                 return target.getCustomerInformation();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -115,7 +116,7 @@ public class DataSetALLItemDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new CustomerInformation();
             }
         } );
@@ -133,13 +134,13 @@ public class DataSetALLItemDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- _LMAppliance
         desc = new XMLFieldDescriptorImpl(LMAppliance.class, "_LMAppliance", "LMAppliance", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 DataSetALLItem target = (DataSetALLItem) object;
                 return target.getLMAppliance();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -150,7 +151,7 @@ public class DataSetALLItemDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new LMAppliance();
             }
         } );
@@ -168,13 +169,13 @@ public class DataSetALLItemDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- _LMHardware
         desc = new XMLFieldDescriptorImpl(LMHardware.class, "_LMHardware", "LMHardware", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 DataSetALLItem target = (DataSetALLItem) object;
                 return target.getLMHardware();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -185,7 +186,7 @@ public class DataSetALLItemDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new LMHardware();
             }
         } );

@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
  * $Id$
  */
@@ -23,6 +23,7 @@ import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
 import org.exolab.castor.xml.validators.*;
 
 /**
+ * 
  * 
  * @version $Revision$ $Date$
 **/
@@ -60,13 +61,13 @@ public class DataSetALLDescriptor extends org.exolab.castor.xml.util.XMLClassDes
         //-- _items
         desc = new XMLFieldDescriptorImpl(com.cannontech.stars.honeywell.serialize.DataSetALLItem.class, "_items", (String)null, NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 DataSetALL target = (DataSetALL) object;
                 return target.getDataSetALLItem();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -77,18 +78,20 @@ public class DataSetALLDescriptor extends org.exolab.castor.xml.util.XMLClassDes
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new com.cannontech.stars.honeywell.serialize.DataSetALLItem();
             }
         } );
         desc.setHandler(handler);
         desc.setContainer(true);
+        desc.setClassDescriptor(new com.cannontech.stars.honeywell.serialize.DataSetALLItemDescriptor());
         desc.setNameSpaceURI("http://www.tempuri.org/DataSetALL.xsd");
         desc.setMultivalued(true);
         addFieldDescriptor(desc);
         
         //-- validation code for: _items
         fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(0);
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.honeywell.serialize.DataSetALLDescriptor()

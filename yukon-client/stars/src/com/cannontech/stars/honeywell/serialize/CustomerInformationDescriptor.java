@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
  * $Id$
  */
@@ -23,6 +23,7 @@ import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
 import org.exolab.castor.xml.validators.*;
 
 /**
+ * 
  * 
  * @version $Revision$ $Date$
 **/
@@ -58,100 +59,19 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         setCompositorAsSequence();
         //-- initialize attribute descriptors
         
-        //-- _id
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_id", "id", NodeType.Attribute);
-        desc.setImmutable(true);
-        handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
-                throws IllegalStateException
-            {
-                CustomerInformation target = (CustomerInformation) object;
-                return target.getId();
-            }
-            public void setValue( Object object, Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    CustomerInformation target = (CustomerInformation) object;
-                    target.setId( (java.lang.String) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public Object newInstance( Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setNameSpaceURI("http://www.tempuri.org/DataSetALL.xsd");
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _id
-        fieldValidator = new FieldValidator();
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
-        desc.setValidator(fieldValidator);
-        
-        //-- _rowData
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_rowData", "rowData", NodeType.Attribute);
-        handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
-                throws IllegalStateException
-            {
-                CustomerInformation target = (CustomerInformation) object;
-                if(!target.hasRowData())
-                    return null;
-                return new Integer(target.getRowData());
-            }
-            public void setValue( Object object, Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    CustomerInformation target = (CustomerInformation) object;
-                    // if null, use delete method for optional primitives 
-                    if (value == null) {
-                        target.deleteRowData();
-                        return;
-                    }
-                    target.setRowData( ((Integer)value).intValue());
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public Object newInstance( Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setNameSpaceURI("http://www.tempuri.org/DataSetALL.xsd");
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _rowData
-        fieldValidator = new FieldValidator();
-        { //-- local scope
-            IntegerValidator iv = new IntegerValidator();
-            fieldValidator.setValidator(iv);
-        }
-        desc.setValidator(fieldValidator);
-        
         //-- initialize element descriptors
         
         //-- _ACCOUNTID
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_ACCOUNTID", "ACCOUNTID", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getACCOUNTID();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -162,7 +82,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -186,13 +106,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_CUSTOMERNUMBER", "CUSTOMERNUMBER", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getCUSTOMERNUMBER();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -203,7 +123,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -227,13 +147,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_ACCOUNTNUMBER", "ACCOUNTNUMBER", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getACCOUNTNUMBER();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -244,7 +164,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -268,13 +188,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_ACCOUNTNOTES", "ACCOUNTNOTES", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getACCOUNTNOTES();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -285,7 +205,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -307,13 +227,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_PROPERTYNUMBER", "PROPERTYNUMBER", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getPROPERTYNUMBER();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -324,7 +244,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -346,13 +266,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_PROPERTYNOTES", "PROPERTYNOTES", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getPROPERTYNOTES();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -363,7 +283,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -385,13 +305,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_STREETADDRESS1", "STREETADDRESS1", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getSTREETADDRESS1();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -402,7 +322,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -424,13 +344,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_STREETADDRESS2", "STREETADDRESS2", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getSTREETADDRESS2();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -441,7 +361,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -463,13 +383,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_STREETADDRESSCITY", "STREETADDRESSCITY", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getSTREETADDRESSCITY();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -480,7 +400,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -502,13 +422,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_STREETADDRESSSTATECODE", "STREETADDRESSSTATECODE", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getSTREETADDRESSSTATECODE();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -519,7 +439,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -541,13 +461,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_STREETADDRESSZIPCODE", "STREETADDRESSZIPCODE", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getSTREETADDRESSZIPCODE();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -558,7 +478,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -580,13 +500,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_SUBSTATIONNAME", "SUBSTATIONNAME", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getSUBSTATIONNAME();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -597,7 +517,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -619,13 +539,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_FEEDER", "FEEDER", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getFEEDER();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -636,7 +556,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -658,13 +578,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_POLE", "POLE", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getPOLE();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -675,7 +595,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -697,13 +617,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_TRANSFORMERSIZE", "TRANSFORMERSIZE", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getTRANSFORMERSIZE();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -714,7 +634,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -736,13 +656,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_SERVICEVOLTAGE", "SERVICEVOLTAGE", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getSERVICEVOLTAGE();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -753,7 +673,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -775,13 +695,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_BILLINGADDRESS1", "BILLINGADDRESS1", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getBILLINGADDRESS1();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -792,7 +712,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -814,13 +734,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_BILLINGADDRESS2", "BILLINGADDRESS2", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getBILLINGADDRESS2();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -831,7 +751,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -853,13 +773,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_BILLINGADDRESSCITY", "BILLINGADDRESSCITY", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getBILLINGADDRESSCITY();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -870,7 +790,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -892,13 +812,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_BILLINGADDRESSSTATECODE", "BILLINGADDRESSSTATECODE", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getBILLINGADDRESSSTATECODE();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -909,7 +829,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -931,13 +851,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_BILLINGADDRESSZIPCODE", "BILLINGADDRESSZIPCODE", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getBILLINGADDRESSZIPCODE();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -948,7 +868,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -970,13 +890,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_ACCOUNT_ID", "ACCOUNT_ID", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getACCOUNT_ID();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -987,7 +907,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -1011,13 +931,13 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_ADDRESS_ID", "ADDRESS_ID", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 CustomerInformation target = (CustomerInformation) object;
                 return target.getADDRESS_ID();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -1028,7 +948,7 @@ public class CustomerInformationDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );

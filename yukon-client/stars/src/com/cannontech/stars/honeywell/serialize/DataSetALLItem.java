@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
  * $Id$
  */
@@ -15,6 +15,7 @@ import java.io.Serializable;
 import org.exolab.castor.xml.*;
 
 /**
+ * 
  * 
  * @version $Revision$ $Date$
 **/
@@ -48,6 +49,9 @@ public class DataSetALLItem implements java.io.Serializable {
     //-----------/
 
     /**
+     * Returns the value of field 'customerContact'.
+     * 
+     * @return the value of field 'customerContact'.
     **/
     public CustomerContact getCustomerContact()
     {
@@ -55,6 +59,9 @@ public class DataSetALLItem implements java.io.Serializable {
     } //-- CustomerContact getCustomerContact() 
 
     /**
+     * Returns the value of field 'customerInformation'.
+     * 
+     * @return the value of field 'customerInformation'.
     **/
     public CustomerInformation getCustomerInformation()
     {
@@ -62,6 +69,9 @@ public class DataSetALLItem implements java.io.Serializable {
     } //-- CustomerInformation getCustomerInformation() 
 
     /**
+     * Returns the value of field 'LMAppliance'.
+     * 
+     * @return the value of field 'LMAppliance'.
     **/
     public LMAppliance getLMAppliance()
     {
@@ -69,6 +79,9 @@ public class DataSetALLItem implements java.io.Serializable {
     } //-- LMAppliance getLMAppliance() 
 
     /**
+     * Returns the value of field 'LMHardware'.
+     * 
+     * @return the value of field 'LMHardware'.
     **/
     public LMHardware getLMHardware()
     {
@@ -76,8 +89,9 @@ public class DataSetALLItem implements java.io.Serializable {
     } //-- LMHardware getLMHardware() 
 
     /**
+     * Sets the value of field 'customerContact'.
      * 
-     * @param customerContact
+     * @param customerContact the value of field 'customerContact'.
     **/
     public void setCustomerContact(CustomerContact customerContact)
     {
@@ -85,8 +99,10 @@ public class DataSetALLItem implements java.io.Serializable {
     } //-- void setCustomerContact(CustomerContact) 
 
     /**
+     * Sets the value of field 'customerInformation'.
      * 
-     * @param customerInformation
+     * @param customerInformation the value of field
+     * 'customerInformation'.
     **/
     public void setCustomerInformation(CustomerInformation customerInformation)
     {
@@ -94,8 +110,9 @@ public class DataSetALLItem implements java.io.Serializable {
     } //-- void setCustomerInformation(CustomerInformation) 
 
     /**
+     * Sets the value of field 'LMAppliance'.
      * 
-     * @param LMAppliance
+     * @param LMAppliance the value of field 'LMAppliance'.
     **/
     public void setLMAppliance(LMAppliance LMAppliance)
     {
@@ -103,8 +120,9 @@ public class DataSetALLItem implements java.io.Serializable {
     } //-- void setLMAppliance(LMAppliance) 
 
     /**
+     * Sets the value of field 'LMHardware'.
      * 
-     * @param LMHardware
+     * @param LMHardware the value of field 'LMHardware'.
     **/
     public void setLMHardware(LMHardware LMHardware)
     {

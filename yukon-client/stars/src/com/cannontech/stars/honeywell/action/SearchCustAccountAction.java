@@ -129,22 +129,22 @@ public class SearchCustAccountAction extends ActionBase {
 			}
 			
 			it = element.getChildElements();
-			element = null;
+			SOAPElement dataSetElmt = null;
 			
 			while (it.hasNext()) {
 				SOAPElement elem = (SOAPElement) it.next();
 				if ( elem.getElementName().getLocalName().equals("DataSetALL") ) {
-					element = elem;
+					dataSetElmt = elem;
 					break;
 				}
 			}
 			
-			if ( element == null ) { 
+			if ( dataSetElmt == null ) { 
 				XMLUtil.getLogger( SearchCustAccountAction.class ).debug("DataSetALL Not Found");
 				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			}
 			
-			String elemStr = SOAPUtil.parseSOAPElement(respMsg , element.getElementName());
+			String elemStr = SOAPUtil.parseSOAPElement(respMsg , dataSetElmt.getElementName());
 			StringReader sr = new StringReader( elemStr );
 			DataSetALL dataSet = DataSetALL.unmarshal( sr );
 			if ( dataSet.getDataSetALLItemCount() == 0 ) { 

@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
  * $Id$
  */
@@ -11,6 +11,7 @@ package com.cannontech.stars.honeywell.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
@@ -19,9 +20,10 @@ import java.util.Vector;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.DocumentHandler;
+import org.xml.sax.ContentHandler;
 
 /**
+ * 
  * 
  * @version $Revision$ $Date$
 **/
@@ -51,6 +53,7 @@ public class DataSetALL implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param vDataSetALLItem
     **/
     public void addDataSetALLItem(com.cannontech.stars.honeywell.serialize.DataSetALLItem vDataSetALLItem)
@@ -60,6 +63,7 @@ public class DataSetALL implements java.io.Serializable {
     } //-- void addDataSetALLItem(com.cannontech.stars.honeywell.serialize.DataSetALLItem) 
 
     /**
+     * 
      * 
      * @param index
      * @param vDataSetALLItem
@@ -78,6 +82,7 @@ public class DataSetALL implements java.io.Serializable {
     } //-- java.util.Enumeration enumerateDataSetALLItem() 
 
     /**
+     * 
      * 
      * @param index
     **/
@@ -99,7 +104,7 @@ public class DataSetALL implements java.io.Serializable {
         int size = _items.size();
         com.cannontech.stars.honeywell.serialize.DataSetALLItem[] mArray = new com.cannontech.stars.honeywell.serialize.DataSetALLItem[size];
         for (int index = 0; index < size; index++) {
-            mArray[index] = (DataSetALLItem) _items.elementAt(index);
+            mArray[index] = (com.cannontech.stars.honeywell.serialize.DataSetALLItem) _items.elementAt(index);
         }
         return mArray;
     } //-- com.cannontech.stars.honeywell.serialize.DataSetALLItem[] getDataSetALLItem() 
@@ -126,6 +131,7 @@ public class DataSetALL implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param out
     **/
     public void marshal(java.io.Writer out)
@@ -137,14 +143,15 @@ public class DataSetALL implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param handler
     **/
-    public void marshal(org.xml.sax.DocumentHandler handler)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    public void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
         
         Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.DocumentHandler) 
+    } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
     **/
@@ -155,16 +162,18 @@ public class DataSetALL implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param index
     **/
     public com.cannontech.stars.honeywell.serialize.DataSetALLItem removeDataSetALLItem(int index)
     {
-        Object obj = _items.elementAt(index);
+        java.lang.Object obj = _items.elementAt(index);
         _items.removeElementAt(index);
         return (com.cannontech.stars.honeywell.serialize.DataSetALLItem) obj;
     } //-- com.cannontech.stars.honeywell.serialize.DataSetALLItem removeDataSetALLItem(int) 
 
     /**
+     * 
      * 
      * @param index
      * @param vDataSetALLItem
@@ -181,6 +190,7 @@ public class DataSetALL implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param dataSetALLItemArray
     **/
     public void setDataSetALLItem(com.cannontech.stars.honeywell.serialize.DataSetALLItem[] dataSetALLItemArray)
@@ -193,6 +203,7 @@ public class DataSetALL implements java.io.Serializable {
     } //-- void setDataSetALLItem(com.cannontech.stars.honeywell.serialize.DataSetALLItem) 
 
     /**
+     * 
      * 
      * @param reader
     **/

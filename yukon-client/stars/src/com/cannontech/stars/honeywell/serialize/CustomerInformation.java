@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
  * $Id$
  */
@@ -11,15 +11,17 @@ package com.cannontech.stars.honeywell.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.DocumentHandler;
+import org.xml.sax.ContentHandler;
 
 /**
+ * 
  * 
  * @version $Revision$ $Date$
 **/
@@ -29,15 +31,6 @@ public class CustomerInformation implements java.io.Serializable {
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
-
-    private java.lang.String _id;
-
-    private int _rowData;
-
-    /**
-     * keeps track of state for field: _rowData
-    **/
-    private boolean _has_rowData;
 
     private java.lang.String _ACCOUNTID;
 
@@ -100,13 +93,9 @@ public class CustomerInformation implements java.io.Serializable {
     //-----------/
 
     /**
-    **/
-    public void deleteRowData()
-    {
-        this._has_rowData= false;
-    } //-- void deleteRowData() 
-
-    /**
+     * Returns the value of field 'ACCOUNTID'.
+     * 
+     * @return the value of field 'ACCOUNTID'.
     **/
     public java.lang.String getACCOUNTID()
     {
@@ -114,6 +103,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getACCOUNTID() 
 
     /**
+     * Returns the value of field 'ACCOUNTNOTES'.
+     * 
+     * @return the value of field 'ACCOUNTNOTES'.
     **/
     public java.lang.String getACCOUNTNOTES()
     {
@@ -121,6 +113,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getACCOUNTNOTES() 
 
     /**
+     * Returns the value of field 'ACCOUNTNUMBER'.
+     * 
+     * @return the value of field 'ACCOUNTNUMBER'.
     **/
     public java.lang.String getACCOUNTNUMBER()
     {
@@ -128,6 +123,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getACCOUNTNUMBER() 
 
     /**
+     * Returns the value of field 'ACCOUNT_ID'.
+     * 
+     * @return the value of field 'ACCOUNT_ID'.
     **/
     public java.lang.String getACCOUNT_ID()
     {
@@ -135,6 +133,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getACCOUNT_ID() 
 
     /**
+     * Returns the value of field 'ADDRESS_ID'.
+     * 
+     * @return the value of field 'ADDRESS_ID'.
     **/
     public java.lang.String getADDRESS_ID()
     {
@@ -142,6 +143,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getADDRESS_ID() 
 
     /**
+     * Returns the value of field 'BILLINGADDRESS1'.
+     * 
+     * @return the value of field 'BILLINGADDRESS1'.
     **/
     public java.lang.String getBILLINGADDRESS1()
     {
@@ -149,6 +153,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getBILLINGADDRESS1() 
 
     /**
+     * Returns the value of field 'BILLINGADDRESS2'.
+     * 
+     * @return the value of field 'BILLINGADDRESS2'.
     **/
     public java.lang.String getBILLINGADDRESS2()
     {
@@ -156,6 +163,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getBILLINGADDRESS2() 
 
     /**
+     * Returns the value of field 'BILLINGADDRESSCITY'.
+     * 
+     * @return the value of field 'BILLINGADDRESSCITY'.
     **/
     public java.lang.String getBILLINGADDRESSCITY()
     {
@@ -163,6 +173,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getBILLINGADDRESSCITY() 
 
     /**
+     * Returns the value of field 'BILLINGADDRESSSTATECODE'.
+     * 
+     * @return the value of field 'BILLINGADDRESSSTATECODE'.
     **/
     public java.lang.String getBILLINGADDRESSSTATECODE()
     {
@@ -170,6 +183,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getBILLINGADDRESSSTATECODE() 
 
     /**
+     * Returns the value of field 'BILLINGADDRESSZIPCODE'.
+     * 
+     * @return the value of field 'BILLINGADDRESSZIPCODE'.
     **/
     public java.lang.String getBILLINGADDRESSZIPCODE()
     {
@@ -177,6 +193,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getBILLINGADDRESSZIPCODE() 
 
     /**
+     * Returns the value of field 'CUSTOMERNUMBER'.
+     * 
+     * @return the value of field 'CUSTOMERNUMBER'.
     **/
     public java.lang.String getCUSTOMERNUMBER()
     {
@@ -184,6 +203,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getCUSTOMERNUMBER() 
 
     /**
+     * Returns the value of field 'FEEDER'.
+     * 
+     * @return the value of field 'FEEDER'.
     **/
     public java.lang.String getFEEDER()
     {
@@ -191,13 +213,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getFEEDER() 
 
     /**
-    **/
-    public java.lang.String getId()
-    {
-        return this._id;
-    } //-- java.lang.String getId() 
-
-    /**
+     * Returns the value of field 'POLE'.
+     * 
+     * @return the value of field 'POLE'.
     **/
     public java.lang.String getPOLE()
     {
@@ -205,6 +223,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getPOLE() 
 
     /**
+     * Returns the value of field 'PROPERTYNOTES'.
+     * 
+     * @return the value of field 'PROPERTYNOTES'.
     **/
     public java.lang.String getPROPERTYNOTES()
     {
@@ -212,6 +233,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getPROPERTYNOTES() 
 
     /**
+     * Returns the value of field 'PROPERTYNUMBER'.
+     * 
+     * @return the value of field 'PROPERTYNUMBER'.
     **/
     public java.lang.String getPROPERTYNUMBER()
     {
@@ -219,13 +243,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getPROPERTYNUMBER() 
 
     /**
-    **/
-    public int getRowData()
-    {
-        return this._rowData;
-    } //-- int getRowData() 
-
-    /**
+     * Returns the value of field 'SERVICEVOLTAGE'.
+     * 
+     * @return the value of field 'SERVICEVOLTAGE'.
     **/
     public java.lang.String getSERVICEVOLTAGE()
     {
@@ -233,6 +253,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getSERVICEVOLTAGE() 
 
     /**
+     * Returns the value of field 'STREETADDRESS1'.
+     * 
+     * @return the value of field 'STREETADDRESS1'.
     **/
     public java.lang.String getSTREETADDRESS1()
     {
@@ -240,6 +263,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getSTREETADDRESS1() 
 
     /**
+     * Returns the value of field 'STREETADDRESS2'.
+     * 
+     * @return the value of field 'STREETADDRESS2'.
     **/
     public java.lang.String getSTREETADDRESS2()
     {
@@ -247,6 +273,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getSTREETADDRESS2() 
 
     /**
+     * Returns the value of field 'STREETADDRESSCITY'.
+     * 
+     * @return the value of field 'STREETADDRESSCITY'.
     **/
     public java.lang.String getSTREETADDRESSCITY()
     {
@@ -254,6 +283,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getSTREETADDRESSCITY() 
 
     /**
+     * Returns the value of field 'STREETADDRESSSTATECODE'.
+     * 
+     * @return the value of field 'STREETADDRESSSTATECODE'.
     **/
     public java.lang.String getSTREETADDRESSSTATECODE()
     {
@@ -261,6 +293,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getSTREETADDRESSSTATECODE() 
 
     /**
+     * Returns the value of field 'STREETADDRESSZIPCODE'.
+     * 
+     * @return the value of field 'STREETADDRESSZIPCODE'.
     **/
     public java.lang.String getSTREETADDRESSZIPCODE()
     {
@@ -268,6 +303,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getSTREETADDRESSZIPCODE() 
 
     /**
+     * Returns the value of field 'SUBSTATIONNAME'.
+     * 
+     * @return the value of field 'SUBSTATIONNAME'.
     **/
     public java.lang.String getSUBSTATIONNAME()
     {
@@ -275,18 +313,14 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- java.lang.String getSUBSTATIONNAME() 
 
     /**
+     * Returns the value of field 'TRANSFORMERSIZE'.
+     * 
+     * @return the value of field 'TRANSFORMERSIZE'.
     **/
     public java.lang.String getTRANSFORMERSIZE()
     {
         return this._TRANSFORMERSIZE;
     } //-- java.lang.String getTRANSFORMERSIZE() 
-
-    /**
-    **/
-    public boolean hasRowData()
-    {
-        return this._has_rowData;
-    } //-- boolean hasRowData() 
 
     /**
     **/
@@ -303,6 +337,7 @@ public class CustomerInformation implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param out
     **/
     public void marshal(java.io.Writer out)
@@ -314,18 +349,20 @@ public class CustomerInformation implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param handler
     **/
-    public void marshal(org.xml.sax.DocumentHandler handler)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    public void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
         
         Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.DocumentHandler) 
+    } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'ACCOUNTID'.
      * 
-     * @param ACCOUNTID
+     * @param ACCOUNTID the value of field 'ACCOUNTID'.
     **/
     public void setACCOUNTID(java.lang.String ACCOUNTID)
     {
@@ -333,8 +370,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setACCOUNTID(java.lang.String) 
 
     /**
+     * Sets the value of field 'ACCOUNTNOTES'.
      * 
-     * @param ACCOUNTNOTES
+     * @param ACCOUNTNOTES the value of field 'ACCOUNTNOTES'.
     **/
     public void setACCOUNTNOTES(java.lang.String ACCOUNTNOTES)
     {
@@ -342,8 +380,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setACCOUNTNOTES(java.lang.String) 
 
     /**
+     * Sets the value of field 'ACCOUNTNUMBER'.
      * 
-     * @param ACCOUNTNUMBER
+     * @param ACCOUNTNUMBER the value of field 'ACCOUNTNUMBER'.
     **/
     public void setACCOUNTNUMBER(java.lang.String ACCOUNTNUMBER)
     {
@@ -351,8 +390,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setACCOUNTNUMBER(java.lang.String) 
 
     /**
+     * Sets the value of field 'ACCOUNT_ID'.
      * 
-     * @param ACCOUNT_ID
+     * @param ACCOUNT_ID the value of field 'ACCOUNT_ID'.
     **/
     public void setACCOUNT_ID(java.lang.String ACCOUNT_ID)
     {
@@ -360,8 +400,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setACCOUNT_ID(java.lang.String) 
 
     /**
+     * Sets the value of field 'ADDRESS_ID'.
      * 
-     * @param ADDRESS_ID
+     * @param ADDRESS_ID the value of field 'ADDRESS_ID'.
     **/
     public void setADDRESS_ID(java.lang.String ADDRESS_ID)
     {
@@ -369,8 +410,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setADDRESS_ID(java.lang.String) 
 
     /**
+     * Sets the value of field 'BILLINGADDRESS1'.
      * 
-     * @param BILLINGADDRESS1
+     * @param BILLINGADDRESS1 the value of field 'BILLINGADDRESS1'.
     **/
     public void setBILLINGADDRESS1(java.lang.String BILLINGADDRESS1)
     {
@@ -378,8 +420,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setBILLINGADDRESS1(java.lang.String) 
 
     /**
+     * Sets the value of field 'BILLINGADDRESS2'.
      * 
-     * @param BILLINGADDRESS2
+     * @param BILLINGADDRESS2 the value of field 'BILLINGADDRESS2'.
     **/
     public void setBILLINGADDRESS2(java.lang.String BILLINGADDRESS2)
     {
@@ -387,8 +430,10 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setBILLINGADDRESS2(java.lang.String) 
 
     /**
+     * Sets the value of field 'BILLINGADDRESSCITY'.
      * 
-     * @param BILLINGADDRESSCITY
+     * @param BILLINGADDRESSCITY the value of field
+     * 'BILLINGADDRESSCITY'.
     **/
     public void setBILLINGADDRESSCITY(java.lang.String BILLINGADDRESSCITY)
     {
@@ -396,8 +441,10 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setBILLINGADDRESSCITY(java.lang.String) 
 
     /**
+     * Sets the value of field 'BILLINGADDRESSSTATECODE'.
      * 
-     * @param BILLINGADDRESSSTATECODE
+     * @param BILLINGADDRESSSTATECODE the value of field
+     * 'BILLINGADDRESSSTATECODE'.
     **/
     public void setBILLINGADDRESSSTATECODE(java.lang.String BILLINGADDRESSSTATECODE)
     {
@@ -405,8 +452,10 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setBILLINGADDRESSSTATECODE(java.lang.String) 
 
     /**
+     * Sets the value of field 'BILLINGADDRESSZIPCODE'.
      * 
-     * @param BILLINGADDRESSZIPCODE
+     * @param BILLINGADDRESSZIPCODE the value of field
+     * 'BILLINGADDRESSZIPCODE'.
     **/
     public void setBILLINGADDRESSZIPCODE(java.lang.String BILLINGADDRESSZIPCODE)
     {
@@ -414,8 +463,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setBILLINGADDRESSZIPCODE(java.lang.String) 
 
     /**
+     * Sets the value of field 'CUSTOMERNUMBER'.
      * 
-     * @param CUSTOMERNUMBER
+     * @param CUSTOMERNUMBER the value of field 'CUSTOMERNUMBER'.
     **/
     public void setCUSTOMERNUMBER(java.lang.String CUSTOMERNUMBER)
     {
@@ -423,8 +473,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setCUSTOMERNUMBER(java.lang.String) 
 
     /**
+     * Sets the value of field 'FEEDER'.
      * 
-     * @param FEEDER
+     * @param FEEDER the value of field 'FEEDER'.
     **/
     public void setFEEDER(java.lang.String FEEDER)
     {
@@ -432,17 +483,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setFEEDER(java.lang.String) 
 
     /**
+     * Sets the value of field 'POLE'.
      * 
-     * @param id
-    **/
-    public void setId(java.lang.String id)
-    {
-        this._id = id;
-    } //-- void setId(java.lang.String) 
-
-    /**
-     * 
-     * @param POLE
+     * @param POLE the value of field 'POLE'.
     **/
     public void setPOLE(java.lang.String POLE)
     {
@@ -450,8 +493,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setPOLE(java.lang.String) 
 
     /**
+     * Sets the value of field 'PROPERTYNOTES'.
      * 
-     * @param PROPERTYNOTES
+     * @param PROPERTYNOTES the value of field 'PROPERTYNOTES'.
     **/
     public void setPROPERTYNOTES(java.lang.String PROPERTYNOTES)
     {
@@ -459,8 +503,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setPROPERTYNOTES(java.lang.String) 
 
     /**
+     * Sets the value of field 'PROPERTYNUMBER'.
      * 
-     * @param PROPERTYNUMBER
+     * @param PROPERTYNUMBER the value of field 'PROPERTYNUMBER'.
     **/
     public void setPROPERTYNUMBER(java.lang.String PROPERTYNUMBER)
     {
@@ -468,18 +513,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setPROPERTYNUMBER(java.lang.String) 
 
     /**
+     * Sets the value of field 'SERVICEVOLTAGE'.
      * 
-     * @param rowData
-    **/
-    public void setRowData(int rowData)
-    {
-        this._rowData = rowData;
-        this._has_rowData = true;
-    } //-- void setRowData(int) 
-
-    /**
-     * 
-     * @param SERVICEVOLTAGE
+     * @param SERVICEVOLTAGE the value of field 'SERVICEVOLTAGE'.
     **/
     public void setSERVICEVOLTAGE(java.lang.String SERVICEVOLTAGE)
     {
@@ -487,8 +523,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setSERVICEVOLTAGE(java.lang.String) 
 
     /**
+     * Sets the value of field 'STREETADDRESS1'.
      * 
-     * @param STREETADDRESS1
+     * @param STREETADDRESS1 the value of field 'STREETADDRESS1'.
     **/
     public void setSTREETADDRESS1(java.lang.String STREETADDRESS1)
     {
@@ -496,8 +533,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setSTREETADDRESS1(java.lang.String) 
 
     /**
+     * Sets the value of field 'STREETADDRESS2'.
      * 
-     * @param STREETADDRESS2
+     * @param STREETADDRESS2 the value of field 'STREETADDRESS2'.
     **/
     public void setSTREETADDRESS2(java.lang.String STREETADDRESS2)
     {
@@ -505,8 +543,10 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setSTREETADDRESS2(java.lang.String) 
 
     /**
+     * Sets the value of field 'STREETADDRESSCITY'.
      * 
-     * @param STREETADDRESSCITY
+     * @param STREETADDRESSCITY the value of field
+     * 'STREETADDRESSCITY'.
     **/
     public void setSTREETADDRESSCITY(java.lang.String STREETADDRESSCITY)
     {
@@ -514,8 +554,10 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setSTREETADDRESSCITY(java.lang.String) 
 
     /**
+     * Sets the value of field 'STREETADDRESSSTATECODE'.
      * 
-     * @param STREETADDRESSSTATECODE
+     * @param STREETADDRESSSTATECODE the value of field
+     * 'STREETADDRESSSTATECODE'.
     **/
     public void setSTREETADDRESSSTATECODE(java.lang.String STREETADDRESSSTATECODE)
     {
@@ -523,8 +565,10 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setSTREETADDRESSSTATECODE(java.lang.String) 
 
     /**
+     * Sets the value of field 'STREETADDRESSZIPCODE'.
      * 
-     * @param STREETADDRESSZIPCODE
+     * @param STREETADDRESSZIPCODE the value of field
+     * 'STREETADDRESSZIPCODE'.
     **/
     public void setSTREETADDRESSZIPCODE(java.lang.String STREETADDRESSZIPCODE)
     {
@@ -532,8 +576,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setSTREETADDRESSZIPCODE(java.lang.String) 
 
     /**
+     * Sets the value of field 'SUBSTATIONNAME'.
      * 
-     * @param SUBSTATIONNAME
+     * @param SUBSTATIONNAME the value of field 'SUBSTATIONNAME'.
     **/
     public void setSUBSTATIONNAME(java.lang.String SUBSTATIONNAME)
     {
@@ -541,8 +586,9 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setSUBSTATIONNAME(java.lang.String) 
 
     /**
+     * Sets the value of field 'TRANSFORMERSIZE'.
      * 
-     * @param TRANSFORMERSIZE
+     * @param TRANSFORMERSIZE the value of field 'TRANSFORMERSIZE'.
     **/
     public void setTRANSFORMERSIZE(java.lang.String TRANSFORMERSIZE)
     {
@@ -550,6 +596,7 @@ public class CustomerInformation implements java.io.Serializable {
     } //-- void setTRANSFORMERSIZE(java.lang.String) 
 
     /**
+     * 
      * 
      * @param reader
     **/

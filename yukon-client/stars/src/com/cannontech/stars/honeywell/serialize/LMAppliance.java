@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
  * $Id$
  */
@@ -11,15 +11,17 @@ package com.cannontech.stars.honeywell.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.DocumentHandler;
+import org.xml.sax.ContentHandler;
 
 /**
+ * 
  * 
  * @version $Revision$ $Date$
 **/
@@ -29,15 +31,6 @@ public class LMAppliance implements java.io.Serializable {
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
-
-    private java.lang.String _id;
-
-    private int _rowData;
-
-    /**
-     * keeps track of state for field: _rowData
-    **/
-    private boolean _has_rowData;
 
     private java.lang.String _APPLIANCE_ID;
 
@@ -66,13 +59,9 @@ public class LMAppliance implements java.io.Serializable {
     //-----------/
 
     /**
-    **/
-    public void deleteRowData()
-    {
-        this._has_rowData= false;
-    } //-- void deleteRowData() 
-
-    /**
+     * Returns the value of field 'APPLIANCE_ID'.
+     * 
+     * @return the value of field 'APPLIANCE_ID'.
     **/
     public java.lang.String getAPPLIANCE_ID()
     {
@@ -80,6 +69,9 @@ public class LMAppliance implements java.io.Serializable {
     } //-- java.lang.String getAPPLIANCE_ID() 
 
     /**
+     * Returns the value of field 'CATEGORY'.
+     * 
+     * @return the value of field 'CATEGORY'.
     **/
     public java.lang.String getCATEGORY()
     {
@@ -87,6 +79,9 @@ public class LMAppliance implements java.io.Serializable {
     } //-- java.lang.String getCATEGORY() 
 
     /**
+     * Returns the value of field 'DESCRIPTION'.
+     * 
+     * @return the value of field 'DESCRIPTION'.
     **/
     public java.lang.String getDESCRIPTION()
     {
@@ -94,6 +89,9 @@ public class LMAppliance implements java.io.Serializable {
     } //-- java.lang.String getDESCRIPTION() 
 
     /**
+     * Returns the value of field 'INVENTORYID'.
+     * 
+     * @return the value of field 'INVENTORYID'.
     **/
     public java.lang.String getINVENTORYID()
     {
@@ -101,13 +99,9 @@ public class LMAppliance implements java.io.Serializable {
     } //-- java.lang.String getINVENTORYID() 
 
     /**
-    **/
-    public java.lang.String getId()
-    {
-        return this._id;
-    } //-- java.lang.String getId() 
-
-    /**
+     * Returns the value of field 'NOTES'.
+     * 
+     * @return the value of field 'NOTES'.
     **/
     public java.lang.String getNOTES()
     {
@@ -115,25 +109,14 @@ public class LMAppliance implements java.io.Serializable {
     } //-- java.lang.String getNOTES() 
 
     /**
-    **/
-    public int getRowData()
-    {
-        return this._rowData;
-    } //-- int getRowData() 
-
-    /**
+     * Returns the value of field 'TYPE_CD'.
+     * 
+     * @return the value of field 'TYPE_CD'.
     **/
     public java.lang.String getTYPE_CD()
     {
         return this._TYPE_CD;
     } //-- java.lang.String getTYPE_CD() 
-
-    /**
-    **/
-    public boolean hasRowData()
-    {
-        return this._has_rowData;
-    } //-- boolean hasRowData() 
 
     /**
     **/
@@ -150,6 +133,7 @@ public class LMAppliance implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param out
     **/
     public void marshal(java.io.Writer out)
@@ -161,18 +145,20 @@ public class LMAppliance implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param handler
     **/
-    public void marshal(org.xml.sax.DocumentHandler handler)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    public void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
         
         Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.DocumentHandler) 
+    } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'APPLIANCE_ID'.
      * 
-     * @param APPLIANCE_ID
+     * @param APPLIANCE_ID the value of field 'APPLIANCE_ID'.
     **/
     public void setAPPLIANCE_ID(java.lang.String APPLIANCE_ID)
     {
@@ -180,8 +166,9 @@ public class LMAppliance implements java.io.Serializable {
     } //-- void setAPPLIANCE_ID(java.lang.String) 
 
     /**
+     * Sets the value of field 'CATEGORY'.
      * 
-     * @param CATEGORY
+     * @param CATEGORY the value of field 'CATEGORY'.
     **/
     public void setCATEGORY(java.lang.String CATEGORY)
     {
@@ -189,8 +176,9 @@ public class LMAppliance implements java.io.Serializable {
     } //-- void setCATEGORY(java.lang.String) 
 
     /**
+     * Sets the value of field 'DESCRIPTION'.
      * 
-     * @param DESCRIPTION
+     * @param DESCRIPTION the value of field 'DESCRIPTION'.
     **/
     public void setDESCRIPTION(java.lang.String DESCRIPTION)
     {
@@ -198,8 +186,9 @@ public class LMAppliance implements java.io.Serializable {
     } //-- void setDESCRIPTION(java.lang.String) 
 
     /**
+     * Sets the value of field 'INVENTORYID'.
      * 
-     * @param INVENTORYID
+     * @param INVENTORYID the value of field 'INVENTORYID'.
     **/
     public void setINVENTORYID(java.lang.String INVENTORYID)
     {
@@ -207,17 +196,9 @@ public class LMAppliance implements java.io.Serializable {
     } //-- void setINVENTORYID(java.lang.String) 
 
     /**
+     * Sets the value of field 'NOTES'.
      * 
-     * @param id
-    **/
-    public void setId(java.lang.String id)
-    {
-        this._id = id;
-    } //-- void setId(java.lang.String) 
-
-    /**
-     * 
-     * @param NOTES
+     * @param NOTES the value of field 'NOTES'.
     **/
     public void setNOTES(java.lang.String NOTES)
     {
@@ -225,18 +206,9 @@ public class LMAppliance implements java.io.Serializable {
     } //-- void setNOTES(java.lang.String) 
 
     /**
+     * Sets the value of field 'TYPE_CD'.
      * 
-     * @param rowData
-    **/
-    public void setRowData(int rowData)
-    {
-        this._rowData = rowData;
-        this._has_rowData = true;
-    } //-- void setRowData(int) 
-
-    /**
-     * 
-     * @param TYPE_CD
+     * @param TYPE_CD the value of field 'TYPE_CD'.
     **/
     public void setTYPE_CD(java.lang.String TYPE_CD)
     {
@@ -244,6 +216,7 @@ public class LMAppliance implements java.io.Serializable {
     } //-- void setTYPE_CD(java.lang.String) 
 
     /**
+     * 
      * 
      * @param reader
     **/

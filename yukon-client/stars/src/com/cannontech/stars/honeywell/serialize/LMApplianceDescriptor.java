@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
  * $Id$
  */
@@ -23,6 +23,7 @@ import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
 import org.exolab.castor.xml.validators.*;
 
 /**
+ * 
  * 
  * @version $Revision$ $Date$
 **/
@@ -58,100 +59,19 @@ public class LMApplianceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
         setCompositorAsSequence();
         //-- initialize attribute descriptors
         
-        //-- _id
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_id", "id", NodeType.Attribute);
-        desc.setImmutable(true);
-        handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
-                throws IllegalStateException
-            {
-                LMAppliance target = (LMAppliance) object;
-                return target.getId();
-            }
-            public void setValue( Object object, Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    LMAppliance target = (LMAppliance) object;
-                    target.setId( (java.lang.String) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public Object newInstance( Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setNameSpaceURI("http://www.tempuri.org/DataSetALL.xsd");
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _id
-        fieldValidator = new FieldValidator();
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
-        desc.setValidator(fieldValidator);
-        
-        //-- _rowData
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_rowData", "rowData", NodeType.Attribute);
-        handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
-                throws IllegalStateException
-            {
-                LMAppliance target = (LMAppliance) object;
-                if(!target.hasRowData())
-                    return null;
-                return new Integer(target.getRowData());
-            }
-            public void setValue( Object object, Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    LMAppliance target = (LMAppliance) object;
-                    // if null, use delete method for optional primitives 
-                    if (value == null) {
-                        target.deleteRowData();
-                        return;
-                    }
-                    target.setRowData( ((Integer)value).intValue());
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public Object newInstance( Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setNameSpaceURI("http://www.tempuri.org/DataSetALL.xsd");
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _rowData
-        fieldValidator = new FieldValidator();
-        { //-- local scope
-            IntegerValidator iv = new IntegerValidator();
-            fieldValidator.setValidator(iv);
-        }
-        desc.setValidator(fieldValidator);
-        
         //-- initialize element descriptors
         
         //-- _APPLIANCE_ID
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_APPLIANCE_ID", "APPLIANCE_ID", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 LMAppliance target = (LMAppliance) object;
                 return target.getAPPLIANCE_ID();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -162,7 +82,7 @@ public class LMApplianceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -186,13 +106,13 @@ public class LMApplianceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_INVENTORYID", "INVENTORYID", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 LMAppliance target = (LMAppliance) object;
                 return target.getINVENTORYID();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -203,7 +123,7 @@ public class LMApplianceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -225,13 +145,13 @@ public class LMApplianceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_DESCRIPTION", "DESCRIPTION", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 LMAppliance target = (LMAppliance) object;
                 return target.getDESCRIPTION();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -242,7 +162,7 @@ public class LMApplianceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -266,13 +186,13 @@ public class LMApplianceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_CATEGORY", "CATEGORY", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 LMAppliance target = (LMAppliance) object;
                 return target.getCATEGORY();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -283,7 +203,7 @@ public class LMApplianceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -305,13 +225,13 @@ public class LMApplianceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_NOTES", "NOTES", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 LMAppliance target = (LMAppliance) object;
                 return target.getNOTES();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -322,7 +242,7 @@ public class LMApplianceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -344,13 +264,13 @@ public class LMApplianceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_TYPE_CD", "TYPE_CD", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 LMAppliance target = (LMAppliance) object;
                 return target.getTYPE_CD();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -361,7 +281,7 @@ public class LMApplianceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
