@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/12/24 18:48:45 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/01/09 18:10:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -463,13 +463,28 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
 
     if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
     {
+        #if 0
         if(getActiveRestore() != RWCString(LMAR_NEWCONTROL))
             setPreviousLogTime( getStopTime() );
         else
             setPreviousLogTime( getStartTime() );
+        #else
+        if(isNewControl())
+        {
+            setPreviousLogTime( getStartTime() );
+        }
+        else if(getActiveRestore() == RWCString(LMAR_NEWCONTROL))
+        {
+            setPreviousLogTime(RWTime());
+        }
+        else
+        {
+            setPreviousLogTime( getStopTime() );
+        }
+        #endif
 
         setDirty(false);
-        _isNewControl = false;
+        setNotNewControl();
     }
     else
     {
@@ -495,13 +510,28 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
             }
             else
             {
+                #if 0
                 if(getActiveRestore() != RWCString(LMAR_NEWCONTROL))
                     setPreviousLogTime( getStopTime() );
                 else
                     setPreviousLogTime( getStartTime() );
+                #else
+                if(isNewControl())
+                {
+                    setPreviousLogTime( getStartTime() );
+                }
+                else if(getActiveRestore() == RWCString(LMAR_NEWCONTROL))
+                {
+                    setPreviousLogTime(RWTime());
+                }
+                else
+                {
+                    setPreviousLogTime( getStopTime() );
+                }
+                #endif
 
                 setDirty(false);
-                _isNewControl = false;
+                setNotNewControl();
             }
         }
     }

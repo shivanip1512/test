@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2002/12/24 18:48:45 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2003/01/09 18:11:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2948,7 +2948,7 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
         if(pPoint != NULL)      // We do know this point..
         {
             // We need to make sure there is no pending pointdata on this pointid. 102501 CGP.
-            if( removePointDataFromPending( pData->getId(), *pData))
+            if( removePointDataFromPending( pData->getId(), *pData) )
             {
                 updateControlHistory( pData->getId(), CtiPendingPointOperations::datachange, pData->getTime() );
 
@@ -5345,8 +5345,6 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
                    ppc.getControl().getControlDuration() != RESTORE_DURATION)     // This indicates a restore.
                 {
                     verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
-
-
                     ppc.getControl().setActiveRestore( LMAR_NEWCONTROL );                               // Record this as a start interval.
 
                     insertControlHistoryRow(ppc, now);                                                  // Drop the row in there!
@@ -5364,7 +5362,7 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
                 {
                     LONG addnlseconds = thetime.seconds() - ppc.getControl().getPreviousLogTime().seconds();
 
-                    if(addnlseconds > 0)
+                    if(addnlseconds >= 0)
                     {
                         verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
 
@@ -5394,6 +5392,30 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
             {
                 // insertAndPostControlHistoryPoints(ppc, now, false, false, true);        // Post countdown AI
                 postControlStopPoint(ppc,now);
+                break;
+            }
+        case (CtiPendingPointOperations::repeatcontrol):
+            {
+                if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress &&
+                   ppc.getControl().getControlDuration() != RESTORE_DURATION)     // This indicates a restore.
+                {
+                    LONG addnlseconds = thetime.seconds() - ppc.getControl().getPreviousLogTime().seconds();
+
+                    if(addnlseconds >= 0)
+                    {
+                        verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
+                        ppc.getControl().incrementTimes( now, addnlseconds );
+
+                        insertControlHistoryRow(ppc, now);
+                        postControlHistoryPoints(ppc,now);
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+
                 break;
             }
         case (CtiPendingPointOperations::control):
@@ -6336,7 +6358,7 @@ bool CtiVanGogh::addToPendingSet(CtiPendingPointOperations &pendingControlReques
                 // The control command we just received is the same command as that which started the prior control.
                 // This is a repeat/continuation of the old command!  We just record that and continue.
                 ppo.getControl().setActiveRestore(LMAR_CONT_CONTROL);
-                updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::control, updatetime );
+                updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::repeatcontrol, updatetime );
 
                 pendingControlRequest.getControl().setStartTime(ppo.getControl().getStartTime());
                 pendingControlRequest.getControl().setPreviousLogTime(ppo.getControl().getPreviousLogTime());
@@ -6349,7 +6371,6 @@ bool CtiVanGogh::addToPendingSet(CtiPendingPointOperations &pendingControlReques
                 ppo.getControl().setActiveRestore(LMAR_OVERRIDE_CONTROL);
                 updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::control, updatetime );
             }
-
         }
 
         ppo = pendingControlRequest;    // Copy it to update the control state.
