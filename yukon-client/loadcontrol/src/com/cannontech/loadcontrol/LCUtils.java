@@ -454,7 +454,7 @@ public class LCUtils
 			retStr = CtiUtilities.STRING_DASH_LINE;
 		else
 		{					
-			if( defSecs <= LMControlArea.INVAID_INT )
+			if( defSecs <= LMControlArea.INVAID_INT && currSecs <= LMControlArea.INVAID_INT )
 			{
 				retStr = CtiUtilities.STRING_DASH_LINE;
 			}
@@ -462,12 +462,15 @@ public class LCUtils
 			{
 				//set our time to todays date
 				currTime.setTime( new java.util.Date() );
-				currTime.set( currTime.HOUR_OF_DAY, 0 ); 
-				currTime.set( currTime.MINUTE, 0 );
-				currTime.set( currTime.SECOND, defSecs );
 										
 				if( defSecs == currSecs || currSecs <= LMControlArea.INVAID_INT )
+				{
+					currTime.set( currTime.HOUR_OF_DAY, 0 ); 
+					currTime.set( currTime.MINUTE, 0 );
+					currTime.set( currTime.SECOND, defSecs );
+
 					retStr = TIME_FORMATTER.format( currTime.getTime() );
+				}
 				else
 				{
 					tempTime.setTime( currTime.getTime() );

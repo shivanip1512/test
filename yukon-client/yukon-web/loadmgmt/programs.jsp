@@ -13,6 +13,16 @@ if( strID == null )
 }
 
 LMControlArea lmCntrArea = (LMControlArea)lcCache.getControlArea( new Integer(strID) );
+if( lmCntrArea == null )
+{
+	CTILogger.warn( 
+		"Unable to find selected ControlArea (AreaID = " + strID +
+		"), redirecting request to: " + lmSession.DEF_REDIRECT ); 
+
+	response.sendRedirect( lmSession.DEF_REDIRECT );
+	return;
+}
+
 
 NativeIntVector intVect = new NativeIntVector(16);
 String doAllProgs = request.getParameter("allChks");

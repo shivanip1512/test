@@ -46,7 +46,7 @@ public class WebCmdMsg
 
 	public Message genLCCmdMsg()
 	{
-		return getGenLCMsg();
+		return _genLCMsg;
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class WebCmdMsg
 	/**
 	 * @return
 	 */
-	protected ILMData getLMData()
+	public ILMData getLMData()
 	{
 		return _lmData;
 	}
@@ -89,15 +89,6 @@ public class WebCmdMsg
 		_lmData = lmData;
 	}
 
-
-
-	/**
-	 * @return
-	 */
-	protected Message getGenLCMsg()
-	{
-		return _genLCMsg;
-	}
 
 	/**
 	 * @return

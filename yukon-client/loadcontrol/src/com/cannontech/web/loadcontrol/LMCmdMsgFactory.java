@@ -151,8 +151,8 @@ public final class LMCmdMsgFactory
 		if( lmCntrArea == null )
 		{
 			cmdMsg.setHTMLTextMsg(
-				"<font class=boldMsg>Unable to find the Control Area specified (id=" +
-				cmdMsg.getLMData().getYukonID() + ")</font><BR>" );
+				"<font class=boldMsg>Unable to find the Control Area specified (cmd = " +
+				cmdMsg.getCmd() + ")</font><BR>" );
 
 			return;
 		}
@@ -348,8 +348,8 @@ public final class LMCmdMsgFactory
 		if( prg == null )
 		{
 			cmdMsg.setHTMLTextMsg(
-				"<font class=boldMsg>Unable to find the Program specified (id=" +
-				cmdMsg.getLMData().getYukonID() + ")</font><BR>" );
+				"<font class=boldMsg>Unable to find the Program specified (cmd = " +
+				cmdMsg.getCmd() + ")</font><BR>" );
 
 			return;
 		}
@@ -440,8 +440,8 @@ public final class LMCmdMsgFactory
 		if( grp == null )
 		{
 			cmdMsg.setHTMLTextMsg(
-				"<font class=boldMsg>Unable to find the Group specified (id=" +
-				cmdMsg.getLMData().getYukonID() + ")</font><BR>" );
+				"<font class=boldMsg>Unable to find the Group specified (cmd = " +
+				cmdMsg.getCmd() + ")</font><BR>" );
 
 			return;
 		}
