@@ -21,7 +21,7 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	}
 	
 	public void setDbConnection(java.sql.Connection conn) {
-		setDbConnection( conn );
+		super.setDbConnection( conn );
 		getYukonUser().setDbConnection( conn );
 	}
 	
