@@ -55,26 +55,31 @@ function checkCallNo(form) {
                             <hr>
                           </td>
                         </tr>
-						<cti:checkNoProperty propertyid="<%= ConsumerInfoRole.CALL_NUMBER_AUTO_GEN %>">
+<%
+	String autoGen = liteEC.getEnergyCompanySetting(ConsumerInfoRole.CALL_NUMBER_AUTO_GEN);
+	if (autoGen == null || CtiUtilities.isFalse(autoGen)) {
+%>
                         <tr> 
-                          <td width = "75" align = "right">Tracking #:</td>
+                          <td width = "75" align = "right" class="SubtitleHeader">*Tracking #:</td>
                           <td width="269"> 
-                            <input type="text" name="CallNo" size="14" maxlength="20">
+                            <input type="text" name="CallNo" size="14" maxlength="20" onchange="setContentChanged(true)">
                           </td>
                         </tr>
-						</cti:checkNoProperty>
+<%
+	}
+%>
                         <tr> 
                           <td width = "75" align = "right">Date:</td>
                           <td width="269" > 
-                            <input type="text" name="CallDate" size="14" value="<%= ServletUtils.formatDate(new Date(), datePart) %>">
+                            <input type="text" name="CallDate" size="14" value="<%= ServletUtils.formatDate(new Date(), datePart) %>" onchange="setContentChanged(true)">
                             - 
-                            <input type="text" name="CallTime" size="8" value="<%= ServletUtils.formatDate(new Date(), timeFormat) %>">
+                            <input type="text" name="CallTime" size="8" value="<%= ServletUtils.formatDate(new Date(), timeFormat) %>" onchange="setContentChanged(true)"
                           </td>
                         </tr>
                         <tr> 
                           <td width = "75" align = "right">Type:</td>
                           <td width="269"> 
-                            <select name="CallType">
+                            <select name="CallType" onchange="setContentChanged(true)">
                               <%
 	StarsCustSelectionList callTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE );
 	for (int i = 0; i < callTypeList.getStarsSelectionListEntryCount(); i++) {
@@ -90,13 +95,13 @@ function checkCallNo(form) {
                         <tr> 
                           <td width = "75" align = "right">Taken By:</td>
                           <td width="269"> 
-                            <input type="text" name="TakenBy" size="14">
+                            <input type="text" name="TakenBy" size="14" onchange="setContentChanged(true)">
                           </td>
                         </tr>
                         <tr> 
                           <td width = "75" align = "right">Description:</td>
                           <td width="269"> 
-                            <textarea name="Description" rows="3" wrap="soft" cols="35" class = "TableCell"></textarea>
+                            <textarea name="Description" rows="3" wrap="soft" cols="35" class = "TableCell" onchange="setContentChanged(true)"></textarea>
                           </td>
                         </tr>
                       </table>
@@ -110,7 +115,7 @@ function checkCallNo(form) {
                     <input type="submit" name="Submit" value="Save" onclick="return checkCallNo(this.form)">
                   </td>
                   <td width = "50%"> 
-                    <input type="reset" name="Reset" value="Reset" >
+                    <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
                   </td>
                 </tr>
               </table><br>

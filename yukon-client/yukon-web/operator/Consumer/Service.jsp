@@ -54,24 +54,29 @@ function validate(form) {
                   <tr> 
                     <td valign="top" bgcolor="#FFFFFF"> 
                       <table width="360" border="0" cellspacing="0" cellpadding="3" align="center" class="TableCell">
-                        <cti:checkNoProperty propertyid="<%= ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN %>"> 
+<%
+	String autoGen = liteEC.getEnergyCompanySetting(ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN);
+	if (autoGen == null || CtiUtilities.isFalse(autoGen)) {
+%>
                         <tr> 
-                          <td width="100" class="TableCell"> 
-                            <div align="right">Service Order #:</div>
+                          <td width="100" class="SubtitleHeader"> 
+                            <div align="right">*Service Order #:</div>
                           </td>
                           <td width="248"> 
-                            <input type="text" name="OrderNo" size="14" maxlength="20">
+                            <input type="text" name="OrderNo" size="14" maxlength="20" onchange="setContentChanged(true)">
                           </td>
                         </tr>
-                        </cti:checkNoProperty> 
+<%
+	}
+%>
                         <tr> 
                           <td width="100" class="TableCell"> 
                             <div align="right">Date Reported:</div>
                           </td>
                           <td width="248"> 
-                            <input type="text" name="DateReported" size="14" value="<%= ServletUtils.formatDate(new Date(), datePart) %>">
+                            <input type="text" name="DateReported" size="14" value="<%= ServletUtils.formatDate(new Date(), datePart) %>" onchange="setContentChanged(true)">
                             - 
-                            <input type="text" name="TimeReported" size="8" value="<%= ServletUtils.formatDate(new Date(), timeFormat) %>">
+                            <input type="text" name="TimeReported" size="8" value="<%= ServletUtils.formatDate(new Date(), timeFormat) %>" onchange="setContentChanged(true)">
                           </td>
                         </tr>
                         <tr> 
@@ -79,7 +84,7 @@ function validate(form) {
                             <div align="right">Service Type:</div>
                           </td>
                           <td width="248"> 
-                            <select name="ServiceType">
+                            <select name="ServiceType" onchange="setContentChanged(true)">
                               <%
 	StarsCustSelectionList serviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE );
 	for (int i = 0; i < serviceTypeList.getStarsSelectionListEntryCount(); i++) {
@@ -97,7 +102,7 @@ function validate(form) {
                             <div align="right">Assign to:</div>
                           </td>
                           <td width="248"> 
-                            <select name="ServiceCompany">
+                            <select name="ServiceCompany" onchange="setContentChanged(true)">
                               <%
 	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
 		StarsServiceCompany company = companies.getStarsServiceCompany(i);
@@ -114,7 +119,7 @@ function validate(form) {
                             <div align="right">Ordered By:</div>
                           </td>
                           <td width="248"> 
-                            <input type="text" name="OrderedBy" size="14">
+                            <input type="text" name="OrderedBy" size="14" onchange="setContentChanged(true)">
                           </td>
                         </tr>
                         <tr> 
@@ -122,7 +127,7 @@ function validate(form) {
                             <div align="right">Notes: </div>
                           </td>
                           <td width="248"> 
-                            <textarea name="Description" rows="3" wrap="soft" cols="35" class = "TableCell"></textarea>
+                            <textarea name="Description" rows="3" wrap="soft" cols="35" class = "TableCell" onchange="setContentChanged(true)"></textarea>
                           </td>
                         </tr>
                       </table>
@@ -135,7 +140,7 @@ function validate(form) {
                           </td>
                           <td width="211"> 
                             <div align="left"> 
-                              <input type="reset" name="Reset" value="Reset">
+                              <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
                             </div>
                           </td>
                         </tr>

@@ -48,28 +48,28 @@
                 <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportAccount.jsp">
                 <table width="500" border="0" cellspacing="0" cellpadding="0">
                   <tr> 
-                    <td class="MainText"> 
-                      <div align="center">Enter the import file(s). Leave the 
-                        box empty if you don't have the corresponding file.</div>
-                    </td>
+                    <td class="MainText" align="center">Enter the import file(s). 
+                      Leave the box empty if you don't have the corresponding 
+                      file.</td>
                   </tr>
                 </table>
                 <br>
                 <table width="400" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                   <tr> 
-                    <td width="150"> 
-                      <div align="right">Customer File: </div>
-                    </td>
+                    <td width="150" align="right" class="SubtitleHeader">*Customer File: </td>
                     <td width="250"> 
                       <input type="file" name="CustFile" size="35">
                     </td>
                   </tr>
                   <tr> 
-                    <td width="150"> 
-                      <div align="right">Hardware File: </div>
-                    </td>
+                    <td width="150" align="right">Hardware File: </td>
                     <td width="250"> 
                       <input type="file" name="HwFile" size="35">
+                    </td>
+                  </tr>
+                  <tr align="center"> 
+                    <td colspan="2">Send me the import log by email: 
+                      <input type="text" name="Email" size="35">
                     </td>
                   </tr>
                 </table>
@@ -87,12 +87,10 @@
                 <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportAccount.jsp">
                 <table width="600" border="0" cellspacing="0" cellpadding="0">
                   <tr> 
-                    <td class="MainText"> 
-                      <div align="center">Import the INI files before importing 
-                        any other file. The S3DATA.INI file only needs to be imported 
-                        once. The STARS3.INI file must be imported every time 
-                        after a new login.</div>
-                    </td>
+                    <td class="MainText" align="center">Import the INI files 
+                      before importing any other file. The S3DATA.INI file only 
+                      needs to be imported once. The STARS3.INI file must be imported 
+                      every time after a new login.</td>
                   </tr>
                 </table>
                 <table width="400" border="0" cellspacing="0" cellpadding="3" class="TableCell">
@@ -101,7 +99,7 @@
                       <div align="right">S3DATA.INI: </div>
                     </td>
                     <td width="250"> 
-                      <input type="file" name="SelListFile" size="35">
+                      <input type="file" name="S3DATA_INI" size="35">
                     </td>
                   </tr>
                   <tr> 
@@ -109,7 +107,7 @@
                       <div align="right">STARS3.INI: </div>
                     </td>
                     <td width="250"> 
-                      <input type="file" name="UsrLabelFile" size="35">
+                      <input type="file" name="STARS3_INI" size="35">
                     </td>
                   </tr>
                 </table>

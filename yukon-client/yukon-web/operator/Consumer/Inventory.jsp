@@ -1,52 +1,41 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
-<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
 	StarsInventory inventory = inventories.getStarsInventory(invNo);
 	
-	boolean invChanged = request.getParameter("Changed") != null;
-	StarsInventory newInv = null;
-	
-	if (invChanged) {
-		newInv = (StarsInventory) session.getAttribute(InventoryManager.STARS_INVENTORY_TEMP + String.valueOf(invNo));
-		errorMsg = "The hardware has been changed, click \"Submit\" button to save it, or click \"Reset\" button to discard the changes.";
-	}
-	else {
-		newInv = inventory;
-		session.setAttribute(InventoryManager.STARS_INVENTORY_TEMP + String.valueOf(invNo), inventory);
-	}
-	
 	boolean invChecking = AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING);
 	
-	String devTypeStr = "(none)";
-	String serialNo = "(none)";
-	String serialLabel = "(none)";
+	String deviceType = "(none)";
+	String serialName = "";
+	String serialNameLabel = "Serial #";
+	String serialNameVar = "SerialNo";
 	
-	if (newInv.getLMHardware() != null) {
-		devTypeStr = newInv.getDeviceType().getContent();
-		serialNo = newInv.getLMHardware().getManufacturerSerialNumber();
-		serialLabel = "Serial #";
+	if (inventory.getLMHardware() != null) {
+		deviceType = ServletUtils.getEntryText(inventory.getDeviceType().getEntryID(), selectionListTable);
+		serialName = inventory.getLMHardware().getManufacturerSerialNumber();
 	}
 	else {
-		if (newInv.getDeviceID() > 0) {
-			LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO(newInv.getDeviceID());
-			devTypeStr = PAOGroups.getPAOTypeString(litePao.getType());
-			serialNo = litePao.getPaoName();
+		if (inventory.getDeviceID() > 0) {
+			LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO(inventory.getDeviceID());
+			deviceType = PAOGroups.getPAOTypeString(litePao.getType());
+			serialName = litePao.getPaoName();
 		}
-		else if (newInv.getMCT() != null) {
-			devTypeStr = newInv.getDeviceType().getContent();
-			serialNo = newInv.getMCT().getDeviceName();
+		else if (inventory.getMCT() != null) {
+			deviceType = ServletUtils.getEntryText(inventory.getDeviceType().getEntryID(), selectionListTable);
+			serialName = inventory.getMCT().getDeviceName();
 		}
-		serialLabel = "Device Name";
+		
+		serialNameLabel = "Device Name";
+		serialNameVar = "DeviceName";
 	}
 	
 	StarsServiceCompany company = null;
 	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
 		StarsServiceCompany comp = companies.getStarsServiceCompany(i);
-		if (comp.getCompanyID() == newInv.getInstallationCompany().getEntryID()) {
+		if (comp.getCompanyID() == inventory.getInstallationCompany().getEntryID()) {
 			company = comp;
 			break;
 		}
@@ -62,26 +51,26 @@
 
 <script language="JavaScript">
 function deleteHardware(form) {
+<% if (inventory.getLMHardware() != null) { %>
 	if (!confirm('Deleting the hardware will also disable all the programs associated with it. Are you sure you want to continue?'))
 		return;
-	form.attributes["action"].value = "<%= request.getContextPath() %>/servlet/InventoryManager";
-	form.action.value = "DeleteLMHardware";
+<% } %>
+	form.attributes["action"].value = "DeleteInv.jsp";
 	form.REDIRECT.value = "<%= request.getContextPath() %>/operator/Consumer/Update.jsp";
 	form.submit();
 }
 
 function validate(form) {
-	if (form.SerialNo.value == "") {
-		alert(document.getElementById("NameLabel").innerText + " cannot be empty");
-		return false;
-	}
-	
-	if (form.DeviceType.value != <%= inventory.getDeviceType().getEntryID() %>
-	<% if (inventory.getLMHardware() != null) { %>
-		|| form.SerialNo.value != "<%= inventory.getLMHardware().getManufacturerSerialNumber() %>"
-	<% } %>)
-	{
-		form.attributes["action"].value = "<%= request.getContextPath() %>/servlet/InventoryManager";
+	if (form.SerialNo != null) {
+		if (form.SerialNo.value == "") {
+			alert("Serial # cannot be empty");
+			return false;
+		}
+		if (form.DeviceType.value != <%= inventory.getDeviceType().getEntryID() %>
+			|| form.SerialNo.value != "<%= serialName %>")
+		{
+			form.attributes["action"].value = "<%= request.getContextPath() %>/servlet/InventoryManager";
+		}
 	}
 	return true;
 }
@@ -118,12 +107,13 @@ function changeSerialNo() {
             <div align="center">
               <% String header = "HARDWARE - INFORMATION"; %><%@ include file="include/InfoSearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+			  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			  
 			  <form name="MForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)">
                 <input type="hidden" name="action" value="UpdateLMHardware">
                 <input type="hidden" name="OrigInvID" value="<%= inventory.getInventoryID() %>">
-                <input type="hidden" name="InvID" value="<%= newInv.getInventoryID() %>">
-                <input type="hidden" name="DeviceID" value="<%= newInv.getDeviceID() %>">
+                <input type="hidden" name="InvID" value="<%= inventory.getInventoryID() %>">
+                <input type="hidden" name="DeviceID" value="<%= inventory.getDeviceID() %>">
 				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
 				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
                 <table width="610" border="0" cellspacing="0" cellpadding="0" align="center">
@@ -133,37 +123,40 @@ function changeSerialNo() {
                       <tr> 
                           <td valign="top"><span class="SubtitleHeader">DEVICE</span> 
                             <hr>
-<%	if (invChecking) { %>
-                            <input type="hidden" name="DeviceType" value="<%= newInv.getDeviceType().getEntryID() %>">
-							<input type="hidden" name="SerialNo" value="<%= serialNo %>">
+<% if (invChecking || inventory.getLMHardware() == null) { %>
+                            <input type="hidden" name="DeviceType" value="<%= inventory.getDeviceType().getEntryID() %>">
+							<input type="hidden" name="<%= serialNameVar %>" value="<%= serialName %>">
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr> 
                                 <td width="100" class="TableCell" align="right">Type: 
                                 </td>
-                                <td width="120" class="MainText"><%= devTypeStr %></td>
+                                <td width="120" class="MainText"><%= deviceType %></td>
                                 <td width="80" rowspan="2"> 
+<%  if (invChecking) { %>
                                   <input type="button" name="Change" value="Change" onclick="changeSerialNo()">
+<%  } %>
                                 </td>
                               </tr>
                               <tr> 
-                                <td width="100" class="TableCell" align="right"><%= serialLabel %>: </td>
-                                <td width="120" class="MainText"><%= serialNo %></td>
+                                <td width="100" class="TableCell" align="right"><%= serialNameLabel %>: </td>
+                                <td width="120" class="MainText"><%= serialName %></td>
                               </tr>
                             </table>
-<%	} %>
+<% } %>
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-<%	if (!invChecking) { %>
+<% if (!invChecking && inventory.getLMHardware() != null) { %>
                               <tr> 
-                                <td width="100" class="TableCell"> 
-                                  <div align="right">Type: </div>
+                                <td width="100" class="SubtitleHeader"> 
+                                  <div align="right">*Type: </div>
                                 </td>
                                 <td width="200" class="MainText">
-                                  <select name="DeviceType">
+                                  <select name="DeviceType" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 		for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
-			String selected = (entry.getEntryID() == newInv.getDeviceType().getEntryID())? "selected" : "";
+			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) continue;
+			String selected = (entry.getEntryID() == inventory.getDeviceType().getEntryID())? "selected" : "";
 %>
                                     <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
 <%
@@ -173,19 +166,19 @@ function changeSerialNo() {
                                 </td>
                               </tr>
                               <tr> 
-                                <td width="100" class="TableCell" align="right">Serial 
+                                <td width="100" class="SubtitleHeader" align="right">Serial 
                                   #: </td>
                                 <td width="200"> 
-                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= serialNo %>">
+                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= serialName %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
-<%	} %>
+<% } %>
                               <tr> 
                                 <td width="100" class="TableCell"> 
                                   <div align="right">Label: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="DeviceLabel" maxlength="30" size="24" value="<%= newInv.getDeviceLabel() %>">
+                                  <input type="text" name="DeviceLabel" maxlength="30" size="24" value="<%= inventory.getDeviceLabel() %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
@@ -193,7 +186,7 @@ function changeSerialNo() {
                                   <div align="right">Alt Tracking #: </div>
                                 </td>
                                 <td width="200">
-                                  <input type="text" name="AltTrackNo" maxlength="30" size="24" value="<%= newInv.getAltTrackingNumber() %>">
+                                  <input type="text" name="AltTrackNo" maxlength="30" size="24" value="<%= inventory.getAltTrackingNumber() %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
@@ -201,7 +194,7 @@ function changeSerialNo() {
                                   <div align="right">Receive Date: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(newInv.getReceiveDate(), datePart) %>">
+                                  <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(inventory.getReceiveDate(), datePart) %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
@@ -209,7 +202,7 @@ function changeSerialNo() {
                                   <div align="right">Remove Date: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(newInv.getRemoveDate(), datePart) %>">
+                                  <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(inventory.getRemoveDate(), datePart) %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
@@ -217,12 +210,12 @@ function changeSerialNo() {
                                   <div align="right">Voltage: </div>
                                 </td>
                                 <td width="200"> 
-                                  <select name="Voltage">
+                                  <select name="Voltage" onchange="setContentChanged(true)">
                                     <%
 	StarsCustSelectionList voltageList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE );
 	for (int i = 0; i < voltageList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = voltageList.getStarsSelectionListEntry(i);
-		String selected = (entry.getEntryID() == newInv.getVoltage().getEntryID())? "selected" : "";
+		String selected = (entry.getEntryID() == inventory.getVoltage().getEntryID())? "selected" : "";
 %>
                                     <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
                                     <%
@@ -236,7 +229,7 @@ function changeSerialNo() {
                                   <div align="right">Status: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="Status" maxlength="30" size="24" value="<%= newInv.getDeviceStatus().getContent() %>">
+                                  <input type="text" name="Status" maxlength="30" size="24" value="<%= inventory.getDeviceStatus().getContent() %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
@@ -244,7 +237,7 @@ function changeSerialNo() {
                                   <div align="right">Notes: </div>
                                 </td>
                                 <td width="200"> 
-                                  <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= newInv.getNotes().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
+                                  <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell" onchange="setContentChanged(true)"><%= inventory.getNotes().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                                 </td>
                               </tr>
                             </table>
@@ -264,7 +257,7 @@ function changeSerialNo() {
                                     <div align="right">Date Installed: </div>
                                   </td>
                                   <td width="200"> 
-                                    <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(newInv.getInstallDate(), datePart) %>">
+                                    <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(inventory.getInstallDate(), datePart) %>" onchange="setContentChanged(true)">
                                   </td>
                                 </tr>
                                 <tr> 
@@ -272,7 +265,7 @@ function changeSerialNo() {
                                     <div align="right">Service Company: </div>
                                   </td>
                                   <td width="200"> 
-                                    <select name="ServiceCompany">
+                                    <select name="ServiceCompany" onchange="setContentChanged(true)">
 <%
 	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
 		StarsServiceCompany servCompany = companies.getStarsServiceCompany(i);
@@ -290,7 +283,7 @@ function changeSerialNo() {
                                     <div align="right">Notes: </div>
                                   </td>
                                   <td width="200"> 
-                                    <textarea name="InstallNotes" rows="3 wrap="soft" cols="28" class = "TableCell"><%= newInv.getInstallationNotes().replaceAll(System.getProperty("line.separator"), "<br>") %></textarea>
+                                    <textarea name="InstallNotes" rows="3 wrap="soft" cols="28" class = "TableCell" onchange="setContentChanged(true)"><%= inventory.getInstallationNotes().replaceAll(System.getProperty("line.separator"), "<br>") %></textarea>
                                   </td>
                                 </tr>
                               </table>
@@ -317,7 +310,7 @@ function changeSerialNo() {
                           </td>
                         </tr>
                       </table>
-<% if (newInv.getLMHardware() != null) { %>
+<% if (inventory.getLMHardware() != null) { %>
                         <table width="300" border="0" cellspacing="0" cellpadding="0">
                           <tr> 
                             <td valign="top"><span class="SubtitleHeader"><br>
@@ -329,29 +322,14 @@ function changeSerialNo() {
                                     <div align="right">Route: </div>
                                   </td>
                                   <td width="200"> 
-                                    <select name="Route">
+                                    <select name="Route" onchange="setContentChanged(true)">
+                                      <option value="0">(Default Route)</option>
 <%
-	LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
-	TreeMap routeMap = new TreeMap();
-	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-	
-	synchronized (cache) {
-		List allRoutes = cache.getAllRoutes();
-		for (int i = 0; i < allRoutes.size(); i++) {
-			LiteYukonPAObject litePao = (LiteYukonPAObject) allRoutes.get(i);
-			if (litePao.getYukonID() == liteEC.getDefaultRouteID())
-				routeMap.put("", new LiteYukonPAObject(litePao.getYukonID(), litePao.getPaoName() + " (Default)"));
-			else
-				routeMap.put(litePao.getPaoName(), litePao);
-		}
-	}
-	
-	Iterator it = routeMap.values().iterator();
-	while (it.hasNext()) {
-		LiteYukonPAObject route = (LiteYukonPAObject) it.next();
-		String selected = (route.getYukonID() == newInv.getLMHardware().getRouteID())? "selected" : "";
+	LiteYukonPAObject[] routes = liteEC.getAllRoutes();
+	for (int i = 0; i < routes.length; i++) {
+		String selected = (routes[i].getYukonID() == inventory.getLMHardware().getRouteID())? "selected" : "";
 %>
-                                      <option value="<%= route.getYukonID() %>" <%= selected %>><%= route.getPaoName() %></option>
+                                      <option value="<%= routes[i].getYukonID() %>" <%= selected %>><%= routes[i].getPaoName() %></option>
 <%
 	}
 %>
@@ -373,11 +351,7 @@ function changeSerialNo() {
                     <input type="submit" name="Submit" value="Save">
                   </td>
                   <td width="15%" align="center"> 
-                  <% if (invChanged) { %>
-                    <input type="button" name="Reset" value="Reset" onclick="location.href = 'Inventory.jsp?InvNo=<%= invNo %>'">
-                  <% } else { %>
-                    <input type="reset" name="Reset" value="Reset">
-                  <% } %>
+                    <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
                   </td>
                   <td width="43%" align="left"> 
                     <input type="button" name="Delete" value="Delete" onclick="deleteHardware(this.form)">
@@ -389,7 +363,7 @@ function changeSerialNo() {
               <input type="hidden" name="action" value="Change">
             </form>
             </div>
-<%	if (newInv.getStarsLMHardwareHistory() != null) { %>
+<%	if (inventory.getStarsLMHardwareHistory() != null) { %>
             <hr>
             <div align="center"> 
               <span class="TitleHeader">Hardware History</span><br>
@@ -399,7 +373,7 @@ function changeSerialNo() {
                   <td width="50%" class="HeaderCell">Action</td>
                 </tr>
 <%
-		StarsLMHardwareHistory hwHist = newInv.getStarsLMHardwareHistory();
+		StarsLMHardwareHistory hwHist = inventory.getStarsLMHardwareHistory();
 		for (int i = hwHist.getStarsLMHardwareEventCount() - 1; i >= 0 && i >= hwHist.getStarsLMHardwareEventCount() - 5; i--) {
 			StarsLMHardwareEvent event = hwHist.getStarsLMHardwareEvent(i);
 %>
@@ -416,7 +390,7 @@ function changeSerialNo() {
                 <tr> 
                   <td> 
                     <div align="right"> 
-                      <input type="button" name="More2" value="More" onClick="location='InventoryHist.jsp?InvNo=<%= invNo %>'">
+                      <input type="button" name="More2" value="More" onclick="if (warnUnsavedChanges()) location='InventoryHist.jsp?InvNo=<%= invNo %>'">
                     </div>
                   </td>
                 </tr>

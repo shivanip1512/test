@@ -7,13 +7,13 @@
 		ServletUtils.removeTransientAttributes(session);
 		session.removeAttribute(ServletUtils.ATT_NEW_ACCOUNT_WIZARD);
 		session.removeAttribute(ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT);
-		session.removeAttribute(InventoryManager.STARS_INVENTORY_TEMP + "_NEW");
+		session.removeAttribute(InventoryManagerUtil.STARS_INVENTORY_TEMP);
 	}
 	
 	if (inWizard) {
 		MultiAction actions = (MultiAction) session.getAttribute(ServletUtils.ATT_NEW_ACCOUNT_WIZARD);
 		if (actions != null) {
-			SOAPMessage reqMsg = actions.build(request, session);
+			SOAPMessage reqMsg = actions.getRequestMessage( NewCustAccountAction.class );
 			if (reqMsg != null) {
 				StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation(reqMsg);
 				newAccount = reqOper.getStarsNewCustomerAccount();
@@ -125,6 +125,7 @@ function confirmCancel() {
   <tr>
     <td>
       <%@ include file="include/HeaderBar.jsp" %>
+      <script language="JavaScript">setContentChanged(<%= account.getAccountNumber().length() > 0 %>);</script>
     </td>
   </tr>
   <tr>
@@ -146,6 +147,8 @@ function confirmCancel() {
 			
             <form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient" onSubmit="return validate(this)">
               <input type="hidden" name="action" value="NewCustAccount">
+			  <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/NewFinal.jsp">
+			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
 <% if (inWizard) { %>
 			  <input type="hidden" name="REDIRECT2" value="<%= request.getContextPath() %>/operator/Consumer/CreateHardware.jsp?Wizard=true">
 			  <input type="hidden" name="Wizard" value="true">
@@ -156,17 +159,17 @@ function confirmCancel() {
                     <hr>
                     <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                       <tr> 
-                        <td width="90" class="TableCell"> 
-                          <div align="right">Account #:</div>
+                        <td width="90" class="SubtitleHeader"> 
+                          <div align="right">*Account #:</div>
                         </td>
                         <td width="210" valign="top"> 
                           <table width="191" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
                               <td width="95"> 
-                                <input type="text" name="AcctNo" maxlength="40" size="14" value="<%= account.getAccountNumber() %>">
+                                <input type="text" name="AcctNo" maxlength="40" size="14" value="<%= account.getAccountNumber() %>" onchange="setContentChanged(true)">
                               </td>
                               <td valign="top" class="TableCell" width="95" align="center">&nbsp;&nbsp;Commercial: 
-                                <input type="checkbox" name="Commercial" value="true" <% if (account.getIsCommercial()) { %>checked<% } %>>
+                                <input type="checkbox" name="Commercial" value="true" <% if (account.getIsCommercial()) { %>checked<% } %> onclick="setContentChanged(true)">
                               </td>
                             </tr>
                           </table>
@@ -177,7 +180,7 @@ function confirmCancel() {
                           <div align="right">Company: </div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="Company" maxlength="30" size="24" value="<%= account.getCompany() %>">
+                          <input type="text" name="Company" maxlength="30" size="24" value="<%= account.getCompany() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -185,7 +188,7 @@ function confirmCancel() {
                           <div align="right">Last Name:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="LastName" maxlength="30" size="24" value="<%= account.getPrimaryContact().getLastName() %>">
+                          <input type="text" name="LastName" maxlength="30" size="24" value="<%= account.getPrimaryContact().getLastName() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -193,38 +196,50 @@ function confirmCancel() {
                           <div align="right">First Name:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="FirstName" maxlength="30" size="24" value="<%= account.getPrimaryContact().getFirstName() %>">
+                          <input type="text" name="FirstName" maxlength="30" size="24" value="<%= account.getPrimaryContact().getFirstName() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Home #:</div>
                         </td>
+<%
+	ContactNotification homePhone = ServletUtils.getContactNotification(account.getPrimaryContact(), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
+	String homePhoneNo = (homePhone != null)? homePhone.getNotification() : "";
+%>
                         <td width="210"> 
-                          <input type="text" name="HomePhone" maxlength="14" size="14" value="<%= account.getPrimaryContact().getHomePhone() %>">
+                          <input type="text" name="HomePhone" maxlength="14" size="14" value="<%= homePhoneNo %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Work #:</div>
                         </td>
+<%
+	ContactNotification workPhone = ServletUtils.getContactNotification(account.getPrimaryContact(), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
+	String workPhoneNo = (workPhone != null)? workPhone.getNotification() : "";
+%>
                         <td width="210"> 
-                          <input type="text" name="WorkPhone" maxlength="14" size="14" value="<%= account.getPrimaryContact().getWorkPhone() %>">
+                          <input type="text" name="WorkPhone" maxlength="14" size="14" value="<%= workPhoneNo %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">e-mail Address:</div>
                         </td>
+<%
+	ContactNotification email = ServletUtils.getContactNotification(account.getPrimaryContact(), YukonListEntryTypes.YUK_ENTRY_ID_EMAIL);
+	String emailAddr = (email != null)? email.getNotification() : "";
+%>
                         <td width="210"> 
-                          <input type="text" name="Email" maxlength="50" size="24" value="<%= account.getPrimaryContact().getEmail().getNotification() %>">
+                          <input type="text" name="Email" maxlength="50" size="24" value="<%= emailAddr %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
 <cti:checkRole roleid="<%= com.cannontech.roles.operator.OddsForControlRole.ROLEID %>">
                       <tr> 
                         <td width="90" class="TableCell">&nbsp;</td>
                         <td width="210"> 
-                          <input type="checkbox" name="NotifyControl" value="true" <% if (account.getPrimaryContact().getEmail().getEnabled()) { %>checked<% } %>>
+                          <input type="checkbox" name="NotifyControl" value="true" <% if (email != null && !email.getDisabled()) { %>checked<% } %> onclick="setContentChanged(true)">
                           <span class="TableCell">Notify <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>" defaultvalue="Odds for Control"/></span></td>
                       </tr>
 </cti:checkRole>
@@ -233,7 +248,7 @@ function confirmCancel() {
                           <div align="right">Notes:</div>
                         </td>
                         <td width="210"> 
-                          <textarea name="AcctNotes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= account.getAccountNotes() %></textarea>
+                          <textarea name="AcctNotes" rows="3" wrap="soft" cols="28" class = "TableCell" onchange="setContentChanged(true)"><%= account.getAccountNotes() %></textarea>
                         </td>
                       </tr>
                       <tr> 
@@ -241,7 +256,7 @@ function confirmCancel() {
                           <div align="right">Last Name (2):</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="LastName2" maxlength="30" size="24" value="<%= contacts[0].getLastName() %>">
+                          <input type="text" name="LastName2" maxlength="30" size="24" value="<%= contacts[0].getLastName() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -249,23 +264,31 @@ function confirmCancel() {
                           <div align="right">First Name (2):</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="FirstName2" maxlength="30" size="24" value="<%= contacts[0].getFirstName() %>">
+                          <input type="text" name="FirstName2" maxlength="30" size="24" value="<%= contacts[0].getFirstName() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Home # (2):</div>
                         </td>
+<%
+	ContactNotification homePhone2 = ServletUtils.getContactNotification(contacts[0], YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
+	String homePhoneNo2 = (homePhone2 != null)? homePhone2.getNotification() : "";
+%>
                         <td width="210"> 
-                          <input type="text" name="HomePhone2" maxlength="14" size="14" value="<%= contacts[0].getHomePhone() %>">
+                          <input type="text" name="HomePhone2" maxlength="14" size="14" value="<%= homePhoneNo2 %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Work # (2):</div>
                         </td>
+<%
+	ContactNotification workPhone2 = ServletUtils.getContactNotification(contacts[0], YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
+	String workPhoneNo2 = (workPhone2 != null)? workPhone2.getNotification() : "";
+%>
                         <td width="210"> 
-                          <input type="text" name="WorkPhone2" maxlength="14" size="14" value="<%= contacts[0].getWorkPhone() %>">
+                          <input type="text" name="WorkPhone2" maxlength="14" size="14" value="<%= workPhoneNo2 %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -273,7 +296,7 @@ function confirmCancel() {
                           <div align="right">Last Name (3):</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="LastName3" maxlength="30" size="24" value="<%= contacts[1].getLastName() %>">
+                          <input type="text" name="LastName3" maxlength="30" size="24" value="<%= contacts[1].getLastName() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -281,23 +304,31 @@ function confirmCancel() {
                           <div align="right">First Name (3):</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="FirstName3" maxlength="30" size="24" value="<%= contacts[1].getFirstName() %>">
+                          <input type="text" name="FirstName3" maxlength="30" size="24" value="<%= contacts[1].getFirstName() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Home # (3):</div>
                         </td>
+<%
+	ContactNotification homePhone3 = ServletUtils.getContactNotification(contacts[1], YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
+	String homePhoneNo3 = (homePhone3 != null)? homePhone3.getNotification() : "";
+%>
                         <td width="210"> 
-                          <input type="text" name="HomePhone3" maxlength="14" size="14" value="<%= contacts[1].getHomePhone() %>">
+                          <input type="text" name="HomePhone3" maxlength="14" size="14" value="<%= homePhoneNo3 %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Work # (3):</div>
                         </td>
+<%
+	ContactNotification workPhone3 = ServletUtils.getContactNotification(contacts[1], YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
+	String workPhoneNo3 = (workPhone3 != null)? workPhone3.getNotification() : "";
+%>
                         <td width="210"> 
-                          <input type="text" name="WorkPhone3" maxlength="14" size="14" value="<%= contacts[1].getWorkPhone() %>">
+                          <input type="text" name="WorkPhone3" maxlength="14" size="14" value="<%= workPhoneNo3 %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -305,7 +336,7 @@ function confirmCancel() {
                           <div align="right">Last Name (4):</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="LastName4" maxlength="30" size="24" value="<%= contacts[2].getLastName() %>">
+                          <input type="text" name="LastName4" maxlength="30" size="24" value="<%= contacts[2].getLastName() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -313,23 +344,31 @@ function confirmCancel() {
                           <div align="right">First Name (4):</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="FirstName4" maxlength="30" size="24" value="<%= contacts[2].getFirstName() %>">
+                          <input type="text" name="FirstName4" maxlength="30" size="24" value="<%= contacts[2].getFirstName() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Home # (4):</div>
                         </td>
+<%
+	ContactNotification homePhone4 = ServletUtils.getContactNotification(contacts[2], YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
+	String homePhoneNo4 = (homePhone4 != null)? homePhone4.getNotification() : "";
+%>
                         <td width="210"> 
-                          <input type="text" name="HomePhone4" maxlength="14" size="14" value="<%= contacts[2].getHomePhone() %>">
+                          <input type="text" name="HomePhone4" maxlength="14" size="14" value="<%= homePhoneNo4 %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Work # (4):</div>
                         </td>
+<%
+	ContactNotification workPhone4 = ServletUtils.getContactNotification(contacts[2], YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
+	String workPhoneNo4 = (workPhone4 != null)? workPhone4.getNotification() : "";
+%>
                         <td width="210"> 
-                          <input type="text" name="WorkPhone4" maxlength="14" size="14" value="<%= contacts[2].getWorkPhone() %>">
+                          <input type="text" name="WorkPhone4" maxlength="14" size="14" value="<%= workPhoneNo4 %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                     </table>
@@ -342,7 +381,7 @@ function confirmCancel() {
                           <div align="right">Address 1:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="SAddr1" maxlength="40" size="24" value="<%= account.getStreetAddress().getStreetAddr1() %>">
+                          <input type="text" name="SAddr1" maxlength="40" size="24" value="<%= account.getStreetAddress().getStreetAddr1() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -350,7 +389,7 @@ function confirmCancel() {
                           <div align="right">Address 2:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="SAddr2" maxlength="40" size="24" value="<%= account.getStreetAddress().getStreetAddr2() %>">
+                          <input type="text" name="SAddr2" maxlength="40" size="24" value="<%= account.getStreetAddress().getStreetAddr2() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -358,7 +397,7 @@ function confirmCancel() {
                           <div align="right">City:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="SCity" maxlength="30" size="24" value="<%= account.getStreetAddress().getCity() %>">
+                          <input type="text" name="SCity" maxlength="30" size="24" value="<%= account.getStreetAddress().getCity() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -366,7 +405,7 @@ function confirmCancel() {
                           <div align="right">County:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="SCounty" maxlength="30" size="24" value="<%= account.getStreetAddress().getCounty() %>">
+                          <input type="text" name="SCounty" maxlength="30" size="24" value="<%= account.getStreetAddress().getCounty() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -374,7 +413,7 @@ function confirmCancel() {
                           <div align="right">State:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="SState" maxlength="2" size="14" value="<%= account.getStreetAddress().getState() %>">
+                          <input type="text" name="SState" maxlength="2" size="14" value="<%= account.getStreetAddress().getState() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -382,7 +421,7 @@ function confirmCancel() {
                           <div align="right">Zip:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="SZip" maxlength="12" size="14" value="<%= account.getStreetAddress().getZip() %>">
+                          <input type="text" name="SZip" maxlength="12" size="14" value="<%= account.getStreetAddress().getZip() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -390,7 +429,7 @@ function confirmCancel() {
                           <div align="right">Map #:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="PropNo" maxlength="12" size="14" value="<%= account.getPropertyNumber() %>">
+                          <input type="text" name="PropNo" maxlength="12" size="14" value="<%= account.getPropertyNumber() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -398,7 +437,7 @@ function confirmCancel() {
                           <div align="right">Notes:</div>
                         </td>
                         <td width="210"> 
-                          <textarea name="PropNotes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= account.getPropertyNotes() %></textarea>
+                          <textarea name="PropNotes" rows="3" wrap="soft" cols="28" class = "TableCell" onchange="setContentChanged(true)"><%= account.getPropertyNotes() %></textarea>
                         </td>
                       </tr>
                     </table>
@@ -409,7 +448,7 @@ function confirmCancel() {
                       <tr> 
                         <td width="90" class="TableCell" height="2">&nbsp;</td>
                         <td width="210" height="2" class="TableCell"> 
-                          <input type="checkbox" name="CopyAddress" value="true" onClick="copyAddress(this.form)">
+                          <input type="checkbox" name="CopyAddress" value="true" onclick="copyAddress(this.form);setContentChanged(true);">
                           Same as above</td>
                       </tr>
                       <tr> 
@@ -417,7 +456,7 @@ function confirmCancel() {
                           <div align="right">Address 1:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="BAddr1" maxlength="40" size="24" value="<%= account.getBillingAddress().getStreetAddr1() %>">
+                          <input type="text" name="BAddr1" maxlength="40" size="24" value="<%= account.getBillingAddress().getStreetAddr1() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -425,7 +464,7 @@ function confirmCancel() {
                           <div align="right">Address 2:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="BAddr2" maxlength="40" size="24" value="<%= account.getBillingAddress().getStreetAddr2() %>">
+                          <input type="text" name="BAddr2" maxlength="40" size="24" value="<%= account.getBillingAddress().getStreetAddr2() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -433,7 +472,7 @@ function confirmCancel() {
                           <div align="right">City:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="BCity" maxlength="30" size="24" value="<%= account.getBillingAddress().getCity() %>">
+                          <input type="text" name="BCity" maxlength="30" size="24" value="<%= account.getBillingAddress().getCity() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -441,7 +480,7 @@ function confirmCancel() {
                           <div align="right">State:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="BState" maxlength="2" size="14" value="<%= account.getBillingAddress().getState() %>">
+                          <input type="text" name="BState" maxlength="2" size="14" value="<%= account.getBillingAddress().getState() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -449,7 +488,7 @@ function confirmCancel() {
                           <div align="right">Zip:</div>
                         </td>
                         <td width="210" height="2"> 
-                          <input type="text" name="BZip" maxlength="12" size="14" value="<%= account.getBillingAddress().getZip() %>">
+                          <input type="text" name="BZip" maxlength="12" size="14" value="<%= account.getBillingAddress().getZip() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                     </table>
@@ -462,7 +501,7 @@ function confirmCancel() {
                           <div align="right">Substation Name: </div>
                         </td>
                         <td width="210"> 
-                          <select name="Substation">
+                          <select name="Substation" onchange="setContentChanged(true)">
                             <%
 	StarsCustSelectionList substationList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION );
 	for (int i = 0; i < substationList.getStarsSelectionListEntryCount(); i++) {
@@ -481,7 +520,7 @@ function confirmCancel() {
                           <div align="right">Feeder: </div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="Feeder" maxlength="20" size="20" value="<%= account.getStarsSiteInformation().getFeeder() %>">
+                          <input type="text" name="Feeder" maxlength="20" size="20" value="<%= account.getStarsSiteInformation().getFeeder() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -489,7 +528,7 @@ function confirmCancel() {
                           <div align="right">Pole: </div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="Pole" maxlength="20" size="20" value="<%= account.getStarsSiteInformation().getPole() %>">
+                          <input type="text" name="Pole" maxlength="20" size="20" value="<%= account.getStarsSiteInformation().getPole() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -497,7 +536,7 @@ function confirmCancel() {
                           <div align="right">Transformer Size: </div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="TranSize" maxlength="20" size="20" value="<%= account.getStarsSiteInformation().getTransformerSize() %>">
+                          <input type="text" name="TranSize" maxlength="20" size="20" value="<%= account.getStarsSiteInformation().getTransformerSize() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -505,7 +544,7 @@ function confirmCancel() {
                           <div align="right">Service Voltage: </div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="ServVolt" maxlength="20" size="20" value="<%= account.getStarsSiteInformation().getServiceVoltage() %>">
+                          <input type="text" name="ServVolt" maxlength="20" size="20" value="<%= account.getStarsSiteInformation().getServiceVoltage() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                     </table>
@@ -524,7 +563,7 @@ function confirmCancel() {
                     <div align="right">Customer Group: </div>
                   </td>
                   <td width="200">
-                    <select name="CustomerGroup">
+                    <select name="CustomerGroup" onchange="setContentChanged(true)">
 <%		for (int i = 0; i < custGroups.length; i++) { %>
                       <option value="<%= custGroups[i].getGroupID() %>"><%= custGroups[i].getGroupName() %></option>
 <%		} %>
@@ -536,7 +575,7 @@ function confirmCancel() {
                     <div align="right">User Name: </div>
                   </td>
                   <td width="200"> 
-                    <input type="text" name="Username" maxlength="20" size="20" value="<%= login.getUsername() %>">
+                    <input type="text" name="Username" maxlength="20" size="20" value="<%= login.getUsername() %>" onchange="setContentChanged(true)">
                   </td>
                 </tr>
                 <tr> 
@@ -544,7 +583,7 @@ function confirmCancel() {
                     <div align="right">Password:</div>
                   </td>
                   <td width="200"> 
-                    <input type="password" name="Password" maxlength="20" size="20">
+                    <input type="password" name="Password" maxlength="20" size="20" onchange="setContentChanged(true)">
                   </td>
                 </tr>
                 <tr> 
@@ -582,7 +621,7 @@ function confirmCancel() {
                     <input type="submit" name="Submit" value="Save">
                   </td>
                   <td width="50%" align="left"> 
-                    <input type="button" name="Cancel" value="Cancel" onclick="location.href='../Operations.jsp'">
+                    <input type="button" name="Cancel" value="Cancel" onclick="if (warnUnsavedChanges()) location.href='../Operations.jsp'">
                   </td>
                 </tr>
               </table>
