@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2004/11/24 17:16:53 $
+* REVISION     :  $Revision: 1.65 $
+* DATE         :  $Date: 2004/12/14 22:36:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -513,6 +513,30 @@ void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, voi
     }
 }
 
+void applyDeviceLoadReport(const long unusedid, CtiDeviceSPtr RemoteDevice, void *lprtid)
+{
+    RWCString printStr;
+
+    int sub, proc, orph;
+    LONG PortID = (LONG)lprtid;
+
+    if(lprtid == NULL || PortID == RemoteDevice->getPortID())
+    {
+        printStr = RWTime().asString() + " Device: " + CtiNumStr(RemoteDevice->getID()).spad(2) + " / " + RemoteDevice->getName() + "\n";
+
+        for(int i = 0; i < 288; i++)
+        {
+            RemoteDevice->getQueueMetrics(i, sub, proc, orph);
+            printStr += CtiNumStr(i).spad(2) + ", " + CtiNumStr(sub).spad(5) + ", " + CtiNumStr(proc).spad(5) + ", " + CtiNumStr(orph).spad(5) + "\n";
+        }
+
+        {
+            CtiLockGuard<CtiLogger> bguard(blog);
+            blog << printStr << endl;
+        }
+    }
+}
+
 void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *passedPtr)
 {
     RWCString printStr;
@@ -584,6 +608,31 @@ void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *passedP
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << printStr << endl;
+    }
+}
+
+void applyPortLoadReport(const long unusedid, CtiPortSPtr ptPort, void *passedPtr)
+{
+    RWCString printStr;
+
+    /* Report on the state of the queues */
+
+    if(!ptPort->isInhibited())
+    {
+        int sub, proc, orph;
+
+        printStr = RWTime().asString() + " Port: " + CtiNumStr(ptPort->getPortID()).spad(2) + " / " + ptPort->getName() + "\n";
+
+        for(int i = 0; i < 288; i++)
+        {
+            ptPort->getQueueMetrics(i, sub, proc, orph);
+            printStr += CtiNumStr(i).spad(2) + ", " + CtiNumStr(sub).spad(5) + ", " + CtiNumStr(proc).spad(5) + ", " + CtiNumStr(orph).spad(5) + "\n";
+        }
+    }
+
+    {
+        CtiLockGuard<CtiLogger> bguard(blog);
+        blog << printStr << endl;
     }
 }
 
@@ -937,13 +986,14 @@ INT PorterMainFunction (INT argc, CHAR **argv)
             }
         }
 
-/*        if( last_print + 60 <= ::time(0) )
+        /*
+        if( last_print + 60 <= ::time(0) )
         {
             last_print = ::time(0);
-
-            processInputFunction(0x71);  //  do an alt-q every 30 seconds
+            processInputFunction(0x79);  //  do an alt-y every 60 seconds
         }
-  */
+        */
+
         CTISleep(250);
     }
 
@@ -1194,6 +1244,9 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
 
     slog.interrupt(CtiThread::SHUTDOWN);
     slog.join();
+
+    blog.interrupt(CtiThread::SHUTDOWN);
+    blog.join();
 }
 
 
@@ -2056,6 +2109,13 @@ bool processInputFunction(CHAR Char)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << endl << RWTime() << " There are " << OutMessageCount() << " OutMessages held by Port Control." << endl << endl;
             }
+            break;
+        }
+    case 0x79:              // alt-y
+        {
+            PortManager.apply( applyPortLoadReport, (void*)1 );
+            DeviceManager.apply( applyDeviceLoadReport, NULL );
+
             break;
         }
     default:
