@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/02/10 23:23:55 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/02/17 23:30:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -93,7 +93,7 @@ VOID PortPoolDialoutThread(void *pid)
              *  This is a Read from the CTI queueing structures which will originate from
              *  some other requestor.  This is where this thread blocks and waits if there are
              *  no entries on the queue.  One may think of the "above" call as "cleanup" for the
-             *  previous ReadQueue's operation. Note that the ReadQueue call mallocs space for the
+             *  previous ReadQueue's operation. Note that the ReadQueue call allocs space for the
              *  OutMessage pointer, and fills it from it's queue entries!
              */
 

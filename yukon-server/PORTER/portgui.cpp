@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portgui.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:23:55 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/02/17 23:29:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -95,7 +95,7 @@ VOID PorterGUIConnectionThread (VOID *Arg)
    {
       for(;;)
       {
-         NewNexus = (CTINEXUS*) malloc(sizeof(CTINEXUS));
+         NewNexus = (CTINEXUS*) CTIDBG_new CTINEXUS;
 
          if(NewNexus == NULL)
          {
@@ -157,7 +157,7 @@ VOID GUIConnectionThread (VOID *Arg)
    {
 
       /* Allocate memory for block coming in */
-      if((GUIMsg = (CTIGUIMSG*)malloc (sizeof (CTIGUIMSG))) == NULL)
+      if((GUIMsg = (CTIGUIMSG*) CTIDBG_new CTIGUIMSG) == NULL)
       {
          printf ("Error Allocating Memory for Incoming GUI Message Block\n");
          continue;
