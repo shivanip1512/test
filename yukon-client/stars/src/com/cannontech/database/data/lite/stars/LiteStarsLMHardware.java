@@ -90,26 +90,21 @@ public class LiteStarsLMHardware extends LiteInventoryBase {
 	}
 	
 	public void updateThermostatType() {
-		if (getInventoryID() < 0) {
-			// Default hardware is one-way thermostat
+		YukonListEntry invCatEntry = YukonListFuncs.getYukonListEntry( getCategoryID() );
+		YukonListEntry devTypeEntry = YukonListFuncs.getYukonListEntry( getLmHardwareTypeID() );
+		
+		if (invCatEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC &&
+			devTypeEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_THERMOSTAT)
+		{
 			thermostatType = THERMOSTAT_TYPE_ONE_WAY;
 		}
+		else if (invCatEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC &&
+			devTypeEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO)
+		{
+			thermostatType = THERMOSTAT_TYPE_TWO_WAY;
+		}
 		else {
-			YukonListEntry invCatEntry = YukonListFuncs.getYukonListEntry( getCategoryID() );
-			YukonListEntry devTypeEntry = YukonListFuncs.getYukonListEntry( getLmHardwareTypeID() );
-			if (invCatEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC &&
-				devTypeEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_THERMOSTAT)
-			{
-				thermostatType = THERMOSTAT_TYPE_ONE_WAY;
-			}
-			else if (invCatEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC &&
-				devTypeEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO)
-			{
-				thermostatType = THERMOSTAT_TYPE_TWO_WAY;
-			}
-			else {
-				thermostatType = THERMOSTAT_TYPE_IS_NOT;
-			}
+			thermostatType = THERMOSTAT_TYPE_IS_NOT;
 		}
 	}
 	
