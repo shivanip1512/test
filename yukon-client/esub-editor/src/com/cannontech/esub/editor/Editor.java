@@ -398,7 +398,7 @@ public class Editor extends JPanel {
 		
 		SplashWindow splash = new SplashWindow(
 			frame,
-			"ctismall.gif",
+			CtiUtilities.CTISMALL_GIF,
 			"Loading " + System.getProperty("cti.app.name") + "...",
 			new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
 	

@@ -12,8 +12,11 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.URL;
 
 import javax.swing.JFrame;
+
+import com.cannontech.common.util.CtiUtilities;
 
  public class SplashWindow extends Window 
  {
@@ -22,7 +25,7 @@ import javax.swing.JFrame;
   
    private FontMetrics fontMetrics;
    
-   private String imgName;
+   private URL imgURL;
    private int borderSize;
    private Color borderColor;
    Toolkit tk;
@@ -33,20 +36,22 @@ import javax.swing.JFrame;
    public SplashWindow(Frame f, String imgName  ) 
    {
 		super( (f == null ? new JFrame() : f) );
-		initialize( f, imgName, "Loading...", new java.awt.Font("dialog", 0, 12), Color.black, Color.black, 1  );
+		initialize( f, SplashWindow.class.getResource(imgName),
+                "Loading...", new java.awt.Font("dialog", 0, 12), Color.black, Color.black, 1  );
    }
    
 	public SplashWindow(Frame f, String imgName, String displayText, Font displayFont, Color textColor, Color borderColor, int borderSize ) 
 	{
 		super( (f == null ? new JFrame() : f) );
-		initialize( f, imgName, displayText, displayFont, textColor, borderColor, borderSize ); 
+		initialize( f, SplashWindow.class.getResource(imgName), displayText, displayFont,
+                textColor, borderColor, borderSize ); 
 	} 
 
-   public SplashWindow(Frame f, String imgName, String displayText )
-   {
-		super( (f == null ? new JFrame() : f) );
-		initialize( f, imgName, displayText, new java.awt.Font("dialog", 0, 12), Color.black, Color.black, 1  );			 
-	 } 
+    public SplashWindow(Frame f, URL imgURL_, String displayText, Font displayFont, Color textColor, Color borderColor, int borderSize ) 
+    {
+        super( (f == null ? new JFrame() : f) );
+        initialize( f, imgURL_, displayText, displayFont, textColor, borderColor, borderSize ); 
+    } 
 
 	/**
 	 * This method was created in VisualAge.
@@ -55,8 +60,8 @@ import javax.swing.JFrame;
 	 * @param borderColor java.awt.Color
 	 * @param borderSize int
 	 */
-	private void initialize( Frame f, String imgName, String displayText, Font displayFont, Color textColor, Color borderColor, int borderSize) {
-		this.imgName = imgName;
+	private void initialize( Frame f, URL imgURL_, String displayText, Font displayFont, Color textColor, Color borderColor, int borderSize) {
+		this.imgURL = imgURL_;
 		this.textColor = textColor;
 		this.borderColor = borderColor;
 		this.borderSize = borderSize;
@@ -86,7 +91,7 @@ import javax.swing.JFrame;
    public Image loadSplashImage() {
 	 MediaTracker tracker = new MediaTracker(this);
 	 Image result;
-	 result = tk.getImage(imgName);
+	 result = tk.getImage( imgURL );
 	 tracker.addImage(result, 0);
 	 try { 
 	   tracker.waitForAll(); 
@@ -111,7 +116,7 @@ import javax.swing.JFrame;
 			javax.swing.JFrame f = new javax.swing.JFrame();
 			f.setSize(100,200);		
 			
-			com.cannontech.common.gui.util.SplashWindow splash = new com.cannontech.common.gui.util.SplashWindow(f, "ctismall.gif", "Hi, I'm loading...", new java.awt.Font("dialog", 0, 16), Color.black,  Color.black, 1  );
+			com.cannontech.common.gui.util.SplashWindow splash = new com.cannontech.common.gui.util.SplashWindow(f, CtiUtilities.CTISMALL_GIF, "Hi, I'm loading...", new java.awt.Font("dialog", 0, 16), Color.black,  Color.black, 1  );
 		
 			Thread.sleep(3000);
 			splash.setDisplayText("Hi, I'm still loading...");

@@ -16,9 +16,6 @@ public class SystrayFlasher implements Runnable
 
 	private java.applet.AudioClip alarmSound = null;
 
-	public static final String ALARM_SOUND_FILE =
-			CtiUtilities.getConfigDirPath() + "alarm.au";
-
 	private SysTrayMenu yukonSysTray = null;
 	
 	/**
@@ -73,18 +70,7 @@ public class SystrayFlasher implements Runnable
 	{	
 		if( alarmSound == null )
 		{
-			java.net.URL url = null;
-		
-			try
-			{
-				url = new java.net.URL( "file:/" + ALARM_SOUND_FILE );
-			}
-			catch( java.net.MalformedURLException e )
-			{
-				//handleException( e );
-			}
-		
-			alarmSound = java.applet.Applet.newAudioClip( url );
+			alarmSound = java.applet.Applet.newAudioClip( CtiUtilities.ALARM_AU );
 
 		}
 	

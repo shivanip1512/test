@@ -54,6 +54,7 @@ import com.cannontech.database.model.MCTCheckBoxTreeModel;
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.database.model.TransmitterCheckBoxTreeModel;
 import com.cannontech.debug.gui.AboutDialog;
+import com.cannontech.graph.GraphClient;
 import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.Registration;
@@ -993,10 +994,10 @@ private javax.swing.JButton getGenerateButton() {
 			javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
 			javax.swing.JFrame mainFrame = new javax.swing.JFrame();
-			mainFrame.setIconImage( java.awt.Toolkit.getDefaultToolkit().getImage("GraphIcon.gif"));
+			mainFrame.setIconImage( java.awt.Toolkit.getDefaultToolkit().getImage(GraphClient.GRAPH_GIF));
 			mainFrame.setTitle("Yukon Reporting");
         
-			SplashWindow splash = new SplashWindow( mainFrame, "ctismall.gif", "Loading " + System.getProperty("cti.app.name") + "...", new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
+			SplashWindow splash = new SplashWindow( mainFrame, CtiUtilities.CTISMALL_GIF, "Loading " + System.getProperty("cti.app.name") + "...", new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
         
 //			ClientSession session = ClientSession.getInstance(); 
 //			if(!session.establishSession(mainFrame))

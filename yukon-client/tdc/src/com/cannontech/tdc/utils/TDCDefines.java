@@ -8,6 +8,7 @@ package com.cannontech.tdc.utils;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.ClientRights;
 import com.cannontech.roles.application.TDCRole;
+import com.cannontech.tdc.TDCMainFrame;
 
 public final class TDCDefines 
 {
@@ -15,15 +16,12 @@ public final class TDCDefines
 	public static final String HELP_FILE = com.cannontech.common.util.CtiUtilities.getHelpDirPath()
 			+ "Tabular Data Console Help.chm";
 
-	public static final String ALARM_SOUND_FILE = "/alarm.au";
-
 	public static String DBALIAS = "yukon";
 
 	public static final String DISPLAY_OUT_FILE_NAME = com.cannontech.common.util.CtiUtilities.getConfigDirPath() + "TDCDisplaySettings.DAT";
 
-	public static final java.awt.Image ICON_TDC = java.awt.Toolkit.getDefaultToolkit().getImage("tdcIcon.gif");   
-   public static final javax.swing.Icon ICON_ALARM = 
-      new javax.swing.ImageIcon("AlarmSqr.gif");
+	public static final java.awt.Image ICON_TDC = java.awt.Toolkit.getDefaultToolkit().getImage(TDCMainFrame.TDC_GIF);   
+   public static final javax.swing.Icon ICON_ALARM = new javax.swing.ImageIcon("/AlarmSqr.gif");
       //new javax.swing.ImageIcon("C:/Documents and Settings/rneuharth/My Documents/My Pictures/AlarmSqr.gif");
 	
 	// JTable model constants

@@ -9,7 +9,7 @@
    <target name="build">
        <mkdir dir="build"/>
        
-       <javac srcdir="src" destdir="build" target="1.3" debug="true">                               
+       <javac srcdir="src" destdir="build" target="1.4" debug="true">                               
           <classpath>                        
              <fileset dir="${yukon.lib}">
                 <include name="**/*.jar"/>
@@ -22,7 +22,8 @@
 
 		<copy todir="${yukon.lib}">
 	 	    <fileset dir="resource">
-	 		<include name="**/*.bat"/>
+		 		<include name="**/*.bat"/>
+	 	    	<include name="**/*.properties"/>
 		    </fileset>
 	    </copy>
    </target>
@@ -30,7 +31,14 @@
 	<target name="install" depends="build">
    		<jar jarfile="${yukon.client.bin}/tools.jar"
    			basedir="build/" />   			       
-   </target>
+
+		<copy todir="${yukon.client.bin}">
+	 	    <fileset dir="resource">
+		 		<include name="**/*.bat"/>
+	 	    	<include name="**/*.properties"/>
+		    </fileset>
+	    </copy>
+	</target>
    
    <target name="clean">
        <delete dir="build"/>        

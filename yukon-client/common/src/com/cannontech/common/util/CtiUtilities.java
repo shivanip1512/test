@@ -8,6 +8,7 @@ import java.awt.EventQueue;
 import java.awt.MenuComponent;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.*;
 import com.cannontech.database.Transaction;
@@ -57,7 +58,14 @@ public final class CtiUtilities
 	//a universal formatter for numbers
 	private static DecimalFormat numberFormatter = null;
 	
-
+	// image names
+    public static final URL CTISMALL_GIF =
+            CtiUtilities.class.getResource("/ctismall.gif");
+    public static final URL ALARM_AU =
+        CtiUtilities.class.getResource("/alarm.au");
+    
+    
+    
 	// image extensions
 	public final static String jpeg = "jpeg";
     public final static String jpg = "jpg";

@@ -14,32 +14,24 @@
              </fileset>
 	      </classpath> 
      	</javac>
-		
-	   <copy todir="build/">
-           <fileset dir="resource">
-               <include name="**/*.gif"/>
-           </fileset>
-       </copy>
-       
-       <jar jarfile="${yukon.lib}/esub-editor.jar"
-            basedir="build/" 
-            manifest="resource/manifest.mf" />              	
+
+		<jar jarfile="${yukon.lib}/esub-editor.jar" basedir="build/" manifest="resource/manifest.mf" >
+	 	    <fileset dir="resource">
+				<include name="**/*.gif"/>
+			</fileset>       	
+		</jar>
+
    </target>
 
 	<target name="install" depends="build">
-   		<jar jarfile="${yukon.client.bin}/esub-editor.jar"
-   			basedir="build/"
-   			manifest="resource/manifest.mf" />   			
-   			
-   		<copy todir="${yukon.client.bin}">
- 	    	<fileset dir="resource">
+   		<jar jarfile="${yukon.client.bin}/esub-editor.jar" basedir="build/" manifest="resource/manifest.mf" >
+	 	    <fileset dir="resource">
 				<include name="**/*.gif"/>
- 				<include name="**/*.ico"/>
-	    	</fileset>
-
-       </copy>             
+			</fileset>		
+		</jar>   			
    </target>
-   
+
+
    <target name="clean">
        <delete dir="build"/>        
    </target>

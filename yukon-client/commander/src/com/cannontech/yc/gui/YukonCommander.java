@@ -6,6 +6,7 @@ package com.cannontech.yc.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.print.PrinterException;
+import java.net.URL;
 import java.util.Observable;
 import java.util.Vector;
 
@@ -47,6 +48,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	private int [] treeModels = null;
 	private static final String YC_TITLE = "Commander";
 	public static final String HELP_FILE = CtiUtilities.getHelpDirPath() + "Yukon Commander Help.chm";
+    public static final URL COMMANDER_GIF = YukonCommander.class.getResource("/CommanderIcon.gif");
 
 	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
 	private javax.swing.JPanel ivjJFrameContentPane = null;
@@ -138,7 +140,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	private void about()
 	{
 		javax.swing.JFrame popupFrame = new javax.swing.JFrame();
-		popupFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("CommanderIcon.gif"));
+		popupFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(COMMANDER_GIF));
 		javax.swing.JOptionPane.showMessageDialog(popupFrame,
 		"This is version " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() + "\nCopyright (C) 1999-2003 Cannon Technologies.",
 		"About Yukon Commander",javax.swing.JOptionPane.INFORMATION_MESSAGE);
@@ -234,7 +236,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		else if( event.getSource() == getYCCommandMenu().installAddressing)
 		{
-			javax.swing.ImageIcon icon = new javax.swing.ImageIcon("CommanderIcon.gif");
+			javax.swing.ImageIcon icon = new javax.swing.ImageIcon(COMMANDER_GIF);
 			Object[] selections = null;			
 			// Get an instance of the cache.
 			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
@@ -394,7 +396,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	private int areYouSure(String message, int messageType )
 	{
 		javax.swing.JFrame popupFrame = new javax.swing.JFrame();
-		popupFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("CommanderIcon.gif"));
+		popupFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(COMMANDER_GIF));
 		return javax.swing.JOptionPane.showConfirmDialog(popupFrame, message, YC_TITLE, javax.swing.JOptionPane.YES_NO_OPTION, messageType);
 	}
 
@@ -1410,7 +1412,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			System.setProperty("cti.app.name", "Commander");
 			javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 			SplashWindow splash = new SplashWindow(
-					null, "ctismall.gif", "Loading resources...",
+					null, CtiUtilities.CTISMALL_GIF, "Loading resources...",
 					new java.awt.Font("dialog", 0, 14), java.awt.Color.black,
 					java.awt.Color.black, 1 );
 
@@ -1429,7 +1431,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			YukonCommander ycClient;
 			ycClient = new YukonCommander();
 			
-			ycClient.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("CommanderIcon.gif"));
+			ycClient.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(COMMANDER_GIF));
 						
 			ycClient.setTitle(YC_TITLE);
 			splash.setDisplayText("Opening connection to database...");

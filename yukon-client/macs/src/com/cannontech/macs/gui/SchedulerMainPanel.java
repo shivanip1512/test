@@ -32,6 +32,7 @@ import com.cannontech.message.util.ConnStateChange;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -1064,7 +1065,7 @@ public void showEditorPanel( final Schedule selectedSchedule )
 	
 		frame.setTitle( panel.toString() );
 		frame.setLocation( getEditViewButton().getLocation() );
-		frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("tdcIcon.gif"));
+		frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(TDCMainFrame.TDC_GIF));
 		frame.show();
 
 

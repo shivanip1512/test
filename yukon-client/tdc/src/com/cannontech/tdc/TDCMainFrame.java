@@ -50,6 +50,7 @@ import com.cannontech.clientutils.parametersfile.ParameterNotFoundException;
 import com.cannontech.clientutils.parametersfile.ParametersFile;
 import com.cannontech.debug.gui.AboutDialog;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -131,6 +132,8 @@ public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.t
    private SignalAlarmHandler alarmHandler = null;
    
 	private javax.swing.JMenuItem jMenuItemResetCntrlHrs = null;
+
+    public static final URL TDC_GIF = TDCMainFrame.class.getResource("/tdcIcon.gif");
 
 
 /**
@@ -3154,7 +3157,7 @@ public void jMenuItemAbout_ActionPerformed(java.awt.event.ActionEvent actionEven
 {
 	ArrayList list = new ArrayList(16);
 	list.add("Max Rows     : " + TDCDefines.MAX_ROWS);
-	list.add("Sound File   : " + TDCDefines.ALARM_SOUND_FILE);
+	list.add("Sound File   : " + CtiUtilities.ALARM_AU);
 	list.add("Temp File    : " + CtiUtilities.OUTPUT_FILE_NAME);
 				
 	AboutDialog aboutDialog = new AboutDialog( this, "About TDC", true );
@@ -4074,7 +4077,7 @@ public static void main(final java.lang.String[] args)
 		
 		SplashWindow splash = new SplashWindow(
 			null,
-			"ctismall.gif",
+			CtiUtilities.CTISMALL_GIF,
 			"Loading " + System.getProperty("cti.app.name") + "...",
 			new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
 		

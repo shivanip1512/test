@@ -86,7 +86,8 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 			iconCyclerThrd.setDaemon( true );
 		}
 
-		iconCyclerThrd.start();
+        if( !iconCyclerThrd.isAlive() )
+            iconCyclerThrd.start();
 	}
 
 	public void actionPerformed(java.awt.event.ActionEvent e) 

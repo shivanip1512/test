@@ -1257,7 +1257,7 @@ public static void main(java.lang.String[] args)
 		javax.swing.JFrame frame = new javax.swing.JFrame();
 		CreateGraphPanel aCreateGraphPanel;
 		aCreateGraphPanel = new CreateGraphPanel();
-		//frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("GraphIcon.gif"));
+		//frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(GraphClient.GRAPH_GIF));
 		//frame.setTitle("Yukon Trending Reports Editor");
 		frame.setContentPane(aCreateGraphPanel);
 		frame.setSize(aCreateGraphPanel.getSize());
@@ -1487,7 +1487,7 @@ public GraphDefinition showCreateGraphPanelDialog(java.awt.Frame parent)
 	public void showPopupMessage(String message, int messageType )
 	{
 		javax.swing.JFrame popupFrame = new javax.swing.JFrame();
-		popupFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("GraphIcon.gif"));
+		popupFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(GraphClient.GRAPH_GIF));
 		javax.swing.JOptionPane.showMessageDialog(popupFrame,
 		message, "Yukon Trending", messageType);
 		return;

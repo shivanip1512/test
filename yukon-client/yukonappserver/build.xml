@@ -21,7 +21,7 @@
 			</fileset>
 		</copy>
 
-       <javac srcdir="temp" destdir="build" target="1.3" debug="true">
+       <javac srcdir="temp" destdir="build" target="1.4" debug="true">
           <classpath>                        
              <fileset dir="${yukon.lib}">
                 <include name="**/*.jar"/>

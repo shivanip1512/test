@@ -16,6 +16,7 @@ import javax.sound.sampled.SourceDataLine;
 
 import com.cannontech.tdc.utils.TDCDefines;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 
 
 public class RowBlinker implements Runnable 
@@ -109,10 +110,9 @@ public void start()
 {
 	try
 	{
-		java.net.URL url = RowBlinker.class.getResource( TDCDefines.ALARM_SOUND_FILE );
+		AudioInputStream audioInputStream =
+            AudioSystem.getAudioInputStream( CtiUtilities.ALARM_AU );
 
-        
-		AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url);
 		audioFormat = audioInputStream.getFormat();
 		// At present, ALAW and ULAW encodings must be converted
 		// to PCM_SIGNED before it can be played

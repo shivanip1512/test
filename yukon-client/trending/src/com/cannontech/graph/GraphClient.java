@@ -14,6 +14,7 @@ import java.awt.event.WindowEvent;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.PrinterJob;
+import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -64,7 +65,9 @@ import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.TrendingRole;
 import com.cannontech.util.ServletUtil;
-public class GraphClient extends javax.swing.JPanel implements com.cannontech.database.cache.DBChangeListener, GraphDefines, java.awt.event.ActionListener, java.awt.event.WindowListener, javax.swing.event.ChangeListener, javax.swing.event.TreeSelectionListener {
+public class GraphClient extends javax.swing.JPanel implements com.cannontech.database.cache.DBChangeListener, GraphDefines, java.awt.event.ActionListener, java.awt.event.WindowListener, javax.swing.event.ChangeListener, javax.swing.event.TreeSelectionListener
+{
+    public static final URL GRAPH_GIF = GraphClient.class.getResource("/GraphIcon.gif");
 
 	private class TrendDataAutoUpdater extends Thread
 	{
@@ -2002,10 +2005,10 @@ public static void main(String[] args)
         javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
         javax.swing.JFrame mainFrame = new javax.swing.JFrame();
-		mainFrame.setIconImage( java.awt.Toolkit.getDefaultToolkit().getImage("GraphIcon.gif"));
+		mainFrame.setIconImage( java.awt.Toolkit.getDefaultToolkit().getImage(GRAPH_GIF));
 		mainFrame.setTitle("Yukon Trending");
         
-        SplashWindow splash = new SplashWindow( mainFrame, "ctismall.gif", "Loading " + System.getProperty("cti.app.name") + "...", new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
+        SplashWindow splash = new SplashWindow( mainFrame, CtiUtilities.CTISMALL_GIF, "Loading " + System.getProperty("cti.app.name") + "...", new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
         
 		ClientSession session = ClientSession.getInstance(); 
 		if(!session.establishSession(mainFrame))
@@ -2195,7 +2198,7 @@ public void setSliderSize(int min, int max, int numTicks)
 public void showPopupMessage(String message, int messageType )
 {
 	javax.swing.JFrame popupFrame = new javax.swing.JFrame();
-	popupFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("GraphIcon.gif"));
+	popupFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(GRAPH_GIF));
 	javax.swing.JOptionPane.showMessageDialog(popupFrame,
 	message, "Yukon Trending", messageType);
 	return;

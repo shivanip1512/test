@@ -11,6 +11,7 @@ import com.cannontech.database.model.*;
 import java.awt.*;
 import java.awt.event.*;
 
+import java.net.URL;
 import java.util.Vector;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
@@ -23,6 +24,7 @@ import com.cannontech.common.gui.util.MessagePanel;
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.FileMessageLog;
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
@@ -41,7 +43,6 @@ import com.cannontech.dbeditor.editor.defaults.DefaultRoutesDialog;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateDialog;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
 import com.cannontech.dbeditor.wizard.changetype.device.DeviceChngTypesPanel;
-import com.cannontech.dbeditor.wizard.device.lmconstraint.LMProgramConstraintPanel;
 import com.cannontech.debug.gui.*;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.BillingRole;
@@ -66,6 +67,7 @@ public class DatabaseEditor
 {
    //all editor frame sizes
    private static final Dimension EDITOR_FRAME_SIZE = new Dimension(435, 500);
+   public static final URL DBEDITOR_GIF = DatabaseEditor.class.getResource("/dbEditorIcon.gif");
    
 	//gui elements of the app
 	private DBEditorTreePopUpMenu treeNodePopUpMenu = null;
@@ -201,7 +203,7 @@ public void actionPerformed(ActionEvent event)
 	if( item == viewMenu.coreRadioButtonMenuItem &&
 		currentDatabase != DatabaseTypes.CORE_DB )
 	{
-		java.awt.Frame f = com.cannontech.common.util.CtiUtilities.getParentFrame(getContentPane());
+		java.awt.Frame f = CtiUtilities.getParentFrame(getContentPane());
 		java.awt.Cursor savedCursor = f.getCursor();
 		try
 		{
@@ -225,7 +227,7 @@ public void actionPerformed(ActionEvent event)
 	if( item == viewMenu.lmRadioButtonMenuItem &&
 		currentDatabase != DatabaseTypes.LM_DB )
 	{
-		java.awt.Frame f = com.cannontech.common.util.CtiUtilities.getParentFrame(getContentPane());
+		java.awt.Frame f = CtiUtilities.getParentFrame(getContentPane());
 		java.awt.Cursor savedCursor = f.getCursor();
 		try
 		{
@@ -249,7 +251,7 @@ public void actionPerformed(ActionEvent event)
 	if( item == viewMenu.capControlRadioButtonMenuItem &&
 		currentDatabase != DatabaseTypes.CAP_CONTROL_DB )
 	{
-		java.awt.Frame f = com.cannontech.common.util.CtiUtilities.getParentFrame(getContentPane());
+		java.awt.Frame f = CtiUtilities.getParentFrame(getContentPane());
 		java.awt.Cursor savedCursor = f.getCursor();
 		try
 		{
@@ -273,7 +275,7 @@ public void actionPerformed(ActionEvent event)
 	if( item == viewMenu.systemRadioButtonMenuItem &&
 		currentDatabase != DatabaseTypes.SYSTEM_DB )
 	{
-		java.awt.Frame f = com.cannontech.common.util.CtiUtilities.getParentFrame(getContentPane());
+		java.awt.Frame f = CtiUtilities.getParentFrame(getContentPane());
 		java.awt.Cursor savedCursor = f.getCursor();
 		try
 		{
@@ -334,7 +336,7 @@ public void actionPerformed(ActionEvent event)
 	else
 	if( item == viewMenu.refreshMenuItem )
 	{
-		java.awt.Frame f = com.cannontech.common.util.CtiUtilities.getParentFrame(getContentPane());
+		java.awt.Frame f = CtiUtilities.getParentFrame(getContentPane());
 		java.awt.Cursor savedCursor = f.getCursor();
 		
 		try
@@ -408,7 +410,7 @@ public void actionPerformed(ActionEvent event)
 	if( item == helpMenu.helpTopicMenuItem )
 	{
 		//run and show our help program
-		Process p = com.cannontech.common.util.CtiUtilities.showHelp( CommonDefines.HELP_FILE );
+		Process p = CtiUtilities.showHelp( CommonDefines.HELP_FILE );
 	}
 	else
 	{
@@ -512,7 +514,7 @@ private JTreeEditorFrame createInternalEditorFrame()
 		
 	});
 	
-	ImageIcon editorIcon = new ImageIcon(java.awt.Toolkit.getDefaultToolkit().getImage("dbEditorIcon.gif"));
+	ImageIcon editorIcon = new ImageIcon(java.awt.Toolkit.getDefaultToolkit().getImage(DBEDITOR_GIF));
 	frame.setFrameIcon(editorIcon);
 
 	return frame;
@@ -1117,7 +1119,7 @@ private void executeDeleteButton_ActionPerformed(ActionEvent event)
  */
 private void executeEditButton_ActionPerformed(ActionEvent event)
 {
-   java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(getTree());   
+   java.awt.Frame owner = CtiUtilities.getParentFrame(getTree());   
    java.awt.Cursor savedCursor = owner.getCursor();
 
 
@@ -1521,7 +1523,7 @@ private com.cannontech.message.dispatch.ClientConnection getConnToDispatch()
 
 		connToDispatch = new com.cannontech.message.dispatch.ClientConnection();
 		com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
-		reg.setAppName("DatabaseEditor @" + com.cannontech.common.util.CtiUtilities.getUserName() );
+		reg.setAppName("DatabaseEditor @" + CtiUtilities.getUserName() );
 		reg.setAppIsUnique(0);
 		reg.setAppKnownPort(0);
 		reg.setAppExpirationDelay( 300 );  // 5 minutes should be OK
@@ -1824,7 +1826,7 @@ private MessagePanel getMessagePanel() {
  */
 private JFrame getParentFrame() 
 {
-	return (JFrame)com.cannontech.common.util.CtiUtilities.getParentFrame(
+	return (JFrame)CtiUtilities.getParentFrame(
 				DatabaseEditor.this.getContentPane() );
 }
 /**
@@ -1921,7 +1923,7 @@ public void handleDBChangeMsg( com.cannontech.message.dispatch.message.DBChangeM
 {
 	//see if the message originated from us
 	if( !(msg.getSource().equals(
-				com.cannontech.common.util.CtiUtilities.DEFAULT_MSG_SOURCE) ) )
+				CtiUtilities.DEFAULT_MSG_SOURCE) ) )
 	{
 
 		StringBuffer txtMsg = new StringBuffer( 
@@ -2085,7 +2087,7 @@ private void initialize(JRootPane rootPane)
 
 	//Just make sure its instantiated
 	addMessageListener( getFileMessageLog() );
-	owner = com.cannontech.common.util.CtiUtilities.getParentFrame(rootPane);
+	owner = CtiUtilities.getParentFrame(rootPane);
 
 	//get all the config values read in
 	readConfigParameters();
@@ -2123,7 +2125,7 @@ public static void main(String[] args) {
 		f.setDefaultCloseOperation( f.DO_NOTHING_ON_CLOSE );
 		SplashWindow splash = new SplashWindow(
 			f,
-			"ctismall.gif",
+			CtiUtilities.CTISMALL_GIF,
 			"Loading " + System.getProperty("cti.app.name") + "...",
 			new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
 		
@@ -2137,7 +2139,7 @@ public static void main(String[] args) {
       f.setLocation( (java.awt.Toolkit.getDefaultToolkit().getScreenSize().width - f.getSize().width) / 2,
                      (java.awt.Toolkit.getDefaultToolkit().getScreenSize().height - f.getSize().height) / 2);
 
-      f.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("dbEditorIcon.gif"));
+      f.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(DBEDITOR_GIF));
 			
 	  ClientSession session = ClientSession.getInstance(); 
 	  if(!session.establishSession(f)){
@@ -2712,7 +2714,7 @@ public void setDatabase(int whichDatabase)
 	Integer[] models = null;
 
 	//Get a ref to the rootpane
-	JRootPane rPane = ((JFrame) com.cannontech.common.util.CtiUtilities.getParentFrame( getContentPane() )).getRootPane();
+	JRootPane rPane = ((JFrame) CtiUtilities.getParentFrame( getContentPane() )).getRootPane();
 	
 	//this.menuBar = null;
 	
@@ -2779,7 +2781,7 @@ public void setDatabase(int whichDatabase)
 private void showChangeTypeWizardPanel(WizardPanel wizard) {
 
 	//Set the cursor to wait
-	java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this.desktopPane);
+	java.awt.Frame owner = CtiUtilities.getParentFrame(this.desktopPane);
 	java.awt.Cursor savedCursor = owner.getCursor();
 	owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 
@@ -2795,7 +2797,7 @@ private void showChangeTypeWizardPanel(WizardPanel wizard) {
 	changingObjectType = true;
 	wizard.setValue(null);
 	f.setVisible(true);
-	ImageIcon wizardIcon = new ImageIcon(java.awt.Toolkit.getDefaultToolkit().getImage("dbEditorIcon.gif"));
+	ImageIcon wizardIcon = new ImageIcon(java.awt.Toolkit.getDefaultToolkit().getImage(DBEDITOR_GIF));
 	f.setFrameIcon(wizardIcon);
 	
 	try
@@ -2819,7 +2821,7 @@ private void showChangeTypeWizardPanel(WizardPanel wizard) {
 private void showCopyWizardPanel(WizardPanel wizard) {
 
 	//Set the cursor to wait
-	java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this.desktopPane);
+	java.awt.Frame owner = CtiUtilities.getParentFrame(this.desktopPane);
 	java.awt.Cursor savedCursor = owner.getCursor();
 	owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 
@@ -2848,7 +2850,7 @@ private void showCopyWizardPanel(WizardPanel wizard) {
 	
 	wizard.setValue(userObject);
 	copyingObject = true;
-	ImageIcon wizardIcon = new ImageIcon(java.awt.Toolkit.getDefaultToolkit().getImage("dbEditorIcon.gif"));
+	ImageIcon wizardIcon = new ImageIcon(java.awt.Toolkit.getDefaultToolkit().getImage(CtiUtilities.CTISMALL_GIF));
 	f.setFrameIcon(wizardIcon);
 	f.show();
 	
@@ -2871,7 +2873,7 @@ private void showCopyWizardPanel(WizardPanel wizard) {
  */
 public void showEditorSelectedObject()
 {
-	java.awt.Frame f = com.cannontech.common.util.CtiUtilities.getParentFrame(this.desktopPane);
+	java.awt.Frame f = CtiUtilities.getParentFrame(this.desktopPane);
 	f.validate();
 
 	try
@@ -2896,7 +2898,7 @@ public void showEditorSelectedObject()
 private void showWizardPanel(WizardPanel wizard) {
 
 	//Set the cursor to wait
-	java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this.desktopPane);
+	java.awt.Frame owner = CtiUtilities.getParentFrame(this.desktopPane);
 	java.awt.Cursor savedCursor = owner.getCursor();
 	owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 
@@ -2914,7 +2916,7 @@ private void showWizardPanel(WizardPanel wizard) {
 
 	wizard.setValue(null);
 	f.setVisible(true);
-	ImageIcon wizardIcon = new ImageIcon(java.awt.Toolkit.getDefaultToolkit().getImage("dbEditorIcon.gif"));
+	ImageIcon wizardIcon = new ImageIcon(java.awt.Toolkit.getDefaultToolkit().getImage(CtiUtilities.CTISMALL_GIF));
 	f.setFrameIcon(wizardIcon);
 	
 	try

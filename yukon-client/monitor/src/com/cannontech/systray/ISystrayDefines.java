@@ -48,21 +48,21 @@ public interface ISystrayDefines
 		
 		//default state
 		new SysTrayMenuIcon( 
-			ClassLoader.getSystemResource("YukonNoAlarm" + SysTrayMenuIcon.getExtension()) ),
+		        ISystrayDefines.class.getResource("/YukonNoAlarm" + SysTrayMenuIcon.getExtension()) ),
 	
 		new SysTrayMenuIcon( 
-			ClassLoader.getSystemResource("YukonDiscon" + SysTrayMenuIcon.getExtension()) ),
+                ISystrayDefines.class.getResource("/YukonDiscon" + SysTrayMenuIcon.getExtension()) ),
 	
 		new SysTrayMenuIcon( 
-			ClassLoader.getSystemResource("YukonNoLog" + SysTrayMenuIcon.getExtension()) ),
+                ISystrayDefines.class.getResource("/YukonNoLog" + SysTrayMenuIcon.getExtension()) ),
 	
 	
 		//all animated icons go below here
 		new SysTrayMenuIcon( 
-			ClassLoader.getSystemResource("YukonAlarm1" + SysTrayMenuIcon.getExtension()) ),
+                ISystrayDefines.class.getResource("/YukonAlarm1" + SysTrayMenuIcon.getExtension()) ),
 	
 		new SysTrayMenuIcon(
-			ClassLoader.getSystemResource("YukonAlarm2" + SysTrayMenuIcon.getExtension()) ),
+		        ISystrayDefines.class.getResource("/YukonAlarm2" + SysTrayMenuIcon.getExtension()) ),
 	};
 
 }

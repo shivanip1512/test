@@ -36,7 +36,7 @@
 		*  are all put into the same package!!
 		**********************************************************-->
 		<!--
-		<javac srcdir="build" destdir="jspbuild" target="1.3">
+		<javac srcdir="build" destdir="jspbuild" target="1.4">
 			<classpath>                        
 				<fileset dir="${yukon.lib}">
 					<include name="**/*.jar"/>
@@ -236,8 +236,7 @@
 		</copy>
 
 
-		<javac srcdir="${tempbuild}" destdir="${param.jspdir}" target="1.3"
-						debug="on" optimize="off">
+		<javac srcdir="${tempbuild}" destdir="${param.jspdir}" target="1.4" debug="true" optimize="off">
 			<classpath>
 				<fileset dir="${yukon.lib}">
 					<include name="**/*.jar"/>

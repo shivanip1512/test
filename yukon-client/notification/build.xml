@@ -9,7 +9,7 @@
    <target name="build">
        <mkdir dir="build"/>
        
-       <javac srcdir="src" destdir="build" target="1.3" debug="true">                               
+       <javac srcdir="src" destdir="build" target="1.4" debug="true">                               
           <classpath>                        
              <fileset dir="${yukon.lib}">
                 <include name="**/*.jar"/>
@@ -19,27 +19,13 @@
 
        <jar jarfile="${yukon.lib}/notification.jar"
             basedir="build/" 
-            manifest="resource/manifest.mf" />       
-
-	<copy todir="${yukon.lib}">
- 	    <fileset dir="resource">
-		<include name="**/*.gif"/>
- 		<include name="**/*.ico"/>
-	    </fileset>
-       </copy>
+            manifest="resource/manifest.mf" />
    </target>
 
 	<target name="install" depends="build">
    		<jar jarfile="${yukon.client.bin}/notification.jar"
    			basedir="build/"
    			manifest="resource/manifest.mf" />   			
-   			
-   		<copy todir="${yukon.client.bin}">
- 	    	<fileset dir="resource">
-				<include name="**/*.gif"/>
- 				<include name="**/*.ico"/>
-	    	</fileset>
-       </copy>       
    </target>
    
    <target name="clean">
