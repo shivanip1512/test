@@ -1104,6 +1104,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RW
                     (getControlInterval()!=0 ||
                      currentFeeder->getNewPointDataReceivedFlag()) )
                 {
+                    figureCurrentSetPoint(currentDateTime);//this is to set the Peak Time Flag
                     if( currentFeeder->checkForAndProvideNeededIndividualControl(currentDateTime, pointChanges, pilMessages, getPeakTimeFlag(), getDecimalPlaces()) )
                     {
                         setLastOperationTime(currentDateTime);
@@ -1263,7 +1264,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RW
         ULONG iterations = 0;
 
         RWTPtrSortedVector<CtiCCFeeder, FeederVARComparison<CtiCCFeeder> > varSortedFeeders;
-        DOUBLE setpoint = (getPeakTimeFlag()?getPeakSetPoint():getOffPeakSetPoint());
+        DOUBLE setpoint = figureCurrentSetPoint(currentDateTime);
 
         for(int i=0;i<_ccfeeders.entries();i++)
         {
