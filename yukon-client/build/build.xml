@@ -5,10 +5,11 @@
          just slowing down builds -ACL -->
     <!-- Define new tasks -->
     <!--	 <taskdef name="XSDCompiler" classname="org.exolab.castor.tools.XSDCompiler"/>-->
-	 	 	 
+    <property environment="env"/> 	 	 
     <property file="build.properties"/>
 	 	      	     	     
     <target name="targets">
+    	<echo message="${yukon.client.home}"/>
         <echo message="The following targets are available"/>
         <echo message=" build - perform incremental build"/>
         <echo message=" clean - clean the slate"/>
