@@ -3,9 +3,12 @@ package com.cannontech.dbeditor;
 /**
  * This type was created in VisualAge.
  */
+import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -30,6 +33,7 @@ import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
@@ -38,6 +42,8 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
+
+import sun.awt.SunToolkit;
 
 import Acme.RefInt;
 import Acme.Nnrpd.ArticleCache;
@@ -291,8 +297,8 @@ public void actionPerformed(ActionEvent event)
 	else
 	if( item == fileMenu.exitMenuItem )
 	{
-		exitConfirm();
-		exit();
+		if( exitConfirm() )		
+			exit();
 	}
 	else
 	if( item == editMenu.editMenuItem )
@@ -1208,6 +1214,7 @@ public void executeSortByOffsetButton_ActionPerformed(ActionEvent event)
  */
 private void exit() 
 {
+
 	try
 	{
 		if ( getConnToDispatch() != null && getConnToDispatch().isValid() )  // free up Dispatchs resources
@@ -1228,13 +1235,25 @@ private void exit()
 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
-	System.exit(0);
+	//There may be events in the EventQueue up to this point,
+	// let them go first then we can Exit the program.
+	SwingUtilities.invokeLater( new Runnable()
+	{
+		public void run()
+		{
+			System.exit(0);
+		}
+	});
 }
+
+
 /**
  * This method was created by Cannon Technologies Inc.
  */
 private boolean exitConfirm()
 {
+	boolean retVal = true;
+	
 	for( int i = 0; i < getInternalEditorFrames().length; i++ )
 	{
 		if( getInternalEditorFrames()[i].getContentPane() instanceof PropertyPanel)
@@ -1247,14 +1266,21 @@ private boolean exitConfirm()
 					int confirm = javax.swing.JOptionPane.showConfirmDialog(
 							getParentFrame(),
 							"Do you want to save changes made to '" + getInternalEditorFrames()[i].getOwnerNode() + 
-							"'?", "Yukon Database Editor", JOptionPane.YES_NO_OPTION);
+							"'?", "Yukon Database Editor", JOptionPane.YES_NO_CANCEL_OPTION);
 					
 					// act as though the cancel button has been pressed
 					if (confirm == JOptionPane.YES_OPTION)
+					{
 						current.fireOkButtonPressed();
-					else
+					}
+					else if (confirm == JOptionPane.NO_OPTION)
+					{
 						current.fireCancelButtonPressed();
-						//updateObject((com.cannontech.database.db.DBPersistent) current.getValue(null));
+					}
+					else
+						retVal = false;
+						
+					//updateObject((com.cannontech.database.db.DBPersistent) current.getValue(null));
 				}
 				else    // act as though the cancel button has been pressed
 					current.fireCancelButtonPressed();
@@ -1265,7 +1291,7 @@ private boolean exitConfirm()
 	}
 
 
-	return true;
+	return retVal;
 }
 /**
  * This method was created in VisualAge.
@@ -2099,7 +2125,10 @@ public static void main(String[] args) {
       System.setProperty("cti.app.name", "DBEditor");
 
 		javax.swing.JFrame f = new javax.swing.JFrame("Yukon Database Editor [Not Connected to Dispatch]");
+		f.setDefaultCloseOperation( f.DO_NOTHING_ON_CLOSE );
 
+	
+	
 		//Set the width and height 85% of max
 		java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();	
 		f.setSize( (int) (d.width * .85), (int)( d.height * .85) );
@@ -2394,6 +2423,10 @@ private void removeUnneededEditorFrames()
  */
 public void selectionPerformed( PropertyPanelEvent event)
 {
+	try {
+		
+		
+		
 	if( !( event.getSource() instanceof PropertyPanel) )
 		return;
 
@@ -2469,6 +2502,13 @@ public void selectionPerformed( PropertyPanelEvent event)
 	}
 
 }
+finally{
+	//just in case someone is waiting on this event
+	//this.notifyAll();
+	}
+
+}
+
 /**
  * This method was created in VisualAge.
  * @param event com.cannontech.common.wizard.WizardPanelEvent
@@ -2896,9 +2936,10 @@ public void windowClosed(WindowEvent event) {
  */
 public void windowClosing(WindowEvent event) 
 {
-	exitConfirm();
-	exit();		
+	if( exitConfirm() )
+		exit();
 }
+
 
 /**
  * This method was created by Cannon Technologies Inc.
