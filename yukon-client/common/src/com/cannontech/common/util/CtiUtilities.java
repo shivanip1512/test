@@ -825,6 +825,15 @@ public final static boolean isTrue(String s) {
 }
 
 /**
+ * Return true if the given string represents false
+ * @param s
+ * @return
+ */
+public final static boolean isFalse(String s) {
+	return (s == null || FALSE_STRING.equalsIgnoreCase(s));
+}
+
+/**
  * Returns true of the given string represents true
  * @param enableStr
  * @return boolean
