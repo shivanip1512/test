@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/30 21:29:15 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/05/02 17:21:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -277,8 +277,8 @@ ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
 
                 if( pPoint != NULL )
                 {
+                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                     RWDBConnection conn = getConnection();
-                    RWLockGuard<RWDBConnection> conn_guard(conn);
 
                     RWCString sql       = "select max(timestamp) as maxtimestamp from rawpointhistory where pointid=" + CtiNumStr(pPoint->getPointID());
                     RWDBResult results  = conn.executeSql( sql );

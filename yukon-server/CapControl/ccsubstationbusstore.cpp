@@ -1,14 +1,14 @@
 /*---------------------------------------------------------------------------
         Filename:  ccsubstationbusstore.cpp
-        
+
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiCCSubstationBusStore
-                        CtiCCSubstationBusStore maintains a pool of 
+                        CtiCCSubstationBusStore maintains a pool of
                         CtiCCSubstationBuses.
-                        
+
         Initial Date:  8/27/2001
-        
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
@@ -74,9 +74,9 @@ CtiCCSubstationBusStore::~CtiCCSubstationBusStore()
 
 /*---------------------------------------------------------------------------
     getSubstationBuses
-    
+
     Returns a RWOrdered of CtiCCSubstationBuses
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 RWOrdered* CtiCCSubstationBusStore::getCCSubstationBuses()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -95,9 +95,9 @@ RWOrdered* CtiCCSubstationBusStore::getCCSubstationBuses()
 
 /*---------------------------------------------------------------------------
     getCCGeoAreas
-    
+
     Returns a RWOrdered of CtiCCGeoAreas
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 RWOrdered* CtiCCSubstationBusStore::getCCGeoAreas()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -112,9 +112,9 @@ RWOrdered* CtiCCSubstationBusStore::getCCGeoAreas()
 
 /*---------------------------------------------------------------------------
     getCCCapBankStates
-    
+
     Returns a RWOrdered of CtiCCStates
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 RWOrdered* CtiCCSubstationBusStore::getCCCapBankStates()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -129,7 +129,7 @@ RWOrdered* CtiCCSubstationBusStore::getCCCapBankStates()
 
 /*---------------------------------------------------------------------------
     dumpAllDynamicData
-    
+
     Writes out the dynamic information for each of the substation buses.
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::dumpAllDynamicData()
@@ -168,7 +168,7 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
 
 /*---------------------------------------------------------------------------
     reset
-    
+
     Reset attempts to read in all the substation buses from the database.
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::reset()
@@ -176,17 +176,17 @@ void CtiCCSubstationBusStore::reset()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
     if( _CC_DEBUG )
-    {    
+    {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Obtaining connection to the database..." << endl;
         dout << RWTime() << " - Reseting substation buses from database..." << endl;
     }
 
     {
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
         {
-            RWLockGuard<RWDBConnection> conn_guard(conn);
-    
+
             if ( conn.isValid() )
             {
                 if( _ccSubstationBuses->entries() > 0 )
@@ -201,7 +201,7 @@ void CtiCCSubstationBusStore::reset()
                 RWDBTable pointTable = db.table("point");
                 RWDBTable pointUnitTable = db.table("pointunit");
                 RWDBTable dynamicCCSubstationBusTable = db.table("dynamicccsubstationbus");
-    
+
                 {
                     RWDBSelector selector = db.selector();
                     selector << yukonPAObjectTable["paobjectid"]
@@ -247,28 +247,28 @@ void CtiCCSubstationBusStore::reset()
                              << pointTable["pointid"]
                              << pointTable["pointoffset"]
                              << pointTable["pointtype"];
-    
+
                     selector.from(yukonPAObjectTable);
                     selector.from(capControlSubstationBusTable);
                     selector.from(pointUnitTable);
                     selector.from(dynamicCCSubstationBusTable);
                     selector.from(pointTable);
-        
+
                     selector.where(yukonPAObjectTable["paobjectid"]==capControlSubstationBusTable["substationbusid"] &&
                                    capControlSubstationBusTable["currentvarloadpointid"]==pointUnitTable["pointid"] &&
                                    capControlSubstationBusTable["substationbusid"].leftOuterJoin(dynamicCCSubstationBusTable["substationbusid"]) &&
                                    capControlSubstationBusTable["substationbusid"].leftOuterJoin(pointTable["paobjectid"]) );
-        
+
                     selector.orderBy(yukonPAObjectTable["description"]);
                     selector.orderBy(yukonPAObjectTable["paoname"]);
                     selector.orderBy(pointTable["pointoffset"]);
-    
+
                     /*if( _CC_DEBUG )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - " << selector.asString().data() << endl;
                     }*/
-    
+
                     RWDBReader rdr = selector.reader(conn);
 
                     CtiCCSubstationBus* currentCCSubstationBus = NULL;
@@ -361,28 +361,28 @@ void CtiCCSubstationBusStore::reset()
                              << pointTable["pointid"]
                              << pointTable["pointoffset"]
                              << pointTable["pointtype"];
-    
+
                     selector.from(yukonPAObjectTable);
                     selector.from(capControlFeederTable);
                     selector.from(ccFeederSubAssignmentTable);
                     selector.from(dynamicCCFeederTable);
                     selector.from(pointTable);
-    
+
                     selector.where( yukonPAObjectTable["paobjectid"]==ccFeederSubAssignmentTable["feederid"] &&
                                     capControlFeederTable["feederid"]==ccFeederSubAssignmentTable["feederid"] &&
                                     capControlFeederTable["feederid"].leftOuterJoin(dynamicCCFeederTable["feederid"]) &&
                                     capControlFeederTable["feederid"].leftOuterJoin(pointTable["paobjectid"]) );
-    
+
                     selector.orderBy(ccFeederSubAssignmentTable["substationbusid"]);
                     selector.orderBy(ccFeederSubAssignmentTable["displayorder"]);
                     selector.orderBy(pointTable["pointoffset"]);
-    
+
                     /*if( _CC_DEBUG )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - " << selector.asString().data() << endl;
                     }*/
-    
+
                     RWDBReader rdr = selector.reader(conn);
 
                     CtiCCFeeder* currentCCFeeder = NULL;
@@ -686,14 +686,14 @@ void CtiCCSubstationBusStore::checkAMFMSystemForUpdates()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
     if( _CC_DEBUG )
-    {    
+    {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Checking AMFM system for updates..." << endl;
     }
 
-    RWDBConnection amfmConn = getConnection(1);
     {
-        RWLockGuard<RWDBConnection> conn_guard(amfmConn);
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection amfmConn = getConnection(1);
         if( amfmConn.isValid() && amfmConn.isReady() )
         {
             RWDBDateTime lastAMFMUpdateTime = RWDBDateTime(1990,1,1,0,0,0,0);
@@ -1229,7 +1229,7 @@ void CtiCCSubstationBusStore::shutdown()
 
     dumpAllDynamicData();
     _ccSubstationBuses->clearAndDestroy();
-	delete _ccSubstationBuses;
+    delete _ccSubstationBuses;
 
     if( _CC_DEBUG )
     {
@@ -1240,7 +1240,7 @@ void CtiCCSubstationBusStore::shutdown()
 
 /*---------------------------------------------------------------------------
     doResetThr
-    
+
     Starts on construction and simply forces a call to reset every 60 minutes
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::doResetThr()
@@ -1278,7 +1278,7 @@ void CtiCCSubstationBusStore::doResetThr()
         if ( RWDBDateTime() >= nextDatabaseRefresh )
         {
             if( _CC_DEBUG )
-            {    
+            {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Restoring substation list from the database" << endl;
             }
@@ -1300,7 +1300,7 @@ void CtiCCSubstationBusStore::doResetThr()
 
 /*---------------------------------------------------------------------------
     doAMFMThr
-    
+
     Starts on construction and simply forces a call to reset every 60 minutes
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::doAMFMThr()
@@ -1436,7 +1436,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
                 if ( RWDBDateTime() >= nextAMFMRefresh )
                 {
                     if( _CC_DEBUG )
-                    {    
+                    {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Setting AMFM reload flag." << endl;
                     }
@@ -1455,20 +1455,20 @@ void CtiCCSubstationBusStore::doAMFMThr()
             }
         }
         else
-        {    
+        {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Can't find AMFM DB setting in master.cfg!!!" << endl;
         }
     }
 }
 
-/* Pointer to the singleton instance of CtiCCSubstationBusStore 
+/* Pointer to the singleton instance of CtiCCSubstationBusStore
    Instantiate lazily by Instance */
 CtiCCSubstationBusStore* CtiCCSubstationBusStore::_instance = NULL;
 
 /*---------------------------------------------------------------------------
     getInstance
-    
+
     Returns a pointer to the singleton instance of CtiCCSubstationBusStore
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBusStore* CtiCCSubstationBusStore::getInstance()
@@ -1483,7 +1483,7 @@ CtiCCSubstationBusStore* CtiCCSubstationBusStore::getInstance()
 
 /*---------------------------------------------------------------------------
     deleteInstance
-    
+
     Deletes the singleton instance of CtiCCSubstationBusStore
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::deleteInstance()
@@ -1497,7 +1497,7 @@ void CtiCCSubstationBusStore::deleteInstance()
 
 /*---------------------------------------------------------------------------
     isValid
-    
+
     Returns a TRUE if the strategystore was able to initialize properly
 ---------------------------------------------------------------------------*/
 BOOL CtiCCSubstationBusStore::isValid() const
@@ -1508,8 +1508,8 @@ BOOL CtiCCSubstationBusStore::isValid() const
 
 /*---------------------------------------------------------------------------
     setValid
-    
-    Sets the _isvalid flag 
+
+    Sets the _isvalid flag
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::setValid(BOOL valid)
 {
@@ -1519,7 +1519,7 @@ void CtiCCSubstationBusStore::setValid(BOOL valid)
 
 /*---------------------------------------------------------------------------
     getReregisterForPoints
-    
+
     Gets _reregisterforpoints
 ---------------------------------------------------------------------------*/
 BOOL CtiCCSubstationBusStore::getReregisterForPoints() const
@@ -1530,7 +1530,7 @@ BOOL CtiCCSubstationBusStore::getReregisterForPoints() const
 
 /*---------------------------------------------------------------------------
     setReregisterForPoints
-    
+
     Sets _reregisterforpoints
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::setReregisterForPoints(BOOL reregister)
@@ -1541,7 +1541,7 @@ void CtiCCSubstationBusStore::setReregisterForPoints(BOOL reregister)
 
 /*---------------------------------------------------------------------------
     getReloadFromAMFMSystemFlag
-    
+
     Gets _reloadfromamfmsystemflag
 ---------------------------------------------------------------------------*/
 BOOL CtiCCSubstationBusStore::getReloadFromAMFMSystemFlag() const
@@ -1552,7 +1552,7 @@ BOOL CtiCCSubstationBusStore::getReloadFromAMFMSystemFlag() const
 
 /*---------------------------------------------------------------------------
     setReloadFromAMFMSystemFlag
-    
+
     Sets _reloadfromamfmsystemflag
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::setReloadFromAMFMSystemFlag(BOOL reload)
@@ -1571,9 +1571,9 @@ bool CtiCCSubstationBusStore::UpdateBusDisableFlagInDB(CtiCCSubstationBus* bus)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
-    RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
 
         RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
         RWDBUpdater updater = yukonPAObjectTable.updater();
@@ -1604,9 +1604,9 @@ bool CtiCCSubstationBusStore::UpdateFeederDisableFlagInDB(CtiCCFeeder* feeder)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
-    RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
 
         RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
         RWDBUpdater updater = yukonPAObjectTable.updater();
@@ -1637,9 +1637,9 @@ bool CtiCCSubstationBusStore::UpdateCapBankDisableFlagInDB(CtiCCCapBank* capbank
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
-    RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
 
         RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
         RWDBUpdater updater = yukonPAObjectTable.updater();
@@ -1671,9 +1671,9 @@ bool CtiCCSubstationBusStore::UpdateCapBankInDB(CtiCCCapBank* capbank)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
-    RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
 
         RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
         RWDBUpdater updater = yukonPAObjectTable.updater();
@@ -1715,9 +1715,9 @@ bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
-    RWDBConnection conn = getConnection();
     {
-        RWLockGuard<RWDBConnection> conn_guard(conn);
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
 
         RWDBTable ccFeederBankListTable = getDatabase().table("ccfeederbanklist");
         RWDBDeleter deleter = ccFeederBankListTable.deleter();
