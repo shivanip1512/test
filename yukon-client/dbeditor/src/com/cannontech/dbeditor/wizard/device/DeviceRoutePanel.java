@@ -16,12 +16,16 @@ import com.cannontech.database.data.device.MCT310IL;
 import com.cannontech.database.data.device.RepeaterBase;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.route.MacroRoute;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.point.PointStatus;
+import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
 
 public class DeviceRoutePanel
@@ -195,24 +199,24 @@ public class DeviceRoutePanel
 
 
 			if (val instanceof MCT310ID
-				 || val instanceof MCT310IDL ) {
+				 || val instanceof MCT310IDL ) 
+			{
 				 	
 				//an automatic status point is created for certain devices
-				com.cannontech.database.data.point.PointBase newPoint2 =
-					com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.STATUS_POINT);
-
 				//set default for point tables
-				newPoint2 = PointFactory.createNewPoint(
+				PointBase newPoint2 = PointFactory.createNewPoint(
 	               new Integer(++pointID),
-						com.cannontech.database.data.point.PointTypes.STATUS_POINT,"DISCONNECT STATUS",((DeviceBase) val).getDevice().getDeviceID(),new Integer(1));
+						PointTypes.STATUS_POINT,
+						"DISCONNECT STATUS",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(PointTypes.PT_OFFSET_TOTAL_KWH));
 
-				newPoint2.getPoint().setStateGroupID(new Integer(2));
 
-				(
-					(
-						com.cannontech.database.data.point.StatusPoint) newPoint2).setPointStatus(
-								new com.cannontech.database.db.point.PointStatus(
-               				new Integer(++pointID)) );
+				newPoint2.getPoint().setStateGroupID(
+						new Integer(StateGroupUtils.STATEGROUP_THREE_STATE_STATUS) );
+
+				((StatusPoint) newPoint2).setPointStatus(
+								new PointStatus(newPoint2.getPoint().getPointID()) );
 
 				newVal.getDBPersistentVector().add(newPoint2);
 			}
