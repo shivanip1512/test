@@ -145,8 +145,7 @@ public static final EnergyCompany[] getEnergyCompanies(java.sql.Connection conn)
 	java.sql.ResultSet rset = null;
 	java.util.ArrayList list = new java.util.ArrayList();
 	
-	String sql = "SELECT " + 
-			CONSTRAINT_COLUMNS[0] + ", " +
+	String sql = "SELECT EnergyCompanyID," + 
 			SETTER_COLUMNS[0] + ", " +
 			SETTER_COLUMNS[1] + ", " +
 			SETTER_COLUMNS[2] + ", " +
@@ -225,7 +224,8 @@ public static final Integer getNextEnergyCompanyID()
 	java.sql.ResultSet rset = null;
 	java.sql.Connection conn = null;
 
-	String sql = "SELECT MAX(" + CONSTRAINT_COLUMNS[0] + ") FROM " + TABLE_NAME + " order by " + CONSTRAINT_COLUMNS[0];
+	String sql = "SELECT MAX(EnergyCompanyID) FROM " + 
+					 TABLE_NAME + " order by EnergyCompanyID";
 
 	try
 	{
