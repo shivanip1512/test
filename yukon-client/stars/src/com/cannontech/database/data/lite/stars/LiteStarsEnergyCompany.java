@@ -978,6 +978,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public synchronized ArrayList getOperatorLoginIDs() {
 		if (operatorLoginIDs == null) {
+			operatorLoginIDs = new ArrayList();
+			
 			SqlStatement stmt = new SqlStatement(
 					"SELECT OperatorLoginID FROM EnergyCompanyOperatorLoginList WHERE EnergyCompanyID=" + getEnergyCompanyID(),
 					CtiUtilities.getDatabaseAlias() );
@@ -985,7 +987,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			try {
 				stmt.execute();
 				
-				operatorLoginIDs = new ArrayList( stmt.getRowCount() );
 				for (int i = 0; i < stmt.getRowCount(); i++) {
 					int userID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
 					operatorLoginIDs.add( new Integer(userID) );
@@ -1003,13 +1004,34 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public synchronized ArrayList getRouteIDs() {
 		if (routeIDs == null) {
+			routeIDs = new ArrayList();
+			
 			ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems(
 					getEnergyCompanyID(), ECToGenericMapping.MAPPING_CATEGORY_ROUTE );
 			
-			routeIDs = new ArrayList();
 			if (items != null) {
 				for (int i = 0; i < items.length; i++)
 					routeIDs.add( items[i].getItemID() );
+			}
+			
+			if (getDefaultRouteID() > 0) {
+				// Make sure the default route ID is in the list
+				Integer dftRouteID = new Integer( getDefaultRouteID() );
+				
+				if (!routeIDs.contains( dftRouteID )) {
+					ECToGenericMapping map = new ECToGenericMapping();
+					map.setEnergyCompanyID( getEnergyCompanyID() );
+					map.setItemID( dftRouteID );
+					map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_ROUTE );
+					
+					try {
+						Transaction.createTransaction( Transaction.INSERT, map ).execute();
+						routeIDs.add( dftRouteID );
+					}
+					catch (TransactionException e) {
+						CTILogger.error( e.getMessage(), e );
+					}
+				}
 			}
 		}
 		

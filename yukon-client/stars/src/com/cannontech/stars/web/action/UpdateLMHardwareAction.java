@@ -371,28 +371,32 @@ public class UpdateLMHardwareAction implements ActionBase {
 		
 		starsInvs.addStarsInventory( invNo, starsInv );
 		
-		String redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
-		if (redirect != null) {
-			// redirect should ends with "InvNo=X" or "Item=X", replace "X" with the new location
-			int pos = redirect.lastIndexOf( "InvNo=" );
-			if (pos >= 0) {
-				// Request from Inventory.jsp
-				session.setAttribute(ServletUtils.ATT_REDIRECT, redirect.substring(0, pos+6) + invNo);
-			}
-			else {
-				pos = redirect.lastIndexOf( "Item=" );
+		if (session != null) {
+			String redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
+			if (redirect != null) {
+				// redirect should ends with "InvNo=X" or "Item=X", replace "X" with the new location
+				int pos = redirect.lastIndexOf( "InvNo=" );
 				if (pos >= 0) {
-					// Request from NewLabel.jsp, only count thermostats
-					int itemNo = 0;
-					for (int i = 0; i < invNo; i++) {
-						StarsInventory inv = starsInvs.getStarsInventory(i);
-						if (inv.getLMHardware() != null && inv.getLMHardware().getStarsThermostatSettings() != null)
-							itemNo++;
+					// Request from Inventory.jsp
+					session.setAttribute(ServletUtils.ATT_REDIRECT, redirect.substring(0, pos+6) + invNo);
+				}
+				else {
+					pos = redirect.lastIndexOf( "Item=" );
+					if (pos >= 0) {
+						// Request from NewLabel.jsp, only count thermostats
+						int itemNo = 0;
+						for (int i = 0; i < invNo; i++) {
+							StarsInventory inv = starsInvs.getStarsInventory(i);
+							if (inv.getLMHardware() != null && inv.getLMHardware().getStarsThermostatSettings() != null)
+								itemNo++;
+						}
+						
+						session.setAttribute(ServletUtils.ATT_REDIRECT, redirect.substring(0, pos+5) + itemNo);
 					}
-					
-					session.setAttribute(ServletUtils.ATT_REDIRECT, redirect.substring(0, pos+5) + itemNo);
 				}
 			}
+			
+			session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware information updated successfully" );
 		}
 	}
 

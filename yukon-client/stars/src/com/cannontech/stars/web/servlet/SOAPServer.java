@@ -28,6 +28,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.servlet.PILConnectionServlet;
@@ -456,22 +457,30 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 			}
 		}
 		else if (msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
+			LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( msg.getId() );
+			
 			for (int i = 0; i < companies.size(); i++) {
 				LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
 				
-				LiteLMProgramWebPublishing liteProg = energyCompany.getProgram( msg.getId() );
-				if (liteProg != null) {
-					handleLMProgramChange( msg, energyCompany, liteProg );
-					return;
-				}
-				
-				ArrayList inventory = energyCompany.getAllInventory();
-				for (int j = 0; j < inventory.size(); j++) {
-					LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(j);
-					if (liteInv.getDeviceID() == msg.getId()) {
-						handleDeviceChange( msg, energyCompany, liteInv );
+				if (litePao.getCategory() == PAOGroups.CAT_LOADCONTROL) {
+					LiteLMProgramWebPublishing liteProg = energyCompany.getProgram( msg.getId() );
+					if (liteProg != null) {
+						handleLMProgramChange( msg, energyCompany, liteProg );
 						return;
 					}
+				}
+				else if (litePao.getCategory() == PAOGroups.CAT_DEVICE) {
+					ArrayList inventory = energyCompany.getAllInventory();
+					for (int j = 0; j < inventory.size(); j++) {
+						LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(j);
+						if (liteInv.getDeviceID() == msg.getId()) {
+							handleDeviceChange( msg, energyCompany, liteInv );
+							return;
+						}
+					}
+				}
+				else if (litePao.getCategory() == PAOGroups.CAT_ROUTE) {
+					handleRouteChange( msg, energyCompany );
 				}
 			}
 		}
@@ -740,6 +749,27 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				
 			case DBChangeMsg.CHANGE_TYPE_DELETE:
 				// Don't need to do anything
+				break;
+		}
+	}
+	
+	private void handleRouteChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany) {
+		switch( msg.getTypeOfChange() ) {
+			case DBChangeMsg.CHANGE_TYPE_ADD:
+				// Don't need to do anything
+				break;
+				
+			case DBChangeMsg.CHANGE_TYPE_UPDATE:
+				// Don't need to do anything
+				break;
+				
+			case DBChangeMsg.CHANGE_TYPE_DELETE:
+				try {
+					StarsAdmin.removeRoute( energyCompany, msg.getId() );
+				}
+				catch (Exception e) {
+					CTILogger.error( e.getMessage(), e );
+				}
 				break;
 		}
 	}

@@ -2156,6 +2156,48 @@ public class StarsAdmin extends HttpServlet {
 		}
 	}
 	
+	public static void removeRoute(LiteStarsEnergyCompany energyCompany, int routeID)
+		throws TransactionException
+	{
+		ArrayList routeIDs = energyCompany.getRouteIDs();
+		Integer rtID = new Integer(routeID);
+		if (!routeIDs.contains( rtID )) return;
+		
+		ArrayList inventory = energyCompany.loadAllInventory();
+		synchronized (inventory) {
+			for (int i = 0; i < inventory.size(); i++) {
+				if (!(inventory.get(i) instanceof LiteStarsLMHardware)) continue;
+				
+				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) inventory.get(i);
+				if (liteHw.getRouteID() == routeID) {
+					com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
+							new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+					StarsLiteFactory.setLMHardwareBase( hw, liteHw );
+					hw.getLMHardwareBase().setRouteID( new Integer(CtiUtilities.NONE_ID) );
+					
+					Transaction.createTransaction( Transaction.UPDATE, hw.getLMHardwareBase() ).execute();
+					liteHw.setRouteID( CtiUtilities.NONE_ID );
+					
+					if (liteHw.getAccountID() > 0) {
+						StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
+						if (starsAcctInfo != null) {
+							StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
+							UpdateLMHardwareAction.parseResponse( liteHw.getInventoryID(), starsInv, starsAcctInfo, null );
+						}
+					}
+				}
+			}
+		}
+		
+		ECToGenericMapping map = new ECToGenericMapping();
+		map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+		map.setItemID( rtID );
+		map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_ROUTE );
+		Transaction.createTransaction( Transaction.DELETE, map ).execute();
+		
+		synchronized (routeIDs) { routeIDs.remove(rtID); }
+	}
+	
 	private void updateRoutes(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
@@ -2187,41 +2229,8 @@ public class StarsAdmin extends HttpServlet {
 			
 			for (int i = 0; i < oldRouteIDs.size(); i++) {
 				// Routes to be removed
-				Integer routeID = (Integer) oldRouteIDs.get(i);
-				
-				ArrayList inventory = energyCompany.loadAllInventory();
-				synchronized (inventory) {
-					for (int j = 0; j < inventory.size(); j++) {
-						if (!(inventory.get(j) instanceof LiteStarsLMHardware)) continue;
-						
-						LiteStarsLMHardware liteHw = (LiteStarsLMHardware) inventory.get(j);
-						if (liteHw.getRouteID() == routeID.intValue()) {
-							com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
-									new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-							StarsLiteFactory.setLMHardwareBase( hw, liteHw );
-							hw.getLMHardwareBase().setRouteID( new Integer(CtiUtilities.NONE_ID) );
-							
-							Transaction.createTransaction( Transaction.UPDATE, hw.getLMHardwareBase() ).execute();
-							liteHw.setRouteID( CtiUtilities.NONE_ID );
-							
-							if (liteHw.getAccountID() > 0) {
-								StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
-								if (starsAcctInfo != null) {
-									StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
-									UpdateLMHardwareAction.parseResponse( liteHw.getInventoryID(), starsInv, starsAcctInfo, session );
-								}
-							}
-						}
-					}
-				}
-				
-				ECToGenericMapping map = new ECToGenericMapping();
-				map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-				map.setItemID( routeID );
-				map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_ROUTE );
-				Transaction.createTransaction( Transaction.DELETE, map ).execute();
-				
-				synchronized (routeIDs) { routeIDs.remove( routeID ); }
+				int routeID = ((Integer) oldRouteIDs.get(i)).intValue();
+				removeRoute( energyCompany, routeID );
 			}
 		}
 		catch (Exception e) {

@@ -454,7 +454,7 @@ public class InventoryManager extends HttpServlet {
 				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteInv.getAccountID() );
 				if (starsAcctInfo != null) {
 					StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteInv, energyCompany );
-					UpdateLMHardwareAction.parseResponse( liteInv.getInventoryID(), starsInv, starsAcctInfo, session );
+					UpdateLMHardwareAction.parseResponse( liteInv.getInventoryID(), starsInv, starsAcctInfo, null );
 				}
 			}
 		}
@@ -519,7 +519,7 @@ public class InventoryManager extends HttpServlet {
 				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
 				if (starsAcctInfo != null) {
 					StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
-					UpdateLMHardwareAction.parseResponse( liteHw.getInventoryID(), starsInv, starsAcctInfo, session );
+					UpdateLMHardwareAction.parseResponse( liteHw.getInventoryID(), starsInv, starsAcctInfo, null );
 				}
 			}
 			
