@@ -7,7 +7,7 @@
 <web-app>
     <display-name>STARS Web Demo</display-name>
     <description>Yukon STARS Web Services</description>
-    
+
     <servlet>
         <servlet-name>LoginController</servlet-name>
         <display-name>LoginController</display-name>
@@ -15,7 +15,7 @@
         <servlet-class>com.cannontech.servlet.LoginController</servlet-class>
         <load-on-startup>3</load-on-startup>
     </servlet>
-    
+
     <servlet>
         <servlet-name>MACSConnectionServlet</servlet-name>
         <display-name>MACSConnectionServlet</display-name>
@@ -23,21 +23,13 @@
         <servlet-class>com.cannontech.servlet.MACSConnectionServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    
+
     <servlet>
         <servlet-name>GraphGenerator</servlet-name>
         <display-name>GraphGenerator</display-name>
         <description>Dynamically generates graphs in gif format</description>
         <servlet-class>com.cannontech.servlet.GraphGenerator</servlet-class>
         <load-on-startup>4</load-on-startup>
-    </servlet>
-    
-    <servlet>
-        <servlet-name>PeakDataGenerator</servlet-name>
-        <display-name>PeakDataGenerator</display-name>
-        <description>Generates peak data html</description>
-        <servlet-class>com.cannontech.servlet.PeakDataGenerator</servlet-class>
-        <load-on-startup>5</load-on-startup>
     </servlet>
     
     <servlet>
@@ -49,21 +41,13 @@
     </servlet>
     
     <servlet>
-        <servlet-name>TabularDataGenerator</servlet-name>
-        <display-name>TabularDataGenerator</display-name>
-        <description>Generates tabular data html</description>
-        <servlet-class>com.cannontech.servlet.TabularDataGenerator</servlet-class>
-        <load-on-startup>6</load-on-startup>
-    </servlet>
-    
-    <servlet>
         <servlet-name>ScheduleController</servlet-name>
         <display-name>ScheduleController</display-name>
         <description>Handles start/stop requests to MACS</description>
         <servlet-class>com.cannontech.servlet.ScheduleController</servlet-class>
         <load-on-startup>7</load-on-startup>
     </servlet>
-    
+
     <servlet>
         <servlet-name>SwitchCommand</servlet-name>
         <display-name>SwitchCommand</display-name>
@@ -87,7 +71,7 @@
         <servlet-class>com.cannontech.servlet.LCConnectionServlet</servlet-class>
         <load-on-startup>11</load-on-startup>
     </servlet>
-    
+
     <servlet>
         <servlet-name>Download</servlet-name>
         <display-name>Download</display-name>
@@ -95,7 +79,14 @@
         <servlet-class>com.cannontech.servlet.Download</servlet-class>
         <load-on-startup>12</load-on-startup>
     </servlet>
-    
+
+    <servlet>
+        <servlet-name>BillingServlet</servlet-name>
+        <display-name>BillingServlet</display-name>
+        <description>Billing reports for various formats.</description>
+        <servlet-class>com.cannontech.servlet.BillingServlet</servlet-class>
+    </servlet>
+
     <servlet>
         <servlet-name>SOAPServer</servlet-name>
         <display-name>SOAPServer</display-name>
@@ -103,7 +94,7 @@
         <servlet-class>com.cannontech.stars.web.servlet.SOAPServer</servlet-class>
         <load-on-startup>13</load-on-startup>
     </servlet>
-    
+
     <servlet>
         <servlet-name>SOAPClient</servlet-name>
         <display-name>SOAPClient</display-name>
@@ -119,7 +110,7 @@
         <servlet-class>com.cannontech.stars.web.servlet.UpdateContacts</servlet-class>
         <load-on-startup>15</load-on-startup>
     </servlet>
-    
+
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
@@ -134,5 +125,4 @@
     <welcome-file-list>
         <welcome-file>login.jsp</welcome-file>
     </welcome-file-list>
-    
 </web-app>
