@@ -14,12 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/12 17:14:35 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/04/12 19:26:48 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
 #include <rw/rwtime.h>
+
 #include "verification.h"
 
 class CtiVerificationReport : public CtiVerification
@@ -38,7 +39,7 @@ public:
 private:
 
    RWCString   _receivedData;
-   RWTime      _txTime;             //if the device knows, fine, if not, we'll use now
+   RWTime      _txTime;                   //if the device knows, fine, if not, we'll use now()
 
 protected:
 
