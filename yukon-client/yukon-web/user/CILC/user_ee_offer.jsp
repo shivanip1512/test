@@ -80,7 +80,7 @@
 			if (amount == 0)
 				amountStrs[i] = "----";
 			else
-				amountStrs[i] = priceFormat.format(amount);
+				amountStrs[i] = numberFormat.format(amount);
 		}
 
         // Attempt to get the customers baseline values for the date of the offer
