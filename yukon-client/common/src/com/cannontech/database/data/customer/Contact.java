@@ -271,5 +271,49 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 			return false;
 		}
 	}
+	
+	public static int[] searchByPhoneNumber(String phoneNo) {
+		String sql = "SELECT ContactID FROM " + com.cannontech.database.db.contact.Contact.TABLE_NAME
+				   + " WHERE ContPhone1 = '" + phoneNo + "' OR ContPhone2 = '" + phoneNo + "'";
+		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+		
+		try {
+			stmt.execute();
+			int[] contactIDs = new int[ stmt.getRowCount() ];
+			
+			for (int i = 0; i < contactIDs.length; i++)
+				contactIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+				
+			return contactIDs;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public static int[] searchByLastName(String lastName) {
+		String sql = "SELECT ContactID FROM " + com.cannontech.database.db.contact.Contact.TABLE_NAME
+				   + " WHERE UPPER(ContLastName) = UPPER('" + lastName + "')";
+		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+		
+		try {
+			stmt.execute();
+			int[] contactIDs = new int[ stmt.getRowCount() ];
+			
+			for (int i = 0; i < contactIDs.length; i++)
+				contactIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+				
+			return contactIDs;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 
 }
