@@ -39,6 +39,7 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.util.task.ImportCustAccountsTask;
 import com.cannontech.stars.util.task.ImportStarsDataTask;
+import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.ImportManagerUtil;
 import com.cannontech.stars.web.util.StarsAdminUtil;
@@ -353,7 +354,7 @@ public class ImportManager extends HttpServlet {
 		return null;
 	}
 	
-	private FileItem getUploadFile(List items, String fieldName, LiteStarsEnergyCompany energyCompany)
+	private FileItem getUploadFile(List items, String fieldName)
 		throws WebClientException
 	{
 		for (int i = 0; i < items.size(); i++) {
@@ -390,6 +391,7 @@ public class ImportManager extends HttpServlet {
 				items = upload.parseRequest( req );
 				action = getFormField( items, "action" );
 				redirect = getFormField( items, ServletUtils.ATT_REDIRECT );
+				referer = getFormField( items, ServletUtils.ATT_REFERRER );
 			}
 			catch (FileUploadException e) {
 				CTILogger.error( e.getMessage(), e );
@@ -399,10 +401,11 @@ public class ImportManager extends HttpServlet {
 		else {
 			action = req.getParameter( "action" );
 			redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
+			referer = req.getParameter( ServletUtils.ATT_REFERRER );
 		}
 		
 		if (action == null) action = "";
-		referer = req.getHeader( "referer" );
+		if (referer == null) referer = req.getHeader( "referer" );
 		if (redirect == null) redirect = referer;
 		
 		if (action.equalsIgnoreCase("ImportCustAccounts"))
@@ -423,14 +426,14 @@ public class ImportManager extends HttpServlet {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		try {
-			FileItem custFile = getUploadFile( items, "CustFile", energyCompany );
-			FileItem hwFile = getUploadFile( items, "HwFile", energyCompany );
+			FileItem custFile = getUploadFile( items, "CustFile" );
+			FileItem hwFile = getUploadFile( items, "HwFile" );
 			String email = getFormField( items, "Email" );
 			
 			if (custFile == null && hwFile == null)
 				throw new WebClientException( "No import file is provided" );
 			
-			ImportCustAccountsTask task = new ImportCustAccountsTask( user, custFile, hwFile, email );
+			TimeConsumingTask task = new ImportCustAccountsTask( user, custFile, hwFile, email );
 			long id = ProgressChecker.addTask( task );
 			
 			// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
@@ -439,6 +442,8 @@ public class ImportManager extends HttpServlet {
 					Thread.sleep(1000);
 				}
 				catch (InterruptedException e) {}
+				
+				task = ProgressChecker.getTask(id);
 				
 				if (task.getStatus() == ImportCustAccountsTask.STATUS_FINISHED) {
 					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
@@ -454,6 +459,7 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+			session.setAttribute(ServletUtils.ATT_REFERRER, redirect);
 			redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 		}
 		catch (WebClientException e) {
@@ -2458,7 +2464,7 @@ public class ImportManager extends HttpServlet {
 			}
 		}
 		
-		ImportStarsDataTask task = new ImportStarsDataTask(user, preprocessedData);
+		TimeConsumingTask task = new ImportStarsDataTask(user, preprocessedData);
 		long id = ProgressChecker.addTask( task );
 		
 		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
@@ -2467,6 +2473,8 @@ public class ImportManager extends HttpServlet {
 				Thread.sleep(1000);
 			}
 			catch (InterruptedException e) {}
+			
+			task = ProgressChecker.getTask(id);
 			
 			if (task.getStatus() == ImportStarsDataTask.STATUS_FINISHED) {
 				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
@@ -2482,6 +2490,7 @@ public class ImportManager extends HttpServlet {
 		}
 		
 		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+		session.setAttribute(ServletUtils.ATT_REFERRER, redirect);
 		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 	}
 

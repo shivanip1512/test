@@ -43,6 +43,7 @@ import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.util.task.AddSNRangeTask;
 import com.cannontech.stars.util.task.ConfigSNRangeTask;
 import com.cannontech.stars.util.task.DeleteSNRangeTask;
+import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.util.task.UpdateSNRangeTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
@@ -888,9 +889,8 @@ public class InventoryManager extends HttpServlet {
 				(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
-		session.setAttribute( ServletUtils.ATT_REFERRER, referer );
 		
-		AddSNRangeTask task = new AddSNRangeTask( snFrom, snTo, devTypeID, recvDate, voltageID, companyID, routeID, req );
+		TimeConsumingTask task = new AddSNRangeTask( snFrom, snTo, devTypeID, recvDate, voltageID, companyID, routeID, req );
 		long id = ProgressChecker.addTask( task );
 		
 		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
@@ -900,6 +900,7 @@ public class InventoryManager extends HttpServlet {
 			}
 			catch (InterruptedException e) {}
 			
+			task = ProgressChecker.getTask(id);
 			String redir = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
 			
 			if (task.getStatus() == AddSNRangeTask.STATUS_FINISHED) {
@@ -918,6 +919,7 @@ public class InventoryManager extends HttpServlet {
 		}
 		
 		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+		session.setAttribute(ServletUtils.ATT_REFERRER, redirect);
 		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 	}
 	
@@ -988,9 +990,8 @@ public class InventoryManager extends HttpServlet {
 				(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
-		session.setAttribute( ServletUtils.ATT_REFERRER, referer );
 		
-		UpdateSNRangeTask task = new UpdateSNRangeTask( snFrom, snTo, devTypeID, newDevTypeID, recvDate, voltageID, companyID, routeID, req );
+		TimeConsumingTask task = new UpdateSNRangeTask( snFrom, snTo, devTypeID, newDevTypeID, recvDate, voltageID, companyID, routeID, req );
 		long id = ProgressChecker.addTask( task );
 		
 		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
@@ -1000,6 +1001,7 @@ public class InventoryManager extends HttpServlet {
 			}
 			catch (InterruptedException e) {}
 			
+			task = ProgressChecker.getTask(id);
 			String redir = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
 			
 			if (task.getStatus() == UpdateSNRangeTask.STATUS_FINISHED) {
@@ -1018,6 +1020,7 @@ public class InventoryManager extends HttpServlet {
 		}
 		
 		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+		session.setAttribute(ServletUtils.ATT_REFERRER, redirect);
 		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 	}
 	
@@ -1061,9 +1064,8 @@ public class InventoryManager extends HttpServlet {
 				(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
-		session.setAttribute( ServletUtils.ATT_REFERRER, referer );
 		
-		DeleteSNRangeTask task = new DeleteSNRangeTask( snFrom, snTo, devTypeID, req );
+		TimeConsumingTask task = new DeleteSNRangeTask( snFrom, snTo, devTypeID, req );
 		long id = ProgressChecker.addTask( task );
 		
 		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
@@ -1073,6 +1075,7 @@ public class InventoryManager extends HttpServlet {
 			}
 			catch (InterruptedException e) {}
 			
+			task = ProgressChecker.getTask(id);
 			String redir = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
 			
 			if (task.getStatus() == DeleteSNRangeTask.STATUS_FINISHED) {
@@ -1091,6 +1094,7 @@ public class InventoryManager extends HttpServlet {
 		}
 		
 		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+		session.setAttribute(ServletUtils.ATT_REFERRER, redirect);
 		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 	}
 	
@@ -1108,9 +1112,8 @@ public class InventoryManager extends HttpServlet {
 				(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
-		session.setAttribute( ServletUtils.ATT_REFERRER, referer );
 		
-		ConfigSNRangeTask task = new ConfigSNRangeTask( configNow, req );
+		TimeConsumingTask task = new ConfigSNRangeTask( configNow, req );
 		long id = ProgressChecker.addTask( task );
 		
 		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
@@ -1120,6 +1123,7 @@ public class InventoryManager extends HttpServlet {
 			}
 			catch (InterruptedException e) {}
 			
+			task = ProgressChecker.getTask(id);
 			String redir = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
 			
 			if (task.getStatus() == ConfigSNRangeTask.STATUS_FINISHED) {
@@ -1138,6 +1142,7 @@ public class InventoryManager extends HttpServlet {
 		}
 		
 		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+		session.setAttribute(ServletUtils.ATT_REFERRER, redirect);
 		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 	}
 	

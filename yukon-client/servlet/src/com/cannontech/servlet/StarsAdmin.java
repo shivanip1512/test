@@ -60,6 +60,7 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.util.task.DeleteCustAccountsTask;
 import com.cannontech.stars.util.task.DeleteEnergyCompanyTask;
+import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.UpdateThermostatScheduleAction;
 import com.cannontech.stars.web.util.StarsAdminUtil;
@@ -252,7 +253,7 @@ public class StarsAdmin extends HttpServlet {
 				for (int i = 0; i < acctIDList.size(); i++)
 					accountIDs[i] = ((Integer)acctIDList.get(i)).intValue();
 				
-				DeleteCustAccountsTask task = new DeleteCustAccountsTask(user, accountIDs);
+				TimeConsumingTask task = new DeleteCustAccountsTask(user, accountIDs);
 				long id = ProgressChecker.addTask( task );
 				
 				// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
@@ -261,6 +262,8 @@ public class StarsAdmin extends HttpServlet {
 						Thread.sleep(1000);
 					}
 					catch (InterruptedException e) {}
+					
+					task = ProgressChecker.getTask(id);
 					
 					if (task.getStatus() == DeleteCustAccountsTask.STATUS_FINISHED) {
 						session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
@@ -276,6 +279,7 @@ public class StarsAdmin extends HttpServlet {
 				}
 				
 				session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+				session.setAttribute(ServletUtils.ATT_REFERRER, redirect);
 				redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 			}
 		}

@@ -29,9 +29,17 @@
 		if (taskError != null)
 			taskError = taskError.replaceAll(System.getProperty("line.separator"), "<br>");
 		
-		if (task.getStatus() == TimeConsumingTask.STATUS_FINISHED ||
-			task.getStatus() == TimeConsumingTask.STATUS_CANCELED ||
-			task.getStatus() == TimeConsumingTask.STATUS_ERROR)
+		if (task.getStatus() == TimeConsumingTask.STATUS_FINISHED) {
+			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, taskProgress);
+			
+			ProgressChecker.removeTask(id);
+			isStopped = true;
+			
+			String redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
+			if (redirect != null) response.sendRedirect(redirect);
+		}
+		else if (task.getStatus() == TimeConsumingTask.STATUS_ERROR ||
+				task.getStatus() == TimeConsumingTask.STATUS_CANCELED)
 		{
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, taskProgress);
 			if (task.getStatus() == TimeConsumingTask.STATUS_ERROR) {
@@ -40,14 +48,14 @@
 				else
 					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "An error occured during the operation.");
 			}
-			else if (task.getStatus() == TimeConsumingTask.STATUS_CANCELED)
+			else
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Operation is canceled by user");
 			
 			ProgressChecker.removeTask(id);
 			isStopped = true;
 			
-			String redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
-			if (redirect != null) response.sendRedirect(redirect);
+			String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
+			if (referer != null) response.sendRedirect(referer);
 		}
 	}
 %>
