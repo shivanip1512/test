@@ -37,9 +37,10 @@ public final class LiteTypes
 	public final static int STARS_LMCUSTOMER_EVENT = 106;
 	public final static int STARS_LMPROGRAM_EVENT = 107;
 	public final static int STARS_LMHARDWARE_EVENT = 108;
-	public final static int STARS_CONTROL_HISTORY = 109;
-	public final static int STARS_APPLIANCE_CATEGORY = 110;
-	public final static int STARS_CUSTOMER_WEB_CONFIGURATION = 111;
+	public final static int STARS_LMTHERMOSTAT_MANUAL_EVENT = 109;
+	public final static int STARS_CONTROL_HISTORY = 110;
+	public final static int STARS_APPLIANCE_CATEGORY = 111;
+	public final static int STARS_CUSTOMER_WEB_CONFIGURATION = 112;
 	public final static int STARS_CUSTOMER_ACCOUNT = 113;
 	public final static int STARS_WORK_ORDER_BASE = 114;
 	public final static int STARS_CALL_REPORT_BASE = 115;
@@ -48,9 +49,7 @@ public final class LiteTypes
 	public final static int STARS_SERVICE_COMPANY = 118;
 	public final static int STARS_THERMOSTAT_SEASON = 119;
 	public final static int STARS_THERMOSTAT_SEASON_ENTRY = 120;
-	public final static int STARS_THERMOSTAT_MANUAL_OPTION = 121;
 	public final static int STARS_INTERVIEW_QUESTION = 122;
 	public final static int STARS_APPLIANCE = 123;
 	public final static int STARS_CUSTOMER_FAQ = 124;
-	public final static int STARS_LMTHERMOSTAT_MANUAL_EVENT = 125;
 }
