@@ -8,5 +8,5 @@ import com.cannontech.roles.*;
 public interface CommanderRole {
 	public static final int ROLEID = ApplicationRoleDefs.COMMANDER_ROLEID;
 	
-	public static final int LOG_LEVEL = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE;
+//	public static final int LOG_LEVEL = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE;
 }

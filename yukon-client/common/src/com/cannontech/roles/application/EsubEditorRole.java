@@ -8,5 +8,5 @@ import com.cannontech.roles.*;
 public interface EsubEditorRole {
 	public static final int ROLEID = ApplicationRoleDefs.ESUBSTATION_EDITOR_ROLEID;
 	
-	public static final int LOG_LEVEL = ApplicationRoleDefs.ESUBSTATION_EDITOR_PROPERTYID_BASE;
+//	public static final int LOG_LEVEL = ApplicationRoleDefs.ESUBSTATION_EDITOR_PROPERTYID_BASE;
 }

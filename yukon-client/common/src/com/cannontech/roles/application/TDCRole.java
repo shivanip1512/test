@@ -19,8 +19,8 @@ public interface TDCRole {
 	public static final int TDC_ALARM_COUNT = ApplicationRoleDefs.TABULAR_DISPLAY_CONSOLE_PROPERTYID_BASE - 7;
 	public static final int DECIMAL_PLACES = ApplicationRoleDefs.TABULAR_DISPLAY_CONSOLE_PROPERTYID_BASE - 8;
 	public static final int PFACTOR_DECIMAL_PLACES = ApplicationRoleDefs.TABULAR_DISPLAY_CONSOLE_PROPERTYID_BASE - 9;
-	public static final int LOG_LEVEL = ApplicationRoleDefs.TABULAR_DISPLAY_CONSOLE_PROPERTYID_BASE - 10;
 	
-	
+//	public static final int LOG_LEVEL = ApplicationRoleDefs.TABULAR_DISPLAY_CONSOLE_PROPERTYID_BASE - 10;
+		
 	public static final int LC_REDUCTION_COL = ApplicationRoleDefs.TABULAR_DISPLAY_CONSOLE_PROPERTYID_BASE - 11;
 }
