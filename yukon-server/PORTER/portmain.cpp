@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/05/20 22:40:52 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/06/23 18:38:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,12 +56,12 @@ int main(int argc, char* argv[] )
    slog.start();     // fire up the logger thread
    slog.setOutputPath(gLogDirectory.data());
    slog.setOutputFile("simulate");
-   slog.setToStdOut(false);
+   slog.setToStdOut( (bool)(gConfigParms.getValueAsInt("YUKON_SIMULATE_TOSTDOUT",0)) );
    slog.setWriteInterval(1000);
 
    {
        CtiLockGuard<CtiLogger> doubt_guard(slog);
-       slog << RWTime() << " **** Simulator Started **** " << endl;
+       slog << endl << RWTime() << " **** Simulator Started **** " << endl;
    }
 
    if( SetConsoleTitle("Port Control") ) // We are a console application
