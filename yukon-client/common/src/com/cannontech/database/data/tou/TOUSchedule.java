@@ -6,7 +6,7 @@
  */
 package com.cannontech.database.data.tou;
 
-import com.cannontech.database.db.tou.TOURateOffset;
+import com.cannontech.database.db.tou.TOUDayMapping;
 
 /**
  * @author jdayton
@@ -18,8 +18,8 @@ public class TOUSchedule extends com.cannontech.database.db.DBPersistent impleme
 {
 	private com.cannontech.database.db.tou.TOUSchedule touSchedule = null;
 
-	//objects of type com.cannontech.database.db.tou.TOURateOffset will only go in here
-	private java.util.Vector rateOffsetsVector = null;
+	//only objects of type com.cannontech.database.db.tou.TOUDayMapping will go in here
+	private java.util.Vector touDayMappingVector = null;
 /**
  * TOUSchedule constructor comment.
  */
@@ -53,10 +53,10 @@ public void add() throws java.sql.SQLException
 {
 	getTOUSchedule().add();
 		
-	for (int i = 0; i < getRateOffsetsVector().size(); i++)
+	for (int i = 0; i < getTOUDayMappingVector().size(); i++)
 	{
-		((TOURateOffset) getRateOffsetsVector().elementAt(i)).setTOUScheduleID(getTOUSchedule().getScheduleID());
-		((TOURateOffset) getRateOffsetsVector().elementAt(i)).add();
+		((TOUDayMapping) getTOUDayMappingVector().elementAt(i)).setScheduleID(getTOUSchedule().getScheduleID());
+		((TOUDayMapping) getTOUDayMappingVector().elementAt(i)).add();
 	}
 }
 /**
@@ -65,7 +65,7 @@ public void add() throws java.sql.SQLException
  */
 public void delete() throws java.sql.SQLException 
 {
-	TOURateOffset.deleteAllRateOffsets(getTOUSchedule().getScheduleID(), getDbConnection());
+	TOUDayMapping.deleteAMapping(getTOUSchedule().getScheduleID(), getDbConnection());
 
 	getTOUSchedule().delete();	
 }
@@ -94,12 +94,12 @@ public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( in
  * Creation date: (9/22/2004 10:35:21 AM)
  * @return java.util.Vector
  */
-public java.util.Vector getRateOffsetsVector()
+public java.util.Vector getTOUDayMappingVector()
 {
-	if (rateOffsetsVector == null)
-		rateOffsetsVector = new java.util.Vector();
+	if (touDayMappingVector == null)
+		touDayMappingVector = new java.util.Vector();
 
-	return rateOffsetsVector;
+	return touDayMappingVector;
 }
 /**
  * Insert the method's description here.
@@ -136,11 +136,11 @@ public void retrieve() throws java.sql.SQLException
 {
 	getTOUSchedule().retrieve();
 
-	java.util.Vector rateOffsets = TOURateOffset.getAllRateOffsets(
+	java.util.Vector someDays = TOUDayMapping.getAllScheduleDays(
 				getTOUSchedule().getScheduleID(), getDbConnection() );
 
-	for( int i = 0; i < rateOffsets.size(); i++ )
-		getRateOffsetsVector().add( rateOffsets.get(i) );
+	for( int i = 0; i < someDays.size(); i++ )
+		getTOUDayMappingVector().add( someDays.get(i) );
 }
 /**
  * Insert the method's description here.
@@ -153,8 +153,8 @@ public void setDbConnection(java.sql.Connection conn)
 
 	getTOUSchedule().setDbConnection(conn);
 	
-	for( int i = 0; i < getRateOffsetsVector().size(); i++ )
-		((com.cannontech.database.db.tou.TOURateOffset)getRateOffsetsVector().get(i)).setDbConnection(conn);
+	for( int i = 0; i < getTOUDayMappingVector().size(); i++ )
+		((com.cannontech.database.db.tou.TOUDayMapping)getTOUDayMappingVector().get(i)).setDbConnection(conn);
 
 }
 /**
@@ -166,8 +166,8 @@ public void setScheduleID( Integer newID )
 {
 	getTOUSchedule().setScheduleID( newID );
 	
-	for( int i = 0; i < getRateOffsetsVector().size(); i++ )
-		((com.cannontech.database.db.tou.TOURateOffset)getRateOffsetsVector().get(i)).setTOUScheduleID(newID);
+	for( int i = 0; i < getTOUDayMappingVector().size(); i++ )
+		((com.cannontech.database.db.tou.TOUDayMapping)getTOUDayMappingVector().get(i)).setScheduleID(newID);
 }
 /**
  * Insert the method's description here.
@@ -195,20 +195,22 @@ public void update() throws java.sql.SQLException
 	getTOUSchedule().update();
 
 	//delete all the Dates
-	com.cannontech.database.db.tou.TOURateOffset.deleteAllRateOffsets(getTOUSchedule().getScheduleID(), getDbConnection());
+	TOUDayMapping.deleteAMapping(getTOUSchedule().getScheduleID(), getDbConnection());
 
-	for (int i = 0; i < getRateOffsetsVector().size(); i++)
-		((TOURateOffset) getRateOffsetsVector().elementAt(i)).add();	
+	for (int i = 0; i < getTOUDayMappingVector().size(); i++)
+		((TOUDayMapping) getTOUDayMappingVector().elementAt(i)).add();	
 }
 
+
+
+/*
 public final static boolean inUseByDevice(Integer touID) throws java.sql.SQLException 
 {	
 	return inUseByDevice(touID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
 }
-/**
- * This method was created in VisualAge.
- * @param pointID java.lang.Integer
- */
+
+
+
 public final static boolean inUseByDevice(Integer schedID, String databaseAlias) throws java.sql.SQLException 
 {
 	com.cannontech.database.SqlStatement stmt =
@@ -224,6 +226,6 @@ public final static boolean inUseByDevice(Integer schedID, String databaseAlias)
 	{
 		return false;
 	}
-}
+}*/
 }
 

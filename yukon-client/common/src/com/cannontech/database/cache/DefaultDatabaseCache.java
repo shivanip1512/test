@@ -166,6 +166,11 @@ public class DefaultDatabaseCache implements IDatabaseCache
 		return getDBCache().getAllTOUSchedules();
 	}
 	
+	public synchronized java.util.List getAllTOUDays()
+	{
+		return getDBCache().getAllTOUDays();
+	}
+	
 	/**
 	 * @ejb:interface-method
 	 * tview-type="remote" 
@@ -541,6 +546,11 @@ public class DefaultDatabaseCache implements IDatabaseCache
    public synchronized void releaseAllTOUSchedules()
    {
 	  getDBCache().releaseAllTOUSchedules();
+   }
+   
+   public synchronized void releaseAllTOUDays()
+   {
+	  getDBCache().releaseAllTOUDays();
    }
    
    public synchronized void releaseAllConfigs()

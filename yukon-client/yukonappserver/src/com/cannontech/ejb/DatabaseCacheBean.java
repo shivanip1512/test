@@ -218,6 +218,11 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 	  return getCache().getAllTOUSchedules();
    }
    
+   public synchronized java.util.List getAllTOUDays()
+   {
+	  return getCache().getAllTOUDays();
+   }
+   
    public synchronized java.util.List getAllLMProgramConstraints()
    {
 	  return getCache().getAllLMProgramConstraints();
@@ -629,6 +634,11 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    public synchronized void releaseAllTOUSchedules()
    {
 	  getCache().releaseAllTOUSchedules();
+   }
+   
+   public synchronized void releaseAllTOUDays()
+   {
+	  getCache().releaseAllTOUDays();
    }
    
    public synchronized void releaseAllTags()

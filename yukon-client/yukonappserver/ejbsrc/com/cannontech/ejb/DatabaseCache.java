@@ -47,6 +47,8 @@ public interface DatabaseCache
    
    public java.util.List getAllTOUSchedules(  ) throws java.rmi.RemoteException;
    
+   public java.util.List getAllTOUDays(  ) throws java.rmi.RemoteException;
+   
    public java.util.List getAllBaselines(  ) throws java.rmi.RemoteException;
    
    public java.util.List getAllConfigs(  ) throws java.rmi.RemoteException;
@@ -138,6 +140,8 @@ public interface DatabaseCache
    public void releaseAllSeasons(  ) throws java.rmi.RemoteException;
    
    public void releaseAllTOUSchedules(  ) throws java.rmi.RemoteException;
+   
+   public void releaseAllTOUDays(  ) throws java.rmi.RemoteException;
    
    public void releaseAllBaselines(  ) throws java.rmi.RemoteException;
    

@@ -12,22 +12,37 @@ package com.cannontech.database.db.tou;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class TOUDeviceMapping extends com.cannontech.database.db.DBPersistent {
+public class TOUDayMapping extends com.cannontech.database.db.DBPersistent 
+{
 	
-	private Integer deviceID;
 	private Integer scheduleID;
+	private Integer dayID;
+	private Integer dayOffset;
 
-	public static final String SETTER_COLUMNS[] = { "scheduleID" };
+	public static final String SETTER_COLUMNS[] = { "TOUDayID", "TOUDayOffset" };
 
-	public static final String CONSTRAINT_COLUMNS[] = { "deviceID" };
+	public static final String CONSTRAINT_COLUMNS[] = { "TOUScheduleID" };
+	
+	public final Object SET_VALUES[] = { getDayID(), getDayOffset() };
 
-	public static final String TABLE_NAME = "TOUDeviceMapping";
+	public final Object CONSTRAINT_VALUES[] = { getScheduleID()};
+
+	public static final String TABLE_NAME = "TOUDayMapping";
 
 /**
  * TOUDeviceMapping constructor comment.
  */
-public TOUDeviceMapping() {
+public TOUDayMapping() {
 	super();
+}
+
+public TOUDayMapping(Integer newSchedID, Integer newDayID, Integer newDayOffset)
+{
+	super();
+	
+	scheduleID = newSchedID;
+	dayID = newDayID;
+	dayOffset = newDayOffset;
 }
 
 /**
@@ -36,8 +51,8 @@ public TOUDeviceMapping() {
  */
 public void add() throws java.sql.SQLException 
 {
-	Object addValues[] = { getScheduleID(), getDeviceID() };
-	deleteAMapping(getDeviceID(), getDbConnection());
+	Object addValues[] = { getScheduleID(), getDayID(), getDayOffset() };
+	deleteAMapping(getDayID(), getDbConnection());
 	add( TABLE_NAME, addValues );
 }
 
@@ -46,7 +61,7 @@ public void add() throws java.sql.SQLException
  */
 public void delete() throws java.sql.SQLException {
 	
-	String values[] = { getDeviceID().toString(), getScheduleID().toString() };
+	String values[] = { getScheduleID().toString(), getDayID().toString(), getDayOffset().toString() };
 
 	delete( TABLE_NAME, CONSTRAINT_COLUMNS, values );
 }
@@ -56,10 +71,10 @@ public void delete() throws java.sql.SQLException {
  * @return boolean
  * @param deviceID java.lang.Integer
  */
-public static boolean deleteAMapping(Integer deviceID, java.sql.Connection conn)
+public static boolean deleteAMapping(Integer scheduleID, java.sql.Connection conn)
 {
 	java.sql.PreparedStatement pstmt = null;		
-	String sql = "DELETE FROM " + TABLE_NAME + " WHERE deviceID=" + deviceID;
+	String sql = "DELETE FROM " + TABLE_NAME + " WHERE TOUScheduleID=" + scheduleID;
 
 	try
 	{		
@@ -93,7 +108,7 @@ public static boolean deleteAMapping(Integer deviceID, java.sql.Connection conn)
 	return true;
 }
 
-public void deleteAMapping(Integer mctID)
+public void deleteAMapping(Integer scheduleID)
 {
 	try
 	{
@@ -101,7 +116,7 @@ public void deleteAMapping(Integer mctID)
 	
 		conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
 	
-		deleteAMapping(mctID, conn);
+		deleteAMapping(scheduleID, conn);
 
 		conn.close();
 	}
@@ -116,13 +131,13 @@ public void deleteAMapping(Integer mctID)
  * @return boolean
  * @param deviceID java.lang.Integer
  */
-public static final java.util.Vector getAllDevicesIDList(Integer scheduleID, java.sql.Connection conn ) throws java.sql.SQLException
+public static final java.util.Vector getAllDayIDList(Integer scheduleID, java.sql.Connection conn ) throws java.sql.SQLException
 {
 	java.util.Vector tmpList = new java.util.Vector();
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
 
-	String sql = "SELECT deviceID FROM " + TABLE_NAME + " WHERE scheduleID= ?";
+	String sql = "SELECT " + SETTER_COLUMNS[0] + " FROM " + TABLE_NAME + " WHERE " + CONSTRAINT_COLUMNS[0] + "= ?";
 
 	try
 	{		
@@ -163,22 +178,82 @@ public static final java.util.Vector getAllDevicesIDList(Integer scheduleID, jav
 	return tmpList;
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (9/22/2004 1:49:55 PM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getDeviceID() {
-	return deviceID;
+public static final java.util.Vector getAllScheduleDays(Integer scheduleID, java.sql.Connection conn)
+{
+	java.util.Vector returnVector = new java.util.Vector(5);
+	Integer touScheduleID = null;
+	Integer touDayOffset = null;
+	Integer touDayID = null;
+	
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.ResultSet rset = null;
+	
+	String sql = "SELECT " + SETTER_COLUMNS[0] +"," 
+		+ SETTER_COLUMNS[1] + 
+		" FROM " + TABLE_NAME +
+		" WHERE " + CONSTRAINT_COLUMNS[0] + 
+		"=? ORDER BY " + SETTER_COLUMNS[1];
+
+	try
+	{		
+		if( conn == null )
+		{
+			throw new IllegalStateException("Database connection should not be (null).");
+		}
+		else
+		{
+			pstmt = conn.prepareStatement(sql.toString());
+			pstmt.setInt( 1, scheduleID.intValue() );
+			
+			rset = pstmt.executeQuery();
+	
+			while( rset.next() )
+			{
+				touScheduleID = scheduleID;
+				touDayID = new Integer( rset.getInt(SETTER_COLUMNS[1]) );
+				touDayOffset = new Integer( rset.getInt(SETTER_COLUMNS[2]) );
+								
+				returnVector.addElement( new TOUDayMapping(
+						touScheduleID, 
+						touDayID, 
+						touDayOffset) );				
+			}
+					
+		}		
+	}
+	catch( java.sql.SQLException e )
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	}
+	finally
+	{
+		try
+		{
+			if( pstmt != null ) pstmt.close();
+		} 
+		catch( java.sql.SQLException e2 )
+		{
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
+		}	
+	}
+
+
+	return returnVector;
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (9/22/2004 1:49:55 PM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getScheduleID() {
+public Integer getDayID() 
+{
+	return dayID;
+}
+
+public Integer getScheduleID() 
+{
 	return scheduleID;
+}
+
+public Integer getDayOffset() 
+{
+	return dayOffset;
 }
 
 /**
@@ -186,45 +261,35 @@ public java.lang.Integer getScheduleID() {
  */
 public void retrieve() throws java.sql.SQLException {
 
-	String selectColumns[] = { "scheduleID" };
-	String constraintColumns[] = { "deviceID"};
-
-	Object constraintValues[] = { getDeviceID() };
-
-	Object results[] = retrieve( selectColumns, TABLE_NAME, constraintColumns, constraintValues );
+	Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, CONSTRAINT_VALUES );
+	
+	if (results.length == SETTER_COLUMNS.length)
+	{
+		setDayID((Integer) results[0]);
+		setDayOffset((Integer) results[1]);		
+	}
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (9/22/2004 1:49:55 PM)
- * @param newdeviceID java.lang.Integer
- */
-
-public void setDeviceID(java.lang.Integer newdeviceID) {
-	deviceID = newdeviceID;
+public void setDayID(Integer newDayID) 
+{
+	dayID = newDayID;
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (9/22/2004 1:49:55 PM)
- * @param newscheduleID java.lang.Integer
- */
-public void setScheduleID(java.lang.Integer newscheduleID) {
-	scheduleID = newscheduleID;
+public void setScheduleID(Integer newScheduleID) 
+{
+	scheduleID = newScheduleID;
 }
 
+public void setDayOffset(Integer newOffset) 
+{
+	dayOffset = newOffset;
+}
 /**
  * update method comment.
  */
 public void update() throws java.sql.SQLException {
 
-	String setColumns[] = { "scheduleID" };
-	Object setValues[] = { getScheduleID() };
-
-	String constraintColumns[] = { "deviceID" };
-	Object constraintValues[] = { getDeviceID()};
-
-	update( TABLE_NAME, setColumns, setValues, constraintColumns, constraintValues );
+	update( TABLE_NAME, SETTER_COLUMNS, SET_VALUES, CONSTRAINT_COLUMNS, CONSTRAINT_VALUES );
 }
 
 /**
@@ -276,14 +341,12 @@ public static final Integer getTheScheduleID(Integer deviceID, java.sql.Connecti
 	return returnedID;
 }
 
+/*
 public final static boolean hasSchedule(Integer deviceID) throws java.sql.SQLException 
 {	
 	return hasSchedule(deviceID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
 }
-/**
- * This method was created in VisualAge.
- * @param pointID java.lang.Integer
- */
+
 public final static boolean hasSchedule(Integer deviceID, String databaseAlias) throws java.sql.SQLException 
 {
 	com.cannontech.database.SqlStatement stmt =
@@ -298,5 +361,5 @@ public final static boolean hasSchedule(Integer deviceID, String databaseAlias) 
 	{
 		return false;
 	}
-}
+}*/
 }

@@ -38,7 +38,8 @@ public final class LiteTypes
 	public final static int LM_PAO_EXCLUSION		= 31;	
 	public final static int DEVICE_TYPE_COMMAND 	= 32;
 	public final static int COMMAND 	= 33;
-	public final static int TOU_SCHEDULE	= 34;	
+	public final static int TOU_SCHEDULE	= 34;
+	public final static int TOU_DAY			= 35;	
 	
 	// Stars lite types
 	public final static int STARS_CUST_ACCOUNT_INFO = 100;

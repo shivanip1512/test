@@ -235,7 +235,7 @@ public class DBDeletionFuncs
 		//this object is deleteable
 		return STATUS_ALLOW;
 	}	
-	
+	/*
 	private static byte createDeleteStringForTOU(int touID) throws java.sql.SQLException
 	{
 		Integer theID = new Integer( touID );
@@ -251,7 +251,7 @@ public class DBDeletionFuncs
 		//this object is deleteable
 		return STATUS_ALLOW;
 	}
-	
+	*/
 	private static byte createDeleteStringForLMProgConst(int constrID) throws java.sql.SQLException
 	{
 		if( LMProgramConstraint.inUseByProgram(constrID, CtiUtilities.getDatabaseAlias()) )
@@ -619,8 +619,8 @@ public class DBDeletionFuncs
 			else if(type == CONFIG_TYPE)
 					return createDeleteStringForConfig(anID);
 			
-			else if(type == TOU_TYPE)
-				return createDeleteStringForTOU(anID);
+			/*else if(type == TOU_TYPE)
+				return createDeleteStringForTOU(anID);*/
 					
 			else if(type == TAG_TYPE)
 				return createDeleteStringForTag(anID);

@@ -1,5 +1,5 @@
 /*
- * Created on Sep 22, 2004
+ * Created on Dec 06, 2004
  *
  * To change the template for this generated file go to
  * Window>Preferences>Java>Code Generation>Code and Comments
@@ -12,73 +12,78 @@ package com.cannontech.database.db.tou;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class TOURateOffset extends com.cannontech.database.db.DBPersistent 
+public class TOUDayRateSwitches extends com.cannontech.database.db.DBPersistent 
 {
-	private Integer touScheduleID;
+	private Integer rateSwitchID;
 	private String switchRate;
 	private Integer switchOffset;
+	private Integer dayID;
 	
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"TOUSCHEDULEID", "SWITCHRATE", "SWITCHOFFSET"
+		"SWITCHRATE", "SWITCHOFFSET", "TOUDAYID"
 	};
 
-	public static final String CONSTRAINT_COLUMNS[] = { "TOUScheduleID" };
+	public static final String CONSTRAINT_COLUMNS[] = { "TOURateSwitchID" };
 
-	public static final String TABLE_NAME = "TOURateOffset";
+	public static final String TABLE_NAME = "TOUDayRateSwitches";
 
 /**
  * TOURateOffset constructor comment.
  */
-public TOURateOffset() {
+public TOUDayRateSwitches() {
 	super();
 }
 /**
  * TOURateOffset constructor comment.
  */
-public TOURateOffset(String rate, Integer offset) 
+public TOUDayRateSwitches(String rate, Integer offset) 
 {
 	super();
 	switchRate = rate;
 	switchOffset = offset;
 }
 
-public TOURateOffset(Integer scheduleID, String rate, Integer offset) 
+public TOUDayRateSwitches(Integer rateID, String rate, Integer offset, Integer touDayID) 
 {
 	super();
-	touScheduleID = scheduleID;
+
+	rateSwitchID = rateID;
 	switchRate = rate;
 	switchOffset = offset;
+	dayID = touDayID;
 }
 
 /**
  * Insert the method's description here.
- * Creation date: (9/22/2004 10:34:05 AM)
+ * Creation date: (12/06/2004 10:34:05 AM)
  */
 public void add() throws java.sql.SQLException
 {
 	Object addValues[] = 
 	{ 
-		getTOUScheduleID(), getSwitchRate(),
-		getSwitchOffset()
+		getRateSwitchID(), getSwitchRate(),
+		getSwitchOffset(), getDayID()
 	};
 
 	add( TABLE_NAME, addValues );
 }
+
 /**
  * Insert the method's description here.
- * Creation date: (9/22/2004 10:34:22 AM)
+ * Creation date: (12/06/2004 10:34:22 AM)
  */
 public void delete() 
 {
 	throw new com.cannontech.common.util.MethodNotImplementedException();
 }
+
 /**
  * This method was created by Cannon Technologies Inc.
  * @return boolean
  * @param deviceID java.lang.Integer
  */
-public static boolean deleteAllRateOffsets(Integer touScheduleID, java.sql.Connection conn)
+public static boolean deleteAllDayRateSwitches(Integer touDayID, java.sql.Connection conn)
 {
 	com.cannontech.database.SqlStatement stmt = null;
 
@@ -89,7 +94,7 @@ public static boolean deleteAllRateOffsets(Integer touScheduleID, java.sql.Conne
 	{
 		java.sql.Statement stat = conn.createStatement();
 
-		stat.execute("DELETE FROM " + TABLE_NAME + " WHERE touScheduleID=" + touScheduleID);
+		stat.execute("DELETE FROM " + TABLE_NAME + " WHERE TOUDayID=" + touDayID);
 
 		if (stat != null)
 			stat.close();
@@ -102,16 +107,17 @@ public static boolean deleteAllRateOffsets(Integer touScheduleID, java.sql.Conne
 
 	return true;
 }
+
 /**
  * Insert the method's description here.
- * Creation date: (9/22/2004 12:52:15 PM)
+ * Creation date: (12/06/2004 12:52:15 PM)
  * @param touScheduleID java.lang.Integer
  * @param dbAlias java.lang.String
  */
-public static final java.util.Vector getAllRateOffsets(Integer scheduleID, java.sql.Connection conn)
+public static final java.util.Vector getAllDayRateSwitches(Integer touDayID, java.sql.Connection conn)
 {
 	java.util.Vector returnVector = new java.util.Vector(5);
-	Integer touScheduleID = null;
+	Integer rateSwitchID = null;
 	String 	switchRate = null;
 	Integer switchOffset = null;
 	
@@ -133,20 +139,20 @@ public static final java.util.Vector getAllRateOffsets(Integer scheduleID, java.
 		else
 		{
 			pstmt = conn.prepareStatement(sql.toString());
-			pstmt.setInt( 1, scheduleID.intValue() );
+			pstmt.setInt( 1, rateSwitchID.intValue() );
 			
 			rset = pstmt.executeQuery();
 	
 			while( rset.next() )
 			{
-				touScheduleID = scheduleID;
+				rateSwitchID = new Integer( rset.getInt(SETTER_COLUMNS[0]) );
 				switchRate = rset.getString(SETTER_COLUMNS[1]);
 				switchOffset = new Integer( rset.getInt(SETTER_COLUMNS[2]) );
 								
-				returnVector.addElement( new TOURateOffset(
-						touScheduleID, 
+				returnVector.addElement( new TOUDayRateSwitches(
+						rateSwitchID, 
 						switchRate, 
-						switchOffset) );				
+						switchOffset, touDayID) );				
 			}
 					
 		}		
@@ -173,7 +179,16 @@ public static final java.util.Vector getAllRateOffsets(Integer scheduleID, java.
 
 /**
  * Insert the method's description here.
- * Creation date: (9/22/2004 5:40:28 PM)
+ * Creation date: (12/06/2004 5:40:28 PM)
+ * @return java.lang.Integer
+ */
+public java.lang.Integer getRateSwitchID() {
+	return rateSwitchID;
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (12/06/2004 5:40:28 PM)
  * @return java.lang.Integer
  */
 public java.lang.Integer getSwitchOffset() {
@@ -182,7 +197,7 @@ public java.lang.Integer getSwitchOffset() {
 
 /**
  * Insert the method's description here.
- * Creation date: (9/22/2004 5:40:28 PM)
+ * Creation date: (12/06/2004 5:40:28 PM)
  * @return java.lang.String
  */
 public java.lang.String getSwitchRate() {
@@ -191,20 +206,28 @@ public java.lang.String getSwitchRate() {
 
 /**
  * Insert the method's description here.
- * Creation date: (9/22/2004 5:40:28 PM)
+ * Creation date: (12/06/2004 5:40:28 PM)
  * @return java.lang.Integer
  */
-public java.lang.Integer getTOUScheduleID() {
-	return touScheduleID;
+public java.lang.Integer getDayID() {
+	return dayID;
 }
 
 /**
  * Insert the method's description here.
- * Creation date: (9/22/2004 10:33:53 AM)
+ * Creation date: (12/06/2004 10:33:53 AM)
  */
 public void retrieve() 
 {
 	throw new com.cannontech.common.util.MethodNotImplementedException();
+}
+
+/**
+ * Insert the method's description here.
+ * @param newRateSwitchID java.lang.Integer
+ */
+public void setRateSwitchID(java.lang.Integer newRateSwitchID) {
+	rateSwitchID = newRateSwitchID;
 }
 
 /**
@@ -225,15 +248,15 @@ public void setSwitchRate(java.lang.String newSwitchRate) {
 
 /**
  * Insert the method's description here.
- * @param newTOUScheduleID java.lang.Integer
+ * @param newDayID java.lang.Integer
  */
-public void setTOUScheduleID(java.lang.Integer newTOUScheduleID) {
-	touScheduleID = newTOUScheduleID;
+public void setDayID(java.lang.Integer newDayID) {
+	dayID = newDayID;
 }
 
 /**
  * Insert the method's description here.
- * Creation date: (9/22/2004 10:34:35 AM)
+ * Creation date: (12/06/2004 10:34:35 AM)
  */
 public void update() 
 {

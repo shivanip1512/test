@@ -1,10 +1,12 @@
 /*
- * Created on Sep 22, 2004
+ * Created on Dec 02, 2004
  *
  * To change the template for this generated file go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 package com.cannontech.database.db.tou;
+
+import com.cannontech.database.data.lite.LiteTOUDay;
 
 /**
  * @author jdayton
@@ -12,84 +14,84 @@ package com.cannontech.database.db.tou;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class TOUSchedule extends com.cannontech.database.db.DBPersistent
+public class TOUDay extends com.cannontech.database.db.DBPersistent
 {
-	private Integer scheduleID;
-	private String scheduleName;
-	private String defaultRate;
+	private Integer dayID;
+	private String dayName;
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"TOUScheduleName", "TOUDefaultRate"
+		"TOUDayName"
 	};
 
-	public static final String CONSTRAINT_COLUMNS[] = { "TOUScheduleID" };
+	public static final String CONSTRAINT_COLUMNS[] = { "TOUDayID" };
 
-	public static final String TABLE_NAME = "TOUSchedule";
+	public static final String TABLE_NAME = "TOUDay";
+
 /**
  * TOUSchedule constructor comment.
  */
-public TOUSchedule() {
+public TOUDay() {
 	super();
 }
+
 /**
  * Insert the method's description here.
- * Creation date: (9/22/2004 12:08:19 PM)
+ * Creation date: (12/02/2004 12:08:19 PM)
  */
 public void add() throws java.sql.SQLException 
 {
-	Object addValues[] = { getScheduleID(), getScheduleName(), getDefaultRate() };
+	Object addValues[] = { getDayID(), getDayName()};
 
 	add( TABLE_NAME, addValues );
 }
+
 /**
  * Insert the method's description here.
- * Creation date: (9/22/2004 12:08:42 PM)
+ * Creation date: (12/02/2004 12:08:42 PM)
  */
 public void delete() throws java.sql.SQLException 
 {
-	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getScheduleID());
-}
-/**
- * Insert the method's description here.
- * Creation date: (9/22/2004 1:31:31 PM)
- */
-public Integer getScheduleID()
-{
-	return scheduleID;
-}
-/**
- * Insert the method's description here.
- * Creation date: (9/22/2004 1:34:49 PM)
- */
-public String getScheduleName() 
-{
-	return scheduleName;
+	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getDayID());
 }
 
-public String getDefaultRate() 
+/**
+ * Insert the method's description here.
+ * Creation date: (12/02/2004 1:31:31 PM)
+ */
+public Integer getDayID()
 {
-	return defaultRate;
+	return dayID;
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (12/02/2004 1:34:49 PM)
+ */
+public String getDayName() 
+{
+	return dayName;
+}
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Integer
  */
-public final static Integer getNextTOUScheduleID()
+public final static Integer getNextTOUDayID()
 {
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	synchronized(cache)
 	{
-		java.util.List touSchedules = cache.getAllTOUSchedules();
-		java.util.Collections.sort(touSchedules);
+		java.util.List touDays = cache.getAllTOUDays();
+		java.util.Collections.sort(touDays);
 
 		int counter = 1;
 		int currentID;
 		 														
-		for(int i = 0; i < touSchedules.size(); i++)
+		for(int i = 0; i < touDays.size(); i++)
 		{
-			currentID = ((com.cannontech.database.data.lite.LiteTOUSchedule)touSchedules.get(i)).getScheduleID();
+			currentID = ((LiteTOUDay)touDays.get(i)).getDayID();
 
 			if( currentID > counter )
 				break;
@@ -102,53 +104,49 @@ public final static Integer getNextTOUScheduleID()
 }
 /**
  * Insert the method's description here.
- * Creation date: (9/22/2004 12:08:08 PM)
+ * Creation date: (12/02/2004 12:08:08 PM)
  */
 public void retrieve() throws java.sql.SQLException
 {
-	Object constraintValues[] = { getScheduleID()};
+	Object constraintValues[] = { getDayID()};
 
 	Object results[] = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
 
 	if (results.length == SETTER_COLUMNS.length)
 	{
-		setScheduleName((String) results[0]);
-		setDefaultRate((String) results[1]);		
+		setDayName((String) results[0]);
 	}
 
 }
+
 /**
  * Insert the method's description here.
- * Creation date: (9/22/2004 1:39:07 PM)
+ * Creation date: (12/02/2004 1:39:07 PM)
  * @param id java.lang.Integer
  */
-public void setScheduleID(Integer id) 
+public void setDayID(Integer id) 
 {
-	scheduleID = id;
+	dayID = id;
 }
+
 /**
  * Insert the method's description here.
- * Creation date: (9/22/2004 1:38:37 PM)
+ * Creation date: (12/02/2004 1:38:37 PM)
  * @param name java.lang.String
  */
-public void setScheduleName(String name) 
+public void setDayName(String name) 
 {
-	scheduleName = name;
-}
-
-public void setDefaultRate(String rate) 
-{
-	defaultRate = rate;
+	dayName = name;
 }
 
 /**
  * Insert the method's description here.
- * Creation date: (9/22/2004 12:08:59 PM)
+ * Creation date: (12/02/2004 12:08:59 PM)
  */
 public void update() throws java.sql.SQLException
 {
-	Object setValues[] = { getScheduleName(), getDefaultRate()};
-	Object constraintValues[] = { getScheduleID()};
+	Object setValues[] = { getDayName()};
+	Object constraintValues[] = { getDayID()};
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues);
 }

@@ -78,6 +78,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allSeasonSchedules = null;
 	private ArrayList allGears = null;
 	private ArrayList allTOUSchedules = null;
+	private ArrayList allTOUDays = null;
 	
 	private ArrayList allYukonUsers = null;
 	private ArrayList allYukonRoles = null;
@@ -517,6 +518,20 @@ public synchronized java.util.List getAllTOUSchedules()
 		TOUScheduleLoader touLoader = new TOUScheduleLoader(allTOUSchedules, databaseAlias);
 		touLoader.run();
 		return allTOUSchedules;
+	}
+}
+
+public synchronized java.util.List getAllTOUDays()
+{
+
+	if (allTOUDays != null)
+		return allTOUDays;
+	else
+	{
+		allTOUDays = new ArrayList();
+		TOUDayLoader dayLoader = new TOUDayLoader(allTOUDays, databaseAlias);
+		dayLoader.run();
+		return allTOUDays;
 	}
 }
 
@@ -2137,6 +2152,7 @@ private synchronized LiteBase handleSeasonScheduleChange( int changeType, int id
 
 	return lBase;
 }
+
 private synchronized LiteBase handleTOUScheduleChange( int changeType, int id )
 {
 	boolean alreadyAdded = false;
@@ -2189,6 +2205,66 @@ private synchronized LiteBase handleTOUScheduleChange( int changeType, int id )
 				break;
 		default:
 				releaseAllTOUSchedules();
+				break;
+	}
+
+	return lBase;
+}
+
+private synchronized LiteBase handleTOUDayChange( int changeType, int id )
+{
+	boolean alreadyAdded = false;
+	LiteBase lBase = null;
+
+	// if the storage is not already loaded, we must not care about it
+	if( allTOUDays == null )
+		return lBase;
+
+	switch(changeType)
+	{
+		case DBChangeMsg.CHANGE_TYPE_ADD:
+				for(int i=0;i<allTOUDays.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteTOUDay)allTOUDays.get(i)).getDayID() == id )
+					{
+						alreadyAdded = true;
+						lBase = (LiteBase)allTOUDays.get(i);
+						break;
+					}
+				}
+				if( !alreadyAdded )
+				{
+					com.cannontech.database.data.lite.LiteTOUDay lh = new com.cannontech.database.data.lite.LiteTOUDay(id);
+					lh.retrieve(databaseAlias);
+					allTOUDays.add(lh);
+					lBase = lh;
+				}
+				break;
+				
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+				for(int i=0;i<allTOUDays.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteTOUDay)allTOUDays.get(i)).getDayID() == id )
+					{
+						((com.cannontech.database.data.lite.LiteTOUDay)allTOUDays.get(i)).retrieve(databaseAlias);
+						lBase = (LiteBase)allTOUDays.get(i);
+						break;
+					}
+				}
+				break;
+				
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
+				for(int i=0;i<allTOUDays.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteTOUDay)allTOUDays.get(i)).getDayID() == id )
+					{
+						lBase = (LiteBase)allTOUDays.remove(i);
+						break;
+					}
+				}
+				break;
+		default:
+				releaseAllTOUDays();
 				break;
 	}
 
@@ -2957,6 +3033,7 @@ public synchronized void releaseAllCache()
     allGears = null;
     allDeviceTypeCommands = null;
     allTOUSchedules = null;
+    allTOUDays = null;
     
     allYukonUsers = null;
     allYukonRoles = null;
@@ -3058,6 +3135,11 @@ public synchronized void releaseAllCommands()
 public synchronized void releaseAllTOUSchedules()
 {
 	allTOUSchedules = null;
+}
+
+public synchronized void releaseAllTOUDays()
+{
+	allTOUDays = null;
 }
 
 public synchronized void releaseAllConfigs()
