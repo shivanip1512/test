@@ -1,1 +1,1 @@
-java -Djava.class.path=.;../config;classes12.jar;database.jar;common.jar;tdc.jar;dbeditor.jar;yukonappserver.jar;jtds.jar;SqlServer.jar;jcpagelayout450k.jar;logger.jar com.cannontech.logger.config.LoggerMainFrame
+java -Djava.class.path=.;%YUKON_BASE%/server/web;../../lib/classes12.jar;../../lib/database.jar;../../lib/common.jar;tdc.jar;dbeditor.jar;../../lib/yukonappserver.jar;../../lib/jtds.jar;../../lib/SqlServer.jar;../../lib/jcpagelayout450k.jar;../../lib/logger.jar com.cannontech.logger.config.LoggerMainFrame

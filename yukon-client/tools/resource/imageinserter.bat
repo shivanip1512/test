@@ -1,1 +1,1 @@
-java -classpath .;../config;tools.jar;common.jar;log4j-1.2.4.jar;classes12.jar;jtds.jar;SqlServer.jar;yukonappserver.jar;j2ee.jar com.cannontech.dbtools.image.ImageInserter %1
+java -classpath .;%YUKON_BASE%/server/web;../../lib/tools.jar;../../lib/common.jar;../../lib/log4j-1.2.4.jar;../../lib/classes12.jar;../../lib/jtds.jar;../../lib/SqlServer.jar;../../lib/yukonappserver.jar;../../lib/j2ee.jar com.cannontech.dbtools.image.ImageInserter %1
