@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
@@ -77,7 +78,7 @@ public class LoadcontrolCache implements java.util.Observer, java.awt.event.Acti
 	//programs
 	private ArrayList curtailmentPrograms = new ArrayList();
 	private ArrayList energyExchangePrograms = new ArrayList();
-	private ArrayList directPrograms = new ArrayList();
+	private HashSet directPrograms = new HashSet();
 	
 /**
  * LoadcontrolCache constructor comment.
@@ -608,7 +609,8 @@ private void handleCurtailmentProgram(LMProgramCurtailment prog)
  */
 private void handleDirectProgram(LMProgramDirect prog) 
 {
-	replaceProgram(prog,directPrograms);
+	directPrograms.add(prog);
+	//replaceProgram(prog,directPrograms);
 }
 
 
