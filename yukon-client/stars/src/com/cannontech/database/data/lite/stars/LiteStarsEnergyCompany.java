@@ -54,6 +54,7 @@ import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.ControlSummary;
 import com.cannontech.stars.xml.serialize.StarsCallReport;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
@@ -3072,11 +3073,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				LiteStarsLMControlHistory liteCtrlHist = getLMControlHistory( groupID );
 				if (liteCtrlHist != null) {
 					starsCtrlHist = StarsLiteFactory.createStarsLMControlHistory(
-							liteCtrlHist, StarsCtrlHistPeriod.ALL, false );
+							liteCtrlHist, StarsCtrlHistPeriod.ALL, true );
 					starsLMCtrlHists.put( new Integer(groupID), starsCtrlHist );
 				}
-				else
+				else {
 					starsCtrlHist = new StarsLMControlHistory();
+					starsCtrlHist.setControlSummary( new ControlSummary() );
+				}
 			}
 			
 			return starsCtrlHist;
@@ -3102,7 +3105,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			StarsLMControlHistory starsCtrlHist = (StarsLMControlHistory)
 					starsLMCtrlHists.get( new Integer(liteCtrlHist.getGroupID()) );
 			if (starsCtrlHist != null)
-				StarsLiteFactory.setStarsLMControlHistory( starsCtrlHist, liteCtrlHist, StarsCtrlHistPeriod.ALL, false );
+				StarsLiteFactory.setStarsLMControlHistory( starsCtrlHist, liteCtrlHist, StarsCtrlHistPeriod.ALL, true );
 			
 			return starsCtrlHist;
 		}

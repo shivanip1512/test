@@ -1555,29 +1555,18 @@ public class StarsLiteFactory {
 			starsCtrlHist.setBeingControlled( new Date().getTime() < lastStopTime );
 		}
         
-		/* This is wrong!!!
-		 * Now the summary is computed at run time from the control history 
-		 */
 		if (getSummary) {
 			ControlSummary summary = new ControlSummary();
-			int dailyTime = 0;
-			int monthlyTime = 0;
-			int seasonalTime = 0;
-			int annualTime = 0;
             
 			int size = liteCtrlHist.getLmControlHistory().size();
 			if (size > 0) {
 				LiteLMControlHistory lastCtrlHist = (LiteLMControlHistory) liteCtrlHist.getLmControlHistory().get(size - 1);
-				dailyTime = (int) lastCtrlHist.getCurrentDailyTime();
-				monthlyTime = (int) lastCtrlHist.getCurrentMonthlyTime();
-				seasonalTime = (int) lastCtrlHist.getCurrentSeasonalTime();
-				annualTime = (int) lastCtrlHist.getCurrentAnnualTime();
+				summary.setDailyTime( (int) lastCtrlHist.getCurrentDailyTime() );
+				summary.setMonthlyTime( (int) lastCtrlHist.getCurrentMonthlyTime() );
+				summary.setSeasonalTime( (int) lastCtrlHist.getCurrentSeasonalTime() );
+				summary.setAnnualTime( (int) lastCtrlHist.getCurrentAnnualTime() );
 			}
-            
-			summary.setDailyTime( dailyTime );
-			summary.setMonthlyTime( monthlyTime );
-			summary.setSeasonalTime( seasonalTime );
-			summary.setAnnualTime( annualTime );
+			
 			starsCtrlHist.setControlSummary( summary );
 		}
 	}

@@ -213,6 +213,8 @@ public class ServletUtils {
 			}
 			
 			StarsLMControlHistory lmCtrlHist = new StarsLMControlHistory();
+			lmCtrlHist.setControlSummary( new ControlSummary() );
+			
 			for (int i = 0; i < groupIDs.size(); i++) {
 				StarsLMControlHistory ctrlHist = energyCompany.getStarsLMControlHistory( ((Integer)groupIDs.get(i)).intValue() );
 				
@@ -224,6 +226,17 @@ public class ServletUtils {
 				}
 				
 				if (ctrlHist.getBeingControlled()) lmCtrlHist.setBeingControlled(true);
+				
+				if (ctrlHist.getControlSummary() != null) {
+					lmCtrlHist.getControlSummary().setDailyTime(
+							lmCtrlHist.getControlSummary().getDailyTime() + ctrlHist.getControlSummary().getDailyTime() );
+					lmCtrlHist.getControlSummary().setMonthlyTime(
+							lmCtrlHist.getControlSummary().getMonthlyTime() + ctrlHist.getControlSummary().getMonthlyTime() );
+					lmCtrlHist.getControlSummary().setSeasonalTime(
+							lmCtrlHist.getControlSummary().getSeasonalTime() + ctrlHist.getControlSummary().getSeasonalTime() );
+					lmCtrlHist.getControlSummary().setAnnualTime(
+							lmCtrlHist.getControlSummary().getAnnualTime() + ctrlHist.getControlSummary().getAnnualTime() );
+				}
 			}
 			
 			return lmCtrlHist;

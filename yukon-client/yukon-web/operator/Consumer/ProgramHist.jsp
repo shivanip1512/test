@@ -65,8 +65,8 @@
 		}
 		
 		StarsLMControlHistory allCtrlHist = ServletUtils.getAllControlHistory( program, appliances, liteEC );
-		StarsLMControlHistory ctrlHist = ServletUtils.getControlHistory( allCtrlHist, StarsCtrlHistPeriod.ALL, program.getDateEnrolled(), tz );
-		ControlSummary summary = ServletUtils.getControlSummary( ctrlHist, tz );
+		StarsLMControlHistory ctrlHist = ServletUtils.getControlHistory( allCtrlHist, StarsCtrlHistPeriod.ALL, null, tz );
+		ControlSummary summary = allCtrlHist.getControlSummary();
 %>
                 <tr bgcolor="#FFFFFF"> 
                   <td width="110"> 
@@ -95,7 +95,7 @@
                         <td width="60" class="TableCell">Duration</td>
                       </tr>
                       <%
-			StarsLMControlHistory ctrlHistToday = ServletUtils.getControlHistory( allCtrlHist, StarsCtrlHistPeriod.PASTDAY, program.getDateEnrolled(), tz );
+			StarsLMControlHistory ctrlHistToday = ServletUtils.getControlHistory( allCtrlHist, StarsCtrlHistPeriod.PASTDAY, null, tz );
 			if (ctrlHistToday.getControlHistoryCount() == 0) {
 %>
                       <tr> 

@@ -11,7 +11,7 @@
 	if (periodStr != null) period = StarsCtrlHistPeriod.valueOf( periodStr );
 	
 	StarsLMControlHistory allCtrlHist = ServletUtils.getAllControlHistory( program, appliances, liteEC );
-	StarsLMControlHistory ctrlHist = ServletUtils.getControlHistory( allCtrlHist, period, program.getDateEnrolled(), tz );
+	StarsLMControlHistory ctrlHist = ServletUtils.getControlHistory( allCtrlHist, period, null, tz );
 	
 	StarsApplianceCategory category = null;
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {

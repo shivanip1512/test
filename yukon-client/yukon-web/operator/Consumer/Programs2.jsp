@@ -17,7 +17,7 @@
 			(MultiAction) session.getAttribute(ServletUtils.ATT_NEW_ACCOUNT_WIZARD) :
 			(MultiAction) session.getAttribute(ServletUtils.ATT_MULTI_ACTIONS);
 	if (actions != null) {
-		SOAPMessage reqMsg = actions.getRequestMessage(new ProgramSignUpAction());
+		SOAPMessage reqMsg = actions.getRequestMessage( ProgramSignUpAction.class );
 		if (reqMsg != null) {
 			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation(reqMsg);
 			StarsProgramSignUp progSignUp = reqOper.getStarsProgramSignUp();

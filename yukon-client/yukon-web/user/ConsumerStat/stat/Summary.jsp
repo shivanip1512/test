@@ -8,8 +8,8 @@
 	
 	StarsLMProgram program = programs.getStarsLMProgram( progNo );
 	StarsLMControlHistory allCtrlHist = ServletUtils.getAllControlHistory( program, appliances, liteEC );
-	StarsLMControlHistory ctrlHist = ServletUtils.getControlHistory( allCtrlHist, StarsCtrlHistPeriod.ALL, program.getDateEnrolled(), tz );
-	ControlSummary summary = ServletUtils.getControlSummary( ctrlHist, tz );
+	StarsLMControlHistory ctrlHist = ServletUtils.getControlHistory( allCtrlHist, StarsCtrlHistPeriod.ALL, null, tz );
+	ControlSummary summary = allCtrlHist.getControlSummary();
 	
 	StarsApplianceCategory category = null;
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
