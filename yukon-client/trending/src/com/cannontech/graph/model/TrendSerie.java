@@ -26,7 +26,7 @@ public class TrendSerie
 	private Double multiplier = new Double(1.0);	//This is different then the point multiplier, this is a GDS
 	private Character axis = new Character('L');
 	public int typeMask = GraphDataSeries.BASIC_GRAPH_TYPE;
-	public Double moreData = new Double(0.0);
+	public String moreData = com.cannontech.common.util.CtiUtilities.STRING_NONE;
 	 
 	// Flag for using graph multiplier
 	public boolean useMultiplier = false;
@@ -412,7 +412,7 @@ public class TrendSerie
 	/**
 	 * @return
 	 */
-	public Double getMoreData()
+	public String getMoreData()
 	{
 		return moreData;
 	}
@@ -420,9 +420,9 @@ public class TrendSerie
 	/**
 	 * @param double1
 	 */
-	public void setMoreData(Double double1)
+	public void setMoreData(String string)
 	{
-		moreData = double1;
+		moreData = string;
 	}
 
 }

@@ -1,7 +1,6 @@
 package com.cannontech.graph.gds.tablemodel;
 
 import com.cannontech.common.gui.util.Colors;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.graph.GraphDataSeries;
@@ -149,20 +148,17 @@ public Object getGDSAttribute(int index, GraphDataSeries gds) {
 			return gds.getDeviceName();
 			
 		case POINT_NAME_COLUMN:
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			Integer id = gds.getPointID();
 			
-			synchronized(cache)
-			{
-				//must not have found it so we'll try some predefined points too.
-				if( id.intValue() == com.cannontech.database.data.point.PointTypes.SYS_PID_THRESHOLD)
-					return "Threshold";
-				
-				LitePoint pt = PointFuncs.getLitePoint( id.intValue() );
-				if( pt != null )
-					return pt.getPointName();	
-			}
+			//must not have found it so we'll try some predefined points too.
+			if( id.intValue() == com.cannontech.database.data.point.PointTypes.SYS_PID_THRESHOLD)
+				return "Threshold";
+			
+			LitePoint pt = PointFuncs.getLitePoint( id.intValue() );
+			if( pt != null )
+				return pt.getPointName();	
 		break;
+		
 		case LABEL_NAME_COLUMN:
 			return gds.getLabel();
 			
@@ -186,7 +182,7 @@ public Object getGDSAttribute(int index, GraphDataSeries gds) {
 			{
 				java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MM/dd/yy");
 				//get timestamp from database;
-				if( gds.getMoreData().longValue() > 0)
+				if( !com.cannontech.common.util.CtiUtilities.STRING_NONE.equalsIgnoreCase(gds.getMoreData()))
 					type = format.format(gds.getSpecificDate());
 				else
 					type = "mm/dd/yy";
@@ -337,20 +333,21 @@ public void setValueAt(Object value, int row, int col)
 		{
 			//Save the Integer value of the String.
 			gds.setType( new Integer(GraphDataSeries.getTypeInt(new String(value.toString()))));
+			
+			String moreData = com.cannontech.common.util.CtiUtilities.STRING_NONE;
 			if( GraphDataSeries.isDateType(gds.getType().intValue()))
 			{
 				java.util.Date date = com.cannontech.util.ServletUtil.parseDateStringLiberally(value.toString());
-				Double moreData = new Double(0.0);
 				if(date != null)
 				{
 					Long ts = new Long(date.getTime());
-					moreData = new Double(ts.doubleValue());
+					moreData = String.valueOf(ts);
 					gds.setMoreData(moreData);
 				}
 			}
 			else
 			{
-				gds.setMoreData(new Double(0.0));
+				gds.setMoreData(moreData);
 			}
 		}
 		break;

@@ -929,7 +929,7 @@ private TrendSerie[] hitDatabase_Date(int seriesTypeMask, int serieIndex)
 			{
 				if (GraphDataSeries.isDateType(trendSeries[serieIndex].getTypeMask()))
 				{
-					day = getStartDate().getTime() - trendSeries[serieIndex].getMoreData().longValue();
+					day = getStartDate().getTime() - Long.valueOf(trendSeries[serieIndex].getMoreData()).longValue();
 					startTS = getStartDate().getTime() - day;
 					stopTS = getStartDate().getTime() - day + 86400000;
 					trendSeries[serieIndex].setLabel(trendSeries[serieIndex].getLabel() + " ["+ LEGEND_DATE_FORMAT.format(new java.util.Date(startTS))+"]");

@@ -83,7 +83,7 @@ public class GraphDataSeries extends com.cannontech.database.db.DBPersistent
 	private java.lang.Character axis = new Character('L');
 	private java.lang.Integer color = null;
 	private Double multiplier = new Double(1.0);
-	private Double moreData = new Double(0.0);
+	private String moreData = com.cannontech.common.util.CtiUtilities.STRING_NONE;
 	public static final String tableName = "GraphDataSeries";
 	
 	//These come from the device and point unit tables
@@ -309,7 +309,7 @@ public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID,
 		java.math.BigDecimal color = (java.math.BigDecimal) sql.getRow(i)[5];
 		String deviceName = (String) sql.getRow(i)[6];
 		Number mult = (Number)sql.getRow(i)[7];
-		Number moreData = (Number)sql.getRow(i)[8];
+		String moreData = (String)sql.getRow(i)[8];
 //		java.math.BigDecimal mult = (java.math.BigDecimal)sql.getRow(i)[7];
 //		java.math.BigDecimal uomid = (java.math.BigDecimal) sql.getRow(i)[7];
 	
@@ -322,7 +322,7 @@ public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID,
 		dataSeries.setColor( new Integer( color.intValue() ) );
 		dataSeries.setDeviceName(deviceName);
 		dataSeries.setMultiplier(new Double(mult.doubleValue()));
-		dataSeries.setMoreData(new Double(moreData.doubleValue()));
+		dataSeries.setMoreData(moreData);
 //		dataSeries.setUoMId(new Integer (uomid.intValue()) );
 			
 		temp.addElement( dataSeries );
@@ -534,7 +534,7 @@ public void retrieve() throws java.sql.SQLException
 //		setType( (String) results[5] );
 		setType( (Integer) results[5] );
 		setMultiplier((Double)results[6]);
-		setMoreData((Double)results[7]);
+		setMoreData((String)results[7]);
 	}
 }
 /**
@@ -666,24 +666,27 @@ public void update() throws java.sql.SQLException
 	/**
 	 * @return
 	 */
-	public Double getMoreData()
+	public String getMoreData()
 	{
 		return moreData;
 	}
 	/**
 	 * @param object
 	 */
-	public void setMoreData(Double object)
+	public void setMoreData(String object)
 	{
 		moreData = object;
 	}
 
 	public java.util.Date getSpecificDate()
 	{
+		if( com.cannontech.common.util.CtiUtilities.STRING_NONE.equalsIgnoreCase( getMoreData()))
+			return null;
+			
 		java.util.Date date = null;
-		if( isDateType(getType().intValue()))
+		if( isDateType(getType().intValue()) )
 		{
-			long ts = getMoreData().longValue();
+			long ts = Long.valueOf(getMoreData()).longValue();
 			date = new java.util.Date(ts);
 		}
 		return date;
