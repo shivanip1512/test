@@ -74,8 +74,15 @@ public boolean needsComboIniting()
  */
 public void destroy() 
 {
-	mainPanel = null;
+	//remove all the observers from the connection
+	if( mainPanel != null ) {	
+		getIMACSConnection().getMACSConnBase().deleteObserver( mainPanel );
 
+		getIMACSConnection().getMACSConnBase().deleteObserver( mainPanel.getScheduleTableModel() );
+	}
+	
+
+	mainPanel = null;
 	buttonsArray = null;
 	
 	System.gc();	
