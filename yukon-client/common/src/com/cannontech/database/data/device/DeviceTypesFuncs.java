@@ -255,6 +255,10 @@ public final static boolean isLmGroup(int deviceType)
 		case LM_GROUP_POINT:
 		case MACRO_GROUP:
 		case LM_GROUP_MCT:
+		case LM_GROUP_SA305:
+		case LM_GROUP_SA205:
+		case LM_GROUP_SADIGITAL:
+		case LM_GROUP_GOLAY:
 			return true;
 	
 		default:
