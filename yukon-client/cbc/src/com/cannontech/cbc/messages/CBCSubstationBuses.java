@@ -7,6 +7,7 @@ import com.cannontech.cbc.data.SubBus;
 
 public class CBCSubstationBuses extends com.cannontech.cbc.messages.CBCMessage {
 	
+	private java.lang.Integer msgInfoBitMask;
 	private java.util.Vector buses;
 /**
  * ScheduleCommand constructor comment.
@@ -39,4 +40,18 @@ void setSubBuses(java.util.Vector subbuses)
 {
 	buses = subbuses;
 }
+	/**
+	 * @return
+	 */
+	public java.lang.Integer getMsgInfoBitMask() {
+		return msgInfoBitMask;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setMsgInfoBitMask(java.lang.Integer integer) {
+		msgInfoBitMask = integer;
+	}
+
 }

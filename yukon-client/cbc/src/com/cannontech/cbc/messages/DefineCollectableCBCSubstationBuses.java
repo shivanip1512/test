@@ -52,9 +52,13 @@ public Class getJavaClass() {
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
 	super.restoreGuts( obj, vstr, polystr );
+
+	CBCSubstationBuses cbcSubBuses = (CBCSubstationBuses) obj;
+
+	cbcSubBuses.setMsgInfoBitMask( new Integer( (int)vstr.extractUnsignedInt() ) );
 	java.util.Vector strategyStore = (java.util.Vector)vstr.restoreObject( polystr );
 
-	((CBCSubstationBuses) obj).setSubBuses( strategyStore );
+	cbcSubBuses.setSubBuses( strategyStore );
 }
 /**
  * saveGuts method comment.
@@ -65,6 +69,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	com.cannontech.clientutils.CTILogger.info("com.cannontech.cbc.DefineCollectableCBCStratgegies.saveGuts() should not be called");
 	com.cannontech.clientutils.CTILogger.info("**********************************************************************************");
 	//super.saveGuts( obj, vstr, polystr );
+	//vstr.insertUnsignedInt( ((CBCStrategies) obj).getMs().intValue() );
 	//java.util.Vector strategyStore = ((CBCStrategies) obj).getStrategies();
 	//vstr.saveObject( strategyStore, com.roguewave.vsj.streamer.CollectableMappings.allCollectables );	
 }
