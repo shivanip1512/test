@@ -389,6 +389,7 @@ void CtiCCCommandExecutor::OpenCapBank()
                     currentCapBank->setCurrentDailyOperations(currentCapBank->getCurrentDailyOperations() + 1);
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
                     currentSubstationBus->setVarValueBeforeControl(currentSubstationBus->getCurrentVarLoadPointValue());
+                    currentFeeder->setVarValueBeforeControl(currentFeeder->getCurrentVarLoadPointValue());
                     if( currentCapBank->getStatusPointId() > 0 )
                     {
                         RWCString text = RWCString("Manual Open Sent");
@@ -550,6 +551,7 @@ void CtiCCCommandExecutor::CloseCapBank()
                     currentCapBank->setCurrentDailyOperations(currentCapBank->getCurrentDailyOperations() + 1);
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
                     currentSubstationBus->setVarValueBeforeControl(currentSubstationBus->getCurrentVarLoadPointValue());
+                    currentFeeder->setVarValueBeforeControl(currentFeeder->getCurrentVarLoadPointValue());
                     if( currentCapBank->getStatusPointId() > 0 )
                     {
                         RWCString text = RWCString("Manual Close Sent");
@@ -671,6 +673,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
     BOOL found = FALSE;
     BOOL savedBusRecentlyControlledFlag = FALSE;
     BOOL savedFeederRecentlyControlledFlag = FALSE;
+    ULONG savedControlStatus = -10;
     RWDBDateTime savedBusLastOperationTime = RWDBDateTime(1990,1,1,0,0,0,0);
     RWDBDateTime savedFeederLastOperationTime = RWDBDateTime(1990,1,1,0,0,0,0);
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -704,6 +707,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
                     currentSubstationBus->setLastFeederControlledPosition(j);
                     currentSubstationBus->setLastOperationTime(RWDBDateTime());
                     currentFeeder->setLastOperationTime(RWDBDateTime());
+                    savedControlStatus = currentCapBank->getControlStatus();
                     currentCapBank->setControlStatus(CtiCCCapBank::OpenPending);
                     currentSubstationBus->figureEstimatedVarLoadPointValue();
                     //currentSubstationBus->setCurrentDailyOperations(currentSubstationBus->getCurrentDailyOperations() + 1);
@@ -711,6 +715,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
                     //currentCapBank->setCurrentDailyOperations(currentCapBank->getCurrentDailyOperations() + 1);
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
                     currentSubstationBus->setVarValueBeforeControl(currentSubstationBus->getCurrentVarLoadPointValue());
+                    currentFeeder->setVarValueBeforeControl(currentFeeder->getCurrentVarLoadPointValue());
                     if( currentCapBank->getStatusPointId() > 0 )
                     {
                         RWCString text = RWCString("Manual Confirm Open Sent");
@@ -718,7 +723,9 @@ void CtiCCCommandExecutor::ConfirmOpen()
                         additional += currentSubstationBus->getPAOName();
                         pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                         ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
-                        if( !(savedFeederRecentlyControlledFlag || savedBusRecentlyControlledFlag) )
+                        if( ( !savedBusRecentlyControlledFlag ||
+                              (currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod && !savedFeederRecentlyControlledFlag) ) &&
+                             savedControlStatus != CtiCCCapBank::Open )
                         {
                             pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
@@ -741,7 +748,11 @@ void CtiCCCommandExecutor::ConfirmOpen()
                     found = TRUE;
 
                     BOOL confirmImmediately = FALSE;
-                    if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod )
+                    if( savedControlStatus == CtiCCCapBank::Open )
+                    {
+                        confirmImmediately = TRUE;
+                    }
+                    else if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod )
                     {
                         if( savedFeederRecentlyControlledFlag ||
                             ((savedFeederLastOperationTime.seconds()+currentSubstationBus->getMinResponseTime()) >= currentFeeder->getLastOperationTime().seconds()) )
@@ -833,6 +844,7 @@ void CtiCCCommandExecutor::ConfirmClose()
     BOOL savedFeederRecentlyControlledFlag = FALSE;
     RWDBDateTime savedBusLastOperationTime = RWDBDateTime(1990,1,1,0,0,0,0);
     RWDBDateTime savedFeederLastOperationTime = RWDBDateTime(1990,1,1,0,0,0,0);
+    ULONG savedControlStatus = -10;
     CtiMultiMsg* multi = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
     RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
@@ -864,6 +876,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                     currentSubstationBus->setLastFeederControlledPosition(j);
                     currentSubstationBus->setLastOperationTime(RWDBDateTime());
                     currentFeeder->setLastOperationTime(RWDBDateTime());
+                    savedControlStatus = currentCapBank->getControlStatus();
                     currentCapBank->setControlStatus(CtiCCCapBank::ClosePending);
                     currentSubstationBus->figureEstimatedVarLoadPointValue();
                     //currentSubstationBus->setCurrentDailyOperations(currentSubstationBus->getCurrentDailyOperations() + 1);
@@ -872,6 +885,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                     currentSubstationBus->setRecentlyControlledFlag(TRUE);
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
                     currentSubstationBus->setVarValueBeforeControl(currentSubstationBus->getCurrentVarLoadPointValue());
+                    currentFeeder->setVarValueBeforeControl(currentFeeder->getCurrentVarLoadPointValue());
                     if( currentCapBank->getStatusPointId() > 0 )
                     {
                         RWCString text = RWCString("Manual Confirm Close Sent");
@@ -879,8 +893,9 @@ void CtiCCCommandExecutor::ConfirmClose()
                         additional += currentSubstationBus->getPAOName();
                         pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                         ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
-                        if( !savedBusRecentlyControlledFlag ||
-                            (currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod && !savedFeederRecentlyControlledFlag) )
+                        if( ( !savedBusRecentlyControlledFlag ||
+                              (currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod && !savedFeederRecentlyControlledFlag) ) &&
+                            savedControlStatus != CtiCCCapBank::Close )
                         {
                             pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
@@ -903,7 +918,11 @@ void CtiCCCommandExecutor::ConfirmClose()
                     found = TRUE;
 
                     BOOL confirmImmediately = FALSE;
-                    if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod )
+                    if( savedControlStatus == CtiCCCapBank::Close )
+                    {
+                        confirmImmediately = TRUE;
+                    }
+                    else if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod )
                     {
                         if( savedFeederRecentlyControlledFlag ||
                             ((savedFeederLastOperationTime.seconds()+currentSubstationBus->getMinResponseTime()) >= currentFeeder->getLastOperationTime().seconds()) )
