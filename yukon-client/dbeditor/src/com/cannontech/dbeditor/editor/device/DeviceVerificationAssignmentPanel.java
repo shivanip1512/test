@@ -9,6 +9,11 @@ import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.common.gui.util.CheckBoxTableRenderer;
 import com.cannontech.database.data.device.RTM;
 import com.cannontech.database.db.device.DeviceVerification;
+import javax.swing.JCheckBox;
+import java.awt.ComponentOrientation;
+import java.awt.Font;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 /**
  * Insert the type's description here.
@@ -16,6 +21,7 @@ import com.cannontech.database.db.device.DeviceVerification;
  * @author: 
  */
 public class DeviceVerificationAssignmentPanel extends com.cannontech.common.gui.util.DataInputPanel {
+	private JCheckBox DeviceVerificationCheckBox;
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
 	private javax.swing.JScrollPane ivjAssignedDevicesScrollPane = null;
 	private javax.swing.JTable ivjVerifyDevicesTable = null;
@@ -58,6 +64,17 @@ public DeviceVerificationAssignmentPanel() {
 	super();
 	setLayout(null);
 	initialize();
+	DeviceVerificationCheckBox = new JCheckBox();
+	DeviceVerificationCheckBox.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			fireInputUpdate();
+		}
+	});
+	DeviceVerificationCheckBox.setToolTipText("Select to disable verification for this transmitter.");
+	DeviceVerificationCheckBox.setFont(new Font("Arial", Font.BOLD, 12));
+	DeviceVerificationCheckBox.setBounds(10, 5, 225, 25);
+	add(DeviceVerificationCheckBox);
+	DeviceVerificationCheckBox.setText("Disable Verification");
 }
 
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -212,7 +229,7 @@ private javax.swing.JButton getJButtonAdd() {
 	if (ivjJButtonAdd == null) {
 		try {
 			ivjJButtonAdd = new javax.swing.JButton();
-			ivjJButtonAdd.setBounds(15, 155, 149, 25);
+			ivjJButtonAdd.setBounds(15, 180, 149, 25);
 			ivjJButtonAdd.setName("JButtonAdd");
 			ivjJButtonAdd.setFont(new java.awt.Font("Arial", 1, 12));
 			ivjJButtonAdd.setText("Assign to RTM");
@@ -235,7 +252,7 @@ private javax.swing.JButton getJButtonRemove() {
 	if (ivjJButtonRemove == null) {
 		try {
 			ivjJButtonRemove = new javax.swing.JButton();
-			ivjJButtonRemove.setBounds(215, 155, 143, 25);
+			ivjJButtonRemove.setBounds(215, 180, 143, 25);
 			ivjJButtonRemove.setName("JButtonRemove");
 			ivjJButtonRemove.setFont(new java.awt.Font("Arial", 1, 12));
 			ivjJButtonRemove.setText("Remove from RTM");
@@ -262,7 +279,7 @@ private javax.swing.JScrollPane getJScrollPaneAvailable() {
 			ivjLocalBorder1.setTitleFont(new java.awt.Font("Arial", 1, 12));
 			ivjLocalBorder1.setTitle("Available Devices");
 			ivjJScrollPaneAvailable = new javax.swing.JScrollPane();
-			ivjJScrollPaneAvailable.setBounds(10, 10, 400, 140);
+			ivjJScrollPaneAvailable.setBounds(10, 35, 400, 140);
 			ivjJScrollPaneAvailable.setName("JScrollPaneAvailable");
 			ivjJScrollPaneAvailable.setPreferredSize(new java.awt.Dimension(404, 130));
 			ivjJScrollPaneAvailable.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -293,7 +310,7 @@ private javax.swing.JScrollPane getAssignedDevicesScrollPane() {
 			ivjLocalBorder.setTitleFont(new java.awt.Font("Arial", 1, 12));
 			ivjLocalBorder.setTitle("Assigned Devices");
 			ivjAssignedDevicesScrollPane = new javax.swing.JScrollPane();
-			ivjAssignedDevicesScrollPane.setBounds(10, 185, 400, 166);
+			ivjAssignedDevicesScrollPane.setBounds(10, 210, 400, 166);
 			ivjAssignedDevicesScrollPane.setName("AssignedDevicesScrollPane");
 			ivjAssignedDevicesScrollPane.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 			ivjAssignedDevicesScrollPane.setHorizontalScrollBarPolicy(javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -386,6 +403,8 @@ public Object getValue(Object o)
 	if( getDeviceVerificationTable().isEditing() )
 		getDeviceVerificationTable().getCellEditor().stopCellEditing();
 	
+	boolean disabled = getDeviceVerificationCheckBox().isSelected();
+	
 	RTM rtm = (RTM)o;
 	
 	if(rtm == null)
@@ -412,6 +431,11 @@ public Object getValue(Object o)
 			trans.setResendOnFail("Y");
 		else
 			trans.setResendOnFail("N");
+			
+		if(disabled)
+			trans.setDisable("Y");
+		else
+			trans.setDisable("N");
 		
 		assignedDevices.addElement(trans);
 	}
@@ -452,7 +476,7 @@ private void initialize() {
 		// user code begin {1}
 		// user code end
 		setName("RTMVerificationPanel");
-		setPreferredSize(new java.awt.Dimension(420, 360));
+		setPreferredSize(new java.awt.Dimension(420, 386));
 		setSize(420, 360);
 		setMinimumSize(new java.awt.Dimension(420, 360));
 		setMaximumSize(new java.awt.Dimension(420, 360));
@@ -608,12 +632,15 @@ public void setValue(Object o)
 	Vector allAvailable = populateAvailableList();
 	
 	Vector deviceVerifications = rtm.getDeviceVerificationVector();
+	boolean disabled = false;
 	
 	for(int j = 0; j < deviceVerifications.size(); j++)
 	{
 		DeviceVerification veryDevice = (DeviceVerification)deviceVerifications.elementAt(j);
 		Integer devID = veryDevice.getTransmitterID();
 		LiteYukonPAObject thePAO = PAOFuncs.getLiteYukonPAO(devID.intValue());
+		
+		disabled = veryDevice.getDisable().equalsIgnoreCase("Y");
 		
 		boolean resend;
 		if(veryDevice.getResendOnFail().equalsIgnoreCase("Y"))
@@ -633,12 +660,26 @@ public void setValue(Object o)
 	}
 	//update the available programs list
 	getAvailableList().setListData(allAvailable);
+	getDeviceVerificationCheckBox().setSelected(disabled);
 		
 }
 
 public boolean isInputValid() 
 {
 	return true;
+}
+
+/**
+ * @return
+ */
+public JCheckBox getDeviceVerificationCheckBox() {
+	return DeviceVerificationCheckBox;
+}
+/**
+ * @param box
+ */
+public void setDeviceVerificationCheckBox(JCheckBox box) {
+	DeviceVerificationCheckBox = box;
 }
 
 }
