@@ -13,7 +13,7 @@ public interface WebClientRole {
 
 	public static final int STYLE_SHEET = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 2;
 	public static final int NAV_BULLET_SELECTED = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 3;	//Bullet.gif
-	public static final int NAV_BULLET = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 4;	//Bullet2.gif
+	public static final int NAV_BULLET_EXPAND = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 4;	//BulletExpand.gif
 	public static final int HEADER_LOGO = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 5;
 	
 	public static final int LOG_OFF_URL = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 6;
