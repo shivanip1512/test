@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/05/10 22:35:28 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/06/23 14:13:44 $
 *
 * HISTORY      :
 * $Log: dev_grp_sadigital.cpp,v $
+* Revision 1.3  2004/06/23 14:13:44  cplender
+* Added control_interval and control_reduction to the grp so the protocol doesn't need to set it.
+*
 * Revision 1.2  2004/05/10 22:35:28  cplender
 * Controls require
 * OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC
@@ -185,6 +188,11 @@ INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
     else
     {
         parse.setValue("shed", _loadGroup.getNominalTimeout());
+
+        // Set these here in case they are not set elsewhere.
+        parse.setValue("control_interval", _loadGroup.getNominalTimeout() );
+        parse.setValue("control_reduction", 100 );
+
         parse.setValue("sa_codesimple", _loadGroup.getOperationalAddress());
 
         if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
