@@ -744,9 +744,10 @@ private void initialize() {
 
 		java.awt.GridBagConstraints constraintsJCheckBoxNeverStop = new java.awt.GridBagConstraints();
 		constraintsJCheckBoxNeverStop.gridx = 1; constraintsJCheckBoxNeverStop.gridy = 4;
+		constraintsJCheckBoxNeverStop.gridwidth = 2;
 		constraintsJCheckBoxNeverStop.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJCheckBoxNeverStop.ipadx = -1;
-		constraintsJCheckBoxNeverStop.insets = new java.awt.Insets(3, 10, 0, 3);
+		constraintsJCheckBoxNeverStop.ipadx = 16;
+		constraintsJCheckBoxNeverStop.insets = new java.awt.Insets(6, 10, 1, 87);
 		add(getJCheckBoxNeverStop(), constraintsJCheckBoxNeverStop);
 
 		java.awt.GridBagConstraints constraintsJPanelOkCancel = new java.awt.GridBagConstraints();
