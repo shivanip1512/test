@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/11/15 14:08:23 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/11/20 20:21:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -348,12 +348,6 @@ INT CtiRouteXCU::assembleRippleRequest(CtiRequestMsg               *pReq,
 
     bookkeeping |= 0x00000002;
 
-    if(OutMessage)
-    {
-        outList.insert( OutMessage );         // Insert a copy someone else can clean up.
-        OutMessage = NULL;
-    }
-
     if( bookkeeping & 0x00000001 && bookkeeping & 0x00000002 )
     {
         resultString = "Control \"" + parse.getCommandStr() + "\" (+ stage) sent on route " + getName();
@@ -385,6 +379,12 @@ INT CtiRouteXCU::assembleRippleRequest(CtiRequestMsg               *pReq,
     else
     {
         delete retReturn;
+    }
+
+    if(OutMessage)
+    {
+        outList.insert( OutMessage );         // Insert a copy someone else can clean up.
+        OutMessage = NULL;
     }
 
     return status;
