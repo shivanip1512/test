@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2002/08/06 18:58:42 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2002/08/12 16:53:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -462,7 +462,7 @@ void CtiPILServer::resultThread()
     /* Define the various records */
     CtiDeviceBase   *DeviceRecord;
 
-    /* Define the various time variable */
+    /* Time variable for decode */
     RWTime      TimeNow;
 
     ULONG       BytesRead;
@@ -474,7 +474,7 @@ void CtiPILServer::resultThread()
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << TimeNow.now() << " ResThread      : Started as TID " << rwThreadId() << endl;
+        dout << RWTime() << " ResThread      : Started as TID " << rwThreadId() << endl;
     }
 
     /* Give us a tiny attitude */
@@ -512,7 +512,7 @@ void CtiPILServer::resultThread()
             catch(const RWCancellation& cMsg)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << TimeNow << " ResThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
+                dout << RWTime() << " ResThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
                 bServerClosing = TRUE;
                 //throw;
             }
@@ -528,7 +528,7 @@ void CtiPILServer::resultThread()
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << TimeNow << " ResThread : " << rwThreadId() << " just got KICKED!" << endl;
+                dout << RWTime() << " ResThread : " << rwThreadId() << " just got KICKED!" << endl;
             }
 
             if(PorterNexus.NexusState != CTINEXUS_STATE_NULL)
@@ -547,7 +547,7 @@ void CtiPILServer::resultThread()
         catch(const RWCancellation& cMsg)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << TimeNow << " ResThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
+            dout << RWTime() << " ResThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
             bServerClosing = TRUE;
 
             continue;
@@ -665,7 +665,7 @@ void CtiPILServer::resultThread()
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << TimeNow << " ResThread : " << rwThreadId() << " terminating " << endl;
+        dout << RWTime() << " ResThread : " << rwThreadId() << " terminating " << endl;
     }
 
 }
