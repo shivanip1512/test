@@ -46,7 +46,7 @@ public class UpdateAttribute extends HttpServlet {
 		String valueStr = req.getParameter(VALUE);
 		
 		if( idStr == null || dattribStr == null || valueStr == null ) {
-			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);	
+			out.write("error");
 			return;
 		}
 		
@@ -58,21 +58,21 @@ public class UpdateAttribute extends HttpServlet {
 			dattrib = Integer.parseInt(dattribStr);	
 		}
 		catch(NumberFormatException nfe) {
-			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);		
+			out.write("error");		
 			return;
 		}
 		
 		LitePoint lp = PointFuncs.getLitePoint(id);
 		
 		if( lp == null ) {
-			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);		
+			out.write("error");		
 			return;
 		}
 			
 		DBPersistent dbObj = LiteFactory.createDBPersistent(lp);
 		
 		if( dbObj == null ) {
-			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);		
+			out.write("error");		
 			return;
 		}
 		
@@ -81,12 +81,12 @@ public class UpdateAttribute extends HttpServlet {
 			retrieveTrans.execute();
 		}
 		catch(TransactionException te) {
-			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);		
+			out.write("error");		
 			return;
 		}
 						
 		if( PointAttributes.setAttribute(dbObj, dattrib, valueStr) == null ) {
-			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);		
+			out.write("error");		
 			return;
 		}
 		
@@ -96,7 +96,7 @@ public class UpdateAttribute extends HttpServlet {
 			updateTrans.execute();
 		}
 		catch(TransactionException te) {
-			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);		
+			out.write("error");		
 			return;
 		}		
 	}
