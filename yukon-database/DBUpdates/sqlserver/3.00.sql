@@ -117,6 +117,7 @@ insert into YukonRoleProperty values(-20003,-200,'Manage Members','false','Contr
 
 /* operator consumer info role properties */
 update YukonRoleProperty set DefaultValue='(none)' where RolePropertyID=-20152;
+/* @error ignore */
 insert into YukonRoleProperty values(-20157,-201,'Opt Out Rules','(none)','Defines the rules for opting out.');
 
 /* residential customer role properties */
@@ -724,11 +725,6 @@ update YukonGroupRole set grouproleid=grouproleid * -1 where grouproleid > 0;
 go
 
 update YukonUserRole set userroleid=userroleid * -1 where userroleid > 0;
-go
-
-
-update YukonUser set username = 'admin', password = 'admin' where userid = -1;
-update YukonUser set username = 'yukon', password = 'yukon' where userid = -2;
 go
 
 insert into YukonGroup values(-2,'System Administrator Grp','A set of roles that allow administrative access to the system.');
@@ -1423,11 +1419,11 @@ go
 update yukonpaobject set type = 'MCT-410iLE' where type = 'MCT-410 kWh Only';
 
 
-alter table CTIDatabse add Build numeric;
+alter table CTIDatabase add Build numeric;
 go
-update CTIDatabse set Build = 0;
+update CTIDatabase set Build = 0;
 go
-alter table CTIDatabse alter column Build numeric not null;
+alter table CTIDatabase alter column Build numeric not null;
 go
 
 
