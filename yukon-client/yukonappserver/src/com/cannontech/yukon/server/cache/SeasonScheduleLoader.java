@@ -85,7 +85,7 @@ public void run()
 		timerStop = new java.util.Date();
 		com.cannontech.clientutils.CTILogger.info(
 			(timerStop.getTime() - timerStart.getTime())*.001 + 
-			   " Secs for SeasonLoader (" + allSeasons.size() + " loaded)" );
+			   " Secs for SeasonScheduleLoader (" + allSeasons.size() + " loaded)" );
                
 		//temp code
 	}
