@@ -2423,8 +2423,11 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
                                                             newHourlyCustomer->addLMEnergyExchangeHourlyCustomerTable();
                                                             lmHourlyCustomers.insert(newHourlyCustomer);
 
-                                                            if( ((CtiLMEnergyExchangeHourlyOffer*)revisionHourlyOffers[m])->getAmountRequested() > 0 &&
-                                                                (committedArray[m] + newHourlyCustomer->getAmountCommitted()) >= ((CtiLMEnergyExchangeHourlyOffer*)revisionHourlyOffers[m])->getAmountRequested() )
+                                                            DOUBLE amountRequested = ((CtiLMEnergyExchangeHourlyOffer*)revisionHourlyOffers[m])->getAmountRequested();
+                                                            DOUBLE oldAmountCommitted = committedArray[m];
+                                                            DOUBLE newAmountCommitted = newHourlyCustomer->getAmountCommitted();
+                                                            if( amountRequested > 0.0 &&
+                                                                (oldAmountCommitted + newAmountCommitted) >= amountRequested )
                                                             {
                                                                 overCommittedArray[numberOfHoursOverCommitted] = m;
                                                                 numberOfHoursOverCommitted++;
@@ -2444,11 +2447,6 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
                                                     //create a new revision
                                                     lmProgramEnergyExchange->setManualControlReceivedFlag(FALSE);
 
-                                                    if( currentRevision->getOfferExpirationDateTime() > RWDBDateTime() )
-                                                    {
-                                                        currentRevision->setOfferExpirationDateTime(RWDBDateTime());
-                                                        currentRevision->updateLMEnergyExchangeOfferRevisionTable();
-                                                    }
                                                     RWOrdered& offerRevisions = currentOffer->getLMEnergyExchangeOfferRevisions();
                                                     CtiLMEnergyExchangeOfferRevision* newRevision = new CtiLMEnergyExchangeOfferRevision();
 
@@ -2457,7 +2455,12 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
                                                     newRevision->setActionDateTime(RWDBDateTime());
                                                     newRevision->setNotificationDateTime(RWDBDateTime());
                                                     newRevision->setOfferExpirationDateTime(currentRevision->getOfferExpirationDateTime());
-                                                    newRevision->setAdditionalInfo("Offer was revised automatically due the over committed hours.");
+                                                    newRevision->setAdditionalInfo("Offer was revised automatically due to the over committed hours.");
+                                                    if( currentRevision->getOfferExpirationDateTime() > RWDBDateTime() )
+                                                    {
+                                                        currentRevision->setOfferExpirationDateTime(RWDBDateTime());
+                                                        currentRevision->updateLMEnergyExchangeOfferRevisionTable();
+                                                    }
 
                                                     newRevision->addLMEnergyExchangeOfferRevisionTable();
                                                     offerRevisions.insert(newRevision);
@@ -2469,7 +2472,7 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
                                                         CtiLMEnergyExchangeHourlyOffer* newHourlyOffer = new CtiLMEnergyExchangeHourlyOffer();
                                                         newHourlyOffer->setOfferId(newRevision->getOfferId());
                                                         newHourlyOffer->setRevisionNumber(newRevision->getRevisionNumber());
-                                                        newHourlyOffer->setHour(k);
+                                                        newHourlyOffer->setHour(y);
                                                         if( currentOverCommittedHourPosition < numberOfHoursOverCommitted &&
                                                             overCommittedArray[currentOverCommittedHourPosition] == y )
                                                         {//zero out over committed hour
@@ -2479,8 +2482,8 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
                                                         }
                                                         else
                                                         {
-                                                            newHourlyOffer->setPrice(((CtiLMEnergyExchangeHourlyOffer*)revisionHourlyOffers[k])->getPrice());
-                                                            newHourlyOffer->setAmountRequested(((CtiLMEnergyExchangeHourlyOffer*)revisionHourlyOffers[k])->getAmountRequested());
+                                                            newHourlyOffer->setPrice(((CtiLMEnergyExchangeHourlyOffer*)revisionHourlyOffers[y])->getPrice());
+                                                            newHourlyOffer->setAmountRequested(((CtiLMEnergyExchangeHourlyOffer*)revisionHourlyOffers[y])->getAmountRequested());
                                                         }
                                                         newHourlyOffer->addLMEnergyExchangeHourlyOfferTable();
                                                         newHourlyOffers.insert(newHourlyOffer);
