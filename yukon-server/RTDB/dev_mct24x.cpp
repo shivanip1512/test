@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2004/07/12 19:30:37 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2004/07/27 16:55:32 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -488,7 +488,7 @@ INT CtiDeviceMCT24X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
     RWCString val_report, result_string;
 
     int     demand_rate, block_size, max_blocks;
-    int     current_block_num, retrieved_block_num, retrieved_channel, midnight_offset;
+    int     current_block_num, retrieved_block_num, midnight_offset;
     bool    bad_data = false;
     double  value;
     unsigned long pulses, timestamp, current_block_start, retrieved_block_start;

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2004/07/12 19:30:37 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2004/07/27 16:55:33 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -965,7 +965,7 @@ INT CtiDeviceMCT310::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
     RWCString val_report, result_string;
 
     int     demand_rate, block_size, max_blocks;
-    int     current_block_num, retrieved_block_num, retrieved_channel, midnight_offset;
+    int     current_block_num, retrieved_block_num, midnight_offset;
     bool    bad_data = false;
     double  value;
     unsigned long pulses, timestamp, current_block_start, retrieved_block_start;
@@ -1138,7 +1138,7 @@ INT CtiDeviceMCT310::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
             }
             else
             {
-                result_string = "No load profile point defined for '" + getName() + "' demand accumulator " + CtiNumStr(retrieved_channel);
+                result_string = "No load profile point defined for '" + getName() + "'";
             }
         }
         else
