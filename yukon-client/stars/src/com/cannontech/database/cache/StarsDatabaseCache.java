@@ -282,7 +282,8 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 			for (int i = 0; i < companies.size(); i++) {
 	    		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
 				if (company.getEnergyCompanyID().intValue() == energyCompanyID) {
-					company.init();
+					String preloadData = RoleFuncs.getGlobalPropertyValue( SystemRole.STARS_PRELOAD_DATA );
+					if (CtiUtilities.isFalse(preloadData)) company.init();
 					return company;
 				}
 			}
