@@ -143,8 +143,8 @@ public:
  */
 #define CMD_FLAG_PV_RESET        0x00000010
 #define CMD_FLAG_PV_FREEZE       0x00000020
-#define CMD_FLAG_PV_PEAK         0x00000030
 #define CMD_FLAG_PV_DIAL         0x00000040     // integer value for the PI reg.
+#define CMD_FLAG_PV_ANALOG       0x00000080     // integer value for the PI reg.
 
 #define CMD_FLAG_PV_IED          0x00000100     // The write is to be from a connected ied!
 #define CMD_FLAG_PV_PWR          0x00000200     // The looking for a powerfail read/write

@@ -883,7 +883,9 @@ void  CtiCommandParser::doParsePutValue(const RWCString &CmdStr)
     RWCRExpr   re_reset("reset");
     RWCRExpr   re_reading("reading *[0-9]+(\\.[0-9]*)?");
     RWCRExpr   re_numfloat("[0-9]+(\\.[0-9]*)?");
-    RWCRExpr   re_kyzoffset("kyz *[123]");  //  if there's an offset specified
+    RWCRExpr   re_kyzoffset("kyz *[123]");   //  if there's a kyz offset specified
+    RWCRExpr   re_analog("analog +[0-9]+ +\-?[0-9]+");  //  if there's a non-kyz offset specified
+
 
     RWCTokenizer   tok(CmdStr);
 
@@ -914,6 +916,20 @@ void  CtiCommandParser::doParsePutValue(const RWCString &CmdStr)
 
             _cmd["dial"]      = CtiParseValue( dial   );
             _cmd["offset"]    = CtiParseValue( offset );
+        }
+        if(!CmdStr.match("analog").isNull())
+        {
+            if(!(token = CmdStr.match(re_analog)).isNull())
+            {
+                flag |= CMD_FLAG_PV_ANALOG;
+
+                RWCTokenizer cmdtok(token);
+
+                cmdtok();
+
+                _cmd["analogoffset"] = CtiParseValue( atoi(cmdtok().data()) );
+                _cmd["analogvalue"]  = CtiParseValue( atoi(cmdtok().data()) );
+            }
         }
         if(!(CmdStr.match("reset")).isNull())
         {
