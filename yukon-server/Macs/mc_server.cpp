@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/10/17 17:49:30 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/10/18 19:53:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,9 +53,8 @@ CtiMCServer::~CtiMCServer()
 void CtiMCServer::run()
 {
     CtiMessage* msg = NULL;
-    long delay = 0;
-    long millis = 0;
-
+    unsigned long delay = 0;
+    
     try
     {
         if( init() )
@@ -80,7 +79,7 @@ void CtiMCServer::run()
                     delay = millisToNextMinute();
                     RWTime nextTime = _scheduler.getNextEventTime();
                     if( nextTime.isValid() ) {
-                        long next = millisToTime(nextTime);
+                        unsigned long next = millisToTime(nextTime);
                         if( next < delay ) delay = next;
                     }
                    
@@ -1157,9 +1156,12 @@ unsigned long CtiMCServer::millisToNextMinute() const
 
 unsigned long CtiMCServer::millisToTime(const RWTime& t) const
 {
-    CtiLockGuard< CtiLogger > guard(dout);    
-    unsigned long millis = (t.seconds() - RWTime::now().seconds()) * 1000;
-    return ( millis < 0 ? 0 : millis );
+    unsigned long t_secs = t.seconds();
+    unsigned long now_secs = RWTime::now().seconds();
+
+    return ( t_secs < now_secs ?
+             0 :
+             (t_secs - now_secs) * 1000 );    
 }
 
 void CtiMCServer::dumpRunningScripts()
