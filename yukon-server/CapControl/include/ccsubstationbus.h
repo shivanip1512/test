@@ -59,13 +59,15 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE getCurrentVarLoadPointValue() const;
     ULONG getCurrentWattLoadPointId() const;
     DOUBLE getCurrentWattLoadPointValue() const;
-    ULONG getBandwidth() const;
+    DOUBLE getUpperBandwidth() const;
     ULONG getControlInterval() const;
     ULONG getMinResponseTime() const;
     ULONG getMinConfirmPercent() const;
     ULONG getFailurePercent() const;
     const RWCString& getDaysOfWeek() const;
     ULONG getMapLocationId() const;
+    DOUBLE getLowerBandwidth() const;
+    const RWCString& getControlUnits() const;
     ULONG getDecimalPlaces() const;
     const RWDBDateTime& getNextCheckTime() const;
     BOOL getNewPointDataReceivedFlag() const;
@@ -82,6 +84,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE getVarValueBeforeControl() const;
     ULONG getLastFeederControlledPAOId() const;
     LONG getLastFeederControlledPosition() const;
+    DOUBLE getPowerFactorValue() const;
     
     RWOrdered& getCCFeeders();
 
@@ -103,13 +106,15 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setCurrentVarLoadPointValue(DOUBLE currentvarval);
     CtiCCSubstationBus& setCurrentWattLoadPointId(ULONG currentwattid);
     CtiCCSubstationBus& setCurrentWattLoadPointValue(DOUBLE currentwattval);
-    CtiCCSubstationBus& setBandwidth(ULONG bandwidth);
+    CtiCCSubstationBus& setUpperBandwidth(DOUBLE bandwidth);
     CtiCCSubstationBus& setControlInterval(ULONG interval);
     CtiCCSubstationBus& setMinResponseTime(ULONG response);
     CtiCCSubstationBus& setMinConfirmPercent(ULONG confirm);
     CtiCCSubstationBus& setFailurePercent(ULONG failure);
     CtiCCSubstationBus& setDaysOfWeek(const RWCString& days);
     CtiCCSubstationBus& setMapLocationId(ULONG maplocation);
+    CtiCCSubstationBus& setLowerBandwidth(DOUBLE bandwidth);
+    CtiCCSubstationBus& setControlUnits(const RWCString& contunit);
     CtiCCSubstationBus& setDecimalPlaces(ULONG places);
     CtiCCSubstationBus& figureNextCheckTime();
     CtiCCSubstationBus& setNewPointDataReceivedFlag(BOOL newpointdatareceived);
@@ -126,7 +131,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setVarValueBeforeControl(DOUBLE oldvarval);
     CtiCCSubstationBus& setLastFeederControlledPAOId(ULONG lastfeederpao);
     CtiCCSubstationBus& setLastFeederControlledPosition(LONG lastfeederposition);
-
+    CtiCCSubstationBus& setPowerFactorValue(DOUBLE pfval);
 
     BOOL isPastResponseTime(const RWDBDateTime& currentDateTime);
     BOOL isVarCheckNeeded(const RWDBDateTime& currentDateTime);
@@ -140,6 +145,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& figureEstimatedVarLoadPointValue();
     BOOL isAlreadyControlled();
     BOOL areAllCapBankStatusesReceived();
+    DOUBLE calculatePowerFactor(DOUBLE kvar, DOUBLE kw);
+    DOUBLE convertKQToKVAR(DOUBLE kq, DOUBLE kw);
+    DOUBLE convertKVARToKQ(DOUBLE kvar, DOUBLE kw);
     void dumpDynamicData();
 
     //Members inherited from RWCollectable
@@ -158,6 +166,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     static const RWCString SubstationBusControlMethod;
     static const RWCString BusOptimizedFeederControlMethod;
 
+    static const RWCString KVARControlUnits;
+    static const RWCString PF_BY_KVARControlUnits;
+    static const RWCString PF_BY_KQControlUnits;
     //static int PeakState;
     //static int OffPeakState;
 
@@ -181,13 +192,15 @@ private:
     DOUBLE _currentvarloadpointvalue;
     ULONG _currentwattloadpointid;
     DOUBLE _currentwattloadpointvalue;
-    ULONG _bandwidth;
+    DOUBLE _upperbandwidth;
     ULONG _controlinterval;
     ULONG _minresponsetime;
     ULONG _minconfirmpercent;
     ULONG _failurepercent;
     RWCString _daysofweek;
     ULONG _maplocationid;
+    DOUBLE _lowerbandwidth;
+    RWCString _controlunits;
     ULONG _decimalplaces;
     RWDBDateTime _nextchecktime;
     BOOL _newpointdatareceivedflag;
@@ -204,6 +217,7 @@ private:
     DOUBLE _varvaluebeforecontrol;
     ULONG _lastfeedercontrolledpaoid;
     LONG _lastfeedercontrolledposition;
+    DOUBLE _powerfactorvalue;
 
     RWOrdered _ccfeeders;
 
