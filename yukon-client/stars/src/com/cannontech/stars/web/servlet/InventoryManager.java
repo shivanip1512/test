@@ -3,7 +3,6 @@ package com.cannontech.stars.web.servlet;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.TimeZone;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -86,6 +85,7 @@ import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.VersaCom;
 import com.cannontech.stars.xml.serialize.Voltage;
+import com.cannontech.util.ServletUtil;
 
 /**
  * @author yao
@@ -372,7 +372,7 @@ public class InventoryManager extends HttpServlet {
 			if (action.equalsIgnoreCase("CreateLMHardware")) {
 				// Request from CreateHardware.jsp, no inventory checking
 				// Save the request parameters 
-				StarsOperation operation = CreateLMHardwareAction.getRequestOperation(req, energyCompany.getDefaultTimeZone());
+				StarsOperation operation = CreateLMHardwareAction.getRequestOperation( req, energyCompany );
 				session.setAttribute( STARS_INVENTORY_OPERATION, operation );
 				
 				if (liteInv != null) {
@@ -385,7 +385,7 @@ public class InventoryManager extends HttpServlet {
 			}
 			else if (action.equalsIgnoreCase("UpdateLMHardware")) {
 				// Request from Inventory.jsp, device type or serial # must have been changed
-				StarsOperation operation = UpdateLMHardwareAction.getRequestOperation(req, energyCompany.getDefaultTimeZone());
+				StarsOperation operation = UpdateLMHardwareAction.getRequestOperation( req, energyCompany );
 				StarsDeleteLMHardware deleteHw = new StarsDeleteLMHardware();
 				deleteHw.setInventoryID( Integer.parseInt(req.getParameter("OrigInvID")) );
 				operation.setStarsDeleteLMHardware( deleteHw );
@@ -479,7 +479,7 @@ public class InventoryManager extends HttpServlet {
 			int invID = Integer.parseInt( req.getParameter("InvID") );
 			LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID, true );
 			
-			StarsOperation operation = UpdateLMHardwareAction.getRequestOperation(req, energyCompany.getDefaultTimeZone());
+			StarsOperation operation = UpdateLMHardwareAction.getRequestOperation( req, energyCompany );
 			UpdateLMHardwareAction.updateInventory( operation.getStarsUpdateLMHardware(), liteInv, energyCompany );
 			
 			if (req.getParameter("UseHardwareAddressing") != null) {
@@ -1020,7 +1020,7 @@ public class InventoryManager extends HttpServlet {
 		
 		try {
 			StarsCreateLMHardware createHw = new StarsCreateLMHardware();
-			setStarsInv( createHw, req, energyCompany.getDefaultTimeZone() );
+			setStarsInv( createHw, req, energyCompany );
 			
 			try {
 				LiteInventoryBase existingHw = energyCompany.searchForLMHardware(
@@ -1055,7 +1055,7 @@ public class InventoryManager extends HttpServlet {
 		
 		try {
 			StarsCreateLMHardware createHw = new StarsCreateLMHardware();
-			setStarsInv( createHw, req, energyCompany.getDefaultTimeZone() );
+			setStarsInv( createHw, req, energyCompany );
 			
 			if (req.getParameter("DeviceName").length() > 0) {
 				int mctType = Integer.parseInt( req.getParameter("MCTType") );
@@ -1195,7 +1195,7 @@ public class InventoryManager extends HttpServlet {
 	/**
 	 * Store hardware information entered by user into a StarsLMHw object 
 	 */
-	public static void setStarsInv(StarsInv starsInv, HttpServletRequest req, TimeZone tz) throws WebClientException {
+	public static void setStarsInv(StarsInv starsInv, HttpServletRequest req, LiteStarsEnergyCompany energyCompany) throws WebClientException {
 		if (req.getParameter("InvID") != null)
 			starsInv.setInventoryID( Integer.parseInt(req.getParameter("InvID")) );
 		else
@@ -1214,7 +1214,7 @@ public class InventoryManager extends HttpServlet {
 		
 		String recvDateStr = req.getParameter("ReceiveDate");
 		if (recvDateStr != null && recvDateStr.length() > 0) {
-			Date recvDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(recvDateStr, tz);
+			Date recvDate = ServletUtil.parseDateStringLiberally( recvDateStr, energyCompany.getDefaultTimeZone() );
 			if (recvDate == null)
 				throw new WebClientException("Invalid receive date format '" + recvDateStr + "', the date should be in the form of 'mm/dd/yy'");
 			starsInv.setReceiveDate( recvDate );
@@ -1222,7 +1222,7 @@ public class InventoryManager extends HttpServlet {
 		
 		String instDateStr = req.getParameter("InstallDate");
 		if (instDateStr != null && instDateStr.length() > 0) {
-			Date instDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(instDateStr, tz);
+			Date instDate = ServletUtil.parseDateStringLiberally( instDateStr, energyCompany.getDefaultTimeZone() );
 			if (instDate == null)
 				throw new WebClientException("Invalid install date format '" + instDateStr + "', the date should be in the form of 'mm/dd/yy'");
 			starsInv.setInstallDate( instDate );
@@ -1230,7 +1230,7 @@ public class InventoryManager extends HttpServlet {
 		
 		String remvDateStr = req.getParameter("RemoveDate");
 		if (remvDateStr != null && remvDateStr.length() > 0) {
-			Date remvDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(remvDateStr, tz);
+			Date remvDate = ServletUtil.parseDateStringLiberally( remvDateStr, energyCompany.getDefaultTimeZone() );
 			if (remvDate == null)
 				throw new WebClientException("Invalid remove date format '" + remvDateStr + "', the date should be in the form of 'mm/dd/yy'");
 			starsInv.setRemoveDate( remvDate );
@@ -1254,13 +1254,15 @@ public class InventoryManager extends HttpServlet {
 			starsInv.setDeviceType( devType );
 		}
 		
-		int devTypeDefID = YukonListFuncs.getYukonListEntry( starsInv.getDeviceType().getEntryID() ).getYukonDefID();
-		if (devTypeDefID != YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) {
-			LMHardware hw = new LMHardware();
-			hw.setManufacturerSerialNumber( req.getParameter("SerialNo") );
-			if (req.getParameter("Route") != null)
-				hw.setRouteID( Integer.parseInt(req.getParameter("Route")) );
-			starsInv.setLMHardware( hw );
+		if (starsInv.getDeviceType() != null) {
+			int categoryID = ECUtils.getInventoryCategoryID( starsInv.getDeviceType().getEntryID(), energyCompany );
+			if (ECUtils.isLMHardware( categoryID )) {
+				LMHardware hw = new LMHardware();
+				hw.setManufacturerSerialNumber( req.getParameter("SerialNo") );
+				if (req.getParameter("Route") != null)
+					hw.setRouteID( Integer.parseInt(req.getParameter("Route")) );
+				starsInv.setLMHardware( hw );
+			}
 		}
 	}
 	

@@ -1,7 +1,6 @@
 package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
-import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -34,7 +33,6 @@ import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsCreateLMHardware;
-import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareConfig;
@@ -61,16 +59,12 @@ public class UpdateLMHardwareAction implements ActionBase {
 		try {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
-			
-			StarsEnergyCompanySettings ecSettings =
-					(StarsEnergyCompanySettings) session.getAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
-			TimeZone tz = TimeZone.getTimeZone( ecSettings.getStarsEnergyCompany().getTimeZone() );
-			if (tz == null) tz = TimeZone.getDefault();
 
 			StarsOperation operation = null;
 			if (req.getParameter("InvID") != null) {
 				// Request from Inventory.jsp or ChangeLabel.jsp
-				operation = getRequestOperation( req, tz );
+				LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+				operation = getRequestOperation( req, energyCompany );
 			}
 			else {
 				// Request redirected from InventoryManager
@@ -240,13 +234,13 @@ public class UpdateLMHardwareAction implements ActionBase {
 		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	public static StarsOperation getRequestOperation(HttpServletRequest req, TimeZone tz) throws WebClientException {
+	public static StarsOperation getRequestOperation(HttpServletRequest req, LiteStarsEnergyCompany energyCompany) throws WebClientException {
 		StarsOperation operation = new StarsOperation();
 		StarsUpdateLMHardware updateHw = new StarsUpdateLMHardware();
 		
 		if (req.getParameter("DeviceID") != null) {
 			// This comes from operator side
-			InventoryManager.setStarsInv( updateHw, req, tz );
+			InventoryManager.setStarsInv( updateHw, req, energyCompany );
 			
 			if (req.getParameter("OrigInvID") != null) {
 				int origInvID = Integer.parseInt( req.getParameter("OrigInvID") );
