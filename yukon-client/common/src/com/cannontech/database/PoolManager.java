@@ -1,7 +1,6 @@
 package com.cannontech.database;
 
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -13,7 +12,6 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.yukon.IDBPersistent;
 import com.cannontech.yukon.concrete.ResourceFactory;
 
 public class PoolManager
@@ -22,9 +20,6 @@ public class PoolManager
 	
    static private PoolManager instance;
    static private int clients;
-
-//   private LogWriter logWriter;
-   private PrintWriter pw;
 
    private Vector drivers = new Vector();
    private Hashtable pools = new Hashtable();
@@ -44,12 +39,9 @@ public class PoolManager
 			String poolName = name.substring(0, name.lastIndexOf("."));
 			String url = props.getProperty(poolName + ".url");
 			if (url == null)
-			{   
-//			   logWriter.log("No URL specified for " + poolName,
-//				  LogWriter.ERROR);
-              
-            CTILogger.error( "No URL specified for " + poolName );
-			   continue;
+			{                 
+	            CTILogger.error( "No URL specified for " + poolName );
+			    continue;
 			}
    
 			String user = props.getProperty(poolName + ".user");
@@ -64,9 +56,8 @@ public class PoolManager
 			}
 			catch (NumberFormatException e)
 			{
-//			   logWriter.log("Invalid maxconns value " + maxConns + " for " + poolName, LogWriter.ERROR);
-            CTILogger.error("Invalid maxconns value " + maxConns + " for " + poolName);
-			   max = 0;
+            	CTILogger.error("Invalid maxconns value " + maxConns + " for " + poolName);
+			   	max = 0;
 			}
    
 			String initConns = props.getProperty(poolName + 
@@ -77,11 +68,9 @@ public class PoolManager
 			   init = Integer.valueOf(initConns).intValue();
 			}
 			catch (NumberFormatException e)
-			{
-//			   logWriter.log("Invalid initconns value " + initConns + " for " + poolName, LogWriter.ERROR);
-                      
-            CTILogger.error( "Invalid initconns value " + initConns + " for " + poolName );
-			   init = 0;
+			{                      
+            	CTILogger.error( "Invalid initconns value " + initConns + " for " + poolName );
+			   	init = 0;
 			}
    
 			String loginTimeOut = props.getProperty(poolName + 
@@ -93,30 +82,11 @@ public class PoolManager
 			}
 			catch (NumberFormatException e)
 			{
-//			   logWriter.log("Invalid logintimeout value " + loginTimeOut + " for " + poolName, LogWriter.ERROR);
-            CTILogger.info("Invalid logintimeout value " + loginTimeOut + " for " 
-                  + poolName + ", defaulting to 5" );
-                  
-			   timeOut = 5;
+            	CTILogger.info("Invalid logintimeout value " + loginTimeOut + " for " 
+                  				+ poolName + ", defaulting to 5" );                  
+			   	timeOut = 5;
 			}
    
-/*			String logLevelProp = props.getProperty(poolName + 
-						   ".loglevel", String.valueOf(LogWriter.ERROR));
-
-			int logLevel = LogWriter.INFO;
-			if (logLevelProp.equalsIgnoreCase("none"))
-			{
-			   logLevel = LogWriter.NONE;
-			}
-			else if (logLevelProp.equalsIgnoreCase("error"))
-			{
-			   logLevel = LogWriter.ERROR;
-			}
-			else if (logLevelProp.equalsIgnoreCase("debug"))
-			{
-			   logLevel = LogWriter.DEBUG;
-			}
-*/
 			ConnectionPool pool =
 						   new ConnectionPool(poolName, url, user, password,
 											max, init, timeOut );
@@ -125,6 +95,7 @@ public class PoolManager
 		 }
 	  }
    }
+   
    public void freeConnection(String name, Connection con)
    {
 	  ConnectionPool pool = (ConnectionPool) pools.get(name);
@@ -134,7 +105,6 @@ public class PoolManager
 	  }
    }
 /**
- * Insert the method's description here.
  * Creation date: (2/20/2002 10:48:47 AM)
  * @return java.util.Enumeration
  */
@@ -149,6 +119,7 @@ public String[] getAllPoolsStrings()
 		
 	return strs;
 }
+   
    public Connection getConnection(String name)
    {
 	  Connection conn = null;
@@ -161,11 +132,7 @@ public String[] getAllPoolsStrings()
 		 }
 		 catch (SQLException e)
 		 {
-//			logWriter.log(e, "Exception getting connection from " +
-//			   name, LogWriter.ERROR);
-         CTILogger.error("Exception getting connection from " +
-            name, e );
-         
+         	CTILogger.error("Exception getting connection from " + name, e );         
 		 }
 	  }
 
@@ -182,9 +149,6 @@ public String[] getAllPoolsStrings()
    }
    private void init()
    {
-	  // Log to System.err until we have read the logfile property
-	  pw = new PrintWriter(System.err, true);
-//	  logWriter = new LogWriter("PoolManager", LogWriter.INFO, pw);
 	  InputStream is = getClass().getResourceAsStream( DB_PROPERTIES_FILE );
 	  Properties dbProps = new Properties();
 	  try
@@ -193,35 +157,12 @@ public String[] getAllPoolsStrings()
 	  }
 	  catch (Exception e)
 	  {
-//		 logWriter.log("Can't read the properties file. " +
-//			"Make sure db.properties is in the CLASSPATH",
-//			LogWriter.ERROR);
+
        CTILogger.error("Can't read the properties file. " +
          "Make sure db.properties is in the CLASSPATH" );
          
 		 return;
 	  }
-
-/*	  String logFile = dbProps.getProperty("logfile");
-	  if (logFile != null)
-	  {		 
-		 try
-		 {
-			pw = new PrintWriter(new FileWriter( com.cannontech.common.util.CtiUtilities.getLogDirPath() + logFile, true), true);
-			logWriter.setPrintWriter(pw);
-		 }
-		 catch (IOException e)
-		 {
-			logWriter.log("Can't open the log file: " + com.cannontech.common.util.CtiUtilities.getLogDirPath() + "/" + logFile +
-			   ". Using System.err instead", LogWriter.ERROR);
-		 }
-	  }
-	  else
-	  {
-		   com.cannontech.clientutils.CTILogger.info("*** LogFile value not found, not logging database activity."); 
-			pw = null;
-	  }
-*/
 
 	  String printSQLfile = dbProps.getProperty("PrintSQL");
 	  if (printSQLfile != null)
@@ -229,8 +170,6 @@ public String[] getAllPoolsStrings()
 		 try
 		 {
 			ResourceFactory.getIYukon().setSQLFileName( printSQLfile );
-			//com.cannontech.database.db.DBPersistent.setSQLFileName( com.cannontech.common.util.CtiUtilities.getLogDirPath() + "/" + printSQLfile );
-			//com.cannontech.database.db.DBPersistent.setPrintSQL( true );
 		 }
 		 catch (Exception e)
 		 {
@@ -255,18 +194,13 @@ public String[] getAllPoolsStrings()
 			   Class.forName(driverClassName).newInstance();
 			DriverManager.registerDriver(driver);
 			drivers.addElement(driver);
-//			logWriter.log("Registered JDBC driver " + driverClassName,
-//			   LogWriter.INFO);
 
-         CTILogger.info("Registered JDBC driver " + driverClassName );
+	         CTILogger.info("Registered JDBC driver " + driverClassName );
 		 }
 		 catch (Exception e)
 		 {
          CTILogger.error("Can't register JDBC driver: " +
-                  driverClassName, e );
-         
-//			logWriter.log(e, "Can't register JDBC driver: " +
-//			   driverClassName, LogWriter.ERROR);
+                  driverClassName, e );        
 		 }
 	  }
    }
