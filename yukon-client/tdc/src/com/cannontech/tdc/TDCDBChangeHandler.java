@@ -1,5 +1,10 @@
 package com.cannontech.tdc;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Timer;
+
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
@@ -12,13 +17,46 @@ import com.cannontech.tdc.logbox.MessageBoxFrame;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-class TDCDBChangeHandler
+class TDCDBChangeHandler implements ActionListener
 {
-	public TDCDBChangeHandler()
+	public static final int DB_REFRESH = 5000; //millis to batch DB changes
+	private Timer dbTimer = null;
+	
+	private TDCMainPanel tdcPan = null;
+	
+	//a flag to say if we need to refresh from the DB or not
+	private boolean needRefresh = false;
+
+	
+	public TDCDBChangeHandler( TDCMainPanel tdcPanel_ )
 	{
 		super();
+		
+		tdcPan = tdcPanel_;
+		dbTimer = new Timer( DB_REFRESH, this );
+		dbTimer.start();
 	}
 	
+	public void actionPerformed(ActionEvent e)
+	{
+		if( e.getSource() == dbTimer
+			 && needRefresh )
+		{
+			synchronized( tdcPan.getTableDataModel() )
+			{
+				try
+				{
+					tdcPan.executeRefresh_Pressed();
+				}
+				finally
+				{
+					needRefresh = false;
+				}
+			} //end synch
+		}
+
+	}
+
 	private boolean hasChangedItem( DBChangeMsg msg, TDCMainPanel tdcPan )
 	{
 		if( (msg.getDatabase() == DBChangeMsg.CHANGE_ALARM_CATEGORY_DB ||
@@ -60,7 +98,7 @@ class TDCDBChangeHandler
 	 * Insert the method's description here.
 	 * Creation date: (1/21/00 11:46:00 AM)
 	 */
-	public void processDBChangeMsg( DBChangeMsg msg, TDCMainPanel tdcPan )
+	public void processDBChangeMsg( DBChangeMsg msg )
 	{	
 		TDCMainFrame.messageLog.addMessage(
 				"Received a Database Change Message from : " +  msg.getUserName() + 
@@ -75,22 +113,22 @@ class TDCDBChangeHandler
 		if( !tdcPan.isClientDisplay() 
 			 && !Display.isReadOnlyDisplay(tdcPan.getTableDataModel().getCurrentDisplay().getDisplayNumber()) )
 		{
-         if( msg.getDatabase() == DBChangeMsg.CHANGE_ALARM_CATEGORY_DB )
-         {
-            synchronized( tdcPan.getTableDataModel() )
-            {
-               //just a try, work in nearly all cases!
-               int i = tdcPan.getJComboCurrentDisplay().getSelectedIndex();
-               tdcPan.initComboCurrentDisplay();
-               tdcPan.getJComboCurrentDisplay().setSelectedIndex( i );
-            }   
-         }
-         else
-         {
-            // fire the refresh button
-            tdcPan.executeRefresh_Pressed();
-         }
-	         
+			synchronized( tdcPan.getTableDataModel() )
+			{
+	         if( msg.getDatabase() == DBChangeMsg.CHANGE_ALARM_CATEGORY_DB )
+	         {
+	            //just a try, work in nearly all cases!
+	            int i = tdcPan.getJComboCurrentDisplay().getSelectedIndex();
+	            tdcPan.initComboCurrentDisplay();
+	            tdcPan.getJComboCurrentDisplay().setSelectedIndex( i );
+	         }
+	         else
+	         {
+	            // fire the refresh button
+	            //tdcPan.executeRefresh_Pressed();
+	            needRefresh = true;
+	         }
+			}	         
 	
 	
 		}

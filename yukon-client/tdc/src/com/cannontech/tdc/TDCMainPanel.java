@@ -111,7 +111,7 @@ public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.t
 	private javax.swing.JRadioButtonMenuItem ivjJRadioButtonMenuItemAllowPt = null;
 	private javax.swing.JRadioButtonMenuItem ivjJRadioButtonMenuItemInhibitDev = null;
 	private javax.swing.JRadioButtonMenuItem ivjJRadioButtonMenuItemInhibitPt = null;
-	private TDCDBChangeHandler dbChangeHandler = new TDCDBChangeHandler();
+	private TDCDBChangeHandler dbChangeHandler = null;
 	
 	private javax.swing.JMenuItem jMenuItemGraph = null;
 
@@ -2116,6 +2116,9 @@ private void initialize() {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
+	
+	dbChangeHandler = new TDCDBChangeHandler( this );
+	
 	// user code end
 }
 /**
@@ -3166,7 +3169,7 @@ protected void processDBChangeMsg( DBChangeMsg msg )
 {		
 	try
 	{
-		dbChangeHandler.processDBChangeMsg( msg, this );
+		dbChangeHandler.processDBChangeMsg( msg );
 	}
 	catch( Exception e )
 	{

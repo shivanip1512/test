@@ -2000,33 +2000,7 @@ public boolean pointExists(String ptID)
 	
 	return pointExists( value.longValue() );
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/20/00 2:33:19 PM)
- * Version: <version>
- */
-public synchronized void processDBChangeMessage( DBChangeMsg msg ) 
-{
 
-	if( Display.isReadOnlyDisplay(getCurrentDisplay().getDisplayNumber())  )
-	{
-		return;  // do nothing
-	}
-
-	switch( msg.getDatabase() )
-	{
-		case DBChangeMsg.CHANGE_STATE_GROUP_DB:
-		case DBChangeMsg.CHANGE_PAO_DB:
-		case DBChangeMsg.CHANGE_POINT_DB:	
-		case DBChangeMsg.CHANGE_ALARM_CATEGORY_DB:
-		//case DBChangeMsg.CHANGE_ALL_DB:
-			makeTable(); // just recreate the table
-			break;
-		
-		default:
-		TDCMainFrame.messageLog.addMessage("Unhandled DBChangeMessage received and ignored = " + msg.toString(), MessageBoxFrame.INFORMATION_MSG );
-	}
-}
 /**
  * This method was created in VisualAge.
  */
