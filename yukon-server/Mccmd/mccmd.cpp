@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2003/02/19 16:03:30 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2003/03/04 16:27:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -877,6 +877,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
     CHAR newFileName[50];
     int retVal = TCL_OK;
     bool dsm2ImportFlag = false;
+    int protocol = TEXT_CMD_FILE_SPECIFY_VERSACOM;
 
     if( argc < 2 )
     {
@@ -886,6 +887,8 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
             dout << "           optional parameters: " << endl;
             dout << "                 /export - export commands sent to file export\\sent-mm-dd.txt" << endl;
             dout << "                 /cmdsperexecution:# - number of commands sent each execution (default to all)" << endl;
+            dout << "                 /protocol:x - specify the protocol all commands should use (default versacom)" << endl;
+            dout << "                      where x is versacom, expresscom, none (meaning don't specify)           " << endl;
             dout << "                 /dsm2 - import dsm2 vconfig.dat type commands (not valid with other options)" << endl;
         }
 
@@ -965,7 +968,41 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                         dout << RWTime() << " - Will import file as DSM2 vconfig.dat format " <<endl;;
                     }
                 }
-
+                if(RWCString(argv[i]).contains (RWCString ("/protocol"),RWCString::ignoreCase))
+                {
+                    if(RWCString(argv[i]).contains (RWCString ("versacom"),RWCString::ignoreCase))
+                    {
+                        protocol = TEXT_CMD_FILE_SPECIFY_VERSACOM;
+                        {
+                            CtiLockGuard< CtiLogger > guard(dout);
+                            dout << RWTime() << " - Will export commands using versacom only " <<endl;;
+                        }
+                    } 
+                    else if(RWCString(argv[i]).contains (RWCString ("expresscom"),RWCString::ignoreCase))
+                    {
+                        protocol = TEXT_CMD_FILE_SPECIFY_EXPRESSCOM;
+                        {
+                            CtiLockGuard< CtiLogger > guard(dout);
+                            dout << RWTime() << " - Will export commands using expresscom only " <<endl;;
+                        }
+                    }
+                    else if(RWCString(argv[i]).contains (RWCString ("none"),RWCString::ignoreCase))
+                    {
+                        protocol = TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL;
+                        {
+                            CtiLockGuard< CtiLogger > guard(dout);
+                            dout << RWTime() << " - Will export commands without specifying protocol " <<endl;;
+                        }
+                    }
+                    else
+                    {
+                        protocol = TEXT_CMD_FILE_SPECIFY_VERSACOM;
+                        {
+                            CtiLockGuard< CtiLogger > guard(dout);
+                            dout << RWTime() << " - Will export commands using versacom only " <<endl;;
+                        }
+                    }
+                }
             }
         }
 
@@ -982,10 +1019,8 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
 
         }
         else
-
         {
-
-            decodeResult = decodeTextCommandFile( file, commandsPerTime, &results);
+            decodeResult = decodeTextCommandFile( file, commandsPerTime, protocol, &results);
 
             if(decodeResult == TEXT_CMD_FILE_LOG_FAIL )
             {
