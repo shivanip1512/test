@@ -754,7 +754,8 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
          byte deleteVal = DBDeletionWarn.deletionAttempted(((com.cannontech.database.data.point.PointBase) userObject)
                               .getPoint().getPointID().intValue(), DBDeletionWarn.POINT_TYPE);
          
-         if( deleteVal == DBDeletionWarn.STATUS_ALLOW )
+         if( deleteVal == DBDeletionWarn.STATUS_ALLOW
+             || deleteVal == DBDeletionWarn.STATUS_CONFIRM )
          {
 			   showChangeTypeWizardPanel(
 				  new com.cannontech.dbeditor.wizard.changetype.point.PointChangeTypeWizardPanel(
