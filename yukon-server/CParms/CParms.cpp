@@ -29,7 +29,7 @@ CtiConfigParameters& CtiConfigParameters::setConfigFile(RWCString strName)
    return *this;
 }
 
-RWCString CtiConfigParameters::getYukonBaseDir() const 
+RWCString CtiConfigParameters::getYukonBaseDir() const
 {
   char buf[1000] = "c:\\yukon";
   char* pos;
@@ -37,15 +37,15 @@ RWCString CtiConfigParameters::getYukonBaseDir() const
   //Assume the master.cfg is in the normal place
   //x:\\yukon\\server\\config\\master.cfg
   int n = GetFullPathName(FileName, 1000, buf, &pos);
-  if(n != 0 && n < 1000) 
+  if(n != 0 && n < 1000)
     {
-      for(int i = 0; i < 3; i++) 
-	{
-	  if((pos = strrchr(buf, '\\')) != NULL)
-	    *pos = NULL;
-	  else
-	    break;
-	}
+      for(int i = 0; i < 3; i++)
+    {
+      if((pos = strrchr(buf, '\\')) != NULL)
+        *pos = NULL;
+      else
+        break;
+    }
     }
 
   return RWCString(buf);
@@ -189,13 +189,13 @@ BOOL CtiConfigParameters::isOpt(RWCString key)
 
 
 RWCString
-CtiConfigParameters::getValueAsString(RWCString key)
+CtiConfigParameters::getValueAsString(RWCString key, RWCString defaultval)
 {
    BOOL           bRet = TRUE;
    CtiConfigKey   Key(key);
    CtiConfigValue *Value;
 
-   RWCString      retStr = RWCString();      // A Null string.
+   RWCString retStr = defaultval;      // A Null string.
 
    checkForRefresh();
 

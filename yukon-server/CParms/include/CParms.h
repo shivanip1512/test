@@ -54,7 +54,7 @@ public:
    void              Dump();
    void              HeadAndTail(char *source, char *dest, size_t len);
 
-   RWCString         getValueAsString(RWCString Key);
+   RWCString         getValueAsString(RWCString Key, RWCString defaultval = RWCString());
    int               getValueAsInt(RWCString key, int defaultval = 0);
    double            getValueAsDouble(RWCString key, double defaultval = 0.0);
    ULONG             getValueAsULong(RWCString key, ULONG defaultval = 0L, int base = 10);
