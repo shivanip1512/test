@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/05/11 18:31:25 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/05/24 17:48:39 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,14 +18,18 @@
 
 #include "logger.h"
 #include "porter.h"
+#include "msg_pdata.h"
 #include "prot_lmi.h"
 #include "rw/rwdate.h"
 #include "utility.h"
+#include "numstr.h"
+#include "cparms.h"
 
 
-CtiProtocolLMI::CtiProtocolLMI()
+CtiProtocolLMI::CtiProtocolLMI() :
+    _transmitter_power_time(0),
+    _address(0)
 {
-    _address = 0;
 }
 
 
@@ -65,7 +69,8 @@ void CtiProtocolLMI::setAddress( unsigned char address )
 
 void CtiProtocolLMI::setCommand( LMICommand cmd, unsigned control_offset, unsigned control_parameter )
 {
-    //  if the command needs any additional parameters (or needs to percolate to the seriesv) catch it here
+    //  if the command needs to percolate to the seriesv, catch it here
+    //    this is necessary because the commands between the LMI and the Series V may not always match as a passthrough
     switch( cmd )
     {
         case Command_ScanAccumulator:   _seriesv.setCommand(CtiProtocolSeriesV::Command_ScanAccumulator);   break;
@@ -74,13 +79,11 @@ void CtiProtocolLMI::setCommand( LMICommand cmd, unsigned control_offset, unsign
 
         case Command_Control:           _seriesv.setCommandControl(CtiProtocolSeriesV::Command_Control, control_offset, control_parameter);         break;
         case Command_AnalogSetpoint:    _seriesv.setCommandControl(CtiProtocolSeriesV::Command_AnalogSetpoint, control_offset, control_parameter);  break;
-
-        default:
-        //case Command_Loopback:
-            break;
     }
 
     _command = cmd;
+    _control_offset    = control_offset;
+    _control_parameter = control_parameter;
 }
 
 
@@ -102,8 +105,8 @@ int CtiProtocolLMI::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS 
         //  on the trip over, the seriesv stuff doesn't matter;  it'll be set when setCommand gets called
 
         tmp_om_struct.command = _command;
-        tmp_om_struct.control_offset    = 0;  //  control point
-        tmp_om_struct.control_parameter = 0;  //  control duration, setpoint value
+        tmp_om_struct.control_offset    = _control_offset;      //  control point
+        tmp_om_struct.control_parameter = _control_parameter;   //  control duration, setpoint value
 
         memcpy( OutMessage->Buffer.OutMessage, &tmp_om_struct, sizeof(tmp_om_struct) );
         OutMessage->OutLength = sizeof(tmp_om_struct);
@@ -143,25 +146,48 @@ int CtiProtocolLMI::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
 
 bool CtiProtocolLMI::hasInboundPoints( void )
 {
-    return _seriesv.hasInboundPoints();
+    return _seriesv.hasInboundPoints() | (_transmitter_power_time != 0);
 }
 
 
 void CtiProtocolLMI::getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList )
 {
+    CtiPointDataMsg *pdm;
+
     _seriesv.getInboundPoints(pointList);
+
+    if( _transmitter_power >= 0 )
+    {
+        pdm = CTIDBG_new CtiPointDataMsg(LMITransmitterPowerPointOffset, _transmitter_power, NormalQuality, AnalogPointType);
+        pdm->setTime(_transmitter_power_time);
+
+        pointList.append(pdm);
+
+        _transmitter_power      = -1;
+        _transmitter_power_time =  0;
+    }
 }
 
 
 int CtiProtocolLMI::recvCommRequest( OUTMESS *OutMessage )
 {
-    lmi_outmess_struct &lmi_om = *((lmi_outmess_struct *)OutMessage->Buffer.OutMessage);
+    if( OutMessage->Sequence == QueuedWorkToken )
+    {
+        setCommand(Command_SendQueuedCodes, 0, 0);
 
-    setCommand(lmi_om.command, lmi_om.control_offset, lmi_om.control_parameter);
+        _completion_time    = OutMessage->ExpirationTime;
+        _transmitting_until = RWTime::now();
+    }
+    else
+    {
+        lmi_outmess_struct &lmi_om = *((lmi_outmess_struct *)OutMessage->Buffer.OutMessage);
 
-    _transactionComplete = false;
-    _in_count = 0;
-    _in_total = 0;
+        setCommand(lmi_om.command, lmi_om.control_offset, lmi_om.control_parameter);
+
+        _transactionComplete = false;
+        _in_count = 0;
+        _in_total = 0;
+    }
 
     return 0;
 }
@@ -191,6 +217,24 @@ int CtiProtocolLMI::sendCommResult( INMESS  *InMessage )
     InMessage->InLength = offset;
 
     return 0;
+}
+
+
+void CtiProtocolLMI::queueCode(unsigned int code)
+{
+    _codes.push_back(code);
+}
+
+
+bool CtiProtocolLMI::hasCodes( void ) const
+{
+    return !_codes.empty();
+}
+
+
+int CtiProtocolLMI::numCodes( void ) const
+{
+    return _codes.size();
 }
 
 
@@ -231,10 +275,60 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
 
         switch( _command )
         {
+            case Command_SendQueuedCodes:
+            {
+                long numcodes;
+                int current_code;
+
+                long percode = gConfigParms.getValueAsULong("PORTER_LMI_TIME_TRANSMIT", 166),
+                     fudge   = gConfigParms.getValueAsULong("PORTER_LMI_FUDGE", 1000);
+
+                numcodes  = _completion_time.seconds() - _transmitting_until.seconds();
+                numcodes -= fudge;
+                numcodes /= percode;
+
+                if( numcodes > 42 )
+                {
+                    numcodes = 42;
+                }
+
+                _outbound.body_header.message_type = Opcode_SendCodes;
+
+                if( _codes.size() <= numcodes )
+                {
+                    numcodes = _codes.size();
+                    _outbound.body_header.message_type |= 0xc0;  //  last group of codes, send immediately
+                }
+
+                _outbound.length = (numcodes * 6);
+                _transmitting_until += ((numcodes * percode) + fudge) / 1000;
+
+                for( int i = 0; i < (numcodes * 6); i += 6 )
+                {
+                    current_code = _codes.back();
+                    CtiNumStr codestr(current_code);
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(slog);
+                        dout << RWTime() << " LMI device loading code: " << current_code << endl;
+                    }
+
+                    _outbound.data[i+0] = codestr[0];
+                    _outbound.data[i+1] = codestr[1];
+                    _outbound.data[i+2] = codestr[2];
+                    _outbound.data[i+3] = codestr[3];
+                    _outbound.data[i+4] = codestr[4];
+                    _outbound.data[i+5] = codestr[5];
+                    _codes.pop_back();
+                }
+
+                break;
+            }
+
             case Command_Loopback:
             {
                 _outbound.length  = 2;
-                _outbound.body_header.message_type = Opcode_RetransmitCodes;
+                _outbound.body_header.message_type = Opcode_ClearAndReadStatus;
                 _outbound.data[0] = 0;
                 _outbound.data[1] = 0;
 
@@ -246,11 +340,11 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                 _outbound.length  = 7;
                 _outbound.body_header.message_type = Opcode_SetTime;
                 _outbound.data[0] = NowDate.month();
-                _outbound.data[0] = NowDate.dayOfMonth();
-                _outbound.data[0] = NowDate.year() % 1900;
-                _outbound.data[0] = NowTime.hour();
-                _outbound.data[0] = NowTime.minute();
-                _outbound.data[0] = NowTime.second();
+                _outbound.data[1] = NowDate.dayOfMonth();
+                _outbound.data[2] = NowDate.year() % 1900;
+                _outbound.data[3] = NowTime.hour();
+                _outbound.data[4] = NowTime.minute();
+                _outbound.data[5] = NowTime.second();
 
                 break;
             }
@@ -276,7 +370,16 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                 }
                 else
                 {
-                    retval = !NORMAL;
+                    //  make into a switch if any other commands need to perform commands after the Series V is done
+                    if( _command == Command_ScanAccumulator )
+                    {
+                        _outbound.length = 1;
+                        _outbound.body_header.message_type = Opcode_GetTransmitterPower;
+                    }
+                    else
+                    {
+                        retval = !NORMAL;
+                    }
                 }
 
                 break;
@@ -323,6 +426,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
     CtiXfer seriesv_xfer;
     unsigned long seriesv_incount_actual;
     const unsigned char *buf = (unsigned char *)&_inbound;
+    RWTime Now;
 
     if( !status )
     {
@@ -372,19 +476,38 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                     case Command_Control:
                     case Command_AnalogSetpoint:
                     {
-                        memcpy(_seriesv_inbuffer, buf + LMIPacketHeaderLen + 1, _in_total - LMIPacketHeaderLen - 1);
+                        if( !_seriesv.isTransactionComplete() )
+                        {
+                            memcpy(_seriesv_inbuffer, buf + LMIPacketHeaderLen + 1, _in_total - LMIPacketHeaderLen - 1);
 
-                        seriesv_xfer.setInBuffer(_seriesv_inbuffer);
-                        seriesv_xfer.setInCountActual(&seriesv_incount_actual);
-                        seriesv_xfer.setInCountActual(_in_total - LMIPacketHeaderLen - 1);
+                            seriesv_xfer.setInBuffer(_seriesv_inbuffer);
+                            seriesv_xfer.setInCountActual(&seriesv_incount_actual);
+                            seriesv_xfer.setInCountActual(_in_total - LMIPacketHeaderLen - 1);
 
-                        //  tack on the Series V passthrough CRC
-                        _seriesv_inbuffer[seriesv_xfer.getInCountActual() - 2] = (CtiProtocolSeriesV::PassthroughCRC & 0x00ff);
-                        _seriesv_inbuffer[seriesv_xfer.getInCountActual() - 1] = (CtiProtocolSeriesV::PassthroughCRC & 0xff00) >> 8;
+                            //  tack on the Series V passthrough CRC
+                            _seriesv_inbuffer[seriesv_xfer.getInCountActual() - 2] = (CtiProtocolSeriesV::PassthroughCRC & 0x00ff);
+                            _seriesv_inbuffer[seriesv_xfer.getInCountActual() - 1] = (CtiProtocolSeriesV::PassthroughCRC & 0xff00) >> 8;
 
-                        retval = _seriesv.decode(seriesv_xfer, status);
+                            retval = _seriesv.decode(seriesv_xfer, status);
 
-                        _transactionComplete = _seriesv.isTransactionComplete();
+                            _transactionComplete = _seriesv.isTransactionComplete();
+                        }
+                        else
+                        {
+                            if( _command == Command_ScanAccumulator )
+                            {
+                                _transmitter_power  = _inbound.data[0];
+                                _transmitter_power |= _inbound.data[1] << 8;
+
+                                _transmitter_power_time = RWTime::now().seconds();
+
+                                _transactionComplete = true;
+                            }
+                            else
+                            {
+                                retval = !NORMAL;
+                            }
+                        }
 
                         break;
                     }
@@ -402,6 +525,23 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
 
             _in_total = 0;
         }
+    }
+    else if( status == ErrPortSimulated )
+    {
+        if( _command == Command_SendQueuedCodes )
+        {
+            if( _codes.size() == 0 ||
+                _completion_time > Now )
+            {
+                _transactionComplete = true;
+            }
+        }
+        else
+        {
+            _transactionComplete = true;
+        }
+
+        retval = NoError;
     }
 
     return retval;

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/05/11 18:31:25 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/05/24 17:48:38 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,6 +16,11 @@
 
 #include "dev_lmi.h"
 #include "porter.h"
+#include "pt_numeric.h"
+#include "pt_status.h"
+#include "numstr.h"
+#include "dllyukon.h"
+#include "cparms.h"
 
 
 CtiProtocolBase *CtiDeviceLMI::getProtocol() const
@@ -83,6 +88,17 @@ INT CtiDeviceLMI::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
         }
 
         case ControlRequest:
+        {
+            int code = parse.getiValue("lmi_code");
+
+            if( code )
+            {
+                _lmi.setCommand(CtiProtocolLMI::Command_QueueCode, code);
+            }
+
+            break;
+        }
+
         case PutConfigRequest:
         case GetStatusRequest:
         case GetValueRequest:
@@ -223,7 +239,7 @@ INT CtiDeviceLMI::ErrorDecode( INMESS *InMessage, RWTime &Now, RWTPtrSlist< CtiM
 INT CtiDeviceLMI::ResultDecode( INMESS *InMessage, RWTime &Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList )
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
-    RWTPtrSlist<CtiPointDataMsg> seriesvPoints;
+    RWTPtrSlist<CtiPointDataMsg> points;
 
     RWCString resultString;
     CtiReturnMsg *retMsg;
@@ -232,14 +248,80 @@ INT CtiDeviceLMI::ResultDecode( INMESS *InMessage, RWTime &Now, RWTPtrSlist< Cti
     {
         if( _lmi.hasInboundPoints() )
         {
-            _lmi.getInboundPoints(seriesvPoints);
+            _lmi.getInboundPoints(points);
 
-//            processInboundPoints(InMessage, TimeNow, vgList, retList, outList, seriesvPoints);
+            processInboundPoints(InMessage, Now, vgList, retList, outList, points);
         }
     }
 
     return 0;
 }
+
+void CtiDeviceLMI::processInboundPoints(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, RWTPtrSlist<CtiPointDataMsg> &points )
+{
+    CtiReturnMsg    *retMsg,
+                    *vgMsg;
+    CtiPointDataMsg *tmpMsg;
+    CtiPointBase    *point;
+    CtiPointNumeric *pNumeric;
+    RWCString        resultString;
+    RWTime           Now;
+
+    retMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    vgMsg  = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+    retMsg->setUserMessageId(InMessage->Return.UserID);
+    vgMsg->setUserMessageId (InMessage->Return.UserID);
+
+    double tmpValue;
+
+    while( !points.isEmpty() )
+    {
+        tmpMsg = points.removeFirst();
+
+        //  !!! tmpMsg->getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
+        if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId(), tmpMsg->getType())) != NULL )
+        {
+            tmpMsg->setId(point->getID());
+
+            if( point->isNumeric() )
+            {
+                pNumeric = (CtiPointNumeric *)point;
+
+                tmpValue = pNumeric->computeValueForUOM(tmpMsg->getValue());
+
+                tmpMsg->setValue(tmpValue);
+
+                resultString = getName() + " / " + point->getName() + ": " + CtiNumStr(tmpMsg->getValue(), ((CtiPointNumeric *)point)->getPointUnits().getDecimalPlaces());
+            }
+            else if( point->isStatus() )
+            {
+                resultString = getName() + " / " + point->getName() + ": " + ResolveStateName(((CtiPointStatus *)point)->getStateGroupID(), tmpMsg->getValue());
+            }
+            else
+            {
+                resultString = "";
+            }
+
+            tmpMsg->setString(resultString);
+
+            if( !useScanFlags() )  //  if we're not Scanner, send it to VG as well (scanner will do this on his own)
+            {
+                //  maybe (parse.isKeyValid("flag") && (parse.getFlags( ) & CMD_FLAG_UPDATE)) someday
+                vgMsg->PointData().append(tmpMsg->replicateMessage());
+            }
+            retMsg->PointData().append(tmpMsg);
+        }
+        else
+        {
+            delete tmpMsg;
+        }
+    }
+
+    retList.append(retMsg);
+    vgList.append(vgMsg);
+}
+
 
 void CtiDeviceLMI::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector)
 {
@@ -256,5 +338,72 @@ void CtiDeviceLMI::DecodeDatabaseReader(RWDBReader &rdr)
     _address.DecodeDatabaseReader(rdr);
 
     _lmi.setAddress(_address.getSlaveAddress());
+}
+
+
+bool CtiDeviceLMI::hasQueuedWork() const
+{
+    return _lmi.hasCodes();
+}
+
+
+INT CtiDeviceLMI::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
+{
+    _lmi.queueCode(atoi(OutMessage->Buffer.SASt._codeSimple));
+
+    return QUEUED_TO_DEVICE;
+}
+
+
+bool CtiDeviceLMI::getOutMessage(CtiOutMessage *&OutMessage)
+{
+    bool retval = false;
+
+    if( _lmi.hasCodes() )
+    {
+        if( !OutMessage )
+        {
+            OutMessage = new CtiOutMessage();
+        }
+
+        OutMessage->DeviceID = getID();
+        OutMessage->Sequence = CtiProtocolLMI::QueuedWorkToken;
+
+        OutMessage->ExpirationTime = getExclusion().getExecutionGrantExpires().seconds();  //  i'm hijacking this over
+
+        retval = true;
+    }
+    else
+    {
+        if( OutMessage )
+        {
+            delete OutMessage;
+        }
+    }
+
+    return retval;
+}
+
+
+LONG CtiDeviceLMI::deviceQueueCommunicationTime() const
+{
+    RWTime Now;
+
+    long percode = gConfigParms.getValueAsULong("PORTER_LMI_TIME_TRANSMIT", 166),
+         fudge   = gConfigParms.getValueAsULong("PORTER_LMI_FUDGE", 1000);
+
+    long millis;
+
+    millis = (percode * _lmi.numCodes()) + fudge;
+
+    return millis;
+}
+
+
+LONG CtiDeviceLMI::deviceMaxCommunicationTime() const
+{
+    long  maxtime = gConfigParms.getValueAsULong("PORTER_MAX_TRANSMITTER_TIME", 0);
+
+    return maxtime;
 }
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/05/11 18:31:26 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/05/24 17:48:39 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,10 +40,18 @@ private:
     unsigned char *_seriesv_inbuffer;
 
     LMICommand    _command;
+    unsigned int  _control_offset,
+                  _control_parameter;
+
     unsigned char _address;
     bool          _deadbandsSent,
                   _transactionComplete;
+
+    int           _transmitter_power;
+    unsigned long _transmitter_power_time;
+
     //crc_ccitt_type _crc;
+    vector<unsigned int>    _codes;
 
     enum LMIOpcode
     {
@@ -64,7 +72,9 @@ private:
     enum
     {
         LMIPacketOverheadLen = 8,
-        LMIPacketHeaderLen   = 6
+        LMIPacketHeaderLen   = 6,
+
+        LMITransmitterPowerPointOffset = 1000
     };
 
 #pragma pack(push, 1)
@@ -126,6 +136,9 @@ private:
     unsigned long _in_count,
                   _in_total;
 
+    RWTime _completion_time,
+           _transmitting_until;
+
 protected:
 
 public:
@@ -136,6 +149,11 @@ public:
 
     CtiProtocolLMI &operator=(const CtiProtocolLMI &aRef);
 
+    enum
+    {
+        QueuedWorkToken = 934845  //  w00t
+    };
+
     enum LMICommand
     {
         Command_ScanAccumulator,
@@ -144,10 +162,10 @@ public:
         Command_Control,
         Command_Loopback,
         Command_AnalogSetpoint,
-        Command_Timesync/*,
-        Command_UploadCodes,
-        Command_TransmitCodes
-        */
+        Command_Timesync,
+        Command_QueueCode,
+        Command_TransmitCodes,
+        Command_SendQueuedCodes
     };
 
     void setAddress( unsigned char address );
@@ -164,6 +182,10 @@ public:
     //  porter-side (portfield, specificially) functions
     int recvCommRequest( OUTMESS *OutMessage );
     int sendCommResult ( INMESS  *InMessage );
+
+    void queueCode( unsigned int code );
+    bool hasCodes( void ) const;
+    int  numCodes( void ) const;
 
     bool isTransactionComplete( void );
 
