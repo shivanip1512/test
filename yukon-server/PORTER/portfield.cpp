@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2002/10/03 16:16:39 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2002/10/09 19:49:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1082,6 +1082,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     status = Port->outMess(trx, Device, traceList);
                     break;
                 }
+
             case TYPE_LCU415:
             case TYPE_LCU415LG:
             case TYPE_LCU415ER:
@@ -1096,32 +1097,45 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     status = Port->outMess(trx, Device, traceList);
                     break;
                 }
+
+            case TYPE_ION7700:
             case TYPECBC6510:
             case TYPE_DNPRTU:
                 {
-                    CtiDeviceDNP   *dnpdev = (CtiDeviceDNP *)Device;
-                    CtiProtocolDNP &dnp    = dnpdev->getProtocol();
+                    CtiProtocolBase *protocol;
 
-                    dnp.recvOutbound(OutMessage);
-
-                    while( !dnp.isTransactionComplete() )
+                    if( (protocol = Device->getProtocol()) != NULL )
                     {
-                        dnp.generate(trx);
+                        protocol->recvCommRequest(OutMessage);
 
-                        status = Port->outInMess(trx, Device, traceList);
-
-                        dnp.decode(trx, status);
-
-                        // Prepare for tracing
-                        if(trx.doTrace(status))
+                        while( !protocol->isTransactionComplete() )
                         {
-                            Port->traceXfer(trx, traceList, Device, status);
+                            protocol->generate(trx);
+
+                            status = Port->outInMess(trx, Device, traceList);
+
+                            protocol->decode(trx, status);
+
+                            // Prepare for tracing
+                            if(trx.doTrace(status))
+                            {
+                                Port->traceXfer(trx, traceList, Device, status);
+                            }
+
+                            DisplayTraceList(Port, traceList, true);
                         }
 
-                        DisplayTraceList(Port, traceList, true);
+                        protocol->sendCommResult(InMessage);
+                    }
+                    else
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << RWTime() << " **** Device \'" << Device->getName() << "\' has no protocol object, aborting communication **** " << endl;
+                        }
                     }
 
-                    dnp.sendInbound(InMessage);
                     break;
                 }
 
@@ -1541,6 +1555,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                 case TYPECBC6510:
                 case TYPE_DNPRTU:
+                case TYPE_ION7700:
                 case TYPE_SIXNET:
                 case TYPE_TAPTERM:
                 case TYPE_WCTP:
@@ -2308,8 +2323,8 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
             }
             else if(OutMessage->EventCode & BWORD)
             {
-                /* find out if this is I or O */
-                if(OutMessage->Buffer.BSt.IO)
+                /* find out if this is a read or a write */
+                if(OutMessage->Buffer.BSt.IO & READ)
                 {
                     DSTRUCT        DSt;
 
@@ -2321,7 +2336,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                 }
                 else
                 {
-                    /* This is O so make sure we got back ACKS */
+                    /* This is a write so make sure we got back ACKS */
                 }
             }
 
