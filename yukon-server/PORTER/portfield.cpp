@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.108 $
-* DATE         :  $Date: 2004/05/24 22:35:44 $
+* REVISION     :  $Revision: 1.109 $
+* DATE         :  $Date: 2004/06/03 21:46:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -117,7 +117,7 @@ using namespace std;
 #include "utility.h"
 
 
-#define INF_LOOP_COUNT 10000
+#define INF_LOOP_COUNT 1000
 
 extern RWCString GetDeviceName( ULONG id );
 
@@ -218,14 +218,14 @@ VOID PortThread(void *pid)
         {
             if( LastExclusionDevice &&
                 LastExclusionDevice->hasQueuedWork() &&
-                nowTime < LastExclusionDevice->getExclusion().getExecutingUntil() &&
-                nowTime > LastExclusionDevice->getExclusion().getEvaluateNextAt() )
+                nowTime <= LastExclusionDevice->getExclusion().getExecutionGrantExpires() &&
+                nowTime >= LastExclusionDevice->getExclusion().getEvaluateNextAt() )
             {
                 Device = LastExclusionDevice;
 
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Last Exclusion Device " << Device->getName() << " has been reselected." << endl;
+                    CtiLockGuard<CtiLogger> doubt_guard(slog);
+                    slog << nowTime << " " << Device->getName() << " has been reselected by exclusion logic." << endl;
                 }
             }
             else
@@ -502,6 +502,7 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDeviceSPtr &Device)
         ULONG stayConnectedMax = Device->getMaxConnectTime();
 
         RWTime current;
+
         RWTime minTimeout(current + stayConnectedMin);
         RWTime maxTimeout(current + stayConnectedMax);
 
@@ -596,16 +597,16 @@ INT ResetCommsChannel(CtiPortSPtr Port, CtiDeviceSPtr &Device)
 
     try
     {
-        if(Port->getType() == PortTypeTServerDirect)
+        if( !(Port->isInhibited()))
         {
-            if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+            if(Port->getType() == PortTypeTServerDirect)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << Port->getName() << ": IP ports open on usage." << endl;
+                if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " " << Port->getName() << ": IP ports open on usage." << endl;
+                }
             }
-        }
-        else if( !(Port->isInhibited()))
-        {
             /*
              *  If the port is inhibited, don't talk to it ok...
              */
@@ -797,6 +798,9 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
             OutMessage = 0;
             Sleep(100L);
 
+            DeviceManager.apply( ApplyTapNeedsLogon, (void*)(Port->getPortID()) );
+            Port->disconnect(Device, FALSE);
+
             return RETRY_SUBMITTED;
         }
     }
@@ -829,7 +833,8 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
      */
     UINT dqcnt = 0;
 
-    if( (MSGFLG_APPLY_EXCLUSION_LOGIC & OutMessage->MessageFlags) && QUEUED_TO_DEVICE == (status = Device->queueOutMessageToDevice(OutMessage, &dqcnt)) )
+    //if( (MSGFLG_APPLY_EXCLUSION_LOGIC & OutMessage->MessageFlags) && QUEUED_TO_DEVICE == (status = Device->queueOutMessageToDevice(OutMessage, &dqcnt)) )
+    if( QUEUED_TO_DEVICE == (status = Device->queueOutMessageToDevice(OutMessage, &dqcnt)) )
     {
         Port->setDeviceQueued( Device->getID() );
 
@@ -838,7 +843,6 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
             slog << RWTime() << " " << Device->getName() << " queuing work.  There are " << dqcnt << " entries on the queue.  Last grant at " << Device->getExclusion().getExecutionGrant() << endl;
         }
     }
-
 
     if( status == NORMAL )
         status = ProcessExclusionLogic(Port, OutMessage, Device);
@@ -1326,9 +1330,17 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                             status = PerformRequestedCmd (Port, Device, NULL, NULL, traceList);
 
-                            if( status != NORMAL)
+
+
+                            if( status != NORMAL && !(status == ErrorPageRS || status == ErrorPageNAK || status == ErrorPageNoResponse) )
                             {
                                 IED->setLogOnNeeded(TRUE);      // We did not come through it cleanly, let's kill this connection.
+
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+
                                 Port->setConnectedDevice(0);
                             }
                             else
@@ -2923,8 +2935,7 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aI
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  status = " << status << " " << FormatError( status ) << endl;
+                    dout << RWTime() << " " << aIED->getName() << " status = " << status << " " << FormatError( status ) << endl;
                 }
             }
 
@@ -3122,6 +3133,11 @@ INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, RWTPtrSlist<
             {
             case TYPE_TAPTERM:
                 {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
                     // Since an EOT was done on this port by this device, all devices on this port need to logon the next loop.
                     // Sweep the port and tag them so.
                     DeviceManager.apply( ApplyTapNeedsLogon, (void*)(aPortRecord->getPortID()) );

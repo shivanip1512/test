@@ -911,10 +911,19 @@ BOOL CtiPortDirect::connected()
 {
     if(_dialable)
     {
-        if(getTablePortSettings().getCDWait() != 0 && getConnectedDevice() > 0)
+        if(getTablePortSettings().getCDWait() != 0 )
         {
-            if(!dcdTest())    // No DCD and we think we are connected!  This is BAD.
+            if(getConnectedDevice() > 0 && !dcdTest())    // No DCD and we think we are connected!  This is BAD.
             {
+                disconnect(CtiDeviceSPtr(), FALSE);
+            }
+            else if (getConnectedDevice() <= 0 && dcdTest())
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
                 disconnect(CtiDeviceSPtr(), FALSE);
             }
         }
