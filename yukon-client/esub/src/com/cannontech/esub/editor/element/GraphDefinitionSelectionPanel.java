@@ -267,7 +267,7 @@ public class GraphDefinitionSelectionPanel
 	 * Invoked whenever a node in the tree is about to be expanded.
 	 */
 	public void treeWillExpand(javax.swing.event.TreeExpansionEvent event)
-		throws javax.swing.tree.ExpandVetoException {
+	throws javax.swing.tree.ExpandVetoException {
 		getGraphDefinitionTreeModel().treePathWillExpand(event.getPath());
 	}
 	
@@ -309,6 +309,10 @@ public class GraphDefinitionSelectionPanel
  * @param gdef com.cannontech.database.data.lite.LiteGraphDefinition
  */
 public boolean selectGraphDefinition(LiteGraphDefinition gdef) {
+	if(gdef == null) {
+		return false;
+	}
+	
 	TreePath rootPath = new TreePath( getGraphDefinitionTreeModel().getRoot() );
 	TreePath gdefPath = findPAO(rootPath, gdef.getGraphDefinitionID());
 	
