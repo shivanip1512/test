@@ -177,6 +177,9 @@ private CBCClientConnection getConnectionWrapper()
 			connectionWrapper = new CBCClientConnection();
 			connectionWrapper.addObserver( this );
 
+			//start the conn!!!
+			connectionWrapper.startInThread();		
+
 		 	if( connectionWrapper.isConnValid() )
 				com.cannontech.clientutils.CTILogger.info("Retrieving CBC strategies...");
 		}

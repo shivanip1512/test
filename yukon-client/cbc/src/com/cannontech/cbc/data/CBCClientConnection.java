@@ -62,7 +62,7 @@ public class CBCClientConnection extends java.util.Observable implements java.ut
 	};
 	
 /**
- * ClientConnection constructor comment.
+ * ClientConnection constructor comment.The caller must start the listening.
  * @param host java.lang.String
  * @param port int
  */
@@ -71,13 +71,10 @@ public CBCClientConnection()
 	super();// "127.0.0.1", 1910 );
 	initialize();
 	getExternalResources();
-
-	// the following method will attempt the connection in another thread
-	startInThread();
 }
 
 /**
- * ClientConnection constructor comment.
+ * ClientConnection constructor comment.The caller must start the listening.
  * @param host java.lang.String
  * @param port int
  */
@@ -88,13 +85,10 @@ public CBCClientConnection( Message registrationMsg_ )
 	getExternalResources();
 	initialize();
 	getConnection().setRegistrationMsg( registrationMsg_ );
-	
-	// the following method will attempt the connection in another thread
-	startInThread();
 }
 
 /**
- * ClientConnection constructor comment.
+ * ClientConnection constructor comment.The caller must start the listening.
  * @param host java.lang.String
  * @param port int
  */
@@ -105,9 +99,6 @@ public CBCClientConnection(String hostStr, int portInt)
 	
 	host = hostStr;
 	port = portInt;	
-
-	// the following method will attempt the connection in another thread
-	startInThread();
 }
 
 
@@ -229,9 +220,6 @@ protected com.cannontech.message.util.ClientConnection getConnection()
 		
 		connection.setAutoReconnect( true );
 		connection.setTimeToReconnect( 10 );
-
-		// the following method will attempt the connection in another thread
-		//startInThread();
 	}
 
 	return connection;
@@ -527,7 +515,7 @@ private void setPort(int newPort) {
  * Insert the method's description here.
  * Creation date: (8/21/00 5:33:36 PM)
  */
-private void startInThread()
+public synchronized void startInThread()
 {
 	if( inThread == null )
 	{
