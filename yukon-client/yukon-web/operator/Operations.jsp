@@ -229,14 +229,14 @@
     </td>
     <td width="1" background="../Images/Icons/VerticalRule.gif" height="102"></td>
   </tr>
+</cti:checkRole>
+
+<cti:checkRole roleid="<%= Integer.MAX_VALUE %>"> <% /* TODO This section is for work orders, is this real stuff? */ %>
   <tr> 
     <td width="102" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
     <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
     <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
   </tr>
-</cti:checkRole>
-
-<cti:checkRole roleid="<%= Integer.MAX_VALUE %>"> <% /* TODO This section is for work orders, is this real stuff? */ %>
   <tr> 
     <td width="102" height="102" background="WorkOrder/WorkImage.jpg">&nbsp;</td>
     <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="WorkHeader.gif" width="104" height="15"><br>
@@ -265,14 +265,14 @@
     </td>
     <td width="1" background="../Images/Icons/VerticalRule.gif" height="102"></td>
   </tr>
+</cti:checkRole> 
+
+<cti:checkRole roleid="<%= AdministratorRole.ROLEID %>">
   <tr> 
     <td width="102" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
     <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
     <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
   </tr>
-</cti:checkRole> 
-
-<cti:checkRole roleid="<%= AdministratorRole.ROLEID %>">
   <tr>
     <td width="102" bgcolor="#000000" height="102" background="Admin/AdminImage.jpg">&nbsp;</td>
     <td bgcolor="#FFFFFF" height="102" valign="top"><img src="AdminHeader.gif" width="129" height="15"><br>
@@ -307,11 +307,6 @@
       </table>
     </td>
     <td width="1" background="../Images/Icons/VerticalRule.gif" height="16"></td>
-  </tr>
-  <tr> 
-    <td width="102" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
-    <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
-    <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
   </tr>
 </cti:checkRole>
   </table>
