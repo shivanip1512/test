@@ -124,7 +124,8 @@ public class WebGraph implements com.cannontech.database.cache.DBChangeListener
 			
 			nextRunTime = new GregorianCalendar();
 			nextRunTime.setTime(new java.util.Date(tempSeconds));
-	
+			
+			getStartDate();
 		}
 		com.cannontech.clientutils.CTILogger.info("Next RunTime Interval: " + nextRunTime.getTime());
 	}
