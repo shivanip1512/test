@@ -519,7 +519,7 @@ private void initialize() {
  */
 public boolean isInputValid() 
 {
-	int start = 0, stop = 0;
+	/*int start = 0, stop = 0;
 	
 	if( getJCheckBoxUse1().isSelected() )
 	{
@@ -544,7 +544,7 @@ public boolean isInputValid()
 			return false;
 		}
 	}
-
+	*/
 	return true;
 }
 /**
