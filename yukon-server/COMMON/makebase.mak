@@ -62,6 +62,7 @@ queues.obj \
 repeaterrole.obj \
 resolvers.obj \
 rtdb.obj \
+rwutil.obj \
 sema.obj \
 statistics.obj \
 stdexcepthdlr.obj \
