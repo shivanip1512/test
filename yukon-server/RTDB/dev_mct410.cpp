@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/05/14 17:18:29 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/05/18 21:23:28 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -168,7 +168,7 @@ bool CtiDeviceMCT410::initCommandStore( )
 
     cs._cmd     = CtiProtocolEmetcon::PutValue_ResetPFCount;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair((int)MCT4XX_CommandReset, 0);
+    cs._funcLen = make_pair((int)MCT4XX_CommandPowerfailReset, 0);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutStatus_Reset;
