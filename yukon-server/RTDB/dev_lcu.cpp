@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/16 16:00:02 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/04/18 16:17:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1066,11 +1066,25 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, RWTPtrSlist
                 FLOAT PartHour = (FLOAT)(getLastFreezeTime().seconds() - getPrevFreezeTime().seconds());
                 PartHour /= (3600.0);
 
+                #if 0
                 /* to convert to units */
                 PValue /= PartHour;
-
                 //  apply multiplier and offset
                 PValue = pAccumPoint->computeValueForUOM(PValue);
+                #else
+
+                PValue = (FLOAT) Value * pAccumPoint->getMultiplier();
+                /* to convert to units */
+                PValue /= PartHour;
+                PValue += pAccumPoint->getDataOffset();
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  Demand accumulators are not computed correctly " << endl;
+                }
+
+                #endif
 
                 pData = new CtiPointDataMsg(pAccumPoint->getPointID(),
                                             PValue, NormalQuality,
