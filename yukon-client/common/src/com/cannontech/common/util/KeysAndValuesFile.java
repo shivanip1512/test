@@ -336,7 +336,10 @@ public class KeysAndValuesFile extends java.io.File
 	{
 		try
 		{
-			mkdirs();
+			//if not there, lets create the file
+			if( !exists())
+				createNewFile();
+			
 			java.io.FileWriter writer = new java.io.FileWriter(this);
 	
 			for (int i = 0; i < getKeysAndValues().getKeys().length; i++)
