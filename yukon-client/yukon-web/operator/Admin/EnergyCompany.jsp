@@ -67,7 +67,7 @@
 	
 	String adminEmail = savedReq.getProperty("AdminEmail");
 	if (adminEmail == null)
-		adminEmail = liteEC.getEnergyCompanySetting(EnergyCompanyRole.ADMIN_EMAIL_ADDRESS);
+		adminEmail = liteEC.getAdminEmailAddress();
 	
 	String optOutNotif = savedReq.getProperty("OptOutNotif");
 	if (optOutNotif == null)
