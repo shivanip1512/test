@@ -58,6 +58,7 @@ if (browser.isMicrosoft) {
     document.addEventListener("mousemove", moveHandler,   true);
     document.addEventListener("mouseup",   dragStop, true);
     event.preventDefault();
+    event.stopPropagation();
   }
 
 
@@ -106,7 +107,6 @@ else if (direction == 'horizontal') {
 	
  eval(f);
   
-
 if (browser.isMicrosoft) {
     window.event.cancelBubble = true;
     window.event.returnValue = false;
