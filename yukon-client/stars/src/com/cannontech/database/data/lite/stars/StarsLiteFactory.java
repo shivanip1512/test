@@ -13,6 +13,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
@@ -24,9 +25,13 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.stars.hardware.LMConfigurationBase;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.macro.GenericMacro;
+import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
@@ -1980,6 +1985,46 @@ public class StarsLiteFactory {
 		return starsWebConfig;
 	}
 	
+	public static void setAddressingGroups(StarsEnrLMProgram starsProg, LiteLMProgramWebPublishing liteProg) {
+		starsProg.removeAllAddressingGroup();
+		starsProg.addAddressingGroup( (AddressingGroup)StarsFactory.newEmptyStarsCustListEntry(AddressingGroup.class) );
+		
+		for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
+			LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( liteProg.getGroupIDs()[j] );
+			
+			if (litePao.getType() == PAOGroups.MACRO_GROUP) {
+				java.sql.Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+				try {
+					GenericMacro[] groups = GenericMacro.getGenericMacros(
+							new Integer(litePao.getYukonID()), MacroTypes.GROUP, conn );
+					
+					for (int k = 0; k < groups.length; k++) {
+						int groupID = groups[k].getChildID().intValue();
+						AddressingGroup group = new AddressingGroup();
+						group.setEntryID( groupID );
+						group.setContent( PAOFuncs.getYukonPAOName(groupID) );
+						starsProg.addAddressingGroup( group );
+					}
+				}
+				catch (java.sql.SQLException e) {
+					CTILogger.error( e.getMessage(), e );
+				}
+				finally {
+					try {
+						if (conn != null) conn.close();
+					}
+					catch (java.sql.SQLException e) {}
+				}
+			}
+			else {
+				AddressingGroup group = new AddressingGroup();
+				group.setEntryID( liteProg.getGroupIDs()[j] );
+				group.setContent( litePao.getPaoName() );
+				starsProg.addAddressingGroup( group );
+			}
+		}
+	}
+	
 	public static StarsApplianceCategory createStarsApplianceCategory(LiteApplianceCategory liteAppCat, LiteStarsEnergyCompany energyCompany) {
 		StarsApplianceCategory starsAppCat = new StarsApplianceCategory();
 		starsAppCat.setApplianceCategoryID( liteAppCat.getApplianceCategoryID() );
@@ -2001,17 +2046,9 @@ public class StarsLiteFactory {
 				starsProg.setYukonName( PAOFuncs.getYukonPAOName(liteProg.getDeviceID()) );
 			
 			liteConfig = SOAPServer.getWebConfiguration( liteProg.getWebSettingsID() );
-			starsConfig = createStarsWebConfig( liteConfig );
-			starsProg.setStarsWebConfig( starsConfig );
+			starsProg.setStarsWebConfig( createStarsWebConfig(liteConfig) );
 			
-			starsProg.addAddressingGroup( (AddressingGroup)StarsFactory.newEmptyStarsCustListEntry(AddressingGroup.class) );
-			for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
-				String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] );
-				AddressingGroup group = new AddressingGroup();
-				group.setEntryID( liteProg.getGroupIDs()[j] );
-				group.setContent( groupName );
-				starsProg.addAddressingGroup( group );
-			}
+			setAddressingGroups( starsProg, liteProg );
 			
 			if (liteProg.getChanceOfControlID() != 0) {
 				starsProg.setChanceOfControl( (ChanceOfControl) StarsFactory.newStarsCustListEntry(

@@ -33,10 +33,9 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
-import com.cannontech.stars.xml.serialize.AddressingGroup;
-import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
@@ -453,14 +452,48 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 			for (int i = 0; i < companies.size(); i++) {
 				LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
 				
-				if (litePao.getCategory() == PAOGroups.CAT_LOADCONTROL) {
-					LiteLMProgramWebPublishing liteProg = energyCompany.getProgram( msg.getId() );
-					if (liteProg != null) {
-						handleLMProgramChange( msg, energyCompany, liteProg );
-						return;
+				if (litePao.getCategory() == PAOGroups.CAT_ROUTE) {
+					handleRouteChange( msg, energyCompany );
+				}
+				else if (DeviceTypesFuncs.isLMProgramDirect( litePao.getType() )) {
+					ArrayList programs = energyCompany.getAllPrograms();
+					for (int j = 0; j < programs.size(); j++) {
+						LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) programs.get(j);
+						if (liteProg.getDeviceID() == msg.getId()) {
+							handleLMProgramChange( msg, energyCompany, liteProg );
+							return;
+						}
 					}
 				}
-				else if (litePao.getCategory() == PAOGroups.CAT_DEVICE) {
+				else if (DeviceTypesFuncs.isLmGroup( litePao.getType() )) {
+					ArrayList programs = energyCompany.getAllPrograms();
+					StarsEnrollmentPrograms categories = energyCompany.getStarsEnrollmentPrograms();
+					
+					for (int j = 0; j < programs.size(); j++) {
+						LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) programs.get(j);
+						boolean groupFound = false;
+						
+						for (int k = 0; k < liteProg.getGroupIDs().length; k++) {
+							if (liteProg.getGroupIDs()[k] == msg.getId()) {
+								handleLMGroupChange( msg, energyCompany, liteProg );
+								groupFound = true;
+								break;
+							}
+						}
+						
+						if (!groupFound) {
+							// Program could contain a macro group, while a LM group in that macro group is changed
+							StarsEnrLMProgram starsProg = ServletUtils.getEnrollmentProgram( categories, liteProg.getProgramID() );
+							for (int k = 0; k < starsProg.getAddressingGroupCount(); k++) {
+								if (starsProg.getAddressingGroup(k).getEntryID() == msg.getId()) {
+									handleLMGroupChange( msg, energyCompany, liteProg );
+									break;
+								}
+							}
+						}
+					}
+				}
+				else if (DeviceTypesFuncs.isMCT( litePao.getType() )) {
 					ArrayList inventory = energyCompany.getAllInventory();
 					for (int j = 0; j < inventory.size(); j++) {
 						LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(j);
@@ -469,9 +502,6 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 							return;
 						}
 					}
-				}
-				else if (litePao.getCategory() == PAOGroups.CAT_ROUTE) {
-					handleRouteChange( msg, energyCompany );
 				}
 			}
 		}
@@ -628,37 +658,16 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 					// Update group list of the LM program
 					com.cannontech.database.db.device.lm.LMProgramDirectGroup[] groups =
 							com.cannontech.database.db.device.lm.LMProgramDirectGroup.getAllDirectGroups( new Integer(liteProg.getDeviceID()) );
+					
 					int[] groupIDs = new int[ groups.length ];
-					for (int k = 0; k < groups.length; k++)
-						groupIDs[k] = groups[k].getLmGroupDeviceID().intValue();
+					for (int i = 0; i < groups.length; i++)
+						groupIDs[i] = groups[i].getLmGroupDeviceID().intValue();
 					liteProg.setGroupIDs( groupIDs );
 					
-					StarsEnrollmentPrograms programs = energyCompany.getStarsEnrollmentPrograms();
-					for (int i = 0; i < programs.getStarsApplianceCategoryCount(); i++) {
-						StarsApplianceCategory appCat = programs.getStarsApplianceCategory(i);
-						boolean programFound = false;
-						
-						for (int j = 0; j < appCat.getStarsEnrLMProgramCount(); j++) {
-							StarsEnrLMProgram program = appCat.getStarsEnrLMProgram(j);
-							if (program.getProgramID() == liteProg.getProgramID()) {
-								program.setYukonName( PAOFuncs.getYukonPAOName(liteProg.getDeviceID()) );
-								
-								program.removeAllAddressingGroup();
-								program.addAddressingGroup( (AddressingGroup)StarsFactory.newEmptyStarsCustListEntry(AddressingGroup.class) );
-								for (int k = 0; k < liteProg.getGroupIDs().length; k++) {
-									String groupName = PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] );
-									AddressingGroup group = new AddressingGroup();
-									group.setEntryID( liteProg.getGroupIDs()[j] );
-									group.setContent( groupName );
-									program.addAddressingGroup( group );
-								}
-								
-								programFound = true;
-								break;
-							}
-						}
-						
-						if (programFound) break;
+					StarsEnrLMProgram program = ServletUtils.getEnrollmentProgram( energyCompany.getStarsEnrollmentPrograms(), liteProg.getProgramID() );
+					if (program != null) {
+						program.setYukonName( PAOFuncs.getYukonPAOName(liteProg.getDeviceID()) );
+						StarsLiteFactory.setAddressingGroups( program, liteProg );
 					}
 				}
 				catch (SQLException e) {
@@ -687,6 +696,37 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		}
 	}
 	
+	private void handleLMGroupChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteLMProgramWebPublishing liteProg) {
+		switch( msg.getTypeOfChange() )
+		{
+			case DBChangeMsg.CHANGE_TYPE_ADD:
+				// Don't need to do anything
+				break;
+				
+			case DBChangeMsg.CHANGE_TYPE_UPDATE :
+			case DBChangeMsg.CHANGE_TYPE_DELETE :
+				try {
+					// Update group list of the LM program
+					com.cannontech.database.db.device.lm.LMProgramDirectGroup[] groups =
+							com.cannontech.database.db.device.lm.LMProgramDirectGroup.getAllDirectGroups( new Integer(liteProg.getDeviceID()) );
+					
+					int[] groupIDs = new int[ groups.length ];
+					for (int i = 0; i < groups.length; i++)
+						groupIDs[i] = groups[i].getLmGroupDeviceID().intValue();
+					liteProg.setGroupIDs( groupIDs );
+					
+					StarsEnrLMProgram program = ServletUtils.getEnrollmentProgram( energyCompany.getStarsEnrollmentPrograms(), liteProg.getProgramID() );
+					if (program != null)
+						StarsLiteFactory.setAddressingGroups( program, liteProg );
+				}
+				catch (SQLException e) {
+					CTILogger.error( e.getMessage(), e );
+				}
+				
+				break;
+		}
+	}
+	
 	private void handleDeviceChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteInventoryBase liteInv) {
 		switch( msg.getTypeOfChange() )
 		{
@@ -695,17 +735,12 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				break;
 				
 			case DBChangeMsg.CHANGE_TYPE_UPDATE :
-				LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( msg.getId() );
-				// STARS only cares about MCT now
-				if (!DeviceTypesFuncs.isMCT( litePao.getLiteType() ))
-					return;
-				
 				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteInv.getAccountID() );
 				if (starsAcctInfo != null) {
 					for (int i = 0; i < starsAcctInfo.getStarsInventories().getStarsInventoryCount(); i++) {
 						StarsInventory starsInv = starsAcctInfo.getStarsInventories().getStarsInventory(i);
-						if (starsInv.getDeviceID() == litePao.getYukonID()) {
-							starsInv.getMCT().setDeviceName( litePao.getPaoName() );
+						if (starsInv.getDeviceID() == msg.getId()) {
+							starsInv.getMCT().setDeviceName( PAOFuncs.getYukonPAOName(msg.getId()) );
 							break;
 						}
 					}
