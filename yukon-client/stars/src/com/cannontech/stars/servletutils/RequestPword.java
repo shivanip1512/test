@@ -50,6 +50,7 @@ public class RequestPword
 
 	private transient int state = RET_FAILED;
 	private transient String resultString = "";
+	private transient String subject = "Password Request";
 
 
 	public static final int RET_FAILED = 0;
@@ -180,6 +181,7 @@ public class RequestPword
 				else
 				{
 					setState( RET_FAILED, "More than one account number found, forwarding request onto the WebMaster" );
+					subject = "WebMaster: " + subject;
 					foundData.add( " " + getResultString() );
 					foundData.add( " Number of Account Numbers for this Account: " + allCustAccts.size() );
 					for( int i = 0; i < allCustAccts.size(); i++ )
@@ -231,6 +233,7 @@ public class RequestPword
 					else
 					{
 						setState( RET_FAILED, "More than one first name found, forwarding request onto the WebMaster" );
+						subject = "WebMaster: " + subject;
 						foundData.add( " " + getResultString() );
 						foundData.add( " Number of Contacts for this First Name: " + lConts.length );
 						for( int i = 0; i < lConts.length; i++ )
@@ -279,6 +282,7 @@ public class RequestPword
 					else
 					{						
 						setState( RET_FAILED, "More than one last name found, forwarding request onto the WebMaster" );
+						subject = "WebMaster: " + subject;
 						foundData.add( " " + getResultString() );
 						foundData.add( " Number of Contacts for this Last Name: " + lConts.length );
 						for( int i = 0; i < lConts.length; i++ )
@@ -299,6 +303,7 @@ public class RequestPword
 		{
 			//send this request with all its data to CTI
 			setState( RET_FAILED, "Unknown error occured, please contact the WebMaster for more details" );
+			subject = "WebMaster: " + subject;
 
 			CTILogger.error( e.getMessage(), e );
 		}
@@ -362,6 +367,7 @@ public class RequestPword
 		{
 			//do something here, dont know what for now
 			setState( RET_FAILED, "More than one energy company found, forwarding request onto the WebMaster" );
+			subject = "WebMaster: " + subject;
 			foundData.add( " " + getResultString() );
 			foundData.add( " Number of Energy Companies for this Data: " + comps_.length );
 
@@ -377,7 +383,7 @@ public class RequestPword
 	{
 		EmailMessage msg = new EmailMessage(
 			emailTO_,
-			"Password Request",
+			subject,
 			body_ );
 
 		try
