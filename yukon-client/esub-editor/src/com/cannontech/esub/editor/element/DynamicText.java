@@ -126,7 +126,7 @@ public void readFromJLX(InputStream in, String version) throws IOException
 	super.readFromJLX(in, version);
 	
 	setPointID(LxSaveUtils.readInt(in));
-	setDisplayAttribs(LxSaveUtils.readInt(in));
+	setDisplayAttribs(LxSaveUtils.readInt(in));	
 		
 	//read link
 	setLinkTo( LxSaveUtils.readString(in));
@@ -221,6 +221,17 @@ public void setPointID(int newPointID) {
 	 */
 	public void setDisplayAttribs(int displayAttribs) {
 		this.displayAttribs = displayAttribs;
+	}
+
+	/**
+	 * Returns the editable.
+	 * @return boolean
+	 */
+	public boolean isEditable() {
+		return 
+			(	displayAttribs == PointAttributes.LOW_LIMIT  ||
+			 	displayAttribs == PointAttributes.HIGH_LIMIT ||
+			 	displayAttribs == PointAttributes.LIMIT_DURATION );		
 	}
 
 }

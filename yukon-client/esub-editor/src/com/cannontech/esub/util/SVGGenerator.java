@@ -28,7 +28,6 @@ import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.editor.element.DrawingElement;
 import com.cannontech.esub.editor.element.DynamicGraphElement;
 import com.cannontech.esub.editor.element.DynamicText;
-import com.cannontech.esub.editor.element.PointAttributes;
 import com.cannontech.esub.editor.element.StateImage;
 import com.cannontech.esub.editor.element.StaticImage;
 import com.cannontech.esub.editor.element.StaticText;

@@ -16,6 +16,9 @@ public class EditorPrefs {
 	public static final String DEFAULT_DRAWING_WIDTH = "Default Drawing Width";
 	public static final String DEFAULT_DRAWING_HEIGHT = "Default Drawing Height";
 	
+	public static final String DEFAULT_WINDOW_WIDTH = "Default Window Width";
+	public static final String DEFAULT_WINDOW_HEIGHT = "Default Window Height";
+	 
 	// Singleton instance
 	private static EditorPrefs instance;
 	

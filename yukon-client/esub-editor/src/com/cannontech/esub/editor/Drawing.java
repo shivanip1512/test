@@ -37,6 +37,10 @@ public class Drawing implements Serializable {
 	}
 	public synchronized void load(String file) {
 		clear();
+		
+		// the saved drawing willhave its own meta element, remove the default
+		getLxGraph().remove(getMetaElement());
+		
 		getLxGraph().read(file);
 		fileName = file;
 
@@ -61,8 +65,8 @@ public class Drawing implements Serializable {
 		setFileName(jlxFileName);
 		
 		// make sure meta info reflects our saving width, height
-		getMetaElement().setDrawingWidth( getLxView().getWidth() );
-		getMetaElement().setDrawingHeight( getLxView().getHeight() );
+		//getMetaElement().setDrawingWidth( getLxView().getWidth() );
+		//getMetaElement().setDrawingHeight( getLxView().getHeight() );
 		
 		getLxGraph().save(jlxFileName);
 
@@ -214,6 +218,7 @@ public class Drawing implements Serializable {
 	private void addMetaElement() {
 		if( getMetaElement() == null ) {
 			DrawingMetaElement metaInfo = new DrawingMetaElement();
+			metaInfo.setDrawing(this);
 			getLxGraph().add(metaInfo);
 		}
 	}

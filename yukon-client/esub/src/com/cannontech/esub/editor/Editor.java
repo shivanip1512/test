@@ -2,6 +2,7 @@ package com.cannontech.esub.editor;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -45,9 +46,6 @@ import com.loox.jloox.LxView;
  */
 public class Editor extends JPanel {
 	
-//	JPopupMenu editPopup = new JPopupMenu();
-//	JMenuItem deletePopupItem = new JMenuItem("Delete");
-
 	private static final Dimension defaultSize = new Dimension(800, 600);
 
 	// the drawing to edit
@@ -175,7 +173,7 @@ public class Editor extends JPanel {
 		propertyDialog.setContentPane(editor);
 		//	propertyDialog.setSize(475, 500);
 		propertyDialog.pack();
-		propertyDialog.setLocationRelativeTo(getDrawing().getLxView());
+		propertyDialog.setLocationRelativeTo(CtiUtilities.getParentFrame(getDrawing().getLxView()));
 		propertyDialog.show();
 		
 		// start the updates again
@@ -212,8 +210,11 @@ public class Editor extends JPanel {
 		LxView lxView = getDrawing().getLxView();
 				
 		JPanel viewPanel = new JPanel();
-		viewPanel.setLayout(null);		
+		viewPanel.setLayout(new FlowLayout());		
 		viewPanel.add(lxView);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setViewportView(viewPanel);
 		
 		EditorActions editorActions = new EditorActions(this);
 		EditorMenus editorMenus = new EditorMenus(editorActions);
@@ -223,16 +224,12 @@ public class Editor extends JPanel {
 		JToolBar toolBar = editorToolBar.getToolBar();
 
 		p.setLayout(new java.awt.BorderLayout());
-		p.add(viewPanel, java.awt.BorderLayout.CENTER);
+		p.add(scrollPane, java.awt.BorderLayout.CENTER);
 		p.add(menuBar, java.awt.BorderLayout.NORTH);
 		p.add(toolBar, java.awt.BorderLayout.WEST);
 		p.setPreferredSize(new Dimension(prefs.getDefaultDrawingWidth(),prefs.getDefaultDrawingHeight()));
 		lxView.addMouseListener(viewMouseListener);		
 					
-//		lxView.registerKeyboardAction(E)
-		/*deletePopupItem.addActionListener(
-			editorActions.getAction(EditorActions.SET_DYNAMIC_TEXT_COLOR));		
-		*/
 		drawingUpdater = new DrawingUpdater();	
 		drawingUpdater.setDrawing( getDrawing() );
 		drawingUpdateTimer = new Timer();
@@ -279,39 +276,8 @@ public class Editor extends JPanel {
 	}
 	public void newDrawing() {
 
-		getDrawing().clear();		
-		/*			
-		JFileChooser fileChooser =
-			com.cannontech.esub.util.Util.getDrawingJFileChooser();
-		fileChooser.setApproveButtonText("Ok");
-		fileChooser.setDialogTitle("Create Drawing");
-		String currentDir = EditorPrefs.getPreferences().getWorkingDir();
-		fileChooser.setCurrentDirectory(new File(currentDir));
-
-		int returnVal = fileChooser.showSaveDialog(null);
-
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			getDrawing().clear();
-
-			String selectedFile = fileChooser.getSelectedFile().getPath();
-
-			getDrawing().save(selectedFile);
-			setFrameTitle(selectedFile);
-
-			try {
-				EditorPrefs.getPreferences().setWorkingDir(
-					fileChooser
-						.getSelectedFile()
-						.getParentFile()
-						.getCanonicalPath());
-			} catch (IOException ioe) {
-				ioe.printStackTrace();
-			}
-			
-			//HACKHACK
-		currentDir = EditorPrefs.getPreferences().getWorkingDir();
-		com.cannontech.esub.util.ImageChooser.getInstance().setCurrentDirectory(new File(currentDir));
-		}	*/	
+		getDrawing().clear();
+		editDrawingProperties();	
 	}
 
 	/**
@@ -331,7 +297,7 @@ public class Editor extends JPanel {
 		elementPlacer.setIsPlacing(false);
 		setFrameTitle(drawingFile);
 		
-		//drawingUpdater.setDrawing(getDrawing());
+		updateSize();
 	}
 
 	/**
@@ -339,16 +305,9 @@ public class Editor extends JPanel {
 	 * @param args java.lang.String[]
 	 */
 	public static void main(String[] args) {
-			
-		try {
-			javax.swing.UIManager.setLookAndFeel(
-				javax.swing.UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
-			e.printStackTrace(); /*Not much to do about*/
-		}
-
+		
+		CtiUtilities.setLaF();
 		JFrame frame = new JFrame();
-
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
@@ -357,11 +316,7 @@ public class Editor extends JPanel {
 
 		Editor editor = new Editor();
 
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setViewportView(editor);
-
-		frame.getContentPane().add(scrollPane);
-
+		frame.getContentPane().add(editor);
 		frame.setSize(defaultSize);
 		
 		//set the location of the frame to the center of the screen
@@ -369,7 +324,6 @@ public class Editor extends JPanel {
                      (java.awt.Toolkit.getDefaultToolkit().getScreenSize().height - frame.getSize().height) / 2);
 
         frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("esubEditorIcon.png"));
-//		editor.setPreferredSize(defaultSize);
 
 		frame.pack();
 		frame.show();
@@ -397,8 +351,8 @@ public class Editor extends JPanel {
 			CTILogger.info("Loading " + file);
 			editor.loadDrawing(file);
 		}
-
-		//editor.loadDrawing("c:/temp/test.jlx");
+		
+		System.
 	}
 	/**
 	 * Creation date: (12/12/2001 3:29:49 PM)
@@ -533,5 +487,22 @@ public class Editor extends JPanel {
 		aboutDialog.setLocationRelativeTo(getDrawing().getLxView());
 		aboutDialog.setVisible(true);
 		aboutDialog.dispose();
+	}
+	
+	void updateSize() {
+		final int width = getDrawing().getMetaElement().getDrawingWidth();
+		final int height = getDrawing().getMetaElement().getDrawingHeight();
+		final LxView view = getDrawing().getLxView();
+		
+		SwingUtilities.invokeLater( new Runnable() {
+			public void run() {
+				view.setPreferredSize(new Dimension(width,height));
+				view.revalidate();					
+			}
+		});
+	}
+	void editDrawingProperties() {
+		editElement(getDrawing().getMetaElement());				
+		updateSize();
 	}
 }
