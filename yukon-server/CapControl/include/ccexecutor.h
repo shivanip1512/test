@@ -44,7 +44,6 @@ public:
 private:
 
     CtiCCSubstationBusMsg* _ccSubstationBusesMsg;
-    RWRecursiveLock<RWMutexLock> _mutex;
 };
 
 class CtiCCCapBankStatesMsgExecutor : public CtiCCExecutor
@@ -58,7 +57,6 @@ public:
 private:
 
     CtiCCCapBankStatesMsg* _ccCapBankStatesMsg;
-    RWRecursiveLock<RWMutexLock> _mutex;
 };
 
 class CtiCCGeoAreasMsgExecutor : public CtiCCExecutor
@@ -72,7 +70,6 @@ public:
 private:
 
     CtiCCGeoAreasMsg* _ccGeoAreasMsg;
-    RWRecursiveLock<RWMutexLock> _mutex;
 };
 
 class CtiCCCommandExecutor : public CtiCCExecutor
@@ -97,7 +94,6 @@ private:
     void SendAllSubstationBuses();
 
     CtiCCCommand* _command;
-    RWRecursiveLock<RWMutexLock> _mutex;
 };
 
 class CtiCCPointDataMsgExecutor : public CtiCCExecutor
@@ -110,7 +106,6 @@ public:
 
 private:
     CtiPointDataMsg* _pointDataMsg;
-    RWRecursiveLock<RWMutexLock> _mutex;
 };
 
 class CtiCCForwardMsgToDispatchExecutor : public CtiCCExecutor
@@ -123,7 +118,6 @@ public:
 
 private:
     CtiMessage* _ctiMessage;
-    RWRecursiveLock<RWMutexLock> _mutex;
 };
 
 class CtiCCMultiMsgExecutor : public CtiCCExecutor
@@ -136,7 +130,6 @@ public:
 
 private:
     CtiMultiMsg* _multiMsg;
-    RWRecursiveLock<RWMutexLock> _mutex;
 };
 
 class CtiCCShutdownExecutor : public CtiCCExecutor

@@ -32,8 +32,6 @@ extern BOOL _CC_DEBUG;
 ---------------------------------------------------------------------------*/
 void CtiCCCommandExecutor::Execute()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-    
     switch ( _command->getCommand() )
     {
     case CtiCCCommand::DISABLE_SUBSTATION_BUS:
@@ -95,8 +93,6 @@ void CtiCCCommandExecutor::Execute()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::EnableSubstationBus()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-    
     ULONG subID = _command->getId();
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
@@ -123,8 +119,6 @@ void CtiCCCommandExecutor::EnableSubstationBus()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::DisableSubstationBus()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     ULONG subID = _command->getId();
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
@@ -151,8 +145,6 @@ void CtiCCCommandExecutor::DisableSubstationBus()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::EnableFeeder()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-    
     ULONG feederID = _command->getId();
     BOOL found = FALSE;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -189,8 +181,6 @@ void CtiCCCommandExecutor::EnableFeeder()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::DisableFeeder()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-    
     ULONG feederID = _command->getId();
     BOOL found = FALSE;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -227,8 +217,6 @@ void CtiCCCommandExecutor::DisableFeeder()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::EnableCapBank()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-    
     ULONG capBankID = _command->getId();
     BOOL found = FALSE;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -283,8 +271,6 @@ void CtiCCCommandExecutor::EnableCapBank()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::DisableCapBank()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-    
     ULONG capBankID = _command->getId();
     BOOL found = FALSE;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -339,8 +325,6 @@ void CtiCCCommandExecutor::DisableCapBank()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::OpenCapBank()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-    
     ULONG controlID = 0;
     ULONG bankID = _command->getId();
     BOOL found = FALSE;
@@ -511,8 +495,6 @@ void CtiCCCommandExecutor::OpenCapBank()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::CloseCapBank()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-    
     ULONG controlID = 0;
     ULONG bankID = _command->getId();
     BOOL found = FALSE;
@@ -684,8 +666,6 @@ void CtiCCCommandExecutor::CloseCapBank()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::ConfirmOpen()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-    
     ULONG controlID = 0;
     ULONG bankID = _command->getId();
     BOOL found = FALSE;
@@ -855,8 +835,6 @@ void CtiCCCommandExecutor::ConfirmOpen()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::ConfirmClose()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-    
     ULONG controlID = 0;
     ULONG bankID = _command->getId();
     BOOL found = FALSE;
@@ -1028,8 +1006,6 @@ void CtiCCCommandExecutor::ConfirmClose()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::SendAllSubstationBuses()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     CtiCCExecutorFactory f;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*(store->getCCSubstationBuses(RWDBDateTime().seconds()))));
@@ -1046,7 +1022,6 @@ void CtiCCCommandExecutor::SendAllSubstationBuses()
 ---------------------------------------------------------------------------*/    
 void CtiCCSubstationBusMsgExecutor::Execute()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     CtiCCClientListener::getInstance()->BroadcastMessage(_ccSubstationBusesMsg);
 }
 
@@ -1059,7 +1034,6 @@ void CtiCCSubstationBusMsgExecutor::Execute()
 ---------------------------------------------------------------------------*/    
 void CtiCCCapBankStatesMsgExecutor::Execute()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     CtiCCClientListener::getInstance()->BroadcastMessage(_ccCapBankStatesMsg);
 }
 
@@ -1072,7 +1046,6 @@ void CtiCCCapBankStatesMsgExecutor::Execute()
 ---------------------------------------------------------------------------*/    
 void CtiCCGeoAreasMsgExecutor::Execute()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     CtiCCClientListener::getInstance()->BroadcastMessage(_ccGeoAreasMsg);
 }
 
@@ -1085,7 +1058,6 @@ void CtiCCGeoAreasMsgExecutor::Execute()
 ---------------------------------------------------------------------------*/    
 void CtiCCForwardMsgToDispatchExecutor::Execute()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     CtiCapController::getInstance()->sendMessageToDispatch(_ctiMessage->replicateMessage());
 }
 
@@ -1098,8 +1070,6 @@ void CtiCCForwardMsgToDispatchExecutor::Execute()
 ---------------------------------------------------------------------------*/    
 void CtiCCPointDataMsgExecutor::Execute()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     long pointID = _pointDataMsg->getId();
     double value = _pointDataMsg->getValue();
     unsigned tags = _pointDataMsg->getTags();
@@ -1216,8 +1186,6 @@ void CtiCCPointDataMsgExecutor::Execute()
 ---------------------------------------------------------------------------*/    
 void CtiCCMultiMsgExecutor::Execute()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     CtiCCExecutorFactory f;
     RWOrdered& messages = _multiMsg->getData();
     while(messages.entries( )>0)
