@@ -9,17 +9,16 @@ package com.cannontech.graph.model;
  * Window>Preferences>Java>Code Generation.
  */
 import com.cannontech.database.db.graph.GraphDataSeries;
-import org.jfree.data.AbstractSeriesDataset;
 import org.jfree.data.AbstractDataset;
 import org.jfree.data.DefaultCategoryDataset;
-import org.jfree.data.time.TimePeriod;
 import org.jfree.data.time.Millisecond;
+import org.jfree.data.SeriesException;
+import org.jfree.data.time.TimePeriod;
 import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.XYSeries;
 import org.jfree.data.XYSeriesCollection;
-import org.jfree.data.SeriesException;
 /**
  * A quick and dirty implementation.
  */
@@ -103,7 +102,7 @@ public class YukonDataSetFactory
 						stat += "   Max: " + MIN_MAX_FORMAT.format(serie.getMaximumValue());
 				}
 			}
-//			stat += "     " + serie.getAxis();
+			stat += "     " + serie.getAxis();
 		}
 		return stat;
     }    	
@@ -124,13 +123,13 @@ public class YukonDataSetFactory
 			{
 				if( serie.getAxis().equals(axisChars[datasetIndex]))
 				{
-					if( serie.getDataPairArray() != null)
+					if( serie.getDataItemArray() != null)
 					{
-				 		long[] timeStamp = new long[serie.getDataPairArray().length];
-				 		double[] values = new double[serie.getDataPairArray().length];
-						for (int x = 0; x < serie.getDataPairArray().length; x++)
+				 		long[] timeStamp = new long[serie.getDataItemArray().length];
+				 		double[] values = new double[serie.getDataItemArray().length];
+						for (int x = 0; x < serie.getDataItemArray().length; x++)
 						{
-							TimeSeriesDataItem dp = serie.getDataPairArray(x);						
+							TimeSeriesDataItem dp = serie.getDataItemArray(x);						
 							timeStamp[x] = dp.getPeriod().getStart().getTime();
 							values[x] = dp.getValue().doubleValue();
 						}
@@ -179,11 +178,11 @@ public class YukonDataSetFactory
 						{	
 							TimeSeries series = new TimeSeries(serie.getLabel(), Millisecond.class);
 
-							if( serie.getDataPairArray() != null)
+							if( serie.getDataItemArray() != null)
 							{
-								for (int j = 0; j < serie.getDataPairArray().length; j++)
+								for (int j = 0; j < serie.getDataItemArray().length; j++)
 								{
-									TimeSeriesDataItem dp = (TimeSeriesDataItem)serie.getDataPairArray(j);
+									TimeSeriesDataItem dp = (TimeSeriesDataItem)serie.getDataItemArray(j);
 									try
 									{
 										if( GraphDataSeries.isUsageType(serie.getTypeMask()))
@@ -286,7 +285,7 @@ public class YukonDataSetFactory
 			Double[][] datasetValues = new Double[count][];
 	
 			//This index holder is needed parrallel to i.
-			//When there is a null tSeries[i].getDataPairArray(), we have to ignore the i values interval 
+			//When there is a null tSeries[i].getDataItemArray(), we have to ignore the i values interval 
 			//of the tree.get(keyArray[j]).  AKA...the i value can't be incremented, But because i is the 
 			//for loop index of the series, we need another representation of it, hence notNullValuesIndex.
 			int notNullValuesIndex = 0;
@@ -299,7 +298,7 @@ public class YukonDataSetFactory
 					{
 						datasetValues[allIndex] = new Double[keyArray.length];
 						Double prevValue = null;				
-						if( tSeries[i].getDataPairArray() != null)
+						if( tSeries[i].getDataItemArray() != null)
 						{
 							for (int j = 0; j < keyArray.length; j++)
 							{
@@ -409,7 +408,7 @@ public class YukonDataSetFactory
 			keySet.toArray(keyArray);
 			
 			//This index holder is needed parrallel to i.
-			//When there is a null tSeries[i].getDataPairArray(), we have to ignore the i values interval of the tree.get(keyArray[j]).
+			//When there is a null tSeries[i].getDataItemArray(), we have to ignore the i values interval of the tree.get(keyArray[j]).
 			int notNullValuesIndex = 0;
 
 			DefaultCategoryDataset tempDataset = new DefaultCategoryDataset();
@@ -434,7 +433,7 @@ public class YukonDataSetFactory
 					//UNCOMMENT WITH MULTIPLE AXIS SUPPORT					
 					if( tSeries[i].getAxis().equals(axisChars[datasetIndex]))
 					{
-						if( tSeries[i].getDataPairArray() != null)
+						if( tSeries[i].getDataItemArray() != null)
 						{
 							for (int j = 0; j < keyArray.length; j++)
 							{
@@ -524,7 +523,7 @@ public class YukonDataSetFactory
 			keySet.toArray(keyArray);
 			
 			//This index holder is needed parrallel to i.
-			//When there is a null tSeries[i].getDataPairArray(), we have to ignore the i values interval of the tree.get(keyArray[j]).
+			//When there is a null tSeries[i].getDataItemArray(), we have to ignore the i values interval of the tree.get(keyArray[j]).
 			int notNullValuesIndex = 0;
 
 			DefaultCategoryDataset tempDataset = new DefaultCategoryDataset();
@@ -546,7 +545,7 @@ public class YukonDataSetFactory
 					String serieKey = tSeries[i].getLabel().toString() + updateSeriesNames(tSeries[i]);
 					if( tSeries[i].getAxis().equals(axisChars[datasetIndex]))
 					{
-						if( tSeries[i].getDataPairArray() != null)
+						if( tSeries[i].getDataItemArray() != null)
 						{
 							for (int j = 0; j < keyArray.length; j++)
 							{

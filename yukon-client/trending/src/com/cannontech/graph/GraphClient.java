@@ -469,7 +469,16 @@ public void actionPerformed_DeleteMenuItem( )
 				}
 					
 				getTreeViewPanel().refresh();
-				getFreeChart().getPlot().setDataset(null);
+				if( getFreeChart().getPlot() instanceof org.jfree.chart.plot.CategoryPlot)
+				{
+					((org.jfree.chart.plot.CategoryPlot)getFreeChart().getPlot()).setDataset(null);
+					((org.jfree.chart.plot.CategoryPlot)getFreeChart().getPlot()).setSecondaryDataset(0, null);
+				}
+				else if( getFreeChart().getPlot() instanceof org.jfree.chart.plot.XYPlot)
+				{
+					((org.jfree.chart.plot.XYPlot)getFreeChart().getPlot()).setDataset(null);
+					((org.jfree.chart.plot.XYPlot)getFreeChart().getPlot()).setSecondaryDataset(0, null);
+				}
 			}
 			catch( com.cannontech.database.TransactionException e )
 			{
