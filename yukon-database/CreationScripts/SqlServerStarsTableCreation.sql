@@ -773,13 +773,6 @@ alter table AccountSite
 go
 
 
-alter table WorkOrderBase
-   add constraint FK_AccS_WkB foreign key (SiteID)
-      references AccountSite (AccountSiteID)
->>>>>>> 1.8
-go
-
-
 alter table ApplianceBase
    add constraint FK_AppBs_LMPr foreign key (LMProgramID)
       references LMPROGRAM (DEVICEID)
@@ -915,12 +908,6 @@ go
 alter table ServiceCompany
    add constraint FK_CstAdd_SrC foreign key (AddressID)
       references CustomerAddress (AddressID)
-go
-
-
-alter table CallReportBase
-   add constraint FK_CstB_CllR foreign key ()
-      references CustomerBase (CustomerID)
 go
 
 
