@@ -470,6 +470,18 @@ public static boolean isMCT410KWHONLY( int type )
 	}
 
 }
+
+public static boolean isDisconnectMCT( int type)
+{
+	switch (type)
+	{
+		case MCT213:
+		case MCT310ID:
+			return true;
+		default:
+			return false;
+	}
+}
 /**
  * Insert the method's description here.
  * Creation date: (1/15/2001 1:46:22 PM)
