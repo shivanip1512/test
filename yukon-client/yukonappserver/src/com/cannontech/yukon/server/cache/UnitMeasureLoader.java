@@ -1,5 +1,8 @@
 package com.cannontech.yukon.server.cache;
 
+import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.database.db.point.UnitMeasure;
+
 /**
  * Insert the type's description here.
  * Creation date: (3/15/00 3:57:58 PM)
@@ -28,7 +31,10 @@ java.util.Date timerStop = null;
 //temp code
 timerStart = new java.util.Date();
 //temp code
-	String sqlString = "select UoMID, LongName, calctype from UnitMeasure order by LongName";
+
+	String sqlString = 
+			"select UoMID, UoMName, CalcType, LongName from " + 
+			UnitMeasure.TABLE_NAME + " order by LongName";
 
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
@@ -44,9 +50,10 @@ timerStart = new java.util.Date();
 			int uomID = rset.getInt(1);
 			String unitMeasureName = rset.getString(2).trim();
 			int unitMeasureCalcType = rset.getInt(3);
+			String longName = rset.getString(4).trim();
 
-			com.cannontech.database.data.lite.LiteUnitMeasure lum =
-				new com.cannontech.database.data.lite.LiteUnitMeasure( uomID, unitMeasureName, unitMeasureCalcType);
+			LiteUnitMeasure lum =
+				new LiteUnitMeasure( uomID, unitMeasureName, unitMeasureCalcType, longName );
 
 			allUnitMeasures.add(lum);
 		}

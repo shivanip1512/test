@@ -7,13 +7,17 @@ public class LiteUnitMeasure extends LiteBase
 {
 	private String unitMeasureName = null;
 	private int unitMeasureCalcType;
+	private String longName = null;
+	
 /**
  * PointUnit constructor comment.
  */
-public LiteUnitMeasure(int umID, String umName, int umCalcType) {
+public LiteUnitMeasure(int umID, String umName, int umCalcType, String longName_ ) 
+{
 	super();
 	unitMeasureName = umName;
 	unitMeasureCalcType = umCalcType;
+	setLongName( longName_ );
 	setLiteID(umID);
 	setLiteType( LiteTypes.UNITMEASURE );
 }
@@ -67,6 +71,22 @@ public void setUomID(int newUomID)
  * @return java.lang.String
  */
 public String toString() {
-	return unitMeasureName;
+	return getLongName();
 }
+	/**
+	 * @return
+	 */
+	public String getLongName()
+	{
+		return longName;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setLongName(String string)
+	{
+		longName = string;
+	}
+
 }
