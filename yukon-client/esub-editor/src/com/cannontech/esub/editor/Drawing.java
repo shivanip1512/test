@@ -45,33 +45,11 @@ public class Drawing {
 		fileName = file;
 
 		// Fix up each element so they know who their drawing is
-		// Also since the absolute paths are lost in persisting
-		// a drawing they need to be recalculated 		
 		LxComponent[] comps = lxGraph.getComponents();
 		for (int i = 0; i < comps.length; i++) {
 			if (comps[i] instanceof DrawingElement) {
 				((DrawingElement) comps[i]).setDrawing(this);
-			}
-			
-			// fix up image paths
-			if( comps[i] instanceof StaticImage ) {
-				StaticImage si = (StaticImage) comps[i];
-				String absPath = Util.getAbsolutePath(this, si.getRelativeImagePath());				
-				si.setAbsoluteImagePath( absPath );
-			}
-			
-			if( comps[i] instanceof StateImage ) {
-				StateImage si = (StateImage) comps[i];
-				String[] states = si.getStates();
-				for( int j = 0; j < states.length; j++ ) {
-					String absPath = Util.getAbsolutePath(this, si.getRelativeImagePath(states[j]));
-					si.setAbsoluteImagePath(states[j], absPath);
-					
-					si.setState(si.getStates()[0]);
-					
-			
-				}
-			}			
+			}							
 		}
 	}
 

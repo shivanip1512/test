@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.io.Writer;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.cache.functions.YukonImageFuncs;
+import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.editor.element.DynamicText;
 import com.cannontech.esub.editor.element.DrawingElement;
@@ -205,26 +208,29 @@ public class SVGGenerator {
 		int x = (int) r.getMinX();
 		int y = (int) r.getMinY();
 		int width = (int) r.getMaxX() - x;
-		int height = (int) r.getMaxY() - y;
-		
-//	 	String relImage = Util.getRelativePath( new File(img.getDrawing().getFileName()), new File(img.getAbsoluteImagePath()));
-		String relImage = img.calcRelativeImagePath();
-	 	//relImage = relImage.replace('\\','/');
-	 	
+		int height = (int) r.getMaxY() - y;		
+		String relImage = img.getYukonImage().getImageName();	 	 	
 		writer.write("<image id=\"" + img.getName() + "\" xlink:href=\"" + relImage + "\" x=\"" + x + "\" y=\"" + y + "\" width=\"" + width + "\" height=\"" + height + "\" />\n");
 	}
 	
 	private void generateStateImage(Writer writer, StateImage img) throws IOException {
-			Rectangle2D r = img.getBounds2D();
+		Rectangle2D r = img.getBounds2D();
 		int x = (int) r.getMinX();
 		int y = (int) r.getMinY();
 		int width = (int) r.getMaxX() - x;
 		int height = (int) r.getMaxY() - y;
-		
-		String relImage = Util.getRelativePath( new File(img.getDrawing().getFileName()), new File(img.getAbsoluteImagePath(img.getState())));
-	 	relImage = relImage.replace('\\','/');
-	 	
-		writer.write("<image id=\"" + img.getName() + "\" xlink:href=\"" + relImage + "\" x=\"" + x + "\" y=\"" + y + "\" width=\"" + width + "\" height=\"" + height + "\" />\n");
+
+		String imgName = "X.gif";		
+		LiteState ls = img.getCurrentState();
+
+		if( ls != null ) {
+			LiteYukonImage lyi = YukonImageFuncs.getLiteYukonImage(ls.getImageID());			
+			if( lyi != null ) {
+				imgName = lyi.getImageName();
+			}
+		}
+
+		writer.write("<image id=\"" + imgName + "\" xlink:href=\"" + imgName + "\" x=\"" + x + "\" y=\"" + y + "\" width=\"" + width + "\" height=\"" + height + "\" />\n");
 	}
 	
 	/**

@@ -6,6 +6,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.*;
 
 import com.cannontech.common.gui.util.*;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.util.Util;
 
@@ -208,7 +209,10 @@ public void setValue(Object o) {
 	getLinkToPanel().setLinkTo(stateImage.getLinkTo());
 
 	// Set selected point
-	getPointSelectionPanel().selectPoint(stateImage.getPoint());
+	LitePoint lp = stateImage.getPoint();
+	if( lp != null ) {
+		getPointSelectionPanel().selectPoint(lp);
+	}
 }
 /**
  * Creation date: (12/18/2001 4:16:51 PM)

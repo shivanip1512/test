@@ -4,6 +4,10 @@ import java.text.DecimalFormat;
 import java.util.TimerTask;
 
 import com.cannontech.common.cache.PointChangeCache;
+import com.cannontech.database.cache.functions.StateFuncs;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.editor.element.DynamicText;
 import com.cannontech.esub.editor.element.StateImage;
@@ -80,19 +84,21 @@ public class DrawingUpdater extends TimerTask {
 
 						if (comp[i] instanceof StateImage) {
 							StateImage si = (StateImage) comp[i];
-							int pointID = si.getPointID();
-
-							if (pointID > 0) {
-								PointData pData = pcc.getValue(si.getPointID());
-								String newState =
-									pcc.getState(
-										si.getPointID(),
-										pData.getValue());
-								if( !si.getState().equals(newState) ) {
-									si.setState(newState);
-									change = true;
+							LitePoint lp = si.getPoint();
+							
+							if( lp != null ) {
+								PointData pData = pcc.getValue(lp.getPointID());
+								if( pData != null ) {
+									LiteState ls = StateFuncs.getLiteState(lp.getStateGroupID(), (int) pData.getValue());
+									if( ls != null ) {
+										si.setCurrentState(ls);
+										si.updateImage();
+										change = true;
+									}	
+	
 								}
 							}
+
 						}
 					}
 

@@ -2,11 +2,14 @@ package com.cannontech.esub.editor.element;
 
 import java.awt.Image;
 import java.awt.MediaTracker;
+import java.awt.Toolkit;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 
 import com.cannontech.common.gui.image.ImageCache;
+import com.cannontech.database.cache.functions.YukonImageFuncs;
+import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.util.Util;
 import com.loox.jloox.*;
@@ -15,14 +18,8 @@ import com.loox.jloox.*;
  * @author: 
  */
 public class StaticImage extends LxAbstractImage implements DrawingElement {
-
-	public static final String INVALID_IMAGE_NAME = "X.gif";
 	
-	// Absolute path the the image, not persisted
-	private String absoluteImagePath;
-	
-	// Relateive path (to drawing) of the image, is persisted
-	private String relativeImagePath;
+	private LiteYukonImage yukonImage = LiteYukonImage.NONE_IMAGE;
 	
 	private Drawing drawing;
 	private String linkTo;
@@ -32,14 +29,6 @@ public class StaticImage extends LxAbstractImage implements DrawingElement {
 public StaticImage() {
 	super();
 	initialize();
-}
-/**
- * Creation date: (1/22/2002 10:17:19 AM)
- * @return java.lang.String
- */
-public java.lang.String getAbsoluteImagePath() {
-	
-	return absoluteImagePath;
 }
 /**
  * Creation date: (1/22/2002 10:18:53 AM)
@@ -52,7 +41,8 @@ public java.lang.String getLinkTo() {
  * Creation date: (1/22/2002 10:20:30 AM)
  */
 private void initialize() {
-	setImage( Util.findImage(INVALID_IMAGE_NAME));	
+	yukonImage.setImageValue(Util.DEFAULT_IMAGE_BYTES);
+	setYukonImage(yukonImage);
 }
 /**
  * Creation date: (12/17/2001 3:50:28 PM)
@@ -63,8 +53,9 @@ public synchronized void readFromJLX(InputStream in, String version) throws IOEx
 {
 	super.readFromJLX(in, version);
 
-//	setAbsoluteImagePath(LxSaveUtils.readString(in));
-	setRelativeImagePath(LxSaveUtils.readString(in));
+	int imgID = LxSaveUtils.readInt(in);
+	LiteYukonImage img = YukonImageFuncs.getLiteYukonImage(imgID);
+	setYukonImage(img);
 	setLinkTo(LxSaveUtils.readString(in));
 	
 	LxSaveUtils.readEndOfPart(in);
@@ -77,24 +68,10 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
 {
 	super.saveAsJLX(out);
 
-	//LxSaveUtils.writeString(out, getAbsoluteImagePath());
-	LxSaveUtils.writeString(out, calcRelativeImagePath());
+	LxSaveUtils.writeInt(out, getYukonImage().getImageID());
 	LxSaveUtils.writeString(out, getLinkTo());
 	
 	LxSaveUtils.writeEndOfPart(out);
-}
-/**
- * Creation date: (1/22/2002 10:17:19 AM)
- * @param newImageName java.lang.String
- */
-public void setAbsoluteImagePath(java.lang.String newImageName) {
-	absoluteImagePath = newImageName;
-	Image i = ImageCache.getInstance().getImage(absoluteImagePath, getDrawing().getLxView() );
-	/*MediaTracker mt = new MediaTracker(getDrawing().getLxView());
-	mt.addImage(i, 0);
-	try {
-	mt.waitForID(0); } catch(Exception e ) { e.printStackTrace(); }*/
-	setImage(i);
 }
 /**
  * Creation date: (1/22/2002 10:18:53 AM)
@@ -115,38 +92,29 @@ public void setLinkTo(java.lang.String newLinkTo) {
 	public void setDrawing(Drawing d) {
 		this.drawing = d;
 	}
-
 	
 	/**
-	 * Calculates the relative image path based on
-	 * the path of the drawing this element is a part of.
-	 * @return String
+	 * Returns the yukonImage.
+	 * @return LiteYukonImage
 	 */
-	public String calcRelativeImagePath() {
-		if( getDrawing() != null ) {
-			return Util.getRelativePath(getDrawing(), getAbsoluteImagePath());
-		}
-		else {
-			return null;
-		}
-	}
-	/**
-	 * Exposed only for persisting this element.
-	 * Normally set the relativePath indirectly through
-	 * the absolu
-	 * @param relativeImagePath The relativeImagePath to set
-	 */
-	public void setRelativeImagePath(String relativeImagePath) {
-		this.relativeImagePath = relativeImagePath;
+	public LiteYukonImage getYukonImage() {
+		return yukonImage;
 	}
 
 	/**
-	 * Exposed only for persisting this element,
-	 * Usually call calcRelativeImagePath()
-	 * @return String
+	 * Sets the yukonImage.
+	 * @param yukonImage The yukonImage to set
 	 */
-	public String getRelativeImagePath() {
-		return relativeImagePath;
+	public void setYukonImage(LiteYukonImage yukonImage) {
+		this.yukonImage = yukonImage;
+		setImage( Util.prepareImage(yukonImage.getImageValue()));
+	}
+	
+	public void setImage(Image img) {
+		if( img != null ) 
+			setSize(img.getWidth(null), img.getHeight(null));
+		super.setImage(img);
+			
 	}
 
 }
