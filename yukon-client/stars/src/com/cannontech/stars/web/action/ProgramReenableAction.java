@@ -188,7 +188,7 @@ public class ProgramReenableAction implements ActionBase {
 				catch (Exception e) {
 					CTILogger.error( e.getMessage(), e );
 					respOper.setStarsFailure( StarsFactory.newStarsFailure(
-							StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot send out " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) + " notification.") );
+							StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to send the " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) + " notification.") );
 				}
 			}
 			
