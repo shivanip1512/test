@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2004/04/01 21:50:02 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2004/04/14 00:46:41 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -918,6 +918,7 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         case CtiProtocolEmetcon::PutConfig_GroupAddr_Bronze:
         case CtiProtocolEmetcon::PutConfig_GroupAddr_GoldSilver:
         case CtiProtocolEmetcon::PutConfig_GroupAddr_Lead:
+        case CtiProtocolEmetcon::PutConfig_UniqueAddr:
         {
             status = decodePutConfig(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -2024,9 +2025,54 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
 
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
     }
-    else if( parse.isKeyValid("groupaddress_set") )
+    else if( parse.isKeyValid("address") )
     {
-        if( parse.isKeyValid("groupaddress_gold") && parse.isKeyValid("groupaddress_silver") )
+        if( parse.isKeyValid("uniqueaddress") )
+        {
+            int uadd;
+
+            function = CtiProtocolEmetcon::PutConfig_UniqueAddr;
+            found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+            uadd = parse.getiValue("uniqueaddress");
+
+            if( uadd > 0x3fffff || uadd < 0 )
+            {
+                found = false;
+
+                if( errRet )
+                {
+                    temp = "Invalid address \"" + CtiNumStr(uadd) + "\" for device \"" + getName() + "\", not sending";
+                    errRet->setResultString(temp);
+                    errRet->setStatus(NoMethod);
+                    retList.insert(errRet);
+                    errRet = NULL;
+                }
+            }
+            else if( getAddress() != MCT_TestAddr1 && getAddress() != MCT_TestAddr2 )
+            {
+                found = false;
+
+                if( errRet )
+                {
+                    temp = "Device must be set to one of the test addresses, not sending";
+                    errRet->setResultString(temp);
+                    errRet->setStatus(NoMethod);
+                    retList.insert(errRet);
+                    errRet = NULL;
+                }
+            }
+            else
+            {
+                OutMessage->Buffer.BSt.Message[0] = ( uadd >> 16) & 0x0000ff;
+                OutMessage->Buffer.BSt.Message[1] = ( uadd >>  8) & 0x0000ff;
+                OutMessage->Buffer.BSt.Message[2] = ( uadd      ) & 0x0000ff;
+                OutMessage->Buffer.BSt.Message[3] = (~uadd >> 16) & 0x0000ff;
+                OutMessage->Buffer.BSt.Message[4] = (~uadd >>  8) & 0x0000ff;
+                OutMessage->Buffer.BSt.Message[5] = (~uadd      ) & 0x0000ff;
+            }
+        }
+        else if( parse.isKeyValid("groupaddress_gold") && parse.isKeyValid("groupaddress_silver") )
         {
             int gold, silver;
 
