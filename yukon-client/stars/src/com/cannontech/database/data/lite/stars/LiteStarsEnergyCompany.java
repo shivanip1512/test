@@ -1580,10 +1580,18 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		if (starsServCompanies == null) {
 			starsServCompanies = new StarsServiceCompanies();
 			ArrayList servCompanies = getAllServiceCompanies();
-			for (int i = 0; i < servCompanies.size(); i++) {
-				LiteServiceCompany liteServCompany = (LiteServiceCompany) servCompanies.get(i);
-				starsServCompanies.addStarsServiceCompany(
-						StarsLiteFactory.createStarsServiceCompany(liteServCompany, getLiteID()) );
+			if (servCompanies.size() == 0) {
+				StarsServiceCompany servCompany = new StarsServiceCompany();
+				servCompany.setCompanyID( 0 );
+				servCompany.setCompanyName( "(none)" );
+				servCompanies.add( servCompany );
+			}
+			else {
+				for (int i = 0; i < servCompanies.size(); i++) {
+					LiteServiceCompany liteServCompany = (LiteServiceCompany) servCompanies.get(i);
+					starsServCompanies.addStarsServiceCompany(
+							StarsLiteFactory.createStarsServiceCompany(liteServCompany, getLiteID()) );
+				}
 			}
 		}
 		
