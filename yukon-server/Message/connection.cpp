@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2003/06/10 21:05:14 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2004/03/04 23:07:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -905,6 +905,12 @@ INT CtiConnection::establishConnection(INT freq)
          */
         if( !(SpinCount++ % freq) )
         {
+            /*************************
+            * added because of turnaround time observed on Progress Energy's system
+            **************************
+            */
+            Sleep(1000);         
+
             if(!ConnectPortal())
             {
                 break;         // the while.  because we connected correctly.
