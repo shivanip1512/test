@@ -11,7 +11,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 {
 	/* Set attributes to null when a user must enter them*/
 	private Integer customerID = null;
-	private Integer primaryContactID = new Integer(Contact.CONTACTID_INVALID);
+	private Integer primaryContactID = new Integer(CtiUtilities.NONE_ID);
 	private Integer customerTypeID = new Integer(CtiUtilities.NONE_ID);	
 	private String timeZone = "";
 

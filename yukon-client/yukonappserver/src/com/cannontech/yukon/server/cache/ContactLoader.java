@@ -45,7 +45,7 @@ public class ContactLoader implements Runnable
 			"SELECT cnt.contactID, cnt.ContFirstName, cnt.ContLastName, " + 
 			"cnt.Loginid, cnt.AddressID " + 
 			"FROM " + Contact.TABLE_NAME + " cnt " +
-			"where cnt.ContactID > " + Contact.CONTACTID_INVALID + " " +
+			"where cnt.ContactID > " + CtiUtilities.NONE_ID + " " +
 			"order by cnt.contactID";
 	
 		java.sql.Connection conn = null;

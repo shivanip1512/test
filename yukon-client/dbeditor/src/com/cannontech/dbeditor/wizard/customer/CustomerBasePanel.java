@@ -530,7 +530,7 @@ public Object getValue(Object o)
 	}
 	else
 		customer.getCustomer().setPrimaryContactID( 
-				new Integer(com.cannontech.database.db.contact.Contact.CONTACTID_INVALID) );
+				new Integer(CtiUtilities.NONE_ID) );
 
 
 	//get the selected Time Zone if there is one

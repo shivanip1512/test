@@ -103,8 +103,23 @@ public class LiteContact extends LiteBase
 	/**
 	 * This method was created by Cannon Technologies Inc.
 	 */
-	public String toString() {
-		return getContLastName() + ", " + getContFirstName();
+	public String toString() 
+	{
+		if( getContLastName() == null )
+		{
+			if( getContFirstName() == null )
+				return super.toString();
+			else
+				return getContFirstName();
+		}		
+		else
+		{
+			if( getContFirstName() == null )
+				return getContLastName();
+			else
+				return getContLastName() + ", " + getContFirstName();
+		}
+
 	}
 
 	/**

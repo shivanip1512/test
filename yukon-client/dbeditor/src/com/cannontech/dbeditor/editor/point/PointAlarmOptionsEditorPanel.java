@@ -38,6 +38,12 @@ public class PointAlarmOptionsEditorPanel extends com.cannontech.common.gui.util
 		"Limit Set 1",
 		"Limit Set 2"
 	};
+	
+	public static final LiteContact NONE_LITE_CONTACT =
+			new LiteContact( CtiUtilities.NONE_ID, 
+					null, CtiUtilities.STRING_NONE ); 
+
+	
 	private javax.swing.JCheckBox ivjJCheckBoxNotifyWhenAck = null;
 	private javax.swing.JCheckBox ivjJCheckBoxDisableAllAlarms = null;
 	private javax.swing.JComboBox ivjJComboBoxGroup = null;
@@ -73,6 +79,10 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 	if (e.getSource() == getJButtonNewContact()) 
 		connEtoC2(e);
 	// user code begin {2}
+	
+	if (e.getSource() == getJComboBoxGroup()) 
+		fireInputUpdate();
+	
 	// user code end
 }
 
@@ -596,6 +606,7 @@ public Object getValue(Object val)
 
 	// get the selected contact from its combo box
 	LiteContact contact = (LiteContact)getJComboBoxContact().getSelectedItem();
+	Integer recID_ = new Integer(CtiUtilities.NONE_ID);
 
 	if( contact != null )
 	{
@@ -607,12 +618,14 @@ public Object getValue(Object val)
 					
 			if( ltCntNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_DEF_ID_EMAIL )
 			{
-				point.getPointAlarming().setRecipientID( new Integer(ltCntNotif.getContactNotifID()) );
+				recID_ = new Integer(ltCntNotif.getContactNotifID());
 				break;
 			}
 		}
 	}
-
+	point.getPointAlarming().setRecipientID( recID_ );
+	
+	
 
 	// get the selected notificationGroup from its combo box and insert its id
 	LiteNotificationGroup grp = 
@@ -643,7 +656,8 @@ private void handleException(Throwable exception) {
 private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
 
-	//getAlarmClassSpinner().addValueListener(this);
+	getJComboBoxGroup().addActionListener(this);
+	
 	// user code end
 	getJCheckBoxDisableAllAlarms().addActionListener(this);
 	getJCheckBoxNotifyWhenAck().addActionListener(this);
@@ -836,7 +850,7 @@ public void newContactButton_ActionPerformed(java.awt.event.ActionEvent actionEv
 		refillContactComboBox();
 
 		//select the newly created contact in out JComboBox, seems reasonable
-		for (int j = 0; j < getJComboBoxContact().getModel().getSize(); j++)
+		for (int j = 0; j < getJComboBoxContact().getItemCount(); j++)
 		{
 			if( contactDB.getContact().getContactID().intValue()
 				 == ((LiteContact)getJComboBoxContact().getItemAt(j)).getContactID() )
@@ -857,7 +871,9 @@ public void newContactButton_ActionPerformed(java.awt.event.ActionEvent actionEv
 private void refillContactComboBox()
 {
 	getJComboBoxContact().removeAllItems();
-
+	getJComboBoxContact().addItem( NONE_LITE_CONTACT );
+	
+	
 	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
