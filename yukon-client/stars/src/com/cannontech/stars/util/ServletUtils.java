@@ -73,6 +73,7 @@ public class ServletUtils {
 	public static final String OUT_OF_SERVICE = "Out of Service";
 	
 	public static final String IMAGE_NAME_SEPARATOR = ",";
+	public static final int MAX_NUM_IMAGES = 5;
 	
 
     private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
@@ -304,8 +305,14 @@ public class ServletUtils {
     	while (st.hasMoreTokens())
     		imgNameList.add( st.nextToken() );
     		
-    	String[] imgNames = new String[ imgNameList.size() ];
-    	imgNameList.toArray( imgNames );
+    	String[] imgNames = new String[ MAX_NUM_IMAGES ];
+    	for (int i = 0; i < MAX_NUM_IMAGES; i++) {
+    		if (i < imgNameList.size())
+    			imgNames[i] = (String) imgNameList.get(i);
+    		else
+    			imgNames[i] = "";
+    	}
+    	
     	return imgNames;
     }
     
