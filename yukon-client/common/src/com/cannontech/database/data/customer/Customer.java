@@ -1,7 +1,9 @@
 package com.cannontech.database.data.customer;
 
+import com.cannontech.database.db.contact.Contact;
+import com.cannontech.database.db.customer.DeviceCustomerList;
+import com.cannontech.database.db.graph.GraphCustomerList;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.user.UserUtils;
 
 /**
  * This type was created in VisualAge.
@@ -10,8 +12,11 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 {	
 	private com.cannontech.database.db.customer.Customer customer = null;
 	
-	//containts com.cannontech.database.db.graph.GraphCustomerList
+	//contains com.cannontech.database.db.graph.GraphCustomerList
 	private java.util.Vector graphVector = null;
+
+	//contains com.cannontech.database.db.customer.DeviceCustomerList
+	private java.util.Vector deviceVector = null;
 
 	//contains ints of ContactIDs
 	private int[] customerContactIDs = new int[0];
@@ -48,18 +53,6 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 		customerContactIDs = ids_;
 	}
 
-	/**
-	 * Insert the method's description here.
-	 * @return java.util.Vector
-	 */
-	public java.util.Vector getCustomerGraphVector() 
-	{
-		if( graphVector == null )
-			graphVector = new java.util.Vector(10);
-	
-		return graphVector;
-	}
-	
 	public void setCustomer( com.cannontech.database.db.customer.Customer customer_ ) {
 		customer = customer_;
 	}
@@ -112,6 +105,9 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 				add("CustomerAdditionalContact", addValues);
 			}
 		}
+
+		for (int i = 0; i < getDeviceVector().size(); i++)
+			 ((com.cannontech.database.db.DBPersistent) getDeviceVector().elementAt(i)).add();			
 		
 	}
 	
@@ -123,6 +119,10 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 	{
 		// delete all the relations from a graph to this customer
 		com.cannontech.database.db.customer.Customer.deleteCustomerGraphList(
+				getCustomerID(), getDbConnection() );
+
+		// delete all the relations from a device to this customer
+		com.cannontech.database.db.customer.Customer.deleteCustomerDeviceList(
 				getCustomerID(), getDbConnection() );
 		
 		
@@ -139,7 +139,11 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 		getCustomer().setDbConnection(conn);
 
 		for (int i = 0; i < getGraphVector().size(); i++)
-			 ((com.cannontech.database.db.DBPersistent) getGraphVector().elementAt(i)).setDbConnection(conn);			
+			 ((com.cannontech.database.db.DBPersistent) getGraphVector().elementAt(i)).setDbConnection(conn);
+			 			
+		for (int i = 0; i < getDeviceVector().size(); i++)
+			 ((com.cannontech.database.db.DBPersistent) getDeviceVector().elementAt(i)).setDbConnection(conn);			
+
 	}
 	
 	/**
@@ -152,7 +156,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 	
 		try
 		{
-			com.cannontech.database.db.graph.GraphCustomerList[] graphs = 
+			GraphCustomerList[] graphs = 
 					com.cannontech.database.db.customer.Customer.getAllGraphCustomerList( 
 							getCustomerID(), getDbConnection() );
 
@@ -169,9 +173,9 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 			
 		try
 		{
-			com.cannontech.database.db.contact.Contact[] contacts =
-					com.cannontech.database.db.contact.Contact.getAllCustomerContacts( 
-						getCustomerID(), getDbConnection() );
+			Contact[] contacts = Contact.getAllCustomerContacts( 
+						getCustomerID(), 
+						getDbConnection() );
 
 			int[] cntIDs = new int[ contacts.length ];
 			for( int i = 0; i < contacts.length; i++ )
@@ -183,7 +187,24 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 		{
 			//not necessarily an error
 		}
-			
+
+		try
+		{
+			DeviceCustomerList[] devices =
+				com.cannontech.database.db.customer.Customer.getAllDeviceCustomerList( 
+				getCustomerID(), 
+				getDbConnection() );
+
+			for( int i = 0; i < devices.length; i++ )
+			{
+				devices[i].setDbConnection(getDbConnection());
+				getDeviceVector().addElement( devices[i] );
+			}
+		}
+		catch(java.sql.SQLException e )
+		{
+			//not necessarily an error
+		}
 	}
 	
 	
@@ -196,16 +217,22 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 		getCustomer().update();
 		
 		// delete all the graph references for this customer
-		com.cannontech.database.db.graph.GraphCustomerList.deleteCustomerGraphList(
-					getCustomerID() );
+		GraphCustomerList.deleteCustomerGraphList( getCustomerID() );
 
 		// add all the graphs for this customer
 		for (int i = 0; i < getGraphVector().size(); i++)
-			 ((com.cannontech.database.db.graph.GraphCustomerList) getGraphVector().elementAt(i)).add();
+			 ((GraphCustomerList) getGraphVector().elementAt(i)).add();
+
+		// delete all the device references for this customer
+		DeviceCustomerList.deleteDeviceCustomerList( getCustomerID() );
+
+		// add all the devices for this customer
+		for (int i = 0; i < getDeviceVector().size(); i++)
+			 ((DeviceCustomerList) getDeviceVector().elementAt(i)).add();
+
 			 
 		// delete all the customer contacts for this customer
-		com.cannontech.database.db.contact.Contact.deleteAllAdditionalContacts( 
-				getCustomerID(), getDbConnection() );
+		Contact.deleteAllAdditionalContacts( getCustomerID(), getDbConnection() );
 	
 		// add all the contacts for this customer
 		if( getCustomerContactIDs() != null )
@@ -222,9 +249,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 				// showing that this contact belongs to the current customer 
 				add("CustomerAdditionalContact", addValues);
 			}
-	
 		}
-			 			
 	}
 
 
@@ -233,7 +258,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 	 * Creation date: (12/19/2001 1:45:25 PM)
 	 * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
 	 */
-	public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
+	public DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
 	{
 /*
 		DBChangeMsg[] msgs =
@@ -243,8 +268,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 							: getCustomerContactIDs().length)  ];
 */
 		DBChangeMsg[] msgs = new DBChangeMsg[ 1 ];
-		msgs[0] =
-			new DBChangeMsg(
+		msgs[0] = new DBChangeMsg(
 						getCustomerID().intValue(),
 						DBChangeMsg.CHANGE_CUSTOMER_DB,
 						DBChangeMsg.CAT_CUSTOMER,
@@ -300,4 +324,22 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 		this.graphVector = graphVector;
 	}
 
+	/**
+	 * @return
+	 */
+	public java.util.Vector getDeviceVector()
+	{
+		if( deviceVector == null )
+			deviceVector = new java.util.Vector(10);
+
+		return deviceVector;
+	}
+
+	/**
+	 * @param vector
+	 */
+	public void setDeviceVector(java.util.Vector deviceVector)
+	{
+		this.deviceVector = deviceVector;
+	}
 }

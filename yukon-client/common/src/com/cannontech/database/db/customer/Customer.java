@@ -1,7 +1,8 @@
 package com.cannontech.database.db.customer;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.db.contact.Contact;
+import com.cannontech.database.db.graph.GraphCustomerList;
+import com.cannontech.database.db.customer.DeviceCustomerList;
 
 /**
  * This type was created in VisualAge.
@@ -104,7 +105,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 	 * @return com.cannontech.database.db.point.State[]
 	 * @param stateGroup java.lang.Integer
 	 */
-	public static final com.cannontech.database.db.graph.GraphCustomerList[] getAllGraphCustomerList(Integer customerID, java.sql.Connection conn) throws java.sql.SQLException
+	public static final GraphCustomerList[] getAllGraphCustomerList(Integer customerID, java.sql.Connection conn) throws java.sql.SQLException
 	{
 		java.util.ArrayList tmpList = new java.util.ArrayList(30);
 		java.sql.PreparedStatement pstmt = null;
@@ -112,7 +113,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 	
 		String sql = 
 				"SELECT GraphDefinitionID,CustomerID,CustomerOrder " +
-				"FROM " + com.cannontech.database.db.graph.GraphCustomerList.TABLE_NAME + 
+				"FROM " + GraphCustomerList.TABLE_NAME + 
 				" WHERE CustomerID= ?";
 	
 		try
@@ -130,7 +131,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 		
 				while( rset.next() )
 				{
-					com.cannontech.database.db.graph.GraphCustomerList item = new com.cannontech.database.db.graph.GraphCustomerList();
+					GraphCustomerList item = new GraphCustomerList();
 	
 					item.setDbConnection(conn);
 					item.setGraphDefinitionID( new Integer(rset.getInt("GraphDefinitionID")) );
@@ -158,9 +159,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
 			}	
 		}
-	
-	
-		com.cannontech.database.db.graph.GraphCustomerList retVal[] = new com.cannontech.database.db.graph.GraphCustomerList[ tmpList.size() ];
+		GraphCustomerList retVal[] = new GraphCustomerList[ tmpList.size() ];
 		tmpList.toArray( retVal );
 		
 		return retVal;
@@ -182,7 +181,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 			java.sql.Statement stat = conn.createStatement();
 			
 			stat.execute( "DELETE FROM " + 
-					com.cannontech.database.db.graph.GraphCustomerList.TABLE_NAME + 
+					GraphCustomerList.TABLE_NAME + 
 					" WHERE CustomerID=" + customerID );
 	
 			if( stat != null )
@@ -193,8 +192,99 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			return false;
 		}
+		return true;
+	}
 	
+	/**
+	 * This method was created in VisualAge.
+	 * @return DeviceCustomerList[]
+	 * @param customerID java.lang.Integer
+	 */
+	public static final DeviceCustomerList[] getAllDeviceCustomerList(Integer customerID, java.sql.Connection conn) throws java.sql.SQLException
+	{
+		java.util.ArrayList tmpList = new java.util.ArrayList(30);
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
 	
+		String sql = 
+				"SELECT DeviceID,CustomerID " +
+				"FROM " + DeviceCustomerList.TABLE_NAME + 
+				" WHERE CustomerID= ?";
+	
+		try
+		{		
+			if( conn == null )
+			{
+				throw new IllegalStateException("Database connection should not be null.");
+			}
+			else
+			{
+				pstmt = conn.prepareStatement(sql.toString());
+				pstmt.setInt( 1, customerID.intValue() );
+				
+				rset = pstmt.executeQuery();							
+		
+				while( rset.next() )
+				{
+					DeviceCustomerList item = new DeviceCustomerList();
+	
+					item.setDbConnection(conn);
+					item.setDeviceID( new Integer(rset.getInt("DeviceID")) );
+					item.setCustomerID( new Integer(rset.getInt("CustomerID")) );
+					tmpList.add( item );
+				}
+						
+			}		
+		}
+		catch( java.sql.SQLException e )
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}
+		finally
+		{
+			try
+			{
+				if( pstmt != null ) pstmt.close();
+				if( rset != null ) rset.close();
+			} 
+			catch( java.sql.SQLException e2 )
+			{
+				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
+			}	
+		}
+	
+		DeviceCustomerList retVal[] = new DeviceCustomerList[ tmpList.size() ];
+		tmpList.toArray( retVal );
+		
+		return retVal;
+	}
+	
+	/**
+	 * This method was created by Cannon Technologies Inc.
+	 * @return boolean
+	 * @param deviceID java.lang.Integer
+	 */
+	public static synchronized boolean deleteCustomerDeviceList(Integer customerID, java.sql.Connection conn )
+	{
+		try
+		{
+			if( conn == null )
+				throw new IllegalStateException("Database connection should not be null.");
+	
+			java.sql.Statement stat = conn.createStatement();
+			
+			stat.execute( "DELETE FROM " + 
+					DeviceCustomerList.TABLE_NAME + 
+					" WHERE CustomerID=" + customerID );
+	
+			if( stat != null )
+				stat.close();
+		}
+		catch(Exception e)
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			return false;
+		}
 		return true;
 	}
 	
@@ -214,7 +304,6 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 		}
 		else
 			throw new Error(getClass() + " - Incorrect Number of results retrieved");
-	
 	}
 	
 	
