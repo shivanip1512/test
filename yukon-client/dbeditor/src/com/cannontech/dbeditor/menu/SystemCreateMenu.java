@@ -16,6 +16,7 @@ public class SystemCreateMenu extends javax.swing.JMenu {
 	public CommandableMenuItem holidayMenuItem;
 	public CommandableMenuItem baselineMenuItem;
 	public CommandableMenuItem tagMenuItem;
+	public CommandableMenuItem seasonMenuItem;
 
 /**
  * CreateMenu constructor comment.
@@ -59,6 +60,10 @@ private void initialize() {
 	baselineMenuItem.setFont( font );
 	baselineMenuItem.setMnemonic('b');
 	
+	seasonMenuItem = new CommandableMenuItem("Season...");
+	seasonMenuItem.setFont( font );
+	seasonMenuItem.setMnemonic('s');
+	
 	tagMenuItem = new CommandableMenuItem("Tag...");
 	tagMenuItem.setFont( font );
 	tagMenuItem.setMnemonic('t');
@@ -74,6 +79,7 @@ private void initialize() {
 	add( notificationGroupMenuItem );
 	add( holidayMenuItem );
 	add( baselineMenuItem );
+	add( seasonMenuItem );
 	add( tagMenuItem );
 }
 }

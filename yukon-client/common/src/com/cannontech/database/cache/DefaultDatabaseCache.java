@@ -131,6 +131,10 @@ public class DefaultDatabaseCache implements IDatabaseCache
 		return getDBCache().getAllBaselines();
 	}
 
+	public synchronized java.util.List getAllSeasons()
+	{
+		return getDBCache().getAllSeasons();
+	}
 	/**
 	 * @ejb:interface-method
 	 * tview-type="remote" 
@@ -491,6 +495,11 @@ public class DefaultDatabaseCache implements IDatabaseCache
    public synchronized void releaseAllBaselines()
    {
 	  getDBCache().releaseAllBaselines();
+   }
+   
+   public synchronized void releaseAllSeasons()
+   {
+	  getDBCache().releaseAllSeasons();
    }
    
    public synchronized void releaseAllConfigs()

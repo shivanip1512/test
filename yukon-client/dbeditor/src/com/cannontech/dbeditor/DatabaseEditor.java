@@ -141,6 +141,7 @@ public class DatabaseEditor
 			new Integer(ModelFactory.ALARM_STATES),
 			new Integer(ModelFactory.HOLIDAY_SCHEDULE),
 			new Integer(ModelFactory.BASELINE),
+			new Integer(ModelFactory.SEASON),
 			new Integer(ModelFactory.TAG)
 		};
 	private static final Integer[] NONLOGIN_SYSTEM_MODELS =
@@ -151,6 +152,7 @@ public class DatabaseEditor
 			new Integer(ModelFactory.ALARM_STATES),
 			new Integer(ModelFactory.HOLIDAY_SCHEDULE),
 			new Integer(ModelFactory.BASELINE),
+			new Integer(ModelFactory.SEASON),
 			new Integer(ModelFactory.TAG)
 		};	
 	
@@ -662,6 +664,10 @@ private void displayAWizardPanel(JMenuItem item)
 	else if (item == systemCreateMenu.baselineMenuItem)
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.baseline.BaselineWizardPanel());
+	}
+	else if (item == systemCreateMenu.seasonMenuItem) 
+	{
+		showWizardPanel(new com.cannontech.dbeditor.wizard.season.SeasonWizardPanel());
 	}
 	else if (item == systemCreateMenu.tagMenuItem) 
 	{

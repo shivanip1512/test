@@ -211,7 +211,11 @@ public final class LiteComparators
 				thisVal = ((LiteHolidaySchedule)o1).getHolidayScheduleName();
 				anotherVal = ((LiteHolidaySchedule)o2).getHolidayScheduleName();
 			}
-			
+			else if(o1 instanceof com.cannontech.database.data.lite.LiteSeason && o2 instanceof com.cannontech.database.data.lite.LiteSeason)
+			{
+				thisVal = ((LiteSeason)o1).getSeasonName();
+				anotherVal = ((LiteSeason)o2).getSeasonName();
+			}
 			else if(o1 instanceof com.cannontech.database.data.lite.LiteBaseline && o2 instanceof com.cannontech.database.data.lite.LiteBaseline)
 			{
 				thisVal = ((LiteBaseline)o1).getBaselineName();

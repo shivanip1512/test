@@ -73,6 +73,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allLMScenarioProgs = null;
 
 	private ArrayList allTags = null;
+	private ArrayList allSeasons = null;
 	
 	private ArrayList allYukonUsers = null;
 	private ArrayList allYukonRoles = null;
@@ -482,6 +483,20 @@ public synchronized java.util.List getAllBaselines()
 		BaselineLoader baselineLoader = new BaselineLoader(allBaselines, databaseAlias);
 		baselineLoader.run();
 		return allBaselines;
+	}
+}
+
+public synchronized java.util.List getAllSeasons()
+{
+
+	if (allSeasons != null)
+		return allSeasons;
+	else
+	{
+		allSeasons = new ArrayList();
+		SeasonLoader seasonLoader = new SeasonLoader(allSeasons, databaseAlias);
+		seasonLoader.run();
+		return allSeasons;
 	}
 }
 
@@ -1580,6 +1595,10 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	{
 		retLBase = handleBaselineChange( dbType, id );
 	}
+	else if( database == DBChangeMsg.CHANGE_SEASON_DB )
+	{
+		retLBase = handleSeasonChange( dbType, id );
+	}
 	else if( database == DBChangeMsg.CHANGE_CONFIG_DB )
 	{
 		retLBase = handleConfigChange( dbType, id );
@@ -1873,6 +1892,64 @@ private synchronized LiteBase handleBaselineChange( int changeType, int id )
 				break;
 		default:
 				releaseAllBaselines();
+				break;
+	}
+
+	return lBase;
+}
+
+private synchronized LiteBase handleSeasonChange( int changeType, int id )
+{
+	boolean alreadyAdded = false;
+	LiteBase lBase = null;
+
+	// if the storage is not already loaded, we must not care about it
+	if( allSeasons == null )
+		return lBase;
+
+	switch(changeType)
+	{
+		case DBChangeMsg.CHANGE_TYPE_ADD:
+				for(int i=0;i<allSeasons.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteSeason)allSeasons.get(i)).getSeasonID() == id )
+					{
+						alreadyAdded = true;
+						lBase = (LiteBase)allSeasons.get(i);
+						break;
+					}
+				}
+				if( !alreadyAdded )
+				{
+					com.cannontech.database.data.lite.LiteSeason lh = new com.cannontech.database.data.lite.LiteSeason(id);
+					lh.retrieve(databaseAlias);
+					allSeasons.add(lh);
+					lBase = lh;
+				}
+				break;
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+				for(int i=0;i<allSeasons.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteSeason)allSeasons.get(i)).getSeasonID() == id )
+					{
+						((com.cannontech.database.data.lite.LiteSeason)allSeasons.get(i)).retrieve(databaseAlias);
+						lBase = (LiteBase)allSeasons.get(i);
+						break;
+					}
+				}
+				break;
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
+				for(int i=0;i<allSeasons.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteSeason)allSeasons.get(i)).getSeasonID() == id )
+					{
+						lBase = (LiteBase)allSeasons.remove(i);
+						break;
+					}
+				}
+				break;
+		default:
+				releaseAllSeasons();
 				break;
 	}
 
@@ -2569,6 +2646,7 @@ public synchronized void releaseAllCache()
 	allGraphDefinitions = null;
 	allHolidaySchedules = null;
 	allBaselines = null;
+	allSeasons = null;
 	allConfigs = null;
 	allTags = null;
 	allDeviceMeterGroups = null;
@@ -2654,6 +2732,11 @@ public synchronized void releaseAllHolidaySchedules()
 public synchronized void releaseAllBaselines()
 {
 	allBaselines = null;
+}
+
+public synchronized void releaseAllSeasons()
+{
+	allSeasons = null;
 }
 
 public synchronized void releaseAllConfigs()

@@ -42,6 +42,7 @@ public interface IDatabaseCache
    public java.util.List getAllLMPrograms();
    public java.util.List getAllLoadManagement();
    public java.util.List getAllLMScenarioProgs();
+   public java.util.List getAllSeasons();
 
 
    public java.util.List getAllPoints();
@@ -126,6 +127,7 @@ public interface IDatabaseCache
    public void releaseAllLMProgramConstraints();
    public void releaseAllLMScenarios();
    public void releaseAllTags();
+   public void releaseAllSeasons();
    public void releaseAllNotificationGroups();
    public void releaseAllContactNotifications();
    public void releaseAllPoints();

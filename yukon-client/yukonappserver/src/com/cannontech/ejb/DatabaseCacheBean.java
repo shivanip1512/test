@@ -175,6 +175,11 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    {
 	  return getCache().getAllBaselines();
    }
+   
+   public synchronized java.util.List getAllSeasons()
+   {
+	  return getCache().getAllSeasons();
+   }
 
    public synchronized java.util.List getAllConfigs()
    {
@@ -557,6 +562,11 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    public synchronized void releaseAllBaselines()
    {
 	  getCache().releaseAllBaselines();
+   }
+   
+   public synchronized void releaseAllSeasons()
+   {
+	  getCache().releaseAllSeasons();
    }
    
    public synchronized void releaseAllConfigs()
