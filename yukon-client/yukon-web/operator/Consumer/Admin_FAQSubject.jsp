@@ -132,9 +132,9 @@ function saveFAQ(form) {
 
 function prepareSubmit(form) {
 	for (i = 0; i < questions.length; i++) {
-		var html = "<input type='hidden' name='Questions' value=\"" + questions[i].replace(/"/g, "&quot;") + "\">";
+		var html = '<input type="hidden" name="Questions" value="' + questions[i].replace(/"/g, "&quot;") + '">';
 		form.insertAdjacentHTML("beforeEnd", html);
-		html = "<input type='hidden' name='Answers' value=\"" + answers[i].replace(/"/g, "&quot;") + "\">";
+		html = '<input type="hidden" name="Answers" value="' + answers[i].replace(/"/g, "&quot;") + '">';
 		form.insertAdjacentHTML("beforeEnd", html);
 	}
 }

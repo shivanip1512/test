@@ -142,18 +142,18 @@
     com.cannontech.stars.web.servlet.UpdateContacts</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>UpdateThermostat</servlet-name>
-    <display-name>UpdateThermostat</display-name>
-    <description>Update thermostat settings</description>
-    <servlet-class>
-    com.cannontech.stars.web.servlet.UpdateThermostat</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>StarsAdmin</servlet-name>
     <display-name>StarsAdmin</display-name>
     <description>Administration functions for consumer information.</description>
     <servlet-class>
     com.cannontech.stars.web.servlet.StarsAdmin</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>InventoryManager</servlet-name>
+    <display-name>InventoryManager</display-name>
+    <description>Inventory management</description>
+    <servlet-class>
+    com.cannontech.stars.web.servlet.InventoryManager</servlet-class>
   </servlet>
   <!-- esub specific servlets -->
   <servlet>

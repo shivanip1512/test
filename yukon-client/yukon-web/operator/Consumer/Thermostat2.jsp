@@ -361,7 +361,7 @@ function prepareSubmit() {
 	if (curSettings.getDisplayedTemperature() > 0)
 		displayTemp = curSettings.getDisplayedTemperature() + "&deg;" + unit;
 %>
-                                  Room: <%= displayTemp %><br>
+                                  <span class="TitleHeader">Room: <%= displayTemp %></span><br>
 <%
 	for (int i = 0; i < curSettings.getInfoStringCount(); i++) {
 		String infoString = (String) curSettings.getInfoString(i);

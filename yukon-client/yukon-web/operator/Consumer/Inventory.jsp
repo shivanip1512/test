@@ -49,12 +49,6 @@
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 
 <script language="JavaScript">
-function sendCommand(cmd) {
-	var form = document.invForm;
-	form.action.value = cmd;
-	form.submit();
-}
-
 function deleteHardware() {
 	var form = document.invForm;
 <%
@@ -73,11 +67,6 @@ function deleteHardware() {
 	form.submit();
 }
 
-function changeAppSelection(chkBox) {
-	var grpList = document.getElementById('Group_App' + chkBox.value);
-	grpList.disabled = !chkBox.checked;
-}
-
 function validate(form) {
 	if (form.SerialNo.value == "") {
 		alert("Serial # cannot be empty");
@@ -85,14 +74,10 @@ function validate(form) {
 	}
 	return true;
 }
-
-function init() {
-	showHardwareGroup("<%= hwGroupName %>");
-}
 </script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0" onload="init()">
+<body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -161,7 +146,8 @@ function init() {
                                   <div align="right">Type: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="DeviceType" size="24" maxlength="30" value="<%= hardware.getLMDeviceType().getContent() %>">
+                                  <input type="text" size="24" maxlength="30" value="<%= hardware.getLMDeviceType().getContent() %>">
+                                  <input type="hidden" name="DeviceType" value="<%= hardware.getLMDeviceType().getEntryID() %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -174,16 +160,9 @@ function init() {
                               </tr>
                               <tr> 
                                 <td width="100" class="TableCell"> 
-                                  <div align="right"></div>
-                                </td>
-                                <td width="200" class="TableCell" valign="middle"><img src="../../Images/Buttons/CheckInv.gif" width="87" height="18"> 
-                                  <img src="../../Images/Buttons/SelectInv.gif" width="87" height="18"></td>
-                              </tr>
-                              <tr> 
-                                <td width="100" class="TableCell"> 
                                   <div align="right">Label: </div>
                                 </td>
-                                <td width="200">
+                                <td width="200"> 
                                   <input type="text" name="DeviceLabel" maxlength="30" size="24" value="<%= hardware.getDeviceLabel() %>">
                                 </td>
                               </tr>
@@ -216,7 +195,8 @@ function init() {
                                   <div align="right">Voltage: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="Voltage" maxlength="30" size="24" value="<%= hardware.getVoltage().getContent() %>">
+                                  <input type="text" maxlength="30" size="24" value="<%= hardware.getVoltage().getContent() %>">
+                                  <input type="hidden" name="Voltage" value="<%= hardware.getVoltage().getEntryID() %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -335,241 +315,45 @@ function init() {
                   </td>
               </tr>
             </table>
-			    <hr>
-                <table width="610" border="0" cellspacing="0" cellpadding="0" align="center" height="66">
+              </form>
+            </div>
+            <hr>
+            <div align="center"> 
+              <div align="center"><span class="TitleHeader">Hardware History</span><br>
+                <table width="300" border="1" cellspacing="0" cellpadding="3" align="center">
                   <tr> 
-                    <td width="300" valign="top" class = "TableCell" height="65"> &nbsp;
-                      <table width="300" border="1" cellspacing="0" cellpadding="3">
-                        <tr> 
-                          <td width="10%" class="HeaderCell">&nbsp; </td>
-                          <td width="40%" class="HeaderCell">Program</td>
-                          <td width="50%" class="HeaderCell">Assigned Group</td>
-                        </tr>
-<%
-	for (int i = 0; i < starsApps.length; i++) {
-		StarsLMProgram program = null;
-		for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
-			StarsLMProgram starsProg = programs.getStarsLMProgram(j);
-			if (starsProg.getProgramID() == starsApps[i].getLmProgramID()) {
-				program = starsProg;
-				break;
-			}
-		}
-		
-		StarsEnrLMProgram enrProg = null;
-		for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
-			StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
-			if (category.getApplianceCategoryID() == starsApps[i].getApplianceCategoryID()) {
-				for (int k = 0; k < category.getStarsEnrLMProgramCount(); k++) {
-					StarsEnrLMProgram prog = category.getStarsEnrLMProgram(k);
-					if (prog.getProgramID() == starsApps[i].getLmProgramID()) {
-						enrProg = prog;
-						break;
-					}
-				}
-				break;
-			}
-		}
-%>
-                        <tr> 
-                          <td width="27" height="2"> 
-                            <input type="checkbox" name="AppID" value="<%= starsApps[i].getApplianceID() %>" checked onClick="changeAppSelection(this)">
-                          </td>
-                          <td width="73" class="TableCell" height="2"><%= program.getProgramName() %></td>
-                          <td width="89" height="2"> 
-                            <select id="Group_App<%= starsApps[i].getApplianceID() %>" name="GroupID">
-<%
-		if (enrProg == null || enrProg.getAddressingGroupCount() == 0) {
-%>
-                              <option value="0">(none)</option>
-<%
-		} else {
-			for (int j = 0; j < enrProg.getAddressingGroupCount(); j++) {
-				AddressingGroup group = enrProg.getAddressingGroup(j);
-				String selectedStr = (group.getEntryID() == program.getGroupID()) ? "selected" : "";
-%>
-                              <option value="<%= group.getEntryID() %>" <%= selectedStr %>><%= group.getContent() %></option>
-<%
-			}
-		}
-%>
-                            </select>
-                          </td>
-                        </tr>
-<%
-	}
-%>
-<%
-	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
-		StarsAppliance appliance = appliances.getStarsAppliance(i);
-		if (appliance.getInventoryID() == 0 && appliance.getLmProgramID() > 0) {
-			StarsEnrLMProgram program = null;
-			for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
-				StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
-				if (category.getApplianceCategoryID() == appliance.getApplianceCategoryID()) {
-					for (int k = 0; k < category.getStarsEnrLMProgramCount(); k++) {
-						StarsEnrLMProgram prog = category.getStarsEnrLMProgram(k);
-						if (prog.getProgramID() == appliance.getLmProgramID()) {
-							program = prog;
-							break;
-						}
-					}
-					break;
-				}
-			}
-			boolean disabled = (program == null || program.getAddressingGroupCount() == 0);
-%>
-                        <tr> 
-                          <td width="27" height="2"> 
-                            <input type="checkbox" name="AppID" value="<%= appliance.getApplianceID() %>" onClick="changeAppSelection(this)"
-							 <%= (disabled)? "disabled" : "" %>>
-                          </td>
-                          <td width="73" class="TableCell" height="2"><%= program.getProgramName() %></td>
-                          <td width="89" height="2"> 
-                            <select id="Group_App<%= appliance.getApplianceID() %>" name="GroupID" disabled="true">
-<%
-			if (disabled) {
-%>
-                              <option value="0">(none)</option>
-<%
-			} else {
-				for (int j = 0; j < program.getAddressingGroupCount(); j++) {
-					AddressingGroup group = program.getAddressingGroup(j);
-%>
-                              <option value="<%= group.getEntryID() %>"><%= group.getContent() %></option>
-<%
-				}
-			}
-%>
-                            </select>
-                          </td>
-                        </tr>
-<%
-		}
-	}
-%>
-                        <tr align="center"> 
-                          <td colspan="3"> 
-                            <input type="button" name="UpdateLMHardwareConfig" value="Config" onClick="sendCommand(this.name)">
-                          </td>
-                        </tr>
-					  </table>
-<!--
-                      <table width="300" border="0" cellspacing="0" cellpadding="0">
-                        <tr> 
-                          <td valign="top" align = "center" height="33"> <br>
-                            <table width="46%" border="0" height="26" cellpadding = "3" cellspacing = "0">
-                              <tr> 
-                                <td> 
-                                  <table width="150" border="0" cellpadding = "3" cellspacing = "0" height="39" align = "center">
-                                    <tr> 
-                                      <td width="35%" align = "center"> 
-                                        <input type="button" name="EnableService" value="In Service" onClick="sendCommand(this.name)">
-                                      </td>
-                                      <td width="35%" align = "center"> 
-                                        <input type="button" name="DisableService" value="Out of Service" onClick="sendCommand(this.name)">
-                                      </td>
-                                      </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                      </table>
--->
-                    </td>
-                    <td width="300" valign="top" bgcolor="#FFFFFF" height="65"> 
-                      <div align="center"> 
-                        <table width="305" border="0" cellspacing="0" cellpadding="0">
-                          <tr> 
-                            <td valign="top" align = "center" class = "TableCell"> 
-                              <span class="SubtitleHedaer">Hardware History</span> 
-                              <br>
-                              <table width="250" border="1" cellspacing="0" cellpadding="3" align="center">
-                                <tr> 
-                                  <td width="104" class="HeaderCell">Date</td>
-                                  <td width="100" class="HeaderCell">Action</td>
-                                </tr>
-<%
+                    <td width="50%" class="HeaderCell">Date</td>
+                    <td width="50%" class="HeaderCell">Action</td>
+                  </tr>
+                  <%
 	StarsLMHardwareHistory hwHist = hardware.getStarsLMHardwareHistory();
 	for (int i = hwHist.getStarsLMHardwareEventCount() - 1; i >= 0 && i >= hwHist.getStarsLMHardwareEventCount() - 5; i--) {
 		StarsLMHardwareEvent event = hwHist.getStarsLMHardwareEvent(i);
 %>
-                                <tr valign="top"> 
-                                  <td width="104" class="TableCell" bgcolor="#FFFFFF"><%= datePart.format(event.getEventDateTime()) %></td>
-                                  <td width="100" class="TableCell" bgcolor="#FFFFFF"><%= event.getEventAction() %></td>
-                                </tr>
-<%
+                  <tr valign="top"> 
+                    <td width="50%" class="TableCell" bgcolor="#FFFFFF"><%= datePart.format(event.getEventDateTime()) %></td>
+                    <td width="50%" class="TableCell" bgcolor="#FFFFFF"><%= event.getEventAction() %></td>
+                  </tr>
+                  <%
 	}
 %>
-                              </table>
-<%
+                </table>
+                <%
 	if (hwHist.getStarsLMHardwareEventCount() > 5) {
 %>
-                              <table width="250" border="0" cellspacing="0" cellpadding="0">
-                                <tr> 
-                                  <td> 
-                                    <div align="right"> 
-                                      <input type="button" name="More" value="More" onClick="location='InventoryHist.jsp?InvNo=<%= invNoStr %>'">
-                                    </div>
-                                  </td>
-                                </tr>
-                              </table>
-<%
-	}
-%>
-                            </td>
-                          </tr>
-                        </table>
+                <table width="300" border="0" cellspacing="0" cellpadding="0">
+                  <tr> 
+                    <td> 
+                      <div align="right"> 
+                        <input type="button" name="More2" value="More" onClick="location='InventoryHist.jsp?InvNo=<%= invNoStr %>'">
                       </div>
                     </td>
                   </tr>
                 </table>
-              </form>
-            </div>
-            <hr>
-            <div align="center">
-              <span class="TitleHeader">Appliance Summary</span><br>
-              <table width="350" border="1" cellspacing="0" cellpadding="3">
-                <tr bgcolor="#FFFFFF"> 
-                  <td width="104" class="HeaderCell"> Appliance Type</td>
-                  <td width="100" class="HeaderCell"> Status</td>
-                  <td width="120" class="HeaderCell"> Enrolled Programs</td>
-                </tr>
-<%
-	for (int i = 0; i < starsApps.length; i++) {
-		StarsLMProgram program = null;
-		for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
-			StarsLMProgram starsProg = programs.getStarsLMProgram(j);
-			if (starsProg.getProgramID() == starsApps[i].getLmProgramID()) {
-				program = starsProg;
-				break;
-			}
-		}
-		
-		StarsApplianceCategory category = null;
-		for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
-			StarsApplianceCategory appCat = categories.getStarsApplianceCategory(j);
-			if (appCat.getApplianceCategoryID() == starsApps[i].getApplianceCategoryID()) {
-				category = appCat;
-				break;
-			}
-		}
-%>
-                <tr bgcolor="#FFFFFF" valign="top"> 
-                  <td width="104" class="TableCell"> <%= starsApps[i].getDescription() %></td>
-                  <td width="100" class="TableCell"><%= program.getStatus() %></td>
-                  <td width="120"> 
-                    <div align="center"> <img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>
-					  <span class="TableCell"><%= program.getProgramName() %></span>
-					</div>
-                  </td>
-                </tr>
-<%
+                <%
 	}
 %>
-              </table>
+              </div>
             </div>
             <p>&nbsp;</p>
           </td>

@@ -132,10 +132,10 @@
                                               <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROLLING %>"/> 
 <%		} else if (todayCtrlHist.getControlHistoryCount() > 0) { %>
                                               You have<br>
-                                              been <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_CONTROLLED %>"/> since midnight
+                                              been <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_CONTROLLED %>"/> today
 <%		} else { %>
                                               You have not<br>
-                                              been <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_CONTROLLED %>"/> since midnight
+                                              been <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_CONTROLLED %>"/> today
 <%		} %>
                                             </b></div>
                                           </td>

@@ -53,7 +53,7 @@
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
               <br>
               
-            <div align="center" class="MainText">
+            <div align="center">
               <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_TITLE_UTILITY, "QUESTIONS - UTILITY"); %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
@@ -65,23 +65,31 @@
               </table>
               <br>
               <br>
-              <%= energyCompany.getCompanyName() %><br>
-			  <%= ServletUtils.getFormattedAddress( energyCompany.getCompanyAddress() ) %><br>
-              <br>
-<% if (energyCompany.getMainPhoneNumber().trim().length() > 0) { %>
-              Ph: <%= energyCompany.getMainPhoneNumber() %><br>
-<% } %>
-<% if (energyCompany.getMainFaxNumber().trim().length() > 0) { %>
-              Fax: <%= energyCompany.getMainFaxNumber() %><br>
-<% } %>
-<cti:checkProperty propertyid="<%=ResidentialCustomerRole.CUSTOMIZED_UTIL_EMAIL_LINK %>">
-			  <a href="<%= energyCompany.getEmail() %>" class="Link1" target="new">Send us an email</a><br>
-</cti:checkProperty>
-<cti:checkNoProperty propertyid="<%=ResidentialCustomerRole.CUSTOMIZED_UTIL_EMAIL_LINK %>">
-<% if (energyCompany.getEmail().trim().length() > 0) { %>
-              <a href="mailto: <%= energyCompany.getEmail() %>" class = "Link1">Email: <%= energyCompany.getEmail() %></a><br>
-<% } %>
-</cti:checkNoProperty>
+              <table width="80%" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td align="center" class="MainText"> 
+                    <%
+	String desc = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_DESC_UTILITY, "");
+	String address = ServletUtils.getFormattedAddress(energyCompany.getCompanyAddress()) + "<br>";
+	String phoneNo = (energyCompany.getMainPhoneNumber().trim().length() > 0)?
+			"Ph: " + energyCompany.getMainPhoneNumber() + "<br>" : "";
+	String faxNo = (energyCompany.getMainFaxNumber().trim().length() > 0)?
+			"Fax: " + energyCompany.getMainFaxNumber() + "<br>" : "";
+	String email = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LINK_UTIL_EMAIL);
+	if (ServerUtils.forceNotNone(email).length() > 0)
+		email = "<a href='" + email + "' class='Link1' target='new'>Send us an email</a><br>";
+	else
+		email = "<a href='mailto:" + energyCompany.getEmail() + "' class='Link1'>Email: " + energyCompany.getEmail() + "</a><br>";
+	
+	desc = desc.replaceAll(ServletUtils.UTIL_COMPANY_ADDRESS, address);
+	desc = desc.replaceAll(ServletUtils.UTIL_PHONE_NUMBER, phoneNo);
+	desc = desc.replaceAll(ServletUtils.UTIL_FAX_NUMBER, faxNo);
+	desc = desc.replaceAll(ServletUtils.UTIL_EMAIL, email);
+%>
+                    <%= energyCompany.getCompanyName() %><br>
+                    <%= desc %></td>
+                </tr>
+              </table>
               <br>
             </div>
             <p>&nbsp;</p>

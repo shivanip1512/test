@@ -45,10 +45,13 @@
 		ec = energyCompany;
 		com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		String propVal = AuthFuncs.getRolePropValueGroup(liteEC.getResidentialCustomerGroup(),
-				com.cannontech.roles.consumer.ResidentialCustomerRole.CUSTOMIZED_UTIL_EMAIL_LINK, "(none)");
-		email = ec.getEmail();
-		if (com.cannontech.common.util.CtiUtilities.isTrue(propVal))
+				com.cannontech.roles.consumer.ResidentialCustomerRole.WEB_LINK_UTIL_EMAIL, "(none)");
+		if (ServerUtils.forceNotNone(propVal).length() > 0) {
+			email = propVal;
 			checkedStr = "checked";
+		}
+		else
+			email = ec.getEmail();
 	}
 %>
 <html>

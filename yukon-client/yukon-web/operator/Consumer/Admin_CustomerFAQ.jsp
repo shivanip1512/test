@@ -58,7 +58,7 @@ function submitFAQSubjects(form) {
 	if (subjects.options[0].value >= 0) {
 		form.action.value = "UpdateFAQSubjects";
 		for (i = 0; i < subjects.options.length; i++) {
-			var html = "<input type='hidden' name='SubjectIDs' value='" + subjectIDs[subjects.options[i].value] + "'>";
+			var html = '<input type="hidden" name="SubjectIDs" value="' + subjectIDs[subjects.options[i].value] + '">';
 			form.insertAdjacentHTML("beforeEnd", html);
 		}
 		form.submit();
@@ -159,7 +159,8 @@ function newFAQSubject(form) {
                             <table width="100%" border="0" cellspacing="0" cellpadding="3" align="center" class="TableCell">
                               <input type="hidden" name="action" value="UpdateFAQLink">
 <%
-	boolean customizedFAQ = AuthFuncs.checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.CUSTOMIZED_FAQ_LINK);
+	String faqLink = ServerUtils.forceNotNone(AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_FAQ));
+	boolean customizedFAQ = faqLink.length() > 0;
 	String checkedStr = (customizedFAQ) ? "checked" : "";
 	String disabledStr = (customizedFAQ) ? "" : "disabled";
 %>
@@ -167,7 +168,7 @@ function newFAQSubject(form) {
                                 <td width="75%"> 
                                   <input type="checkbox" name="CustomizedFAQ" value="true" onClick="this.form.FAQLink.disabled = !this.checked" <%= checkedStr %>>
                                   Use a link to your company's website: 
-                                  <input type="text" name="FAQLink" size="30" value='<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_LINK_FAQ %>"/>' <%= disabledStr %>>
+                                  <input type="text" name="FAQLink" size="30" value="<%= faqLink %>" <%= disabledStr %>>
                                 </td>
                                 <td width="25%"> 
                                   <input type="submit" name="SubmitFAQLink" value="Submit">

@@ -213,7 +213,7 @@ function confirmDeleteAllCompanies() {
                                         <input type="radio" name="Program<%= numProgCat %>" value="<%= prog.getProgramID() %>" onClick="changeProgram(this, <%= numProgCat %>)">
                                       </div>
                                     </td>
-                                    <td class="TableCell" nowrap><%= prog.getStarsWebConfig().getAlternateDisplayName() %></td>
+                                    <td class="TableCell" nowrap><%= ServletUtils.getProgramDisplayNames(prog)[1] %></td>
                                   </tr>
                                   <%
 			}	// End of program
@@ -276,23 +276,38 @@ function confirmDeleteAllCompanies() {
                                 <table width="100%" border="0" cellspacing="0" cellpadding="3">
                                   <input type="hidden" name="action" value="DeleteApplianceCategory">
                                   <input type="hidden" name="AppCatID" value="0">
-                                  <%
+<%
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
 		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
 %>
                                   <tr> 
                                     <td width="15%" class="TableCell" align="center"><img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" width="60"></td>
                                     <td width="60%" class="TableCell" valign="top"><%= category.getDescription() %> 
+<%		if (!category.getStarsWebConfig().getAlternateDisplayName().equals( category.getDescription() )) { %>
                                       (<%= category.getStarsWebConfig().getAlternateDisplayName() %>) 
+<%		} %>
                                       <table width="100%" border="0" cellspacing="3" cellpadding="0">
-                                        <%
+<%
 		for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
 			StarsEnrLMProgram program = category.getStarsEnrLMProgram(j);
+			String[] dispNames = program.getStarsWebConfig().getAlternateDisplayName().split(",");
+			String progAlias = "";
+			if (dispNames.length > 0) {
+				progAlias += "(";
+				if (dispNames[0].trim().length() > 0) {
+					progAlias += dispNames[0];
+					if (dispNames.length > 1 && dispNames[1].trim().length() > 0)
+						progAlias += " / ";
+				}
+				if (dispNames.length > 1 && dispNames[1].trim().length() > 0)
+					progAlias += dispNames[1];
+				progAlias += ")";
+			}
 %>
                                         <tr> 
                                           <td width="15" class="TableCell">&nbsp;</td>
                                           <td width="458" class="TableCell"><%= program.getProgramName() %> 
-                                            (<%= program.getStarsWebConfig().getAlternateDisplayName() %>)</td>
+                                            <%= progAlias %></td>
                                         </tr>
                                         <%		} %>
                                       </table>
@@ -374,21 +389,26 @@ function confirmDeleteAllCompanies() {
                               <td> 
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                   <tr> 
-                                    <td class="TableCell" width="15%"> <cti:checkProperty propertyid="<%= ConsumerInfoRole.CUSTOMIZED_FAQ_LINK %>"> 
-                                      FAQ Link: </cti:checkProperty> <cti:checkNoProperty propertyid="<%= ConsumerInfoRole.CUSTOMIZED_FAQ_LINK %>"> 
-                                      FAQ Subjects: </cti:checkNoProperty> </td>
-                                    <td class="TableCell" width="60%"> <cti:checkProperty propertyid="<%= ConsumerInfoRole.CUSTOMIZED_FAQ_LINK %>"> 
-                                      <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_LINK_FAQ %>"/> 
-                                      </cti:checkProperty> <cti:checkNoProperty propertyid="<%= ConsumerInfoRole.CUSTOMIZED_FAQ_LINK %>"> 
-                                      <ul>
-                                        <%
-	for (int i = 0; i < customerFAQs.getStarsCustomerFAQGroupCount(); i++) {
-		StarsCustomerFAQGroup faqGroup = customerFAQs.getStarsCustomerFAQGroup(i);
+<%
+	String faqLink = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_FAQ);
+	boolean customizedFAQ = ServerUtils.forceNotNone(faqLink).length() > 0;
+%>
+                                    <td class="TableCell" width="15%">
+                                      <% if (customizedFAQ) { %>FAQ Link:<% } else { %>FAQ Subjects:<% } %>
+									</td>
+                                    <td class="TableCell" width="60%">
+<%	if (customizedFAQ) { %>
+                                      <%= faqLink %>
+<%	} else { %>
+									  <ul>
+<%		for (int i = 0; i < customerFAQs.getStarsCustomerFAQGroupCount(); i++) {
+			StarsCustomerFAQGroup faqGroup = customerFAQs.getStarsCustomerFAQGroup(i);
 %>
                                         <li><%= faqGroup.getSubject() %></li>
-                                        <%	} %>
+<%		} %>
                                       </ul>
-                                      </cti:checkNoProperty> </td>
+<%	} %>
+                                    </td>
                                     <td width="25%" class="TableCell"> 
                                       <input type="button" name="Edit" value="Edit" onClick="location.href='Admin_CustomerFAQ.jsp'">
                                     </td>

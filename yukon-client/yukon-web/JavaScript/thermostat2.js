@@ -14,6 +14,7 @@ var upperLimit = 88;
 
 var thermostats = ['', 'MovingLayer1', 'MovingLayer2', 'MovingLayer3', 'MovingLayer4'];
 var timeFields = ['', 'time1', 'time2', 'time3', 'time4'];
+var checkboxes = ['', 'WakeEnabled', 'LeaveEnabled', 'ReturnEnabled', 'SleepEnabled'];
 
 var browser = new Object();
 browser.isNetscape = false;
@@ -197,20 +198,15 @@ function getRightBound(idx) {
   return layerRightBnd - layerHorDist * (idx-1);
 }
 
-function toggleThermostat(idx) {
+function toggleThermostat(idx, on) {
   var layer = document.getElementById(thermostats[idx]);
   if (layer == null) {
     alert("The layer object of this time schedule doesn't exist!");
     return;
   }
   
-  if (layer.style.display == '') {
-    // Hide the thermostat layer
-    layer.style.display = 'none';
-    document.getElementById(timeFields[idx]).disabled = true;
-    document.getElementById(timeFields[idx]).value = "";
-  }
-  else {
+  document.getElementById(checkboxes[idx]).checked = on;
+  if (on) {
     // Show the thermostat layer
     var leftBnd = getLeftBound(idx);
     var rightBnd = getRightBound(idx);
@@ -226,6 +222,12 @@ function toggleThermostat(idx) {
     if (pos <= leftBnd || pos >= rightBnd)
       layer.style.left = leftBnd + tenMinEqlLen;
     showTime(document.getElementById(thermostats[idx]), document.getElementById(timeFields[idx]), idx);
+  }
+  else {
+    // Hide the thermostat layer
+    layer.style.display = 'none';
+    document.getElementById(timeFields[idx]).disabled = true;
+    document.getElementById(timeFields[idx]).value = "";
   }
 }
 

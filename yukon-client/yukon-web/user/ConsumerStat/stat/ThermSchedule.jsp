@@ -1,7 +1,7 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
-	int invNo = Integer.parseInt(request.getParameter("InvNo"));
-	StarsLMHardware thermostat = thermostats.getStarsLMHardware(invNo);
+	int itemNo = Integer.parseInt(request.getParameter("Item"));
+	StarsLMHardware thermostat = thermostats.getStarsLMHardware(itemNo);
 	StarsThermostatSettings thermoSettings = thermostat.getStarsThermostatSettings();
 
 	String dayStr = request.getParameter("day");
@@ -125,7 +125,7 @@ function prepareSubmit(form) {
 
 function switchSettings(day, mode) {
 	var form = document.form1;
-	form.REDIRECT.value = "<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule.jsp?InvNo=<%= invNo %>&day=" + day + "&mode=" + mode;
+	form.REDIRECT.value = "<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule.jsp?Item=<%= itemNo %>&day=" + day + "&mode=" + mode;
 	if (changed && confirm('You have made changes to the thermostat schedule. Click "Ok" to submit these changes before leaving the page, or click "Cancel" to discard them.'))
 	{
 		var form = document.form1;
@@ -179,6 +179,7 @@ function init() {
 	document.getElementById('MovingLayer2').style.display = "";
 	document.getElementById('MovingLayer3').style.display = "";
 	document.getElementById('MovingLayer4').style.display = "";
+	document.getElementById('Default').value = '<cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON %>"/>';
 }
 </script>
 
@@ -232,14 +233,12 @@ MM_reloadPage(true);
         </tr>
         <tr> 
           <td  valign="top" width="101">
-		  <% String pageName = "ThermSchedule.jsp?InvNo=" + invNo; %>
+		  <% String pageName = "ThermSchedule.jsp?Item=" + itemNo; %>
           <%@ include file="Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
-          
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
-              
-            <div align="center">
+            <div align="center"><br>
               <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_TITLE_THERM_SCHED, "THERMOSTAT - SCHEDULE"); %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
@@ -257,8 +256,8 @@ MM_reloadPage(true);
 			  <input type="hidden" name="invID" value="<%= thermostat.getInventoryID() %>">
 			  <input type="hidden" name="day" value="<%= dayStr %>">
 			  <input type="hidden" name="mode" value="<%= modeStr %>">
-			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule.jsp?InvNo=<%= invNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
-			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule.jsp?InvNo=<%= invNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule.jsp?Item=<%= itemNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule.jsp?Item=<%= itemNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
 			  <input type="hidden" name="tempval1">
 			  <input type="hidden" name="tempval2">
 			  <input type="hidden" name="tempval3">
@@ -315,7 +314,7 @@ MM_reloadPage(true);
                           </td>
                           <td class = "TableCell" width="29%" height="4" align = "left" valign="top" > 
                             <i>Make temporary adjustments to your heating and 
-                            cooling system<a class="Link1" href="Thermostat.jsp?InvNo=<%= invNo %>"> 
+                            cooling system<a class="Link1" href="Thermostat.jsp?Item=<%= itemNo %>"> 
                             here</a>.</i> </td>
                         </tr>
                       </table>
@@ -545,7 +544,7 @@ MM_reloadPage(true);
                       <input type="submit" name="Submit" value="Submit">
                   </td>
                   <td width="64%" align = "left" class = "TableCell"> 
-                    <input type="button" id="Default" value='<cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON %>"/>' onclick="setToDefault()">
+                    <input type="button" id="Default" value="Recommended Settings" onclick="setToDefault()">
                   </td>
                 </tr>
               </table>

@@ -61,11 +61,20 @@
                   </td>
                 </tr>
               </table>
-              </div>
-              
-            <div align="center">
-              <p class="MainText"> </p>
             </div>
+<%
+	String desc = ServerUtils.forceNotNone(AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_DESC_PROGRAM));
+	if (desc.length() > 0) {
+%>
+            <div align="center">
+              <table width="600" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td class="MainText"><%= desc %></td>
+                </tr>
+              </table>
+            </div>
+<%	}
+	else { %>
             <table width="95%" border="1" class = "TableCell" align = "center" height="28" cellspacing = "0" cellpadding = "4">
               <tr> 
                 <td width="17%"><b>The following symbols represent:</b></td>
@@ -133,6 +142,7 @@
 	}
 %>
             </table>
+<%	} %>
             <div align="center"> 
               <form method="post" action="Enrollment.jsp">
                 <input type="submit" name="Back" value="Back">

@@ -7,34 +7,43 @@
 <body bgcolor="#FFFFFF" text="#000000">
 <form method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 <input type="hidden" name="action" value="SearchCustAccount">
-  <table width="100%" border="0" cellpadding = "5">
+  <table width="100%" border="0" cellpadding="3">
     <tr> 
-      <td width="33%" valign = "top" align = "left"><span class="TitleHeader">Acct #<%= account.getAccountNumber() %></span><br>
-        <span class="NavText"><%= primContact.getFirstName() %>&nbsp;<%= primContact.getLastName() %><br>
-        <!--<%= account.getCompany() %><br> -->
-        <%= primContact.getHomePhone() %><br>
-        <%= primContact.getWorkPhone() %></span></td>
-      <td valign = "bottom" align = "center" width="33%" rowspan = "3" class = "TitleHeader"><%=header%></td>
-      <td align = "right" width="33%"><span class="TitleHeader">
+      <td width="50%" valign = "top" align = "left"><span class="TitleHeader">Acct 
+        #<%= account.getAccountNumber() %></span><br>
+        <%
+	StringBuffer phoneNo = new StringBuffer();
+	if (primContact.getHomePhone().length() > 0)
+		phoneNo.append(", ").append(primContact.getHomePhone()).append("(H)");
+	if (primContact.getWorkPhone().length() > 0)
+		phoneNo.append(", ").append(primContact.getWorkPhone()).append("(W)");
+%>
+        <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><%= phoneNo.toString() %> 
+        </span><br>
+        <span class="NavText"><%= ServletUtils.getOneLineAddress(propAddr) %></span><br>
+        </td>
+      <td align = "right" width="50%"><span class="TitleHeader"> 
         <select name="SearchBy">
-<%
+          <%
 	Integer lastOption = (Integer) user.getAttribute(ServletUtils.ATT_LAST_SEARCH_OPTION);
 	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE );
 	for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
 		String selectedStr = (lastOption != null && entry.getEntryID() == lastOption.intValue()) ? "selected" : "";
 %>
-		  <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
-<%
+          <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
+          <%
 	}
 %>
         </select>
         <input type="text" name="SearchValue" size="14">
         <input type="submit" name="Search" value="Search">
-		<cti:checkProperty propertyid="<%= ConsumerInfoRole.SUPER_OPERATOR %>">
-		  <input type="submit" name="Refresh" value="Refresh" onclick="javascript:this.form.action.value='ReloadCustAccount'">
-		</cti:checkProperty>
-        </span></td>
+      </span></td>
+    </tr>
+  </table>
+  <table width="100%" border="0" cellspacing="0" cellpadding="3">
+    <tr>
+      <td align="center" class="TitleHeader"><%= header %></td>
     </tr>
   </table>
 </form>

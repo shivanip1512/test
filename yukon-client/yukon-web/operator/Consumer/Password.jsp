@@ -21,7 +21,7 @@ function checkPassword(form) {
 	}
 }
 
-function genNewPassword(form) {
+function generatePassword(form) {
 	// Generate a random password w/ the length of 6, consists of letters and digits
 	var pwChars = new Array(6);
 	for (i = 0; i < 6; i++) {
@@ -128,7 +128,7 @@ function genNewPassword(form) {
                   <tr> 
                     <td width="100" class="TableCell">&nbsp;</td>
                     <td width="200"> 
-                      <input type="button" name="NewPasswd" value="New Password" onclick="genNewPassword(this.form)">
+                      <input type="button" name="GenPasswd" value="Generate Password" onclick="generatePassword(this.form)">
                     </td>
                   </tr>
                 </table>

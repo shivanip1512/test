@@ -105,7 +105,7 @@
 %>
                                 <tr> 
 								  <input type="hidden" name="ProgID" value="<%= program.getProgramID() %>">
-                                  <td width="187" class="TableCell"><%= program.getProgramName() %>
+                                  <td width="187" class="TableCell"><%= ServletUtils.getProgramDisplayNames(program)[0] %>
 								  </td>
                                   <td width="81"> 
                                     <select name="ControlOdds">

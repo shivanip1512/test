@@ -200,7 +200,7 @@ function confirmSubmit(form) {
 									    onclick="changeProgram(this, <%= idx %>)" <%= checkStr %>>
 									  </div>
                                     </td>
-                                    <td class="TableCell" nowrap><%= prog.getStarsWebConfig().getAlternateDisplayName() %></td>
+                                    <td class="TableCell" nowrap><%= ServletUtils.getProgramDisplayNames(prog)[1] %></td>
                                   </tr>
 <%
 			}	// End of program

@@ -77,8 +77,7 @@ function setRedirect(form) {
                     <div align="center">Enrolled Programs</div>
                   </td>
                   <td width="302" class="HeaderCell"> 
-                    <div align="center">Recent <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROL %>" format="capital"/> History <br>
-                      (since midnight)</div>
+                    <div align="center">Today's <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROL %>" format="capital"/> History</div>
                   </td>
                   <td width="180" class="HeaderCell"> 
                     <div align="center">Complete <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROL %>" format="capital"/> History</div>

@@ -1,7 +1,7 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
-	int invNo = Integer.parseInt(request.getParameter("InvNo"));
-	StarsLMHardware thermostat = thermostats.getStarsLMHardware(invNo);
+	int itemNo = Integer.parseInt(request.getParameter("Item"));
+	StarsLMHardware thermostat = thermostats.getStarsLMHardware(itemNo);
 	StarsThermostatSettings thermoSettings = thermostat.getStarsThermostatSettings();
 
 	StarsThermostatManualEvent lastEvent = null;
@@ -184,7 +184,7 @@ if (text.length == 2) {
         </tr>
         <tr> 
           <td  valign="top" width="101">
-		  <% String pageName = "Thermostat.jsp?InvNo=" + invNo; %>
+		  <% String pageName = "Thermostat.jsp?Item=" + itemNo; %>
           <%@ include file="Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
@@ -219,8 +219,8 @@ if (text.length == 2) {
 			  <form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="UpdateThermostatOption">
               <input type="hidden" name="invID" value="<%= thermostat.getInventoryID() %>">
-			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat.jsp?InvNo=<%= invNo %>">
-			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat.jsp?InvNo=<%= invNo %>">
+			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat.jsp?Item=<%= itemNo %>">
+			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat.jsp?Item=<%= itemNo %>">
 			  <input type="hidden" name="mode" value="">
 			  <input type="hidden" name="fan" value="">
 			  <input type="hidden" name="RunProgram" value="false">

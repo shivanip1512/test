@@ -130,18 +130,23 @@ function removeProgram(form) {
 	clearProgramConfig(form);
 }
 
-function setSameAsName(form, checked) {
+function sameAsName(form, checked) {
 	form.SameAsName.checked = checked;
 	form.DispName.disabled = checked;
 }
 
-function setSameAsProgName(form, checked) {
+function sameAsProgName(form, checked) {
 	form.SameAsProgName.checked = checked;
 	form.ProgDispName.disabled = checked;
 }
 
+function sameAsDispName(form, checked) {
+	form.SameAsDispName.checked = checked;
+	form.ProgShortName.disabled = checked;
+}
+
 function init() {
-	setSameAsName(document.form1, <%= category.getStarsWebConfig().getAlternateDisplayName().equals(category.getDescription()) %>);
+	sameAsName(document.form1, <%= category.getStarsWebConfig().getAlternateDisplayName().equals(category.getDescription()) %>);
 	removeProgram(document.form1);
 	addProgram(document.form1);
 	removeWarned = false;
@@ -163,13 +168,14 @@ var idx = 0;
 	for (int i = 0; i < category.getStarsEnrLMProgramCount(); i++) {
 		StarsEnrLMProgram program = category.getStarsEnrLMProgram(i);
 		StarsWebConfig cfg = program.getStarsWebConfig();
+		String[] dispNames = cfg.getAlternateDisplayName().split(",");
 		String[] imgNames = ServletUtils.getImageNames( cfg.getLogoLocation() );
 %>
 	progID[idx] = <%= program.getProgramID() %>;
 	progName[idx] = "<%= program.getProgramName() %>";
-	dispName[idx] = "<%= cfg.getURL() %>";
-	shortName[idx] = "<%= cfg.getAlternateDisplayName() %>";
-	description[idx] = '<%= cfg.getDescription() %>'.replace(/<br>/g, "\r\n");
+	dispName[idx] = "<%= (dispNames.length > 0)? dispNames[0] : "" %>";
+	shortName[idx] = "<%= (dispNames.length > 1)? dispNames[1] : "" %>";
+	description[idx] = "<%= cfg.getDescription().replaceAll("\"", "&quot;") %>".replace(/&quot;/g, '"').replace(/<br>/g, '\r\n');
 	ctrlOdds[idx] = <%= (program.getChanceOfControl() == null) ? 0 : program.getChanceOfControl().getEntryID() %>;
 	iconNameSmall[idx] = "<%= imgNames[1] %>";
 	iconNameSavings[idx] = "<%= imgNames[2] %>";
@@ -184,8 +190,8 @@ var idx = 0;
 	progID[idx] = <%= program.getYukonID() %>;
 	progName[idx] = "<%= program.getYukonName() %>";
 	dispName[idx] = "";
-	shortName[idx] = "<%= program.getYukonName() %>";
-	description[idx] = "<%= com.cannontech.stars.util.ServerUtils.forceNotNone(program.getYukonDescription()) %>";
+	shortName[idx] = "";
+	description[idx] = "<%= ServerUtils.forceNotNone(program.getYukonDescription()).replaceAll("\"", "&quot;") %>".replace(/&quot;/g, '"');
 	ctrlOdds[idx] = 0;
 	iconNameSmall[idx] = "";
 	iconNameSavings[idx] = "";
@@ -206,7 +212,10 @@ function saveProgramConfig(form) {
 			dispName[idx] = "";
 		else
 			dispName[idx] = form.ProgDispName.value;
-		shortName[idx] = form.ProgShortName.value;
+		if (form.SameAsDispName.checked)
+			shortName[idx] = "";
+		else
+			shortName[idx] = form.ProgShortName.value;
 		description[idx] = form.ProgDescription.value;
 		ctrlOdds[idx] = form.ProgCtrlOdds.value;
 		iconNameSmall[idx] = form.IconNameSmall.value;
@@ -219,7 +228,8 @@ function saveProgramConfig(form) {
 function clearProgramConfig(form) {
 	document.getElementById("ProgName").innerText = "";
 	form.ProgDispName.value = "";
-	setSameAsProgName(form, false);
+	sameAsProgName(form, false);
+	sameAsDispName(form, false);
 	form.ProgShortName.value = "";
 	form.ProgDescription.value = "";
 	form.ProgCtrlOdds.selectedIndex = 0;
@@ -246,8 +256,9 @@ function showProgramConfig(form) {
 		if (idx < progID.length) {
 			document.getElementById("ProgName").innerText = progName[idx];
 			form.ProgDispName.value = dispName[idx];
-			setSameAsProgName(form, dispName[idx] == "");
+			sameAsProgName(form, dispName[idx] == "");
 			form.ProgShortName.value = shortName[idx];
+			sameAsDispName(form, shortName[idx] == "");
 			form.ProgDescription.value = description[idx];
 			form.ProgCtrlOdds.value = ctrlOdds[idx];
 			form.IconNameSmall.value = iconNameSmall[idx];
@@ -281,7 +292,7 @@ function prepareSubmit(form) {
 			form.insertAdjacentHTML("beforeEnd", html);
 			html = '<input type="hidden" name="ProgShortNames" value="' + shortName[idx] + '">';
 			form.insertAdjacentHTML("beforeEnd", html);
-			html = '<input type="hidden" name="ProgDescriptions" value="' + description[idx] + '">';
+			html = '<input type="hidden" name="ProgDescriptions" value="' + description[idx].replace(/"/g, "&quot;") + '">';
 			form.insertAdjacentHTML("beforeEnd", html);
 			html = '<input type="hidden" name="ProgChanceOfCtrls" value="' + ctrlOdds[idx] + '">';
 			form.insertAdjacentHTML("beforeEnd", html);
@@ -368,7 +379,7 @@ function prepareSubmit(form) {
                           Name:</td>
                         <td width="82%" class="TableCell"> 
                           <input type="text" name="DispName" value="<%= category.getStarsWebConfig().getAlternateDisplayName() %>">
-                          <input type="checkbox" name="SameAsName" value="true" onClick="setSameAsName(this.form, this.checked)">
+                          <input type="checkbox" name="SameAsName" value="true" onClick="sameAsName(this.form, this.checked)">
                           Same as category name </td>
                       </tr>
                       <tr> 
@@ -470,14 +481,15 @@ function prepareSubmit(form) {
                               <td width="16%">Display Name:</td>
                               <td width="84%"> 
                                 <input type="text" name="ProgDispName" size="20">
-                                <input type="checkbox" name="SameAsProgName" value="true" onclick="setSameAsProgName(this.form, this.checked)">
+                                <input type="checkbox" name="SameAsProgName" value="true" onclick="sameAsProgName(this.form, this.checked)">
                                 Same as program name</td>
                             </tr>
                             <tr> 
                               <td width="16%">Short Name:</td>
                               <td width="84%"> 
                                 <input type="text" name="ProgShortName" size="20">
-                              </td>
+                                <input type="checkbox" name="SameAsDispName" value="true" onClick="sameAsDispName(this.form, this.checked)">
+                                Same as display name </td>
                             </tr>
                             <tr> 
                               <td width="16%">Description:</td>

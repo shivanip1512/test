@@ -180,6 +180,7 @@ function init() {
 	document.getElementById('MovingLayer2').style.display = "";
 	document.getElementById('MovingLayer3').style.display = "";
 	document.getElementById('MovingLayer4').style.display = "";
+	document.getElementById('Default').value = '<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON %>"/>';
 }
 </script>
 
@@ -544,7 +545,7 @@ MM_reloadPage(true);
                       <input type="submit" name="Submit" value="Submit">
                   </td>
                     <td width="64%" align = "left" class = "TableCell"> 
-                      <input type="button" id="Default" value='<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON %>"/>' onclick="setToDefault()">
+                      <input type="button" id="Default" value="Recommended Settings" onclick="setToDefault()">
                   </td>
                 </tr>
               </table>
@@ -554,16 +555,12 @@ MM_reloadPage(true);
               </p>
               <p align="center" class="MainText">&nbsp; </p>
             </div>
-			
           </td>
-		  
-		  
-        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-    </tr>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+        </tr>
       </table>
-	  
     </td>
-	</tr>
+  </tr>
 </table>
 <br>
 </body>

@@ -67,8 +67,7 @@
                     <div align="center">Enrolled Programs</div>
                   </td>
                   <td width="332" class="HeaderCell"> 
-                    <div align="center">Recent <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" format="capital"/> History <br>
-                      (since midnight yesterday)</div>
+                    <div align="center">Today's <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" format="capital"/> History</div>
                   </td>
                   <td width="332" class="HeaderCell"> 
                     <div align="center"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" format="capital"/> History Summary</div>

@@ -236,7 +236,7 @@ function showAll(form) {
                   </td>
                 </tr>
               </table>
-              <%= inventoryBean.getHTML() %>
+              <%= inventoryBean.getHTML(request) %>
 <!--              <table width='80%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>
                 <tr>
                   <td>1-4 of 4 | <font color='#CCCCCC'>First</font> | <font color='#CCCCCC'>Previous</font> 

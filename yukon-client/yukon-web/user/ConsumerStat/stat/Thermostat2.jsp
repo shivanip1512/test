@@ -1,7 +1,7 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
-	int invNo = Integer.parseInt(request.getParameter("InvNo"));
-	StarsLMHardware thermostat = thermostats.getStarsLMHardware(invNo);
+	int itemNo = Integer.parseInt(request.getParameter("Item"));
+	StarsLMHardware thermostat = thermostats.getStarsLMHardware(itemNo);
 	StarsThermostatSettings thermoSettings = thermostat.getStarsThermostatSettings();
 
 	StarsThermostatDynamicData curSettings = thermoSettings.getStarsThermostatDynamicData();
@@ -281,13 +281,13 @@ function prepareSubmit() {
         </tr>
         <tr> 
           <td  valign="top" width="101">
-		  <% String pageName = "Thermostat2.jsp?InvNo=" + invNo; %>
+		  <% String pageName = "Thermostat2.jsp?Item=" + itemNo; %>
           <%@ include file="Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
           
 		  <td width="657" valign="top" bgcolor="#FFFFFF" bordercolor="#333399"> 
-            <div align="center">
+            <div align="center"><br>
               <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_TITLE_THERM_MANUAL, "THERMOSTAT - MANUAL"); %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
@@ -316,8 +316,8 @@ function prepareSubmit() {
 			  <form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient">
 				<input type="hidden" name="action" value="UpdateThermostatOption">
 				<input type="hidden" name="invID" value="<%= thermostat.getInventoryID() %>">
-				<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat2.jsp?InvNo=<%= invNo %>">
-				<input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat2.jsp?InvNo=<%= invNo %>">
+				<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat2.jsp?Item=<%= itemNo %>">
+				<input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat2.jsp?Item=<%= itemNo %>">
 				<input type="hidden" name="mode" value="">
 				<input type="hidden" name="fan" value="">
 				<input type="hidden" name="RunProgram" value="false">
@@ -367,7 +367,7 @@ function prepareSubmit() {
 	if (curSettings.getDisplayedTemperature() > 0)
 		displayTemp = curSettings.getDisplayedTemperature() + "&deg;" + unit;
 %>
-                                      Room: <%= displayTemp %><br>
+                                      <span class="TitleHeader">Room: <%= displayTemp %></span><br>
 <%
 	for (int i = 0; i < curSettings.getInfoStringCount(); i++) {
 		String infoString = (String) curSettings.getInfoString(i);

@@ -1,13 +1,16 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
-	int invNo = Integer.parseInt(request.getParameter("InvNo"));
-	StarsLMHardware thermostat = thermostats.getStarsLMHardware(invNo);
+	int itemNo = Integer.parseInt(request.getParameter("Item"));
+	StarsLMHardware thermostat = thermostats.getStarsLMHardware(itemNo);
 	StarsThermostatSettings thermoSettings = thermostat.getStarsThermostatSettings();
 
 	String dayStr = request.getParameter("day");
-	if (dayStr == null) dayStr = StarsThermoDaySettings.WEEKDAY.toString();
+	if (dayStr == null) dayStr = StarsThermoDaySettings.MONDAY.toString();
 	String modeStr = request.getParameter("mode");
 	if (modeStr == null) modeStr = StarsThermoModeSettings.COOL.toString();
+	
+	StarsThermoDaySettings daySetting = StarsThermoDaySettings.valueOf(dayStr);
+	if (daySetting == null) daySetting = StarsThermoDaySettings.MONDAY;
 	
 	boolean isCooling = modeStr.equalsIgnoreCase( StarsThermoModeSettings.COOL.toString() );
 	String visibleC = isCooling ? "visible" : "hidden";
@@ -26,7 +29,7 @@
 			StarsThermostatSeason season = thermoSettings.getStarsThermostatSeason(i);
 			if (season.getMode().getType() == StarsThermoModeSettings.COOL_TYPE) {
 				for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
-					if (season.getStarsThermostatSchedule(j).getDay().toString().equalsIgnoreCase( dayStr )) {
+					if (season.getStarsThermostatSchedule(j).getDay().getType() == daySetting.getType()) {
 						coolSched = season.getStarsThermostatSchedule(j);
 						if (isCooling) schedule = coolSched;
 						break;
@@ -35,7 +38,7 @@
 			}
 			else {
 				for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
-					if (season.getStarsThermostatSchedule(j).getDay().toString().equalsIgnoreCase( dayStr )) {
+					if (season.getStarsThermostatSchedule(j).getDay().getType() == daySetting.getType()) {
 						heatSched = season.getStarsThermostatSchedule(j);
 						if (!isCooling) schedule = heatSched;
 						break;
@@ -50,7 +53,9 @@
 			StarsThermostatSeason season = dftThermoSettings.getStarsThermostatSeason(i);
 			if (season.getMode().getType() == StarsThermoModeSettings.COOL_TYPE) {
 				for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
-					if (season.getStarsThermostatSchedule(j).getDay().toString().equalsIgnoreCase( dayStr )) {
+					if (season.getStarsThermostatSchedule(j).getDay().getType() == daySetting.getType() ||
+						ServletUtils.isWeekday(daySetting) && season.getStarsThermostatSchedule(j).getDay().getType() == StarsThermoDaySettings.WEEKDAY_TYPE)
+					{
 						dftCoolSched = season.getStarsThermostatSchedule(j);
 						if (coolSched == null) coolSched = dftCoolSched;
 						if (isCooling) dftSchedule = dftCoolSched;
@@ -60,7 +65,9 @@
 			}
 			else {
 				for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
-					if (season.getStarsThermostatSchedule(j).getDay().toString().equalsIgnoreCase( dayStr )) {
+					if (season.getStarsThermostatSchedule(j).getDay().getType() == daySetting.getType() ||
+						ServletUtils.isWeekday(daySetting) && season.getStarsThermostatSchedule(j).getDay().getType() == StarsThermoDaySettings.WEEKDAY_TYPE)
+					{
 						dftHeatSched = season.getStarsThermostatSchedule(j);
 						if (heatSched == null) heatSched = dftHeatSched;
 						if (!isCooling) dftSchedule = dftHeatSched;
@@ -150,7 +157,7 @@ function prepareSubmit(form) {
 
 function switchSettings(day, mode) {
 	var form = document.form1;
-	form.REDIRECT.value = "<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule2.jsp?InvNo=<%= invNo %>&day=" + day + "&mode=" + mode;
+	form.REDIRECT.value = "<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule2.jsp?Item=<%= itemNo %>&day=" + day + "&mode=" + mode;
 	if (changed && confirm('You have made changes to the thermostat schedule. Click "Ok" to submit these changes before leaving the page, or click "Cancel" to discard them.'))
 	{
 		var form = document.form1;
@@ -183,13 +190,17 @@ function setToDefault() {
 		temp4H = <%= dftSchedule.getTemperature4() %>;
 		temp1C = temp2C = temp3C = temp4C = null;
 	}
-	
 	updateLayout(
 		<%= dftSchedule.getTime1().getHour() %>,<%= dftSchedule.getTime1().getMinute() %>,temp1C,temp1H,
 		<%= dftSchedule.getTime2().getHour() %>,<%= dftSchedule.getTime2().getMinute() %>,temp2C,temp2H,
 		<%= dftSchedule.getTime3().getHour() %>,<%= dftSchedule.getTime3().getMinute() %>,temp3C,temp3H,
 		<%= dftSchedule.getTime4().getHour() %>,<%= dftSchedule.getTime4().getMinute() %>,temp4C,temp4H
 	);
+	
+	toggleThermostat(1, true);
+	toggleThermostat(2, true);
+	toggleThermostat(3, true);
+	toggleThermostat(4, true);
 	setChanged();
 }
 
@@ -218,10 +229,14 @@ function init() {
 		<%= schedule.getTime3().getHour() %>,<%= schedule.getTime3().getMinute() %>,<%= ct3 %>,<%= ht3 %>,
 		<%= schedule.getTime4().getHour() %>,<%= schedule.getTime4().getMinute() %>,<%= ct4 %>,<%= ht4 %>
 	);
-	<% if (!skip1) { %>toggleThermostat(1);<% } %>
-	<% if (!skip2) { %>toggleThermostat(2);<% } %>
-	<% if (!skip3) { %>toggleThermostat(3);<% } %>
-	<% if (!skip4) { %>toggleThermostat(4);<% } %>
+	
+	// The wake time cannot be turned off
+	toggleThermostat(1, true);
+	toggleThermostat(2, <%= !skip2 %>);
+	toggleThermostat(3, <%= !skip3 %>);
+	toggleThermostat(4, <%= !skip4 %>);
+
+	document.getElementById('Default').value = '<cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON %>"/>';
 <%	if (thermoSettings.getStarsThermostatDynamicData() != null) { %>
 	timeoutId = setTimeout("location.reload()", 60000);
 <%	} %>
@@ -278,14 +293,12 @@ MM_reloadPage(true);
         </tr>
         <tr> 
           <td  valign="top" width="101">
-		  <% String pageName = "ThermSchedule2.jsp?InvNo=" + invNo; %>
+		  <% String pageName = "ThermSchedule2.jsp?Item=" + itemNo; %>
           <%@ include file="Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
-          
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
-              
-            <div align="center">
+            <div align="center"><br>
               <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_TITLE_THERM_SCHED, "THERMOSTAT - SCHEDULE"); %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
@@ -303,8 +316,8 @@ MM_reloadPage(true);
 			  <input type="hidden" name="invID" value="<%= thermostat.getInventoryID() %>">
 			  <input type="hidden" name="day" value="<%= dayStr %>">
 			  <input type="hidden" name="mode" value="<%= modeStr %>">
-			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule2.jsp?InvNo=<%= invNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
-			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule2.jsp?InvNo=<%= invNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule2.jsp?Item=<%= itemNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule2.jsp?Item=<%= itemNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
 			  <input type="hidden" name="tempval1">
 			  <input type="hidden" name="tempval2">
 			  <input type="hidden" name="tempval3">
@@ -315,33 +328,57 @@ MM_reloadPage(true);
                       <table width="478" border="0" height="8" valign = "bottom" >
                         <tr> 
                           <td class = "TableCell1" align = "left" width="54%"> 
-                            <% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.WEEKDAY.toString() )) { %>
-                            <b><span class="Header2">Weekday</span></b> 
+                            <% if (daySetting.getType() == StarsThermoDaySettings.MONDAY_TYPE) { %>
+                            <b><span class="Header2">Mon</span></b> 
                             <% } else { %>
-                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.WEEKDAY.toString() %>', '<%= modeStr %>')">Weekday</span> 
+                            <span class="Clickable" onClick="switchSettings('<%= StarsThermoDaySettings.MONDAY.toString() %>', '<%= modeStr %>')">Mon</span> 
                             <% } %>
                             &nbsp;&nbsp; 
-                            <% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.SATURDAY.toString() )) { %>
-                            <b><span class="Header2">Saturday</span> </b>
+                            <% if (daySetting.getType() == StarsThermoDaySettings.TUESDAY_TYPE) { %>
+                            <b><span class="Header2">Tue</span></b> 
                             <% } else { %>
-                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.SATURDAY.toString() %>', '<%= modeStr %>')">Saturday</span> 
+                            <span class="Clickable" onClick="switchSettings('<%= StarsThermoDaySettings.TUESDAY.toString() %>', '<%= modeStr %>')">Tue</span> 
                             <% } %>
                             &nbsp;&nbsp; 
-                            <% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.SUNDAY.toString() )) { %>
-                            <b><span class="Header2">Sunday</span></b> 
+                            <% if (daySetting.getType() == StarsThermoDaySettings.WEDNESDAY_TYPE) { %>
+                            <b><span class="Header2">Wed</span></b> 
                             <% } else { %>
-                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.SUNDAY.toString() %>', '<%= modeStr %>')">Sunday</span> 
+                            <span class="Clickable" onClick="switchSettings('<%= StarsThermoDaySettings.WEDNESDAY.toString() %>', '<%= modeStr %>')">Wed</span> 
+                            <% } %>
+                            &nbsp;&nbsp; 
+                            <% if (daySetting.getType() == StarsThermoDaySettings.THURSDAY_TYPE) { %>
+                            <b><span class="Header2">Thu</span></b> 
+                            <% } else { %>
+                            <span class="Clickable" onClick="switchSettings('<%= StarsThermoDaySettings.THURSDAY.toString() %>', '<%= modeStr %>')">Thu</span> 
+                            <% } %>
+                            &nbsp;&nbsp; 
+                            <% if (daySetting.getType() == StarsThermoDaySettings.FRIDAY_TYPE) { %>
+                            <b><span class="Header2">Fri</span></b> 
+                            <% } else { %>
+                            <span class="Clickable" onClick="switchSettings('<%= StarsThermoDaySettings.FRIDAY.toString() %>', '<%= modeStr %>')">Fri</span> 
+                            <% } %>
+                            &nbsp;&nbsp; 
+                            <% if (daySetting.getType() == StarsThermoDaySettings.SATURDAY_TYPE) { %>
+                            <b><span class="Header2">Sat</span> </b> 
+                            <% } else { %>
+                            <span class="Clickable" onClick="switchSettings('<%= StarsThermoDaySettings.SATURDAY.toString() %>', '<%= modeStr %>')">Sat</span> 
+                            <% } %>
+                            &nbsp;&nbsp; 
+                            <% if (daySetting.getType() == StarsThermoDaySettings.SUNDAY_TYPE) { %>
+                            <b><span class="Header2">Sun</span></b> 
+                            <% } else { %>
+                            <span class="Clickable" onClick="switchSettings('<%= StarsThermoDaySettings.SUNDAY.toString() %>', '<%= modeStr %>')">Sun</span> 
                             <% } %>
                           <td class = "Background" align = "right" width="46%"> 
-<%
-	String visibleStr = dayStr.equalsIgnoreCase( StarsThermoDaySettings.WEEKDAY.toString() ) ? "visible" : "hidden";
-	String checkStr = (String) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKEND);
+                            <%
+	String visibleStr = ServletUtils.isWeekday(daySetting)? "visible" : "hidden";
+	String checkStr = (String) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKDAYS);
 	if (checkStr == null) checkStr = "";
 %>
                             <span style="visibility:<%= visibleStr %>"> 
-                            <input type="checkbox" name="ApplyToWeekend" value="true" <%= checkStr %>>
-                            <span class="TableCell1">Apply settings to Saturday 
-                            and Sunday </span></span> 
+                            <input type="checkbox" name="ApplyToWeekdays" value="true" <%= checkStr %>>
+                            <span class="TableCell1">Apply settings to all weekdays </span></span> 
+						  </td>
                         </tr>
                       </table>
                     </td>
@@ -361,7 +398,7 @@ MM_reloadPage(true);
                           </td>
                           <td class = "TableCell" width="29%" height="4" align = "left" valign="top" > 
                             <i>Make temporary adjustments to your heating and 
-                            cooling system<a class="Link1" href="Thermostat2.jsp?InvNo=<%= invNo %>"> 
+                            cooling system<a class="Link1" href="Thermostat2.jsp?Item=<%= itemNo %>"> 
                             here</a>.</i> </td>
                         </tr>
                       </table>
@@ -505,52 +542,64 @@ MM_reloadPage(true);
                         </tr>
                       </table>
                       <table width="100%" border="0" height="27">
-                        <tr>
-					  	  <td width="10%">&nbsp;</td> 
-                          <td class = "TitleHeader" align = "left" width="15%">
-						    <span class="Clickable" onclick="toggleThermostat(1);setChanged();">Wake (W)</span>
+                        <tr> 
+                          <td width="10%" class="MainText"> 
+                            <div align="right">
+                              <input type="checkbox" id="WakeEnabled" onclick="toggleThermostat(1, this.checked);setChanged();" disabled>
+                            </div>
                           </td>
-                          <td width="10%">&nbsp;</td>
-						  <td class = "TitleHeader" align = "left" width="15%">
-						    <span class="Clickable" onclick="toggleThermostat(2);setChanged();">Leave (L)</span>
-						  </td>
-                          <td width="10%">&nbsp;</td>
-						  <td class = "TitleHeader" align = "left" width="15%">
-						    <span class="Clickable" onclick="toggleThermostat(3);setChanged();">Return (R)</span>
-						  </td>
-                          <td width="10%">&nbsp;</td>
-						  <td class = "TitleHeader" align = "left" width="15%">
-						    <span class="Clickable" onclick="toggleThermostat(4);setChanged();">Sleep (S)</span>
-						  </td>
-                      </tr>
-                      <tr> 
-                        <td class = "TableCell">
+                          <td class = "TitleHeader" align = "left" width="15%"> 
+                            Wake (W) </td>
+                          <td width="10%" class="MainText">
+                            <div align="right">
+                              <input type="checkbox" id="LeaveEnabled" onclick="toggleThermostat(2, this.checked);setChanged();">
+                            </div>
+                          </td>
+                          <td class = "TitleHeader" align = "left" width="15%"> 
+                            Leave (L) </td>
+                          <td width="10%" class="MainText">
+                            <div align="right">
+                              <input type="checkbox" id="ReturnEnabled" onclick="toggleThermostat(3, this.checked);setChanged();">
+                            </div>
+                          </td>
+                          <td class = "TitleHeader" align = "left" width="15%"> 
+                            Return (R) </td>
+                          <td width="10%" class="MainText">
+                            <div align="right">
+                              <input type="checkbox" id="SleepEnabled" onclick="toggleThermostat(4, this.checked);setChanged();">
+                            </div>
+                          </td>
+                          <td class = "TitleHeader" align = "left" width="15%"> 
+                            Sleep (S) </td>
+                        </tr>
+                        <tr> 
+                          <td class = "TableCell" width="10%"> 
                             <div align="right">Start At:</div>
                           </td>
-						<td class = "TableCell">  
-                          <input id="time1" type="text" size="8" name="time1" onchange="Javascript:setChanged();timeChange(this,1);" disabled>
-                        </td>
-                        <td class = "TableCell">
+                          <td class = "TableCell" width="15%"> 
+                            <input id="time1" type="text" size="8" name="time1" onchange="Javascript:setChanged();timeChange(this,1);">
+                          </td>
+                          <td class = "TableCell" width="10%"> 
                             <div align="right">Start At: </div>
                           </td>
-						<td class = "TableCell"> 
-                          <input id="time2" type="text" size="8" name="time2" onchange="Javascript:setChanged();timeChange(this,2);" disabled>
-                        </td>
-                        <td class = "TableCell">
+                          <td class = "TableCell" width="15%"> 
+                            <input id="time2" type="text" size="8" name="time2" onChange="Javascript:setChanged();timeChange(this,2);">
+                          </td>
+                          <td class = "TableCell" width="10%"> 
                             <div align="right">Start At: </div>
                           </td>
-						<td class = "TableCell"> 
-                          <input id="time3" type="text" size="8" name="time3" onchange="Javascript:setChanged();timeChange(this,3);" disabled>
-                        </td>
-                        <td class = "TableCell">
+                          <td class = "TableCell" width="15%"> 
+                            <input id="time3" type="text" size="8" name="time3" onchange="Javascript:setChanged();timeChange(this,3);">
+                          </td>
+                          <td class = "TableCell" width="10%"> 
                             <div align="right">Start At: </div>
                           </td>
-						<td class = "TableCell"> 
-                          <input id="time4" type="text" size="8" name="time4" onchange="Javascript:setChanged();timeChange(this,4);" disabled>
-                        </td>
-                      </tr>
-                    </table>
-					<noscript>
+                          <td class = "TableCell" width="15%"> 
+                            <input id="time4" type="text" size="8" name="time4" onchange="Javascript:setChanged();timeChange(this,4);">
+                          </td>
+                        </tr>
+                      </table>
+					  <noscript>
 					  <table width="100%" border="0" class = "TableCell">
 					    <tr>
                           <td class = "TableCell" width="10%"> 
@@ -599,7 +648,7 @@ MM_reloadPage(true);
                       <input type="submit" name="Submit" value="Submit">
                   </td>
                   <td width="64%" align = "left" class = "TableCell"> 
-                    <input type="button" id="Default" value='<cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON %>"/>' onclick="setToDefault()">
+                    <input type="button" id="Default" value="Recommended Settings" onclick="setToDefault()">
                   </td>
                 </tr>
               </table>

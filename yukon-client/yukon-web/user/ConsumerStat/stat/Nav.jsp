@@ -7,55 +7,27 @@
 						  {"FAQ.jsp", "FAQ"},
 						  {"Enrollment.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_ENROLLMENT, "Enrollment")},
 						  {"OptOut.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_OPT_OUT, "Opt Out")},
-						  {"Thermostat.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual")},
-						  {"Thermostat2.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual")},
-						  {"ThermSchedule.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule")},
-						  {"Password.jsp", "Change Login"}
+						  {"Password.jsp", "Change Login"},
+						  {"AllTherm.jsp", "All"}
 						 };
 
-	ArrayList linkList = new ArrayList();
-	for (int i = 0; i < linkPairs.length; i++)
-		linkList.add( linkPairs[i] );
-
-	String[] thermostatNames = new String[ thermostats.getStarsLMHardwareCount() ];
-	int lastItemType = 0;
-	int itemNo = 1;
+	String bulletImg = "<img src='../../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif") + "' width='9' height='9'>";
+	String bulletImgExp = "<img src='../../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_EXPAND, "BulletExpand.gif") + "' width='9' height='9'>";
 	
-	for (int i = 0; i < thermostats.getStarsLMHardwareCount(); i++) {
-		StarsLMHardware hw = thermostats.getStarsLMHardware(i);
-		thermostatNames[i] = hw.getLMDeviceType().getContent();
-		
-		if (hw.getLMDeviceType().getEntryID() != lastItemType) {
-			lastItemType = hw.getLMDeviceType().getEntryID();
-			itemNo = 1;
-		}
-		else {
-			itemNo++;
-			thermostatNames[i] += " (" + Integer.toString(itemNo) + ")";
-		}
-		
-		if (hw.getStarsThermostatSettings().getStarsThermostatDynamicData() == null) {
-			linkList.add( new String[] {"ThermSchedule.jsp?InvNo=" + i, AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule")} );
-			linkList.add( new String[] {"Thermostat.jsp?InvNo=" + i, AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual")} );
-		}
-		else {
-			linkList.add( new String[] {"ThermSchedule2.jsp?InvNo=" + i, AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule")} );
-			linkList.add( new String[] {"Thermostat2.jsp?InvNo=" + i, AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual")} );
-		}
-	}
-
-	String bulletImg = "../../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED);
-	if (bulletImg == null) bulletImg = "../../../WebConfig/Bullet.gif";
-	String bulletImg2 = "../../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET);
-	if (bulletImg2 == null) bulletImg2 = "../../../WebConfig/Bullet2.gif";
-	
+	// List of String[] (link image, link html)
 	Hashtable links = new Hashtable();
-	for (int i = 0; i < linkList.size(); i++) {
-		String[] linkPair = (String[]) linkList.get(i);
-		if (linkPair[0].equalsIgnoreCase(pageName))
-			links.put(linkPair[0], "<img src='" + bulletImg + "' width='12' height='12'><span class='Nav'>" + linkPair[1] + "</span>");
-		else
-			links.put(linkPair[0], "<img src='" + bulletImg2 + "' width='12' height='12'><a href='" + linkPair[0] + "' class='Link2'><span class='NavText'>" + linkPair[1] + "</span></a>");
+	for (int i = 0; i < linkPairs.length; i++) {
+		String linkImg = null;
+		String linkHtml = null;
+		if (linkPairs[i][0].equalsIgnoreCase(pageName)) {
+			linkImg = bulletImg;
+			linkHtml = "<span class='Nav'>" + linkPairs[i][1] + "</span>";
+		}
+		else {
+			linkImg = "";
+			linkHtml = "<a href='" + linkPairs[i][0] + "' class='Link2'><span class='NavText'>" + linkPairs[i][1] + "</span></a>";
+		}
+		links.put(linkPairs[i][0], new String[] {linkImg, linkHtml});
 	}
 %>
 
@@ -65,10 +37,13 @@
   <tr> 
     <td> 
       <div align="left"><span class="NavHeader">Account</span><br>
-        <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_ACCOUNT_GENERAL %>">
-          <%= links.get("General.jsp") %><br>
-        </cti:checkProperty>
-	  </div>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr> 
+            <td width="10"><%= ((String[]) links.get("General.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("General.jsp"))[1] %></td>
+          </tr>
+        </table>
+      </div>
     </td>
   </tr>
 </cti:checkProperty>
@@ -80,35 +55,44 @@
   <tr>
     <td>
       <div align="left"><span class="NavHeader">Thermostat</span><br>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+		  <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_THERMOSTATS_ALL %>"> 
+          <tr> 
+            <td width="10"><%= ((String[]) links.get("AllTherm.jsp"))[0] %></td>
+            <td><%= ((String[]) links.get("AllTherm.jsp"))[1] %></td>
+            <td width="10">&nbsp;</td>
+          </tr>
+          </cti:checkProperty>
 <%
 		for (int i = 0; i < thermostats.getStarsLMHardwareCount(); i++) {
-%>
-        <img src="<%= bulletImg2 %>" width="12" height="12"><span class="NavText" style="color:#FFFFFF"><%= thermostatNames[i] %></span><br>
-	    <table width="90" border="0" cellspacing="0" cellpadding="0">
-          <tr> 
-            <td width="12">&nbsp;</td>
-            <td width="78">
-<%
-			if (thermostats.getStarsLMHardware(i).getStarsThermostatSettings().getStarsThermostatDynamicData() == null) {
-%>
-			  <%= links.get("ThermSchedule.jsp?InvNo=" + i) %><br>
-              <%= links.get("Thermostat.jsp?InvNo=" + i) %><br>
-<%
+			StarsLMHardware hw = thermostats.getStarsLMHardware(i);
+			String linkLabel = hw.getDeviceLabel();
+			
+			String linkImg = null;
+			String linkHtml = null;
+			String linkImgExp = null;
+			int pos = pageName.lastIndexOf("Item=");
+			if (pos >= 0 && pageName.substring(pos).equals("Item=" + i)) {
+				linkImg = bulletImg;
+				linkHtml = "<span class='Nav' style='cursor:default'>" + linkLabel + "</span>";
+				linkImgExp = bulletImg;
 			}
 			else {
-%>
-			  <%= links.get("ThermSchedule2.jsp?InvNo=" + i) %><br>
-              <%= links.get("Thermostat2.jsp?InvNo=" + i) %><br>
-<%
+				linkImg = "";
+				linkHtml = "<span class='NavText' style='cursor:default; color:#FFFFFF'>" + linkLabel + "</span>";
+				linkImgExp = bulletImgExp;
 			}
 %>
-			</td>
+          <tr onMouseOver="menuAppear(event, this, 'thermostatMenu', <%= i %>)"> 
+            <td width="10" valign="top" style="padding-top:1"><%= linkImg %></td>
+            <td><%= linkHtml %></td>
+            <td width="10" valign="bottom" style="padding-bottom:1"><%= linkImgExp %></td>
           </tr>
-        </table>
 <%
 		}
 %>
-	  </div>
+        </table>
+      </div>
     </td>
   </tr>
 <%
@@ -120,10 +104,13 @@
   <tr> 
     <td> 
       <div align="left"><span class="NavHeader">Metering</span><br>
-        <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_METERING_USAGE %>">
-          <%= links.get("TOU.jsp") %><br>
-        </cti:checkProperty>
-	  </div>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr> 
+            <td width="10"><%= ((String[]) links.get("TOU.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("TOU.jsp"))[1] %></td>
+          </tr>
+        </table>
+      </div>
     </td>
   </tr>
 </cti:checkProperty>
@@ -131,15 +118,26 @@
   <tr> 
     <td> 
       <div align="left"><span class="NavHeader">Programs</span><br>
-        <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY %>">
-          <%= links.get("ProgramHist.jsp") %><br>
-        </cti:checkProperty>
-        <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT %>">
-          <%= links.get("Enrollment.jsp") %><br>
-        </cti:checkProperty>
-        <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT %>">
-          <%= links.get("OptOut.jsp") %><br>
-        </cti:checkProperty>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY %>"> 
+          <tr>
+            <td width="10"><%= ((String[]) links.get("ProgramHist.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("ProgramHist.jsp"))[1] %></td>
+          </tr>
+		  </cti:checkProperty>
+		  <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT %>"> 
+          <tr>
+            <td width="10"><%= ((String[]) links.get("Enrollment.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("Enrollment.jsp"))[1] %></td>
+          </tr>
+		  </cti:checkProperty>
+		  <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT %>">
+          <tr>
+            <td width="10"><%= ((String[]) links.get("OptOut.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("OptOut.jsp"))[1] %></td>
+          </tr>
+		  </cti:checkProperty>
+        </table>
       </div>
     </td>
   </tr>
@@ -148,17 +146,28 @@
   <tr> 
     <td> 
       <div align="left"><span class="NavHeader">Questions</span><br>
-        <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_UTIL %>">
-          <%= links.get("Util.jsp") %><br>
-        </cti:checkProperty>
-        <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ %>">
-          <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CUSTOMIZED_FAQ_LINK %>">
-            <img src="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.NAV_BULLET%>"/>" width="12" height="12"><a href="<cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_LINK_FAQ%>"/>" class="Link2" target="new"><span class="NavText">FAQ</span></a><br>
-          </cti:checkProperty>
-          <cti:checkNoProperty propertyid="<%= ResidentialCustomerRole.CUSTOMIZED_FAQ_LINK %>">
-            <%= links.get("FAQ.jsp") %><br>
-          </cti:checkNoProperty>
-        </cti:checkProperty>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+		  <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_UTIL %>"> 
+          <tr> 
+            <td width="10"><%= ((String[]) links.get("Util.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("Util.jsp"))[1] %></td>
+          </tr>
+		  </cti:checkProperty>
+<%
+	String faqLink = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LINK_FAQ);
+	if (ServerUtils.forceNotNone(faqLink).length() > 0) {
+%>
+          <tr> 
+            <td width="10">&nbsp;</td>
+            <td style="padding:1"><a href="<%= faqLink %>" class="Link2" target="new"><span class="NavText">FAQ</span></a></td>
+          </tr>
+<%	} else { %>
+          <tr> 
+            <td width="10"><%= ((String[]) links.get("FAQ.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("FAQ.jsp"))[1] %></td>
+          </tr>
+<%	} %>
+        </table>
 	  </div>
     </td>
   </tr>
@@ -168,11 +177,63 @@
   <tr> 
     <td> 
       <div align="left"><span class="NavHeader">Administration</span><br>
-        <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN %>">
-          <%= links.get("Password.jsp") %><br>
-        </cti:checkProperty>
-	  </div>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr> 
+            <td width="10"><%= ((String[]) links.get("Password.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("Password.jsp"))[1] %></td>
+          </tr>
+        </table>
+      </div>
     </td>
   </tr>
 </cti:checkProperty>
 </table>
+
+<script language="JavaScript" src="../../../JavaScript/hardware_menu.js"></script>
+<script language="JavaScript">
+// Initialize variables defined in thermostat_menu.js
+pageName = "<%= pageName %>";
+pageLinks = new Array(<%= thermostats.getStarsLMHardwareCount() %>);
+<%
+	for (int i = 0; i < thermostats.getStarsLMHardwareCount(); i++) {
+		StarsThermostatSettings settings = thermostats.getStarsLMHardware(i).getStarsThermostatSettings();
+%>
+	pageLinks[<%= i %>] = new Array(3);
+	pageLinks[<%= i %>][0] = "NewLabel.jsp?Item=" + <%= i %>;
+<%
+		if (settings.getStarsThermostatDynamicData() == null) {
+%>
+	pageLinks[<%= i %>][1] = "ThermSchedule.jsp?Item=" + <%= i %>;
+	pageLinks[<%= i %>][2] = "Thermostat.jsp?Item=" + <%= i %>;
+<%
+		}
+		else {
+%>
+	pageLinks[<%= i %>][1] = "ThermSchedule2.jsp?Item=" + <%= i %>;
+	pageLinks[<%= i %>][2] = "Thermostat2.jsp?Item=" + <%= i %>;
+<%
+		}
+	}
+%>
+</script>
+
+<div id="thermostatMenu" class="bgMenu" style="width:85px" align="left">
+  <div id="MenuItem" style="width:85px" onmouseover="changeOptionStyle(this)" class = "navmenu1" onclick = "showPage(0)">
+  &nbsp;&nbsp;&nbsp;Change Label
+  </div>
+  <div id="MenuItemSelected" style="width:85px; display:none" onmouseover="changeOptionStyle(this)" class = "navmenu2" onclick = "showPage(0)">
+  &nbsp;&#149;&nbsp;Change Label
+  </div>
+  <div id="MenuItem" style="width:85px" onmouseover="changeOptionStyle(this)" class = "navmenu1" onclick = "showPage(1)">
+  &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule") %>
+  </div>
+  <div id="MenuItemSelected" style="width:85px; display:none" onmouseover="changeOptionStyle(this)" class = "navmenu2" onclick = "showPage(1)">
+  &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule") %>
+  </div>
+  <div id="MenuItem" style="width:85px" onmouseover="changeOptionStyle(this)" class = "navmenu1" onclick = "showPage(2)">
+  &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual") %>
+  </div>
+  <div id="MenuItemSelected" style="width:85px; display:none" onmouseover="changeOptionStyle(this)" class = "navmenu2" onclick = "showPage(2)">
+  &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual") %>
+  </div>
+</div>
