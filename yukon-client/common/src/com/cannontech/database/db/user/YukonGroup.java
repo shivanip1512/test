@@ -9,7 +9,7 @@ import com.cannontech.database.db.DBPersistent;
  */
 public class YukonGroup extends DBPersistent {
 
-	private static final String tableName = "YukonGroup";
+	public static final String TABLE_NAME = "YukonGroup";
 	
 	private Integer groupID;
 	private String groupName;
@@ -36,14 +36,14 @@ public class YukonGroup extends DBPersistent {
 	 */
 	public void add() throws SQLException {
 		Object[] addValues = { getGroupID(), getGroupName() };
-		add(tableName, addValues);
+		add(TABLE_NAME, addValues);
 	}
 	
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#delete()
 	 */
 	public void delete() throws SQLException {
-		delete(tableName, "GroupID", getGroupID());
+		delete(TABLE_NAME, "GroupID", getGroupID());
 	}
 
 	/**
@@ -54,7 +54,7 @@ public class YukonGroup extends DBPersistent {
 		String[] constraintColumns = { "GroupID" };
 		Object[] constraintValues = { getGroupID() };
 		
-		Object[] results = retrieve(selectColumns, tableName, constraintColumns, constraintValues);
+		Object[] results = retrieve(selectColumns, TABLE_NAME, constraintColumns, constraintValues);
 		if(results.length == selectColumns.length) {			
 			setGroupName((String) results[0]);
 		}			
@@ -70,7 +70,7 @@ public class YukonGroup extends DBPersistent {
 		String[] constraintColumns = { "GroupID" };
 		Object[] constraintValues = { getGroupID() };
 		
-		update(tableName, setColumns, setValues, constraintColumns, constraintValues);
+		update(TABLE_NAME, setColumns, setValues, constraintColumns, constraintValues);
 	}
 
 	/**

@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.db.user.YukonGroup;
 
 /**
  * @author alauinger
@@ -15,7 +16,8 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 
 public final class YukonGroupLoader implements Runnable
 {
-	private static final String sql = "SELECT GroupID,GroupName FROM YukonGroup";
+	private static final String sql = 
+				"SELECT GroupID, GroupName, GroupDescription FROM " + YukonGroup.TABLE_NAME;
 	
    	private final List allGroups;
 	private final String dbAlias;
@@ -31,7 +33,7 @@ public final class YukonGroupLoader implements Runnable
 	public void run()
 	{
    		final long timerStart = System.currentTimeMillis();
-   		
+
       	Connection conn = null;
       	Statement stmt = null;
       	ResultSet rset = null;
@@ -43,8 +45,12 @@ public final class YukonGroupLoader implements Runnable
       		while (rset.next() ) {      			
       			final int groupID = rset.getInt(1);
       			final String groupName = rset.getString(2).trim();      			
-      			
-      			final LiteYukonGroup group = new LiteYukonGroup(groupID,groupName);      			
+					final String groupDesc = rset.getString(3).trim();
+					
+      			final LiteYukonGroup group = new LiteYukonGroup(groupID,groupName);
+      			group.setGroupDescription( groupDesc );
+
+
             	allGroups.add(group);                       		
          	}
       	}
