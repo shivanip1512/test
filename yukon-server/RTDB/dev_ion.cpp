@@ -272,7 +272,6 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
         OutMessage->TargetID = getID();
         OutMessage->Retry    = IONRetries;
         OutMessage->Sequence = _ion.getCommand();
-        _ion.sendCommRequest( OutMessage, outList );
 
         retList.insert(CTIDBG_new CtiReturnMsg(getID(),
                                                RWCString(OutMessage->Request.CommandStr),
@@ -285,6 +284,10 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                                                OutMessage->Request.UserID,
                                                OutMessage->Request.SOE,
                                                RWOrdered()));
+
+        //  fills in OutMessage with eventlog position and current command,
+        //    then appends to outlist, consuming the outmessage
+        _ion.sendCommRequest( OutMessage, outList );
     }
     else
     {
