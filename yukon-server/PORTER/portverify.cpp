@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2004/10/29 19:59:11 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/11/09 06:14:37 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -346,6 +346,8 @@ void CtiPorterVerification::processWorkQueue(bool purge)
 
 void CtiPorterVerification::push(CtiVerificationBase *entry)
 {
+    static bool whine = false;
+
     if( isRunning() )
     {
         if( entry )
@@ -360,7 +362,9 @@ void CtiPorterVerification::push(CtiVerificationBase *entry)
     }
     else
     {
+        if(!whine)
         {
+            whine = true;
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint - CtiPorterVerification::push will not enqueue message when thread is not running, deleting entry **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
@@ -372,6 +376,8 @@ void CtiPorterVerification::push(CtiVerificationBase *entry)
 
 void CtiPorterVerification::push(queue< CtiVerificationBase * > &entries)
 {
+    static bool whine = false;
+
     if( isRunning() )
     {
         while( !entries.empty() )
@@ -391,7 +397,9 @@ void CtiPorterVerification::push(queue< CtiVerificationBase * > &entries)
     }
     else
     {
+        if(!whine)
         {
+            whine = true;
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint - CtiPorterVerification::push will not enqueue message when thread is not running, deleting " << entries.size() << " entries **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
