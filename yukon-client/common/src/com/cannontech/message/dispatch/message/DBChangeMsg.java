@@ -32,6 +32,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final int CHANGE_STATE_IMAGE_DB				= 10;
 	public static final int CHANGE_YUKON_USER_DB					= 11;
 	public static final int CHANGE_CUSTOMER_DB					= 12;
+	public static final int CHANGE_CUSTOMER_ACCOUNT_DB		= 13;
 
 	
 	public static final String CAT_POINT = "Point";
@@ -45,6 +46,13 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final String CAT_ENERGY_COMPANY = "EnergyCompany";
 	public static final String CAT_YUKON_USER = "YukonUser";
 	public static final String CAT_CUSTOMER = "Customer";
+	
+	// Categories used by stars
+	public static final String CAT_CUSTOMER_ACCOUNT = "CustomerAccount";
+	public static final String CAT_LM_PROGRAM = "LMProgram";
+	public static final String CAT_LM_HARDWARE = "LMHardware";
+	public static final String CAT_APPLIANCE = "Appliance";
+	public static final String CAT_CUSTOMER_LOGIN = "CustomerLogin";
 
 	
 	//THE FOLLOWING EXIST ONLY IN THE JAVA VERSION OF THIS MESSAGE!

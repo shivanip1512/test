@@ -28,6 +28,7 @@ public final class LiteTypes
 
 	
 	// Stars lite types
+	public final static int STARS_CUST_ACCOUNT_INFO = 100;
 	public final static int STARS_CUSTOMER = 101;
 	public final static int STARS_CUSTOMER_CONTACT = 102;
 	public final static int STARS_ADDRESS = 103;
