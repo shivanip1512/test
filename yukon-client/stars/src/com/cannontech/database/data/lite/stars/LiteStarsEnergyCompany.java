@@ -2311,7 +2311,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				(LiteStarsCustAccountInformation) getCustAccountInfoMap().get( new Integer(accountID) );
 		if (liteAcctInfo != null) return liteAcctInfo;
 		
-		if (autoLoad && !isAccountsLoaded()) {
+		if (autoLoad) {
 			try {
 				com.cannontech.database.db.stars.customer.CustomerAccount accountDB =
 						com.cannontech.database.db.stars.customer.CustomerAccount.getCustomerAccount( new Integer(accountID) );

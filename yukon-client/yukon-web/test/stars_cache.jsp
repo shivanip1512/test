@@ -44,7 +44,7 @@
 	}
 	else if (request.getParameter("ReloadAcct") != null) {
 		String acctNo = request.getParameter("AcctNo");
-		LiteStarsCustAccountInformation liteAcctInfo = liteEC.searchByAccountNo( acctNo );
+		LiteStarsCustAccountInformation liteAcctInfo = liteEC.searchAccountByAccountNo( acctNo );
 		if (liteAcctInfo == null) {
 			cache = "<font color='red'>No customer account found for account #" + acctNo + "!</font>";
 		}
