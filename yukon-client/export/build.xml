@@ -27,6 +27,11 @@
  		<include name="**/*.ico"/>
 	    </fileset>
        </copy>
+
+       <copy todir="${yukon.lib}">
+         <fileset dir="conf"/>
+       </copy>       
+       
    </target>
 
 
@@ -41,6 +46,10 @@
  				<include name="**/*.ico"/>
 	    	</fileset>
        </copy>       
+       <copy todir="${yukon.lib}">
+         <fileset dir="conf"/>
+       </copy>
+              
    </target>
    
    
