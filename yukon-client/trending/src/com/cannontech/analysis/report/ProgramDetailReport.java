@@ -11,6 +11,7 @@ import org.jfree.report.GroupHeader;
 import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
+import org.jfree.report.TextElement;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
@@ -24,6 +25,7 @@ import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
+import com.cannontech.analysis.function.ElementVisibilityEvalFunction;
 import com.cannontech.analysis.tablemodel.ProgramDetailModel;
 
 /**
@@ -34,6 +36,8 @@ import com.cannontech.analysis.tablemodel.ProgramDetailModel;
  */
 public class ProgramDetailReport extends YukonReportBase
 {
+	private boolean showNotEnrolled = false;
+
 	/**
 	 * Constructor for Report.
 	 * Data Base for this report type is instanceOf SystemLogModel.
@@ -42,6 +46,10 @@ public class ProgramDetailReport extends YukonReportBase
 	{
 		this(new ProgramDetailModel());
 	}
+	public ProgramDetailReport(boolean showNotEnrolled_)
+	{
+		this(new ProgramDetailModel(), showNotEnrolled_);
+	}	
 	/**
 	 * Constructor for Report.
 	 * Data Base for this report type is instanceOf SystemLogModel.
@@ -49,22 +57,25 @@ public class ProgramDetailReport extends YukonReportBase
 	 */
 	public ProgramDetailReport(ProgramDetailModel model_)
 	{
+		this(model_, false);
+	}
+	public ProgramDetailReport(ProgramDetailModel model_, boolean showNotEnrolled_)
+	{
 		super();
 		setModel(model_);
-	}
+		setShowNotEnrolled(showNotEnrolled_);
+	}	
 	/**
 	 * Constructor for Report.
-	 * Data Base for this report type is instanceOf SystemLogModel.
-	 * @param startTime_ - startTime in millis for data query
+	 * Data Base for this report type is instanceOf ProgramDetailModel.
 	 * @param stopTime_ - stopTime in millis for data query
 	 * 
 	 */
-/*	public ProgramDetailReport(long startTime_, long stopTime_)
+	public ProgramDetailReport(long stopTime_)
 	{
-		this(new ProgramDetailModel(startTime_, stopTime_ ));
+		this(new ProgramDetailModel(stopTime_ ));
 		
 	}
-	*/
 	/**
 	 * Runs this report and shows a preview dialog.
  	 * @param args the arguments (ignored).
@@ -78,7 +89,7 @@ public class ProgramDetailReport extends YukonReportBase
 
 		//Define start and stop parameters for a default 90 day report.
 		YukonReportBase report = ReportFuncs.createYukonReport(ReportTypes.PROGRAM_DETAIL_DATA);
-//		((ActivityModel)report.getModel()).setECIDs(new Integer(1010));
+		
 		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 		cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
 		cal.set(java.util.Calendar.MINUTE, 0);
@@ -87,9 +98,9 @@ public class ProgramDetailReport extends YukonReportBase
 		cal.add(java.util.Calendar.DATE, -4);
 		long stop = cal.getTimeInMillis();
 //		report.getModel().setStopTime(stop);
-//		((ProgramDetailModel)report.getModel()).setECIDs(new Integer(0));
-		((ProgramDetailModel)report.getModel()).setECIDs(new Integer(1010));
-		
+
+		((ProgramDetailModel)report.getModel()).setECIDs(new Integer(0));
+		((ProgramDetailReport)report).showNotEnrolled = true;
 		report.getModel().collectData();
 
 		//Create the report
@@ -119,7 +130,6 @@ public class ProgramDetailReport extends YukonReportBase
 	protected ExpressionCollection getExpressions() throws FunctionInitializeException
 	{
 		super.getExpressions();
-
 		ItemHideFunction hideItem = new ItemHideFunction();
 		hideItem.setName(ProgramDetailModel.CONTACT_STRING + " Hidden");
 		hideItem.setProperty("field", ProgramDetailModel.CONTACT_STRING);
@@ -137,7 +147,12 @@ public class ProgramDetailReport extends YukonReportBase
 		hideItem.setProperty("field", ProgramDetailModel.PROGRAM_NAME_STRING);
 		hideItem.setProperty("element", ProgramDetailModel.PROGRAM_NAME_STRING+" Element");
 		expressions.add(hideItem);
-				
+
+		ElementVisibilityEvalFunction action = new ElementVisibilityEvalFunction(ProgramDetailModel.STATUS_COLUMN, "Not Enrolled", showNotEnrolled);
+		action.setName("Hide Not Enrolled String");
+		action.setProperty("element", ProgramDetailModel.STATUS_STRING +" Element");
+		expressions.add(action);
+
 //		expressions.add(getDateExpression(getModel().getColumnProperties(5).getValueFormat(), getModel().getColumnName(5)));
 		return expressions;
 	}
@@ -206,10 +221,12 @@ public class ProgramDetailReport extends YukonReportBase
 
 		final GroupHeader header = new GroupHeader();
 		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 5));
+		header.setDynamicContent(true);
 		progGroup.setHeader(header);
 		
 		final GroupFooter footer = new GroupFooter();
 		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 5));
+		footer.setDynamicContent(true);
 		progGroup.setFooter(footer);
 
 		return progGroup;
@@ -257,13 +274,31 @@ public class ProgramDetailReport extends YukonReportBase
 			factory.setName(getModel().getColumnNames()[i]+ " Element");
 			factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(i).getPositionX(),getModel().getColumnProperties(i).getPositionY()));
 			factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), 10));
+			factory.setDynamicHeight(Boolean.TRUE);
 			factory.setHorizontalAlignment(ElementAlignment.LEFT);
 			factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 			factory.setNullString("<null>");
 			factory.setFieldname(getModel().getColumnNames()[i]);
 			items.addElement(factory.createElement());
 		}
-
+		items.setDynamicContent(true);
 		return items;
 	}
+	
+	/**
+	 * @return
+	 */
+	public boolean isShowNotEnrolled()
+	{
+		return showNotEnrolled;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setShowNotEnrolled(boolean b)
+	{
+		showNotEnrolled = b;
+	}
+
 }
