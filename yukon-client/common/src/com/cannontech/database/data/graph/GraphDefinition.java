@@ -5,7 +5,8 @@ package com.cannontech.database.data.graph;
  * Creation date: (10/5/00 10:50:03 AM)
  * @author: 
  */
-public class GraphDefinition extends com.cannontech.database.db.DBPersistent {
+public class GraphDefinition extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange
+{
 	private com.cannontech.database.db.graph.GraphDefinition graphDefinition;
 	private java.util.ArrayList graphDataSeries;
 /**
@@ -13,6 +14,27 @@ public class GraphDefinition extends com.cannontech.database.db.DBPersistent {
  */
 public GraphDefinition() {
 	super();
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (12/19/2001 1:45:25 PM)
+ * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
+ */
+public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
+{
+	java.util.ArrayList list = new java.util.ArrayList(10);
+
+	//add the basic change method
+	list.add( new com.cannontech.message.dispatch.message.DBChangeMsg(
+					getGraphDefinition().getGraphDefinitionID().intValue(),
+					com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_GRAPH_DB,
+					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_GRAPH,
+					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_GRAPH,
+					typeOfChange ) );
+	 
+	com.cannontech.message.dispatch.message.DBChangeMsg[] dbChange = new com.cannontech.message.dispatch.message.DBChangeMsg[list.size()];
+	return (com.cannontech.message.dispatch.message.DBChangeMsg[])list.toArray( dbChange );
 }
 /**
  * This method was created by a SmartGuide.
@@ -40,6 +62,8 @@ public void add() throws java.sql.SQLException
  */
 public void delete() throws java.sql.SQLException 
 {	
+	delete(com.cannontech.database.db.web.OperatorLoginGraphList.tableName, "GraphDefinitionID", getGraphDefinition().getGraphDefinitionID());
+	delete(com.cannontech.database.db.graph.GraphCustomerList.TABLE_NAME, "GraphDefinitionID", getGraphDefinition().getGraphDefinitionID());
 	com.cannontech.database.db.graph.GraphDataSeries.deleteAllGraphDataSeries(getGraphDefinition().getGraphDefinitionID());
 
 	getGraphDefinition().setDbConnection(getDbConnection());
