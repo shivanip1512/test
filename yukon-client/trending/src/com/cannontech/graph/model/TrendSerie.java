@@ -15,9 +15,12 @@ public class TrendSerie
 	private Integer pointId;
 	private String label = null;
 	private Color color = null;
-	private String type = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES;
 	private String deviceName = null;
-		
+	private Double multiplier = null;	//This is different then the point multiplier, this is a GDS `
+	private String type = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES;		
+	public int typeMask = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_MASK;
+	
+	
 	private com.jrefinery.data.TimeSeriesDataPair minimumTSDataPair = null;
 	private com.jrefinery.data.TimeSeriesDataPair maximumTSDataPair = null;
 
@@ -25,8 +28,6 @@ public class TrendSerie
 	//  is in accordance to the order of the pointIds.
 	private double areaOfSet = 0.0; //Load Factor, area under the curve
 	private double maxArea = 0.0;  //Load Factor, total area (using max point value)
-
-	//private double multiplier = 0;	//(Analog, Accumulator) Point's Multiplier
 
 	// Number of decimal places each point has (from pointUnit table)
 	private int decimalPlaces = 3;
@@ -47,7 +48,7 @@ public class TrendSerie
 		{
 			for (int i = 0; i < getDataPairArray().length; i++)
 			{
-				areaOfSet += getDataPairArray()[i].getValue().doubleValue();
+				areaOfSet += getDataPairArray(i).getValue().doubleValue();
 			}
 		}
 		return areaOfSet;
@@ -56,10 +57,24 @@ public class TrendSerie
 	{
 		return color;
 	}
+
 	public com.jrefinery.data.TimeSeriesDataPair[] getDataPairArray()
 	{
 		return dataPairArray;
 	}
+
+	public com.jrefinery.data.TimeSeriesDataPair getDataPairArray(int serie)
+	{
+		if( getMultiplier() != null)
+		{
+			com.jrefinery.data.TimePeriod tp = dataPairArray[serie].getPeriod();
+			Number val = new Double(dataPairArray[serie].getValue().doubleValue() * getMultiplier().doubleValue());
+			com.jrefinery.data.TimeSeriesDataPair multDP = new com.jrefinery.data.TimeSeriesDataPair(tp, val);
+			return (multDP);
+		}
+		return dataPairArray[serie];
+	}
+	
 	public int getDecimalPlaces()
 	{
 		return decimalPlaces;
@@ -99,10 +114,10 @@ public class TrendSerie
 			{
 				for (int i = 0; i < getDataPairArray().length; i++)
 				{
-					if( getDataPairArray()[i].getValue().doubleValue() > max)
+					if( getDataPairArray(i).getValue().doubleValue() > max)
 					{
-						max = getDataPairArray()[i].getValue().doubleValue();
-						maximumTSDataPair = getDataPairArray()[i];
+						max = getDataPairArray(i).getValue().doubleValue();
+						maximumTSDataPair = getDataPairArray(i);
 					}
 				}
 			}
@@ -118,10 +133,10 @@ public class TrendSerie
 			{
 				for (int i = 0; i < getDataPairArray().length; i++)
 				{
-					if( getDataPairArray()[i].getValue().doubleValue() < min)
+					if( getDataPairArray(i).getValue().doubleValue() < min)
 					{
-						min = getDataPairArray()[i].getValue().doubleValue();					
-						minimumTSDataPair = getDataPairArray()[i];
+						min = getDataPairArray(i).getValue().doubleValue();					
+						minimumTSDataPair = getDataPairArray(i);
 					}
 				}
 			}
@@ -155,6 +170,10 @@ public class TrendSerie
 		return getMinimumTSDataPair().getPeriod().getStart();
 	}
 	*/
+	public Double getMultiplier()
+	{
+		return multiplier;
+	}
 	public Integer getPointId()
 	{
 		return pointId;
@@ -164,7 +183,10 @@ public class TrendSerie
 	{
 		return type;
 	}
-	
+	public int getTypeMask()
+	{
+		return typeMask;
+	}
 	public double[] getValuesArray()
 	{
 		if( valuesArray == null)
@@ -174,7 +196,7 @@ public class TrendSerie
 			valuesArray = new double[getDataPairArray().length];
 			for (int i = 0; i < getDataPairArray().length; i++)
 			{
-				valuesArray[i] = getDataPairArray()[i].getValue().doubleValue();
+				valuesArray[i] = getDataPairArray(i).getValue().doubleValue();
 			}
 		}
 		return valuesArray;
@@ -190,7 +212,7 @@ public class TrendSerie
 			periodsArray = new long[getDataPairArray().length];
 			for (int i = 0; i < getDataPairArray().length; i++)
 			{
-				periodsArray[i] = getDataPairArray()[i].getPeriod().getStart();
+				periodsArray[i] = getDataPairArray(i).getPeriod().getStart();
 			}
 		}
 		return periodsArray;
@@ -215,6 +237,10 @@ public class TrendSerie
 	{
 		label = newLabel;
 	}
+	protected void setMultiplier(Double newMultiplier)
+	{
+		multiplier = newMultiplier;
+	}
 	protected void setPointId(Integer newPointId)
 	{
 		pointId = newPointId;
@@ -222,5 +248,9 @@ public class TrendSerie
 	protected void setType(String newType)
 	{
 		type = newType;
+	}
+	protected void setTypeMask(int newTypeMask)
+	{
+		typeMask = newTypeMask;
 	}
 }
