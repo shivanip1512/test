@@ -346,7 +346,10 @@ function confirmDelete() {
             <div align = "center" style = "border:solid 1px #666999;"><a href = "Admin/NewEnergyCompany.jsp" class = "Link1" style = "text-decoration:none;">New 
               Energy Company</a></div>
             </cti:checkProperty> </td>
-          <td align = "center" class = "MainText" width="25%">&nbsp;</td>
+          <td align = "center" class = "MainText" width="25%"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_MANAGE_MEMBERS %>"> 
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "Admin/ManageMembers.jsp" class = "Link1" style = "text-decoration:none;"> 
+              Member Management</a></div>
+            </cti:checkProperty></td>
         </tr>
       </table>
     </td>

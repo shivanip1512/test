@@ -1,11 +1,17 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.bean.InventoryBean" %>
+<%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
+<%
+	LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
+%>
+
 <jsp:useBean id="inventoryBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session">
 	<%-- this body is executed only if the bean is created --%>
 	<jsp:setProperty name="inventoryBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
 	<jsp:setProperty name="inventoryBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>"/>
 	<jsp:setProperty name="inventoryBean" property="sortOrder" value="<%= InventoryBean.SORT_ORDER_ASCENDING %>"/>
 	<jsp:setProperty name="inventoryBean" property="filterBy" value="0"/>
+	<jsp:setProperty name="inventoryBean" property="subEnergyCompany" value="<%= user.getEnergyCompanyID() %>"/>
 </jsp:useBean>
 
 <% if (request.getParameter("page") == null) { %>
@@ -24,6 +30,7 @@
 <jsp:setProperty name="inventoryBean" property="addressingGroup" param="AddressingGroup"/>
 <jsp:setProperty name="inventoryBean" property="deviceStatus" param="DeviceStatus"/>
 <jsp:setProperty name="inventoryBean" property="page" param="page"/>
+<jsp:setProperty name="inventoryBean" property="subEnergyCompany" param="SubEnergyCompany"/>
 
 <html>
 <head>
@@ -38,6 +45,7 @@ function changeFilter(filterBy) {
 	document.getElementById("DivLocation").style.display = (filterBy == <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION %>)? "" : "none";
 	document.getElementById("DivAddressingGroup").style.display = (filterBy == <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG %>)? "" : "none";
 	document.getElementById("DivDeviceStatus").style.display = (filterBy == <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS %>)? "" : "none";
+	document.getElementById("DivEnergyCompany").style.display = (filterBy == <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_ENERGY_COMPANY %>)? "" : "none";
 }
 
 function init() {
@@ -141,14 +149,20 @@ function showAll(form) {
                           <td width="35%"> 
                             <select name="FilterBy" onChange="changeFilter(this.value)">
                               <option value="0">(none)</option>
-                              <%
+<%
 	StarsCustSelectionList filterByList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY );
 	for (int i = 0; i < filterByList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = filterByList.getStarsSelectionListEntry(i);
 		String selected = (entry.getYukonDefID() == inventoryBean.getFilterBy())? "selected" : "";
 %>
                               <option value="<%= entry.getYukonDefID() %>" <%= selected %>><%= entry.getContent() %></option>
-                              <%
+<%
+	}
+	if (liteEC.getChildren().size() > 0) {
+		String selected = (inventoryBean.getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_ENERGY_COMPANY)? "selected" : "";
+%>
+                              <option value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_ENERGY_COMPANY %>" <%= selected %>>Energy Company</option>
+<%
 	}
 %>
                             </select>
@@ -230,6 +244,20 @@ function showAll(form) {
 		String selected = (entry.getYukonDefID() == inventoryBean.getDeviceStatus())? "selected" : "";
 %>
                                 <option value="<%= entry.getYukonDefID() %>" <%= selected %>><%= entry.getContent() %></option>
+                                <%
+	}
+%>
+                              </select>
+                            </div>
+                            <div id="DivEnergyCompany" style="display:none"> 
+                              <select name="SubEnergyCompany">
+                                <%
+	ArrayList subCompanies = com.cannontech.stars.util.ECUtils.getAllDescendants(liteEC);
+	for (int i = 0; i < subCompanies.size(); i++) {
+		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) subCompanies.get(i);
+		String selected = (company.getLiteID() == inventoryBean.getSubEnergyCompany())? "selected" : "";
+%>
+                                <option value="<%= company.getLiteID() %>" <%= selected %>><%= company.getName() %></option>
                                 <%
 	}
 %>
