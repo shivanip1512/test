@@ -31,7 +31,10 @@ public class ClientSession {
 	private String host;
 	private int port;
 	
+	private boolean localLogin = true;
 	private String errMsg;
+	
+	private static int INVALID_CURRENT_USERID = Integer.MIN_VALUE;
 	
 	/**
 	 * Return the user associated with this session.
@@ -66,6 +69,20 @@ public class ClientSession {
 		return instance;
 	}
 	
+	public synchronized void closeSession() {
+		if(LoginPrefs.getInstance().getCurrentSessionID().length() > 0 &&
+			LoginPrefs.getInstance().getCurrentUserID() != INVALID_CURRENT_USERID) {
+		
+			LoginPrefs.getInstance().setCurrentSessionID("");
+			LoginPrefs.getInstance().setCurrentUserID(INVALID_CURRENT_USERID);		
+
+			if(!localLogin) {
+				LoginSupport.closeSession(sessionID, host, port);
+			}
+		}
+	}
+
+
 	/**
 		 * Attempt to establish a session
 		 * @return
@@ -79,10 +96,10 @@ public class ClientSession {
 		
 		boolean success = false;
 		if(dbProps != null && !dbProps.isEmpty()) {
-			success = doLocalLogin(parent, dbProps);
+			localLogin = (success = doLocalLogin(parent, dbProps));
 		}
 		else {
-			success = doRemoteLogin(parent);
+			localLogin = !(success = doRemoteLogin(parent));
 		}			
 		
 		if(success) {
@@ -102,11 +119,11 @@ public class ClientSession {
 		
 		LoginPrefs prefs = LoginPrefs.getInstance();
 		int userID = prefs.getCurrentUserID();
-		if(userID > 0) {
+		if(userID != INVALID_CURRENT_USERID) {
 			//already 'logged in' so just try to use it
 			LiteYukonUser u = YukonUserFuncs.getLiteYukonUser(userID);
 			if(u != null) {
-				setSessionInfo(u, Integer.toString(userID), "", -1);		
+				setSessionInfo(u, Integer.toString(u.getUserID()), "", Integer.MIN_VALUE);		
 				return true;
 			}
 			//Couldn't find the supposedly logged in user, disregard current login
@@ -117,7 +134,7 @@ public class ClientSession {
 			LiteYukonUser u = AuthFuncs.login(lp.getUsername(), lp.getPassword());
 			if(u != null) {
 				//score! we found them
-				setSessionInfo(u, Integer.toString(userID), "", -1);
+				setSessionInfo(u, Integer.toString(u.getUserID()), "", Integer.MIN_VALUE);
 				return true;
 			}
 			else {
@@ -210,6 +227,7 @@ public class ClientSession {
 	private void displayMessage(Frame p, String msg, String title) {
 		JOptionPane.showMessageDialog(p, msg, title, JOptionPane.WARNING_MESSAGE); 
 	}
+	
 	
 	// My pretty private instance
 	private static ClientSession instance;
