@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: MCT.java,v 1.1 2004/01/21 17:52:19 zyao Exp $
+ * $Id: MCT.java,v 1.2 2004/01/28 20:28:58 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.1 $ $Date: 2004/01/21 17:52:19 $
+ * @version $Revision: 1.2 $ $Date: 2004/01/28 20:28:58 $
 **/
 public class MCT implements java.io.Serializable {
 

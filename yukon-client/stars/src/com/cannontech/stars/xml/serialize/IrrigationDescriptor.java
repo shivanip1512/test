@@ -85,13 +85,11 @@ public class IrrigationDescriptor extends org.exolab.castor.xml.util.XMLClassDes
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _irrigationType
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _horsePower
@@ -119,13 +117,11 @@ public class IrrigationDescriptor extends org.exolab.castor.xml.util.XMLClassDes
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _horsePower
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _energySource
@@ -153,13 +149,11 @@ public class IrrigationDescriptor extends org.exolab.castor.xml.util.XMLClassDes
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _energySource
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _soilType
@@ -187,13 +181,11 @@ public class IrrigationDescriptor extends org.exolab.castor.xml.util.XMLClassDes
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _soilType
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _meterLocation
@@ -221,13 +213,11 @@ public class IrrigationDescriptor extends org.exolab.castor.xml.util.XMLClassDes
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _meterLocation
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _meterVoltage
@@ -255,13 +245,11 @@ public class IrrigationDescriptor extends org.exolab.castor.xml.util.XMLClassDes
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _meterVoltage
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.IrrigationDescriptor()

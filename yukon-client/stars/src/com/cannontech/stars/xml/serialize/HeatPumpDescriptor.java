@@ -85,13 +85,43 @@ public class HeatPumpDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _pumpType
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
+        desc.setValidator(fieldValidator);
+        
+        //-- _pumpSize
+        desc = new XMLFieldDescriptorImpl(PumpSize.class, "_pumpSize", "PumpSize", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                HeatPump target = (HeatPump) object;
+                return target.getPumpSize();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    HeatPump target = (HeatPump) object;
+                    target.setPumpSize( (PumpSize) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new PumpSize();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _pumpSize
+        fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
         //-- _standbySource
@@ -119,13 +149,11 @@ public class HeatPumpDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _standbySource
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _restartDelaySeconds
@@ -144,9 +172,11 @@ public class HeatPumpDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             {
                 try {
                     HeatPump target = (HeatPump) object;
-                    // ignore null values for non optional primitives
-                    if (value == null) return;
-                    
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteRestartDelaySeconds();
+                        return;
+                    }
                     target.setRestartDelaySeconds( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
@@ -158,13 +188,11 @@ public class HeatPumpDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _restartDelaySeconds
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             IntegerValidator iv = new IntegerValidator();
             fieldValidator.setValidator(iv);

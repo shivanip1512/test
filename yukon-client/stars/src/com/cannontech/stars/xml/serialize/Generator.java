@@ -72,6 +72,27 @@ public class Generator implements java.io.Serializable {
     //-----------/
 
     /**
+    **/
+    public void deleteFuelCapGallons()
+    {
+        this._has_fuelCapGallons= false;
+    } //-- void deleteFuelCapGallons() 
+
+    /**
+    **/
+    public void deletePeakKWCapacity()
+    {
+        this._has_peakKWCapacity= false;
+    } //-- void deletePeakKWCapacity() 
+
+    /**
+    **/
+    public void deleteStartDelaySeconds()
+    {
+        this._has_startDelaySeconds= false;
+    } //-- void deleteStartDelaySeconds() 
+
+    /**
      * Returns the value of field 'fuelCapGallons'.
      * 
      * @return the value of field 'fuelCapGallons'.

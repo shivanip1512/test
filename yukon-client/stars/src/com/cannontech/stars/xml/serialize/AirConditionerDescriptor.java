@@ -85,13 +85,11 @@ public class AirConditionerDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _tonnage
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _ACType
@@ -119,13 +117,11 @@ public class AirConditionerDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _ACType
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.AirConditionerDescriptor()

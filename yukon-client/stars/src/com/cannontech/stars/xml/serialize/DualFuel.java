@@ -58,6 +58,13 @@ public class DualFuel implements java.io.Serializable {
     //-----------/
 
     /**
+    **/
+    public void deleteSecondaryKWCapacity()
+    {
+        this._has_secondaryKWCapacity= false;
+    } //-- void deleteSecondaryKWCapacity() 
+
+    /**
      * Returns the value of field 'secondaryEnergySource'.
      * 
      * @return the value of field 'secondaryEnergySource'.

@@ -149,83 +149,83 @@
 			<xs:element name="ServiceCompany" type="stars-CustListEntry" minOccurs="0"/>
 			<xs:element name="Notes" type="xs:string"/>
 			<xs:element name="ModelNumber" type="xs:string"/>
-			<xs:element name="KWCapacity" type="xs:int"/>
-			<xs:element name="EfficiencyRating" type="xs:int"/>
+			<xs:element name="KWCapacity" type="xs:int" minOccurs="0"/>
+			<xs:element name="EfficiencyRating" type="xs:int" minOccurs="0"/>
 			<xs:element name="AirConditioner" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="Tonnage" type="stars-CustListEntry"/>
-						<xs:element name="ACType" type="stars-CustListEntry"/>
+						<xs:element name="Tonnage" type="stars-CustListEntry" minOccurs="0"/>
+						<xs:element name="ACType" type="stars-CustListEntry" minOccurs="0"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="WaterHeater" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="NumberOfGallons" type="stars-CustListEntry"/>
-						<xs:element name="EnergySource" type="stars-CustListEntry"/>
-						<xs:element name="NumberOfElements" type="xs:int"/>
+						<xs:element name="NumberOfGallons" type="stars-CustListEntry" minOccurs="0"/>
+						<xs:element name="EnergySource" type="stars-CustListEntry" minOccurs="0"/>
+						<xs:element name="NumberOfElements" type="xs:int" minOccurs="0"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="DualFuel" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="SwitchOverType" type="stars-CustListEntry"/>
-						<xs:element name="SecondaryKWCapacity" type="xs:int"/>
-						<xs:element name="SecondaryEnergySource" type="stars-CustListEntry"/>
+						<xs:element name="SwitchOverType" type="stars-CustListEntry" minOccurs="0"/>
+						<xs:element name="SecondaryKWCapacity" type="xs:int" minOccurs="0"/>
+						<xs:element name="SecondaryEnergySource" type="stars-CustListEntry" minOccurs="0"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="Generator" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="TransferSwitchType" type="stars-CustListEntry"/>
-						<xs:element name="TransferSwitchManufacturer" type="stars-CustListEntry"/>
-						<xs:element name="PeakKWCapacity" type="xs:int"/>
-						<xs:element name="FuelCapGallons" type="xs:int"/>
-						<xs:element name="StartDelaySeconds" type="xs:int"/>
+						<xs:element name="TransferSwitchType" type="stars-CustListEntry" minOccurs="0"/>
+						<xs:element name="TransferSwitchManufacturer" type="stars-CustListEntry" minOccurs="0"/>
+						<xs:element name="PeakKWCapacity" type="xs:int" minOccurs="0"/>
+						<xs:element name="FuelCapGallons" type="xs:int" minOccurs="0"/>
+						<xs:element name="StartDelaySeconds" type="xs:int" minOccurs="0"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="GrainDryer" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="DryerType" type="stars-CustListEntry"/>
-						<xs:element name="BinSize" type="stars-CustListEntry"/>
-						<xs:element name="BlowerEnergySource" type="stars-CustListEntry"/>
-						<xs:element name="BlowerHorsePower" type="stars-CustListEntry"/>
-						<xs:element name="BlowerHeatSource" type="stars-CustListEntry"/>
+						<xs:element name="DryerType" type="stars-CustListEntry" minOccurs="0"/>
+						<xs:element name="BinSize" type="stars-CustListEntry" minOccurs="0"/>
+						<xs:element name="BlowerEnergySource" type="stars-CustListEntry" minOccurs="0"/>
+						<xs:element name="BlowerHorsePower" type="stars-CustListEntry" minOccurs="0"/>
+						<xs:element name="BlowerHeatSource" type="stars-CustListEntry" minOccurs="0"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="StorageHeat" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="StorageType" type="stars-CustListEntry"/>
-						<xs:element name="PeakKWCapacity" type="xs:int"/>
-						<xs:element name="HoursToRecharge" type="xs:int"/>
+						<xs:element name="StorageType" type="stars-CustListEntry" minOccurs="0"/>
+						<xs:element name="PeakKWCapacity" type="xs:int" minOccurs="0"/>
+						<xs:element name="HoursToRecharge" type="xs:int" minOccurs="0"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="HeatPump" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="PumpType" type="stars-CustListEntry"/>
-						<xs:element name="StandbySource" type="stars-CustListEntry"/>
-						<xs:element name="RestartDelaySeconds" type="xs:int"/>
+						<xs:element name="PumpType" type="stars-CustListEntry" minOccurs="0"/>
+						<xs:element name="PumpSize" type="stars-CustListEntry" minOccurs="0"/><xs:element name="StandbySource" type="stars-CustListEntry" minOccurs="0"/>
+						<xs:element name="RestartDelaySeconds" type="xs:int" minOccurs="0"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="Irrigation" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="IrrigationType" type="stars-CustListEntry"/>
-						<xs:element name="HorsePower" type="stars-CustListEntry"/>
-						<xs:element name="EnergySource" type="stars-CustListEntry"/>
-						<xs:element name="SoilType" type="stars-CustListEntry"/>
-						<xs:element name="MeterLocation" type="stars-CustListEntry"/>
-						<xs:element name="MeterVoltage" type="stars-CustListEntry"/>
+						<xs:element name="IrrigationType" type="stars-CustListEntry" minOccurs="0"/>
+						<xs:element name="HorsePower" type="stars-CustListEntry" minOccurs="0"/>
+						<xs:element name="EnergySource" type="stars-CustListEntry" minOccurs="0"/>
+						<xs:element name="SoilType" type="stars-CustListEntry" minOccurs="0"/>
+						<xs:element name="MeterLocation" type="stars-CustListEntry" minOccurs="0"/>
+						<xs:element name="MeterVoltage" type="stars-CustListEntry" minOccurs="0"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>

@@ -63,6 +63,20 @@ public class StorageHeat implements java.io.Serializable {
     //-----------/
 
     /**
+    **/
+    public void deleteHoursToRecharge()
+    {
+        this._has_hoursToRecharge= false;
+    } //-- void deleteHoursToRecharge() 
+
+    /**
+    **/
+    public void deletePeakKWCapacity()
+    {
+        this._has_peakKWCapacity= false;
+    } //-- void deletePeakKWCapacity() 
+
+    /**
      * Returns the value of field 'hoursToRecharge'.
      * 
      * @return the value of field 'hoursToRecharge'.

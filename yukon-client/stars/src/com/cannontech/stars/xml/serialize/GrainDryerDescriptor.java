@@ -85,13 +85,11 @@ public class GrainDryerDescriptor extends org.exolab.castor.xml.util.XMLClassDes
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _dryerType
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _binSize
@@ -119,13 +117,11 @@ public class GrainDryerDescriptor extends org.exolab.castor.xml.util.XMLClassDes
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _binSize
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _blowerEnergySource
@@ -153,13 +149,11 @@ public class GrainDryerDescriptor extends org.exolab.castor.xml.util.XMLClassDes
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _blowerEnergySource
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _blowerHorsePower
@@ -187,13 +181,11 @@ public class GrainDryerDescriptor extends org.exolab.castor.xml.util.XMLClassDes
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _blowerHorsePower
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _blowerHeatSource
@@ -221,13 +213,11 @@ public class GrainDryerDescriptor extends org.exolab.castor.xml.util.XMLClassDes
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _blowerHeatSource
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.GrainDryerDescriptor()

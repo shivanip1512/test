@@ -85,13 +85,11 @@ public class DualFuelDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _switchOverType
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _secondaryKWCapacity
@@ -110,9 +108,11 @@ public class DualFuelDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             {
                 try {
                     DualFuel target = (DualFuel) object;
-                    // ignore null values for non optional primitives
-                    if (value == null) return;
-                    
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteSecondaryKWCapacity();
+                        return;
+                    }
                     target.setSecondaryKWCapacity( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
@@ -124,13 +124,11 @@ public class DualFuelDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _secondaryKWCapacity
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             IntegerValidator iv = new IntegerValidator();
             fieldValidator.setValidator(iv);
@@ -162,13 +160,11 @@ public class DualFuelDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _secondaryEnergySource
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.DualFuelDescriptor()

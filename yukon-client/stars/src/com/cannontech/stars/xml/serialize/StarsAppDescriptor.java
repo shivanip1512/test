@@ -502,9 +502,11 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             {
                 try {
                     StarsApp target = (StarsApp) object;
-                    // ignore null values for non optional primitives
-                    if (value == null) return;
-                    
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteKWCapacity();
+                        return;
+                    }
                     target.setKWCapacity( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
@@ -516,13 +518,11 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _KWCapacity
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             IntegerValidator iv = new IntegerValidator();
             fieldValidator.setValidator(iv);
@@ -545,9 +545,11 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             {
                 try {
                     StarsApp target = (StarsApp) object;
-                    // ignore null values for non optional primitives
-                    if (value == null) return;
-                    
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteEfficiencyRating();
+                        return;
+                    }
                     target.setEfficiencyRating( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
@@ -559,13 +561,11 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _efficiencyRating
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             IntegerValidator iv = new IntegerValidator();
             fieldValidator.setValidator(iv);

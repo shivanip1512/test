@@ -85,13 +85,11 @@ public class GeneratorDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _transferSwitchType
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _transferSwitchManufacturer
@@ -119,13 +117,11 @@ public class GeneratorDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _transferSwitchManufacturer
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _peakKWCapacity
@@ -144,9 +140,11 @@ public class GeneratorDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
             {
                 try {
                     Generator target = (Generator) object;
-                    // ignore null values for non optional primitives
-                    if (value == null) return;
-                    
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deletePeakKWCapacity();
+                        return;
+                    }
                     target.setPeakKWCapacity( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
@@ -158,13 +156,11 @@ public class GeneratorDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _peakKWCapacity
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             IntegerValidator iv = new IntegerValidator();
             fieldValidator.setValidator(iv);
@@ -187,9 +183,11 @@ public class GeneratorDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
             {
                 try {
                     Generator target = (Generator) object;
-                    // ignore null values for non optional primitives
-                    if (value == null) return;
-                    
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteFuelCapGallons();
+                        return;
+                    }
                     target.setFuelCapGallons( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
@@ -201,13 +199,11 @@ public class GeneratorDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _fuelCapGallons
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             IntegerValidator iv = new IntegerValidator();
             fieldValidator.setValidator(iv);
@@ -230,9 +226,11 @@ public class GeneratorDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
             {
                 try {
                     Generator target = (Generator) object;
-                    // ignore null values for non optional primitives
-                    if (value == null) return;
-                    
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteStartDelaySeconds();
+                        return;
+                    }
                     target.setStartDelaySeconds( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
@@ -244,13 +242,11 @@ public class GeneratorDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _startDelaySeconds
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             IntegerValidator iv = new IntegerValidator();
             fieldValidator.setValidator(iv);

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsUpdateCustomerAccount.java,v 1.63 2004/01/28 20:28:55 zyao Exp $
+ * $Id: PumpSize.java,v 1.1 2004/01/28 20:28:59 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -21,11 +21,11 @@ import org.exolab.castor.xml.ValidationException;
 import org.xml.sax.ContentHandler;
 
 /**
- * Update a customer account
  * 
- * @version $Revision: 1.63 $ $Date: 2004/01/28 20:28:55 $
+ * 
+ * @version $Revision: 1.1 $ $Date: 2004/01/28 20:28:59 $
 **/
-public class StarsUpdateCustomerAccount extends StarsCustAccount 
+public class PumpSize extends StarsCustListEntry 
 implements java.io.Serializable
 {
 
@@ -34,9 +34,9 @@ implements java.io.Serializable
      //- Constructors -/
     //----------------/
 
-    public StarsUpdateCustomerAccount() {
+    public PumpSize() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsUpdateCustomerAccount()
+    } //-- com.cannontech.stars.xml.serialize.PumpSize()
 
 
       //-----------/
@@ -85,11 +85,11 @@ implements java.io.Serializable
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsUpdateCustomerAccount unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.PumpSize unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsUpdateCustomerAccount) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsUpdateCustomerAccount.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsUpdateCustomerAccount unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.PumpSize) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.PumpSize.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.PumpSize unmarshal(java.io.Reader) 
 
     /**
     **/

@@ -34,6 +34,8 @@ public class HeatPump implements java.io.Serializable {
 
     private PumpType _pumpType;
 
+    private PumpSize _pumpSize;
+
     private StandbySource _standbySource;
 
     private int _restartDelaySeconds;
@@ -56,6 +58,23 @@ public class HeatPump implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+    **/
+    public void deleteRestartDelaySeconds()
+    {
+        this._has_restartDelaySeconds= false;
+    } //-- void deleteRestartDelaySeconds() 
+
+    /**
+     * Returns the value of field 'pumpSize'.
+     * 
+     * @return the value of field 'pumpSize'.
+    **/
+    public PumpSize getPumpSize()
+    {
+        return this._pumpSize;
+    } //-- PumpSize getPumpSize() 
 
     /**
      * Returns the value of field 'pumpType'.
@@ -130,6 +149,16 @@ public class HeatPump implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'pumpSize'.
+     * 
+     * @param pumpSize the value of field 'pumpSize'.
+    **/
+    public void setPumpSize(PumpSize pumpSize)
+    {
+        this._pumpSize = pumpSize;
+    } //-- void setPumpSize(PumpSize) 
 
     /**
      * Sets the value of field 'pumpType'.

@@ -58,6 +58,13 @@ public class WaterHeater implements java.io.Serializable {
     //-----------/
 
     /**
+    **/
+    public void deleteNumberOfElements()
+    {
+        this._has_numberOfElements= false;
+    } //-- void deleteNumberOfElements() 
+
+    /**
      * Returns the value of field 'energySource'.
      * 
      * @return the value of field 'energySource'.

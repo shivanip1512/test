@@ -134,10 +134,24 @@ public abstract class StarsApp implements java.io.Serializable {
 
     /**
     **/
+    public void deleteEfficiencyRating()
+    {
+        this._has_efficiencyRating= false;
+    } //-- void deleteEfficiencyRating() 
+
+    /**
+    **/
     public void deleteInventoryID()
     {
         this._has_inventoryID= false;
     } //-- void deleteInventoryID() 
+
+    /**
+    **/
+    public void deleteKWCapacity()
+    {
+        this._has_KWCapacity= false;
+    } //-- void deleteKWCapacity() 
 
     /**
     **/

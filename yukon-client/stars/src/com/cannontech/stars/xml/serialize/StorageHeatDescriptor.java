@@ -85,13 +85,11 @@ public class StorageHeatDescriptor extends org.exolab.castor.xml.util.XMLClassDe
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _storageType
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _peakKWCapacity
@@ -110,9 +108,11 @@ public class StorageHeatDescriptor extends org.exolab.castor.xml.util.XMLClassDe
             {
                 try {
                     StorageHeat target = (StorageHeat) object;
-                    // ignore null values for non optional primitives
-                    if (value == null) return;
-                    
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deletePeakKWCapacity();
+                        return;
+                    }
                     target.setPeakKWCapacity( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
@@ -124,13 +124,11 @@ public class StorageHeatDescriptor extends org.exolab.castor.xml.util.XMLClassDe
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _peakKWCapacity
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             IntegerValidator iv = new IntegerValidator();
             fieldValidator.setValidator(iv);
@@ -153,9 +151,11 @@ public class StorageHeatDescriptor extends org.exolab.castor.xml.util.XMLClassDe
             {
                 try {
                     StorageHeat target = (StorageHeat) object;
-                    // ignore null values for non optional primitives
-                    if (value == null) return;
-                    
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteHoursToRecharge();
+                        return;
+                    }
                     target.setHoursToRecharge( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
@@ -167,13 +167,11 @@ public class StorageHeatDescriptor extends org.exolab.castor.xml.util.XMLClassDe
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _hoursToRecharge
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             IntegerValidator iv = new IntegerValidator();
             fieldValidator.setValidator(iv);

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsDeleteCallReportDescriptor.java,v 1.5 2004/01/28 20:28:57 zyao Exp $
+ * $Id: PumpSizeDescriptor.java,v 1.1 2004/01/28 20:28:54 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.5 $ $Date: 2004/01/28 20:28:57 $
+ * @version $Revision: 1.1 $ $Date: 2004/01/28 20:28:54 $
 **/
-public class StarsDeleteCallReportDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class PumpSizeDescriptor extends StarsCustListEntryDescriptor {
 
 
       //--------------------------/
@@ -47,59 +47,18 @@ public class StarsDeleteCallReportDescriptor extends org.exolab.castor.xml.util.
      //- Constructors -/
     //----------------/
 
-    public StarsDeleteCallReportDescriptor() {
+    public PumpSizeDescriptor() {
         super();
-        xmlName = "stars-DeleteCallReport";
+        setExtendsWithoutFlatten(new StarsCustListEntryDescriptor());
+        xmlName = "PumpSize";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
         //-- initialize attribute descriptors
         
-        //-- _callID
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_callID", "callID", NodeType.Attribute);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsDeleteCallReport target = (StarsDeleteCallReport) object;
-                if(!target.hasCallID())
-                    return null;
-                return new Integer(target.getCallID());
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsDeleteCallReport target = (StarsDeleteCallReport) object;
-                    // if null, use delete method for optional primitives 
-                    if (value == null) {
-                        target.deleteCallID();
-                        return;
-                    }
-                    target.setCallID( ((Integer)value).intValue());
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _callID
-        fieldValidator = new FieldValidator();
-        { //-- local scope
-            IntegerValidator iv = new IntegerValidator();
-            fieldValidator.setValidator(iv);
-        }
-        desc.setValidator(fieldValidator);
-        
         //-- initialize element descriptors
         
-    } //-- com.cannontech.stars.xml.serialize.StarsDeleteCallReportDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.PumpSizeDescriptor()
 
 
       //-----------/
@@ -117,13 +76,15 @@ public class StarsDeleteCallReportDescriptor extends org.exolab.castor.xml.util.
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return null;
+        return super.getExtends();
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
+        if (identity == null)
+            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 
@@ -131,7 +92,7 @@ public class StarsDeleteCallReportDescriptor extends org.exolab.castor.xml.util.
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsDeleteCallReport.class;
+        return com.cannontech.stars.xml.serialize.PumpSize.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**
