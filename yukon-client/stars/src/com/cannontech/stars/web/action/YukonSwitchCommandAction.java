@@ -29,7 +29,6 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
-import com.cannontech.stars.xml.serialize.SA205;
 import com.cannontech.stars.xml.serialize.StarsConfig;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDisableService;
@@ -37,7 +36,6 @@ import com.cannontech.stars.xml.serialize.StarsEnableService;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsInventory;
-import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsYukonSwitchCommand;
 import com.cannontech.stars.xml.serialize.StarsYukonSwitchCommandResponse;
@@ -54,6 +52,14 @@ import com.cannontech.stars.xml.util.StarsConstants;
  */
 
 public class YukonSwitchCommandAction implements ActionBase {
+	
+	private static Timer configTimer = null;
+	
+	private synchronized static Timer getTimer() {
+		if (configTimer == null)
+			configTimer = new Timer();
+		return configTimer;
+	}
 
 	public YukonSwitchCommandAction() {
 		super();
@@ -233,23 +239,21 @@ public class YukonSwitchCommandAction implements ActionBase {
 		
 		String cmd = null;
 		int hwConfigType = ECUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
-		if (hwConfigType == ECUtils.HW_CONFIG_TYPE_VERSACOM || hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM)
-		{
-			cmd = "putconfig service out serial " + liteHw.getManufacturerSerialNumber();
+		if (hwConfigType == ECUtils.HW_CONFIG_TYPE_VERSACOM) {
+			cmd = "putconfig vcom service out serial " + liteHw.getManufacturerSerialNumber();
+		}
+		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
+			cmd = "putconfig xcom service out serial " + liteHw.getManufacturerSerialNumber();
 		}
 		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205) {
 			// To disable a SA205 switch, reconfig all slots to the unused address
-			StarsLMConfiguration starsCfg = new StarsLMConfiguration();
-			starsCfg.setSA205( new SA205() );
-			starsCfg.getSA205().setSlot1( ECUtils.SA205_UNUSED_ADDR );
-			starsCfg.getSA205().setSlot2( ECUtils.SA205_UNUSED_ADDR );
-			starsCfg.getSA205().setSlot3( ECUtils.SA205_UNUSED_ADDR );
-			starsCfg.getSA205().setSlot4( ECUtils.SA205_UNUSED_ADDR );
-			starsCfg.getSA205().setSlot5( ECUtils.SA205_UNUSED_ADDR );
-			starsCfg.getSA205().setSlot6( ECUtils.SA205_UNUSED_ADDR );
-			
-			UpdateLMHardwareConfigAction.updateLMConfiguration( starsCfg, liteHw );
-			cmd = getConfigCommands( liteHw, energyCompany, true, null )[0];
+			cmd = "putconfig sa205 serial " + liteHw.getManufacturerSerialNumber() + " assign" +
+				" 1=" + ECUtils.SA205_UNUSED_ADDR +
+				",2=" + ECUtils.SA205_UNUSED_ADDR +
+				",3=" + ECUtils.SA205_UNUSED_ADDR +
+				",4=" + ECUtils.SA205_UNUSED_ADDR +
+				",5=" + ECUtils.SA205_UNUSED_ADDR +
+				",6=" + ECUtils.SA205_UNUSED_ADDR;
 		}
 		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305) {
 			// TODO: reconfig a SA305 switch to disable it
@@ -293,15 +297,24 @@ public class YukonSwitchCommandAction implements ActionBase {
 	public static void sendEnableCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, Integer routeID)
 		throws WebClientException
 	{
-		// SA205 and SA305 switches don't have an "in service" command
-		int hwConfigType = ECUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
-		if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205 || hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305)
-			return;
-		
 		if (liteHw.getManufacturerSerialNumber().length() == 0)
 			throw new WebClientException( "The manufacturer serial # of the hardware cannot be empty" );
 		
-		String cmd = "putconfig service in serial " + liteHw.getManufacturerSerialNumber();
+		String cmd = null;
+		int hwConfigType = ECUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
+		if (hwConfigType == ECUtils.HW_CONFIG_TYPE_VERSACOM) {
+			cmd = "putconfig vcom service in serial " + liteHw.getManufacturerSerialNumber();
+		}
+		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
+			cmd = "putconfig xcom service in serial " + liteHw.getManufacturerSerialNumber();
+		}
+		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205) {
+			// To enable a SA205 switch, just reconfig it using the saved configuration
+			cmd = getConfigCommands(liteHw, energyCompany, true, null)[0];
+		}
+		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305) {
+			// TODO: reconfig a SA305 switch to enable it
+		}
 		
 		int rtID = 0;
 		if (routeID != null)
@@ -384,14 +397,13 @@ public class YukonSwitchCommandAction implements ActionBase {
 		boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
 		
 		int hwConfigType = ECUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
-		if ((liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL || forceInService)
-			&& (hwConfigType == ECUtils.HW_CONFIG_TYPE_VERSACOM || hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM))
+		if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL || forceInService)
 		{
 			// Send an in service command first
 			sendEnableCommand( energyCompany, liteHw, optRouteID );
 			
 			final String[] cfgCmds = getConfigCommands( liteHw, energyCompany, useHardwareAddressing, optGroupID );
-			if (cfgCmds == null) return;
+			if (cfgCmds == null || cfgCmds.length == 0) return;
 			final int routeID2 = routeID;
 			
 			// Send the config command a while later
@@ -406,7 +418,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 				}
 			};
 			
-			new Timer().schedule( sendCfgTask, 300 * 1000 );
+			getTimer().schedule( sendCfgTask, 300 * 1000 );
 			CTILogger.info( "*** Send config command a while later ***" );
 		}
 		else {
@@ -479,7 +491,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 					}
 				}
 				
-				String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " xcom assign" +
+				String cmd = "putconfig xcom serial " + liteHw.getManufacturerSerialNumber() + " assign" +
 						" S " + liteHw.getLMConfiguration().getExpressCom().getServiceProvider() +
 						" G " + liteHw.getLMConfiguration().getExpressCom().getGEO() +
 						" B " + liteHw.getLMConfiguration().getExpressCom().getSubstation() +
@@ -491,7 +503,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 				commands.add( cmd );
 			}
 			else if (liteHw.getLMConfiguration().getVersaCom() != null) {
-				String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " vcom assign" +
+				String cmd = "putconfig vcom serial " + liteHw.getManufacturerSerialNumber() + " assign" +
 						" U " + liteHw.getLMConfiguration().getVersaCom().getUtilityID() +
 						" S " + liteHw.getLMConfiguration().getVersaCom().getSection() +
 						" C 0x" + Integer.toHexString( liteHw.getLMConfiguration().getVersaCom().getClassAddress() ) +
@@ -499,24 +511,23 @@ public class YukonSwitchCommandAction implements ActionBase {
 				commands.add( cmd );
 			}
 			else if (liteHw.getLMConfiguration().getSA205() != null) {
-				String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " sa205 assign" +
-						" 1," + liteHw.getLMConfiguration().getSA205().getSlot1() +
-						",2," + liteHw.getLMConfiguration().getSA205().getSlot2() +
-						",3," + liteHw.getLMConfiguration().getSA205().getSlot3() +
-						",4," + liteHw.getLMConfiguration().getSA205().getSlot4() +
-						",5," + liteHw.getLMConfiguration().getSA205().getSlot5() +
-						",6," + liteHw.getLMConfiguration().getSA205().getSlot6();
+				String cmd = "putconfig sa205 serial " + liteHw.getManufacturerSerialNumber() + " assign" +
+						" 1=" + liteHw.getLMConfiguration().getSA205().getSlot1() +
+						",2=" + liteHw.getLMConfiguration().getSA205().getSlot2() +
+						",3=" + liteHw.getLMConfiguration().getSA205().getSlot3() +
+						",4=" + liteHw.getLMConfiguration().getSA205().getSlot4() +
+						",5=" + liteHw.getLMConfiguration().getSA205().getSlot5() +
+						",6=" + liteHw.getLMConfiguration().getSA205().getSlot6();
 				commands.add( cmd );
 			}
 			else if (liteHw.getLMConfiguration().getSA305() != null) {
-				String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " sa305 assign" +
-						" U " + liteHw.getLMConfiguration().getSA305().getUtility() +
-						" G " + liteHw.getLMConfiguration().getSA305().getGroup() +
-						" D " + liteHw.getLMConfiguration().getSA305().getDivision() +
-						" S " + liteHw.getLMConfiguration().getSA305().getSubstation() +
-						" F " + liteHw.getLMConfiguration().getSA305().getRateFamily() +
-						" M " + liteHw.getLMConfiguration().getSA305().getRateMember();
-						// Why RateHierarchy not included?
+				String cmd = "putconfig sa305 serial " + liteHw.getManufacturerSerialNumber() +
+						" utility " + liteHw.getLMConfiguration().getSA305().getUtility() + " assign" +
+						" g=" + liteHw.getLMConfiguration().getSA305().getGroup() +
+						" d=" + liteHw.getLMConfiguration().getSA305().getDivision() +
+						" s=" + liteHw.getLMConfiguration().getSA305().getSubstation() +
+						" f=" + liteHw.getLMConfiguration().getSA305().getRateFamily() +
+						" m=" + liteHw.getLMConfiguration().getSA305().getRateMember();
 				commands.add( cmd );
 			}
 			else {

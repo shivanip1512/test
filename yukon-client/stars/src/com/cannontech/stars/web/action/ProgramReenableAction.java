@@ -23,6 +23,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -366,7 +367,25 @@ public class ProgramReenableAction implements ActionBase {
 		if (liteHw.getManufacturerSerialNumber().trim().length() == 0)
 			throw new WebClientException( "The serial # of the hardware cannot be empty" );
 		
-		String cmd = "putconfig service in temp serial " + liteHw.getManufacturerSerialNumber();
+		String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber();
+		int hwConfigType = ECUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
+		if (hwConfigType == ECUtils.HW_CONFIG_TYPE_VERSACOM) {
+			cmd += " vcom service in temp";
+		}
+		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
+			cmd += " xcom service in temp";
+		}
+		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205) {
+			cmd += " sa205 service out temp offhours 0";
+		}
+		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305) {
+			String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
+			if (trackHwAddr == null || !Boolean.valueOf(trackHwAddr).booleanValue())
+				throw new WebClientException("The utility ID of the SA305 switch is unknown");
+			
+			cmd += " sa305 utility " + liteHw.getLMConfiguration().getSA305().getUtility() + " override 0";
+		}
+		
 		return cmd;
 	}
 	

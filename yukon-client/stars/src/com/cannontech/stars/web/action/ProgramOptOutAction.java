@@ -28,6 +28,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
@@ -805,13 +806,23 @@ public class ProgramOptOutAction implements ActionBase {
         
 		String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber();
 		int hwConfigType = ECUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
-		if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205 || hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305)
-		{
-			cmd += " override " + String.valueOf( offHours );
+		if (hwConfigType == ECUtils.HW_CONFIG_TYPE_VERSACOM) {
+			cmd += " vcom service out temp offhours " + String.valueOf(offHours);
 		}
-		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_VERSACOM || hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM)
+		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
+			cmd += " xcom service out temp offhours " + String.valueOf(offHours);
+		}
+		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205)
 		{
-			cmd += " service out temp offhours " + String.valueOf(offHours);
+			cmd += " sa205 service out temp offhours " + String.valueOf(offHours);
+		}
+		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305)
+		{
+			String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
+			if (trackHwAddr == null || !Boolean.valueOf(trackHwAddr).booleanValue())
+				throw new WebClientException("The utility ID of the SA305 switch is unknown");
+			
+			cmd += " sa305 utility " + liteHw.getLMConfiguration().getSA305().getUtility() + " override " + String.valueOf( offHours );
 		}
 		
 		return cmd;
