@@ -7,10 +7,16 @@
 	String action = request.getParameter("action");
 	if (action == null) action = "";
 	
+	StarsEnergyCompany ec = null;
+	Properties savedReq = null;
+	
 	if (action.equalsIgnoreCase("init")) {
+		// Remove all saved form fields
 		session.removeAttribute(StarsAdmin.ENERGY_COMPANY_TEMP);
+		session.removeAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
 	}
 	else if (action.equalsIgnoreCase("EditAddress")) {
+		// Save all form fields
 		StarsEnergyCompany ecTemp = (StarsEnergyCompany) session.getAttribute(StarsAdmin.ENERGY_COMPANY_TEMP);
 		if (ecTemp == null) {
 			ecTemp = new StarsEnergyCompany();
@@ -20,30 +26,50 @@
 				ecTemp.setCompanyAddress( energyCompany.getCompanyAddress() );
 			session.setAttribute(StarsAdmin.ENERGY_COMPANY_TEMP, ecTemp);
 		}
+		
 		ecTemp.setCompanyName( request.getParameter("CompanyName") );
 		ecTemp.setMainPhoneNumber( request.getParameter("PhoneNo") );
 		ecTemp.setMainFaxNumber( request.getParameter("FaxNo") );
 		ecTemp.setEmail( request.getParameter("Email") );
 		ecTemp.setTimeZone( request.getParameter("TimeZone") );
+		ecTemp.setRouteID( Integer.parseInt(request.getParameter("Route")) );
+		
+		ServletUtils.saveRequest(request, session, new String[] {"Route", "OperatorGroup", "CustomerGroup", "OptOutNotif"});
 		
 		response.sendRedirect("Address.jsp?referer=EnergyCompany.jsp");
 		return;
 	}
+	else {
+		ec = (StarsEnergyCompany) session.getAttribute(StarsAdmin.ENERGY_COMPANY_TEMP);
+		savedReq = (Properties) session.getAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
+		session.removeAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
+	}
 	
-	StarsEnergyCompany ec = (StarsEnergyCompany) session.getAttribute(StarsAdmin.ENERGY_COMPANY_TEMP);
 	if (ec == null) ec = energyCompany;
+	if (savedReq == null) savedReq = new Properties();
 	
 	String address = ServletUtils.getOneLineAddress(ec.getCompanyAddress());
 	if (address.length() == 0) address = "(none)";
 	
-	LiteYukonGroup[] operGroups = liteEC.getWebClientOperatorGroups();
-	LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
-	String operGroup = "";
-	String custGroup = "";
-	for (int i = 0; i < operGroups.length; i++)
-		operGroup += operGroups[i].getGroupName() + ",";
-	for (int i = 0; i < custGroups.length; i++)
-		custGroup += custGroups[i].getGroupName() + ",";
+	String operGroup = savedReq.getProperty("OperatorGroup");
+	if (operGroup == null) {
+		operGroup = "";
+		LiteYukonGroup[] operGroups = liteEC.getWebClientOperatorGroups();
+		for (int i = 0; i < operGroups.length; i++)
+			operGroup += operGroups[i].getGroupName() + ",";
+	}
+	
+	String custGroup = savedReq.getProperty("CustomerGroup");
+	if (custGroup == null) {
+		custGroup = "";
+		LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
+		for (int i = 0; i < custGroups.length; i++)
+			custGroup += custGroups[i].getGroupName() + ",";
+	}
+	
+	String optOutNotif = savedReq.getProperty("OptOutNotif");
+	if (optOutNotif == null)
+		optOutNotif = liteEC.getEnergyCompanySetting(EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS).trim();
 	
 	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	ArrayList yukonGroups = null;
@@ -207,13 +233,17 @@ function init() {
                         <td class="TableCell"> 
                           <select name="Route">
                             <option value="<%= LiteStarsEnergyCompany.INVALID_ROUTE_ID %>">(none)</option>
-                            <%
+<%
+	int routeID = liteEC.getDefaultRouteID();
+	if (savedReq.getProperty("Route") != null)
+		routeID = Integer.parseInt(savedReq.getProperty("Route"));
+	
 	LiteYukonPAObject[] routes = liteEC.getAllRoutes();
 	for (int i = 0; i < routes.length; i++) {
-		String selected = (routes[i].getYukonID() == liteEC.getDefaultRouteID())? "selected" : "";
+		String selected = (routes[i].getYukonID() == routeID)? "selected" : "";
 %>
                             <option value="<%= routes[i].getYukonID() %>" <%= selected %>><%= routes[i].getPaoName() %></option>
-                            <%
+<%
 	}
 %>
                           </select>
@@ -231,12 +261,12 @@ function init() {
                         <td width="25%" align="right" class="TableCell">&nbsp;</td>
                         <td class="TableCell"> 
                           <select name="OperGroupList">
-                            <%
+<%
 	for (int i = 0; i < yukonGroups.size(); i++) {
 		LiteYukonGroup group = (LiteYukonGroup) yukonGroups.get(i);
 %>
                             <option value="<%= group.getGroupName() %>"><%= group.getGroupName() %></option>
-                            <%
+<%
 	}
 %>
                           </select>
@@ -255,12 +285,12 @@ function init() {
                         <td width="25%" align="right" class="TableCell">&nbsp;</td>
                         <td class="TableCell">
                           <select name="CustGroupList">
-                            <%
+<%
 	for (int i = 0; i < yukonGroups.size(); i++) {
 		LiteYukonGroup group = (LiteYukonGroup) yukonGroups.get(i);
 %>
                             <option value="<%= group.getGroupName() %>"><%= group.getGroupName() %></option>
-                            <%
+<%
 	}
 %>
                           </select>
@@ -271,7 +301,7 @@ function init() {
                         <td width="25%" align="right" class="TableCell">Opt out 
                           Notif. Recipients:</td>
                         <td class="TableCell"> 
-                          <input type="text" name="OptOutNotif" size="50" value="<%= liteEC.getEnergyCompanySetting(EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS) %>">
+                          <input type="text" name="OptOutNotif" size="50" value="<%= optOutNotif %>">
                           <input type="checkbox" name="SendNotif" value="true" onclick="setSendNotification(this.form)">
                           Send Notification</td>
                       </tr>

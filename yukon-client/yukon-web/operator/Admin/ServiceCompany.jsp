@@ -3,20 +3,17 @@
 <%
 	StarsServiceCompany company = null;
 	int compIdx = Integer.parseInt( request.getParameter("Company") );
-	if (compIdx < companies.getStarsServiceCompanyCount())
+	if (compIdx >= 0 && compIdx < companies.getStarsServiceCompanyCount()) {
 		company = companies.getStarsServiceCompany(compIdx);
+	}
 	else {
-		company = (StarsServiceCompany) session.getAttribute(StarsAdmin.SERVICE_COMPANY_TEMP);
-		if (company == null) {
-			company = new StarsServiceCompany();
-			company.setCompanyID(-1);
-			company.setCompanyName("");
-			company.setMainPhoneNumber("");
-			company.setMainFaxNumber("");
-			company.setCompanyAddress( (CompanyAddress)StarsFactory.newStarsCustomerAddress(CompanyAddress.class) );
-			company.setPrimaryContact( (PrimaryContact)StarsFactory.newStarsCustomerContact(PrimaryContact.class) );
-			session.setAttribute(StarsAdmin.SERVICE_COMPANY_TEMP, company);
-		}
+		company = new StarsServiceCompany();
+		company.setCompanyID(-1);
+		company.setCompanyName("");
+		company.setMainPhoneNumber("");
+		company.setMainFaxNumber("");
+		company.setCompanyAddress( (CompanyAddress)StarsFactory.newStarsCustomerAddress(CompanyAddress.class) );
+		company.setPrimaryContact( (PrimaryContact)StarsFactory.newStarsCustomerContact(PrimaryContact.class) );
 	}
 	
 	String action = request.getParameter("action");
@@ -39,6 +36,7 @@
 				scTemp.setPrimaryContact( (PrimaryContact)StarsFactory.newStarsCustomerContact(company.getPrimaryContact(), PrimaryContact.class) );
 			session.setAttribute(StarsAdmin.SERVICE_COMPANY_TEMP, scTemp);
 		}
+		
 		scTemp.setCompanyName( request.getParameter("CompanyName") );
 		scTemp.setMainPhoneNumber( request.getParameter("PhoneNo") );
 		scTemp.setMainFaxNumber( request.getParameter("FaxNo") );

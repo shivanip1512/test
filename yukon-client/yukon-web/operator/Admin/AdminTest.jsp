@@ -373,7 +373,7 @@ function removeAllMembers(form) {
                                 <input type="submit" name="DeleteAll" value="Delete All" onclick="this.form.CompanyID.value=-1; return confirmDeleteAllCompanies();">
                               </td>
                               <td width="80%"> 
-                                <input type="button" name="New" value="New" onclick="location.href='ServiceCompany.jsp?Company=<%= companies.getStarsServiceCompanyCount() %>'">
+                                <input type="button" name="New" value="New" onclick="editServiceCompany(this.form, <%= companies.getStarsServiceCompanyCount() %>)">
                               </td>
                             </tr>
                           </table>

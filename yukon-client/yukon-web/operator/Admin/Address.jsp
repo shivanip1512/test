@@ -116,7 +116,7 @@
                     <input type="reset" name="Reset" value="Reset">
                   </td>
                   <td width="75" align="right"> 
-                    <input type="button" name="Done" value="Done" onclick="location.href='<%= referer %>'">
+                    <input type="button" name="Back" value="Back" onclick="location.href='<%= referer %>'">
                   </td>
                 </tr>
               </table>
