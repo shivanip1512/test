@@ -1549,5 +1549,5 @@ update yukonpaobject set type = 'MCT-410IL' where type like '%410%';
 /******************************************************************************/
 /* VERSION INFO                                                               */
 /******************************************************************************/
-insert into CTIDatabase values('3.00', 'Ryan', '22-APR-2004', 'Many changes to a major version jump', 21 );
+insert into CTIDatabase values('3.00', 'Ryan', '22-APR-2004', 'Many changes to a major version jump', 25 );
 go
