@@ -60,7 +60,7 @@ public class LMScenario extends YukonPAObject implements com.cannontech.database
 	 */
 	public void delete() throws java.sql.SQLException 
 	{
-		
+		retrieve();
 		//delete all the wee programs from the database
 		if(getAllThePrograms() != null)
 		{
@@ -160,6 +160,10 @@ public class LMScenario extends YukonPAObject implements com.cannontech.database
 		
 	}
 	
+	public void setAllThePrograms(Vector newVector)
+	{
+		allThePrograms = newVector;
+	}
 	/**
 	* This method was created in VisualAge.
 	*/

@@ -291,6 +291,7 @@ public Object getValue(Object o) {
 	
 	return scen;
 }
+
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
@@ -458,17 +459,18 @@ public void initLeftList()
 		
 		for( int i = 0; i < progs.size(); i++ )
 		{ 
-			if( com.cannontech.database.data.device.DeviceTypesFuncs.isLMProgram( ((com.cannontech.database.data.lite.LiteYukonPAObject)progs.get(i)).getType() ))
+			if( com.cannontech.database.data.device.DeviceTypesFuncs.isLMProgramDirect( ((com.cannontech.database.data.lite.LiteYukonPAObject)progs.get(i)).getType() ))
 			{
 				newList.addElement( progs.get(i) );
 			}
 
 		}
-
+		
 		getProgramAddRemovePanel().leftListSetListData( newList );
 	}
 	
 }
+
 /**
  * This method was created in VisualAge.
  * @return boolean

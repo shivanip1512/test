@@ -1,6 +1,12 @@
 package com.cannontech.dbeditor.wizard.device.lmscenario;
 
 import com.cannontech.database.data.device.lm.LMScenario;
+import com.cannontech.database.data.device.lm.LMProgramDirect;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
+import com.cannontech.database.db.device.lm.LMProgramDirectGear;
+
+import java.lang.Integer;
 /**
  * Insert the type's description here.
  * Creation date: (3/31/2004 12:15:45 PM)
@@ -12,7 +18,7 @@ public class LMScenarioProgramSettingsPanel extends com.cannontech.common.gui.ut
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
 	private javax.swing.JScrollPane ivjProgramsScrollPane = null;
 	private javax.swing.JTable ivjProgramsTable = null;
-
+	
 class IvjEventHandler implements java.awt.event.ActionListener, java.awt.event.MouseListener, javax.swing.event.CaretListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
 			if (e.getSource() == LMScenarioProgramSettingsPanel.this.getDefaultGearJComboBox()) 
@@ -282,6 +288,7 @@ private javax.swing.JTable getProgramsTable() {
 			ivjProgramsTable.setMaximumSize(new java.awt.Dimension(32767, 32767));
 			ivjProgramsTable.setPreferredScrollableViewportSize(new java.awt.Dimension(200, 8000));
 			// user code begin {1}
+			ivjProgramsTable.createDefaultColumnsFromModel();
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -290,6 +297,10 @@ private javax.swing.JTable getProgramsTable() {
 		}
 	}
 	return ivjProgramsTable;
+}
+
+private com.cannontech.common.gui.util.LMControlScenarioProgramTableModel getTableModel() {
+	return ((com.cannontech.common.gui.util.LMControlScenarioProgramTableModel)getProgramsTable().getModel());
 }
 /**
  * Return the StartDelayJLabel property value.
@@ -337,15 +348,84 @@ private javax.swing.JTextField getStartDelayJTextField() {
  * @return java.lang.Object
  * @param o java.lang.Object
  */
-public Object getValue(Object o) {
+public Object getValue(Object o) 
+{
 	
 	LMScenario scen = (LMScenario)o;
 	
 	if(scen == null)
 		scen = new LMScenario(); 
 		
-	return scen;
+	java.util.Vector allLMPrograms = initProgramList();
+	java.util.Vector theGears = new java.util.Vector();
+	
+	java.util.Vector thePrograms = new java.util.Vector();
+	
+	if (getProgramsTable().getRowCount() > 0)
+	{
+		java.util.Vector programEntry = null;
+		String name = null;
+		Integer progId = null;
+		Integer delay = null;
+		Integer duration = null;
+		Integer gearID = null;
+		String gear = null;
+
+		for (int i = 0; i < getProgramsTable().getRowCount(); i++)
+		{
+			LMControlScenarioProgram singleProgram = null;
+			
+			name = (String) getProgramsTable().getModel().getValueAt(i, 0);
+			delay = (Integer) getProgramsTable().getModel().getValueAt(i, 1);
+			duration = (Integer) getProgramsTable().getModel().getValueAt(i, 2);
+			gear = (String) getProgramsTable().getModel().getValueAt(i, 3);
+				
+			for(int j = 0; j < allLMPrograms.size(); j++)
+			{
+				if(name.compareTo(((LiteYukonPAObject)allLMPrograms.elementAt(j)).getPaoName()) == 0)
+				{
+					progId = new Integer(((LiteYukonPAObject)allLMPrograms.elementAt(j)).getLiteID());
+					
+					java.sql.Connection conn = null;
+					conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
+			
+					try
+					{
+						theGears = LMProgramDirectGear.getAllDirectGears(progId, conn);
+						conn.close();
+					}
+					catch (java.sql.SQLException e2)
+					{
+						e2.printStackTrace(); //something is up
+					}
+				}
+			}
+				
+			//grab the gear ID
+			for(int x = 0; x < theGears.size(); x++)
+			{
+				if(gear.compareTo(((LMProgramDirectGear)theGears.elementAt(x)).getGearName()) == 0)
+				{
+					gearID = ((LMProgramDirectGear)theGears.elementAt(x)).getGearID();
+					break;
+				}
+			}
+			
+			singleProgram = new LMControlScenarioProgram(scen.getPAObjectID());
+			singleProgram.setProgramID(progId);
+			singleProgram.setStartDelay(delay);
+			singleProgram.setDuration(duration);
+			singleProgram.setStartGear(gearID);
+					
+			thePrograms.addElement(singleProgram);
+			}
+		}
+
+		scen.setAllThePrograms(thePrograms);
+		return scen;
 }
+
+
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
@@ -440,6 +520,13 @@ private void initialize() {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
+	getProgramsTable().setModel(new com.cannontech.common.gui.util.LMControlScenarioProgramTableModel());
+	((com.cannontech.common.gui.util.LMControlScenarioProgramTableModel)getProgramsTable().getModel()).makeTable();
+
+	getProgramsTable().getColumnModel().getColumn(0).setWidth(80);
+	getProgramsTable().getColumnModel().getColumn(0).setPreferredWidth(80);
+	getProgramsTable().revalidate();
+	getProgramsTable().repaint();
 	// user code end
 }
 /**
@@ -477,5 +564,107 @@ public void programsTable_MousePressed(java.awt.event.MouseEvent mouseEvent) {
  * This method was created in VisualAge.
  * @param o java.lang.Object
  */
-public void setValue(Object o) {}
+public void setValue(Object o) 
+{
+	//the interactions with direct programs in this method needs to be redone.
+	//Use a hashmap or matrix to hold program names and their gears
+	//Make initProgramList do more of the dirty work 
+	
+	LMScenario scen = (LMScenario)o;
+	java.util.Vector programsOfThisScenario;
+
+	programsOfThisScenario = scen.getAllThePrograms();
+		
+	java.util.Vector allLMPrograms = initProgramList();
+	 
+	String name = null;
+	Integer progId = null;
+	Integer delay = null;
+	Integer duration = null;
+	Integer gearID = null;
+	String gear = null;
+	java.util.Vector theGears = new java.util.Vector();
+
+	java.util.Vector programEntry = null;
+	LMControlScenarioProgram singleProgram = null;
+
+	for (int i = 0; i < programsOfThisScenario.size(); i++)
+	{
+		programEntry = new java.util.Vector(4);
+		singleProgram = (LMControlScenarioProgram) programsOfThisScenario.get(i);
+			
+		//get and add the name
+		progId = singleProgram.getProgramID();
+		gearID = singleProgram.getStartGear();
+		for(int j = 0; j < allLMPrograms.size(); j++)
+		{
+			if(progId.intValue() == (((LiteYukonPAObject)allLMPrograms.elementAt(j)).getLiteID()))
+			{
+				name = ((LiteYukonPAObject)allLMPrograms.elementAt(j)).getPaoName();
+				
+				java.sql.Connection conn = null;
+				conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
+		
+				try
+				{
+					theGears = LMProgramDirectGear.getAllDirectGears(progId, conn);
+					conn.close();
+				}
+				catch (java.sql.SQLException e2)
+				{
+					e2.printStackTrace(); //something is up
+				}
+	
+				break;
+			}
+		}
+		
+		delay = singleProgram.getStartDelay();
+		duration = singleProgram.getDuration();
+		
+		//grab the gear name
+		for(int x = 0; x < theGears.size(); x++)
+		{
+			if(gearID.compareTo(((LMProgramDirectGear)theGears.elementAt(x)).getGearID()) == 0)
+			{
+				gear = ((LMProgramDirectGear)theGears.elementAt(x)).getGearName();
+				break;
+			}
+		}
+		
+		programEntry.addElement(name);
+		programEntry.addElement(delay);
+		programEntry.addElement(duration);
+		programEntry.addElement(gear);
+		
+		getTableModel().addRow(programEntry);
+			
+	}
+		
+		fireInputUpdate();
+		repaint();
+}
+	
+public java.util.Vector initProgramList()
+{
+	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	synchronized( cache )
+	{
+		java.util.List progs = cache.getAllLoadManagement();
+		java.util.Collections.sort( progs, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
+		java.util.Vector newList = new java.util.Vector();
+		
+		for( int i = 0; i < progs.size(); i++ )
+		{ 
+			if( com.cannontech.database.data.device.DeviceTypesFuncs.isLMProgramDirect( ((com.cannontech.database.data.lite.LiteYukonPAObject)progs.get(i)).getType() ))
+			{
+				newList.addElement( progs.get(i) );
+			}
+
+		}
+
+		return newList;
+	}
+}
+
 }

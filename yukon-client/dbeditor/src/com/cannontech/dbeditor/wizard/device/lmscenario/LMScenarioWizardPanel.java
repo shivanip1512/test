@@ -80,10 +80,12 @@ public class LMScenarioWizardPanel extends WizardPanel
 	{
 		if( currentInputPanel == null )
 		{
+			getLmControlScenarioPanel().initLeftList();
 			return getLmControlScenarioPanel();
 		}
 		if( currentInputPanel == getLmControlScenarioPanel())
 		{
+			getLmScenarioProgramSettingsPanel().setValue(getLmControlScenarioPanel().getValue(null));
 			return getLmScenarioProgramSettingsPanel();
 		}
 		
