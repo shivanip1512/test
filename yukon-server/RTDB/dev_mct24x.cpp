@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/05/19 16:33:49 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/06/27 21:10:35 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,39 +59,63 @@ bool CtiDeviceMCT24X::initCommandStore()
 
     CtiDLCCommandStore cs;
 
+    cs._cmd     = CtiProtocolEmetcon::GetConfig_GroupAddress;
+    cs._io      = IO_READ;
+    cs._funcLen = make_pair( (int)MCT2XX_GroupAddrPos,
+                             (int)MCT2XX_GroupAddrLen );
+    _commandStore.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddr_GoldSilver;
+    cs._io      = IO_WRITE | Q_ARMC;
+    cs._funcLen = make_pair( (int)MCT2XX_GroupAddrGoldSilverPos,
+                             (int)MCT2XX_GroupAddrGoldSilverLen );
+    _commandStore.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddr_Bronze;
+    cs._io      = IO_WRITE | Q_ARMC;
+    cs._funcLen = make_pair( (int)MCT2XX_GroupAddrBronzePos,
+                             (int)MCT2XX_GroupAddrBronzeLen );
+    _commandStore.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddr_Lead;
+    cs._io      = IO_WRITE | Q_ARMC;
+    cs._funcLen = make_pair( (int)MCT2XX_GroupAddrLeadPos,
+                             (int)MCT2XX_GroupAddrLeadLen );
+    _commandStore.insert( cs );
+
     cs._cmd     = CtiProtocolEmetcon::Scan_General;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT24X_StatusAddr,
+    cs._funcLen = make_pair( (int)MCT24X_StatusPos,
                              (int)MCT24X_StatusLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::Scan_Accum;
     cs._io      = IO_FCT_READ;
-    cs._funcLen = make_pair( (int)MCT24X_MReadAddr,
+    cs._funcLen = make_pair( (int)MCT24X_MReadPos,
                              (int)MCT24X_MReadLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetValue_Default;
     cs._io      = IO_FCT_READ;
-    cs._funcLen = make_pair( (int)MCT24X_MReadAddr,
+    cs._funcLen = make_pair( (int)MCT24X_MReadPos,
                              (int)MCT24X_MReadLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutValue_KYZ;
     cs._io      = IO_WRITE | Q_ARMC;
-    cs._funcLen = make_pair( (int)MCT24X_PutMReadAddr,
+    cs._funcLen = make_pair( (int)MCT24X_PutMReadPos,
                              (int)MCT24X_PutMReadLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::Scan_Integrity;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT24X_DemandAddr,
+    cs._funcLen = make_pair( (int)MCT24X_DemandPos,
                              (int)MCT24X_DemandLen);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetValue_Demand;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT24X_DemandAddr,
+    cs._funcLen = make_pair( (int)MCT24X_DemandPos,
                              (int)MCT24X_DemandLen);
     _commandStore.insert( cs );
 
@@ -102,37 +126,37 @@ bool CtiDeviceMCT24X::initCommandStore()
 
     cs._cmd     = CtiProtocolEmetcon::GetStatus_Disconnect;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT24X_DiscAddr,
+    cs._funcLen = make_pair( (int)MCT24X_DiscPos,
                              (int)MCT24X_DiscLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetStatus_External;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT24X_StatusAddr,
+    cs._funcLen = make_pair( (int)MCT24X_StatusPos,
                              (int)MCT24X_StatusLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetStatus_LoadProfile;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT24X_LPStatusAddr,
+    cs._funcLen = make_pair( (int)MCT24X_LPStatusPos,
                              (int)MCT24X_LPStatusLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_DemandInterval;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT24X_DemandIntervalAddr,
+    cs._funcLen = make_pair( (int)MCT24X_DemandIntervalPos,
                              (int)MCT24X_DemandIntervalLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_DemandInterval;
     cs._io      = IO_WRITE | Q_ARMC;
-    cs._funcLen = make_pair( (int)MCT24X_DemandIntervalAddr,
+    cs._funcLen = make_pair( (int)MCT24X_DemandIntervalPos,
                              (int)MCT24X_DemandIntervalLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_LoadProfileInterval;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT24X_LPIntervalAddr,
+    cs._funcLen = make_pair( (int)MCT24X_LPIntervalPos,
                              (int)MCT24X_LPIntervalLen );
     _commandStore.insert( cs );
 
@@ -169,7 +193,7 @@ bool CtiDeviceMCT24X::getOperation( const UINT &cmd, USHORT &function, USHORT &l
         if( getType() == TYPEMCT250 &&
             (cmd == CtiProtocolEmetcon::Scan_General || cmd == CtiProtocolEmetcon::GetStatus_External) )
         {
-            function = MCT250_StatusAddr;
+            function = MCT250_StatusPos;
             length   = MCT250_StatusLen;
         }
     }
