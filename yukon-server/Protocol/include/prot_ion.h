@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/06/02 15:03:35 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/06/12 21:27:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -133,6 +133,8 @@ private:
 
     void generateEventLogRead( void );
     void decodeEventLogRead  ( void );
+
+    bool eventLogLastPositionValid( unsigned long currentPos, unsigned long depth, unsigned long lastPos );
 
     void generateTimeSync( void );
     void decodeTimeSync  ( void );
