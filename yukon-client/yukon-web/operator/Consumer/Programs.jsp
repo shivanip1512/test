@@ -41,18 +41,16 @@
 	boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
 	
 	boolean needMoreInfo = false;
-	if (!useHardwareAddressing) {
-		if (inWizard) {
-			needMoreInfo = autoConfig;
+	if (inWizard) {
+		needMoreInfo = autoConfig && !useHardwareAddressing;
+	}
+	else {
+		int hardwareCnt = 0;
+		for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
+			if (inventories.getStarsInventory(i).getLMHardware() != null)
+				hardwareCnt++;
 		}
-		else {
-			int hardwareCnt = 0;
-			for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
-				if (inventories.getStarsInventory(i).getLMHardware() != null)
-					hardwareCnt++;
-			}
-			needMoreInfo = hardwareCnt > 1 || autoConfig && hardwareCnt > 0;
-		}
+		needMoreInfo = hardwareCnt > 1 || autoConfig && !useHardwareAddressing && hardwareCnt > 0;
 	}
 %>
 <html>
