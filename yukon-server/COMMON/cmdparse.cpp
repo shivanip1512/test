@@ -345,6 +345,8 @@ void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
     RWCRExpr   re_frozen("froz");                             //     at the end of the string or with whitespace following
     RWCRExpr   re_peak  ("peak");
     RWCRExpr   re_minmax("minmax");
+    RWCRExpr   re_voltage("volt(age)?");
+
 
     RWCRExpr   re_powerfail("power");
 
@@ -423,6 +425,10 @@ void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
         else if(!(token = CmdStr.match(re_minmax)).isNull())      // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_GV_MINMAX;
+        }
+        else if(!(token = CmdStr.match(re_voltage)).isNull())
+        {
+            flag |= CMD_FLAG_GV_VOLTAGE;
         }
         else if(!(token = CmdStr.match(re_offset)).isNull())      // Sourcing from CmdStr, which is the entire command string.
         {
