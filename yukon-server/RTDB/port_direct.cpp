@@ -81,56 +81,94 @@ INT CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
         }
 
 
-        /* load _dcb and set the default DCB/COMMTIMEOUTS info for the port */
-        initPrivateStores();
+        try
+        {
+            /* set the modem parameters */
+            if((status = setup(true)) != NORMAL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Error setting port on " << getName() << endl;
+            }
 
-        /* set the baud rate bits parity etc! on the port */
-        if((i = setLine()) != NORMAL)
+            /* load _dcb and set the default DCB/COMMTIMEOUTS info for the port */
+            initPrivateStores();
+
+            /* set the baud rate bits parity etc! on the port */
+            if((i = setLine()) != NORMAL)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                return(i);
+            }
+
+            /* set the Read Timeout for the port */
+            if((i = setPortReadTimeOut(1000)) != NORMAL)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                return(i);
+            }
+
+            /* set the write timeout for the port */
+            if((i = setPortWriteTimeOut(1000)) != NORMAL)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                return(i);
+            }
+
+            /* Lower RTS */
+            lowerRTS();
+
+            /* Raise DTR */
+            raiseDTR();
+
+        }
+        catch(...)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-            return(i);
         }
 
-        /* set the Read Timeout for the port */
-        if((i = setPortReadTimeOut(1000)) != NORMAL)
+        try
+        {
+            if((status = reset(true)) != NORMAL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Error resetting port on " << getName() << endl;
+            }
+        }
+        catch(...)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-            return(i);
         }
 
-        /* set the write timeout for the port */
-        if((i = setPortWriteTimeOut(1000)) != NORMAL)
+        try
+        {
+            /* set the modem parameters */
+            if((status = setup(true)) != NORMAL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Error setting port on " << getName() << endl;
+            }
+        }
+        catch(...)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-            return(i);
-        }
-
-        /* Lower RTS */
-        lowerRTS();
-
-        /* Raise DTR */
-        raiseDTR();
-
-        if((status = reset(true)) != NORMAL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Error resetting port on " << getName() << endl;
-        }
-
-        /* set the modem parameters */
-        if((status = setup(true)) != NORMAL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Error setting port on " << getName() << endl;
         }
     }
 

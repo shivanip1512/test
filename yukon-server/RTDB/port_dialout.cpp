@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/03/13 19:36:04 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/04/01 16:30:54 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -367,10 +367,20 @@ INT CtiPortDialout::modemSetup(USHORT Trace, BOOL dcdTest)
         dout << RWTime() << " " << _superPort->getName() << " modem setup " << (j >= 5 ? "failed" : "successful") << endl;
     }
 
-    if(gLogPorts)
+    try
     {
-        CtiLockGuard<CtiLogger> portlog_guard(_superPort->getPortLog());
-        _superPort->getPortLog() << RWTime() << " " << _superPort->getName() << " modem setup " << (j >= 5 ? "failed" : "successful") << endl;
+        if(gLogPorts)
+        {
+            CtiLockGuard<CtiLogger> portlog_guard(_superPort->getPortLog());
+            _superPort->getPortLog() << RWTime() << " " << _superPort->getName() << " modem setup " << (j >= 5 ? "failed" : "successful") << endl;
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 
     if(j >= 5)
