@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     5/24/2004 4:00:19 PM                         */
+/* Created on:     7/1/2004 3:50:18 PM                          */
 /*==============================================================*/
 
 
@@ -94,6 +94,18 @@ drop table InterviewQuestion cascade constraints
 
 
 drop table InventoryBase cascade constraints
+/
+
+
+drop table LMConfigurationBase cascade constraints
+/
+
+
+drop table LMConfigurationSA205 cascade constraints
+/
+
+
+drop table LMConfigurationSA305 cascade constraints
 /
 
 
@@ -211,7 +223,7 @@ create table ApplianceBase  (
    ApplianceID          NUMBER                           not null,
    AccountID            NUMBER                           not null,
    ApplianceCategoryID  NUMBER                           not null,
-   LMProgramID          NUMBER,
+   ProgramID            NUMBER,
    YearManufactured     NUMBER,
    ManufacturerID       NUMBER,
    LocationID           NUMBER,
@@ -259,6 +271,8 @@ create table ApplianceCategory  (
 )
 /
 
+
+insert into ApplianceCategory values (0,'(none)',0,0);
 
 alter table ApplianceCategory
    add constraint PK_APPLIANCECATEGORY primary key (ApplianceCategoryID)
@@ -562,6 +576,7 @@ create table ECToGenericMapping  (
 /
 
 
+insert into ectogenericmapping values (-1,-1,'LMThermostatSchedule');
 insert into ectogenericmapping values (-1, 1001, 'YukonSelectionList');
 insert into ectogenericmapping values (-1, 1002, 'YukonSelectionList');
 insert into ectogenericmapping values (-1, 1003, 'YukonSelectionList');
@@ -644,8 +659,6 @@ create table ECToInventoryMapping  (
 /
 
 
-INSERT INTO ECToInventoryMapping VALUES (-1,-1);
-
 alter table ECToInventoryMapping
    add constraint PK_ECTOINVENTORYMAPPING primary key (EnergyCompanyID, InventoryID)
 /
@@ -662,8 +675,6 @@ create table ECToLMCustomerEventMapping  (
 )
 /
 
-
-INSERT INTO ECToLMCustomerEventMapping VALUES (-1,-1);
 
 alter table ECToLMCustomerEventMapping
    add constraint PK_ECTOLMCUSTOMEREVENTMAPPING primary key (EnergyCompanyID, EventID)
@@ -732,7 +743,6 @@ create table InventoryBase  (
 
 
 INSERT INTO InventoryBase VALUES (0,0,0,0,'01-JAN-70','01-JAN-70','01-JAN-70','(none)',0,'(none)',0,'(none)');
-INSERT INTO InventoryBase VALUES (-1,0,0,0,'01-JAN-70','01-JAN-70','01-JAN-70','(none)',0,'Default Thermostat',0,'(none)');
 
 alter table InventoryBase
    add constraint PK_INVENTORYBASE primary key (InventoryID)
@@ -758,6 +768,71 @@ create index HrdInst_CstHrdBs_FK on InventoryBase (
 
 
 /*==============================================================*/
+/* Table : LMConfigurationBase                                  */
+/*==============================================================*/
+
+
+create table LMConfigurationBase  (
+   ConfigurationID      NUMBER                           not null,
+   ColdLoadPickup       VARCHAR2(128)                    not null,
+   TamperDetect         VARCHAR2(128)                    not null
+)
+/
+
+
+insert into LMConfigurationBase values (0, '(none)', '(none)');
+
+alter table LMConfigurationBase
+   add constraint PK_LMCONFIGURATIONBASE primary key (ConfigurationID)
+/
+
+
+/*==============================================================*/
+/* Table : LMConfigurationSA205                                 */
+/*==============================================================*/
+
+
+create table LMConfigurationSA205  (
+   ConfigurationID      NUMBER                           not null,
+   Slot1                NUMBER                           not null,
+   Slot2                NUMBER                           not null,
+   Slot3                NUMBER                           not null,
+   Slot4                NUMBER                           not null,
+   Slot5                NUMBER                           not null,
+   Slot6                NUMBER                           not null
+)
+/
+
+
+alter table LMConfigurationSA205
+   add constraint PK_LMCONFIGURATIONSA205 primary key (ConfigurationID)
+/
+
+
+/*==============================================================*/
+/* Table : LMConfigurationSA305                                 */
+/*==============================================================*/
+
+
+create table LMConfigurationSA305  (
+   ConfigurationID      NUMBER                           not null,
+   Utility              NUMBER                           not null,
+   GroupAddress         NUMBER                           not null,
+   Division             NUMBER                           not null,
+   Substation           NUMBER                           not null,
+   RateFamily           NUMBER                           not null,
+   RateMember           NUMBER                           not null,
+   RateHierarchy        NUMBER                           not null
+)
+/
+
+
+alter table LMConfigurationSA305
+   add constraint PK_LMCONFIGURATIONSA305 primary key (ConfigurationID)
+/
+
+
+/*==============================================================*/
 /* Table : LMCustomerEventBase                                  */
 /*==============================================================*/
 
@@ -773,8 +848,6 @@ create table LMCustomerEventBase  (
 /
 
 
-INSERT INTO LMCustomerEventBase VALUES (-1,1003,1020,'01-JAN-70','','');
-
 alter table LMCustomerEventBase
    add constraint PK_LMCUSTOMEREVENTBASE primary key (EventID)
 /
@@ -789,12 +862,11 @@ create table LMHardwareBase  (
    InventoryID          NUMBER                           not null,
    ManufacturerSerialNumber VARCHAR2(30),
    LMHardwareTypeID     NUMBER                           not null,
-   RouteID              NUMBER                           not null
+   RouteID              NUMBER                           not null,
+   ConfigurationID      NUMBER                           not null
 )
 /
 
-
-INSERT INTO LMHardwareBase VALUES (-1,'0',0);
 
 alter table LMHardwareBase
    add constraint PK_LMHARDWAREBASE primary key (InventoryID)
@@ -809,7 +881,8 @@ alter table LMHardwareBase
 create table LMHardwareConfiguration  (
    InventoryID          NUMBER                           not null,
    ApplianceID          NUMBER                           not null,
-   AddressingGroupID    NUMBER
+   AddressingGroupID    NUMBER,
+   LoadNumber           NUMBER
 )
 /
 
@@ -862,7 +935,7 @@ alter table LMHardwareEvent
 create table LMProgramEvent  (
    EventID              NUMBER                           not null,
    AccountID            NUMBER                           not null,
-   LMProgramID          NUMBER
+   ProgramID            NUMBER
 )
 /
 
@@ -879,16 +952,19 @@ alter table LMProgramEvent
 
 create table LMProgramWebPublishing  (
    ApplianceCategoryID  NUMBER                           not null,
-   LMProgramID          NUMBER                           not null,
+   DeviceID             NUMBER                           not null,
    WebsettingsID        NUMBER,
    ChanceOfControlID    NUMBER,
-   ProgramOrder         NUMBER
+   ProgramOrder         NUMBER,
+   ProgramID            NUMBER                           not null
 )
 /
 
 
+insert into LMProgramWebPublishing values (0,0,0,0,0,0);
+
 alter table LMProgramWebPublishing
-   add constraint PK_LMPROGRAMWEBPUBLISHING primary key (ApplianceCategoryID, LMProgramID)
+   add constraint PK_LMPROGRAMWEBPUBLISHING primary key (ProgramID)
 /
 
 
@@ -907,8 +983,6 @@ create table LMThermostatManualEvent  (
 )
 /
 
-
-INSERT INTO LMThermostatManualEvent VALUES (-1,-1,72,'N',1211,1221);
 
 alter table LMThermostatManualEvent
    add constraint PK_LMTHERMOSTATMANUALEVENT primary key (EventID)
@@ -929,6 +1003,8 @@ create table LMThermostatSchedule  (
 )
 /
 
+
+INSERT INTO LMThermostatSchedule VALUES (-1,'(none)',0,0,0);
 
 alter table LMThermostatSchedule
    add constraint PK_LMTHERMOSTATSCHEDULE primary key (ScheduleID)
@@ -1260,8 +1336,8 @@ alter table ApplianceWaterHeater
 
 
 alter table ApplianceBase
-   add constraint FK_AppBs_LMPr foreign key (LMProgramID)
-      references LMPROGRAM (DeviceID)
+   add constraint FK_AppBs_LMPrPub foreign key (ProgramID)
+      references LMProgramWebPublishing (ProgramID)
 /
 
 
@@ -1331,26 +1407,26 @@ alter table LMProgramWebPublishing
 /
 
 
-alter table ApplianceAirConditioner
-   add constraint FK_CsLsE_Ac_ty foreign key (TypeID)
-      references YukonListEntry (EntryID)
-/
-
-
-alter table LMCustomerEventBase
-   add constraint FK_CsLsE_LCstE foreign key (EventTypeID)
-      references YukonListEntry (EntryID)
-/
-
-
 alter table LMThermostatSeasonEntry
    add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
       references YukonListEntry (EntryID)
 /
 
 
+alter table ApplianceAirConditioner
+   add constraint FK_CsLsE_Ac_ty foreign key (TypeID)
+      references YukonListEntry (EntryID)
+/
+
+
 alter table WorkOrderBase
    add constraint FK_CsLsE_WkB_c foreign key (CurrentStateID)
+      references YukonListEntry (EntryID)
+/
+
+
+alter table LMCustomerEventBase
+   add constraint FK_CsLsE_LCstE foreign key (EventTypeID)
       references YukonListEntry (EntryID)
 /
 
@@ -1367,8 +1443,8 @@ alter table LMThermostatManualEvent
 /
 
 
-alter table LMThermostatManualEvent
-   add constraint FK_CsLsE_LThMnO1 foreign key (FanOperationID)
+alter table ApplianceAirConditioner
+   add constraint FK_CsLsE_Ac foreign key (TonnageID)
       references YukonListEntry (EntryID)
 /
 
@@ -1379,8 +1455,8 @@ alter table WorkOrderBase
 /
 
 
-alter table ApplianceAirConditioner
-   add constraint FK_CsLsE_Ac foreign key (TonnageID)
+alter table LMThermostatManualEvent
+   add constraint FK_CsLsE_LThMnO1 foreign key (FanOperationID)
       references YukonListEntry (EntryID)
 /
 
@@ -1439,14 +1515,14 @@ alter table CallReportBase
 /
 
 
-alter table ApplianceCategory
-   add constraint FK_CstLs_ApCt foreign key (CategoryID)
+alter table LMHardwareBase
+   add constraint FK_LMH_REF__YUK foreign key (LMHardwareTypeID)
       references YukonListEntry (EntryID)
 /
 
 
-alter table LMHardwareBase
-   add constraint FK_LMH_REF__YUK foreign key (LMHardwareTypeID)
+alter table ApplianceCategory
+   add constraint FK_CstLs_ApCt foreign key (CategoryID)
       references YukonListEntry (EntryID)
 /
 
@@ -1613,12 +1689,6 @@ alter table InterviewQuestion
 /
 
 
-alter table LMThermostatSeason
-   add constraint FK_ThSc_LThSs foreign key (ScheduleID)
-      references LMThermostatSchedule (ScheduleID)
-/
-
-
 alter table LMHardwareEvent
    add constraint FK_IvB_LMHrEv foreign key (InventoryID)
       references InventoryBase (InventoryID)
@@ -1628,6 +1698,18 @@ alter table LMHardwareEvent
 alter table ECToLMCustomerEventMapping
    add constraint FK_LCsEv_ECLmCs foreign key (EventID)
       references LMCustomerEventBase (EventID)
+/
+
+
+alter table LMConfigurationSA305
+   add constraint FK_LMCfg305_LMCfg foreign key (ConfigurationID)
+      references LMConfigurationBase (ConfigurationID)
+/
+
+
+alter table LMHardwareBase
+   add constraint FK_LMHrdB_LMCfg foreign key (ConfigurationID)
+      references LMConfigurationBase (ConfigurationID)
 /
 
 
@@ -1644,8 +1726,8 @@ alter table LMHardwareConfiguration
 
 
 alter table LMProgramEvent
-   add constraint FK_LMPrg_LMPrEv foreign key (LMProgramID)
-      references LMPROGRAM (DeviceID)
+   add constraint FK_LMPrEv_LMPrPub foreign key (ProgramID)
+      references LMProgramWebPublishing (ProgramID)
 /
 
 
@@ -1674,7 +1756,7 @@ alter table LMProgramWebPublishing
 
 
 alter table LMProgramWebPublishing
-   add constraint FK_LMprApp_LMPrg foreign key (LMProgramID)
+   add constraint FK_LMprApp_LMPrg foreign key (DeviceID)
       references LMPROGRAM (DeviceID)
 /
 
@@ -1682,6 +1764,12 @@ alter table LMProgramWebPublishing
 alter table LMThermostatSeasonEntry
    add constraint FK_LThSe_LThSEn foreign key (SeasonID)
       references LMThermostatSeason (SeasonID)
+/
+
+
+alter table LMConfigurationSA205
+   add constraint FK_LmCf2_LmCBs foreign key (ConfigurationID)
+      references LMConfigurationBase (ConfigurationID)
 /
 
 
@@ -1712,6 +1800,12 @@ alter table Substation
 alter table SiteInformation
    add constraint FK_Sub_Si foreign key (SubstationID)
       references Substation (SubstationID)
+/
+
+
+alter table LMThermostatSeason
+   add constraint FK_ThSc_LThSs foreign key (ScheduleID)
+      references LMThermostatSchedule (ScheduleID)
 /
 
 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     6/25/2004 4:39:53 PM                         */
+/* Created on:     7/1/2004 3:29:17 PM                          */
 /*==============================================================*/
 
 
@@ -2066,16 +2066,7 @@ create table DateOfSeason  (
 
 
 alter table DateOfSeason
-   add constraint PK_DATEOFSEASON primary key (SeasonScheduleID)
-/
-
-
-/*==============================================================*/
-/* Index: Indx_DATOFSEAS_NAM                                    */
-/*==============================================================*/
-create unique index Indx_DATOFSEAS_NAM on DateOfSeason (
-   SeasonName ASC
-)
+   add constraint PK_DATEOFSEASON primary key (SeasonScheduleID, SeasonName)
 /
 
 

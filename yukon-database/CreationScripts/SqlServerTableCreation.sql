@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     6/25/2004 4:40:44 PM                         */
+/* Created on:     7/1/2004 3:27:45 PM                          */
 /*==============================================================*/
 
 
@@ -2710,16 +2710,7 @@ go
 
 
 alter table DateOfSeason
-   add constraint PK_DATEOFSEASON primary key  (SeasonScheduleID)
-go
-
-
-/*==============================================================*/
-/* Index: Indx_DATOFSEAS_NAM                                    */
-/*==============================================================*/
-create unique  index Indx_DATOFSEAS_NAM on DateOfSeason (
-SeasonName
-)
+   add constraint PK_DATEOFSEASON primary key  (SeasonScheduleID, SeasonName)
 go
 
 
