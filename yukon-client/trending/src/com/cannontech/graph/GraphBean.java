@@ -52,6 +52,7 @@ public class GraphBean implements GraphDataFormats, GraphDefines
 	private Date stop = null;
 	private int viewType = com.cannontech.graph.model.TrendModelType.LINE_VIEW;
 	private int options = 0x000;
+	private String format = "png";
 /**
  * This method needs to be implemented for the abstract class JCValueListener.
  *  JCValueListener is the DatePopupComboBox's listener.  This particular method is
@@ -549,6 +550,10 @@ public Graph getGraph()
 		graphClass = new Graph();
 	return graphClass;
 }
+public String getFormat()
+{
+	return format;
+}
 public int getOption()
 {
 	return getGraph().getOptionsMaskHolder();
@@ -791,6 +796,10 @@ public void setGraphDefinitionDates(java.util.Date newStart, java.util.Date newS
 
 	getGraph().getCurrentGraphDefinition().getGraphDefinition().setStartDate(newStart);
 	getGraph().getCurrentGraphDefinition().getGraphDefinition().setStopDate(newStop);
+}
+public void setFormat(String newFormat)
+{
+	format = newFormat;
 }
 /**
  *** Client *** 
