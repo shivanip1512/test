@@ -67,15 +67,18 @@ public static void main(String[] args)
 			{
 				int startIndex = argLowerCase.indexOf("=") + 1;
 				String subString = argLowerCase.substring(startIndex);
-				billingFile.getBillingDefaults().setFormatID(Integer.valueOf(subString).intValue());
+				if( subString.length() > 2 )	//we accept int values of 0 - 12ish...so far.  Anything longer must be the string value.
+					billingFile.getBillingDefaults().setFormatID(FileFormatTypes.getFormatID(subString));
+				else
+					billingFile.getBillingDefaults().setFormatID(Integer.valueOf(subString).intValue());
 			}
-			else if( argLowerCase.startsWith("demand"))
+			else if( argLowerCase.startsWith("dem"))
 			{
 				int startIndex = argLowerCase.indexOf("=") + 1;
 				String subString = argLowerCase.substring(startIndex);
 				billingFile.getBillingDefaults().setDemandDaysPrev(Integer.valueOf(subString).intValue());
 			}
-			else if( argLowerCase.startsWith("energy"))
+			else if( argLowerCase.startsWith("ener"))
 			{
 				int startIndex = argLowerCase.indexOf("=") + 1;
 				String subString = argLowerCase.substring(startIndex);
@@ -103,11 +106,14 @@ public static void main(String[] args)
 				com.cannontech.util.ServletUtil.parseDateStringLiberally(subString);
 				billingFile.getBillingDefaults().setEndDate(com.cannontech.util.ServletUtil.parseDateStringLiberally(subString));
 			}
-			else if( argLowerCase.startsWith("file"))
+			else if( argLowerCase.startsWith("file") || argLowerCase.startsWith("dir"))
 			{
 				int startIndex = argLowerCase.indexOf("=") + 1;
 				String subString = argLowerCase.substring(startIndex);
-				billingFile.getBillingDefaults().setOutputFile(subString);
+//				if( subString.indexOf(':') > 0)	//the remembered the whole directory
+					billingFile.getBillingDefaults().setOutputFile(subString);
+//				else	//try to help out and default the directory
+//					billingFile.getBillingDefaults().setOutputFile(com.cannontech.common.util.CtiUtilities.getExportDirPath() + "/" + subString);
 			}
 		}
 		
