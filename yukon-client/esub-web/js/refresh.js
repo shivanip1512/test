@@ -12,17 +12,14 @@ var graphRefreshRate = 120 * 1000;
 var pointRefreshRate  = 15 * 1000;
 var tableRefreshRate  = 30 * 1000;
 
+/* rectangle to indicate an image is a link */
+var selectedRect = null;
+
 /* refresh needs to be called once and it will set up
    periodic updates */   
 function refresh(evt) {	
 	SVGDoc = evt.getTarget().getOwnerDocument();
 	
-	/* TODO: is this needed? */
-	dynText = SVGDoc.getElementsByTagName('text');
-	dynImages = SVGDoc.getElementsByTagName('image');
-	dynSVG = SVGDoc.documentElement.getElementsByTagName('svg');
-	root = evt.getTarget();	
-		
 	updateAll();
 	
 	setInterval('updateAllGraphs()', graphRefreshRate); 
@@ -121,7 +118,9 @@ function updateGraph(node) {
 		var x = node.getAttribute('x');
 		var y = node.getAttribute('y');
 		
-		SVGDoc.documentElement.replaceChild(Newnode,node);
+		if(findChild(node) != null) {
+			SVGDoc.documentElement.replaceChild(Newnode,node);
+		}
 		
 		var svgElements = Newnode.getOwnerDocument().documentElement.getElementsByTagName('svg');
 
@@ -162,8 +161,10 @@ function updateAlarmsTable(node,url) {
 	function fn2(obj) {   
 		var Newnode = parseXML(obj.content, SVGDoc);
 
-		SVGDoc.documentElement.removeChild(node);
-		SVGDoc.documentElement.appendChild(Newnode);		
+		if(findChild(node) != null) {
+			SVGDoc.documentElement.removeChild(node);
+			SVGDoc.documentElement.appendChild(Newnode);		
+		}
 	} // end f2
 } // end updateAlarmsTable
 
@@ -203,7 +204,7 @@ function updateAlarmText(node) {
 	var pointIDs = node.getAttribute('id');
 	var fill1 = node.getAttribute('fill1');
 	var fill2 = node.getAttribute('fill2');
-//alert('old style: ' + node.getAttribute('style'));	
+
 	if(pointIDs.length > 0) {
 		url = encodeURI('/servlet/AlarmTextStyleServlet' + '?' + 'id=' + pointIDs + '&fill1=' + fill1 + '&fill2=' + fill2);
 		getURL(url,fn);	
@@ -212,17 +213,58 @@ function updateAlarmText(node) {
 	/* Handle the getURL to the AlarmTextStyleServlet */
 	function fn(obj) {
 		if(obj.content) {
-//			alert(node.getStyle().getPropertyValue('fill'));
-//			alert(obj.content
 			node.getStyle().setProperty('fill', obj.content);
-/*			alert('new style: ' + obj.content);
-			node.setAttributeNS(xlinkNS, 'style', obj.content);
-			alert('now its: ' + node.getAttribute('style'));*/
 		}
 	}
 }
 
-function go() {
-alert("going!");
-location = 'sublist.html';
+function underLine(elem) {
+	//Using non-standard Adobe SVG extension
+	var elemStyle = elem.getStyle();
+	elemStyle.setProperty('text-decoration','underline');
+} //end underLine
+
+function noUnderLine(elem) {
+	//Using non-standard Adobe SVG extension	
+	var elemStyle = elem.getStyle();
+	elemStyle.setProperty('text-decoration','none');
+} //end noUnderLine
+
+function addBorder(elem) {
+	var x = parseInt(elem.getAttribute('x'));
+	var y = parseInt(elem.getAttribute('y'));
+	var w = parseInt(elem.getAttribute('width'));
+	var h = parseInt(elem.getAttribute('height'));
+	
+	selectedRect = SVGDoc.createElement('rect');
+	selectedRect.setAttribute('x', x-2);
+	selectedRect.setAttribute('y', y-2);
+	selectedRect.setAttribute('width', w+4);
+	selectedRect.setAttribute('height', h+4);
+	
+	var rStyle = selectedRect.getStyle();
+	rStyle.setProperty('fill','none');
+	rStyle.setProperty('stroke','#CCCCCC');
+	
+	SVGDoc.getDocumentElement().appendChild(selectedRect);
+} //end addBorder
+
+function noBorder(elem) {
+	var b = findChild(selectedRect);
+	if(b != null) {
+		SVGDoc.documentElement.removeChild(b);
+	}	
+} //end noBorder
+
+function findChild(node) {
+	var kids = SVGDoc.getDocumentElement().getChildNodes();
+	for(var i = 0; i < kids.getLength(); i++) {
+		if(node == kids.item(i)) {
+			return kids.item(i);
+		}
+	}
+	return null;
+}
+function suppressErrors() {
+	return true;
 }
