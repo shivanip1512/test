@@ -2857,6 +2857,9 @@ public class StarsAdmin extends HttpServlet {
 					
 					for (int i = 0; i < invLines.size(); i++) {
 						String[] fields = parser.populateFields( (String)invLines.get(i) );
+						if (fields[IDX_DEVICE_TYPE].equals("") || fields[IDX_DEVICE_TYPE].equals("-1"))
+							continue;
+						
 						invFieldsList.add( fields );
 						invIDFields.put( fields[IDX_INV_ID], fields );
 						
