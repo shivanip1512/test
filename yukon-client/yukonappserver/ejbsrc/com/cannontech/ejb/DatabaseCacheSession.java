@@ -18,7 +18,7 @@ import com.cannontech.yukon.server.cache.ServerDatabaseCache;
 
 /**
  * Session layer for DatabaseCache.
- * @xdoclet-generated at Oct 2, 2002 11:11:44 AM
+ * @xdoclet-generated at Oct 2, 2002 4:14:22 PM
  */
 public class DatabaseCacheSession
    extends com.cannontech.ejb.DatabaseCacheBean

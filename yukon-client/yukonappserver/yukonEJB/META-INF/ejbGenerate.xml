@@ -22,7 +22,6 @@
         <pathelement location="${log4j.jar.path}" />
 
         <pathelement location="${bin.dir}" />
-        
 
         <!-- append the path sent through eclipse to classpath -->
         <pathelement path="${pcpath}" />
@@ -32,8 +31,7 @@
       	</fileset>
 
         <!-- append the external classpath lastly -->
-        <pathelement path="${java.class.path}" />       
-
+        <pathelement path="${java.class.path}" />
       </path>
 
 
@@ -51,7 +49,7 @@
       <ejbdoclet
          sourcepath="${src.dir}"
          destdir="${ejbsrc.dir}"
-         classpathref= "project.class.path"
+         classpathref="project.class.path"
          excludedtags="@version,@author"
          ejbspec="2.0"
          force="${xdoclet.force}">

@@ -14,7 +14,7 @@ import com.cannontech.database.TransactionException;
 
 /**
  * Session layer for DBPersistent.
- * @xdoclet-generated at Oct 2, 2002 11:11:44 AM
+ * @xdoclet-generated at Oct 2, 2002 4:14:22 PM
  */
 public class DBPersistentSession
    extends com.cannontech.ejb.DBPersistentBean

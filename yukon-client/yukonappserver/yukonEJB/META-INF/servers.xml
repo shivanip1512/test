@@ -7,7 +7,7 @@
 
 <servers>
 	<server>
-		<name>JBOSS Server</name>
+		<name>JBOSS Serve</name>
 		<launcherClass>org.jboss.Main</launcherClass>
 		<workingDirectory>D:/jboss-3.0.0RC1_tomcat-4.0.3/bin</workingDirectory>
 		<vmParameters></vmParameters>
