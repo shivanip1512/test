@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2002/08/01 22:16:02 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2002/08/06 18:58:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -172,6 +172,7 @@ void CtiPILServer::mainThread()
     }
 
     VanGoghConnection.doConnect(VANGOGHNEXUS, VanGoghMachine);
+    VanGoghConnection.setName("Dispatch");
     VanGoghConnection.WriteConnQue(new CtiRegistrationMsg(PIL_REGISTRATION_NAME, rwThreadId(), TRUE));
 
     try
@@ -660,7 +661,6 @@ void CtiPILServer::resultThread()
             dout << " Port listed as                                   : " << InMessage.Port     << endl;
             dout << " Remote listed as                                 : " << InMessage.Remote   << endl;
         }
-
     } /* End of for */
 
     {
@@ -722,7 +722,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                 pExecReq->setSOE( SystemLogIdGen() );  // Get us a new number to deal with
             }
 
-            tempOutList.clear();
+            tempOutList.clearAndDestroy();              // Just make sure!
             status = Dev->ExecuteRequest(pExecReq, parse, vgList, retList, tempOutList);    // Defined ONLY in dev_base.cpp
 
             for(int j = tempOutList.entries(); j > 0; j--)
@@ -869,7 +869,9 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
         VanGoghConnection.WriteConnQue((CtiMessage*)pVg);
     }
 
-    execList.clearAndDestroy();   // Get rid of the new messages.
+    vgList.clearAndDestroy();
+    retList.clearAndDestroy();
+    execList.clearAndDestroy();
 
     return status;
 }
