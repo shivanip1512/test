@@ -327,7 +327,7 @@ public void setLabel(java.lang.String newLabel) {
  */
 public String toString()
 {
-	return getLabel() + ": " + getCommand();
+	return getLabel() + " : " + getCommand() + " : " + getCategory();
 }
 /**
  * @exception java.sql.SQLException The exception description.
