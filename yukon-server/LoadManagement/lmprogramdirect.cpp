@@ -29,6 +29,7 @@
 #include "loadmanager.h"
 #include "msg_pcrequest.h"
 #include "lmcontrolareatrigger.h"
+#include "lmprogramthermostatgear.h"
 
 extern BOOL _LM_DEBUG;
 
@@ -598,7 +599,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                                 multiPilMsg->insert( currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, defaultLMStartPriority) );
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - Program: " << getPAOName() << ", can not True Cycle a non-Expresscom group: " << currentLMGroup->getPAOName() << " : " << __FILE__ << " at:" << __LINE__ << endl;
+                                    dout << RWTime() << " - Program: " << getPAOName() << ", can not True Cycle a non-Expresscom group: " << currentLMGroup->getPAOName() << ", Smart Cycling instead in: " << __FILE__ << " at:" << __LINE__ << endl;
                                 }
                             }
                             setLastControlSent(RWDBDateTime());
@@ -622,13 +623,59 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                 }
                 else if( currentGearObject->getControlMethod() == CtiLMProgramDirectGear::ThermostatSetbackMethod )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Program: " << getPAOName() << ", Control Method: " << CtiLMProgramDirectGear::ThermostatSetbackMethod << " is not implemented yet in: " << __FILE__ << " at:" << __LINE__ << endl;
-                }
-                else if( currentGearObject->getControlMethod() == CtiLMProgramDirectGear::ThermostatPreOperateMethod )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Program: " << getPAOName() << ", Control Method: " << CtiLMProgramDirectGear::ThermostatPreOperateMethod << " is not implemented yet in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
+                    RWCString settings = thermostatGearObject->getSettings();
+                    LONG minValue = thermostatGearObject->getMinValue();
+                    LONG maxValue = thermostatGearObject->getMaxValue();
+                    LONG valueB = thermostatGearObject->getValueB();
+                    LONG valueD = thermostatGearObject->getValueD();
+                    LONG valueF = thermostatGearObject->getValueF();
+                    LONG random = thermostatGearObject->getRandom();
+                    LONG valueTA = thermostatGearObject->getValueTa();
+                    LONG valueTB = thermostatGearObject->getValueTb();
+                    LONG valueTC = thermostatGearObject->getValueTc();
+                    LONG valueTD = thermostatGearObject->getValueTd();
+                    LONG valueTE = thermostatGearObject->getValueTe();
+                    LONG valueTF = thermostatGearObject->getValueTf();
+
+                    if( _LM_DEBUG )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Thermostat Set Point command all groups, LM Program: " << getPAOName() << endl;
+                    }
+                    for(LONG i=0;i<_lmprogramdirectgroups.entries();i++)
+                    {
+                        CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
+                        if( !currentLMGroup->getDisableFlag() &&
+                            !currentLMGroup->getControlInhibit() )
+                        {
+                            if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
+                            {
+                                multiPilMsg->insert( currentLMGroup->createSetPointRequestMsg(settings, minValue, maxValue, valueB, valueD, valueF, random, valueTA, valueTB, valueTC, valueTD, valueTE, valueTF, defaultLMStartPriority) );
+                                setLastControlSent(RWDBDateTime());
+                                setLastGroupControlled(currentLMGroup->getPAOId());
+                                currentLMGroup->setLastControlSent(RWDBDateTime());
+                                currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
+                                if( currentGearObject->getPercentReduction() > 0.0 )
+                                {
+                                    expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
+                                }
+                                else
+                                {
+                                    expectedLoadReduced += currentLMGroup->getKWCapacity() * (currentGearObject->getMethodRate() / 100.0);
+                                }
+                            }
+                            else
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - Program: " << getPAOName() << ", can not Thermostat Set Point command a non-Expresscom group: " << currentLMGroup->getPAOName() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            }
+                        }
+                    }
+                    if( getProgramState() != CtiLMProgramBase::ManualActiveState )
+                    {
+                        setProgramState(CtiLMProgramBase::FullyActiveState);
+                    }
                 }
                 else
                 {
@@ -1090,13 +1137,59 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
             }
             else if( currentGearObject->getControlMethod() == CtiLMProgramDirectGear::ThermostatSetbackMethod )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Program: " << getPAOName() << ", Control Method: " << CtiLMProgramDirectGear::ThermostatSetbackMethod << " is not implemented yet in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
-            else if( currentGearObject->getControlMethod() == CtiLMProgramDirectGear::ThermostatPreOperateMethod )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Program: " << getPAOName() << ", Control Method: " << CtiLMProgramDirectGear::ThermostatPreOperateMethod << " is not implemented yet in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
+                RWCString settings = thermostatGearObject->getSettings();
+                LONG minValue = thermostatGearObject->getMinValue();
+                LONG maxValue = thermostatGearObject->getMaxValue();
+                LONG valueB = thermostatGearObject->getValueB();
+                LONG valueD = thermostatGearObject->getValueD();
+                LONG valueF = thermostatGearObject->getValueF();
+                LONG random = thermostatGearObject->getRandom();
+                LONG valueTA = thermostatGearObject->getValueTa();
+                LONG valueTB = thermostatGearObject->getValueTb();
+                LONG valueTC = thermostatGearObject->getValueTc();
+                LONG valueTD = thermostatGearObject->getValueTd();
+                LONG valueTE = thermostatGearObject->getValueTe();
+                LONG valueTF = thermostatGearObject->getValueTf();
+
+                if( _LM_DEBUG )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Thermostat Set Point command all groups, LM Program: " << getPAOName() << endl;
+                }
+                for(LONG i=0;i<_lmprogramdirectgroups.entries();i++)
+                {
+                    CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
+                    if( !currentLMGroup->getDisableFlag() &&
+                        !currentLMGroup->getControlInhibit() )
+                    {
+                        if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
+                        {
+                            multiPilMsg->insert( currentLMGroup->createSetPointRequestMsg(settings, minValue, maxValue, valueB, valueD, valueF, random, valueTA, valueTB, valueTC, valueTD, valueTE, valueTF, defaultLMStartPriority) );
+                            setLastControlSent(RWDBDateTime());
+                            setLastGroupControlled(currentLMGroup->getPAOId());
+                            currentLMGroup->setLastControlSent(RWDBDateTime());
+                            currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
+                            if( currentGearObject->getPercentReduction() > 0.0 )
+                            {
+                                expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
+                            }
+                            else
+                            {
+                                expectedLoadReduced += currentLMGroup->getKWCapacity() * (currentGearObject->getMethodRate() / 100.0);
+                            }
+                        }
+                        else
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Program: " << getPAOName() << ", can not Thermostat Set Point command a non-Expresscom group: " << currentLMGroup->getPAOName() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }
+                    }
+                }
+                if( getProgramState() != CtiLMProgramBase::ManualActiveState )
+                {
+                    setProgramState(CtiLMProgramBase::FullyActiveState);
+                }
             }
             else
             {
@@ -1926,13 +2019,59 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
         }
         else if( currentGearObject->getControlMethod() == CtiLMProgramDirectGear::ThermostatSetbackMethod )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Program: " << getPAOName() << ", Control Method: " << CtiLMProgramDirectGear::ThermostatSetbackMethod << " is not implemented yet in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
-        else if( currentGearObject->getControlMethod() == CtiLMProgramDirectGear::ThermostatPreOperateMethod )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Program: " << getPAOName() << ", Control Method: " << CtiLMProgramDirectGear::ThermostatPreOperateMethod << " is not implemented yet in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
+            RWCString settings = thermostatGearObject->getSettings();
+            LONG minValue = thermostatGearObject->getMinValue();
+            LONG maxValue = thermostatGearObject->getMaxValue();
+            LONG valueB = thermostatGearObject->getValueB();
+            LONG valueD = thermostatGearObject->getValueD();
+            LONG valueF = thermostatGearObject->getValueF();
+            LONG random = thermostatGearObject->getRandom();
+            LONG valueTA = thermostatGearObject->getValueTa();
+            LONG valueTB = thermostatGearObject->getValueTb();
+            LONG valueTC = thermostatGearObject->getValueTc();
+            LONG valueTD = thermostatGearObject->getValueTd();
+            LONG valueTE = thermostatGearObject->getValueTe();
+            LONG valueTF = thermostatGearObject->getValueTf();
+
+            if( _LM_DEBUG )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - Thermostat Set Point command all groups, LM Program: " << getPAOName() << endl;
+            }
+            for(LONG i=0;i<_lmprogramdirectgroups.entries();i++)
+            {
+                CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
+                if( !currentLMGroup->getDisableFlag() &&
+                    !currentLMGroup->getControlInhibit() )
+                {
+                    if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
+                    {
+                        multiPilMsg->insert( currentLMGroup->createSetPointRequestMsg(settings, minValue, maxValue, valueB, valueD, valueF, random, valueTA, valueTB, valueTC, valueTD, valueTE, valueTF, defaultLMStartPriority) );
+                        setLastControlSent(RWDBDateTime());
+                        setLastGroupControlled(currentLMGroup->getPAOId());
+                        currentLMGroup->setLastControlSent(RWDBDateTime());
+                        currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
+                        if( currentGearObject->getPercentReduction() > 0.0 )
+                        {
+                            expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
+                        }
+                        else
+                        {
+                            expectedLoadReduced += currentLMGroup->getKWCapacity() * (currentGearObject->getMethodRate() / 100.0);
+                        }
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Program: " << getPAOName() << ", can not Thermostat Set Point command a non-Expresscom group: " << currentLMGroup->getPAOName() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    }
+                }
+            }
+            if( getProgramState() != CtiLMProgramBase::ManualActiveState )
+            {
+                setProgramState(CtiLMProgramBase::FullyActiveState);
+            }
         }
         else
         {
@@ -2589,13 +2728,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
         }
         else if( currentGearObject->getControlMethod() == CtiLMProgramDirectGear::ThermostatSetbackMethod )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Program: " << getPAOName() << ", Control Method: " << CtiLMProgramDirectGear::ThermostatSetbackMethod << " is not implemented yet in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
-        else if( currentGearObject->getControlMethod() == CtiLMProgramDirectGear::ThermostatPreOperateMethod )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Program: " << getPAOName() << ", Control Method: " << CtiLMProgramDirectGear::ThermostatPreOperateMethod << " is not implemented yet in: " << __FILE__ << " at:" << __LINE__ << endl;
+            //we don't refresh set point commands
         }
         else
         {
@@ -2676,7 +2809,8 @@ void CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                 }
                 else if( tempControlMethod == CtiLMProgramDirectGear::TimeRefreshMethod ||
                          tempControlMethod == CtiLMProgramDirectGear::MasterCycleMethod ||
-                         tempControlMethod == CtiLMProgramDirectGear::RotationMethod )
+                         tempControlMethod == CtiLMProgramDirectGear::RotationMethod ||
+                         tempControlMethod == CtiLMProgramDirectGear::ThermostatSetbackMethod )
                 {
                     if( tempMethodStopType == CtiLMProgramDirectGear::RestoreStopType )
                     {
@@ -2718,16 +2852,6 @@ void CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                     }
                     setLastControlSent(RWDBDateTime());
                     currentLMGroup->setLastControlSent(RWDBDateTime());
-                }
-                else if( currentGearObject->getControlMethod() == CtiLMProgramDirectGear::ThermostatSetbackMethod )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Program: " << getPAOName() << ", Control Method: " << CtiLMProgramDirectGear::ThermostatSetbackMethod << " is not implemented yet in: " << __FILE__ << " at:" << __LINE__ << endl;
-                }
-                else if( currentGearObject->getControlMethod() == CtiLMProgramDirectGear::ThermostatPreOperateMethod )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Program: " << getPAOName() << ", Control Method: " << CtiLMProgramDirectGear::ThermostatPreOperateMethod << " is not implemented yet in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
                 else
                 {
