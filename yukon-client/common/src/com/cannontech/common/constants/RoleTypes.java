@@ -91,6 +91,7 @@ public interface RoleTypes {
 
 	// Used for testing
 	public static final int WEB_OPERATOR_SUPER = -1000;
+	public static final int NEW_ACCOUNT_WIZARD = -1001;
 
 	// WebText category
 	// text formerly specified in text.properties, sorta belongs near energy exchange and curtailment stuff
