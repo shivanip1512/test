@@ -33,7 +33,10 @@ LONG CtiLMGroupBase::numberOfReferences = 0;
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase::CtiLMGroupBase()
-    : _next_control_time(gInvalidRWDBDateTime), _insertDynamicDataFlag(TRUE)
+    : _next_control_time(gInvalidRWDBDateTime),
+      _controlstarttime(gInvalidRWDBDateTime),
+      _controlcompletetime(gInvalidRWDBDateTime),
+      _insertDynamicDataFlag(TRUE)    
 {
 #ifdef _DEBUG_MEMORY    
         numberOfReferences++;
