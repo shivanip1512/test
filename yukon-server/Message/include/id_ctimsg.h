@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/id_ctimsg.h-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2002/07/30 23:04:29 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2002/08/01 22:58:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,8 +20,8 @@
 #define PROJECT   "CTI Message DLL"
 
 #define MAJORREVISION   2
-#define MINORREVISION   29
-#define BUILDNUMBER     2
+#define MINORREVISION   30
+#define BUILDNUMBER     0
 
 CTICOMPILEINFO CompileInfo = {
    PROJECT,
