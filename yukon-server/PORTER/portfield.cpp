@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.94 $
-* DATE         :  $Date: 2004/02/02 17:00:12 $
+* REVISION     :  $Revision: 1.95 $
+* DATE         :  $Date: 2004/02/16 19:06:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1451,37 +1451,33 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                           DisplayTraceList( Port, traceList, true );
                        }
 
-                       if( !error )
+                       //debug
+                       if( error != 0 )
                        {
-                          CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg();
-
-                          //send dispatch lp data directly
-                          markv->processDispatchReturnMessage( retMsg );
-
-                          if( !retMsg->getData().isEmpty() )
-                          {
-                             VanGoghConnection.WriteConnQue( retMsg );
-                          }
-                          else
-                          {
-                             delete retMsg;
-                          }
-
-                          //send the billing data back to scanner
-                          markv->sendCommResult( InMessage );
-                          
-                       }
-                       else
-                       {
-                          InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = error;
-
                           if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                           {
                               CtiLockGuard<CtiLogger> doubt_guard(dout);
-                              dout << RWTime() << " ----Unexpected Communication; Error----" << endl;
+                              dout << RWTime() << " ! comm error !" << endl;
                           }
                        }
+                       
+                       CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg();
 
+                       //send dispatch lp data directly
+                       markv->processDispatchReturnMessage( retMsg );
+
+                       if( !retMsg->getData().isEmpty() )
+                       {
+                          VanGoghConnection.WriteConnQue( retMsg );
+                       }
+                       else
+                       {
+                          delete retMsg;
+                       }
+
+                       //send the billing data back to scanner
+                       markv->sendCommResult( InMessage );
+                          
                        transdata.destroy();
                        markv = NULL;
                        break;
