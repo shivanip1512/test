@@ -364,6 +364,7 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
 	return( currentPanel == lmGroupEmetconPanel
 		 	  || currentPanel == lmGroupVersacomEditorPanel
 		 	  || currentPanel == rippleMessageShedPanel
+		 	  || currentPanel == specialRippleMessagePanel
 		      || currentPanel == groupMacroLoadGroupsPanel
 		      || currentPanel == lmGroupExpressComEditorPanel
 		      || currentPanel == lmGroupPointEditorPanel
