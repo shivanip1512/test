@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2003/01/13 18:24:23 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2003/03/26 20:33:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -161,8 +161,6 @@ VOID PorterConnectionThread (VOID *Arg)
         }
         sprintf(NewNexus->Name, "PortControl Nexus %d", iNexus++);
 
-        // fprintf(stderr,"PortControl Connection Server: Waiting for Connection\n");
-
         /*
          *  Blocking wait on the listening nexus.
          */
@@ -172,7 +170,9 @@ VOID PorterConnectionThread (VOID *Arg)
 
         if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 0L) )
         {
-            free(NewNexus);
+            delete NewNexus;
+            NewNexus = 0;
+
             break;         // FIX FIX FIX...??? Should this stop porter dead?? CGP
         }
         else if(!nRet)
@@ -180,14 +180,20 @@ VOID PorterConnectionThread (VOID *Arg)
             /* Someone has connected to us.. */
             // fprintf(stderr,"PortControl Connection Server: Nexus Connected\n");
             _beginthread(ConnectionThread, 0, (VOID*)NewNexus);
+
+            NewNexus = 0;
         }
         else
         {
             fprintf(stderr,"Error creating listener nexus\n");
-            free(NewNexus);
+            delete NewNexus;
+            NewNexus = 0;
+
             break;         // FIX FIX FIX...??? Should this stop porter dead?? CGP
         }
     }
+
+    if(NewNexus) delete NewNexus;
 
     return;
 }
