@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2002/12/24 18:51:57 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2003/01/07 17:49:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -98,7 +98,6 @@ using namespace std;
 #include "dev_kv2.h"
 #include "msg_trace.h"
 #include "msg_cmd.h"
-#include "porttypes.h"
 #include "xfer.h"
 #include "rtdb.h"
 
@@ -447,11 +446,6 @@ VOID PortThread(void *pid)
             continue;
         }
 
-        if( Port->getType() == TCPIPSERVER )
-        {
-            Port->close(TraceFlag);
-        }
-
         if(OutMessage != NULL)
         {
             delete OutMessage; /* free up the OutMessage, it made a successful run! */
@@ -693,6 +687,7 @@ INT ResetCommsChannel(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
              */
 
             pair< bool, INT > portpair = Port->verifyPortStatus(Device);
+            status = portpair.second;
 
             if( portpair.first == true && portpair.second == NORMAL)    // Indicates that it was (re)opened successfully on this pass.
             {
@@ -728,9 +723,6 @@ INT ResetCommsChannel(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
 
             if(status == NORMAL)
             {
-                pair< bool, INT > portpair = Port->verifyPortStatus(Device);    // Is this port still A-OK?
-                status = portpair.second;
-
                 if(Port->isDialup())
                 {
                     PostCommQueuePeek(Port, Device, OutMessage);
@@ -2123,26 +2115,6 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
                                     if(OutMessage->EventCode & RCONT)
                                         pInfo->PortQueueConts++;
                                 }
-                            }
-                        }
-
-                        /* If this is an TCP/IP Transaction port, disconnect */
-                        if(Port->getType() & TCPIPSERVER)
-                        {
-                            // TCPClose (NetCXPortRecord[OutMessage->Port]);
-                            Port->close(TraceFlag);
-
-                            /* Query how many are on the queue and if it is only one sleep for a bit */
-                            for(j = 0; j < 4; j++)
-                            {
-                                /* Check the queue */
-                                QueryQueue (Port->getPortQueueHandle(), &QueueCount);
-                                if(QueueCount > 1)
-                                {
-                                    break;
-                                }
-
-                                CTISleep (250L);
                             }
                         }
 
