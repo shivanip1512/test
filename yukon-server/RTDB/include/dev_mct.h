@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2005/02/21 21:48:19 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2005/02/25 21:45:50 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -82,15 +82,16 @@ protected:
         MCT_TSyncPos                  = 0x49,
         MCT_TSyncLen                  =    3, //  5,  <-- !!  don't send the extra 2 bytes - this fools Porter into letting it through unscathed
 
-        MCT_Function_Open             = 0x41,
-        MCT_Function_Close            = 0x42,
-        MCT_Function_GroupAddrInhibit = 0x53,
-        MCT_Function_GroupAddrEnable  = 0x54,
-        MCT_Function_ARML             = 0x60,
-        MCT_Function_ARMD             = 0x61,
-        MCT_Function_ARMC             = 0x62,
+        MCT_Command_Open             = 0x41,
+        MCT_Command_Close            = 0x42,
 
-        MCT_Function_LPInt            = 0x70,
+        MCT_Command_GroupAddrInhibit = 0x53,
+        MCT_Command_GroupAddrEnable  = 0x54,
+        MCT_Command_ARML             = 0x60,
+        MCT_Command_ARMD             = 0x61,
+        MCT_Command_ARMC             = 0x62,
+
+        MCT_Command_LPInt            = 0x70,
 
         MCT_Restore                   = 0x00,
         MCT_Shed_Base_07m             = 0x00,
@@ -112,14 +113,22 @@ protected:
 
     enum
     {
-        MCT_PointOffset_Status_Powerfail      = 10,
-        MCT_PointOffset_Accumulator_Powerfail = 20
+        MCT_PointOffset_Status_Powerfail      =  10,
+        MCT_PointOffset_Accumulator_Powerfail =  20,
+
+        MCT_PointOffset_LoadProfileOffset     = 100
     };
 
 public:
 
-    typedef CtiDeviceCarrier Inherited;
+    enum
+    {
+        //  for dev_mctbroadcast...  maybe he should be a friend someday
+        MCT_Command_FreezeOne        = 0x51,
+        MCT_Command_FreezeTwo        = 0x52
+    };
 
+    typedef CtiDeviceCarrier Inherited;
 
     CtiDeviceMCT( );
     CtiDeviceMCT( const CtiDeviceMCT &aRef );
