@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2003/10/27 22:04:04 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2003/10/30 20:36:13 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,7 +24,6 @@
 #include "logger.h"
 #include "mgr_point.h"
 #include "porter.h"
-#include "prot_emetcon.h"
 #include "pt_numeric.h"
 #include "yukon.h"
 #include "numstr.h"
@@ -162,7 +161,7 @@ bool CtiDeviceMCT24X::initCommandStore()
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_LoadProfileInterval;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT_LPInt_Func, 0 );
+    cs._funcLen = make_pair( (int)MCT_Function_LPInt, 0 );
     _commandStore.insert( cs );
 
 
