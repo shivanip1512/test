@@ -2197,21 +2197,37 @@ bool findLPRequestEntries(void *om, void* d)
 
     if(NewGuy && OutMessage)
     {
-        bRet = (OutMessage->Sequence == LOADPROFILESEQUENCE) &&  (OutMessage->TargetID == NewGuy->TargetID);
+        bRet = (OutMessage->Sequence == LOADPROFILESEQUENCE) &&
+               (NewGuy->Sequence     == LOADPROFILESEQUENCE) &&
+               (OutMessage->TargetID == NewGuy->TargetID);
 
         RWCString oldstr(OutMessage->Request.CommandStr);
 
-        if( oldstr.contains(" channel", RWCString::ignoreCase) )
+        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Comparing Outmessage->CommandStr" << endl;
+            dout << "NewGuy     = \"" << NewGuy->Request.CommandStr << "\" and" << endl;
+            dout << "OutMessage = \"" << OutMessage->Request.CommandStr << "\"" << endl;
+        }
+
+        if( bRet && oldstr.contains(" channel", RWCString::ignoreCase) )
         {
             RWCRExpr re_channel(" channel +[0-9]");
 
-            RWCString newstr(OutMessage->Request.CommandStr);
+            RWCString newstr(NewGuy->Request.CommandStr);
 
             if( !(newstr.match(re_channel) == oldstr.match(re_channel)) )
             {
                 bRet = false;
             }
         }
+    }
+
+    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " bRet = " << bRet << endl;
     }
 
     return(bRet);
