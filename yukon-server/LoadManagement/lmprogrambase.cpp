@@ -767,7 +767,7 @@ BOOL CtiLMProgramBase::isAvailableToday()
     
     if( (is_holiday &&_availableweekdays(7) == 'E') || //exclude
         (_availableweekdays(start_tm.tm_wday) == 'N' && !(is_holiday && _availableweekdays(7) == 'F')) ||
-          !CtiSeasonManager::getInstance().isInSeason(RWDate(), getSeasonScheduleId()) )
+        ( getSeasonScheduleId() > 0 && !CtiSeasonManager::getInstance().isInSeason(RWDate(), getSeasonScheduleId())) )
     {
         returnBool = FALSE;
     }
