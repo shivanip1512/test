@@ -86,77 +86,122 @@ LONG GetMaxLMControl(long pao)
 LONG LMControlHistoryIdGen(bool force)
 {
     static RWMutexLock   mux;
-    RWMutexLock::LockGuard guard(mux);
 
-    LONG tempid = 0;
+    LONG tempid = -1;
     static BOOL init_id = FALSE;
     static LONG id = 0;
     static const CHAR sql[] = "SELECT MAX(LMCTRLHISTID) FROM LMCONTROLHISTORY";
 
-    if(!init_id || force)
-    {   // Make sure all objects that that store results
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-        // are out of scope when the release is called
-        RWDBReader  rdr = ExecuteQuery( conn, sql );
+    RWMutexLock::TryLockGuard guard(mux);
 
-        if(rdr() && rdr.isValid())
+    int trycnt = 0;
+    while(!guard.isAcquired() && trycnt++ < 20)
+    {
+        Sleep(500);
+        guard.tryAcquire();
+    }
+
+    if(guard.isAcquired())
+    {
+        if(!init_id || force)
+        {   // Make sure all objects that that store results
+            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+            RWDBConnection conn = getConnection();
+            // are out of scope when the release is called
+            RWDBReader  rdr = ExecuteQuery( conn, sql );
+
+            if(rdr() && rdr.isValid())
+            {
+                rdr >> tempid;
+            }
+            else
+            {
+                RWMutexLock::LockGuard  guard(coutMux);
+                cout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            if(tempid >= id)
+            {
+                id = tempid;
+            }
+
+            init_id = TRUE;
+        }   // Temporary results are destroyed to free the connection
+
+        tempid =  ++id;
+    }
+    else
+    {
         {
-            rdr >> tempid;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "Unable to acquire mutex for LMControlHistoryGen" << endl;
         }
-        else
-        {
-            RWMutexLock::LockGuard  guard(coutMux);
-            cout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+    }
 
-        if(tempid >= id)
-        {
-            id = tempid;
-        }
-
-        init_id = TRUE;
-    }   // Temporary results are destroyed to free the connection
-
-    return(++id);
+    return(tempid);
 }
 
 LONG CommErrorHistoryIdGen(bool force)
 {
-    static RWMutexLock   mux;
-    RWMutexLock::LockGuard guard(mux);
+    LONG tempid = -1;
 
-    LONG tempid = 0;
+    static RWMutexLock   mux;
+
     static BOOL init_id = FALSE;
     static LONG id = 0;
     static const CHAR sql[] = "SELECT MAX(COMMERRORID) FROM COMMERRORHISTORY";
 
-    if(!init_id || force)
-    {   // Make sure all objects that that store results
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-        // are out of scope when the release is called
-        RWDBReader  rdr = ExecuteQuery( conn, sql );
+    {
+        RWMutexLock::TryLockGuard guard(mux);
 
-        if(rdr() && rdr.isValid())
+        int trycnt = 0;
+        while(!guard.isAcquired() && trycnt++ < 20)
         {
-            rdr >> tempid;
+            Sleep(500);
+            guard.tryAcquire();
+        }
+
+        if(guard.isAcquired())
+        {
+            if(!init_id || force)
+            {   // Make sure all objects that that store results
+                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+                RWDBConnection conn = getConnection();
+                // are out of scope when the release is called
+                RWDBReader  rdr = ExecuteQuery( conn, sql );
+
+                if(rdr() && rdr.isValid())
+                {
+                    rdr >> tempid;
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                if(tempid >= id)
+                {
+                    id = tempid;
+                }
+
+                init_id = TRUE;
+            }   // Temporary results are destroyed to free the connection
+
+            tempid =  ++id;
         }
         else
         {
-            RWMutexLock::LockGuard  guard(coutMux);
-            cout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "Unable to acquire mutex for CommErrorHistoryIdGen" << endl;
+            }
         }
+    }
 
-        if(tempid >= id)
-        {
-            id = tempid;
-        }
-
-        init_id = TRUE;
-    }   // Temporary results are destroyed to free the connection
-
-    return(++id);
+    return tempid;
 }
 
 INT ChangeIdGen(bool force)
