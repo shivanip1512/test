@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2002/06/21 15:37:55 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2002/06/24 20:25:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1136,6 +1136,7 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
 
                     dnp.sendInbound(InMessage);
 
+                    i = status;                 /// CGP... 062402 This is UGLY.
                     break;
                 }
             case TYPE_SIXNET:
@@ -1163,6 +1164,7 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
                     // OutMessage->EventCode &= ~RESULT;
                     InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[0] = CtiDeviceIED::CmdScanData;
 
+                    i = status;                 /// CGP... 062402 This is UGLY.
                     break;
                 }
             case TYPE_WCTP:
@@ -1175,7 +1177,7 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
                         IED->setInitialState(0);
                         IED->allocateDataBins(OutMessage);
 
-                        status = PerformRequestedCmd(Port, IED, InMessage, OutMessage, traceList);
+                        i = PerformRequestedCmd(Port, IED, InMessage, OutMessage, traceList);
 
                         IED->freeDataBins();
 
@@ -1223,12 +1225,13 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
                         }
 
                         INT dcstat = TerminateHandshake (Port, IED, traceList);
-                        if(status == NORMAL)
-                            status = dcstat;
 
+                        if(status == NORMAL) status = dcstat;
                     }
 
                     IED->freeDataBins();
+
+                    i = status;                 /// CGP... 062402 This is UGLY.
 
                     break;
                 }
