@@ -120,27 +120,10 @@ public void createGDefReports(com.cannontech.database.data.lite.LiteGraphDefinit
 		graph.setDatabaseAlias("yukon");
 		//graph.setSize(width, height);
 		graph.setCurrentGraphDefinition(gDef);
-		graph.setShowLoadFactor(false);
-		graph.setSeriesType( com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);
-
-		graph.setModelType(TrendModelType.LINE_MODEL );
-
-		// Define the peak series....
-		/*
-		for (int i = 0; i < gDef.getGraphDataSeries().size(); i++)
-		{
-			com.cannontech.database.db.graph.GraphDataSeries gds = (com.cannontech.database.db.graph.GraphDataSeries) gDef.getGraphDataSeries().get(i);
-
-			if ( graph.isPeakSeries( gds.getType()) )
-			{
-				graph.setHasPeakSeries( true );
-				break;
-			}
-		}*/
+		graph.setViewType(TrendModelType.LINE_VIEW );
 
 		// Graph .gif file creation
 		String fileName = getFileName( GRAPH_GIF, gDef.getGraphDefinition().getName());
-		graph.setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);
 		graph.setUpdateTrend(true);
 		graph.update();
 		writeGIF(fileName);
@@ -149,18 +132,16 @@ public void createGDefReports(com.cannontech.database.data.lite.LiteGraphDefinit
 		//Tabular .html file creation.
 		fileName = getFileName( TABULAR_HTML, gDef.getGraphDefinition().getName());
 		//graph.update();	//Don't have to do this again because same data is reused for tabular and graph series
-		buf.append(getHTMLBuffer( graph.getSeriesType()));
+		buf.append(getHTMLBuffer( new TabularHtml()));
 
 		//Summary .html file creation
 		fileName = getFileName( SUMMARY_HTML, gDef.getGraphDefinition().getName());
-		graph.setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES);			
 		graph.update();
 		buf.append("<BR><BR>");
-		buf.append( getHTMLBuffer(graph.getSeriesType()));
+		buf.append( getHTMLBuffer(new PeakHtml()));
 		
-		graph.setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.USAGE_SERIES);
 		graph.update();
-		buf.append( getHTMLBuffer(graph.getSeriesType() ));
+		buf.append( getHTMLBuffer(new UsageHtml()));
 		buf.append("</CENTER></HTML>");
 		writeHTML( buf.toString() , fileName );
 	}
@@ -261,33 +242,16 @@ private String getHomeDirectory()
  *  Calls the peaks html code and the usage code
  * Creation date: (11/15/00 4:11:14 PM)
  */
-private String getHTMLBuffer( String seriesType)
+private String getHTMLBuffer( HTMLBuffer htmlBuffer)
 {
-	HTMLBuffer htmlData = null;
 	StringBuffer buf = null;
-	try
-	{
-		if ( seriesType.equalsIgnoreCase( com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES) )
-		{
-			htmlData = new TabularHtml();
-		}
-		else if ( seriesType.equalsIgnoreCase( com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES) )
-			htmlData = new PeakHtml();
-		else if (seriesType.equalsIgnoreCase( com.cannontech.database.db.graph.GraphDataSeries.USAGE_SERIES) )
-			htmlData = new UsageHtml();
-		else
-			htmlData = new TabularHtml();	//default on error(?) to graph_series
+
+	buf = new StringBuffer("<HTML><CENTER>");
 	
-		buf = new StringBuffer("<HTML><CENTER>");
-	
-		TrendModel model = getTrendModel();
-		htmlData.setModel( model);
-		htmlData.getHtml( buf );
-	}
-	catch(Throwable t )
-	{
-		t.printStackTrace();
-	}
+	TrendModel model = getTrendModel();
+	htmlBuffer.setModel( model);
+	htmlBuffer.getHtml( buf );
+
 	return buf.toString();
 }
 /**
