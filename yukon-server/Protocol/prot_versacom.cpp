@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/06/27 19:25:35 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/08/19 13:49:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1707,8 +1707,10 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
         parse.Map()["control_interval"]  = CtiParseValue( parse.getiValue("shed") );
         parse.Map()["control_reduction"] = CtiParseValue( 100 );
 
-        if( !(hasrand || hasdelay) && !(relay & 0xfffffff8) )     // Positional relays only one thru three can go out type four (in one message).
+        if( useVersacomTypeFourControl  || getTransmitterType() == TYPE_TCU5000 )     // Positional relays only one thru three can go out type four (in one message).
         {
+            // 081203 CGP - Shed times which are not exact were failing... // (!(hasrand || hasdelay) && !(relay & 0xfffffff8))
+
             // Control time is in the parsers iValue!
             // Assume the VSTRUCT RelayMask is set, otherwise use default relay 0
             primeAndAppend(aVst);  // Get a new one in the system
