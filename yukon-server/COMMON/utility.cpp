@@ -2164,7 +2164,27 @@ BOOL searchFuncForOutMessageUniqueID(void *pId, void* d)
     return(OutMessage->Request.CheckSum == Id);
 }
 
+LONG ResetBreakAlloc()
+{
+    long allocReqNum;
+    char *my_pointer;
 
+    /*
+     * Allocate "my_pointer" for the first
+     * time and ensure that it gets allocated correctly
+     */
+    my_pointer = (char*)malloc(10);
+    _CrtIsMemoryBlock(my_pointer, 10, &allocReqNum, NULL, NULL);
+
+    /*
+     * Set a breakpoint on the allocation request number for "my_pointer"
+     * this should keep us from breaking for at least 2^31 allocations.
+     */
+    _CrtSetBreakAlloc(allocReqNum);
+    free(my_pointer);
+
+    return allocReqNum;
+}
 
 
 

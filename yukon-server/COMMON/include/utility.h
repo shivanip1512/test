@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/05/09 15:39:59 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/05/21 13:24:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -122,6 +122,9 @@ IM_EX_CTIBASE FLOAT    FltLittleEndian(FLOAT  *BigEndianFloat);
 IM_EX_CTIBASE DOUBLE   DblLittleEndian(DOUBLE *BigEndianDouble);
 IM_EX_CTIBASE VOID     BDblLittleEndian(CHAR *BigEndianBDouble);
 IM_EX_CTIBASE ULONG    MilliTime (PULONG);
+
+IM_EX_CTIBASE LONG     ResetBreakAlloc();
+
 
 
 #endif // #ifndef __UTILITY_H__
