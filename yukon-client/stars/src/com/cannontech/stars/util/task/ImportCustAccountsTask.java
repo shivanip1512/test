@@ -6,11 +6,7 @@
  */
 package com.cannontech.stars.util.task;
 
-import java.io.BufferedReader;
-import java.io.CharArrayWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
@@ -1058,23 +1054,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		emailMsg.setTo( email );
 		emailMsg.setSubject( "Import Log" );
 		emailMsg.setBody( "The log file containing information of the import process is attached." + LINE_SEPARATOR + LINE_SEPARATOR );
-		
-		CharArrayWriter cw = new CharArrayWriter();
-		PrintWriter pw = new PrintWriter( cw );
-		BufferedReader br = null;
-		
-		try {
-			br = new BufferedReader( new FileReader(importLog) );
-			String line = null;
-			while ((line = br.readLine()) != null)
-				pw.println( line );
-		}
-		finally {
-			if (br != null) br.close();
-		}
-		
-		emailMsg.addAttachment( cw.toCharArray() );
-		emailMsg.addAttachmentName( importLog.getName() );
+		emailMsg.addAttachment( importLog );
 		
 		emailMsg.send();
 	}

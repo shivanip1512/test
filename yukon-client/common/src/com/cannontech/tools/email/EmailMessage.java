@@ -7,10 +7,9 @@
 package com.cannontech.tools.email;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
 import javax.activation.DataHandler;
+import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -47,7 +46,10 @@ public class EmailMessage
 	//Elements of char[] values
 	private java.util.ArrayList attachments;	//email files attachment char[] data 
 	//Elements of String values (of filenames)
-	private java.util.ArrayList attachmentNames;	//email files attachment names 
+	private java.util.ArrayList attachmentNames;	//email files attachment names
+	
+	// Elements of DataSource values
+	private java.util.ArrayList dsAttachments;	// email attachment as data source 
 	
 	public EmailMessage()
 	{
@@ -178,34 +180,26 @@ public class EmailMessage
 		bodyPart.setText(getBody());
 		multiPart.addBodyPart(bodyPart);
 		
-		if( !getAttachments().isEmpty())
+		for (int i = 0; i < getAttachments().size(); i++)
 		{
-			for (int i = 0; i < getAttachments().size(); i++)
-			{
-				bodyPart = new MimeBodyPart();
-				try
-				{
-					File tempFile = File.createTempFile("ctiMailTemp", "att");					
-					FileWriter fWriter = new FileWriter(tempFile);
-					fWriter.write( (char [])getAttachments().get(i) );
-					fWriter.flush();
-					fWriter.close();
-					tempFile.deleteOnExit(); 
-
-
-					FileDataSource fileDataSource = new FileDataSource(tempFile);
-					bodyPart.setDataHandler( new DataHandler(fileDataSource) );
-					
-					bodyPart.setFileName((String) getAttachmentNames().get(i));
-					multiPart.addBodyPart(bodyPart);					
-				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
-				}
-				
-			}
+			CharArrayDataSource ds = new CharArrayDataSource( (char[])getAttachments().get(i), (String)getAttachmentNames().get(i), "" );
+			
+			bodyPart = new MimeBodyPart();
+			bodyPart.setDataHandler( new DataHandler(ds) );
+			bodyPart.setFileName( ds.getName() );
+			multiPart.addBodyPart( bodyPart );
 		}
+		
+		for (int i = 0; i < getDSAttachments().size(); i++)
+		{
+			DataSource ds = (DataSource) getDSAttachments().get(i);
+			
+			bodyPart = new MimeBodyPart();
+			bodyPart.setDataHandler( new DataHandler(ds) );
+			bodyPart.setFileName( ds.getName() );
+			multiPart.addBodyPart( bodyPart );
+		}
+		
 		message.setContent(multiPart);
 		message.setHeader("X-Mailer", "CannontechEmail");
 		message.setSentDate(new java.util.Date());
@@ -342,7 +336,7 @@ public class EmailMessage
 
 	public void addAttachment(char [] fileData)
 	{
-		getAttachments().add(fileData);	
+		getAttachments().add( fileData );
 	}
 
 	/**
@@ -444,5 +438,27 @@ public class EmailMessage
 				oldTo += ", " + emailAddress[i];
 		}
 		setTo(oldTo);
+	}
+	
+	
+	private java.util.ArrayList getDSAttachments() {
+		if (dsAttachments == null)
+			dsAttachments = new java.util.ArrayList();
+		return dsAttachments;
+	}
+	
+	public void addAttachment(File file) {
+		FileDataSource ds = new FileDataSource(file);
+		getDSAttachments().add( ds );
+	}
+	
+	public void addAttachment(char[] fileData, String fileName, String contentType) {
+		CharArrayDataSource ds = new CharArrayDataSource(fileData, fileName, contentType);
+		getDSAttachments().add( ds );
+	}
+	
+	public void addAttachment(byte[] fileData, String fileName, String contentType) {
+		ByteArrayDataSource ds = new ByteArrayDataSource(fileData, fileName, contentType);
+		getDSAttachments().add( ds );
 	}
 }
