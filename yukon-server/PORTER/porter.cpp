@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2002/09/06 19:27:57 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2002/09/12 21:33:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -323,18 +323,54 @@ static void applyColdStart(const long unusedid, CtiPortSPtr ptPort, void *unused
 
 static void applyPortQueuePurge(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr)
 {
+    extern bool findAllQueueEntries(void *unused, void* d);
+    extern void cleanupOrphanOutMessages(void *unusedptr, void* d);
+
     if(!ptPort->isInhibited())
     {
         ULONG QueEntCnt = 0L;
         /* Print out the port queue information */
-        QueryQueue (*QueueHandle(ptPort->getPortID()), &QueEntCnt);
+        QueryQueue(*QueueHandle(ptPort->getPortID()), &QueEntCnt);
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Port: " << setw(2) << ptPort->getPortID() << " / " << ptPort->getName() << " PURGING " << QueEntCnt << " port queue entries" << endl;
         }
 
-        PurgeQueue (*QueueHandle(ptPort->getPortID()));
+        CleanQueue(*QueueHandle(ptPort->getPortID()), NULL, findAllQueueEntries, cleanupOrphanOutMessages);
+        // PurgeQueue(*QueueHandle(ptPort->getPortID()));
+
+        RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
+        CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr_dev(DeviceManager.getMap());
+        /* Do the remotes on this port */
+        for(; ++itr_dev ;)
+        {
+            CtiDeviceBase *RemoteDevice = itr_dev.value();
+
+            if(RemoteDevice->getType() == TYPE_CCU711 && ptPort->getPortID() == RemoteDevice->getPortID())
+            {
+                CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)RemoteDevice->getTrxInfo();
+
+                if(pInfo != NULL)
+                {
+                    QueryQueue(pInfo->QueueHandle, &QueEntCnt);
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << QueEntCnt << " queue queue entries" << endl;
+                    }
+                    CleanQueue(pInfo->QueueHandle, NULL, findAllQueueEntries, cleanupOrphanOutMessages);
+                    // PurgeQueue(pInfo->QueueHandle);
+
+                    QueryQueue(pInfo->ActinQueueHandle, &QueEntCnt);
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << QueEntCnt << " actin queue entries" << endl;
+                    }
+                    CleanQueue(pInfo->ActinQueueHandle, NULL, findAllQueueEntries, cleanupOrphanOutMessages);
+                    //PurgeQueue(pInfo->ActinQueueHandle);
+                }
+            }
+        }
     }
 }
 
@@ -1244,11 +1280,15 @@ INT RefreshPorterRTDB(void *ptr)
         if(pChg != NULL)
         {
             id = pChg->getId();
+            if(NULL == DeviceManager.getEqual(id))
+            {
+                id = 0;
+            }
         }
 
         if(id)
         {
-            DeviceManager.RefreshList(id);      // Reloads them all if id is not in the list already!
+            DeviceManager.RefreshList(id);
         }
         else
         {

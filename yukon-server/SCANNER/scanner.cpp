@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2002/09/09 21:52:09 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2002/09/12 21:33:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1215,8 +1215,12 @@ void LoadScannableDevices(void *ptr)
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Reloading " << DeviceRecord->getName() << endl;
                     }
+                    ScannerDeviceManager.RefreshList(pChg->getId());
                 }
-                ScannerDeviceManager.RefreshList(pChg->getId());
+                else
+                {
+                    ScannerDeviceManager.RefreshList(DeviceFactory, isNotAScannableDevice);
+                }
             }
             else
             {
