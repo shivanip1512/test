@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/08/12 13:03:59 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/08/18 15:16:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -109,16 +109,28 @@ short CtiDeviceGatewayStat::convertFromStatTemp(short Temp, int tempScale)
 {
     long TempTemp = (long)Temp;
 
-    if(tempScale == scaleCelsius || (tempScale == scaleToStat && _displayedTemp._displayedTempUnits == 1))      // Celsius
     {
-        TempTemp = (((TempTemp + 1)) / 100);
-    }
-    else
-    {
-        TempTemp = (((TempTemp + 1) * 9) / 500) + 32;
-    }
+        if(tempScale == scaleCelsius || (tempScale == scaleToStat && _displayedTemp._displayedTempUnits == 1))      // Celsius
+        {
+            TempTemp = (((TempTemp + 1)) / 100);
 
-    return((short) TempTemp);
+            if(TempTemp < 0 || TempTemp > 100)
+            {
+                TempTemp = 0;
+            }
+        }
+        else
+        {
+            TempTemp = (((TempTemp + 1) * 9) / 500) + 32;
+
+            if(TempTemp < 32 || TempTemp > 212)
+            {
+                TempTemp = 0;
+            }
+        }
+
+        return((short) TempTemp);
+    }
 }
 
 // The stat stores most temps as hundreths of a degree C
@@ -654,7 +666,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
 
             astr += (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + " Cool Setpoint:  ");
-            if(_setpoints._coolSetpoint == 0x7fff)
+            if(_setpoints._coolSetpoint = 0x7fff)
             {
                 astr += RWCString("Unknown\n");
             }
@@ -2595,6 +2607,11 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
                         system = EP_SETSYSTEM_EMHEAT;
                         break;
                     }
+                case 0x80:
+                    {
+                        system = EP_SETSYSTEM_AUTO;
+                        break;
+                    }
                 default:
                     {
                         system = ( (_systemSwitch._systemSwitch < EP_SETSYSTEM_AUTO) ? _systemSwitch._systemSwitch : -1);
@@ -2606,9 +2623,23 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
                 {
                     sppriority = EP_SETPOINT_PRIORITY_COOL;
                 }
-                else
+                else if(system == EP_SETSYSTEM_COOL)
                 {
                     sppriority = EP_SETPOINT_PRIORITY_HEAT;
+                }
+                else
+                {
+                    switch(RWDate().month())
+                    {
+                    case 6:
+                    case 7:
+                    case 8:
+                        sppriority = EP_SETPOINT_PRIORITY_COOL;
+                        break;
+                    default:
+                        sppriority = EP_SETPOINT_PRIORITY_HEAT;
+                        break;
+                    }
                 }
 
                 switch(fan)
@@ -3906,15 +3937,54 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
                 break;
 
             case 4:
-                astr = (RWCString("AUTO"));
-                break;
+                {
+                    short coolsp = convertFromStatTemp(_setpoints._coolSetpoint);
+                    short heatsp = convertFromStatTemp(_setpoints._heatSetpoint);
 
+                    float dt = (float)_displayedTemp._displayedTemperature;
+                    if(_displayedTemp._displayedTempUnits == 1)     // Celsius is given in 1/2 degrees.
+                    {
+                        dt = dt / 2 ;
+                    }
+
+                    if(_displayedTemp._utime == YUKONEOT)   // Take a guess!
+                    {
+                        switch(RWDate().month())
+                        {
+                        case 6:
+                        case 7:
+                        case 8:
+                        case 9:
+                            astr = (RWCString("COOL,(AUTO)"));
+                            break;
+                        default:
+                            astr = (RWCString("HEAT,(AUTO)"));
+                            break;
+                        }
+
+                        astr = RWCString(); // Don't change the table!.
+                    }
+                    else if( _displayedTemp._displayedTemperature > coolsp )
+                    {
+                        astr = (RWCString("COOL,(AUTO)"));
+                    }
+                    else if(_displayedTemp._displayedTemperature < heatsp)
+                    {
+                        astr = (RWCString("HEAT,(AUTO)"));
+                    }
+                    else
+                    {
+                        astr = RWCString(); // Don't change the table!.
+                    }
+
+                    break;
+                }
             case 255:
-                astr = (RWCString("UNKNOWN"));
+                astr = (RWCString("(UNKNOWN)"));
                 break;
 
             default:
-                astr = (RWCString("INVALID"));
+                astr = (RWCString("(UNKNOWN)")); // INVALID"));
                 break;
             }
 
@@ -4245,8 +4315,6 @@ RWCString CtiDeviceGatewayStat::generateTidbitScheduleToDatabase(int day, int pe
 {
     bool status = false;
 
-    RWCString updated_str("Update Time Unknown");
-    RWCString confirmed_str("Confirm Time Unknown");
     RWCString astr;
 
     {
@@ -4259,10 +4327,12 @@ RWCString CtiDeviceGatewayStat::generateTidbitScheduleToDatabase(int day, int pe
                 break;
             case 1:
                 astr += (RWCString("AUTO,"));
+                break;
             case 0:                                 // astr += (RWCString("NSch"));
             case 2:                                 // astr += (RWCString("Circ"));
             case 255:                               // astr += (RWCString("Unk "));
             default:                                // astr += (RWCString("Inv "));
+                astr += (RWCString("NONE,"));
                 break;
             }
 
@@ -4270,14 +4340,12 @@ RWCString CtiDeviceGatewayStat::generateTidbitScheduleToDatabase(int day, int pe
             if(_schedule[day][period]._hour == 254)
             {
                 // astr += (RWCString("CC:"));      // Restart/Unknown
-                astr = RWCString();
-                return astr;
+                astr += (RWCString("-1,"));
             }
             else if(_schedule[day][period]._hour == 255)
             {
                 // astr += (RWCString("UU:"));      // Unknown
-                astr = RWCString();
-                return astr;
+                astr += (RWCString("-1,"));
             }
             else if(_schedule[day][period]._hour < 24)
             {
@@ -4286,8 +4354,7 @@ RWCString CtiDeviceGatewayStat::generateTidbitScheduleToDatabase(int day, int pe
             else
             {
                 // astr += (RWCString("II:"));      // Invalid
-                astr = RWCString();
-                return astr;
+                astr += (RWCString("-1,"));
             }
 
             switch(_schedule[day][period]._minute)
@@ -4302,19 +4369,21 @@ RWCString CtiDeviceGatewayStat::generateTidbitScheduleToDatabase(int day, int pe
             case 254:   // astr += (RWCString("CC"));
             case 255:   // astr += (RWCString("UU"));
             default:    // astr += (RWCString("II"));
-                astr = RWCString();
-                return astr;
+                astr += (RWCString("-1,"));
                 break;
             }
 
+            short sp = convertFromStatTemp(_schedule[day][period]._coolSetpoint);
             if(_schedule[day][period]._coolSetpoint == 0x7fff)
             {
-                astr += (RWCString("0,"));
+                astr += RWCString("0,");
             }
             else
             {
-                astr += (RWCString(CtiNumStr(convertFromStatTemp(_schedule[day][period]._coolSetpoint)) + ","));
+                astr += RWCString(CtiNumStr(sp) + ",");
             }
+
+            sp = convertFromStatTemp(_schedule[day][period]._heatSetpoint);
 
             if(_schedule[day][period]._heatSetpoint == 0x7fff)
             {
@@ -4322,7 +4391,7 @@ RWCString CtiDeviceGatewayStat::generateTidbitScheduleToDatabase(int day, int pe
             }
             else
             {
-                astr += (RWCString(CtiNumStr(convertFromStatTemp(_schedule[day][period]._heatSetpoint))));
+                astr += (RWCString(CtiNumStr(sp)));
             }
         }
     }
