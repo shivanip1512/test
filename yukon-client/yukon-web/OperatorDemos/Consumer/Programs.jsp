@@ -300,7 +300,7 @@ function changeProgram(radioBtn, index) {
 		operator.setAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY", progHist );
 	}
 	
-	for (int i = 0; i < progHist.length; i++) {
+	for (int i = progHist.length - 1; i >= 0; i--) {
 %>
                   <tr> 
                     <td class="TableCell" width="100" ><%= dateFormat.format(progHist[i].getDate()) %></td>
