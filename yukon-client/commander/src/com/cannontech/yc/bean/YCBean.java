@@ -79,6 +79,9 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 		if( deviceID_ != getDeviceID())
 		{
 			super.setDeviceID(deviceID_);
+			//Remove data from other devices..we don't care about it anymore
+			clearResultText();
+			
 			LitePoint [] litePoints = PAOFuncs.getLitePointsForPAObject(deviceID_);
 
 			for(int i = 0; i < litePoints.length; i++)
