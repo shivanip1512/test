@@ -27,6 +27,7 @@ public interface ResidentialCustomerRole {
 
 	public static final int NOTIFICATION_ON_GENERAL_PAGE = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 50;
 	public static final int HIDE_OPT_OUT_BOX = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 51;
+	public static final int AUTOMATIC_CONFIGURATION = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 52;
 	public static final int DISABLE_PROGRAM_SIGNUP = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 54;
 	
 	public static final int WEB_LINK_FAQ = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 100;
