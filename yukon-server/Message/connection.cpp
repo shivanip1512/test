@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2003/03/14 03:08:31 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2003/03/26 20:31:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1033,7 +1033,9 @@ RWCString CtiConnection::who()
 {
     RWCString connectedto(_name);
 
-    if(_port == -2 && Ex != NULL)
+    TryLockGuard guard(monitor());
+
+    if(_port == -2 && guard.isAcquired() && Ex != NULL)
     {
         connectedto += (_name.isNull() ? "" : " / " ) + getPeer().id();
     }
