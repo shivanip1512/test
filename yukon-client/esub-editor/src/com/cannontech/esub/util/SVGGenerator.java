@@ -219,11 +219,11 @@ public class SVGGenerator {
 		Color fillColor = (Color) style.getPaint();
 		
 		Rectangle2D r = rect.getStrokedBounds2D();
-		int x = (int) r.getMinX();
-		int y = (int) r.getMinY();
+		int x = (int) r.getMinX() + 5; // fudge factor !
+		int y = (int) r.getMinY() + 5;
 		
-		int width = (int) r.getMaxX() - x;
-		int height = (int) r.getMaxY() - y;
+		int width = (int) r.getMaxX() - x - 10;
+		int height = (int) r.getMaxY() - y - 10;
 			
 		String fillStr = "none";
 		if( fillColor != null ) {
