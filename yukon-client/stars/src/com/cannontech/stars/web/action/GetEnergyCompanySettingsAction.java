@@ -97,7 +97,7 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
 		            resp.setStarsWebConfig( energyCompany.getStarsWebConfig(energyCompany.getWebConfigID()) );
 	            	resp.setStarsEnrollmentPrograms( energyCompany.getStarsEnrollmentPrograms(getSettings.getProgramCategory()) );
 	            	resp.setStarsCustomerSelectionLists( energyCompany.getStarsCustomerSelectionLists(user) );
-					if (AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.CONSUMERINFO_HARDWARE ) != null
+					if (AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.CONSUMERINFO_HARDWARES ) != null
 						|| AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.CONSUMERINFO_WORKORDERS) != null)
 						resp.setStarsServiceCompanies( energyCompany.getStarsServiceCompanies() );
 	            }
@@ -133,7 +133,7 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
 	            	resp.setStarsEnrollmentPrograms( StarsLiteFactory.createStarsEnrollmentPrograms(
 	            			energyCompany.getAllApplianceCategories(), getSettings.getProgramCategory(), energyCompanyID) );
 	            	resp.setStarsCustomerSelectionLists( energyCompany.getStarsCustomerSelectionLists(user) );
-					if (AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.CONSUMERINFO_HARDWARE ) != null
+					if (AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.CONSUMERINFO_HARDWARES ) != null
 						|| AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.CONSUMERINFO_WORKORDERS) != null)
 						resp.setStarsServiceCompanies( energyCompany.getStarsServiceCompanies() );
 	            }

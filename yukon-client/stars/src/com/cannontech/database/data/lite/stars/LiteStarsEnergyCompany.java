@@ -1418,7 +1418,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				}
 			}
 		}
-		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_HARDWARE ) != null) {
+		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_HARDWARES ) != null) {
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE) );
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS) );
 			if (!deviceLocationListAdded) {
@@ -1442,7 +1442,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				serviceCompanyListAdded = true;
 			}*/
 		}
-		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_RESIDENCE ) != null) {
+		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_ACCOUNT_RESIDENCE ) != null) {
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_RESIDENCE_TYPE) );
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CONSTRUCTION_MATERIAL) );
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DECADE_BUILT) );

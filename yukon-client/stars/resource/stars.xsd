@@ -126,7 +126,7 @@
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="Tonnage" type="stars-CustListEntry"/>
-						<xs:element name="Type" type="stars-CustListEntry"/>
+						<xs:element name="ACType" type="stars-CustListEntry"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>

@@ -72,17 +72,7 @@ function checkPassword(form) {
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101"> 
-                        
-            <table width="101" border="0" cellspacing="0" cellpadding="6" height="200">
-              <tr> 
-                <td>&nbsp;</td>
-              </tr>
-              <tr> 
-                <td height="40" valign="bottom">&nbsp;</td>
-              </tr>
-            </table>
-          </td>
+          <td valign="top" width="101">&nbsp; </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" bgcolor="#FFFFFF" valign = "top" align = "center"> 
            <% String header = "NEW SIGNUP"; %><%@ include file="SearchBar.jsp" %><br>
@@ -90,7 +80,6 @@ function checkPassword(form) {
 		   
 		   <form name="form1" method="POST" action="/servlet/SOAPClient" onSubmit="return checkPassword(this)">
 			<input type="hidden" name="action" value="NewCustAccount">
-            
             <table width="600" border="0" cellspacing="0" cellpadding="10" align="center">
               <tr> 
                   <td width="300" valign="top"><span class="MainHeader"><b>CUSTOMER 

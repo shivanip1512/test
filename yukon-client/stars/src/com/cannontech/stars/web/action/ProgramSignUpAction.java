@@ -154,107 +154,114 @@ public class ProgramSignUpAction implements ActionBase {
         			LiteStarsAppliance lApp = (LiteStarsAppliance) appList.get(j);
         			if (lApp.getApplianceCategoryID() == program.getApplianceCategoryID()) {
         				liteApp = lApp;
-        				
-        				if (liteApp.getLmProgramID() == 0) {
-        				/* Assign the program to an unenrolled appliance */
-        					// Add "sign up" event to the new program
-        					event.setEventID( null );
-							event.setEnergyCompanyID( new Integer(energyCompanyID) );
-							eventDB.setAccountID( accountID );
-							eventDB.setLMProgramID( new Integer(program.getProgramID()) );
-							eventBase.setEventTypeID( progEventEntryID );
-							eventBase.setActionID( signUpEntryID );
-							eventBase.setEventDateTime( now );
-							Transaction.createTransaction(Transaction.INSERT, event).execute();
-							
-							// What's the initial status of the program?
-							
-							// Add the program to the program list of the account
-			                LiteLMProgram liteProg = energyCompany.getLMProgram( program.getProgramID() );
-			                LiteStarsLMProgram liteStarsProg = new LiteStarsLMProgram( liteProg );
-			                if (liteApp.getInventoryID() > 0) {
-			                	if (liteProg.getGroupIDs() != null || liteProg.getGroupIDs().length > 0)
-			                		liteStarsProg.setGroupID( liteProg.getGroupIDs()[0] );
-			                }
-			                com.cannontech.database.data.stars.event.LMProgramEvent[] events =
-			                		com.cannontech.database.data.stars.event.LMProgramEvent.getAllLMProgramEvents(
-			                			new Integer(liteAcctInfo.getCustomerAccount().getAccountID()), new Integer(program.getProgramID()) );
-			                if (events != null) {
-			                	liteStarsProg.setProgramHistory( new ArrayList() );
-			                	for (int k = 0; k < events.length; k++) {
-			                		LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( events[k] );
-			                		liteStarsProg.getProgramHistory().add( liteEvent );
-			                	}
-			                }
-			                newProgList.add( liteStarsProg );
-							
-        					liteApp.setLmProgramID( program.getProgramID() );
-        					com.cannontech.database.data.stars.appliance.ApplianceBase app =
-        							(com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
-        					Transaction.createTransaction(Transaction.UPDATE, app).execute();
-        				}
-        				else if (liteApp.getLmProgramID() != program.getProgramID()) {
-						/* Update the program enrollment for an appliance */
-        					// Add "termination" event to the old program
-        					event.setEventID( null );
-							event.setEnergyCompanyID( new Integer(energyCompanyID) );
-							eventDB.setAccountID( accountID );
-							eventDB.setLMProgramID( new Integer(liteApp.getLmProgramID()) );
-							eventBase.setEventTypeID( progEventEntryID );
-							eventBase.setActionID( termEntryID );
-							eventBase.setEventDateTime( now );
-							Transaction.createTransaction(Transaction.INSERT, event).execute();
-							
-							// Keep the current program status?
-							
-							// Add "sign up" event to the new program
-        					event.setEventID( null );
-							eventDB.setLMProgramID( new Integer(program.getProgramID()) );
-							eventBase.setActionID( signUpEntryID );
-							Transaction.createTransaction(Transaction.INSERT, event).execute();
-							
-							// Update the program list of the account
-			                LiteLMProgram liteProg = energyCompany.getLMProgram( program.getProgramID() );
-			                LiteStarsLMProgram liteStarsProg = new LiteStarsLMProgram( liteProg );
-			                if (liteApp.getInventoryID() > 0) {
-			                	if (liteProg.getGroupIDs() != null || liteProg.getGroupIDs().length > 0)
-			                		liteStarsProg.setGroupID( liteProg.getGroupIDs()[0] );
-			                }
-			                com.cannontech.database.data.stars.event.LMProgramEvent[] events =
-			                		com.cannontech.database.data.stars.event.LMProgramEvent.getAllLMProgramEvents(
-			                			new Integer(liteAcctInfo.getCustomerAccount().getAccountID()), new Integer(program.getProgramID()) );
-			                if (events != null) {
-			                	liteStarsProg.setProgramHistory( new ArrayList() );
-			                	for (int k = 0; k < events.length; k++) {
-			                		LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( events[k] );
-			                		liteStarsProg.getProgramHistory().add( liteEvent );
-			                	}
-			                }
-			                newProgList.add( liteStarsProg );
-							
-        					liteApp.setLmProgramID( program.getProgramID() );
-        					com.cannontech.database.data.stars.appliance.ApplianceBase app =
-        							(com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
-        					Transaction.createTransaction(Transaction.UPDATE, app).execute();
-        				}
-        				else {
-        					for (int k = 0; k < progList.size(); k++) {
-        						LiteStarsLMProgram liteStarsProg = (LiteStarsLMProgram) progList.get(k);
-        						if (liteStarsProg.getLmProgram().getProgramID() == program.getProgramID()) {
-        							newProgList.add( liteStarsProg );
-        							break;
-        						}
-        					}
-        				}
-    					
-    					appList.remove( liteApp );
-    					newAppList.add( liteApp );
         				break;
         			}
         		}
         		
-        		if (liteApp == null) {
-        		/* Create a new appliance for the program */
+        		if (liteApp != null) {
+        		/* There is an appliance in the same category as the program.
+        		 * If the appliance isn't enrolled in any program now, assign the program to it
+        		 * If the appliance is enrolled in some other program, update its program enrollment
+        		 * If the appliance is enrolled in the same program -- nothing has been changed
+        		 */
+    				if (liteApp.getLmProgramID() == 0) {
+    					// Add "sign up" event to the new program
+    					event.setEventID( null );
+						event.setEnergyCompanyID( new Integer(energyCompanyID) );
+						eventDB.setAccountID( accountID );
+						eventDB.setLMProgramID( new Integer(program.getProgramID()) );
+						eventBase.setEventTypeID( progEventEntryID );
+						eventBase.setActionID( signUpEntryID );
+						eventBase.setEventDateTime( now );
+						Transaction.createTransaction(Transaction.INSERT, event).execute();
+						
+						// What's the initial status of the program?
+						
+						// Add the program to the program list of the account
+		                LiteLMProgram liteProg = energyCompany.getLMProgram( program.getProgramID() );
+		                LiteStarsLMProgram liteStarsProg = new LiteStarsLMProgram( liteProg );
+		                if (liteApp.getInventoryID() > 0) {
+		                	if (liteProg.getGroupIDs() != null || liteProg.getGroupIDs().length > 0)
+		                		liteStarsProg.setGroupID( liteProg.getGroupIDs()[0] );
+		                }
+		                com.cannontech.database.data.stars.event.LMProgramEvent[] events =
+		                		com.cannontech.database.data.stars.event.LMProgramEvent.getAllLMProgramEvents(
+		                			new Integer(liteAcctInfo.getCustomerAccount().getAccountID()), new Integer(program.getProgramID()) );
+		                if (events != null) {
+		                	liteStarsProg.setProgramHistory( new ArrayList() );
+		                	for (int k = 0; k < events.length; k++) {
+		                		LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( events[k] );
+		                		liteStarsProg.getProgramHistory().add( liteEvent );
+		                	}
+		                }
+		                newProgList.add( liteStarsProg );
+						
+    					liteApp.setLmProgramID( program.getProgramID() );
+    					com.cannontech.database.data.stars.appliance.ApplianceBase app =
+    							(com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
+    					Transaction.createTransaction(Transaction.UPDATE, app).execute();
+    				}
+    				else if (liteApp.getLmProgramID() != program.getProgramID()) {
+    					// Add "termination" event to the old program
+    					event.setEventID( null );
+						event.setEnergyCompanyID( new Integer(energyCompanyID) );
+						eventDB.setAccountID( accountID );
+						eventDB.setLMProgramID( new Integer(liteApp.getLmProgramID()) );
+						eventBase.setEventTypeID( progEventEntryID );
+						eventBase.setActionID( termEntryID );
+						eventBase.setEventDateTime( now );
+						Transaction.createTransaction(Transaction.INSERT, event).execute();
+						
+						// Keep the current program status?
+						
+						// Add "sign up" event to the new program
+    					event.setEventID( null );
+						eventDB.setLMProgramID( new Integer(program.getProgramID()) );
+						eventBase.setActionID( signUpEntryID );
+						Transaction.createTransaction(Transaction.INSERT, event).execute();
+						
+						// Update the program list of the account
+		                LiteLMProgram liteProg = energyCompany.getLMProgram( program.getProgramID() );
+		                LiteStarsLMProgram liteStarsProg = new LiteStarsLMProgram( liteProg );
+		                if (liteApp.getInventoryID() > 0) {
+		                	if (liteProg.getGroupIDs() != null || liteProg.getGroupIDs().length > 0)
+		                		liteStarsProg.setGroupID( liteProg.getGroupIDs()[0] );
+		                }
+		                com.cannontech.database.data.stars.event.LMProgramEvent[] events =
+		                		com.cannontech.database.data.stars.event.LMProgramEvent.getAllLMProgramEvents(
+		                			new Integer(liteAcctInfo.getCustomerAccount().getAccountID()), new Integer(program.getProgramID()) );
+		                if (events != null) {
+		                	liteStarsProg.setProgramHistory( new ArrayList() );
+		                	for (int k = 0; k < events.length; k++) {
+		                		LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( events[k] );
+		                		liteStarsProg.getProgramHistory().add( liteEvent );
+		                	}
+		                }
+		                newProgList.add( liteStarsProg );
+						
+    					liteApp.setLmProgramID( program.getProgramID() );
+    					com.cannontech.database.data.stars.appliance.ApplianceBase app =
+    							(com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
+    					Transaction.createTransaction(Transaction.UPDATE, app).execute();
+    				}
+    				else {
+    					// Just copy the program to the new program list of the account
+    					for (int k = 0; k < progList.size(); k++) {
+    						LiteStarsLMProgram liteStarsProg = (LiteStarsLMProgram) progList.get(k);
+    						if (liteStarsProg.getLmProgram().getProgramID() == program.getProgramID()) {
+    							newProgList.add( liteStarsProg );
+    							break;
+    						}
+    					}
+    				}
+					
+					appList.remove( liteApp );
+					newAppList.add( liteApp );
+        		}
+        		else {
+        		/* There is no appliance in the same category as the program,
+        		 * so create a new appliance for the program
+        		 */
 					// Add "sign up" event to the new program
 					event.setEventID( null );
 					event.setEnergyCompanyID( new Integer(energyCompanyID) );
