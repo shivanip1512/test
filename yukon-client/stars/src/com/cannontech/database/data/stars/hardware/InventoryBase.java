@@ -33,26 +33,13 @@ public class InventoryBase extends DBPersistent {
         getInstallationCompany().setDbConnection(conn);
     }
     
-    /**
-     * When deleteInv = false, this method is used to remove inventory from a customer account.
-     * This method should not be used alone with deleteInv = true, instead it will be invoked
-     * from the delete() method of this class and all its subclasses with deleteInv set to true
-     * (e.g. com.cannontech.database.data.stars.hardware.LMHardwareBase).
-     */
-    public void deleteInventoryBase(boolean deleteInv) throws java.sql.SQLException {
-    	if (deleteInv) {
-			// delete from LMHardwareEvent
-			com.cannontech.database.data.stars.event.LMHardwareEvent.deleteAllLMHardwareEvents(
-					getInventoryBase().getInventoryID(), getDbConnection() );
-			
-			delete( "ECToInventoryMapping", "InventoryID", getInventoryBase().getInventoryID() );
-			getInventoryBase().delete();
-    	}
-    	else {
-			getInventoryBase().setAccountID( new Integer(com.cannontech.common.util.CtiUtilities.NONE_ID) );
-			getInventoryBase().setRemoveDate( new java.util.Date() );
-			getInventoryBase().update();
-    	}
+    public void deleteInventoryBase() throws java.sql.SQLException {
+		// delete from LMHardwareEvent
+		com.cannontech.database.data.stars.event.LMHardwareEvent.deleteAllLMHardwareEvents(
+				getInventoryBase().getInventoryID(), getDbConnection() );
+		
+		delete( "ECToInventoryMapping", "InventoryID", getInventoryBase().getInventoryID() );
+		getInventoryBase().delete();
     }
 
     public void delete() throws java.sql.SQLException {
@@ -62,7 +49,7 @@ public class InventoryBase extends DBPersistent {
     	hw.setDbConnection( getDbConnection() );
     	hw.deleteLMHardwareBase( true );
     	
-    	deleteInventoryBase( true );
+    	deleteInventoryBase();
     }
 
     public void add() throws java.sql.SQLException {

@@ -17,6 +17,7 @@ import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDeleteCustomerAccount;
+import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
@@ -141,22 +142,26 @@ public class DeleteCustAccountAction implements ActionBase {
 			// Remove hardwares from the account
 			for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
 				int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
-				DeleteLMHardwareAction.removeInventory(
-						invID, liteAcctInfo, energyCompany, DeleteLMHardwareAction.TARGET_ACCOUNT_DELETED, conn);
+				
+				StarsDeleteLMHardware deleteHw = new StarsDeleteLMHardware();
+				deleteHw.setInventoryID( invID );
+				deleteHw.setDeleteFromInventory( false );
+				
+				DeleteLMHardwareAction.removeInventory(deleteHw, null, energyCompany, conn);
 			}
-		
+			
 			com.cannontech.database.data.stars.customer.CustomerAccount account =
 					StarsLiteFactory.createCustomerAccount(liteAcctInfo, energyCompany);
 			account.setDbConnection( conn );
 			account.delete();
-    	
+    		
 			// Delete contacts from database
 			LiteCustomerContact liteContact = energyCompany.getCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
 			com.cannontech.database.data.customer.Contact contact =
 					(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
 			contact.setDbConnection( conn );
 			contact.delete();
-    	
+    		
 			java.util.ArrayList contactIDs = liteAcctInfo.getCustomer().getAdditionalContacts();
 			for (int i = 0; i < contactIDs.size(); i++) {
 				liteContact = energyCompany.getCustomerContact( ((Integer) contactIDs.get(i)).intValue() );
@@ -164,12 +169,12 @@ public class DeleteCustAccountAction implements ActionBase {
 				contact.setDbConnection( conn );
 				contact.delete();
 			}
-    	
+    		
 			// Delete login
 			int userID = liteContact.getLoginID();
 			if (userID > com.cannontech.user.UserUtils.USER_YUKON_ID)
 				UpdateLoginAction.deleteLogin( userID, null );
-    	
+    		
 			// Delete lite and stars objects
 			energyCompany.deleteCustAccountInformation( liteAcctInfo );
 			energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );

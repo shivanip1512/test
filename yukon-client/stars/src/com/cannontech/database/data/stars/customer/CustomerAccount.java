@@ -52,8 +52,15 @@ public class CustomerAccount extends DBPersistent {
 			Integer invID = (Integer) getInventoryVector().get(i);
 			hw.setInventoryID( invID );
 			hw.setDbConnection( getDbConnection() );
+			
 			// Don't delete hardware information from the database
 			hw.deleteLMHardwareBase( false );
+			
+			com.cannontech.database.db.stars.hardware.InventoryBase invDB = hw.getInventoryBase();
+			invDB.retrieve();
+			invDB.setAccountID( new Integer(com.cannontech.common.util.CtiUtilities.NONE_ID) );
+			invDB.setRemoveDate( new java.util.Date() );
+			invDB.update();
 		}
 		
         com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(

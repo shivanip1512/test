@@ -49,18 +49,13 @@ public class LMHardwareBase extends InventoryBase {
 		com.cannontech.database.data.stars.event.LMThermostatManualEvent.deleteAllLMThermostatManualEvents(
 				getInventoryBase().getInventoryID(), getDbConnection() );
 
-		// deleteHwInfo controls whether to delete the hardware permanantly from the database
-		if (deleteHwInfo) {
+		if (deleteHwInfo)
 			getLMHardwareBase().delete();
-		} 
-		else {
-			deleteInventoryBase( false );
-		}
 	}
 
 	public void delete() throws java.sql.SQLException {
 		deleteLMHardwareBase( true );
-		super.deleteInventoryBase( true );
+		super.deleteInventoryBase();
 	}
 
 	public void add() throws java.sql.SQLException {

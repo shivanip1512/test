@@ -389,10 +389,11 @@ public class InventoryManager extends HttpServlet {
 	 * The delete button is clicked on Inventory.jsp 
 	 */
 	private void deleteLMHardware(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-		StarsOperation operation = DeleteLMHardwareAction.getRequestOperation( req );
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		
+		StarsOperation operation = DeleteLMHardwareAction.getRequestOperation( req, energyCompany.getDefaultTimeZone() );
 		session.setAttribute( STARS_INVENTORY_OPERATION, operation );
 		
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		LiteInventoryBase liteInv = energyCompany.getInventory( operation.getStarsDeleteLMHardware().getInventoryID(), true );
 		session.setAttribute( INVENTORY_TO_DELETE, liteInv );
 		
@@ -490,7 +491,7 @@ public class InventoryManager extends HttpServlet {
 			}
 		}
 		else {
-			StarsOperation operation = DeleteLMHardwareAction.getRequestOperation( req );
+			StarsOperation operation = DeleteLMHardwareAction.getRequestOperation( req, energyCompany.getDefaultTimeZone() );
 			session.setAttribute( STARS_INVENTORY_OPERATION, operation );
 			redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
 		}

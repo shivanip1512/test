@@ -31,6 +31,7 @@ import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsCreateLMHardware;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
 import com.cannontech.stars.xml.serialize.StarsInventories;
@@ -316,7 +317,12 @@ public class CreateLMHardwareAction implements ActionBase {
 			if (liteInv.getAccountID() > 0) {
 				// Remove hardware from previous account
 				LiteStarsCustAccountInformation litePrevAccount = energyCompany.getCustAccountInformation( liteInv.getAccountID(), true );
-				DeleteLMHardwareAction.removeInventory(invID, litePrevAccount, energyCompany, DeleteLMHardwareAction.TARGET_TO_ANOTHER_ACCOUNT, conn);
+				
+				StarsDeleteLMHardware deleteHw = new StarsDeleteLMHardware();
+				deleteHw.setInventoryID( invID );
+				deleteHw.setDeleteFromInventory( false );
+				
+				DeleteLMHardwareAction.removeInventory(deleteHw, litePrevAccount, energyCompany, conn);
 				
 				StarsCustAccountInformation starsPrevAccount = energyCompany.getStarsCustAccountInformation( litePrevAccount.getAccountID() );
 				if (starsPrevAccount != null)

@@ -24,9 +24,9 @@ import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsAppliances;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsCreateLMHardware;
-import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsInventory;
@@ -126,10 +126,7 @@ public class UpdateLMHardwareAction implements ActionBase {
             		}
             	}
             	
-            	int target = deleteHw.getDeleteFromInventory()?
-            			DeleteLMHardwareAction.TARGET_ACCOUNT_DELETED :
-            			DeleteLMHardwareAction.TARGET_TO_WAREHOUSE;
-            	DeleteLMHardwareAction.removeInventory(deleteHw.getInventoryID(), liteAcctInfo, energyCompany, target, conn);
+            	DeleteLMHardwareAction.removeInventory(deleteHw, liteAcctInfo, energyCompany, conn);
             	
 				liteInv = CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany, conn );
 				origInvID = deleteHw.getInventoryID();
