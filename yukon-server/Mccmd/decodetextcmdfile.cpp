@@ -1008,6 +1008,11 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                                     sendCmd=true;
                                                 }
                                             }
+                                            else if ((programCnt==0) &&(splinterCnt==0) && (loadCnt==0))
+                                            {
+                                                // we have some addressing to do here, it just doesn't have load specific addressing
+                                                sendCmd=true;
+                                            }
 
                                             if  (sendCmd)
                                             {
