@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.2 $
-*    DATE         :  $Date: 2004/06/15 19:34:00 $
+*    REVISION     :  $Revision: 1.3 $
+*    DATE         :  $Date: 2004/07/14 19:27:27 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport_std.h,v $
+      Revision 1.3  2004/07/14 19:27:27  jrichter
+      modified lodestar files to work when fdr is run on systems where yukon is not on c drive.
+
       Revision 1.2  2004/06/15 19:34:00  jrichter
       Added FDR lodestar tag point def / fixed time stamp issue / modified backup file to append time stamp
 
@@ -69,7 +72,9 @@ public:
     virtual bool decodeDataRecord(RWCString& aLine, CtiMultiMsg* multiDispatchMsg);
     virtual const CHAR * getKeyInterval();
     virtual const CHAR * getKeyFilename();
-    virtual const CHAR * getKeyDrivePath();
+    virtual const CHAR * getKeyImportDrivePath();
+    virtual const RWCString& getFileImportBaseDrivePath();
+    virtual const RWCString& setFileImportBaseDrivePath(RWCString importBase);
     virtual const CHAR * getKeyDBReloadRate();
     virtual const CHAR * getKeyQueueFlushRate();
     virtual const CHAR * getKeyDeleteFile();
@@ -80,7 +85,7 @@ public:
     RWTime ForeignToYukonTime (RWCString aTime, CHAR aDstFlag);
     static const CHAR * KEY_INTERVAL;
     static const CHAR * KEY_FILENAME;
-    static const CHAR * KEY_DRIVE_AND_PATH;
+    static const CHAR * KEY_IMPORT_BASE_PATH;
     static const CHAR * KEY_DB_RELOAD_RATE;
     static const CHAR * KEY_QUEUE_FLUSH_RATE;
     static const CHAR * KEY_DELETE_FILE;
@@ -112,6 +117,9 @@ private:
     double      _stdLsAltPulseMultiplier;
     double      _stdLsPopulation;
     double      _stdLsWeight;
+
+
+    RWCString _fileImportBaseDrivePath;
 
     int _stdLsExpectedNumEntries;
 

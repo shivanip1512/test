@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2004/06/15 19:34:00 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2004/07/14 19:27:27 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport_enh.cpp,v $
+      Revision 1.4  2004/07/14 19:27:27  jrichter
+      modified lodestar files to work when fdr is run on systems where yukon is not on c drive.
+
       Revision 1.3  2004/06/15 19:34:00  jrichter
       Added FDR lodestar tag point def / fixed time stamp issue / modified backup file to append time stamp
 
@@ -63,7 +66,7 @@ CtiFDR_EnhancedLodeStar *enhLodeStarObj;
 
 const CHAR * CtiFDR_EnhancedLodeStar::KEY_INTERVAL = "FDR_ENH_LODESTARIMPORT_INTERVAL";
 const CHAR * CtiFDR_EnhancedLodeStar::KEY_FILENAME = "FDR_ENH_LODESTARIMPORT_FILENAME";
-const CHAR * CtiFDR_EnhancedLodeStar::KEY_DRIVE_AND_PATH = "FDR_ENH_LODESTARIMPORT_DRIVE_AND_PATH";
+const CHAR * CtiFDR_EnhancedLodeStar::KEY_IMPORT_BASE_PATH = "FDR_ENH_LODESTARIMPORT_DRIVE_AND_PATH";
 const CHAR * CtiFDR_EnhancedLodeStar::KEY_DB_RELOAD_RATE = "FDR_ENH_LODESTARIMPORT_DB_RELOAD_RATE";
 const CHAR * CtiFDR_EnhancedLodeStar::KEY_QUEUE_FLUSH_RATE = "FDR_ENH_LODESTARIMPORT_QUEUE_FLUSH_RATE";
 const CHAR * CtiFDR_EnhancedLodeStar::KEY_DELETE_FILE = "FDR_ENH_LODESTARIMPORT_DELETE_FILE";
@@ -94,7 +97,8 @@ CtiFDR_EnhancedLodeStar::CtiFDR_EnhancedLodeStar()
   _lsWeight(0.0),
   _lsDescriptor(RWCString()),
   _lsTimeStamp(RWTime(RWDate(1,1,1990))),
-  _lsOrigin(RWCString())  
+  _lsOrigin(RWCString()),
+  _fileImportBaseDrivePath(RWCString("c:\\yukon\\server\\import"))
 { 
     
     init();
@@ -221,9 +225,18 @@ const CHAR * CtiFDR_EnhancedLodeStar::getKeyFilename()
 {
     return KEY_FILENAME;
 }
-const CHAR * CtiFDR_EnhancedLodeStar::getKeyDrivePath()
+const CHAR * CtiFDR_EnhancedLodeStar::getKeyImportDrivePath()
 {
-    return KEY_DRIVE_AND_PATH;
+    return KEY_IMPORT_BASE_PATH;
+}
+const RWCString& CtiFDR_EnhancedLodeStar::getFileImportBaseDrivePath()
+{
+    return _fileImportBaseDrivePath;
+}
+const RWCString& CtiFDR_EnhancedLodeStar::setFileImportBaseDrivePath(RWCString importBase)
+{
+    _fileImportBaseDrivePath = importBase;
+    return _fileImportBaseDrivePath;
 }
 const CHAR * CtiFDR_EnhancedLodeStar::getKeyDBReloadRate()
 {

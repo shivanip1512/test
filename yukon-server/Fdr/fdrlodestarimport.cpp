@@ -8,8 +8,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.8 $
-*    DATE         :  $Date: 2004/06/15 19:34:00 $
+*    REVISION     :  $Revision: 1.9 $
+*    DATE         :  $Date: 2004/07/14 19:27:27 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -21,6 +21,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.9  2004/07/14 19:27:27  jrichter
+      modified lodestar files to work when fdr is run on systems where yukon is not on c drive.
+
       Revision 1.8  2004/06/15 19:34:00  jrichter
       Added FDR lodestar tag point def / fixed time stamp issue / modified backup file to append time stamp
 
@@ -241,14 +244,14 @@ int CtiFDR_LodeStarImportBase::readConfig( void )
         setFileName(RWCString ("yukon.txt"));
     }
 
-    tempStr = getCparmValueAsString(getKeyDrivePath());
+    tempStr = getCparmValueAsString(getKeyImportDrivePath());
     if (tempStr.length() > 0)
     {
-        setDriveAndPath(tempStr);
+        setFileImportBaseDrivePath(tempStr);
     }
     else
     {
-        setDriveAndPath(RWCString ("\\yukon\\server\\import"));
+        setFileImportBaseDrivePath(RWCString ("c:\\yukon\\server\\import"));
     }
 
     tempStr = getCparmValueAsString(getKeyDBReloadRate());
@@ -427,7 +430,7 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
                                             // now we have a Drive/Path                                            
                                             if ( !tempString2.isNull() )
                                             {
-                                                translationDrivePath = RWCString ("\\yukon\\server\\import\\"); 
+                                                translationDrivePath = getFileImportBaseDrivePath(); 
                                                 translationDrivePath += tempString2;
                                                 translationDrivePath.toUpper();
                                                 setDriveAndPath(translationDrivePath);
@@ -578,8 +581,9 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                  for (int fileIndex = 0; fileIndex < getFileInfoList().size(); fileIndex++) 
                  {
                      _snprintf(fileName, 200, "%s\\%s",getFileInfoList()[fileIndex].getLodeStarDrivePath(),getFileInfoList()[fileIndex].getLodeStarFileName());
-                     FindFirstFile(fileName, fileData);
-                     _snprintf(fileNameAndPath, 250, "%s\\%s",getFileInfoList()[fileIndex].getLodeStarDrivePath(),fileData->cFileName);
+                     //FindFirstFile(fileName, fileData);
+                     _snprintf(fileNameAndPath, 250, "%s",fileName);
+                     //_snprintf(fileNameAndPath, 250, "%s\\%s",getFileInfoList()[fileIndex].getLodeStarDrivePath(),fileData->cFileName);
                      if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                      {
                          CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -754,7 +758,6 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
 
                              _snprintf(newFileName, 250, "%s%s%s",fileNameAndPath, ".", tempTime);
                              MoveFileEx(oldFileName,newFileName, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED);
-                             //MoveFile(oldFileName,newFileName);
 
                              DWORD lastError = GetLastError();
                              if( lastError )

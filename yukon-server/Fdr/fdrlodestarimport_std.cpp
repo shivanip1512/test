@@ -8,8 +8,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2004/06/15 19:34:00 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2004/07/14 19:27:27 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -21,6 +21,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport_std.cpp,v $
+      Revision 1.4  2004/07/14 19:27:27  jrichter
+      modified lodestar files to work when fdr is run on systems where yukon is not on c drive.
+
       Revision 1.3  2004/06/15 19:34:00  jrichter
       Added FDR lodestar tag point def / fixed time stamp issue / modified backup file to append time stamp
 
@@ -62,7 +65,7 @@ CtiFDR_StandardLodeStar *stdLodeStarObj;
 
 const CHAR * CtiFDR_StandardLodeStar::KEY_INTERVAL = "FDR_STD_LODESTARIMPORT_INTERVAL";
 const CHAR * CtiFDR_StandardLodeStar::KEY_FILENAME = "FDR_STD_LODESTARIMPORT_FILENAME";
-const CHAR * CtiFDR_StandardLodeStar::KEY_DRIVE_AND_PATH = "FDR_STD_LODESTARIMPORT_DRIVE_AND_PATH";
+const CHAR * CtiFDR_StandardLodeStar::KEY_IMPORT_BASE_PATH = "FDR_STD_LODESTARIMPORT_DRIVE_AND_PATH";
 const CHAR * CtiFDR_StandardLodeStar::KEY_DB_RELOAD_RATE = "FDR_STD_LODESTARIMPORT_DB_RELOAD_RATE";
 const CHAR * CtiFDR_StandardLodeStar::KEY_QUEUE_FLUSH_RATE = "FDR_STD_LODESTARIMPORT_QUEUE_FLUSH_RATE";
 const CHAR * CtiFDR_StandardLodeStar::KEY_DELETE_FILE = "FDR_STD_LODESTARIMPORT_DELETE_FILE";
@@ -90,8 +93,8 @@ CtiFDR_StandardLodeStar::CtiFDR_StandardLodeStar()
     _stdLsDescriptor(RWCString()),
     _stdLsAltPulseMultiplier(0.0),
     _stdLsPopulation(0.0),
-    _stdLsWeight(0.0)
-    
+    _stdLsWeight(0.0),
+    _fileImportBaseDrivePath(RWCString("c:\\yukon\\server\\import"))
 {  
     init();
     _fileInfoList.empty();
@@ -212,9 +215,18 @@ const CHAR * CtiFDR_StandardLodeStar::getKeyFilename()
 {
     return KEY_FILENAME;
 }
-const CHAR * CtiFDR_StandardLodeStar::getKeyDrivePath()
+const CHAR * CtiFDR_StandardLodeStar::getKeyImportDrivePath()
 {
-    return KEY_DRIVE_AND_PATH;
+    return KEY_IMPORT_BASE_PATH;
+}
+const RWCString& CtiFDR_StandardLodeStar::getFileImportBaseDrivePath()
+{
+    return _fileImportBaseDrivePath;
+}
+const RWCString& CtiFDR_StandardLodeStar::setFileImportBaseDrivePath(RWCString importBase)
+{
+    _fileImportBaseDrivePath = importBase;
+    return _fileImportBaseDrivePath;
 }
 const CHAR * CtiFDR_StandardLodeStar::getKeyDBReloadRate()
 {
@@ -912,6 +924,7 @@ bool CtiFDR_StandardLodeStar::decodeDataRecord(RWCString& aLine, CtiMultiMsg* mu
     int                 intervalStatus;
     unsigned            importedQuality;
     RWCString           _stdLsFiller; 
+    long tempSortCode = 0;
 
 
     /****************************
@@ -943,7 +956,7 @@ bool CtiFDR_StandardLodeStar::decodeDataRecord(RWCString& aLine, CtiMultiMsg* mu
                     { 
                         strncpy(tempTest, tempCharPtr, 4);
                         tempTest[4] = '\0';
-                        long tempSortCode = atol(tempTest);
+                        tempSortCode = atol(tempTest);
                         if( tempSortCode < 1000 || tempSortCode > 9999 )
                         {
                             isDataRecordFlag = false;
@@ -987,6 +1000,17 @@ bool CtiFDR_StandardLodeStar::decodeDataRecord(RWCString& aLine, CtiMultiMsg* mu
                                 pointData->setTags(TAG_POINT_LOAD_PROFILE_DATA);
                                 if (intervalValue == 0 && intervalStatus == 9) 
                                 {
+                                    //CHAR tempRecStr[80];
+                                    //CHAR tempIntStr[80];
+
+                                    RWCString desc = RWCString ("Lodestar point interval data is invalid");
+                                    //_snprintf(tempIdStr,80,"%s", _stdLsCustomerIdentifier);
+                                    //_snprintf(tempChanStr,80,"%d", _stdLsChannel);
+                                    CHAR tempBigStr[256];
+                                    _snprintf(tempBigStr,256,"%s%d%s%d", "Record: ",tempSortCode, "; Interval: ", i+1);
+                                    RWCString action = RWCString(tempBigStr);
+                                    logEvent (desc,action);
+
                                     pointData->setTags(TAG_INVALID_LODESTAR_READING);
                                 }
 

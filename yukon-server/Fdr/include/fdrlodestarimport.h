@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2004/06/15 19:33:59 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2004/07/14 19:27:27 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport.h,v $
+      Revision 1.6  2004/07/14 19:27:27  jrichter
+      modified lodestar files to work when fdr is run on systems where yukon is not on c drive.
+
       Revision 1.5  2004/06/15 19:33:59  jrichter
       Added FDR lodestar tag point def / fixed time stamp issue / modified backup file to append time stamp
 
@@ -78,7 +81,10 @@ public:
     virtual bool decodeDataRecord(RWCString& aLine, CtiMultiMsg* multiDispatchMsg) = 0;
     virtual const CHAR * getKeyInterval() = 0;
     virtual const CHAR * getKeyFilename() = 0;
-    virtual const CHAR * getKeyDrivePath() = 0;
+    virtual const CHAR * getKeyImportDrivePath() = 0;
+    virtual const RWCString& getFileImportBaseDrivePath() = 0;
+    virtual const RWCString& setFileImportBaseDrivePath(RWCString importBase) = 0;
+
     virtual const CHAR * getKeyDBReloadRate() = 0;
     virtual const CHAR * getKeyQueueFlushRate() = 0;
     virtual const CHAR * getKeyDeleteFile() = 0;

@@ -71,7 +71,6 @@ CtiFDR_LodeStarInfoTable& CtiFDR_LodeStarInfoTable::setLodeStarFileName(RWCStrin
     return *this;
 
 }
-
 /*int operator==(const CtiFDR_LodeStarInfoTable &lodeStarInfoList1, const CtiFDR_LodeStarInfoTable &lodeStarInfoList2)
 {
     const char * ptr1;
