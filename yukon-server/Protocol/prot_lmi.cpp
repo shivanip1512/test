@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2004/09/21 15:53:40 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2004/11/16 20:48:13 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -235,7 +235,6 @@ int CtiProtocolLMI::recvCommRequest( OUTMESS *OutMessage )
             _completion_time    = OutMessage->ExpirationTime;
 
             _transmitting_until = RWTime::now();
-            _first_comm = true;
 
             break;
         }
@@ -244,8 +243,6 @@ int CtiProtocolLMI::recvCommRequest( OUTMESS *OutMessage )
         {
             setCommand(Command_ReadEchoedCodes, 0, 0);
             _completion_time    = OutMessage->ExpirationTime;
-
-            _first_comm = true;
 
             break;
         }
@@ -263,6 +260,8 @@ int CtiProtocolLMI::recvCommRequest( OUTMESS *OutMessage )
 
     _transmitter_id = OutMessage->DeviceID;
     _transactionComplete = false;
+    _first_comm = true;
+    _untransmitted_codes = false;
     _status.c = 0;
     _in_count = 0;
     _in_total = 0;
@@ -367,19 +366,34 @@ RWTime CtiProtocolLMI::getTransmittingUntil( void ) const
 
 bool CtiProtocolLMI::isTransactionComplete( void )
 {
-    bool retval = _transactionComplete;
+    bool retval = false;
 
-    if( _completion_time.seconds() && _completion_time <= RWTime::now() )
+    if( _completion_time.seconds() && _completion_time < RWTime::now() )
     {
-        retval = true;
-
+        if( _command == Command_SendQueuedCodes && _untransmitted_codes )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - breaking out of late loop in \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - late in loop for \"" << _name << "\", using one more pass to transmit codes **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+        else
+        {
+            //  if we don't have any untransmitted codes, it's okay to break
+            retval = true;
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - breaking out of late loop in \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
         }
     }
+    else
+    {
+        retval = _transactionComplete;
+    }
 
-    return _transactionComplete;  //  this is rather naive - maybe it should check state instead
+    return retval;  //  this is rather naive - maybe it should check state instead
 }
 
 
@@ -416,10 +430,10 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
     else
     {
         _outbound.preamble = 0x01;
-        _outbound.dest_sat_id  = 0x08; //_address;
-        _outbound.dest_node    = 0x08; //0x01;
-        _outbound.src_sat_id   = 0x01; //0x01;  //  picked at random - they seem like nice enough numbers
-        _outbound.src_sat_node = 0x01; //0x01;  //
+        _outbound.dest_sat_id  = _address;
+        _outbound.dest_node    = _address;
+        _outbound.src_sat_id   = 0x01;
+        _outbound.src_sat_node = 0x01;
         _outbound.body_header.flush_codes  = 0;
 
         if( _status.c )
@@ -435,71 +449,74 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
             {
                 case Command_SendQueuedCodes:
                 {
-                    unsigned long numcodes;
+                    unsigned long transmit_time, waiting_codes, max_codes, num_codes;
+                    bool final_block = false;
                     CtiOutMessage *om;
 
                     long percode = gConfigParms.getValueAsULong("PORTER_LMI_TIME_TRANSMIT", 250);
 
+                    waiting_codes = _codes.size();
+
                     if( _completion_time > _transmitting_until )
                     {
-                        numcodes  = (_completion_time.seconds() - _transmitting_until.seconds()) * 1000;
-                        numcodes /= percode;
+                        transmit_time  = _completion_time.seconds() - _transmitting_until.seconds();
+                        transmit_time *= 1000;
+
+                        max_codes = transmit_time / percode;
                     }
                     else
                     {
-                        numcodes = 0;
+                        max_codes = 0;
                     }
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(slog);
-                        slog << RWTime() << " LMI device \"" << _name << "\" has enough time to load " << numcodes << " codes" << endl;
-                    }
-
-                    if( numcodes > 42 )
-                    {
-                        numcodes = 42;
-                    }
-                    else if( numcodes <= 0 )
-                    {
-                        numcodes = 0;
-
-                        _transactionComplete = true;
+                        slog << RWTime() << " LMI device \"" << _name << "\" has enough time to load " << max_codes << " (of " << waiting_codes << ") codes" << endl;
                     }
 
                     _outbound.body_header.message_type = Opcode_SendCodes;
                     _outbound.body_header.flush_codes  = _first_comm;
 
-                    if( _first_comm )
+                    if( _outbound.body_header.flush_codes )
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(slog);
                             slog << RWTime() << " LMI device \"" << _name << "\" removing previously-transmitted codes" << endl;
                         }
-
-                        _first_comm = false;
                     }
 
-                    if( (long)_codes.size() <= numcodes )
+                    if( waiting_codes > max_codes )
                     {
-                        numcodes = _codes.size();
-
-                        _outbound.data[0] = numcodes | 0xc0;    //  last group of codes, send immediately
+                        num_codes = max_codes;
                     }
                     else
                     {
-                        _outbound.data[0] = numcodes;
+                        num_codes = waiting_codes;
                     }
+
+                    if( num_codes > LMIMaxCodesPerTransaction )
+                    {
+                        num_codes = LMIMaxCodesPerTransaction;
+                    }
+                    else
+                    {
+                        final_block = true;
+                    }
+
+                    _outbound.data[0] = num_codes;
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(slog);
-                        slog << RWTime() << " LMI device \"" << _name << "\" loading " << (numcodes & 0x3f) << " codes this pass:" << endl;
+                        slog << RWTime() << " LMI device \"" << _name << "\" loading " << num_codes << " (of " << waiting_codes << ") codes this pass:" << endl;
                     }
 
-                    _outbound.length = (numcodes * 6) + 2;
-                    _transmitting_until += (numcodes * percode) / 1000;
+                    _outbound.length = (num_codes * 6) + 2;
+                    _transmitting_until += (num_codes * percode) / 1000;
 
-                    for( int i = 0; i < (numcodes * 6); i += 6 )
+                    for( int i = 0; i < (num_codes * 6); i += 6 )
                     {
+                        _untransmitted_codes = true;
+
                         om = _codes.front();
                         om->Buffer.SASt._codeSimple[6] = 0;  //  make sure it's null-terminated, just to be safe...
                         char (&codestr)[7] = om->Buffer.SASt._codeSimple;
@@ -535,23 +552,22 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                         //    i need to move them to a pending list or something until i get to decode(), where i can then pop them with vigor and prejudice
                         _codes.pop();
 
-                        CtiVerificationReport *report;
-    /*
-                        //  testing receipts
-                        report = new CtiVerificationReport(CtiVerificationBase::Protocol_Golay, id, codestr, second_clock::universal_time());
-
-                        _verification_objects.push(report);
-
-                        report = new CtiVerificationReport(CtiVerificationBase::Protocol_Golay, id, string("999999"), second_clock::universal_time());
-
-                        _verification_objects.push(report);
-    */
                         delete om;
                     }
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(slog);
                         slog << endl;
+                    }
+
+                    if( final_block )
+                    {
+                        _outbound.data[0] |= 0xc0;    //  last group of codes, send immediately
+
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(slog);
+                            slog << RWTime() << " LMI device \"" << _name << "\" transmitting" << endl;
+                        }
                     }
 
                     break;
@@ -677,6 +693,8 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
 
     if( !status )
     {
+        _first_comm = false;
+
         _in_total += xfer.getInCountActual();
 
         if( _in_total >= LMIPacketHeaderLen && _in_total >= (_inbound.length + LMIPacketOverheadLen) )
@@ -702,7 +720,20 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                         {
                             _verification_pending = true;
 
-                            if( _codes.empty() || !((_completion_time - 1) > _transmitting_until) )  //  knock off a second so we act polite
+                            if( _outbound.data[0] & 0xc0 )
+                            {
+                                _untransmitted_codes = false;
+                            }
+
+                            //  well, theory goes that if we're here and the code queue is empty, we probably transmitted them
+                            //    (this should be FIX 'd to make the transactioncomplete stuff more robust, ick)
+                            if( _codes.empty() )
+                            {
+                                _transactionComplete = true;
+                            }
+
+                            //  also, if we're out of time, stop loading codes
+                            if( _transmitting_until >= _completion_time )
                             {
                                 _transactionComplete = true;
                             }
@@ -717,6 +748,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
 
                             offset++;  //  move past the UPA status for the time being
 
+                            //  final block of codes, so we're done
                             if( !(_inbound.data[offset++] & 0x80) )
                             {
                                 _transactionComplete = true;
@@ -747,9 +779,15 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                                 _num_codes_retrieved++;
                             }
 
+                            //  shouldn't be possible
                             if( _num_codes_retrieved > 0xff )
                             {
                                 _transactionComplete = true;
+
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint - exceeded maximum codes for device \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
                             }
 
                             break;
@@ -823,7 +861,17 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
     {
         if( _command == Command_SendQueuedCodes )
         {
+            if( _outbound.data[0] & 0xc0 )
+            {
+                _untransmitted_codes = false;
+            }
+
             if( _codes.empty() )
+            {
+                _transactionComplete = true;
+            }
+
+            if( _transmitting_until >= _completion_time )
             {
                 _transactionComplete = true;
             }
@@ -836,12 +884,14 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
         retval = NoError;
     }
 
+//  this is handled by isTransactionComplete, and i want to make sure the complaint there gets printed
+/*
     //  always exit if the expiration time is past
     if( _completion_time.seconds() && _completion_time <= Now )
     {
         _transactionComplete = true;
     }
-
+*/
     return retval;
 }
 
