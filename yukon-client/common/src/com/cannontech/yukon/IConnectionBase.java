@@ -20,8 +20,6 @@ public interface IConnectionBase
 
 	public int getPort();
 
-	public boolean handleMessage(Object message);
-
 	public boolean isValid();
 
 }

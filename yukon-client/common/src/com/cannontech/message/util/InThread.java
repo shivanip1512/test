@@ -5,34 +5,18 @@ package com.cannontech.message.util;
  */
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.message.dispatch.message.Multi;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.VirtualInputStream;
 
-class InThread extends Thread {
-
-	ClientConnection conn;
+class InThread extends Thread
+{
+	private ClientConnection conn;
 	
-	VirtualInputStream istrm;
-	CollectableStreamer streamer;
-	java.util.ArrayList in;
+	private VirtualInputStream istrm;
+	private CollectableStreamer streamer;
+	private java.util.ArrayList in;
 
-	class HandleMessage extends Thread
-	{
-		ClientConnection connection;
-		Object message;
-		
-		public HandleMessage(ClientConnection connection, Object message)
-		{
-			super("InThreadMsgHandler");
-			this.connection = connection;
-			this.message = message;
-		}
-
-		public void run()
-		{
-			connection.doHandleMessage( message );
-		}
-	}
 /**
  * InThread constructor comment.
  */
@@ -56,30 +40,9 @@ public void run() {
 		{
 			Object o = istrm.restoreObject( streamer );
 			
-			if( conn.handleMessage( o ) )
-			{	// Handle each incoming message in a new thread
-				HandleMessage handleThr = new HandleMessage( this.conn, o );
-				handleThr.start();
-			}
-			else
-			if(conn.isQueueMessages())
-			{   // Add this message to the in queue so it can be 'read'
-				synchronized( in )
-				{
-					in.add( o );								
-					in.notifyAll();
-				}			
-			}
 			
-			if(o instanceof Message)
-			{	// Tell out listeners about this message
-				try { // protect against misbehaved listeners											
-					conn.fireMessageEvent((Message) o);
-				}
-				catch(Throwable t) {
-					CTILogger.error(getClass(), t);
-				}
-			}
+			processMsg( o );
+
 
 			if( this.isInterrupted() )
 			{
@@ -94,4 +57,41 @@ public void run() {
 	}	
 	
 }
+
+public void processMsg( Object o )
+{
+	if( o instanceof Multi )
+	{           
+		Multi mpc = (Multi)o;
+
+		for( int i = 0; i < mpc.getVector().size(); i++ )
+			processMsg( mpc.getVector().get(i) );
+	}
+	else if( conn.isQueueMessages() )
+	{  
+		// Add this message to the in queue so it can be 'read'
+		synchronized( in )
+		{
+			in.add( o );								
+			in.notifyAll();
+		}			
+	}
+			
+	if(o instanceof Message)
+	{	
+		// Tell out listeners about this message
+		try 
+		{
+			// protect against misbehaved listeners											
+			conn.fireMessageEvent((Message) o);
+		}
+		catch(Throwable t) 
+		{
+			CTILogger.error(getClass(), t);
+		}
+	}
+
+}
+
+
 }

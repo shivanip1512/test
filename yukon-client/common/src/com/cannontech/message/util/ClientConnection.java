@@ -225,19 +225,7 @@ public Message getRegistrationMsg() {
 public int getTimeToReconnect() {
 	return this.timeToReconnect;
 }
-/**
- * handleMessage should be defined by subclasses should they want
- * a chance to handle a particular message when it comes in.
- * Before a message is put in the inVector handleMessage is
- * called.  If handleMEssage returns true then the message
- * is considered handled otherwise the message will be put
- * in the inVector to await processing.
- * Do not actually handle the message here, handle it in doHandleMessage
- * @param message CtiMessage
- */
-public boolean handleMessage(Object message) {
-	return false;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/17/2001 1:40:04 PM)
