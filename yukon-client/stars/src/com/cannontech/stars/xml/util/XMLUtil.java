@@ -1,8 +1,5 @@
 package com.cannontech.stars.xml.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * <p>Title: </p>
  * <p>Description: </p>
@@ -14,37 +11,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class XMLUtil {
 
-    private static String LOG4J_CONFIG_FILE = "log4j.properties";
-
     private static String XML_DECL = "<?xml version=\"1.0\"?>";
-
-    private static LogFactory logFac = null;
-
-    static {
-        System.setProperty("org.apache.commons.logging.LogFactory", "org.apache.commons.logging.impl.Log4jFactory");
-        System.setProperty("log4j.configuration", LOG4J_CONFIG_FILE);
-    }
-
-    private static LogFactory getLogFactory() throws Exception {
-        if (logFac == null)
-            logFac = LogFactory.getFactory();
-        return logFac;
-    }
-
-    public static Log getLogger(Class c) {
-        return getLogger( c.getName() );
-    }
-
-    public static Log getLogger(String name) {
-        try {
-            Log logger = getLogFactory().getLog(name);
-            return logger;
-        }
-        catch (Exception e) {
-            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-        }
-        return null;
-    }
 
     public static String removeXMLDecl(String xmlStr) {
         int pos = xmlStr.indexOf( "?>" );
