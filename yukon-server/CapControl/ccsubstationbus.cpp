@@ -431,17 +431,6 @@ DOUBLE CtiCCSubstationBus::getEstimatedVarLoadPointValue() const
 }
 
 /*---------------------------------------------------------------------------
-    getStatusesReceivedFlag
-
-    Returns the statuses received flag of the substation
----------------------------------------------------------------------------*/
-BOOL CtiCCSubstationBus::getStatusesReceivedFlag() const
-{
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-    return _statusesreceivedflag;
-}
-
-/*---------------------------------------------------------------------------
     getDailyOperationsAnalogPointId
 
     Returns the daily operations analog point id of the substation
@@ -967,18 +956,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedVarLoadPointValue(DOUBLE est
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _estimatedvarloadpointvalue = estimatedvarval;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setStatusesReceivedFlag
-
-    Sets the statuses received flag of the substation
----------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setStatusesReceivedFlag(BOOL statusesreceived)
-{
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    _statusesreceivedflag = statusesreceived;
     return *this;
 }
 
@@ -1810,6 +1787,11 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RW
                 }
             }
         }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Invalid control units: " << _controlunits << " in sub bus: " << getPAOName() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+        }
 
         if( request != NULL )
         {
@@ -2080,36 +2062,6 @@ void CtiCCSubstationBus::clearOutNewPointReceivedFlags()
 }
 
 /*---------------------------------------------------------------------------
-    areAllCapBankStatusesReceived
-
-    Returns a boolean if all the cap banks in each feeder have updated statuses
----------------------------------------------------------------------------*/
-BOOL CtiCCSubstationBus::areAllCapBankStatusesReceived()
-{
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-
-    BOOL tempBoolean = TRUE;
-
-    if( !_statusesreceivedflag )
-    {
-        if( _ccfeeders.entries() > 0 )
-        {
-            for(ULONG i=0;i<_ccfeeders.entries();i++)
-            {
-                if( !((CtiCCFeeder*)_ccfeeders[i])->areAllCapBankStatusesReceived() )
-                {
-                    tempBoolean = FALSE;
-                    break;
-                }
-            }
-        }
-    }
-
-    _statusesreceivedflag = tempBoolean;
-    return _statusesreceivedflag;
-}
-
-/*---------------------------------------------------------------------------
     isAlreadyControlled
 
     Returns a boolean if the last cap bank controlled expected var changes
@@ -2275,9 +2227,9 @@ void CtiCCSubstationBus::dumpDynamicData()
             << dynamicCCSubstationBusTable["varvaluebeforecontrol"].assign( getVarValueBeforeControl() )
             << dynamicCCSubstationBusTable["lastfeederpaoid"].assign( getLastFeederControlledPAOId() )
             << dynamicCCSubstationBusTable["lastfeederposition"].assign( getLastFeederControlledPosition() )
-            //<< dynamicCCSubstationBusTable["powerfactorvalue"].assign( getPowerFactorValue() )
-            //<< dynamicCCSubstationBusTable["kvarsolution"].assign( getKVARSolution() )
-            << dynamicCCSubstationBusTable["ctitimestamp"].assign((RWDBDateTime)currentDateTime);
+            << dynamicCCSubstationBusTable["ctitimestamp"].assign((RWDBDateTime)currentDateTime)
+            << dynamicCCSubstationBusTable["powerfactorvalue"].assign( getPowerFactorValue() )
+            << dynamicCCSubstationBusTable["kvarsolution"].assign( getKVARSolution() );
 
             updater.where(dynamicCCSubstationBusTable["substationbusid"]==getPAOId());
 
@@ -2307,9 +2259,9 @@ void CtiCCSubstationBus::dumpDynamicData()
             << getVarValueBeforeControl()
             << getLastFeederControlledPAOId()
             << getLastFeederControlledPosition()
-            //<< getPowerFactorValue()
-            //<< getKVARSolution()
-            << currentDateTime;
+            << currentDateTime
+            << getPowerFactorValue()
+            << getKVARSolution();
 
             /*if( _CC_DEBUG )
             {
@@ -2344,7 +2296,7 @@ DOUBLE CtiCCSubstationBus::calculatePowerFactor(DOUBLE kvar, DOUBLE kw)
         //check if this is leading
         if( kvar < 0.0 && newPowerFactorValue != 1.0 )
         {
-            newPowerFactorValue = -newPowerFactorValue;
+            newPowerFactorValue = 2.0-newPowerFactorValue;
         }
     }
 
@@ -2391,6 +2343,7 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     RWTime tempTime1;
     RWTime tempTime2;
     RWTime tempTime3;
+    BOOL pleaseRemoveMe;
 
     RWCollectable::restoreGuts( istrm );
 
@@ -2428,7 +2381,7 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     >> tempTime2
     >> _estimatedvarloadpointid
     >> _estimatedvarloadpointvalue
-    >> _statusesreceivedflag
+    >> pleaseRemoveMe
     >> _dailyoperationsanalogpointid
     >> _currentdailyoperations
     >> _peaktimeflag
@@ -2491,7 +2444,7 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _lastcurrentvarpointupdatetime.rwtime()
     << _estimatedvarloadpointid
     << _estimatedvarloadpointvalue
-    << _statusesreceivedflag
+    << TRUE
     << _dailyoperationsanalogpointid
     << _currentdailyoperations
     << _peaktimeflag
@@ -2548,7 +2501,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _lastcurrentvarpointupdatetime = right._lastcurrentvarpointupdatetime;
         _estimatedvarloadpointid = right._estimatedvarloadpointid;
         _estimatedvarloadpointvalue = right._estimatedvarloadpointvalue;
-        _statusesreceivedflag = right._statusesreceivedflag;
         _dailyoperationsanalogpointid = right._dailyoperationsanalogpointid;
         _currentdailyoperations = right._currentdailyoperations;
         _peaktimeflag = right._peaktimeflag;
@@ -2653,7 +2605,6 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     }
 
     setEstimatedVarLoadPointId(0);
-    setStatusesReceivedFlag(FALSE);
     setDailyOperationsAnalogPointId(0);
 
     rdr["currentvarpointvalue"] >> isNull;
@@ -2681,13 +2632,9 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
         rdr["varvaluebeforecontrol"] >> _varvaluebeforecontrol;
         rdr["lastfeederpaoid"] >> _lastfeedercontrolledpaoid;
         rdr["lastfeederposition"] >> _lastfeedercontrolledposition;
-		//HACK 
-        //rdr["powerfactorvalue"] >> _powerfactorvalue;
-        //rdr["kvarsolution"] >> _kvarsolution;
-        setPowerFactorValue(-1000000.0);
-        setKVARSolution(0.0);
-		//HACK 
         rdr["ctitimestamp"] >> dynamicTimeStamp;
+        rdr["powerfactorvalue"] >> _powerfactorvalue;
+        rdr["kvarsolution"] >> _kvarsolution;
 
         //if dynamic timestamp from yesterday, zero out operation count
         if( dynamicTimeStamp.rwdate() < currentDateTime.rwdate() ||

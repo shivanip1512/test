@@ -75,7 +75,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     const RWDBDateTime& getLastCurrentVarPointUpdateTime() const;
     ULONG getEstimatedVarLoadPointId() const;
     DOUBLE getEstimatedVarLoadPointValue() const;
-    BOOL getStatusesReceivedFlag() const;
     ULONG getDailyOperationsAnalogPointId() const;
     ULONG getCurrentDailyOperations() const;
     BOOL getPeakTimeFlag() const;
@@ -123,7 +122,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setLastCurrentVarPointUpdateTime(const RWDBDateTime& lastpointupdate);
     CtiCCSubstationBus& setEstimatedVarLoadPointId(ULONG estimatedvarid);
     CtiCCSubstationBus& setEstimatedVarLoadPointValue(DOUBLE estimatedvarval);
-    CtiCCSubstationBus& setStatusesReceivedFlag(BOOL statusesreceived);
     CtiCCSubstationBus& setDailyOperationsAnalogPointId(ULONG opanalogpointid);
     CtiCCSubstationBus& setCurrentDailyOperations(ULONG operations);
     CtiCCSubstationBus& setPeakTimeFlag(ULONG peaktime);
@@ -146,7 +144,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void optimizedSubstationBusControl(DOUBLE setpoint, const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
     CtiCCSubstationBus& figureEstimatedVarLoadPointValue();
     BOOL isAlreadyControlled();
-    BOOL areAllCapBankStatusesReceived();
     DOUBLE calculatePowerFactor(DOUBLE kvar, DOUBLE kw);
     DOUBLE convertKQToKVAR(DOUBLE kq, DOUBLE kw);
     DOUBLE convertKVARToKQ(DOUBLE kvar, DOUBLE kw);
@@ -211,7 +208,6 @@ private:
     RWDBDateTime _lastcurrentvarpointupdatetime;
     ULONG _estimatedvarloadpointid;
     DOUBLE _estimatedvarloadpointvalue;
-    BOOL _statusesreceivedflag;
     ULONG _dailyoperationsanalogpointid;
     ULONG _currentdailyoperations;
     BOOL _peaktimeflag;

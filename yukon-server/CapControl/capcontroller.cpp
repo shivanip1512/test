@@ -105,10 +105,21 @@ void CtiCapController::start()
 ---------------------------------------------------------------------------*/
 void CtiCapController::stop()
 {
-    //if( _CC_DEBUG )
     {
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+        if( _dispatchConnection!=NULL && _dispatchConnection->valid() )
+        {
+            _dispatchConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+            _dispatchConnection->ShutdownConnection();
+        }
+        if( _pilConnection!=NULL && _pilConnection->valid() )
+        {
+            _pilConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+            _pilConnection->ShutdownConnection();
+        }
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Shutting down controller thread..." << endl;
+        dout.interrupt(CtiThread::SHUTDOWN);
+        dout.join();
     }
 
     if ( _substationBusThread.isValid() && _substationBusThread.requestCancellation() == RW_THR_ABORTED )
@@ -120,26 +131,10 @@ void CtiCapController::stop()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Forced to terminate." << endl;
         }
-    } else
+    }
+    else
     {
         _substationBusThread.join();
-
-        //if( _CC_DEBUG )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Controller thread shutdown" << endl;
-        }
-    }
-
-    {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        getDispatchConnection()->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
-        getDispatchConnection()->ShutdownConnection();
-        getPILConnection()->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
-        getPILConnection()->ShutdownConnection();
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout.interrupt(CtiThread::SHUTDOWN);
-        dout.join();
     }
 }
 
@@ -218,8 +213,7 @@ void CtiCapController::controlLoop()
 
                 try
                 {
-                    if( currentSubstationBus->areAllCapBankStatusesReceived() &&
-                        currentSubstationBus->isVarCheckNeeded(currentDateTime) )
+                    if( currentSubstationBus->isVarCheckNeeded(currentDateTime) )
                     {
                         if( currentSubstationBus->getRecentlyControlledFlag() )
                         {
@@ -939,7 +933,6 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, 
                             currentCapBank->setControlStatus((ULONG)value);
                             currentCapBank->setTagsControlStatus((ULONG)tags);
                             currentCapBank->setLastStatusChangeTime(timestamp);
-                            currentCapBank->setStatusReceivedFlag(TRUE);
                             currentSubstationBus->figureEstimatedVarLoadPointValue();
                             if( currentSubstationBus->getEstimatedVarLoadPointId() > 0 )
                                 sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedVarLoadPointId(),currentSubstationBus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
@@ -1062,7 +1055,7 @@ void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, 
 ---------------------------------------------------------------------------*/
 void CtiCapController::signalMsg( long pointID, unsigned tags, RWCString text, RWCString additional, ULONG secondsFrom1901 )
 {
-    /*if( _CC_DEBUG )
+    if( _CC_DEBUG )
     {
         char tempchar[64] = "";
         RWCString outString = "Signal Message received. Point ID:";
@@ -1075,7 +1068,7 @@ void CtiCapController::signalMsg( long pointID, unsigned tags, RWCString text, R
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - " << outString.data() << "  Text: "
                       << text << " Additional Info: " << additional << endl;
-    }*/
+    }
 
     BOOL found = FALSE;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
