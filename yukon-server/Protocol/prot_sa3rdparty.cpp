@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/06/03 21:46:17 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/06/23 18:37:27 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.6  2004/06/23 18:37:27  cplender
+* Altered the default constructor to memset the SAStruct.
+*
 * Revision 1.5  2004/06/03 21:46:17  cplender
 * Simulator mods.
 *
@@ -44,21 +47,8 @@
 CtiProtocolSA3rdParty::CtiProtocolSA3rdParty() :
 _messageReady(false)
 {
-    _sa._commandType = 0;
-    _sa._lbt = (0x00);
-    _sa._delayToTx = (0x00);
+    memset(&_sa, 0, sizeof(_sa));
     _sa._maxTxTime = (0x3f);
-    _sa._transmitterAddress = (0);
-    _sa._groupType = (0);
-    _sa._shed = (false);
-    _sa._function = (0);
-    _sa._code205 = (0);
-    _sa._swTimeout = (0);
-    _sa._cycleTime = (0);
-    _sa._repeats = (0);
-    _sa._bufferLen = (0);
-
-    memset(_sa._buffer, 0, MAX_SA_MSG_SIZE);
 }
 
 CtiProtocolSA3rdParty::CtiProtocolSA3rdParty(const CtiSAData sa)
