@@ -163,6 +163,11 @@ public final class LiteComparators
 				thisVal = ((com.cannontech.database.data.lite.LiteHolidaySchedule)o1).getHolidayScheduleName();
 				anotherVal = ((com.cannontech.database.data.lite.LiteHolidaySchedule)o2).getHolidayScheduleName();
 			}
+			else if(o1 instanceof LiteGraphDefinition && o2 instanceof LiteGraphDefinition)
+			{
+				thisVal = ((LiteGraphDefinition)o1).getName();
+				anotherVal = ((LiteGraphDefinition)o2).getName();
+			}
 			else
 			{	// unknown lite type
 				throw new IllegalArgumentException("Unhandled lite types or the 2 objects being compared are not the same object types in comparator of : " + this.getClass().toString() );
