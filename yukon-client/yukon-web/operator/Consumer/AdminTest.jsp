@@ -1,8 +1,14 @@
 <%@ include file="include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.common.util.CtiUtilities" %>
+<%@ page import="com.cannontech.roles.consumer.ResidentialCustomerRole" %>
 <%	if (!AuthFuncs.checkRoleProperty(lYukonUser, com.cannontech.roles.operator.AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
 		|| ecSettings == null) {
 		response.sendRedirect("../Operations.jsp"); return;
 	}
+%>
+<%
+	com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany liteEnergyCompany = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
+	com.cannontech.database.data.lite.LiteYukonGroup liteCustGroup = liteEnergyCompany.getResidentialCustomerGroup();
 %>
 <html>
 <head>
@@ -337,6 +343,11 @@ function confirmDeleteAllCompanies() {
                         </form>
                       </td>
                     </tr>
+<%
+	if (AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_HARDWARES) ||
+		AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS))
+	{
+%>
                     <tr> 
                       <td> 
                         <form name="form4" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
@@ -348,9 +359,9 @@ function confirmDeleteAllCompanies() {
                                   <input type="hidden" name="action" value="DeleteServiceCompany">
                                   <input type="hidden" name="CompanyID" value="0">
 <%
-	// The first service company is always "(none)"
-	for (int i = 1; i < companies.getStarsServiceCompanyCount(); i++) {
-		StarsServiceCompany company = companies.getStarsServiceCompany(i);
+		// The first service company is always "(none)"
+		for (int i = 1; i < companies.getStarsServiceCompanyCount(); i++) {
+			StarsServiceCompany company = companies.getStarsServiceCompany(i);
 %>
                                   <tr> 
                                     <td class="TableCell" width="5%">&nbsp;</td>
@@ -362,7 +373,7 @@ function confirmDeleteAllCompanies() {
                                       <input type="submit" name="Delete" value="Delete" onClick="this.form.CompanyID.value=<%= company.getCompanyID() %>; return confirmDeleteCompany();">
                                     </td>
                                   </tr>
-                                  <%	} %>
+<%		} %>
                                 </table>
                               </td>
                             </tr>
@@ -380,6 +391,13 @@ function confirmDeleteAllCompanies() {
                         </form>
                       </td>
                     </tr>
+<%
+	}
+	
+	if (AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ) ||
+		!CtiUtilities.isFalse(AuthFuncs.getRolePropValueGroup(liteCustGroup, ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ, "false")))
+	{
+%>
                     <tr> 
                       <td width="75%"> 
                         <form name="form5" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
@@ -390,24 +408,24 @@ function confirmDeleteAllCompanies() {
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                   <tr> 
 <%
-	String faqLink = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_FAQ);
-	boolean customizedFAQ = ServerUtils.forceNotNone(faqLink).length() > 0;
+		String faqLink = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_FAQ);
+		boolean customizedFAQ = ServerUtils.forceNotNone(faqLink).length() > 0;
 %>
                                     <td class="TableCell" width="15%">
                                       <% if (customizedFAQ) { %>FAQ Link:<% } else { %>FAQ Subjects:<% } %>
 									</td>
                                     <td class="TableCell" width="60%">
-<%	if (customizedFAQ) { %>
+<%		if (customizedFAQ) { %>
                                       <%= faqLink %>
-<%	} else { %>
+<%		} else { %>
 									  <ul>
-<%		for (int i = 0; i < customerFAQs.getStarsCustomerFAQGroupCount(); i++) {
-			StarsCustomerFAQGroup faqGroup = customerFAQs.getStarsCustomerFAQGroup(i);
+<%			for (int i = 0; i < customerFAQs.getStarsCustomerFAQGroupCount(); i++) {
+				StarsCustomerFAQGroup faqGroup = customerFAQs.getStarsCustomerFAQGroup(i);
 %>
                                         <li><%= faqGroup.getSubject() %></li>
-<%		} %>
+<%			} %>
                                       </ul>
-<%	} %>
+<%		} %>
                                     </td>
                                     <td width="25%" class="TableCell"> 
                                       <input type="button" name="Edit" value="Edit" onClick="location.href='Admin_CustomerFAQ.jsp'">
@@ -420,6 +438,13 @@ function confirmDeleteAllCompanies() {
                         </form>
                       </td>
                     </tr>
+<%
+	}
+	
+	if (AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT) ||
+		!CtiUtilities.isFalse(AuthFuncs.getRolePropValueGroup(liteCustGroup, ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT, "false")))
+	{
+%>
                     <tr> 
                       <td> <b><font color="#0000FF">Interview Questions:</font></b> 
                         <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
@@ -430,13 +455,13 @@ function confirmDeleteAllCompanies() {
                                   <td class="TableCell" width="15%">Exit Interview:</td>
                                   <td class="TableCell" width="60%"> 
                                     <ul>
-                                      <%
-	for (int i = 0; i < exitQuestions.getStarsExitInterviewQuestionCount(); i++) {
-		StarsExitInterviewQuestion question = exitQuestions.getStarsExitInterviewQuestion(i);
-		String qStr = (question.getQuestion().length() <= 50) ? question.getQuestion() : question.getQuestion().substring(0,47).concat("...");
+<%
+		for (int i = 0; i < exitQuestions.getStarsExitInterviewQuestionCount(); i++) {
+			StarsExitInterviewQuestion question = exitQuestions.getStarsExitInterviewQuestion(i);
+			String qStr = (question.getQuestion().length() <= 50) ? question.getQuestion() : question.getQuestion().substring(0,47).concat("...");
 %>
                                       <li><%= qStr %></li>
-                                      <%	} %>
+<%		} %>
                                     </ul>
                                   </td>
                                   <td width="25%" class="TableCell"> 
@@ -449,7 +474,13 @@ function confirmDeleteAllCompanies() {
                         </table>
                       </td>
                     </tr>
-<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT %>">
+<%
+	}
+	
+	if (AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT) ||
+		!CtiUtilities.isFalse(AuthFuncs.getRolePropValueGroup(liteCustGroup, ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT, "false")))
+	{
+%>
                     <tr>
                       <td><b><font color="#0000FF">Default Thermostat Settings: 
                         </font></b> 
@@ -464,7 +495,9 @@ function confirmDeleteAllCompanies() {
                         </table>
                         </td>
                     </tr>
-</cti:checkProperty>
+<%
+	}
+%>
                     <tr> 
                       <td><b><font color="#0000FF">Customer Selection Lists:</font></b> 
                         <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
@@ -472,10 +505,9 @@ function confirmDeleteAllCompanies() {
                             <td> 
                               <table width="100%" border="0" cellspacing="0" cellpadding="0">
 <%
-	com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany ec = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
-	for (int i = 0; i < ec.getAllSelectionLists().size(); i++) {
+	for (int i = 0; i < liteEnergyCompany.getAllSelectionLists().size(); i++) {
 		com.cannontech.common.constants.YukonSelectionList cList =
-				(com.cannontech.common.constants.YukonSelectionList) ec.getAllSelectionLists().get(i);
+				(com.cannontech.common.constants.YukonSelectionList) liteEnergyCompany.getAllSelectionLists().get(i);
 		if (cList.getUserUpdateAvailable() == null || !cList.getUserUpdateAvailable().equalsIgnoreCase("Y")) continue;
 		
 		StarsCustSelectionList list = (StarsCustSelectionList) selectionListTable.get( cList.getListName() );
