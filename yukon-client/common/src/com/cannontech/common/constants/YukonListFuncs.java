@@ -1,5 +1,6 @@
 package com.cannontech.common.constants;
 
+import java.util.ArrayList;
 import java.util.Properties;
 
 import com.cannontech.common.util.CtiUtilities;
@@ -194,7 +195,7 @@ public final class YukonListFuncs implements YukonListEntryTypes
     	return yukonSelectionLists;
     }
     
-    private static Properties getAllListEntries(int listID, java.sql.Connection conn) {
+    private static ArrayList getAllListEntries(int listID, java.sql.Connection conn) {
     	YukonSelectionList list = new YukonSelectionList();
     	list.setListID( listID );
     	list.setOrdering( "N" );
@@ -202,7 +203,7 @@ public final class YukonListFuncs implements YukonListEntryTypes
     	return getAllListEntries(list, conn);
     }
 	
-	private static Properties getAllListEntries(YukonSelectionList list, java.sql.Connection conn) {
+	private static ArrayList getAllListEntries(YukonSelectionList list, java.sql.Connection conn) {
         String sql =
         		"SELECT EntryID, ListID, EntryOrder, EntryText, YukonDefinitionID"
         		+ " FROM " + YukonListEntry.TABLE_NAME
@@ -211,10 +212,12 @@ public final class YukonListFuncs implements YukonListEntryTypes
         	sql += " ORDER BY EntryText";
         else if (list.getOrdering().equalsIgnoreCase("O"))	// Order by "EntryOrder"
         	sql += " ORDER BY EntryOrder";
+        else
+        	sql += " ORDER BY EntryID";
 
         java.sql.PreparedStatement pstmt = null;
         java.sql.ResultSet rset = null;
-        Properties entries = new Properties();
+        ArrayList entries = new ArrayList();
 
         try
         {
@@ -230,7 +233,7 @@ public final class YukonListFuncs implements YukonListEntryTypes
             	entry.setEntryText( rset.getString(4).trim() );
             	entry.setYukonDefID( rset.getInt(5) );
             	
-            	entries.put( new Integer(entry.getEntryID()), entry );
+            	entries.add( entry );
             }
         }
         catch( java.sql.SQLException e )

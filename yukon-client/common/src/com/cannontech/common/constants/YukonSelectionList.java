@@ -17,7 +17,7 @@ public class YukonSelectionList {
 	private String listName = null;
 	private String userUpdateAvailable = null;
 	
-	private java.util.Properties yukonListEntries = null;
+	private java.util.ArrayList yukonListEntries = null;
 	
 	
 	public static final String TABLE_NAME = "YukonSelectionList";
@@ -135,11 +135,11 @@ public class YukonSelectionList {
 
 	/**
 	 * Returns the yukonListEntries.
-	 * @return java.util.Properties
+	 * @return java.util.ArrayList
 	 */
-	public java.util.Properties getYukonListEntries() {
+	public java.util.ArrayList getYukonListEntries() {
 		if (yukonListEntries == null)
-			yukonListEntries = new java.util.Properties();
+			yukonListEntries = new java.util.ArrayList();
 		return yukonListEntries;
 	}
 
@@ -147,7 +147,7 @@ public class YukonSelectionList {
 	 * Sets the yukonListEntries.
 	 * @param yukonListEntries The yukonListEntries to set
 	 */
-	public void setYukonListEntries(java.util.Properties yukonListEntries) {
+	public void setYukonListEntries(java.util.ArrayList yukonListEntries) {
 		this.yukonListEntries = yukonListEntries;
 	}
 
