@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/Msg_reg.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:24 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/10/02 19:26:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,7 +29,7 @@ class IM_EX_MSG CtiRegistrationMsg : public CtiMessage
 private:
 
    RWCString      _appName;
-   RWThreadId     _appId;
+   int            _appId;
    int            _appIsUnique;
 
    int            _appKnownPort;
@@ -41,7 +41,7 @@ public:
    typedef CtiMessage Inherited;
 
    CtiRegistrationMsg();
-   CtiRegistrationMsg(RWCString str, RWThreadId id, RWBoolean bUnique, int port = -1, int delay = 900);
+   CtiRegistrationMsg(RWCString str, int id, RWBoolean bUnique, int port = -1, int delay = 900);
    CtiRegistrationMsg(const CtiRegistrationMsg &aRef);
    virtual ~CtiRegistrationMsg();
    // Assignement operator
@@ -56,8 +56,8 @@ public:
    RWCString&  getAppName();
    void        setAppName(RWCString str);
 
-   RWThreadId  getAppId() const;
-   void        setAppID(RWThreadId id);
+   int         getAppId() const;
+   void        setAppID(int id);
 
    RWBoolean   getAppIsUnique() const;
    void        setAppIsUnique(RWBoolean b);

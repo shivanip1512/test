@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/con_mgr.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/18 15:23:04 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/10/02 19:27:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,7 +40,7 @@ protected:
    };
 
    RWCString         ClientName;
-   RWThreadId        ClientAppId;
+   int               ClientAppId;
 
 
    CtiConnectionManager() :
@@ -60,8 +60,8 @@ public:
    CtiConnectionManager(CtiExchange *xchg, InQ_t *inQ = NULL);
 
    virtual ~CtiConnectionManager();
-   RWThreadId  getClientAppId() const;//              { return ClientAppId; }
-   RWThreadId  setClientAppId(RWThreadId id);//       { return ClientAppId = id; }
+   int         getClientAppId() const;//              { return ClientAppId; }
+   int         setClientAppId(int id);//       { return ClientAppId = id; }
 
    RWCString   getClientName() const;//               { return ClientName; }
    void        setClientName(RWCString str);

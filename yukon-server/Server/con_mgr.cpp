@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/con_mgr.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:46 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/10/02 19:27:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,8 +55,8 @@ CtiConnectionManager::~CtiConnectionManager()
    // Inherited::ShutdownConnection(); // Handled in the base class...
 }
 
-RWThreadId  CtiConnectionManager::getClientAppId() const              { return ClientAppId; }
-RWThreadId  CtiConnectionManager::setClientAppId(RWThreadId id)       { return ClientAppId = id; }
+int CtiConnectionManager::getClientAppId() const              { return ClientAppId; }
+int CtiConnectionManager::setClientAppId(int id)       { return ClientAppId = id; }
 
 RWCString   CtiConnectionManager::getClientName() const               { return ClientName; }
 void        CtiConnectionManager::setClientName(RWCString str)

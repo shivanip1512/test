@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_reg.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:23 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/10/02 19:26:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -98,7 +98,7 @@ CtiRegistrationMsg::CtiRegistrationMsg() :
    // cout << "Creating registration object" << endl;
 }
 
-CtiRegistrationMsg::CtiRegistrationMsg(RWCString str, RWThreadId id, RWBoolean bUnique, int port, int delay) :
+CtiRegistrationMsg::CtiRegistrationMsg(RWCString str, int id, RWBoolean bUnique, int port, int delay) :
    CtiMessage(15),
    _appIsUnique(bUnique),
    _appName(str),
@@ -141,8 +141,8 @@ RWCString   CtiRegistrationMsg::getAppName() const            { return _appName;
 RWCString&  CtiRegistrationMsg::getAppName()                  { return _appName; }
 void        CtiRegistrationMsg::setAppName(RWCString str)     { _appName = str; }
 
-RWThreadId  CtiRegistrationMsg::getAppId() const              { return _appId;   }
-void        CtiRegistrationMsg::setAppID(RWThreadId id)       { _appId = id;    }
+int         CtiRegistrationMsg::getAppId() const              { return _appId;   }
+void        CtiRegistrationMsg::setAppID(int id)              { _appId = id;    }
 
 RWBoolean   CtiRegistrationMsg::getAppIsUnique() const        { return _appIsUnique; }
 void        CtiRegistrationMsg::setAppIsUnique(RWBoolean b)   { _appIsUnique = b;    }
