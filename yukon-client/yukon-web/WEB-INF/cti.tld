@@ -80,9 +80,9 @@
   	<name>text</name>
 	<tagclass>com.cannontech.web.taglib.TextTag</tagclass>	
 	<attribute>
-		<name>key</name>
+		<name>roleid</name>
 		<required>true</required>
-		<rtexprvalue>false</rtexprvalue>
+		<rtexprvalue>true</rtexprvalue>
 	</attribute>
   </tag>
   
@@ -95,9 +95,9 @@
   	<name>checkRole</name>
   	<tagclass>com.cannontech.web.taglib.CheckRole</tagclass>
   	<attribute>
-  		<name>name</name>
+  		<name>roleid</name>
   		<required>true</required>
-  		<rtexprvalue>false</rtexprvalue>
+  		<rtexprvalue>true</rtexprvalue>
   	</attribute>	
   </tag>  
   
@@ -105,9 +105,9 @@
   	<name>checkNoRole</name>
   	<tagclass>com.cannontech.web.taglib.CheckNoRole</tagclass>
   	<attribute>
-  		<name>name</name>
+  		<name>roleid</name>
   		<required>true</required>
-  		<rtexprvalue>false</rtexprvalue>
+  		<rtexprvalue>true</rtexprvalue>
   	</attribute>	
   </tag>  
 </taglib>
