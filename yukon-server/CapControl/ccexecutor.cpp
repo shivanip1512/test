@@ -32,6 +32,8 @@ extern BOOL _CC_DEBUG;
 ---------------------------------------------------------------------------*/
 void CtiCCCommandExecutor::Execute()
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    
     switch ( _command->getCommand() )
     {
     case CtiCCCommand::DISABLE_SUBSTATION_BUS:

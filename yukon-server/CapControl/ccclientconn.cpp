@@ -24,11 +24,11 @@ extern BOOL _CC_DEBUG;
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiCCClientConnection::CtiCCClientConnection(RWPortal portal) : _valid(TRUE), _portal(new RWPortal(portal) ), _queue( new CtiCountedPCPtrQueue<RWCollectable> )
+CtiCCClientConnection::CtiCCClientConnection(RWPortal portal) : _valid(TRUE), _portal(new RWPortal(portal) )
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - New Client Connection." << endl;
+        dout << RWTime() << " - New Client Connection, from " << ((RWSocketPortal*)_portal)->socket().getsockname() << endl;
     }
 
     try
@@ -57,12 +57,25 @@ CtiCCClientConnection::CtiCCClientConnection(RWPortal portal) : _valid(TRUE), _p
 ---------------------------------------------------------------------------*/
 CtiCCClientConnection::~CtiCCClientConnection()
 {
-    //if( _CC_DEBUG )
+    if( _CC_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Client Connection Closing." << endl;
+        dout << RWTime() << " - Client Connection closing." << endl;
     }
-    close();
+    try
+    {
+        close();
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+    if( _CC_DEBUG )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Client Connection closed." << endl;
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -98,6 +111,9 @@ void CtiCCClientConnection::close()
     iStream = NULL;
     _portal = NULL;
 
+    //unblock the in and out thread
+    RWCollectable* unblocker = new RWCollectable();
+    _queue.write(unblocker);
     _recvrunnable.requestCancellation();
     _sendrunnable.requestCancellation();
 
@@ -105,15 +121,11 @@ void CtiCCClientConnection::close()
     _sendrunnable.join();
 
     RWCollectable* c;
-
-    while ( _queue->tryRead( c ) )
+    _queue.close();
+    while( _queue.canRead() )
     {
+        c = _queue.read();
         delete c;
-    }
-
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Client Connection closed." << endl;
     }
 }
 
@@ -124,7 +136,10 @@ void CtiCCClientConnection::close()
 ---------------------------------------------------------------------------*/
 void CtiCCClientConnection::write(RWCollectable* msg)
 {
-    _queue->write( (RWCollectable*) msg );
+    if( _queue.isOpen() )
+    {
+        _queue.write( (RWCollectable*) msg );
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -143,14 +158,17 @@ void CtiCCClientConnection::_sendthr()
         {
             rwRunnable().serviceCancellation();
 
-            out = _queue->read();
+            out = _queue.read();
 
             try
             {
                 if( out != NULL )
                 {
-                    *oStream << out;
-                    oStream->vflush();
+                    if( out->isA()!=__RWCOLLECTABLE )
+                    {
+                        *oStream << out;
+                        oStream->vflush();
+                    }
                     delete out;
                 }
             }

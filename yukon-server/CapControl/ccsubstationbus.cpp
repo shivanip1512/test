@@ -1111,6 +1111,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::setKVARSolution(DOUBLE solution)
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::figureEstimatedVarLoadPointValue()
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    
     DOUBLE tempValue;
     if( getRecentlyControlledFlag() )
         tempValue = getVarValueBeforeControl();
@@ -1149,6 +1151,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::figureEstimatedVarLoadPointValue()
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    
     BOOL keepGoing = TRUE;
 
     //have we went past the max daily ops
@@ -1287,6 +1291,8 @@ DOUBLE CtiCCSubstationBus::calculateKVARSolution(const RWCString& controlUnits, 
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE setpoint, const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    
     CtiRequestMsg* request = NULL;
     try
     {
@@ -1575,6 +1581,8 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE setpoint, const RWDB
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    
     CtiRequestMsg* request = NULL;
     CtiCCFeeder* lastFeederControlled = NULL;
     int positionLastFeederControlled = -1;
@@ -1842,6 +1850,8 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RW
 ---------------------------------------------------------------------------*/
 DOUBLE CtiCCSubstationBus::figureCurrentSetPoint(const RWDBDateTime& currentDateTime)
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    
     unsigned nowInSeconds = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
     if( isPeakDay() && getPeakStartTime() <= nowInSeconds && nowInSeconds <= getPeakStopTime() )
     {
@@ -1862,6 +1872,8 @@ DOUBLE CtiCCSubstationBus::figureCurrentSetPoint(const RWDBDateTime& currentDate
 ---------------------------------------------------------------------------*/
 BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    
     BOOL returnBoolean = TRUE;
     char tempchar[64] = "";
     RWCString text = "";
@@ -2058,6 +2070,8 @@ BOOL CtiCCSubstationBus::isPeakDay()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::clearOutNewPointReceivedFlags()
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    
     setNewPointDataReceivedFlag(FALSE);
     for(int i=0;i<_ccfeeders.entries();i++)
     {
@@ -2344,6 +2358,8 @@ DOUBLE CtiCCSubstationBus::calculatePowerFactor(DOUBLE kvar, DOUBLE kw)
 --------------------------------------------------------------------------*/
 DOUBLE CtiCCSubstationBus::convertKQToKVAR(DOUBLE kq, DOUBLE kw)
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    
     DOUBLE returnKVAR = 0.0;
     returnKVAR = ((2.0*kq)-kw)/SQRT3;
     return returnKVAR;
@@ -2356,6 +2372,8 @@ DOUBLE CtiCCSubstationBus::convertKQToKVAR(DOUBLE kq, DOUBLE kw)
 --------------------------------------------------------------------------*/
 DOUBLE CtiCCSubstationBus::convertKVARToKQ(DOUBLE kvar, DOUBLE kw)
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    
     DOUBLE returnKQ = 0.0;
     returnKQ = ((SQRT3*kvar)+kw)/2.0;
     return returnKQ;
@@ -2576,6 +2594,8 @@ int CtiCCSubstationBus::operator!=(const CtiCCSubstationBus& right) const
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus* CtiCCSubstationBus::replicate() const
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    
     return(new CtiCCSubstationBus(*this));
 }
 

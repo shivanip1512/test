@@ -1240,7 +1240,7 @@ void CtiLMControlAreaStore::doResetThr()
                 if( _LM_DEBUG )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Restoring control area list from the database" << endl;
+                    dout << RWTime() << " - Periodic restore of control area list from the database" << endl;
                 }
     
                 if( currenttime.rwdate() != RWDBDateTime().rwdate() )

@@ -178,18 +178,17 @@ void CtiCCSubstationBusStore::reset()
     bool wasAlreadyRunning = false;
     try
     {
-        //if( _CC_DEBUG )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Obtaining connection to the database..." << endl;
-            dout << RWTime() << " - Reseting substation buses from database..." << endl;
-        }
-    
         {
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
             {
-    
+                //if( _CC_DEBUG )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Obtained connection to the database..." << endl;
+                    dout << RWTime() << " - Reseting substation buses from database..." << endl;
+                }
+
                 if ( conn.isValid() )
                 {
                     if( _ccSubstationBuses->entries() > 0 )
@@ -1330,7 +1329,7 @@ void CtiCCSubstationBusStore::doResetThr()
             //if( _CC_DEBUG )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Restoring substation list from the database" << endl;
+                dout << RWTime() << " - Periodic restore of substation list from the database" << endl;
             }
 
             dumpAllDynamicData();

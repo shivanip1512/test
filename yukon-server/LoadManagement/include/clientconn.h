@@ -38,7 +38,7 @@ public:
     void write(RWCollectable* msg);
 
 protected:
-    RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > _queue;
+    RWPCPtrQueue< RWCollectable > _queue;
 
     void _sendthr();
     void _recvthr();

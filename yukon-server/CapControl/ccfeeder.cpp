@@ -787,6 +787,8 @@ CtiCCFeeder& CtiCCFeeder::setKVARSolution(DOUBLE solution)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    
     CtiCCCapBank* returnCapBank = NULL;
 
     if( kvarSolution < 0.0 )
@@ -836,6 +838,8 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
 ---------------------------------------------------------------------------*/
 CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, ULONG decimalPlaces)
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    
     CtiRequestMsg* reqMsg = NULL;
     if( capBank != NULL )
     {
@@ -888,6 +892,8 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, RWOr
 ---------------------------------------------------------------------------*/
 CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, ULONG decimalPlaces)
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    
     CtiRequestMsg* reqMsg = NULL;
     if( capBank != NULL )
     {
@@ -940,6 +946,8 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, RWOr
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::figureEstimatedVarLoadPointValue()
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    
     DOUBLE tempValue;
     if( getRecentlyControlledFlag() )
         tempValue = getVarValueBeforeControl();
@@ -968,6 +976,8 @@ CtiCCFeeder& CtiCCFeeder::figureEstimatedVarLoadPointValue()
 ---------------------------------------------------------------------------*/
 BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, BOOL peakTimeFlag, ULONG decimalPlaces, const RWCString& controlUnits)
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    
     BOOL returnBoolean = FALSE;
     DOUBLE setpoint = (peakTimeFlag?getPeakSetPoint():getOffPeakSetPoint());
     setKVARSolution(CtiCCSubstationBus::calculateKVARSolution(controlUnits,setpoint,getCurrentVarLoadPointValue(),getCurrentWattLoadPointValue()));
@@ -1169,6 +1179,8 @@ void CtiCCFeeder::figureKVARSolution(const RWCString& controlUnits, DOUBLE setPo
 ---------------------------------------------------------------------------*/
 BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, ULONG minConfirmPercent, ULONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue)
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    
     BOOL returnBoolean = TRUE;
     char tempchar[64] = "";
     RWCString text = "";
@@ -1693,6 +1705,8 @@ int CtiCCFeeder::operator!=(const CtiCCFeeder& right) const
 ---------------------------------------------------------------------------*/
 CtiCCFeeder* CtiCCFeeder::replicate() const
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    
     return(new CtiCCFeeder(*this));
 }
 

@@ -634,6 +634,7 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
 ---------------------------------------------------------------------------*/
 void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     try
     {
         CtiMultiMsg* msgMulti;
@@ -687,14 +688,14 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                     cmdMsg = (CtiCommandMsg *)message;
                     if( cmdMsg->getOperation() == CtiCommandMsg::AreYouThere )
                     {
-                        if( _CC_DEBUG )
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Replying to Are You There message." << endl;
-                        }
                         {
                             RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
                             getDispatchConnection()->WriteConnQue(cmdMsg->replicateMessage());
+                        }
+                        if( _CC_DEBUG )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Replied to Are You There message." << endl;
                         }
                     }
                     else
@@ -746,6 +747,7 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
 ---------------------------------------------------------------------------*/
 void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, RWTime& timestamp, ULONG secondsFrom1901 )
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     if( _CC_DEBUG )
     {
         char tempchar[80];
@@ -976,6 +978,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, 
 ---------------------------------------------------------------------------*/
 void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, int status, RWCString resultString, ULONG secondsFrom1901 )
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     /*if( _CC_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
