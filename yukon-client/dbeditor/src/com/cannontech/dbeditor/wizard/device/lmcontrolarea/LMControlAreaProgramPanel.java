@@ -184,9 +184,9 @@ private com.klg.jclass.field.JCSpinField getJCSpinFieldPriority() {
 			ivjJCSpinFieldPriority.setDataProperties(
 				new com.klg.jclass.field.DataProperties(
 					new com.klg.jclass.field.validate.JCIntegerValidator(
-						null, new Integer(0), new Integer(Integer.MAX_VALUE), null, true, null, 
+						null, new Integer(1), new Integer(Integer.MAX_VALUE), null, true, null, 
 						new Integer(1), "###0.###;-###0.###", false/*allow_null*/,
-						false, false, null, new Integer(0)/*default value*/), 
+						false, false, null, new Integer(1)/*default value*/), 
 						new com.klg.jclass.util.value.MutableValueModel(
 							java.lang.Integer.class, new Integer(0)), 
 							new com.klg.jclass.field.JCInvalidInfo(true, 2, 
@@ -449,7 +449,6 @@ private javax.swing.JTable getJTableProgram() {
 			ivjJTableProgram = new javax.swing.JTable();
 			ivjJTableProgram.setName("JTableProgram");
 			getJScrollPaneJTable().setColumnHeaderView(ivjJTableProgram.getTableHeader());
-			getJScrollPaneJTable().getViewport().setBackingStoreEnabled(true);
 			ivjJTableProgram.setBounds(0, 0, 200, 200);
 			// user code begin {1}
 
@@ -467,7 +466,7 @@ private javax.swing.JTable getJTableProgram() {
 			});
 			
 			field.setHorizontalAlignment( javax.swing.JTextField.CENTER );
-			field.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(0, 99999) );
+			field.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(1, 99999) );
 			javax.swing.DefaultCellEditor ed = new javax.swing.DefaultCellEditor(field);
 			ed.setClickCountToStart(1);
 
