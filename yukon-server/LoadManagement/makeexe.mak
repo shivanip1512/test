@@ -57,6 +57,7 @@ lmenergyexchangeoffer.obj \
 lmenergyexchangeofferrevision.obj \
 lmgroupbase.obj \
 lmgroupemetcon.obj \
+lmgroupexpresscom.obj \
 lmgrouppoint.obj \
 lmgroupripple.obj \
 lmgroupversacom.obj \
@@ -67,6 +68,7 @@ lmprogramcurtailment.obj \
 lmprogramdirect.obj \
 lmprogramdirectgear.obj \
 lmprogramenergyexchange.obj \
+lmprogramthermostatgear.obj \
 lmservice.obj \
 loadmanager.obj \
 main.obj
