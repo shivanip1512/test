@@ -52,6 +52,9 @@ insert into YukonListEntry values (1063,1005,-1,'SA Simple',1312);
 
 update ctidatabase set version = '3.0' where version = '3.00';
 
+insert into YukonRoleProperty values(-1018,-1,'export_file_directory','(none)','File location of all export operations');
+insert into YukonGroupRole values(-19,-1,-1,-1018,'(none)');
+
 
 
 
