@@ -946,6 +946,9 @@ create index Indx_ContLstName on Contact (
    ContLastName ASC
 );
 
+create index Index_DYNVER_CS on DynamicVerification (
+   CodeSequence ASC
+);
 
 
 

@@ -1070,6 +1070,10 @@ create   index Indx_ContLstName on Contact (
 ContLastName
 );
 
+create   index Index_DYNVER_CS on DynamicVerification (
+CodeSequence
+);
+
 
 
 
