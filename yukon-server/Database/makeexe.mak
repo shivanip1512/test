@@ -181,6 +181,8 @@ tbl_dv_ied.obj:	tbl_dv_ied.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h dbmemobject.h dbaccess.h \
 		sema.h resolvers.h pointtypes.h yukon.h ctidbgmem.h \
 		db_entry_defines.h logger.h thread.h
+tbl_dv_lmgmct.obj:	tbl_dv_lmgmct.h dlldefs.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h logger.h thread.h
 tbl_dv_lmg_ripple.obj:	logger.h thread.h mutex.h dlldefs.h guard.h \
 		tbl_dv_lmg_ripple.h dllbase.h os2_2w32.h types.h cticalls.h \
 		dsm2.h dbmemobject.h dbaccess.h sema.h resolvers.h \
@@ -209,6 +211,15 @@ tbl_dv_wnd.obj:	tbl_dv_wnd.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h dbmemobject.h dbaccess.h \
 		sema.h resolvers.h pointtypes.h yukon.h ctidbgmem.h \
 		db_entry_defines.h desolvers.h logger.h thread.h
+tbl_dyn_ptalarming.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h sema.h logger.h \
+		thread.h numstr.h tbl_dyn_ptalarming.h ctibase.h ctinexus.h \
+		dbmemobject.h pointdefs.h yukon.h ctidbgmem.h
+tbl_gateway_end_device.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h sema.h numstr.h \
+		tbl_gateway_end_device.h resolvers.h pointtypes.h yukon.h \
+		ctidbgmem.h db_entry_defines.h logger.h thread.h \
+		dbmemobject.h
 tbl_lm_controlhist.obj:	tbl_lm_controlhist.h dbmemobject.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h sema.h yukon.h ctidbgmem.h utility.h logger.h \
@@ -225,6 +236,9 @@ tbl_pao.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h sema.h logger.h thread.h \
 		resolvers.h pointtypes.h yukon.h ctidbgmem.h \
 		db_entry_defines.h tbl_pao.h dbmemobject.h
+tbl_paoexclusion.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h sema.h logger.h \
+		thread.h tbl_paoexclusion.h utility.h yukon.h ctidbgmem.h
 tbl_port_base.obj:	tbl_port_base.h dbmemobject.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h sema.h resolvers.h pointtypes.h yukon.h ctidbgmem.h \
