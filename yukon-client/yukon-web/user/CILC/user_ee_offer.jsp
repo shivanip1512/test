@@ -69,7 +69,7 @@
 			if (price == 0)
 				priceStrs[i] = "----";
 			else
-				priceStrs[i] = numberFormat.format(price);
+				priceStrs[i] = priceFormat.format(price);
    
 			double amount = 0;
 			if ( replyHistory.getAcceptStatus().equalsIgnoreCase("accepted") )
@@ -80,7 +80,7 @@
 			if (amount == 0)
 				amountStrs[i] = "----";
 			else
-				amountStrs[i] = numberFormat.format(amount);
+				amountStrs[i] = priceFormat.format(amount);
 		}
 
         // Attempt to get the customers baseline values for the date of the offer
@@ -183,7 +183,7 @@
                   </tr>
                   <%
                for( int i = 0; i < 12; i++ ) {
-                   String hourStr = hourFormat.format(i) + ":00";
+                   String hourStr = hourFormat.format(i+1) + ":00";
           %>
                   <tr> 
                     <td width="75" height="10" class="TableCell"><%= hourStr %></td>
@@ -217,7 +217,7 @@
                   </tr>
                   <%
                for( int i = 12; i < 24; i++ ) {
-                   String hourStr = hourFormat.format(i) + ":00";
+                   String hourStr = hourFormat.format(i+1) + ":00";
           %>
                   <tr> 
                     <td width="75" height="10" valign="TOP" class="TableCell"><%= hourStr %></td>
