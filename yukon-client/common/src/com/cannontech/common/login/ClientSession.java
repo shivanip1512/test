@@ -62,6 +62,26 @@ public class ClientSession {
 		return AuthFuncs.checkRoleProperty(getUser(), rolePropertyID);
 	}
 	
+	/**
+	 * Returns the value of the given role property for the current user.
+	 * Checks if the current user has the give roleproperty id
+	 * @param rolePropertyID
+	 * @param defaultValue
+	 * @return
+	 */
+	public String getRolePropertyValue(int rolePropertyID, String defaultValue) {
+		return AuthFuncs.getRolePropertyValue(getUser(), rolePropertyID, defaultValue);
+	}
+		
+	/**
+	 * Returns the value of the given role property for the current user.
+	 * @param rolePropertyID
+	 * @return
+	 */
+	public String getRolePropertyValue(int rolePropertyID) {
+		return AuthFuncs.getRolePropertyValue(getUser(), rolePropertyID);
+	}
+	
 	public static synchronized ClientSession getInstance() {
 		if(instance == null) {
 			instance = new ClientSession();
