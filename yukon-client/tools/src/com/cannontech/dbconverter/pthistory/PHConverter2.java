@@ -97,13 +97,6 @@ public void convert(String dsm2Root) throws Exception {
 			continue;
 		}
 		
-		float multiplier = getMultiplier(id);
-		
-		if( multiplier < 0 ) {
-			System.out.println(" ...no yukon point found skipping");
-			continue;
-		}
-			
 		DSM2PointData[] data = DSM2PointData.loadPointData(entries[i].getCanonicalPath());
 		System.out.println(" read " + data.length + " values");
 		
@@ -349,7 +342,6 @@ private void writePointData(int id, float multiplier, DSM2PointData[] data)
 		pstmt = conn.prepareStatement("INSERT INTO RAWPOINTHISTORY VALUES(?,?,?,?,?)");
 
 		int count = 0;
-			
 		for(int i = 0; i < data.length; i++ ) {
 
 			if( data[i] == null)
@@ -362,7 +354,8 @@ private void writePointData(int id, float multiplier, DSM2PointData[] data)
 			int quality = getQuality(data[i].quality);
 
 			if( forceInsert )
-				System.out.println("Forcing inserts, ignoring maxTimestamp of pointhistory.");
+			{
+			}
 			else if(timestamp.getTime() <= lastTimestamp)
 				continue;
 
@@ -377,7 +370,7 @@ private void writePointData(int id, float multiplier, DSM2PointData[] data)
 			count++;
 		 }
 
-		System.out.print("Writing " + count + " values...");
+		System.out.print("\r\nWriting " + count + " values for ID="+id+"...");
 		long start = System.currentTimeMillis();		
 		conn.commit();
 		System.out.println(" took "  + (System.currentTimeMillis() - start) + " millis");
