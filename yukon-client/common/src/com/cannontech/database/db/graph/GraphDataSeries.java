@@ -12,14 +12,16 @@ public class GraphDataSeries extends com.cannontech.database.db.DBPersistent {
 	public static final String PEAK_SERIES  = "peak";
 	public static final String USAGE_SERIES = "usage";
 	public static final String YESTERDAY_SERIES = "yesterday";
+	public static final String PEAK_VALUE_SERIES = "peakvalue";
 	
 	public static final int GRAPH_MASK = 0x0001;
 	public static final int PEAK_MASK = 0x0002;
 	public static final int USAGE_MASK = 0x0004;
 	public static final int YESTERDAY_MASK = 0x0008;
+	public static final int PEAK_VALUE_MASK = 0x0010;
 	
-	public static final int NORMAL_QUERY_MASK = 0x0007;
-	public static final int VALID_INTERVAL_MASK = 0x0009;
+	public static final int NORMAL_QUERY_MASK = 0x0007; // graph, peak, usage
+	public static final int VALID_INTERVAL_MASK = 0x0019;	// graph, yesterday, peakinterval
 	
 	
 	private java.lang.Integer graphDataSeriesID = null;
@@ -156,7 +158,8 @@ public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID,
 		String axis = (String) sql.getRow(i)[4];
 		java.math.BigDecimal color = (java.math.BigDecimal) sql.getRow(i)[5];
 		String deviceName = (String) sql.getRow(i)[6];
-		Double mult = (Double)sql.getRow(i)[7];
+		Number mult = (Number)sql.getRow(i)[7];
+//		java.math.BigDecimal mult = (java.math.BigDecimal)sql.getRow(i)[7];
 //		java.math.BigDecimal uomid = (java.math.BigDecimal) sql.getRow(i)[7];
 	
 		dataSeries.setGraphDataSeriesID ( new Integer( gdsID.intValue() ) );		
@@ -167,7 +170,7 @@ public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID,
 		dataSeries.setAxis( new Character( axis.charAt(0)) );
 		dataSeries.setColor( new Integer( color.intValue() ) );
 		dataSeries.setDeviceName(deviceName);
-		dataSeries.setMultiplier(mult);
+		dataSeries.setMultiplier(new Double(mult.doubleValue()));
 		
 		dataSeries.setTypeMask(type);
 		
@@ -422,6 +425,8 @@ public void setTypeMask(String newType)
 		typeMask = USAGE_MASK;
 	else if( newType.equalsIgnoreCase(YESTERDAY_SERIES))
 		typeMask = YESTERDAY_MASK;
+	else if( newType.equalsIgnoreCase(PEAK_VALUE_SERIES))
+		typeMask = PEAK_VALUE_MASK;
 }
 /**
  * Insert the method's description here.
