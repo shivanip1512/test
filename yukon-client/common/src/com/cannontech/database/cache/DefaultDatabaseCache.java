@@ -139,6 +139,23 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	 * @ejb:interface-method
 	 * tview-type="remote" 
 	**/
+	public synchronized java.util.List getAllCommands()
+	{
+		return getDBCache().getAllCommands();
+	}
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote" 
+	**/
+	public synchronized java.util.Map getAllCommandsMap()
+	{
+		return getDBCache().getAllCommandsMap();
+	}
+	
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote" 
+	**/
 	public synchronized java.util.List getAllConfigs()
 	{
 		return getDBCache().getAllConfigs();
@@ -515,6 +532,11 @@ public class DefaultDatabaseCache implements IDatabaseCache
    {
 	  getDBCache().releaseAllSeasonSchedules();
    }
+   public synchronized void releaseAllCommands()
+   {
+	  getDBCache().releaseAllCommands();
+   }
+
    
    public synchronized void releaseAllTOUSchedules()
    {
@@ -710,6 +732,23 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	public synchronized void releaseAllTags()
 	{
 	   getDBCache().releaseAllTags();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllDeviceTypeCommands()
+	 */
+	public List getAllDeviceTypeCommands()
+	{
+		return getDBCache().getAllDeviceTypeCommands();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.cannontech.yukon.IDatabaseCache#releaseAllDeviceTypeCommands()
+	 */
+	public void releaseAllDeviceTypeCommands()
+	{
+		getDBCache().releaseAllDeviceTypeCommands();
+		
 	}
 
 }
