@@ -15,6 +15,7 @@
     <classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
     <classpathentry kind="lib" path="/third-party/junit.jar"/>
     <classpathentry kind="lib" path="/third-party/jcommon.jar"/>
+    <classpathentry kind="src" path="/yukonappserver"/>
     <classpathentry kind="lib" path="/third-party/classes12.jar"/>
     <classpathentry kind="lib" path="/third-party/jtds.jar"/>
     <classpathentry kind="output" path="bin"/>
