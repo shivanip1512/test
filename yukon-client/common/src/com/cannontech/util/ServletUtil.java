@@ -1,5 +1,9 @@
 package com.cannontech.util;
 
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 /**
  * The junk drawer for servlets.
  * Creation date: (3/28/00 11:19:23 AM)
@@ -89,8 +93,9 @@ public class ServletUtil {
 		new java.text.SimpleDateFormat("MM.dd.yy"),
 		new java.text.SimpleDateFormat("MM/dd/yyyy"),
 		new java.text.SimpleDateFormat("MM-dd-yyyy"),
-		new java.text.SimpleDateFormat("MM.dd-yyyy")
-		
+		new java.text.SimpleDateFormat("MM.dd-yyyy"),
+		new java.text.SimpleDateFormat("HH:mm:ss"),
+		new java.text.SimpleDateFormat("HH:mm")		
 	};
 
 	//Ever seen this before? hehe
@@ -820,20 +825,32 @@ public static java.util.Date getYesterday() {
 	return cal.getTime();
 }
 /**
- * Insert the method's description here.
+ * Create a Date object using the given String and TimeZone
  * Creation date: (3/28/00 11:28:32 AM)
  * @return java.util.Date
  * @param str java.lang.String
  */
-public static java.util.Date parseDateStringLiberally(String str) {
+public static synchronized java.util.Date parseDateStringLiberally(String dateStr) {
+	return parseDateStringLiberally(dateStr, TimeZone.getDefault());
+}
 
+/**
+ * Method parseDateStringLiberally.
+ * Create a Date object using the given String and TimeZone
+ * @param dateStr
+ * @param tz
+ * @return Date
+ */
+public static synchronized Date parseDateStringLiberally(String dateStr, TimeZone tz) {
 	java.util.Date retVal = null;
 	
 	for( int i = 0; i < dateFormat.length; i++ )
 	{
 		try
 		{
-			retVal = dateFormat[i].parse(str);
+			DateFormat df = dateFormat[i];
+			df.setTimeZone(tz);
+			retVal = df.parse(dateStr);
 			break;
 		}
 		catch( java.text.ParseException pe )
@@ -841,7 +858,7 @@ public static java.util.Date parseDateStringLiberally(String str) {
 		}
 	}
 		
-	return retVal;
+	return retVal;	
 }
 /**
  * Insert the method's description here.
