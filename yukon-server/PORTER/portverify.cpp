@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/03/14 01:16:24 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/03/17 18:51:57 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -345,7 +345,22 @@ void CtiPorterVerification::push(CtiVerificationBase *entry)
     {
         if( entry )
         {
-            _input.putQueue(entry);
+            int maxsize = gConfigParms.getValueAsInt("PORTER_VERIFICATION_QUEUE_LIMIT", 10000);
+
+            if( _input.entries() < maxsize )
+            {
+                _input.putQueue(entry);
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint - CtiPorterVerification::push has exceeded maximum queue size (" << maxsize << "), purging **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                _input.clearAndDestroy();
+                delete entry;
+            }
         }
         else
         {
