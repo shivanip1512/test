@@ -57,7 +57,8 @@ bool CtiMutex::acquire(unsigned long millis)
     DWORD result = WaitForSingleObject( hMutex, millis );
     // assert(result != WAIT_FAILED);   // Why??? CGP 021502
 #ifdef _DEBUG
-    _threadID = GetCurrentThreadId();
+    if(result == WAIT_OBJECT_0)
+        _threadID = GetCurrentThreadId();
 #endif
     return( result == WAIT_OBJECT_0 );
 #endif
