@@ -10,17 +10,21 @@ public class CollectableMappings
 	private static DefineCollectable[] mappings =
 	{
 		//messages sent
-		new com.cannontech.loadcontrol.messages.DefineCollectableLMManualControlMsg(),		
+		new com.cannontech.message.server.DefineCollectableServerResponse(),
+		new com.cannontech.loadcontrol.messages.DefineCollectableLMManualControlRequest(),
 		new com.cannontech.loadcontrol.messages.DefineCollectableLMCommand(),
 		new com.cannontech.loadcontrol.messages.DefineCollectableLMControlAreaMsg(),
 		new com.cannontech.loadcontrol.messages.DefineCollectableLMCurtailmentAcknowledgeMsg(),
-		new com.cannontech.loadcontrol.messages.DefineCollectableLMManualControlMsg(),
+		new com.cannontech.loadcontrol.messages.DefineCollectableLMManualControlRequest(),
 		new com.cannontech.loadcontrol.messages.DefineCollectableLMMessage(),
 		new com.cannontech.loadcontrol.messages.DefineCollectableLMEnergyExchangeAcceptMsg(),
 		new com.cannontech.loadcontrol.messages.DefineCollectableLMEnergyExchangeControlMsg(),
 		
 		//data received
+		new com.cannontech.message.server.DefineCollectableServerRequest(),
 		new com.cannontech.message.dispatch.message.DefineCollectableMulti(),
+		
+		new com.cannontech.loadcontrol.messages.DefineCollectableLMManualControlResponse(),
 		
 		new com.cannontech.loadcontrol.data.DefColl_LMControlArea(),
 		new com.cannontech.loadcontrol.data.DefColl_LMProgramDirect(),
