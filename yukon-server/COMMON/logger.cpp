@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/logger.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/04/02 16:30:46 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/06/10 21:04:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -136,8 +136,22 @@ CtiLogger& CtiLogger::setToStdOut(bool to_stdout)
 
 CtiLogger& CtiLogger::acquire()
 {
-    _log_mux.acquire();
+#ifdef _DEBUG
 
+    bool isacq = false;
+    do
+    {
+        isacq = _log_mux.acquire(300000);       // Five minutes seems like infinite anyway!
+
+        if(!isacq)
+        {
+            cerr << RWTime() << " logger mutex is unable to be locked down for thread id: " << GetCurrentThreadId() << endl;
+        }
+
+    } while (!isacq);
+#else
+    _log_mux.acquire();
+#endif
     return *this;
 }
 
