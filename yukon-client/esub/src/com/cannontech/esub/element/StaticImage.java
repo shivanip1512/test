@@ -71,8 +71,15 @@ private void initialize() {
 	 * @param yukonImage The yukonImage to set
 	 */
 	public void setYukonImage(LiteYukonImage yukonImage) {
-		this.yukonImage = yukonImage;
-		setImage( Util.prepareImage(yukonImage.getImageValue()));
+		if(yukonImage == null) {
+			this.yukonImage = LiteYukonImage.NONE_IMAGE;
+			this.yukonImage.setImageValue(Util.DEFAULT_IMAGE_BYTES);
+		}
+		else {
+			this.yukonImage = yukonImage;
+		}
+			
+		setImage( Util.prepareImage(this.yukonImage.getImageValue()));
 	}
 	
 	/**
