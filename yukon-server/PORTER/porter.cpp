@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2004/10/08 20:48:41 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2004/10/12 20:17:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -502,7 +502,7 @@ void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, voi
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "    Transmitter:  " << RemoteDevice->getName() << " queued commands:  " << QueEntCnt << " Evaluate Next at " << RemoteDevice->getExclusion().getEvaluateNextAt() << endl;
+                dout << "    Transmitter:  " << setw(25) << RemoteDevice->getName() << " queued commands:  " << setw(4) << QueEntCnt << " Evaluate Next at " << RemoteDevice->getExclusion().getEvaluateNextAt() << endl;
             }
         }
     }
@@ -1952,6 +1952,7 @@ bool processInputFunction(CHAR Char)
         {
 #ifndef DEBUG_MEMORY
             fprintf(stdout, "Module not compiled for Memory Dumps\n");
+            _CrtDumpMemoryLeaks();
 #else
             fprintf(stderr, "Memory Dump ------- \n");
             fprintf(stderr, "  Start Memory Deltas ------- \n");
