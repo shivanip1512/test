@@ -1,4 +1,44 @@
 <%@ include file="StarsHeader.jsp" %>
+<%
+	StarsThermostatSeason summer = null;
+	StarsThermostatSeason winter = null;
+	StarsThermostatSchedule schedule = null;
+	StarsThermostatSchedule dftSchedule = null;
+	
+	if (thermoSettings != null) {
+		for (int i = 0; i < thermoSettings.getStarsThermostatSeasonCount(); i++) {
+			if (thermoSettings.getStarsThermostatSeason(i).getMode().getType() == StarsThermoModeSettings.COOL_TYPE) {
+				summer = thermoSettings.getStarsThermostatSeason(i);
+				for (int j = 0; j < summer.getStarsThermostatScheduleCount(); j++) {
+					if (summer.getStarsThermostatSchedule(j).getDay().getType() == StarsThermoDaySettings.WEEKDAY_TYPE) {
+						schedule = summer.getStarsThermostatSchedule(j);
+						break;
+					}
+				}
+			}
+			else if (thermoSettings.getStarsThermostatSeason(i).getMode().getType() == StarsThermoModeSettings.HEAT_TYPE)
+				winter = thermoSettings.getStarsThermostatSeason(i);
+		}
+	}
+	
+	if (dftThermoSettings != null) {
+		for (int i = 0; i < dftThermoSettings.getStarsThermostatSeasonCount(); i++) {
+			if (dftThermoSettings.getStarsThermostatSeason(i).getMode().getType() == StarsThermoModeSettings.COOL_TYPE) {
+				StarsThermostatSeason season = dftThermoSettings.getStarsThermostatSeason(i);
+				if (summer == null) summer = season;
+				for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
+					if (season.getStarsThermostatSchedule(j).getDay().getType() == StarsThermoDaySettings.WEEKDAY_TYPE) {
+						dftSchedule = season.getStarsThermostatSchedule(j);
+						if (schedule == null) schedule = dftSchedule;
+						break;
+					}
+				}
+			}
+			else if (dftThermoSettings.getStarsThermostatSeason(i).getMode().getType() == StarsThermoModeSettings.HEAT_TYPE)
+				if (winter == null) winter = dftThermoSettings.getStarsThermostatSeason(i);
+		}
+	}
+%>
 <html>
 <head>
 <title>Consumer Energy Services</title>
@@ -125,9 +165,10 @@ MM_reloadPage(true);
                 </tr>
               </table>
               <br>
-			<form name="form1" method="POST" action="/servlet/SOAPClient">
+			<form name="form1" method="POST" action="/servlet/SOAPClient" onsubmit="setChanged(false)">
 			  <input type="hidden" name="action" value="ConfigThermostat">
-			  <input type="hidden" name="schedule" value="WeekdayH">
+			  <input type="hidden" name="Day" value="<%= StarsThermoDaySettings.WEEKDAY.toString() %>">
+			  <input type="hidden" name="Mode" value="<%= StarsThermoModeSettings.COOL.toString() %>">
               <table width="80%" border="1" height="411" cellspacing = "0" cellpadding = "2">
                 <tr> 
                   <td align = "center"  valign = "bottom" height="84"> 
@@ -150,14 +191,14 @@ MM_reloadPage(true);
                               <td class = "TableCell" align = "right" width="49%">Summer 
                                 Start Date: </td>
                               <td width="51%"> 
-                                <input type="text" name="" size = "8" value = "06/01/02">
+                                <input type="text" name="SummerStartDate" size="8" value="<%= datePart.format(summer.getStartDate().toDate()) %>" onchange="setChanged(true)">
                               </td>
                             </tr>
                             <tr>
                               <td class = "TableCell" align = "right" width="49%">Winter 
                                 Start Date:</td>
                               <td width="51%"> 
-                                <input type="text" name="" size = "8" value = "10/15/02">
+                                <input type="text" name="WinterStartDate" size="8" value="<%= datePart.format(winter.getStartDate().toDate()) %>" onchange="setChanged(true)">
                               </td>
                             </tr>
                           </table>
@@ -188,50 +229,54 @@ MM_reloadPage(true);
                     </table><br>
                     
                     <img src="TempBG.gif" style ="position:relative;">
-                    <div id="MovingLayer1" style="position:absolute; width:25px; height:162px; left:309px; z-index:1; top: 408px"> 
+                    <div id="MovingLayer1" style="position:absolute; width:25px; height:162px; left:309px; z-index:1; top: 408px"
+					   onload="moveLayer('MovingLayer1',<%= schedule.getTime1().getHour() %>,<%= schedule.getTime1().getMinute() %>); moveTempArrow('arrow1','div1',<%= schedule.getTemperature1() %>)">
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
                           <td> 
-                            <div id = "div1" class = "TableCell3">72&deg</div>
+                            <div id="div1" class="TableCell3" onchange="setChanged(true)">72&deg</div>
                             <img src="Thermometer.gif" style = "position:relative; left:-5px" width="16" height="131"  onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer2').style.left)-3,200,'showTimeWake()','horizontal', 'MovingLayer1')"> 
-                            <img id = "arrow1" src="Arrow.gif" style = "position:relative; left:-11px; top:-100px" onMouseDown = "beginDrag(event,-135,-35,0,0,'showTemp1()','vertical')"> 
+                            <img id="arrow1" src="Arrow.gif" style = "position:relative; left:-11px; top:-100px" onMouseDown = "beginDrag(event,-135,-35,0,0,'showTemp1()','vertical')"> 
                           </td>
                         </tr>
                       </table>
                     </div>
-                    <div id="MovingLayer2" style="position:absolute; width:21px; height:162px; left:354px; z-index:1; top: 408px"> 
+                    <div id="MovingLayer2" style="position:absolute; width:21px; height:162px; left:354px; z-index:1; top: 408px"
+					  onload="MoveLayer('MovingLayer2',<%= schedule.getTime2().getHour() %>,<%= schedule.getTime2().getMinute() %>); MoveTempArrow('arrow2','div2',<%= schedule.getTemperature2() %>)"> 
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
                           <td> 
-                            <div id = "div2" class = "TableCell3">72&deg</div>
+                            <div id="div2" class="TableCell3" onchange="setChanged(true)">72&deg</div>
                             <img src="Thermometer.gif" style = "position:relative; left:-5px" width="16" height="131"  onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer3').style.left)-3,parseInt(document.getElementById('MovingLayer1').style.left)+3,'showTimeLeave()','horizontal', 'MovingLayer2')"> 
-                            <img id = "arrow2" src="Arrow.gif" style = "position:relative; left:-9px; top:-100px"  onMouseDown = "beginDrag(event,-135,-35,0,0,'showTemp2()','vertical')"> 
+                            <img id="arrow2" src="Arrow.gif" style = "position:relative; left:-9px; top:-100px"  onMouseDown = "beginDrag(event,-135,-35,0,0,'showTemp2()','vertical')"> 
                           </td>
                         </tr>
                       </table>
                     </div>
-                    <div id="MovingLayer3" style="position:absolute;  width:21px; height:162px; left:507px; z-index:1; top: 408px"> 
+                    <div id="MovingLayer3" style="position:absolute;  width:21px; height:162px; left:507px; z-index:1; top: 408px"
+					  onload="MoveLayer('MovingLayer3',<%= schedule.getTime3().getHour() %>,<%= schedule.getTime3().getMinute() %>); MoveTempArrow('arrow3','div3',<%= schedule.getTemperature3() %>)"> 
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
                           <td> 
-                            <div id = "div3" class = "TableCell3">72&deg</div>
+                            <div id="div3" class="TableCell3" onchange="setChanged(true)">72&deg</div>
                             <img src="Thermometer.gif" style = "position:relative; left:-5px" width="16" height="131"  onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer4').style.left)-3,parseInt(document.getElementById('MovingLayer2').style.left)+3,'showTimeReturn()','horizontal', 'MovingLayer3')"> 
-                            <img id = "arrow3" src="Arrow.gif" style = "position:relative; left:-9px; top:-100px"  onMouseDown = "beginDrag(event,-135,-35,0,0,'showTemp3()','vertical')"> 
+                            <img id="arrow3" src="Arrow.gif" style = "position:relative; left:-9px; top:-100px"  onMouseDown = "beginDrag(event,-135,-35,0,0,'showTemp3()','vertical')"> 
                           </td>
                         </tr>
                       </table>
                     </div>
-                    <div id="MovingLayer4" style="position:absolute;  width:21px; height:162px; left:578px; z-index:1; top: 408px"> 
+                    <div id="MovingLayer4" style="position:absolute;  width:21px; height:162px; left:578px; z-index:1; top: 408px"
+					  onload="MoveLayer('MovingLayer4',<%= schedule.getTime4().getHour() %>,<%= schedule.getTime4().getMinute() %>); MoveTempArrow('arrow4','div4',<%= schedule.getTemperature4() %>)"> 
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
                           <td> 
-                            <div id = "div4" class = "TableCell3">72&deg</div>
+                            <div id="div4" class="TableCell3" onchange="setChanged(true)">72&deg</div>
                             <img src="Thermometer.gif" style = "position:relative; left:-5px" width="16" height="131"  onMouseDown = "beginDrag(event,0,0,629,parseInt(document.getElementById('MovingLayer3').style.left)+3,'showTimeSleep()','horizontal', 'MovingLayer4')"> 
-                            <img id = "arrow4" src="Arrow.gif" style = "position:relative; left:-9px; top:-100px;"  onMouseDown = "beginDrag(event,-135,-35,0,0,'showTemp4()','vertical')"> 
+                            <img id="arrow4" src="Arrow.gif" style = "position:relative; left:-9px; top:-100px;"  onMouseDown = "beginDrag(event,-135,-35,0,0,'showTemp4()','vertical')"> 
                           </td>
                         </tr>
                       </table>
@@ -248,25 +293,24 @@ MM_reloadPage(true);
                       </tr>
                       <tr> 
                         <td width="25%" class = "TableCell"> Start At: 
-                          <input id = "time1" type="text"  size = "4" value = "06:00" name="time1" onchange="Javascript:setChanged();timeChange(this, 'MovingLayer1', 'time2', null);">
+                          <input id="time1" type="text" size="5" value="<%= timePart.format(schedule.getTime1().toDate()) %>" name="time1" onchange="Javascript:setChanged(true);timeChange(this, 'MovingLayer1', 'time2', null);">
                         </td>
                         <td class = "TableCell" width="25%"> Start At: 
-                          <input id = "time2" type="text"  size = "4" value = "08:30" name="time2" onchange="Javascript:setChanged();timeChange(this, 'MovingLayer2', 'time3', 'time1');">
+                          <input id="time2" type="text" size="5" value="<%= timePart.format(schedule.getTime2().toDate()) %>" name="time2" onchange="Javascript:setChanged(true);timeChange(this, 'MovingLayer2', 'time3', 'time1');">
                         </td>
-                        <td class = "TableCell" width="25%"> <span class = "Main"> 
-                          </span> Start At: 
-                          <input id = "time3" type="text"  size = "4" value = "17:00" name="time3" onchange="Javascript:setChanged();timeChange(this, 'MovingLayer3', 'time4', 'time2');">
+                        <td class = "TableCell" width="25%"> Start At: 
+                          <input id="time3" type="text" size="5" value="<%= timePart.format(schedule.getTime3().toDate()) %>" name="time3" onchange="Javascript:setChanged(true);timeChange(this, 'MovingLayer3', 'time4', 'time2');">
                         </td>
                         <td width="25%" class = "TableCell"> Start At: 
-                          <input id = "time4" type="text"  size = "4" value = "21:00" name="time4" onchange="Javascript:setChanged();timeChange(this, 'MovingLayer4', null, 'time3');">
+                          <input id="time4" type="text" size="5" value="<%= timePart.format(schedule.getTime4().toDate()) %>" name="time4" onchange="Javascript:setChanged(true);timeChange(this, 'MovingLayer4', null, 'time3');">
                         </td>
                       </tr>
                     </table><noscript><table width="100%" border="0" class = "TableCell">
   <tr>
-                        <td>Temp: <input id="temp1" type="text" size = "3" name="temp1" onchange="setChanged()" value = "72"></td>
-                        <td>Temp: <input id="temp2" type="text" size = "3" name="temp2" onchange="setChanged()" value = "72"></td>
-                        <td>Temp: <input id="temp3" type="text" size = "3" name="temp3" onchange="setChanged()" value = "72"></td>
-                        <td>Temp: <input id="temp4" type="text" size = "3" name="temp4" onchange="setChanged()" value = "72"></td>
+                        <td>Temp: <input id="temp1" type="text" size="3" name="temp1" onchange="setChanged()" value="<%= schedule.getTemperature1() %>"></td>
+                        <td>Temp: <input id="temp2" type="text" size="3" name="temp2" onchange="setChanged()" value="<%= schedule.getTemperature2() %>"></td>
+                        <td>Temp: <input id="temp3" type="text" size="3" name="temp3" onchange="setChanged()" value="<%= schedule.getTemperature3() %>"></td>
+                        <td>Temp: <input id="temp4" type="text" size="3" name="temp4" onchange="setChanged()" value="<%= schedule.getTemperature4() %>"></td>
   </tr>
 </table>
                     <div class = "TableCell" align = "left">
@@ -290,7 +334,7 @@ MM_reloadPage(true);
                       <input type="submit" name="Submit" value="Submit">
                   </td>
                     <td width="56%" align = "left" class = "TableCell"> 
-                      <input type="button" name="Default" value="Default Settings" onclick="setDefault()">
+                      <input type="submit" name="Submit2" value="Recommended Settings" title="These are the Acme Utility recommended settings.">
             
                   </td>
                 </tr>

@@ -2,7 +2,7 @@
 <head>
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../demostyle.css" type="text/css">
+<link rel="stylesheet" href="demostyle.css" type="text/css">
 </head>
 
 <body class="Background" text="#000000" leftmargin="0" topmargin="0">

@@ -10,7 +10,7 @@
 						  {"Enrollment.jsp", "Enrollment"},
 						  {"OptOut.jsp", "Opt Out"},
 						  {"Thermostat.jsp", "Manual"},
-						  {"WeekdayS.jsp", "Schedule"}
+						  {"ThermSchedule.jsp", "Schedule"}
 						 };
 						   
 	Hashtable links = new Hashtable();
@@ -26,7 +26,7 @@
   <tr>
     <td height="65"><br>
 <div align="left"><span class="NavHeader">Thermostat</span><br>
-        <%= links.get("WeekdayS.jsp") %><br>
+        <%= links.get("ThermSchedule.jsp") %><br>
         <%= links.get("Thermostat.jsp") %></div>
     </td>
   </tr>

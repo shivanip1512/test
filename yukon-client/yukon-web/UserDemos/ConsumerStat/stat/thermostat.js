@@ -77,13 +77,16 @@ function setChanged() {
 	changed = true;
 }
 
-function saveChanges() {
-	if (!changed) return;
+function switchSettings(day, mode) {
+	if (!changed) return true;
 	
 	var form = document.form1;
 	form.action = "/servlet/UpdateThermostat";
 	form.elements('action').value = "SaveChanges";
+	form.day2.value=day;
+	form.mode2.value=mode;
 	form.submit();
+	return false;
 }
 
 function setDefault() {
@@ -142,8 +145,10 @@ prevMin = parseInt(prevTime[1], 10);
 
 
 if (time.length == 2) {
-	if (time[0])
+	if (time[0]) {
 	hour = parseInt(time[0]);
+	alert(time[0]+"/"+hour);
+	}
 	else 
 	hour = 0;
 	if (time[1])
