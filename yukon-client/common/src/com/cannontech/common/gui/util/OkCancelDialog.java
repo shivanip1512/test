@@ -30,6 +30,28 @@ public OkCancelDialog() {
 	super();
 	initialize();
 }
+
+/**
+ * OkCancelDialog constructor comment.
+ * @param owner java.awt.Dialog
+ * @param title java.lang.String
+ * @param modal boolean
+ */
+public OkCancelDialog(String title, boolean modal, com.cannontech.common.gui.util.DataInputPanel displayPanel )
+{
+	super();
+	setModal( modal );
+
+	initialize();
+
+	setTitle( title );
+	setDisplayPanel( displayPanel );
+
+	if( displayPanel == null )
+		throw new IllegalArgumentException("*** Can not have a null panel in the constructor of : " + this.getClass().getName() );
+
+}
+
 /**
  * OkCancelDialog constructor comment.
  * @param owner java.awt.Dialog
