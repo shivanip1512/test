@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2004/10/12 20:14:17 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2004/12/07 18:55:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -587,7 +587,7 @@ INT CtiDeviceMCT31X::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             }
             else
             {
-                status = decodeStatus(InMessage, TimeNow, vgList, retList, outList);
+                status = decodeStatus(InMessage, TimeNow, vgList, retList, outList, true);
 
                 if(status)  //  FIX - OR these or something, we should be smarter
                 {
@@ -648,7 +648,7 @@ INT CtiDeviceMCT31X::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 }
 
 
-INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, bool expectMore)
 {
     INT status = NORMAL;
     ULONG i;
@@ -719,7 +719,7 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             }
         }
 
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
     }
 
     return status;
@@ -2227,6 +2227,11 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
+    int demand_rate;
+    unsigned long pulses;
+    bool bad_data;
+    PointQuality_t quality;
+
     DOUBLE Value;
     CtiPointNumeric      *pPoint = NULL;
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -2256,6 +2261,8 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
             return MEMORY;
         }
 
+        demand_rate = getDemandInterval();
+
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
         pointTime -= pointTime.seconds() % getDemandInterval();
@@ -2267,20 +2274,31 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
             Error = (DSt->Message[byte_offset] & 0xc0);
 
             // 2 byte demand value.  Upper 2 bits are error indicators.
-            Value = MAKEUSHORT(DSt->Message[byte_offset + 1], (DSt->Message[byte_offset] & 0x3f) );
-            //  turn raw pulses into a demand reading
-            Value *= DOUBLE(3600 / getDemandInterval());
+            pulses = MAKEUSHORT(DSt->Message[byte_offset + 1], (DSt->Message[byte_offset] & 0x3f) );
 
-            /* look for first defined DEMAND accumulator */
+            //  look for the demand accumulator point for this offset
             pPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual( pnt_offset, DemandAccumulatorPointType );
+
+            if( checkDemandQuality( pulses, quality, bad_data ) )
+            {
+                Value = 0.0;
+            }
+            else
+            {
+                //  if no fatal problems with the quality,
+                //    adjust for the demand interval
+                Value = pulses * (3600 / demand_rate);
+
+                if( pPoint )
+                {
+                    //    and the UOM
+                    Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM(Value);
+                }
+            }
 
             // handle demand data here
             if( pPoint != NULL)
             {
-                // Adjust for the unit of measure!
-                Value = pPoint->computeValueForUOM(Value);
-
-
                 if(Error == 0)
                 {
                     resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
@@ -2557,7 +2575,7 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                             quality = DeviceFillerQuality;
                             value = 0.0;
                         }
-                        else if( checkLoadProfileQuality( pulses, quality, bad_data ) )
+                        else if( checkDemandQuality( pulses, quality, bad_data ) )
                         {
                             value = 0.0;
                         }
