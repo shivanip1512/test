@@ -99,6 +99,11 @@ void CtiCalculateThread::periodicLoop( void )
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " PeriodicLoop thread active" << endl;
                 }
+
+                // ecs 1/5/2005 may be in the wrong spot
+                CtiThreadRegData *data = new CtiThreadRegData( rwThreadId(), "CalcLogicSvc periodic", CtiThreadRegData::Action1, 350, &CtiCalculateThread::periodicComplain, 0 , 0,  0 );
+                ThreadMonitor.tickle( data );
+
             }
 
             //  while it's still the same second /and/ i haven't been interrupted
@@ -198,6 +203,8 @@ void CtiCalculateThread::periodicLoop( void )
 
 void CtiCalculateThread::onUpdateLoop( void )
 {
+    ThreadMonitor.start(); //ecs 1/5/2005
+
     try
     {
         long pointIDChanged, recalcPointID;
@@ -227,6 +234,11 @@ void CtiCalculateThread::onUpdateLoop( void )
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " OnUpdateLoop thread active" << endl;
                     }
+
+                    //ecs 1/5/2005
+                    CtiThreadRegData *data = new CtiThreadRegData( rwThreadId(), "CalcLogicSvc onUpdate", CtiThreadRegData::Action1, 350, &CtiCalculateThread::onUpdateComplain, 0 , 0, 0 );
+                    ThreadMonitor.tickle( data );
+
                 }
 
                 if( _auSelf.serviceInterrupt( ) )
@@ -370,24 +382,51 @@ void CtiCalculateThread::onUpdateLoop( void )
 
 void CtiCalculateThread::calcLoop( void )
 {
+    int cnt = 0;
+
     RWRunnableSelf _self = rwRunnable( );
 
     RWThreadFunction periodicThreadFunc = rwMakeThreadFunction( (*this), &CtiCalculateThread::periodicLoop );
     RWThreadFunction onUpdateThreadFunc = rwMakeThreadFunction( (*this), &CtiCalculateThread::onUpdateLoop );
+
     periodicThreadFunc.start( );
     onUpdateThreadFunc.start( );
 
     //  while nobody's bothering me...
     while( !_self.serviceInterrupt( ) )
     {
-        _self.sleep( 1000 );
+       if( cnt++ % 15 == 0 )
+       {
+           //ecs 1/5/2005
+           CtiThreadRegData *data = new CtiThreadRegData( rwThreadId(), "CalcLogicSvc calcThread", CtiThreadRegData::Action1, 20000, &CtiCalculateThread::calcComplain, 0 , 0, 0 );
+           ThreadMonitor.tickle( data );
+       }
+
+       _self.sleep( 1000 );
+
     }
 
+    //
     //  scream at the other threads, tell them it's time for dinner
-    periodicThreadFunc.requestInterrupt( );
-    periodicThreadFunc.releaseInterrupt( );
-    onUpdateThreadFunc.requestInterrupt( );
-    onUpdateThreadFunc.releaseInterrupt( );
+    //
+    {
+       periodicThreadFunc.requestInterrupt( );
+       periodicThreadFunc.releaseInterrupt( );
+
+       //ecs 1/5/2005
+       CtiThreadRegData *data = new CtiThreadRegData( rwThreadId(), "CalcLogicSvc periodic", CtiThreadRegData::LogOut );
+       ThreadMonitor.tickle( data );
+    }
+
+    {
+       onUpdateThreadFunc.requestInterrupt( );
+       onUpdateThreadFunc.releaseInterrupt( );
+
+       //ecs 1/5/2005
+       CtiThreadRegData *data = new CtiThreadRegData( rwThreadId(), "CalcLogicSvc onUpdate", CtiThreadRegData::LogOut );
+       ThreadMonitor.tickle( data );
+    }
+
     periodicThreadFunc.join( );
     onUpdateThreadFunc.join( );
 }
@@ -530,5 +569,29 @@ BOOL CtiCalculateThread::isAnOnUpdateCalcPointID(const long aPointID)
     }
 
     return foundPoint;
+}
+
+void CtiCalculateThread::onUpdateComplain( void *la )
+{
+   {
+       CtiLockGuard<CtiLogger> doubt_guard(dout);
+       dout << RWTime( ) << " CalcLogicSvc onUpdate thread is AWOL" << endl;
+   }
+}
+
+void CtiCalculateThread::periodicComplain( void *la )
+{
+   {
+       CtiLockGuard<CtiLogger> doubt_guard(dout);
+       dout << RWTime( ) << " CalcLogicSvc periodic thread is AWOL" << endl;
+   }
+}
+
+void CtiCalculateThread::calcComplain( void *la )
+{
+   {
+       CtiLockGuard<CtiLogger> doubt_guard(dout);
+       dout << RWTime( ) << " CalcLogicSvc calc thread thread is AWOL" << endl;
+   }
 }
 

@@ -274,10 +274,12 @@ BOOL CtiCalc::ready( void )
                 }
 //                isReady = !(--_countdown);  //  NOTE!  do NOT check if ready more than once before calculating
                 break;                      //    it decrements the timer for the periodic points
+
             case allUpdate:
                 for( ; iter( ); )
                     isReady &= ((CtiCalcComponent *)(iter.key( )))->isUpdated( );
                 break;
+
             case anyUpdate:
                 for( ; iter( ); )
                 {
@@ -288,6 +290,7 @@ BOOL CtiCalc::ready( void )
                     }
                 }
                 break;
+
             case periodicPlusUpdate:
                 {
                     if(RWTime::now().seconds() >= getNextInterval())

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/10/22 20:58:54 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/01/06 16:13:03 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -59,8 +59,8 @@ private:
 
 };
 
-//  included here instead of dllbase.h because ptimes are fat as of 2004-oct-22;
-//    include thread_monitor.h if you want to use the thread monitor in your code
+//  included here instead of dllbase.h because ptimes are fat as of 2004-oct-22
+//  include thread_monitor.h if you want to use the thread monitor in your code
 IM_EX_CTIBASE extern CtiThreadMonitor  ThreadMonitor;
 
 #endif // #ifndef __THREAD_MONITOR_H__

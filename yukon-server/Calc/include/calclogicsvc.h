@@ -7,6 +7,10 @@
 
 #include "calcthread.h"
 
+//ecs 1/4/2005
+#include "thread_monitor.h"
+#include "thread_register_data.h"
+//
 
 class CtiCalcLogicService : public CService
 {
@@ -27,6 +31,13 @@ protected:
     bool readCalcPoints( CtiCalculateThread *calcThread );
     BOOL parseMessage( RWCollectable *message, CtiCalculateThread *calcThread );
     void dropDispatchConnection( );
+
+    //
+    // ecs 1/5/2005
+    //
+    static void mainComplain( void *la );
+    static void outComplain( void *la );
+    static void inComplain( void *la );
 
 private:
 

@@ -16,6 +16,11 @@ using namespace std;
 #include "calc.h"
 #include "pointstore.h"
 
+//ecs 1/5/2005
+#include "thread_monitor.h"
+#include "thread_register_data.h"
+//
+
 class CtiCalculateThread
 {
 private:
@@ -65,6 +70,13 @@ public:
     CtiMultiMsg *getOutboxEntry( void )                         {   return _outbox.popFront( ); };
     RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, equal_to<CtiHashKey> >
     *getPointDependencyIterator( void )                         {   return new RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, equal_to<CtiHashKey> >( *CtiPointStore::getInstance() );   };
+
+    //
+    // ecs 1/5/2005
+    //
+    static void onUpdateComplain( void *la );
+    static void periodicComplain( void *la );
+    static void calcComplain( void *la );
 
 };
 
