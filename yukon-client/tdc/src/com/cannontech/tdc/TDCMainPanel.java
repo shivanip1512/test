@@ -1116,7 +1116,7 @@ public javax.swing.JTable getDisplayTable() {
 			ivjDisplayTable = new javax.swing.JTable();
 			ivjDisplayTable.setName("DisplayTable");
 			getScrollPaneDisplayTable().setColumnHeaderView(ivjDisplayTable.getTableHeader());
-			getScrollPaneDisplayTable().getViewport().setBackingStoreEnabled(true);
+			//getScrollPaneDisplayTable().getViewport().setBackingStoreEnabled(true);
 			ivjDisplayTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_NEXT_COLUMN);
 			ivjDisplayTable.setOpaque(false);
 			ivjDisplayTable.setShowVerticalLines(false);
