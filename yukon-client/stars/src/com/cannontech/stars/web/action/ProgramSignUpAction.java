@@ -38,6 +38,7 @@ import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.SULMProgram;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsInventory;
@@ -447,7 +448,10 @@ public class ProgramSignUpAction implements ActionBase {
         	
 			for (int i = 0; i < processedPrograms.getSULMProgramCount(); i++) {
 				SULMProgram program = processedPrograms.getSULMProgram(i);
+				
 				LiteLMProgramWebPublishing liteProg = energyCompany.getProgram( program.getProgramID() );
+				StarsEnrLMProgram starsProg = ServletUtils.getEnrollmentProgram(
+						energyCompany.getStarsEnrollmentPrograms(), program.getProgramID() );
 				
 				// Add the program to the new program list
 				LiteStarsLMProgram liteStarsProg = getLMProgram( liteAcctInfo, program.getProgramID() );
@@ -457,8 +461,8 @@ public class ProgramSignUpAction implements ActionBase {
 					newProgList.add( liteStarsProg );
 			    
 				int groupID = program.getAddressingGroupID();
-				if (!program.hasAddressingGroupID() && liteProg.getGroupIDs() != null && liteProg.getGroupIDs().length > 0)
-					groupID = liteProg.getGroupIDs()[0];
+				if (!program.hasAddressingGroupID() && starsProg.getAddressingGroupCount() > 1)
+					groupID = starsProg.getAddressingGroup(1).getEntryID();
 				liteStarsProg.setGroupID( groupID );
         		
 				LiteStarsLMHardware liteHw = null;

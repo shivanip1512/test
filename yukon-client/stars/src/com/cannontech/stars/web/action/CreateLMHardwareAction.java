@@ -14,6 +14,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
+import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeasonEntry;
@@ -440,46 +441,77 @@ public class CreateLMHardwareAction implements ActionBase {
 				event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
 						Transaction.createTransaction( Transaction.INSERT, event ).execute();
 				
-				int statusDefID = YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL;
-				if (createHw.getDeviceStatus() != null)
-					statusDefID = YukonListFuncs.getYukonListEntry(
-							createHw.getDeviceStatus().getEntryID() ).getYukonDefID();
+				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
+				liteInv.getInventoryHistory().add( liteEvent );
+				liteInv.updateDeviceStatus();
 				
-				if (statusDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
-					// If device status is unavailable, add "Termination" event
-					int termActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION ).getEntryID();
-					
-					event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-					eventDB = event.getLMHardwareEvent();
-					eventBaseDB = event.getLMCustomerEventBase();
-					
-					eventBaseDB.setEventTypeID( new Integer(hwEventEntryID) );
-					eventBaseDB.setActionID( new Integer(termActID) );
-					eventBaseDB.setEventDateTime( new Date() );
-					eventBaseDB.setNotes( "Event added to match the device status" );
-					eventDB.setInventoryID( invDB.getInventoryID() );
-					event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-					
-					event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
-							Transaction.createTransaction( Transaction.INSERT, event ).execute();
-				}
-				else if (statusDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL) {
-					// If device status is temporary unavailable, add "Temp Termination" event
-					int tempTermActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION ).getEntryID();
-					
-					event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-					eventDB = event.getLMHardwareEvent();
-					eventBaseDB = event.getLMCustomerEventBase();
-					
-					eventBaseDB.setEventTypeID( new Integer(hwEventEntryID) );
-					eventBaseDB.setActionID( new Integer(tempTermActID) );
-					eventBaseDB.setEventDateTime( new Date() );
-					eventBaseDB.setNotes( "Event added to match the device status" );
-					eventDB.setInventoryID( invDB.getInventoryID() );
-					event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-					
-					event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
-							Transaction.createTransaction( Transaction.INSERT, event ).execute();
+				if (createHw.getDeviceStatus() != null) {
+					int statusDefID = YukonListFuncs.getYukonListEntry( createHw.getDeviceStatus().getEntryID() ).getYukonDefID();
+					if (statusDefID != liteInv.getDeviceStatus()) {
+						// Add customer event to match the device status
+						event = null;
+						
+						if (statusDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL) {
+							// If device status is available, add "Activation Completed" event
+							int activActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED ).getEntryID();
+							
+							event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+							eventDB = event.getLMHardwareEvent();
+							eventBaseDB = event.getLMCustomerEventBase();
+							
+							eventBaseDB.setEventTypeID( new Integer(hwEventEntryID) );
+							eventBaseDB.setActionID( new Integer(activActID) );
+							eventBaseDB.setEventDateTime( new Date() );
+							eventBaseDB.setNotes( "Event added to match the device status" );
+							eventDB.setInventoryID( invDB.getInventoryID() );
+							event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+							
+							event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+									Transaction.createTransaction( Transaction.INSERT, event ).execute();
+						}
+						else if (statusDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
+							// If device status is unavailable, add "Termination" event
+							int termActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION ).getEntryID();
+							
+							event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+							eventDB = event.getLMHardwareEvent();
+							eventBaseDB = event.getLMCustomerEventBase();
+							
+							eventBaseDB.setEventTypeID( new Integer(hwEventEntryID) );
+							eventBaseDB.setActionID( new Integer(termActID) );
+							eventBaseDB.setEventDateTime( new Date() );
+							eventBaseDB.setNotes( "Event added to match the device status" );
+							eventDB.setInventoryID( invDB.getInventoryID() );
+							event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+							
+							event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+									Transaction.createTransaction( Transaction.INSERT, event ).execute();
+						}
+						else if (statusDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL) {
+							// If device status is temporary unavailable, add "Temp Termination" event
+							int tempTermActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION ).getEntryID();
+							
+							event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+							eventDB = event.getLMHardwareEvent();
+							eventBaseDB = event.getLMCustomerEventBase();
+							
+							eventBaseDB.setEventTypeID( new Integer(hwEventEntryID) );
+							eventBaseDB.setActionID( new Integer(tempTermActID) );
+							eventBaseDB.setEventDateTime( new Date() );
+							eventBaseDB.setNotes( "Event added to match the device status" );
+							eventDB.setInventoryID( invDB.getInventoryID() );
+							event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+							
+							event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+									Transaction.createTransaction( Transaction.INSERT, event ).execute();
+						}
+						
+						if (event != null) {
+							liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
+							liteInv.getInventoryHistory().add( liteEvent );
+							liteInv.updateDeviceStatus();
+						}
+					}
 				}
 				
 				StarsLiteFactory.extendLiteInventoryBase( liteInv, energyCompany );

@@ -186,6 +186,18 @@ public class StarsLiteFactory {
 		liteInv.setNotes( invDB.getNotes() );
 		liteInv.setDeviceID( invDB.getDeviceID().intValue() );
 		liteInv.setDeviceLabel( invDB.getDeviceLabel() );
+		
+		ArrayList invHist = liteInv.getInventoryHistory();
+		invHist.clear();
+		
+		com.cannontech.database.data.stars.event.LMHardwareEvent[] events =
+				com.cannontech.database.data.stars.event.LMHardwareEvent.getAllLMHardwareEvents( new Integer(liteInv.getInventoryID()) );
+		for (int i = 0; i < events.length; i++) {
+			LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) createLite( events[i] );
+			invHist.add( liteEvent );
+		}
+		
+		liteInv.updateDeviceStatus();
 	}
 	
 	public static void setLiteStarsLMHardware(LiteStarsLMHardware liteHw, com.cannontech.database.data.stars.hardware.LMHardwareBase hw) {
@@ -253,18 +265,6 @@ public class StarsLiteFactory {
 	}
 	
 	public static void extendLiteInventoryBase(LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) {
-		ArrayList invHist = liteInv.getInventoryHistory();
-		invHist.clear();
-		
-		com.cannontech.database.data.stars.event.LMHardwareEvent[] events =
-				com.cannontech.database.data.stars.event.LMHardwareEvent.getAllLMHardwareEvents( new Integer(liteInv.getInventoryID()) );
-		for (int i = 0; i < events.length; i++) {
-			LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) createLite( events[i] );
-			invHist.add( liteEvent );
-		}
-		
-		liteInv.updateDeviceStatus();
-		
 		if (liteInv instanceof LiteStarsLMHardware) {
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
 			if (liteHw.isThermostat())

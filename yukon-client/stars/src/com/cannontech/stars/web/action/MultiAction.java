@@ -26,7 +26,7 @@ public class MultiAction implements ActionBase {
 	private Hashtable actionMsgMap = new Hashtable();
 	private ActionBase failedAction = null;
 	
-	public void addAction(ActionBase action, SOAPMessage message) {
+	public synchronized void addAction(ActionBase action, SOAPMessage message) {
 		// Look for action of the same class. If found, replace it; otherwise add the new action
 		boolean actionFound = false;
 		for (int i = 0; i < actionList.size(); i++) {
@@ -42,8 +42,18 @@ public class MultiAction implements ActionBase {
 		actionMsgMap.put( action.getClass(), message );
 	}
 	
-	public SOAPMessage getRequestMessage(ActionBase action) {
-		return (SOAPMessage) actionMsgMap.get( action.getClass() );
+	public synchronized void removeAction(Class actionType) {
+		for (int i = 0; i < actionList.size(); i++) {
+			if (actionList.get(i).getClass().equals( actionType )) {
+				actionList.remove(i);
+				actionMsgMap.remove( actionType );
+				break;
+			}
+		}
+	}
+	
+	public synchronized SOAPMessage getRequestMessage(Class actionType) {
+		return (SOAPMessage) actionMsgMap.get( actionType );
 	}
 
 	/**

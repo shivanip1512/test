@@ -249,8 +249,7 @@ public class LiteInventoryBase extends LiteBase {
 			LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) invHist.get(i);
 			YukonListEntry entry = YukonListFuncs.getYukonListEntry( liteEvent.getActionID() );
 			
-			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED ||
-				entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL)
+			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED)
 			{
 				deviceStatus = YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL;
 				return;
@@ -268,7 +267,7 @@ public class LiteInventoryBase extends LiteBase {
 			}
 		}
 		
-		deviceStatus = YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL;
+		deviceStatus = YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL;
 	}
 
 	/**
