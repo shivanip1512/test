@@ -335,15 +335,22 @@ protected boolean isServerSocket()
  * This method was created in VisualAge.
  */
 public void run() 
-{		
+{	
+	//Use a count of retries after failing to connect
+	//to avoid logging too much when a server is down.
+	int retryCount = 0;
+		
 	while( true )
 	{		
 		try
-		{
+		{			
 			// we were not given a Socket, so create a new one everytime
 			if( !isServerSocket() )
 			{
-				CTILogger.info("Attempting to open SOCKET to: " + this.host + " " + this.port);
+				if(retryCount == 0) 
+				{
+					CTILogger.info("Attempting to open SOCKET to: " + this.host + " " + this.port);
+				}
 				this.sock = new Socket( this.host, this.port );
 			}
 
@@ -365,10 +372,11 @@ public void run()
 			outThread.start();
 
 			isValid = true;
-
+			retryCount = 0;
+			
 			setChanged();
 			notifyObservers(this);
-			
+						
 			CTILogger.info("SOCKET open for " + this.getClass().getName() );
 
 			do
@@ -391,7 +399,10 @@ public void run()
 		}
 		catch( java.io.IOException io )
 		{
-			CTILogger.info( io.getMessage() );
+			if(retryCount == 0)
+			{
+				CTILogger.info( io.getMessage() );
+			}
 		}
 		
 		isValid = false;
@@ -415,8 +426,12 @@ public void run()
 				return;
 			}
 		}
-
-		CTILogger.info("Attempting to reconnect to " + getHost() + ":" + getPort() );
+		
+		if(retryCount == 0)
+		{
+			CTILogger.info("Attempting to reconnect to " + getHost() + ":" + getPort() );
+		}
+		retryCount++;
 	} 
 	
 }
