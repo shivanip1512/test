@@ -2,7 +2,6 @@
 <classpath>
     <classpathentry kind="src" path="src"/>
     <classpathentry kind="src" path="app"/>
-    <classpathentry exported="true" kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
     <classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
     <classpathentry kind="lib" path="/third-party/acme.jar"/>
     <classpathentry kind="lib" path="/third-party/classes12.jar"/>
@@ -24,5 +23,6 @@
     <classpathentry kind="lib" path="/third-party/jtds.jar"/>
     <classpathentry kind="lib" path="/third-party/commons-fileupload.jar"/>
     <classpathentry kind="src" path="/dbeditor"/>
+    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

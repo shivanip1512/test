@@ -18,6 +18,6 @@
     <classpathentry kind="lib" path="/third-party/jcommon.jar"/>
     <classpathentry kind="src" path="/trending"/>
     <classpathentry kind="lib" path="/third-party/jtds.jar"/>
-    <classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
+    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

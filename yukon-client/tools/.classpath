@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
     <classpathentry kind="src" path="src"/>
-    <classpathentry exported="true" kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
     <classpathentry exported="true" kind="lib" path="/third-party/SqlServer.jar"/>
     <classpathentry exported="true" kind="lib" path="/third-party/acme.jar"/>
     <classpathentry exported="true" kind="lib" path="/third-party/j2ee.jar"/>
@@ -27,5 +26,6 @@
     <classpathentry exported="true" kind="lib" path="/third-party/jtds.jar"/>
     <classpathentry exported="true" kind="src" path="/common"/>
     <classpathentry kind="src" path="/esub"/>
+    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
     <classpathentry kind="src" path="src"/>
-    <classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
     <classpathentry kind="src" path="/common"/>
     <classpathentry kind="src" path="/loadcontrol"/>
     <classpathentry kind="lib" path="/third-party/acme.jar"/>
@@ -33,5 +32,6 @@
     <classpathentry kind="src" path="/report"/>
     <classpathentry kind="src" path="/stars"/>
     <classpathentry kind="lib" path="/third-party/commons-fileupload.jar"/>
+    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
