@@ -118,6 +118,9 @@ MaxHoursMonthly, MaxHoursSeasonal, MaxHoursAnnually, MinActivateTime, MinRestart
 
 update LMProgram set constraintid = deviceid;
 
+alter table LMProgram drop constraint FK_SesSch_LmPr;
+alter table LMProgram drop constraint FK_HlSc_LmPr;
+
 alter table LMProgram drop column AvailableSeasons;
 alter table LMProgram drop column AvailableWeekdays;
 alter table LMProgram drop column MaxHoursDaily;
