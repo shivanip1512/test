@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/11/20 22:28:39 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/02/04 18:09:50 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -439,6 +439,7 @@ INT CtiDeviceMCT24X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
         dout << RWTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
+    //  ACH:  are these necessary?  /mskf
     resetScanFreezePending( );
     resetScanFreezeFailed( );
 
@@ -552,9 +553,11 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtr
         dout << RWTime() << " **** General/Status Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
+    //  ACH:  are these necessary?  /mskf
     resetScanFreezePending( );
     resetScanFreezeFailed( );
-    resetScanPending();
+
+    setMCTScanPending(ScanRateGeneral, false);  //resetScanPending();
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {

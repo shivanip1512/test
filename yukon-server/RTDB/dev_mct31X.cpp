@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2002/12/12 17:38:48 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2003/02/04 18:11:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -526,7 +526,7 @@ INT CtiDeviceMCT31X::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         case CtiProtocolEmetcon::Scan_Integrity:
         {
             //  to catch the IED case
-            resetScanPending();
+            setMCTScanPending(ScanRateIntegrity, false);  //  resetScanPending();
         }
         case CtiProtocolEmetcon::GetValue_Demand:
         {
@@ -614,7 +614,7 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         dout << RWTime() << " **** Status Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    resetScanPending();
+    setMCTScanPending(ScanRateGeneral, false);  //resetScanPending();
 
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
@@ -1521,6 +1521,7 @@ INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData     = NULL;
 
+    //  ACH:  are these necessary?  /mskf
     resetScanFreezePending();
     resetScanFreezeFailed();
 
@@ -1619,7 +1620,7 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         dout << RWTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    resetScanPending();
+    setMCTScanPending(ScanRateIntegrity, false);  //  resetScanPending();
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -1750,6 +1751,7 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
         dout << RWTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
+    //  ACH:  are these necessary?  /mskf
     resetScanFreezePending( );
     resetScanFreezeFailed( );
 
