@@ -1,6 +1,8 @@
 
+<%@ page import="com.cannontech.common.version.VersionTools" %>
 <%
 String logo = (String) com.cannontech.common.util.CtiProperties.getInstance().get(com.cannontech.common.util.CtiProperties.KEY_LOGIN_PAGE_LOGO);
+boolean starsExists = VersionTools.starsExists();
 %>
 
 <html>
@@ -56,7 +58,12 @@ String logo = (String) com.cannontech.common.util.CtiProperties.getInstance().ge
             </div>
             <div align="center" class="MainText">Please enter any or all known 
               information about your account.</div>
-            <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/PWordRequest">
+            <form name="form1" method="post" action=
+				<%	if( starsExists ) { %>
+					"<%=request.getContextPath()%>/servlet/StarsPWordRequest">
+				<%} else { %>
+					"<%=request.getContextPath()%>/servlet/PWordRequest">
+				<% } %>
               
               <table width="290" border="0" cellspacing="0" cellpadding="3" align="center">
                 <tr> 
@@ -83,13 +90,18 @@ String logo = (String) com.cannontech.common.util.CtiProperties.getInstance().ge
                     <input type="text" name="LAST_NAME" size="26">
                   </td>
                 </tr>
-				
+
+<%	if( starsExists )
+	{%>
                 <tr> 
                   <td width="83" class = "MainText" align="right">Account #:</td>
                   <td width="117"> 
                     <input type="text" name="ACCOUNT_NUM" size="26">
                   </td>
                 </tr>
+<%	
+	} 
+%>
 
                 <tr> 
                   <td width="83" class = "MainText" align="right">Your Notes:</td>

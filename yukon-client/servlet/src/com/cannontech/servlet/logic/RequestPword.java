@@ -1,7 +1,5 @@
-package com.cannontech.stars.servletutils;
+package com.cannontech.servlet.logic;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
@@ -13,9 +11,6 @@ import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.tools.email.EmailMessage;
 
 /**
@@ -28,7 +23,6 @@ import com.cannontech.tools.email.EmailMessage;
  * 
  *   CtiProperties.KEY_LOGIN_PAGE_HELP_EMAIL
  *  
- * NOTE: Can't put this class in common since it uses STARS
  */
 public class RequestPword
 {
@@ -40,17 +34,17 @@ public class RequestPword
 	private String email = null;
 	private String fName = null;
 	private String lName = null;
-	private String accNum = null;		
-	private String masterMail = null;
 	private String notes = null;
-	
-	private final String[] allParams;
-	private Vector foundData = new Vector(8);
+
+	private int state = RET_FAILED;
+	private String resultString = "";
 
 
-	private transient int state = RET_FAILED;
-	private transient String resultString = "";
-	private transient String subject = "Password Request";
+	//allow sub classes access to these attributes
+	protected String[] allParams = null;
+	protected String masterMail = null;
+	protected String subject = "Password Request";
+	protected Vector foundData = new Vector(8);
 
 
 	public static final int RET_FAILED = 0;
@@ -60,26 +54,20 @@ public class RequestPword
 	/**
 	 * 
 	 */
-	public RequestPword( String userName_, String email_, String fName_, String lName_, String accNum_ )
+	public RequestPword( String userName_, String email_, String fName_, String lName_ )
 	{
 		super();
 		userName = userName_;
 		email = email_;
 		fName = fName_;
 		lName = lName_;
-		accNum = accNum_;
 		
-		allParams = new String[] { userName, email, fName, lName, accNum };
+		allParams = new String[] { userName, email, fName, lName };
 
 
 		Object o = CtiProperties.getInstance().get(CtiProperties.KEY_LOGIN_PAGE_HELP_EMAIL);
 		if( o != null )
 			masterMail = o.toString();
-	}
-	
-	public int getResultState()
-	{
-		return state;
 	}
 
 	public String getResultString()
@@ -113,7 +101,7 @@ public class RequestPword
 			}
 				
 			//unique system wide user name
-			if( state != RET_SUCCESS && userName != null )
+			if( getState() != RET_SUCCESS && userName != null )
 			{
 				//we may continue after this, remove all the stored data
 				foundData.clear();
@@ -136,76 +124,7 @@ public class RequestPword
 				}
 			}
 				
-			//uses STARS functionality
-			if( state != RET_SUCCESS && accNum != null )
-			{
-				//we may continue after this, remove all the stored data
-				foundData.clear();
-				
-				List engrComps = SOAPServer.getAllEnergyCompanies();
-				LiteStarsEnergyCompany eComp = null;
-				ArrayList allCustAccts = new ArrayList(8);
-
-				for( int i = 0; i < engrComps.size(); i++ )
-				{
-					LiteStarsEnergyCompany lsec = (LiteStarsEnergyCompany)engrComps.get(i);
-					
-					LiteStarsCustAccountInformation lCustInfo =
-							lsec.searchByAccountNumber( accNum );
-					
-					if( lCustInfo != null )
-					{
-						allCustAccts.add( lCustInfo );
-						eComp = lsec;
-					}
-				}
-					
-				if( allCustAccts.size() == 1 )
-				{
-					//only 1 found, this is good
-					LiteStarsCustAccountInformation lCustInf = 
-						(LiteStarsCustAccountInformation)allCustAccts.get(0);
-
-					LiteContact lc = (LiteContact)
-						ContactFuncs.getContact( lCustInf.getCustomer().getPrimaryContactID() );
-
-					LiteYukonUser user =
-						YukonUserFuncs.getLiteYukonUser( lc.getLoginID() );
-					
-					foundData.add( " User Name: " + user.getUsername() );					
-					foundData.add( " Contact Name: " + lc.getContFirstName() + " " + lc.getContLastName() );					
-					
-					//we must get the Yukon lite energy company for the stars lite energy company
-					LiteEnergyCompany lEnrgy =
-						EnergyCompanyFuncs.getEnergyCompany( eComp.getEnergyCompanyID().intValue() );
-
-					processEnergyCompanies( new LiteEnergyCompany[] { lEnrgy } );
-				}
-				else if( allCustAccts.size() < 1 )
-				{
-					setState( RET_FAILED, "Account Number not found, try again" );					
-				}
-				else
-				{
-					setState( RET_FAILED, "More than one account number found, forwarding request onto the WebMaster" );
-					subject = "WebMaster: " + subject;
-					foundData.add( " " + getResultString() );
-					foundData.add( " Number of Account Numbers for this Account: " + allCustAccts.size() );
-					for( int i = 0; i < allCustAccts.size(); i++ )
-					{
-						LiteStarsCustAccountInformation lCstInfo =
-							(LiteStarsCustAccountInformation)allCustAccts.get(i);
-						
-						foundData.add( "   Account # " + i + ": " + lCstInfo.getCustomerAccount().getAccountNumber() );
-					}
-
-					sendEmails( new String[] { masterMail }, genBody() );
-				}
-
-
-			}
-				
-			if( state != RET_SUCCESS && fName != null )
+			if( getState() != RET_SUCCESS && fName != null )
 			{
 				//we may continue after this, remove all the stored data
 				foundData.clear();
@@ -257,7 +176,7 @@ public class RequestPword
 					
 			}
 				
-			if( state != RET_SUCCESS && lName != null )
+			if( getState() != RET_SUCCESS && lName != null )
 			{
 				//we may continue after this, remove all the stored data
 				foundData.clear();
@@ -355,7 +274,7 @@ public class RequestPword
 	 * @param allParams_
 	 * @return
 	 */
-	private void processEnergyCompanies( LiteEnergyCompany[] comps_ )
+	protected void processEnergyCompanies( LiteEnergyCompany[] comps_ )
 	{
 
 		if( comps_ == null || comps_.length <= 0 )
@@ -398,7 +317,7 @@ public class RequestPword
 
 	}
 
-	private void sendEmails( String[] emailTO_, final String body_ )
+	protected void sendEmails( String[] emailTO_, final String body_ )
 	{
 		EmailMessage msg = new EmailMessage(
 			emailTO_,
@@ -417,17 +336,42 @@ public class RequestPword
 	}
 
 
-	private String genBody()
+	protected String genBody()
 	{
 		String body =
-			"A password request has been made from a user that provided the following information:" + CR +
-			(allParams[0] == null ? "" : " User Name    : " + allParams[0] + CR ) +
-			(allParams[1] == null ? "" : " Email        : " + allParams[1] + CR ) +
-			(allParams[2] == null ? "" : " First Name   : " + allParams[2] + CR ) +
-			(allParams[3] == null ? "" : " Last Name    : " + allParams[3] + CR ) +
-			(allParams[4] == null ? "" : " Account Num. : " + allParams[4] + CR ) +
-			CR +
-			"The following information is what was found for this user:" + CR;
+			"A password request has been made from a user that provided the following information:" + CR;
+		for( int i = 0; i < allParams.length; i++ )
+		{
+			if( allParams[i] != null )
+			{
+				switch( i )
+				{
+					case 0:
+					body += " User Name    : " + allParams[i] + CR;
+					break;
+
+					case 1:
+					body += " Email        : " + allParams[i] + CR;
+					break;
+
+					case 2:
+					body += " First Name   : " + allParams[i] + CR;
+					break;
+
+					case 3:
+					body += " Last Name    : " + allParams[i] + CR;
+					break;
+
+					case 4:
+					body += " Account Num. : " + allParams[i] + CR;
+					break;
+				}
+				
+			}				
+		}
+		
+			
+		body += CR + "The following information is what was found for this user:" + CR;
 			
 		for( int i = 0; i < foundData.size(); i++ )
 			body += foundData.get(i).toString() + 
@@ -441,19 +385,30 @@ public class RequestPword
 		return body;
 	}
 
+	/**
+	 * If all params are NULL, we have INVALID data.
+	 * @return boolean validParams
+	 */
 	public boolean isValidParams()
 	{
-		return 
-			!(userName == null && email == null && fName == null
-			  && lName == null && accNum == null);
+		boolean isValid = false;
+		for( int i = 0; i < allParams.length; i++ )
+			isValid |= allParams[i] != null;
+
+		return isValid;
 	}
 	
-	private void setState( int state_, String msg_ )
+	protected void setState( int state_, String msg_ )
 	{
 		state = state_;
 		resultString = msg_;
 	}
 
+	public int getState()
+	{
+		return state;
+	}
+	
 	/**
 	 * @return
 	 */

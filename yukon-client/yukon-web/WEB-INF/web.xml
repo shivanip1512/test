@@ -118,6 +118,15 @@
     <servlet-class>
     com.cannontech.servlet.BillingServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>PWordRequest</servlet-name>
+    <display-name>PWordRequest</display-name>
+    <description>Allows a user to request a password via email.</description>
+    <servlet-class>
+    com.cannontech.servlet.PWordRequest</servlet-class>
+  </servlet>  
+
+
   
   <!-- STARS specific configs -->
   <servlet>
@@ -158,11 +167,11 @@
     com.cannontech.stars.web.servlet.WorkOrderManager</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>PWordRequest</servlet-name>
-    <display-name>PWordRequest</display-name>
+    <servlet-name>StarsPWordRequest</servlet-name>
+    <display-name>StarsPWordRequest</display-name>
     <description>Allows a user to request a password via email.</description>
     <servlet-class>
-    com.cannontech.stars.web.servlet.PWordRequest</servlet-class>
+    com.cannontech.stars.web.servlet.StarsPWordRequest</servlet-class>
   </servlet>  
   <!-- STARS specific configs -->
 
