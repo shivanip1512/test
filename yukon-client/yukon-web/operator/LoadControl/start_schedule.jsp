@@ -1,6 +1,9 @@
 <%@ include file="oper_header.jsp" %>
-<%@ include file="oper_trendingheader.jsp" %>
+
 <%@ page import="com.cannontech.message.macs.message.Schedule" %>
+<%@ page import="com.cannontech.yukon.concrete.ResourceFactory" %>
+<%@ page import="com.cannontech.yukon.IMACSConnection" %>
+
 <%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 <jsp:useBean id="checker" scope="session" class="com.cannontech.validate.PageBean"/>
@@ -109,15 +112,7 @@
 		}
 	}
 
-	com.cannontech.servlet.MACSConnectionServlet connContainer = (com.cannontech.servlet.MACSConnectionServlet)
-	   application.getAttribute(com.cannontech.servlet.MACSConnectionServlet.SERVLET_CONTEXT_ID);
-
-	com.cannontech.macs.MACSClientConnection conn = null;
-
-	if( connContainer != null )
-	{
-		conn = connContainer.getConnection();
-	}
+	IMACSConnection conn = ResourceFactory.getIYukon().getMACSConnection();
 
 	if( conn != null )
 	{
@@ -182,7 +177,7 @@
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
+                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>

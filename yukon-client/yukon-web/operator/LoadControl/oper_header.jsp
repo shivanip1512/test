@@ -1,11 +1,16 @@
 <%@ page language="java" %>
-<%@ page import="com.cannontech.common.constants.RoleTypes" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 <%@ page import="com.cannontech.database.cache.functions.EnergyCompanyFuncs" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 <%@ page import="com.cannontech.common.util.CtiUtilities" %>
+<%@ page import="com.cannontech.util.ServletUtil" %>
+
+<%@ page import="com.cannontech.roles.application.WebClientRole" %>
+<%@ page import="com.cannontech.roles.operator.DirectLoadcontrolRole" %>
+<%@ page import="com.cannontech.roles.operator.DirectCurtailmentRole" %>
+<%@ page import="com.cannontech.roles.operator.EnergyBuybackRole" %>
 
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 

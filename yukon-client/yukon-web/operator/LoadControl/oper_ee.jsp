@@ -1,5 +1,4 @@
 <%@ include file="oper_header.jsp" %>
-<%@ include file="oper_trendingheader.jsp" %>
 
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramEnergyExchange" %>
@@ -9,18 +8,23 @@
 <%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeCustomer" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeCustomerReply" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeHourlyCustomer" %>
+
 <%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
-<%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
+
+<cti:checkRole roleid="<%=EnergyBuybackRole.ROLEID%>">
 <jsp:useBean id="checker" scope="session" class="com.cannontech.validate.PageBean"/>
 
 <%  
-    //previous decl of tab in oper_treandingheader.jsp :P
-    //String tab = request.getParameter("tab");
+    String tab = request.getParameter("tab");
     tab = request.getParameter("tab");
 
     if( tab == null )
         tab = "current";
 
+	String referrer = (String) session.getValue("referrer");
+    if( referrer == null )
+      referrer = request.getRequestURI() + "?" + request.getQueryString();
+      
 	String[] programNames = null;
 	String[] programIds = null;
 
@@ -46,6 +50,8 @@
 	java.text.SimpleDateFormat eeDateTimeFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
 	java.text.DecimalFormat numberFormat = new java.text.DecimalFormat("#,###.00");
 
+	session.putValue("referrer", request.getRequestURI() + "?" + request.getQueryString());
+	
 	if (tab.equalsIgnoreCase("current"))
 	{
 		String pending = request.getParameter("pending");
@@ -505,3 +511,4 @@ System.out.println("bar: " + eeDateFormat.format(com.cannontech.util.ServletUtil
 </body>
 </html>
 
+</cti:checkRole>

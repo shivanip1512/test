@@ -1,15 +1,16 @@
 <%@ include file="oper_header.jsp" %>
-<%@ include file="oper_trendingheader.jsp" %>
 
 <%@ page import="com.cannontech.message.macs.message.Schedule" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
 <%@ page import="com.cannontech.yukon.IMACSConnection" %>
+
 <%@ page import="java.util.TreeMap" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.ArrayList" %>
-<%@ page import="java.util.Vector" %>
+<%@ page import="java.util.Vector" %> 
 <%@ page import="java.util.Iterator" %>
-<%@ taglib uri="/WEB-INF/jruntags.jar" prefix="jrun" %>
+
+<cti:checkRole roleid="<%=DirectLoadcontrolRole.ROLEID%>">
 <%
    String pending = request.getParameter("pending");
    
@@ -116,7 +117,7 @@
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
+                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -142,8 +143,11 @@
               <tr> 
                 <td height="20" valign="top"> 
                   <div align="left"> 
-                    <p align="center" class="TableCell1"><b><a href="switch_commands.jsp" class="Link2"><br>
-                      Individual Switch Commands</a></b></p>
+                    <p align="center" class="TableCell1">
+                    <cti:checkProperty propertyid="<%=DirectLoadcontrolRole.INDIVIDUAL_SWITCH%>">
+                    <b><a href="switch_commands.jsp" class="Link2"><br>
+                      Individual Switch Commands</a></b>
+                    </cti:checkProperty></p>
                   </div>
                 </td>
               </tr>
@@ -243,8 +247,8 @@
                 LMProgramDirect p = (LMProgramDirect) iter.next();
 
                 String status = p.getProgramStatusString( p.getProgramStatus().intValue());
-                startStr = "-";               
-                stopStr = "-"; 
+                String startStr = "-";               
+                String stopStr = "-"; 
                 String actionURI = "oper_direct.jsp";
 
 
@@ -303,3 +307,4 @@
 </table>
 </body>
 </html>
+</cti:checkRole>

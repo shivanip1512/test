@@ -60,13 +60,13 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="253" height="28" class="PageHeader">&nbsp;&nbsp;&nbsp;<cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_TEXT %>"/></td>
+                <td width="253" height="28" class="PageHeader">&nbsp;&nbsp;&nbsp;<cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/></td>
 				<td width="235" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle"> 
                   <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                 </td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
+                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                     Off</a>&nbsp;</span></div>
                 </td>
               </tr>
@@ -121,7 +121,7 @@
 <table width="640" border="0" cellspacing="0" cellpadding="0" align="left">
     <tr>
       <td width="635">
-        <p align="center" class="Main"><br><b><cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_HEADING_TEXT %>"/> - CUSTOMER PROFILE</b> 
+        <p align="center" class="Main"><br><b><cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - CUSTOMER PROFILE</b> 
         </p>
         <p align="center" class="Main"><%= cust.getCiCustomerBase().getCompanyName() %><br clear="ALL">
           <%= cust.getAddress().getLocationAddress1() %><br clear="ALL">

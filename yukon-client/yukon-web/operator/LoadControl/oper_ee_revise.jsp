@@ -117,7 +117,7 @@
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
+                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -180,7 +180,7 @@
         <input type=hidden name="offer" value="<%= offerID %>">
         <input type=hidden name="rev" value="<%= revisionNumber %>">
         <input type=hidden name="date" value="<%= eeDateFormat.format(offer.getOfferDate()) %>">
-                    <b> <cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_HEADING_TEXT %>"/> - REVISE OFFER </b><br>
+                    <b> <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - REVISE OFFER </b><br>
                     <br>
                   </div>
       <table

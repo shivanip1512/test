@@ -25,7 +25,7 @@
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
+                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -81,10 +81,10 @@
   <tr> 
                 <td width="650" class="Main"valign="top"> 
                   <p align="center"><b><br>
-                    <cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_HEADING_TEXT %>"/> - CURRENT SUMMARY</b> <br>
+                    <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - CURRENT SUMMARY</b> <br>
                     <br>
                   <p align="center">Click on an Offer ID to view the offer summary.</p>
-      <p align="center"><span class="MainHeader"><b>Today's <cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_TEXT %>"/> Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getToday()) %></b></span> 
+      <p align="center"><span class="MainHeader"><b>Today's <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getToday()) %></b></span> 
       <center>
         <table width="620" border="1" cellspacing="0" cellpadding="2">
           <tr valign="top"> 
@@ -178,7 +178,7 @@
       </center>
       <p>&nbsp; 
       <p align="center"><span class="MainHeader"><b>Tomorrow's 
-        <cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_TEXT %>"/> Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getTommorow()) %></b></span>
+        <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getTommorow()) %></b></span>
       <table width="620" border="1" cellspacing="0" cellpadding="2" align="center">
         <tr valign="top"> 
           <td width="10%" class="HeaderCell">Offer ID</td>

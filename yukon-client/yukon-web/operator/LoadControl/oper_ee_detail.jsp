@@ -73,7 +73,7 @@
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
+                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
                 
@@ -131,7 +131,7 @@
                 <tr> 
                   <td width="650" class="Main"> 
                     <br>
-                    <p align="center"><b><cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_HEADING_TEXT %>"/> - OFFER <%= offer.getOfferID().toString() %> 
+                    <p align="center"><b><cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - OFFER <%= offer.getOfferID().toString() %> 
                       - <%= revisionNumber %> DETAILS</b></p>
                     <% 
            java.util.Date notificationDate = ((LMEnergyExchangeOfferRevision) offerRevisions.get(revisionNumber.intValue())).getNotificationDateTime();          

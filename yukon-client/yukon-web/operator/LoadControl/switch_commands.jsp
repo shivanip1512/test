@@ -3,6 +3,8 @@
 <!-- Find all the versacom serial groups associated with this operator -->
 <!-- a serial address of 0 indicates that we should display the serial number text field -->
 
+<cti:checkProperty propertyid="<%=DirectLoadcontrolRole.INDIVIDUAL_SWITCH%>">
+
 <%                                       
     boolean showSerialNumberTextField = false;
     int serialNumberTextFieldIndex = -1;
@@ -11,7 +13,7 @@
     int textFieldRouteID = -1;
     
     String sql = "select GENERICMACRO.CHILDID from OPERATORSERIALGROUP,GENERICMACRO WHERE GENERICMACRO.OWNERID=OPERATORSERIALGROUP.LMGROUPID AND OPERATORSERIALGROUP.LOGINID=" +user.getUserID()  + " ORDER BY GENERICMACRO.CHILDORDER";
-   
+
     Object[][] serialGroupIDs = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sql, new Class[] { Integer.class } );
 	Object[][] versacomNameSerial = null;
 	Object[][] expresscomNameSerial = null;
@@ -53,7 +55,7 @@
     }
     
     sql += " )";
-   
+
     expresscomNameSerial = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sql, new Class[] { String.class, Integer.class, Integer.class, Integer.class } );
 	
 	int numSerial = 0;
@@ -164,7 +166,7 @@ dropDownRouteIDArray[<%=ii%>] = <%=nameSerial[i][3]%>;
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
+                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -578,3 +580,4 @@ dropDownRouteIDArray[<%=ii%>] = <%=nameSerial[i][3]%>;
 </body>
 </html>
 
+</cti:checkProperty>

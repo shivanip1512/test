@@ -1,13 +1,18 @@
 <%@ include file="oper_header.jsp" %> 
-<%@ include file="oper_trendingheader.jsp" %>
 
+<cti:checkRole roleid="<%=DirectCurtailmentRole.ROLEID%>">
 <%
-    //Duplicate decl in oper_trendingheader.jsp :P
-    //String tab = request.getParameter("tab");
-    tab = request.getParameter("tab");
+   String tab = request.getParameter("tab");
+   tab = request.getParameter("tab");
 
+   String referrer = (String) session.getValue("referrer");
+   if( referrer == null )
+      referrer = request.getRequestURI() + "?" + request.getQueryString();
+		
     if( tab == null )
         tab = "";
+         
+    session.putValue("referrer", request.getRequestURI() + "?" + request.getQueryString());
 %>
 
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramCurtailment" %>
@@ -229,3 +234,4 @@
 <!-- Add menus -->   
 </body>
 </html>
+</cti:checkRole>

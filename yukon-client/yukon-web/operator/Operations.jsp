@@ -1,13 +1,26 @@
-<%@ page import="com.cannontech.common.constants.RoleTypes" %>
-<%@ page import="com.cannontech.roles.operator.*"%>
-<%@ page import="com.cannontech.roles.*"%>
+<%
+	/**
+	 * Main portal for operators
+	 **/
+%>
+
+<%@ page import="com.cannontech.roles.application.WebClientRole" %>
+
+<%@ page import="com.cannontech.roles.operator.CommercialMeteringRole" %>
+<%@ page import="com.cannontech.roles.operator.ConsumerInfoRole" %>
+<%@ page import="com.cannontech.roles.operator.DirectCurtailmentRole" %>
+<%@ page import="com.cannontech.roles.operator.DirectLoadcontrolRole" %>
+<%@ page import="com.cannontech.roles.operator.EnergyBuybackRole" %>
+<%@ page import="com.cannontech.roles.operator.OddsForControlRole" %>
+
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 <%@ include file="Consumer/StarsHeader.jsp" %>
+
 <html>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link id="StyleSheet" rel="stylesheet" href="../WebConfig/CannonStyle.css" type="text/css">
+<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link id="StyleSheet" rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 </head>
 
@@ -17,13 +30,13 @@
     <td width="657"valign="bottom">
       <table width="657" border="0" cellspacing="0" cellpadding="3" height="102"> 
         <tr> 
-          <td id="Header" background="<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>" height="77" >&nbsp;</td>
+          <td id="Header" background="../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>" height="77" >&nbsp;</td>
         </tr>
         <tr>
-          <form name="form2" method="post" action="/login.jsp"><td>
-                      <div align="right"><span class="Main"><a href="/login.jsp" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
-                    </td></form>
+         	<td>
+               <div align="right"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
+                Off</a>&nbsp;</span></div>
+            </td>
         </tr>
       </table>
     </td>
@@ -36,7 +49,8 @@
     <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
     <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
   </tr>
-<cti:checkRole roleid="<%= OperatorRoleDefs.CONSUMER_INFO_ROLEID %>">
+  
+<cti:checkRole roleid="<%= ConsumerInfoRole.ROLEID %>">
   <tr> 
     <td width="102" background="Consumer/ConsumerImage.jpg" height="102">&nbsp;</td>
     <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="ConsumerHeader.gif" width="229" height="15" border="0"><br>
@@ -53,7 +67,7 @@
             <input type="hidden" name="action" value="SearchCustAccount">
             <td width="97" class="Main">
               <div align = "center" style = "border:solid 1px #666999;">
-                <a href = "Consumer/New.jsp<cti:checkRole roleid="<%= RoleTypes.NEW_ACCOUNT_WIZARD %>">?Wizard=true</cti:checkRole>" class = "Link1" style = "text-decoration:none;">New 
+                <a href = "Consumer/New.jsp<cti:checkRole roleid="<%= ConsumerInfoRole.NEW_ACCOUNT_WIZARD %>">?Wizard=true</cti:checkRole>" class = "Link1" style = "text-decoration:none;">New 
                 Account</a>
               </div>
             </td>
@@ -84,7 +98,8 @@
     <td width="1" background="../Images/Icons/VerticalRule.gif" height="102"></td>
   </tr>
 </cti:checkRole>
-<cti:checkRole roleid="<%= RoleTypes.OPERATOR_COMMERCIAL_METERING %>">
+
+<cti:checkRole roleid="<%= CommercialMeteringRole.ROLEID %>">
   <tr> 
     <td width="102" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
     <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
@@ -121,7 +136,8 @@
     <td width="1" background="../Images/Icons/VerticalRule.gif" height="102"></td>
   </tr>
 </cti:checkRole>
-<cti:checkRole roleid="<%= RoleTypes.OPERATOR_LOADCONTROL %>">
+
+<cti:checkMultiRole roleid="<%= Integer.toString(DirectLoadcontrolRole.ROLEID) + "," + Integer.toString(DirectCurtailmentRole.ROLEID) + "," + Integer.toString(EnergyBuybackRole.ROLEID) %>">
   <tr> 
     <td width="102" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
     <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
@@ -143,7 +159,7 @@
         <tr> 
           <form method="post" action="LoadControl/oper_direct.jsp">
             <td width="110" class = "Main">
-<cti:checkRole roleid="<%= OperatorRoleDefs.DIRECT_LOADCONTROL_ROLEID %>"> 
+<cti:checkRole roleid="<%= DirectLoadcontrolRole.ROLEID %>"> 
               <div align = "center" style = "border:solid 1px #666999;">
 			    <a href = "LoadControl/oper_direct.jsp" class = "Link1" style = "text-decoration:none;">Direct</a>
               </div>
@@ -152,7 +168,7 @@
           </form>
           <form method="post" action="LoadControl/oper_mand.jsp">
             <td width="110" class = "Main"> 
-<cti:checkRole roleid="<%= OperatorRoleDefs.DIRECT_CURTAILMENT_ROLEID %>"> 
+<cti:checkRole roleid="<%= DirectCurtailmentRole.ROLEID %>"> 
               <div align = "center" style = "border:solid 1px #666999;">
 			    <a href = "LoadControl/oper_mand.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= DirectCurtailmentRole.CURTAILMENT_LABEL%>"/></a>
 			  </div>
@@ -161,7 +177,7 @@
           </form>
           <form method="post" action="LoadControl/oper_ee.jsp">
             <td width = "110" class = "Main"> 
-<cti:checkRole roleid="<%= OperatorRoleDefs.ENERGY_BUYBACK_ROLEID%>"> 
+<cti:checkRole roleid="<%= EnergyBuybackRole.ROLEID %>"> 
               <div align = "center" style = "border:solid 1px #666999;">
 			    <a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/></a>
 			  </div>
@@ -170,7 +186,7 @@
 		  </form>
             <form method="post" action="Consumer/Odds.jsp">
             <td width = "110" class = "Main">
-<cti:checkRole roleid="<%= RoleTypes.LOADCONTROL_CONTROL_ODDS %>">
+<cti:checkRole roleid="<%= OddsForControlRole.ROLEID %>">
               <div align = "center" style = "border:solid 1px #666999;">
 			    <a href = "Consumer/Odds.jsp" class = "Link1" style = "text-decoration:none;">Odds for Control</a>
 			  </div>
@@ -188,8 +204,9 @@
     </td>
     <td width="1" background="../Images/Icons/VerticalRule.gif" height="102"></td>
   </tr>
-</cti:checkRole>
-<cti:checkRole roleid="<%= RoleTypes.OPERATOR_HARDWARE_INVENTORY %>">
+</cti:checkMultiRole>
+
+<cti:checkRole roleid="<%= Integer.MAX_VALUE %>"> <% /* TODO, this section is for hardware inventory is this real stuff? */ %>
   <tr> 
     <td width="102" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
     <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
@@ -222,7 +239,8 @@
     <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
   </tr>
 </cti:checkRole>
-<cti:checkRole roleid="<%= RoleTypes.OPERATOR_WORK_ORDERS %>">
+
+<cti:checkRole roleid="<%= Integer.MAX_VALUE %>"> <% /* TODO This section is for work orders, is this real stuff? */ %>
   <tr> 
     <td width="102" height="102" background="WorkOrder/WorkImage.jpg">&nbsp;</td>
     <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="WorkHeader.gif" width="104" height="15"><br>
@@ -256,8 +274,9 @@
     <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
     <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
   </tr>
-</cti:checkRole>
-<cti:checkRole roleid="<%= RoleTypes.OPERATOR_ADMINISTRATION %>">
+</cti:checkRole> 
+
+<cti:checkRole roleid="<%= Integer.MAX_VALUE %>"> <% /* TODO This is the administration section, todate there are no properties for this */ %>
   <tr>
     <td width="102" bgcolor="#000000" height="102" background="Admin/AdminImage.jpg">&nbsp;</td>
     <td bgcolor="#FFFFFF" height="102" valign="top"><img src="AdminHeader.gif" width="129" height="15"><br>

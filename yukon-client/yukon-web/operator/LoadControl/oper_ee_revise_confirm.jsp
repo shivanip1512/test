@@ -35,7 +35,7 @@
                   <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                 </td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
+                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                     Off</a>&nbsp;</span></div>
                 </td>
               </tr>
@@ -91,7 +91,7 @@
     <tr> 
                 <td width="650" valign="top"> 
                   <p align="center" class="Main"><b><br>
-                    <cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_HEADING_TEXT %>"/> - REVISE OFFER 
+                    <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - REVISE OFFER 
                     <%= offerIdStr %> - <%= revNumStr %> <br>
                     </b></p>
                     
