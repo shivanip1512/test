@@ -1,6 +1,7 @@
 package com.cannontech.database.db.user;
 
 import java.sql.SQLException;
+import java.util.Date;
 
 import com.cannontech.database.db.DBPersistent;
 
@@ -15,12 +16,15 @@ public class YukonUser extends DBPersistent {
 	private Integer userID;
 	private String username;
 	private String password;
-
+	private Integer loginCount;
+	private Date lastLogin;
+	private String status;
+	
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
 	public void add() throws SQLException {
-		Object[] addValues = { getUserID(), getUsername(), getPassword() };
+		Object[] addValues = { getUserID(), getUsername(), getPassword(), getLoginCount(), getLastLogin(), getStatus() };
 		add(tableName, addValues);
 	}
 
@@ -35,7 +39,7 @@ public class YukonUser extends DBPersistent {
 	 * @see com.cannontech.database.db.DBPersistent#retrieve()
 	 */
 	public void retrieve() throws SQLException {
-		String[] selectColumns = { "Username", "Password" };
+		String[] selectColumns = { "Username", "Password", "LoginCount", "LastLogin", "Status" };
 		String[] constraintColumns = { "UserID" };
 		Object[] constraintValues = { getUserID() };
 		
@@ -44,6 +48,9 @@ public class YukonUser extends DBPersistent {
 		if(results.length == selectColumns.length) {
 			setUsername((String) results[0]);
 			setPassword((String) results[1]);
+			setLoginCount((Integer) results[2]);
+			setLastLogin((Date) results[3]);
+			setStatus((String) results[4]);
 		}
 	}
 
@@ -51,8 +58,8 @@ public class YukonUser extends DBPersistent {
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
 	public void update() throws SQLException {
-		String[] setColumns = { "Username", "Password" };
-		Object[] setValues = { getUsername(), getPassword() };
+		String[] setColumns = { "Username", "Password", "LoginCount", "LastLogin", "Status" };
+		Object[] setValues = { getUsername(), getPassword(), getLoginCount(), getLastLogin(), getStatus() };
 		
 		String[] constraintColumns = { "UserID" };
 		Object[] constraintValues = { getUserID() };
@@ -106,6 +113,54 @@ public class YukonUser extends DBPersistent {
 	 */
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	/**
+	 * Returns the lastLogin.
+	 * @return Date
+	 */
+	public Date getLastLogin() {
+		return lastLogin;
+	}
+
+	/**
+	 * Returns the loginCount.
+	 * @return Integer
+	 */
+	public Integer getLoginCount() {
+		return loginCount;
+	}
+
+	/**
+	 * Returns the status.
+	 * @return String
+	 */
+	public String getStatus() {
+		return status;
+	}
+
+	/**
+	 * Sets the lastLogin.
+	 * @param lastLogin The lastLogin to set
+	 */
+	public void setLastLogin(Date lastLogin) {
+		this.lastLogin = lastLogin;
+	}
+
+	/**
+	 * Sets the loginCount.
+	 * @param loginCount The loginCount to set
+	 */
+	public void setLoginCount(Integer loginCount) {
+		this.loginCount = loginCount;
+	}
+
+	/**
+	 * Sets the status.
+	 * @param status The status to set
+	 */
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 }

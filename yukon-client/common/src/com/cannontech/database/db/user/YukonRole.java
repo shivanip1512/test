@@ -12,20 +12,21 @@ public class YukonRole extends DBPersistent {
 	
 	private Integer roleID;
 	private String roleName;
+	private String category;
 	
 	public YukonRole() {
-		initialize(null,null);
+		initialize(null,null,null);
 	}
 	
 	public YukonRole(Integer roleID) {
-		initialize(roleID,null);
+		initialize(roleID,null,null);
 	}
 	
-	public YukonRole(Integer roleID, String roleName) {
-		initialize(roleID, roleName);
+	public YukonRole(Integer roleID, String roleName, String category) {
+		initialize(roleID, roleName, category);
 	}
 	
-	private void initialize(Integer roleID, String roleName) {
+	private void initialize(Integer roleID, String roleName, String category) {
 		setRoleID(roleID);
 		setRoleName(roleName);	
 	}
@@ -34,7 +35,7 @@ public class YukonRole extends DBPersistent {
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
 	public void add() throws SQLException {
-		Object[] addValues = { getRoleID() };
+		Object[] addValues = { getRoleID(), getRoleName(), getCategory() };
 		add(tableName, addValues);
 	}
 
@@ -49,13 +50,14 @@ public class YukonRole extends DBPersistent {
 	 * @see com.cannontech.database.db.DBPersistent#retrieve()
 	 */
 	public void retrieve() throws SQLException {
-		String[] selectColumns = { "RoleName" };
+		String[] selectColumns = { "RoleName", "Category" };
 		String[] constraintColumns = { "RoleID"};
 		Object[] constraintValues = { getRoleID() };
 		
 		Object[] results = retrieve(selectColumns, tableName, constraintColumns, constraintValues);
 		if(results.length == selectColumns.length) {
 			setRoleName((String) results[0]);
+			setCategory((String) results[1]);
 		}
 	}
 
@@ -63,8 +65,8 @@ public class YukonRole extends DBPersistent {
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
 	public void update() throws SQLException {
-		String[] setColumns = { "RoleName" };
-		Object[] setValues = { getRoleName() };
+		String[] setColumns = { "RoleName", "Category" };
+		Object[] setValues = { getRoleName(), getCategory() };
 		
 		String[] constraintColumns = { "RoleID" };
 		Object[] constraintValues = { getRoleID() };
@@ -102,6 +104,22 @@ public class YukonRole extends DBPersistent {
 	 */
 	public void setRoleName(String roleName) {
 		this.roleName = roleName;
+	}
+
+	/**
+	 * Returns the category.
+	 * @return String
+	 */
+	public String getCategory() {
+		return category;
+	}
+
+	/**
+	 * Sets the category.
+	 * @param category The category to set
+	 */
+	public void setCategory(String category) {
+		this.category = category;
 	}
 
 }
