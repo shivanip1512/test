@@ -4128,7 +4128,8 @@ public static void main(final java.lang.String[] args)
 	catch (Throwable exception)
 	{
 		System.err.println("Exception occurred in main() of javax.swing.JFrame");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+		exception.printStackTrace( System.err );
+		System.exit(-1);
 	}
 }
 

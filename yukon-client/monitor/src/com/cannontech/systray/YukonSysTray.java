@@ -152,22 +152,25 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 		try
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+			System.setProperty("cti.app.name", "Yukon Systray");
+	
+	
+			ClientSession session = ClientSession.getInstance(); 
+			if( session.establishSession() )
+			{
+				//System.exit(-1);
+				new YukonSysTray();
+			}
+			else
+				System.exit(-1);
 		}
 		catch (Exception e)
-		{}
-
-
-		System.setProperty("cti.app.name", "Yukon Systray");
-
-
-		ClientSession session = ClientSession.getInstance(); 
-		if( session.establishSession() )
 		{
-			//System.exit(-1);
-			new YukonSysTray();
+			e.printStackTrace( System.err );
+			System.exit(-1);		
 		}
 
-		//exits gracefully if we are not logged in!
 	}
 
 	public AlarmHandler getAlarmHandler()

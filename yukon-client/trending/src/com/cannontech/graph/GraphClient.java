@@ -2192,8 +2192,9 @@ public static void main(String[] args)
 
     }
     catch (Exception e)
-        {
-        e.printStackTrace();
+    {
+		e.printStackTrace( System.err );
+		System.exit(-1);    	
     }
 
 }

@@ -1415,14 +1415,8 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			System.setProperty("cti.app.name", "Commander");
 			javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 	
-			YukonCommander ycClient;
-			ycClient = new YukonCommander();
-			
-			com.cannontech.common.gui.util.SplashWindow splash = new com.cannontech.common.gui.util.SplashWindow( ycClient, "ctismall.gif", "Loading resources...", new java.awt.Font("dialog", 0, 14), java.awt.Color.black, java.awt.Color.black, 1 );
-			ycClient.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("CommanderIcon.gif"));
-			
 			ClientSession session = ClientSession.getInstance(); 
-			if(!session.establishSession(ycClient)) {
+			if(!session.establishSession(null)) {
 				System.exit(-1);			
 			}
 		
@@ -1430,6 +1424,13 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			  JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.", "Access Denied", JOptionPane.WARNING_MESSAGE);
 			  System.exit(-1);				
 			}
+
+	
+			YukonCommander ycClient;
+			ycClient = new YukonCommander();
+			
+			com.cannontech.common.gui.util.SplashWindow splash = new com.cannontech.common.gui.util.SplashWindow( ycClient, "ctismall.gif", "Loading resources...", new java.awt.Font("dialog", 0, 14), java.awt.Color.black, java.awt.Color.black, 1 );
+			ycClient.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("CommanderIcon.gif"));
 						
 			ycClient.setTitle(YC_TITLE);
 			splash.setDisplayText("Opening connection to database...");
@@ -1472,7 +1473,8 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		catch (Throwable exception)
 		{
 			System.err.println("Exception occurred in main() of javax.swing.JFrame");
-			exception.printStackTrace(System.out);
+			exception.printStackTrace(System.err);
+			System.exit(-1);
 		}
 	}
 	

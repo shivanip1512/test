@@ -15,6 +15,7 @@ import javax.swing.Timer;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.parametersfile.ParametersFile;
 import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.logger.config.LoggerMainFrame;
 import com.cannontech.logger.scm.SCMEvent;
@@ -339,19 +340,34 @@ private void initialize()
  */
 public static void main(String[] args) 
 {
-	LoggerClient client = new LoggerClient( null, new Logger() );
-	client.startConnection();
-
-	while( true )
+	try
 	{
-		try
+		ClientSession session = ClientSession.getInstance(); 
+		if(!session.establishSession(null))
+			System.exit(-1);			
+	
+		if(session == null) 
+			System.exit(-1);
+			
+		LoggerClient client = new LoggerClient( null, new Logger() );
+		client.startConnection();
+	
+		while( true )
 		{
-			Thread.sleep( 1000 );
+			try
+			{
+				Thread.sleep( 1000 );
+			}
+			catch( InterruptedException ex )
+			{
+				com.cannontech.clientutils.CTILogger.info("InterruptedException occured in Main()");
+			}
 		}
-		catch( InterruptedException ex )
-		{
-			com.cannontech.clientutils.CTILogger.info("InterruptedException occured in Main()");
-		}
+	}
+	catch( Exception e )
+	{
+		e.printStackTrace( System.err );
+		System.exit(-1);
 	}
 }
 /**
