@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/10/09 19:46:58 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/10/18 14:37:49 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -132,7 +132,7 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                 {
                     controltype = CtiDNPBinaryOutputControl::PulseOff;
                 }
-                else
+                else if( parse.getFlags() & CMD_FLAG_CTL_CLOSE )
                 {
                     controltype = CtiDNPBinaryOutputControl::PulseOn;
                 }
