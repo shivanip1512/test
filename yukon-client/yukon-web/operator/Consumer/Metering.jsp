@@ -10,7 +10,8 @@
                                   " FROM GRAPHDEFINITION GDEF, GRAPHCUSTOMERLIST GCL, ENERGYCOMPANYCUSTOMERLIST ECCL "+
                                   " WHERE ECCL.ENERGYCOMPANYID = " + energyCompanyID + 
                                   " AND GDEF.GRAPHDEFINITIONID = GCL.GRAPHDEFINITIONID " +
-                                  " AND GCL.CUSTOMERID = ECCL.CUSTOMERID";
+                                  " AND GCL.CUSTOMERID = ECCL.CUSTOMERID" +
+                                  " ORDER BY GDEF.NAME";
 
 	gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sqlString);
 %>
@@ -84,9 +85,9 @@
 					out.println(graphBean.getHtmlString());
 				}
 				else if( graphBean.getViewType() == TrendModelType.TABULAR_VIEW )
-				{
-					graphBean.updateCurrentPane();
-					out.println(graphBean.getHtmlString());
+				{%>
+					<%@ include file="../../trending_tabular.jsp" %>					
+					<%
 				}				
 				else // "graph" is default
 				{%>
