@@ -8,15 +8,22 @@ public class EnergyCompany extends com.cannontech.database.db.DBPersistent
 	private Integer energyCompanyID = null;
 	private String name = null;
 	private Integer routeID = null;
+	private Integer webConfigID = null;
 
 	public static final String[] SETTER_COLUMNS = 
 	{ 
-		"Name", "RouteID"
+		"Name", "RouteID", "WebConfigID"
 	};
 	
 	public static final String[] CONSTRAINT_COLUMNS = { "EnergyCompanyID" };
 	
 	public static final String TABLE_NAME = "EnergyCompany";
+	
+	
+
+	private static final String allSql =
+	"SELECT EnergyCompanyID FROM EnergyCompany";
+	
 /**
  * EnergyCompany constructor comment.
  */
@@ -32,7 +39,8 @@ public void add() throws java.sql.SQLException
 	{ 
 		getEnergyCompanyID(),
 		getName(),
-		getRouteID()
+		getRouteID(),
+		getWebConfigID()
 	};
 
 	//if any of the values are null, return
@@ -61,6 +69,67 @@ public boolean equals(Object o)
 	else
 		return false;
 }
+
+/**
+ * Creation date: (6/11/2001 3:38:14 PM)
+ * @return com.cannontech.database.db.web.EnergyCompany
+ * @param dbAlias java.lang.String
+ */
+public static long[] getAllEnergyCompanieIDs() {
+	return getAllEnergyCompanieIDs("yukon");
+}
+/**
+ * Creation date: (6/11/2001 3:38:14 PM)
+ * @return com.cannontech.database.db.web.EnergyCompany
+ * @param dbAlias java.lang.String
+ */
+public static long[] getAllEnergyCompanieIDs(String dbAlias) {
+	
+	java.sql.Connection conn = null;
+	java.sql.Statement stmt = null;
+	java.sql.ResultSet rset = null;
+	
+	try
+	{
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
+		stmt = conn.createStatement();
+		rset = stmt.executeQuery(allSql);
+
+		java.util.ArrayList idList = new java.util.ArrayList();	
+		while( rset.next() )
+		{
+			idList.add( new Long(rset.getLong(1)) );
+		}
+
+		long[] retIDs = new long[idList.size()];
+		for( int i = 0; i < idList.size(); i++ )
+		{
+			retIDs[i] = ((Long) idList.get(i)).longValue();
+		}
+		
+		return retIDs;			
+	}
+	catch(java.sql.SQLException e)
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	}
+	finally
+	{
+		try
+		{
+			if( stmt != null ) stmt.close();
+			if( conn != null ) conn.close();
+		}
+		catch( java.sql.SQLException e2 )
+		{
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
+		}
+	}
+
+	// An exception must have occured
+	return new long[0];
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (8/24/2001 12:52:15 PM)
@@ -75,7 +144,8 @@ public static final EnergyCompany[] getEnergyCompanies(java.sql.Connection conn)
 	String sql = "SELECT " + 
 			CONSTRAINT_COLUMNS[0] + ", " +
 			SETTER_COLUMNS[0] + ", " +
-			SETTER_COLUMNS[1] +
+			SETTER_COLUMNS[1] + ", " +
+			SETTER_COLUMNS[2] +
 			" FROM " + TABLE_NAME;
 
 	try
@@ -95,6 +165,7 @@ public static final EnergyCompany[] getEnergyCompanies(java.sql.Connection conn)
 				ex.setEnergyCompanyID( new Integer(rset.getInt(CONSTRAINT_COLUMNS[0])) );
 				ex.setName( rset.getString(SETTER_COLUMNS[0]) );
 				ex.setRouteID( new Integer(rset.getInt(SETTER_COLUMNS[1])) );
+				ex.setWebConfigID( new Integer(rset.getInt(SETTER_COLUMNS[2])) );
 
 				list.add( ex );
 			}
@@ -120,6 +191,7 @@ public static final EnergyCompany[] getEnergyCompanies(java.sql.Connection conn)
 	EnergyCompany[] cmpys = new EnergyCompany[ list.size() ];	
 	return (EnergyCompany[])list.toArray( cmpys );
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (2/28/2002 10:21:44 AM)
@@ -215,6 +287,7 @@ public void retrieve() throws java.sql.SQLException
 	{
 		setName( (String) results[0] );
 		setRouteID( (Integer)results[1] );
+		setWebConfigID( (Integer)results[2] );
 	}
 	else
 		throw new RuntimeException("Incorrect number of columns in result");
@@ -260,7 +333,8 @@ public void update() throws java.sql.SQLException
 	{
 		getEnergyCompanyID(),
 		getName(),
-		getRouteID()
+		getRouteID(),
+		getWebConfigID()
 	};
 
 	//if any of the values are null, return
@@ -274,4 +348,20 @@ public void update() throws java.sql.SQLException
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
+	/**
+	 * Returns the webConfigID.
+	 * @return Integer
+	 */
+	public Integer getWebConfigID() {
+		return webConfigID;
+	}
+
+	/**
+	 * Sets the webConfigID.
+	 * @param webConfigID The webConfigID to set
+	 */
+	public void setWebConfigID(Integer webConfigID) {
+		this.webConfigID = webConfigID;
+	}
+
 }
