@@ -78,11 +78,15 @@ public void delete() throws java.sql.SQLException
 	delete( "EnergyCompanyOperatorLoginList", "EnergyCompanyID", getEnergyCompany().getEnergyCompanyID() );
 	getEnergyCompany().delete();
 	
-	com.cannontech.database.data.customer.Contact contact =
-			new com.cannontech.database.data.customer.Contact();
-	contact.setContactID( getEnergyCompany().getPrimaryContactID() );
-	contact.setDbConnection( getDbConnection() );
-	contact.delete();
+	if (getEnergyCompany().getPrimaryContactID() != null
+		&& getEnergyCompany().getPrimaryContactID().intValue() != com.cannontech.common.util.CtiUtilities.NONE_ID)
+	{
+		com.cannontech.database.data.customer.Contact contact =
+				new com.cannontech.database.data.customer.Contact();
+		contact.setContactID( getEnergyCompany().getPrimaryContactID() );
+		contact.setDbConnection( getDbConnection() );
+		contact.delete();
+	}
 }
 /**
  * Insert the method's description here.
