@@ -119,21 +119,27 @@ public class KeysAndValuesFile extends java.io.File
 								cpf.setIncludedFiles(getIncludedFiles());
 								
 								KeysAndValues tempKAV = cpf.getKeysAndValues();
-								for(int i = 0; i < tempKAV.getKeys().length; i++)
+								if( tempKAV != null)
 								{
-									keys.addElement(tempKAV.getKeys()[i]);
-									values.addElement(tempKAV.getValues()[i]);
+									for(int i = 0; i < tempKAV.getKeys().length; i++)
+									{
+										keys.addElement(tempKAV.getKeys()[i]);
+										values.addElement(tempKAV.getValues()[i]);
+									}
 								}
 							}
 						}
 						else
 						{	
 							int separatorIndex = line.indexOf(separator);
-							String key = line.substring(0, separatorIndex);
-							String value = line.substring(separatorIndex + 1);
-				
-							keys.addElement( key.trim());
-							values.addElement( value.trim() );				
+							if( separatorIndex != -1)	// separator character is found
+							{
+								String key = line.substring(0, separatorIndex);
+								String value = line.substring(separatorIndex + 1);
+
+								keys.addElement( key.trim());
+								values.addElement( value.trim() );
+							}
 						}
 					}
 	
