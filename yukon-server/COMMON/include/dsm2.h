@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/07/30 21:14:43 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/08/08 17:13:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,7 +53,10 @@ IM_EX_CTIBASE ULONG OutMessageCount();
 #endif
 #define NORMAL_TXT      "Normal (Success) Return"
 #define NORMAL_TYPE     NORMAL
-#define BADBCH          1
+#define NOTNORMAL       1
+#define NOTNORMAL_TXT   "Not Normal (Unsuccessful) Return"
+#define NOTNORMAL_TYPE  ERRTYPESYSTEM
+#define BADBCH          100
 #define BADBCH_TXT      "Bad BCH"
 #define BADBCH_TYPE     ERRTYPEPROTOCOL
 #define NODWORD         2
