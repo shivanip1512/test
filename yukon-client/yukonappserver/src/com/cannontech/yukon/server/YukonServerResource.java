@@ -1,6 +1,5 @@
 package com.cannontech.yukon.server;
 
-import com.cannontech.yukon.IConnectionBase;
 import com.cannontech.yukon.IDBPersistent;
 import com.cannontech.yukon.ITimedDatabaseCache;
 import com.cannontech.yukon.IDatabaseCache;
@@ -25,7 +24,7 @@ public class YukonServerResource extends YukonResourceBase
       return new com.cannontech.ejb.DBPersistentBean();
    }
    
-   public synchronized IDBPersistent getDBPersistent()
+   public IDBPersistent getDBPersistent()
    {
       if( dbPersistent == null )
          dbPersistent = new com.cannontech.ejb.DBPersistentBean();
@@ -38,7 +37,7 @@ public class YukonServerResource extends YukonResourceBase
    // ---------------------------------------------------------------------------------
    //  START of the IDatabase implementation
    // ---------------------------------------------------------------------------------   
-   public synchronized IDatabaseCache getDBCache()
+   public IDatabaseCache getDBCache()
    {
       if( dbCache == null )
       {         
@@ -54,7 +53,7 @@ public class YukonServerResource extends YukonResourceBase
    // ---------------------------------------------------------------------------------
    //  START of the ITimedDatabase implementation
    // ---------------------------------------------------------------------------------   
-   public synchronized ITimedDatabaseCache getTimedDBCache()
+   public ITimedDatabaseCache getTimedDBCache()
    {
       if( timedDBCache == null )
       {         
@@ -69,7 +68,7 @@ public class YukonServerResource extends YukonResourceBase
    // ---------------------------------------------------------------------------------
    //  START of the ISqlStatement implementation
    // ---------------------------------------------------------------------------------   
-   public synchronized ISQLStatement getSQLStatement()
+   public ISQLStatement getSQLStatement()
    {
       if( sqlStatement == null )
          sqlStatement = new com.cannontech.ejb.SqlStatementBean();
@@ -86,7 +85,7 @@ public class YukonServerResource extends YukonResourceBase
    // ---------------------------------------------------------------------------------
    //  START of the IMACSConnection implementation
    // ---------------------------------------------------------------------------------   
-   public synchronized IMACSConnection getMACSConnection()
+   public IMACSConnection getMACSConnection()
    {
       if( macsConnection == null )
          macsConnection = new com.cannontech.yukon.connections.ServerMACSConnection();
