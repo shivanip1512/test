@@ -2,7 +2,7 @@ package com.cannontech.database.db.device.lm;
 
 /**
  * This type was created in VisualAge.
- *  new 1.6
+ *  new 1.7
  */
 
 public abstract class LMProgramDirectGear
