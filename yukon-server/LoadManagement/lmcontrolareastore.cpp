@@ -293,11 +293,12 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaStore::reset()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-
-    bool wasAlreadyRunning = false;
     try
     {
+	RWOrdered temp_control_areas;
+	map<long, CtiLMGroupBase*> temp_all_group_map;
+	map<long, CtiLMGroupBase*> temp_point_group_map;
+	
         LONG currentAllocations = ResetBreakAlloc();
         if( _LM_DEBUG & LM_DEBUG_EXTENDED )
         {
@@ -309,33 +310,24 @@ void CtiLMControlAreaStore::reset()
         overallTimer.start();
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Obtaining connection to the database..." << endl;
-            dout << RWTime() << " - Reseting control areas from database..." << endl;
+	    dout << RWTime() << " - Starting Database Reload..." << endl;
         }
-
+	
         {
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
             {
                 if( conn.isValid() )
                 {
+		{   
+		    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
                     if( _controlAreas->entries() > 0 )
-                    {
+                    {   //Save off current data to database so that if can be loaded by new objects on reload
                         dumpAllDynamicData();
                         saveAnyProjectionData();
                         saveAnyControlStringData(); 
-                        _controlAreas->clearAndDestroy();
-			//the line above doesn't delete groups, do that now
-                        for(map<long,CtiLMGroupBase*>::iterator iter = _all_group_map.begin();
-		            iter != _all_group_map.end();
-			    iter++)
-			{
-			    delete iter->second;
-			}
-			_all_group_map.clear();	
-                        wasAlreadyRunning = true;
                     }
-
+		}
                     RWDBDateTime currentDateTime;
                     RWDBDatabase db = getDatabase();
 
@@ -416,15 +408,89 @@ void CtiLMControlAreaStore::reset()
 			rdr["category"] >> category;
 			rdr["type"] >> type;
 			CtiLMGroupBase* lm_group = lm_group_factory.createLMGroup(rdr);
-			_all_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
+			temp_all_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
 			attachControlStringData(lm_group);
 		    }
 
 		} //end main group loading
 
-		/* Attach any points necessary to groups */
+	    { /* Load up any group point specific information */
+		RWDBTable lmGroupPointTable = db.table("lmgrouppoint");
+		RWDBSelector selector = db.selector();
+		selector << rwdbName("groupid", lmGroupPointTable["deviceid"])
+			 << rwdbName("deviceid", lmGroupPointTable["deviceidusage"])
+			 << rwdbName("pointid", lmGroupPointTable["pointidusage"])
+			 << lmGroupPointTable["startcontrolrawstate"];
+		selector.from(lmGroupPointTable);
+		RWDBReader rdr = selector.reader(conn);
+		while(rdr())
+		{
+		    int group_id;
+		    int device_id;
+		    int point_id;
+		    int start_control_raw_state;
+
+		    rdr >> group_id;
+		    rdr >> device_id;
+		    rdr >> point_id;
+		    rdr >> start_control_raw_state;
+
+    		    map< long, CtiLMGroupBase* >::iterator iter = temp_all_group_map.find(group_id);
+		    if(iter != temp_all_group_map.end())
+		    {
+			CtiLMGroupPoint* lm_group = (CtiLMGroupPoint*) iter->second;
+			lm_group->setDeviceIdUsage(device_id);
+			lm_group->setPointIdUsage(point_id);
+			lm_group->setStartControlRawState(start_control_raw_state);
+		    }
+		    else
+		    {
+			CtiLockGuard<CtiLogger> dout_guard(dout);
+			dout << RWTime() << " **Checkpoint** " <<  " Rows exist in the LMGroupPoint table exist but do not correspond with any lm groups already loaded.  Either groups didn't get loaded correctly or the LMGroupPoint table has missing constraints?" << __FILE__ << "(" << __LINE__ << ")" << endl;
+		    }
+		} 
+	    }// end loading group point specific info
+		    
+	    { /* Start loading ripple group specific info */
+		RWDBTable lmGroupRippleTable = db.table("lmgroupripple");
+		RWDBSelector selector = db.selector();
+
+		selector << rwdbName("groupid", lmGroupRippleTable["deviceid"])
+			 << lmGroupRippleTable["shedtime"];
+
+		selector.from(lmGroupRippleTable);
+		
+		RWDBReader rdr = selector.reader(conn);
+		while(rdr())
+		{
+		    int group_id;
+		    int shed_time;
+
+		    rdr >> group_id;
+		    rdr >> shed_time;
+
+		    map< long, CtiLMGroupBase* >::iterator iter = temp_all_group_map.find(group_id);
+		    if(iter != temp_all_group_map.end())
+		    {
+			CtiLMGroupRipple* lm_group = (CtiLMGroupRipple*) iter->second;
+			lm_group->setShedTime(shed_time);
+		    }
+		    else
+		    {
+			CtiLockGuard<CtiLogger> dout_guard(dout);
+			dout << RWTime() << " **Checkpoint** " <<  " Rows exist in the LMGroupRipple table exist but do not correspond with any lm groups already loaded.  Either groups didn't get loaded correctly or the LMGroupRipple table has missing constraints?" << __FILE__ << "(" << __LINE__ << ")" << endl;
+		    }
+		}
+	    } // end loading ripple group specific info */
+
+	{ /* Start loading sa dumb group specific info */
+	    /* We would load the nominal timeout here, I don't think it is used yet,
+	       so add it if necessary */
+	} // end loading sa dumb group specific info */
+		
+	    /* Attach any points necessary to groups */
 	    {
-		_point_group_map.clear();
+		temp_point_group_map.clear();
 		RWDBTable pointTable = db.table("point");
 		RWDBTable lmGroupTable = db.table("lmgroup");
 
@@ -459,7 +525,7 @@ void CtiLMControlAreaStore::reset()
 		    rdr["pointtype"] >> point_type;
 		    rdr["pointoffset"] >> point_offset;
 
-		    map< long, CtiLMGroupBase* >::iterator iter = _all_group_map.find(group_id);
+		    map< long, CtiLMGroupBase* >::iterator iter = temp_all_group_map.find(group_id);
 		    CtiLMGroupBase* lm_group = iter->second;
 
 		    switch(resolvePointType(point_type.data()))
@@ -469,19 +535,19 @@ void CtiLMControlAreaStore::reset()
 			{
 			case DAILYCONTROLHISTOFFSET:
 			    lm_group->setHoursDailyPointId(point_id);
-			    _point_group_map.insert(make_pair(point_id,lm_group));
+			    temp_point_group_map.insert(make_pair(point_id,lm_group));
 			    break;
 			case MONTHLYCONTROLHISTOFFSET:
 			    lm_group->setHoursMonthlyPointId(point_id);
-			    _point_group_map.insert(make_pair(point_id,lm_group));
+			    temp_point_group_map.insert(make_pair(point_id,lm_group));
 			    break;
 			case SEASONALCONTROLHISTOFFSET:
 			    lm_group->setHoursSeasonalPointId(point_id);
-			    _point_group_map.insert(make_pair(point_id,lm_group));
+			    temp_point_group_map.insert(make_pair(point_id,lm_group));
 			    break;
 			case ANNUALCONTROLHISTOFFSET:
 			    lm_group->setHoursAnnuallyPointId(point_id);
-			    _point_group_map.insert(make_pair(point_id,lm_group));
+			    temp_point_group_map.insert(make_pair(point_id,lm_group));
 			    break;
 			default:
 			{
@@ -499,7 +565,7 @@ void CtiLMControlAreaStore::reset()
 			    if(controlPointHashMap.findValue(point_id, control_status_point_id))
 			    {
 				lm_group->setControlStatusPointId(control_status_point_id);
-				_point_group_map.insert(make_pair(point_id,lm_group));
+				temp_point_group_map.insert(make_pair(point_id,lm_group));
 			    }
 			}
 			break;
@@ -558,7 +624,7 @@ void CtiLMControlAreaStore::reset()
 		    rdr["nextcontroltime"] >> next_control_time;
 		    rdr["internalstate"] >> internal_state;
 		    
-		    CtiLMGroupBase* lm_group = _all_group_map.find(group_id)->second;
+		    CtiLMGroupBase* lm_group = temp_all_group_map.find(group_id)->second;
 		    lm_group->setCurrentHoursDaily(cur_hours_daily);
 		    lm_group->setCurrentHoursMonthly(cur_hours_monthly);
 		    lm_group->setCurrentHoursSeasonal(cur_hours_seasonal);
@@ -651,7 +717,7 @@ void CtiLMControlAreaStore::reset()
 		    if(cur_iter == all_program_group_map.end())
 		    {
 			vector<CtiLMGroupBase*> group_vec;
-			CtiLMGroupBase* lm_group = _all_group_map.find(group_id)->second;
+			CtiLMGroupBase* lm_group = temp_all_group_map.find(group_id)->second;
 
 			map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
 			if(macro_iter != group_macro_map.end())
@@ -661,7 +727,7 @@ void CtiLMControlAreaStore::reset()
 				iter != macro_vec.end();
 				iter++)
 			    { //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
-				CtiLMGroupBase* child_group = _all_group_map.find(*iter)->second;
+				CtiLMGroupBase* child_group = temp_all_group_map.find(*iter)->second;
 				group_vec.push_back(child_group);
 				child_group->setGroupOrder(group_vec.size());
 				all_assigned_group_map.insert(make_pair(child_group->getPAOId(), child_group));
@@ -677,7 +743,7 @@ void CtiLMControlAreaStore::reset()
 		    }
 		    else
 		    {
-			CtiLMGroupBase* lm_group = _all_group_map.find(group_id)->second;
+			CtiLMGroupBase* lm_group = temp_all_group_map.find(group_id)->second;
 			
 			map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
 			if(macro_iter != group_macro_map.end())
@@ -687,7 +753,7 @@ void CtiLMControlAreaStore::reset()
 				iter != macro_vec.end();
 				iter++)
 			    { //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
-				CtiLMGroupBase* child_group = _all_group_map.find(*iter)->second;
+				CtiLMGroupBase* child_group = temp_all_group_map.find(*iter)->second;
 				cur_iter->second.push_back(child_group);
 				child_group->setGroupOrder(cur_iter->second.size());
 				all_assigned_group_map.insert(make_pair(child_group->getPAOId(), child_group));
@@ -708,7 +774,7 @@ void CtiLMControlAreaStore::reset()
 	    {
 		CtiLockGuard<CtiLogger> logger_guard(dout);
 		dout << "DB Load Timer for All Groups is: " << allGroupTimer.elapsedTime() << endl;
-		dout << "Loaded a total of " << _all_group_map.size() << " groups, " << group_macro_map.size() << " of them are in macro groups" << endl;
+		dout << "Loaded a total of " << temp_all_group_map.size() << " groups, " << group_macro_map.size() << " of them are in macro groups" << endl;
 		dout << all_program_group_map.size() << "==" << all_assigned_group_map.size() << " groups are assigned to programs" << endl;
 		allGroupTimer.reset();
 	    }
@@ -2222,7 +2288,7 @@ void CtiLMControlAreaStore::reset()
                                 tempControlAreaId != currentLMControlArea->getPAOId() )
                             {
                                 currentLMControlArea = new CtiLMControlArea(rdr);
-                                _controlAreas->insert(currentLMControlArea);
+                                temp_control_areas.insert(currentLMControlArea);
                             }
 
                             rdr["lmprogramdeviceid"] >> isNull;
@@ -2361,9 +2427,9 @@ void CtiLMControlAreaStore::reset()
                             ****************************************************************/
                             LONG tempControlAreaId = 0;
                             rdr["deviceid"] >> tempControlAreaId;
-                            for(LONG i=0;i<_controlAreas->entries();i++)
+                            for(LONG i=0;i<temp_control_areas.entries();i++)
                             {
-                                CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)((*_controlAreas)[i]);
+                                CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)(temp_control_areas[i]);
                                 if( currentLMControlArea->getPAOId() == tempControlAreaId )
                                 {
                                     currentLMControlArea->getLMControlAreaTriggers().insert(newTrigger);
@@ -2378,6 +2444,11 @@ void CtiLMControlAreaStore::reset()
                         dout << "DB Load Timer for Triggers is: " << trigTimer.elapsedTime() << endl;
                         trigTimer.reset();
                     }
+
+		    	//Make sure holidays and season schedules are refreshed
+		    CtiHolidayManager::getInstance().refresh();
+		    CtiSeasonManager::getInstance().refresh();
+	
                 }
                 else
                 {
@@ -2389,7 +2460,6 @@ void CtiLMControlAreaStore::reset()
             }
         }
 
-	/* fix up direct program group ordering now that we have them attached to control areas */
 #ifdef _BUNG_
 	for(int i = _controlAreas.entries(); i++)
 	{
@@ -2407,18 +2477,43 @@ void CtiLMControlAreaStore::reset()
 	    }
 	}
 #endif
-	       
-        if( _LM_DEBUG & LM_DEBUG_DATABASE )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << "DB Load Timer for entire LM DB: " << overallTimer.elapsedTime() << endl;
-            overallTimer.reset();
-        }
+
+    {
+	RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+			    
+	// Clear out our old working objects
+	_controlAreas->clearAndDestroy(); //89
+	//the line above doesn't delete groups, do that now
+	for(map<long,CtiLMGroupBase*>::iterator iter = _all_group_map.begin();
+	    iter != _all_group_map.end();
+	    iter++)
+	{
+	    delete iter->second;
+	}
+	_all_group_map.clear();
+	_point_group_map.clear();
+
+        // Lets start using the new objects we just loaded.
+	// do a swap, make sure we have the mux
+	*_controlAreas = temp_control_areas;
+	_all_group_map = temp_all_group_map;
+	_point_group_map = temp_point_group_map;
+	
         _isvalid = TRUE;
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Control areas reset" << endl;
-        }
+
+    {
+	CtiLockGuard<CtiLogger> logger_guard(dout);
+	dout << RWTime() << " - Control areas reset" << endl;
+    }
+    		       
+    if( _LM_DEBUG & LM_DEBUG_DATABASE )
+    {
+	CtiLockGuard<CtiLogger> logger_guard(dout);
+	dout << "DB Load Timer for entire LM DB: " << overallTimer.elapsedTime() << endl;
+	overallTimer.reset();
+    }
+
+    }
     }
     catch(...)
     {
@@ -2428,17 +2523,9 @@ void CtiLMControlAreaStore::reset()
 
     try
     {
-	//Make sure holidays and season schedules are refreshed
-	CtiHolidayManager::getInstance().refresh();
-	CtiSeasonManager::getInstance().refresh();
-	
         _reregisterforpoints = true;
         _lastdbreloadtime.now();
-	
-        if( !wasAlreadyRunning )
-        {
-            dumpAllDynamicData();
-        }
+
         ULONG msgBitMask = CtiLMControlAreaMsg::AllControlAreasSent;
         if( _wascontrolareadeletedflag )
         {

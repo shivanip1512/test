@@ -81,10 +81,19 @@ bool CtiLMConstraintChecker::checkSeason(const CtiLMProgramDirect& lm_program,
 
     RWTime startTime(proposed_start_from_1901);
     RWTime stopTime(proposed_stop_from_1901);
-
+ 
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " blas - " <<  startTime << endl;
+	dout << RWTime() << " blah - " << stopTime << endl;
+    }
     RWDate startDate(startTime);
     RWDate stopDate(stopTime);
-
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " blas - " <<  startDate << endl;
+	dout << RWTime() << " blah - " << stopDate << endl;
+    }
     while(startDate++ <= stopDate)
     {
 	if(!CtiSeasonManager::getInstance().isInSeason(startDate, lm_program.getSeasonScheduleId()))

@@ -267,7 +267,7 @@ CtiLMGroupBase* CtiLMGroupRipple::replicate() const
 void CtiLMGroupRipple::restore(RWDBReader& rdr)
 {
     CtiLMGroupBase::restore(rdr);
-#ifdef _THISNEEDSTOBEADDEDBACK_
+#ifdef _OLD_DB_RELOAD_
     //NOTE: !
     RWDBNullIndicator isNull;
     rdr["rippleshedtime"] >> isNull;

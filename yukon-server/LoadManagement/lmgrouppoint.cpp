@@ -296,7 +296,7 @@ CtiLMGroupBase* CtiLMGroupPoint::replicate() const
 void CtiLMGroupPoint::restore(RWDBReader& rdr)
 {
     CtiLMGroupBase::restore(rdr);
-
+#ifdef _OLD_DBRELOAD_
     RWDBNullIndicator isNull;
     rdr["pointdeviceidusage"] >> isNull;
     if( !isNull )
@@ -310,5 +310,6 @@ void CtiLMGroupPoint::restore(RWDBReader& rdr)
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Unexpected database load issue, in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
+#endif
 }
 
