@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2004/10/25 16:22:07 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2004/12/07 18:16:09 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,23 +32,27 @@
 set< CtiDLCCommandStore > CtiDeviceMCT24X::_commandStore;
 
 
-CtiDeviceMCT24X::CtiDeviceMCT24X( ) { }
+CtiDeviceMCT24X::CtiDeviceMCT24X( )
+{
+}
 
 CtiDeviceMCT24X::CtiDeviceMCT24X( const CtiDeviceMCT24X &aRef )
 {
     *this = aRef;
 }
 
-CtiDeviceMCT24X::~CtiDeviceMCT24X( ) { }
+CtiDeviceMCT24X::~CtiDeviceMCT24X( )
+{
+}
 
 CtiDeviceMCT24X& CtiDeviceMCT24X::operator=(const CtiDeviceMCT24X& aRef)
 {
-   if( this != &aRef )
-   {
-       Inherited::operator=( aRef );
-   }
+    if( this != &aRef )
+    {
+        Inherited::operator=( aRef );
+    }
 
-   return *this;
+    return *this;
 }
 
 
@@ -121,12 +125,6 @@ bool CtiDeviceMCT24X::initCommandStore()
     cs._cmd     = CtiProtocolEmetcon::Scan_LoadProfile;
     cs._io      = IO_READ;
     cs._funcLen = make_pair( 0,0 );
-    _commandStore.insert( cs );
-
-    cs._cmd     = CtiProtocolEmetcon::GetStatus_Disconnect;
-    cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT24X_DiscPos,
-                             (int)MCT24X_DiscLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetStatus_External;
@@ -604,7 +602,7 @@ INT CtiDeviceMCT24X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                             quality = DeviceFillerQuality;
                             value = 0.0;
                         }
-                        else if( checkLoadProfileQuality( pulses, quality, bad_data ) )
+                        else if( checkDemandQuality( pulses, quality, bad_data ) )
                         {
                             value = 0.0;
                         }
@@ -848,87 +846,6 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtr
                 rwtemp = getName() + " / Disconnect:" + disc + "  --  point undefined in DB";
                 ReturnMsg->setResultString( rwtemp );
             }
-        }
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-    }
-
-    return status;
-}
-
-
-INT CtiDeviceMCT24X::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
-{
-    INT status = NORMAL;
-
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
-
-
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-    {
-        // No error occured, we must do a real decode!
-
-        CtiPointBase    *pPoint;
-        CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        CtiPointDataMsg *pData     = NULL;
-
-        double Value;
-        RWCString rwtemp;
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        pPoint = getDevicePointOffsetTypeEqual(1, StatusPointType);
-
-        Value = CLOSED;
-
-        switch(InMessage->Buffer.DSt.Message[0])
-        {
-            case MCT24X_Status_Closed:
-            {
-                Value = CLOSED;
-                rwtemp += " SERVICE CONNECT ENABLED";
-                break;
-            }
-            case MCT24X_Status_Open:
-            {
-                Value = OPENED;
-                rwtemp += " SERVICE DISCONNECTED";
-                break;
-            }
-            default:
-            {
-                Value = INVALID;
-                rwtemp += " UNKNOWN / No Disconnect Status";
-                break;
-            }
-        }
-
-
-        //  Send this value to requestor via retList.
-        if(pPoint != NULL)
-        {
-            rwtemp = getName() + " / " + pPoint->getName() + ":" + rwtemp;
-
-            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, rwtemp);
-            if(pData != NULL)
-            {
-                ReturnMsg->PointData().insert(pData);
-                pData = NULL;  // We just put it on the list...
-            }
-        }
-        else
-        {
-            rwtemp = getName() + " / Disconnect:" + rwtemp + "  --  point undefined in DB";
-            ReturnMsg->setResultString( rwtemp );
         }
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
