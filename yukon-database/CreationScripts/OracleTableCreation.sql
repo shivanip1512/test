@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     6/23/2003 3:30:43 PM                         */
+/* Created on:     7/14/2003 1:05:05 PM                         */
 /*==============================================================*/
 
 
@@ -61,17 +61,7 @@ drop view SubstationAddress_View
 /
 
 
-alter table Address
-   drop primary key cascade
-/
-
-
 drop table Address cascade constraints
-/
-
-
-alter table AlarmCategory
-   drop primary key cascade
 /
 
 
@@ -79,21 +69,7 @@ drop table AlarmCategory cascade constraints
 /
 
 
-alter table BillingFileFormats
-   drop primary key cascade
-/
-
-
 drop table BillingFileFormats cascade constraints
-/
-
-
-drop index Indx_ClcBaseUpdTyp
-/
-
-
-alter table CALCBASE
-   drop primary key cascade
 /
 
 
@@ -101,21 +77,7 @@ drop table CALCBASE cascade constraints
 /
 
 
-drop index Indx_CalcCmpCmpType
-/
-
-
-alter table CALCCOMPONENT
-   drop primary key cascade
-/
-
-
 drop table CALCCOMPONENT cascade constraints
-/
-
-
-alter table CAPBANK
-   drop primary key cascade
 /
 
 
@@ -123,21 +85,7 @@ drop table CAPBANK cascade constraints
 /
 
 
-drop index Indx_CSUBVPT
-/
-
-
-alter table CAPCONTROLSUBSTATIONBUS
-   drop primary key cascade
-/
-
-
 drop table CAPCONTROLSUBSTATIONBUS cascade constraints
-/
-
-
-alter table CCFeederBankList
-   drop primary key cascade
 /
 
 
@@ -145,17 +93,7 @@ drop table CCFeederBankList cascade constraints
 /
 
 
-alter table CCFeederSubAssignment
-   drop primary key cascade
-/
-
-
 drop table CCFeederSubAssignment cascade constraints
-/
-
-
-alter table CICustomerBase
-   drop primary key cascade
 /
 
 
@@ -163,17 +101,7 @@ drop table CICustomerBase cascade constraints
 /
 
 
-alter table COLUMNTYPE
-   drop primary key cascade
-/
-
-
 drop table COLUMNTYPE cascade constraints
-/
-
-
-alter table CTIDatabase
-   drop primary key cascade
 /
 
 
@@ -181,21 +109,7 @@ drop table CTIDatabase cascade constraints
 /
 
 
-drop index Indx_CPCNFDVARPT
-/
-
-
-alter table CapControlFeeder
-   drop primary key cascade
-/
-
-
 drop table CapControlFeeder cascade constraints
-/
-
-
-alter table CarrierRoute
-   drop primary key cascade
 /
 
 
@@ -203,17 +117,7 @@ drop table CarrierRoute cascade constraints
 /
 
 
-alter table CommErrorHistory
-   drop primary key cascade
-/
-
-
 drop table CommErrorHistory cascade constraints
-/
-
-
-alter table CommPort
-   drop primary key cascade
 /
 
 
@@ -221,17 +125,7 @@ drop table CommPort cascade constraints
 /
 
 
-alter table Contact
-   drop primary key cascade
-/
-
-
 drop table Contact cascade constraints
-/
-
-
-alter table ContactNotification
-   drop primary key cascade
 /
 
 
@@ -239,17 +133,7 @@ drop table ContactNotification cascade constraints
 /
 
 
-alter table Customer
-   drop primary key cascade
-/
-
-
 drop table Customer cascade constraints
-/
-
-
-alter table CustomerAdditionalContact
-   drop primary key cascade
 /
 
 
@@ -257,17 +141,7 @@ drop table CustomerAdditionalContact cascade constraints
 /
 
 
-alter table CustomerBaseLine
-   drop primary key cascade
-/
-
-
 drop table CustomerBaseLine cascade constraints
-/
-
-
-alter table CustomerBaseLinePoint
-   drop primary key cascade
 /
 
 
@@ -275,17 +149,7 @@ drop table CustomerBaseLinePoint cascade constraints
 /
 
 
-alter table CustomerLoginSerialGroup
-   drop primary key cascade
-/
-
-
 drop table CustomerLoginSerialGroup cascade constraints
-/
-
-
-alter table DEVICE
-   drop primary key cascade
 /
 
 
@@ -293,17 +157,7 @@ drop table DEVICE cascade constraints
 /
 
 
-alter table DEVICE2WAYFLAGS
-   drop primary key cascade
-/
-
-
 drop table DEVICE2WAYFLAGS cascade constraints
-/
-
-
-alter table DEVICECARRIERSETTINGS
-   drop primary key cascade
 /
 
 
@@ -311,17 +165,7 @@ drop table DEVICECARRIERSETTINGS cascade constraints
 /
 
 
-alter table DEVICEDIALUPSETTINGS
-   drop primary key cascade
-/
-
-
 drop table DEVICEDIALUPSETTINGS cascade constraints
-/
-
-
-alter table DEVICEIDLCREMOTE
-   drop primary key cascade
 /
 
 
@@ -329,17 +173,7 @@ drop table DEVICEIDLCREMOTE cascade constraints
 /
 
 
-alter table DEVICEIED
-   drop primary key cascade
-/
-
-
 drop table DEVICEIED cascade constraints
-/
-
-
-alter table DEVICELOADPROFILE
-   drop primary key cascade
 /
 
 
@@ -347,17 +181,7 @@ drop table DEVICELOADPROFILE cascade constraints
 /
 
 
-alter table DEVICEMCTIEDPORT
-   drop primary key cascade
-/
-
-
 drop table DEVICEMCTIEDPORT cascade constraints
-/
-
-
-alter table DEVICEMETERGROUP
-   drop primary key cascade
 /
 
 
@@ -365,17 +189,7 @@ drop table DEVICEMETERGROUP cascade constraints
 /
 
 
-alter table DEVICESCANRATE
-   drop primary key cascade
-/
-
-
 drop table DEVICESCANRATE cascade constraints
-/
-
-
-alter table DEVICETAPPAGINGSETTINGS
-   drop primary key cascade
 /
 
 
@@ -383,25 +197,7 @@ drop table DEVICETAPPAGINGSETTINGS cascade constraints
 /
 
 
-drop index Indx_DISPLAYNAME
-/
-
-
-alter table DISPLAY
-   drop primary key cascade
-/
-
-
 drop table DISPLAY cascade constraints
-/
-
-
-drop index Index_DisNum
-/
-
-
-alter table DISPLAY2WAYDATA
-   drop primary key cascade
 /
 
 
@@ -409,17 +205,7 @@ drop table DISPLAY2WAYDATA cascade constraints
 /
 
 
-alter table DISPLAYCOLUMNS
-   drop primary key cascade
-/
-
-
 drop table DISPLAYCOLUMNS cascade constraints
-/
-
-
-alter table DYNAMICACCUMULATOR
-   drop primary key cascade
 /
 
 
@@ -427,17 +213,7 @@ drop table DYNAMICACCUMULATOR cascade constraints
 /
 
 
-alter table DYNAMICDEVICESCANDATA
-   drop primary key cascade
-/
-
-
 drop table DYNAMICDEVICESCANDATA cascade constraints
-/
-
-
-alter table DYNAMICPOINTDISPATCH
-   drop primary key cascade
 /
 
 
@@ -445,17 +221,7 @@ drop table DYNAMICPOINTDISPATCH cascade constraints
 /
 
 
-alter table DateOfHoliday
-   drop primary key cascade
-/
-
-
 drop table DateOfHoliday cascade constraints
-/
-
-
-alter table DeviceCBC
-   drop primary key cascade
 /
 
 
@@ -463,17 +229,7 @@ drop table DeviceCBC cascade constraints
 /
 
 
-alter table DeviceCustomerList
-   drop primary key cascade
-/
-
-
 drop table DeviceCustomerList cascade constraints
-/
-
-
-alter table DeviceDNP
-   drop primary key cascade
 /
 
 
@@ -481,17 +237,7 @@ drop table DeviceDNP cascade constraints
 /
 
 
-alter table DeviceDirectCommSettings
-   drop primary key cascade
-/
-
-
 drop table DeviceDirectCommSettings cascade constraints
-/
-
-
-alter table DeviceRoutes
-   drop primary key cascade
 /
 
 
@@ -499,17 +245,7 @@ drop table DeviceRoutes cascade constraints
 /
 
 
-alter table DeviceWindow
-   drop primary key cascade
-/
-
-
 drop table DeviceWindow cascade constraints
-/
-
-
-alter table DynamicCCCapBank
-   drop primary key cascade
 /
 
 
@@ -517,17 +253,7 @@ drop table DynamicCCCapBank cascade constraints
 /
 
 
-alter table DynamicCCFeeder
-   drop primary key cascade
-/
-
-
 drop table DynamicCCFeeder cascade constraints
-/
-
-
-alter table DynamicCCSubstationBus
-   drop primary key cascade
 /
 
 
@@ -535,17 +261,7 @@ drop table DynamicCCSubstationBus cascade constraints
 /
 
 
-alter table DynamicCalcHistorical
-   drop primary key cascade
-/
-
-
 drop table DynamicCalcHistorical cascade constraints
-/
-
-
-alter table DynamicLMControlArea
-   drop primary key cascade
 /
 
 
@@ -553,17 +269,7 @@ drop table DynamicLMControlArea cascade constraints
 /
 
 
-alter table DynamicLMControlAreaTrigger
-   drop primary key cascade
-/
-
-
 drop table DynamicLMControlAreaTrigger cascade constraints
-/
-
-
-alter table DynamicLMGroup
-   drop primary key cascade
 /
 
 
@@ -571,17 +277,7 @@ drop table DynamicLMGroup cascade constraints
 /
 
 
-alter table DynamicLMProgram
-   drop primary key cascade
-/
-
-
 drop table DynamicLMProgram cascade constraints
-/
-
-
-alter table DynamicLMProgramDirect
-   drop primary key cascade
 /
 
 
@@ -589,21 +285,7 @@ drop table DynamicLMProgramDirect cascade constraints
 /
 
 
-alter table DynamicPAOStatistics
-   drop primary key cascade
-/
-
-
 drop table DynamicPAOStatistics cascade constraints
-/
-
-
-drop index Indx_EnCmpName
-/
-
-
-alter table EnergyCompany
-   drop primary key cascade
 /
 
 
@@ -611,17 +293,7 @@ drop table EnergyCompany cascade constraints
 /
 
 
-alter table EnergyCompanyCustomerList
-   drop primary key cascade
-/
-
-
 drop table EnergyCompanyCustomerList cascade constraints
-/
-
-
-alter table EnergyCompanyOperatorLoginList
-   drop primary key cascade
 /
 
 
@@ -629,17 +301,7 @@ drop table EnergyCompanyOperatorLoginList cascade constraints
 /
 
 
-alter table FDRInterface
-   drop primary key cascade
-/
-
-
 drop table FDRInterface cascade constraints
-/
-
-
-alter table FDRInterfaceOption
-   drop primary key cascade
 /
 
 
@@ -647,25 +309,7 @@ drop table FDRInterfaceOption cascade constraints
 /
 
 
-drop index Indx_FdrTransIntTyp
-/
-
-
-drop index Indx_FdrTrnsIntTypDir
-/
-
-
-alter table FDRTRANSLATION
-   drop primary key cascade
-/
-
-
 drop table FDRTRANSLATION cascade constraints
-/
-
-
-alter table FDRTelegyrGroup
-   drop primary key cascade
 /
 
 
@@ -673,26 +317,7 @@ drop table FDRTelegyrGroup cascade constraints
 /
 
 
-drop index Indx_GrpDSerPtID
-/
-
-
-alter table GRAPHDATASERIES
-   drop primary key cascade
-/
-
-
 drop table GRAPHDATASERIES cascade constraints
-/
-
-
-alter table GRAPHDEFINITION
-   drop primary key cascade
-/
-
-
-alter table GRAPHDEFINITION
-   drop unique (NAME) cascade
 /
 
 
@@ -700,8 +325,7 @@ drop table GRAPHDEFINITION cascade constraints
 /
 
 
-alter table GenericMacro
-   drop primary key cascade
+drop table GatewayEndDevice cascade constraints
 /
 
 
@@ -709,21 +333,7 @@ drop table GenericMacro cascade constraints
 /
 
 
-alter table GraphCustomerList
-   drop primary key cascade
-/
-
-
 drop table GraphCustomerList cascade constraints
-/
-
-
-drop index Indx_HolSchName
-/
-
-
-alter table HolidaySchedule
-   drop primary key cascade
 /
 
 
@@ -731,17 +341,7 @@ drop table HolidaySchedule cascade constraints
 /
 
 
-alter table LMCONTROLAREAPROGRAM
-   drop primary key cascade
-/
-
-
 drop table LMCONTROLAREAPROGRAM cascade constraints
-/
-
-
-alter table LMCONTROLAREATRIGGER
-   drop primary key cascade
 /
 
 
@@ -749,21 +349,7 @@ drop table LMCONTROLAREATRIGGER cascade constraints
 /
 
 
-alter table LMControlArea
-   drop primary key cascade
-/
-
-
 drop table LMControlArea cascade constraints
-/
-
-
-drop index Indx_Start
-/
-
-
-alter table LMControlHistory
-   drop primary key cascade
 /
 
 
@@ -771,29 +357,7 @@ drop table LMControlHistory cascade constraints
 /
 
 
-drop index Index_LMCrtCstActID
-/
-
-
-drop index Index_LMCrtCstAckSt
-/
-
-
-alter table LMCurtailCustomerActivity
-   drop primary key cascade
-/
-
-
 drop table LMCurtailCustomerActivity cascade constraints
-/
-
-
-drop index Indx_LMCrtPrgActStTime
-/
-
-
-alter table LMCurtailProgramActivity
-   drop primary key cascade
 /
 
 
@@ -801,17 +365,7 @@ drop table LMCurtailProgramActivity cascade constraints
 /
 
 
-alter table LMDirectCustomerList
-   drop primary key cascade
-/
-
-
 drop table LMDirectCustomerList cascade constraints
-/
-
-
-alter table LMDirectOperatorList
-   drop primary key cascade
 /
 
 
@@ -819,17 +373,7 @@ drop table LMDirectOperatorList cascade constraints
 /
 
 
-alter table LMEnergyExchangeCustomerList
-   drop primary key cascade
-/
-
-
 drop table LMEnergyExchangeCustomerList cascade constraints
-/
-
-
-alter table LMEnergyExchangeCustomerReply
-   drop primary key cascade
 /
 
 
@@ -837,17 +381,7 @@ drop table LMEnergyExchangeCustomerReply cascade constraints
 /
 
 
-alter table LMEnergyExchangeHourlyCustomer
-   drop primary key cascade
-/
-
-
 drop table LMEnergyExchangeHourlyCustomer cascade constraints
-/
-
-
-alter table LMEnergyExchangeHourlyOffer
-   drop primary key cascade
 /
 
 
@@ -855,17 +389,7 @@ drop table LMEnergyExchangeHourlyOffer cascade constraints
 /
 
 
-alter table LMEnergyExchangeOfferRevision
-   drop primary key cascade
-/
-
-
 drop table LMEnergyExchangeOfferRevision cascade constraints
-/
-
-
-alter table LMEnergyExchangeProgramOffer
-   drop primary key cascade
 /
 
 
@@ -873,17 +397,7 @@ drop table LMEnergyExchangeProgramOffer cascade constraints
 /
 
 
-alter table LMGroup
-   drop primary key cascade
-/
-
-
 drop table LMGroup cascade constraints
-/
-
-
-alter table LMGroupEmetcon
-   drop primary key cascade
 /
 
 
@@ -891,17 +405,7 @@ drop table LMGroupEmetcon cascade constraints
 /
 
 
-alter table LMGroupExpressCom
-   drop primary key cascade
-/
-
-
 drop table LMGroupExpressCom cascade constraints
-/
-
-
-alter table LMGroupExpressComAddress
-   drop primary key cascade
 /
 
 
@@ -909,17 +413,7 @@ drop table LMGroupExpressComAddress cascade constraints
 /
 
 
-alter table LMGroupMCT
-   drop primary key cascade
-/
-
-
 drop table LMGroupMCT cascade constraints
-/
-
-
-alter table LMGroupPoint
-   drop primary key cascade
 /
 
 
@@ -927,17 +421,7 @@ drop table LMGroupPoint cascade constraints
 /
 
 
-alter table LMGroupRipple
-   drop primary key cascade
-/
-
-
 drop table LMGroupRipple cascade constraints
-/
-
-
-alter table LMGroupVersacom
-   drop primary key cascade
 /
 
 
@@ -945,17 +429,7 @@ drop table LMGroupVersacom cascade constraints
 /
 
 
-alter table LMMACSScheduleOperatorList
-   drop primary key cascade
-/
-
-
 drop table LMMACSScheduleOperatorList cascade constraints
-/
-
-
-alter table LMMacsScheduleCustomerList
-   drop primary key cascade
 /
 
 
@@ -963,17 +437,7 @@ drop table LMMacsScheduleCustomerList cascade constraints
 /
 
 
-alter table LMPROGRAM
-   drop primary key cascade
-/
-
-
 drop table LMPROGRAM cascade constraints
-/
-
-
-alter table LMProgramControlWindow
-   drop primary key cascade
 /
 
 
@@ -981,17 +445,7 @@ drop table LMProgramControlWindow cascade constraints
 /
 
 
-alter table LMProgramCurtailCustomerList
-   drop primary key cascade
-/
-
-
 drop table LMProgramCurtailCustomerList cascade constraints
-/
-
-
-alter table LMProgramCurtailment
-   drop primary key cascade
 /
 
 
@@ -999,22 +453,7 @@ drop table LMProgramCurtailment cascade constraints
 /
 
 
-alter table LMProgramDirect
-   drop primary key cascade
-/
-
-
 drop table LMProgramDirect cascade constraints
-/
-
-
-alter table LMProgramDirectGear
-   drop primary key cascade
-/
-
-
-alter table LMProgramDirectGear
-   drop unique (DeviceID, GearNumber) cascade
 /
 
 
@@ -1022,17 +461,7 @@ drop table LMProgramDirectGear cascade constraints
 /
 
 
-alter table LMProgramDirectGroup
-   drop primary key cascade
-/
-
-
 drop table LMProgramDirectGroup cascade constraints
-/
-
-
-alter table LMProgramEnergyExchange
-   drop primary key cascade
 /
 
 
@@ -1040,17 +469,7 @@ drop table LMProgramEnergyExchange cascade constraints
 /
 
 
-alter table LMThermoStatGear
-   drop primary key cascade
-/
-
-
 drop table LMThermoStatGear cascade constraints
-/
-
-
-alter table LOGIC
-   drop primary key cascade
 /
 
 
@@ -1058,17 +477,7 @@ drop table LOGIC cascade constraints
 /
 
 
-alter table MACROROUTE
-   drop primary key cascade
-/
-
-
 drop table MACROROUTE cascade constraints
-/
-
-
-alter table MACSchedule
-   drop primary key cascade
 /
 
 
@@ -1076,17 +485,7 @@ drop table MACSchedule cascade constraints
 /
 
 
-alter table MACSimpleSchedule
-   drop primary key cascade
-/
-
-
 drop table MACSimpleSchedule cascade constraints
-/
-
-
-alter table MCTBroadCastMapping
-   drop primary key cascade
 /
 
 
@@ -1094,21 +493,7 @@ drop table MCTBroadCastMapping cascade constraints
 /
 
 
-alter table NotificationDestination
-   drop primary key cascade
-/
-
-
 drop table NotificationDestination cascade constraints
-/
-
-
-drop index Indx_NOTIFGRPNme
-/
-
-
-alter table NotificationGroup
-   drop primary key cascade
 /
 
 
@@ -1116,17 +501,7 @@ drop table NotificationGroup cascade constraints
 /
 
 
-alter table OperatorLoginGraphList
-   drop primary key cascade
-/
-
-
 drop table OperatorLoginGraphList cascade constraints
-/
-
-
-alter table OperatorSerialGroup
-   drop primary key cascade
 /
 
 
@@ -1134,21 +509,7 @@ drop table OperatorSerialGroup cascade constraints
 /
 
 
-drop index Indx_PAOExclus
-/
-
-
-alter table PAOExclusion
-   drop primary key cascade
-/
-
-
 drop table PAOExclusion cascade constraints
-/
-
-
-alter table PAOowner
-   drop primary key cascade
 /
 
 
@@ -1156,26 +517,7 @@ drop table PAOowner cascade constraints
 /
 
 
-drop index Indx_PointStGrpID
-/
-
-
-alter table POINT
-   drop primary key cascade
-/
-
-
-alter table POINT
-   drop unique (POINTNAME, PAObjectID) cascade
-/
-
-
 drop table POINT cascade constraints
-/
-
-
-alter table POINTACCUMULATOR
-   drop primary key cascade
 /
 
 
@@ -1183,17 +525,7 @@ drop table POINTACCUMULATOR cascade constraints
 /
 
 
-alter table POINTANALOG
-   drop primary key cascade
-/
-
-
 drop table POINTANALOG cascade constraints
-/
-
-
-alter table POINTLIMITS
-   drop primary key cascade
 /
 
 
@@ -1201,17 +533,7 @@ drop table POINTLIMITS cascade constraints
 /
 
 
-alter table POINTSTATUS
-   drop primary key cascade
-/
-
-
 drop table POINTSTATUS cascade constraints
-/
-
-
-alter table POINTUNIT
-   drop primary key cascade
 /
 
 
@@ -1219,17 +541,7 @@ drop table POINTUNIT cascade constraints
 /
 
 
-alter table PORTDIALUPMODEM
-   drop primary key cascade
-/
-
-
 drop table PORTDIALUPMODEM cascade constraints
-/
-
-
-alter table PORTLOCALSERIAL
-   drop primary key cascade
 /
 
 
@@ -1237,17 +549,7 @@ drop table PORTLOCALSERIAL cascade constraints
 /
 
 
-alter table PORTRADIOSETTINGS
-   drop primary key cascade
-/
-
-
 drop table PORTRADIOSETTINGS cascade constraints
-/
-
-
-alter table PORTSETTINGS
-   drop primary key cascade
 /
 
 
@@ -1255,17 +557,7 @@ drop table PORTSETTINGS cascade constraints
 /
 
 
-alter table PORTTERMINALSERVER
-   drop primary key cascade
-/
-
-
 drop table PORTTERMINALSERVER cascade constraints
-/
-
-
-alter table PointAlarming
-   drop primary key cascade
 /
 
 
@@ -1273,17 +565,7 @@ drop table PointAlarming cascade constraints
 /
 
 
-alter table PortStatistics
-   drop primary key cascade
-/
-
-
 drop table PortStatistics cascade constraints
-/
-
-
-alter table PortTiming
-   drop primary key cascade
 /
 
 
@@ -1291,25 +573,7 @@ drop table PortTiming cascade constraints
 /
 
 
-drop index Index_PointID
-/
-
-
-drop index Indx_TimeStamp
-/
-
-
-alter table RAWPOINTHISTORY
-   drop primary key cascade
-/
-
-
 drop table RAWPOINTHISTORY cascade constraints
-/
-
-
-alter table RepeaterRoute
-   drop primary key cascade
 /
 
 
@@ -1317,25 +581,7 @@ drop table RepeaterRoute cascade constraints
 /
 
 
-drop index Indx_RouteDevID
-/
-
-
-alter table Route
-   drop primary key cascade
-/
-
-
 drop table Route cascade constraints
-/
-
-
-drop index Indx_StateRaw
-/
-
-
-alter table STATE
-   drop primary key cascade
 /
 
 
@@ -1343,29 +589,7 @@ drop table STATE cascade constraints
 /
 
 
-drop index Indx_STATEGRP_Nme
-/
-
-
-alter table STATEGROUP
-   drop primary key cascade
-/
-
-
 drop table STATEGROUP cascade constraints
-/
-
-
-drop index Indx_SYSLG_PtId
-/
-
-
-drop index Indx_SYSLG_Date
-/
-
-
-alter table SYSTEMLOG
-   drop primary key cascade
 /
 
 
@@ -1373,17 +597,7 @@ drop table SYSTEMLOG cascade constraints
 /
 
 
-alter table SeasonSchedule
-   drop primary key cascade
-/
-
-
 drop table SeasonSchedule cascade constraints
-/
-
-
-alter table TEMPLATE
-   drop primary key cascade
 /
 
 
@@ -1391,17 +605,7 @@ drop table TEMPLATE cascade constraints
 /
 
 
-alter table TEMPLATECOLUMNS
-   drop primary key cascade
-/
-
-
 drop table TEMPLATECOLUMNS cascade constraints
-/
-
-
-alter table UNITMEASURE
-   drop primary key cascade
 /
 
 
@@ -1409,17 +613,7 @@ drop table UNITMEASURE cascade constraints
 /
 
 
-alter table VersacomRoute
-   drop primary key cascade
-/
-
-
 drop table VersacomRoute cascade constraints
-/
-
-
-alter table YukonGroup
-   drop primary key cascade
 /
 
 
@@ -1427,17 +621,7 @@ drop table YukonGroup cascade constraints
 /
 
 
-alter table YukonGroupRole
-   drop primary key cascade
-/
-
-
 drop table YukonGroupRole cascade constraints
-/
-
-
-alter table YukonImage
-   drop primary key cascade
 /
 
 
@@ -1445,25 +629,7 @@ drop table YukonImage cascade constraints
 /
 
 
-drop index Indx_YkLstDefID
-/
-
-
-alter table YukonListEntry
-   drop primary key cascade
-/
-
-
 drop table YukonListEntry cascade constraints
-/
-
-
-drop index Indx_PAO
-/
-
-
-alter table YukonPAObject
-   drop primary key cascade
 /
 
 
@@ -1471,21 +637,7 @@ drop table YukonPAObject cascade constraints
 /
 
 
-drop index Indx_YukRol_Nm
-/
-
-
-alter table YukonRole
-   drop primary key cascade
-/
-
-
 drop table YukonRole cascade constraints
-/
-
-
-alter table YukonRoleProperty
-   drop primary key cascade
 /
 
 
@@ -1493,21 +645,7 @@ drop table YukonRoleProperty cascade constraints
 /
 
 
-alter table YukonSelectionList
-   drop primary key cascade
-/
-
-
 drop table YukonSelectionList cascade constraints
-/
-
-
-drop index Indx_YkUsIDNm
-/
-
-
-alter table YukonUser
-   drop primary key cascade
 /
 
 
@@ -1515,26 +653,11 @@ drop table YukonUser cascade constraints
 /
 
 
-alter table YukonUserGroup
-   drop primary key cascade
-/
-
-
 drop table YukonUserGroup cascade constraints
 /
 
 
-alter table YukonUserRole
-   drop primary key cascade
-/
-
-
 drop table YukonUserRole cascade constraints
-/
-
-
-alter table YukonWebConfiguration
-   drop primary key cascade
 /
 
 
@@ -1971,10 +1094,14 @@ alter table CommErrorHistory
 
 create table CommPort  (
    PORTID               NUMBER                           not null,
-   ALARMINHIBIT         VARCHAR2(1)                      not null,
-   COMMONPROTOCOL       VARCHAR2(8)                      not null,
-   PERFORMTHRESHOLD     NUMBER                           not null,
-   PERFORMANCEALARM     VARCHAR2(1)                      not null,
+   ALARMINHIBIT         VARCHAR2(1)                      not null
+         constraint SYS_C0013108 check ("ALARMINHIBIT" IS NOT NULL),
+   COMMONPROTOCOL       VARCHAR2(8)                      not null
+         constraint SYS_C0013109 check ("COMMONPROTOCOL" IS NOT NULL),
+   PERFORMTHRESHOLD     NUMBER                           not null
+         constraint SYS_C0013110 check ("PERFORMTHRESHOLD" IS NOT NULL),
+   PERFORMANCEALARM     VARCHAR2(1)                      not null
+         constraint SYS_C0013111 check ("PERFORMANCEALARM" IS NOT NULL),
    SharedPortType       VARCHAR2(20)                     not null,
    SharedSocketNumber   NUMBER                           not null
 )
@@ -2149,13 +1276,20 @@ alter table DEVICE
 
 create table DEVICE2WAYFLAGS  (
    DEVICEID             NUMBER                           not null,
-   MONTHLYSTATS         VARCHAR2(1)                      not null,
-   TWENTYFOURHOURSTATS  VARCHAR2(1)                      not null,
-   HOURLYSTATS          VARCHAR2(1)                      not null,
-   FAILUREALARM         VARCHAR2(1)                      not null,
-   PERFORMANCETHRESHOLD NUMBER                           not null,
-   PERFORMANCEALARM     VARCHAR2(1)                      not null,
+   MONTHLYSTATS         VARCHAR2(1)                      not null
+         constraint SYS_C0013200 check ("MONTHLYSTATS" IS NOT NULL),
+   TWENTYFOURHOURSTATS  VARCHAR2(1)                      not null
+         constraint SYS_C0013201 check ("TWENTYFOURHOURSTATS" IS NOT NULL),
+   HOURLYSTATS          VARCHAR2(1)                      not null
+         constraint SYS_C0013202 check ("HOURLYSTATS" IS NOT NULL),
+   FAILUREALARM         VARCHAR2(1)                      not null
+         constraint SYS_C0013203 check ("FAILUREALARM" IS NOT NULL),
+   PERFORMANCETHRESHOLD NUMBER                           not null
+         constraint SYS_C0013204 check ("PERFORMANCETHRESHOLD" IS NOT NULL),
+   PERFORMANCEALARM     VARCHAR2(1)                      not null
+         constraint SYS_C0013205 check ("PERFORMANCEALARM" IS NOT NULL),
    PERFORMANCETWENTYFOURALARM VARCHAR2(1)                      not null
+         constraint SYS_C0013206 check ("PERFORMANCETWENTYFOURALARM" IS NOT NULL)
 )
 /
 
@@ -2173,6 +1307,7 @@ alter table DEVICE2WAYFLAGS
 create table DEVICECARRIERSETTINGS  (
    DEVICEID             NUMBER                           not null,
    ADDRESS              NUMBER                           not null
+         constraint SYS_C0013215 check ("ADDRESS" IS NOT NULL)
 )
 /
 
@@ -2189,10 +1324,14 @@ alter table DEVICECARRIERSETTINGS
 
 create table DEVICEDIALUPSETTINGS  (
    DEVICEID             NUMBER                           not null,
-   PHONENUMBER          VARCHAR2(40)                     not null,
-   MINCONNECTTIME       NUMBER                           not null,
-   MAXCONNECTTIME       NUMBER                           not null,
-   LINESETTINGS         VARCHAR2(8)                      not null,
+   PHONENUMBER          VARCHAR2(40)                     not null
+         constraint SYS_C0013189 check ("PHONENUMBER" IS NOT NULL),
+   MINCONNECTTIME       NUMBER                           not null
+         constraint SYS_C0013190 check ("MINCONNECTTIME" IS NOT NULL),
+   MAXCONNECTTIME       NUMBER                           not null
+         constraint SYS_C0013191 check ("MAXCONNECTTIME" IS NOT NULL),
+   LINESETTINGS         VARCHAR2(8)                      not null
+         constraint SYS_C0013192 check ("LINESETTINGS" IS NOT NULL),
    BaudRate             NUMBER                           not null
 )
 /
@@ -2210,8 +1349,10 @@ alter table DEVICEDIALUPSETTINGS
 
 create table DEVICEIDLCREMOTE  (
    DEVICEID             NUMBER                           not null,
-   ADDRESS              NUMBER                           not null,
-   POSTCOMMWAIT         NUMBER                           not null,
+   ADDRESS              NUMBER                           not null
+         constraint SYS_C0013239 check ("ADDRESS" IS NOT NULL),
+   POSTCOMMWAIT         NUMBER                           not null
+         constraint SYS_C0013240 check ("POSTCOMMWAIT" IS NOT NULL),
    CCUAmpUseType        VARCHAR2(20)                     not null
 )
 /
@@ -2266,12 +1407,18 @@ alter table DEVICELOADPROFILE
 
 create table DEVICEMCTIEDPORT  (
    DEVICEID             NUMBER                           not null,
-   CONNECTEDIED         VARCHAR2(20)                     not null,
-   IEDSCANRATE          NUMBER                           not null,
-   DEFAULTDATACLASS     NUMBER                           not null,
-   DEFAULTDATAOFFSET    NUMBER                           not null,
-   PASSWORD             VARCHAR2(6)                      not null,
+   CONNECTEDIED         VARCHAR2(20)                     not null
+         constraint SYS_C0013247 check ("CONNECTEDIED" IS NOT NULL),
+   IEDSCANRATE          NUMBER                           not null
+         constraint SYS_C0013248 check ("IEDSCANRATE" IS NOT NULL),
+   DEFAULTDATACLASS     NUMBER                           not null
+         constraint SYS_C0013249 check ("DEFAULTDATACLASS" IS NOT NULL),
+   DEFAULTDATAOFFSET    NUMBER                           not null
+         constraint SYS_C0013250 check ("DEFAULTDATAOFFSET" IS NOT NULL),
+   PASSWORD             VARCHAR2(6)                      not null
+         constraint SYS_C0013251 check ("PASSWORD" IS NOT NULL),
    REALTIMESCAN         VARCHAR2(1)                      not null
+         constraint SYS_C0013252 check ("REALTIMESCAN" IS NOT NULL)
 )
 /
 
@@ -2308,9 +1455,12 @@ alter table DEVICEMETERGROUP
 
 create table DEVICESCANRATE  (
    DEVICEID             NUMBER                           not null,
-   SCANTYPE             VARCHAR2(20)                     not null,
-   INTERVALRATE         NUMBER                           not null,
-   SCANGROUP            NUMBER                           not null,
+   SCANTYPE             VARCHAR2(20)                     not null
+         constraint SYS_C0013195 check ("SCANTYPE" IS NOT NULL),
+   INTERVALRATE         NUMBER                           not null
+         constraint SYS_C0013196 check ("INTERVALRATE" IS NOT NULL),
+   SCANGROUP            NUMBER                           not null
+         constraint SYS_C0013197 check ("SCANGROUP" IS NOT NULL),
    AlternateRate        NUMBER                           not null
 )
 /
@@ -2570,12 +1720,18 @@ alter table DYNAMICDEVICESCANDATA
 
 create table DYNAMICPOINTDISPATCH  (
    POINTID              NUMBER                           not null,
-   TIMESTAMP            DATE                             not null,
-   QUALITY              NUMBER                           not null,
-   VALUE                FLOAT                            not null,
-   TAGS                 NUMBER                           not null,
-   NEXTARCHIVE          DATE                             not null,
-   STALECOUNT           NUMBER                           not null,
+   TIMESTAMP            DATE                             not null
+         constraint SYS_C0013325 check ("TIMESTAMP" IS NOT NULL),
+   QUALITY              NUMBER                           not null
+         constraint SYS_C0013326 check ("QUALITY" IS NOT NULL),
+   VALUE                FLOAT                            not null
+         constraint SYS_C0013327 check ("VALUE" IS NOT NULL),
+   TAGS                 NUMBER                           not null
+         constraint SYS_C0013328 check ("TAGS" IS NOT NULL),
+   NEXTARCHIVE          DATE                             not null
+         constraint SYS_C0013329 check ("NEXTARCHIVE" IS NOT NULL),
+   STALECOUNT           NUMBER                           not null
+         constraint SYS_C0013330 check ("STALECOUNT" IS NOT NULL),
    LastAlarmLogID       NUMBER                           not null
 )
 /
@@ -3225,6 +2381,25 @@ alter table GRAPHDEFINITION
 
 
 /*==============================================================*/
+/* Table : GatewayEndDevice                                     */
+/*==============================================================*/
+
+
+create table GatewayEndDevice  (
+   SerialNumber         VARCHAR2(30)                     not null,
+   HardwareType         NUMBER                           not null,
+   DataType             NUMBER,
+   DataValue            VARCHAR2(100)
+)
+/
+
+
+alter table GatewayEndDevice
+   add constraint PK_GATEWAYENDDEVICE primary key (SerialNumber, HardwareType)
+/
+
+
+/*==============================================================*/
 /* Table : GenericMacro                                         */
 /*==============================================================*/
 
@@ -3650,10 +2825,14 @@ alter table LMGroup
 
 create table LMGroupEmetcon  (
    DEVICEID             NUMBER                           not null,
-   GOLDADDRESS          NUMBER                           not null,
-   SILVERADDRESS        NUMBER                           not null,
-   ADDRESSUSAGE         CHAR(1)                          not null,
-   RELAYUSAGE           CHAR(1)                          not null,
+   GOLDADDRESS          NUMBER                           not null
+         constraint SYS_C13351 check ("GOLDADDRESS" IS NOT NULL),
+   SILVERADDRESS        NUMBER                           not null
+         constraint SYS_C13352 check ("SILVERADDRESS" IS NOT NULL),
+   ADDRESSUSAGE         CHAR(1)                          not null
+         constraint SYS_C0013353 check ("ADDRESSUSAGE" IS NOT NULL),
+   RELAYUSAGE           CHAR(1)                          not null
+         constraint SYS_C0013354 check ("RELAYUSAGE" IS NOT NULL),
    ROUTEID              NUMBER                           not null
 )
 /
@@ -4051,10 +3230,14 @@ alter table LMThermoStatGear
 
 create table LOGIC  (
    LOGICID              NUMBER                           not null,
-   LOGICNAME            VARCHAR2(20)                     not null,
-   PERIODICRATE         NUMBER                           not null,
-   STATEFLAG            VARCHAR2(10)                     not null,
+   LOGICNAME            VARCHAR2(20)                     not null
+         constraint SYS_C0013441 check ("LOGICNAME" IS NOT NULL),
+   PERIODICRATE         NUMBER                           not null
+         constraint SYS_C0013442 check ("PERIODICRATE" IS NOT NULL),
+   STATEFLAG            VARCHAR2(10)                     not null
+         constraint SYS_C0013443 check ("STATEFLAG" IS NOT NULL),
    SCRIPTNAME           VARCHAR2(20)                     not null
+         constraint SYS_C0013444 check ("SCRIPTNAME" IS NOT NULL)
 )
 /
 
@@ -4073,6 +3256,7 @@ create table MACROROUTE  (
    ROUTEID              NUMBER                           not null,
    SINGLEROUTEID        NUMBER                           not null,
    ROUTEORDER           NUMBER                           not null
+         constraint SYS_C0013273 check ("ROUTEORDER" IS NOT NULL)
 )
 /
 
@@ -4447,10 +3631,14 @@ alter table POINTUNIT
 
 create table PORTDIALUPMODEM  (
    PORTID               NUMBER                           not null,
-   MODEMTYPE            VARCHAR2(30)                     not null,
-   INITIALIZATIONSTRING VARCHAR2(50)                     not null,
-   PREFIXNUMBER         VARCHAR2(10)                     not null,
+   MODEMTYPE            VARCHAR2(30)                     not null
+         constraint SYS_C13171 check ("MODEMTYPE" IS NOT NULL),
+   INITIALIZATIONSTRING VARCHAR2(50)                     not null
+         constraint SYS_C13172 check ("INITIALIZATIONSTRING" IS NOT NULL),
+   PREFIXNUMBER         VARCHAR2(10)                     not null
+         constraint SYS_C0013173 check ("PREFIXNUMBER" IS NOT NULL),
    SUFFIXNUMBER         VARCHAR2(10)                     not null
+         constraint SYS_C0013174 check ("SUFFIXNUMBER" IS NOT NULL)
 )
 /
 
@@ -4468,6 +3656,7 @@ alter table PORTDIALUPMODEM
 create table PORTLOCALSERIAL  (
    PORTID               NUMBER                           not null,
    PHYSICALPORT         VARCHAR2(8)                      not null
+         constraint SYS_C0013146 check ("PHYSICALPORT" IS NOT NULL)
 )
 /
 
@@ -4484,10 +3673,14 @@ alter table PORTLOCALSERIAL
 
 create table PORTRADIOSETTINGS  (
    PORTID               NUMBER                           not null,
-   RTSTOTXWAITSAMED     NUMBER                           not null,
-   RTSTOTXWAITDIFFD     NUMBER                           not null,
-   RADIOMASTERTAIL      NUMBER                           not null,
+   RTSTOTXWAITSAMED     NUMBER                           not null
+         constraint SYS_C0013165 check ("RTSTOTXWAITSAMED" IS NOT NULL),
+   RTSTOTXWAITDIFFD     NUMBER                           not null
+         constraint SYS_C0013166 check ("RTSTOTXWAITDIFFD" IS NOT NULL),
+   RADIOMASTERTAIL      NUMBER                           not null
+         constraint SYS_C0013167 check ("RADIOMASTERTAIL" IS NOT NULL),
    REVERSERTS           NUMBER                           not null
+         constraint SYS_C0013168 check ("REVERSERTS" IS NOT NULL)
 )
 /
 
@@ -4504,9 +3697,12 @@ alter table PORTRADIOSETTINGS
 
 create table PORTSETTINGS  (
    PORTID               NUMBER                           not null,
-   BAUDRATE             NUMBER                           not null,
-   CDWAIT               NUMBER                           not null,
+   BAUDRATE             NUMBER                           not null
+         constraint SYS_C0013153 check ("BAUDRATE" IS NOT NULL),
+   CDWAIT               NUMBER                           not null
+         constraint SYS_C0013154 check ("CDWAIT" IS NOT NULL),
    LINESETTINGS         VARCHAR2(8)                      not null
+         constraint SYS_C0013155 check ("LINESETTINGS" IS NOT NULL)
 )
 /
 
@@ -4523,8 +3719,10 @@ alter table PORTSETTINGS
 
 create table PORTTERMINALSERVER  (
    PORTID               NUMBER                           not null,
-   IPADDRESS            VARCHAR2(16)                     not null,
+   IPADDRESS            VARCHAR2(16)                     not null
+         constraint SYS_C0013149 check ("IPADDRESS" IS NOT NULL),
    SOCKETPORTNUMBER     NUMBER                           not null
+         constraint SYS_C0013150 check ("SOCKETPORTNUMBER" IS NOT NULL)
 )
 /
 
@@ -4569,12 +3767,18 @@ alter table PointAlarming
 
 create table PortStatistics  (
    PORTID               NUMBER                           not null,
-   STATISTICTYPE        NUMBER                           not null,
-   ATTEMPTS             NUMBER                           not null,
-   DATAERRORS           NUMBER                           not null,
-   SYSTEMERRORS         NUMBER                           not null,
-   STARTDATETIME        DATE                             not null,
+   STATISTICTYPE        NUMBER                           not null
+         constraint SYS_C0013177 check ("STATISTICTYPE" IS NOT NULL),
+   ATTEMPTS             NUMBER                           not null
+         constraint SYS_C0013178 check ("ATTEMPTS" IS NOT NULL),
+   DATAERRORS           NUMBER                           not null
+         constraint SYS_C0013179 check ("DATAERRORS" IS NOT NULL),
+   SYSTEMERRORS         NUMBER                           not null
+         constraint SYS_C0013180 check ("SYSTEMERRORS" IS NOT NULL),
+   STARTDATETIME        DATE                             not null
+         constraint SYS_C0013181 check ("STARTDATETIME" IS NOT NULL),
    STOPDATETIME         DATE                             not null
+         constraint SYS_C0013182 check ("STOPDATETIME" IS NOT NULL)
 )
 /
 
@@ -4591,11 +3795,16 @@ alter table PortStatistics
 
 create table PortTiming  (
    PORTID               NUMBER                           not null,
-   PRETXWAIT            NUMBER                           not null,
-   RTSTOTXWAIT          NUMBER                           not null,
-   POSTTXWAIT           NUMBER                           not null,
-   RECEIVEDATAWAIT      NUMBER                           not null,
+   PRETXWAIT            NUMBER                           not null
+         constraint SYS_C0013158 check ("PRETXWAIT" IS NOT NULL),
+   RTSTOTXWAIT          NUMBER                           not null
+         constraint SYS_C0013159 check ("RTSTOTXWAIT" IS NOT NULL),
+   POSTTXWAIT           NUMBER                           not null
+         constraint SYS_C0013160 check ("POSTTXWAIT" IS NOT NULL),
+   RECEIVEDATAWAIT      NUMBER                           not null
+         constraint SYS_C0013161 check ("RECEIVEDATAWAIT" IS NOT NULL),
    EXTRATIMEOUT         NUMBER                           not null
+         constraint SYS_C0013162 check ("EXTRATIMEOUT" IS NOT NULL)
 )
 /
 
@@ -4651,8 +3860,10 @@ create index Indx_TimeStamp on RAWPOINTHISTORY (
 create table RepeaterRoute  (
    ROUTEID              NUMBER                           not null,
    DEVICEID             NUMBER                           not null,
-   VARIABLEBITS         NUMBER                           not null,
+   VARIABLEBITS         NUMBER                           not null
+         constraint SYS_C0013267 check ("VARIABLEBITS" IS NOT NULL),
    REPEATERORDER        NUMBER                           not null
+         constraint SYS_C0013268 check ("REPEATERORDER" IS NOT NULL)
 )
 /
 
@@ -4697,10 +3908,14 @@ create unique index Indx_RouteDevID on Route (
 
 create table STATE  (
    STATEGROUPID         NUMBER                           not null,
-   RAWSTATE             NUMBER                           not null,
-   TEXT                 VARCHAR2(20)                     not null,
-   FOREGROUNDCOLOR      NUMBER                           not null,
-   BACKGROUNDCOLOR      NUMBER                           not null,
+   RAWSTATE             NUMBER                           not null
+         constraint SYS_C0013338 check ("RAWSTATE" IS NOT NULL),
+   TEXT                 VARCHAR2(20)                     not null
+         constraint SYS_C0013339 check ("TEXT" IS NOT NULL),
+   FOREGROUNDCOLOR      NUMBER                           not null
+         constraint SYS_C0013340 check ("FOREGROUNDCOLOR" IS NOT NULL),
+   BACKGROUNDCOLOR      NUMBER                           not null
+         constraint SYS_C0013341 check ("BACKGROUNDCOLOR" IS NOT NULL),
    ImageID              NUMBER                           not null
 )
 /
@@ -4759,7 +3974,8 @@ create index Indx_StateRaw on STATE (
 
 create table STATEGROUP  (
    STATEGROUPID         NUMBER                           not null,
-   NAME                 VARCHAR2(20)                     not null,
+   NAME                 VARCHAR2(20)                     not null
+         constraint SYS_C0013127 check ("NAME" IS NOT NULL),
    GroupType            VARCHAR2(20)                     not null
 )
 /
@@ -4796,10 +4012,14 @@ create unique index Indx_STATEGRP_Nme on STATEGROUP (
 create table SYSTEMLOG  (
    LOGID                NUMBER                           not null,
    POINTID              NUMBER                           not null,
-   DATETIME             DATE                             not null,
-   SOE_TAG              NUMBER                           not null,
-   TYPE                 NUMBER                           not null,
-   PRIORITY             NUMBER                           not null,
+   DATETIME             DATE                             not null
+         constraint SYS_C0013403 check ("DATETIME" IS NOT NULL),
+   SOE_TAG              NUMBER                           not null
+         constraint SYS_C0013404 check ("SOE_TAG" IS NOT NULL),
+   TYPE                 NUMBER                           not null
+         constraint SYS_C0013405 check ("TYPE" IS NOT NULL),
+   PRIORITY             NUMBER                           not null
+         constraint SYS_C0013406 check ("PRIORITY" IS NOT NULL),
    ACTION               VARCHAR2(60),
    DESCRIPTION          VARCHAR2(120),
    USERNAME             VARCHAR2(30)
@@ -5007,12 +4227,18 @@ alter table UNITMEASURE
 
 create table VersacomRoute  (
    ROUTEID              NUMBER                           not null,
-   UTILITYID            NUMBER                           not null,
-   SECTIONADDRESS       NUMBER                           not null,
-   CLASSADDRESS         NUMBER                           not null,
-   DIVISIONADDRESS      NUMBER                           not null,
-   BUSNUMBER            NUMBER                           not null,
+   UTILITYID            NUMBER                           not null
+         constraint SYS_C0013276 check ("UTILITYID" IS NOT NULL),
+   SECTIONADDRESS       NUMBER                           not null
+         constraint SYS_C0013277 check ("SECTIONADDRESS" IS NOT NULL),
+   CLASSADDRESS         NUMBER                           not null
+         constraint SYS_C0013278 check ("CLASSADDRESS" IS NOT NULL),
+   DIVISIONADDRESS      NUMBER                           not null
+         constraint SYS_C0013279 check ("DIVISIONADDRESS" IS NOT NULL),
+   BUSNUMBER            NUMBER                           not null
+         constraint SYS_C0013280 check ("BUSNUMBER" IS NOT NULL),
    AMPCARDSET           NUMBER                           not null
+         constraint SYS_C0013281 check ("AMPCARDSET" IS NOT NULL)
 )
 /
 

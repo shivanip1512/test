@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     6/23/2003 3:31:36 PM                         */
+/* Created on:     7/14/2003 1:03:53 PM                         */
 /*==============================================================*/
 
 
@@ -119,27 +119,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_ADDRESS')
-            and   type = 'K')
-alter table Address
-   drop constraint PK_ADDRESS
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('Address')
             and   type = 'U')
    drop table Address
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_ALARMCATEGORYID')
-            and   type = 'K')
-alter table AlarmCategory
-   drop constraint PK_ALARMCATEGORYID
 go
 
 
@@ -153,37 +135,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_BILLINGFILEFORMATS')
-            and   type = 'K')
-alter table BillingFileFormats
-   drop constraint PK_BILLINGFILEFORMATS
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('BillingFileFormats')
             and   type = 'U')
    drop table BillingFileFormats
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('CALCBASE')
-            and   name  = 'Indx_ClcBaseUpdTyp'
-            and   indid > 0
-            and   indid < 255)
-   drop index CALCBASE.Indx_ClcBaseUpdTyp
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_CALCBASE')
-            and   type = 'K')
-alter table CALCBASE
-   drop constraint PK_CALCBASE
 go
 
 
@@ -192,25 +146,6 @@ if exists (select 1
            where  id = object_id('CALCBASE')
             and   type = 'U')
    drop table CALCBASE
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('CALCCOMPONENT')
-            and   name  = 'Indx_CalcCmpCmpType'
-            and   indid > 0
-            and   indid < 255)
-   drop index CALCCOMPONENT.Indx_CalcCmpCmpType
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_CALCCOMPONENT')
-            and   type = 'K')
-alter table CALCCOMPONENT
-   drop constraint PK_CALCCOMPONENT
 go
 
 
@@ -224,37 +159,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_CAPBANK')
-            and   type = 'K')
-alter table CAPBANK
-   drop constraint PK_CAPBANK
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('CAPBANK')
             and   type = 'U')
    drop table CAPBANK
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('CAPCONTROLSUBSTATIONBUS')
-            and   name  = 'Indx_CSUBVPT'
-            and   indid > 0
-            and   indid < 255)
-   drop index CAPCONTROLSUBSTATIONBUS.Indx_CSUBVPT
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('SYS_C0013476')
-            and   type = 'K')
-alter table CAPCONTROLSUBSTATIONBUS
-   drop constraint SYS_C0013476
 go
 
 
@@ -268,27 +175,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_CCFEEDERBANKLIST')
-            and   type = 'K')
-alter table CCFeederBankList
-   drop constraint PK_CCFEEDERBANKLIST
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('CCFeederBankList')
             and   type = 'U')
    drop table CCFeederBankList
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_CCFEEDERSUBASSIGNMENT')
-            and   type = 'K')
-alter table CCFeederSubAssignment
-   drop constraint PK_CCFEEDERSUBASSIGNMENT
 go
 
 
@@ -302,27 +191,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_CICUSTOMERBASE')
-            and   type = 'K')
-alter table CICustomerBase
-   drop constraint PK_CICUSTOMERBASE
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('CICustomerBase')
             and   type = 'U')
    drop table CICustomerBase
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('SYS_C0013414')
-            and   type = 'K')
-alter table COLUMNTYPE
-   drop constraint SYS_C0013414
 go
 
 
@@ -336,37 +207,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_CTIDATABASE')
-            and   type = 'K')
-alter table CTIDatabase
-   drop constraint PK_CTIDATABASE
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('CTIDatabase')
             and   type = 'U')
    drop table CTIDatabase
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('CapControlFeeder')
-            and   name  = 'Indx_CPCNFDVARPT'
-            and   indid > 0
-            and   indid < 255)
-   drop index CapControlFeeder.Indx_CPCNFDVARPT
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_CAPCONTROLFEEDER')
-            and   type = 'K')
-alter table CapControlFeeder
-   drop constraint PK_CAPCONTROLFEEDER
 go
 
 
@@ -380,27 +223,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_CARRIERROUTE')
-            and   type = 'K')
-alter table CarrierRoute
-   drop constraint PK_CARRIERROUTE
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('CarrierRoute')
             and   type = 'U')
    drop table CarrierRoute
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_COMMERRORHISTORY')
-            and   type = 'K')
-alter table CommErrorHistory
-   drop constraint PK_COMMERRORHISTORY
 go
 
 
@@ -414,27 +239,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('SYS_C0013112')
-            and   type = 'K')
-alter table CommPort
-   drop constraint SYS_C0013112
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('CommPort')
             and   type = 'U')
    drop table CommPort
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_CONTACT')
-            and   type = 'K')
-alter table Contact
-   drop constraint PK_CONTACT
 go
 
 
@@ -448,27 +255,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_CONTACTNOTIFICATION')
-            and   type = 'K')
-alter table ContactNotification
-   drop constraint PK_CONTACTNOTIFICATION
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('ContactNotification')
             and   type = 'U')
    drop table ContactNotification
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_CUSTOMER')
-            and   type = 'K')
-alter table Customer
-   drop constraint PK_CUSTOMER
 go
 
 
@@ -482,27 +271,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_CUSTOMERADDITIONALCONTACT')
-            and   type = 'K')
-alter table CustomerAdditionalContact
-   drop constraint PK_CUSTOMERADDITIONALCONTACT
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('CustomerAdditionalContact')
             and   type = 'U')
    drop table CustomerAdditionalContact
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_CUSTOMERBASELINE')
-            and   type = 'K')
-alter table CustomerBaseLine
-   drop constraint PK_CUSTOMERBASELINE
 go
 
 
@@ -516,27 +287,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_CUSTOMERBASELINEPOINT')
-            and   type = 'K')
-alter table CustomerBaseLinePoint
-   drop constraint PK_CUSTOMERBASELINEPOINT
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('CustomerBaseLinePoint')
             and   type = 'U')
    drop table CustomerBaseLinePoint
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_CUSTOMERLOGINSERIALGROUP')
-            and   type = 'K')
-alter table CustomerLoginSerialGroup
-   drop constraint PK_CUSTOMERLOGINSERIALGROUP
 go
 
 
@@ -550,27 +303,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_DEV_DEVICEID2')
-            and   type = 'K')
-alter table DEVICE
-   drop constraint PK_DEV_DEVICEID2
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('DEVICE')
             and   type = 'U')
    drop table DEVICE
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_DEVICE2WAYFLAGS')
-            and   type = 'K')
-alter table DEVICE2WAYFLAGS
-   drop constraint PK_DEVICE2WAYFLAGS
 go
 
 
@@ -584,27 +319,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_DEVICECARRIERSETTINGS')
-            and   type = 'K')
-alter table DEVICECARRIERSETTINGS
-   drop constraint PK_DEVICECARRIERSETTINGS
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('DEVICECARRIERSETTINGS')
             and   type = 'U')
    drop table DEVICECARRIERSETTINGS
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_DEVICEDIALUPSETTINGS')
-            and   type = 'K')
-alter table DEVICEDIALUPSETTINGS
-   drop constraint PK_DEVICEDIALUPSETTINGS
 go
 
 
@@ -618,27 +335,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_DEVICEIDLCREMOTE')
-            and   type = 'K')
-alter table DEVICEIDLCREMOTE
-   drop constraint PK_DEVICEIDLCREMOTE
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('DEVICEIDLCREMOTE')
             and   type = 'U')
    drop table DEVICEIDLCREMOTE
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_DEVICEIED')
-            and   type = 'K')
-alter table DEVICEIED
-   drop constraint PK_DEVICEIED
 go
 
 
@@ -652,27 +351,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_DEVICELOADPROFILE')
-            and   type = 'K')
-alter table DEVICELOADPROFILE
-   drop constraint PK_DEVICELOADPROFILE
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('DEVICELOADPROFILE')
             and   type = 'U')
    drop table DEVICELOADPROFILE
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_DEVICEMCTIEDPORT')
-            and   type = 'K')
-alter table DEVICEMCTIEDPORT
-   drop constraint PK_DEVICEMCTIEDPORT
 go
 
 
@@ -686,27 +367,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_DEVICEMETERGROUP')
-            and   type = 'K')
-alter table DEVICEMETERGROUP
-   drop constraint PK_DEVICEMETERGROUP
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('DEVICEMETERGROUP')
             and   type = 'U')
    drop table DEVICEMETERGROUP
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_DEVICESCANRATE')
-            and   type = 'K')
-alter table DEVICESCANRATE
-   drop constraint PK_DEVICESCANRATE
 go
 
 
@@ -720,37 +383,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_DEVICETAPPAGINGSETTINGS')
-            and   type = 'K')
-alter table DEVICETAPPAGINGSETTINGS
-   drop constraint PK_DEVICETAPPAGINGSETTINGS
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('DEVICETAPPAGINGSETTINGS')
             and   type = 'U')
    drop table DEVICETAPPAGINGSETTINGS
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('DISPLAY')
-            and   name  = 'Indx_DISPLAYNAME'
-            and   indid > 0
-            and   indid < 255)
-   drop index DISPLAY.Indx_DISPLAYNAME
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('SYS_C0013412')
-            and   type = 'K')
-alter table DISPLAY
-   drop constraint SYS_C0013412
 go
 
 
@@ -759,25 +394,6 @@ if exists (select 1
            where  id = object_id('DISPLAY')
             and   type = 'U')
    drop table DISPLAY
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('DISPLAY2WAYDATA')
-            and   name  = 'Index_DisNum'
-            and   indid > 0
-            and   indid < 255)
-   drop index DISPLAY2WAYDATA.Index_DisNum
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_DISPLAY2WAYDATA')
-            and   type = 'K')
-alter table DISPLAY2WAYDATA
-   drop constraint PK_DISPLAY2WAYDATA
 go
 
 
@@ -791,27 +407,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_DISPLAYCOLUMNS')
-            and   type = 'K')
-alter table DISPLAYCOLUMNS
-   drop constraint PK_DISPLAYCOLUMNS
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('DISPLAYCOLUMNS')
             and   type = 'U')
    drop table DISPLAYCOLUMNS
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_DYNAMICACCUMULATOR')
-            and   type = 'K')
-alter table DYNAMICACCUMULATOR
-   drop constraint PK_DYNAMICACCUMULATOR
 go
 
 
@@ -825,27 +423,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_DYNAMICDEVICESCANDATA')
-            and   type = 'K')
-alter table DYNAMICDEVICESCANDATA
-   drop constraint PK_DYNAMICDEVICESCANDATA
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('DYNAMICDEVICESCANDATA')
             and   type = 'U')
    drop table DYNAMICDEVICESCANDATA
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_DYNAMICPOINTDISPATCH')
-            and   type = 'K')
-alter table DYNAMICPOINTDISPATCH
-   drop constraint PK_DYNAMICPOINTDISPATCH
 go
 
 
@@ -859,27 +439,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_DATEOFHOLIDAY')
-            and   type = 'K')
-alter table DateOfHoliday
-   drop constraint PK_DATEOFHOLIDAY
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('DateOfHoliday')
             and   type = 'U')
    drop table DateOfHoliday
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_DEVICECBC')
-            and   type = 'K')
-alter table DeviceCBC
-   drop constraint PK_DEVICECBC
 go
 
 
@@ -893,27 +455,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_DEVICECUSTOMERLIST')
-            and   type = 'K')
-alter table DeviceCustomerList
-   drop constraint PK_DEVICECUSTOMERLIST
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('DeviceCustomerList')
             and   type = 'U')
    drop table DeviceCustomerList
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_DEVICEDNP')
-            and   type = 'K')
-alter table DeviceDNP
-   drop constraint PK_DEVICEDNP
 go
 
 
@@ -927,27 +471,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_DEVICEDIRECTCOMMSETTINGS')
-            and   type = 'K')
-alter table DeviceDirectCommSettings
-   drop constraint PK_DEVICEDIRECTCOMMSETTINGS
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('DeviceDirectCommSettings')
             and   type = 'U')
    drop table DeviceDirectCommSettings
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_DEVICEROUTES')
-            and   type = 'K')
-alter table DeviceRoutes
-   drop constraint PK_DEVICEROUTES
 go
 
 
@@ -961,27 +487,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_DEVICEWINDOW')
-            and   type = 'K')
-alter table DeviceWindow
-   drop constraint PK_DEVICEWINDOW
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('DeviceWindow')
             and   type = 'U')
    drop table DeviceWindow
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_DYNAMICCCCAPBANK')
-            and   type = 'K')
-alter table DynamicCCCapBank
-   drop constraint PK_DYNAMICCCCAPBANK
 go
 
 
@@ -995,27 +503,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_DYNAMICCCFEEDER')
-            and   type = 'K')
-alter table DynamicCCFeeder
-   drop constraint PK_DYNAMICCCFEEDER
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('DynamicCCFeeder')
             and   type = 'U')
    drop table DynamicCCFeeder
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_DYNAMICCCSUBSTATIONBUS')
-            and   type = 'K')
-alter table DynamicCCSubstationBus
-   drop constraint PK_DYNAMICCCSUBSTATIONBUS
 go
 
 
@@ -1029,27 +519,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_DYNAMICCALCHISTORICAL')
-            and   type = 'K')
-alter table DynamicCalcHistorical
-   drop constraint PK_DYNAMICCALCHISTORICAL
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('DynamicCalcHistorical')
             and   type = 'U')
    drop table DynamicCalcHistorical
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_DYNAMICLMCONTROLAREA')
-            and   type = 'K')
-alter table DynamicLMControlArea
-   drop constraint PK_DYNAMICLMCONTROLAREA
 go
 
 
@@ -1063,27 +535,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_DYNAMICLMCONTROLAREATRIGGER')
-            and   type = 'K')
-alter table DynamicLMControlAreaTrigger
-   drop constraint PK_DYNAMICLMCONTROLAREATRIGGER
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('DynamicLMControlAreaTrigger')
             and   type = 'U')
    drop table DynamicLMControlAreaTrigger
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_DYNAMICLMGROUP')
-            and   type = 'K')
-alter table DynamicLMGroup
-   drop constraint PK_DYNAMICLMGROUP
 go
 
 
@@ -1097,27 +551,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_DYNAMICLMPROGRAM')
-            and   type = 'K')
-alter table DynamicLMProgram
-   drop constraint PK_DYNAMICLMPROGRAM
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('DynamicLMProgram')
             and   type = 'U')
    drop table DynamicLMProgram
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_DYNAMICLMPROGRAMDIRECT')
-            and   type = 'K')
-alter table DynamicLMProgramDirect
-   drop constraint PK_DYNAMICLMPROGRAMDIRECT
 go
 
 
@@ -1131,37 +567,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_DYNAMICPAOSTATISTICS')
-            and   type = 'K')
-alter table DynamicPAOStatistics
-   drop constraint PK_DYNAMICPAOSTATISTICS
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('DynamicPAOStatistics')
             and   type = 'U')
    drop table DynamicPAOStatistics
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('EnergyCompany')
-            and   name  = 'Indx_EnCmpName'
-            and   indid > 0
-            and   indid < 255)
-   drop index EnergyCompany.Indx_EnCmpName
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_ENERGYCOMPANY')
-            and   type = 'K')
-alter table EnergyCompany
-   drop constraint PK_ENERGYCOMPANY
 go
 
 
@@ -1175,27 +583,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_ENERGYCOMPANYCUSTOMERLIST')
-            and   type = 'K')
-alter table EnergyCompanyCustomerList
-   drop constraint PK_ENERGYCOMPANYCUSTOMERLIST
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('EnergyCompanyCustomerList')
             and   type = 'U')
    drop table EnergyCompanyCustomerList
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_ENERGYCOMPANYOPERATORLOGINL')
-            and   type = 'K')
-alter table EnergyCompanyOperatorLoginList
-   drop constraint PK_ENERGYCOMPANYOPERATORLOGINL
 go
 
 
@@ -1209,15 +599,6 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_FDRINTERFACE')
-            and   type = 'K')
-alter table FDRInterface
-   drop constraint PK_FDRINTERFACE
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('FDRInterface')
             and   type = 'U')
    drop table FDRInterface
@@ -1226,47 +607,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_FDRINTERFACEOPTION')
-            and   type = 'K')
-alter table FDRInterfaceOption
-   drop constraint PK_FDRINTERFACEOPTION
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('FDRInterfaceOption')
             and   type = 'U')
    drop table FDRInterfaceOption
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('FDRTRANSLATION')
-            and   name  = 'Indx_FdrTransIntTyp'
-            and   indid > 0
-            and   indid < 255)
-   drop index FDRTRANSLATION.Indx_FdrTransIntTyp
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('FDRTRANSLATION')
-            and   name  = 'Indx_FdrTrnsIntTypDir'
-            and   indid > 0
-            and   indid < 255)
-   drop index FDRTRANSLATION.Indx_FdrTrnsIntTypDir
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_FDRTrans')
-            and   type = 'K')
-alter table FDRTRANSLATION
-   drop constraint PK_FDRTrans
 go
 
 
@@ -1280,37 +623,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_FDRTELEGYRGROUP')
-            and   type = 'K')
-alter table FDRTelegyrGroup
-   drop constraint PK_FDRTELEGYRGROUP
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('FDRTelegyrGroup')
             and   type = 'U')
    drop table FDRTelegyrGroup
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('GRAPHDATASERIES')
-            and   name  = 'Indx_GrpDSerPtID'
-            and   indid > 0
-            and   indid < 255)
-   drop index GRAPHDATASERIES.Indx_GrpDSerPtID
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('SYS_GrphDserID')
-            and   type = 'K')
-alter table GRAPHDATASERIES
-   drop constraint SYS_GrphDserID
 go
 
 
@@ -1324,24 +639,6 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('SYS_C0015109')
-            and   type = 'K')
-alter table GRAPHDEFINITION
-   drop constraint SYS_C0015109
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('AK_GRNMUQ_GRAPHDEF')
-            and   type = 'K')
-alter table GRAPHDEFINITION
-   drop constraint AK_GRNMUQ_GRAPHDEF
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('GRAPHDEFINITION')
             and   type = 'U')
    drop table GRAPHDEFINITION
@@ -1350,10 +647,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_GENERICMACRO')
-            and   type = 'K')
-alter table GenericMacro
-   drop constraint PK_GENERICMACRO
+           where  id = object_id('GatewayEndDevice')
+            and   type = 'U')
+   drop table GatewayEndDevice
 go
 
 
@@ -1367,37 +663,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_GRAPHCUSTOMERLIST')
-            and   type = 'K')
-alter table GraphCustomerList
-   drop constraint PK_GRAPHCUSTOMERLIST
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('GraphCustomerList')
             and   type = 'U')
    drop table GraphCustomerList
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('HolidaySchedule')
-            and   name  = 'Indx_HolSchName'
-            and   indid > 0
-            and   indid < 255)
-   drop index HolidaySchedule.Indx_HolSchName
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_HOLIDAYSCHEDULE')
-            and   type = 'K')
-alter table HolidaySchedule
-   drop constraint PK_HOLIDAYSCHEDULE
 go
 
 
@@ -1411,27 +679,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_LMCONTROLAREAPROGRAM')
-            and   type = 'K')
-alter table LMCONTROLAREAPROGRAM
-   drop constraint PK_LMCONTROLAREAPROGRAM
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('LMCONTROLAREAPROGRAM')
             and   type = 'U')
    drop table LMCONTROLAREAPROGRAM
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_LMCONTROLAREATRIGGER')
-            and   type = 'K')
-alter table LMCONTROLAREATRIGGER
-   drop constraint PK_LMCONTROLAREATRIGGER
 go
 
 
@@ -1445,37 +695,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_LMCONTROLAREA')
-            and   type = 'K')
-alter table LMControlArea
-   drop constraint PK_LMCONTROLAREA
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('LMControlArea')
             and   type = 'U')
    drop table LMControlArea
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('LMControlHistory')
-            and   name  = 'Indx_Start'
-            and   indid > 0
-            and   indid < 255)
-   drop index LMControlHistory.Indx_Start
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_LMCONTROLHISTORY')
-            and   type = 'K')
-alter table LMControlHistory
-   drop constraint PK_LMCONTROLHISTORY
 go
 
 
@@ -1488,58 +710,10 @@ go
 
 
 if exists (select 1
-            from  sysindexes
-           where  id    = object_id('LMCurtailCustomerActivity')
-            and   name  = 'Index_LMCrtCstActID'
-            and   indid > 0
-            and   indid < 255)
-   drop index LMCurtailCustomerActivity.Index_LMCrtCstActID
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('LMCurtailCustomerActivity')
-            and   name  = 'Index_LMCrtCstAckSt'
-            and   indid > 0
-            and   indid < 255)
-   drop index LMCurtailCustomerActivity.Index_LMCrtCstAckSt
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_LMCURTAILCUSTOMERACTIVITY')
-            and   type = 'K')
-alter table LMCurtailCustomerActivity
-   drop constraint PK_LMCURTAILCUSTOMERACTIVITY
-go
-
-
-if exists (select 1
             from  sysobjects
            where  id = object_id('LMCurtailCustomerActivity')
             and   type = 'U')
    drop table LMCurtailCustomerActivity
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('LMCurtailProgramActivity')
-            and   name  = 'Indx_LMCrtPrgActStTime'
-            and   indid > 0
-            and   indid < 255)
-   drop index LMCurtailProgramActivity.Indx_LMCrtPrgActStTime
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_LMCURTAILPROGRAMACTIVITY')
-            and   type = 'K')
-alter table LMCurtailProgramActivity
-   drop constraint PK_LMCURTAILPROGRAMACTIVITY
 go
 
 
@@ -1553,27 +727,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_LMDIRECTCUSTOMERLIST')
-            and   type = 'K')
-alter table LMDirectCustomerList
-   drop constraint PK_LMDIRECTCUSTOMERLIST
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('LMDirectCustomerList')
             and   type = 'U')
    drop table LMDirectCustomerList
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_LMDIRECTOPERATORLIST')
-            and   type = 'K')
-alter table LMDirectOperatorList
-   drop constraint PK_LMDIRECTOPERATORLIST
 go
 
 
@@ -1587,27 +743,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_LMENERGYEXCHANGECUSTOMERLIS')
-            and   type = 'K')
-alter table LMEnergyExchangeCustomerList
-   drop constraint PK_LMENERGYEXCHANGECUSTOMERLIS
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('LMEnergyExchangeCustomerList')
             and   type = 'U')
    drop table LMEnergyExchangeCustomerList
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_LMENERGYEXCHANGECUSTOMERREP')
-            and   type = 'K')
-alter table LMEnergyExchangeCustomerReply
-   drop constraint PK_LMENERGYEXCHANGECUSTOMERREP
 go
 
 
@@ -1621,27 +759,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_LMENERGYEXCHANGEHOURLYCUSTO')
-            and   type = 'K')
-alter table LMEnergyExchangeHourlyCustomer
-   drop constraint PK_LMENERGYEXCHANGEHOURLYCUSTO
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('LMEnergyExchangeHourlyCustomer')
             and   type = 'U')
    drop table LMEnergyExchangeHourlyCustomer
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_LMENERGYEXCHANGEHOURLYOFFER')
-            and   type = 'K')
-alter table LMEnergyExchangeHourlyOffer
-   drop constraint PK_LMENERGYEXCHANGEHOURLYOFFER
 go
 
 
@@ -1655,27 +775,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_LMENERGYEXCHANGEOFFERREVISI')
-            and   type = 'K')
-alter table LMEnergyExchangeOfferRevision
-   drop constraint PK_LMENERGYEXCHANGEOFFERREVISI
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('LMEnergyExchangeOfferRevision')
             and   type = 'U')
    drop table LMEnergyExchangeOfferRevision
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_LMENERGYEXCHANGEPROGRAMOFFE')
-            and   type = 'K')
-alter table LMEnergyExchangeProgramOffer
-   drop constraint PK_LMENERGYEXCHANGEPROGRAMOFFE
 go
 
 
@@ -1689,27 +791,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_LMGROUP')
-            and   type = 'K')
-alter table LMGroup
-   drop constraint PK_LMGROUP
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('LMGroup')
             and   type = 'U')
    drop table LMGroup
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_LMGROUPEMETCON')
-            and   type = 'K')
-alter table LMGroupEmetcon
-   drop constraint PK_LMGROUPEMETCON
 go
 
 
@@ -1723,27 +807,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_LMGROUPEXPRESSCOM')
-            and   type = 'K')
-alter table LMGroupExpressCom
-   drop constraint PK_LMGROUPEXPRESSCOM
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('LMGroupExpressCom')
             and   type = 'U')
    drop table LMGroupExpressCom
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_LMGROUPEXPRESSCOMADDRESS')
-            and   type = 'K')
-alter table LMGroupExpressComAddress
-   drop constraint PK_LMGROUPEXPRESSCOMADDRESS
 go
 
 
@@ -1757,27 +823,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_LMGrpMCTPK')
-            and   type = 'K')
-alter table LMGroupMCT
-   drop constraint PK_LMGrpMCTPK
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('LMGroupMCT')
             and   type = 'U')
    drop table LMGroupMCT
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_LMGROUPPOINT')
-            and   type = 'K')
-alter table LMGroupPoint
-   drop constraint PK_LMGROUPPOINT
 go
 
 
@@ -1791,27 +839,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_LMGROUPRIPPLE')
-            and   type = 'K')
-alter table LMGroupRipple
-   drop constraint PK_LMGROUPRIPPLE
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('LMGroupRipple')
             and   type = 'U')
    drop table LMGroupRipple
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_LMGROUPVERSACOM')
-            and   type = 'K')
-alter table LMGroupVersacom
-   drop constraint PK_LMGROUPVERSACOM
 go
 
 
@@ -1825,27 +855,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_LMMACSSCHEDULEOPERATORLIST')
-            and   type = 'K')
-alter table LMMACSScheduleOperatorList
-   drop constraint PK_LMMACSSCHEDULEOPERATORLIST
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('LMMACSScheduleOperatorList')
             and   type = 'U')
    drop table LMMACSScheduleOperatorList
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_LMMACSSCHEDULECUSTOMERLIST')
-            and   type = 'K')
-alter table LMMacsScheduleCustomerList
-   drop constraint PK_LMMACSSCHEDULECUSTOMERLIST
 go
 
 
@@ -1859,27 +871,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_LMPROGRAM')
-            and   type = 'K')
-alter table LMPROGRAM
-   drop constraint PK_LMPROGRAM
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('LMPROGRAM')
             and   type = 'U')
    drop table LMPROGRAM
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_LMPROGRAMCONTROLWINDOW')
-            and   type = 'K')
-alter table LMProgramControlWindow
-   drop constraint PK_LMPROGRAMCONTROLWINDOW
 go
 
 
@@ -1893,27 +887,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_LMPROGRAMCURTAILCUSTOMERLIS')
-            and   type = 'K')
-alter table LMProgramCurtailCustomerList
-   drop constraint PK_LMPROGRAMCURTAILCUSTOMERLIS
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('LMProgramCurtailCustomerList')
             and   type = 'U')
    drop table LMProgramCurtailCustomerList
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_LMPROGRAMCURTAILMENT')
-            and   type = 'K')
-alter table LMProgramCurtailment
-   drop constraint PK_LMPROGRAMCURTAILMENT
 go
 
 
@@ -1927,36 +903,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_LMPROGRAMDIRECT')
-            and   type = 'K')
-alter table LMProgramDirect
-   drop constraint PK_LMPROGRAMDIRECT
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('LMProgramDirect')
             and   type = 'U')
    drop table LMProgramDirect
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_LMPROGRAMDIRECTGEAR')
-            and   type = 'K')
-alter table LMProgramDirectGear
-   drop constraint PK_LMPROGRAMDIRECTGEAR
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('AK_AKEY_LMPRGDIRG_LMPROGRA')
-            and   type = 'K')
-alter table LMProgramDirectGear
-   drop constraint AK_AKEY_LMPRGDIRG_LMPROGRA
 go
 
 
@@ -1970,27 +919,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_LMPROGRAMDIRECTGROUP')
-            and   type = 'K')
-alter table LMProgramDirectGroup
-   drop constraint PK_LMPROGRAMDIRECTGROUP
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('LMProgramDirectGroup')
             and   type = 'U')
    drop table LMProgramDirectGroup
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_LMPROGRAMENERGYEXCHANGE')
-            and   type = 'K')
-alter table LMProgramEnergyExchange
-   drop constraint PK_LMPROGRAMENERGYEXCHANGE
 go
 
 
@@ -2004,27 +935,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_LMTHERMOSTATGEAR')
-            and   type = 'K')
-alter table LMThermoStatGear
-   drop constraint PK_LMTHERMOSTATGEAR
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('LMThermoStatGear')
             and   type = 'U')
    drop table LMThermoStatGear
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('SYS_C0013445')
-            and   type = 'K')
-alter table LOGIC
-   drop constraint SYS_C0013445
 go
 
 
@@ -2038,27 +951,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_MACROROUTE')
-            and   type = 'K')
-alter table MACROROUTE
-   drop constraint PK_MACROROUTE
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('MACROROUTE')
             and   type = 'U')
    drop table MACROROUTE
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_MACSCHEDULE')
-            and   type = 'K')
-alter table MACSchedule
-   drop constraint PK_MACSCHEDULE
 go
 
 
@@ -2072,27 +967,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_MACSIMPLESCHEDULE')
-            and   type = 'K')
-alter table MACSimpleSchedule
-   drop constraint PK_MACSIMPLESCHEDULE
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('MACSimpleSchedule')
             and   type = 'U')
    drop table MACSimpleSchedule
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_MCTBROADCASTMAPPING')
-            and   type = 'K')
-alter table MCTBroadCastMapping
-   drop constraint PK_MCTBROADCASTMAPPING
 go
 
 
@@ -2106,37 +983,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PKey_NotDestID')
-            and   type = 'K')
-alter table NotificationDestination
-   drop constraint PKey_NotDestID
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('NotificationDestination')
             and   type = 'U')
    drop table NotificationDestination
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('NotificationGroup')
-            and   name  = 'Indx_NOTIFGRPNme'
-            and   indid > 0
-            and   indid < 255)
-   drop index NotificationGroup.Indx_NOTIFGRPNme
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_NOTIFICATIONGROUP')
-            and   type = 'K')
-alter table NotificationGroup
-   drop constraint PK_NOTIFICATIONGROUP
 go
 
 
@@ -2150,15 +999,6 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_OPERATORLOGINGRAPHLIST')
-            and   type = 'K')
-alter table OperatorLoginGraphList
-   drop constraint PK_OPERATORLOGINGRAPHLIST
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('OperatorLoginGraphList')
             and   type = 'U')
    drop table OperatorLoginGraphList
@@ -2167,37 +1007,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_OpSerGrp')
-            and   type = 'K')
-alter table OperatorSerialGroup
-   drop constraint PK_OpSerGrp
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('OperatorSerialGroup')
             and   type = 'U')
    drop table OperatorSerialGroup
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('PAOExclusion')
-            and   name  = 'Indx_PAOExclus'
-            and   indid > 0
-            and   indid < 255)
-   drop index PAOExclusion.Indx_PAOExclus
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_PAOEXCLUSION')
-            and   type = 'K')
-alter table PAOExclusion
-   drop constraint PK_PAOEXCLUSION
 go
 
 
@@ -2211,46 +1023,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_PAOOWNER')
-            and   type = 'K')
-alter table PAOowner
-   drop constraint PK_PAOOWNER
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('PAOowner')
             and   type = 'U')
    drop table PAOowner
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('POINT')
-            and   name  = 'Indx_PointStGrpID'
-            and   indid > 0
-            and   indid < 255)
-   drop index POINT.Indx_PointStGrpID
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('Key_PT_PTID')
-            and   type = 'K')
-alter table POINT
-   drop constraint Key_PT_PTID
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('AK_KEY_PTNM_YUKPAOID')
-            and   type = 'K')
-alter table POINT
-   drop constraint AK_KEY_PTNM_YUKPAOID
 go
 
 
@@ -2264,27 +1039,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_POINTACCUMULATOR')
-            and   type = 'K')
-alter table POINTACCUMULATOR
-   drop constraint PK_POINTACCUMULATOR
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('POINTACCUMULATOR')
             and   type = 'U')
    drop table POINTACCUMULATOR
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_POINTANALOG')
-            and   type = 'K')
-alter table POINTANALOG
-   drop constraint PK_POINTANALOG
 go
 
 
@@ -2298,27 +1055,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_POINTLIMITS')
-            and   type = 'K')
-alter table POINTLIMITS
-   drop constraint PK_POINTLIMITS
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('POINTLIMITS')
             and   type = 'U')
    drop table POINTLIMITS
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_PtStatus')
-            and   type = 'K')
-alter table POINTSTATUS
-   drop constraint PK_PtStatus
 go
 
 
@@ -2332,27 +1071,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_POINTUNITID')
-            and   type = 'K')
-alter table POINTUNIT
-   drop constraint PK_POINTUNITID
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('POINTUNIT')
             and   type = 'U')
    drop table POINTUNIT
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_PORTDIALUPMODEM')
-            and   type = 'K')
-alter table PORTDIALUPMODEM
-   drop constraint PK_PORTDIALUPMODEM
 go
 
 
@@ -2366,27 +1087,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_PORTLOCALSERIAL')
-            and   type = 'K')
-alter table PORTLOCALSERIAL
-   drop constraint PK_PORTLOCALSERIAL
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('PORTLOCALSERIAL')
             and   type = 'U')
    drop table PORTLOCALSERIAL
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_PORTRADIOSETTINGS')
-            and   type = 'K')
-alter table PORTRADIOSETTINGS
-   drop constraint PK_PORTRADIOSETTINGS
 go
 
 
@@ -2400,27 +1103,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_PORTSETTINGS')
-            and   type = 'K')
-alter table PORTSETTINGS
-   drop constraint PK_PORTSETTINGS
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('PORTSETTINGS')
             and   type = 'U')
    drop table PORTSETTINGS
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_PORTTERMINALSERVER')
-            and   type = 'K')
-alter table PORTTERMINALSERVER
-   drop constraint PK_PORTTERMINALSERVER
 go
 
 
@@ -2434,27 +1119,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_POINTALARMING')
-            and   type = 'K')
-alter table PointAlarming
-   drop constraint PK_POINTALARMING
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('PointAlarming')
             and   type = 'U')
    drop table PointAlarming
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_PORTSTATISTICS')
-            and   type = 'K')
-alter table PortStatistics
-   drop constraint PK_PORTSTATISTICS
 go
 
 
@@ -2468,47 +1135,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_PORTTIMING')
-            and   type = 'K')
-alter table PortTiming
-   drop constraint PK_PORTTIMING
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('PortTiming')
             and   type = 'U')
    drop table PortTiming
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('RAWPOINTHISTORY')
-            and   name  = 'Index_PointID'
-            and   indid > 0
-            and   indid < 255)
-   drop index RAWPOINTHISTORY.Index_PointID
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('RAWPOINTHISTORY')
-            and   name  = 'Indx_TimeStamp'
-            and   indid > 0
-            and   indid < 255)
-   drop index RAWPOINTHISTORY.Indx_TimeStamp
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('SYS_C0013322')
-            and   type = 'K')
-alter table RAWPOINTHISTORY
-   drop constraint SYS_C0013322
 go
 
 
@@ -2522,37 +1151,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_REPEATERROUTE')
-            and   type = 'K')
-alter table RepeaterRoute
-   drop constraint PK_REPEATERROUTE
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('RepeaterRoute')
             and   type = 'U')
    drop table RepeaterRoute
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('Route')
-            and   name  = 'Indx_RouteDevID'
-            and   indid > 0
-            and   indid < 255)
-   drop index Route.Indx_RouteDevID
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('SYS_RoutePK')
-            and   type = 'K')
-alter table Route
-   drop constraint SYS_RoutePK
 go
 
 
@@ -2565,25 +1166,6 @@ go
 
 
 if exists (select 1
-            from  sysindexes
-           where  id    = object_id('STATE')
-            and   name  = 'Indx_StateRaw'
-            and   indid > 0
-            and   indid < 255)
-   drop index STATE.Indx_StateRaw
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_STATE')
-            and   type = 'K')
-alter table STATE
-   drop constraint PK_STATE
-go
-
-
-if exists (select 1
             from  sysobjects
            where  id = object_id('STATE')
             and   type = 'U')
@@ -2592,58 +1174,10 @@ go
 
 
 if exists (select 1
-            from  sysindexes
-           where  id    = object_id('STATEGROUP')
-            and   name  = 'Indx_STATEGRP_Nme'
-            and   indid > 0
-            and   indid < 255)
-   drop index STATEGROUP.Indx_STATEGRP_Nme
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('SYS_C0013128')
-            and   type = 'K')
-alter table STATEGROUP
-   drop constraint SYS_C0013128
-go
-
-
-if exists (select 1
             from  sysobjects
            where  id = object_id('STATEGROUP')
             and   type = 'U')
    drop table STATEGROUP
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('SYSTEMLOG')
-            and   name  = 'Indx_SYSLG_PtId'
-            and   indid > 0
-            and   indid < 255)
-   drop index SYSTEMLOG.Indx_SYSLG_PtId
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('SYSTEMLOG')
-            and   name  = 'Indx_SYSLG_Date'
-            and   indid > 0
-            and   indid < 255)
-   drop index SYSTEMLOG.Indx_SYSLG_Date
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('SYS_C0013407')
-            and   type = 'K')
-alter table SYSTEMLOG
-   drop constraint SYS_C0013407
 go
 
 
@@ -2657,27 +1191,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_SEASONSCHEDULE')
-            and   type = 'K')
-alter table SeasonSchedule
-   drop constraint PK_SEASONSCHEDULE
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('SeasonSchedule')
             and   type = 'U')
    drop table SeasonSchedule
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('SYS_C0013425')
-            and   type = 'K')
-alter table TEMPLATE
-   drop constraint SYS_C0013425
 go
 
 
@@ -2691,27 +1207,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_TEMPLATECOLUMNS')
-            and   type = 'K')
-alter table TEMPLATECOLUMNS
-   drop constraint PK_TEMPLATECOLUMNS
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('TEMPLATECOLUMNS')
             and   type = 'U')
    drop table TEMPLATECOLUMNS
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('SYS_C0013344')
-            and   type = 'K')
-alter table UNITMEASURE
-   drop constraint SYS_C0013344
 go
 
 
@@ -2725,27 +1223,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_VERSACOMROUTE')
-            and   type = 'K')
-alter table VersacomRoute
-   drop constraint PK_VERSACOMROUTE
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('VersacomRoute')
             and   type = 'U')
    drop table VersacomRoute
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_YUKONGROUP')
-            and   type = 'K')
-alter table YukonGroup
-   drop constraint PK_YUKONGROUP
 go
 
 
@@ -2759,27 +1239,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_YUKONGRPROLE')
-            and   type = 'K')
-alter table YukonGroupRole
-   drop constraint PK_YUKONGRPROLE
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('YukonGroupRole')
             and   type = 'U')
    drop table YukonGroupRole
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_YUKONIMAGE')
-            and   type = 'K')
-alter table YukonImage
-   drop constraint PK_YUKONIMAGE
 go
 
 
@@ -2792,25 +1254,6 @@ go
 
 
 if exists (select 1
-            from  sysindexes
-           where  id    = object_id('YukonListEntry')
-            and   name  = 'Indx_YkLstDefID'
-            and   indid > 0
-            and   indid < 255)
-   drop index YukonListEntry.Indx_YkLstDefID
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_YUKONLISTENTRY')
-            and   type = 'K')
-alter table YukonListEntry
-   drop constraint PK_YUKONLISTENTRY
-go
-
-
-if exists (select 1
             from  sysobjects
            where  id = object_id('YukonListEntry')
             and   type = 'U')
@@ -2819,48 +1262,10 @@ go
 
 
 if exists (select 1
-            from  sysindexes
-           where  id    = object_id('YukonPAObject')
-            and   name  = 'Indx_PAO'
-            and   indid > 0
-            and   indid < 255)
-   drop index YukonPAObject.Indx_PAO
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_YUKONPAOBJECT')
-            and   type = 'K')
-alter table YukonPAObject
-   drop constraint PK_YUKONPAOBJECT
-go
-
-
-if exists (select 1
             from  sysobjects
            where  id = object_id('YukonPAObject')
             and   type = 'U')
    drop table YukonPAObject
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('YukonRole')
-            and   name  = 'Indx_YukRol_Nm'
-            and   indid > 0
-            and   indid < 255)
-   drop index YukonRole.Indx_YukRol_Nm
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_YUKONROLE')
-            and   type = 'K')
-alter table YukonRole
-   drop constraint PK_YUKONROLE
 go
 
 
@@ -2874,15 +1279,6 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_YUKONROLEPROPERTY')
-            and   type = 'K')
-alter table YukonRoleProperty
-   drop constraint PK_YUKONROLEPROPERTY
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('YukonRoleProperty')
             and   type = 'U')
    drop table YukonRoleProperty
@@ -2891,37 +1287,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_YUKONSELECTIONLIST')
-            and   type = 'K')
-alter table YukonSelectionList
-   drop constraint PK_YUKONSELECTIONLIST
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('YukonSelectionList')
             and   type = 'U')
    drop table YukonSelectionList
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('YukonUser')
-            and   name  = 'Indx_YkUsIDNm'
-            and   indid > 0
-            and   indid < 255)
-   drop index YukonUser.Indx_YkUsIDNm
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_YUKONUSER')
-            and   type = 'K')
-alter table YukonUser
-   drop constraint PK_YUKONUSER
 go
 
 
@@ -2935,15 +1303,6 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_YUKONUSERGROUP')
-            and   type = 'K')
-alter table YukonUserGroup
-   drop constraint PK_YUKONUSERGROUP
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('YukonUserGroup')
             and   type = 'U')
    drop table YukonUserGroup
@@ -2952,27 +1311,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('PK_YKONUSRROLE')
-            and   type = 'K')
-alter table YukonUserRole
-   drop constraint PK_YKONUSRROLE
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('YukonUserRole')
             and   type = 'U')
    drop table YukonUserRole
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PK_YUKONWEBCONFIGURATION')
-            and   type = 'K')
-alter table YukonWebConfiguration
-   drop constraint PK_YUKONWEBCONFIGURATION
 go
 
 
@@ -3381,10 +1722,14 @@ go
 /*==============================================================*/
 create table CommPort (
 PORTID               numeric              not null,
-ALARMINHIBIT         varchar(1)           not null,
-COMMONPROTOCOL       varchar(8)           not null,
-PERFORMTHRESHOLD     numeric              not null,
-PERFORMANCEALARM     varchar(1)           not null,
+ALARMINHIBIT         varchar(1)           not null
+     constraint SYS_C0013108 check ("ALARMINHIBIT" IS NOT NULL),
+COMMONPROTOCOL       varchar(8)           not null
+     constraint SYS_C0013109 check ("COMMONPROTOCOL" IS NOT NULL),
+PERFORMTHRESHOLD     numeric              not null
+     constraint SYS_C0013110 check ("PERFORMTHRESHOLD" IS NOT NULL),
+PERFORMANCEALARM     varchar(1)           not null
+     constraint SYS_C0013111 check ("PERFORMANCEALARM" IS NOT NULL),
 SharedPortType       varchar(20)          not null,
 SharedSocketNumber   numeric              not null
 )
@@ -3541,13 +1886,20 @@ go
 /*==============================================================*/
 create table DEVICE2WAYFLAGS (
 DEVICEID             numeric              not null,
-MONTHLYSTATS         varchar(1)           not null,
-TWENTYFOURHOURSTATS  varchar(1)           not null,
-HOURLYSTATS          varchar(1)           not null,
-FAILUREALARM         varchar(1)           not null,
-PERFORMANCETHRESHOLD numeric              not null,
-PERFORMANCEALARM     varchar(1)           not null,
+MONTHLYSTATS         varchar(1)           not null
+     constraint SYS_C0013200 check ("MONTHLYSTATS" IS NOT NULL),
+TWENTYFOURHOURSTATS  varchar(1)           not null
+     constraint SYS_C0013201 check ("TWENTYFOURHOURSTATS" IS NOT NULL),
+HOURLYSTATS          varchar(1)           not null
+     constraint SYS_C0013202 check ("HOURLYSTATS" IS NOT NULL),
+FAILUREALARM         varchar(1)           not null
+     constraint SYS_C0013203 check ("FAILUREALARM" IS NOT NULL),
+PERFORMANCETHRESHOLD numeric              not null
+     constraint SYS_C0013204 check ("PERFORMANCETHRESHOLD" IS NOT NULL),
+PERFORMANCEALARM     varchar(1)           not null
+     constraint SYS_C0013205 check ("PERFORMANCEALARM" IS NOT NULL),
 PERFORMANCETWENTYFOURALARM varchar(1)           not null
+     constraint SYS_C0013206 check ("PERFORMANCETWENTYFOURALARM" IS NOT NULL)
 )
 go
 
@@ -3563,6 +1915,7 @@ go
 create table DEVICECARRIERSETTINGS (
 DEVICEID             numeric              not null,
 ADDRESS              numeric              not null
+     constraint SYS_C0013215 check ("ADDRESS" IS NOT NULL)
 )
 go
 
@@ -3577,10 +1930,14 @@ go
 /*==============================================================*/
 create table DEVICEDIALUPSETTINGS (
 DEVICEID             numeric              not null,
-PHONENUMBER          varchar(40)          not null,
-MINCONNECTTIME       numeric              not null,
-MAXCONNECTTIME       numeric              not null,
-LINESETTINGS         varchar(8)           not null,
+PHONENUMBER          varchar(40)          not null
+     constraint SYS_C0013189 check ("PHONENUMBER" IS NOT NULL),
+MINCONNECTTIME       numeric              not null
+     constraint SYS_C0013190 check ("MINCONNECTTIME" IS NOT NULL),
+MAXCONNECTTIME       numeric              not null
+     constraint SYS_C0013191 check ("MAXCONNECTTIME" IS NOT NULL),
+LINESETTINGS         varchar(8)           not null
+     constraint SYS_C0013192 check ("LINESETTINGS" IS NOT NULL),
 BaudRate             numeric              not null
 )
 go
@@ -3596,8 +1953,10 @@ go
 /*==============================================================*/
 create table DEVICEIDLCREMOTE (
 DEVICEID             numeric              not null,
-ADDRESS              numeric              not null,
-POSTCOMMWAIT         numeric              not null,
+ADDRESS              numeric              not null
+     constraint SYS_C0013239 check ("ADDRESS" IS NOT NULL),
+POSTCOMMWAIT         numeric              not null
+     constraint SYS_C0013240 check ("POSTCOMMWAIT" IS NOT NULL),
 CCUAmpUseType        varchar(20)          not null
 )
 go
@@ -3646,12 +2005,18 @@ go
 /*==============================================================*/
 create table DEVICEMCTIEDPORT (
 DEVICEID             numeric              not null,
-CONNECTEDIED         varchar(20)          not null,
-IEDSCANRATE          numeric              not null,
-DEFAULTDATACLASS     numeric              not null,
-DEFAULTDATAOFFSET    numeric              not null,
-PASSWORD             varchar(6)           not null,
+CONNECTEDIED         varchar(20)          not null
+     constraint SYS_C0013247 check ("CONNECTEDIED" IS NOT NULL),
+IEDSCANRATE          numeric              not null
+     constraint SYS_C0013248 check ("IEDSCANRATE" IS NOT NULL),
+DEFAULTDATACLASS     numeric              not null
+     constraint SYS_C0013249 check ("DEFAULTDATACLASS" IS NOT NULL),
+DEFAULTDATAOFFSET    numeric              not null
+     constraint SYS_C0013250 check ("DEFAULTDATAOFFSET" IS NOT NULL),
+PASSWORD             varchar(6)           not null
+     constraint SYS_C0013251 check ("PASSWORD" IS NOT NULL),
 REALTIMESCAN         varchar(1)           not null
+     constraint SYS_C0013252 check ("REALTIMESCAN" IS NOT NULL)
 )
 go
 
@@ -3684,9 +2049,12 @@ go
 /*==============================================================*/
 create table DEVICESCANRATE (
 DEVICEID             numeric              not null,
-SCANTYPE             varchar(20)          not null,
-INTERVALRATE         numeric              not null,
-SCANGROUP            numeric              not null,
+SCANTYPE             varchar(20)          not null
+     constraint SYS_C0013195 check ("SCANTYPE" IS NOT NULL),
+INTERVALRATE         numeric              not null
+     constraint SYS_C0013196 check ("INTERVALRATE" IS NOT NULL),
+SCANGROUP            numeric              not null
+     constraint SYS_C0013197 check ("SCANGROUP" IS NOT NULL),
 AlternateRate        numeric              not null
 )
 go
@@ -3932,12 +2300,18 @@ go
 /*==============================================================*/
 create table DYNAMICPOINTDISPATCH (
 POINTID              numeric              not null,
-TIMESTAMP            datetime             not null,
-QUALITY              numeric              not null,
-VALUE                float                not null,
-TAGS                 numeric              not null,
-NEXTARCHIVE          datetime             not null,
-STALECOUNT           numeric              not null,
+TIMESTAMP            datetime             not null
+     constraint SYS_C0013325 check ("TIMESTAMP" IS NOT NULL),
+QUALITY              numeric              not null
+     constraint SYS_C0013326 check ("QUALITY" IS NOT NULL),
+VALUE                float                not null
+     constraint SYS_C0013327 check ("VALUE" IS NOT NULL),
+TAGS                 numeric              not null
+     constraint SYS_C0013328 check ("TAGS" IS NOT NULL),
+NEXTARCHIVE          datetime             not null
+     constraint SYS_C0013329 check ("NEXTARCHIVE" IS NOT NULL),
+STALECOUNT           numeric              not null
+     constraint SYS_C0013330 check ("STALECOUNT" IS NOT NULL),
 LastAlarmLogID       numeric              not null
 )
 go
@@ -4535,6 +2909,23 @@ go
 
 
 /*==============================================================*/
+/* Table : GatewayEndDevice                                     */
+/*==============================================================*/
+create table GatewayEndDevice (
+SerialNumber         varchar(30)          not null,
+HardwareType         numeric              not null,
+DataType             numeric              null,
+DataValue            varchar(100)         null
+)
+go
+
+
+alter table GatewayEndDevice
+   add constraint PK_GATEWAYENDDEVICE primary key  (SerialNumber, HardwareType)
+go
+
+
+/*==============================================================*/
 /* Table : GenericMacro                                         */
 /*==============================================================*/
 create table GenericMacro (
@@ -4922,10 +3313,14 @@ go
 /*==============================================================*/
 create table LMGroupEmetcon (
 DEVICEID             numeric              not null,
-GOLDADDRESS          numeric              not null,
-SILVERADDRESS        numeric              not null,
-ADDRESSUSAGE         char(1)              not null,
-RELAYUSAGE           char(1)              not null,
+GOLDADDRESS          numeric              not null
+     constraint SYS_C13351 check ("GOLDADDRESS" IS NOT NULL),
+SILVERADDRESS        numeric              not null
+     constraint SYS_C13352 check ("SILVERADDRESS" IS NOT NULL),
+ADDRESSUSAGE         char(1)              not null
+     constraint SYS_C0013353 check ("ADDRESSUSAGE" IS NOT NULL),
+RELAYUSAGE           char(1)              not null
+     constraint SYS_C0013354 check ("RELAYUSAGE" IS NOT NULL),
 ROUTEID              numeric              not null
 )
 go
@@ -5287,10 +3682,14 @@ go
 /*==============================================================*/
 create table LOGIC (
 LOGICID              numeric              not null,
-LOGICNAME            varchar(20)          not null,
-PERIODICRATE         numeric              not null,
-STATEFLAG            varchar(10)          not null,
+LOGICNAME            varchar(20)          not null
+     constraint SYS_C0013441 check ("LOGICNAME" IS NOT NULL),
+PERIODICRATE         numeric              not null
+     constraint SYS_C0013442 check ("PERIODICRATE" IS NOT NULL),
+STATEFLAG            varchar(10)          not null
+     constraint SYS_C0013443 check ("STATEFLAG" IS NOT NULL),
 SCRIPTNAME           varchar(20)          not null
+     constraint SYS_C0013444 check ("SCRIPTNAME" IS NOT NULL)
 )
 go
 
@@ -5307,6 +3706,7 @@ create table MACROROUTE (
 ROUTEID              numeric              not null,
 SINGLEROUTEID        numeric              not null,
 ROUTEORDER           numeric              not null
+     constraint SYS_C0013273 check ("ROUTEORDER" IS NOT NULL)
 )
 go
 
@@ -5649,10 +4049,14 @@ go
 /*==============================================================*/
 create table PORTDIALUPMODEM (
 PORTID               numeric              not null,
-MODEMTYPE            varchar(30)          not null,
-INITIALIZATIONSTRING varchar(50)          not null,
-PREFIXNUMBER         varchar(10)          not null,
+MODEMTYPE            varchar(30)          not null
+     constraint SYS_C13171 check ("MODEMTYPE" IS NOT NULL),
+INITIALIZATIONSTRING varchar(50)          not null
+     constraint SYS_C13172 check ("INITIALIZATIONSTRING" IS NOT NULL),
+PREFIXNUMBER         varchar(10)          not null
+     constraint SYS_C0013173 check ("PREFIXNUMBER" IS NOT NULL),
 SUFFIXNUMBER         varchar(10)          not null
+     constraint SYS_C0013174 check ("SUFFIXNUMBER" IS NOT NULL)
 )
 go
 
@@ -5668,6 +4072,7 @@ go
 create table PORTLOCALSERIAL (
 PORTID               numeric              not null,
 PHYSICALPORT         varchar(8)           not null
+     constraint SYS_C0013146 check ("PHYSICALPORT" IS NOT NULL)
 )
 go
 
@@ -5682,10 +4087,14 @@ go
 /*==============================================================*/
 create table PORTRADIOSETTINGS (
 PORTID               numeric              not null,
-RTSTOTXWAITSAMED     numeric              not null,
-RTSTOTXWAITDIFFD     numeric              not null,
-RADIOMASTERTAIL      numeric              not null,
+RTSTOTXWAITSAMED     numeric              not null
+     constraint SYS_C0013165 check ("RTSTOTXWAITSAMED" IS NOT NULL),
+RTSTOTXWAITDIFFD     numeric              not null
+     constraint SYS_C0013166 check ("RTSTOTXWAITDIFFD" IS NOT NULL),
+RADIOMASTERTAIL      numeric              not null
+     constraint SYS_C0013167 check ("RADIOMASTERTAIL" IS NOT NULL),
 REVERSERTS           numeric              not null
+     constraint SYS_C0013168 check ("REVERSERTS" IS NOT NULL)
 )
 go
 
@@ -5700,9 +4109,12 @@ go
 /*==============================================================*/
 create table PORTSETTINGS (
 PORTID               numeric              not null,
-BAUDRATE             numeric              not null,
-CDWAIT               numeric              not null,
+BAUDRATE             numeric              not null
+     constraint SYS_C0013153 check ("BAUDRATE" IS NOT NULL),
+CDWAIT               numeric              not null
+     constraint SYS_C0013154 check ("CDWAIT" IS NOT NULL),
 LINESETTINGS         varchar(8)           not null
+     constraint SYS_C0013155 check ("LINESETTINGS" IS NOT NULL)
 )
 go
 
@@ -5717,8 +4129,10 @@ go
 /*==============================================================*/
 create table PORTTERMINALSERVER (
 PORTID               numeric              not null,
-IPADDRESS            varchar(16)          not null,
+IPADDRESS            varchar(16)          not null
+     constraint SYS_C0013149 check ("IPADDRESS" IS NOT NULL),
 SOCKETPORTNUMBER     numeric              not null
+     constraint SYS_C0013150 check ("SOCKETPORTNUMBER" IS NOT NULL)
 )
 go
 
@@ -5759,12 +4173,18 @@ go
 /*==============================================================*/
 create table PortStatistics (
 PORTID               numeric              not null,
-STATISTICTYPE        numeric              not null,
-ATTEMPTS             numeric              not null,
-DATAERRORS           numeric              not null,
-SYSTEMERRORS         numeric              not null,
-STARTDATETIME        datetime             not null,
+STATISTICTYPE        numeric              not null
+     constraint SYS_C0013177 check ("STATISTICTYPE" IS NOT NULL),
+ATTEMPTS             numeric              not null
+     constraint SYS_C0013178 check ("ATTEMPTS" IS NOT NULL),
+DATAERRORS           numeric              not null
+     constraint SYS_C0013179 check ("DATAERRORS" IS NOT NULL),
+SYSTEMERRORS         numeric              not null
+     constraint SYS_C0013180 check ("SYSTEMERRORS" IS NOT NULL),
+STARTDATETIME        datetime             not null
+     constraint SYS_C0013181 check ("STARTDATETIME" IS NOT NULL),
 STOPDATETIME         datetime             not null
+     constraint SYS_C0013182 check ("STOPDATETIME" IS NOT NULL)
 )
 go
 
@@ -5779,11 +4199,16 @@ go
 /*==============================================================*/
 create table PortTiming (
 PORTID               numeric              not null,
-PRETXWAIT            numeric              not null,
-RTSTOTXWAIT          numeric              not null,
-POSTTXWAIT           numeric              not null,
-RECEIVEDATAWAIT      numeric              not null,
+PRETXWAIT            numeric              not null
+     constraint SYS_C0013158 check ("PRETXWAIT" IS NOT NULL),
+RTSTOTXWAIT          numeric              not null
+     constraint SYS_C0013159 check ("RTSTOTXWAIT" IS NOT NULL),
+POSTTXWAIT           numeric              not null
+     constraint SYS_C0013160 check ("POSTTXWAIT" IS NOT NULL),
+RECEIVEDATAWAIT      numeric              not null
+     constraint SYS_C0013161 check ("RECEIVEDATAWAIT" IS NOT NULL),
 EXTRATIMEOUT         numeric              not null
+     constraint SYS_C0013162 check ("EXTRATIMEOUT" IS NOT NULL)
 )
 go
 
@@ -5835,8 +4260,10 @@ go
 create table RepeaterRoute (
 ROUTEID              numeric              not null,
 DEVICEID             numeric              not null,
-VARIABLEBITS         numeric              not null,
+VARIABLEBITS         numeric              not null
+     constraint SYS_C0013267 check ("VARIABLEBITS" IS NOT NULL),
 REPEATERORDER        numeric              not null
+     constraint SYS_C0013268 check ("REPEATERORDER" IS NOT NULL)
 )
 go
 
@@ -5877,10 +4304,14 @@ go
 /*==============================================================*/
 create table STATE (
 STATEGROUPID         numeric              not null,
-RAWSTATE             numeric              not null,
-TEXT                 varchar(20)          not null,
-FOREGROUNDCOLOR      numeric              not null,
-BACKGROUNDCOLOR      numeric              not null,
+RAWSTATE             numeric              not null
+     constraint SYS_C0013338 check ("RAWSTATE" IS NOT NULL),
+TEXT                 varchar(20)          not null
+     constraint SYS_C0013339 check ("TEXT" IS NOT NULL),
+FOREGROUNDCOLOR      numeric              not null
+     constraint SYS_C0013340 check ("FOREGROUNDCOLOR" IS NOT NULL),
+BACKGROUNDCOLOR      numeric              not null
+     constraint SYS_C0013341 check ("BACKGROUNDCOLOR" IS NOT NULL),
 ImageID              numeric              not null
 )
 go
@@ -5937,7 +4368,8 @@ go
 /*==============================================================*/
 create table STATEGROUP (
 STATEGROUPID         numeric              not null,
-NAME                 varchar(20)          not null,
+NAME                 varchar(20)          not null
+     constraint SYS_C0013127 check ("NAME" IS NOT NULL),
 GroupType            varchar(20)          not null
 )
 go
@@ -5972,10 +4404,14 @@ go
 create table SYSTEMLOG (
 LOGID                numeric              not null,
 POINTID              numeric              not null,
-DATETIME             datetime             not null,
-SOE_TAG              numeric              not null,
-TYPE                 numeric              not null,
-PRIORITY             numeric              not null,
+DATETIME             datetime             not null
+     constraint SYS_C0013403 check ("DATETIME" IS NOT NULL),
+SOE_TAG              numeric              not null
+     constraint SYS_C0013404 check ("SOE_TAG" IS NOT NULL),
+TYPE                 numeric              not null
+     constraint SYS_C0013405 check ("TYPE" IS NOT NULL),
+PRIORITY             numeric              not null
+     constraint SYS_C0013406 check ("PRIORITY" IS NOT NULL),
 ACTION               varchar(60)          null,
 DESCRIPTION          varchar(120)         null,
 USERNAME             varchar(30)          null
@@ -6173,12 +4609,18 @@ go
 /*==============================================================*/
 create table VersacomRoute (
 ROUTEID              numeric              not null,
-UTILITYID            numeric              not null,
-SECTIONADDRESS       numeric              not null,
-CLASSADDRESS         numeric              not null,
-DIVISIONADDRESS      numeric              not null,
-BUSNUMBER            numeric              not null,
+UTILITYID            numeric              not null
+     constraint SYS_C0013276 check ("UTILITYID" IS NOT NULL),
+SECTIONADDRESS       numeric              not null
+     constraint SYS_C0013277 check ("SECTIONADDRESS" IS NOT NULL),
+CLASSADDRESS         numeric              not null
+     constraint SYS_C0013278 check ("CLASSADDRESS" IS NOT NULL),
+DIVISIONADDRESS      numeric              not null
+     constraint SYS_C0013279 check ("DIVISIONADDRESS" IS NOT NULL),
+BUSNUMBER            numeric              not null
+     constraint SYS_C0013280 check ("BUSNUMBER" IS NOT NULL),
 AMPCARDSET           numeric              not null
+     constraint SYS_C0013281 check ("AMPCARDSET" IS NOT NULL)
 )
 go
 

@@ -2,6 +2,17 @@
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
+create table GatewayEndDevice (
+SerialNumber         varchar(30)          not null,
+HardwareType         numeric              not null,
+DataType             numeric              null,
+DataValue            varchar(100)         null
+);
+go
+alter table GatewayEndDevice
+   add constraint PK_GATEWAYENDDEVICE primary key  (SerialNumber, HardwareType);
+go
+
 create table DeviceCustomerList (
 CustomerID           numeric              not null,
 DeviceID             numeric              not null
