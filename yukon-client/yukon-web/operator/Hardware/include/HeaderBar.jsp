@@ -12,24 +12,19 @@
 		  <td width="310" height="28" class="PageHeader">&nbsp;&nbsp;&nbsp;Hardware 
 		    Inventory </td>
 		  <td width="235" valign="middle">&nbsp;</td>
+		  <td width="" valign="middle" align="right" nowrap>
 <% if (session.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) == null) { %>
-		  <td width="58" valign="middle" align="right"> 
-			<span class="MainText"><a href="../Operations.jsp" class="Link3" onclick="return warnUnsavedChanges();">Home</a></span>
-		  &nbsp;&nbsp;&nbsp;</td>
-<% } else { %>
-		  <td width="58" valign="middle">&nbsp;</td>
+            <span class="MainText"><a href="../Operations.jsp" class="Link3" onclick="return warnUnsavedChanges();">Home</a></span> 
 <% } %>
-<% if (session.getAttribute(com.cannontech.common.constants.LoginController.SAVED_YUKON_USERS) != null
-	&& liteEC.getParent() != null) {
-%>
+		  &nbsp;&nbsp;&nbsp;</td>
 		  <td width="" valign="middle" nowrap> 
-			<span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3" onclick="return warnUnsavedChanges();">Back to <%= liteEC.getParent().getName() %></a></span>
-		  &nbsp;&nbsp;&nbsp;</td>
+<% if (session.getAttribute(com.cannontech.common.constants.LoginController.SAVED_YUKON_USERS) != null
+		&& liteEC.getParent() != null) { %>
+		    <span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3" onclick="return warnUnsavedChanges();">Back to <%= liteEC.getParent().getName() %></a>&nbsp;&nbsp;&nbsp;</span>
 <% } else { %>
-		  <td width="57" valign="middle"> 
 			<span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3" onclick="return warnUnsavedChanges();">Log Off</a>&nbsp;</span>
-		  </td>
 <% } %>
+		  </td>
 	    </tr>
 	  </table>
     </td>
