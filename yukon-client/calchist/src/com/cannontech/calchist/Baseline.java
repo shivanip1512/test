@@ -611,9 +611,14 @@ public class Baseline implements Serializable
 					int keyHour = getAdjustedHour(ts);
 					hours.add(new Integer (keyHour));
 				}
-	
+
 				if (!values.isEmpty() && !hours.isEmpty())	//hours and values we always both have data or both be empty.
 				{
+					com.cannontech.database.db.point.PointUnit pUnit = new com.cannontech.database.db.point.PointUnit();
+					pUnit.setPointID(pointID);
+					pUnit.setDbConnection(conn);
+					pUnit.retrieve();
+					
 					java.util.TreeMap treeMap = buildTreeMap(values, hours);					
 					java.util.Set keySet = treeMap.keySet();
 					java.util.Collection keyVals = treeMap.values();
@@ -628,9 +633,11 @@ public class Baseline implements Serializable
 						Double[] v = (Double[])tempArray[i];
 						double counter = v[0].doubleValue();
 						double totalVal = v[1].doubleValue();
-//TODO - allow for kWh calculations from either kW or kWh readings
-//						returnData.values[i] = new Double(totalVal/counter);	//kW values.
-						returnData.values[i] = new Double(totalVal/validTimestampsVector.size());	//kWh values
+						
+						if( pUnit.getUomID().intValue() == com.cannontech.database.data.point.PointUnits.UOMID_KW)
+							returnData.values[i] = new Double(totalVal/counter);	//kW values.
+						else if( pUnit.getUomID().intValue() == com.cannontech.database.data.point.PointUnits.UOMID_KWH)
+							returnData.values[i] = new Double(totalVal/validTimestampsVector.size());	//kWh values
 					}
 				}
 			}
