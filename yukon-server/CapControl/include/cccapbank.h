@@ -21,6 +21,7 @@
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
+#include "dbaccess.h"
 #include "observe.h"
                 
 class CtiCCCapBank : public RWCollectable
@@ -30,7 +31,6 @@ public:
 
 RWDECLARE_COLLECTABLE( CtiCCCapBank )
 
-    CtiCCCapBank();
     CtiCCCapBank(RWDBReader& rdr);
     CtiCCCapBank(const CtiCCCapBank& cap);
 
@@ -90,7 +90,9 @@ RWDECLARE_COLLECTABLE( CtiCCCapBank )
     CtiCCCapBank* replicate() const;
     virtual int compareTo(const RWCollectable* right) const;
 
+    BOOL isDirty() const;
     void dumpDynamicData();
+    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -146,9 +148,9 @@ private:
 
     //don't stream
     BOOL _insertDynamicDataFlag;
-
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
+    BOOL _dirty;
 
     void restore(RWDBReader& rdr);
+    CtiCCCapBank();
 };
 #endif

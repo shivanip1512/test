@@ -53,7 +53,6 @@ CtiCCCapBank::~CtiCCCapBank()
 ---------------------------------------------------------------------------*/
 ULONG CtiCCCapBank::getPAOId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _paoid;
 }
 
@@ -64,7 +63,6 @@ ULONG CtiCCCapBank::getPAOId() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiCCCapBank::getPAOCategory() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _paocategory;
 }
 
@@ -75,7 +73,6 @@ const RWCString& CtiCCCapBank::getPAOCategory() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiCCCapBank::getPAOClass() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _paoclass;
 }
 
@@ -86,7 +83,6 @@ const RWCString& CtiCCCapBank::getPAOClass() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiCCCapBank::getPAOName() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _paoname;
 }
 
@@ -97,7 +93,6 @@ const RWCString& CtiCCCapBank::getPAOName() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiCCCapBank::getPAOType() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _paotype;
 }
 
@@ -108,7 +103,6 @@ const RWCString& CtiCCCapBank::getPAOType() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiCCCapBank::getPAODescription() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _paodescription;
 }
 
@@ -119,7 +113,6 @@ const RWCString& CtiCCCapBank::getPAODescription() const
 ---------------------------------------------------------------------------*/
 BOOL CtiCCCapBank::getDisableFlag() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _disableflag;
 }
 
@@ -130,7 +123,6 @@ BOOL CtiCCCapBank::getDisableFlag() const
 ---------------------------------------------------------------------------*/
 BOOL CtiCCCapBank::getAlarmInhibitFlag() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _alarminhibitflag;
 }
 
@@ -141,7 +133,6 @@ BOOL CtiCCCapBank::getAlarmInhibitFlag() const
 ---------------------------------------------------------------------------*/
 BOOL CtiCCCapBank::getControlInhibitFlag() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _controlinhibitflag;
 }
 
@@ -152,7 +143,6 @@ BOOL CtiCCCapBank::getControlInhibitFlag() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiCCCapBank::getOperationalState() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _operationalstate;
 }
 
@@ -163,7 +153,6 @@ const RWCString& CtiCCCapBank::getOperationalState() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiCCCapBank::getControllerType() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _controllertype;
 }
 
@@ -174,7 +163,6 @@ const RWCString& CtiCCCapBank::getControllerType() const
 ---------------------------------------------------------------------------*/
 ULONG CtiCCCapBank::getControlDeviceId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _controldeviceid;
 }
 
@@ -185,7 +173,6 @@ ULONG CtiCCCapBank::getControlDeviceId() const
 ---------------------------------------------------------------------------*/
 ULONG CtiCCCapBank::getControlPointId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _controlpointid;
 }
 
@@ -196,7 +183,6 @@ ULONG CtiCCCapBank::getControlPointId() const
 ---------------------------------------------------------------------------*/
 ULONG CtiCCCapBank::getBankSize() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _banksize;
 }
 
@@ -207,7 +193,6 @@ ULONG CtiCCCapBank::getBankSize() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiCCCapBank::getTypeOfSwitch() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _typeofswitch;
 }
 
@@ -218,7 +203,6 @@ const RWCString& CtiCCCapBank::getTypeOfSwitch() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiCCCapBank::getSwitchManufacture() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _switchmanufacture;
 }
 
@@ -229,7 +213,6 @@ const RWCString& CtiCCCapBank::getSwitchManufacture() const
 ---------------------------------------------------------------------------*/
 ULONG CtiCCCapBank::getMapLocationId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _maplocationid;
 }
 
@@ -240,7 +223,6 @@ ULONG CtiCCCapBank::getMapLocationId() const
 ---------------------------------------------------------------------------*/
 ULONG CtiCCCapBank::getControlOrder() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _controlorder;
 }
 
@@ -251,7 +233,6 @@ ULONG CtiCCCapBank::getControlOrder() const
 ---------------------------------------------------------------------------*/
 ULONG CtiCCCapBank::getStatusPointId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _statuspointid;
 }
 
@@ -262,7 +243,6 @@ ULONG CtiCCCapBank::getStatusPointId() const
 ---------------------------------------------------------------------------*/
 ULONG CtiCCCapBank::getControlStatus() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _controlstatus;
 }
 
@@ -274,7 +254,6 @@ ULONG CtiCCCapBank::getControlStatus() const
 ---------------------------------------------------------------------------*/
 ULONG CtiCCCapBank::getOperationAnalogPointId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _operationanalogpointid;
 }
 
@@ -285,7 +264,6 @@ ULONG CtiCCCapBank::getOperationAnalogPointId() const
 ---------------------------------------------------------------------------*/
 ULONG CtiCCCapBank::getCurrentDailyOperations() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _currentdailyoperations;
 }
 
@@ -296,7 +274,6 @@ ULONG CtiCCCapBank::getCurrentDailyOperations() const
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiCCCapBank::getLastStatusChangeTime() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _laststatuschangetime;
 }
 
@@ -307,7 +284,6 @@ const RWDBDateTime& CtiCCCapBank::getLastStatusChangeTime() const
 ---------------------------------------------------------------------------*/
 ULONG CtiCCCapBank::getTagsControlStatus() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _tagscontrolstatus;
 }
 
@@ -318,7 +294,6 @@ ULONG CtiCCCapBank::getTagsControlStatus() const
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setPAOId(ULONG id)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _paoid = id;
     //do not notify observers of this !
     return *this;
@@ -331,7 +306,6 @@ CtiCCCapBank& CtiCCCapBank::setPAOId(ULONG id)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setPAOCategory(const RWCString& category)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _paocategory = category;
 
     return *this;
@@ -344,7 +318,6 @@ CtiCCCapBank& CtiCCCapBank::setPAOCategory(const RWCString& category)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setPAOClass(const RWCString& pclass)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _paoclass = pclass;
 
     return *this;
@@ -357,7 +330,6 @@ CtiCCCapBank& CtiCCCapBank::setPAOClass(const RWCString& pclass)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setPAOName(const RWCString& name)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _paoname = name;
 
     return *this;
@@ -370,7 +342,6 @@ CtiCCCapBank& CtiCCCapBank::setPAOName(const RWCString& name)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setPAOType(const RWCString& type)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _paotype = type;
 
     return *this;
@@ -383,7 +354,6 @@ CtiCCCapBank& CtiCCCapBank::setPAOType(const RWCString& type)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setPAODescription(const RWCString& description)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _paodescription = description;
 
     return *this;
@@ -396,7 +366,6 @@ CtiCCCapBank& CtiCCCapBank::setPAODescription(const RWCString& description)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setDisableFlag(BOOL disable)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _disableflag = disable;
 
     return *this;
@@ -409,7 +378,6 @@ CtiCCCapBank& CtiCCCapBank::setDisableFlag(BOOL disable)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setAlarmInhibitFlag(BOOL alarminhibit)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _alarminhibitflag = alarminhibit;
 
     return *this;
@@ -422,7 +390,6 @@ CtiCCCapBank& CtiCCCapBank::setAlarmInhibitFlag(BOOL alarminhibit)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControlInhibitFlag(BOOL controlinhibit)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _controlinhibitflag = controlinhibit;
 
     return *this;
@@ -435,7 +402,6 @@ CtiCCCapBank& CtiCCCapBank::setControlInhibitFlag(BOOL controlinhibit)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setOperationalState(const RWCString& operational)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _operationalstate = operational;
 
     return *this;
@@ -448,7 +414,6 @@ CtiCCCapBank& CtiCCCapBank::setOperationalState(const RWCString& operational)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControllerType(const RWCString& controllertype)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _controllertype = controllertype;
 
     return *this;
@@ -461,7 +426,6 @@ CtiCCCapBank& CtiCCCapBank::setControllerType(const RWCString& controllertype)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControlDeviceId(ULONG controldevice)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _controldeviceid = controldevice;
 
     return *this;
@@ -474,7 +438,6 @@ CtiCCCapBank& CtiCCCapBank::setControlDeviceId(ULONG controldevice)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControlPointId(ULONG controlpoint)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _controlpointid = controlpoint;
 
     return *this;
@@ -487,7 +450,6 @@ CtiCCCapBank& CtiCCCapBank::setControlPointId(ULONG controlpoint)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setBankSize(ULONG size)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _banksize = size;
 
     return *this;
@@ -500,7 +462,6 @@ CtiCCCapBank& CtiCCCapBank::setBankSize(ULONG size)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setTypeOfSwitch(const RWCString& switchtype)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _typeofswitch = switchtype;
 
     return *this;
@@ -513,7 +474,6 @@ CtiCCCapBank& CtiCCCapBank::setTypeOfSwitch(const RWCString& switchtype)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setSwitchManufacture(const RWCString& manufacture)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _switchmanufacture = manufacture;
 
     return *this;
@@ -526,7 +486,6 @@ CtiCCCapBank& CtiCCCapBank::setSwitchManufacture(const RWCString& manufacture)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setMapLocationId(ULONG maplocation)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _maplocationid = maplocation;
 
     return *this;
@@ -539,7 +498,6 @@ CtiCCCapBank& CtiCCCapBank::setMapLocationId(ULONG maplocation)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControlOrder(ULONG order)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _controlorder = order;
 
     return *this;
@@ -552,7 +510,6 @@ CtiCCCapBank& CtiCCCapBank::setControlOrder(ULONG order)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setStatusPointId(ULONG statuspoint)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _statuspointid = statuspoint;
 
     return *this;
@@ -565,9 +522,15 @@ CtiCCCapBank& CtiCCCapBank::setStatusPointId(ULONG statuspoint)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControlStatus(ULONG status)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    if( _controlstatus != status )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
     _controlstatus = status;
-
     return *this;
 }
 
@@ -579,7 +542,6 @@ CtiCCCapBank& CtiCCCapBank::setControlStatus(ULONG status)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setOperationAnalogPointId(ULONG operationpointid)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _operationanalogpointid = operationpointid;
 
     return *this;
@@ -592,9 +554,15 @@ CtiCCCapBank& CtiCCCapBank::setOperationAnalogPointId(ULONG operationpointid)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setCurrentDailyOperations(ULONG operations)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    if( _currentdailyoperations != operations )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
     _currentdailyoperations = operations;
-
     return *this;
 }
 
@@ -605,9 +573,15 @@ CtiCCCapBank& CtiCCCapBank::setCurrentDailyOperations(ULONG operations)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setLastStatusChangeTime(const RWDBDateTime& laststatuschangetime)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    if( _laststatuschangetime != laststatuschangetime )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
     _laststatuschangetime = laststatuschangetime;
-
     return *this;
 }
 
@@ -618,9 +592,15 @@ CtiCCCapBank& CtiCCCapBank::setLastStatusChangeTime(const RWDBDateTime& laststat
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setTagsControlStatus(ULONG tags)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    if( _tagscontrolstatus != tags )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
     _tagscontrolstatus = tags;
-
     return *this;
 }
 
@@ -631,11 +611,7 @@ CtiCCCapBank& CtiCCCapBank::setTagsControlStatus(ULONG tags)
 --------------------------------------------------------------------------*/
 void CtiCCCapBank::restoreGuts(RWvistream& istrm)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-
     RWTime tempTime1;
-    BOOL pleaseRemoveMe;
-
     RWCollectable::restoreGuts( istrm );
 
     istrm >> _paoid
@@ -661,8 +637,7 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     >> _operationanalogpointid
     >> _currentdailyoperations
     >> tempTime1
-    >> _tagscontrolstatus
-    >> pleaseRemoveMe;
+    >> _tagscontrolstatus;
 
     _laststatuschangetime = RWDBDateTime(tempTime1);
 }
@@ -674,8 +649,6 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
 ---------------------------------------------------------------------------*/
 void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _paoid
@@ -701,8 +674,7 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     << _operationanalogpointid
     << _currentdailyoperations
     << _laststatuschangetime.rwtime()
-    << _tagscontrolstatus
-    << TRUE;
+    << _tagscontrolstatus;
 }
 
 /*---------------------------------------------------------------------------
@@ -710,8 +682,6 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-
     if( this != &right )
     {
         _paoid = right._paoid;
@@ -747,7 +717,6 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
 ---------------------------------------------------------------------------*/
 int CtiCCCapBank::operator==(const CtiCCCapBank& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     return getPAOId() == right.getPAOId();
 }
 
@@ -756,7 +725,6 @@ int CtiCCCapBank::operator==(const CtiCCCapBank& right) const
 ---------------------------------------------------------------------------*/
 int CtiCCCapBank::operator!=(const CtiCCCapBank& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     return getPAOId() != right.getPAOId();
 }
 
@@ -768,8 +736,6 @@ int CtiCCCapBank::operator!=(const CtiCCCapBank& right) const
 ---------------------------------------------------------------------------*/
 void CtiCCCapBank::restore(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-
     RWDBNullIndicator isNull;
     RWDBDateTime currentDateTime = RWDBDateTime();
     RWDBDateTime dynamicTimeStamp;
@@ -812,13 +778,8 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
         rdr["tagscontrolstatus"] >> _tagscontrolstatus;
         rdr["ctitimestamp"] >> dynamicTimeStamp;
 
-        //if dynamic timestamp from yesterday, zero out operation count
-        if( dynamicTimeStamp.rwdate() < currentDateTime.rwdate() ||
-            currentDateTime.hour() == 0 )
-        {
-            setCurrentDailyOperations(0);
-        }
         _insertDynamicDataFlag = FALSE;
+        _dirty = FALSE;
     }
     else
     {
@@ -829,6 +790,11 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
         setTagsControlStatus(0);
 
         _insertDynamicDataFlag = TRUE;
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
     }
 
     rdr["pointid"] >> isNull;
@@ -885,34 +851,68 @@ int CtiCCCapBank::compareTo(const RWCollectable* right) const
 }
 
 /*---------------------------------------------------------------------------
+    isDirty
+
+    Returns the dirty flag of the cap bank
+---------------------------------------------------------------------------*/
+BOOL CtiCCCapBank::isDirty() const
+{
+    return _dirty;
+}
+
+/*---------------------------------------------------------------------------
+    dumpDynamicData
+
+    Writes out the dynamic information for this cc feeder.
+---------------------------------------------------------------------------*/
+void CtiCCCapBank::dumpDynamicData()
+{
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    dumpDynamicData(conn,RWDBDateTime());
+}
+
+/*---------------------------------------------------------------------------
     dumpDynamicData
 
     Writes out the dynamic information for this cc cap bank.
 ---------------------------------------------------------------------------*/
-void CtiCCCapBank::dumpDynamicData()
+void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime)
 {
-    RWDBDateTime currentDateTime = RWDBDateTime();
-
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
     {
-
         RWDBTable dynamicCCCapBankTable = getDatabase().table( "dynamiccccapbank" );
         if( !_insertDynamicDataFlag )
         {
             RWDBUpdater updater = dynamicCCCapBankTable.updater();
 
-            updater << dynamicCCCapBankTable["controlstatus"].assign( getControlStatus() )
-            << dynamicCCCapBankTable["currentdailyoperations"].assign( getCurrentDailyOperations() )
-            << dynamicCCCapBankTable["laststatuschangetime"].assign( (RWDBDateTime)getLastStatusChangeTime() )
-            << dynamicCCCapBankTable["tagscontrolstatus"].assign( getTagsControlStatus() )
+            updater.where(dynamicCCCapBankTable["capbankid"]==_paoid);
+
+            updater << dynamicCCCapBankTable["controlstatus"].assign( _controlstatus )
+            << dynamicCCCapBankTable["currentdailyoperations"].assign( _currentdailyoperations )
+            << dynamicCCCapBankTable["laststatuschangetime"].assign( (RWDBDateTime)_laststatuschangetime )
+            << dynamicCCCapBankTable["tagscontrolstatus"].assign( _tagscontrolstatus )
             << dynamicCCCapBankTable["ctitimestamp"].assign((RWDBDateTime)currentDateTime);
 
-            updater.where(dynamicCCCapBankTable["capbankid"]==getPAOId());
-
             updater.execute( conn );
+
+            if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            {
+                _dirty = FALSE;
+            }
+            else
+            {
+                /*{
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }*/
+                _dirty = TRUE;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  " << updater.asString() << endl;
+                }
+            }
         }
         else
         {
@@ -923,11 +923,11 @@ void CtiCCCapBank::dumpDynamicData()
 
             RWDBInserter inserter = dynamicCCCapBankTable.inserter();
 
-            inserter << getPAOId()
-            << getControlStatus()
-            << getCurrentDailyOperations()
-            << getLastStatusChangeTime()
-            << getTagsControlStatus()
+            inserter << _paoid
+            << _controlstatus
+            << _currentdailyoperations
+            << _laststatuschangetime
+            << _tagscontrolstatus
             << currentDateTime;
 
             /*if( _CC_DEBUG )
@@ -938,7 +938,24 @@ void CtiCCCapBank::dumpDynamicData()
 
             inserter.execute( conn );
 
-            _insertDynamicDataFlag = FALSE;
+            if(inserter.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            {
+                _insertDynamicDataFlag = FALSE;
+                _dirty = FALSE;
+            }
+            else
+            {
+                /*{
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }*/
+                _dirty = TRUE;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  " << inserter.asString() << endl;
+                }
+            }
         }
     }
 }
