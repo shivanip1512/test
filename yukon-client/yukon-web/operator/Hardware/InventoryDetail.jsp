@@ -10,7 +10,7 @@
 	LiteInventoryBase liteInv = liteEC.getInventory(invID, true);
 	StarsInventory inventory = StarsLiteFactory.createStarsInventory(liteInv, liteEC);
 	
-	String devTypeStr = ServletUtils.getEntryText(inventory.getDeviceType().getEntryID(), selectionListTable);
+	String devTypeStr = YukonListFuncs.getYukonListEntry(inventory.getDeviceType().getEntryID()).getEntryText();
 	if (inventory.getDeviceID() > 0)
 		devTypeStr = PAOGroups.getPAOTypeString( PAOFuncs.getLiteYukonPAO(inventory.getDeviceID()).getType() );
 	

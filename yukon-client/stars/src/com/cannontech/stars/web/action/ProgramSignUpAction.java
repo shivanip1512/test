@@ -315,7 +315,7 @@ public class ProgramSignUpAction implements ActionBase {
 			ArrayList appCats = energyCompany.getAllApplianceCategories();
 			Integer accountID = new Integer( liteAcctInfo.getCustomerAccount().getAccountID() );
 			
-			Integer dftLocationID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_LOC_UNKNOW).getEntryID() );
+			Integer dftLocationID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_LOC_UNKNOWN).getEntryID() );
 			Integer dftManufacturerID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_MANU_UNKNOWN).getEntryID() );
 			
 			// Set the termination time a little bit earlier than the signup date

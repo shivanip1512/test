@@ -54,7 +54,7 @@
 	String serialNameVar = "SerialNo";
 	
 	if (inventory.getLMHardware() != null) {
-		deviceType = ServletUtils.getEntryText(inventory.getDeviceType().getEntryID(), selectionListTable);
+		deviceType = YukonListFuncs.getYukonListEntry(inventory.getDeviceType().getEntryID()).getEntryText();
 		serialName = inventory.getLMHardware().getManufacturerSerialNumber();
 	}
 	else {
@@ -64,7 +64,7 @@
 			serialName = litePao.getPaoName();
 		}
 		else if (inventory.getMCT() != null) {
-			deviceType = ServletUtils.getEntryText(inventory.getDeviceType().getEntryID(), selectionListTable);
+			deviceType = YukonListFuncs.getYukonListEntry(inventory.getDeviceType().getEntryID()).getEntryText();
 			serialName = inventory.getMCT().getDeviceName();
 		}
 		
@@ -76,7 +76,7 @@
 	StarsInventory origInv = null;
 	if (invNo != null) origInv = inventories.getStarsInventory(Integer.parseInt(invNo));
 	
-	YukonListEntry devTypeMCT = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT, false);
+	YukonListEntry devTypeMCT = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT);
 	
 	Properties savedReq = null;
 	if (request.getParameter("failed") != null)

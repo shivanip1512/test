@@ -12,6 +12,7 @@
 <%@ page import="com.cannontech.database.cache.StarsDatabaseCache"%>
 <%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
 <%@ page import="com.cannontech.database.cache.functions.EnergyCompanyFuncs" %>
+<%@ page import="com.cannontech.database.cache.functions.YukonListFuncs" %>
 <%@ page import="com.cannontech.database.data.device.DeviceTypesFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteGraphDefinition"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject"%>

@@ -90,7 +90,7 @@ function checkOrderNo(form) {
               <tr valign="middle"> 
                 <td width="13%" class="TableCell"><a href="SOHistory.jsp?OrderNo=<%= i %>" class="Link1"><%= order.getOrderNumber() %></a></td>
                 <td width="13%" class="TableCell"><%= ServletUtils.formatDate(order.getDateReported(), dateTimeFormat) %></td>
-                <td width="10%" class="TableCell"><%= ServletUtils.forceNotEmpty(ServletUtils.getEntryText(order.getServiceType().getEntryID(), selectionListTable)) %></td>
+                <td width="10%" class="TableCell"><%= ServletUtils.forceNotEmpty(YukonListFuncs.getYukonListEntry(order.getServiceType().getEntryID()).getEntryText()) %></td>
                 <td width="10%" class="TableCell"><%= order.getCurrentState().getContent() %></td>
                 <td width="8%" class="TableCell"><%= ServletUtils.forceNotEmpty(order.getOrderedBy()) %></td>
                 <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(companyName) %></td>

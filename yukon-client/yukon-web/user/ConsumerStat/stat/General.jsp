@@ -82,7 +82,7 @@
 					StarsEnrLMProgram enrProg = category.getStarsEnrLMProgram(k);
 					if (enrProg.getProgramID() == program.getProgramID()) {
 						if (enrProg.getChanceOfControl() != null)
-							ctrlOdds = ServletUtils.getEntryText(enrProg.getChanceOfControl().getEntryID(), selectionListTable);
+							ctrlOdds = YukonListFuncs.getYukonListEntry(enrProg.getChanceOfControl().getEntryID()).getEntryText();
 						break;
 					}
 				}

@@ -19,6 +19,7 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
@@ -1390,42 +1391,91 @@ public class StarsAdmin extends HttpServlet {
         
 		try {
 			String listName = req.getParameter("ListName");
-			String ordering = req.getParameter("Ordering");
-			String label = req.getParameter("Label");
-			String whereIsList = req.getParameter("WhereIsList");
+			YukonSelectionList cList = energyCompany.getYukonSelectionList( listName, false, false );
 			
-			String[] entryIDs = req.getParameterValues("EntryIDs");
-			String[] entryTexts = req.getParameterValues("EntryTexts");
-			String[] yukonDefIDs = req.getParameterValues("YukonDefIDs");
-			
-			YukonSelectionList cList = energyCompany.getYukonSelectionList( listName );
-			
-			Object[][] entryData = null;
-			if (entryIDs != null) {
-				entryData = new Object[ entryIDs.length ][];
-				for (int i = 0; i < entryIDs.length; i++) {
-					entryData[i] = new Object[3];
-					entryData[i][0] = Integer.valueOf( entryIDs[i] );
-					entryData[i][1] = entryTexts[i];
-					entryData[i][2] = Integer.valueOf( yukonDefIDs[i] );
+			if (req.getParameter("Inherited") != null) {
+				// Nothing need to be done is the list is already an inherited list
+				if (cList == null) return;
+				
+				try {
+					com.cannontech.database.data.constants.YukonSelectionList list =
+							new com.cannontech.database.data.constants.YukonSelectionList();
+					list.setListID( new Integer(cList.getListID()) );
+					Transaction.createTransaction( Transaction.DELETE, list ).execute();
 				}
-			}
-			
-			if (!listName.equalsIgnoreCase(com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION)) {
-				// Update yukon selection list
-				com.cannontech.database.db.constants.YukonSelectionList list =
-						StarsLiteFactory.createYukonSelectionList( cList );
-				list.setOrdering( ordering );
-				list.setSelectionLabel( label );
-				list.setWhereIsList( whereIsList );
+				catch (TransactionException e) {
+					CTILogger.error( e.getMessage(), e );
+					throw new WebClientException("Cannot change the selection list to be \"inherited\", make sure its entries are not referenced.");
+				}
 				
-				list = (com.cannontech.database.db.constants.YukonSelectionList)
-						Transaction.createTransaction( Transaction.UPDATE, list ).execute();
-				
-				StarsLiteFactory.setConstantYukonSelectionList( cList, list );
+				energyCompany.deleteYukonSelectionList( cList );
 			}
-			
-			StarsAdminUtil.updateYukonListEntries( cList, entryData, energyCompany );
+			else {
+				String ordering = req.getParameter("Ordering");
+				String label = req.getParameter("Label");
+				String whereIsList = req.getParameter("WhereIsList");
+				
+				String[] entryIDs = req.getParameterValues("EntryIDs");
+				String[] entryTexts = req.getParameterValues("EntryTexts");
+				String[] yukonDefIDs = req.getParameterValues("YukonDefIDs");
+				
+				Object[][] entryData = null;
+				if (entryIDs != null) {
+					entryData = new Object[ entryIDs.length ][];
+					for (int i = 0; i < entryIDs.length; i++) {
+						entryData[i] = new Object[3];
+						entryData[i][0] = Integer.valueOf( entryIDs[i] );
+						entryData[i][1] = entryTexts[i];
+						entryData[i][2] = Integer.valueOf( yukonDefIDs[i] );
+					}
+				}
+				
+				if (!listName.equalsIgnoreCase(com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION)) {
+					if (cList != null) {
+						// Update yukon selection list
+						com.cannontech.database.db.constants.YukonSelectionList listDB =
+								StarsLiteFactory.createYukonSelectionList( cList );
+						listDB.setOrdering( ordering );
+						listDB.setSelectionLabel( label );
+						listDB.setWhereIsList( whereIsList );
+						
+						listDB = (com.cannontech.database.db.constants.YukonSelectionList)
+								Transaction.createTransaction( Transaction.UPDATE, listDB ).execute();
+						
+						StarsLiteFactory.setConstantYukonSelectionList( cList, listDB );
+					}
+					else {
+						// Create a new selection list
+						com.cannontech.database.data.constants.YukonSelectionList list =
+								new com.cannontech.database.data.constants.YukonSelectionList();
+						com.cannontech.database.db.constants.YukonSelectionList listDB = list.getYukonSelectionList();
+						listDB.setOrdering( ordering );
+						listDB.setSelectionLabel( label );
+						listDB.setWhereIsList( whereIsList );
+						listDB.setListName( listName );
+						listDB.setUserUpdateAvailable( StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getYukonSelectionList(listName).getUserUpdateAvailable() );
+						list.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+						
+						list = (com.cannontech.database.data.constants.YukonSelectionList)
+								Transaction.createTransaction(Transaction.INSERT, list).execute();
+						listDB = list.getYukonSelectionList();
+						
+						cList = new YukonSelectionList();
+						StarsLiteFactory.setConstantYukonSelectionList( cList, listDB );
+						
+						YukonListFuncs.getYukonSelectionLists().put( listDB.getListID(), cList );
+						energyCompany.getAllSelectionLists().add( cList );
+						
+						// Mark all entry data as new entries
+						if (entryData != null) {
+							for (int i = 0; i < entryData.length; i++)
+								entryData[i][0] = new Integer(0);
+						}
+					}
+				}
+				
+				StarsAdminUtil.updateYukonListEntries( cList, entryData, energyCompany );
+			}
 			
 			ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
 			for (int i = 0; i < descendants.size(); i++) {

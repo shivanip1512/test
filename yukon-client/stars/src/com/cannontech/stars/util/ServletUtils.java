@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Properties;
 import java.util.TimeZone;
 
@@ -20,7 +18,6 @@ import com.cannontech.stars.xml.serialize.ControlSummary;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsAppliances;
-import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
 import com.cannontech.stars.xml.serialize.StarsCustomerContact;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
@@ -28,7 +25,6 @@ import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.stars.xml.serialize.StarsLMProgram;
-import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
 import com.cannontech.util.ServletUtil;
@@ -496,20 +492,6 @@ public class ServletUtils {
 		}
 		
 		return null;
-	}
-	
-	public static String getEntryText(int entryID, Hashtable selectionLists) {
-		Iterator it = selectionLists.values().iterator();
-		while (it.hasNext()) {
-			StarsCustSelectionList list = (StarsCustSelectionList) it.next();
-			for (int i = 0; i < list.getStarsSelectionListEntryCount(); i++) {
-				StarsSelectionListEntry entry = list.getStarsSelectionListEntry(i);
-				if (entry.getEntryID() == entryID)
-					return entry.getContent();
-			}
-		}
-		
-		return "(N/A)";
 	}
 	
 	public static boolean isWeekday(StarsThermoDaySettings day) {

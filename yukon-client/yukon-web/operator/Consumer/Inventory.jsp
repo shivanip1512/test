@@ -14,7 +14,7 @@
 	String serialNameVar = "SerialNo";
 	
 	if (inventory.getLMHardware() != null) {
-		deviceType = ServletUtils.getEntryText(inventory.getDeviceType().getEntryID(), selectionListTable);
+		deviceType = YukonListFuncs.getYukonListEntry(inventory.getDeviceType().getEntryID()).getEntryText();
 		serialName = inventory.getLMHardware().getManufacturerSerialNumber();
 	}
 	else {
@@ -24,7 +24,7 @@
 			serialName = litePao.getPaoName();
 		}
 		else if (inventory.getMCT() != null) {
-			deviceType = ServletUtils.getEntryText(inventory.getDeviceType().getEntryID(), selectionListTable);
+			deviceType = YukonListFuncs.getYukonListEntry(inventory.getDeviceType().getEntryID()).getEntryText();
 			serialName = inventory.getMCT().getDeviceName();
 		}
 		

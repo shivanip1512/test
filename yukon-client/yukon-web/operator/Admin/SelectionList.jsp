@@ -7,7 +7,7 @@
 	YukonSelectionList dftList = StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getYukonSelectionList(listName);
 	if (dftList == null) dftList = new YukonSelectionList();
 	
-	String viewOnly = (liteEC.getParent() != null)? "disabled" : "";
+	boolean inherited = liteEC.getParent() != null && liteEC.getYukonSelectionList(listName, false, false) == null;
 %>
 <html>
 <head>
@@ -213,7 +213,6 @@ function restoreDefault(form) {
 }
 
 function prepareSubmit(form) {
-<% if (liteEC.getParent() == null) { %>
 	for (idx = 0; idx < entryTexts.length; idx++) {
 		var html = '<input type="hidden" name="EntryIDs" value="' + entryIDs[idx] + '">';
 		form.insertAdjacentHTML("beforeEnd", html);
@@ -222,10 +221,6 @@ function prepareSubmit(form) {
 		html = '<input type="hidden" name="YukonDefIDs" value="' + entryYukDefIDs[idx] + '">';
 		form.insertAdjacentHTML("beforeEnd", html);
 	}
-	return true;
-<% } else { %>
-	return false;
-<% } %>
 }
 
 function changeOrdering(form) {
@@ -236,10 +231,20 @@ function changeOrdering(form) {
 <% } %>
 }
 
+function setInherited(inherited) {
+	document.form1.MoveUp.disabled = inherited;
+	document.form1.MoveDown.disabled = inherited;
+	document.form1.Delete.disabled = inherited;
+	document.form1.DeleteAll.disabled = inherited;
+	document.form1.Default.disabled = inherited;
+	document.form1.Save.disabled = inherited;
+}
+
 function init() {
 <%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
 	changeOrdering(document.form1);
 <%	} %>
+	setInherited(<%= inherited %>);
 }
 </script>
 </head>
@@ -270,7 +275,7 @@ function init() {
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
             </div>
 			
-			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin" onsubmit="return prepareSubmit(this)">
+			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin" onsubmit="prepareSubmit(this)">
               <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
                 <tr> 
                   <td class="HeaderCell">Edit Customer Selection List</td>
@@ -282,8 +287,22 @@ function init() {
                       <input type="hidden" name="ListName" value="<%= listName %>">
                       <tr> 
                         <td width="15%" align="right" class="TableCell">List Name:</td>
-                        <td width="85%" class="MainText"><%= listName %>
-                          <% if (listName.equals(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD)) { %><b>(For consumer side only)</b><% } %>
+                        <td width="85%" class="TableCell"> 
+                          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr> 
+                              <td class="MainText" width="50%"><%= listName %> 
+<% if (listName.equals(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD)) { %>
+                                <b>(For consumer side only)</b> 
+<% } %>
+                              </td>
+                              <td class="MainText" width="50%"> 
+<% if (liteEC.getParent() != null) { %>
+                                <input type="checkbox" name="Inherited" value="true" <% if (inherited) out.print("checked"); %> onclick="setInherited(this.checked)">
+                                Inherited</td>
+<% } %>
+                            </tr>
+                          </table>
+                          
                         </td>
                       </tr>
 <%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
@@ -332,14 +351,14 @@ function init() {
                                 view or edit it.</span></td>
                               <td width="50%"> 
 <%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
-                                <input type="button" name="MoveUp" value="Move Up" style="width:80" onclick="moveUp(this.form)" <%= viewOnly %>>
+                                <input type="button" name="MoveUp" value="Move Up" style="width:80" onclick="moveUp(this.form)">
                                 <br>
-                                <input type="button" name="MoveDown" value="Move Down" style="width:80" onclick="moveDown(this.form)" <%= viewOnly %>>
+                                <input type="button" name="MoveDown" value="Move Down" style="width:80" onclick="moveDown(this.form)">
                                 <br>
 <%	} %>
-                                <input type="button" name="Delete" value="Delete" style="width:80" onclick="deleteEntry(this.form)" <%= viewOnly %>>
+                                <input type="button" name="Delete" value="Delete" style="width:80" onclick="deleteEntry(this.form)">
                                 <br>
-                                <input type="button" name="DeleteAll" value="Delete All" style="width:80" onclick="deleteAllEntries(this.form)" <%= viewOnly %>>
+                                <input type="button" name="DeleteAll" value="Delete All" style="width:80" onclick="deleteAllEntries(this.form)">
                               </td>
                             </tr>
                           </table>
@@ -376,7 +395,7 @@ function init() {
                                 </select>
                                 <br>
                                 <%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
-                                <input type="button" name="Default" value="Restore Default List" onclick="restoreDefault(this.form)" <%= viewOnly %>>
+                                <input type="button" name="Default" value="Restore Default List" onclick="restoreDefault(this.form)">
                                 <%	} %>
                               </td>
                               <td width="50%"> 
@@ -398,7 +417,7 @@ function init() {
                                   </tr>
                                 </table>
                                 <div align="center"> 
-                                  <input type="button" name="Save" value="Add" onclick="saveEntry(this.form)" <%= viewOnly %>>
+                                  <input type="button" name="Save" value="Add" onclick="saveEntry(this.form)">
                                 </div>
                               </td>
                             </tr>
@@ -412,10 +431,10 @@ function init() {
               <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
                 <tr>
                   <td width="290" align="right"> 
-                    <input type="submit" name="Submit" value="Submit" <%= viewOnly %>>
+                    <input type="submit" name="Submit" value="Submit">
                   </td>
                   <td width="205"> 
-                    <input type="reset" name="Reset" value="Reset" <%= viewOnly %> onclick="setContentChanged(false)">
+                    <input type="reset" name="Reset" value="Reset" onclick="location.reload()">
                   </td>
                   <td width="75" align="right"> 
                     <input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='AdminTest.jsp'">

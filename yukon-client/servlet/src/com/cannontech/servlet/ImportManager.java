@@ -34,7 +34,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ProgressChecker;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -522,7 +521,10 @@ public class ImportManager extends HttpServlet {
 								entryData[j][2] = ZERO;
 							}
 							
-							YukonSelectionList cList = energyCompany.getYukonSelectionList(listName, false);
+							YukonSelectionList cList = energyCompany.getYukonSelectionList(listName, false, false);
+							if (cList == null)
+								throw new WebClientException("Cannot import data into an inherited selection list.");
+							
 							StarsAdminUtil.updateYukonListEntries( cList, entryData, energyCompany );
 						}
 					}
@@ -2264,7 +2266,10 @@ public class ImportManager extends HttpServlet {
 					}
 				}
 				else {
-					YukonSelectionList cList = energyCompany.getYukonSelectionList(listName, false);
+					YukonSelectionList cList = energyCompany.getYukonSelectionList(listName, false, false);
+					if (cList == null)
+						throw new WebClientException("Cannot update an inherited selection list.");
+					
 					ArrayList entries = cList.getYukonListEntries();
 					
 					Object[][] entryData = new Object[entries.size() + entryTexts.length][];

@@ -564,18 +564,8 @@ function removeAllMembers(form) {
                                     <hr width="90%" align="left">
                                   </td>
                                   <td class="TableCell" width="25%"> 
-<%
-		if (liteEC.getParent() == null) {
-%>
                                     <input type="button" name="Edit" value="Edit" onclick="location.href='SelectionList.jsp?List=<%= cList.getListName() %>'">
-<%
-		} else {
-%>
-                                    <input type="button" name="Edit" value="View" onclick="location.href='SelectionList.jsp?List=<%= cList.getListName() %>'">
-                                    (Inherited) 
-<%
-		}
-%>
+                                    <% if (liteEC.getYukonSelectionList(cList.getListName(), false, false) == null) out.print("(Inherited)"); %>
                                   </td>
                                 </tr>
                                 <%

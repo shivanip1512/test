@@ -7,6 +7,7 @@
 <%@ page import="com.cannontech.common.constants.YukonSelectionListDefs" %>
 <%@ page import="com.cannontech.database.cache.StarsDatabaseCache" %>
 <%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
+<%@ page import="com.cannontech.database.cache.functions.YukonListFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
 <%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
