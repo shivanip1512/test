@@ -30,7 +30,7 @@ public class YukonDataSetFactory
 		for( int i = 0; i < tSeries.length; i++ )
 		{
 			TrendSerie serie = tSeries[i];			
-			if(GraphDataSeries.isValidIntervalType( serie.getTypeMask()))
+			if(GraphDataSeries.isGraphType( serie.getTypeMask()))
 			{
 				if( serie.getDataPairArray() != null)
 				{
@@ -66,15 +66,16 @@ public class YukonDataSetFactory
 	{
 		if( tSeries == null)
 			return null;
-
+	
 		com.jrefinery.data.TimeSeriesCollection dSet = new com.jrefinery.data.TimeSeriesCollection();
-
+	
 		for ( int i = 0; i < tSeries.length; i++)
 		{
+			Double prevValue = null;
 			TrendSerie serie = tSeries[i];
 			if( serie != null)
 			{
-				if(GraphDataSeries.isValidIntervalType( serie.getTypeMask()))
+				if(GraphDataSeries.isGraphType( serie.getTypeMask()))
 				{
 					com.jrefinery.data.BasicTimeSeries series = 
 						new com.jrefinery.data.BasicTimeSeries(serie.getLabel(), com.jrefinery.data.Second.class);
@@ -86,7 +87,27 @@ public class YukonDataSetFactory
 							com.jrefinery.data.TimeSeriesDataPair dp = (com.jrefinery.data.TimeSeriesDataPair)serie.getDataPairArray(j);
 							try
 							{
-								series.add(dp);
+								if( GraphDataSeries.isUsageType(serie.getTypeMask()))
+								{
+									if( prevValue == null)
+									{
+										prevValue = (Double)dp.getValue();
+									}
+									else
+									{
+										Double currentValue = (Double)dp.getValue();
+										if( currentValue != null && prevValue != null)
+										{
+											com.jrefinery.data.TimeSeriesDataPair tempDP = new com.jrefinery.data.TimeSeriesDataPair(dp.getPeriod(), new Double(currentValue.doubleValue() - prevValue.doubleValue()));
+											prevValue = currentValue;
+											series.add(tempDP);
+										}
+									}
+								}
+								else
+								{
+									series.add(dp);
+								}
 							}
 							catch(com.jrefinery.data.SeriesException se)
 							{
@@ -100,29 +121,28 @@ public class YukonDataSetFactory
 		}
 		return dSet;
 	}
-		
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (8/2/2001 10:46:02 AM)
 	 * @param cModels FreeChartModel []
 	 */
-	public static com.jrefinery.data.XYSeriesCollection createLoadDurationDataSet(TrendSerie[] tSeries, Integer peakPointId)
+	public static com.jrefinery.data.XYSeriesCollection createLoadDurationDataSet(TrendSerie[] tSeries)
 	{
 		if( tSeries == null)
 			return null;
 
 		//Valid series are those that have type = graph.  tSeries has all types of series,
 		//  therefore we need to weed out those we don't want in the graph.
-		int peakPtIndex = -1;//getPeakPointIndex(tSeries, peakPointId);
+		int primaryIndex = -1;
 			
-		int validSeriesLength = 0;//getValidSeriesLength(tSeries);
+		int validSeriesLength = 0;
 		for( int i = 0; i < tSeries.length; i++)
 		{
-			if(GraphDataSeries.isValidIntervalType(tSeries[i].getTypeMask()))
+			if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
 			{
-				if( tSeries[i].getPointId().equals(peakPointId))
-				{	//find the 'graph' point representing the peak point, if it exists!
-					peakPtIndex = validSeriesLength;
+				if( GraphDataSeries.isPrimaryType(tSeries[i].getTypeMask()))
+				{	//find the primary gds, if it exists!
+					primaryIndex = validSeriesLength;
 				}
 				validSeriesLength++;
 			}
@@ -153,28 +173,50 @@ public class YukonDataSetFactory
 		//for loop index of the series, we need another representation of it, hence notNullValuesIndex.
 		int notNullValuesIndex = 0;
 		int allIndex = 0;
+		Double prevValue = null;
 		for (int i = 0; i < tSeries.length; i++)
 		{
-			if(GraphDataSeries.isValidIntervalType(tSeries[i].getTypeMask()))
+			if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
 			{
 				datasetValues[allIndex] = new Double[keyArray.length];
 				if( tSeries[i].getDataPairArray() != null)
 				{
 					for (int j = 0; j < keyArray.length; j++)
 					{
-						Double[] values = (Double[])tree.get(keyArray[j]);
-						datasetValues[allIndex][j] = values[notNullValuesIndex];
+						if( GraphDataSeries.isUsageType(tSeries[i].getTypeMask()))
+						{
+							Double[] values = (Double[])tree.get(keyArray[j]);							
+							if( prevValue == null)
+							{
+								prevValue = values[notNullValuesIndex];	//dp.getValue().doubleValue();
+								datasetValues[allIndex][j]= null;
+							}
+							else
+							{
+								Double currentValue = values[notNullValuesIndex];	//dp.getValue().doubleValue();
+								if( currentValue != null && prevValue != null)
+								{
+									datasetValues[allIndex][j] = new Double(currentValue.doubleValue() - prevValue.doubleValue());
+									prevValue = currentValue;
+								}
+							}
+						}						
+						else
+						{
+							Double[] values = (Double[])tree.get(keyArray[j]);
+							datasetValues[allIndex][j] = values[notNullValuesIndex];
+						}
 					}
 					notNullValuesIndex++;
 					allIndex++;
 				}
 				else
 				{
-					if( tSeries[i].getPointId().equals(peakPointId))
+					if( GraphDataSeries.isPrimaryType(tSeries[i].getTypeMask()))
 					{
-						// We take away the fact there is a peak point so that when we sort
+						// We take away the fact there is a primary gds so that when we sort
 						//  the values, we are able to still show load duration.
-						peakPtIndex = -1;
+						primaryIndex = -1;
 					}
 
 					for (int j = 0; j < keyArray.length; j++)
@@ -186,8 +228,8 @@ public class YukonDataSetFactory
 			}
 		}
 
-		//Sort values based on peak point if it exists.		
-		sortValuesDescending(datasetValues, peakPtIndex);
+		//Sort values based on primary gds, if it exists.		
+		sortValuesDescending(datasetValues, primaryIndex);
 		
 		//Create a collection of series as the dataset.
 		com.jrefinery.data.XYSeriesCollection collection = new com.jrefinery.data.XYSeriesCollection();
@@ -220,7 +262,7 @@ public class YukonDataSetFactory
 		
 		for( int i = 0; i < tSeries.length; i++)
 		{
-			if(GraphDataSeries.isValidIntervalType(tSeries[i].getTypeMask()))
+			if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
 			{
 				tNamesVector.add(tSeries[i].getLabel().toString());
 				validSeriesLength++;
@@ -259,15 +301,38 @@ public class YukonDataSetFactory
 		int allIndex = 0;
 		for (int i = 0; i < tSeries.length; i++)
 		{
-			if(GraphDataSeries.isValidIntervalType(tSeries[i].getTypeMask()))
+			Double prevValue = null;
+			com.jrefinery.data.TimePeriod prevTimePeriod = null;
+			if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
 			{
 				datasetValues[allIndex] = new Double[keyArray.length];
 				if( tSeries[i].getDataPairArray() != null)
 				{
 					for (int j = 0; j < keyArray.length; j++)
 					{
-						Double[] values = (Double[])tree.get(keyArray[j]);
-						datasetValues[allIndex][j] = values[notNullValuesIndex];
+						if( GraphDataSeries.isUsageType(tSeries[i].getTypeMask()))
+						{
+							Double[] values = (Double[])tree.get(keyArray[j]);							
+							if( prevValue == null)
+							{
+								prevValue = values[notNullValuesIndex];	//dp.getValue().doubleValue();
+								datasetValues[allIndex][j]= null;
+							}
+							else
+							{
+								Double currentValue = values[notNullValuesIndex];	//dp.getValue().doubleValue();
+								if( currentValue != null && prevValue != null)
+								{
+									datasetValues[allIndex][j] = new Double(currentValue.doubleValue() - prevValue.doubleValue());
+									prevValue = currentValue;
+								}
+							}
+						}						
+						else
+						{
+							Double[] values = (Double[])tree.get(keyArray[j]);
+							datasetValues[allIndex][j] = values[notNullValuesIndex];
+						}
 					}
 					notNullValuesIndex++;
 					allIndex++;
@@ -288,22 +353,22 @@ public class YukonDataSetFactory
 	}
 
 
-	public static com.jrefinery.data.DefaultCategoryDataset createVerticalCategoryDataSet_LD(TrendSerie[] tSeries, Integer peakPointId)
+	public static com.jrefinery.data.DefaultCategoryDataset createVerticalCategoryDataSet_LD(TrendSerie[] tSeries)
 	{
 		if( tSeries == null)
 			return null;
 
 		java.util.Vector tNamesVector = new java.util.Vector(tSeries.length);//capacity is best guess right now.
 		int validSeriesLength = 0;
-		int peakPtIndex = -1;
+		int primaryIndex = -1;
 		
 		for( int i = 0; i < tSeries.length; i++)
 		{
-			if(GraphDataSeries.isValidIntervalType(tSeries[i].getTypeMask()))
+			if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
 			{
-				if( tSeries[i].getPointId().equals(peakPointId))
-				{	//find the 'graph' point representing the peak point, if it exists!
-					peakPtIndex = validSeriesLength;
+				if( GraphDataSeries.isPrimaryType(tSeries[i].getTypeMask()))
+				{	//find the primary gds, if it exists!
+					primaryIndex = validSeriesLength;
 				}
 
 				tNamesVector.add(tSeries[i].getLabel().toString());
@@ -341,28 +406,50 @@ public class YukonDataSetFactory
 		//for loop index of the series, we need another representation of it, hence notNullValuesIndex.
 		int notNullValuesIndex = 0;
 		int allIndex = 0;
+		Double prevValue = null;
 		for (int i = 0; i < tSeries.length; i++)
 		{
-			if(GraphDataSeries.isValidIntervalType(tSeries[i].getTypeMask()))
+			if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
 			{
 				datasetValues[allIndex] = new Double[keyArray.length];
 				if( tSeries[i].getDataPairArray() != null)
 				{
 					for (int j = 0; j < keyArray.length; j++)
 					{
-						Double[] values = (Double[])tree.get(keyArray[j]);
-						datasetValues[allIndex][j] = values[notNullValuesIndex];
+						if( GraphDataSeries.isUsageType(tSeries[i].getTypeMask()))
+						{
+							Double[] values = (Double[])tree.get(keyArray[j]);							
+							if( prevValue == null)
+							{
+								prevValue = values[notNullValuesIndex];	//dp.getValue().doubleValue();
+								datasetValues[allIndex][j]= null;
+							}
+							else
+							{
+								Double currentValue = values[notNullValuesIndex];	//dp.getValue().doubleValue();
+								if( currentValue != null && prevValue != null)
+								{
+									datasetValues[allIndex][j] = new Double(currentValue.doubleValue() - prevValue.doubleValue());
+									prevValue = currentValue;
+								}
+							}
+						}						
+						else
+						{
+							Double[] values = (Double[])tree.get(keyArray[j]);
+							datasetValues[allIndex][j] = values[notNullValuesIndex];
+						}
 					}
 					notNullValuesIndex++;
 					allIndex++;
 				}
 				else
 				{
-					if( tSeries[i].getPointId().equals(peakPointId))
+					if( GraphDataSeries.isPrimaryType(tSeries[i].getTypeMask()))
 					{
-						// We take away the fact there is a peak point so that when we sort
+						// We take away the fact there is a primary gds so that when we sort
 						//  the values, we are able to still show load duration.
-						peakPtIndex = -1;
+						primaryIndex = -1;
 					}
 						
 					for (int j = 0; j < keyArray.length; j++)
@@ -374,7 +461,7 @@ public class YukonDataSetFactory
 			}
 		}
 
-		sortValuesDescending(datasetValues, peakPtIndex);
+		sortValuesDescending(datasetValues, categoryList, primaryIndex);
 		
 		return (new com.jrefinery.data.DefaultCategoryDataset(seriesNames, categoryList, datasetValues));
 	}
@@ -408,10 +495,11 @@ public class YukonDataSetFactory
 	 * @param xHrs java.util.ArrayList
 	 * @param yQual java.util.ArrayList
 	 */
-	private static Double[][] sortValuesDescending(Double[][] dataSetValues, int peakPtIndex)
+//	private static Double[][] sortValuesDescending(Double[][] dataSetValues, int primaryIndex)
+	private static Double[][] sortValuesDescending(Double[][] dataSetValues, String[] catList, int primaryIndex)
 	{
 		int maxIndex = 0;
-		if( peakPtIndex < 0 )	//No peak point!
+		if( primaryIndex < 0 )	//No primary gds point!
 		{
 			// Sort the values according to their value readings (descending)
 			for (int i = 0; i < dataSetValues.length; i++)
@@ -434,22 +522,26 @@ public class YukonDataSetFactory
 		}			
 		else
 		{
-			// Have a peak point and need to sort peak values only!  Rest are coincidental on Peak Point!
-			if( dataSetValues[peakPtIndex] != null)
+			// Have a primary gds and need to sort these values only!  Rest are coincidental on Primary GDS!
+			if( dataSetValues[primaryIndex] != null)
 			{
-				for (int i = 0; i < dataSetValues[peakPtIndex].length; i++)
+				for (int i = 0; i < dataSetValues[primaryIndex].length; i++)
 				{
-					maxIndex = findMaxIndex(dataSetValues[peakPtIndex], i);
+					maxIndex = findMaxIndex(dataSetValues[primaryIndex], i);
 					if( maxIndex != i)
 					{
-						Double tempDataSetValue = dataSetValues[peakPtIndex][i];
-						dataSetValues[peakPtIndex][i] = dataSetValues[peakPtIndex][maxIndex];
-						dataSetValues[peakPtIndex][maxIndex] = tempDataSetValue;
+						Double tempDataSetValue = dataSetValues[primaryIndex][i];
+						dataSetValues[primaryIndex][i] = dataSetValues[primaryIndex][maxIndex];
+						dataSetValues[primaryIndex][maxIndex] = tempDataSetValue;
+						
+						String tempCatList = catList[i];
+						catList[i] = catList[maxIndex];
+						catList[maxIndex] = tempCatList;
 						
 						for ( int x = 0; x < dataSetValues.length; x++)
 						{
-							// For all other points, sort according to the peak values' sorting.
-							if (x != peakPtIndex)
+							// For all other points, sort according to the primary gds values' sorting.
+							if (x != primaryIndex)
 							{
 								tempDataSetValue = dataSetValues[x][i];
 								dataSetValues[x][i] = dataSetValues[x][maxIndex];
@@ -462,4 +554,62 @@ public class YukonDataSetFactory
 		}
 		return dataSetValues;
 	}
+	
+	
+	
+	private static Double[][] sortValuesDescending(Double[][] dataSetValues, int primaryIndex)
+	{
+		int maxIndex = 0;
+		if( primaryIndex < 0 )	//No primary gds point!
+		{
+			// Sort the values according to their value readings (descending)
+			for (int i = 0; i < dataSetValues.length; i++)
+			{
+				if( dataSetValues[i] != null)
+				{
+					for (int j = 0; j < dataSetValues[i].length; j++)
+					{
+						maxIndex = findMaxIndex(dataSetValues[i], j);
+						if( maxIndex != j)
+						{
+							Double tempDataSetValue = dataSetValues[i][j];
+							dataSetValues[i][j] = dataSetValues[i][maxIndex];
+							dataSetValues[i][maxIndex] = tempDataSetValue;
+						}
+					}
+				}
+			}
+			
+		}			
+		else
+		{
+			// Have a primary gds and need to sort these values only!  Rest are coincidental on Primary GDS!
+			if( dataSetValues[primaryIndex] != null)
+			{
+				for (int i = 0; i < dataSetValues[primaryIndex].length; i++)
+				{
+					maxIndex = findMaxIndex(dataSetValues[primaryIndex], i);
+					if( maxIndex != i)
+					{
+						Double tempDataSetValue = dataSetValues[primaryIndex][i];
+						dataSetValues[primaryIndex][i] = dataSetValues[primaryIndex][maxIndex];
+						dataSetValues[primaryIndex][maxIndex] = tempDataSetValue;
+						
+						for ( int x = 0; x < dataSetValues.length; x++)
+						{
+							// For all other points, sort according to the primary gds values' sorting.
+							if (x != primaryIndex)
+							{
+								tempDataSetValue = dataSetValues[x][i];
+								dataSetValues[x][i] = dataSetValues[x][maxIndex];
+								dataSetValues[x][maxIndex] = tempDataSetValue;
+							}
+						}						
+					}
+				}
+			}
+		}
+		return dataSetValues;
+	}
+
 }
