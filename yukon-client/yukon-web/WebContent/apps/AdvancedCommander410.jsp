@@ -181,7 +181,7 @@ function disableAllButtons()
 							<table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
 							  <tr> 
 								<td class="main" width="47%" valign="bottom" align="right">Start Date:
-									  <input id="startCal" type="text" name="startDate" value="<%= datePart.format(YC_BEAN.getStartDate()) %>" size="8">
+									  <input id="startCal" type="text" name="startDate" value="<%= datePart.format(YC_BEAN.getLPStartDate()) %>" size="8">
 									  <a href="javascript:openCalendar(document.getElementById('commandForm').startCal)"
 									  onMouseOver="window.status='Start Date Calendar';return true;"
 									  onMouseOut="window.status='';return true;"> <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a>
@@ -295,7 +295,7 @@ function disableAllButtons()
 						<tr> 
 						  <td width="6" height="19"><img src="../WebConfig/yukon/Header_left.gif" width="6" height="36"></td>
 						  <td height="19" bgcolor="888888" class="tableHeader" align="center">Data currently stored in Database:&nbsp;&nbsp;<%=liteYukonPao.getPaoName()%> - <%=com.cannontech.database.cache.functions.PointFuncs.getPointName(YC_BEAN.getPointID())%>
-												&nbsp;[<%=datePart.format(YC_BEAN.getStartDate())%>]<BR>
+												&nbsp;[<%=datePart.format(YC_BEAN.getLPStartDate())%>]<BR>
 												<a href="javascript:disableAllButtons();" class="Link3">Refresh</a>
 												  &nbsp;Tabular View (using above settings)</td>
 						  <td width="6" height="19"><img src="../WebConfig/yukon/Header_right.gif" width="6" height="36"></td>		  
