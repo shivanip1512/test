@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mgr_mcsched.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/03/25 22:06:17 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/06/10 15:26:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -233,7 +233,9 @@ bool CtiMCScheduleManager::updateSchedule(const CtiMCSchedule& sched)
         RWRecursiveLock<RWMutexLock>::LockGuard guard( getMux() );
 
         //Don't allow a schedule to have the same name as any existing schedule
-	if( getID(sched.getScheduleName()) != sched.getScheduleID())
+	long temp_id = getID(sched.getScheduleName());
+
+	if( temp_id != -1 && temp_id != id)
 	{
 	    return false;
 	}
