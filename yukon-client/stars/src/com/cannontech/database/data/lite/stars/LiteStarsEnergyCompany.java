@@ -663,10 +663,15 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				if (rset != null) rset.close();
 				if (stmt != null) stmt.close();
 	        	
+	        	int oneWayRecID = getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC).getEntryID();
+	        	int thermostatID = getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_THERMOSTAT).getEntryID();
+	        	
 				com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
 						new com.cannontech.database.data.stars.hardware.LMHardwareBase();
 				hardware.setInventoryID( new Integer(dftInventoryID) );
+				hardware.getInventoryBase().setCategoryID( new Integer(oneWayRecID) );
 				hardware.getInventoryBase().setNotes( "Default Thermostat" );
+				hardware.getLMHardwareBase().setLMHardwareTypeID( new Integer(thermostatID) );
 				hardware.getLMHardwareBase().setManufacturerSerialNumber( "0" );
 				hardware.setEnergyCompanyID( getEnergyCompanyID() );
 				hardware.setDbConnection( conn );
