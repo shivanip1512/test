@@ -66,22 +66,62 @@ public final class YukonImageFuncs
 	 * @return LiteYukonImage
 	 */
    	public static LiteYukonImage getLiteYukonImage(int id) {
+         
    		 com.cannontech.database.cache.DefaultDatabaseCache cache =
             com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+         synchronized( cache )
+         {
+            Iterator iter = cache.getAllYukonImages().iterator();
+            while( iter.hasNext() ) 
+            {
+               LiteYukonImage img = (LiteYukonImage) iter.next();
+               if( img.getImageID() == id ) 
+               {
+                  return img;
+               }
+            }
+         }        
+         
+         return null;
+      }
 
-      	synchronized( cache )
-      	{
-         	Iterator iter = cache.getAllYukonImages().iterator();
-         	while( iter.hasNext() ) 
-         	{
-         		LiteYukonImage img = (LiteYukonImage) iter.next();
-         		if( img.getImageID() == id ) 
-         		{
-         			return img;
-         		}
-         	}
-      	}	      
-      	
-      	return null;
-   	}
+   /** 
+    * Returns the StateGroup that uses the YukonImageID,
+    * If no StateGroup uses the YukonImageID a null is returned
+    */
+   public static String yukonImageUsage( int yukImgID_ ) 
+   {
+      java.util.ArrayList imgList = new java.util.ArrayList(10);
+
+      com.cannontech.database.cache.DefaultDatabaseCache cache =
+            com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+
+      synchronized( cache )
+      {
+         java.util.List stateGroups = cache.getAllStateGroups();
+         
+         for( int i = 0; i < stateGroups.size(); i++ )
+         {
+            com.cannontech.database.data.lite.LiteStateGroup sGroup = 
+                  (com.cannontech.database.data.lite.LiteStateGroup)stateGroups.get(i);
+            
+            for( int j = 0; j < sGroup.getStatesList().size(); j++ )
+            {
+               com.cannontech.database.data.lite.LiteState state = 
+                     (com.cannontech.database.data.lite.LiteState)sGroup.getStatesList().get(j);
+               
+               if( state.getImageID() == yukImgID_ )
+               {
+                  return sGroup.getStateGroupName();
+               }
+            }
+            
+         }
+
+      }
+      
+      //this image is not used, just return null
+      return null;
+   }
+
 }

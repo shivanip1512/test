@@ -109,13 +109,26 @@ public void setValue(Object o)
 			data.addElement("("+i+")DB Pool   : " + pools[i] );
 
 		data.addElement("DB Version   : " + db.getVersion() + "  on  " + md.getDateString() );
-		//data.addElement("DB Notes     : " + db.getNotes() );
+
+      java.util.Enumeration enum = java.sql.DriverManager.getDrivers();      
+      while( enum.hasMoreElements() )
+      {
+         java.sql.Driver driver = (java.sql.Driver)enum.nextElement();
+         data.addElement("DB Driver    : " + driver.getClass().getName() + " : " +
+            driver.getMajorVersion() + "." +
+            driver.getMinorVersion() );
+      }
+      
+      data.addElement("JRE Version  : " + System.getProperty("java.version") );
+      
+         
+      //com.cannontech.database.PoolManager.getInstance().;
 		
 	}
 	catch(Throwable t)  // Catch ALL things and just print them out
 	{
 		com.cannontech.clientutils.CTILogger.info("*** Throwable caught in + " + this.getClass() + " : " + t.getMessage() );
-		data.addElement("(Exception occured while getting value)");
+		data.addElement("(Exception occured while getting values from database)");
 	}
 		
 	getJListInfo().setListData(data);

@@ -107,9 +107,24 @@ protected void add( String tableName, Object values[] ) throws SQLException {
 */
       for( int k = 0; k < values.length; k++ )
       {
-         pstmt.setObject(
-            k+1, 
-            values[k] );
+         /* The Oracle driver does not set the correct object for byte[]
+          *  when calling the pstmt.setObject() method. If we do a call like
+          *  pstmt.setObject(byte[]) an SQLException is thrown if the byte[]
+          *  length > 4k.  */
+         if( values[k] instanceof byte[] )
+         {
+            java.io.ByteArrayInputStream bs = new java.io.ByteArrayInputStream( 
+                     (byte[])values[k] );
+
+            pstmt.setBinaryStream(
+               k+1, 
+               bs,
+               ((byte[])values[k]).length );
+         }
+         else
+            pstmt.setObject(
+               k+1, 
+               values[k] );         
       }
 
    	pstmt.executeUpdate();
@@ -709,8 +724,25 @@ protected void update( String tableName, String setColumnName[], Object setColum
 	{
 		pstmt = getDbConnection().prepareStatement(pSql.toString());
 		for( int i = 0; i < setColumnValue.length; i++ )
-			pstmt.setObject(i+1, setColumnValue[i]);
-			
+      {
+         /* The Oracle driver does not set the correct object for byte[]
+          *  when calling the pstmt.setObject() method. If we do a call like
+          *  pstmt.setObject(byte[]) an SQLException is thrown if the byte[]
+          *  length > 4k.  */
+         if( setColumnValue[i] instanceof byte[] )
+         {
+            java.io.ByteArrayInputStream bs = new java.io.ByteArrayInputStream( 
+                     (byte[])setColumnValue[i] );
+
+            pstmt.setBinaryStream(
+               i+1, 
+               bs,
+               ((byte[])setColumnValue[i]).length );
+         }
+         else
+			   pstmt.setObject(i+1, setColumnValue[i]);
+      }
+      	
 		for( int i = 0; i < constraintColumnValue.length; i++ )
 			pstmt.setObject(i+setColumnValue.length+1, constraintColumnValue[i]);
 			

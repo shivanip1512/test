@@ -1004,6 +1004,9 @@ private javax.swing.JButton getJButtonImage1() {
 			ivjJButtonImage1.setMargin(new java.awt.Insets(2, 3, 2, 3));
 			ivjJButtonImage1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 			// user code begin {1}
+         
+         ivjJButtonImage1.setEnabled(false);
+         
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1032,6 +1035,9 @@ private javax.swing.JButton getJButtonImage10() {
 			ivjJButtonImage10.setMargin(new java.awt.Insets(2, 3, 2, 3));
 			ivjJButtonImage10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 			// user code begin {1}
+         
+         ivjJButtonImage10.setEnabled(false);
+         
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1059,6 +1065,9 @@ private javax.swing.JButton getJButtonImage2() {
 			ivjJButtonImage2.setMargin(new java.awt.Insets(2, 3, 2, 3));
 			ivjJButtonImage2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 			// user code begin {1}
+         
+         ivjJButtonImage2.setEnabled(false);
+         
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1086,6 +1095,9 @@ private javax.swing.JButton getJButtonImage3() {
 			ivjJButtonImage3.setMargin(new java.awt.Insets(2, 3, 2, 3));
 			ivjJButtonImage3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 			// user code begin {1}
+         
+         ivjJButtonImage3.setEnabled(false);
+         
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1113,6 +1125,9 @@ private javax.swing.JButton getJButtonImage4() {
 			ivjJButtonImage4.setMargin(new java.awt.Insets(2, 3, 2, 3));
 			ivjJButtonImage4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 			// user code begin {1}
+         
+         ivjJButtonImage4.setEnabled(false);
+         
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1140,6 +1155,9 @@ private javax.swing.JButton getJButtonImage5() {
 			ivjJButtonImage5.setMargin(new java.awt.Insets(2, 3, 2, 3));
 			ivjJButtonImage5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 			// user code begin {1}
+         
+         ivjJButtonImage5.setEnabled(false);
+
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1167,6 +1185,9 @@ private javax.swing.JButton getJButtonImage6() {
 			ivjJButtonImage6.setMargin(new java.awt.Insets(2, 3, 2, 3));
 			ivjJButtonImage6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 			// user code begin {1}
+         
+         ivjJButtonImage6.setEnabled(false);
+
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1194,6 +1215,9 @@ private javax.swing.JButton getJButtonImage7() {
 			ivjJButtonImage7.setMargin(new java.awt.Insets(2, 3, 2, 3));
 			ivjJButtonImage7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 			// user code begin {1}
+         
+         ivjJButtonImage7.setEnabled(false);
+
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1221,6 +1245,9 @@ private javax.swing.JButton getJButtonImage8() {
 			ivjJButtonImage8.setMargin(new java.awt.Insets(2, 3, 2, 3));
 			ivjJButtonImage8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 			// user code begin {1}
+         
+         ivjJButtonImage8.setEnabled(false);
+
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1248,6 +1275,9 @@ private javax.swing.JButton getJButtonImage9() {
 			ivjJButtonImage9.setMargin(new java.awt.Insets(2, 3, 2, 3));
 			ivjJButtonImage9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 			// user code begin {1}
+         
+         ivjJButtonImage9.setEnabled(false);
+
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -2777,6 +2807,7 @@ private void stateNumberSpinnerChanged(com.klg.jclass.util.value.JCValueEvent ar
 				stateNameTextFields[i].setEnabled(true);
 				foregroundColorComboBoxes[i].setEnabled(true);
             imageButton[i].setEnabled(true);
+
 				if( stateNameTextFields[i].getText().equals("") )
 					stateNameTextFields[i].setText("DefaultStateName" + (Integer.toString(i+1)) );
 			}
@@ -2787,6 +2818,7 @@ private void stateNumberSpinnerChanged(com.klg.jclass.util.value.JCValueEvent ar
 				stateNameTextFields[i].setEnabled(false);
 				foregroundColorComboBoxes[i].setEnabled(false);
             imageButton[i].setEnabled(false);
+
 				if( stateNameTextFields[i].getText().equals("DefaultStateName" + (Integer.toString(i+1))) )
 					stateNameTextFields[i].setText("");
 			}

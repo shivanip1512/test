@@ -59,7 +59,21 @@ class ImagePopup extends JPopupMenu implements java.awt.event.ActionListener
    
    private void jButtonActionPerformed_Delete( java.awt.event.ActionEvent ev )
    {
+      String stateGroup = 
+            com.cannontech.database.cache.functions.YukonImageFuncs.yukonImageUsage( getSelectedLiteImage().getImageID() );
+
+      if( stateGroup != null )
+      {
+         javax.swing.JOptionPane.showMessageDialog( 
+               this,
+               "The selected image is used by the State Group named '" + stateGroup + "'",
+               "Image Deletion Failed",
+               javax.swing.JOptionPane.WARNING_MESSAGE );
+
+         return;
+      }
       
+      //try to delete the image
       try
       {         
          //insert the new image
