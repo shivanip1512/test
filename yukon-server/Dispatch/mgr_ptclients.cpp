@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/02 17:02:19 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/09/30 14:54:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,6 +36,7 @@
 #include "resolvers.h"
 #include "yukon.h"
 
+static void verifyDynamicData(CtiPoint *&pTempPoint);
 
 bool findNonUpdatedDynamicData(CtiPoint *pTempPoint, void* d)
 {
@@ -87,11 +88,7 @@ void ApplyInsertNonUpdatedDynamicData(const CtiHashKey *key, CtiPoint *&pTempPoi
     return;
 }
 
-
-/*
- *  This method initializes each point's dynamic data to it's default/initial values.
- */
-void ApplyInitialDynamicConditions(const CtiHashKey *key, CtiPoint *&pTempPoint, void* d)
+void verifyInitialDynamicData(CtiPoint *&pTempPoint)
 {
     CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pTempPoint->getDynamic();
 
@@ -124,7 +121,57 @@ void ApplyInitialDynamicConditions(const CtiHashKey *key, CtiPoint *&pTempPoint,
             pDyn->getDispatch().setTags(statictags);
         }
     }
+}
+
+/*
+ *  This method initializes each point's dynamic data to it's default/initial values.
+ */
+void ApplyInitialDynamicConditions(const CtiHashKey *key, CtiPoint *&pTempPoint, void* d)
+{
+    LONG id = 0;
+    verifyInitialDynamicData(pTempPoint);
     return;
+}
+
+void CtiPointClientManager::RefreshList(LONG pointID)
+{
+    LockGuard  guard(monitor());
+
+    Inherited::RefreshPoint(pointID);   // Load Points on PAO!
+
+    CtiRTDBIterator itr(Map);
+
+    CtiPoint *pTempPoint = Map.findValue(&CtiHashKey(pointID));
+
+    if(pTempPoint)
+    {
+        verifyInitialDynamicData(pTempPoint);
+
+        CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pTempPoint->getDynamic();
+
+        if(pDyn != NULL)
+        {
+            if(pDyn->getDispatch().getUpdatedFlag() == FALSE)
+            {
+                RefreshDynamicData(pointID);
+
+                if( pDyn->getDispatch().Insert().errorCode() != RWDBStatus::ok )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << " Unable to insert dynamicpointdata for " << pTempPoint->getName() << endl;
+                    }
+                }
+                pDyn->getDispatch().setUpdatedFlag();
+            }
+
+            if(pDyn->getDispatch().isDirty())
+            {
+                storeDirtyRecords();
+            }
+        }
+    }
 }
 
 
@@ -146,6 +193,7 @@ void CtiPointClientManager::RefreshList(BOOL (*testFunc)(CtiPoint*,void*), void 
         storeDirtyRecords();
     }
 }
+
 
 
 void CtiPointClientManager::DumpList(void)
@@ -218,7 +266,7 @@ int CtiPointClientManager::InsertConnectionManager(CtiConnectionManager* CM, con
         /*
          *  OK, now I walk the list of points looking at each one's ID to find who to add this guy to
          */
-        
+
         {
             CtiPoint* temp = Map.findValue(&CtiHashKey(aReg[i]));
             if(temp != 0)
@@ -460,7 +508,7 @@ void CtiPointClientManager::DeleteList(void)
  *  This method reloads all dynamic point data into memory.  It will only update the memory image if
  *  this point has never previously been loaded (updated).
  */
-void CtiPointClientManager::RefreshDynamicData()
+void CtiPointClientManager::RefreshDynamicData(LONG id)
 {
     LockGuard  guard(monitor());
 
@@ -478,6 +526,11 @@ void CtiPointClientManager::RefreshDynamicData()
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Looking for Dynamic Dispatch Data" << endl;
     }
     CtiTablePointDispatch::getSQL( db, keyTable, selector );
+
+    if(id)
+    {
+        selector.where( keyTable["pointid"] == id && selector.where() );
+    }
 
     RWDBReader rdr = selector.reader(conn);
 
