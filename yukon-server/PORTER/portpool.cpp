@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/03/13 19:35:33 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/04/29 13:44:49 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,6 +19,7 @@
 #include "mgr_device.h"
 #include "mgr_port.h"
 #include "port_base.h"
+#include "port_pool_out.h"
 #include "portdecl.h"
 #include "portglob.h"
 
@@ -52,7 +53,16 @@ VOID PortPoolDialoutThread(void *pid)
 
         return;
     }
+    else if(Port->getType() != PortTypePoolDialout )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " PortPoolDialoutThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << " NOT POOLABLE." << endl;
+        }
 
+        return;
+    }
+    else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " PortPoolDialoutThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
@@ -103,6 +113,7 @@ VOID PortPoolDialoutThread(void *pid)
                 dout << RWTime() << " Port has " << QueEntries << " pending OUTMESS requests " << endl;
             }
         }
+
 
         if(QueEntries > 5000 && RWTime() > lastQueueReportTime)  // Ok, we may have an issue here....
         {
@@ -173,16 +184,24 @@ VOID PortPoolDialoutThread(void *pid)
             }
         }
 
+        CtiPortManager::ptr_type childport = ((CtiPortPoolDialout*)Port.get())->getAvailableChildPort(Device);
 
+        if(childport)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** A.C.H. A.C.H.  Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << Port->getName() << " port has allocated an OUTMESS to " << childport->getName() << endl;
+            }
+
+            childport->writeQueue(OutMessage->EventCode, sizeof(*OutMessage), (char *) OutMessage, OutMessage->Priority);
         }
-
-
-        if(OutMessage != NULL)
+        else if(OutMessage != NULL)
         {
-            delete OutMessage; /* free up the OutMessage, it made a successful run! */
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            delete OutMessage;
             OutMessage = NULL;
         }
     }

@@ -1,3 +1,4 @@
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   portfield
@@ -6,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2003/04/25 15:09:19 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2003/04/29 13:44:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -666,15 +667,15 @@ INT ResetCommsChannel(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
                 if( (StartTCPIP == TCP_SES92) || (StartTCPIP == TCP_CCU710 &&  Port->isTCPIPPort()) || (StartTCPIP == TCP_WELCO  &&  Port->isTCPIPPort()))
                 {
 
-    #if 0 // 040300 CGP FIX FIX FIX This was pulled for brevity!
+#if 0 // 040300 CGP FIX FIX FIX This was pulled for brevity!
                     if(PortTCPIPStart(ThreadPortNumber))
                     {
                         printf ("Error Starting TCP/IP Interface\n");
                         // _endthread ();
                     }
-    #else
+#else
                     printf ("TCP/IP Interface disabled by #ifdef. CGP 040300\n");
-    #endif
+#endif
                 }
             }
 
@@ -776,8 +777,22 @@ INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
 INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device)
 {
     INT status = NORMAL;
+    LONG LastConnectedDevice = 0L;
 
-    status = Port->connectToDevice(Device, TraceFlag);
+    status = Port->connectToDevice(Device, LastConnectedDevice, TraceFlag);
+
+    if(LastConnectedDevice > 0 && LastConnectedDevice != Device->getID())
+    {
+        {
+            RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
+            CtiDevice *pOldConnectedDevice = DeviceManager.getEqual(LastConnectedDevice);
+
+            if(pOldConnectedDevice)
+            {
+                pOldConnectedDevice->setLogOnNeeded(TRUE);
+            }
+        }
+    }
 
     if(status != NORMAL)
     {
@@ -999,7 +1014,6 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
     BYTE           scratchBuffer[300];
     BYTE           *dataBuffer = NULL;
     CtiXfer        trx;
-    LONG           oldid = 0L;
 
     RWTPtrSlist< CtiMessage > traceList;
 
@@ -1123,15 +1137,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                           {
                              //jump in, check for login, build packets, send messages, etc...
                              ansi.generate( trx );
-
                              status = Port->outInMess( trx, Device, traceList );
-
                              if( status != NORMAL )
                              {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " KV2 loop is A-B-N-O-R-M-A-L " << endl;
                              }
-
                              ansi.decode( trx, status );
 
                              // Prepare for tracing
@@ -1139,7 +1150,6 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                              {
                                 Port->traceXfer( trx, traceList, Device, status );
                              }
-
                              DisplayTraceList( Port, traceList, true );
                           }
 
@@ -1154,7 +1164,6 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                        ansi.reinitialize();
                        break;
                    }
-
                 case TYPE_SIXNET:
                     {
                         CtiDeviceIED         *IED= (CtiDeviceIED*)Device;
@@ -1211,10 +1220,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     }
                 case TYPE_TAPTERM:
                     {
-                        LONG portConnectedUID = -1;
+                        LONG oldid = 0L;
                         CtiDeviceIED *IED= (CtiDeviceIED*)Device;
-
-                        verifyConnectedDevice(Port, Device, oldid, portConnectedUID);
 
                         IED->allocateDataBins(OutMessage);
                         IED->setInitialState(oldid);
@@ -1228,10 +1235,11 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             if( status != NORMAL)
                             {
                                 IED->setLogOnNeeded(TRUE);      // We did not come through it cleanly, let's kill this connection.
+                                Port->setConnectedDevice(0);
                             }
                             else
                             {
-                                if( SearchQueue(Port->getPortQueueHandle(), (void*)portConnectedUID, areAnyOutMessagesForUniqueID) == 0 )
+                                if( SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), areAnyOutMessagesForUniqueID) == 0 )
                                 {
                                     IED->setLogOnNeeded(TRUE);      // We have zero queue entries!
                                 }
@@ -3001,14 +3009,17 @@ INT verifyConnectedDevice(CtiPortSPtr Port, CtiDevice *pDevice, LONG &oldid, LON
 
             CtiDevice *pOldConnectedDevice = DeviceManager.getEqual(Port->getConnectedDevice());
 
-            oldid = pOldConnectedDevice->getPortID();
-            pOldConnectedDevice->setLogOnNeeded(TRUE);
-
-            if( pOldConnectedDevice->getUniqueIdentifier() != pDevice->getUniqueIdentifier() )
+            if(pOldConnectedDevice)
             {
-                // OK, this means we need to do a logon. (At least to TAP)
-                oldid = 0;
-                pDevice->setLogOnNeeded(TRUE);
+                oldid = pOldConnectedDevice->getID();
+                pOldConnectedDevice->setLogOnNeeded(TRUE);
+
+                if( pOldConnectedDevice->getUniqueIdentifier() != pDevice->getUniqueIdentifier() )
+                {
+                    // OK, this means we need to do a logon. (At least to TAP)
+                    oldid = 0;
+                    pDevice->setLogOnNeeded(TRUE);
+                }
             }
         }
 
@@ -3293,4 +3304,3 @@ INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDevice *Device )
 
     return protocol;
 }
-

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2003/03/13 19:35:30 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2003/04/29 13:44:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -876,9 +876,9 @@ INT PorterMainFunction (INT argc, CHAR **argv)
                             }
                         case 0x6d:              // alt-m trace filter.
                             {
-            #ifndef DEBUG_MEMORY
+#ifndef DEBUG_MEMORY
                                 fprintf(stdout, "Module not compiled for Memory Dumps\n");
-            #else
+#else
                                 fprintf(stderr, "Memory Dump ------- \n");
                                 fprintf(stderr, "  Start Memory Deltas ------- \n");
                                 _dump_allocated_delta(10);
@@ -890,7 +890,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
                                 _heap_check();
                                 fprintf(stderr, "  Stop  Heap Check  ------- \n");
                                 fprintf(stderr, "Memory Dump ------- \n");
-            #endif
+#endif
 
                                 break;
                             }
@@ -1641,6 +1641,11 @@ void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, b
             CtiTraceMsg *&pTrace = ((CtiTraceMsg*&)traceList.at(i));
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)pTrace->getAttributes());
             cout << pTrace->getTrace();
+
+            if(pTrace->isEnd())
+            {
+                cout << endl;
+            }
         }
 
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE) , FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);

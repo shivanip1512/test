@@ -12,8 +12,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_port.h-arc  $
- * REVISION     :  $Revision: 1.10 $
- * DATE         :  $Date: 2003/03/13 19:36:15 $
+ * REVISION     :  $Revision: 1.11 $
+ * DATE         :  $Date: 2003/04/29 13:44:49 $
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -57,6 +57,7 @@ public:
 
     virtual ~CtiPortManager();
 
+    void RefreshPooledPortEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg);
     void RefreshList(CtiPort* (*Factory)(RWDBReader &) = PortFactory, BOOL (*fn)(CtiPort*,void*) = isAPort, void *d = NULL);
     void DumpList(void);
     void DeleteList(void);
