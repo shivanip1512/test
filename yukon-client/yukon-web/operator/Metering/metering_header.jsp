@@ -34,8 +34,9 @@
                                   " FROM GRAPHDEFINITION GDEF, GRAPHCUSTOMERLIST GCL, ENERGYCOMPANYCUSTOMERLIST ECCL "+
                                   " WHERE ECCL.ENERGYCOMPANYID = " + energyCompanyID + 
                                   " AND GDEF.GRAPHDEFINITIONID = GCL.GRAPHDEFINITIONID " +
-                                  " AND GCL.CUSTOMERID = ECCL.CUSTOMERID";
-	Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sqlString);
+                                  " AND GCL.CUSTOMERID = ECCL.CUSTOMERID" + 
+                                  " ORDER BY GDEF.NAME";
+	Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sqlString, types);
 %>
 
 	<jsp:useBean id="graphBean" class="com.cannontech.graph.GraphBean" scope="session">

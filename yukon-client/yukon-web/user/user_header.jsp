@@ -42,7 +42,12 @@
     String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 	
     Class[] types = { Integer.class,String.class };    
-	Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "SELECT GDEF.GRAPHDEFINITIONID, GDEF.NAME FROM GRAPHDEFINITION GDEF, GRAPHCUSTOMERLIST GCL WHERE GDEF.GRAPHDEFINITIONID=GCL.GRAPHDEFINITIONID AND GCL.CUSTOMERID = " + customerID+ " ORDER BY GDEF.NAME", types );
+    java.lang.String sqlString =  "SELECT GDEF.GRAPHDEFINITIONID, GDEF.NAME " +
+                                  " FROM GRAPHDEFINITION GDEF, GRAPHCUSTOMERLIST GCL "+
+                                  " WHERE GDEF.GRAPHDEFINITIONID=GCL.GRAPHDEFINITIONID "+
+                                  " AND GCL.CUSTOMERID = " + customerID+ " ORDER BY GDEF.NAME";
+    
+	Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sqlString, types );
 %>
 
 	<jsp:useBean id="graphBean" class="com.cannontech.graph.GraphBean" scope="session">
