@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2004/06/23 15:23:58 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2004/06/23 18:39:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1701,10 +1701,13 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                         if( anxiousDevice->getExclusion().isTimeExclusionOpen() )
                         {
                             // The window is open.  All proximity devices should eventually clear out of our way.
-                            if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                            if(0 && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Device " << anxiousDevice->getName() << " is in its execution window and will execute if there are no proximity conflicts." << endl;
+                                dout << RWTime() << " Device " << anxiousDevice->getName() << " is in its execution window, checking proximity conflicts." << endl;
+                                dout << "   CycleTime " << anxiousDevice->getExclusion().getCycleTimeExclusion().getCycleTime() <<
+                                    ", Offset " << anxiousDevice->getExclusion().getCycleTimeExclusion().getCycleOffset() <<
+                                    ", Duration " << anxiousDevice->getExclusion().getCycleTimeExclusion().getTransmitTime() << endl;
                             }
 
                             bstatus = true;             // Provided no proximity exclusion is executing, we can go!
