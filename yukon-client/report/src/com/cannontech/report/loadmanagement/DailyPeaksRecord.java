@@ -5,6 +5,8 @@ package com.cannontech.report.loadmanagement;
  * Creation date: (6/28/00 11:55:04 AM)
  * @author: 
  */
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.data.point.CTIPointQuailtyException;
 import com.cannontech.report.ReportRecordBase;
 public class DailyPeaksRecord implements ReportRecordBase
 {
@@ -71,18 +73,25 @@ public String dataToString()
 
 		if( getPeakDataQuality().intValue() != com.cannontech.database.data.point.PointQualities.UNINTIALIZED_QUALITY )
 		{
-			String peakQualityStr = com.cannontech.database.data.point.PointQualities.getQuality(getPeakDataQuality().intValue());
-			if( peakQualityStr.length() <= 10 )
+			try
 			{
-				returnBuffer.append(peakQualityStr);
+				String peakQualityStr = com.cannontech.database.data.point.PointQualities.getQuality(getPeakDataQuality().intValue());
+				if( peakQualityStr.length() <= 10 )
+				{
+					returnBuffer.append(peakQualityStr);
+				}
+				else
+				{
+					returnBuffer.append(peakQualityStr.substring(0,10));
+				}
+				for(int i=0;i<(10-peakQualityStr.length());i++)
+				{
+					returnBuffer.append(" ");
+				}
 			}
-			else
+			catch( CTIPointQuailtyException ex )
 			{
-				returnBuffer.append(peakQualityStr.substring(0,10));
-			}
-			for(int i=0;i<(10-peakQualityStr.length());i++)
-			{
-				returnBuffer.append(" ");
+				CTILogger.error("Pt Quaility not found", ex );
 			}
 		}
 		else
@@ -122,18 +131,25 @@ public String dataToString()
 
 		if( getOffPeakDataQuality().intValue() != com.cannontech.database.data.point.PointQualities.UNINTIALIZED_QUALITY )
 		{
-			String offPeakQualityStr = com.cannontech.database.data.point.PointQualities.getQuality(getOffPeakDataQuality().intValue());
-			if( offPeakQualityStr.length() <= 10 )
+			try
 			{
-				returnBuffer.append(offPeakQualityStr);
+				String offPeakQualityStr = com.cannontech.database.data.point.PointQualities.getQuality(getOffPeakDataQuality().intValue());
+				if( offPeakQualityStr.length() <= 10 )
+				{
+					returnBuffer.append(offPeakQualityStr);
+				}
+				else
+				{
+					returnBuffer.append(offPeakQualityStr.substring(0,10));
+				}
+				for(int i=0;i<(10-offPeakQualityStr.length());i++)
+				{
+					returnBuffer.append(" ");
+				}
 			}
-			else
+			catch( CTIPointQuailtyException ex )
 			{
-				returnBuffer.append(offPeakQualityStr.substring(0,10));
-			}
-			for(int i=0;i<(10-offPeakQualityStr.length());i++)
-			{
-				returnBuffer.append(" ");
+				CTILogger.error("Pt Quaility not found", ex );
 			}
 		}
 		else
