@@ -121,6 +121,11 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 				((com.cannontech.database.data.season.SeasonSchedule)returnObject).setScheduleID(new Integer(((LiteSeasonSchedule)liteObject).getScheduleID()) );
 				((com.cannontech.database.data.season.SeasonSchedule)returnObject).setScheduleName( ((LiteSeasonSchedule)liteObject).getScheduleName() );
 				break;
+			case LiteTypes.TOU_SCHEDULE:
+				returnObject = new com.cannontech.database.data.tou.TOUSchedule();
+				((com.cannontech.database.data.tou.TOUSchedule)returnObject).setScheduleID(new Integer(((LiteTOUSchedule)liteObject).getScheduleID()) );
+				((com.cannontech.database.data.tou.TOUSchedule)returnObject).setScheduleName( ((LiteTOUSchedule)liteObject).getScheduleName() );
+				break;
 			case LiteTypes.BASELINE:
 				returnObject = new com.cannontech.database.data.baseline.Baseline();
 				((com.cannontech.database.data.baseline.Baseline)returnObject).setBaselineID(new Integer(((LiteBaseline)liteObject).getBaselineID()) );
@@ -256,6 +261,12 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 			((com.cannontech.database.data.season.SeasonSchedule)val).getScheduleID().intValue(),
 			((com.cannontech.database.data.season.SeasonSchedule)val).getScheduleName() );
 			
+	}	
+	else if( val instanceof com.cannontech.database.data.tou.TOUSchedule )
+	{
+		returnLite = new LiteTOUSchedule(
+			((com.cannontech.database.data.tou.TOUSchedule)val).getScheduleID().intValue(),
+			((com.cannontech.database.data.tou.TOUSchedule)val).getScheduleName() );
 	}
 	else if( val instanceof com.cannontech.database.data.baseline.Baseline )
 	{

@@ -68,7 +68,7 @@ public void retrieve(String databaseAlias)
 	  new com.cannontech.database.SqlStatement(
 		 "SELECT TOUScheduleID, TOUScheduleName "  + 
 			"FROM " + com.cannontech.database.db.tou.TOUSchedule.TABLE_NAME +
-			" where configID = " + getScheduleID(),
+			" where TOUScheduleID = " + getScheduleID(),
 		 com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
    try 

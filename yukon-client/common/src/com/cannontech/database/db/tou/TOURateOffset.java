@@ -36,6 +36,13 @@ public TOURateOffset() {
 /**
  * TOURateOffset constructor comment.
  */
+public TOURateOffset(String rate, Integer offset) 
+{
+	super();
+	switchRate = rate;
+	switchOffset = offset;
+}
+
 public TOURateOffset(Integer scheduleID, String rate, Integer offset) 
 {
 	super();
@@ -115,7 +122,7 @@ public static final java.util.Vector getAllRateOffsets(Integer scheduleID, java.
 		+ SETTER_COLUMNS[2] + 
 		" FROM " + TABLE_NAME +
 		" WHERE " + CONSTRAINT_COLUMNS[0] + 
-		"=? ORDER BY " + SETTER_COLUMNS[0];
+		"=? ORDER BY " + SETTER_COLUMNS[1];
 
 	try
 	{		

@@ -54,8 +54,10 @@ public void add() throws java.sql.SQLException
 	getTOUSchedule().add();
 		
 	for (int i = 0; i < getRateOffsetsVector().size(); i++)
+	{
+		((TOURateOffset) getRateOffsetsVector().elementAt(i)).setTOUScheduleID(getTOUSchedule().getScheduleID());
 		((TOURateOffset) getRateOffsetsVector().elementAt(i)).add();
-
+	}
 }
 /**
  * Insert the method's description here.
@@ -139,8 +141,6 @@ public void retrieve() throws java.sql.SQLException
 
 	for( int i = 0; i < rateOffsets.size(); i++ )
 		getRateOffsetsVector().add( rateOffsets.get(i) );
-
-
 }
 /**
  * Insert the method's description here.

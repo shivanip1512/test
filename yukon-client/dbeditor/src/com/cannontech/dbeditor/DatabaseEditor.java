@@ -43,6 +43,7 @@ import com.cannontech.dbeditor.editor.defaults.DefaultRoutesDialog;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateDialog;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
 import com.cannontech.dbeditor.wizard.changetype.device.DeviceChngTypesPanel;
+import com.cannontech.dbeditor.wizard.tou.TOUScheduleWizardPanel;
 import com.cannontech.debug.gui.*;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.BillingRole;
@@ -152,7 +153,8 @@ public class DatabaseEditor
 			new Integer(ModelFactory.LOGIN_GROUPS),
 			new Integer(ModelFactory.NOTIFICATION_GROUP),
 			new Integer(ModelFactory.SEASON),
-			new Integer(ModelFactory.TAG)
+			new Integer(ModelFactory.TAG),
+			new Integer(ModelFactory.TOUSCHEDULE)
 		};
 	private static final Integer[] NONLOGIN_SYSTEM_MODELS =
 		{
@@ -163,7 +165,8 @@ public class DatabaseEditor
 			new Integer(ModelFactory.HOLIDAY_SCHEDULE),
 			new Integer(ModelFactory.NOTIFICATION_GROUP),
 			new Integer(ModelFactory.SEASON),
-			new Integer(ModelFactory.TAG)
+			new Integer(ModelFactory.TAG),
+			new Integer(ModelFactory.TOUSCHEDULE)
 		};	
 	
 
@@ -682,6 +685,10 @@ private void displayAWizardPanel(JMenuItem item)
 	else if (item == systemCreateMenu.tagMenuItem) 
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.tags.TagWizardPanel());
+	}	
+	else if (item == systemCreateMenu.touMenuItem) 
+	{
+		showWizardPanel(new TOUScheduleWizardPanel());
 	}
 
 }

@@ -13,6 +13,8 @@ import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.data.season.SeasonSchedule;
 import com.cannontech.dbeditor.editor.season.SeasonEditorPanel;
+import com.cannontech.dbeditor.editor.tou.TOUEditorPanel;
+import com.cannontech.database.data.tou.TOUSchedule;
 
 public final class EditorPanelFactory
 {
@@ -45,7 +47,7 @@ public final class EditorPanelFactory
    	{com.cannontech.database.data.user.YukonUser.class,
 		 com.cannontech.dbeditor.editor.user.LoginEditorPanel.class},
 
-		{com.cannontech.database.data.user.YukonGroup.class,
+	{com.cannontech.database.data.user.YukonGroup.class,
 		 com.cannontech.dbeditor.editor.user.RoleGroupEditorPanel.class},
 
    	{com.cannontech.database.data.device.DeviceBase.class,
@@ -57,14 +59,14 @@ public final class EditorPanelFactory
    	{com.cannontech.database.data.notification.GroupNotification.class,
 		 com.cannontech.dbeditor.editor.notification.group.NotificationGroupEditorPanel.class},
 
-//   	{com.cannontech.database.data.notification.ContactNotification.class,
-//		 com.cannontech.dbeditor.editor.notification.recipient.NotificationRecipientEditorPanel.class},
+	//{com.cannontech.database.data.notification.ContactNotification.class,
+	//com.cannontech.dbeditor.editor.notification.recipient.NotificationRecipientEditorPanel.class},
 
    	{com.cannontech.database.data.state.GroupState.class,
 	  	com.cannontech.dbeditor.editor.state.StateEditorPanel.class},
 
-		{com.cannontech.database.data.device.lm.LMControlArea.class,
-		 com.cannontech.dbeditor.editor.device.lmcontrolarea.LMControlAreaEditor.class},
+	{com.cannontech.database.data.device.lm.LMControlArea.class,
+		com.cannontech.dbeditor.editor.device.lmcontrolarea.LMControlAreaEditor.class},
 
    	{com.cannontech.database.data.device.lm.LMProgramBase.class,
 	  	com.cannontech.dbeditor.editor.device.lmprogram.LMProgramEditor.class},
@@ -97,7 +99,10 @@ public final class EditorPanelFactory
 		com.cannontech.dbeditor.editor.device.lmscenario.LMScenarioEditorPanel.class},
 		
 	{SeasonSchedule.class,
-		SeasonEditorPanel.class}
+		SeasonEditorPanel.class},
+		
+	{TOUSchedule.class,
+		TOUEditorPanel.class}
 	
    	//Remove the Schedule editor because of dependency issues
    	//{com.cannontech.message.macs.message.Schedule.class,

@@ -30,6 +30,7 @@ public class TextFieldDocument extends javax.swing.text.PlainDocument
 	public static int MAX_CAP_GEO_NAME_LENGTH = 30;
 
 	// some simple int defined lengths
+	public static int STRING_LENGTH_4 = 4;
 	public static int STRING_LENGTH_5 = 5;
 	public static int STRING_LENGTH_10 = 10;
 	public static int STRING_LENGTH_15 = 15;
@@ -59,6 +60,14 @@ public class TextFieldDocument extends javax.swing.text.PlainDocument
 		'\'',
 		',',
 		'|'
+	};
+	
+	public static final char[] INVALID_CHARS_TOURATEOFFSETS =
+	{
+		'\'',
+		',',
+		'|',
+		'"'	
 	};
 
 
