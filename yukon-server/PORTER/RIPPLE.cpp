@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/11/09 21:56:06 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/12/06 19:53:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -83,7 +83,7 @@
 
 extern CtiPortManager   PortManager;
 extern HCTIQUEUE*       QueueHandle(LONG pid);
-     
+
 void Send4PartToDispatch(RWCString Source, RWCString MajorName, RWCString MinorName, RWCString Message1 = RWCString(""), RWCString Message2 = RWCString(""));
 INT QueueForScan( CtiDeviceLCU *lcu, bool mayqueuescans );
 INT QueueAllForScan( CtiDeviceLCU *lcu, bool mayqueuescans );
@@ -101,7 +101,7 @@ INT ReleaseAnLCU(OUTMESS *&OutMessage, CtiDeviceLCU *lcu);
 bool AnyLCUCanExecute( OUTMESS *&OutMessage, CtiDeviceLCU *lcu, RWTime &Now );
 bool LCUCanExecute( OUTMESS *&OutMessage, CtiDeviceLCU *lcu, RWTime &Now );
 bool LCUPortHasAnLCUScan( OUTMESS *&OutMessage, CtiDeviceLCU *lcu, RWTime &Now );
-        
+
 bool findAnyLCUsTransmitting(const long key, CtiDeviceSPtr Dev, void* ptr)
 {
     bool bStatus = false;
@@ -215,6 +215,10 @@ void ApplyPortXLCUSet(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
             }
             else
             {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << pOtherLCU->getName() << endl;
+                }
                 pOtherLCU->setFlags( LCUTRANSMITSENT );    // Global address will make this LCU squawk
             }
         }
@@ -227,6 +231,10 @@ void ApplyPortXLCUSet(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
         {
             if(pOtherLCU->isFlagSet(LCUTRANSMITSENT))
             {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
                 lcu->setNumberStarted( lcu->getNumberStarted() + 1 );
             }
         }
@@ -379,6 +387,10 @@ LCUResultDecode (OUTMESS *OutMessage, INMESS *InMessage, CtiDeviceSPtr Dev, ULON
                 {
                     CTISleep( CtiDeviceLCU::getSlowScanDelay() );
                 }
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
                 QueueForScan( lcu, Result ? true : mayqueuescans );     // Make porter do a fast scan!
                 status = RETRY_SUBMITTED;               // Keep the decode from happening on this stupid thing.
             }
@@ -457,7 +469,6 @@ SendBitPatternToLogger (const CHAR *DeviceName, const BYTE *Telegraph, int len)
     PCHAR Source = "Rbp";
     CHAR Message[100];
     ULONG i, j;
-#if 1
 
     memset(Message, '\0', sizeof(Message) );
 
@@ -502,7 +513,6 @@ SendBitPatternToLogger (const CHAR *DeviceName, const BYTE *Telegraph, int len)
         }
     }
 
-#endif
     /* Do it */
     return(SendTextToLogger (Source, Message, DeviceName));
 }
@@ -513,11 +523,6 @@ SendBitPatternToLogger (const CHAR *DeviceName, const BYTE *Telegraph, int len)
 /* Routine to send double orders to Logger */
 SendDOToLogger (const CHAR *DeviceName, const BYTE *Telegraph)
 {
-#if 1
-
-    return NORMAL;
-
-#else
     PCHAR Source = "Rdo";
     CHAR Message[200];
     ULONG i;
@@ -704,7 +709,6 @@ SendDOToLogger (const CHAR *DeviceName, const BYTE *Telegraph)
 
     /* Do it */
     return(SendTextToLogger (Source, Message, DeviceName));
-#endif
 }
 
 
@@ -1680,12 +1684,10 @@ INT QueueForScan( CtiDeviceLCU *lcu, bool mayqueuescans )
             }
         }
     }
-#if 0
-    else
+    else if(lcu->getAddress() == LCUGLOBAL)
     {
         QueueAllForScan(lcu, mayqueuescans);        // A bit recursive, but not really too bad.
     }
-#endif
 
     return status;
 }
