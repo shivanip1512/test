@@ -169,6 +169,15 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 			((DBPersistent)getYukonUserRoles().get(i)).add();
 		}
 	}
+	
+	public void deleteOperatorLogin(java.sql.Connection conn) throws SQLException {
+		delete( "EnergyCompanyOperatorLoginList", "OperatorLoginID", getYukonUser().getUserID() );
+		delete( "LMDirectOperatorList", "OperatorLoginID", getYukonUser().getUserID() );
+		delete( "OperatorSerialGroup", "LoginID", getYukonUser().getUserID() );
+		delete( "LMMACSScheduleOperatorList", "OperatorLoginID", getYukonUser().getUserID() );
+		delete( "OperatorLoginGraphList", "OperatorLoginID", getYukonUser().getUserID() );
+		delete();
+	}
 
 	/**
 	 * Returns the yukonGroups.
