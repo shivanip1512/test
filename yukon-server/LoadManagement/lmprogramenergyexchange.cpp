@@ -242,35 +242,16 @@ DOUBLE CtiLMProgramEnergyExchange::reduceProgramLoad(DOUBLE loadReductionNeeded,
 
     Stops control on the program by sending all groups that are active.
 ---------------------------------------------------------------------------*/
-void CtiLMProgramEnergyExchange::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+BOOL CtiLMProgramEnergyExchange::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901)
 {
-
+    BOOL returnBool = TRUE;
 
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - stopProgramControl isn't implemented yet, in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-    /*const RWDBDateTime currentDateTime;
-    if( getProgramState() == CtiLMProgramBase::ManualActiveState ||
-        getProgramState() == CtiLMProgramBase::ActiveState )
-    {
-        for(LONG i=0;i<_lmenergyexchangeoffers.entries();i++)
-        {
-            CtiLMEnergyExchangeOffer* currentOffer = (CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i];
-            if( currentOffer->getRunStatus() == CtiLMEnergyExchangeOffer::CanceledRunStatus )
-            {
-                currentOffer->setRunStatus(CtiLMEnergyExchangeOffer::CanceledRunStatus);
-                notifyCustomersOfStop(multiDispatchMsg);
-                currentOffer->dumpDynamicData();
-                //setProgramState(CtiLMProgramBase::InactiveState);
-            }
-        }
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Trying to stop a program that isn't in a active state, state is: " << getProgramState() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }*/
+    
+    return returnBool;
 }
 
 /*---------------------------------------------------------------------------

@@ -435,9 +435,9 @@ DOUBLE CtiLMProgramCurtailment::reduceProgramLoad(DOUBLE loadReductionNeeded, LO
 
     Stops control on the program by sending all groups that are active.
 ---------------------------------------------------------------------------*/
-void CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+BOOL CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901)
 {
-
+    BOOL returnBool = TRUE;
 
     const RWDBDateTime currentDateTime;
     if( getProgramState() == CtiLMProgramBase::StoppingState )
@@ -495,9 +495,12 @@ void CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
     }
     else
     {
+        returnBool = FALSE;
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Trying to stop curtailment on a program that isn't in the StoppingState state is: " << getProgramState() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
+
+    return returnBool;
 }
 
 /*---------------------------------------------------------------------------
@@ -547,7 +550,7 @@ BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMult
         {
             returnBoolean = TRUE;
             setProgramState(CtiLMProgramBase::StoppingState);
-            stopProgramControl(multiPilMsg,multiDispatchMsg);
+            stopProgramControl(multiPilMsg,multiDispatchMsg, secondsFrom1901);
             setManualControlReceivedFlag(FALSE);
 
             if( _LM_DEBUG )
@@ -560,7 +563,7 @@ BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMult
     else if( getProgramState() == CtiLMProgramBase::StoppingState )
     {
         returnBoolean = TRUE;
-        stopProgramControl(multiPilMsg,multiDispatchMsg);
+        stopProgramControl(multiPilMsg,multiDispatchMsg, secondsFrom1901);
         setManualControlReceivedFlag(FALSE);
     }
     else
