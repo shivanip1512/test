@@ -202,6 +202,7 @@ public class StarsAdmin extends HttpServlet {
 				st.wordChars( '#', '#' );
 				st.wordChars( '@', '@' );
 				st.wordChars( '(', ')' );
+				st.wordChars( '!', '!' );
 				
 				st.nextToken();
 				if (st.ttype != ',') st.nextToken();
@@ -301,6 +302,7 @@ public class StarsAdmin extends HttpServlet {
 				st.wordChars( '#', '#' );
 				st.wordChars( '@', '@' );
 				st.wordChars( '(', ')' );
+				st.wordChars( '!', '!' );
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_NO] = st.sval;
@@ -408,6 +410,7 @@ public class StarsAdmin extends HttpServlet {
 				st.wordChars( '#', '#' );
 				st.wordChars( '@', '@' );
 				st.wordChars( '(', ')' );
+				st.wordChars( '!', '!' );
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_NO] = st.sval;
@@ -1054,8 +1057,6 @@ public class StarsAdmin extends HttpServlet {
 						e2.printStackTrace();
 						numFailed++;
 					}
-					
-					line = fr.readLine();
 				}
 				
 				if (numAdded + numUpdated > 0) {
