@@ -1194,13 +1194,10 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
 
         switch( type )
         {
-        case ProtocolVersacomType:
-            {
-                doParsePutConfigVersacom(CmdStr);
-                break;
-            }
+        case ProtocolVersacomType:              // For putconfig, we may not know who we are talking to.  Decode for both.
         case ProtocolExpresscomType:
             {
+                doParsePutConfigVersacom(CmdStr);
                 doParsePutConfigExpresscom(CmdStr);
                 break;
             }
@@ -1592,6 +1589,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
     RWCString   token;
     RWCString   temp, temp2;
     RWCString   strnum;
+    RWCString   str;
 
     INT         _num = 0;
 
@@ -2051,7 +2049,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
         if(!(token = CmdStr.match("serv")).isNull())
         {
-            if(!(token = CmdStr.match("serv(ice)? +((in)|(out)|(enable)|(disable)) *(t(emp)?)?")).isNull())
+            if(!(token = CmdStr.match(" serv(ice)? +((in)|(out)|(enable)|(disable))( +temp)?")).isNull())
             {
                 INT   flag = 0;
 
@@ -2079,7 +2077,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
                     _snprintf(tbuf, sizeof(tbuf), "SERVICE DISABLE");
                 }
 
-                if(token[token.length() - 1] == 't' && token[token.length() - 2] != 'u') // Verify the 't' is not following 'u' as in "out"
+                if(token.contains(" temp"))
                 {
                     char t2[80];
                     strcpy(t2, tbuf);
@@ -2087,6 +2085,16 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
                     flag >>= 2;       // Make the flag match the protocol
 
                     _snprintf(tbuf, sizeof(tbuf), "%s TEMPORARY", t2);
+                    _cmd["vctexservice"] = CtiParseValue( TRUE );
+
+
+                    if(!(token = CmdStr.match("offhours +[0-9]+")).isNull())
+                    {
+                        str = token.match("[0-9]+");
+                        int offtimeinhours = atoi(str.data());
+
+                        _cmd["vctservicetime"] = CtiParseValue( offtimeinhours > 65535 ? 65535 : offtimeinhours );  // Must be passed as half seconds for VCOM
+                    }
                 }
 
                 _cmd["service"] = CtiParseValue( flag );
@@ -2547,71 +2555,74 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
     /*
      *  Type is assigned i.f.f. there is a serial number specified.  The default type is versacom.
      */
-    if( isKeyValid("serial") )
+    if(!isKeyValid("type"))
     {
-        if(CmdStr.contains("emetcon"))
+        if( isKeyValid("serial") )
         {
-            _cmd["type"] = CtiParseValue( "emetcon",  ProtocolEmetconType );
-        }
-        else if(CmdStr.contains("fp"))            // Sourcing from CmdStr, which is the entire command string.
-        {
-            _cmd["type"] = CtiParseValue( "fp",  ProtocolFisherPierceType );
-        }
-        else if(CmdStr.contains("sa105"))       // Sourcing from CmdStr, which is the entire command string.
-        {
-            _cmd["type"] = CtiParseValue( "sa105", ProtocolSA105Type );
-        }
-        else if(CmdStr.contains("sa205"))       // Sourcing from CmdStr, which is the entire command string.
-        {
-            _cmd["type"] = CtiParseValue( "sa205", ProtocolSA205Type );
-        }
-        else if(CmdStr.contains("sa305"))       // Sourcing from CmdStr, which is the entire command string.
-        {
-            _cmd["type"] = CtiParseValue( "sa305", ProtocolSA305Type );
-        }
-        else if(CmdStr.contains("xcom") || CmdStr.contains("expresscom"))
-        {
-            _cmd["type"] = CtiParseValue( "expresscom", ProtocolExpresscomType );
-        }
-        else if(CmdStr.contains("vcom") || CmdStr.contains("versacom"))
-        {
-            _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
-        }
-        else
-        {
-            int xcom_base = gConfigParms.getValueAsInt("LCR_EXPRESSCOM_SERIAL_BASE", -1);
-
-            if(xcom_base >= 0)
+            if(CmdStr.contains("emetcon"))
             {
-                if( getiValue("serial", 0) >= xcom_base )
+                _cmd["type"] = CtiParseValue( "emetcon",  ProtocolEmetconType );
+            }
+            else if(CmdStr.contains("fp"))            // Sourcing from CmdStr, which is the entire command string.
+            {
+                _cmd["type"] = CtiParseValue( "fp",  ProtocolFisherPierceType );
+            }
+            else if(CmdStr.contains("sa105"))       // Sourcing from CmdStr, which is the entire command string.
+            {
+                _cmd["type"] = CtiParseValue( "sa105", ProtocolSA105Type );
+            }
+            else if(CmdStr.contains("sa205"))       // Sourcing from CmdStr, which is the entire command string.
+            {
+                _cmd["type"] = CtiParseValue( "sa205", ProtocolSA205Type );
+            }
+            else if(CmdStr.contains("sa305"))       // Sourcing from CmdStr, which is the entire command string.
+            {
+                _cmd["type"] = CtiParseValue( "sa305", ProtocolSA305Type );
+            }
+            else if(CmdStr.contains("xcom") || CmdStr.contains("expresscom"))
+            {
+                _cmd["type"] = CtiParseValue( "expresscom", ProtocolExpresscomType );
+            }
+            else if(CmdStr.contains("vcom") || CmdStr.contains("versacom"))
+            {
+                _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
+            }
+            else
+            {
+                int xcom_base = gConfigParms.getValueAsInt("LCR_EXPRESSCOM_SERIAL_BASE", -1);
+
+                if(xcom_base >= 0)
                 {
-                    _cmd["type"] = CtiParseValue( "expresscom", ProtocolExpresscomType );
+                    if( getiValue("serial", 0) >= xcom_base )
+                    {
+                        _cmd["type"] = CtiParseValue( "expresscom", ProtocolExpresscomType );
+                    }
+                    else
+                    {
+                        _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
+                    }
                 }
                 else
                 {
                     _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
                 }
             }
-            else
-            {
-                _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
-            }
-        }
-    }
-    else
-    {
-        //  check for "emetcon" protocol
-        if(CmdStr.contains("emetcon"))
-        {
-            _cmd["type"] = CtiParseValue( "emetcon",  ProtocolEmetconType );
-        }
-        else if(CmdStr.contains("xcom") || CmdStr.contains("expresscom"))
-        {
-            _cmd["type"] = CtiParseValue( "expresscom", ProtocolExpresscomType );
         }
         else
-        {  //  default to Versacom if nothing found
-            _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
+        {
+            //  check for "emetcon" protocol
+            if(CmdStr.contains("emetcon"))
+            {
+                _cmd["type"] = CtiParseValue( "emetcon",  ProtocolEmetconType );
+            }
+            else if(CmdStr.contains("xcom") || CmdStr.contains("expresscom"))
+            {
+                _cmd["type"] = CtiParseValue( "expresscom", ProtocolExpresscomType );
+            }
+            else
+            {  //  default to Versacom if nothing found
+                _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
+            }
         }
     }
 }
@@ -3312,7 +3323,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
         }
     }
 
-    if(CmdStr.contains("serv"))
+    if(CmdStr.contains(" serv"))
     {
         if(CmdStr.contains("temp") && !(token = CmdStr.match("serv(ice)? +((in)|(out)|(enable)|(disable))")).isNull())
         {
@@ -3322,7 +3333,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
             INT bitP = 0;    // default to using cold load
             INT bitL = 0;    // default to using the LEDs
 
-            if(!(str = token.match("out")).isNull() || !(str = token.match("disable")).isNull())
+            if(!(str = token.match(" out")).isNull() || !(str = token.match(" disable")).isNull())
             {
                 cancel = 1;
                 _snprintf(tbuf, sizeof(tbuf), "SERVICE DISABLE TEMPORARY");
@@ -3332,16 +3343,16 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
                 _snprintf(tbuf, sizeof(tbuf), "SERVICE ENABLE TEMPORARY");
             }
 
-            if(CmdStr.contains("noclp"))
+            if(CmdStr.contains(" noclp"))
             {
                 bitP = 1;
             }
-            if(CmdStr.contains("noled"))
+            if(CmdStr.contains(" noled"))
             {
                 bitL = 1;
             }
 
-            if(!(token = CmdStr.match("offhours +[0-9]+")).isNull())
+            if(!(token = CmdStr.match(" offhours +[0-9]+")).isNull())
             {
                 str = token.match("[0-9]+");
                 offtime = atoi(str.data());
@@ -3358,12 +3369,12 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
             CHAR tbuf[80];
             INT flag = 0;
 
-            if(!(str = token.match("in")).isNull() || !(str = token.match("enable")).isNull())
+            if(!(str = token.match(" in")).isNull() || !(str = token.match(" enable")).isNull())
             {
                 flag |= 0x80;
                 _snprintf(tbuf, sizeof(tbuf), "SERVICE ENABLE");
             }
-            else if(!(str = token.match("out")).isNull() || !(str = token.match("disable")).isNull())
+            else if(!(str = token.match(" out")).isNull() || !(str = token.match(" disable")).isNull())
             {
                 flag |= 0x00;
                 _snprintf(tbuf, sizeof(tbuf), "SERVICE DISABLE");

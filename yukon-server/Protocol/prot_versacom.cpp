@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/03/13 19:35:41 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/03/26 20:33:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -199,6 +199,30 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
         setNibble ( _vst[_last]->Nibbles++, _vst[_last]->Service);
         break;
 
+    case VEX_SERVICE:
+        {
+            USHORT flag = (_vst[_last]->ExService.Cancel ? 0x0004 : 0x0000) | (_vst[_last]->ExService.LED_Off ? 0x0002 : 0x0000);
+
+            setNibble ( 0, VADDITIONAL);
+            setNibble ( _vst[_last]->Nibbles++, VSERVICE);  // Service is a 9 as-is EX_SERVICE.. Pay attention.
+            setNibble ( _vst[_last]->Nibbles++, flag);
+
+            if(!(_vst[_last]->ExService.Cancel))
+            {
+                USHORT offtime = _vst[_last]->ExService.TOOS_Time;
+                setNibble ( _vst[_last]->Nibbles++, offtime >> 12);
+                setNibble ( _vst[_last]->Nibbles++, offtime >> 8);
+                setNibble ( _vst[_last]->Nibbles++, offtime >> 4);
+                setNibble ( _vst[_last]->Nibbles++, offtime);
+            }
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            break;
+        }
     case VPROPOGATION:
         setNibble ( 0, VPROPOGATION);
         setNibble ( _vst[_last]->Nibbles++, _vst[_last]->PropDIT);
@@ -720,11 +744,6 @@ CtiProtocolVersacom& CtiProtocolVersacom::setTransmitterType(INT type)
     _transmitterType = type;
     return *this;
 }
-CtiProtocolVersacom& CtiProtocolVersacom::VersacomTransmitter(INT type)
-{
-    _transmitterType = type;
-    return *this;
-}
 
 /*-------------------------------------------------------------------------*
  * Group addressing is COMPLETELY ignored if Serial Number (Serial) is non
@@ -1173,6 +1192,19 @@ INT    CtiProtocolVersacom::VersacomServiceCommand(UINT serviceflag)
     return updateVersacomMessage();
 }
 
+INT CtiProtocolVersacom::VersacomExtendedServiceCommand(bool cancel, bool led_off, int offtimeinhours )
+{
+
+    _vst[_last]->CommandType = VEX_SERVICE;
+
+    _vst[_last]->ExService.Cancel = (cancel ? TRUE : FALSE);
+    _vst[_last]->ExService.LED_Off = (led_off ? TRUE : FALSE);
+    _vst[_last]->ExService.TOOS_Time = (USHORT)offtimeinhours;
+
+    /* OK this is all set-up for the builder to manhandle now! */
+    return updateVersacomMessage();
+}
+
 INT    CtiProtocolVersacom::VersacomConfigLEDCommand(BYTE leds)
 {
     /*
@@ -1567,7 +1599,18 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     }
     else
     {
-        if((iNum = parse.getiValue("service")) != INT_MIN)
+        if((iNum = parse.getiValue("vctexservice")) != INT_MIN)
+        {
+            primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+            bool cancel = (parse.getiValue("vctservicetime", 0) == 0 ? true : false );
+            bool led_off = (parse.getiValue("vctservicedisableled", 0) != 0 ? true : false );   // Currently not parsable!
+            int halfseconds = parse.getiValue("vctservicetime", 0);
+
+            if(VersacomExtendedServiceCommand(cancel, led_off, halfseconds))
+                removeLastVStruct();
+        }
+        else if((iNum = parse.getiValue("service")) != INT_MIN)
         {
             primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 

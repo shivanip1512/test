@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/03/13 19:35:49 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/03/26 20:33:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -325,6 +325,14 @@ public:
     *  serviceflag == VC_SERVICE_C_IN  == 8 is Contractual IN service
     *-------------------------------------------------------------------------*/
    INT    VersacomServiceCommand(UINT serviceflag);
+
+   /*-------------------------------------------------------------------------*
+    * Builds a message to temporarily remove or restore service to a versacom switch.
+    * cacel restores a prior Extended Temporary OOS command
+    * led_off disables the lights on the switch during the OOS
+    * half seconds off is the OOS timeout in half seconds.
+    *-------------------------------------------------------------------------*/
+   INT    VersacomExtendedServiceCommand(bool cancel, bool led_off, int offtimeinhours );
 
    /*-----------------------------------------------------------------*
     * A VDATA Command
