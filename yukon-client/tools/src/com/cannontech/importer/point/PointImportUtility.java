@@ -12,9 +12,8 @@ package com.cannontech.importer.point;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-
-
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.Point;
 
@@ -62,7 +61,7 @@ public class PointImportUtility
 				return false;
 			}
 			/*
-			 * PointName,PointType,DeviceName,PointOffset,UOM_Text,Multiplier,DataOffset,DeadBand,HiLimit1,
+			 * PointName,PointType,DeviceName,PointOffset,UOM_Text,Multiplier,DataOffset,DecimalPlaces,DeadBand,HiLimit1,
 			 * LowLimit1,Duration1,HiLimit2,LowLimit2,Duration2,Archivetype,ArchInterval,NonUpdate,
 			 * RateOfChange,LimitSet1,LimitSet2,HighReasonablility,LowReasonability
 			 */
@@ -139,7 +138,11 @@ public class PointImportUtility
 			}
 
 			comparer.toUpperCase();
-			if( comparer.compareTo( "KVA" ) == 0 )
+			if( comparer.compareTo( "KW" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 0 ) );
+			else if( comparer.compareTo( "KWH" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 1 ) );
+			else if( comparer.compareTo( "KVA" ) == 0 )
 				analogPoint.getPointUnit().setUomID( new Integer( 2) );
 			else if( comparer.compareTo( "KVAR" ) == 0 )
 				analogPoint.getPointUnit().setUomID( new Integer( 3 ) );
@@ -147,52 +150,63 @@ public class PointImportUtility
 				analogPoint.getPointUnit().setUomID( new Integer (4) );
 			else if( comparer.compareTo( "KVARH" ) == 0 )
 				analogPoint.getPointUnit().setUomID( new Integer( 5 ) );
-			else if( comparer.compareTo( "KWH" ) == 0 )
-				analogPoint.getPointUnit().setUomID( new Integer( 1 ) );
+			else if( comparer.compareTo( "KVOLTS" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 6 ) );
+			else if( comparer.compareTo( "KQ" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 7 ) );
+			else if( comparer.compareTo( "AMPS" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 8 ) );
+			else if( comparer.compareTo( "COUNTS" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 9 ) );
+			else if( comparer.compareTo( "DEGREES" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 10 ) );
+			else if( comparer.compareTo( "DOLLARS" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 11 ) );
+			else if( comparer.compareTo( "$" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 12 ) );
+			else if( comparer.compareTo( "FEET" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 13 ) );
+			else if( comparer.compareTo( "GALLONS" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 14 ) );
+			/*else if( comparer.compareTo(      ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 15 ) );*/
+			/*else if( comparer.compareTo(      ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 16 ) );*/
+			else if( comparer.compareTo( "HOURS" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 17 ) );
 			else if( comparer.compareTo( "MW" ) == 0 )
 				analogPoint.getPointUnit().setUomID( new Integer( 20 ) );
 			else if( comparer.compareTo( "MWH" ) == 0 )
 				analogPoint.getPointUnit().setUomID( new Integer( 21 ) );
-			else if( comparer.compareTo( "KQ" ) == 0 )
-				analogPoint.getPointUnit().setUomID( new Integer( 7 ) );
-			else if( comparer.compareTo( "PF" ) == 0 )
-				analogPoint.getPointUnit().setUomID( new Integer( 27 ) );
-			else if( comparer.compareTo( "VOLTS" ) == 0 )
-				analogPoint.getPointUnit().setUomID( new Integer( 35 ) );
-			else if( comparer.compareTo( "MS" ) == 0 )
-				analogPoint.getPointUnit().setUomID( new Integer( 45 ) );
-			else if( comparer.compareTo( "SECONDS" ) == 0 )
-				analogPoint.getPointUnit().setUomID( new Integer( 31 ) );
-			else if( comparer.compareTo( "HOURS" ) == 0 )
-				analogPoint.getPointUnit().setUomID( new Integer( 17 ) );
 			else if( comparer.compareTo( "MVA" ) == 0 )
 				analogPoint.getPointUnit().setUomID( new Integer( 22 ) );
 			else if( comparer.compareTo( "MVAR" ) == 0 )
 				analogPoint.getPointUnit().setUomID( new Integer( 23 ) );
 			else if( comparer.compareTo( "MVAH" ) == 0 )
-					analogPoint.getPointUnit().setUomID( new Integer( 24 ) );	
+				analogPoint.getPointUnit().setUomID( new Integer( 24 ) );	
 			else if( comparer.compareTo( "MVARH" ) == 0 )
 				analogPoint.getPointUnit().setUomID( new Integer( 25 ) );
-			else if( comparer.compareTo( "C" ) == 0 || comparer.compareTo( "'C" ) == 0 )
-				analogPoint.getPointUnit().setUomID( new Integer( 33 ) );
 			else if( comparer.compareTo( "OPS" ) == 0 )
 				analogPoint.getPointUnit().setUomID( new Integer( 26 ) );
-			else if( comparer.compareTo( "%" ) == 0 )
-				analogPoint.getPointUnit().setUomID( new Integer( 29 ) );
+			else if( comparer.compareTo( "PF" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 27 ) );
 			else if( comparer.compareTo( "PERCENT" ) == 0 )
 				analogPoint.getPointUnit().setUomID( new Integer( 28 ) );
-			else if( comparer.compareTo( "KW" ) == 0 )
-				analogPoint.getPointUnit().setUomID( new Integer( 0 ) );
-			else if( comparer.compareTo( "AMPS" ) == 0 )
-				analogPoint.getPointUnit().setUomID( new Integer( 8 ) );
-			else if( comparer.compareTo( "DOLLARS" ) == 0 )
-				analogPoint.getPointUnit().setUomID( new Integer( 11 ) );
-			else if( comparer.compareTo( "$" ) == 0 )
-				analogPoint.getPointUnit().setUomID( new Integer( 11 ) );
+			else if( comparer.compareTo( "%" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 29 ) );
+			else if( comparer.compareTo( "SECONDS" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 31 ) );
+			else if( comparer.compareTo( "C" ) == 0 || comparer.compareTo( "ºC" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 33 ) );
+			else if( comparer.compareTo( "VOLTS" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 35 ) );
+			else if( comparer.compareTo( "MILES" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 44 ) );
+			else if( comparer.compareTo( "MS" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 45 ) );
 			else 
-				analogPoint.getPointUnit().setUomID( new Integer( 0  ) );
+				analogPoint.getPointUnit().setUomID( new Integer( 0 ) );
 			
-				
 			// set default settings for BASE point
 			analogPoint.getPoint().setLogicalGroup(new String("Default"));
 			analogPoint.getPoint().setServiceFlag(new Character('N'));
@@ -233,6 +247,14 @@ public class PointImportUtility
 					((com.cannontech.database.data.point.AnalogPoint)analogPoint).getPointAnalog().setDataOffset(new Double(0));
 				}
 				((com.cannontech.database.data.point.AnalogPoint)analogPoint).getPointAnalog().setDataOffset(new Double(tokenHolder));
+				
+				//this is a little out of place...one last pointunit field that needs to be grabbed
+				String decimalPlaces = tokenizer.nextElement().toString();
+				if(emptyField(decimalPlaces))
+				{
+					decimalPlaces = "2";
+				}
+				analogPoint.getPointUnit().setDecimalPlaces(new Integer(decimalPlaces));
 				
 				tokenHolder = tokenizer.nextElement().toString();
 				tokenCounter++;
@@ -793,7 +815,10 @@ public class PointImportUtility
 					currentNewLine += nextToken + ",";
 					//move past that extra token (the delimiter itself)
 					Object holder = tokenizer.nextElement();
-					nextToken = tokenizer.nextElement().toString();
+					if(tokenizer.countTokens() != 0)
+						nextToken = tokenizer.nextElement().toString();
+					else
+						break;
 					
 				}
 				
