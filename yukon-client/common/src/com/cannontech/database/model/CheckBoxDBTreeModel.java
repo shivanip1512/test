@@ -14,53 +14,33 @@ import java.util.Vector;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public abstract class CheckBoxDBTreeModel extends DBTreeModel
+public abstract class CheckBoxDBTreeModel extends DBTreeModel implements Checkable
 {
-
 	//Contains CheckNodes (hopefully) values.  DOES NOT CONTAIN THE PARENT!!!
-	private Vector checkedNodes = null;	
+	private Vector checkedNodes = null;
+		
 	/**
-	 * DBEditorTreeModel constructor comment.
-	 * @param root javax.swing.tree.TreeNode
+	 * @param root
 	 */
 	public CheckBoxDBTreeModel(javax.swing.tree.TreeNode root) {
 		super(root);
 	}
 
-//	/* (non-Javadoc)
-//	 * @see com.cannontech.database.model.LiteBaseTreeModel#isLiteTypeSupported(int)
-//	 */
-//	public boolean isLiteTypeSupported(int liteType)
-//	{
-//		// TODO Auto-generated method stub
-//		return false;
-//	}
-//
-//	/* (non-Javadoc)
-//	 * @see com.cannontech.database.model.LiteBaseTreeModel#update()
-//	 */
-//	public void update()
-//	{
-//		// TODO Auto-generated method stub
-//
-//	}
-
-/**
- * @return
- */
-public Vector getCheckedNodes()
-{
-	if( checkedNodes == null)
-		checkedNodes = new Vector();
-	return checkedNodes;
-}
-
-/**
- * @param vector
- */
-public void setCheckedNodes(Vector vector)
-{
-	checkedNodes = vector;
-}
-
+	/**
+	 * @return
+	 */
+	public Vector getCheckedNodes()
+	{
+		if( checkedNodes == null)
+			checkedNodes = new Vector();
+		return checkedNodes;
+	}
+	
+	/**
+	 * @param vector
+	 */
+	public void setCheckedNodes(Vector vector)
+	{
+		checkedNodes = vector;
+	}
 }
