@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/04/22 16:35:06 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/06/02 15:03:35 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,7 +47,7 @@ private:
 
     CtiIONDataStream       _dsOut, _dsIn;
 
-    unsigned short _srcID, _dstID;
+    unsigned short _masterAddress, _slaveAddress;
 
     struct ion_protocol_command_struct
     {
@@ -65,7 +65,11 @@ private:
     unsigned long _client_eventLogLastPosition,
                   _eventLogLastPosition,
                   _eventLogCurrentPosition,
-                  _eventLogDepth;
+                  _eventLogDepth,
+                  _eventLogSearchSuccessPoint,
+                  _eventLogSearchFailPoint,
+                  _eventLogSearchPokePoint,
+                  _eventLogSearchCounter;
 
     typedef vector< unsigned long >             ion_handle_vector;
     typedef map< unsigned long, unsigned long > ion_value_register_map;
@@ -250,10 +254,12 @@ protected:
         State_ReceiveDataRecorderLogs,*/
 
         //  reading event logs
-        State_RequestEventLogDepth,
-        State_ReceiveEventLogDepth,
-        State_RequestEventLogPosition,
-        State_ReceiveEventLogPosition,
+        State_RequestEventLogStatusInfo,
+        State_ReceiveEventLogStatusInfo,
+
+        State_RequestEventLogLastPositionSearch,
+        State_ReceiveEventLogLastPositionSearch,
+
         State_RequestEventLogRecords,
         State_ReceiveEventLogRecords,
 
@@ -348,6 +354,7 @@ public:
     IONCommand getCommand( void );
     void setCommand( IONCommand command );
     void setCommand( IONCommand command, unsigned int unsigned_int_parameter );
+    bool commandRequiresRequeueOnFail( void );
 //    void setCommand( IONCommand command, ion_output_point *points = NULL, int numPoints = 0 );
     void setEventLogLastPosition( unsigned long lastRecord );
     unsigned long getEventLogLastPosition( void );
