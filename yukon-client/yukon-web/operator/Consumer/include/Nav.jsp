@@ -1,6 +1,6 @@
 <%
-	// Table of (link, page name) pairs
-	String linkPairs[][] = {{"Update.jsp", "General"},
+	// Table of [link, label, page name(optional)]
+	String linkTable[][] = {{"Update.jsp", "General"},
 						  {"Contacts.jsp", "Contacts"},
 						  {"Residence.jsp", "Residence"},
 						  {"Calls.jsp", "Call Tracking"},
@@ -17,7 +17,8 @@
 						  {"PrintExport.jsp", "Print/Export"},
 						  {"FAQ.jsp", "FAQ"},
 						  {"CreateAppliances.jsp", "New"},
-						  {"SerialNumber.jsp", "New"},
+						  {(AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING_TIME).equalsIgnoreCase(InventoryManager.INVENTORY_CHECKING_TIME_EARLY))?
+						  	"SerialNumber.jsp" : "CreateHardware.jsp", "New", "CreateHardware.jsp"},
 						 };
 
 	String bulletImg = "<img src='../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif") + "' width='9' height='9'>";
@@ -25,19 +26,25 @@
 	
 	// List of String[] (link image, link html)
 	Hashtable links = new Hashtable();
-	for (int i = 0; i < linkPairs.length; i++) {
+	for (int i = 0; i < linkTable.length; i++) {
 		String linkImg = null;
 		String linkHtml = null;
-		if (linkPairs[i][0].equalsIgnoreCase(pageName)) {
+		String linkPageName = (linkTable[i].length == 3)? linkTable[i][2] : linkTable[i][0];
+		if (linkPageName.equalsIgnoreCase(pageName)) {
 			linkImg = bulletImg;
-			linkHtml = "<span class='Nav'>" + linkPairs[i][1] + "</span>";
+			linkHtml = "<span class='Nav'>" + linkTable[i][1] + "</span>";
 		}
 		else {
 			linkImg = "";
-			linkHtml = "<a href='" + linkPairs[i][0] + "' class='Link2'><span class='NavText'>" + linkPairs[i][1] + "</span></a>";
+			linkHtml = "<a href='" + linkTable[i][0] + "' class='Link2'><span class='NavText'>" + linkTable[i][1] + "</span></a>";
 		}
-		links.put(linkPairs[i][0], new String[] {linkImg, linkHtml});
+		links.put(linkPageName, new String[] {linkImg, linkHtml});
 	}
+	
+	// List of String[] (inventory no., bullet image, link html, expand bullet image)
+	ArrayList switches = new ArrayList();
+	ArrayList thermostats = new ArrayList();
+	ArrayList meters = new ArrayList();
 %>
 
 <table width="101" border="0" cellspacing="0" cellpadding="5">
@@ -211,11 +218,6 @@
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES %>"> 
           <%
-	// List of String[] (inventory no., bullet image, link html, expand bullet image)
-	ArrayList switches = new ArrayList();
-	ArrayList thermostats = new ArrayList();
-	ArrayList meters = new ArrayList();
-	
 	for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
 		StarsLMHardware hw = inventories.getStarsLMHardware(i);
 		String linkLabel = hw.getDeviceLabel();
@@ -241,7 +243,148 @@
 		else
 			switches.add( linkFields );
 	}
+	
+	if (inventories.getStarsLMHardwareCount() > 0) {
 %>
+          <tr>
+            <td width="10">&nbsp;</td>
+            <td>
+<%
+		if (switches.size() > 0) {
+%>
+			  <span class="NavGroup">Switches</span><br>
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <%
+			for (int i = 0; i < switches.size(); i++) {
+				String[] linkFields = (String[]) switches.get(i);
+%>
+                <tr onmouseover="menuAppear(event, this, 'switchMenu', <%= linkFields[0] %>)"> 
+                  <td width="10" valign="top" style="padding-top:1"><%= linkFields[1] %></td>
+                  <td><%= linkFields[2] %></td>
+                  <td width="10" valign="bottom" style="padding-bottom:1"><%= linkFields[3] %></td>
+                </tr>
+<%
+			}
+%>
+              </table>
+<%
+		}	// switches
+		if (thermostats.size() > 0) {
+%>
+              <span class="NavGroup">Thermostats</span><br>
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <%
+			for (int i = 0; i < thermostats.size(); i++) {
+				String[] linkFields = (String[]) thermostats.get(i);
+%>
+                <tr onmouseover="menuAppear(event, this, 'thermostatMenu', <%= linkFields[0] %>)"> 
+                  <td width="10" valign="top" style="padding-top:1"><%= linkFields[1] %></td>
+                  <td><%= linkFields[2] %></td>
+                  <td width="10" valign="bottom" style="padding-bottom:1"><%= linkFields[3] %></td>
+                </tr>
+<%
+			}
+%>
+              </table>
+<%
+		}	// thermostats
+		if (meters.size() > 0) {
+%>
+              <span class="NavGroup">Meters</span><br>
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <%
+			for (int i = 0; i < meters.size(); i++) {
+				String[] linkFields = (String[]) meters.get(i);
+%>
+                <tr onmouseover="menuAppear(event, this, 'meterMenu', <%= linkFields[0] %>)"> 
+                  <td width="10" valign="top" style="padding-top:1"><%= linkFields[1] %></td>
+                  <td><%= linkFields[2] %></td>
+                  <td width="10" valign="bottom" style="padding-bottom:1"><%= linkFields[3] %></td>
+                </tr>
+<%
+			}
+%>
+              </table>
+<%
+		}	// meters
+%>
+            </td>
+          </tr>
+<%
+	}
+%>
+		  </cti:checkProperty>
+		  <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE %>"> 
+          <tr>
+            <td width="10"><%= ((String[]) links.get("CreateHardware.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("CreateHardware.jsp"))[1] %></td>
+          </tr>
+		  </cti:checkProperty>
+        </table>
+      </div>
+    </td>
+  </tr>
+</cti:checkMultiProperty>
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS %>">
+  <tr> 
+    <td> 
+      <div align="left"><span class="NavHeader">Work Orders</span><br>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td width="10"><%= ((String[]) links.get("Service.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("Service.jsp"))[1] %></td>
+          </tr>
+          <tr>
+            <td width="10"><%= ((String[]) links.get("ServiceSummary.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("ServiceSummary.jsp"))[1] %></td>
+          </tr>
+        </table>
+	  </div>
+    </td>
+  </tr>
+</cti:checkProperty>
+<cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ) %>">
+  <tr> 
+    <td> 
+      <div align="left"><span class="NavHeader">Administration</span><br>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN %>"> 
+          <tr>
+            <td width="10"><%= ((String[]) links.get("Password.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("Password.jsp"))[1] %></td>
+          </tr>
+		  </cti:checkProperty>
+<%
+	String faqLink = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_FAQ);
+	if (ServerUtils.forceNotNone(faqLink).length() > 0) {
+%>
+          <tr>
+            <td width="10">&nbsp;</td>
+            <td style="padding:1"><a href='<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_LINK_FAQ %>"/>' class="Link2" target="faqs"><span class="NavText">FAQ</span></a></td>
+          </tr>
+<%	} else { %>
+          <tr>
+            <td width="10"><%= ((String[]) links.get("FAQ.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("FAQ.jsp"))[1] %></td>
+          </tr>
+<%	} %>
+		  <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_NOT_IMPLEMENTED %>">
+          <tr>
+            <td width="10"><%= ((String[]) links.get("Privileges.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("Privileges.jsp"))[1] %></td>
+          </tr>
+          <tr>
+            <td width="10"><%= ((String[]) links.get("PrintExport.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("PrintExport.jsp"))[1] %></td>
+          </tr>
+		  </cti:checkProperty>
+        </table>
+	  </div>
+    </td>
+  </tr>
+</cti:checkMultiProperty>
+</table>
+
 <script language="JavaScript" src="../../JavaScript/hardware_menu.js"></script>
 <script language="JavaScript">
 // Initialize variables defined in hardware_menu.js
@@ -286,141 +429,6 @@ pageLinks = new Array(<%= inventories.getStarsLMHardwareCount() %>);
 	}
 %>
 </script>
-          <tr>
-            <td width="10">&nbsp;</td>
-            <td>
-<%
-	if (switches.size() > 0) {
-%>
-			  <span class="NavGroup">Switches</span><br>
-              <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                <%
-		for (int i = 0; i < switches.size(); i++) {
-			String[] linkFields = (String[]) switches.get(i);
-%>
-                <tr onmouseover="menuAppear(event, this, 'switchMenu', <%= linkFields[0] %>)"> 
-                  <td width="10" valign="top" style="padding-top:1"><%= linkFields[1] %></td>
-                  <td><%= linkFields[2] %></td>
-                  <td width="10" valign="bottom" style="padding-bottom:1"><%= linkFields[3] %></td>
-                </tr>
-<%
-		}
-%>
-              </table>
-<%
-	}
-	if (thermostats.size() > 0) {
-%>
-              <span class="NavGroup">Thermostats</span><br>
-              <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                <%
-		for (int i = 0; i < thermostats.size(); i++) {
-			String[] linkFields = (String[]) thermostats.get(i);
-%>
-                <tr onmouseover="menuAppear(event, this, 'thermostatMenu', <%= linkFields[0] %>)"> 
-                  <td width="10" valign="top" style="padding-top:1"><%= linkFields[1] %></td>
-                  <td><%= linkFields[2] %></td>
-                  <td width="10" valign="bottom" style="padding-bottom:1"><%= linkFields[3] %></td>
-                </tr>
-<%
-		}
-%>
-              </table>
-<%
-	}
-	if (meters.size() > 0) {
-%>
-              <span class="NavGroup">Meters</span><br>
-              <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                <%
-		for (int i = 0; i < meters.size(); i++) {
-			String[] linkFields = (String[]) meters.get(i);
-%>
-                <tr onmouseover="menuAppear(event, this, 'meterMenu', <%= linkFields[0] %>)"> 
-                  <td width="10" valign="top" style="padding-top:1"><%= linkFields[1] %></td>
-                  <td><%= linkFields[2] %></td>
-                  <td width="10" valign="bottom" style="padding-bottom:1"><%= linkFields[3] %></td>
-                </tr>
-<%
-		}
-%>
-              </table>
-<%
-	}
-%>
-            </td>
-          </tr>
-		  </cti:checkProperty>
-		  <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE %>"> 
-          <tr>
-            <td width="10"><%= ((String[]) links.get("SerialNumber.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("SerialNumber.jsp"))[1] %></td>
-          </tr>
-		  </cti:checkProperty>
-        </table>
-      </div>
-    </td>
-  </tr>
-</cti:checkMultiProperty>
-<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS %>">
-  <tr> 
-    <td> 
-      <div align="left"><span class="NavHeader">Work Orders</span><br>
-        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-          <tr>
-            <td width="10"><%= ((String[]) links.get("Service.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("Service.jsp"))[1] %></td>
-          </tr>
-          <tr>
-            <td width="10"><%= ((String[]) links.get("ServiceSummary.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("ServiceSummary.jsp"))[1] %></td>
-          </tr>
-        </table>
-	  </div>
-    </td>
-  </tr>
-</cti:checkProperty>
-<cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ) %>">
-  <tr> 
-    <td> 
-      <div align="left"><span class="NavHeader">Administration</span><br>
-        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-          <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN %>"> 
-          <tr>
-            <td width="10"><%= ((String[]) links.get("Password.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("Password.jsp"))[1] %></td>
-          </tr>
-		  </cti:checkProperty>
-<%
-	String faqLink = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_FAQ);
-	if (ServerUtils.forceNotNone(faqLink).length() > 0) {
-%>
-          <tr>
-            <td width="10">&nbsp;</td>
-            <td style="padding:1"><a href='<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_LINK_FAQ %>"/>' class="Link2" target="new"><span class="NavText">FAQ</span></a></td>
-          </tr>
-<%	} else { %>
-          <tr>
-            <td width="10"><%= ((String[]) links.get("FAQ.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("FAQ.jsp"))[1] %></td>
-          </tr>
-<%	} %>
-		  <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_NOT_IMPLEMENTED %>">
-          <tr>
-            <td width="10"><%= ((String[]) links.get("Privileges.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("Privileges.jsp"))[1] %></td>
-          </tr>
-          <tr>
-            <td width="10"><%= ((String[]) links.get("PrintExport.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("PrintExport.jsp"))[1] %></td>
-          </tr>
-		  </cti:checkProperty>
-        </table>
-	  </div>
-    </td>
-  </tr>
-</cti:checkMultiProperty>
-</table>
 
 <div id="switchMenu" class="bgMenu" style="width:75px" align="left">
   <div id="MenuItem" style="width:75px" onmouseover="changeOptionStyle(this)" class = "navmenu1" onclick = "showPage(0)">
