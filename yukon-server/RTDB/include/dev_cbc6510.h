@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/08/29 16:46:08 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/09/11 21:27:57 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,6 +41,7 @@ public:
 
     virtual RWCString getDescription(const CtiCommandParser & parse) const;
 
+    void processInboundPoints(RWTPtrSlist<CtiPointDataMsg> &points, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 };
 

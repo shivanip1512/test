@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/08/29 16:46:07 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/09/11 21:27:57 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -97,6 +97,79 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pars
     }
 
     return nRet;
+}
+
+
+void CtiDeviceCBC6510::processInboundPoints(RWTPtrSlist<CtiPointDataMsg> &points, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
+{
+    CtiPointDataMsg *tmpMsg;
+    CtiPointBase *point;
+    int tripped, closed;
+
+    tripped = -1;
+    closed  = -1;
+
+    while( !points.isEmpty() )
+    {
+        tmpMsg = points.removeFirst();
+
+        if( tmpMsg->getId() == 1 && tmpMsg->getType() == StatusPointType )
+        {
+            closed  = tmpMsg->getValue();
+
+            delete tmpMsg;
+            tmpMsg = NULL;
+        }
+        else if( tmpMsg->getId() == 2 && tmpMsg->getType() == StatusPointType )
+        {
+            tripped = tmpMsg->getValue();
+
+            delete tmpMsg;
+            tmpMsg = NULL;
+        }
+
+        if( tmpMsg != NULL )
+        {
+            //  !!! getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
+            if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId(), tmpMsg->getType())) != NULL )
+            {
+                tmpMsg->setId(point->getID());
+
+                retList.append(tmpMsg);
+            }
+            else
+            {
+                delete tmpMsg;
+            }
+        }
+    }
+
+    if( (point = getDevicePointOffsetTypeEqual(1, StatusPointType)) != NULL )
+    {
+        if( tripped >= 0 || closed >= 0 )
+        {
+            tmpMsg = new CtiPointDataMsg(point->getID());
+
+            if( tripped == 1 && closed == 0 )
+            {
+                tmpMsg->setValue( 0.0 );
+            }
+            else if( tripped == 0 && closed == 1 )
+            {
+                tmpMsg->setValue( 1.0 );
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                tmpMsg->setValue( 2.0 );
+            }
+
+            retList.append(tmpMsg);
+        }
+    }
 }
 
 
