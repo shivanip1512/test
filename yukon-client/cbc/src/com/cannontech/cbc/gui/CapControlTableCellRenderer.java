@@ -129,8 +129,11 @@ private void handleFeederTableModel(FeederTableModel model, int row, int column,
 	// columns are the BankSize and OpCount, because the user could have moved it.
 	if( table.convertColumnIndexToModel(column) == FeederTableModel.CURRENT_VAR_LOAD_COLUMN||
 		 table.convertColumnIndexToModel(column) == FeederTableModel.ESTIMATED_VARS_COLUMN ||
-		 table.convertColumnIndexToModel(column) == FeederTableModel.DAILY_OPERATIONS_COLUMN )
+		 table.convertColumnIndexToModel(column) == FeederTableModel.DAILY_OPERATIONS_COLUMN ||
+       table.convertColumnIndexToModel(column) == FeederTableModel.POWER_FACTOR_COLUMN )
+   {
 		this.setHorizontalAlignment( javax.swing.SwingConstants.CENTER );
+   }
 	else
 		this.setHorizontalAlignment( javax.swing.SwingConstants.LEFT );
 
@@ -149,8 +152,12 @@ private void handleSubBusTableModel(SubBusTableModel model, int row, int column,
 	// columns are the BankSize and OpCount, because the user could have moved it.
 	if( table.convertColumnIndexToModel(column) == SubBusTableModel.CURRENT_VAR_LOAD_COLUMN||
 		 table.convertColumnIndexToModel(column) == SubBusTableModel.ESTIMATED_VARS_COLUMN ||
-		 table.convertColumnIndexToModel(column) == SubBusTableModel.DAILY_OPERATIONS_COLUMN )
+       table.convertColumnIndexToModel(column) == SubBusTableModel.DAILY_OPERATIONS_COLUMN ||
+		 table.convertColumnIndexToModel(column) == SubBusTableModel.POWER_FACTOR_COLUMN ||
+       table.convertColumnIndexToModel(column) == SubBusTableModel.WATTS_COLUMN )
+   {
 		this.setHorizontalAlignment( javax.swing.SwingConstants.CENTER );
+   }
 	else
 		this.setHorizontalAlignment( javax.swing.SwingConstants.LEFT );
 

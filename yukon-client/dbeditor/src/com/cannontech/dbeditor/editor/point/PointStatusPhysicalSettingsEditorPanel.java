@@ -708,6 +708,9 @@ private javax.swing.JLabel getJLabelHrs() {
 			ivjJLabelHrs.setText("(Hours)");
 			ivjJLabelHrs.setEnabled(false);
 			// user code begin {1}
+         
+         ivjJLabelHrs.setText("(min.)");
+         
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -731,6 +734,9 @@ private javax.swing.JLabel getJLabelSecs() {
 			ivjJLabelSecs.setText("(Seconds)");
 			ivjJLabelSecs.setEnabled(false);
 			// user code begin {1}
+         
+         ivjJLabelSecs.setText("(sec.)");
+         
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}

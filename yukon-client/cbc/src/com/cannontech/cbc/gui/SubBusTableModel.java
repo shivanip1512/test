@@ -12,6 +12,7 @@ import com.cannontech.cbc.data.CBCClientConnection;
 import com.cannontech.cbc.data.CapBankDevice;
 import com.cannontech.cbc.tablemodelevents.StateTableModelEvent;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
+import com.cannontech.cbc.data.CapControlConst;
 
 public class SubBusTableModel extends javax.swing.table.AbstractTableModel implements java.util.Observer, com.cannontech.tdc.alarms.gui.AlarmTableModel, com.cannontech.common.gui.util.SortableTableModel
 {
@@ -272,11 +273,11 @@ private String getSubBusPendingState( SubBus sub )
 		{
 			CapBankDevice capBank = ((CapBankDevice)feeder.getCcCapBanks().elementAt(j));
 			
-			if( capBank.getControlStatus().intValue() == CapBankDevice.CLOSE_PENDING )
-				return CapBankTableModel.getStateNames()[CapBankDevice.CLOSE_PENDING];
+			if( capBank.getControlStatus().intValue() == CapControlConst.BANK_CLOSE_PENDING )
+				return CapBankTableModel.getStateNames()[CapControlConst.BANK_CLOSE_PENDING];
 				
-			if( capBank.getControlStatus().intValue() == CapBankDevice.OPEN_PENDING )
-				return CapBankTableModel.getStateNames()[CapBankDevice.OPEN_PENDING];
+			if( capBank.getControlStatus().intValue() == CapControlConst.BANK_OPEN_PENDING )
+				return CapBankTableModel.getStateNames()[CapControlConst.BANK_OPEN_PENDING];
 		}
 
 	}
@@ -362,8 +363,13 @@ public Object getValueAt(int row, int col)
 						sub.getEstimatedVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() );
 
 		case POWER_FACTOR_COLUMN:
-         return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces(
-                  sub.getPowerFactorValue().doubleValue(), sub.getDecimalPlaces().intValue() );
+      {
+         if( sub.getPowerFactorValue().doubleValue() <= CapControlConst.PF_INVALID_VALUE )
+            return "  NA";
+         else
+            return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces(
+                  sub.getPowerFactorValue().doubleValue() * 100, 1 ) + "%"; //get percent
+      }
 			
 		case WATTS_COLUMN:
          return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 

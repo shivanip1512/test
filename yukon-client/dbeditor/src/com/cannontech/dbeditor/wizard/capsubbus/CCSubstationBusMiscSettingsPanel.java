@@ -1771,7 +1771,8 @@ public void setValue(Object val )
 	getJTextFieldStopTime().setTimeText(
 			subBus.getCapControlSubstationBus().getPeakStopTime() );
 
-
+   getJComboBoxControlUnits().setSelectedItem(
+         subBus.getCapControlSubstationBus().getControlUnits().toString() );
 	
 	return;
 }

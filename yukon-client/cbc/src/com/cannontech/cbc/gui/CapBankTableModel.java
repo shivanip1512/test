@@ -17,6 +17,7 @@ import com.cannontech.tdc.alarms.gui.AlarmingRowVector;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
 import com.cannontech.cbc.data.SubBus;
 import com.cannontech.cbc.data.Feeder;
+import com.cannontech.cbc.data.CapControlConst;
 
 public class CapBankTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, com.cannontech.tdc.alarms.gui.AlarmTableModel, CapControlTableModel, com.cannontech.common.gui.util.SortableTableModel
 {
@@ -286,11 +287,11 @@ public String getPendingState()
 	{
 		CapBankDevice rowValue = getRowAt(i);
 		
-		if( rowValue.getControlStatus().intValue() == CapBankDevice.CLOSE_PENDING )
-			return getStateNames()[CapBankDevice.CLOSE_PENDING];
+		if( rowValue.getControlStatus().intValue() == CapControlConst.BANK_CLOSE_PENDING )
+			return getStateNames()[CapControlConst.BANK_CLOSE_PENDING];
 			
-		if( rowValue.getControlStatus().intValue() == CapBankDevice.OPEN_PENDING )
-			return getStateNames()[CapBankDevice.OPEN_PENDING];
+		if( rowValue.getControlStatus().intValue() == CapControlConst.BANK_OPEN_PENDING )
+			return getStateNames()[CapControlConst.BANK_OPEN_PENDING];
 	}
 
 	// we are not pending
@@ -434,8 +435,8 @@ public boolean isAnyCapBankInPendingState()
 	{
 		CapBankDevice rowValue = getRowAt(i);
 		
-		if( rowValue.getControlStatus().intValue() == CapBankDevice.CLOSE_PENDING 
-			 || rowValue.getControlStatus().intValue() == CapBankDevice.OPEN_PENDING )
+		if( rowValue.getControlStatus().intValue() == CapControlConst.BANK_CLOSE_PENDING 
+			 || rowValue.getControlStatus().intValue() == CapControlConst.BANK_OPEN_PENDING )
 		{
 			return true;
 		}

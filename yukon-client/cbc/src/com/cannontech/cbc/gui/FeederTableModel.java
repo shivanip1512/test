@@ -13,6 +13,7 @@ import com.cannontech.cbc.data.CBCClientConnection;
 import com.cannontech.cbc.data.CapBankDevice;
 import com.cannontech.cbc.tablemodelevents.StateTableModelEvent;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
+import com.cannontech.cbc.data.CapControlConst;
 
 public class FeederTableModel extends javax.swing.table.AbstractTableModel implements com.cannontech.tdc.alarms.gui.AlarmTableModel, javax.swing.event.TableModelListener, CapControlTableModel, com.cannontech.common.gui.util.SortableTableModel
 {
@@ -168,11 +169,11 @@ private String getFeederPendingState( Feeder feeder )
 	{
 		CapBankDevice capBank = ((CapBankDevice)feeder.getCcCapBanks().elementAt(j));
 		
-		if( capBank.getControlStatus().intValue() == CapBankDevice.CLOSE_PENDING )
-			return CapBankTableModel.getStateNames()[CapBankDevice.CLOSE_PENDING];
+		if( capBank.getControlStatus().intValue() == CapControlConst.BANK_CLOSE_PENDING )
+			return CapBankTableModel.getStateNames()[CapControlConst.BANK_CLOSE_PENDING];
 			
-		if( capBank.getControlStatus().intValue() == CapBankDevice.OPEN_PENDING )
-			return CapBankTableModel.getStateNames()[CapBankDevice.OPEN_PENDING];
+		if( capBank.getControlStatus().intValue() == CapControlConst.BANK_OPEN_PENDING )
+			return CapBankTableModel.getStateNames()[CapControlConst.BANK_OPEN_PENDING];
 	}
 
 	// we are not pending
@@ -279,9 +280,15 @@ public Object getValueAt(int row, int col)
 			}
 
          case POWER_FACTOR_COLUMN:
-            return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces(
-                     feeder.getPowerFactorValue().doubleValue(), getCurrentSubBus().getDecimalPlaces().intValue() );
-                     				
+         {            
+            if( feeder.getPowerFactorValue().doubleValue() <= CapControlConst.PF_INVALID_VALUE )
+               return "  NA";
+            else
+            
+               return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces(
+                     feeder.getPowerFactorValue().doubleValue(), 1 ) + "%"; //get percent
+         }
+         
 			case DAILY_OPERATIONS_COLUMN:
 				return feeder.getCurrentDailyOperations();
 				

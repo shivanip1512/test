@@ -6,7 +6,7 @@ package com.cannontech.cbc.data;
  * @author: 
  */
 public class SubBus extends StreamableCapObject
-{
+{   
 	private String controlMethod = null;
 	private Integer maxDailyOperation = null;
 	private Boolean maxOperationDisableFlag = null;

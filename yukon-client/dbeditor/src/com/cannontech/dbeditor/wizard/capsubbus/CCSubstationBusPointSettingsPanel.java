@@ -861,8 +861,12 @@ public void jComboBoxCalcWattsDevice_ActionPerformed(java.awt.event.ActionEvent 
 
 	for( int i=0; i < altPoints.length; i++)
 	{
-		if( deviceID == altPoints[i].getPaobjectID() )
+		if( deviceID == altPoints[i].getPaobjectID()
+          && (altPoints[i].getPointType() == com.cannontech.database.data.point.PointTypes.ANALOG_POINT
+              || altPoints[i].getPointType() == com.cannontech.database.data.point.PointTypes.CALCULATED_POINT) )
+      {      
 			getJComboBoxCalcWattsPoint().addItem( altPoints[i] );
+      }
 		else if( deviceID < altPoints[i].getPaobjectID() )
 			break;
 	}

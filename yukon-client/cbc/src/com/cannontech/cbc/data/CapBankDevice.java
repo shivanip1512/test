@@ -7,15 +7,6 @@ package com.cannontech.cbc.data;
  */
 public class CapBankDevice extends StreamableCapObject
 {
-	public final static int OPEN = 0;
-	public final static int CLOSE = 1;
-	public final static int OPEN_QUESTIONABLE = 2;
-	public final static int CLOSE_QUESTIONABLE = 3;
-	public final static int OPEN_FAIL = 4;
-	public final static int CLOSE_FAIL = 5;
-	public final static int OPEN_PENDING = 6;
-	public final static int CLOSE_PENDING = 7;
-
 	private Integer alarmInhibit = null;
 	private Integer controlInhibit = null;
 	private String operationalState = null;
@@ -212,10 +203,10 @@ public static boolean isInAnyOpenState( CapBankDevice capBank)
 {
 	if( capBank != null )
 	{
-		if( capBank.getControlStatus().intValue() == OPEN ||
-			 capBank.getControlStatus().intValue() == OPEN_PENDING ||
-			 capBank.getControlStatus().intValue() == OPEN_FAIL ||
-			 capBank.getControlStatus().intValue() == OPEN_QUESTIONABLE ) 
+		if( capBank.getControlStatus().intValue() == CapControlConst.BANK_OPEN ||
+			 capBank.getControlStatus().intValue() == CapControlConst.BANK_OPEN_PENDING ||
+			 capBank.getControlStatus().intValue() == CapControlConst.BANK_OPEN_FAIL ||
+			 capBank.getControlStatus().intValue() == CapControlConst.BANK_OPEN_QUESTIONABLE ) 
 		{
 			return true;
 		}
@@ -231,8 +222,8 @@ public static boolean isInAnyOpenState( CapBankDevice capBank)
  */
 public static boolean isStatusClosed(int status) 
 {
-	if( status == CLOSE || status == CLOSE_FAIL
-		 || status == CLOSE_PENDING || status == CLOSE_QUESTIONABLE ) 
+	if( status == CapControlConst.BANK_CLOSE || status == CapControlConst.BANK_CLOSE_FAIL
+		 || status == CapControlConst.BANK_CLOSE_PENDING || status == CapControlConst.BANK_CLOSE_QUESTIONABLE ) 
 	{
 		return true;
 	}
