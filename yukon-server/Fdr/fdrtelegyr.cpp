@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/04/21 17:13:32 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/03/02 17:39:28 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -590,14 +590,14 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
                   break;
 
                case API_CRE_RES:     //we've created a group
-               {
-                  if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
                   {
-                     CtiLockGuard<CtiLogger> doubt_guard( dout );
-                     dout << RWTime::now() << " Group Created!! " << endl;
+                     if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
+                     {
+                        CtiLockGuard<CtiLogger> doubt_guard( dout );
+                        dout << RWTime::now() << " Group Created!! " << endl;
+                     }
                   }
-               }
-               break;
+                  break;
 
                default:              //we don't know what the heck is going on....
                   {
@@ -1263,18 +1263,20 @@ bool CtiFDRTelegyr::processAnalog( APICLI_GET_MEA aPoint, int groupid, int index
    bool                 returnCode;
    int                  x;
    double               value;
+   double               raw;
    USHORT               quality;
    bool                 nonUpdated = false;
 
    if( aPoint.mea_valid == API_VALID )
    {
-      value = aPoint.mea_value.mea4_value;
-
+      raw = aPoint.mea_value.mea4_value;  //just want to log the 'raw', unmultiplied value
+      value = raw;
+/*
       {
          CtiLockGuard<CtiLogger> doubt_guard( dout );
-         dout << "Raw Analog Value: " << value << endl;
+         dout << RWTime() << " Raw Analog Value: " << value << endl;
       }
-
+*/
       //flip through our groups until the groupid matches the one this point came from
       //then snag the pointid out
       CtiLockGuard<CtiMutex> sendGuard( _controlCenter.getMutex() );
@@ -1292,8 +1294,7 @@ bool CtiFDRTelegyr::processAnalog( APICLI_GET_MEA aPoint, int groupid, int index
 
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << "Point with PointID " << pointid << "from Control Center "<< _controlCenter.getSysName() << endl;
-               dout << /*add some more crap here*/endl;
+               dout << RWTime() << " Raw Analog Value: " << raw << " from Point with PointID " << pointid << " from Control Center "<< _controlCenter.getSysName() << endl;
             }
 
             //if the value is higher than it should be, we want to let the boss man know
@@ -1392,7 +1393,7 @@ bool CtiFDRTelegyr::processDigital( APICLI_GET_IND aPoint, int groupid, int inde
 
       {
          CtiLockGuard<CtiLogger> doubt_guard( dout );
-         dout << "My Raw Digital: " << value << endl;
+         dout << RWTime() << " Raw Digital Value: " << value << endl;
       }
 
       //flip through our groups until the groupid matches the one this point came from
@@ -1537,22 +1538,14 @@ RWCString CtiFDRTelegyr::decipherReason( int transmissionReason )
       retReason = "API_REQ_DATA";
       break;
 
-   case API_DQS_DATA:
-      retReason = "API_DQS_DATA";
+   case API_CYC_DATA:
+      retReason = "API_CYC_DATA";
       break;
-
-   case  API_LIST_ALM_EVT:
-      retReason = "API_LIST_ALM_EVT";
+   
+   case API_SPO_DATA:
+      retReason = "API_SPO_DATA";
       break;
-
-   case API_ALARMS_LIST:
-      retReason = "API_ALARMS_LIST";
-      break;
-
-   case API_INOUT_SCAN:
-      retReason = "API_INOUT_SCAN";
-      break;
-
+   
    case API_CRE_RES:
       retReason = "API_CRE_RES";
       break;
@@ -1561,56 +1554,92 @@ RWCString CtiFDRTelegyr::decipherReason( int transmissionReason )
       retReason = "API_DEL_RES";
       break;
 
+   case API_DELALL_RES:
+      retReason = "API_DELALL_RES";
+      break;
+
+   case API_ENCYC_RES:
+      retReason = "API_ENCYC_RES";
+      break;
+
+   case API_ENSPO_RES:
+      retReason = "API_ENSPO_RES";
+      break;
+
    case API_ENDQS_RES:
       retReason = "API_ENDQS_RES";
       break;
-
-   case API_ENLIST_RES:
-      retReason = "API_ENLIST_RES";
-      break;
-
+   
    case API_DISCYC_RES:
       retReason = "API_DISCYC_RES";
       break;
-
+   
    case API_DISSPO_RES:
       retReason = "API_DISSPO_RES";
       break;
-
+   
    case API_DISDQS_RES:
       retReason = "API_DISDQS_RES";
-      break;
-
-   case API_DISLIST_RES:
-      retReason = "API_DISLIST_RES";
       break;
 
    case API_DISCYCALL_RES:
       retReason = "API_DISCYCALL_RES";
       break;
-
+   
    case API_DISSPOALL_RES:
       retReason = "API_DISSPOALL_RES";
+      break;
+   
+   case API_WRI_RES:
+      retReason = "API_WRI_RES";
       break;
 
    case API_COM_RES:
       retReason = "API_COM_RES";
       break;
 
-   case API_WRI_RES:
-      retReason = "API_WRI_RES";
+   case API_GROUPS:
+      retReason = "API_GROUPS";
+      break;
+   
+   case API_READ_GRP:
+      retReason = "API_READ_GRP";
       break;
 
-   case API_WRT_RES:
-      retReason = "API_WRT_RES";
+   case API_DISC_NOTIFY:
+      retReason = "API_DISC_NOTIFY";
       break;
 
-   case API_TAG_RES:
-      retReason = "API_TAG_RES";
+   case API_FULL_NOTIFY:
+      retReason = "API_FULL_NOTIFY";
       break;
-
+   
+   case API_DQS_DATA:
+      retReason = "API_DQS_DATA";
+      break;
+   
    case API_DQS_RES:
       retReason = "API_DQS_RES";
+      break;
+
+   case  API_LIST_ALM_EVT:
+      retReason = "API_LIST_ALM_EVT";
+      break;
+   
+   case API_ENLIST_RES:
+      retReason = "API_ENLIST_RES";
+      break;
+   
+   case API_DISLIST_RES:
+      retReason = "API_DISLIST_RES";
+      break;
+
+   case API_INOUT_SCAN:
+      retReason = "API_INOUT_SCAN";
+      break;
+   
+   case API_ALARMS_LIST:
+      retReason = "API_ALARMS_LIST";
       break;
 
    case API_ALARM_ACK_DELETE_RES:
@@ -1632,17 +1661,25 @@ RWCString CtiFDRTelegyr::decipherReason( int transmissionReason )
    case API_DISPLAY_REQUEST_RES:
       retReason = "API_DISPLAY_REQUEST_RES";
       break;
-
-   case API_GROUPS:
-      retReason = "API_GROUPS";
+   
+   case API_SPO_TAG_ADD:
+      retReason = "API_SPO_TAG_ADD";
       break;
 
-   case API_READ_GRP:
-      retReason = "API_READ_GRP";
+   case API_SPO_TAG_DELETE:
+      retReason = "API_SPO_TAG_DELETE";
       break;
 
-   case API_FULL_NOTIFY:
-      retReason = "API_FULL_NOTIFY";
+   case API_SPO_TAG_MODIFY:
+      retReason = "API_SPO_TAG_MODIFY";
+      break;
+
+   case API_WRT_RES:
+      retReason = "API_WRT_RES";
+      break;
+
+   case API_TAG_RES:
+      retReason = "API_TAG_RES";
       break;
 
    default:
