@@ -33,7 +33,7 @@ public class SVGGenerator {
 	
 	private static final String svgFooter = 
 		"</svg>";
-	
+		
 	public SVGGenerator() {
 	}
 	/** 
@@ -199,9 +199,11 @@ public class SVGGenerator {
 		int y = (int) r.getMinY();
 		int width = (int) r.getMaxX() - x;
 		int height = (int) r.getMaxY() - y;
-		
+System.out.println("here!!!");		
 	 	String relImage = Util.getRelativePath( new File(img.getDrawing().getFileName()), new File(img.getImageName()));
+System.out.println("here!!!!");	 	
 	 	relImage = relImage.replace('\\','/');
+System.out.println("here!!!!!");
 	 	
 		writer.write("<image id=\"" + img.getName() + "\" xlink:href=\"" + relImage + "\" x=\"" + x + "\" y=\"" + y + "\" width=\"" + width + "\" height=\"" + height + "\" />\n");
 	}
