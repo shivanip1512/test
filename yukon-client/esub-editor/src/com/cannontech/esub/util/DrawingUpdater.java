@@ -3,6 +3,7 @@ package com.cannontech.esub.util;
 import java.util.TimerTask;
 
 import com.cannontech.common.cache.PointChangeCache;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
@@ -48,6 +49,11 @@ public class DrawingUpdater extends TimerTask {
 	public void updateDrawing() {
 		synchronized (drawing) {			
 			try {
+				// keep stuff up to date in the cache
+				DefaultDatabaseCache.getInstance().getAllDevices();
+				DefaultDatabaseCache.getInstance().getAllPoints();
+				DefaultDatabaseCache.getInstance().getAllStateGroups();
+				
 				// keep track if we changed anything
 				boolean change = false; 
 								
@@ -145,8 +151,6 @@ public class DrawingUpdater extends TimerTask {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		//assert( drawing != null );
-
 		if (drawing == null) {
 			return;
 		} 	
