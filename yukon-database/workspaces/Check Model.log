@@ -21,9 +21,9 @@ Checking table ...
 -	Existence of reference
 	Warning	The following table do not have any reference:
 		-> LOGIC
-		-> GatewayEndDevice
 		-> CTIDatabase
 		-> YukonWebConfiguration
+		-> GatewayEndDevice
 		-> GenericMacro
 		-> BillingFileFormats
 		-> FDRTelegyrGroup

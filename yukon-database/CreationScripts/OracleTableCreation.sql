@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     9/19/2003 3:19:42 PM                         */
+/* Created on:     9/24/2003 2:39:56 PM                         */
 /*==============================================================*/
 
 
@@ -708,12 +708,8 @@ create table Address  (
 
 insert into address values ( 0, '(none)', '(none)', '(none)', 'MN', '(none)', '(none)' );
 
-/*==============================================================*/
-/* Index: Indx_CUSTOMERADDRESS_PK                               */
-/*==============================================================*/
-create unique index Indx_CUSTOMERADDRESS_PK on Address (
-   AddressID ASC
-)
+alter table Address
+   add constraint PK_ADDRESS primary key (AddressID)
 /
 
 
@@ -765,12 +761,8 @@ insert into AlarmCategory values(30,'Category 29',1);
 insert into AlarmCategory values(31,'Category 30',1);
 insert into AlarmCategory values(32,'Category 31',1);
 
-/*==============================================================*/
-/* Index: Indx_ALARMCATEGORY_PK                                 */
-/*==============================================================*/
-create unique index Indx_ALARMCATEGORY_PK on AlarmCategory (
-   AlarmCategoryID ASC
-)
+alter table AlarmCategory
+   add constraint PK_ALARMCATEGORYID primary key (AlarmCategoryID)
 /
 
 
@@ -792,6 +784,11 @@ create table BaseLine  (
 
 
 insert into baseline values (1, 'Default Baseline', 30, 75, 5, 'YNNNNNY', 0);
+
+alter table BaseLine
+   add constraint PK_BASELINE primary key (BaselineID)
+/
+
 
 /*==============================================================*/
 /* Index: Indx_BASELINE_PK                                      */
@@ -829,12 +826,8 @@ insert into billingfileformats values( 13, 'NISC-Turtle');
 insert into billingfileformats values( 14, 'NISC-NCDC');
 
 
-/*==============================================================*/
-/* Index: Indx_BILLINGFILEFORM_PK                               */
-/*==============================================================*/
-create unique index Indx_BILLINGFILEFORM_PK on BillingFileFormats (
-   FormatID ASC
-)
+alter table BillingFileFormats
+   add constraint PK_BILLINGFILEFORMATS primary key (FormatID)
 /
 
 
@@ -851,20 +844,16 @@ create table CALCBASE  (
 /
 
 
+alter table CALCBASE
+   add constraint PK_CALCBASE primary key (POINTID)
+/
+
+
 /*==============================================================*/
 /* Index: Indx_ClcBaseUpdTyp                                    */
 /*==============================================================*/
 create index Indx_ClcBaseUpdTyp on CALCBASE (
    UPDATETYPE ASC
-)
-/
-
-
-/*==============================================================*/
-/* Index: Indx_CALCBASE_PK                                      */
-/*==============================================================*/
-create unique index Indx_CALCBASE_PK on CALCBASE (
-   POINTID ASC
 )
 /
 
@@ -886,21 +875,16 @@ create table CALCCOMPONENT  (
 /
 
 
+alter table CALCCOMPONENT
+   add constraint PK_CALCCOMPONENT primary key (PointID, COMPONENTORDER)
+/
+
+
 /*==============================================================*/
 /* Index: Indx_CalcCmpCmpType                                   */
 /*==============================================================*/
 create index Indx_CalcCmpCmpType on CALCCOMPONENT (
    COMPONENTTYPE ASC
-)
-/
-
-
-/*==============================================================*/
-/* Index: Indx_CALCCOMPONENT_PK                                 */
-/*==============================================================*/
-create unique index Indx_CALCCOMPONENT_PK on CALCCOMPONENT (
-   PointID ASC,
-   COMPONENTORDER ASC
 )
 /
 
@@ -924,12 +908,8 @@ create table CAPBANK  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_CAPBANK_PK                                       */
-/*==============================================================*/
-create unique index Indx_CAPBANK_PK on CAPBANK (
-   DEVICEID ASC
-)
+alter table CAPBANK
+   add constraint PK_CAPBANK primary key (DEVICEID)
 /
 
 
@@ -962,12 +942,8 @@ create table CAPCONTROLSUBSTATIONBUS  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_CAPCONTROLSUBST_PK                               */
-/*==============================================================*/
-create unique index Indx_CAPCONTROLSUBST_PK on CAPCONTROLSUBSTATIONBUS (
-   SubstationBusID ASC
-)
+alter table CAPCONTROLSUBSTATIONBUS
+   add constraint SYS_C0013476 primary key (SubstationBusID)
 /
 
 
@@ -993,13 +969,8 @@ create table CCFeederBankList  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_CCFEEDERBANKLIS_PK                               */
-/*==============================================================*/
-create unique index Indx_CCFEEDERBANKLIS_PK on CCFeederBankList (
-   FeederID ASC,
-   DeviceID ASC
-)
+alter table CCFeederBankList
+   add constraint PK_CCFEEDERBANKLIST primary key (FeederID, DeviceID)
 /
 
 
@@ -1016,13 +987,8 @@ create table CCFeederSubAssignment  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_CCFEEDERSUBASSI_PK                               */
-/*==============================================================*/
-create unique index Indx_CCFEEDERSUBASSI_PK on CCFeederSubAssignment (
-   SubStationBusID ASC,
-   FeederID ASC
-)
+alter table CCFeederSubAssignment
+   add constraint PK_CCFEEDERSUBASSIGNMENT primary key (SubStationBusID, FeederID)
 /
 
 
@@ -1042,12 +1008,8 @@ create table CICustomerBase  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_CICUSTOMERBASE_PK                                */
-/*==============================================================*/
-create unique index Indx_CICUSTOMERBASE_PK on CICustomerBase (
-   CustomerID ASC
-)
+alter table CICustomerBase
+   add constraint PK_CICUSTOMERBASE primary key (CustomerID)
 /
 
 
@@ -1079,12 +1041,8 @@ insert into columntype values (13, 'Tags');
 insert into columntype values (14, 'PointImage' );
 insert into columntype values (15, 'QualityCount' );
 
-/*==============================================================*/
-/* Index: Indx_COLUMNTYPE_PK                                    */
-/*==============================================================*/
-create unique index Indx_COLUMNTYPE_PK on COLUMNTYPE (
-   TYPENUM ASC
-)
+alter table COLUMNTYPE
+   add constraint SYS_C0013414 primary key (TYPENUM)
 /
 
 
@@ -1104,12 +1062,8 @@ create table CTIDatabase  (
 
 insert into CTIDatabase values('2.42', 'Ryan', '11-SEP-2003', 'Added some more roles, tag tables, new alarms, soe tables');
 
-/*==============================================================*/
-/* Index: Indx_CTIDATABASE_PK                                   */
-/*==============================================================*/
-create unique index Indx_CTIDATABASE_PK on CTIDatabase (
-   Version ASC
-)
+alter table CTIDatabase
+   add constraint PK_CTIDATABASE primary key (Version)
 /
 
 
@@ -1122,6 +1076,11 @@ create table CalcPointBaseline  (
    PointID              NUMBER                           not null,
    BaselineID           NUMBER                           not null
 )
+/
+
+
+alter table CalcPointBaseline
+   add constraint PK_CalcBsPt primary key (PointID)
 /
 
 
@@ -1152,12 +1111,8 @@ create table CapControlFeeder  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_CAPCONTROLFEEDE_PK                               */
-/*==============================================================*/
-create unique index Indx_CAPCONTROLFEEDE_PK on CapControlFeeder (
-   FeederID ASC
-)
+alter table CapControlFeeder
+   add constraint PK_CAPCONTROLFEEDER primary key (FeederID)
 /
 
 
@@ -1186,12 +1141,8 @@ create table CarrierRoute  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_CARRIERROUTE_PK                                  */
-/*==============================================================*/
-create unique index Indx_CARRIERROUTE_PK on CarrierRoute (
-   ROUTEID ASC
-)
+alter table CarrierRoute
+   add constraint PK_CARRIERROUTE primary key (ROUTEID)
 /
 
 
@@ -1214,12 +1165,8 @@ create table CommErrorHistory  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_COMMERRORHISTOR_PK                               */
-/*==============================================================*/
-create unique index Indx_COMMERRORHISTOR_PK on CommErrorHistory (
-   CommErrorID ASC
-)
+alter table CommErrorHistory
+   add constraint PK_COMMERRORHISTORY primary key (CommErrorID)
 /
 
 
@@ -1244,12 +1191,8 @@ create table CommPort  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_COMMPORT_PK                                      */
-/*==============================================================*/
-create unique index Indx_COMMPORT_PK on CommPort (
-   PORTID ASC
-)
+alter table CommPort
+   add constraint SYS_C0013112 primary key (PORTID)
 /
 
 
@@ -1270,12 +1213,8 @@ create table Contact  (
 
 insert into contact values ( 0, '(none)', '(none)', -1, 0 );
 
-/*==============================================================*/
-/* Index: Indx_CUSTOMERCONTACT_PK                               */
-/*==============================================================*/
-create unique index Indx_CUSTOMERCONTACT_PK on Contact (
-   ContactID ASC
-)
+alter table Contact
+   add constraint PK_CONTACT primary key (ContactID)
 /
 
 
@@ -1297,12 +1236,8 @@ create table ContactNotification  (
 insert into ContactNotification values( 0, 0, 0, 'N', '(none)' );
 
 
-/*==============================================================*/
-/* Index: Indx_CNTNOTIF_PK                                      */
-/*==============================================================*/
-create unique index Indx_CNTNOTIF_PK on ContactNotification (
-   ContactNotifID ASC
-)
+alter table ContactNotification
+   add constraint PK_CONTACTNOTIFICATION primary key (ContactNotifID)
 /
 
 
@@ -1320,12 +1255,8 @@ create table Customer  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_CSTMR_PK                                         */
-/*==============================================================*/
-create unique index Indx_CSTMR_PK on Customer (
-   CustomerID ASC
-)
+alter table Customer
+   add constraint PK_CUSTOMER primary key (CustomerID)
 /
 
 
@@ -1341,13 +1272,8 @@ create table CustomerAdditionalContact  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_CUSTADDCNT_PK                                    */
-/*==============================================================*/
-create unique index Indx_CUSTADDCNT_PK on CustomerAdditionalContact (
-   ContactID ASC,
-   CustomerID ASC
-)
+alter table CustomerAdditionalContact
+   add constraint PK_CUSTOMERADDITIONALCONTACT primary key (ContactID, CustomerID)
 /
 
 
@@ -1363,13 +1289,8 @@ create table CustomerBaseLinePoint  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_CUSTOMERBASELIN_PK                               */
-/*==============================================================*/
-create unique index Indx_CUSTOMERBASELIN_PK on CustomerBaseLinePoint (
-   CustomerID ASC,
-   PointID ASC
-)
+alter table CustomerBaseLinePoint
+   add constraint PK_CUSTOMERBASELINEPOINT primary key (CustomerID, PointID)
 /
 
 
@@ -1385,13 +1306,8 @@ create table CustomerLoginSerialGroup  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_CUSTOMERLOGINSE_PK                               */
-/*==============================================================*/
-create unique index Indx_CUSTOMERLOGINSE_PK on CustomerLoginSerialGroup (
-   LoginID ASC,
-   LMGroupID ASC
-)
+alter table CustomerLoginSerialGroup
+   add constraint PK_CUSTOMERLOGINSERIALGROUP primary key (LoginID, LMGroupID)
 /
 
 
@@ -1410,12 +1326,8 @@ create table DEVICE  (
 
 INSERT into device values (0, 'N', 'N');
 
-/*==============================================================*/
-/* Index: Indx_DEVICE_PK                                        */
-/*==============================================================*/
-create unique index Indx_DEVICE_PK on DEVICE (
-   DEVICEID ASC
-)
+alter table DEVICE
+   add constraint PK_DEV_DEVICEID2 primary key (DEVICEID)
 /
 
 
@@ -1444,12 +1356,8 @@ create table DEVICE2WAYFLAGS  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DEVICE2WAYFLAGS_PK                               */
-/*==============================================================*/
-create unique index Indx_DEVICE2WAYFLAGS_PK on DEVICE2WAYFLAGS (
-   DEVICEID ASC
-)
+alter table DEVICE2WAYFLAGS
+   add constraint PK_DEVICE2WAYFLAGS primary key (DEVICEID)
 /
 
 
@@ -1466,12 +1374,8 @@ create table DEVICECARRIERSETTINGS  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DEVICECARRIERSE_PK                               */
-/*==============================================================*/
-create unique index Indx_DEVICECARRIERSE_PK on DEVICECARRIERSETTINGS (
-   DEVICEID ASC
-)
+alter table DEVICECARRIERSETTINGS
+   add constraint PK_DEVICECARRIERSETTINGS primary key (DEVICEID)
 /
 
 
@@ -1495,12 +1399,8 @@ create table DEVICEDIALUPSETTINGS  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DEVICEDIALUPSET_PK                               */
-/*==============================================================*/
-create unique index Indx_DEVICEDIALUPSET_PK on DEVICEDIALUPSETTINGS (
-   DEVICEID ASC
-)
+alter table DEVICEDIALUPSETTINGS
+   add constraint PK_DEVICEDIALUPSETTINGS primary key (DEVICEID)
 /
 
 
@@ -1520,12 +1420,8 @@ create table DEVICEIDLCREMOTE  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DEVICEIDLCREMOT_PK                               */
-/*==============================================================*/
-create unique index Indx_DEVICEIDLCREMOT_PK on DEVICEIDLCREMOTE (
-   DEVICEID ASC
-)
+alter table DEVICEIDLCREMOTE
+   add constraint PK_DEVICEIDLCREMOTE primary key (DEVICEID)
 /
 
 
@@ -1542,12 +1438,8 @@ create table DEVICEIED  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DEVICEIED_PK                                     */
-/*==============================================================*/
-create unique index Indx_DEVICEIED_PK on DEVICEIED (
-   DEVICEID ASC
-)
+alter table DEVICEIED
+   add constraint PK_DEVICEIED primary key (DEVICEID)
 /
 
 
@@ -1565,12 +1457,8 @@ create table DEVICELOADPROFILE  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DEVICELOADPROFI_PK                               */
-/*==============================================================*/
-create unique index Indx_DEVICELOADPROFI_PK on DEVICELOADPROFILE (
-   DEVICEID ASC
-)
+alter table DEVICELOADPROFILE
+   add constraint PK_DEVICELOADPROFILE primary key (DEVICEID)
 /
 
 
@@ -1597,12 +1485,8 @@ create table DEVICEMCTIEDPORT  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DEVICEMCTIEDPOR_PK                               */
-/*==============================================================*/
-create unique index Indx_DEVICEMCTIEDPOR_PK on DEVICEMCTIEDPORT (
-   DEVICEID ASC
-)
+alter table DEVICEMCTIEDPORT
+   add constraint PK_DEVICEMCTIEDPORT primary key (DEVICEID)
 /
 
 
@@ -1621,12 +1505,8 @@ create table DEVICEMETERGROUP  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DEVICEMETERGROU_PK                               */
-/*==============================================================*/
-create unique index Indx_DEVICEMETERGROU_PK on DEVICEMETERGROUP (
-   DEVICEID ASC
-)
+alter table DEVICEMETERGROUP
+   add constraint PK_DEVICEMETERGROUP primary key (DEVICEID)
 /
 
 
@@ -1648,13 +1528,8 @@ create table DEVICESCANRATE  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DEVICESCANRATE_PK                                */
-/*==============================================================*/
-create unique index Indx_DEVICESCANRATE_PK on DEVICESCANRATE (
-   DEVICEID ASC,
-   SCANTYPE ASC
-)
+alter table DEVICESCANRATE
+   add constraint PK_DEVICESCANRATE primary key (DEVICEID, SCANTYPE)
 /
 
 
@@ -1670,12 +1545,8 @@ create table DEVICETAPPAGINGSETTINGS  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DEVICETAPPAGING_PK                               */
-/*==============================================================*/
-create unique index Indx_DEVICETAPPAGING_PK on DEVICETAPPAGINGSETTINGS (
-   DEVICEID ASC
-)
+alter table DEVICETAPPAGINGSETTINGS
+   add constraint PK_DEVICETAPPAGINGSETTINGS primary key (DEVICEID)
 /
 
 
@@ -1718,20 +1589,16 @@ insert into display values(14, 'Priority 10 Alarms', 'Alarms and Events', 'Prior
 insert into display values(99, 'Your Custom Display', 'Custom Displays', 'Edit This Display', 'This display is is used to show what a user created display looks like. You may edit this display to fit your own needs.');
 
 
+alter table DISPLAY
+   add constraint SYS_C0013412 primary key (DISPLAYNUM)
+/
+
+
 /*==============================================================*/
 /* Index: Indx_DISPLAYNAME                                      */
 /*==============================================================*/
 create unique index Indx_DISPLAYNAME on DISPLAY (
    NAME ASC
-)
-/
-
-
-/*==============================================================*/
-/* Index: Indx_DISPLAY_PK                                       */
-/*==============================================================*/
-create unique index Indx_DISPLAY_PK on DISPLAY (
-   DISPLAYNUM ASC
 )
 /
 
@@ -1749,13 +1616,8 @@ create table DISPLAY2WAYDATA  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DISPLAY2WAYDATA_PK                               */
-/*==============================================================*/
-create unique index Indx_DISPLAY2WAYDATA_PK on DISPLAY2WAYDATA (
-   DISPLAYNUM ASC,
-   ORDERING ASC
-)
+alter table DISPLAY2WAYDATA
+   add constraint PK_DISPLAY2WAYDATA primary key (DISPLAYNUM, ORDERING)
 /
 
 
@@ -1862,13 +1724,8 @@ insert into displaycolumns values(14, 'Point Name', 2, 3, 90 );
 insert into displaycolumns values(14, 'Text Message', 12, 4, 200 );
 insert into displaycolumns values(14, 'User Name', 8, 5, 50 );
 
-/*==============================================================*/
-/* Index: Indx_DISPLAYCOLUMNS_PK                                */
-/*==============================================================*/
-create unique index Indx_DISPLAYCOLUMNS_PK on DISPLAYCOLUMNS (
-   DISPLAYNUM ASC,
-   TITLE ASC
-)
+alter table DISPLAYCOLUMNS
+   add constraint PK_DISPLAYCOLUMNS primary key (DISPLAYNUM, TITLE)
 /
 
 
@@ -1885,12 +1742,8 @@ create table DYNAMICACCUMULATOR  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DYNAMICACCUMULA_PK                               */
-/*==============================================================*/
-create unique index Indx_DYNAMICACCUMULA_PK on DYNAMICACCUMULATOR (
-   POINTID ASC
-)
+alter table DYNAMICACCUMULATOR
+   add constraint PK_DYNAMICACCUMULATOR primary key (POINTID)
 /
 
 
@@ -1914,12 +1767,8 @@ create table DYNAMICDEVICESCANDATA  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DYNAMICDEVICESC_PK                               */
-/*==============================================================*/
-create unique index Indx_DYNAMICDEVICESC_PK on DYNAMICDEVICESCANDATA (
-   DEVICEID ASC
-)
+alter table DYNAMICDEVICESCANDATA
+   add constraint PK_DYNAMICDEVICESCANDATA primary key (DEVICEID)
 /
 
 
@@ -1947,12 +1796,8 @@ create table DYNAMICPOINTDISPATCH  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DYNAMICPOINTDIS_PK                               */
-/*==============================================================*/
-create unique index Indx_DYNAMICPOINTDIS_PK on DYNAMICPOINTDISPATCH (
-   POINTID ASC
-)
+alter table DYNAMICPOINTDISPATCH
+   add constraint PK_DYNAMICPOINTDISPATCH primary key (POINTID)
 /
 
 
@@ -1971,13 +1816,8 @@ create table DateOfHoliday  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DATEOFHOLIDAY_PK                                 */
-/*==============================================================*/
-create unique index Indx_DATEOFHOLIDAY_PK on DateOfHoliday (
-   HolidayScheduleID ASC,
-   HolidayName ASC
-)
+alter table DateOfHoliday
+   add constraint PK_DATEOFHOLIDAY primary key (HolidayScheduleID, HolidayName)
 /
 
 
@@ -1994,12 +1834,8 @@ create table DeviceCBC  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DEVICECBC_PK                                     */
-/*==============================================================*/
-create unique index Indx_DEVICECBC_PK on DeviceCBC (
-   DEVICEID ASC
-)
+alter table DeviceCBC
+   add constraint PK_DEVICECBC primary key (DEVICEID)
 /
 
 
@@ -2015,13 +1851,8 @@ create table DeviceCustomerList  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DEVCSTLST_PK                                     */
-/*==============================================================*/
-create unique index Indx_DEVCSTLST_PK on DeviceCustomerList (
-   DeviceID ASC,
-   CustomerID ASC
-)
+alter table DeviceCustomerList
+   add constraint PK_DEVICECUSTOMERLIST primary key (DeviceID, CustomerID)
 /
 
 
@@ -2039,12 +1870,8 @@ create table DeviceDNP  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DEVICEDNP_PK                                     */
-/*==============================================================*/
-create unique index Indx_DEVICEDNP_PK on DeviceDNP (
-   DeviceID ASC
-)
+alter table DeviceDNP
+   add constraint PK_DEVICEDNP primary key (DeviceID)
 /
 
 
@@ -2060,12 +1887,8 @@ create table DeviceDirectCommSettings  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DEVICEDIRECTCOM_PK                               */
-/*==============================================================*/
-create unique index Indx_DEVICEDIRECTCOM_PK on DeviceDirectCommSettings (
-   DEVICEID ASC
-)
+alter table DeviceDirectCommSettings
+   add constraint PK_DEVICEDIRECTCOMMSETTINGS primary key (DEVICEID)
 /
 
 
@@ -2081,13 +1904,8 @@ create table DeviceRoutes  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DEVICEROUTES_PK                                  */
-/*==============================================================*/
-create unique index Indx_DEVICEROUTES_PK on DeviceRoutes (
-   DEVICEID ASC,
-   ROUTEID ASC
-)
+alter table DeviceRoutes
+   add constraint PK_DEVICEROUTES primary key (DEVICEID, ROUTEID)
 /
 
 
@@ -2107,13 +1925,8 @@ create table DeviceWindow  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DEVICEWINDOW_PK                                  */
-/*==============================================================*/
-create unique index Indx_DEVICEWINDOW_PK on DeviceWindow (
-   DeviceID ASC,
-   Type ASC
-)
+alter table DeviceWindow
+   add constraint PK_DEVICEWINDOW primary key (DeviceID, Type)
 /
 
 
@@ -2135,12 +1948,8 @@ create table DynamicCCCapBank  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DYNAMICCCCAPBAN_PK                               */
-/*==============================================================*/
-create unique index Indx_DYNAMICCCCAPBAN_PK on DynamicCCCapBank (
-   CapBankID ASC
-)
+alter table DynamicCCCapBank
+   add constraint PK_DYNAMICCCCAPBANK primary key (CapBankID)
 /
 
 
@@ -2172,12 +1981,8 @@ create table DynamicCCFeeder  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DYNAMICCCFEEDER_PK                               */
-/*==============================================================*/
-create unique index Indx_DYNAMICCCFEEDER_PK on DynamicCCFeeder (
-   FeederID ASC
-)
+alter table DynamicCCFeeder
+   add constraint PK_DYNAMICCCFEEDER primary key (FeederID)
 /
 
 
@@ -2211,12 +2016,8 @@ create table DynamicCCSubstationBus  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DYNAMICCCSUBSTA_PK                               */
-/*==============================================================*/
-create unique index Indx_DYNAMICCCSUBSTA_PK on DynamicCCSubstationBus (
-   SubstationBusID ASC
-)
+alter table DynamicCCSubstationBus
+   add constraint PK_DYNAMICCCSUBSTATIONBUS primary key (SubstationBusID)
 /
 
 
@@ -2232,12 +2033,8 @@ create table DynamicCalcHistorical  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DYNAMICCALCHIST_PK                               */
-/*==============================================================*/
-create unique index Indx_DYNAMICCALCHIST_PK on DynamicCalcHistorical (
-   PointID ASC
-)
+alter table DynamicCalcHistorical
+   add constraint PK_DYNAMICCALCHISTORICAL primary key (PointID)
 /
 
 
@@ -2260,12 +2057,8 @@ create table DynamicLMControlArea  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DYNAMICLMCONTRO_PK                               */
-/*==============================================================*/
-create unique index Indx_DYNAMICLMCONTRO_PK on DynamicLMControlArea (
-   DeviceID ASC
-)
+alter table DynamicLMControlArea
+   add constraint PK_DYNAMICLMCONTROLAREA primary key (DeviceID)
 /
 
 
@@ -2285,13 +2078,8 @@ create table DynamicLMControlAreaTrigger  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DYNAMICLMCONTRO_PK                               */
-/*==============================================================*/
-create unique index Indx_DYNAMICLMCONTRO_PK on DynamicLMControlAreaTrigger (
-   DeviceID ASC,
-   TriggerNumber ASC
-)
+alter table DynamicLMControlAreaTrigger
+   add constraint PK_DYNAMICLMCONTROLAREATRIGGER primary key (DeviceID, TriggerNumber)
 /
 
 
@@ -2316,13 +2104,8 @@ create table DynamicLMGroup  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DYNAMICLMGROUP_PK                                */
-/*==============================================================*/
-create unique index Indx_DYNAMICLMGROUP_PK on DynamicLMGroup (
-   DeviceID ASC,
-   LMProgramID ASC
-)
+alter table DynamicLMGroup
+   add constraint PK_DYNAMICLMGROUP primary key (DeviceID, LMProgramID)
 /
 
 
@@ -2343,12 +2126,8 @@ create table DynamicLMProgram  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DYNAMICLMPROGRA_PK                               */
-/*==============================================================*/
-create unique index Indx_DYNAMICLMPROGRA_PK on DynamicLMProgram (
-   DeviceID ASC
-)
+alter table DynamicLMProgram
+   add constraint PK_DYNAMICLMPROGRAM primary key (DeviceID)
 /
 
 
@@ -2368,12 +2147,8 @@ create table DynamicLMProgramDirect  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DYNAMICLMPROGRA_PK                               */
-/*==============================================================*/
-create unique index Indx_DYNAMICLMPROGRA_PK on DynamicLMProgramDirect (
-   DeviceID ASC
-)
+alter table DynamicLMProgramDirect
+   add constraint PK_DYNAMICLMPROGRAMDIRECT primary key (DeviceID)
 /
 
 
@@ -2397,13 +2172,8 @@ create table DynamicPAOStatistics  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DYNAMICPAOSTATI_PK                               */
-/*==============================================================*/
-create unique index Indx_DYNAMICPAOSTATI_PK on DynamicPAOStatistics (
-   PAOBjectID ASC,
-   StatisticType ASC
-)
+alter table DynamicPAOStatistics
+   add constraint PK_DYNAMICPAOSTATISTICS primary key (PAOBjectID, StatisticType)
 /
 
 
@@ -2428,13 +2198,8 @@ create table DynamicPointAlarming  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DynPtAlarm_PK                                    */
-/*==============================================================*/
-create unique index Indx_DynPtAlarm_PK on DynamicPointAlarming (
-   PointID ASC,
-   AlarmCondition ASC
-)
+alter table DynamicPointAlarming
+   add constraint PK_DYNAMICPOINTALARMING primary key (PointID, AlarmCondition)
 /
 
 
@@ -2457,12 +2222,8 @@ create table DynamicTags  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_DynTgs_PK                                        */
-/*==============================================================*/
-create unique index Indx_DynTgs_PK on DynamicTags (
-   InstanceID ASC
-)
+alter table DynamicTags
+   add constraint PK_DYNAMICTAGS primary key (InstanceID)
 /
 
 
@@ -2480,20 +2241,16 @@ create table EnergyCompany  (
 /
 
 
+alter table EnergyCompany
+   add constraint PK_ENERGYCOMPANY primary key (EnergyCompanyID)
+/
+
+
 /*==============================================================*/
 /* Index: Indx_EnCmpName                                        */
 /*==============================================================*/
 create unique index Indx_EnCmpName on EnergyCompany (
    Name ASC
-)
-/
-
-
-/*==============================================================*/
-/* Index: Indx_ENERGYCOMPANY_PK                                 */
-/*==============================================================*/
-create unique index Indx_ENERGYCOMPANY_PK on EnergyCompany (
-   EnergyCompanyID ASC
 )
 /
 
@@ -2510,6 +2267,11 @@ create table EnergyCompanyCustomerList  (
 /
 
 
+alter table EnergyCompanyCustomerList
+   add constraint PK_ENERGYCOMPANYCUSTOMERLIST primary key (EnergyCompanyID, CustomerID)
+/
+
+
 /*==============================================================*/
 /* Table : EnergyCompanyOperatorLoginList                       */
 /*==============================================================*/
@@ -2519,6 +2281,11 @@ create table EnergyCompanyOperatorLoginList  (
    EnergyCompanyID      NUMBER                           not null,
    OperatorLoginID      NUMBER                           not null
 )
+/
+
+
+alter table EnergyCompanyOperatorLoginList
+   add constraint PK_ENERGYCOMPANYOPERATORLOGINL primary key (EnergyCompanyID, OperatorLoginID)
 /
 
 
@@ -2552,12 +2319,8 @@ insert into FDRInterface values (13,'TEXTEXPORT','Send','f');
 insert into FDRInterface values (14, 'LODESTAR', 'Receive', 'f' );
 
 
-/*==============================================================*/
-/* Index: Indx_FDRINTERFACE_PK                                  */
-/*==============================================================*/
-create unique index Indx_FDRINTERFACE_PK on FDRInterface (
-   InterfaceID ASC
-)
+alter table FDRInterface
+   add constraint PK_FDRINTERFACE primary key (InterfaceID)
 /
 
 
@@ -2601,13 +2364,8 @@ insert into fdrinterfaceoption values(14,'Customer',1,'Text','(none)');
 insert into fdrinterfaceoption values(14,'Channel',2,'Text','(none)');
 
 
-/*==============================================================*/
-/* Index: Indx_FDRINTERFACEOPT_PK                               */
-/*==============================================================*/
-create unique index Indx_FDRINTERFACEOPT_PK on FDRInterfaceOption (
-   InterfaceID ASC,
-   Ordering ASC
-)
+alter table FDRInterfaceOption
+   add constraint PK_FDRINTERFACEOPTION primary key (InterfaceID, Ordering)
 /
 
 
@@ -2623,6 +2381,11 @@ create table FDRTRANSLATION  (
    DESTINATION          VARCHAR2(20)                     not null,
    TRANSLATION          VARCHAR2(100)                    not null
 )
+/
+
+
+alter table FDRTRANSLATION
+   add constraint PK_FDRTrans primary key (POINTID, InterfaceType, TRANSLATION)
 /
 
 
@@ -2659,12 +2422,8 @@ create table FDRTelegyrGroup  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_FDRTELEGYRGROUP_PK                               */
-/*==============================================================*/
-create unique index Indx_FDRTELEGYRGROUP_PK on FDRTelegyrGroup (
-   GroupID ASC
-)
+alter table FDRTelegyrGroup
+   add constraint PK_FDRTELEGYRGROUP primary key (GroupID)
 /
 
 
@@ -2686,20 +2445,16 @@ create table GRAPHDATASERIES  (
 /
 
 
+alter table GRAPHDATASERIES
+   add constraint SYS_GrphDserID primary key (GRAPHDATASERIESID)
+/
+
+
 /*==============================================================*/
 /* Index: Indx_GrpDSerPtID                                      */
 /*==============================================================*/
 create index Indx_GrpDSerPtID on GRAPHDATASERIES (
    POINTID ASC
-)
-/
-
-
-/*==============================================================*/
-/* Index: Indx_GRAPHDATASERIES_PK                               */
-/*==============================================================*/
-create unique index Indx_GRAPHDATASERIES_PK on GRAPHDATASERIES (
-   GRAPHDATASERIESID ASC
 )
 /
 
@@ -2727,16 +2482,12 @@ create table GRAPHDEFINITION  (
 
 
 alter table GRAPHDEFINITION
-   add constraint AK_GRNMUQ_GRAPHDEF unique (NAME)
+   add constraint SYS_C0015109 primary key (GRAPHDEFINITIONID)
 /
 
 
-/*==============================================================*/
-/* Index: Indx_GRAPHDEFINITION_PK                               */
-/*==============================================================*/
-create unique index Indx_GRAPHDEFINITION_PK on GRAPHDEFINITION (
-   GRAPHDEFINITIONID ASC
-)
+alter table GRAPHDEFINITION
+   add constraint AK_GRNMUQ_GRAPHDEF unique (NAME)
 /
 
 
@@ -2754,6 +2505,11 @@ create table GatewayEndDevice  (
 /
 
 
+alter table GatewayEndDevice
+   add constraint PK_GATEWAYENDDEVICE primary key (SerialNumber, HardwareType, DataType)
+/
+
+
 /*==============================================================*/
 /* Table : GenericMacro                                         */
 /*==============================================================*/
@@ -2768,14 +2524,8 @@ create table GenericMacro  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_GENERICMACRO_PK                                  */
-/*==============================================================*/
-create unique index Indx_GENERICMACRO_PK on GenericMacro (
-   OwnerID ASC,
-   ChildOrder ASC,
-   MacroType ASC
-)
+alter table GenericMacro
+   add constraint PK_GENERICMACRO primary key (OwnerID, ChildOrder, MacroType)
 /
 
 
@@ -2792,13 +2542,8 @@ create table GraphCustomerList  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_GRAPHCUSTOMERLI_PK                               */
-/*==============================================================*/
-create unique index Indx_GRAPHCUSTOMERLI_PK on GraphCustomerList (
-   GraphDefinitionID ASC,
-   CustomerID ASC
-)
+alter table GraphCustomerList
+   add constraint PK_GRAPHCUSTOMERLIST primary key (GraphDefinitionID, CustomerID)
 /
 
 
@@ -2816,20 +2561,16 @@ create table HolidaySchedule  (
 
 insert into HolidaySchedule values( 0, 'Empty Holiday Schedule' );
 
+alter table HolidaySchedule
+   add constraint PK_HOLIDAYSCHEDULE primary key (HolidayScheduleID)
+/
+
+
 /*==============================================================*/
 /* Index: Indx_HolSchName                                       */
 /*==============================================================*/
 create unique index Indx_HolSchName on HolidaySchedule (
    HolidayScheduleName ASC
-)
-/
-
-
-/*==============================================================*/
-/* Index: Indx_HOLIDAYSCHEDULE_PK                               */
-/*==============================================================*/
-create unique index Indx_HOLIDAYSCHEDULE_PK on HolidaySchedule (
-   HolidayScheduleID ASC
 )
 /
 
@@ -2849,13 +2590,8 @@ create table LMCONTROLAREAPROGRAM  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMCONTROLAREAPR_PK                               */
-/*==============================================================*/
-create unique index Indx_LMCONTROLAREAPR_PK on LMCONTROLAREAPROGRAM (
-   DEVICEID ASC,
-   LMPROGRAMDEVICEID ASC
-)
+alter table LMCONTROLAREAPROGRAM
+   add constraint PK_LMCONTROLAREAPROGRAM primary key (DEVICEID, LMPROGRAMDEVICEID)
 /
 
 
@@ -2881,13 +2617,8 @@ create table LMCONTROLAREATRIGGER  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMCONTROLAREATR_PK                               */
-/*==============================================================*/
-create unique index Indx_LMCONTROLAREATR_PK on LMCONTROLAREATRIGGER (
-   DEVICEID ASC,
-   TRIGGERNUMBER ASC
-)
+alter table LMCONTROLAREATRIGGER
+   add constraint PK_LMCONTROLAREATRIGGER primary key (DEVICEID, TRIGGERNUMBER)
 /
 
 
@@ -2908,12 +2639,8 @@ create table LMControlArea  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMCONTROLAREA_PK                                 */
-/*==============================================================*/
-create unique index Indx_LMCONTROLAREA_PK on LMControlArea (
-   DEVICEID ASC
-)
+alter table LMControlArea
+   add constraint PK_LMCONTROLAREA primary key (DEVICEID)
 /
 
 
@@ -2940,20 +2667,16 @@ create table LMControlHistory  (
 /
 
 
+alter table LMControlHistory
+   add constraint PK_LMCONTROLHISTORY primary key (LMCtrlHistID)
+/
+
+
 /*==============================================================*/
 /* Index: Indx_Start                                            */
 /*==============================================================*/
 create index Indx_Start on LMControlHistory (
    StartDateTime ASC
-)
-/
-
-
-/*==============================================================*/
-/* Index: Indx_LMCONTROLHISTOR_PK                               */
-/*==============================================================*/
-create unique index Indx_LMCONTROLHISTOR_PK on LMControlHistory (
-   LMCtrlHistID ASC
 )
 /
 
@@ -2975,6 +2698,11 @@ create table LMCurtailCustomerActivity  (
    CurrentPDL           FLOAT                            not null,
    AckLateFlag          CHAR(1)                          not null
 )
+/
+
+
+alter table LMCurtailCustomerActivity
+   add constraint PK_LMCURTAILCUSTOMERACTIVITY primary key (CustomerID, CurtailReferenceID)
 /
 
 
@@ -3014,20 +2742,16 @@ create table LMCurtailProgramActivity  (
 /
 
 
+alter table LMCurtailProgramActivity
+   add constraint PK_LMCURTAILPROGRAMACTIVITY primary key (CurtailReferenceID)
+/
+
+
 /*==============================================================*/
 /* Index: Indx_LMCrtPrgActStTime                                */
 /*==============================================================*/
 create index Indx_LMCrtPrgActStTime on LMCurtailProgramActivity (
    CurtailmentStartTime ASC
-)
-/
-
-
-/*==============================================================*/
-/* Index: Indx_LMCURTAILPROGRA_PK                               */
-/*==============================================================*/
-create unique index Indx_LMCURTAILPROGRA_PK on LMCurtailProgramActivity (
-   CurtailReferenceID ASC
 )
 /
 
@@ -3044,13 +2768,8 @@ create table LMDirectCustomerList  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMDIRECTCUSTOME_PK                               */
-/*==============================================================*/
-create unique index Indx_LMDIRECTCUSTOME_PK on LMDirectCustomerList (
-   ProgramID ASC,
-   CustomerID ASC
-)
+alter table LMDirectCustomerList
+   add constraint PK_LMDIRECTCUSTOMERLIST primary key (ProgramID, CustomerID)
 /
 
 
@@ -3066,13 +2785,8 @@ create table LMDirectOperatorList  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMDIRECTOPERATO_PK                               */
-/*==============================================================*/
-create unique index Indx_LMDIRECTOPERATO_PK on LMDirectOperatorList (
-   ProgramID ASC,
-   OperatorLoginID ASC
-)
+alter table LMDirectOperatorList
+   add constraint PK_LMDIRECTOPERATORLIST primary key (ProgramID, OperatorLoginID)
 /
 
 
@@ -3089,13 +2803,8 @@ create table LMEnergyExchangeCustomerList  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMENERGYEXCHANG_PK                               */
-/*==============================================================*/
-create unique index Indx_LMENERGYEXCHANG_PK on LMEnergyExchangeCustomerList (
-   ProgramID ASC,
-   CustomerID ASC
-)
+alter table LMEnergyExchangeCustomerList
+   add constraint PK_LMENERGYEXCHANGECUSTOMERLIS primary key (ProgramID, CustomerID)
 /
 
 
@@ -3118,14 +2827,8 @@ create table LMEnergyExchangeCustomerReply  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMENERGYEXCHANG_PK                               */
-/*==============================================================*/
-create unique index Indx_LMENERGYEXCHANG_PK on LMEnergyExchangeCustomerReply (
-   CustomerID ASC,
-   OfferID ASC,
-   RevisionNumber ASC
-)
+alter table LMEnergyExchangeCustomerReply
+   add constraint PK_LMENERGYEXCHANGECUSTOMERREP primary key (CustomerID, OfferID, RevisionNumber)
 /
 
 
@@ -3144,15 +2847,8 @@ create table LMEnergyExchangeHourlyCustomer  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMENERGYEXCHANG_PK                               */
-/*==============================================================*/
-create unique index Indx_LMENERGYEXCHANG_PK on LMEnergyExchangeHourlyCustomer (
-   CustomerID ASC,
-   OfferID ASC,
-   RevisionNumber ASC,
-   Hour ASC
-)
+alter table LMEnergyExchangeHourlyCustomer
+   add constraint PK_LMENERGYEXCHANGEHOURLYCUSTO primary key (CustomerID, OfferID, RevisionNumber, Hour)
 /
 
 
@@ -3171,14 +2867,8 @@ create table LMEnergyExchangeHourlyOffer  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMENERGYEXCHANG_PK                               */
-/*==============================================================*/
-create unique index Indx_LMENERGYEXCHANG_PK on LMEnergyExchangeHourlyOffer (
-   OfferID ASC,
-   RevisionNumber ASC,
-   Hour ASC
-)
+alter table LMEnergyExchangeHourlyOffer
+   add constraint PK_LMENERGYEXCHANGEHOURLYOFFER primary key (OfferID, RevisionNumber, Hour)
 /
 
 
@@ -3198,13 +2888,8 @@ create table LMEnergyExchangeOfferRevision  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMENERGYEXCHANG_PK                               */
-/*==============================================================*/
-create unique index Indx_LMENERGYEXCHANG_PK on LMEnergyExchangeOfferRevision (
-   OfferID ASC,
-   RevisionNumber ASC
-)
+alter table LMEnergyExchangeOfferRevision
+   add constraint PK_LMENERGYEXCHANGEOFFERREVISI primary key (OfferID, RevisionNumber)
 /
 
 
@@ -3222,12 +2907,8 @@ create table LMEnergyExchangeProgramOffer  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMENERGYEXCHANG_PK                               */
-/*==============================================================*/
-create unique index Indx_LMENERGYEXCHANG_PK on LMEnergyExchangeProgramOffer (
-   OfferID ASC
-)
+alter table LMEnergyExchangeProgramOffer
+   add constraint PK_LMENERGYEXCHANGEPROGRAMOFFE primary key (OfferID)
 /
 
 
@@ -3243,12 +2924,8 @@ create table LMGroup  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMGROUP_PK                                       */
-/*==============================================================*/
-create unique index Indx_LMGROUP_PK on LMGroup (
-   DeviceID ASC
-)
+alter table LMGroup
+   add constraint PK_LMGROUP primary key (DeviceID)
 /
 
 
@@ -3272,12 +2949,8 @@ create table LMGroupEmetcon  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMGROUPEMETCON_PK                                */
-/*==============================================================*/
-create unique index Indx_LMGROUPEMETCON_PK on LMGroupEmetcon (
-   DEVICEID ASC
-)
+alter table LMGroupEmetcon
+   add constraint PK_LMGROUPEMETCON primary key (DEVICEID)
 /
 
 
@@ -3304,12 +2977,8 @@ create table LMGroupExpressCom  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMGROUPEXPRESSC_PK                               */
-/*==============================================================*/
-create unique index Indx_LMGROUPEXPRESSC_PK on LMGroupExpressCom (
-   LMGroupID ASC
-)
+alter table LMGroupExpressCom
+   add constraint PK_LMGROUPEXPRESSCOM primary key (LMGroupID)
 /
 
 
@@ -3329,12 +2998,8 @@ create table LMGroupExpressComAddress  (
 
 insert into LMGroupExpressComAddress values( 0, '(none)', 0, '(none)' );
 
-/*==============================================================*/
-/* Index: Indx_LMGROUPEXPRESSC_PK                               */
-/*==============================================================*/
-create unique index Indx_LMGROUPEXPRESSC_PK on LMGroupExpressComAddress (
-   AddressID ASC
-)
+alter table LMGroupExpressComAddress
+   add constraint PK_LMGROUPEXPRESSCOMADDRESS primary key (AddressID)
 /
 
 
@@ -3354,12 +3019,8 @@ create table LMGroupMCT  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMGrpMCT_PK                                      */
-/*==============================================================*/
-create unique index Indx_LMGrpMCT_PK on LMGroupMCT (
-   DeviceID ASC
-)
+alter table LMGroupMCT
+   add constraint PK_LMGrpMCTPK primary key (DeviceID)
 /
 
 
@@ -3377,12 +3038,8 @@ create table LMGroupPoint  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMGROUPPOINT_PK                                  */
-/*==============================================================*/
-create unique index Indx_LMGROUPPOINT_PK on LMGroupPoint (
-   DEVICEID ASC
-)
+alter table LMGroupPoint
+   add constraint PK_LMGROUPPOINT primary key (DEVICEID)
 /
 
 
@@ -3401,12 +3058,8 @@ create table LMGroupRipple  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMGROUPRIPPLE_PK                                 */
-/*==============================================================*/
-create unique index Indx_LMGROUPRIPPLE_PK on LMGroupRipple (
-   DeviceID ASC
-)
+alter table LMGroupRipple
+   add constraint PK_LMGROUPRIPPLE primary key (DeviceID)
 /
 
 
@@ -3429,12 +3082,8 @@ create table LMGroupVersacom  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMGROUPVERSACOM_PK                               */
-/*==============================================================*/
-create unique index Indx_LMGROUPVERSACOM_PK on LMGroupVersacom (
-   DEVICEID ASC
-)
+alter table LMGroupVersacom
+   add constraint PK_LMGROUPVERSACOM primary key (DEVICEID)
 /
 
 
@@ -3447,6 +3096,11 @@ create table LMMACSScheduleOperatorList  (
    ScheduleID           NUMBER                           not null,
    OperatorLoginID      NUMBER                           not null
 )
+/
+
+
+alter table LMMACSScheduleOperatorList
+   add constraint PK_LMMACSSCHEDULEOPERATORLIST primary key (ScheduleID, OperatorLoginID)
 /
 
 
@@ -3463,13 +3117,8 @@ create table LMMacsScheduleCustomerList  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMMACSSCHEDULEC_PK                               */
-/*==============================================================*/
-create unique index Indx_LMMACSSCHEDULEC_PK on LMMacsScheduleCustomerList (
-   ScheduleID ASC,
-   LMCustomerDeviceID ASC
-)
+alter table LMMacsScheduleCustomerList
+   add constraint PK_LMMACSSCHEDULECUSTOMERLIST primary key (ScheduleID, LMCustomerDeviceID)
 /
 
 
@@ -3495,12 +3144,8 @@ create table LMPROGRAM  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMPROGRAM_PK                                     */
-/*==============================================================*/
-create unique index Indx_LMPROGRAM_PK on LMPROGRAM (
-   DEVICEID ASC
-)
+alter table LMPROGRAM
+   add constraint PK_LMPROGRAM primary key (DEVICEID)
 /
 
 
@@ -3518,13 +3163,8 @@ create table LMProgramControlWindow  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMPROGRAMCONTRO_PK                               */
-/*==============================================================*/
-create unique index Indx_LMPROGRAMCONTRO_PK on LMProgramControlWindow (
-   DeviceID ASC,
-   WindowNumber ASC
-)
+alter table LMProgramControlWindow
+   add constraint PK_LMPROGRAMCONTROLWINDOW primary key (DeviceID, WindowNumber)
 /
 
 
@@ -3542,13 +3182,8 @@ create table LMProgramCurtailCustomerList  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMPROGRAMCURTAI_PK                               */
-/*==============================================================*/
-create unique index Indx_LMPROGRAMCURTAI_PK on LMProgramCurtailCustomerList (
-   CustomerID ASC,
-   ProgramID ASC
-)
+alter table LMProgramCurtailCustomerList
+   add constraint PK_LMPROGRAMCURTAILCUSTOMERLIS primary key (CustomerID, ProgramID)
 /
 
 
@@ -3570,12 +3205,8 @@ create table LMProgramCurtailment  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMPROGRAMCURTAI_PK                               */
-/*==============================================================*/
-create unique index Indx_LMPROGRAMCURTAI_PK on LMProgramCurtailment (
-   DeviceID ASC
-)
+alter table LMProgramCurtailment
+   add constraint PK_LMPROGRAMCURTAILMENT primary key (DeviceID)
 /
 
 
@@ -3590,12 +3221,8 @@ create table LMProgramDirect  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMPROGRAMDIRECT_PK                               */
-/*==============================================================*/
-create unique index Indx_LMPROGRAMDIRECT_PK on LMProgramDirect (
-   DeviceID ASC
-)
+alter table LMProgramDirect
+   add constraint PK_LMPROGRAMDIRECT primary key (DeviceID)
 /
 
 
@@ -3629,16 +3256,12 @@ create table LMProgramDirectGear  (
 
 
 alter table LMProgramDirectGear
-   add constraint AK_AKEY_LMPRGDIRG_LMPROGRA unique (DeviceID, GearNumber)
+   add constraint PK_LMPROGRAMDIRECTGEAR primary key (GearID)
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMPROGRAMDIRECT_PK                               */
-/*==============================================================*/
-create unique index Indx_LMPROGRAMDIRECT_PK on LMProgramDirectGear (
-   GearID ASC
-)
+alter table LMProgramDirectGear
+   add constraint AK_AKEY_LMPRGDIRG_LMPROGRA unique (DeviceID, GearNumber)
 /
 
 
@@ -3655,13 +3278,8 @@ create table LMProgramDirectGroup  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMPROGRAMDIRECT_PK                               */
-/*==============================================================*/
-create unique index Indx_LMPROGRAMDIRECT_PK on LMProgramDirectGroup (
-   DeviceID ASC,
-   GroupOrder ASC
-)
+alter table LMProgramDirectGroup
+   add constraint PK_LMPROGRAMDIRECTGROUP primary key (DeviceID, GroupOrder)
 /
 
 
@@ -3682,12 +3300,8 @@ create table LMProgramEnergyExchange  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMPROGRAMENERGY_PK                               */
-/*==============================================================*/
-create unique index Indx_LMPROGRAMENERGY_PK on LMProgramEnergyExchange (
-   DeviceID ASC
-)
+alter table LMProgramEnergyExchange
+   add constraint PK_LMPROGRAMENERGYEXCHANGE primary key (DeviceID)
 /
 
 
@@ -3715,12 +3329,8 @@ create table LMThermoStatGear  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LMTHERMOSTATGEA_PK                               */
-/*==============================================================*/
-create unique index Indx_LMTHERMOSTATGEA_PK on LMThermoStatGear (
-   GearID ASC
-)
+alter table LMThermoStatGear
+   add constraint PK_LMTHERMOSTATGEAR primary key (GearID)
 /
 
 
@@ -3743,12 +3353,8 @@ create table LOGIC  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_LOGIC_PK                                         */
-/*==============================================================*/
-create unique index Indx_LOGIC_PK on LOGIC (
-   LOGICID ASC
-)
+alter table LOGIC
+   add constraint SYS_C0013445 primary key (LOGICID)
 /
 
 
@@ -3766,13 +3372,8 @@ create table MACROROUTE  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_MACROROUTE_PK                                    */
-/*==============================================================*/
-create unique index Indx_MACROROUTE_PK on MACROROUTE (
-   ROUTEID ASC,
-   ROUTEORDER ASC
-)
+alter table MACROROUTE
+   add constraint PK_MACROROUTE primary key (ROUTEID, ROUTEORDER)
 /
 
 
@@ -3804,12 +3405,8 @@ create table MACSchedule  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_MACSCHEDULE_PK                                   */
-/*==============================================================*/
-create unique index Indx_MACSCHEDULE_PK on MACSchedule (
-   ScheduleID ASC
-)
+alter table MACSchedule
+   add constraint PK_MACSCHEDULE primary key (ScheduleID)
 /
 
 
@@ -3828,12 +3425,8 @@ create table MACSimpleSchedule  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_MACSIMPLESCHEDU_PK                               */
-/*==============================================================*/
-create unique index Indx_MACSIMPLESCHEDU_PK on MACSimpleSchedule (
-   ScheduleID ASC
-)
+alter table MACSimpleSchedule
+   add constraint PK_MACSIMPLESCHEDULE primary key (ScheduleID)
 /
 
 
@@ -3850,13 +3443,8 @@ create table MCTBroadCastMapping  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_MCTBROADCASTMAP_PK                               */
-/*==============================================================*/
-create unique index Indx_MCTBROADCASTMAP_PK on MCTBroadCastMapping (
-   MCTBroadCastID ASC,
-   MctID ASC
-)
+alter table MCTBroadCastMapping
+   add constraint PK_MCTBROADCASTMAPPING primary key (MCTBroadCastID, MctID)
 /
 
 
@@ -3873,13 +3461,8 @@ create table NotificationDestination  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_NOTIFICATIONDES_PK                               */
-/*==============================================================*/
-create unique index Indx_NOTIFICATIONDES_PK on NotificationDestination (
-   NotificationGroupID ASC,
-   DestinationOrder ASC
-)
+alter table NotificationDestination
+   add constraint PKey_NotDestID primary key (NotificationGroupID, DestinationOrder)
 /
 
 
@@ -3902,20 +3485,16 @@ create table NotificationGroup  (
 
 insert into notificationgroup values(1,'(none)','(none)','(none)','(none)','(none)','N');
 
+alter table NotificationGroup
+   add constraint PK_NOTIFICATIONGROUP primary key (NotificationGroupID)
+/
+
+
 /*==============================================================*/
 /* Index: Indx_NOTIFGRPNme                                      */
 /*==============================================================*/
 create unique index Indx_NOTIFGRPNme on NotificationGroup (
    GroupName ASC
-)
-/
-
-
-/*==============================================================*/
-/* Index: Indx_NOTIFICATIONGRO_PK                               */
-/*==============================================================*/
-create unique index Indx_NOTIFICATIONGRO_PK on NotificationGroup (
-   NotificationGroupID ASC
 )
 /
 
@@ -3932,6 +3511,11 @@ create table OperatorLoginGraphList  (
 /
 
 
+alter table OperatorLoginGraphList
+   add constraint PK_OPERATORLOGINGRAPHLIST primary key (OperatorLoginID, GraphDefinitionID)
+/
+
+
 /*==============================================================*/
 /* Table : OperatorSerialGroup                                  */
 /*==============================================================*/
@@ -3944,12 +3528,8 @@ create table OperatorSerialGroup  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_OPERATORSERIALG_PK                               */
-/*==============================================================*/
-create unique index Indx_OPERATORSERIALG_PK on OperatorSerialGroup (
-   LoginID ASC
-)
+alter table OperatorSerialGroup
+   add constraint PK_OpSerGrp primary key (LoginID)
 /
 
 
@@ -3968,6 +3548,11 @@ create table PAOExclusion  (
    FuncName             VARCHAR2(100)                    not null,
    FuncRequeue          NUMBER                           not null
 )
+/
+
+
+alter table PAOExclusion
+   add constraint PK_PAOEXCLUSION primary key (ExclusionID)
 /
 
 
@@ -3993,13 +3578,8 @@ create table PAOowner  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_PAOOWNER_PK                                      */
-/*==============================================================*/
-create unique index Indx_PAOOWNER_PK on PAOowner (
-   OwnerID ASC,
-   ChildID ASC
-)
+alter table PAOowner
+   add constraint PK_PAOOWNER primary key (OwnerID, ChildID)
 /
 
 
@@ -4034,6 +3614,11 @@ INSERT into point  values (-5,  'System', 'Cap Control', 0, 'Default', 0, 'N', '
 INSERT into point  values (-10, 'System', 'Load Management' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
 
 alter table POINT
+   add constraint Key_PT_PTID primary key (POINTID)
+/
+
+
+alter table POINT
    add constraint AK_KEY_PTNM_YUKPAOID unique (POINTNAME, PAObjectID)
 /
 
@@ -4043,15 +3628,6 @@ alter table POINT
 /*==============================================================*/
 create index Indx_PointStGrpID on POINT (
    STATEGROUPID ASC
-)
-/
-
-
-/*==============================================================*/
-/* Index: Indx_POINT_PK                                         */
-/*==============================================================*/
-create unique index Indx_POINT_PK on POINT (
-   POINTID ASC
 )
 /
 
@@ -4069,12 +3645,8 @@ create table POINTACCUMULATOR  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_POINTACCUMULATO_PK                               */
-/*==============================================================*/
-create unique index Indx_POINTACCUMULATO_PK on POINTACCUMULATOR (
-   POINTID ASC
-)
+alter table POINTACCUMULATOR
+   add constraint PK_POINTACCUMULATOR primary key (POINTID)
 /
 
 
@@ -4093,12 +3665,8 @@ create table POINTANALOG  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_POINTANALOG_PK                                   */
-/*==============================================================*/
-create unique index Indx_POINTANALOG_PK on POINTANALOG (
-   POINTID ASC
-)
+alter table POINTANALOG
+   add constraint PK_POINTANALOG primary key (POINTID)
 /
 
 
@@ -4117,13 +3685,8 @@ create table POINTLIMITS  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_POINTLIMITS_PK                                   */
-/*==============================================================*/
-create unique index Indx_POINTLIMITS_PK on POINTLIMITS (
-   POINTID ASC,
-   LIMITNUMBER ASC
-)
+alter table POINTLIMITS
+   add constraint PK_POINTLIMITS primary key (POINTID, LIMITNUMBER)
 /
 
 
@@ -4147,12 +3710,8 @@ create table POINTSTATUS  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_POINTSTATUS_PK                                   */
-/*==============================================================*/
-create unique index Indx_POINTSTATUS_PK on POINTSTATUS (
-   POINTID ASC
-)
+alter table POINTSTATUS
+   add constraint PK_PtStatus primary key (POINTID)
 /
 
 
@@ -4171,12 +3730,8 @@ create table POINTUNIT  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_POINTUNIT_PK                                     */
-/*==============================================================*/
-create unique index Indx_POINTUNIT_PK on POINTUNIT (
-   POINTID ASC
-)
+alter table POINTUNIT
+   add constraint PK_POINTUNITID primary key (POINTID)
 /
 
 
@@ -4199,12 +3754,8 @@ create table PORTDIALUPMODEM  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_PORTDIALUPMODEM_PK                               */
-/*==============================================================*/
-create unique index Indx_PORTDIALUPMODEM_PK on PORTDIALUPMODEM (
-   PORTID ASC
-)
+alter table PORTDIALUPMODEM
+   add constraint PK_PORTDIALUPMODEM primary key (PORTID)
 /
 
 
@@ -4221,12 +3772,8 @@ create table PORTLOCALSERIAL  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_PORTLOCALSERIAL_PK                               */
-/*==============================================================*/
-create unique index Indx_PORTLOCALSERIAL_PK on PORTLOCALSERIAL (
-   PORTID ASC
-)
+alter table PORTLOCALSERIAL
+   add constraint PK_PORTLOCALSERIAL primary key (PORTID)
 /
 
 
@@ -4249,12 +3796,8 @@ create table PORTRADIOSETTINGS  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_PORTRADIOSETTIN_PK                               */
-/*==============================================================*/
-create unique index Indx_PORTRADIOSETTIN_PK on PORTRADIOSETTINGS (
-   PORTID ASC
-)
+alter table PORTRADIOSETTINGS
+   add constraint PK_PORTRADIOSETTINGS primary key (PORTID)
 /
 
 
@@ -4275,12 +3818,8 @@ create table PORTSETTINGS  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_PORTSETTINGS_PK                                  */
-/*==============================================================*/
-create unique index Indx_PORTSETTINGS_PK on PORTSETTINGS (
-   PORTID ASC
-)
+alter table PORTSETTINGS
+   add constraint PK_PORTSETTINGS primary key (PORTID)
 /
 
 
@@ -4299,12 +3838,8 @@ create table PORTTERMINALSERVER  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_PORTTERMINALSER_PK                               */
-/*==============================================================*/
-create unique index Indx_PORTTERMINALSER_PK on PORTTERMINALSERVER (
-   PORTID ASC
-)
+alter table PORTTERMINALSERVER
+   add constraint PK_PORTTERMINALSERVER primary key (PORTID)
 /
 
 
@@ -4331,12 +3866,8 @@ insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonack
 	'N',
 	1, 0  from point;
 
-/*==============================================================*/
-/* Index: Index_PtAlarmPK                                       */
-/*==============================================================*/
-create unique index Index_PtAlarmPK on PointAlarming (
-   PointID ASC
-)
+alter table PointAlarming
+   add constraint PK_POINTALARMING primary key (PointID)
 /
 
 
@@ -4363,13 +3894,8 @@ create table PortStatistics  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_PORTSTATISTICS_PK                                */
-/*==============================================================*/
-create unique index Indx_PORTSTATISTICS_PK on PortStatistics (
-   PORTID ASC,
-   STATISTICTYPE ASC
-)
+alter table PortStatistics
+   add constraint PK_PORTSTATISTICS primary key (PORTID, STATISTICTYPE)
 /
 
 
@@ -4394,12 +3920,8 @@ create table PortTiming  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_PORTTIMING_PK                                    */
-/*==============================================================*/
-create unique index Indx_PORTTIMING_PK on PortTiming (
-   PORTID ASC
-)
+alter table PortTiming
+   add constraint PK_PORTTIMING primary key (PORTID)
 /
 
 
@@ -4415,6 +3937,11 @@ create table RAWPOINTHISTORY  (
    QUALITY              NUMBER                           not null,
    VALUE                FLOAT                            not null
 )
+/
+
+
+alter table RAWPOINTHISTORY
+   add constraint SYS_C0013322 primary key (CHANGEID)
 /
 
 
@@ -4437,15 +3964,6 @@ create index Indx_TimeStamp on RAWPOINTHISTORY (
 
 
 /*==============================================================*/
-/* Index: Indx_RAWPOINTHISTORY_PK                               */
-/*==============================================================*/
-create unique index Indx_RAWPOINTHISTORY_PK on RAWPOINTHISTORY (
-   CHANGEID ASC
-)
-/
-
-
-/*==============================================================*/
 /* Table : RepeaterRoute                                        */
 /*==============================================================*/
 
@@ -4461,13 +3979,8 @@ create table RepeaterRoute  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_REPEATERROUTE_PK                                 */
-/*==============================================================*/
-create unique index Indx_REPEATERROUTE_PK on RepeaterRoute (
-   ROUTEID ASC,
-   DEVICEID ASC
-)
+alter table RepeaterRoute
+   add constraint PK_REPEATERROUTE primary key (ROUTEID, DEVICEID)
 /
 
 
@@ -4484,20 +3997,16 @@ create table Route  (
 /
 
 
+alter table Route
+   add constraint SYS_RoutePK primary key (RouteID)
+/
+
+
 /*==============================================================*/
 /* Index: Indx_RouteDevID                                       */
 /*==============================================================*/
 create unique index Indx_RouteDevID on Route (
    DeviceID DESC,
-   RouteID ASC
-)
-/
-
-
-/*==============================================================*/
-/* Index: Indx_ROUTE_PK                                         */
-/*==============================================================*/
-create unique index Indx_ROUTE_PK on Route (
    RouteID ASC
 )
 /
@@ -4516,6 +4025,11 @@ create table SOELog  (
    Description          VARCHAR2(60)                     not null,
    AdditionalInfo       VARCHAR2(120)                    not null
 )
+/
+
+
+alter table SOELog
+   add constraint SYS_SOELog_PK primary key (LogID)
 /
 
 
@@ -4598,20 +4112,15 @@ INSERT INTO State VALUES(-5, 8, 'Priority 8', 2, 6, 0);
 INSERT INTO State VALUES(-5, 9, 'Priority 9', 10, 6, 0);
 INSERT INTO State VALUES(-5, 10, 'Priority 10', 9, 6, 0);
 
-/*==============================================================*/
-/* Index: Indx_StateRaw                                         */
-/*==============================================================*/
-create index Indx_StateRaw on STATE (
-   RAWSTATE ASC
-)
+alter table STATE
+   add constraint PK_STATE primary key (STATEGROUPID, RAWSTATE)
 /
 
 
 /*==============================================================*/
-/* Index: Indx_STATE_PK                                         */
+/* Index: Indx_StateRaw                                         */
 /*==============================================================*/
-create unique index Indx_STATE_PK on STATE (
-   STATEGROUPID ASC,
+create index Indx_StateRaw on STATE (
    RAWSTATE ASC
 )
 /
@@ -4640,20 +4149,16 @@ INSERT INTO StateGroup VALUES ( 1, 'TwoStateStatus', 'Status' );
 INSERT INTO StateGroup VALUES ( 2, 'ThreeStateStatus', 'Status' );
 INSERT INTO StateGroup VALUES ( 3, 'CapBankStatus', 'Status' );
 
+alter table STATEGROUP
+   add constraint SYS_C0013128 primary key (STATEGROUPID)
+/
+
+
 /*==============================================================*/
 /* Index: Indx_STATEGRP_Nme                                     */
 /*==============================================================*/
 create unique index Indx_STATEGRP_Nme on STATEGROUP (
    NAME DESC
-)
-/
-
-
-/*==============================================================*/
-/* Index: Indx_STATEGROUP_PK                                    */
-/*==============================================================*/
-create unique index Indx_STATEGROUP_PK on STATEGROUP (
-   STATEGROUPID ASC
 )
 /
 
@@ -4681,6 +4186,11 @@ create table SYSTEMLOG  (
 /
 
 
+alter table SYSTEMLOG
+   add constraint SYS_C0013407 primary key (LOGID)
+/
+
+
 /*==============================================================*/
 /* Index: Indx_SYSLG_PtId                                       */
 /*==============================================================*/
@@ -4695,15 +4205,6 @@ create index Indx_SYSLG_PtId on SYSTEMLOG (
 /*==============================================================*/
 create index Indx_SYSLG_Date on SYSTEMLOG (
    DATETIME ASC
-)
-/
-
-
-/*==============================================================*/
-/* Index: Indx_SYSTEMLOG_PK                                     */
-/*==============================================================*/
-create unique index Indx_SYSTEMLOG_PK on SYSTEMLOG (
-   LOGID ASC
 )
 /
 
@@ -4734,12 +4235,8 @@ create table SeasonSchedule  (
 */
 insert into SeasonSchedule values(0,'Default Season Schedule',3,15,5,1,8,15,11,1);
 
-/*==============================================================*/
-/* Index: Indx_SeasSchd_PK                                      */
-/*==============================================================*/
-create unique index Indx_SeasSchd_PK on SeasonSchedule (
-   ScheduleID ASC
-)
+alter table SeasonSchedule
+   add constraint PK_SEASONSCHEDULE primary key (ScheduleID)
 /
 
 
@@ -4761,12 +4258,8 @@ insert into template values( 2, 'Standard - No PtName', 'Second Standard Cannon 
 insert into template values( 3, 'Standard - No DevName', 'Third Standard Cannon  Template');
 
 
-/*==============================================================*/
-/* Index: Indx_TEMPLATE_PK                                      */
-/*==============================================================*/
-create unique index Indx_TEMPLATE_PK on TEMPLATE (
-   TEMPLATENUM ASC
-)
+alter table TEMPLATE
+   add constraint SYS_C0013425 primary key (TEMPLATENUM)
 /
 
 
@@ -4805,13 +4298,8 @@ insert into templatecolumns values( 3, 'Time', 11, 4, 135 );
 insert into templatecolumns values( 3, 'Tags', 13, 5, 80 );
 
 
-/*==============================================================*/
-/* Index: Indx_TEMPLATECOLUMNS_PK                               */
-/*==============================================================*/
-create unique index Indx_TEMPLATECOLUMNS_PK on TEMPLATECOLUMNS (
-   TEMPLATENUM ASC,
-   TITLE ASC
-)
+alter table TEMPLATECOLUMNS
+   add constraint PK_TEMPLATECOLUMNS primary key (TEMPLATENUM, TITLE)
 /
 
 
@@ -4834,12 +4322,8 @@ create table TagLog  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_TagLog_PK                                        */
-/*==============================================================*/
-create unique index Indx_TagLog_PK on TagLog (
-   LogID ASC
-)
+alter table TagLog
+   add constraint PK_TAGLOG primary key (LogID)
 /
 
 
@@ -4859,12 +4343,8 @@ create table Tags  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_Tags_PK                                          */
-/*==============================================================*/
-create unique index Indx_Tags_PK on Tags (
-   TagID ASC
-)
+alter table Tags
+   add constraint PK_TAGS primary key (TagID)
 /
 
 
@@ -4939,12 +4419,8 @@ INSERT INTO UnitMeasure VALUES( 52,'m/s',0,'Meters Per Second','(none)');
 INSERT INTO UnitMeasure VALUES( 53,'KV', 0,'KVolts','(none)' );
 INSERT INTO UnitMeasure VALUES( 54,'UNDEF', 0,'Undefined','(none)' );
 
-/*==============================================================*/
-/* Index: Indx_UNITMEASURE_PK                                   */
-/*==============================================================*/
-create unique index Indx_UNITMEASURE_PK on UNITMEASURE (
-   UOMID ASC
-)
+alter table UNITMEASURE
+   add constraint SYS_C0013344 primary key (UOMID)
 /
 
 
@@ -4971,12 +4447,8 @@ create table VersacomRoute  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_VERSACOMROUTE_PK                                 */
-/*==============================================================*/
-create unique index Indx_VERSACOMROUTE_PK on VersacomRoute (
-   ROUTEID ASC
-)
+alter table VersacomRoute
+   add constraint PK_VERSACOMROUTE primary key (ROUTEID)
 /
 
 
@@ -5001,12 +4473,8 @@ insert into yukongroup values (-301,'Web Client Operators','The default group of
 insert into yukongroup values (-300,'Residential Customers','The default group of residential customers');
 insert into yukongroup values (-302, 'Web Client Customers', 'The default group of web client customers');
 
-/*==============================================================*/
-/* Index: Indx_YukGrp_PK                                        */
-/*==============================================================*/
-create unique index Indx_YukGrp_PK on YukonGroup (
-   GroupID ASC
-)
+alter table YukonGroup
+   add constraint PK_YUKONGROUP primary key (GroupID)
 /
 
 
@@ -5234,12 +4702,8 @@ insert into yukongrouprole values (856,-301,-201,-20856,'(none)');
 insert into yukongrouprole values (870,-301,-201,-20870,'(none)');
 
 
-/*==============================================================*/
-/* Index: Indx_YukGrpRol_PK                                     */
-/*==============================================================*/
-create unique index Indx_YukGrpRol_PK on YukonGroupRole (
-   GroupRoleID ASC
-)
+alter table YukonGroupRole
+   add constraint PK_YUKONGRPROLE primary key (GroupRoleID)
 /
 
 
@@ -5259,12 +4723,8 @@ create table YukonImage  (
 
 insert into YukonImage values( 0, '(none)', '(none)', null );
 
-/*==============================================================*/
-/* Index: Indx_YUKONIMAGE_PK                                    */
-/*==============================================================*/
-create unique index Indx_YUKONIMAGE_PK on YukonImage (
-   ImageID ASC
-)
+alter table YukonImage
+   add constraint PK_YUKONIMAGE primary key (ImageID)
 /
 
 
@@ -5291,12 +4751,8 @@ insert into YukonListEntry values( 4, 1, 0, 'Fax Number', 2 );
 insert into YukonListEntry values( 5, 1, 0, 'Home Phone', 2 );
 insert into YukonListEntry values( 6, 1, 0, 'Work Phone', 2 );
 
-/*==============================================================*/
-/* Index: Indx_YukLstEntr_PK                                    */
-/*==============================================================*/
-create unique index Indx_YukLstEntr_PK on YukonListEntry (
-   EntryID ASC
-)
+alter table YukonListEntry
+   add constraint PK_YUKONLISTENTRY primary key (EntryID)
 /
 
 
@@ -5329,6 +4785,11 @@ create table YukonPAObject  (
 
 INSERT into YukonPAObject values (0, 'DEVICE', 'System', 'System Device', 'System', 'Reserved System Device', 'N', '-----');
 
+alter table YukonPAObject
+   add constraint PK_YUKONPAOBJECT primary key (PAObjectID)
+/
+
+
 /*==============================================================*/
 /* Index: Indx_PAO                                              */
 /*==============================================================*/
@@ -5337,15 +4798,6 @@ create unique index Indx_PAO on YukonPAObject (
    PAOName ASC,
    PAOClass ASC,
    Type ASC
-)
-/
-
-
-/*==============================================================*/
-/* Index: Indx_YUKONPAOBJECT_PK                                 */
-/*==============================================================*/
-create unique index Indx_YUKONPAOBJECT_PK on YukonPAObject (
-   PAObjectID ASC
 )
 /
 
@@ -5405,12 +4857,8 @@ insert into YukonRole values(-305,'Administrator','CICustomer','Administrator pr
 /* Consumer roles */
 insert into YukonRole values(-400,'Residential Customer','Consumer','Access to residential customer information');
 
-/*==============================================================*/
-/* Index: Indx_YukRol_PK                                        */
-/*==============================================================*/
-create unique index Indx_YukRol_PK on YukonRole (
-   RoleID ASC
-)
+alter table YukonRole
+   add constraint PK_YUKONROLE primary key (RoleID)
 /
 
 
@@ -5669,12 +5117,8 @@ insert into YukonRoleProperty values(-40173,-400,'Description Utility','<<COMPAN
 insert into YukonRoleProperty values(-40180,-400,'Image Corner','Mom.jpg','Image at the upper-left corner');
 insert into YukonRoleProperty values(-40181,-400,'Image General','Family.jpg','Image on the general page');
 
-/*==============================================================*/
-/* Index: Indx_YukRolPrp_PK                                     */
-/*==============================================================*/
-create unique index Indx_YukRolPrp_PK on YukonRoleProperty (
-   RolePropertyID ASC
-)
+alter table YukonRoleProperty
+   add constraint PK_YUKONROLEPROPERTY primary key (RolePropertyID)
 /
 
 
@@ -5698,12 +5142,8 @@ insert into YukonSelectionList values( 0, 'N', '(none)', '(none)', '(none)', 'N'
 insert into YukonSelectionList values( 1, 'A', 'Contact', 'DBEditor contact type list', 'ContactType', 'N' );
 
 
-/*==============================================================*/
-/* Index: Indx_YkSelLst_PK                                      */
-/*==============================================================*/
-create unique index Indx_YkSelLst_PK on YukonSelectionList (
-   ListID ASC
-)
+alter table YukonSelectionList
+   add constraint PK_YUKONSELECTIONLIST primary key (ListID)
 /
 
 
@@ -5725,20 +5165,16 @@ create table YukonUser  (
 
 insert into YukonUser values(-1,'yukon','yukon',0,'01-JAN-00','Enabled');
 
+alter table YukonUser
+   add constraint PK_YUKONUSER primary key (UserID)
+/
+
+
 /*==============================================================*/
 /* Index: Indx_YkUsIDNm                                         */
 /*==============================================================*/
 create unique index Indx_YkUsIDNm on YukonUser (
    UserName ASC
-)
-/
-
-
-/*==============================================================*/
-/* Index: Indx_YukUser_PK                                       */
-/*==============================================================*/
-create unique index Indx_YukUser_PK on YukonUser (
-   UserID ASC
 )
 /
 
@@ -5758,13 +5194,8 @@ create table YukonUserGroup  (
 insert into YukonUserGroup values(-1,-1);
 insert into YukonUserGroup values(-1,-100);
 
-/*==============================================================*/
-/* Index: Indx_YukUGr_PK                                        */
-/*==============================================================*/
-create unique index Indx_YukUGr_PK on YukonUserGroup (
-   UserID ASC,
-   GroupID ASC
-)
+alter table YukonUserGroup
+   add constraint PK_YUKONUSERGROUP primary key (UserID, GroupID)
 /
 
 
@@ -5783,12 +5214,8 @@ create table YukonUserRole  (
 /
 
 
-/*==============================================================*/
-/* Index: Indx_YukUsRol_PK                                      */
-/*==============================================================*/
-create unique index Indx_YukUsRol_PK on YukonUserRole (
-   UserRoleID ASC
-)
+alter table YukonUserRole
+   add constraint PK_YKONUSRROLE primary key (UserRoleID)
 /
 
 
@@ -5810,12 +5237,8 @@ create table YukonWebConfiguration  (
 insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
 
 
-/*==============================================================*/
-/* Index: Indx_YukWbCfg_PK                                      */
-/*==============================================================*/
-create unique index Indx_YukWbCfg_PK on YukonWebConfiguration (
-   ConfigurationID ASC
-)
+alter table YukonWebConfiguration
+   add constraint PK_YUKONWEBCONFIGURATION primary key (ConfigurationID)
 /
 
 

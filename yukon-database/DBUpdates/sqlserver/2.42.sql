@@ -467,6 +467,13 @@ update billingfileformats set FormatType = 'CADP' where formatid = 1;
 update billingfileformats set FormatType = 'CADPXL2' where formatid = 2;
 
 
+alter table FDRTRANSLATION drop constraint PK_FDRTrans;
+go
+
+alter table FDRTRANSLATION
+   add constraint PK_FDRTrans primary key  (POINTID, InterfaceType, TRANSLATION);
+go
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
