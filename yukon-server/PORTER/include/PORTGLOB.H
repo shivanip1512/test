@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/PORTGLOB.H-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/06/03 20:24:11 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/06/11 22:14:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,11 +54,14 @@ typedef set< CtiStatistics > CtiStatisticsSet_t;
 typedef CtiStatisticsSet_t::iterator CtiStatisticsIterator_t;
 
 extern IM_EX_PORTGLOB INT           PorterRefreshRate;
+
+/*  20020611 CGP ... Oh boy.
 extern IM_EX_PORTGLOB ULONG         PortFlags[MAXPORT];
 extern IM_EX_PORTGLOB ULONG         MilliLast[MAXPORT];
 extern IM_EX_PORTGLOB USHORT        LastCCU[MAXPORT];
 extern IM_EX_PORTGLOB PPORTSTATS    PortStats[MAXPORT];
 extern IM_EX_PORTGLOB NETCXPORTINFO *NetCXPortInfo[MAXPORT];
+*/
 
 extern IM_EX_PORTGLOB USHORT        TraceFlag;
 extern IM_EX_PORTGLOB USHORT        TraceErrorsOnly;

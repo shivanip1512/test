@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/06/10 20:44:39 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/06/11 22:14:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -362,11 +362,15 @@ INT PorterEntryPoint(OUTMESS *&OutMessage)
         return status;
     }
 
+#if 0           // 20020611 CGP.. Thin kagain small man.
+
     /* Find out if this guy gets routed to another system */
     if(PortFlags[OutMessage->Port] & REMOTEPORT)
     {
         return RemotePort(OutMessage);
     }
+
+#endif
 
     /*
      * Ok, all checks passed so far, so lets operate on this remote

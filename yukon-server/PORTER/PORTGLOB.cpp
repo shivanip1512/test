@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTGLOB.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/06/03 20:24:12 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/06/11 22:14:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,11 +36,13 @@
 IM_EX_PORTGLOB RWTPtrSlistDictionary< LONG, CCUINFO > CCUInfo;
 // IM_EX_PORTGLOB RWTPtrSlistIterator< CCUINFO >         CCUInfoItr( RWTPtrSlist< CCUINFO >(CCUInfo) );
 
+/* 20020611 CGP Oh boy...
 IM_EX_PORTGLOB PPORTSTATS      PortStats[MAXPORT];
 IM_EX_PORTGLOB ULONG           PortFlags[MAXPORT];
 IM_EX_PORTGLOB NETCXPORTINFO   *NetCXPortInfo[MAXPORT];
 IM_EX_PORTGLOB ULONG           MilliLast[MAXPORT];
 IM_EX_PORTGLOB USHORT          LastCCU[MAXPORT];
+*/
 
 IM_EX_PORTGLOB HANDLE          hPorterEvents[NUMPORTEREVENTS];
 

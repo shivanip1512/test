@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/06/03 20:24:11 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/06/11 22:14:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -440,26 +440,10 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     /* Announce our presence to the world */
     SendProcessStart ("CtiPort CONTROL");           // For elogger.
 
-    /* null out the queue handles */
-    for(i = 0; i <= PORTMAX; i++)
-    {
-        PortStats[i]         = NULL;
-        PortFlags[i]         = 0;
-    }
-
     if(RefreshPorterRTDB())             // Loads globals and the RTDB
     {
         return -1;
     }
-
-#ifdef MONKEYS_FLY
-    /* Initialize DRP Connection for stats alarming */
-    if(xInitDRP ("PORTER    "))
-    {
-        fprintf(stdout, "Unable to Initialize DRP Interface\n");
-        CTIExit (EXIT_PROCESS, -1);
-    }
-#endif
 
     /* A new guy with Yukon,  start a thread to handle GUI requests.  */
     /* This is a future project as of 070799, allowing a GUI to interface with Porter
