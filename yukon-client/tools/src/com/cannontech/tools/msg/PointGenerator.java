@@ -5,7 +5,6 @@ package com.cannontech.tools.msg;
  * Creation date: (6/13/00 10:32:57 AM)
  * @author: 
  */
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.ClientConnection;
 
 public class PointGenerator {
