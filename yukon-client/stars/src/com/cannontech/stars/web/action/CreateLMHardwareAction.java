@@ -448,6 +448,7 @@ public class CreateLMHardwareAction implements ActionBase {
 			invNo = starsInvs.getStarsLMHardwareCount() + idx;
 		}
 			
+		session.removeAttribute( InventoryManager.STARS_INVENTORY_TEMP );
 		if (session.getAttribute(ServletUtils.ATT_REDIRECT) == null)
 			session.setAttribute( ServletUtils.ATT_REDIRECT, "/operator/Consumer/Inventory.jsp?InvNo=" + String.valueOf(invNo) );
 	}
