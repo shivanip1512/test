@@ -9,9 +9,9 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.stars.LiteCustomerContact;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -89,7 +89,7 @@ public class UpdateLoginAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            LiteCustomerContact liteContact = energyCompany.getCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
+            LiteContact liteContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
 	        int userID = liteContact.getLoginID();
 	        
             StarsUpdateLogin updateLogin = reqOper.getStarsUpdateLogin();
@@ -224,7 +224,7 @@ public class UpdateLoginAction implements ActionBase {
         return true;
 	}
 	
-	public static LiteYukonUser createLogin(StarsUpdateLogin login, LiteCustomerContact liteContact, LiteStarsEnergyCompany energyCompany) throws Exception {
+	public static LiteYukonUser createLogin(StarsUpdateLogin login, LiteContact liteContact, LiteStarsEnergyCompany energyCompany) throws Exception {
         com.cannontech.database.data.user.YukonUser dataUser = new com.cannontech.database.data.user.YukonUser();
         com.cannontech.database.db.user.YukonUser dbUser = dataUser.getYukonUser();
         
@@ -258,7 +258,7 @@ public class UpdateLoginAction implements ActionBase {
         return liteUser;
 	}
 	
-	public static void deleteLogin(int userID, LiteCustomerContact liteContact) throws Exception {
+	public static void deleteLogin(int userID, LiteContact liteContact) throws Exception {
 		if (liteContact != null) {
 	        liteContact.setLoginID( com.cannontech.user.UserUtils.USER_YUKON_ID );
 	        com.cannontech.database.data.customer.Contact contact =

@@ -6,8 +6,9 @@ import java.util.StringTokenizer;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
-import com.cannontech.database.data.lite.stars.LiteCustomerContact;
 import com.cannontech.database.data.lite.stars.LiteLMProgram;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -84,8 +85,10 @@ public class SendControlOddsTask implements Runnable {
 					int accountID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
 					LiteStarsCustAccountInformation accountInfo = energyCompany.getCustAccountInformation( accountID, true );
 					
-					LiteCustomerContact primContact = energyCompany.getCustomerContact( accountInfo.getCustomer().getPrimaryContactID() );
-					if (primContact.getEmail() == null || !primContact.getEmail().isEnabled())
+					LiteContact primContact = energyCompany.getContact( accountInfo.getCustomer().getPrimaryContactID(), accountInfo );
+					LiteContactNotification email = com.cannontech.database.cache.functions.ContactFuncs.getContactNotification(
+							primContact, com.cannontech.common.constants.YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+					if (email == null || email.getDisableFlag().equalsIgnoreCase("Y"))
 						continue;
 					
 					ArrayList activeProgs = new ArrayList();	// List of all the active programs
@@ -96,7 +99,7 @@ public class SendControlOddsTask implements Runnable {
 					}
 					if (activeProgs.size() == 0) continue;
 					
-					StringTokenizer st = new StringTokenizer( primContact.getEmail().getNotification(), "," );
+					StringTokenizer st = new StringTokenizer( email.getNotification(), "," );
 					ArrayList toList = new ArrayList();
 					while (st.hasMoreTokens())
 						toList.add( st.nextToken() );
@@ -107,10 +110,12 @@ public class SendControlOddsTask implements Runnable {
 					for (int j = 0; j < activeProgs.size(); j++) {
 						LiteStarsLMProgram program = (LiteStarsLMProgram) activeProgs.get(j);
 						String progName = program.getLmProgram().getProgramName();
+						
 						// Temporarily use the "URL" field in YukonWebConfiguration table for program alias
 						LiteWebConfiguration liteConfig = SOAPServer.getWebConfiguration( program.getLmProgram().getWebSettingsID() );
-						if (liteConfig.getUrl() != null && liteConfig.getUrl().length() > 0)
-							progName = liteConfig.getUrl();
+						String progAlias = ServerUtils.forceNotNone( liteConfig.getUrl() );
+						if (progAlias.length() > 0) progName = progAlias;
+						
 						String ctrlOdds = YukonListFuncs.getYukonListEntry( program.getLmProgram().getChanceOfControlID() ).getEntryText();
 						
 						text.append( progName );

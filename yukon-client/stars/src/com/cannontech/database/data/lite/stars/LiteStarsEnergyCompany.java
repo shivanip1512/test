@@ -21,7 +21,6 @@ import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -82,7 +81,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private int userID = com.cannontech.user.UserUtils.USER_YUKON_ID;
 	
 	private ArrayList custAccountInfos = null;	// List of LiteStarsCustAccountInformation
-	private ArrayList customerContacts = null;	// List of LiteCustomerContact
 	private ArrayList addresses = null;			// List of LiteAddress
 	private ArrayList lmPrograms = null;			// List of LiteLMProgram
 	private ArrayList inventory = null;			// List of LiteInventoryBase
@@ -336,7 +334,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public void clear() {
 		custAccountInfos = null;
-		customerContacts = null;
 		addresses = null;
 		lmPrograms = null;
 		inventory = null;
@@ -909,13 +906,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		nextOrderNo = 0;
 	}
 	
-	public ArrayList getAllCustomerContacts() {
-		if (customerContacts == null)
-			customerContacts = new ArrayList();
-		
-		return customerContacts;
-	}
-	
 	public ArrayList getAllAddresses() {
 		if (addresses == null)
 			addresses = new ArrayList();
@@ -1039,52 +1029,20 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return null;
 	}
 	
-	public LiteCustomerContact getCustomerContact(int contactID) {
-		return getCustomerContact(contactID, true);
-	}
-	
-	public LiteCustomerContact getCustomerContact(int contactID, boolean autoLoad) {
-		ArrayList contactList = getAllCustomerContacts();
-		synchronized (contactList) {
-			for (int i = 0; i < contactList.size(); i++) {
-				LiteCustomerContact liteContact = (LiteCustomerContact) contactList.get(i);
-				if (liteContact.getContactID() == contactID)
-					return liteContact;
-			}
+	public LiteContact getContact(int contactID, LiteStarsCustAccountInformation liteAcctInfo) {
+		if (liteAcctInfo != null) {
+			Hashtable contactAcctInfoMap = getContactCustAccountInfoMap();
+			synchronized (contactAcctInfoMap) { contactAcctInfoMap.put(new Integer(contactID), liteAcctInfo); }
 		}
 		
-		if (autoLoad) {
-			LiteContact lContact = ContactFuncs.getContact( contactID );
-			
-			if (lContact != null) {
-				LiteCustomerContact liteContact = new LiteCustomerContact();
-				liteContact.setContactID( lContact.getContactID() );
-				liteContact.setLastName( lContact.getContLastName() );
-				liteContact.setFirstName( lContact.getContFirstName() );
-				liteContact.setLoginID( lContact.getLoginID() );
-				
-				for (int i = 0; i < lContact.getLiteContactNotifications().size(); i++) {
-					LiteContactNotification lNotif = (LiteContactNotification) lContact.getLiteContactNotifications().get(i);
-					if (lNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE)
-						liteContact.setHomePhone( lNotif.getNotification() );
-					else if (lNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE)
-						liteContact.setWorkPhone( lNotif.getNotification() );
-					else if (lNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL)
-						liteContact.setEmail( LiteCustomerContact.ContactNotification.newInstance(
-								lNotif.getDisableFlag().equals("N"), lNotif.getNotification()) );
-				}
-			
-				synchronized (contactList) { contactList.add( liteContact ); }
-				return liteContact;
-			}
-		}
-
-		return null;
+		return ContactFuncs.getContact( contactID );
 	}
 	
-	public void addCustomerContact(LiteCustomerContact liteContact, LiteStarsCustAccountInformation liteAcctInfo) {
-		ArrayList contactList = getAllCustomerContacts();
-		synchronized (contactList) { contactList.add( liteContact ); }
+	public void addContact(LiteContact liteContact, LiteStarsCustAccountInformation liteAcctInfo) {
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		synchronized (cache) {
+			cache.getAllContacts().add( liteContact );
+		}
 		
 		if (liteAcctInfo != null) {
 			Hashtable contactAcctInfoMap = getContactCustAccountInfoMap();
@@ -1094,25 +1052,22 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );
 	}
 
-	public LiteCustomerContact deleteCustomerContact(int contactID) {
-		ArrayList contactList = getAllCustomerContacts();
+	public LiteContact deleteContact(int contactID) {
+		LiteContact liteContact = ContactFuncs.getContact( contactID );
 		
-		synchronized (contactList) {
-			for (int i = 0; i < contactList.size(); i++) {
-				LiteCustomerContact liteContact = (LiteCustomerContact) contactList.get(i);
-				if (liteContact.getContactID() == contactID) {
-					contactList.remove(i);
-					
-					Hashtable contactAcctInfoMap = getContactCustAccountInfoMap();
-					synchronized (contactAcctInfoMap) { contactAcctInfoMap.remove(new Integer(contactID)); }
-					
-					ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
-					return liteContact;
-				}
+		if (liteContact != null) {
+			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			synchronized (cache) {
+				cache.getAllContacts().remove( liteContact );
 			}
+			
+			Hashtable contactAcctInfoMap = getContactCustAccountInfoMap();
+			synchronized (contactAcctInfoMap) { contactAcctInfoMap.remove(new Integer(contactID)); }
+			
+			ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
 		}
 		
-		return null;
+		return liteContact;
 	}
 	
 	private Hashtable getContactCustAccountInfoMap() {
@@ -1871,10 +1826,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
     	
 		// Remote all contacts from customerContacts
-		deleteCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
+		deleteContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
 		ArrayList contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
 		for (int i = 0; i < contacts.size(); i++)
-			deleteCustomerContact( ((Integer) contacts.get(i)).intValue() );
+			deleteContact( ((Integer) contacts.get(i)).intValue() );
 		
 		// Remove all addresses from addresses
 		deleteAddress( liteAcctInfo.getCustomerAccount().getBillingAddressID() );

@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteCustomer;
-import com.cannontech.database.data.lite.stars.LiteCustomerContact;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -137,7 +137,7 @@ public class UpdateContactsAction implements ActionBase {
 			StarsUpdateContactsResponse resp = new StarsUpdateContactsResponse(); 
 			
 			LiteCustomer liteCustomer = liteAcctInfo.getCustomer();
-			LiteCustomerContact litePrimContact = energyCompany.getCustomerContact( liteCustomer.getPrimaryContactID() );
+			LiteContact litePrimContact = energyCompany.getContact( liteCustomer.getPrimaryContactID(), liteAcctInfo );
 			PrimaryContact starsPrimContact = updateContacts.getPrimaryContact();
             
 			if (!StarsLiteFactory.isIdenticalCustomerContact( litePrimContact, starsPrimContact )) {
@@ -148,7 +148,7 @@ public class UpdateContactsAction implements ActionBase {
 				primContact.setDbConnection( conn );
 				primContact.update();
 				
-				StarsLiteFactory.setLiteCustomerContact( litePrimContact, primContact );
+				StarsLiteFactory.setLiteContact( litePrimContact, primContact );
 				StarsLiteFactory.setStarsCustomerContact( starsPrimContact, litePrimContact );
 				
 				ServerUtils.handleDBChange( litePrimContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
@@ -161,13 +161,13 @@ public class UpdateContactsAction implements ActionBase {
             
 			for (int i = 0; i < updateContacts.getAdditionalContactCount(); i++) {
 				AdditionalContact starsContact = updateContacts.getAdditionalContact(i);
-				LiteCustomerContact liteContact = null;
+				LiteContact liteContact = null;
 				
 				for (int j = 0; j < contactList.size(); j++) {
 					Integer contactID = (Integer) contactList.get(j);
 					if (contactID.intValue() == starsContact.getContactID()) {
 						contactList.remove(j);
-						liteContact = energyCompany.getCustomerContact( contactID.intValue() );
+						liteContact = energyCompany.getContact( contactID.intValue(), liteAcctInfo );
 		        		
 						if (!StarsLiteFactory.isIdenticalCustomerContact(liteContact, starsContact)) {
 							// Update the customer contact
@@ -178,7 +178,7 @@ public class UpdateContactsAction implements ActionBase {
 							contact.setDbConnection( conn );
 							contact.update();
 							
-							StarsLiteFactory.setLiteCustomerContact( liteContact, contact );
+							StarsLiteFactory.setLiteContact( liteContact, contact );
 							StarsLiteFactory.setStarsCustomerContact( starsContact, liteContact );
 							
 							ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
@@ -197,8 +197,8 @@ public class UpdateContactsAction implements ActionBase {
 					contact.setDbConnection( conn );
 					contact.add();
 		            
-					liteContact = (LiteCustomerContact) StarsLiteFactory.createLite( contact );
-					energyCompany.addCustomerContact( liteContact, liteAcctInfo );
+					liteContact = (LiteContact) StarsLiteFactory.createLite( contact );
+					energyCompany.addContact( liteContact, liteAcctInfo );
 					
 					StarsLiteFactory.setStarsCustomerContact( starsContact, liteContact );
 					resp.addAdditionalContact( starsContact );
@@ -209,13 +209,13 @@ public class UpdateContactsAction implements ActionBase {
             
 			// Remove customer contacts that are not in the update list
 			for (int i = 0; i < contactList.size(); i++) {
-				LiteCustomerContact liteContact = energyCompany.getCustomerContact( ((Integer) contactList.get(i)).intValue() );
+				LiteContact liteContact = energyCompany.getContact( ((Integer) contactList.get(i)).intValue(), liteAcctInfo );
 				com.cannontech.database.data.customer.Contact contact =
 						(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
             	
 				contact.setDbConnection( conn );
 				contact.delete();
-				energyCompany.deleteCustomerContact( liteContact.getContactID() );
+				energyCompany.deleteContact( liteContact.getContactID() );
 			}
             
 			liteCustomer.setAdditionalContacts( newContactList );

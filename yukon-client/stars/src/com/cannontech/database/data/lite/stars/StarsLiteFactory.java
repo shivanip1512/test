@@ -45,8 +45,8 @@ public class StarsLiteFactory {
 		LiteBase lite = null;
 		
 		if (db instanceof com.cannontech.database.data.customer.Contact) {
-			lite = new LiteCustomerContact();
-			setLiteCustomerContact( (LiteCustomerContact) lite, (com.cannontech.database.data.customer.Contact) db );
+			lite = new LiteContact(0);
+			setLiteContact( (LiteContact) lite, (com.cannontech.database.data.customer.Contact) db );
 		}
 		else if (db instanceof com.cannontech.database.db.customer.Address) {
 			lite = new LiteAddress();
@@ -136,28 +136,23 @@ public class StarsLiteFactory {
 		return lite;
 	}
 	
-	public static void setLiteCustomerContact(LiteCustomerContact liteContact, com.cannontech.database.data.customer.Contact contact) {
+	public static void setLiteContact(LiteContact liteContact, com.cannontech.database.data.customer.Contact contact) {
 		liteContact.setContactID( contact.getContact().getContactID().intValue() );
-		liteContact.setLastName( contact.getContact().getContLastName() );
-		liteContact.setFirstName( contact.getContact().getContFirstName() );
+		liteContact.setContLastName( contact.getContact().getContLastName() );
+		liteContact.setContFirstName( contact.getContact().getContFirstName() );
 		liteContact.setLoginID( contact.getContact().getLogInID().intValue() );
 		liteContact.setAddressID( contact.getContact().getAddressID().intValue() );
 		
-		liteContact.setHomePhone( null );
-		liteContact.setWorkPhone( null );
-		liteContact.setEmail( null );
+		liteContact.getLiteContactNotifications().removeAllElements();
 		
 		for (int i = 0; i < contact.getContactNotifVect().size(); i++) {
 			com.cannontech.database.db.contact.ContactNotification notif =
 					(com.cannontech.database.db.contact.ContactNotification) contact.getContactNotifVect().get(i);
 			
-			if (notif.getNotificationCatID().intValue() == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE)
-				liteContact.setHomePhone( notif.getNotification() );
-			else if (notif.getNotificationCatID().intValue() == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE)
-				liteContact.setWorkPhone( notif.getNotification() );
-			else if (notif.getNotificationCatID().intValue() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL)
-				liteContact.setEmail( LiteCustomerContact.ContactNotification.newInstance(
-						notif.getDisableFlag().equalsIgnoreCase("N"), notif.getNotification()) );
+			LiteContactNotification liteNotif = new LiteContactNotification(
+					notif.getContactNotifID().intValue(), liteContact.getContactID(),
+					notif.getNotificationCatID().intValue(), notif.getDisableFlag(), notif.getNotification() );
+			liteContact.getLiteContactNotifications().add( liteNotif );
 		}
 	}
 	
@@ -564,9 +559,9 @@ public class StarsLiteFactory {
 		DBPersistent db = null;
 		
 		switch (lite.getLiteType()) {
-			case LiteTypes.STARS_CUSTOMER_CONTACT:
+			case LiteTypes.CONTACT:
 				db = new com.cannontech.database.data.customer.Contact();
-				setContact( (com.cannontech.database.data.customer.Contact) db, (LiteCustomerContact) lite, true );
+				setContact( (com.cannontech.database.data.customer.Contact) db, (LiteContact) lite );
 				break;
 			case LiteTypes.STARS_ADDRESS:
 				db = new com.cannontech.database.db.customer.Address();
@@ -641,43 +636,27 @@ public class StarsLiteFactory {
 		return db;
 	}
 	
-	public static void setContact(com.cannontech.database.data.customer.Contact contact, LiteCustomerContact liteContact, boolean isResidential) {
+	public static void setContact(com.cannontech.database.data.customer.Contact contact, LiteContact liteContact) {
 		contact.getContact().setContactID( new Integer(liteContact.getContactID()) );
-		contact.getContact().setContLastName( liteContact.getLastName() );
-		contact.getContact().setContFirstName( liteContact.getFirstName() );
+		contact.getContact().setContLastName( liteContact.getContLastName() );
+		contact.getContact().setContFirstName( liteContact.getContFirstName() );
 		contact.getContact().setLogInID( new Integer(liteContact.getLoginID()) );
 		contact.getContact().setAddressID( new Integer(liteContact.getAddressID()) );
 		
-		if (liteContact.getHomePhone() != null && liteContact.getHomePhone().length() > 0) {
-			com.cannontech.database.db.contact.ContactNotification notif = new com.cannontech.database.db.contact.ContactNotification();
-			notif.setContactID( new Integer(liteContact.getContactID()) );
-			if (isResidential)
-				notif.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
-			else
-				notif.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_PHONE) );
-			notif.setNotification( liteContact.getHomePhone() );
-			notif.setDisableFlag( "Y" );
-			contact.getContactNotifVect().add( notif );
-		}
+		contact.getContactNotifVect().removeAllElements();
 		
-		if (liteContact.getWorkPhone() != null && liteContact.getWorkPhone().length() > 0) {
-			com.cannontech.database.db.contact.ContactNotification notif = new com.cannontech.database.db.contact.ContactNotification();
-			notif.setContactID( new Integer(liteContact.getContactID()) );
-			if (isResidential)
-				notif.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
-			else
-				notif.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_FAX) );
-			notif.setNotification( liteContact.getWorkPhone() );
-			notif.setDisableFlag( "Y" );
-			contact.getContactNotifVect().add( notif );
-		}
-		
-		if (liteContact.getEmail() != null && liteContact.getEmail().getNotification() != null && liteContact.getEmail().getNotification().length() > 0) {
-			com.cannontech.database.db.contact.ContactNotification notif = new com.cannontech.database.db.contact.ContactNotification();
-			notif.setContactID( new Integer(liteContact.getContactID()) );
-			notif.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
-			notif.setNotification( liteContact.getEmail().getNotification() );
-			notif.setDisableFlag( liteContact.getEmail().isEnabled() ? "N" : "Y" );
+		for (int i = 0; i < liteContact.getLiteContactNotifications().size(); i++) {
+			LiteContactNotification liteNotif = (LiteContactNotification)
+					liteContact.getLiteContactNotifications().get(i);
+			
+			com.cannontech.database.db.contact.ContactNotification notif =
+					new com.cannontech.database.db.contact.ContactNotification();
+			notif.setContactNotifID( new Integer(liteNotif.getContactNotifID()) );
+			notif.setContactID( new Integer(liteNotif.getContactID()) );
+			notif.setNotificationCatID( new Integer(liteNotif.getNotificationCategoryID()) );
+			notif.setDisableFlag( liteNotif.getDisableFlag() );
+			notif.setNotification( liteNotif.getNotification() );
+			
 			contact.getContactNotifVect().add( notif );
 		}
 	}
@@ -990,19 +969,25 @@ public class StarsLiteFactory {
 	}
 
 	
-	public static void setStarsCustomerContact(StarsCustomerContact starsContact, LiteCustomerContact liteContact) {
+	public static void setStarsCustomerContact(StarsCustomerContact starsContact, LiteContact liteContact) {
 		starsContact.setContactID( liteContact.getContactID() );
-		starsContact.setLastName( ServerUtils.forceNotNull(liteContact.getLastName()) );
-		starsContact.setFirstName( ServerUtils.forceNotNull(liteContact.getFirstName()) );
-		starsContact.setHomePhone( ServerUtils.forceNotNull(liteContact.getHomePhone()) );
-		starsContact.setWorkPhone( ServerUtils.forceNotNull(liteContact.getWorkPhone()) );
+		starsContact.setLastName( ServerUtils.forceNotNull(liteContact.getContLastName()) );
+		starsContact.setFirstName( ServerUtils.forceNotNull(liteContact.getContFirstName()) );
 		
-		if (liteContact.getEmail() != null)
-			starsContact.setEmail( (Email) StarsFactory.newStarsContactNotification(
-					liteContact.getEmail().isEnabled(), ServerUtils.forceNotNull(liteContact.getEmail().getNotification()), Email.class) );
-		else
-			starsContact.setEmail( (Email) StarsFactory.newStarsContactNotification(
-					false, "", Email.class) );
+		LiteContactNotification liteNotifHPhone = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE );
+		starsContact.setHomePhone( ServerUtils.getNotification(liteNotifHPhone) );
+		
+		LiteContactNotification liteNotifWPhone = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE );
+		starsContact.setWorkPhone( ServerUtils.getNotification(liteNotifWPhone) );
+		
+		LiteContactNotification liteNotifEmail = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+		if (liteNotifEmail != null) {
+			starsContact.setEmail( (Email)StarsFactory.newStarsContactNotification(
+					liteNotifEmail.getDisableFlag().equalsIgnoreCase("N"), ServerUtils.forceNotNull(liteNotifEmail.getNotification()), Email.class) );
+		}
+		else {
+			starsContact.setEmail( (Email)StarsFactory.newStarsContactNotification(false, "", Email.class) );
+		}
 	}
 	
 	public static void setStarsCustomerAddress(StarsCustomerAddress starsAddr, LiteAddress liteAddr) {
@@ -1176,7 +1161,7 @@ public class StarsLiteFactory {
 		LiteCustomer liteCustomer = liteAcctInfo.getCustomer();
 		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
 		LiteSiteInformation liteSiteInfo = liteAcctInfo.getSiteInformation();
-		LiteCustomerContact liteContact = energyCompany.getCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
+		LiteContact liteContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
 		
 		StarsCustomerAccount starsAccount = new StarsCustomerAccount();
 		starsAccount.setAccountID( liteAccount.getAccountID() );
@@ -1207,7 +1192,7 @@ public class StarsLiteFactory {
 		for (int i = 0; i < liteCustomer.getAdditionalContacts().size(); i++) {
 			Integer contactID = (Integer) liteCustomer.getAdditionalContacts().get(i);
 			AdditionalContact contact = new AdditionalContact();
-			setStarsCustomerContact( contact, energyCompany.getCustomerContact(contactID.intValue()) );
+			setStarsCustomerContact( contact, energyCompany.getContact(contactID.intValue(), liteAcctInfo) );
 			starsAccount.addAdditionalContact( contact );
 		}
 		
@@ -1680,7 +1665,7 @@ public class StarsLiteFactory {
 		}
 		
 		if (liteCompany.getPrimaryContactID() != CtiUtilities.NONE_ID) {
-			LiteCustomerContact liteContact = energyCompany.getCustomerContact( liteCompany.getPrimaryContactID() );
+			LiteContact liteContact = energyCompany.getContact( liteCompany.getPrimaryContactID(), null );
 			PrimaryContact primContact = new PrimaryContact();
 			setStarsCustomerContact( primContact, liteContact );
 			starsCompany.setPrimaryContact( primContact );
@@ -1976,16 +1961,16 @@ public class StarsLiteFactory {
 		
 		if (liteCompany.getPrimaryContactID() != CtiUtilities.NONE_ID) {
 			LiteContact liteContact = ContactFuncs.getContact( liteCompany.getPrimaryContactID() );
+			
 			if (liteContact != null) {
-				for (int i = 0; i < liteContact.getLiteContactNotifications().size(); i++) {
-					LiteContactNotification liteNotif = (LiteContactNotification) liteContact.getLiteContactNotifications().get(i);
-					if (liteNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_PHONE)
-						starsCompany.setMainPhoneNumber( liteNotif.getNotification() );
-					else if (liteNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_FAX)
-						starsCompany.setMainFaxNumber( liteNotif.getNotification() );
-					else if (liteNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL)
-						starsCompany.setEmail( liteNotif.getNotification() );
-				}
+				LiteContactNotification liteNotifPhone = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_PHONE );
+				starsCompany.setMainPhoneNumber( ServerUtils.getNotification(liteNotifPhone) );
+				
+				LiteContactNotification liteNotifFax = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_FAX );
+				starsCompany.setMainFaxNumber( ServerUtils.getNotification(liteNotifFax) );
+				
+				LiteContactNotification liteNotifEmail = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+				starsCompany.setEmail( ServerUtils.getNotification(liteNotifEmail) );
 				
 				if (liteContact.getAddressID() != CtiUtilities.NONE_ID) {
 					LiteAddress liteAddr = liteCompany.getAddress( liteContact.getAddressID() );
@@ -2075,19 +2060,23 @@ public class StarsLiteFactory {
 	}
 	
 	
-	public static boolean isIdenticalContactNotification(LiteCustomerContact.ContactNotification liteNotif, StarsContactNotification starsNotif) {
-		if (liteNotif == null)
-			return (starsNotif.getNotification().length() == 0);
+	public static boolean isIdenticalContactNotification(LiteContactNotification liteNotif, StarsContactNotification starsNotif) {
+		if (liteNotif == null) return (starsNotif.getNotification().length() == 0);
+		
 		return (ServerUtils.forceNotNull(liteNotif.getNotification()).equals( starsNotif.getNotification() )
-				&& liteNotif.isEnabled() == starsNotif.getEnabled());
+				&& (liteNotif.getDisableFlag().equalsIgnoreCase("Y") ^ starsNotif.getEnabled()));
 	}
 	
-	public static boolean isIdenticalCustomerContact(LiteCustomerContact liteContact, StarsCustomerContact starsContact) {
-		return (ServerUtils.forceNotNull(liteContact.getLastName()).equals( starsContact.getLastName() )
-				&& ServerUtils.forceNotNull(liteContact.getFirstName()).equals( starsContact.getFirstName() )
-				&& ServerUtils.forceNotNull(liteContact.getHomePhone()).equals( starsContact.getHomePhone() )
-				&& ServerUtils.forceNotNull(liteContact.getWorkPhone()).equals( starsContact.getWorkPhone() )
-				&& isIdenticalContactNotification( liteContact.getEmail(), starsContact.getEmail() ));
+	public static boolean isIdenticalCustomerContact(LiteContact liteContact, StarsCustomerContact starsContact) {
+		LiteContactNotification liteNotifHPhone = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE );
+		LiteContactNotification liteNotifWPhone = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE );
+		LiteContactNotification liteNotifEmail = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+		
+		return (ServerUtils.forceNotNull(liteContact.getContLastName()).equals( starsContact.getLastName() )
+				&& ServerUtils.forceNotNull(liteContact.getContFirstName()).equals( starsContact.getFirstName() )
+				&& ServerUtils.getNotification(liteNotifHPhone).equals( starsContact.getHomePhone() )
+				&& ServerUtils.getNotification(liteNotifWPhone).equals( starsContact.getWorkPhone() )
+				&& isIdenticalContactNotification( liteNotifEmail, starsContact.getEmail() ));
 	}
 	
 	public static boolean isIdenticalCustomerAddress(LiteAddress liteAddr, StarsCustomerAddress starsAddr) {

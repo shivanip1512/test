@@ -27,15 +27,17 @@ import com.cannontech.common.util.Pair;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
+import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
-import com.cannontech.database.data.lite.stars.LiteCustomerContact;
 import com.cannontech.database.data.lite.stars.LiteCustomerFAQ;
 import com.cannontech.database.data.lite.stars.LiteInterviewQuestion;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -678,7 +680,7 @@ public class StarsAdmin extends HttpServlet {
 	private void updateLogin(String[] fields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, HttpSession session)
 		throws Exception
 	{
-		LiteCustomerContact liteContact = energyCompany.getCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
+		LiteContact liteContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
 		if (liteContact.getLoginID() == com.cannontech.user.UserUtils.USER_YUKON_ID
 			&& fields[IDX_USERNAME].trim().length() == 0)
 			return;
@@ -1140,28 +1142,107 @@ public class StarsAdmin extends HttpServlet {
 			StarsGetEnergyCompanySettingsResponse ecSettings =
 					(StarsGetEnergyCompanySettingsResponse) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsEnergyCompany ec = ecSettings.getStarsEnergyCompany();
-			
-        	boolean customizedEmail = Boolean.valueOf( req.getParameter("CustomizedEmail") ).booleanValue();
-        	String email = req.getParameter("Email");
-			
-			boolean newContact = (energyCompany.getPrimaryContactID() == CtiUtilities.NONE_ID);
-			LiteCustomerContact liteContact = null;
-			if (newContact) {
-				liteContact = new LiteCustomerContact();
-				liteContact.setLastName( CtiUtilities.STRING_NONE );
-				liteContact.setFirstName( CtiUtilities.STRING_NONE );
-			}
-			else
-				liteContact = energyCompany.getCustomerContact( energyCompany.getPrimaryContactID() );
-				
-			liteContact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("PhoneNo")) );
-			liteContact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("FaxNo")) );
-        	if (!customizedEmail)
-				liteContact.setEmail( LiteCustomerContact.ContactNotification.newInstance(false, email) );
-			
+        	
+			// Create the data object from the request parameters
 			com.cannontech.database.data.customer.Contact contact =
 					new com.cannontech.database.data.customer.Contact();
-			StarsLiteFactory.setContact( contact, liteContact, false );
+			
+			boolean newContact = (energyCompany.getPrimaryContactID() == CtiUtilities.NONE_ID);
+			LiteContact liteContact = null;
+			
+			if (newContact) {
+				contact.getContact().setContLastName( CtiUtilities.STRING_NONE );
+				contact.getContact().setContFirstName( CtiUtilities.STRING_NONE );
+			}
+			else {
+				liteContact = energyCompany.getContact( energyCompany.getPrimaryContactID(), null );
+				StarsLiteFactory.setContact( contact, liteContact );
+			}
+			
+			com.cannontech.database.db.contact.ContactNotification notifPhone = null;
+			com.cannontech.database.db.contact.ContactNotification notifFax = null;
+			com.cannontech.database.db.contact.ContactNotification notifEmail = null;
+			
+			for (int i = 0; i < contact.getContactNotifVect().size(); i++) {
+				com.cannontech.database.db.contact.ContactNotification notif =
+						(com.cannontech.database.db.contact.ContactNotification) contact.getContactNotifVect().get(i);
+				// Set all the opcode to DELETE first, then change it to UPDATE or add INSERT accordingly
+				notif.setOpCode( Transaction.DELETE );
+				
+				if (notif.getNotificationCatID().intValue() == YukonListEntryTypes.YUK_ENTRY_ID_PHONE)
+					notifPhone = notif;
+				else if (notif.getNotificationCatID().intValue() == YukonListEntryTypes.YUK_ENTRY_ID_FAX)
+					notifFax = notif;
+				else if (notif.getNotificationCatID().intValue() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL)
+					notifEmail = notif;
+			}
+			
+			if (req.getParameter("PhoneNo").length() > 0) {
+				if (notifPhone != null) {
+					notifPhone.setNotification( req.getParameter("PhoneNo") );
+					notifPhone.setOpCode( Transaction.UPDATE );
+				}
+				else {
+					notifPhone = new com.cannontech.database.db.contact.ContactNotification();
+					notifPhone.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_PHONE) );
+					notifPhone.setDisableFlag( "Y" );
+					notifPhone.setNotification( req.getParameter("PhoneNo") );
+					notifPhone.setOpCode( Transaction.INSERT );
+					
+					contact.getContactNotifVect().add( notifPhone );
+				}
+			}
+			
+			if (req.getParameter("FaxNo").length() > 0) {
+				if (notifFax != null) {
+					notifFax.setNotification( req.getParameter("FaxNo") );
+					notifFax.setOpCode( Transaction.UPDATE );
+				}
+				else {
+					notifFax = new com.cannontech.database.db.contact.ContactNotification();
+					notifFax.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_FAX) );
+					notifFax.setDisableFlag( "Y" );
+					notifFax.setNotification( req.getParameter("FaxNo") );
+					notifFax.setOpCode( Transaction.INSERT );
+					
+					contact.getContactNotifVect().add( notifFax );
+				}
+			}
+			
+			if (req.getParameter("FaxNo").length() > 0) {
+				if (notifFax != null) {
+					notifFax.setNotification( req.getParameter("FaxNo") );
+					notifFax.setOpCode( Transaction.UPDATE );
+				}
+				else {
+					notifFax = new com.cannontech.database.db.contact.ContactNotification();
+					notifFax.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_FAX) );
+					notifFax.setDisableFlag( "Y" );
+					notifFax.setNotification( req.getParameter("FaxNo") );
+					notifFax.setOpCode( Transaction.INSERT );
+					
+					contact.getContactNotifVect().add( notifFax );
+				}
+			}
+			
+			boolean customizedEmail = Boolean.valueOf( req.getParameter("CustomizedEmail") ).booleanValue();
+			String email = req.getParameter("Email");
+			
+			if (!customizedEmail && email.length() > 0) {
+				if (notifEmail != null) {
+					notifEmail.setNotification( email );
+					notifEmail.setOpCode( Transaction.UPDATE );
+				}
+				else {
+					notifEmail = new com.cannontech.database.db.contact.ContactNotification();
+					notifEmail.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
+					notifEmail.setDisableFlag( "Y" );
+					notifEmail.setNotification( email );
+					notifEmail.setOpCode( Transaction.INSERT );
+					
+					contact.getContactNotifVect().add( notifEmail );
+				}
+			}
 			
 			if (newContact) {
 				com.cannontech.database.db.customer.Address addr =
@@ -1172,11 +1253,10 @@ public class StarsAdmin extends HttpServlet {
 					StarsFactory.setCustomerAddress( addr, ecTemp.getCompanyAddress() );
 				contact.setAddress( addr );
 				
-				contact.setContactID( null );
 				contact = (com.cannontech.database.data.customer.Contact)
 						Transaction.createTransaction( Transaction.INSERT, contact ).execute();
-				StarsLiteFactory.setLiteCustomerContact( liteContact, contact );
-				energyCompany.addCustomerContact( liteContact, null );
+				StarsLiteFactory.setLiteContact( liteContact, contact );
+				energyCompany.addContact( liteContact, null );
 				
 				CompanyAddress starsAddr = new CompanyAddress();
 				StarsLiteFactory.setStarsCustomerAddress(
@@ -1186,12 +1266,17 @@ public class StarsAdmin extends HttpServlet {
 			else {
 				contact = (com.cannontech.database.data.customer.Contact)
 						Transaction.createTransaction( Transaction.UPDATE, contact ).execute();
+				StarsLiteFactory.setLiteContact( liteContact, contact );
 			}
 			
-			ec.setMainPhoneNumber( liteContact.getHomePhone() );
-			ec.setMainFaxNumber( liteContact.getWorkPhone() );
-			if (liteContact.getEmail() != null)
-				ec.setEmail( liteContact.getEmail().getNotification() );
+			LiteContactNotification liteNotifPhone = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_PHONE );
+			ec.setMainPhoneNumber( ServerUtils.getNotification(liteNotifPhone) );
+			
+			LiteContactNotification liteNotifFax = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_FAX );
+			ec.setMainFaxNumber( ServerUtils.getNotification(liteNotifFax) );
+			
+			LiteContactNotification liteNotifEmail = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+			ec.setEmail( ServerUtils.getNotification(liteNotifEmail) );
 			
 			String compName = req.getParameter("CompanyName");
 			if (newContact || !energyCompany.getName().equals( compName )) {
@@ -1572,7 +1657,7 @@ public class StarsAdmin extends HttpServlet {
 			com.cannontech.database.db.contact.Contact contactDB = contact.getContact();
 			
 			LiteServiceCompany liteCompany = null;
-			LiteCustomerContact liteContact = null;
+			LiteContact liteContact = null;
 			LiteAddress liteAddr = null;
 			
 			StarsServiceCompany starsCompany = null;
@@ -1580,8 +1665,8 @@ public class StarsAdmin extends HttpServlet {
 			if (!newCompany) {
 				liteCompany = energyCompany.getServiceCompany( companyID );
 				StarsLiteFactory.setServiceCompany( companyDB, liteCompany );
-				liteContact = energyCompany.getCustomerContact( liteCompany.getPrimaryContactID() );
-				StarsLiteFactory.setContact( contact, liteContact, false );
+				liteContact = energyCompany.getContact( liteCompany.getPrimaryContactID(), null );
+				StarsLiteFactory.setContact( contact, liteContact );
 				liteAddr = energyCompany.getAddress( liteCompany.getAddressID() );
         	}
         	
@@ -1607,8 +1692,8 @@ public class StarsAdmin extends HttpServlet {
 				liteAddr = (LiteAddress) StarsLiteFactory.createLite( company.getAddress() );
 				energyCompany.addAddress( liteAddr );
 				
-				liteContact = (LiteCustomerContact) StarsLiteFactory.createLite( contact );
-				energyCompany.addCustomerContact( liteContact, null );
+				liteContact = (LiteContact) StarsLiteFactory.createLite( contact );
+				energyCompany.addContact( liteContact, null );
 				
 				liteCompany = (LiteServiceCompany) StarsLiteFactory.createLite( company.getServiceCompany() );
 				energyCompany.addServiceCompany( liteCompany );
@@ -1619,7 +1704,7 @@ public class StarsAdmin extends HttpServlet {
 				
 				PrimaryContact starsContact = new PrimaryContact();
 				StarsLiteFactory.setStarsCustomerContact(
-						starsContact, energyCompany.getCustomerContact(company.getPrimaryContact().getContactID().intValue()) );
+						starsContact, energyCompany.getContact(company.getPrimaryContact().getContactID().intValue(), null) );
 				starsCompany.setPrimaryContact( starsContact );
 				
 				CompanyAddress starsAddr = new CompanyAddress();
@@ -1630,7 +1715,7 @@ public class StarsAdmin extends HttpServlet {
 			else {
 				contactDB = (com.cannontech.database.db.contact.Contact)
 						Transaction.createTransaction( Transaction.UPDATE, contactDB ).execute();
-				StarsLiteFactory.setLiteCustomerContact( liteContact, contact );
+				StarsLiteFactory.setLiteContact( liteContact, contact );
 				
 				companyDB = (com.cannontech.database.db.stars.report.ServiceCompany)
 						Transaction.createTransaction( Transaction.UPDATE, companyDB ).execute();
@@ -1645,8 +1730,8 @@ public class StarsAdmin extends HttpServlet {
 				if (starsCompany == null)
 					throw new Exception ("Cannot find the StarsServiceCompany object with companyID = " + companyID);
 				
-				starsCompany.getPrimaryContact().setLastName( liteContact.getLastName() );
-				starsCompany.getPrimaryContact().setFirstName( liteContact.getFirstName() );
+				starsCompany.getPrimaryContact().setLastName( liteContact.getContLastName() );
+				starsCompany.getPrimaryContact().setFirstName( liteContact.getContFirstName() );
 			}
 			
 			starsCompany.setCompanyName( liteCompany.getCompanyName() );
@@ -1727,7 +1812,7 @@ public class StarsAdmin extends HttpServlet {
 				company.delete();
 				
 				energyCompany.deleteAddress( liteCompany.getAddressID() );
-				energyCompany.deleteCustomerContact( liteCompany.getPrimaryContactID() );
+				energyCompany.deleteContact( liteCompany.getPrimaryContactID() );
 				energyCompany.deleteServiceCompany( compID.intValue() );
 				
 				starsCompanies.removeStarsServiceCompany( i );
@@ -2708,7 +2793,7 @@ public class StarsAdmin extends HttpServlet {
 			SOAPServer.deleteEnergyCompany( energyCompany.getLiteID() );
 			ServerUtils.handleDBChange( energyCompany, DBChangeMsg.CHANGE_TYPE_DELETE );
 			if (energyCompany.getPrimaryContactID() != CtiUtilities.NONE_ID) {
-				LiteCustomerContact liteContact = energyCompany.getCustomerContact( energyCompany.getPrimaryContactID() );
+				LiteContact liteContact = energyCompany.getContact( energyCompany.getPrimaryContactID(), null );
 				ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
 			}
 			

@@ -18,9 +18,10 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiProperties;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.stars.LiteAddress;
-import com.cannontech.database.data.lite.stars.LiteCustomerContact;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
@@ -188,7 +189,7 @@ public class ServerUtils {
 	    		typeOfChange
 	    		);
 		}
-		else if (lite.getLiteType() == LiteTypes.CONTACT || lite.getLiteType() == LiteTypes.STARS_CUSTOMER_CONTACT) {
+		else if (lite.getLiteType() == LiteTypes.CONTACT) {
 			msg = new DBChangeMsg(
 				lite.getLiteID(),
 				DBChangeMsg.CHANGE_CONTACT_DB,
@@ -240,14 +241,19 @@ public class ServerUtils {
 		return (str1.equalsIgnoreCase("(none)")) ? "" : str1;
 	}
 	
-	public static String getFormattedName(LiteCustomerContact liteContact) {
+	public static String getNotification(LiteContactNotification liteNotif) {
+		String notification = (liteNotif == null)? null : liteNotif.getNotification();
+		return forceNotNull(notification);
+	}
+	
+	public static String getFormattedName(LiteContact liteContact) {
 		StringBuffer name = new StringBuffer();
 		
-		String firstName = forceNotNone( liteContact.getFirstName() ).trim();
+		String firstName = forceNotNone( liteContact.getContFirstName() ).trim();
 		if (firstName.length() > 0)
 			name.append( firstName );
 		
-		String lastName = forceNotNone( liteContact.getLastName() ).trim();
+		String lastName = forceNotNone( liteContact.getContLastName() ).trim();
 		if (lastName.length() > 0)
 			name.append(" ").append( lastName );
 			

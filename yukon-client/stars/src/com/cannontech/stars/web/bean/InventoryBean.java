@@ -10,8 +10,8 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteAddress;
-import com.cannontech.database.data.lite.stars.LiteCustomerContact;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -359,7 +359,7 @@ public class InventoryBean {
             	htmlBuf.append("Warehouse");
             else {
             	LiteStarsCustAccountInformation liteAcctInfo = getEnergyCompany().getBriefCustAccountInfo( liteInv.getAccountID(), true );
-            	LiteCustomerContact liteCont = getEnergyCompany().getCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
+            	LiteContact liteCont = getEnergyCompany().getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
             	LiteAddress liteAddr = getEnergyCompany().getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
             	
             	htmlBuf.append("<a href='' class='Link1' onclick='selectAccount(").append(liteAcctInfo.getAccountID()).append("); return false;'>");

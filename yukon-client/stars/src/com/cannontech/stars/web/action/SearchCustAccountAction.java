@@ -5,12 +5,14 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteAddress;
-import com.cannontech.database.data.lite.stars.LiteCustomerContact;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
+import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPClient;
@@ -158,20 +160,25 @@ public class SearchCustAccountAction implements ActionBase {
 				for (int i = 0; i < accountIDs.length; i++) {
 					LiteStarsCustAccountInformation acctInfo = energyCompany.getBriefCustAccountInfo( accountIDs[i], true );
 					if (acctInfo != null) {
-						LiteCustomerContact contact = energyCompany.getCustomerContact( acctInfo.getCustomer().getPrimaryContactID() );
+						LiteContact contact = energyCompany.getContact( acctInfo.getCustomer().getPrimaryContactID(), acctInfo );
 						LiteAddress addr = energyCompany.getAddress( acctInfo.getAccountSite().getStreetAddressID() );
 						
 						StarsCustAccountBrief acctBrief = new StarsCustAccountBrief();
 						acctBrief.setAccountID( accountIDs[i] );
 						acctBrief.setAccountNumber( acctInfo.getCustomerAccount().getAccountNumber() );
-						acctBrief.setContactName( contact.getLastName() + ", " + contact.getFirstName() );
+						acctBrief.setContactName( contact.getContLastName() + ", " + contact.getContFirstName() );
+						
+						String homePhone = ServerUtils.getNotification(
+								ContactFuncs.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
+						String workPhone = ServerUtils.getNotification(
+								ContactFuncs.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
 						
 						StringBuffer phoneNo = new StringBuffer();
-						if (contact.getHomePhone() != null)
-							phoneNo.append( contact.getHomePhone() ).append( "(H)" );
-						if (contact.getWorkPhone() != null) {
+						if (homePhone.length() > 0)
+							phoneNo.append( homePhone ).append( "(H)" );
+						if (workPhone.length() > 0) {
 							if (phoneNo.length() > 0) phoneNo.append( ", " );
-							phoneNo.append( contact.getWorkPhone() ).append( "(W)" );
+							phoneNo.append( workPhone ).append( "(W)" );
 						}
 						if (phoneNo.length() == 0) phoneNo.append( "(none)" );
 						acctBrief.setContPhoneNumber( phoneNo.toString() );

@@ -5,6 +5,7 @@ import java.util.Vector;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.customer.Contact;
@@ -399,31 +400,71 @@ public class StarsFactory {
         contact.getContact().setContLastName( starsContact.getLastName() );
         contact.getContact().setContFirstName( starsContact.getFirstName() );
         
+        ContactNotification notifHPhone = null;
+        ContactNotification notifWPhone = null;
+        ContactNotification notifEmail = null;
+        
         Vector contactNotifVect = contact.getContactNotifVect();
-        contactNotifVect.clear();
+        for (int i = 0; i < contactNotifVect.size(); i++) {
+			ContactNotification notif = (ContactNotification) contactNotifVect.get(i);
+			// Set all the opcode to DELETE first, then change them to UPDATE or add INSERT accordingly
+			notif.setOpCode( Transaction.DELETE );
+			
+			if (notif.getNotificationCatID().intValue() == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE)
+				notifHPhone = notif;
+			else if (notif.getNotificationCatID().intValue() == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE)
+				notifWPhone = notif;
+			else if (notif.getNotificationCatID().intValue() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL)
+				notifEmail = notif;
+        }
         
         if (starsContact.getHomePhone().length() > 0) {
-	        ContactNotification notif = new ContactNotification();
-	        notif.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
-	        notif.setNotification( starsContact.getHomePhone() );
-	        notif.setDisableFlag( "Y" );
-	        contactNotifVect.add( notif );
+        	if (notifHPhone != null) {
+        		notifHPhone.setNotification( starsContact.getHomePhone() );
+        		notifHPhone.setOpCode( Transaction.UPDATE );
+        	}
+        	else {
+				notifHPhone = new ContactNotification();
+				notifHPhone.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
+				notifHPhone.setNotification( starsContact.getHomePhone() );
+				notifHPhone.setDisableFlag( "Y" );
+				notifHPhone.setOpCode( Transaction.INSERT );
+				
+				contactNotifVect.add( notifHPhone );
+        	}
         }
         
         if (starsContact.getWorkPhone().length() > 0) {
-	        ContactNotification notif = new ContactNotification();
-	        notif.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
-	        notif.setNotification( starsContact.getWorkPhone() );
-	        notif.setDisableFlag( "Y" );
-	        contactNotifVect.add( notif );
+        	if (notifWPhone != null) {
+        		notifWPhone.setNotification( starsContact.getWorkPhone() );
+        		notifWPhone.setOpCode( Transaction.UPDATE );
+        	}
+        	else {
+				notifWPhone = new ContactNotification();
+				notifWPhone.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
+				notifWPhone.setNotification( starsContact.getWorkPhone() );
+				notifWPhone.setDisableFlag( "Y" );
+				notifWPhone.setOpCode( Transaction.INSERT );
+				
+				contactNotifVect.add( notifWPhone );
+        	}
         }
         
         if (starsContact.getEmail() != null && starsContact.getEmail().getNotification().length() > 0) {
-	        ContactNotification notif = new ContactNotification();
-	        notif.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
-	        notif.setNotification( starsContact.getEmail().getNotification() );
-	        notif.setDisableFlag( starsContact.getEmail().getEnabled() ? "N" : "Y" );
-	        contactNotifVect.add( notif );
+        	if (notifEmail != null) {
+				notifEmail.setNotification( starsContact.getEmail().getNotification() );
+				notifEmail.setDisableFlag( starsContact.getEmail().getEnabled()? "N" : "Y" );
+				notifEmail.setOpCode( Transaction.UPDATE );
+        	}
+        	else {
+				notifEmail = new ContactNotification();
+				notifEmail.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
+				notifEmail.setNotification( starsContact.getEmail().getNotification() );
+				notifEmail.setDisableFlag( starsContact.getEmail().getEnabled() ? "N" : "Y" );
+				notifEmail.setOpCode( Transaction.INSERT );
+				
+				contactNotifVect.add( notifEmail );
+        	}
         }
     }
     

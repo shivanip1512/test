@@ -5,11 +5,11 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.data.customer.CustomerTypes;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteAccountSite;
 import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteCustomerAccount;
-import com.cannontech.database.data.lite.stars.LiteCustomerContact;
 import com.cannontech.database.data.lite.stars.LiteSiteInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -109,7 +109,7 @@ public class UpdateCustAccountAction implements ActionBase {
             primContact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone")) );
 			primContact.setEmail( (Email) StarsFactory.newStarsContactNotification(
 					Boolean.valueOf(req.getParameter("NotifyControl")).booleanValue(),
-					req.getParameter("Email"), Email.class) );
+					req.getParameter("Email").trim(), Email.class) );
             
             updateAccount.setPrimaryContact( primContact );
             updateAccount.setAdditionalContact( starsAcctInfo.getStarsCustomerAccount().getAdditionalContact() );
@@ -196,7 +196,7 @@ public class UpdateCustAccountAction implements ActionBase {
             com.cannontech.database.db.customer.Customer customer =
             		(com.cannontech.database.db.customer.Customer) StarsLiteFactory.createDBPersistent( liteCustomer );
             
-            LiteCustomerContact litePrimContact = energyCompany.getCustomerContact( liteCustomer.getPrimaryContactID() );
+            LiteContact litePrimContact = energyCompany.getContact( liteCustomer.getPrimaryContactID(), liteAcctInfo );
             PrimaryContact starsPrimContact = updateAccount.getPrimaryContact();
             
             if (!StarsLiteFactory.isIdenticalCustomerContact( litePrimContact, starsPrimContact )) {
@@ -206,7 +206,7 @@ public class UpdateCustAccountAction implements ActionBase {
             	
             	primContact.setDbConnection( conn );
             	primContact.update();
-				StarsLiteFactory.setLiteCustomerContact( litePrimContact, primContact );
+				StarsLiteFactory.setLiteContact( litePrimContact, primContact );
 				
 				ServerUtils.handleDBChange( litePrimContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
             }

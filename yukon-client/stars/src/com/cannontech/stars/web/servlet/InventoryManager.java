@@ -320,7 +320,7 @@ public class InventoryManager extends HttpServlet {
 				// Forward to DeleteInv.jsp to confirm removal of the old hardware
 				LiteInventoryBase liteInvOld = energyCompany.getInventory( deleteHw.getInventoryID(), true );
 				session.setAttribute( INVENTORY_TO_DELETE, liteInvOld );
-				redirect = req.getContextPath() + "/operator/Hardware/DeleteInv.jsp";
+				redirect = req.getContextPath() + "/operator/Consumer/DeleteInv.jsp";
 				return;
 			}
 		}
@@ -380,7 +380,7 @@ public class InventoryManager extends HttpServlet {
 						operation.getStarsDeleteLMHardware().getInventoryID(), true );
 				session.setAttribute( INVENTORY_TO_DELETE, liteInvOld );
 				session.setAttribute( NAV_BACK_STEP, new Integer(-2) );	// It takes two steps from DeleteInv.jsp to get back to Inventory.jsp
-				redirect = req.getContextPath() + "/operator/Hardware/DeleteInv.jsp";
+				redirect = req.getContextPath() + "/operator/Consumer/DeleteInv.jsp";
 			}
 		}
 	}
@@ -397,7 +397,7 @@ public class InventoryManager extends HttpServlet {
 		LiteInventoryBase liteInv = energyCompany.getInventory( operation.getStarsDeleteLMHardware().getInventoryID(), true );
 		session.setAttribute( INVENTORY_TO_DELETE, liteInv );
 		
-		redirect = req.getContextPath() + "/operator/Hardware/DeleteInv.jsp"; 
+		redirect = req.getContextPath() + "/operator/Consumer/DeleteInv.jsp"; 
 	}
 	
 	/**

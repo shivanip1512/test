@@ -5,7 +5,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.lite.stars.LiteCustomerContact;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -156,7 +156,7 @@ public class DeleteCustAccountAction implements ActionBase {
 			account.delete();
     		
 			// Delete contacts from database
-			LiteCustomerContact liteContact = energyCompany.getCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
+			LiteContact liteContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
 			com.cannontech.database.data.customer.Contact contact =
 					(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
 			contact.setDbConnection( conn );
@@ -164,7 +164,7 @@ public class DeleteCustAccountAction implements ActionBase {
     		
 			java.util.ArrayList contactIDs = liteAcctInfo.getCustomer().getAdditionalContacts();
 			for (int i = 0; i < contactIDs.size(); i++) {
-				liteContact = energyCompany.getCustomerContact( ((Integer) contactIDs.get(i)).intValue() );
+				liteContact = energyCompany.getContact( ((Integer) contactIDs.get(i)).intValue(), liteAcctInfo );
 				contact = (com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
 				contact.setDbConnection( conn );
 				contact.delete();

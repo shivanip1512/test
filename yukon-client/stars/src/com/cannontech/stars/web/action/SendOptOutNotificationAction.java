@@ -10,8 +10,9 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteAddress;
-import com.cannontech.database.data.lite.stars.LiteCustomerContact;
 import com.cannontech.database.data.lite.stars.LiteInterviewQuestion;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -162,8 +163,8 @@ public class SendOptOutNotificationAction implements ActionBase {
 		StringBuffer text = new StringBuffer();
         text.append("Account #").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append("\r\n");
         
-        LiteCustomerContact cont = energyCompany.getCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
-        text.append(cont.getFirstName()).append(" ").append(cont.getLastName()).append("\r\n");
+        LiteContact cont = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
+        text.append( ServerUtils.getFormattedName(cont) ).append("\r\n");
         
         LiteAddress addr = energyCompany.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
         if (addr.getLocationAddress1().trim().length() > 0) {
@@ -179,13 +180,20 @@ public class SendOptOutNotificationAction implements ActionBase {
             	text.append(addr.getZipCode());
             text.append("\r\n");
         }
+		
+		String homePhone = ServerUtils.getNotification(
+				ContactFuncs.getContactNotification(cont, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
+		String workPhone = ServerUtils.getNotification(
+				ContactFuncs.getContactNotification(cont, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
+		String email = ServerUtils.getNotification(
+				ContactFuncs.getContactNotification(cont, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
         
-        if (cont.getHomePhone() != null)
-            text.append(cont.getHomePhone()).append("\r\n");
-        else if (cont.getWorkPhone() != null)
-            text.append(cont.getWorkPhone()).append("\r\n");
-        else if (cont.getEmail() != null)
-        	text.append(cont.getEmail().getNotification()).append("\r\n");
+        if (homePhone.length() > 0)
+            text.append(homePhone).append("\r\n");
+        else if (workPhone.length() > 0)
+            text.append(workPhone).append("\r\n");
+        else if (email.length() > 0)
+        	text.append(email).append("\r\n");
         
         return text.toString();
 	}

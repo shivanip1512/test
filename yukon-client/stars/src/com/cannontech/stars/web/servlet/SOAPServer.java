@@ -8,9 +8,10 @@ import javax.xml.messaging.ReqRespListener;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.stars.LiteCustomerContact;
 import com.cannontech.database.data.lite.stars.LiteLMControlHistory;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -450,11 +451,11 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 			handleCustomerAccountChange( msg, energyCompany, liteAcctInfo );
 		}
 		else if (msg.getDatabase() == DBChangeMsg.CHANGE_CONTACT_DB) {
-			LiteCustomerContact liteContact = null;
+			LiteContact liteContact = null;
 			
 			for (int i = 0; i < companies.size(); i++) {
 				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
-				liteContact = company.getCustomerContact( msg.getId(), false );
+				liteContact = com.cannontech.database.cache.functions.ContactFuncs.getContact( msg.getId() );
 				if (liteContact != null) {
 					energyCompany = company;
 					break;
@@ -480,17 +481,19 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				energyCompany.getAddress( liteAcctInfo.getCustomerAccount().getBillingAddressID() ).retrieve();
 				liteAcctInfo.getCustomerAccount().retrieve();
 				
-				LiteCustomerContact litePrimContact = energyCompany.getCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
-				litePrimContact.retrieve();
+				LiteContact litePrimContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
+				litePrimContact.retrieve( CtiUtilities.getDatabaseAlias() );;
+				
 				ArrayList contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
 				for (int i = 0; i < contacts.size(); i++)
-					energyCompany.deleteCustomerContact( ((Integer) contacts.get(i)).intValue() );
+					energyCompany.deleteContact( ((Integer) contacts.get(i)).intValue() );
+				
 				liteAcctInfo.getCustomer().retrieve();
 				contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
 				for (int i = 0; i < contacts.size(); i++) {
-					LiteCustomerContact liteContact = new LiteCustomerContact( ((Integer) contacts.get(i)).intValue() );
-					liteContact.retrieve();
-					energyCompany.addCustomerContact( liteContact, liteAcctInfo );
+					LiteContact liteContact = new LiteContact( ((Integer) contacts.get(i)).intValue() );
+					liteContact.retrieve( CtiUtilities.getDatabaseAlias() );
+					energyCompany.addContact( liteContact, liteAcctInfo );
 				}
 				
 				energyCompany.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() ).retrieve();
@@ -508,7 +511,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		}
 	}
 	
-	private void handleCustomerContactChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteCustomerContact liteContact) {
+	private void handleCustomerContactChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteContact liteContact) {
 		LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInfoByContact( liteContact.getContactID() );
 		
 		switch (msg.getTypeOfChange()) {
@@ -517,7 +520,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				break;
 				
 			case DBChangeMsg.CHANGE_TYPE_UPDATE :
-				liteContact.retrieve();
+				liteContact.retrieve( CtiUtilities.getDatabaseAlias() );
 				
 				if (liteAcctInfo != null) {
 					StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo.getAccountID() );
@@ -540,7 +543,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				break;
 				
 			case DBChangeMsg.CHANGE_TYPE_DELETE :
-				energyCompany.deleteCustomerContact( liteContact.getContactID() );
+				energyCompany.deleteContact( liteContact.getContactID() );
 				
 				if (liteAcctInfo != null) {
 					if (liteAcctInfo.getCustomer().getPrimaryContactID() == liteContact.getContactID()) {

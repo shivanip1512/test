@@ -8,7 +8,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.customer.CustomerTypes;
-import com.cannontech.database.data.lite.stars.LiteCustomerContact;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -303,11 +303,11 @@ public class NewCustAccountAction implements ActionBase {
 			LiteStarsCustAccountInformation liteAcctInfo = energyCompany.addCustAccountInformation( account );
             user.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
             
-			LiteCustomerContact liteContact = (LiteCustomerContact) StarsLiteFactory.createLite( primContact );
-			energyCompany.addCustomerContact( liteContact, liteAcctInfo );
+			LiteContact liteContact = (LiteContact) StarsLiteFactory.createLite( primContact );
+			energyCompany.addContact( liteContact, liteAcctInfo );
 			for (int i = 0; i < addContacts.size(); i++) {
-				liteContact = (LiteCustomerContact) StarsLiteFactory.createLite( (com.cannontech.database.data.customer.Contact) addContacts.get(i) );
-				energyCompany.addCustomerContact( liteContact, liteAcctInfo );
+				liteContact = (LiteContact) StarsLiteFactory.createLite( (com.cannontech.database.data.customer.Contact) addContacts.get(i) );
+				energyCompany.addContact( liteContact, liteAcctInfo );
 			}
             
             ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_ADD );

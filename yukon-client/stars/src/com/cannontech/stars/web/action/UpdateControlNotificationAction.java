@@ -4,8 +4,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.stars.LiteCustomerContact;
+import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -40,8 +43,11 @@ public class UpdateControlNotificationAction implements ActionBase {
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
         try {
         	Email email = new Email();
-        	email.setEnabled( Boolean.valueOf(req.getParameter("NotifyControl")).booleanValue() );
-        	email.setNotification( req.getParameter("Email") );
+			email.setNotification( req.getParameter("Email").trim() );
+			if (email.getNotification().length() > 0)
+	        	email.setEnabled( Boolean.valueOf(req.getParameter("NotifyControl")).booleanValue() );
+	        else
+	        	email.setEnabled( false );
         	
         	StarsUpdateControlNotification updateNotif = new StarsUpdateControlNotification();
         	updateNotif.setEmail( email );
@@ -78,30 +84,52 @@ public class UpdateControlNotificationAction implements ActionBase {
             LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
         	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-        	LiteCustomerContact litePrimContact = energyCompany.getCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
+        	LiteContact litePrimContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
             
             StarsUpdateControlNotification updateNotif = reqOper.getStarsUpdateControlNotification();
             if (updateNotif.getEmail() != null) {
-            	if (!StarsLiteFactory.isIdenticalContactNotification( litePrimContact.getEmail(), updateNotif.getEmail() )) {
-	            	litePrimContact.setEmail( LiteCustomerContact.ContactNotification.newInstance(
-	            			updateNotif.getEmail().getEnabled(), updateNotif.getEmail().getNotification()) );
-	            	com.cannontech.database.data.customer.Contact primContact =
-	            			(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( litePrimContact );
-	            	Transaction.createTransaction(Transaction.UPDATE, primContact).execute();
+            	LiteContactNotification liteNotifEmail = ContactFuncs.getContactNotification( litePrimContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+            	
+            	if (!StarsLiteFactory.isIdenticalContactNotification( liteNotifEmail, updateNotif.getEmail() )) {
+					com.cannontech.database.data.customer.Contact primContact =
+							(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( litePrimContact );
+					
+					com.cannontech.database.db.contact.ContactNotification notifEmail = null;
+					for (int i = 0; i < primContact.getContactNotifVect().size(); i++) {
+						com.cannontech.database.db.contact.ContactNotification notif =
+								(com.cannontech.database.db.contact.ContactNotification) primContact.getContactNotifVect().get(i);
+						if (notif.getNotificationCatID().intValue() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) {
+							notifEmail = notif;
+							break;
+						}
+					}
+					
+					if (notifEmail != null) {
+						if (updateNotif.getEmail().getNotification().length() > 0) {
+							notifEmail.setDisableFlag( updateNotif.getEmail().getEnabled()? "N" : "Y" );
+							notifEmail.setNotification( updateNotif.getEmail().getNotification() );
+						}
+						else {
+							notifEmail.setOpCode( Transaction.DELETE );
+						}
+					}
+					else {
+						notifEmail = new com.cannontech.database.db.contact.ContactNotification();
+						notifEmail.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
+						notifEmail.setDisableFlag( updateNotif.getEmail().getEnabled()? "N" : "Y" );
+						notifEmail.setNotification( updateNotif.getEmail().getNotification() );
+						notifEmail.setOpCode( Transaction.INSERT );
+						
+						primContact.getContactNotifVect().add( notifEmail );
+					}
+					
+					primContact = (com.cannontech.database.data.customer.Contact)
+			            	Transaction.createTransaction(Transaction.UPDATE, primContact).execute();
+			        StarsLiteFactory.setLiteContact( litePrimContact, primContact );
 	            	
 		            ServerUtils.handleDBChange( litePrimContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
             	}
             }
-/*            else if (litePrimContact.getEmail() != null) {
-            	if (litePrimContact.getEmail().isEnabled()) {
-	            	litePrimContact.getEmail().setEnabled( false );
-	            	com.cannontech.database.data.customer.Contact primContact =
-	            			(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( litePrimContact );
-	            	Transaction.createTransaction(Transaction.UPDATE, primContact).execute();
-	            	
-		            ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_UPDATE );
-            	}
-            }*/
             
             StarsSuccess success = new StarsSuccess();
             success.setDescription( "Control notification updated successfully" );
