@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/11/09 06:12:51 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/11/17 23:46:33 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.4  2004/11/17 23:46:33  cplender
+* Updates for GRE performance issues.
+*
 * Revision 1.3  2004/11/09 06:12:51  cplender
 * Working to calm dispatch down
 *
@@ -136,7 +139,7 @@ void CtiPendingOpThread::run( void )
         doPendingPointData(true);
         doPendingControls(true);
 
-        if(_multi->getCount() > 0)
+        if(_multi && _multi->getCount() > 0)
         {
             if(_pMainQueue)
                 _pMainQueue->putQueue( _multi );
@@ -233,8 +236,8 @@ void CtiPendingOpThread::processPendableQueue()
     set(QPROCESSED);
     QueryPerformanceCounter(&completeTime);
 
-    #if 0
-    if(PERF_TO_MS(completeTime, startTime, perfFrequency) > 10)
+    #if 1
+    if(PERF_TO_MS(completeTime, startTime, perfFrequency) > 5)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " processPendableQueue duration (ms) = " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;
@@ -246,7 +249,6 @@ void CtiPendingOpThread::processPendableQueue()
     }
     #endif
 }
-
 
 void CtiPendingOpThread::doPendingControls(bool bShutdown)
 {
@@ -441,8 +443,8 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
             }
             QueryPerformanceCounter(&completeTime);
 
-           #if 0
-            if(PERF_TO_MS(completeTime, startTime, perfFrequency) > 5)
+            #if 1
+            if(PERF_TO_MS(completeTime, startTime, perfFrequency) > 2)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " doPendingControls count         = " << _pendingControls.size() << endl;
@@ -539,7 +541,7 @@ void CtiPendingOpThread::doPendingPointData(bool bShutdown)
             QueryPerformanceCounter(&completeTime);
 
             #if 1
-            if(PERF_TO_MS(completeTime, startTime, perfFrequency) > 5)
+            if(PERF_TO_MS(completeTime, startTime, perfFrequency) > 2)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " doPendingPointDataOp duration (ms) = " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;
@@ -609,7 +611,7 @@ void CtiPendingOpThread::doPendingLimits(bool bShutdown)
             }
             QueryPerformanceCounter(&completeTime);
 
-            // if(PERF_TO_MS(completeTime, startTime, perfFrequency) > 50)
+            if(PERF_TO_MS(completeTime, startTime, perfFrequency) > 2)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " doPendingLimitsOp duration (ms) = " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;
@@ -902,6 +904,7 @@ void CtiPendingOpThread::postControlStopPoint(CtiPendingPointOperations &ppc, co
 
     CtiPointNumeric *pPoint = 0;
 
+    if(0) // FIX FIX FIX
     {
         if(ppc.getControl().getControlDuration() > 0)
         {
@@ -1015,6 +1018,7 @@ void CtiPendingOpThread::insertControlHistoryRow( CtiPendingPointOperations &ppc
             ppc.getControl().setPreviousLogTime( ppc.getControl().getStopTime() );
         }
     }
+#if 0
     else
     {
         {
@@ -1024,6 +1028,7 @@ void CtiPendingOpThread::insertControlHistoryRow( CtiPendingPointOperations &ppc
         }
         ppc.dump();
     }
+#endif
 
     return;
 }

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.85 $
-* DATE         :  $Date: 2004/11/09 06:12:51 $
+* REVISION     :  $Revision: 1.86 $
+* DATE         :  $Date: 2004/11/17 23:46:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -346,7 +346,7 @@ void CtiVanGogh::VGMainThread()
                         if(increment > 20)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** BIGMULTI Checkpoint **** submessages to process " << increment << endl;
+                            dout << RWTime() << " **** BIGMULTI Checkpoint **** submessages to process " << increment << " from " << MsgPtr->getSource() << " " << MsgPtr->getUser() << endl;
                         }
                         break;
                     }
@@ -357,7 +357,6 @@ void CtiVanGogh::VGMainThread()
                         break;
                     }
                 }
-
 
                 if( MessageLog > 1000  )
                 {
@@ -3110,6 +3109,8 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
 
         if(pPoint != NULL)      // We do know this point..
         {
+            CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPoint->getDynamic();
+
             if(pData->getType() == InvalidPointType)
             {
                 pData->setType(pPoint->getType());
@@ -3138,12 +3139,13 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
 
             // We need to make sure there is no pending pointdata on this pointid.
             // Arrival of a pointdata message eliminates a pending data msg.  If this is a delayed point, it will overwrite anyway!
-            if(!(pData->getTags() & TAG_POINT_DELAYED_UPDATE))
+            if( pDyn->inDelayedData() && !(pData->getTags() & TAG_POINT_DELAYED_UPDATE) )
+            {
+                pDyn->setInDelayedData(false);
                 removePointDataFromPending(pData->getId());
+            }
 
             {
-                CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPoint->getDynamic();
-
                 if( pDyn != NULL &&
                     pDyn->getDispatch().getTags() & TAG_ATTRIB_CONTROL_AVAILABLE &&     // This is a controllable point.
                     !(pData->getTags() & TAG_CONTROL_PENDING) &&                        // This point is not expecting a control point change.
@@ -3171,6 +3173,8 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Delayed update \"" << pData->getTime() << "\" is indicated on point data for " << resolveDeviceName(*pPoint) << " / " << pPoint->getName() << endl;
                 }
+
+                pDyn->setInDelayedData(true);
 
                 CtiPendingPointOperations *pendingPointData = CTIDBG_new CtiPendingPointOperations(pData->getId());
                 pendingPointData->setType(CtiPendingPointOperations::pendingPointData);
