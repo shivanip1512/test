@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/06/21 15:37:04 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/08/06 18:53:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -218,7 +218,7 @@ void CtiConnection::InThread()
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Terminating Connection with: " << getName() << endl;
+                        dout << RWTime() << " Terminating Connection with: " << (getName().isNull() ? getPeer() : getName()) << endl;
                     }
                     _bQuit = TRUE;
                     continue;
