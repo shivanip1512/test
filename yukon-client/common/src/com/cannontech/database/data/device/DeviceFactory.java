@@ -281,6 +281,13 @@ public final static DeviceBase createDevice(int deviceType) {
 			returnDevice.setDeviceType( PAOGroups.STRING_VIRTUAL_SYSTEM[0] );
 			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_VIRTUAL);
 			break;
+
+		// a system reserved device place holder (not to be available to users)	
+		case PAOGroups.SYSTEM:
+			returnDevice = new SystemDevice();
+			returnDevice.setDeviceType( PAOGroups.STRING_SYSTEM[0] );
+			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_SYSTEM);
+			break;
 			
 		case PAOGroups.RTM:
 			returnDevice = new RTM();

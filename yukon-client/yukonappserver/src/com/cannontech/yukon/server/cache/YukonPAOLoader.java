@@ -55,7 +55,7 @@ public class YukonPAOLoader implements Runnable
 				"FROM " + YukonPAObject.TABLE_NAME+ " y left outer join " + DeviceDirectCommSettings.TABLE_NAME + " d " +
 				"on y.paobjectid = d.deviceid " +
 				"left outer join " + DeviceCarrierSettings.TABLE_NAME + " DCS ON Y.PAOBJECTID = DCS.DEVICEID " +				
-				"WHERE y.PAObjectID > 0 " +
+				//"WHERE y.PAObjectID > 0 " +
 				"ORDER BY y.Category, y.PAOClass, y.PAOName";
 	
 	/*"SELECT PAObjectID, Category, PAOName, " +
@@ -165,7 +165,9 @@ public class YukonPAOLoader implements Runnable
 		String sqlString = 
 				"SELECT PAObjectID, Category, PAOName, " +
 				"Type, PAOClass, Description " +
-				"FROM " + YukonPAObject.TABLE_NAME+" WHERE PAObjectID > 0 ORDER BY Category, PAOClass, PAOName";
+				"FROM " + YukonPAObject.TABLE_NAME +
+				//" WHERE PAObjectID > 0 " + 
+				" ORDER BY Category, PAOClass, PAOName";
 	
 		java.sql.Connection conn = null;
 		java.sql.Statement stmt = null;
