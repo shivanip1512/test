@@ -24,10 +24,9 @@ public class CustomerAccount extends DBPersistent {
     private Integer customerID = new Integer( 0 );
     private Integer billingAddressID = new Integer( 0 );
     private String accountNotes = "";
-    private Integer loginID = new Integer( com.cannontech.user.UserUtils.USER_YUKON_ID );
 
     public static final String[] SETTER_COLUMNS = {
-        "AccountSiteID", "AccountNumber", "CustomerID", "BillingAddressID", "AccountNotes", "LoginID"
+        "AccountSiteID", "AccountNumber", "CustomerID", "BillingAddressID", "AccountNotes"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "AccountID" };
@@ -226,7 +225,7 @@ public class CustomerAccount extends DBPersistent {
     }
 
     public static CustomerAccount getCustomerAccount(Integer accountID) {
-        String sql = "SELECT AccountID, AccountSiteID, AccountNumber, CustomerID, BillingAddressID, AccountNotes, LoginID "
+        String sql = "SELECT AccountID, AccountSiteID, AccountNumber, CustomerID, BillingAddressID, AccountNotes "
         		   + "FROM " + TABLE_NAME + " WHERE AccountID = " + accountID;
         com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
         		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
@@ -245,7 +244,6 @@ public class CustomerAccount extends DBPersistent {
                 account.setCustomerID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
                 account.setBillingAddressID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
                 account.setAccountNotes( (String) row[5] );
-                account.setLoginID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
                 
                 return account;
             }
@@ -298,7 +296,7 @@ public class CustomerAccount extends DBPersistent {
     		
         Object[] addValues = {
             getAccountID(), getAccountSiteID(), getAccountNumber(),
-            getCustomerID(), getBillingAddressID(), getAccountNotes(), getLoginID()
+            getCustomerID(), getBillingAddressID(), getAccountNotes()
         };
 
         add( TABLE_NAME, addValues );
@@ -307,7 +305,7 @@ public class CustomerAccount extends DBPersistent {
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
             getAccountSiteID(), getAccountNumber(), getCustomerID(),
-            getBillingAddressID(), getAccountNotes(), getLoginID()
+            getBillingAddressID(), getAccountNotes()
         };
 
         Object[] constraintValues = { getAccountID() };
@@ -326,7 +324,6 @@ public class CustomerAccount extends DBPersistent {
             setCustomerID( (Integer) results[2] );
             setBillingAddressID( (Integer) results[3] );
             setAccountNotes( (String) results[4] );
-            setLoginID( (Integer) results[5] );
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -408,20 +405,4 @@ public class CustomerAccount extends DBPersistent {
     public void setAccountNotes(String newAccountNotes) {
         accountNotes = newAccountNotes;
     }
-	/**
-	 * Returns the loginID.
-	 * @return Integer
-	 */
-	public Integer getLoginID() {
-		return loginID;
-	}
-
-	/**
-	 * Sets the loginID.
-	 * @param loginID The loginID to set
-	 */
-	public void setLoginID(Integer loginID) {
-		this.loginID = loginID;
-	}
-
 }

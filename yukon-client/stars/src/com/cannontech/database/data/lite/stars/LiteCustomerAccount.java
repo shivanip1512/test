@@ -20,7 +20,6 @@ public class LiteCustomerAccount extends LiteBase {
 	private int customerID = 0;
 	private int billingAddressID = 0;
 	private String accountNotes = null;
-	//private int loginID = 0;
 	
 	public LiteCustomerAccount() {
 		super();
