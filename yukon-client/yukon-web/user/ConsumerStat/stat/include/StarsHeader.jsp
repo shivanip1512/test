@@ -73,6 +73,7 @@
     PrimaryContact primContact = null;
 	
 	StarsLMPrograms programs = null;
+	StarsLMProgramHistory programHistory = null;
 	StarsInventories thermostats = null;
 	StarsUser userLogin = null;
 	
@@ -87,6 +88,7 @@
 		primContact = account.getPrimaryContact();
 		
 		programs = accountInfo.getStarsLMPrograms();
+		programHistory = programs.getStarsLMProgramHistory();
 		
 		thermostats = new StarsInventories();
 		StarsInventories inventories = accountInfo.getStarsInventories();

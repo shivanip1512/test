@@ -118,11 +118,24 @@
 <%
 		if (program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) {
 			String untilStr = "";
-			StarsLMProgramHistory progHist = program.getStarsLMProgramHistory();
-			if (progHist.getStarsLMProgramEventCount() > 0) {
-				StarsLMProgramEvent lastEvent = progHist.getStarsLMProgramEvent(progHist.getStarsLMProgramEventCount() - 1);
-				if (lastEvent.getYukonDefID() == com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION)
-					untilStr = "until " + histDateFormat.format(lastEvent.getEventDateTime());
+			
+			if (programHistory != null) {
+				for (int j = programHistory.getStarsLMProgramEventCount() - 1; j >= 0; j--) {
+					StarsLMProgramEvent event = programHistory.getStarsLMProgramEvent(j);
+					
+					boolean belongsToProgram = false;
+					for (int k = 0; k < event.getProgramIDCount(); k++)
+						if (event.getProgramID(k) == program.getProgramID()) {
+							belongsToProgram = true;
+							break;
+						}
+					
+					if (belongsToProgram) {
+						if (event.getYukonDefID() == com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION)
+							untilStr = "until " + histDateFormat.format(event.getEventDateTime());
+						break;
+					}
+				}
 			}
 %>
                                               Out of Service<br>

@@ -82,28 +82,52 @@ function confirmSubmit(form) { //v1.0
                     <td class="HeaderCell" width="100">Program</td>
                   </tr>
 <%
-	ServletUtils.ProgramHistory[] progHist = ServletUtils.getProgramHistory( account.getAccountID(), programs );
-	for (int i = progHist.length - 1; i >= 0; i--) {
+	if (programHistory != null) {
+		for (int i = programHistory.getStarsLMProgramEventCount() - 1; i >= 0; i--) {
+			StarsLMProgramEvent event = programHistory.getStarsLMProgramEvent(i);
+			
+			String durationStr = "";
+			if (event.hasDuration()) {
+				if (event.getDuration() >= 12) {
+					int numDays = (int) (event.getDuration() / 24.0 + 0.5);
+					durationStr = numDays + " Day";
+					if (numDays > 1) durationStr += "s";
+				}
+				else {
+					durationStr = event.getDuration() + " Hour";
+					if (event.getDuration() > 1) durationStr += "s";
+				}
+			}
+			
+			String progNames = "";
+			for (int j = 0; j < event.getProgramIDCount(); j++) {
+				for (int k = 0; k < categories.getStarsApplianceCategoryCount(); k++) {
+					StarsApplianceCategory appCat = categories.getStarsApplianceCategory(k);
+					boolean foundProgram = false;
+					
+					for (int l = 0; l < appCat.getStarsEnrLMProgramCount(); l++) {
+						StarsEnrLMProgram enrProg = appCat.getStarsEnrLMProgram(l);
+						if (enrProg.getProgramID() == event.getProgramID(j)) {
+							progNames += enrProg.getProgramName() + "<br>";
+							foundProgram = true;
+							break;
+						}
+					}
+					
+					if (foundProgram) break;
+				}
+			}
+			if (progNames.equals("")) continue;
 %>
                   <tr> 
-                    <td class="TableCell" width="100" ><%= datePart.format(progHist[i].getDate()) %></td>
-                    <td class="TableCell" width="154" ><%= progHist[i].getAction() %> 
-                      <% if (progHist[i].getDuration() != null) { %>
-                      - <%= progHist[i].getDuration() %>
-                      <% } %>
+                    <td class="TableCell" width="100" ><%= datePart.format(event.getEventDateTime()) %></td>
+                    <td class="TableCell" width="154" ><%= event.getEventAction() %> 
+                      <% if (event.hasDuration()) { %>- <%= durationStr %><% } %>
                     </td>
-                    <td class="TableCell" width="100" > 
-<%
-		String[] progNames = progHist[i].getPrograms();
-		for (int j = 0; j < progNames.length; j++) {
-%>
-                      <%= progNames[j] %><br>
-<%
-		}
-%>
-                    </td>
+                    <td class="TableCell" width="100" ><%= progNames %></td>
                   </tr>
 <%
+		}
 	}
 %>
                 </table>

@@ -149,7 +149,6 @@ function confirmSubmit(form) {
 			StarsLMProgram prog = programs.getStarsLMProgram(j);
 			if (prog.getApplianceCategoryID() == category.getApplianceCategoryID()) {
 				program = prog;
-				StarsLMProgramHistory progHist = program.getStarsLMProgramHistory();
 				programStatus = program.getStatus();
 				break;
 			}
