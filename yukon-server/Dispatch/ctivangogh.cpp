@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2002/09/30 15:04:01 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2002/10/03 16:19:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -86,7 +86,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #define MAX_ARCHIVER_ENTRIES     10             // If this many entries appear, we'll do a dump
 #define DUMP_RATE                30             // Otherwise, do a dump evey this many seconds
 #define CONFRONT_RATE            300            // Ask every client to post once per 5 minutes or be terminated
-#define UPDATERTDB_RATE          300            // Save all dirty point records once per n seconds
+#define UPDATERTDB_RATE          3600           // Save all dirty point records once per n seconds
 #define SANITY_RATE              300
 
 DLLIMPORT extern CtiLogger   dout;              // From proclog.dll
@@ -579,6 +579,7 @@ int CtiVanGogh::registration(CtiVanGoghConnectionManager *CM, const CtiPointRegi
     return nRet;
 }
 
+// Assumes lock on server_mux has been obtained.
 int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 {
     int status = NORMAL;
@@ -603,8 +604,6 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
             if(Cmd->getOpArgList().entries() > 0)
             {
-                CtiLockGuard<CtiMutex> pmguard(server_mux);
-
                 for(i = 0; i < Cmd->getOpArgList().entries(); i++)
                 {
                     pid   = Cmd->getOpArgList().at(i);
@@ -783,9 +782,6 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 {
                     {
                         CtiPoint *pPoint = NULL;
-                        CtiLockGuard<CtiMutex> pmguard(server_mux);
-
-
                         if(Cmd->getOpArgList().entries() >= 5)
                         {
                             // This is a BOOL which indicates whether a ctrl offset is spec'd by pid.
@@ -920,7 +916,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                     LONG idtype     = Cmd->getOpArgList().at(i);
                     LONG id         = Cmd->getOpArgList().at(i+1);
                     bool disable    = !((Cmd->getOpArgList().at(i+2) != 0));
-                    int  validmask  = 0;         // This mask represents all the bits which are to be adjusted.
+                    int  tagmask  = 0;           // This mask represents all the bits which are to be adjusted.
                     int  setmask    = 0;         // This mask represents the state of the adjusted-masked bit.. Ok, read it again.
 
                     try
@@ -936,39 +932,51 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                             {
                                 if(idtype == OP_DEVICEID)
                                 {
-                                    validmask = TAG_DISABLE_DEVICE_BY_DEVICE;
-                                    setmask |= (disable ? TAG_DISABLE_DEVICE_BY_DEVICE : 0);
+                                    tagmask = TAG_DISABLE_DEVICE_BY_DEVICE;
+                                    setmask |= (disable ? TAG_DISABLE_DEVICE_BY_DEVICE : 0);    // Set it, or clear it?
                                 }
                                 else if(idtype == OP_POINTID)
                                 {
-                                    validmask = TAG_DISABLE_POINT_BY_POINT;
-                                    setmask |= (disable ? TAG_DISABLE_POINT_BY_POINT : 0);
+                                    tagmask = TAG_DISABLE_POINT_BY_POINT;
+                                    setmask |= (disable ? TAG_DISABLE_POINT_BY_POINT : 0);      // Set it, or clear it?
                                 }
                             }
                             else if(Cmd->getOperation() == CtiCommandMsg::ControlAblement)
                             {
                                 if(idtype == OP_DEVICEID)
                                 {
-                                    validmask = TAG_DISABLE_CONTROL_BY_DEVICE;
-                                    setmask |= (disable ? TAG_DISABLE_CONTROL_BY_DEVICE : 0);
+                                    tagmask = TAG_DISABLE_CONTROL_BY_DEVICE;
+                                    setmask |= (disable ? TAG_DISABLE_CONTROL_BY_DEVICE : 0);   // Set it, or clear it?
                                 }
                                 else if(idtype == OP_POINTID)
                                 {
-                                    validmask = TAG_DISABLE_CONTROL_BY_POINT;
-                                    setmask |= (disable ? TAG_DISABLE_CONTROL_BY_POINT : 0);
+                                    tagmask = TAG_DISABLE_CONTROL_BY_POINT;
+                                    setmask |= (disable ? TAG_DISABLE_CONTROL_BY_POINT : 0);    // Set it, or clear it?
                                 }
                             }
 
                             if(idtype == OP_DEVICEID)
                             {
-                                if(ablementDevice(id, setmask, validmask, Cmd->getUser()))
+                                CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(id);
+                                if(dliteit != _deviceLiteSet.end() && ablementDevice(dliteit, setmask, tagmask))
                                 {
-                                    adjustDeviceDisableTags(id);
+                                    adjustDeviceDisableTags(id);    // We always have an id here.
                                 }
                             }
                             else if(idtype == OP_POINTID)
                             {
-                                ablementPoint(id, setmask, validmask, Cmd->getUser(), *pMulti);
+                                bool devicedifferent;
+
+                                pPt = PointMgr.getEqual(id);
+                                ablementPoint(pPt, devicedifferent, setmask, tagmask, Cmd->getUser(), *pMulti);
+
+                                if(devicedifferent)     // The device became interesting because of this change.
+                                {
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    }
+                                }
                             }
 
                             if(pMulti->getData().entries())
@@ -1441,6 +1449,7 @@ INT CtiVanGogh::analyzeMessageData( CtiMessage *pMsg )
                 CM->setClientName(aReg.getAppName());
                 CM->setClientAppId(aReg.getAppId());
                 CM->setClientUnique(aReg.getAppIsUnique());
+                CM->setClientExpirationDelay(aReg.getAppExpirationDelay());
 
                 clientRegistration(CM);
                 break;
@@ -4804,12 +4813,15 @@ void CtiVanGogh::displayConnections(void)
     }
 }
 
-bool CtiVanGogh::ablementPoint(LONG pid, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &sigList)
+/********************
+ *  This method uses the dynamic dispatch POINT settings to determine if the inbound setmask and tagmask indicate a change
+ *  from the current settings.  If a change is indicated, the static tags of the point will be updated.
+ */
+bool CtiVanGogh::ablementPoint(CtiPointBase *&pPoint, bool &devicedifferent, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &Multi)
 {
-    bool status = false;
+    bool different = false;
 
-    CtiLockGuard<CtiMutex> pmguard(server_mux);
-    CtiPoint *pPoint = PointMgr.getMap().findValue( &CtiHashKey(pid) );
+    devicedifferent = false;        // Make it false by default.
 
     if(pPoint != NULL)
     {
@@ -4820,20 +4832,22 @@ bool CtiVanGogh::ablementPoint(LONG pid, UINT setmask, UINT tagmask, RWCString u
 
             if(pDyn != NULL)
             {
-                UINT currtags  = (pDyn->getDispatch().getTags() & (tagmask & MASK_ANY_DISABLE));
-                UINT newpttags = (setmask & MASK_ANY_DISABLE);
+                UINT currtags  = (pDyn->getDispatch().getTags() & (tagmask & MASK_ANY_DISABLE));        // All (dev & pnt) ablement tags.
+                UINT newpttags = (setmask & (tagmask & MASK_ANY_DISABLE));
 
-                UINT currpttags = (currtags & (tagmask & MASK_ANY_POINT_DISABLE));
-                UINT pttags   = (setmask & MASK_ANY_POINT_DISABLE);
+                UINT currpttags = (currtags & (tagmask & MASK_ANY_POINT_DISABLE));                      // Point only ablement tags.
+                UINT pttags   = (setmask & (tagmask & MASK_ANY_POINT_DISABLE));
 
-                UINT currdvtags = (currtags & (tagmask & MASK_ANY_DEVICE_DISABLE));
-                UINT dvtags   = (setmask & MASK_ANY_DEVICE_DISABLE);
+                UINT currdvtags = (currtags & (tagmask & MASK_ANY_DEVICE_DISABLE));                     // Device only ablement tags.
+                UINT dvtags   = (setmask & (tagmask & MASK_ANY_DEVICE_DISABLE));
 
-                if( currtags != newpttags )
+                if( currtags != newpttags )      // Is anything different?
                 {
-                    if(currpttags != pttags)
+                    different = true;
+
+                    if(currpttags != pttags)    // Is the difference in the point tags?
                     {
-                        if(updatePointStaticTables(pPoint->getPointID(), pttags, tagmask, user, sigList))
+                        if(updatePointStaticTables(pPoint->getPointID(), pttags, tagmask, user, Multi))
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -4841,14 +4855,13 @@ bool CtiVanGogh::ablementPoint(LONG pid, UINT setmask, UINT tagmask, RWCString u
                         else
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "  Updated " << pPoint->getName() << "'s enablement status" << endl;
+                            dout << RWTime() << " Updated " << pPoint->getName() << "'s point enablement status" << endl;
                         }
                     }
 
-                    if(currdvtags != dvtags)
+                    if(currdvtags != dvtags)    // Is the difference in the device tags?
                     {
-                        status = true;
+                        devicedifferent = true;
                     }
 
                     pDyn->getDispatch().resetTags(tagmask);
@@ -4858,38 +4871,42 @@ bool CtiVanGogh::ablementPoint(LONG pid, UINT setmask, UINT tagmask, RWCString u
         }
     }
 
-    return status;
+    return different;
 }
 
-bool CtiVanGogh::ablementDevice(LONG did, UINT setmask, UINT tagmask, RWCString user)
+/*
+ *  This method sets the value of the "ablement" information in the lite map.  I will cause an update of the static data
+ *  if a change occurs.
+ *
+ *  tagmask decides which tags are looked at on the device.
+ *  setmask decides what those bits are to be set to.
+ *   they will only be marked as "delta" if the setting was not already in effect.
+ */
+bool CtiVanGogh::ablementDevice(CtiDeviceLiteSet_t::iterator &dliteit, UINT setmask, UINT tagmask)
 {
     bool delta = false;     // Anything changed???
 
-    CtiLockGuard<CtiMutex> pmguard(server_mux);
+    CtiDeviceBaseLite &dLite = *dliteit;
 
-    CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(did);
-
-    if( dliteit != _deviceLiteSet.end() )   // We do know this device..
+    if( tagmask & TAG_DISABLE_DEVICE_BY_DEVICE )
     {
-        CtiDeviceBaseLite &dLite = *dliteit;
+        bool initialsetting = dLite.isDisabled();
+        dLite.setDisableFlag((TAG_DISABLE_DEVICE_BY_DEVICE & setmask ? "Y" : "N"));
+        if(initialsetting != dLite.isDisabled()) delta = true;
+    }
 
-        if( tagmask & TAG_DISABLE_DEVICE_BY_DEVICE )
+    if( tagmask & TAG_DISABLE_CONTROL_BY_DEVICE )
+    {
+        bool initialsetting = dLite.isControlInhibited();
+        dLite.setControlInhibitFlag((TAG_DISABLE_CONTROL_BY_DEVICE & setmask ? "Y" : "N"));
+        if(initialsetting != dLite.isControlInhibited()) delta = true;
+    }
+
+    if( tagmask & TAG_DISABLE_ALARM_BY_DEVICE )
+    {
         {
-            dLite.setDisableFlag((TAG_DISABLE_DEVICE_BY_DEVICE & setmask ? "Y" : "N"));
-            delta = true;
-        }
-        else if( tagmask & TAG_DISABLE_CONTROL_BY_DEVICE )
-        {
-            dLite.setControlInhibitFlag((TAG_DISABLE_CONTROL_BY_DEVICE & setmask ? "Y" : "N"));
-            delta = true;
-        }
-        else if( tagmask & TAG_DISABLE_ALARM_BY_DEVICE )
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            delta = true;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -5754,7 +5771,7 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, R
     return status;
 }
 
-INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &sigList)
+INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &Multi)
 {
     INT status = NORMAL;
 
@@ -5797,11 +5814,16 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RW
     CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(pid, ChangePointDb, "Point", "Point", ChangeTypeUpdate);
     dbChange->setUser(user);
     dbChange->setSource(DISPATCH_APPLICATION_NAME);
-    sigList.insert(dbChange);
+    Multi.insert(dbChange);
 
     return status;
 }
 
+/*
+ *  This method attempts to set all device "ablement" information.
+ *  A key item to remember is that this information _really_ only exists on the _points_ which dispatch tracks.
+ *
+ */
 void CtiVanGogh::adjustDeviceDisableTags(LONG id)
 {
     if(!_deviceLiteSet.empty())
@@ -5809,43 +5831,6 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id)
         set< long > devicesupdated;
 
         UINT tagmask = TAG_DISABLE_DEVICE_BY_DEVICE | TAG_DISABLE_CONTROL_BY_DEVICE;
-
-        CtiDeviceLiteSet_t::iterator dnit;
-
-        if(id == 0)
-        {
-            /*
-             *  This for loop looks at each device in turn and decides if the lite set's static DB entry indicates a disabled status
-             */
-            for(dnit = _deviceLiteSet.begin(); dnit != _deviceLiteSet.end(); dnit++ )
-            {
-                CtiDeviceBaseLite &dLite = *dnit;
-
-                UINT setmask = 0;
-
-                setmask |= (dLite.getDisableFlag() == "Y" ? TAG_DISABLE_DEVICE_BY_DEVICE : 0 );
-                setmask |= (dLite.getControlInhibitFlag() == "Y" ? TAG_DISABLE_CONTROL_BY_DEVICE : 0 );
-
-                ablementDevice(dLite.getID(), setmask, tagmask, DISPATCH_APPLICATION_NAME);
-            }
-        }
-        else
-        {
-            CtiDeviceBaseLite &dLite = CtiDeviceBaseLite(id);
-            dnit = _deviceLiteSet.find(dLite);
-
-            if( dnit != _deviceLiteSet.end() )
-            {
-                dLite = *dnit;
-
-                UINT setmask = 0;
-
-                setmask |= (dLite.getDisableFlag() == "Y" ? TAG_DISABLE_DEVICE_BY_DEVICE : 0 );
-                setmask |= (dLite.getControlInhibitFlag() == "Y" ? TAG_DISABLE_CONTROL_BY_DEVICE : 0 );
-
-                ablementDevice(dLite.getID(), setmask, tagmask, DISPATCH_APPLICATION_NAME);
-            }
-        }
 
         {
             CtiMultiMsg *pMulti = new CtiMultiMsg;
@@ -5869,19 +5854,25 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id)
 
                     if(id != 0 && pPoint->getDeviceID() != id) continue;    // Let's skip devices which DID NOT CHANGE!
 
-                    CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(pPoint->getDeviceID());
-
-                    if( dliteit != _deviceLiteSet.end() )   // We do know this device..
+                    if(pPoint->getDeviceID() > 0)
                     {
-                        CtiDeviceBaseLite &dLite = *dliteit;
+                        CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(pPoint->getDeviceID());
 
-                        UINT setmask = 0;
-                        setmask |= (dLite.getDisableFlag() == "Y" ? TAG_DISABLE_DEVICE_BY_DEVICE : 0 );
-                        setmask |= (dLite.getControlInhibitFlag() == "Y" ? TAG_DISABLE_CONTROL_BY_DEVICE : 0 );
-
-                        if(ablementPoint(pPoint->getPointID(), setmask, tagmask, DISPATCH_APPLICATION_NAME, *pMulti))
+                        if( dliteit != _deviceLiteSet.end() )   // We do know this device..
                         {
-                            devicesupdated.insert( pPoint->getDeviceID() );  // Relying on the fact that only one may be in there!
+                            bool devicedifferent;
+                            CtiDeviceBaseLite &dLite = *dliteit;
+
+                            UINT setmask = 0;
+                            setmask |= (dLite.getDisableFlag() == "Y" ? TAG_DISABLE_DEVICE_BY_DEVICE : 0 );
+                            setmask |= (dLite.getControlInhibitFlag() == "Y" ? TAG_DISABLE_CONTROL_BY_DEVICE : 0 );
+
+                            ablementPoint(pPoint, devicedifferent, setmask, tagmask, DISPATCH_APPLICATION_NAME, *pMulti);
+
+                            if(devicedifferent)
+                            {
+                                devicesupdated.insert( pPoint->getDeviceID() );  // Relying on the fact that only one may be in there!
+                            }
                         }
                     }
                 }
@@ -5893,28 +5884,30 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id)
 
                     for(didset = devicesupdated.begin(); didset != devicesupdated.end(); didset++ )
                     {
-                        CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(*didset);
-
-                        if( dliteit != _deviceLiteSet.end() )   // We do know this device..
+                        if(*didset > 0)
                         {
-                            CtiDeviceBaseLite &dLite = *dliteit;
+                            CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(*didset);
 
-                            UINT setmask = 0;
-
-                            setmask |= (dLite.getDisableFlag() == "Y" ? TAG_DISABLE_DEVICE_BY_DEVICE : 0 );
-                            setmask |= (dLite.getControlInhibitFlag() == "Y" ? TAG_DISABLE_CONTROL_BY_DEVICE : 0 );
-
-                            if(updateDeviceStaticTables(dLite.getID(), setmask, tagmask, DISPATCH_APPLICATION_NAME, *pMulti))
+                            if( dliteit != _deviceLiteSet.end() )   // We do know this device..
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                            else
-                            {
+                                CtiDeviceBaseLite &dLite = *dliteit;
+
+                                UINT setmask = 0;
+
+                                setmask |= (dLite.getDisableFlag() == "Y" ? TAG_DISABLE_DEVICE_BY_DEVICE : 0 );
+                                setmask |= (dLite.getControlInhibitFlag() == "Y" ? TAG_DISABLE_CONTROL_BY_DEVICE : 0 );
+
+                                if(updateDeviceStaticTables(dLite.getID(), setmask, tagmask, DISPATCH_APPLICATION_NAME, *pMulti))
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << " Updated " << dLite.getName() << "'s enablement status" << endl;
+                                }
+                                else
+                                {
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " Updated " << dLite.getName() << "'s device enablement status" << endl;
+                                    }
                                 }
                             }
                         }
