@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2003/01/07 17:49:57 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2003/01/07 21:18:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1065,7 +1065,9 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     break;
                 }
 
+            case TYPE_ION7330:
             case TYPE_ION7700:
+            case TYPE_ION8300:
             case TYPECBC6510:
             case TYPE_DNPRTU:
                 {
@@ -1092,6 +1094,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             DisplayTraceList(Port, traceList, true);
                         }
 
+                        //  ACH:  figure out how to allow for a single-OUTMESS request to generate multiple INMESS replies
+                        //          i.e. if we're returning a massive event log or something
                         protocol->sendCommResult(InMessage);
                     }
                     else
@@ -1531,7 +1535,9 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                 case TYPECBC6510:
                 case TYPE_DNPRTU:
+                case TYPE_ION7330:
                 case TYPE_ION7700:
+                case TYPE_ION8300:
                 case TYPE_SIXNET:
                 case TYPE_TAPTERM:
                 case TYPE_WCTP:
