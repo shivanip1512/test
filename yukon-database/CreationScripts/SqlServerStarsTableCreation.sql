@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     11/25/2002 9:58:09 AM                        */
+/* Created on:     11/26/2002 3:49:51 PM                        */
 /*==============================================================*/
 
 
@@ -10,6 +10,14 @@ if exists (select 1
            where  id = object_id('AccountSite')
             and   type = 'U')
    drop table AccountSite
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ApplianceAirConditioner')
+            and   type = 'U')
+   drop table ApplianceAirConditioner
 go
 
 
@@ -26,14 +34,6 @@ if exists (select 1
            where  id = object_id('ApplianceCategory')
             and   type = 'U')
    drop table ApplianceCategory
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('ApplicanceAirConditioner')
-            and   type = 'U')
-   drop table ApplicanceAirConditioner
 go
 
 
@@ -275,10 +275,22 @@ go
 create table AccountSite (
 AccountSiteID        numeric              not null,
 SiteInformationID    numeric              null,
-AddressID            numeric              null,
 SiteNumber           varchar(40)          not null,
+StreetAddressID      numeric              null,
 PropertyNotes        varchar(200)         null,
 constraint PK_ACCOUNTSITE primary key  (AccountSiteID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : ApplianceAirConditioner                              */
+/*==============================================================*/
+create table ApplianceAirConditioner (
+ApplianceID          numeric              not null,
+TonnageID            numeric              null,
+TypeID               numeric              null,
+constraint PK_APPLIANCEAIRCONDITIONER primary key  (ApplianceID)
 )
 go
 
@@ -316,18 +328,6 @@ go
 
 
 /*==============================================================*/
-/* Table : ApplicanceAirConditioner                             */
-/*==============================================================*/
-create table ApplicanceAirConditioner (
-ApplianceID          numeric              not null,
-TonageID             numeric              null,
-TypeID               numeric              null,
-constraint PK_APPLICANCEAIRCONDITIONER primary key  (ApplianceID)
-)
-go
-
-
-/*==============================================================*/
 /* Table : CallReportBase                                       */
 /*==============================================================*/
 create table CallReportBase (
@@ -338,7 +338,6 @@ DateTaken            datetime             null,
 TakenBy              varchar(30)          null,
 Description          varchar(300)         null,
 AccountID            numeric              null,
-CustomerID           numeric              null,
 constraint PK_CALLREPORTBASE primary key  (CallID)
 )
 go
@@ -376,9 +375,9 @@ go
 /* Table : CustomerAdditionalContact                            */
 /*==============================================================*/
 create table CustomerAdditionalContact (
-CompanyID            numeric              not null,
+CustomerID           numeric              not null,
 ContactID            numeric              not null,
-constraint PK_CUSTOMERADDITIONALCONTACT primary key  (CompanyID)
+constraint PK_CUSTOMERADDITIONALCONTACT primary key  (CustomerID, ContactID)
 )
 go
 
@@ -388,10 +387,10 @@ go
 /*==============================================================*/
 create table CustomerBase (
 CustomerID           numeric              not null,
-ContactID            numeric              null,
+PrimaryContactID     numeric              null,
 CustomerTypeID       numeric              not null,
 TimeZone             varchar(30)          null,
-PAObjectID           numeric              null,
+PaoID                numeric              null,
 constraint PK_CUSTOMERBASE primary key  (CustomerID)
 )
 go
@@ -573,7 +572,7 @@ go
 create table LMHardwareConfiguration (
 InventoryID          numeric              not null,
 ApplianceID          numeric              not null,
-DeviceID             numeric              null,
+AddressingGroupID    numeric              null,
 constraint PK_LMHARDWARECONFIGURATION primary key  (InventoryID, ApplianceID)
 )
 go
@@ -707,8 +706,6 @@ OrderID              numeric              not null,
 OrderNumber          varchar(20)          null,
 WorkTypeID           numeric              not null,
 CurrentStateID       numeric              not null,
-CustomerID           numeric              not null,
-SiteID               numeric              not null,
 ServiceCompanyID     numeric              null,
 DateReported         datetime             null,
 OrderedBy            varchar(30)          null,
@@ -716,6 +713,7 @@ Description          varchar(200)         null,
 DateScheduled        datetime             null,
 DateCompleted        datetime             null,
 ActionTaken          varchar(200)         null,
+AccountID            numeric              null,
 constraint PK_WORKORDERBASE primary key  (OrderID)
 )
 go
@@ -770,7 +768,7 @@ go
 
 
 alter table AccountSite
-   add constraint FK_AccS_CstAd foreign key (AddressID)
+   add constraint FK_AccS_CstAd foreign key (StreetAddressID)
       references CustomerAddress (AddressID)
 go
 
@@ -778,6 +776,7 @@ go
 alter table WorkOrderBase
    add constraint FK_AccS_WkB foreign key (SiteID)
       references AccountSite (AccountSiteID)
+>>>>>>> 1.8
 go
 
 
@@ -799,6 +798,12 @@ alter table ContactNotification
 go
 
 
+alter table ContactNotification
+   add constraint FK_Cnt_CntNot foreign key (ContactID)
+      references CustomerContact (ContactID)
+go
+
+
 alter table CustomerAdditionalContact
    add constraint FK_CsCnt_CsAdCn foreign key (ContactID)
       references CustomerContact (ContactID)
@@ -811,13 +816,13 @@ alter table LMProgramWebPublishing
 go
 
 
-alter table ApplicanceAirConditioner
-   add constraint FK_CsLsE_Ac foreign key (TonageID)
+alter table ApplianceAirConditioner
+   add constraint FK_CsLsE_Ac foreign key (TonnageID)
       references CustomerListEntry (EntryID)
 go
 
 
-alter table ApplicanceAirConditioner
+alter table ApplianceAirConditioner
    add constraint FK_CsLsE_Ac_ty foreign key (TypeID)
       references CustomerListEntry (EntryID)
 go
@@ -914,13 +919,7 @@ go
 
 
 alter table CallReportBase
-   add constraint FK_CstB_CllR foreign key (CustomerID)
-      references CustomerBase (CustomerID)
-go
-
-
-alter table WorkOrderBase
-   add constraint FK_CstB_WkB foreign key (CustomerID)
+   add constraint FK_CstB_CllR foreign key ()
       references CustomerBase (CustomerID)
 go
 
@@ -932,7 +931,7 @@ go
 
 
 alter table CustomerBase
-   add constraint FK_CstBs_CstCnt foreign key (ContactID)
+   add constraint FK_CstBs_CstCnt foreign key (PrimaryContactID)
       references CustomerContact (ContactID)
 go
 
@@ -992,14 +991,14 @@ go
 
 
 alter table ECToInventoryMapping
-   add constraint FK_ECTInv_Enc2 foreign key (InventoryID)
-      references InventoryBase (InventoryID)
+   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
 alter table ECToInventoryMapping
-   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+   add constraint FK_ECTInv_Enc2 foreign key (InventoryID)
+      references InventoryBase (InventoryID)
 go
 
 
@@ -1052,7 +1051,7 @@ go
 
 
 alter table LMHardwareConfiguration
-   add constraint FK_LMHrd_LMGr foreign key (DeviceID)
+   add constraint FK_LMHrd_LMGr foreign key (AddressingGroupID)
       references LMGroup (DeviceID)
 go
 
@@ -1099,7 +1098,7 @@ alter table LMHardwareBase
 go
 
 
-alter table ApplicanceAirConditioner
+alter table ApplianceAirConditioner
    add constraint FK_APP_ISA__APP foreign key (ApplianceID)
       references ApplianceBase (ApplianceID)
 go
