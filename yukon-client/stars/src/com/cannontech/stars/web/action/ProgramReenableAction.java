@@ -109,6 +109,9 @@ public class ProgramReenableAction implements ActionBase {
             
             StarsProgramReenable reenable = reqOper.getStarsProgramReenable();
 			StarsProgramReenableResponse resp = new StarsProgramReenableResponse();
+	        
+			// Get the notification message to send later
+			String notifMsg = SendOptOutNotificationAction.getReenableNotifMessage( energyCompany, liteAcctInfo, reqOper );
 			
 			if (reenable.getCancelScheduledOptOut()) {
 				// Cancel all the scheduled opt out events
@@ -152,26 +155,30 @@ public class ProgramReenableAction implements ActionBase {
 					if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
 					ServerUtils.sendSerialCommand( cmd, routeID );
 					
-					OptOutEventQueue.OptOutEvent event = queue.findReenableEvent( liteHw.getInventoryID() );
-					if (event != null) queue.removeEvent(event);
-					
 					StarsLMHardwareHistory hwHist = processReenable( liteHw, liteAcctInfo, energyCompany );
 					resp.addStarsLMHardwareHistory( hwHist );
 				}
 				
+				OptOutEventQueue.OptOutEvent[] events = queue.findReenableEvents( liteAcctInfo.getAccountID() );
+				for (int i = 0; i < events.length; i++) {
+					if (events[i].getInventoryID() == reenable.getInventoryID()) {
+						queue.removeEvent( events[i] );
+						break;
+					}
+				}
+				
 				resp.setStarsLMProgramHistory( StarsLiteFactory.createStarsLMProgramHistory(liteAcctInfo, energyCompany) );
 				resp.setDescription( ServletUtil.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE)) + " command sent out successfully." );
-	        	
-				// Send out reenable notification
-				SendOptOutNotificationAction.sendReenableNotification( energyCompany, liteAcctInfo, reqOper );
 				
-				// Log activity
 				String logMsg = "Serial #:" + ((LiteStarsLMHardware) hardwares.get(0)).getManufacturerSerialNumber();
 				for (int i = 1; i < hardwares.size(); i++)
 					logMsg += "," + ((LiteStarsLMHardware) hardwares.get(i)).getManufacturerSerialNumber();
 				ActivityLogger.logEvent(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
 						ActivityLogActions.PROGRAM_REENABLE_ACTION, logMsg );
 			}
+			
+			// Send the notification message saved earlier
+			SendOptOutNotificationAction.sendNotification( notifMsg, energyCompany );
 			
             respOper.setStarsProgramReenableResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
@@ -227,27 +234,6 @@ public class ProgramReenableAction implements ActionBase {
         }
 
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
-	}
-	
-	static ArrayList getAffectedHardwares(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany) {
-		ArrayList hardwares = new ArrayList();
-		
-		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
-			LiteInventoryBase liteInv = energyCompany.getInventory(
-					((Integer)liteAcctInfo.getInventories().get(i)).intValue(), true );
-			if (liteInv instanceof LiteStarsLMHardware) {
-				if (((LiteStarsLMHardware)liteInv).getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL)
-					hardwares.add( liteInv );
-			}
-		}
-		
-		OptOutEventQueue.OptOutEvent[] events = energyCompany.getOptOutEventQueue().findOptOutEvents( liteAcctInfo.getAccountID() );
-		for (int i = 0; i < events.length; i++) {
-			LiteInventoryBase liteInv = energyCompany.getInventory( events[i].getInventoryID(), true );
-			if (!hardwares.contains( liteInv )) hardwares.add( liteInv );
-		}
-		
-		return hardwares;
 	}
 	
 	private static StarsLMHardwareHistory processReenable(LiteStarsLMHardware liteHw, 
@@ -363,6 +349,21 @@ public class ProgramReenableAction implements ActionBase {
 		}
 	}
 	
+	public static ArrayList getAffectedHardwares(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany) {
+		ArrayList hardwares = new ArrayList();
+		
+		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
+			LiteInventoryBase liteInv = energyCompany.getInventory(
+					((Integer)liteAcctInfo.getInventories().get(i)).intValue(), true );
+			if (liteInv instanceof LiteStarsLMHardware) {
+				if (((LiteStarsLMHardware)liteInv).getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL)
+					hardwares.add( liteInv );
+			}
+		}
+		
+		return hardwares;
+	}
+	
 	public static String getReenableCommand(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany)
 		throws WebClientException
 	{
@@ -375,24 +376,31 @@ public class ProgramReenableAction implements ActionBase {
 	
 	public static void handleReenableEvent(OptOutEventQueue.OptOutEvent event, LiteStarsEnergyCompany energyCompany) {
 		LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( event.getAccountID(), true );
-		LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( event.getInventoryID(), true );
+		
+		ArrayList hardwares = new ArrayList();
+		if (event.getInventoryID() != 0)
+			hardwares.add( energyCompany.getInventory(event.getInventoryID(), true) );
+		else
+			hardwares = getAffectedHardwares( liteAcctInfo, energyCompany );
 		
 		StarsProgramReenableResponse resp = new StarsProgramReenableResponse();
 		
-		try {
-			resp.addStarsLMHardwareHistory( processReenable(liteHw, liteAcctInfo, energyCompany) );
-			resp.setStarsLMProgramHistory( StarsLiteFactory.createStarsLMProgramHistory(liteAcctInfo, energyCompany) );
+		for (int i = 0; i < hardwares.size(); i++) {
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(i);
+			try {
+				resp.addStarsLMHardwareHistory( processReenable(liteHw, liteAcctInfo, energyCompany) );
+			}
+			catch (com.cannontech.database.TransactionException e) {
+				CTILogger.error( e.getMessage(), e );
+			}
 		}
-		catch (com.cannontech.database.TransactionException e) {
-			CTILogger.error( e.getMessage(), e );
-			return;
-		}
+		
+		resp.setStarsLMProgramHistory( StarsLiteFactory.createStarsLMProgramHistory(liteAcctInfo, energyCompany) );
 		
 		StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation)
 				energyCompany.getStarsCustAccountInformation( liteAcctInfo.getAccountID() );
-		if (starsAcctInfo == null) return;
-		
-		parseResponse( resp, starsAcctInfo, energyCompany );
+		if (starsAcctInfo != null)
+			parseResponse( resp, starsAcctInfo, energyCompany );
 	}
 
 }

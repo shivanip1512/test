@@ -22,6 +22,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ECUtils;
@@ -35,6 +36,8 @@ import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
+import com.cannontech.stars.xml.serialize.StarsLMProgramEvent;
+import com.cannontech.stars.xml.serialize.StarsLMProgramHistory;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramOptOut;
 import com.cannontech.stars.xml.serialize.StarsProgramReenable;
@@ -119,7 +122,8 @@ public class SendOptOutNotificationAction implements ActionBase {
 			int energyCompanyID = user.getEnergyCompanyID();
 			energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
-			sendOptOutNotification( energyCompany, liteAcctInfo, reqOper );
+			String notifMsg = getOptOutNotifMessage( energyCompany, liteAcctInfo, reqOper );
+			sendNotification( notifMsg, energyCompany );
             
 			StarsSuccess success = new StarsSuccess();
 			success.setDescription( ServletUtil.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " notification has been sent successfully" );
@@ -258,26 +262,24 @@ public class SendOptOutNotificationAction implements ActionBase {
 		return null;
 	}
 	
-	public static void sendOptOutNotification(
+	public static String getOptOutNotifMessage(
 			LiteStarsEnergyCompany energyCompany,
 			LiteStarsCustAccountInformation liteAcctInfo,
-			StarsOperation operation) throws Exception
+			StarsOperation operation)
 	{
 		StarsProgramOptOut optout = operation.getStarsProgramOptOut();
+		if (optout.getPeriod() <= 0) return null;
+		
+		String optOutTxt = energyCompany.getEnergyCompanySetting( ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN );
+		String reenableTxt = energyCompany.getEnergyCompanySetting( ConsumerInfoRole.WEB_TEXT_REENABLE );
+		
 		Date optOutDate = optout.getStartDateTime();
 		if (optOutDate == null) optOutDate = new Date();
         
-		Date reenableDate = null;
-		if (optout.getPeriod() == ProgramOptOutAction.REPEAT_LAST)
-			return;
-		if (optout.getPeriod() > 0) {
-			Calendar cal = Calendar.getInstance();
-			cal.setTime( optOutDate );
-			cal.add( Calendar.HOUR_OF_DAY, optout.getPeriod() );
-			reenableDate = cal.getTime();
-		}
-		else if (optout.getPeriod() == ProgramOptOutAction.OPTOUT_TODAY)
-			reenableDate = com.cannontech.util.ServletUtil.getTomorrow( energyCompany.getDefaultTimeZone() );
+		Calendar cal = Calendar.getInstance();
+		cal.setTime( optOutDate );
+		cal.add( Calendar.HOUR_OF_DAY, optout.getPeriod() );
+		Date reenableDate = cal.getTime();
         
 		StringBuffer text = new StringBuffer();
 		text.append("======================================================").append(LINE_SEPARATOR);
@@ -285,6 +287,8 @@ public class SendOptOutNotificationAction implements ActionBase {
 		text.append( getAccountInformation(energyCompany, liteAcctInfo) );
 		text.append(LINE_SEPARATOR);
 		text.append("======================================================").append(LINE_SEPARATOR);
+		text.append(LINE_SEPARATOR);
+		text.append(optOutTxt.toUpperCase()).append(LINE_SEPARATOR);
 		text.append(LINE_SEPARATOR);
 		
 		ArrayList hardwares = null;
@@ -295,10 +299,10 @@ public class SendOptOutNotificationAction implements ActionBase {
 		else
 			hardwares = ProgramOptOutAction.getAffectedHardwares( liteAcctInfo, energyCompany );
         
-		text.append(ServletUtil.capitalizeAll( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
-			.append(" Time: ").append(ServerUtils.formatDate( optOutDate, energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
-		text.append(ServletUtil.capitalize( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) ))
-			.append(" Time: ").append(ServerUtils.formatDate( reenableDate, energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
+		text.append(ServletUtil.capitalizeAll( optOutTxt )).append(" Time: ")
+			.append(ServerUtils.formatDate( optOutDate, energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
+		text.append(ServletUtil.capitalize( reenableTxt )).append(" Time: ")
+			.append(ServerUtils.formatDate( reenableDate, energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
 		text.append(LINE_SEPARATOR);
 		text.append( getProgramInformation(energyCompany, liteAcctInfo, hardwares) );
 		text.append(LINE_SEPARATOR);
@@ -312,53 +316,30 @@ public class SendOptOutNotificationAction implements ActionBase {
 		StarsSendExitInterviewAnswers sendAnswers = operation.getStarsSendExitInterviewAnswers();
 		for (int i = 0; i < sendAnswers.getStarsExitInterviewQuestionCount(); i++) {
 			StarsExitInterviewQuestion answer = sendAnswers.getStarsExitInterviewQuestion(i);
-			LiteInterviewQuestion liteQuestion = null;
-			for (int j = 0; j < liteQuestions.length; j++)
+			
+			for (int j = 0; j < liteQuestions.length; j++) {
 				if (liteQuestions[j].getQuestionID() == answer.getQuestionID()) {
-					liteQuestion = liteQuestions[j];
+					text.append("Q: ").append(liteQuestions[j].getQuestion()).append(LINE_SEPARATOR);
+					text.append("A: ").append(answer.getAnswer()).append(LINE_SEPARATOR);
+					text.append(LINE_SEPARATOR);
 					break;
 				}
-			if (liteQuestion == null)
-				throw new Exception("Cannot find exit interview question with id = " + answer.getQuestionID());
-    		
-			text.append("Q: ").append(liteQuestion.getQuestion()).append(LINE_SEPARATOR);
-			text.append("A: ").append(answer.getAnswer()).append(LINE_SEPARATOR);
-			text.append(LINE_SEPARATOR);
+			}
 		}
 		
-		String toStr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS );
-		if (toStr == null)
-			throw new Exception( "Property \"optout_notification_recipients\" not found" );
-		
-		StringTokenizer st = new StringTokenizer( toStr, "," );
-		ArrayList toList = new ArrayList();
-		while (st.hasMoreTokens())
-			toList.add( st.nextToken() );
-		String[] to = new String[ toList.size() ];
-		toList.toArray( to );
-        
-		String from = null;
-		if (energyCompany.getPrimaryContactID() > 0) {
-			String[] emails = ContactFuncs.getAllEmailAddresses( energyCompany.getPrimaryContactID() );
-			if (emails.length > 0)
-				from = emails[0];
-		}
-		if (from == null)
-			from = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.ADMIN_EMAIL_ADDRESS );
-        
-		String subject = ServletUtil.capitalizeAll(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " Notification";
-		
-		EmailMessage emailMsg = new EmailMessage( to, subject, text.toString() );
-		emailMsg.setFrom( from );
-		emailMsg.send();
+		return text.toString();
 	}
 	
-	public static void sendReenableNotification(
+	public static String getReenableNotifMessage(
 			LiteStarsEnergyCompany energyCompany,
 			LiteStarsCustAccountInformation liteAcctInfo,
-			StarsOperation operation) throws Exception
+			StarsOperation operation)
 	{
 		StarsProgramReenable reenable = operation.getStarsProgramReenable();
+		Date now = new Date();
+		
+		String optOutTxt = energyCompany.getEnergyCompanySetting( ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN );
+		String reenableTxt = energyCompany.getEnergyCompanySetting( ConsumerInfoRole.WEB_TEXT_REENABLE );
 		
 		StringBuffer text = new StringBuffer();
 		text.append("======================================================").append(LINE_SEPARATOR);
@@ -368,58 +349,72 @@ public class SendOptOutNotificationAction implements ActionBase {
 		text.append("======================================================").append(LINE_SEPARATOR);
 		text.append(LINE_SEPARATOR);
 		
+		if (reenable.getCancelScheduledOptOut()) {
+			OptOutEventQueue.OptOutEvent[] events = energyCompany.getOptOutEventQueue().findOptOutEvents( liteAcctInfo.getAccountID() );
+			if (events.length == 0) return null;
+			
+			text.append("SCHEDULED ").append(optOutTxt.toUpperCase()).append(" CANCELED").append(LINE_SEPARATOR);
+			
+			for (int i = 0; i < events.length; i++) {
+				Calendar reenableTime = Calendar.getInstance();
+				reenableTime.setTime( new Date(events[i].getStartDateTime()) );
+				reenableTime.add( Calendar.HOUR_OF_DAY, events[i].getPeriod() );
+				
+				text.append(LINE_SEPARATOR);
+				text.append("Scheduled ").append(ServletUtil.capitalizeAll( optOutTxt )).append(" Time: ")
+					.append(ServerUtils.formatDate( new Date(events[i].getStartDateTime()), energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
+				text.append("Scheduled ").append(ServletUtil.capitalizeAll( reenableTxt )).append(" Time: ")
+					.append(ServerUtils.formatDate( reenableTime.getTime(), energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
+			}
+		}
+		else {
+			text.append(reenableTxt.toUpperCase()).append(LINE_SEPARATOR);
+			text.append(LINE_SEPARATOR);
+			
+			StarsLMProgramHistory progHist = StarsLiteFactory.createStarsLMProgramHistory( liteAcctInfo, energyCompany );
+			boolean foundLastOptOut = false;
+			
+			for (int i = progHist.getStarsLMProgramEventCount() - 1; i >= 0; i--) {
+				StarsLMProgramEvent event = progHist.getStarsLMProgramEvent(i);
+				if (event.hasDuration() && event.getEventDateTime().before( now )) {
+					Calendar reenableTime = Calendar.getInstance();
+					reenableTime.setTime( event.getEventDateTime() );
+					reenableTime.add( Calendar.HOUR_OF_DAY, event.getDuration() );
+					
+					text.append("Last ").append(ServletUtil.capitalizeAll( optOutTxt )).append(" Time: ")
+						.append(ServerUtils.formatDate( event.getEventDateTime(), energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
+					text.append("Scheduled ").append(ServletUtil.capitalizeAll( reenableTxt )).append(" Time: ")
+						.append(ServerUtils.formatDate( reenableTime.getTime(), energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
+					
+					foundLastOptOut = true;
+					break;
+				}
+			}
+			
+			if (!foundLastOptOut)
+				text.append("Last ").append(ServletUtil.capitalizeAll( optOutTxt )).append(" Time: (none)").append(LINE_SEPARATOR);
+			
+			text.append(ServletUtil.capitalize( reenableTxt )).append(" Time: ")
+				.append(ServerUtils.formatDate( now, energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
+		}
+		
 		ArrayList hardwares = null;
 		if (reenable.hasInventoryID()) {
 			hardwares = new ArrayList();
 			hardwares.add( energyCompany.getInventory(reenable.getInventoryID(), true) );
 		}
 		else
-			hardwares = ProgramReenableAction.getAffectedHardwares( liteAcctInfo, energyCompany );
-        
-		OptOutEventQueue queue = energyCompany.getOptOutEventQueue();
-		ArrayList events = new ArrayList();
-		for (int i = 0; i < hardwares.size(); i++) {
-			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(i);
-			OptOutEventQueue.OptOutEvent e = queue.findOptOutEvent( liteHw.getInventoryID() );
-			if (e != null) events.add(e);
-		}
+			hardwares = ProgramOptOutAction.getAffectedHardwares( liteAcctInfo, energyCompany );
 		
-		if (events.size() == 1) {
-			// e.g. "Scheduled Opt Out Time: 04/25/03	(Canceled)"
-			OptOutEventQueue.OptOutEvent e = (OptOutEventQueue.OptOutEvent) events.get(0);
-			text.append("Scheduled ").append(ServletUtil.capitalizeAll( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
-				.append(" Time: ").append(ServerUtils.formatDate( new Date(e.getStartDateTime()), energyCompany.getDefaultTimeZone() ))
-				.append("\t(Canceled)").append(LINE_SEPARATOR);
-		}
-		else if (events.size() > 1){
-			text.append(events.size()).append(" Scheduled ").append(ServletUtil.capitalizeAll( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
-				.append(" Events Canceled").append(LINE_SEPARATOR);
-		}
-		
-		boolean foundLastOptOutEvent = false;
-		if (hardwares.size() > 0) {
-			LiteLMHardwareEvent event = findLastOptOutEvent( (LiteStarsLMHardware)hardwares.get(0), energyCompany );
-			
-			if (event != null) {
-				text.append("Last ").append(ServletUtil.capitalizeAll(energyCompany.getEnergyCompanySetting( ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
-					.append(" Time: ").append(ServerUtils.formatDate( new Date(event.getEventDateTime()), energyCompany.getDefaultTimeZone() ))
-					.append(LINE_SEPARATOR);
-				foundLastOptOutEvent = true;
-			}
-		}
-		
-		if (!foundLastOptOutEvent) {
-			text.append("Last ").append(ServletUtil.capitalizeAll( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
-				.append(" Time: (none)").append(LINE_SEPARATOR);
-		}
-		
-		text.append(ServletUtil.capitalize( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) ))
-			.append(" Time: ").append(ServerUtils.formatDate( new Date(), energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
 		text.append(LINE_SEPARATOR);
 		text.append( getProgramInformation(energyCompany, liteAcctInfo, hardwares) );
 		text.append(LINE_SEPARATOR);
 		text.append("======================================================").append(LINE_SEPARATOR);
 		
+		return text.toString();
+	}
+	
+	public static void sendNotification(String notifMessage, LiteStarsEnergyCompany energyCompany) throws Exception {
 		String toStr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS );
 		if (toStr == null)
 			throw new Exception( "Property \"optout_notification_recipients\" not found" );
@@ -440,9 +435,10 @@ public class SendOptOutNotificationAction implements ActionBase {
 		if (from == null)
 			from = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.ADMIN_EMAIL_ADDRESS );
         
-		String subject = ServletUtil.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE)) + " Notification";
+		String subject = ServletUtil.capitalizeAll( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) )
+				+ "/" + ServletUtil.capitalizeAll( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) ) + " Notification";
 		
-		EmailMessage emailMsg = new EmailMessage( to, subject, text.toString() );
+		EmailMessage emailMsg = new EmailMessage( to, subject, notifMessage );
 		emailMsg.setFrom( from );
 		emailMsg.send();
 	}

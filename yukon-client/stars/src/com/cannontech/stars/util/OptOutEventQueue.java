@@ -243,9 +243,8 @@ public class OptOutEventQueue {
 	/**
 	 * Add an opt out or reenable event to the event queue. There can be at most one
 	 * scheduled opt out event and one reenable event in the queue for each hardware
-	 * at the same time; and at most one scheduled opt out event for each account
-	 * entirely (the account event and hardware event won't interfere with each other).
-	 * The new event will replace the old one if necessary.
+	 * and each account at the same time (the account event and hardware event won't
+	 * interfere with each other). The new event will replace the old one if necessary.
 	 * 
 	 * @param event The opt out event to add to the queue
 	 * @param writeThrough Controls whether to write to the disk file immediately
@@ -268,7 +267,15 @@ public class OptOutEventQueue {
 				break;
 			}
 		}
-		OptOutEvent e2 = findOptOutEvent( event.getInventoryID() );
+		
+		OptOutEvent e2 = null;
+		events = findReenableEvents( event.getAccountID() );
+		for (int i = 0; i < events.length; i++) {
+			if (events[i].getInventoryID() == event.getInventoryID()) {
+				e2 = events[i];
+				break;
+			}
+		}
 		
 		if (event.getPeriod() >= 0) {	// This is an opt out event
 			if (e1 != null) {
@@ -278,6 +285,7 @@ public class OptOutEventQueue {
 			}
 			optOutEvents.add( event );
 			newEvents.add( event );
+			
 			if (e2 != null && e2.getStartDateTime() > event.getStartDateTime() - OVERLAP_INTERVAL) {
 				/* If an existing reenable event overlaps with this opt out event,
 				 * change the period of the reenable event to PERIOD_REENABLE2,
@@ -294,6 +302,9 @@ public class OptOutEventQueue {
 				optOutEvents.remove( e2 );
 				reCreateFile = true;
 			}
+			optOutEvents.add( event );
+			newEvents.add( event );
+			
 			if (e1 != null && event.getStartDateTime() > e1.getStartDateTime() - OVERLAP_INTERVAL) {
 				/* If an existing scheduled opt out event overlaps with this reenable event ... */
 				Calendar cal = Calendar.getInstance();
@@ -310,8 +321,6 @@ public class OptOutEventQueue {
 					event.setPeriod( PERIOD_REENABLE2 );
 				}
 			}
-			optOutEvents.add( event );
-			newEvents.add( event );
 		}
 		
 		if (writeThrough) syncToFile();
@@ -323,7 +332,21 @@ public class OptOutEventQueue {
 	
 	public synchronized void removeEvent(OptOutEvent event) {
 		reCreateFile = optOutEvents.remove( event );
-		if (reCreateFile) syncToFile();
+		if (reCreateFile) {
+			if (event.getPeriod() >= 0) {
+				// When removing an opt out event, we need to check to see if there is a
+				// corresponding reenable event with period = PERIOD_REENABLE2.
+				// If there is, change its period to PERIOD_REENABLE.
+				OptOutEvent[] events = findReenableEvents( event.getAccountID() );
+				for (int i = 0; i < events.length; i++) {
+					if (events[i].getInventoryID() == event.getInventoryID() && events[i].getPeriod() == PERIOD_REENABLE2) {
+						events[i].setPeriod( PERIOD_REENABLE );
+						break;
+					}
+				}
+			}
+			syncToFile();
+		}
 	}
 	
 	public synchronized void removeEvents(int accountID) {
