@@ -144,8 +144,8 @@ public class CapControlWebAnnex implements java.util.Observer
 	 */
 	private void initialize() 
 	{
-		//dont show the year on timestamp strings
-		ModifiedDate.setFormatPattern("MM-dd HH:mm:ss");
+		//dont show the year OR seconds on timestamp strings
+		ModifiedDate.setFormatPattern("MM-dd HH:mm");
 
 
 		//add the table listener to the connection		
