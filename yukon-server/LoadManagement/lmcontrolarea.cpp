@@ -919,6 +919,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
     DOUBLE expectedLoadReduced = 0.0;
     LONG newlyActivePrograms = 0;
     LONG fullyActivePrograms = 0;
+    LONG activePrograms = 0;
 
     setControlAreaState(CtiLMControlArea::AttemptingControlState);//if none the the programs are available then we can't control, but we want to
 
@@ -1048,10 +1049,11 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
             ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::ManualActiveState )
         {
             fullyActivePrograms++;
+            activePrograms++;
         }
-        else
+        else if( ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::ActiveState )
         {
-            break;
+            activePrograms++;
         }
     }
 
@@ -1059,6 +1061,10 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
         fullyActivePrograms >= _lmprograms.entries() )
     {
         setControlAreaState(CtiLMControlArea::FullyActiveState);
+    }
+    else if( activePrograms > 0 )
+    {
+        setControlAreaState(CtiLMControlArea::ActiveState);
     }
 
     if( getControlAreaState() == CtiLMControlArea::AttemptingControlState )
@@ -1080,6 +1086,7 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
 {
     DOUBLE expectedLoadReduced = 0.0;
     LONG fullyActivePrograms = 0;
+    LONG activePrograms = 0;
 
     setControlAreaState(CtiLMControlArea::AttemptingControlState);//if none the the programs are available then we can't control, but we want to
 
@@ -1200,10 +1207,11 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
             ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::ManualActiveState )
         {
             fullyActivePrograms++;
+            activePrograms++;
         }
-        else
+        else if( ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::ActiveState )
         {
-            break;
+            activePrograms++;
         }
     }
 
@@ -1211,6 +1219,10 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
         fullyActivePrograms >= _lmprograms.entries() )
     {
         setControlAreaState(CtiLMControlArea::FullyActiveState);
+    }
+    else if( activePrograms > 0 )
+    {
+        setControlAreaState(CtiLMControlArea::ActiveState);
     }
 
     if( getControlAreaState() == CtiLMControlArea::AttemptingControlState )
