@@ -30,7 +30,7 @@
     <td width="657"valign="bottom">
       <table width="657" border="0" cellspacing="0" cellpadding="3" height="102"> 
         <tr> 
-          <td background="../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>" height="77" >&nbsp;</td>
+          <td id="Header" background="../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>" height="77" >&nbsp;</td>
         </tr>
         <tr>
          	<td>
