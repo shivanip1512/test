@@ -1335,8 +1335,8 @@ void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* m
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << text << ", " << additional << endl;
             }
+			setUpdatedFlag(TRUE);
         }
-        setUpdatedFlag(TRUE);
     }
     else
     {
@@ -1357,8 +1357,8 @@ void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* m
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << text << ", " << additional << endl;
                 }
+	            setUpdatedFlag(TRUE);
             }
-            setUpdatedFlag(TRUE);
         }
     }
 }
@@ -1714,7 +1714,7 @@ RWCString* CtiLMControlArea::getAutomaticallyStartedSignalString()
                 _snprintf(tempchar,80,"%.*f",0,currentTrigger->getPointValue());
                 *returnString += tempchar;
                 *returnString += " != Normal Status: ";
-                _ultoa(currentTrigger->getNormalState(),tempchar,10);
+                _ltoa(currentTrigger->getNormalState(),tempchar,10);
                 *returnString += tempchar;
             }
         }
