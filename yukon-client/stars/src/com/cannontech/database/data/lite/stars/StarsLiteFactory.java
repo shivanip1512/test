@@ -1098,12 +1098,41 @@ public class StarsLiteFactory {
 			starsAcctInfo.setStarsThermostatSettings( starsThermSettings );
 		}
 */		
+		ArrayList liteInvs = liteAcctInfo.getInventories();
+		StarsInventories starsInvs = new StarsInventories();
+		starsAcctInfo.setStarsInventories( starsInvs );
+		
+		TreeMap tmap = new TreeMap();
+		for (int i = 0; i < liteInvs.size(); i++) {
+			LiteLMHardwareBase liteHw = energyCompany.getLMHardware( ((Integer) liteInvs.get(i)).intValue(), true );
+			StarsLMHardware starsHw = createStarsLMHardware(liteHw, energyCompanyID);
+			
+			ArrayList list = (ArrayList) tmap.get( starsHw.getLMDeviceType().getContent() );
+			if (list == null) {
+				list = new ArrayList();
+				tmap.put( starsHw.getLMDeviceType().getContent(), list );
+			}
+			list.add( starsHw );
+		}
+		
+		Iterator it = tmap.values().iterator();
+		while (it.hasNext()) {
+			ArrayList list = (ArrayList) it.next();
+			for (int i = 0; i < list.size(); i++)
+				starsInvs.addStarsLMHardware( (StarsLMHardware) list.get(i) );
+		}
+		
+        if (liteAccount.getLoginID() > com.cannontech.user.UserUtils.USER_YUKON_ID) {
+	        LiteYukonUser liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( liteAccount.getLoginID() );
+			starsAcctInfo.setStarsUser( createStarsUser(liteUser) );
+        }
+		
 		if (isOperator) {
 			ArrayList liteApps = liteAcctInfo.getAppliances();
 			StarsAppliances starsApps = new StarsAppliances();
 			starsAcctInfo.setStarsAppliances( starsApps );
 			
-			TreeMap tmap = new TreeMap();
+			tmap = new TreeMap();
 			for (int i = 0; i < liteApps.size(); i++) {
 				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteApps.get(i);
 				StarsAppliance starsApp = (StarsAppliance) createStarsAppliance(liteApp, energyCompanyID);
@@ -1116,35 +1145,11 @@ public class StarsLiteFactory {
 				list.add( starsApp );
 			}
 			
-			Iterator it = tmap.values().iterator();
-			while (it.hasNext()) {
-				ArrayList list = (ArrayList) it.next();
-				for (int i = 0; i < list.size(); i++)
-					starsApps.addStarsAppliance( (StarsAppliance) list.get(i) );
-			}
-			
-			ArrayList liteInvs = liteAcctInfo.getInventories();
-			StarsInventories starsInvs = new StarsInventories();
-			starsAcctInfo.setStarsInventories( starsInvs );
-			
-			tmap.clear();
-			for (int i = 0; i < liteInvs.size(); i++) {
-				LiteLMHardwareBase liteHw = energyCompany.getLMHardware( ((Integer) liteInvs.get(i)).intValue(), true );
-				StarsLMHardware starsHw = createStarsLMHardware(liteHw, energyCompanyID);
-				
-				ArrayList list = (ArrayList) tmap.get( starsHw.getLMDeviceType().getContent() );
-				if (list == null) {
-					list = new ArrayList();
-					tmap.put( starsHw.getLMDeviceType().getContent(), list );
-				}
-				list.add( starsHw );
-			}
-			
 			it = tmap.values().iterator();
 			while (it.hasNext()) {
 				ArrayList list = (ArrayList) it.next();
 				for (int i = 0; i < list.size(); i++)
-					starsInvs.addStarsLMHardware( (StarsLMHardware) list.get(i) );
+					starsApps.addStarsAppliance( (StarsAppliance) list.get(i) );
 			}
 			
 			ArrayList liteCalls = liteAcctInfo.getCallReportHistory();
@@ -1164,11 +1169,6 @@ public class StarsLiteFactory {
 				LiteWorkOrderBase liteOrder = energyCompany.getWorkOrderBase( ((Integer) liteOrders.get(i)).intValue() );
 				starsOrders.addStarsServiceRequest( createStarsServiceRequest(liteOrder, energyCompanyID) );
 			}
-			
-	        if (liteAccount.getLoginID() > com.cannontech.user.UserUtils.USER_YUKON_ID) {
-		        LiteYukonUser liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( liteAccount.getLoginID() );
-				starsAcctInfo.setStarsUser( createStarsUser(liteUser) );
-	        }
 		}
 	}
 	
