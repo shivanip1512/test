@@ -187,6 +187,12 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
     	com.cannontech.database.cache.functions.YukonListFuncs.releaseAllConstants();
     }
+    
+    public static void refreshCache(LiteStarsEnergyCompany company) {
+    	company.clear();
+    	webConfigList = null;
+		com.cannontech.database.cache.functions.YukonListFuncs.releaseAllConstants();
+    }
 
 	public static boolean isClientLocal() {
 		return clientLocal;
