@@ -46,6 +46,7 @@ import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.database.db.graph.GraphRenderers;
 import com.cannontech.database.model.DeviceTree_CustomPointsModel;
 import com.cannontech.database.model.GraphDefinitionTreeModel;
+import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.graph.buffer.html.HTMLBuffer;
 import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
@@ -234,7 +235,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 			refresh();
 		}
 	}
-	else if( event.getSource() == getViewMenu().getLineGraphRadioButtonItem() )
+	else if( event.getSource() == getViewMenu().getLineRadioButtonItem() )
 	{	
 		getGraph().setViewType( GraphRenderers.LINE);
 		savedViewType = getGraph().getViewType();
@@ -242,7 +243,67 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}
-	else if( event.getSource() == getViewMenu().getStepGraphRadioButtonItem() )
+	else if( event.getSource() == getViewMenu().getLineAreaRadioButtonItem() )
+	{
+		getGraph().setViewType( GraphRenderers.LINE_AREA);
+		savedViewType = getGraph().getViewType();
+		refresh();
+		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
+		getFileMenu().getExportMenuitem().setEnabled(true);
+	}
+
+	else if( event.getSource() == getViewMenu().getLineShapesRadioButtonItem() )
+	{
+		getGraph().setViewType( GraphRenderers.LINE_SHAPES);
+		savedViewType = getGraph().getViewType();
+		refresh();
+		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
+		getFileMenu().getExportMenuitem().setEnabled(true);
+	}
+	else if( event.getSource() == getViewMenu().getLineAreaShapesRadioButtonItem() )
+	{
+		getGraph().setViewType( GraphRenderers.LINE_AREA_SHAPES);
+		savedViewType = getGraph().getViewType();
+		refresh();
+		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
+		getFileMenu().getExportMenuitem().setEnabled(true);
+	}
+
+	else if( event.getSource() == getViewMenu().getStepRadioButtonItem() )
+	{	
+		getGraph().setViewType( GraphRenderers.STEP);
+		savedViewType = getGraph().getViewType();
+		refresh();
+		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
+		getFileMenu().getExportMenuitem().setEnabled(true);
+	}
+	else if( event.getSource() == getViewMenu().getStepAreaRadioButtonItem() )
+	{
+		getGraph().setViewType( GraphRenderers.STEP_AREA);
+		savedViewType = getGraph().getViewType();
+		refresh();
+		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
+		getFileMenu().getExportMenuitem().setEnabled(true);
+	}
+
+	else if( event.getSource() == getViewMenu().getStepShapesRadioButtonItem() )
+	{
+		getGraph().setViewType( GraphRenderers.STEP_SHAPES);
+		savedViewType = getGraph().getViewType();
+		refresh();
+		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
+		getFileMenu().getExportMenuitem().setEnabled(true);
+	}
+	else if( event.getSource() == getViewMenu().getStepAreaShapesRadioButtonItem() )
+	{
+		getGraph().setViewType( GraphRenderers.STEP_AREA_SHAPES);
+		savedViewType = getGraph().getViewType();
+		refresh();
+		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
+		getFileMenu().getExportMenuitem().setEnabled(true);
+	}
+
+	else if( event.getSource() == getViewMenu().getStepRadioButtonItem() )
 	{
 		getGraph().setViewType( GraphRenderers.STEP);
 		savedViewType = getGraph().getViewType();
@@ -250,15 +311,8 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}
-	else if( event.getSource() == getViewMenu().getShapeLineGraphRadioButtonItem() )
-	{
-		getGraph().setViewType( GraphRenderers.SHAPES_LINE);
-		savedViewType = getGraph().getViewType();
-		refresh();
-		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
-		getFileMenu().getExportMenuitem().setEnabled(true);
-	}
-	else if( event.getSource() == getViewMenu().getBarGraphRadioButtonItem())
+
+	else if( event.getSource() == getViewMenu().getBarRadioButtonItem())
 	{
 		getGraph().setViewType( GraphRenderers.BAR);
 		savedViewType = getGraph().getViewType();
@@ -267,7 +321,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		getOptionsMenu().getPlotYesterdayMenuItem().setSelected(false);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}
-	else if ( event.getSource() == getViewMenu().getBarGraph3DRadioButtonItem())
+	else if ( event.getSource() == getViewMenu().getBar3DRadioButtonItem())
 	{
 		getGraph().setViewType( GraphRenderers.BAR_3D);
 		savedViewType = getGraph().getViewType();
@@ -453,7 +507,7 @@ public void runReport(StatisticModel reportData)
  */
 public void about( ) 
 {
-	AboutTrending aboutDialog = new AboutTrending(getGraphParentFrame(), "About Trending", true );
+	AboutDialog aboutDialog = new AboutDialog(getGraphParentFrame(), "About Trending", true );
 
 	aboutDialog.setLocationRelativeTo( getGraphParentFrame() );
 	aboutDialog.setValue(null);
@@ -760,7 +814,8 @@ public void addMenuItemActionListeners(JMenu menu)
 			{
 				for (int j = 0; j < ((JMenu)item).getItemCount(); j++)
 				{
-					((javax.swing.JMenu)item).getItem(j).addActionListener(this);
+					if( ((JMenu)item).getItem(j) != null)
+						((JMenu)item).getItem(j).addActionListener(this);
 				}
 			}
 		}
@@ -1753,15 +1808,7 @@ private javax.swing.JPanel getTrendSetupPanel() {
 	}
 	return ivjTrendSetupPanel;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/3/2001 1:51:05 PM)
- * @return java.lang.String
- */
-public static String getVersion()
-{
-	return (com.cannontech.common.version.VersionTools.getYUKON_VERSION());
-}
+
 private ViewMenu getViewMenu()
 {
 	if (viewMenu == null)
