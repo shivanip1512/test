@@ -194,7 +194,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	if (instance != null) return;
     	
 		getAllWebConfigurations();
-		
+/*		
     	ArrayList companies = getAllEnergyCompanies();
     	for (int i = 0; i < companies.size(); i++) {
     		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
@@ -202,7 +202,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     			|| company.getUserID() != com.cannontech.user.UserUtils.USER_YUKON_ID)
 	    		company.init();
     	}
-    	
+*/    	
     	connToPIL = (com.cannontech.servlet.PILConnectionServlet)
     			getServletContext().getAttribute(com.cannontech.servlet.PILConnectionServlet.SERVLET_CONTEXT_ID);
     			
