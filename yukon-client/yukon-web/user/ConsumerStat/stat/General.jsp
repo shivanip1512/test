@@ -60,7 +60,11 @@
                                   <tr> 
                                     <td colspan="3" background="../../../Images/Icons/dot.gif" height="8"></td>
                                   </tr>
-<%
+<% if (programs.getStarsLMProgramCount() == 0) { %>
+								  <tr>
+								    <td colspan="3" class="TableCell">You are not enrolled in any program.</td>
+								  </tr>
+<% } else {
 	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
 		StarsLMProgram program = programs.getStarsLMProgram(i);
 		StarsApplianceCategory category = null;
@@ -154,6 +158,7 @@
                                   </tr>
 <%
 	}
+ }
 %>
                                 </table>
                               </td>
