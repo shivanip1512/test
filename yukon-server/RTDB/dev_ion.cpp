@@ -276,11 +276,12 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
     if( found )
     {
-        OutMessage->Port     = getPortID();
-        OutMessage->DeviceID = getID();
-        OutMessage->TargetID = getID();
-        OutMessage->Retry    = IONRetries;
-        OutMessage->Sequence = _ion.getCommand();
+        OutMessage->Port         = getPortID();
+        OutMessage->DeviceID     = getID();
+        OutMessage->TargetID     = getID();
+        OutMessage->Retry        = IONRetries;
+        OutMessage->Sequence     = _ion.getCommand();
+        OutMessage->MessageFlags = _ion.commandRequiresRequeueOnFail() ? MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL : 0;
 
         retList.insert(CTIDBG_new CtiReturnMsg(getID(),
                                                RWCString(OutMessage->Request.CommandStr),
