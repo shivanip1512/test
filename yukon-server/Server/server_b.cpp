@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2004/10/26 15:41:11 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2004/11/05 17:22:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -127,7 +127,7 @@ int  CtiServer::clientRegistration(CtiConnectionManager *CM)
 
                         CtiCommandMsg *pCmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
 
-                        pCmd->setSource(RWCString("Server")+CtiNumStr(GetCurrentThreadId()));
+                        pCmd->setSource(getMyServerName());
                         pCmd->insert(-1);
                         pCmd->insert(CompileInfo.major);
                         pCmd->insert(CompileInfo.minor);
@@ -251,8 +251,7 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                     if( DebugLevel & 0x00001000)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Client " << pConn->getClientName() <<
-                        " responded to AreYouThere " << endl;
+                        dout << RWTime() << " Client " << pConn->getClientName() << " responded to AreYouThere " << endl;
                     }
                     // OK, the client responded... drop our bad connection flag...
                     pConn->setClientQuestionable(FALSE);
@@ -262,8 +261,7 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                 }
                 else  // Client wants to hear from us?
                 {
-                    RWCString me(RWCString("Server")+CtiNumStr(GetCurrentThreadId()));
-                    if(me != Cmd->getSource())
+                    if( getMyServerName().compareTo(Cmd->getSource(), RWCString::ignoreCase) )
                         pConn->WriteConnQue(Cmd->replicateMessage());
                 }
 
@@ -390,6 +388,8 @@ int  CtiServer::clientConfrontEveryone(PULONG pClientCount)
             Mgr->setClientQuestionable(TRUE);
 
             CtiCommandMsg *Cmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
+
+            Cmd->setSource(getMyServerName());
             Cmd->setOpString("Are You There");
             Cmd->insert(-1);
             Cmd->insert(CompileInfo.major);
@@ -460,3 +460,9 @@ RWWaitStatus CtiServer::join(unsigned long milliseconds)
 {
     return MainThread_.join(milliseconds);     // He will have waited for this to terminate.
 }
+
+RWCString CtiServer::getMyServerName() const
+{
+    return RWCString("Server Base");
+}
+

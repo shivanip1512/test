@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/server_b.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/10/26 15:33:22 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/11/05 17:22:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -92,6 +92,8 @@ public:
    virtual int   clientArbitrationWinner(CtiConnectionManager *CM);
    virtual int   clientConfrontEveryone(PULONG pClientCount = NULL);
    virtual int   clientPurgeQuestionables(PULONG pDeadClients = NULL);
+
+   virtual RWCString getMyServerName() const;
 
    virtual void  shutdown();
 
