@@ -320,25 +320,26 @@ private boolean executeCheckPorterConnection()
 		{	
 			com.cannontech.clientutils.CTILogger.getStandardLog().info("Connection & Registration to Server Established.");
 			Request req = new Request();
-			req.setDeviceID(DeviceTypes.SYSTEM);
+			req.setDeviceID(0);
 			req.setCommandString("control open select pointid -4");
 
 			connection.write(req);
 			
 			//wait 60 seconds at most for a response then stop
 			ret = connection.read( 60000 );
-			com.cannontech.clientutils.CTILogger.getStandardLog().info("Control returned = " + ret.toString() );
+			if(ret != null) 
+			{
+				com.cannontech.clientutils.CTILogger.getStandardLog().info("Control returned = " + ret.toString() );
+			}
+			else 
+			{
+				com.cannontech.clientutils.CTILogger.getStandardLog().info("No message returned!");	
+			}
 
 			connection.disconnect();
 		}
 
-		connection = null;
-		
-		if( ret == null )
-			return false;
-		else
-			return true;
-			
+		return ret != null;
 	}	
 	catch( Exception e )
 	{
