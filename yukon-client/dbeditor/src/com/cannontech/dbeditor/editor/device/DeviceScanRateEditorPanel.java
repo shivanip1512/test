@@ -1363,7 +1363,6 @@ private javax.swing.JPanel getJPanelScanWindow() {
 			constraintsJLabelhhmm1.insets = new java.awt.Insets(5, 2, 12, 15);
 			getJPanelScanWindow().add(getJLabelhhmm1(), constraintsJLabelhhmm1);
 			// user code begin {1}
-			getJPanelScanWindow().setVisible(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
