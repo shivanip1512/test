@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/07/28 19:01:33 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/10/12 20:12:05 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -152,6 +152,21 @@ public:
             else
             {
                 return lhs < rhs;
+            }
+        }
+    };
+
+    struct later : binary_function<const CtiVerificationWork *, const CtiVerificationWork *, bool>
+    {
+        bool operator()(const CtiVerificationWork *lhs, const CtiVerificationWork *rhs) const
+        {
+            if( lhs && rhs )
+            {
+                return lhs->getExpiration() > rhs->getExpiration();
+            }
+            else
+            {
+                return lhs > rhs;
             }
         }
     };
