@@ -533,7 +533,7 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
 						if (((com.cannontech.database.data.route.RouteBase) oldRoute).getDeviceID().intValue()
 							== previousDeviceID)
 						{
-							type = com.cannontech.database.data.pao.PAOGroups.getRouteTypeString( ((com.cannontech.database.data.lite.LiteYukonPAObject) routes.get(i)).getType() );
+							type = com.cannontech.database.data.pao.PAOGroups.getPAOTypeString( ((com.cannontech.database.data.lite.LiteYukonPAObject) routes.get(i)).getType() );
 							newRoute = com.cannontech.database.data.route.RouteFactory.createRoute(type);
 	
 							routeID = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID();

@@ -113,7 +113,7 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
       }
 
       //set our type field
-      getTypeTextField().setText( com.cannontech.database.data.pao.PAOGroups.getDeviceTypeString(cbcType) );
+      getTypeTextField().setText( com.cannontech.database.data.pao.PAOGroups.getPAOTypeString(cbcType) );
    }
    
 /**

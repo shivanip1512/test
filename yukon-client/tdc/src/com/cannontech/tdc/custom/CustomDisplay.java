@@ -81,7 +81,7 @@ public class CustomDisplay
 			}
 			else if( types[i].equalsIgnoreCase(COLUMN_TYPE_DEVICETYPE) )
 			{
-				retValues[i] = PAOGroups.getDeviceTypeString( litePAO.getType() );
+				retValues[i] = PAOGroups.getPAOTypeString( litePAO.getType() );
 			}
 			else if( types[i].equalsIgnoreCase(COLUMN_TYPE_POINTID) )
 			{

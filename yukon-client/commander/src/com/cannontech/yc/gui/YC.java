@@ -539,7 +539,7 @@ public class YC
 		{
 			int devID = ((DeviceMeterGroupBase)item).getDeviceMeterGroup().getDeviceID().intValue();
 			LiteYukonPAObject litePao = DeviceFuncs.getLiteDevice(devID);
-			className = PAOGroups.getDeviceTypeString(litePao.getType());
+			className = PAOGroups.getPAOTypeString(litePao.getType());
 		}
 		else if (item instanceof String)	//ModelFactory.COLLECTION_GROUP, TESTCOLLECTIONGROUP, LCRSERIAL
 		{

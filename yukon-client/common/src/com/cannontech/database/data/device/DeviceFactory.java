@@ -255,7 +255,7 @@ public final static DeviceBase createDevice(int deviceType) {
  */
 private final static DeviceBase setDeviceDefaults( int type, DeviceBase returnDevice ) 
 {
-	returnDevice.setDeviceType( com.cannontech.database.data.pao.PAOGroups.getDeviceTypeString(type) );
+	returnDevice.setDeviceType( com.cannontech.database.data.pao.PAOGroups.getPAOTypeString(type) );
 
 	if( DeviceTypesFuncs.isMCT(type)
       && (type == PAOGroups.MCT360 || type == PAOGroups.MCT370) )

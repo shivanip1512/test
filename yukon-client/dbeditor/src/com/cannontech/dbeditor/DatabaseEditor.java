@@ -5,6 +5,7 @@ package com.cannontech.dbeditor;
  */
 import javax.swing.*;
 import com.cannontech.dbeditor.menu.*;
+import com.cannontech.dbeditor.offsets.PointOffsetLegend;
 import com.cannontech.common.wizard.*;
 import com.cannontech.database.model.*;
 import java.awt.*;
@@ -19,6 +20,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.MessagePanel;
+import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.FileMessageLog;
 import com.cannontech.common.util.MessageEvent;
@@ -290,6 +292,10 @@ public void actionPerformed(ActionEvent event)
 	else if( item == toolsMenu.defaultMenuItem ) 
 	{
 		executeDefaultButton_ActionPerformed(event);
+	}
+	else if ( item == toolsMenu.ptOffsetLegendMenuItem )
+	{
+		executePointOffsetLegend_ActionPerformed( event );
 	}
 	
 	else
@@ -1184,6 +1190,36 @@ public void executeRegenerateButton_ActionPerformed(ActionEvent event) {
 return;
 	
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (5/31/2002 11:02:30 AM)
+ */
+private void executePointOffsetLegend_ActionPerformed( ActionEvent event ) 
+{
+	java.awt.Frame f = getParentFrame();
+	java.awt.Cursor savedCursor = f.getCursor();
+	f.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+	
+	try
+	{
+		final PointOffsetLegend ptLegend = new PointOffsetLegend();
+		OkCancelDialog diag = new OkCancelDialog(
+			f, "Point Offset Legend", true, ptLegend );
+
+		diag.setCancelButtonVisible( false );
+		diag.setLocationRelativeTo( f );
+		diag.setSize( 640, 500 );
+
+		diag.show();	
+	}
+	finally
+	{
+		f.setCursor(savedCursor);
+	}
+
+}
+
 /**
 * Insert the method's description here.
 * Creation date: (7/9/2001 10:25:56 AM)

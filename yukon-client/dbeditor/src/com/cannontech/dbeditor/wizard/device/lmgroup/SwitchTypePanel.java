@@ -253,7 +253,7 @@ public String getTypeOfSwitchSelectedString()
 	else if(SwitchTypePanel.VALUE_LIST[getSwitchList().getSelectedIndex()] == 999996 )
 			return "Golay";
 	else
-		return com.cannontech.database.data.pao.PAOGroups.getDeviceTypeString(
+		return com.cannontech.database.data.pao.PAOGroups.getPAOTypeString(
 				SwitchTypePanel.VALUE_LIST[getSwitchList().getSelectedIndex()]);
 }
 

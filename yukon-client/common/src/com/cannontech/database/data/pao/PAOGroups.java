@@ -249,10 +249,56 @@ public final static int getDeviceType(String typeString)
  * @return int
  * @param typeString java.lang.String
  */
-public final static String getDeviceTypeString(int type)
+public final static String getPAOTypeString(int type)
 {
 	switch( type )
 	{
+		//routes
+		case ROUTE_CCU:
+			return STRING_CCU;
+		case ROUTE_LCU:
+			return STRING_LCU;
+		case ROUTE_MACRO:
+			return STRING_MACRO;
+		case ROUTE_TAP_PAGING:
+			return STRING_TAP_PAGING;
+		case ROUTE_WCTP_TERMINAL:
+			return STRING_WCTP_TERMINAL_ROUTE;
+		case ROUTE_TCU:
+			return STRING_TCU;
+		case ROUTE_VERSACOM:
+			return STRING_VERSACOM;
+
+		//capcontrol
+		case CAP_CONTROL_SUBBUS:
+			return STRING_CAPCONTROL_SUBBUS;
+		case CAP_CONTROL_FEEDER:
+			return STRING_CAPCONTROL_FEEDER;
+
+		//ports
+		case LOCAL_DIRECT:
+			return STRING_LOCAL_DIRECT;
+		case LOCAL_SHARED:
+			return STRING_LOCAL_SERIAL;
+		case LOCAL_RADIO:
+			return STRING_LOCAL_RADIO;
+		case LOCAL_DIALUP:
+			return STRING_LOCAL_DIALUP;
+		case LOCAL_DIALBACK:
+			return STRING_LOCAL_DIALBACK;
+		case TSERVER_DIRECT:
+			return STRING_TERM_SERVER_DIRECT;
+		case TSERVER_SHARED:
+			return STRING_TERM_SERVER;
+		case TSERVER_RADIO:
+			return STRING_TERM_SERVER_RADIO;
+		case TSERVER_DIALUP:
+			return STRING_TERM_SERVER_DIALUP;
+		case DIALOUT_POOL:
+			return STRING_DIALOUT_POOL;
+
+
+	  //devices
 	  case CCU710A:
 		  return STRING_CCU_710[0];
 	  case CCU711:
@@ -459,6 +505,7 @@ public final static int getPAOType( String category, String paoType )
 	else
 		return PAOGroups.INVALID;
 }
+
 /**
  * This method was created in VisualAge.
  * @return int
@@ -538,36 +585,7 @@ public final static int getRouteType(String typeString)
 	else
 		return INVALID;
 }
-/**
- * This method was created in VisualAge.
- * @return int
- * @param typeString java.lang.String
- */
-public final static String getRouteTypeString(int type)
-{
-	switch( type )
-	{
-		case ROUTE_CCU:
-			return STRING_CCU;
-		case ROUTE_LCU:
-			return STRING_LCU;
-		case ROUTE_MACRO:
-			return STRING_MACRO;
-		case ROUTE_TAP_PAGING:
-			return STRING_TAP_PAGING;
-		case ROUTE_WCTP_TERMINAL:
-			return STRING_WCTP_TERMINAL_ROUTE;
-		case ROUTE_TCU:
-			return STRING_TCU;
-		case ROUTE_VERSACOM:
-			return STRING_VERSACOM;
-
-		default:
-			return STRING_INVALID;
-	}
-
-}
-/**
+/****
  * This method was created in VisualAge.
  * @return int
  * @param typeString java.lang.String
