@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     9/19/2002 3:18:03 PM                         */
+/* Created on:     10/22/2002 3:20:02 PM                        */
 /*==============================================================*/
 
 
@@ -10,6 +10,22 @@ if exists (select 1
            where  id = object_id('DISPLAY2WAYDATA_VIEW')
             and   type = 'V')
    drop view DISPLAY2WAYDATA_VIEW
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ExpressComAddress_View')
+            and   type = 'V')
+   drop view ExpressComAddress_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('FeederAddress_View')
+            and   type = 'V')
+   drop view FeederAddress_View
 go
 
 
@@ -26,6 +42,14 @@ if exists (select 1
            where  id = object_id('FullPointHistory_View')
             and   type = 'V')
    drop view FullPointHistory_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('GeoAddress_View')
+            and   type = 'V')
+   drop view GeoAddress_View
 go
 
 
@@ -58,6 +82,30 @@ if exists (select 1
            where  id = object_id('PointHistory_View')
             and   type = 'V')
    drop view PointHistory_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ProgramAddress_View')
+            and   type = 'V')
+   drop view ProgramAddress_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ServiceAddress_View')
+            and   type = 'V')
+   drop view ServiceAddress_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('SubstationAddress_View')
+            and   type = 'V')
+   drop view SubstationAddress_View
 go
 
 
@@ -895,17 +943,17 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('LMGroupExpressComm')
+           where  id = object_id('LMGroupExpressCom')
             and   type = 'U')
-   drop table LMGroupExpressComm
+   drop table LMGroupExpressCom
 go
 
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('LMGroupExpressCommAddress')
+           where  id = object_id('LMGroupExpressComAddress')
             and   type = 'U')
-   drop table LMGroupExpressCommAddress
+   drop table LMGroupExpressComAddress
 go
 
 
@@ -2403,6 +2451,7 @@ CTITimeStamp         datetime             not null,
 PowerFactorValue     float                not null,
 KvarSolution         float                not null,
 EstimatedPFValue     float                not null,
+CurrentVarPointQuality numeric              not null,
 constraint PK_DYNAMICCCFEEDER primary key  (FeederID)
 )
 go
@@ -2431,6 +2480,7 @@ CTITimeStamp         datetime             not null,
 PowerFactorValue     float                not null,
 KvarSolution         float                not null,
 EstimatedPFValue     float                not null,
+CurrentVarPointQuality numeric              not null,
 constraint PK_DYNAMICCCSUBSTATIONBUS primary key  (SubstationBusID)
 )
 go
@@ -3073,9 +3123,9 @@ go
 
 
 /*==============================================================*/
-/* Table : LMGroupExpressComm                                   */
+/* Table : LMGroupExpressCom                                    */
 /*==============================================================*/
-create table LMGroupExpressComm (
+create table LMGroupExpressCom (
 LMGroupID            numeric              not null,
 RouteID              numeric              not null,
 SerialNumber         varchar(10)          not null,
@@ -3089,20 +3139,20 @@ ProgramID            numeric              not null,
 SplinterAddress      numeric              not null,
 AddressUsage         varchar(10)          not null,
 RelayUsage           char(15)             not null,
-constraint PK_LMGROUPEXPRESSCOMM primary key  (LMGroupID)
+constraint PK_LMGROUPEXPRESSCOM primary key  (LMGroupID)
 )
 go
 
 
 /*==============================================================*/
-/* Table : LMGroupExpressCommAddress                            */
+/* Table : LMGroupExpressComAddress                             */
 /*==============================================================*/
-create table LMGroupExpressCommAddress (
+create table LMGroupExpressComAddress (
 AddressID            numeric              not null,
 AddressType          varchar(20)          not null,
 Address              numeric              not null,
 AddressName          varchar(30)          not null,
-constraint PK_LMGROUPEXPRESSCOMMADDRESS primary key  (AddressID)
+constraint PK_LMGROUPEXPRESSCOMADDRESS primary key  (AddressID)
 )
 go
 
@@ -4055,7 +4105,12 @@ INSERT INTO UnitMeasure VALUES ( 41,'Volts', 1,'Volts from V2H','(none)' );
 INSERT INTO UnitMeasure VALUES ( 42,'Amps', 1,'Amps from A2H','(none)' );
 INSERT INTO UnitMeasure VALUES ( 43,'Tap', 0,'LTC Tap Position','(none)' );
 INSERT INTO UnitMeasure VALUES ( 44,'Miles', 0,'Miles','(none)' );
-INSERT INTO UnitMeasure VALUES ( 45,'ms', 0,'Milliseconds','(none)' );
+INSERT INTO UnitMeasure VALUES ( 45,'Ms', 0,'Milliseconds','(none)' );
+INSERT INTO UnitMeasure VALUES( 46,'PPM',0,'Parts Per Million','(none)');
+INSERT INTO UnitMeasure VALUES( 47,'MPH',0,'Miles Per Hour','(none)');
+INSERT INTO UnitMeasure VALUES( 48,'Inches',0,'Inches','(none)');
+INSERT INTO UnitMeasure VALUES( 49,'KPH',0,'Kilometers Per Hour','(none)');
+INSERT INTO UnitMeasure VALUES( 50,'Milibars',0,'Milibars','(none)');
 
 /*==============================================================*/
 /* Table : VersacomRoute                                        */
@@ -4129,6 +4184,26 @@ go
 
 
 /*==============================================================*/
+/* View: ExpressComAddress_View                                 */
+/*==============================================================*/
+create view ExpressComAddress_View  as
+select x.LMGroupID, x.RouteID, x.SerialNumber, s.serviceaddress, g.geoaddress, b.substationaddress, f.feederaddress, x.ZipCodeAddress, x.UDAddress, p.programaddress, x.SplinterAddress, x.AddressUsage, x.RelayUsage
+from LMGroupExpressCom x, ServiceAddress_View s, GeoAddress_View g, SubstationAddress_View b, FeederAddress_View f, ProgramAddress_View p
+where x.LMGroupID = s.lmgroupid and x.LMGroupID = g.lmgroupid and x.LMGroupID = b.lmgroupid and x.LMGroupID = f.lmgroupid and x.LMGroupID = p.lmgroupid
+go
+
+
+/*==============================================================*/
+/* View: FeederAddress_View                                     */
+/*==============================================================*/
+create view FeederAddress_View  as
+select x.LMGroupID, a.Address as FeederAddress
+from LMGroupExpressCom x, LMGroupExpressComAddress a
+where ( x.FeederID = a.AddressID and ( a.AddressType = 'FEEDER' or a.AddressID = 0 ) )
+go
+
+
+/*==============================================================*/
 /* View: FullEventLog_View                                      */
 /*==============================================================*/
 create view FullEventLog_View (EventID, PointID, EventTimeStamp, EventSequence, EventType, EventAlarmID, DeviceName, PointName, EventDescription, AdditionalInfo, EventUserName) as
@@ -4145,6 +4220,16 @@ create view FullPointHistory_View (PointID, DeviceName, PointName, DataValue, Da
 select r.POINTID, y.PAOName, p.POINTNAME, r.VALUE, r.TIMESTAMP, r.QUALITY
 from YukonPAObject y, POINT p, RAWPOINTHISTORY r
 where r.POINTID = p.POINTID and p.PAObjectID = y.PAObjectID
+go
+
+
+/*==============================================================*/
+/* View: GeoAddress_View                                        */
+/*==============================================================*/
+create view GeoAddress_View  as
+select x.LMGroupID, a.Address as GeoAddress
+from LMGroupExpressCom x, LMGroupExpressComAddress a
+where ( x.GeoID = a.AddressID and ( a.AddressType = 'GEO' or a.AddressID = 0 ) )
 go
 
 
@@ -4190,6 +4275,36 @@ create view PointHistory_View (PointID, PointName, DataValue, DataTimeStamp, Dat
 select r.POINTID, p.POINTNAME, r.VALUE, r.TIMESTAMP, r.QUALITY
 from POINT p, RAWPOINTHISTORY r
 where r.POINTID = p.POINTID
+go
+
+
+/*==============================================================*/
+/* View: ProgramAddress_View                                    */
+/*==============================================================*/
+create view ProgramAddress_View  as
+select x.LMGroupID, a.Address as ProgramAddress
+from LMGroupExpressCom x, LMGroupExpressComAddress a
+where ( x.ProgramID = a.AddressID and ( a.AddressType = 'PROGRAM' or a.AddressID = 0 ) )
+go
+
+
+/*==============================================================*/
+/* View: ServiceAddress_View                                    */
+/*==============================================================*/
+create view ServiceAddress_View  as
+select x.LMGroupID, a.Address as ServiceAddress
+from LMGroupExpressCom x, LMGroupExpressComAddress a
+where ( x.ServiceProviderID = a.AddressID and ( a.AddressType = 'SERVICE' or a.AddressID = 0 ) )
+go
+
+
+/*==============================================================*/
+/* View: SubstationAddress_View                                 */
+/*==============================================================*/
+create view SubstationAddress_View  as
+select x.LMGroupID, a.Address as SubstationAddress
+from LMGroupExpressCom x, LMGroupExpressComAddress a
+where ( x.SubstationID = a.AddressID and ( a.AddressType = 'SUBSTATION' or a.AddressID = 0 ) )
 go
 
 
@@ -4661,33 +4776,33 @@ alter table EnergyCompany
 go
 
 
-alter table LMGroupExpressComm
+alter table LMGroupExpressCom
    add constraint FK_ExCG_LMExCm foreign key (GeoID)
-      references LMGroupExpressCommAddress (AddressID)
+      references LMGroupExpressComAddress (AddressID)
 go
 
 
-alter table LMGroupExpressComm
+alter table LMGroupExpressCom
    add constraint FK_ExCP_LMExCm foreign key (ProgramID)
-      references LMGroupExpressCommAddress (AddressID)
+      references LMGroupExpressComAddress (AddressID)
 go
 
 
-alter table LMGroupExpressComm
+alter table LMGroupExpressCom
    add constraint FK_ExCSb_LMExCm foreign key (SubstationID)
-      references LMGroupExpressCommAddress (AddressID)
+      references LMGroupExpressComAddress (AddressID)
 go
 
 
-alter table LMGroupExpressComm
+alter table LMGroupExpressCom
    add constraint FK_ExCSp_LMExCm foreign key (ServiceProviderID)
-      references LMGroupExpressCommAddress (AddressID)
+      references LMGroupExpressComAddress (AddressID)
 go
 
 
-alter table LMGroupExpressComm
+alter table LMGroupExpressCom
    add constraint FK_ExCad_LMExCm foreign key (FeederID)
-      references LMGroupExpressCommAddress (AddressID)
+      references LMGroupExpressComAddress (AddressID)
 go
 
 
@@ -4703,13 +4818,13 @@ alter table DateOfHoliday
 go
 
 
-alter table LMGroupExpressComm
+alter table LMGroupExpressCom
    add constraint FK_LGrEx_LMG foreign key (LMGroupID)
       references LMGroup (DeviceID)
 go
 
 
-alter table LMGroupExpressComm
+alter table LMGroupExpressCom
    add constraint FK_LGrEx_Rt foreign key (RouteID)
       references Route (RouteID)
 go

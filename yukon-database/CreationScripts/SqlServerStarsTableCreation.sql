@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     8/12/2002 9:06:58 AM                         */
+/* Created on:     10/9/2002 10:23:44 AM                        */
 /*==============================================================*/
 
 
@@ -659,14 +659,6 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('ECToCustomerBaseMapping')
-            and   type = 'U')
-   drop table ECToCustomerBaseMapping
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('ECToGenericMapping')
             and   type = 'U')
    drop table ECToGenericMapping
@@ -1050,14 +1042,6 @@ if exists (select 1
            where  id = object_id('LMGroupRipple')
             and   type = 'U')
    drop table LMGroupRipple
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('LMHardwareActivity')
-            and   type = 'U')
-   drop table LMHardwareActivity
 go
 
 
@@ -1715,6 +1699,7 @@ create table ApplianceCategory (
 ApplianceCategoryID  numeric              not null,
 CategoryID           numeric              null,
 WebConfigurationID   numeric              null,
+Description          varchar(40)          null,
 constraint PK_APPLIANCECATEGORY primary key  (ApplianceCategoryID)
 )
 go
@@ -1989,6 +1974,7 @@ DateTaken            datetime             null,
 Description          varchar(300)         null,
 AccountID            numeric              null,
 CustomerID           numeric              null,
+TakenBy              varchar(30)          null,
 constraint PK_CALLREPORTBASE primary key  (CallID)
 )
 go
@@ -2826,17 +2812,6 @@ go
 
 
 /*==============================================================*/
-/* Table : ECToCustomerBaseMapping                              */
-/*==============================================================*/
-create table ECToCustomerBaseMapping (
-EnergyCompanyID      numeric              not null,
-CustomerID           numeric              not null,
-constraint PK_ECTOCUSTOMERBASEMAPPING primary key  (EnergyCompanyID, CustomerID)
-)
-go
-
-
-/*==============================================================*/
 /* Table : ECToGenericMapping                                   */
 /*==============================================================*/
 create table ECToGenericMapping (
@@ -3464,20 +3439,6 @@ ShedTime             numeric              not null,
 ControlValue         char(50)             not null,
 RestoreValue         char(50)             not null,
 constraint PK_LMGROUPRIPPLE primary key  (DeviceID)
-)
-go
-
-
-/*==============================================================*/
-/* Table : LMHardwareActivity                                   */
-/*==============================================================*/
-create table LMHardwareActivity (
-EventID              numeric              not null,
-InventoryID          numeric              null,
-EventDateTime        datetime             null,
-Notes                varchar(100)         null,
-ActionID             numeric              null,
-constraint PK_LMHARDWAREACTIVITY primary key  (EventID)
 )
 go
 
@@ -4463,6 +4424,7 @@ Description          varchar(200)         null,
 DateScheduled        datetime             null,
 DateCompleted        datetime             null,
 ActionTaken          varchar(200)         null,
+OrderedBy            varchar(30)          null,
 constraint PK_WORKORDERBASE primary key  (OrderID)
 )
 go
@@ -5131,12 +5093,6 @@ alter table CstBaseCstContactMap
 go
 
 
-alter table ECToCustomerBaseMapping
-   add constraint FK_CstBs_ECstM foreign key (CustomerID)
-      references CustomerBase (CustomerID)
-go
-
-
 alter table CustomerBaseLinePoint
    add constraint FK_CstBseLn_CICust foreign key (CustomerID)
       references CICustomerBase (DeviceID)
@@ -5228,14 +5184,14 @@ go
 
 
 alter table ECToInventoryMapping
-   add constraint FK_ECTInv_Enc2 foreign key (InventoryID)
-      references InventoryBase (InventoryID)
+   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
 alter table ECToInventoryMapping
-   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+   add constraint FK_ECTInv_Enc2 foreign key (InventoryID)
+      references InventoryBase (InventoryID)
 go
 
 
@@ -5260,12 +5216,6 @@ go
 alter table ECToWorkOrderMapping
    add constraint FK_ECTWrk_Enc foreign key (WorkOrderID)
       references WorkOrderBase (OrderID)
-go
-
-
-alter table ECToCustomerBaseMapping
-   add constraint FK_ECmp_ECstM foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
 go
 
 
@@ -5302,12 +5252,6 @@ go
 alter table DateOfHoliday
    add constraint FK_HolSchID foreign key (HolidayScheduleID)
       references HolidaySchedule (HolidayScheduleID)
-go
-
-
-alter table LMHardwareActivity
-   add constraint FK_Inv_LMHrdAc foreign key (InventoryID)
-      references InventoryBase (InventoryID)
 go
 
 
