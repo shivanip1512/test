@@ -28,7 +28,7 @@
                     for (int j = 0; j < notifications.size(); j++){
                       com.cannontech.database.data.lite.LiteContactNotification liteNot = (com.cannontech.database.data.lite.LiteContactNotification)notifications.get(j);
                   %>
-                  <%=com.cannontech.common.constants.YukonListFuncs.getYukonListEntry(liteNot.getNotificationCategoryID()) + ": " + liteNot.getNotification() %><br>
+                  <%=com.cannontech.database.cache.functions.YukonListFuncs.getYukonListEntry(liteNot.getNotificationCategoryID()) + ": " + liteNot.getNotification() %><br>
                   <%}%>
                   </div>
                   </p>
@@ -53,7 +53,7 @@
                         for (int j = 0; j < notifications.size(); j++){
                           com.cannontech.database.data.lite.LiteContactNotification liteNot = (com.cannontech.database.data.lite.LiteContactNotification)notifications.get(j);
                           %>
-                          <%= com.cannontech.common.constants.YukonListFuncs.getYukonListEntry(liteNot.getNotificationCategoryID()) + ": " + liteNot.getNotification() %><br>
+                          <%= com.cannontech.database.cache.functions.YukonListFuncs.getYukonListEntry(liteNot.getNotificationCategoryID()) + ": " + liteNot.getNotification() %><br>
 		    	      <%}%>
 		    	  <br>
 		            <%}
