@@ -37,6 +37,7 @@ public class LMCommand extends LMMessage
 	public static final int DISABLE_GROUP								= 15;
 	public static final int CONFIRM_GROUP								= 16;
 	public static final int RESET_PEAK_POINT_VALUE                      = 17;
+	public static final int EMERGENCY_DISABLE_PROGRAM					= 18;
           
 	public static final String[] CMD_STRS =
 	{
