@@ -175,7 +175,7 @@ function changeProgram(radioBtn, index) {
 			  <input type="hidden" name="action" value="ProgramSignUp">
 			  <input type="hidden" name="REDIRECT" value="/operator/Consumer/Programs.jsp">
 			  <input type="hidden" name="REFERRER" value="/operator/Consumer/Programs.jsp">
-              <table border="1" cellspacing="0" cellpadding="3" width="366" height="321">
+              <table border="1" cellspacing="0" cellpadding="3" width="366">
                 <tr>
                   <td width="83" class="HeaderCell" align = "center">Description</td>
                   <td width="132" class="HeaderCell"> 
@@ -201,9 +201,8 @@ function changeProgram(radioBtn, index) {
 		}
 %>
                 <tr>
-                    <td width="83" align = "center"><img id="<%= i %>" src="<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59" onClick = "toolTipAppear(event, 'tool', <%= i %>, 350, text)"><br>
-                    <span class = "TableCell">Click 
-                    Above</span></td>
+                    <td width="83" align = "center"><img id="<%= i %>" src="<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" onClick = "toolTipAppear(event, 'tool', <%= i %>, 350, text)"><br>
+                      <span class = "TableCell">Click for description</span></td>
                   <td width="132" align = "center"> 
                     <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
                       <tr> 
