@@ -2016,7 +2016,8 @@ public void setValue(Object val)
 	else if( sched.getStartPolicy().equalsIgnoreCase( Schedule.DAYOFMONTH_START ) )
 	{		
 		//cal.setTime( sched.getNextRunTime() );		
-		getJTextFieldDayOfMonth().setText( new Integer(sched.getStartMonth()).toString() );
+		getJTextFieldDayOfMonth().setText( 
+				new Integer(sched.getStartDay()).toString() );
 	}
 	else if( sched.getStartPolicy().equalsIgnoreCase( Schedule.WEEKDAY_START ) )
 	{
