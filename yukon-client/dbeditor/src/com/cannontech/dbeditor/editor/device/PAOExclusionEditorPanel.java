@@ -11,6 +11,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.pao.PAODefines;
 import com.cannontech.database.db.pao.PAOExclusion;
+import com.cannontech.database.data.pao.DeviceClasses;
 
 /**
  * This type was created in VisualAge.
@@ -601,7 +602,8 @@ public void setValue(Object val)
          //be sure we have a pao that is similar to ourself by category 
          //  AND that it is not our self!
          if( litePAO.getCategory() == PAOGroups.getCategory(pao.getPAOCategory())
-         	 && litePAO.getYukonID() != pao.getPAObjectID().intValue() )
+         	 && litePAO.getYukonID() != pao.getPAObjectID().intValue()
+         	 && litePAO.getPaoClass() != PAOGroups.getPAOClass(PAOGroups.STRING_CAT_DEVICE, DeviceClasses.STRING_CLASS_GROUP))
          {
             if( !assignedPAOs.contains(litePAO) )
                availablePAOs.addElement( litePAO );
