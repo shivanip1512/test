@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/06/03 21:46:17 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/06/23 18:38:05 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.11  2004/06/23 18:38:05  cplender
+* Memory leak removal and slog addition.
+*
 * Revision 1.10  2004/06/03 21:46:17  cplender
 * Simulator mods.
 *
@@ -332,6 +335,7 @@ INT CtiDeviceRTC::queueRepeatToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
     INT status = NORMAL;
 
+    if(OutMessage->Buffer.SASt._groupType == SA205 || OutMessage->Buffer.SASt._groupType == SA105)
     {
         _millis += messageDuration(OutMessage->Buffer.SASt._groupType);
 
@@ -339,8 +343,8 @@ INT CtiDeviceRTC::queueRepeatToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
         _repeatList.push_back( make_pair(_repeatTime, OutMessage) );
 
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << getName() << " code has been requeued for transmission at " << _repeatTime << endl;
+            CtiLockGuard<CtiLogger> slog_guard(slog);
+            slog << RWTime() << " "  << getName() << ": Requeued for repeat transmit: " << CtiProtocolSA3rdParty(OutMessage->Buffer.SASt).asString() << " for transmission at " << _repeatTime << endl;
         }
 
         OutMessage= 0;
@@ -518,6 +522,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
             {
                 // This OM needs to be plopped on the retry queue!
                 queueRepeatToDevice(rtcOutMessage, NULL);
+                if(rtcOutMessage) delete rtcOutMessage;
             }
             else
             {
