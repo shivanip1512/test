@@ -56,12 +56,11 @@ void CtiIONApplicationLayer::initReserved( void )
 }
 
 
-void CtiIONApplicationLayer::init( CtiIONDataStream &dataStream )
+void CtiIONApplicationLayer::init( CtiIONDataStream dataStream )
 {
     int            itemNum,
                    dataOffset,
                    dataLength;
-    unsigned char *tmpData;
 
 
     freeMemory( );
@@ -74,9 +73,9 @@ void CtiIONApplicationLayer::init( CtiIONDataStream &dataStream )
     //  fill up the header
     _alData.header.service = 0x0F;  //  start, execute, and end the program in a single request
     //  _applicationMessage.status = -1;      //  no status byte in requests (which are all we, the master, send via the application layer)
-    _alData.header.pid = 1;            //  can be set to anything - only one program/PID per request
-    _alData.header.freq = 1;           //  programs can currently only be executed once
-    _alData.header.priority = 0;       //  only support default priority
+    _alData.header.pid  = 1;        //  can be set to anything - only one program/PID per request
+    _alData.header.freq = 1;        //  programs can currently only be executed once
+    _alData.header.priority = 0;    //  only support default priority
     _alData.header.length.byte1 = (dataLength & 0xFF00) >> 8;
     _alData.header.length.byte0 =  dataLength & 0x00FF;
 
@@ -99,7 +98,7 @@ void CtiIONApplicationLayer::init( CtiIONDataStream &dataStream )
 }
 
 
-void CtiIONApplicationLayer::init( CtiIONNetworkLayer &netLayer )
+void CtiIONApplicationLayer::init( CtiIONNetworkLayer netLayer )
 {
     int            alHeaderSize,
                    tmpSize,
@@ -179,6 +178,35 @@ void CtiIONApplicationLayer::init( CtiIONNetworkLayer &netLayer )
         _valid = FALSE;
     }
 */
+}
+
+
+int CtiIONApplicationLayer::generate( CtiXfer &xfer )
+{
+/*    if( _netLayer.isTransactionComplete() )
+    {
+
+    }
+*/
+    return _networkLayer.generate( xfer );
+}
+
+
+int CtiIONApplicationLayer::decode( CtiXfer &xfer, int status )
+{
+    return _networkLayer.decode( xfer, status );
+}
+
+
+bool CtiIONApplicationLayer::isTransactionComplete( void )
+{
+    return _ioState == Complete;
+}
+
+
+bool CtiIONApplicationLayer::errorCondition( void )
+{
+    return _ioState == Failed;
 }
 
 

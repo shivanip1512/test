@@ -27,7 +27,7 @@ unsigned char *CtiIONSerializable::getSerialized( void )
     retDataLength = getSerializedLength( );
 
     retData = new unsigned char[retDataLength];
-    
+
     if( retData != NULL )
     {
         putSerialized( retData );
@@ -54,7 +54,7 @@ int CtiIONValue::isNumeric( void )
         case IONUnsignedInt:
         case IONSignedInt:
             retVal = TRUE;
-         
+
         default:
             retVal = FALSE;
     }
@@ -67,14 +67,14 @@ void CtiIONValue::putSerialized( unsigned char *buf )
     putSerializedHeader( buf );
     putSerializedValue( buf + getSerializedHeaderLength( ) );
 }
-    
+
 
 unsigned int CtiIONValue::getSerializedLength( void )
 {
     return getSerializedHeaderLength( ) + getSerializedValueLength( );
 }
-    
-                                                                      
+
+
 void CtiIONValue::putSerializedHeader( unsigned char *buf )
 {
     unsigned char key = 0, extendedValue;
@@ -96,24 +96,24 @@ void CtiIONValue::putSerializedHeader( unsigned char *buf )
         case IONUnsignedInt:
             key = 0x6;
             break;
-        
+
         case IONBoolean:
             if( ((CtiIONBoolean *)this)->getValue( ) )
                 key = 0xF2;  //  boolean true
             else
                 key = 0xF1;  //  boolean false
             break;
-        
+
         case IONProgram:
             key = 0xF6;
             break;
-        
+
         case IONArray:
             key = ((CtiIONArray *)this)->getArrayKey( );
 
 //        default:
     }
-    
+
     buf = putClassSize( key, buf );
 }
 
@@ -129,7 +129,7 @@ unsigned int CtiIONValue::getSerializedHeaderLength( void )
         tmpHeaderLength = 2;
     else
         tmpHeaderLength = 5;
-    
+
     return tmpHeaderLength;
 }
 
@@ -171,7 +171,7 @@ CtiIONValue *CtiIONValue::restoreObject( unsigned char *&byteStream, unsigned lo
     unsigned char ionClass, classDescriptor;
     unsigned long itemLength, streamPos;
     CtiIONValue *newVal = NULL;
-    
+
     ionClass = (byteStream[0] & 0xF0) >> 4;
     classDescriptor = (byteStream[0] & 0x0F);
 
@@ -221,13 +221,13 @@ CtiIONValue *CtiIONValue::restoreObject( unsigned char *&byteStream, unsigned lo
     {
         switch( classDescriptor )
         {
-            case 0x1:  
+            case 0x1:
                 newVal = new CtiIONBoolean( FALSE );
                 break;
-            case 0x2:  
+            case 0x2:
                 newVal = new CtiIONBoolean( TRUE );
                 break;
-            case 0x6:  
+            case 0x6:
                 newVal = new CtiIONProgram( byteStream + streamPos, streamLength - streamPos );
                 break;
             case 0xA:
@@ -281,6 +281,24 @@ void CtiIONDataStream::parseByteStream( unsigned char *byteStream, unsigned long
 }
 
 
+void CtiIONDataStream::clear( void )
+{
+    CtiIONValue *tmp;
+
+    while( !_streamValues.empty() )
+    {
+        tmp = _streamValues.back();
+
+        if( tmp != NULL )
+        {
+            delete tmp;
+        }
+
+        _streamValues.pop_back();
+    }
+}
+
+
 CtiIONValue *CtiIONDataStream::getItem( int index )
 {
     return _streamValues[index];
@@ -306,13 +324,13 @@ void CtiIONDataStream::putSerialized( unsigned char *buf )
                    dataOffset;
     unsigned char *retData;
     CtiIONValue   *tmpItem;
-    
+
     //  concatenate all items into the buffer
     for( itemNum = 0; itemNum < getItemCount( ); itemNum++ )
     {
         tmpItem = getItem( itemNum );
         tmpItem->putSerialized( buf + dataOffset );
-    
+
         dataOffset += tmpItem->getSerializedLength( );
     }
 }
@@ -367,7 +385,7 @@ CtiIONMethod::CtiIONMethod( IONSimpleMethods method, CtiIONValue *parameter )
 
     _valid = TRUE;
 }
-    
+
 
 CtiIONMethod::CtiIONMethod( IONExtendedMethods method, CtiIONValue *parameter )
 {
@@ -392,13 +410,13 @@ CtiIONMethod::CtiIONMethod( unsigned char *byteStream, unsigned long streamLengt
     streamPos = 0;
 
     _valid = FALSE;
-    
+
     //  make sure there's data to read
     if( streamLength > 0 )
     {
         _methodNum = byteStream[streamPos++];
         _valid = TRUE;
-        
+
         //  if it's an extended method and there's enough data to read
         if( _methodNum == ExtendedMethod )
         {
@@ -416,17 +434,17 @@ CtiIONMethod::CtiIONMethod( unsigned char *byteStream, unsigned long streamLengt
         {
             _extendedMethod = 0;
         }
-            
+
         //  if there's a value included (highest bit set to 1)
         if( _extendedMethod & 0x8000 || _methodNum == ReadValue || _methodNum == WriteValue )
         {
             _valueIncluded = TRUE;
-            
+
             //  just making sure data's available to read...
             if( streamPos < streamLength )
             {
                 _parameter = CtiIONValue::restoreObject( byteStream, streamLength );
-                
+
                 //  make sure we read the parameter value correctly
                 if( _parameter != NULL && _parameter->isValid( ) )
                 {
@@ -448,7 +466,7 @@ CtiIONMethod::CtiIONMethod( unsigned char *byteStream, unsigned long streamLengt
         _valid = FALSE;
     }
 }
-    
+
 
 unsigned int CtiIONMethod::getSerializedValueLength( void )
 {
@@ -459,7 +477,7 @@ unsigned int CtiIONMethod::getSerializedValueLength( void )
 
     if( _valueIncluded )
         size += _parameter->getSerializedValueLength( );
-        
+
     return size;
 }
 
@@ -470,7 +488,7 @@ void CtiIONMethod::putSerializedValue( unsigned char *buf )
 
     memcpy( buf + offset, &_methodNum, 1 );
     offset += 1;
-    
+
     if( _extendedMethod )
     {
         if( _valueIncluded )

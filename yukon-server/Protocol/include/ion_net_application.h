@@ -20,14 +20,15 @@
 #include <vector>
 #include "ctitypes.h"
 #include "dlldefs.h"
+#include "xfer.h"
 
 #include "ion_rootclasses.h"
 #include "ion_valuebasictypes.h"
+#include "ion_net_network.h"
 
 //  predefining for all following classes
 class CtiIONNetworkLayer;
 class CtiIONDataLinkLayer;
-class CtiIONFrame;
 
 
 //  necessary to preserve byte alignment;  makes for easy memcpy initialization and serialization
@@ -37,24 +38,6 @@ class CtiIONFrame;
 class IM_EX_PROT CtiIONApplicationLayer : public CtiIONSerializable
 {
 private:
-
-    enum IONStates
-    {
-        IONStateUninitialized,
-        IONStateInit,
-        IONStateRequestFeatureManagerInfo,
-        IONStateReceiveFeatureManagerInfo,
-        IONStateRequestManagerInfo,
-        IONStateReceiveManagerInfo,
-        IONStateRequestModuleInfo,
-        IONStateReceiveModuleInfo,
-        IONStateRequestRegisterInfo,
-        IONStateReceiveRegisterInfo,
-        IONStateRequestData,
-        IONStateReceiveData,
-        IONStateComplete,
-        IONStateAbort
-    } _IONState;
 
     void freeMemory( void );
 
@@ -91,14 +74,32 @@ private:
 
     bool _valid;
 
+    enum ApplicationIOState
+    {
+        Uninitialized = 0,
+        Output,
+        Input,
+        Complete,
+        Failed
+    } _ioState;
+
+    CtiIONNetworkLayer _networkLayer;
+
+protected:
 
 public:
 
     CtiIONApplicationLayer( );
     ~CtiIONApplicationLayer( );
 
-    void init( CtiIONDataStream &dataStream );
-    void init( CtiIONNetworkLayer &netLayer );
+    void init( CtiIONDataStream dataStream );
+    void init( CtiIONNetworkLayer netLayer );
+
+    int generate( CtiXfer &xfer );
+    int decode  ( CtiXfer &xfer, int status );
+
+    bool isTransactionComplete( void );
+    bool errorCondition( void );
 
     void putPayload( unsigned char *buf );
     int  getPayloadLength( void );

@@ -273,15 +273,15 @@ int CtiIONDataLinkLayer::outFrame( unsigned char *data, unsigned long *len )
                 cout << "in output" << endl;
 
                 bytesInNewFrame = _dataLength - _dataSent;
-                if( bytesInNewFrame > 238 )
-                    bytesInNewFrame = 238;
+                if( bytesInNewFrame > CtiIONFrame::MaxPayloadLength )
+                    bytesInNewFrame = CtiIONFrame::MaxPayloadLength;
 
                 if( _dataSent == 0 )
                 {
                     //  number of full frames
-                    _currentFrame = _dataLength / 238;
+                    _currentFrame = _dataLength / CtiIONFrame::MaxPayloadLength;
                     //  plus a partial frame, if need be
-                    if( _dataLength % 238 )
+                    if( _dataLength % CtiIONFrame::MaxPayloadLength )
                         _currentFrame++;
                     //  then subtract 1 to make it zero-based
                     _currentFrame--;
@@ -353,21 +353,43 @@ int CtiIONDataLinkLayer::outFrame( unsigned char *data, unsigned long *len )
 }
 
 
+int CtiIONDataLinkLayer::generate( CtiXfer &xfer )
+{
+/*    if( _netLayer.isTransactionComplete() )
+    {
+
+    }
+*/
+    return 0; //_datalinkLayer.generate( xfer );
+}
+
+
+int CtiIONDataLinkLayer::decode( CtiXfer &xfer, int status )
+{
+    return 0; //_datalinkLayer.decode( xfer, status );
+}
+
+
+
+
+
+
+
 
 CtiIONFrame::CtiIONFrame( )
 {
     initReserved( );
     _frame.header.sync = 0x14;  //  start of data
     _frame.header.fmt  = 0xAC;  //  format = ION frame
-    _frame.header.len  = 7;
+    _frame.header.len  = EmptyPacketLength;
 }
 
 
 CtiIONFrame::CtiIONFrame( unsigned char *rawFrame, int rawFrameLength )
 {
     //  only copy what we have room for...
-    if( rawFrameLength > 252 )
-        rawFrameLength = 252;
+    if( rawFrameLength > MaxFrameLength )
+        rawFrameLength = MaxFrameLength;
 
     memcpy( &_frame, rawFrame, rawFrameLength );
 }
@@ -381,7 +403,7 @@ void CtiIONFrame::putSerialized( unsigned char *buf )
 
 unsigned int CtiIONFrame::getSerializedLength( void )
 {
-    return _frame.header.len + 5;
+    return _frame.header.len + UncountedHeaderBytes;
 }
 
 
@@ -389,13 +411,13 @@ void CtiIONFrame::setPayload( unsigned char *buf, int len )
 {
     if( len )
     {
-        if( len > 238 )
-            len = 238;
+        if( len > MaxPayloadLength )
+            len = MaxPayloadLength;
 
         memcpy( _frame.data, buf, len );
     }
 
-    _frame.header.len = len + 7;
+    _frame.header.len = len + EmptyPacketLength;
 }
 
 
@@ -416,9 +438,9 @@ void CtiIONFrame::setCRC( void )
     unsigned int frameCRC;
     int dataLen;
 
-    dataLen = _frame.header.len - 7;
+    dataLen = _frame.header.len - EmptyPacketLength;
 
-    frameCRC = crc16( _frame.data - 8, dataLen + 8 );  //  CRC is computed on the data plus the 8 bytes preceding
+    frameCRC = crc16( _frame.data - PrePayloadCRCOffset, dataLen + PrePayloadCRCOffset );  //  CRC is computed on the data plus the 8 bytes preceding
 
     _frame.data[dataLen]   =  frameCRC & 0x00FF;        //  the bytes right after the data ends
     _frame.data[dataLen+1] = (frameCRC & 0xFF00) << 8;  //
@@ -430,13 +452,13 @@ int CtiIONFrame::crcIsValid( void )
     unsigned int frameCRC, computedCRC;
     int dataLen;
 
-    dataLen = _frame.header.len - 7;  //  len = data length + 7
+    dataLen = _frame.header.len - EmptyPacketLength;  //  len = data length + 7
 
 
     frameCRC  = _frame.data[dataLen];         //  the bytes right after the data ends
     frameCRC += _frame.data[dataLen+1] << 8;  //
 
-    computedCRC = crc16( _frame.data - 8, dataLen + 8 );  //  CRC is computed on the data plus the 8 bytes preceding
+    computedCRC = crc16( _frame.data - PrePayloadCRCOffset, dataLen + PrePayloadCRCOffset );  //  CRC is computed on the data plus the 8 bytes preceding
 
     return frameCRC == computedCRC;
 }

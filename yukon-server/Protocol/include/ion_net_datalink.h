@@ -20,6 +20,7 @@
 #include <vector>
 #include "ctitypes.h"
 #include "dlldefs.h"
+#include "xfer.h"
 
 #include "ion_rootclasses.h"
 #include "ion_valuebasictypes.h"
@@ -40,6 +41,9 @@ public:
 
     void setToOutput( CtiIONNetworkLayer &netLayer, int srcID, int dstID );
     void setToInput( void );
+
+    int generate( CtiXfer &xfer );
+    int decode  ( CtiXfer &xfer, int status );
 
     int outFrame( unsigned char *data, unsigned long *len );
     int inFrame( unsigned char *data, unsigned long len );
@@ -135,7 +139,7 @@ public:
 
     void setPayload( unsigned char *buf, int count );
     void putPayload( unsigned char *buf );
-    int getPayloadLength( void ) { return _frame.header.len - 7; };  //  len = data length + 7
+    int getPayloadLength( void ) { return _frame.header.len - EmptyPacketLength; };  //  len = data length + 7
 
     void setDstID( unsigned short dstID ) { _frame.header.dstid = dstID; };
     unsigned short getDstID( void ) { return _frame.header.dstid; };
@@ -152,6 +156,15 @@ public:
         DataAcknakDsbl = 1,  //  01b
         AcknakNAK = 2,       //  10b
         AcknakACK = 3        //  11b
+    };
+
+    enum
+    {
+        MaxFrameLength       = 252,
+        MaxPayloadLength     = 238,
+        EmptyPacketLength    =   7,
+        PrePayloadCRCOffset  =   8,
+        UncountedHeaderBytes =   5
     };
 
 private:

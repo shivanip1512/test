@@ -120,6 +120,7 @@ public:
     CtiIONDataStream( )  { };
     ~CtiIONDataStream( );
 
+    void clear( void );
     CtiIONValue *getItem( int index );
     int getItemCount( void );
     CtiIONDataStream &appendItem( CtiIONValue *toInsert );

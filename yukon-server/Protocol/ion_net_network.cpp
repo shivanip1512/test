@@ -25,6 +25,19 @@ CtiIONNetworkLayer::CtiIONNetworkLayer( )
 }
 
 
+void CtiIONNetworkLayer::initReserved( void )
+{
+    _nlData.header.length.reserved = 0;
+    _nlData.header.desc.reserved   = 0;
+    _nlData.header.src.reserved0_0 = 0;
+    _nlData.header.src.reserved0_1 = 0;
+    _nlData.header.src.reserved1   = 1;
+    _nlData.header.dst.reserved0_0 = 0;
+    _nlData.header.dst.reserved0_1 = 0;
+    _nlData.header.dst.reserved1   = 1;
+}
+
+
 void CtiIONNetworkLayer::init( CtiIONDataLinkLayer &dllLayer )
 {
     unsigned char *tmpDLLData;
@@ -134,6 +147,23 @@ void CtiIONNetworkLayer::init( CtiIONApplicationLayer &appLayer, int msgID, int 
         _nlData.header.length.byte0 =  netSize & 0x00FF;
         _valid = FALSE;
     }
+}
+
+
+int CtiIONNetworkLayer::generate( CtiXfer &xfer )
+{
+/*    if( _netLayer.isTransactionComplete() )
+    {
+
+    }
+*/
+    return _datalinkLayer.generate( xfer );
+}
+
+
+int CtiIONNetworkLayer::decode( CtiXfer &xfer, int status )
+{
+    return _datalinkLayer.decode( xfer, status );
 }
 
 

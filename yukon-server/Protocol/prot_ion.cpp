@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/10/09 20:00:21 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/10/30 16:05:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -369,23 +369,26 @@ void CtiProtocolION::setCommand( IONCommand command, ion_output_point *points, i
     unsigned char *tmp;
     int tmplen;
 
+//  this needs to be moved to porter-side
 //    _appLayer.setAddresses(_slaveAddress, _masterAddress);
 
+/*
     switch( command )
     {
         case ION_ExceptionScan:
             {
-/*                _appLayer.setCommand(CtiIONApplication::RequestRead);
+
+                _appLayer.setCommand(CtiIONApplication::RequestRead);
 
                 CtiIONObjectBlock dob(CtiIONObjectBlock::NoIndex_NoRange);
 
                 dob.addObject(new CtiIONClass(CtiIONClass::Class0));
 
                 _appLayer.addObjectBlock(dob);
-*/
+
                 break;
             }
-/*        case ION_Class123Read:
+        case ION_Class123Read:
             {
                 _appLayer.setCommand(CtiIONApplication::RequestRead);
 
@@ -462,7 +465,7 @@ void CtiProtocolION::setCommand( IONCommand command, ion_output_point *points, i
                 }
 
                 break;
-            }*/
+            }
         default:
             {
                 {
@@ -473,14 +476,52 @@ void CtiProtocolION::setCommand( IONCommand command, ion_output_point *points, i
                 command = ION_Invalid;
             }
     }
+*/
 
-    _currentCommand = command;
+    _currentCommand.command = command;
 }
 
 
 int CtiProtocolION::generate( CtiXfer &xfer )
 {
-    return 0; //_appLayer.generate(xfer);
+    CtiIONMethod    *tmpMethod;
+    CtiIONStatement *tmpStatement;
+    CtiIONProgram   *tmpProgram;
+
+    if( _appLayer.isTransactionComplete() )
+    {
+        switch( _ionState )
+        {
+            case IONStateInit:
+            case IONStateRequestFeatureManagerInfo:
+            {
+                tmpMethod    = new CtiIONMethod   ( CtiIONMethod::ReadModuleSetupHandles );  //  ReadManagedClass
+                tmpStatement = new CtiIONStatement( IONFeatureManagerHandle, tmpMethod );  // ustabeed 132
+                tmpProgram   = new CtiIONProgram  ( tmpStatement );
+
+                _dsBuf.clear();
+                _dsBuf.appendItem( tmpProgram );
+
+                _appLayer.init( _dsBuf );
+
+                _ionState = IONStateReceiveFeatureManagerInfo;
+
+                break;
+            }
+
+            default:
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                break;
+            }
+        }
+    }
+
+    return _appLayer.generate( xfer );
 }
 
 
@@ -532,28 +573,14 @@ int CtiProtocolION::commOut( OUTMESS *&OutMessage )
 {
     int retVal = NoError;
 
-/*    if( _appLayer.getLengthReq() < sizeof( OutMessage->Buffer ) )
-    {
-        _appLayer.serializeReq(OutMessage->Buffer.OutMessage);
-        OutMessage->OutLength   = _appLayer.getLengthReq() + 2 * sizeof(short);
-        OutMessage->Source      = _masterAddress;
-        OutMessage->Destination = _slaveAddress;
-        OutMessage->EventCode   = RESULT;
-    }
-    else
-*/    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "ACH:  need to learn how to fragment application layer.  Abandoning outbound message." << endl;
-        }
+    memcpy( OutMessage->Buffer.OutMessage, &_currentCommand, sizeof(_currentCommand) );
+    OutMessage->OutLength   = sizeof(_currentCommand);
 
-        delete OutMessage;
-        OutMessage = NULL;
+//  these should be filled in by the porter-side device
+//    OutMessage->Source      = _masterAddress;
+//    OutMessage->Destination = _slaveAddress;
 
-        //  oh well, closest thing to reality - not enough room in outmess
-        retVal = MemoryError;
-    }
+    OutMessage->EventCode   = RESULT;
 
     return retVal;
 }
@@ -605,7 +632,9 @@ int CtiProtocolION::recvCommRequest( OUTMESS *OutMessage )
 {
     int retVal = NoError;
 
-//    _appLayer.restoreReq(OutMessage->Buffer.OutMessage, OutMessage->OutLength);
+    memcpy( &_currentCommand, OutMessage->Buffer.OutMessage, OutMessage->OutLength );
+
+    _ionState = IONStateInit;
 
     return retVal;
 }
@@ -614,7 +643,7 @@ int CtiProtocolION::recvCommRequest( OUTMESS *OutMessage )
 bool CtiProtocolION::isTransactionComplete( void )
 {
     //  ACH: factor in application layer retries... ?
-    return true;  //_appLayer.isTransactionComplete() | _appLayer.errorCondition();
+    return _appLayer.isTransactionComplete() | _appLayer.errorCondition();
 }
 
 

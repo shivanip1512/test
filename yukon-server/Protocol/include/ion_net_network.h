@@ -20,10 +20,11 @@
 #include <vector>
 #include "ctitypes.h"
 #include "dlldefs.h"
+#include "xfer.h"
 
 #include "ion_rootclasses.h"
 #include "ion_valuebasictypes.h"
-
+#include "ion_net_datalink.h"
 
 //  predefining for all following classes
 class CtiIONApplicationLayer;
@@ -36,32 +37,9 @@ class CtiIONFrame;
 
 class IM_EX_PROT CtiIONNetworkLayer : public CtiIONSerializable
 {
-public:
-    CtiIONNetworkLayer( );
-    ~CtiIONNetworkLayer( )  {  freeMemory( );  };
-
-    void init( CtiIONDataLinkLayer &dllLayer );
-    void init( CtiIONApplicationLayer &appLayer, int msgID, int srcID, int dstID );
-
-    int  getSrcID( void )   {   return _srcID;  };
-    int  getDstID( void )   {   return _dstID;  };
-
-    void putPayload( unsigned char *buf );
-    int  getPayloadLength( void );
-
-    void putSerialized( unsigned char *buf );
-    unsigned int getSerializedLength( void );
-
-    int isValid( void ) { return _valid; };
-
-    enum MessageType
-    {
-        IONMessage = 0,
-        TimeSync   = 17
-    };
-
 private:
 
+    void initReserved( void );
     void freeMemory( void );
 
     struct _net_networktruct
@@ -101,19 +79,41 @@ private:
         unsigned char *data;
     } _nlData;
 
-    void initReserved( void )
-    {
-        _nlData.header.length.reserved = 0;
-        _nlData.header.desc.reserved   = 0;
-        _nlData.header.src.reserved0_0 = 0;
-        _nlData.header.src.reserved0_1 = 0;
-        _nlData.header.src.reserved1   = 1;
-        _nlData.header.dst.reserved0_0 = 0;
-        _nlData.header.dst.reserved0_1 = 0;
-        _nlData.header.dst.reserved1   = 1;
-    };
+    CtiIONDataLinkLayer _datalinkLayer;
 
     int _valid, _srcID, _dstID;
+
+protected:
+
+public:
+    CtiIONNetworkLayer( );
+    ~CtiIONNetworkLayer( )  {  freeMemory( );  };
+
+    void init( CtiIONDataLinkLayer &dllLayer );
+    void init( CtiIONApplicationLayer &appLayer, int msgID, int srcID, int dstID );
+
+    int generate( CtiXfer &xfer );
+    int decode  ( CtiXfer &xfer, int status );
+
+    bool isTransactionComplete( void );
+    bool errorCondition( void );
+
+    int  getSrcID( void )   {   return _srcID;  };
+    int  getDstID( void )   {   return _dstID;  };
+
+    void putPayload( unsigned char *buf );
+    int  getPayloadLength( void );
+
+    void putSerialized( unsigned char *buf );
+    unsigned int getSerializedLength( void );
+
+    int isValid( void ) { return _valid; };
+
+    enum MessageType
+    {
+        IONMessage = 0,
+        TimeSync   = 17
+    };
 };
 
 #pragma pack(pop, ion_packing)

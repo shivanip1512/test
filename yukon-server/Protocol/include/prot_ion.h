@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/10/09 19:16:50 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/10/30 16:05:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,10 +40,13 @@ private:
     CtiIONApplicationLayer _appLayer;
 
     CtiIONDataStream       _dsBuf;
-    CtiIONDataLinkLayer    *_dllLayer;
 
-    unsigned short    _masterAddress, _slaveAddress;
-    IONCommand        _currentCommand;
+    unsigned short _masterAddress, _slaveAddress;
+
+    struct ion_protocol_command_struct
+    {
+        IONCommand command;
+    } _currentCommand;
 
 protected:
 
@@ -54,6 +57,24 @@ protected:
     {
         IONFeatureManagerHandle = 2
     };
+
+    enum IONStates
+    {
+        IONStateUninitialized,
+        IONStateInit,
+        IONStateRequestFeatureManagerInfo,
+        IONStateReceiveFeatureManagerInfo,
+        IONStateRequestManagerInfo,
+        IONStateReceiveManagerInfo,
+        IONStateRequestModuleInfo,
+        IONStateReceiveModuleInfo,
+        IONStateRequestRegisterInfo,
+        IONStateReceiveRegisterInfo,
+        IONStateRequestData,
+        IONStateReceiveData,
+        IONStateComplete,
+        IONStateAbort
+    } _ionState;
 
 public:
 
