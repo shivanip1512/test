@@ -61,12 +61,13 @@ private void initialize() {
 	setFont( font );
 	setMnemonic('c');
 
+	//keep and add to these in alphabetical order
+	add( billingGroupMenuItem );
 	add( portMenuItem );
 	add( deviceMenuItem );
-	add( routeMenuItem );
-	add( pointMenuItem );
-	add( stateGroupMenuItem );
-	add( billingGroupMenuItem );
 	add( config2WayMenuItem );
+	add( pointMenuItem );
+	add( routeMenuItem );
+	add( stateGroupMenuItem );
 }
 }

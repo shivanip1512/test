@@ -98,35 +98,38 @@ public class DatabaseEditor
 
 	private int currentDatabase = DatabaseTypes.CORE_DB;
 	//Map of database types and treemodels to use
+	//Keep and add to these in alphabetical order	
+	
 	private static final Integer[] CORE_MODELS =
 		{
 			new Integer(ModelFactory.PORT),
 			new Integer(ModelFactory.DEVICE),
 			new Integer(ModelFactory.IED),
 			new Integer(ModelFactory.MCT),
-         	new Integer(ModelFactory.MCTBROADCAST),         
+         	new Integer(ModelFactory.MCTBROADCAST),
+			new Integer(ModelFactory.TWOWAYCONFIG),         
 			new Integer(ModelFactory.METER),
 			new Integer(ModelFactory.DEVICE_METERNUMBER),
 			new Integer(ModelFactory.ROUTE),
 			new Integer(ModelFactory.RTU),
 			new Integer(ModelFactory.STATEGROUP),
-			new Integer(ModelFactory.TRANSMITTER),
-			new Integer(ModelFactory.TWOWAYCONFIG)			
+			new Integer(ModelFactory.TRANSMITTER)
+						
 		};
 	private static final Integer[] LM_MODELS =
 		{
-			new Integer(ModelFactory.LMGROUPS),
+			new Integer(ModelFactory.LMCONSTRAINT),
+			new Integer(ModelFactory.LMCONTROLAREA),
 			new Integer(ModelFactory.LMGROUPEMETCON),
 			new Integer(ModelFactory.LMGROUPEXPRESSCOM),
-			new Integer(ModelFactory.LMGROUPVERSACOM),
+			new Integer(ModelFactory.GOLAY),
+			new Integer(ModelFactory.LMGROUPS),
+			new Integer(ModelFactory.LMPROGRAM),
 			new Integer(ModelFactory.LMGROUPSA305),
 			new Integer(ModelFactory.LMGROUPSA205),
 			new Integer(ModelFactory.LMGROUPSADIGITAL),
-			new Integer(ModelFactory.GOLAY),
-			new Integer(ModelFactory.LMPROGRAM),
-			new Integer(ModelFactory.LMCONTROLAREA),
-			new Integer(ModelFactory.LMCONSTRAINT),
-			new Integer(ModelFactory.LMSCENARIO)
+			new Integer(ModelFactory.LMSCENARIO),
+			new Integer(ModelFactory.LMGROUPVERSACOM)
 		};
 	private static final Integer[] CAP_CONTROL_MODELS =
 		{
@@ -137,25 +140,25 @@ public class DatabaseEditor
 		};
 	private static final Integer[] SYSTEM_MODELS =
 		{
+			new Integer(ModelFactory.ALARM_STATES),
+			new Integer(ModelFactory.BASELINE),
 			new Integer(ModelFactory.CICUSTOMER),
 			new Integer(ModelFactory.CONTACT),
+			new Integer(ModelFactory.HOLIDAY_SCHEDULE),
 			new Integer(ModelFactory.LOGINS),
 			new Integer(ModelFactory.LOGIN_GROUPS),
 			new Integer(ModelFactory.NOTIFICATION_GROUP),
-			new Integer(ModelFactory.ALARM_STATES),
-			new Integer(ModelFactory.HOLIDAY_SCHEDULE),
-			new Integer(ModelFactory.BASELINE),
 			new Integer(ModelFactory.SEASON),
 			new Integer(ModelFactory.TAG)
 		};
 	private static final Integer[] NONLOGIN_SYSTEM_MODELS =
 		{
+			new Integer(ModelFactory.ALARM_STATES),
+			new Integer(ModelFactory.BASELINE),
 			new Integer(ModelFactory.CICUSTOMER),
 			new Integer(ModelFactory.CONTACT),
-			new Integer(ModelFactory.NOTIFICATION_GROUP),
-			new Integer(ModelFactory.ALARM_STATES),
 			new Integer(ModelFactory.HOLIDAY_SCHEDULE),
-			new Integer(ModelFactory.BASELINE),
+			new Integer(ModelFactory.NOTIFICATION_GROUP),
 			new Integer(ModelFactory.SEASON),
 			new Integer(ModelFactory.TAG)
 		};	
@@ -2759,6 +2762,10 @@ public void setDatabase(int whichDatabase)
 	getTreeViewPanel().setTreeModels(newModels);
 	if( models == CORE_MODELS )
 		getTreeViewPanel().setSelectedSortByIndex( 1 ); //device is the default
+	if( models == LM_MODELS )
+		getTreeViewPanel().setSelectedSortByIndex( 5 ); //"load groups" is the default
+	if( models == SYSTEM_MODELS || models == NONLOGIN_SYSTEM_MODELS )
+		getTreeViewPanel().setSelectedSortByIndex( 3 ); //"contacts" is the default
 	
 	rPane.setJMenuBar( this.menuBar );
 	rPane.revalidate();

@@ -72,13 +72,14 @@ private void initialize() {
 	setFont( font );
 	setMnemonic('c');
 
-	add( customerMenuItem );
+	//keep and add to these in alphabetical order
+	add( baselineMenuItem );
 	add( contactMenuItem );
+	add( customerMenuItem );
+	add( holidayMenuItem );
 	add( loginMenuItem );
 	add( loginGrpMenuItem );
 	add( notificationGroupMenuItem );
-	add( holidayMenuItem );
-	add( baselineMenuItem );
 	add( seasonMenuItem );
 	add( tagMenuItem );
 }

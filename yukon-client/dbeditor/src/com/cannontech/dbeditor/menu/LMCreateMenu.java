@@ -56,10 +56,11 @@ private void initialize() {
 	setFont( font );
 	setMnemonic('c');
 
-	add( lmGroupMenuItem );
-	add( lmProgramMenuItem );
+	//keep and add to these in alphabetical order
 	add( lmControlAreaMenuItem );
 	add( lmControlScenarioMenuItem );
+	add( lmGroupMenuItem );
+	add( lmProgramMenuItem );
 	add( pointMenuItem );
 	add( lmProgramConstraintMenuItem );
 
