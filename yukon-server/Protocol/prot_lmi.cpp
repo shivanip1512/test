@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2004/11/16 20:48:13 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/12/02 22:15:13 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -518,35 +518,39 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                         _untransmitted_codes = true;
 
                         om = _codes.front();
-                        om->Buffer.SASt._codeSimple[6] = 0;  //  make sure it's null-terminated, just to be safe...
-                        char (&codestr)[7] = om->Buffer.SASt._codeSimple;
 
+                        if(om && om->ExpirationTime >= NowTime)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(slog);
-                            slog << om->Buffer.SASt._codeSimple << " ";
+                            om->Buffer.SASt._codeSimple[6] = 0;  //  make sure it's null-terminated, just to be safe...
+                            char (&codestr)[7] = om->Buffer.SASt._codeSimple;
+
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(slog);
+                                slog << om->Buffer.SASt._codeSimple << " ";
+                            }
+
+                            //  all offset by one because of the "num_codes" byte at the beginning
+                            _outbound.data[i+1] = codestr[0];
+                            _outbound.data[i+2] = codestr[1];
+                            _outbound.data[i+3] = codestr[2];
+                            _outbound.data[i+4] = codestr[3];
+                            _outbound.data[i+5] = codestr[4];
+                            _outbound.data[i+6] = codestr[5];
+
+
+                            //  new CtiVerificationWork message here
+                            if( !om->VerificationSequence )
+                            {
+                                om->VerificationSequence = VerificationSequenceGen();
+                            }
+
+                            long id = om->DeviceID;
+
+                            ptime::time_duration_type expiration(seconds(60));
+                            CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *om, codestr, expiration);
+
+                            _verification_objects.push(work);
                         }
-
-                        //  all offset by one because of the "num_codes" byte at the beginning
-                        _outbound.data[i+1] = codestr[0];
-                        _outbound.data[i+2] = codestr[1];
-                        _outbound.data[i+3] = codestr[2];
-                        _outbound.data[i+4] = codestr[3];
-                        _outbound.data[i+5] = codestr[4];
-                        _outbound.data[i+6] = codestr[5];
-
-
-                        //  new CtiVerificationWork message here
-                        if( !om->VerificationSequence )
-                        {
-                            om->VerificationSequence = VerificationSequenceGen();
-                        }
-
-                        long id = om->DeviceID;
-
-                        ptime::time_duration_type expiration(seconds(60));
-                        CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *om, codestr, expiration);
-
-                        _verification_objects.push(work);
 
                         //  this isn't very robust yet, as far as error-handling goes - one error, and all of these 40-something codes will go down the toilet
                         //    i need to move them to a pending list or something until i get to decode(), where i can then pop them with vigor and prejudice

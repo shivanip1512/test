@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/12/01 20:12:49 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/12/02 22:15:13 $
 *
 * HISTORY      :
 * $Log: dev_grp_golay.cpp,v $
+* Revision 1.7  2004/12/02 22:15:13  cplender
+* Added OM-ExpirationTime to the device queue processing.
+*
 * Revision 1.6  2004/12/01 20:12:49  cplender
 * Default "control_reduction" is 100, not -1.
 *
@@ -211,6 +214,7 @@ INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
             OutMessage->TargetID = getID();
             OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
             OutMessage->Retry = 0;
+            OutMessage->ExpirationTime = RWTime().seconds() + parse.getiValue("control_interval", 300); // Time this out in 5 minutes or the setting.
 
             //
             // OK, these are the items we are about to set out to perform..  Any additional signals will

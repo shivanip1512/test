@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2004/12/01 20:14:37 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2004/12/02 22:15:14 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.19  2004/12/02 22:15:14  cplender
+* Added OM-ExpirationTime to the device queue processing.
+*
 * Revision 1.18  2004/12/01 20:14:37  cplender
 * Verification Thread now looks for '\0'.
 *
@@ -462,9 +465,26 @@ bool CtiDeviceRTC::getOutMessage(CtiOutMessage *&OutMessage)
         OutMessage->Buffer.SASt._retransmit = TRUE;     // This makes the slog say retransmit.
         stat = true;
     }
-    else if( (OutMessage = _workQueue.getQueue( 500 )) != NULL )
+    else
     {
-        stat = true;
+        do
+        {
+            OutMessage = _workQueue.getQueue( 500 );
+
+            if(OutMessage && OutMessage->ExpirationTime < now)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Expired command on " << getName() << "'s device queue.  Expired at " << RWTime(OutMessage->ExpirationTime) << endl;
+                }
+                delete OutMessage;
+                OutMessage = 0;
+            }
+
+        } while( !OutMessage && _workQueue.entries() );
+
+        if(OutMessage)
+            stat = true;
     }
 
     if(stat)

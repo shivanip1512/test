@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/12/01 20:12:50 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/12/02 22:15:14 $
 *
 * HISTORY      :
 * $Log: dev_grp_sadigital.cpp,v $
+* Revision 1.7  2004/12/02 22:15:14  cplender
+* Added OM-ExpirationTime to the device queue processing.
+*
 * Revision 1.6  2004/12/01 20:12:50  cplender
 * Default "control_reduction" is 100, not -1.
 *
@@ -210,6 +213,7 @@ INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
         {
             OutMessage->TargetID = getID();
             OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
+            OutMessage->ExpirationTime = RWTime().seconds() + parse.getiValue("control_interval", 300); // Time this out in 5 minutes or the setting.
 
             //
             // OK, these are the items we are about to set out to perform..  Any additional signals will

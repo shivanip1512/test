@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/12/01 20:12:50 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/12/02 22:15:14 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -186,6 +186,7 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         OutMessage->TargetID = getID();
         OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
         OutMessage->Retry = gConfigParms.getValueAsInt("PORTER_SA_REPEATS", 1);
+        OutMessage->ExpirationTime = RWTime().seconds() + parse.getiValue("control_interval", 300); // Time this out in 5 minutes or the setting.
 
         //
         // OK, these are the items we are about to set out to perform..  Any additional signals will
