@@ -49,15 +49,8 @@ public class PortEditorPanel extends com.cannontech.common.editor.PropertyPanel 
 		},
 		{		//4 - PortPool
 			PortTypes.DIALOUT_POOL
-		},
+		}
 		
-		{		//5 - PAOExclusionEditorPanel
-			PortTypes.LOCAL_DIRECT, PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO,
-			PortTypes.LOCAL_DIALUP, PortTypes.TSERVER_DIRECT, PortTypes.TSERVER_SHARED,
-			PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP, PortTypes.LOCAL_DIALBACK,
-			PortTypes.DIALOUT_POOL
-		}		
-
 	};
 	private JTabbedPane ivjPortEditorTabbedPane = null;
 /**
@@ -113,19 +106,6 @@ public Object[] createNewPanel(int panelIndex)
 			objs[1] = "Pooled Ports";
 			break;
 
-		case 5:
-			String showIt = 
-					CtiProperties.getInstance().getProperty(CtiProperties.KEY_EDITOR_EXCLUSION, "false");
-
-			if( "TRUE".equalsIgnoreCase(showIt) )
-			{
-				objs[0] = new com.cannontech.dbeditor.editor.device.PAOExclusionEditorPanel();
-				objs[1] = "Exclusion List";
-			}
-			else
-				objs = null;
-
-			break;
 	}
 		
 	return objs;
