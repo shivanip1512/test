@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2003/09/12 21:42:18 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2003/10/28 18:06:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -746,7 +746,7 @@ void CtiPointManager::refreshPointLimits(LONG pntID, LONG paoID)
     if(pntID != 0 && Map.entries() > 0)
     {
         key = CtiHashKey(pntID);
-        if(((pTempCtiPoint = Map.findValue(&key)) != NULL))
+        if(((pTempCtiPoint = Map.findValue(&key)) != NULL) && pTempCtiPoint->isNumeric())
         {
             ((CtiPointNumeric*)pTempCtiPoint)->invalidateLimits();
         }
