@@ -245,12 +245,12 @@ function populateDefaultList(form) {
 }
 
 function setInherited(inherited) {
-	document.form1.MoveUp.disabled = inherited;
-	document.form1.MoveDown.disabled = inherited;
-	document.form1.Delete.disabled = inherited;
-	document.form1.DeleteAll.disabled = inherited;
-	document.form1.Default.disabled = inherited;
-	document.form1.Save.disabled = inherited;
+	document.form1.MoveUp.disabled = inherited || <%= inherited %>;
+	document.form1.MoveDown.disabled = inherited || <%= inherited %>;
+	document.form1.Delete.disabled = inherited || <%= inherited %>;
+	document.form1.DeleteAll.disabled = inherited || <%= inherited %>;
+	document.form1.Default.disabled = inherited || <%= inherited %>;
+	document.form1.Save.disabled = inherited || <%= inherited %>;
 }
 
 function init() {

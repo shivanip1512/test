@@ -697,6 +697,110 @@ public class StarsAdminUtil {
 		}
 	}
 	
+	public static void updateListEntryReferences(LiteStarsEnergyCompany energyCompany, YukonSelectionList newList)
+		throws WebClientException, java.sql.SQLException
+	{
+		String sql1 = null;
+		String sql2 = null;
+		if (newList.getListName().equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE)) {
+			sql1 = "SELECT DISTINCT LMHardwareTypeID FROM LMHardwareBase WHERE InventoryID IN " +
+				"(SELECT InventoryID FROM ECToInventoryMapping WHERE EnergyCompanyID = ?)";
+			sql2 = "UPDATE LMHardwareBase SET LMHardwareTypeID = ? WHERE LMHardwareTypeID = ? AND InventoryID IN " +
+				"(SELECT InventoryID FROM ECToInventoryMapping WHERE EnergyCompanyID = ?)";
+		}
+		
+		if (sql1 == null || sql2 == null)
+			throw new WebClientException("How to update references to selection list \"" + newList.getListName() + "\" has not been defined yet");
+		
+		Hashtable entryIDMap = new Hashtable();
+		
+		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+		ArrayList companies = new ArrayList();
+		for (int i = 0; i < descendants.size(); i++) {
+			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+			if (company.equals(energyCompany) || company.getYukonSelectionList(newList.getListName(), false, false) == null)
+				companies.add( company );
+		}
+		
+		java.sql.Connection conn = null;
+		java.sql.PreparedStatement pstmt1 = null;
+		java.sql.PreparedStatement pstmt2 = null;
+		
+		try {
+			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+			
+			pstmt1 = conn.prepareStatement( sql1 );
+			
+			for (int i = 0; i < companies.size(); i++) {
+				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+				
+				pstmt1.setInt( 1, company.getLiteID() );
+				java.sql.ResultSet rset = pstmt1.executeQuery();
+				
+				while (rset.next()) {
+					int oldEntryID = rset.getInt(1);
+					YukonListEntry oldEntry = YukonListFuncs.getYukonListEntry( oldEntryID );
+					int newEntryID = 0;
+					
+					for (int j = 0; j < newList.getYukonListEntries().size(); j++) {
+						YukonListEntry newEntry = (YukonListEntry) newList.getYukonListEntries().get(j);
+						if (newEntry.getYukonDefID() == oldEntry.getYukonDefID() && newEntry.getEntryText().equalsIgnoreCase(oldEntry.getEntryText())) {
+							newEntryID = newEntry.getEntryID();
+							break;
+						}
+					}
+					
+					if (newEntryID == 0)
+						throw new WebClientException("Cannot find a matching entry for \"" + oldEntry.getEntryText() + "\" in the new list");
+					
+					entryIDMap.put( new Integer(oldEntryID), new Integer(newEntryID) );
+				}
+				
+				rset.close();
+			}
+			
+			pstmt2 = conn.prepareStatement( sql2 );
+			
+			for (int i = 0; i < companies.size(); i++) {
+				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+				
+				Iterator it = entryIDMap.keySet().iterator();
+				while (it.hasNext()) {
+					Integer oldEntryID = (Integer) it.next();
+					Integer newEntryID = (Integer) entryIDMap.get( oldEntryID );
+					pstmt2.setInt( 1, newEntryID.intValue() );
+					pstmt2.setInt( 2, oldEntryID.intValue() );
+					pstmt2.setInt( 3, company.getLiteID() );
+					pstmt2.addBatch();
+				}
+			}
+			
+			pstmt2.executeBatch();
+		}
+		finally {
+			if (pstmt1 != null) pstmt1.close();
+			if (pstmt2 != null) pstmt2.close();
+			if (conn != null) conn.close();
+		}
+		
+		for (int i = 0; i < companies.size(); i++) {
+			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+			
+			if (newList.getListName().equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE)) {
+				ArrayList inventory = company.getAllInventory();
+				for (int j = 0; j < inventory.size(); j++) {
+					if (!(inventory.get(j) instanceof LiteStarsLMHardware))
+						continue;
+					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) inventory.get(j);
+					Integer newDevTypeID = (Integer) entryIDMap.get( new Integer(liteHw.getLmHardwareTypeID()) );
+					if (newDevTypeID != null) liteHw.setLmHardwareTypeID( newDevTypeID.intValue() );
+				}
+			}
+			
+			company.clearActiveAccounts();
+		}
+	}
+	
 	public static void removeRoute(LiteStarsEnergyCompany energyCompany, int routeID)
 		throws TransactionException
 	{
@@ -757,8 +861,11 @@ public class StarsAdminUtil {
 		
 		// Modify energy company hierarchy related role properties
 		LiteYukonGroup adminGroup = energyCompany.getOperatorAdminGroup();
-		if (updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.SINGLE_ENERGY_COMPANY, CtiUtilities.FALSE_STRING )
-			|| updateGroupRoleProperty( adminGroup, AdministratorRole.ROLEID, AdministratorRole.ADMIN_MANAGE_MEMBERS, CtiUtilities.TRUE_STRING ))
+		boolean adminGroupUpdated = false;
+		adminGroupUpdated |= updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.SINGLE_ENERGY_COMPANY, CtiUtilities.FALSE_STRING );
+		adminGroupUpdated |= updateGroupRoleProperty( adminGroup, AdministratorRole.ROLEID, AdministratorRole.ADMIN_MANAGE_MEMBERS, CtiUtilities.TRUE_STRING );
+		
+		if (adminGroupUpdated)
 			ServerUtils.handleDBChange( adminGroup, DBChangeMsg.CHANGE_TYPE_UPDATE );
 		
 		adminGroup = member.getOperatorAdminGroup();
