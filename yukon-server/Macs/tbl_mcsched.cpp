@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/tbl_mcsched.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/02 17:02:29 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/08 22:12:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -191,41 +191,32 @@ bool CtiTableMCSchedule::Update()
 
             updater.where( t["ScheduleID"] == getScheduleID() );
 
-            updater << t["CategoryName"].assign(
-                                               RWCString( (const char*) getCategoryName().data() ));
+            updater << t["CategoryName"].assign((const char*) getCategoryName().data());
 
             updater << t["HolidayScheduleID"].assign(getHolidayScheduleID());
 
-            updater << t["CommandFile"].assign(
-                                              RWCString( (const char*) getCommandFile().data() ));
+            updater << t["CommandFile"].assign((const char*) getCommandFile().data());
 
-            updater << t["CurrentState"].assign(
-                                               RWCString( (const char*) getCurrentState().data() ));
+            updater << t["CurrentState"].assign((const char*) getCurrentState().data());
 
-            updater << t["StartPolicy"].assign(
-                                              RWCString( (const char*) getStartPolicy().data() ));
+            updater << t["StartPolicy"].assign((const char*) getStartPolicy().data());
 
-            updater << t["StopPolicy"].assign(
-                                             RWCString( (const char*) getStopPolicy().data() ));
+            updater << t["StopPolicy"].assign((const char*) getStopPolicy().data());
 
             if( getLastRunTime().isValid() )
                 updater << t["LastRunTime"].assign( getLastRunTime() );
 
-            updater << t["LastRunStatus"].assign(
-                                                RWCString( (const char*) getLastRunStatus().data() ));
+            updater << t["LastRunStatus"].assign((const char*) getLastRunStatus().data());
 
             updater << t["StartDay"].assign( getStartDay() );
             updater << t["StartMonth"].assign( getStartMonth() );
             updater << t["StartYear"].assign( getStartYear() );
 
-            updater << t["StartTime"].assign(
-                                            RWCString( (const char*) getStartTime().data() ));
+            updater << t["StartTime"].assign((const char*) getStartTime().data());
 
-            updater << t["StopTime"].assign(
-                                           RWCString( (const char*) getStopTime().data() ));
+            updater << t["StopTime"].assign((const char*) getStopTime().data());
 
-            updater << t["ValidWeekDays"].assign(
-                                                RWCString( (const char*) getValidWeekDays().data() ));
+            updater << t["ValidWeekDays"].assign((const char*) getValidWeekDays().data());
 
             updater << t["Duration"].assign( getDuration() );
 
@@ -288,34 +279,34 @@ bool CtiTableMCSchedule::Insert()
 
             inserter << getScheduleID();
 
-            inserter << RWCString( (const char*) getCategoryName().data() );
+            inserter << (const char*) getCategoryName().data();
 
             inserter << getHolidayScheduleID();
 
-            inserter << RWCString( (const char*) getCommandFile().data() );
+            inserter << (const char*) getCommandFile().data();
 
-            inserter << RWCString( (const char*) getCurrentState().data() );
+            inserter << (const char*) getCurrentState().data();
 
-            inserter << RWCString( (const char*) getStartPolicy().data() );
+            inserter << (const char*) getStartPolicy().data();
 
-            inserter << RWCString( (const char*) getStopPolicy().data() );
+            inserter << (const char*) getStopPolicy().data();
 
             if( getLastRunTime().isValid() )
                 inserter << RWDBDateTime( getLastRunTime() );
             else
                 inserter << RWDBValue(); //null
 
-            inserter << RWCString( (const char*) getLastRunStatus().data() );
+            inserter << (const char*) getLastRunStatus().data();
 
             inserter << getStartDay();
             inserter << getStartMonth();
             inserter << getStartYear();
 
-            inserter << RWCString( (const char*) getStartTime().data());
+            inserter << (const char*) getStartTime().data();
 
-            inserter << RWCString( (const char*) getStopTime().data() );
+            inserter << (const char*) getStopTime().data();
 
-            inserter << RWCString( (const char*) getValidWeekDays().data() );
+            inserter << (const char*) getValidWeekDays().data();
 
             inserter << getDuration();
 
