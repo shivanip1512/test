@@ -1,13 +1,10 @@
 <%@ include file="StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
-	String orderNo = null;
-%>
-<%
-	orderNo = (String) user.getAttribute(ServletUtils.ATT_ORDER_TRACKING_NUMBER);
+	String orderNo = (String) user.getAttribute(ServletUtils.ATT_ORDER_TRACKING_NUMBER);
 	if (orderNo == null) {
 		if (request.getParameter("getOrderNo") == null)
-			response.sendRedirect("/servlet/SOAPClient?action=GetNextOrderNo");
+			response.sendRedirect("<%= request.getContextPath() %>/servlet/SOAPClient?action=GetNextOrderNo");
 		else
 			orderNo = "";
 	}
@@ -21,12 +18,25 @@
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 
 <script language="JavaScript">
-function checkOrderNumber(form) {
-	if (form.OrderNo.value == '') {
+function checkOrderNo(form) {
+	if (form.OrderNoTxt.value == '') {
 		alert("Order # cannot be empty");
 		return false;
 	}
+	form.OrderNo.value = form.OrderNoTxt.value;
 	return true;
+}
+
+function enableOrderNo(txt, enabled) {
+	if (enabled) {
+		txt.disabled = false;
+		txt.value = "";
+		txt.focus();
+	}
+	else {
+		txt.disabled = true;
+		txt.value = "<%= orderNo %>";
+	}
 }
 </script>
 </head>
@@ -82,26 +92,28 @@ function checkOrderNumber(form) {
             <div align="center"><% String header = "WORK ORDERS - SERVICE REQUEST"; %><%@ include file="InfoSearchBar.jsp" %>
 			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			
-			<form name="form5" method="POST" action="/servlet/SOAPClient">
+			<form name="form5" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="CreateOrder">
               <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                   <tr> 
                     <td valign="top" bgcolor="#FFFFFF"> 
                         
-                      <table width="400" border="0" cellspacing="0" cellpadding="3" align="center">
+                      <table width="360" border="0" cellspacing="0" cellpadding="3" align="center" class="TableCell">
                         <tr>
                           <td width="100" class="TableCell"> 
                             <div align="right">Service Order #:</div>
                           </td>
-                          <td width="210"> 
-                            <input type="text" name="OrderNo" size="14" value="<%= orderNo %>">
-                          </td>
+						  <input type="hidden" name="OrderNo" value="<%= orderNo %>">
+                          <td width="248"> 
+                            <input type="text" name="OrderNoTxt" size="14" maxlength="20" value="<%= orderNo %>" disabled>
+							<input type="checkbox" name="EnableOrderNo" value="true" onclick="enableOrderNo(this.form.OrderNoTxt, this.checked)">
+                            Enter you own order # </td>
                         </tr>
                         <tr> 
                           <td width="100" class="TableCell"> 
                             <div align="right">Date Reported:</div>
                           </td>
-                          <td width="210"> 
+                          <td width="248"> 
                             <input type="text" name="DateReported" size="14" value="<%= datePart.format(Calendar.getInstance().getTime()) %>">
                           </td>
                         </tr>
@@ -109,7 +121,7 @@ function checkOrderNumber(form) {
                           <td width="100" class="TableCell"> 
                             <div align="right">Service Type:</div>
                           </td>
-                          <td width="210"> 
+                          <td width="248"> 
                             <select name="ServiceType">
                               <%
 	StarsCustSelectionList serviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE );
@@ -127,7 +139,7 @@ function checkOrderNumber(form) {
                           <td width="100" class="TableCell"> 
                             <div align="right">Assign to:</div>
                           </td>
-                          <td width="210"> 
+                          <td width="248"> 
                             <select name="ServiceCompany">
 <%
 	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
@@ -144,7 +156,7 @@ function checkOrderNumber(form) {
                           <td width="100" class="TableCell"> 
                             <div align="right">Ordered By:</div>
                           </td>
-                          <td width="210">
+                          <td width="248"> 
                             <input type="text" name="OrderedBy" size="14">
                           </td>
                         </tr>
@@ -152,8 +164,8 @@ function checkOrderNumber(form) {
                           <td width="100" class="TableCell"> 
                             <div align="right">Notes: </div>
                           </td>
-                          <td width="210"> 
-                            <textarea name="Notes" rows="3" wrap="soft" cols="25" class = "TableCell"></textarea>
+                          <td width="248"> 
+                            <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
                           </td>
                         </tr>
                       </table>
@@ -161,7 +173,7 @@ function checkOrderNumber(form) {
                         <tr> 
                           <td width="169"> 
                             <div align="right"> 
-                                <input type="submit" name="Send" value="Send" onclick="return checkOrderNumber(this.form)">
+                                <input type="submit" name="Send" value="Send" onclick="return checkOrderNo(this.form)">
                               </div>
                             </td>
                           <td width="211"> 

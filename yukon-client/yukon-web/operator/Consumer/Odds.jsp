@@ -64,7 +64,7 @@
                 <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>"/> 
 				for each program.</span><br>
               </div>
-			  <form name="form1" method="post" action="/servlet/SOAPClient">
+			  <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 			  	<input type="hidden" name="action" value="SendControlOdds">
                 <table border="1" cellspacing="0" cellpadding="3" width="366">
                   <tr> 

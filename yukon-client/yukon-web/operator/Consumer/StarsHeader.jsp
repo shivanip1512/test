@@ -25,7 +25,8 @@
 	if (com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser(lYukonUser.getUserID()) != lYukonUser)
 	{
 		// User login no longer valid
-		response.sendRedirect("/servlet/LoginController?ACTION=LOGOUT"); return;
+		response.sendRedirect(request.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT");
+		return;
 	}
 	
 	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  

@@ -1,13 +1,10 @@
 <%@ include file="StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
-	String callNo = null;
-%>
-<%
-	callNo = (String) user.getAttribute(ServletUtils.ATT_CALL_TRACKING_NUMBER);
+	String callNo = (String) user.getAttribute(ServletUtils.ATT_CALL_TRACKING_NUMBER);
 	if (callNo == null) {
-		if (request.getParameter("getCallNo") == null)
-			response.sendRedirect("/servlet/SOAPClient?action=GetNextCallNo");
+		if (request.getParameter("GetCallNo") == null)
+			response.sendRedirect("<%= request.getContextPath() %>/servlet/SOAPClient?action=GetNextCallNo");
 		else
 			callNo = "";
 	}
@@ -48,15 +45,29 @@ function getCurrentDateFormatted() {
 }
 
 function checkCallNo(form) {
-	if (form.callNo.value == '') {
+	if (form.CallNoTxt.value == '') {
 		alert("Tracking# cannot be empty");
+		form.CallNoTxt.focus();
 		return false;
 	}
+	form.CallNo.value = form.CallNoTxt.value;
 	return true;
 }
 
+function enableCallNo(txt, enabled) {
+	if (enabled) {
+		txt.disabled = false;
+		txt.value = "";
+		txt.focus();
+	}
+	else {
+		txt.disabled = true;
+		txt.value = "<%= callNo %>";
+	}
+}
+
   //End hiding script -->
-  </SCRIPT>
+</SCRIPT>
 </head>
 <body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
@@ -106,10 +117,10 @@ function checkCallNo(form) {
             <div class = "Main" align="center"><% String header = "ACCOUNT - CREATE NEW CALL"; %><%@ include file="InfoSearchBar.jsp" %>
 			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               
-              <form name = "MForm" method="POST" action="/servlet/SOAPClient">
+              <form name = "MForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 			    <input type="hidden" name="action" value="CreateCall">
                 <span class="MainHeader"><b>&nbsp;</b></span> 
-                <table width="34%" border="0" height="179" cellspacing = "0">
+                <table width="350" border="0" height="179" cellspacing = "0">
                   <tr>
                     <td>
                       <table class = "TableCell" width="100%" border="0" cellspacing = "0" cellpadding = "1" height="174">
@@ -119,23 +130,26 @@ function checkCallNo(form) {
                           </td>
                           </tr>
                         <tr> 
-                          <td width = "50%" align = "right">Date:</td>
-                          <td width="50%" > 
+                          <td width = "75" align = "right">Date:</td>
+                          <td width="269" > 
                             <input type="text" name="CallDate" size = "10" value="<%= datePart.format(Calendar.getInstance().getTime()) %>">
-                            <a href="javascript:show_calendar('MForm.date')"
+                            <a href="javascript:show_calendar('MForm.CallDate')"
 						onMouseOver="window.status='Pop Calendar';return true;"
 						onMouseOut="window.status='';return true;"> <img src="../../Images/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a> 
                           </td>
                         </tr>
                         <tr> 
-                          <td width = "50%" align = "right">Tracking #:</td>
-                          <td width="50%"> 
-                            <input type="text" name="CallNo" size="10" value="<%= callNo %>">
+                          <td width = "75" align = "right">Tracking #:</td>
+                          <input type="hidden" name="CallNo" value="<%= callNo %>">
+                          <td width="269"> 
+							<input type="text" name="CallNoTxt" size="14" maxlength="20" value="<%= callNo %>" disabled>
+							<input type="checkbox" name="EnableCallNo" value="true" onClick="enableCallNo(this.form.CallNoTxt, this.checked)">
+							Enter your own tracking #
                           </td>
                         </tr>
 						<tr> 
-                          <td width = "50%" align = "right">Type:</td>
-                          <td width="50%"> 
+                          <td width = "75" align = "right">Type:</td>
+                          <td width="269"> 
                             <select name="CallType">
 <%
 	StarsCustSelectionList callTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE );
@@ -150,14 +164,14 @@ function checkCallNo(form) {
                           </td>
                         </tr>
                         <tr> 
-                          <td width = "50%" align = "right">Taken By:</td>
-                          <td width="50%"> 
-                            <input type="text" name="TakenBy">
+                          <td width = "75" align = "right">Taken By:</td>
+                          <td width="269"> 
+                            <input type="text" name="TakenBy" size="14">
                           </td>
                         </tr>
                         <tr> 
-                          <td width = "50%" align = "right">Description:</td>
-                          <td width="50%"> 
+                          <td width = "75" align = "right">Description:</td>
+                          <td width="269"> 
                             <textarea name="Description" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
                           </td>
                         </tr>

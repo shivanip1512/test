@@ -76,7 +76,7 @@ function MM_popupMsg(msg) { //v1.0
               of the program:</span> </p>
             <hr width = "90%">
           
-			<form method="post" action="/servlet/SOAPClient">
+			<form method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="SendOptOutNotification">
 			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Programs.jsp">
 			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/OptOut.jsp">

@@ -88,7 +88,7 @@ function saveChanges() {
 			<%@ include file="InfoSearchBar.jsp" %> 
 			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %></div>
               
-			<form name="form1" method="POST" action="/servlet/UpdateContacts">
+			<form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/UpdateContacts">
 <%
 	for (int i = 0; i < 3; i++) {
 %>

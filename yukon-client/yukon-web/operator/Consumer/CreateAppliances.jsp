@@ -78,7 +78,7 @@ function showAdditionalAppInfo(index)
             <div class = "Main" align="center"><% String header = "CREATE NEW APPLIANCE"; %><%@ include file="InfoSearchBar.jsp" %>
 			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
            
-              <form name="MForm" method="post" action="/servlet/SOAPClient">
+              <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 			    <input type="hidden" name="action" value="CreateAppliance">
 				<input type="hidden" name="AppNo" value="<%= appliances.getStarsApplianceCount() %>">
 				<input type="hidden" name="CatID" value="0">
@@ -95,12 +95,12 @@ function showAdditionalAppInfo(index)
                     </td>
                     <td width="200"> 
                       <select name="AppCatID" onchange="showAdditionalAppInfo(this.selectedIndex)">
-                        <%
+<%
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
 		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
 %>
                         <option value="<%= category.getApplianceCategoryID() %>"><%= category.getDescription() %></option>
-                        <%
+<%
 	}
 %>
                       </select>
@@ -120,13 +120,13 @@ function showAdditionalAppInfo(index)
                     </td>
                     <td width="200"> 
                       <select name="Location">
-                        <%
+<%
 	StarsCustSelectionList locationList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION );
 	for (int i = 0; i < locationList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = locationList.getStarsSelectionListEntry(i);
 %>
                         <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-                        <%
+<%
 	}
 %>
                       </select>
@@ -138,13 +138,13 @@ function showAdditionalAppInfo(index)
                     </td>
                     <td width="200"> 
                       <select name="Manufacturer">
-                        <%
+<%
 	StarsCustSelectionList manuList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER );
 	for (int i = 0; i < manuList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = manuList.getStarsSelectionListEntry(i);
 %>
                         <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-                        <%
+<%
 	}
 %>
                       </select>

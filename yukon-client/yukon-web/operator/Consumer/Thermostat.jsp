@@ -209,7 +209,7 @@ if (text.length == 2) {
                   </tr>
                 </table>
               </div>
-              <form name="MForm" method="post" action="/servlet/SOAPClient">
+              <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="UpdateThermostatOption">
 			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Thermostat.jsp">
 			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/Thermostat.jsp">

@@ -10,15 +10,20 @@
 <script language="JavaScript">
 var changed = false;
 
-function setChanged(form, idx) {
-	form.changed[idx].value = 'true';
+function setChanged(idx) {
+	document.getElementsByName("Changed")[idx].value = 'true';
+	changed = true;
+}
+
+function setDeleted(idx, deleted) {
+	document.getElementsByName("Deleted")[idx].value = deleted;
 	changed = true;
 }
 
 function checkCallNo(form) {
 	if (!changed) return false;
-	for (i = 0; i < form.changed.length; i++) {
-		if (form.changed[i].value == 'true' && form.CallNo[i].value == '') {
+	for (i = 0; i < form.Changed.length; i++) {
+		if (form.Deleted[i].value == 'false' && form.Changed[i].value == 'true' && form.CallNo[i].value == '') {
 			alert("Call # cannot be empty");
 			return false;
 		}
@@ -81,45 +86,51 @@ function checkCallNo(form) {
               <%@ include file="InfoSearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
-              <form name="form1" method="post" action="/servlet/SOAPClient">
+              <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 			    <input type="hidden" name="action" value="UpdateCalls">
                 <table width="600" border="1" cellspacing="0" align="center" cellpadding="2">
                   <tr> 
-                    <td class="HeaderCell" width="61">Call #</td>
-                    <td class="HeaderCell" width="65">Date</td>
-                    <td class="HeaderCell" width="69">Type</td>
-                    <td class="HeaderCell" width="217">Description</td>
-                    <td class="HeaderCell" width="69">Taken By</td>
+                    <td class="HeaderCell" width="35">Delete</td>
+                    <td class="HeaderCell" width="60">Call #</td>
+                    <td class="HeaderCell" width="50">Date</td>
+                    <td class="HeaderCell" width="50">Type</td>
+                    <td class="HeaderCell" width="288">Description</td>
+                    <td class="HeaderCell" width="60" nowrap>Taken By</td>
                   </tr>
 <%
 	for (int i = 0; i < callHist.getStarsCallReportCount(); i++) {
 		StarsCallReport call = callHist.getStarsCallReport(i);
 %>
-				  <input type="hidden" name="CallID" value="<%= call.getCallID() %>">
-				  <input type="hidden" name="changed" value="false">
+                  <input type="hidden" name="CallID" value="<%= call.getCallID() %>">
+				  <input type="hidden" name="CallNo" value="<%= call.getCallNumber() %>">
+                  <input type="hidden" name="Changed" value="false">
+                  <input type="hidden" name="Deleted" value="false">
                   <tr> 
-                    <td class="TableCell" width="61">
-					  <input type="text" name="CallNo" size="10" value="<%= call.getCallNumber() %>" onchange="setChanged(this.form, <%= i %>)">
-					</td>
-                    <td class="TableCell" width="65"><%= datePart.format( call.getCallDate() ) %></td>
-                    <td class="TableCell" width="69">
-					  <select name="CallType" onchange="setChanged(this.form, <%= i %>)">
+                    <td class="TableCell" width="35"> 
+                      <div align="center">
+                        <input type="checkbox" name="DeleteCall" value="true" onclick="setDeleted(<%= i %>, this.checked)">
+                      </div>
+                    </td>
+                    <td class="TableCell" width="60"><%= call.getCallNumber() %></td>
+                    <td class="TableCell" width="50"><%= datePart.format( call.getCallDate() ) %></td>
+                    <td class="TableCell" width="50"> 
+                      <select name="CallType" class="TableCell" onchange="setChanged(<%= i %>)">
 <%
 	StarsCustSelectionList callTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE );
 	for (int j = 0; j < callTypeList.getStarsSelectionListEntryCount(); j++) {
 		StarsSelectionListEntry entry = callTypeList.getStarsSelectionListEntry(j);
 		String selectedStr = (call.getCallType().getEntryID() == entry.getEntryID()) ? "selected" : "";
 %>
-						<option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
+                        <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
 	}
 %>
-					  </select>
-					</td>
-                    <td class="TableCell" width="217"> 
-                      <textarea name="Description" rows="3" wrap="soft" cols="50" class="TableCell" onchange="setChanged(this.form, <%= i %>)"><%= call.getDescription() %></textarea>
+                      </select>
                     </td>
-                    <td class="TableCell" width="69"><%= call.getTakenBy() %></td>
+                    <td class="TableCell" width="288"> 
+                      <textarea name="Description" rows="3" wrap="soft" cols="50" class="TableCell" onchange="setChanged(<%= i %>)"><%= call.getDescription().replaceAll("<br>", "\r\n") %></textarea>
+                    </td>
+                    <td class="TableCell" width="60"><%= call.getTakenBy() %></td>
                   </tr>
 <%
 	}
@@ -130,18 +141,17 @@ function checkCallNo(form) {
                   <tr> 
                     <td width="186"> 
                       <div align="right"> 
-                        <input type="submit" name="Save2" value="Save" onclick="return checkCallNo(this.form)">
+                        <input type="submit" name="Submit" value="Submit" onclick="return checkCallNo(this.form)">
                       </div>
                     </td>
                     <td width="194"> 
                       <div align="left"> 
-                        <input type="reset" name="Cancel2" value="Cancel">
+                        <input type="reset" name="Cancel" value="Cancel">
                       </div>
                     </td>
                   </tr>
                 </table>
               </form>
-             
             </div>
             <p align="center">&nbsp;</p>
           </td>

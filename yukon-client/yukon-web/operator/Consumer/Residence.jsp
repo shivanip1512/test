@@ -60,7 +60,7 @@
             <div align="center"><% String header = "ACCOUNT - CUSTOMER RESIDENCE"; %><%@ include file="InfoSearchBar.jsp" %>
 			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %></div>
 			
-			<form method="POST" action="/servlet/SOAPClient">
+			<form method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 			<input type="hidden" name="action" value="UpdateResidenceInfo">
             <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
               <tr> 

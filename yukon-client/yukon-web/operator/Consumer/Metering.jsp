@@ -18,7 +18,7 @@ function MakeArray()
 }
 function jumpPage(form)
 {
-        form.action="/servlet/Download?";
+        form.action="<%= request.getContextPath() %>/servlet/Download?";
         form.method="post";
         form.submit();
 }
@@ -153,7 +153,7 @@ function jumpPage(form)
 				}				
 				else // "graph" is default
 				{%>
-					<img id = "theGraph" src="/servlet/GraphGenerator?" > 
+					<img id = "theGraph" src="<%= request.getContextPath() %>/servlet/GraphGenerator?" > 
 				<%}
 				%>
 				 <br><font size="-1"><cti:text roleid="<%= RoleTypes.TRENDING_DISCLAIMER_TEXT %>"></font>-->

@@ -136,7 +136,7 @@ function validate(form) {
               <% String header = "HARDWARE"; %><%@ include file="InfoSearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
-			  <form name="invForm" method="POST" action="/servlet/SOAPClient" onsubmit="return validate(this)">
+			  <form name="invForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)">
                 <input type="hidden" name="action" value="UpdateLMHardware">
                 <input type="hidden" name="InvID" value="<%= hardware.getInventoryID() %>">
 				<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Inventory.jsp?InvNo=<%= invNo %>">

@@ -87,7 +87,7 @@ function selectAccount(accountID) {
             <div align="center">
               <span class="Main">The following search results were found:</span> 
             </div>
-			<form name="resultForm" method="POST" action="/servlet/SOAPClient">
+			<form name="resultForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 		      <input type="hidden" name="action" value="GetCustAccount">
               <input type="hidden" name="AccountID" value="">
 			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Update.jsp">

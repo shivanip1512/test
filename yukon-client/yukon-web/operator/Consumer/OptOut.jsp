@@ -75,7 +75,7 @@
               </td>
                 </tr>
               </table>
-			<form name="form1" method="post" action="/servlet/SOAPClient">
+			<form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="OptOutProgram">
 			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Programs.jsp">
 			  <input type="hidden" name="REDIRECT2" value="<%=request.getContextPath()%>/operator/Consumer/OptForm.jsp">

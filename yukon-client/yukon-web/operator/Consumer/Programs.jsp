@@ -12,8 +12,10 @@ var text = [
 <%
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
 		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
+		String desc = category.getStarsWebConfig().getDescription();
+		if (desc.length() == 0) desc = "No Description";
 %>
-			"<%= category.getStarsWebConfig().getDescription() %>",
+			"<%= desc %>",
 <%
 	}
 %>
@@ -213,7 +215,7 @@ function resendNotEnrolled(form) {
                 like to be enrolled in. </span><br>
                 <br>
               </div>
-              <form name="form1" method="post" action="/servlet/SOAPClient">
+              <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
                 <input type="hidden" name="action" value="ProgramSignUp">
                 <input type="hidden" name="SignUpChanged" value="false">
                 <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Programs.jsp">

@@ -141,7 +141,7 @@ function clearPage() {
             <% String header = "NEW SIGNUP"; %>
             <%@ include file="InfoSearchBar2.jsp" %>
             <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-            <form name="form1" method="POST" action="/servlet/SOAPClient" onSubmit="return validate(this)">
+            <form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient" onSubmit="return validate(this)">
               <input type="hidden" name="action" value="NewCustAccount">
 <% if (request.getParameter("Wizard") != null) { %>
 			  <input type="hidden" name="Wizard" value="true">

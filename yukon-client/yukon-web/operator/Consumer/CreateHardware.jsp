@@ -76,7 +76,7 @@ function validate(form) {
               <%@ include file="InfoSearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
-              <form name="MForm" method="post" action="/servlet/SOAPClient" onsubmit="return validate(this)">
+              <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)">
 			    <input type="hidden" name="action" value="CreateLMHardware">
 				<input type="hidden" name="InvNo" value="<%= inventories.getStarsLMHardwareCount() %>">
 <% if (request.getParameter("Wizard") != null) { %>
