@@ -806,12 +806,15 @@ alter table UserPAOowner
       references YukonPAObject (PAObjectID);
 go
 
+update lmcontrolareaprogram set userorder=defaultpriority;
+go
+sp_rename 'LMControlAreaProgram.UserOrder', 'StartPriority', 'COLUMN';
+go
+sp_rename 'LMControlAreaProgram.StopOrder', 'StopPriority', 'COLUMN';
+go
 
-
-
-
-
-
+alter table LMControlAreaProgram drop column DefaultPriority;
+go
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
