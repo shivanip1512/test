@@ -184,11 +184,12 @@ class EditorActions {
 		new LxAbstractAction(DELETE_ELEMENT, "Delete", "Delete", null, true) {
 		public void processAction(ActionEvent e) {
 			LxGraph graph = editor.getDrawing().getLxGraph();
-			for (int i = 0; i < graph.getSelectedObjectCount(); i++) {
-				com.loox.jloox.LxComponent c = graph.getSelectedObject(i);
-				graph.remove(c);
+			Object[] allSelected = graph.getSelectedObjects();
+			for(int i = 0; i < allSelected.length; i++) {
+			 	if(allSelected[i] instanceof com.loox.jloox.LxComponent) {
+			 		graph.remove((com.loox.jloox.LxComponent) allSelected[i]);
+			 	}
 			}
-
 		}
 	};
 
