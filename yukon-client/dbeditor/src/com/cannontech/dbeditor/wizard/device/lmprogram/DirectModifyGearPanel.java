@@ -511,10 +511,13 @@ public Object getValue(Object o)
 	LMProgramDirectGear gear = null;
 	
 	if( o == null )
-		gear = LMProgramDirectGear.createGearFactory( getGearType() );
-	
+   {
+      setGearType( getJComboBoxGearType().getSelectedItem().toString() );
+		gear = LMProgramDirectGear.createGearFactory( getGearType() );	
+   }
 	else
 	{		
+      setGearType( getJComboBoxGearType().getSelectedItem().toString() );
 		gear = LMProgramDirectGear.createGearFactory( getGearType() );
 		gear.setGearID(((LMProgramDirectGear)o).getGearID());
 	}
@@ -712,7 +715,7 @@ public static void main(java.lang.String[] args) {
  * Creation date: (2/8/2002 5:37:00 PM)
  * @param newGearType java.lang.String
  */
-public void setGearType(java.lang.String newGearType) 
+private void setGearType(java.lang.String newGearType)
 {
 	gearType = StringUtils.removeChars( ' ', newGearType );
 
