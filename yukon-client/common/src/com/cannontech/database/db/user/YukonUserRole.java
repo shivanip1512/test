@@ -1,6 +1,7 @@
 package com.cannontech.database.db.user;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
@@ -39,9 +40,120 @@ public class YukonUserRole extends DBPersistent
 	}
 
 	/**
+	 * This method was created in VisualAge.
+	 * @return java.lang.Integer
+	 */
+	public static final Integer getNextUserRoleID( java.sql.Connection conn )
+	{
+		if( conn == null )
+			throw new IllegalStateException("Database connection should not be null.");
+		
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
+	
+		String sql = "SELECT max(UserRoleID) as UserRoleID " + "FROM " + TABLE_NAME;
+		int newID = 0;
+		
+		try
+		{
+			pstmt = conn.prepareStatement(sql.toString());
+			
+			rset = pstmt.executeQuery();							
+	
+			while( rset.next() )
+			{
+				newID = rset.getInt("UserRoleID") + 1;
+				break;
+			}
+		}
+		catch( java.sql.SQLException e )
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}
+		finally
+		{
+			try
+			{
+				if( pstmt != null ) pstmt.close();
+			} 
+			catch( java.sql.SQLException e2 )
+			{
+				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); //something is up
+			}	
+		}	
+		
+		return new Integer( newID );
+	}
+	
+
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (12/14/99 10:31:33 AM)
+	 * @return java.lang.Integer
+	 */
+	public static synchronized YukonUserRole[] getYukonUserRoles( int userID_, java.sql.Connection conn )
+	{
+		if( conn == null )
+			throw new IllegalStateException("Database connection should not be null.");
+	
+		
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
+		ArrayList list = new ArrayList(16);
+		
+		try 
+		{		
+		    pstmt = conn.prepareStatement(
+		    		"select UserRoleID, UserID, RoleID, RolePropertyID, Value " +
+		    		"from " + TABLE_NAME + " " +
+		    		"where UserID = ?" );
+		    	
+			 pstmt.setInt( 1, userID_ );
+			 
+			 rset = pstmt.executeQuery();
+				
+			 //get the first returned result
+			 while( rset.next() )
+			 {
+			 	YukonUserRole r = new YukonUserRole(
+			 		new Integer(rset.getInt("UserRoleID")),
+			 		new Integer(rset.getInt("UserID")),
+			 		new Integer(rset.getInt("RoleID")),
+			 		new Integer(rset.getInt("RolePropertyID")),
+			 		rset.getString("Value") );
+			 	
+			 	list.add( r );
+			 }
+		    
+		}
+		catch (java.sql.SQLException e) 
+		{
+		    e.printStackTrace();
+		}
+		finally 
+		{
+		    try 
+		    {
+				if ( pstmt != null) pstmt.close();
+		    }
+		    catch (java.sql.SQLException e2) 
+		    {
+				e2.printStackTrace();
+		    }
+		}
+		
+		YukonUserRole[] roles = new YukonUserRole[list.size()];
+		return (YukonUserRole[])list.toArray( roles );
+	}
+	
+	/**
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
-	public void add() throws SQLException {
+	public void add() throws SQLException 
+	{
+		if( getUserRoleID() == null )
+			setUserRoleID( getNextUserRoleID(getDbConnection()) );
+
 		Object[] addValues = 
 		{ 
 			getUserRoleID(), getUserID(), getRoleID(), getRolePropertyID(), getValue() 

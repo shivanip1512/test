@@ -1,7 +1,7 @@
 package com.cannontech.dbeditor.editor.user;
 
 import com.cannontech.common.gui.tree.CheckNode;
-import com.cannontech.database.data.lite.LiteYukonRole;
+import com.cannontech.database.data.lite.LiteBase;
 
 /**
  * @author rneuharth
@@ -11,7 +11,7 @@ import com.cannontech.database.data.lite.LiteYukonRole;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class RoleNode extends CheckNode 
+public class LiteBaseNode extends CheckNode 
 {
 	private String userValue = null;
 	
@@ -20,16 +20,18 @@ public class RoleNode extends CheckNode
 	 * Constructor for RoleNode.
 	 * @param userObject
 	 */
-	public RoleNode(LiteYukonRole role_ ) {
-		super( role_ );
+	public LiteBaseNode(LiteBase lite_ ) 
+	{
+		super( lite_ );
 	}
 
 	/**
 	 * Constructor for RoleNode.
 	 * @param userObject
 	 */
-	public RoleNode(LiteYukonRole role_, String userValue_ ) {
-		this( role_ );
+	public LiteBaseNode(LiteBase lite_, String userValue_ ) 
+	{
+		this( lite_ );
 		setUserValue( userValue_ );
 	}
 	
@@ -51,11 +53,11 @@ public class RoleNode extends CheckNode
 
 	public void setUserObject( Object obj )
 	{
-		if( obj instanceof LiteYukonRole )			
+		if( obj instanceof LiteBase )			
 			super.setUserObject( obj );
 		else
 			throw new IllegalArgumentException("Only " + 
-					LiteYukonRole.class.getName() + " allowed for the user object.");
+					LiteBase.class.getName() + " allowed for the user object.");
 	}
 
 	public Object getUserObject()

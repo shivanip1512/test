@@ -191,6 +191,16 @@ public final class LiteComparators
 			{
 				thisVal = ((LiteYukonUser)o1).getUsername();
 				anotherVal = ((LiteYukonUser)o2).getUsername();
+			}
+			else if(o1 instanceof LiteYukonRole && o2 instanceof LiteYukonRole)
+			{
+				thisVal = ((LiteYukonRole)o1).getRoleName();
+				anotherVal = ((LiteYukonRole)o2).getRoleName();
+			}			
+			else if(o1 instanceof LiteYukonRoleProperty && o2 instanceof LiteYukonRoleProperty)
+			{
+				thisVal = ((LiteYukonRoleProperty)o1).getKeyName();
+				anotherVal = ((LiteYukonRoleProperty)o2).getKeyName();
 			}			
 			else
 			{	// unknown lite type

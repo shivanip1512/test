@@ -79,9 +79,17 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#retrieve()
 	 */
-	public void retrieve() throws SQLException {
+	public void retrieve() throws SQLException 
+	{
 		getYukonUser().retrieve();
-
+		
+		
+		//add the roles this user has
+		YukonUserRole[] roles = YukonUserRole.getYukonUserRoles( 
+						getUserID().intValue(), getDbConnection() );
+ 
+ 		for( int i = 0; i < roles.length; i++ )
+ 			getYukonUserRoles().add( roles[i] );
 	}
 
 	/**

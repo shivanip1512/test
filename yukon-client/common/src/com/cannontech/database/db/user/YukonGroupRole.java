@@ -10,40 +10,41 @@ import com.cannontech.database.db.DBPersistent;
  */
 public class YukonGroupRole extends DBPersistent 
 {
-	public static final String TABLE_NAME = "YukonRoleProperty";
+	public static final String TABLE_NAME = "YukonGroupRole";
 
 	public static final String[] SETTER_COLUMNS  = 
 	{ 
-		"RoleID","KeyName","DefaultValue","Description"
+		"GroupID","RoleID","RolePropertyID","Value" 
 	};
 
-	public static final String[] CONSTRAINT_COLUMNS  = { "RolePropertyID" }; 
+	public static final String[] CONSTRAINT_COLUMNS  = { "GroupRoleID" }; 
 	
-	private Integer rolePropertyID = null;
+	private Integer groupRoleID = null;
+	private Integer groupID = null;
 	private Integer roleID = null;
-	private String keyName = null;
-	private String defaultValue = null;
-	private String description = null;
-	
+	private Integer rolePropertyID = null;
+	private String value = null;
+
 	public YukonGroupRole() {
 		super();
 	}
 
-	public YukonGroupRole(Integer rolePropertyID, Integer roleID, String keyName, String defaultValue, String description) {
-		setRolePropertyID(rolePropertyID);
-		setRoleID(roleID);
-		setKeyName(keyName);
-		setDefaultValue(defaultValue);
-		setDescription(description);
+	public YukonGroupRole(Integer groupRoleID_, Integer groupID_, Integer roleID_, Integer rolePropertyID_, String value_) {
+		this();
+		setGroupRoleID(groupRoleID_);
+		setGroupID( groupID_ );
+		setRoleID( roleID_ );
+		setRolePropertyID(rolePropertyID_);
+		setValue( value_ );
 	}
-	
+
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
 	public void add() throws SQLException {
 		Object[] addValues = 
 		{ 
-			getRolePropertyID(), getRoleID(), getKeyName(), getDefaultValue(), getDescription()
+			getGroupRoleID(), getGroupID(), getRoleID(), getRolePropertyID(), getValue() 
 		};
 		add(TABLE_NAME, addValues);
 	}
@@ -55,7 +56,7 @@ public class YukonGroupRole extends DBPersistent
 	{
 		Object[] vals = 
 		{ 
-			getRolePropertyID()
+			getGroupRoleID()
 		};
 		
 		delete(TABLE_NAME, CONSTRAINT_COLUMNS, vals);
@@ -66,15 +67,15 @@ public class YukonGroupRole extends DBPersistent
 	 */
 	public void retrieve() throws SQLException 
 	{
-		Object[] constraintValues = { getRolePropertyID() };
+		Object[] constraintValues = { getGroupRoleID() };
 		
 		Object[] results = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
 		if(results.length == SETTER_COLUMNS.length) 
 		{
-			setRoleID((Integer) results[0]);
-			setKeyName((String) results[1]);
-			setDefaultValue((String) results[2]);
-			setDescription((String) results[3]);
+			setGroupID( (Integer) results[0]);
+			setRoleID( (Integer) results[1]);
+			setRolePropertyID( (Integer) results[2]);
+			setValue( (String) results[3] );
 		}
 	}
 
@@ -85,13 +86,13 @@ public class YukonGroupRole extends DBPersistent
 	{
 		Object[] setValues = 
 		{ 
+			getGroupID(),
 			getRoleID(),
-			getKeyName(),
-			getDefaultValue(),
-			getDescription()
+			getRolePropertyID(),
+			getValue() 
 		};
 
-		Object[] constraintValues = { getRolePropertyID() };		
+		Object[] constraintValues = { getGroupRoleID() };		
 		
 		update(TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues);
 	}
@@ -114,6 +115,54 @@ public class YukonGroupRole extends DBPersistent
 
 
 	/**
+	 * Returns the groupID.
+	 * @return Integer
+	 */
+	public Integer getGroupID() {
+		return groupID;
+	}
+
+	/**
+	 * Returns the value.
+	 * @return String
+	 */
+	public String getValue() {
+		return value;
+	}
+
+	/**
+	 * Sets the groupID.
+	 * @param groupID The groupID to set
+	 */
+	public void setGroupID(Integer userID) {
+		this.groupID = userID;
+	}
+
+	/**
+	 * Sets the value.
+	 * @param value The value to set
+	 */
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	/**
+	 * Returns the groupRoleID.
+	 * @return Integer
+	 */
+	public Integer getGroupRoleID() {
+		return groupRoleID;
+	}
+
+	/**
+	 * Sets the groupRoleID.
+	 * @param groupRoleID The groupRoleID to set
+	 */
+	public void setGroupRoleID(Integer userRoleID) {
+		this.groupRoleID = userRoleID;
+	}
+
+	/**
 	 * Returns the rolePropertyID.
 	 * @return Integer
 	 */
@@ -127,54 +176,6 @@ public class YukonGroupRole extends DBPersistent
 	 */
 	public void setRolePropertyID(Integer rolePropertyID) {
 		this.rolePropertyID = rolePropertyID;
-	}
-
-	/**
-	 * Returns the defaultValue.
-	 * @return String
-	 */
-	public String getDefaultValue() {
-		return defaultValue;
-	}
-
-	/**
-	 * Returns the description.
-	 * @return String
-	 */
-	public String getDescription() {
-		return description;
-	}
-
-	/**
-	 * Returns the keyName.
-	 * @return String
-	 */
-	public String getKeyName() {
-		return keyName;
-	}
-
-	/**
-	 * Sets the defaultValue.
-	 * @param defaultValue The defaultValue to set
-	 */
-	public void setDefaultValue(String defaultValue) {
-		this.defaultValue = defaultValue;
-	}
-
-	/**
-	 * Sets the description.
-	 * @param description The description to set
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	/**
-	 * Sets the keyName.
-	 * @param keyName The keyName to set
-	 */
-	public void setKeyName(String keyName) {
-		this.keyName = keyName;
 	}
 
 }
