@@ -137,9 +137,9 @@ alter table LMProgram drop column SeasonScheduleID;
 drop table portstatistics;
 
 
-alter table LMProgramDirect add NotifiyInterval number;
-update LMProgramDirect set NotifiyInterval = 0;
-alter table LMProgramDirect modify NotifiyInterval numeric not null;
+alter table LMProgramDirect add NotifyInterval number;
+update LMProgramDirect set NotifyInterval = 0;
+alter table LMProgramDirect modify NotifyInterval numeric not null;
 
 alter table LMProgramDirect add Heading varchar2(40);
 update LMProgramDirect set Heading = '(none)';
