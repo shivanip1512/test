@@ -73,6 +73,9 @@ public class CtiProperties extends java.util.Properties implements ClientRights
 
    public static final String KEY_MODE = "yukon_mode";   
    
+   public static final String KEY_LOGIN_PAGE_LOGO = "login_page_logo";
+   public static final String KEY_LOGIN_PAGE_HELP_EMAIL = "login_page_help_email";
+   
 	public static final String[] ALL_CONFIG_KEYS =
 	{
 		//Do not put KEY_YUKON_VERSION in here since it is not in the config.properties file
@@ -109,7 +112,10 @@ public class CtiProperties extends java.util.Properties implements ClientRights
       KEY_LOG_LEVEL,
       
       KEY_TDC_ALARM_COUNT,
-      KEY_MODE
+      KEY_MODE,
+      
+      KEY_LOGIN_PAGE_LOGO,
+      KEY_LOGIN_PAGE_HELP_EMAIL
 	};
 
 
@@ -188,8 +194,6 @@ private void initialize()
 	}
 	
 }
-
-
 
    /**
     * Insert the method's description here.
