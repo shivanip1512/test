@@ -65,7 +65,7 @@ create table LMControlScenarioProgram  (
    StartGear            NUMBER                           not null
 );
 alter table LMControlScenarioProgram
-   add constraint PK_LMCONTROLSCENARIOPROGRAM primary key (ScenarioID);
+   add constraint PK_LMCONTROLSCENARIOPROGRAM primary key (ScenarioID, ProgramID);
 alter table LMControlScenarioProgram
    add constraint FK_LMC_REF__LMP foreign key (ProgramID)
       references LMPROGRAM (DEVICEID);

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     4/1/2004 11:41:03 AM                         */
+/* Created on:     4/5/2004 5:00:24 PM                          */
 /*==============================================================*/
 
 
@@ -2940,7 +2940,7 @@ create table LMControlScenarioProgram  (
 
 
 alter table LMControlScenarioProgram
-   add constraint PK_LMCONTROLSCENARIOPROGRAM primary key (ScenarioID)
+   add constraint PK_LMCONTROLSCENARIOPROGRAM primary key (ScenarioID, ProgramID)
 /
 
 
@@ -6071,7 +6071,7 @@ insert into YukonRoleProperty values(-40157,-400,'Title Thermostat Schedule','TH
 insert into YukonRoleProperty values(-40158,-400,'Title Thermostat Manual','THERMOSTAT - MANUAL','Title of the thermostat manual page');
 insert into YukonRoleProperty values(-40170,-400,'Description General','Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!<br><br>This site is designed to help manage your programs on-line from anywhere with access to a Web browser.','Description on the general page');
 insert into YukonRoleProperty values(-40171,-400,'Description Opt Out','If you would like to temporarily opt out of all programs, select the time frame from the drop-down box below, then select Submit.','Description on the programs opt out page');
-insert into YukonRoleProperty values(-40172,-400,'Description Program','(none)','Description on the programs details page. If not provided, the descriptions of the published programs will be used.');
+insert into YukonRoleProperty values(-40172,-400,'Description Enrollment','Select the check boxes and corresponding radio button of the programs you would like to be enrolled in.','Description on the program enrollment page');
 insert into YukonRoleProperty values(-40173,-400,'Description Utility',' <<COMPANY_ADDRESS>><br><<PHONE_NUMBER>><<FAX_NUMBER>><<EMAIL>>','Description on the contact us page. The special fields will be replaced by real information when displayed on the web.');
 
 insert into YukonRoleProperty values(-40180,-400,'Image Corner','Mom.jpg','Image at the upper-left corner');
@@ -6721,6 +6721,12 @@ alter table CICustomerBase
 alter table CALCCOMPONENT
    add constraint FK_ClcCmp_ClcBs foreign key (PointID)
       references CALCBASE (POINTID)
+/
+
+
+alter table CALCCOMPONENT
+   add constraint FK_ClcCmp_Pt foreign key (COMPONENTPOINTID)
+      references POINT (POINTID)
 /
 
 
