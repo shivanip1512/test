@@ -136,32 +136,31 @@
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
 		    <td width="657" valign="top" bgcolor="#FFFFFF"> 
-<table width="657" border="0" cellspacing="0" cellpadding="0">
-  <tr> 
+              <table width="657" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
                 <td width="650" class="Main"> 
                   <p align="center"><b><br>
                     OFFER TO CUSTOMER</b><br>
                     <br>
                   
                   <center>
-        <table
-    width="650" border="0" cellspacing="0" cellpadding="5">
-          <tr> 
-            <td width="18%" class="MainHeader"> 
+                  <table width="650" border="0" cellspacing="0" cellpadding="5">
+                    <tr> 
+                      <td width="18%" class="MainHeader"> 
                           <p align=RIGHT><b>Offer History ID:</b> 
-                        </td>
-            <td width="12%" class="MainHeader"><%= revisionHistory.getOfferId() + " - " + revisionHistory.getRevisionNumber()%></td>
-            <td width="18%" class="MainHeader"> 
+                      </td>
+                      <td width="12%" class="MainHeader"><%= revisionHistory.getOfferId() + " - " + revisionHistory.getRevisionNumber()%></td>
+                      <td width="18%" class="MainHeader"> 
                           <p align=RIGHT><b>Offer History Date: </b> 
-                        </td>
-            <td width="15%" class="MainHeader"><%= datePart.format( offerHistory.getOfferDate()) %></td>
-            <td width="17%" class="MainHeader"> 
+                      </td>
+                      <td width="15%" class="MainHeader"><%= datePart.format( offerHistory.getOfferDate()) %></td>
+                      <td width="17%" class="MainHeader"> 
                           <p align=RIGHT><b>Expire Date/Time: </b> 
-                        </td>
-            <td width="20%" class="MainHeader"><%= timePart.format( revisionHistory.getExpirationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format( revisionHistory.getExpirationDateTime()) %></td>
-          </tr>
-        </table>
-        <table width="650" border="0" cellspacing="0" cellpadding="5">
+                      </td>
+                      <td width="20%" class="MainHeader"><%= timePart.format( revisionHistory.getExpirationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format( revisionHistory.getExpirationDateTime()) %></td>
+                    </tr>
+                  </table>
+                  <table width="650" border="0" cellspacing="0" cellpadding="5">
           <tr> 
             <td width="50%"> 
               <p>
@@ -174,7 +173,7 @@
                       in $ per kWh</td>
                       <% if (replyHistory.getAcceptStatus().equalsIgnoreCase("accepted")) { %>                      
                     <td width="75" height="10" valign="TOP" class="HeaderCell">CLR in kW</td>
-                      <% } else { %>
+                    <% } else { %>
 <!--                    <td width="75" height="10" valign="TOP" class="HeaderCell">kW Requested</td>-->
                       <% } %>
 <!--                    <td width="75" height="10" valign="TOP" class="HeaderCell">Baseline</td>-->

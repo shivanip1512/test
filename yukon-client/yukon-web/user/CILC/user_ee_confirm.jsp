@@ -66,144 +66,120 @@
                     CURTAILMENT TO CUSTOMER</b><br>
                     <br>
                   </div>
-                  <table
-    width="480" border="0" cellspacing="0" cellpadding="5" align="center" class="Main">
-        <tr> 
-          <td> 
-            <p align=RIGHT>&nbsp;Offer 
-              ID:
-          </td>
-          <td> <%= checker.get("offer") + " - " + checker.get("rev") %></td>
-          <td> 
-            <p align=RIGHT>Control Date:
-          </td>
-          <td><%= checker.get("offerdate") %></td>
-          <td> 
-            <p align=RIGHT>Expires:
-          </td> <% System.out.println("HERO " + checker.get("expiredatetime")); %>
-          <td> <%= java.net.URLDecoder.decode( checker.get("expiredatetime") ) %><%= " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %></td>
-        </tr>
-      </table>
-      <form action="user_ee.jsp?tab=confirm" method="post">
-      <input type=hidden name="confirmed" value="true">
-      <input type=hidden name="program" value=<%= checker.get("program") %>>
-      <input type=hidden name="offer" value=<%= checker.get("offer") %>>
-      <input type=hidden name="rev" value=<%= checker.get("rev") %>>
-      <input type=hidden name="initials" value=<%= checker.get("initials") %>>
-      <%
-		for (int i = 0; i < 24; i++) {    
-            	%>
-      <input type=hidden name="amount" value=<%= newAmountStrs[i] %>>
-      <%
-		}
-	%>
-      <table width="650" border="0" cellspacing="0" cellpadding="5" align="center">
-        <tr> 
-          <td width="50%">
-
-            <center>
-              <table width="300" border="1" cellspacing="0" cellpadding="2">
-                <tr> 
-                  <td width="75" height="23" valign="TOP" class="HeaderCell"> 
-                    Hour</td>
-                  <td width="75" height="23" valign="TOP" class="HeaderCell">Offer 
-                    in $ per kWh</td>
-                  <td width="75" height="23" valign="TOP" class="HeaderCell">CLR 
-                    in kW</td>
-<!--                  <td width="75" height="23" valign="TOP" class="HeaderCell">Baseline</td>-->
-                </tr>
-                <%
-               for( int i = 0; i < 12; i++ ) {
-                   String hourStr = hourFormat.format(i+1) + ":00";
-          %>
-                <tr> 
-                  <td width="75" height="10" valign="TOP" class="TableCell"><%= hourStr %></td>
-                  <td width="75" height="10" valign="TOP" class="TableCell"><%= priceStrs[i] %></td>
-                  <td width="75" height="10" valign="TOP" class="TableCell"><%= amountStrs[i] %></td>
-<!--                  <td width="75" height="10" valign="TOP" class="TableCell">&nbsp;</td>-->
-                </tr>
-                <%
-		  		}
-		  %>
-              </table>
-            </center>
-          </td>
-                      <td width="50%" valign="top"> 
-                        <table width="300" border="1" cellspacing="0" cellpadding="2" align="center">
-              <tr> 
-                <td width="75" height="23" valign="TOP" class="HeaderCell"> Hour</td>
-                <td width="75" height="23" valign="TOP" class="HeaderCell">Offer 
-                  in $ per kWh</td>
-                <td width="75" height="23" valign="TOP" class="HeaderCell">CLR 
-                  in kW</td>
-<!--                <td width="75" height="23" valign="TOP" class="HeaderCell">Baseline</td>-->
-              </tr>
-              <%
-               for( int i = 12; i < 24; i++ ) {
-                   String hourStr = hourFormat.format(i + 1) + ":00";
-          %>
-              <tr> 
-                <td width="75" height="10" valign="TOP" class="TableCell"><%= hourStr %></td>
-                <td width="75" height="10" valign="TOP" class="TableCell"><%= priceStrs[i] %></td>
-                <td width="75" height="10" valign="TOP" class="TableCell"><%= amountStrs[i] %></td>
-<!--                <td width="75" height="10" valign="TOP" class="TableCell">&nbsp;</td>-->
-              </tr>
-              <%
-		  		}
-		  %>
-            </table>
-            
-          </td>
-        </tr>        
-      </table>            
-      <br clear="ALL"> 
-	<table width="600" border="0" cellspacing="0" cellpadding="0" align="center" class="Main">
-          <tr> 
-            <td width="83" height="29"  class="Main"> 
-              <div align="right">Comments:&nbsp; </div>
-            </td>
-            <td class="Main" width="511" height="29"><%= checker.get("comments") %> 
-            </td>
-          </tr>
-        </table>
-       <table width="580" border="0" cellspacing="0" cellpadding="4" height="10" align="center" class="Main">
-        <tr> 
-          <td width="36%" valign="TOP" height="10"> 
-            <p align=RIGHT>Initials: 
-          </td>
-          <td width="13%" valign="TOP" height="10"> 
-            <p align=LEFT><%= checker.get("initials") %>
-          </td>
-          <td width="17%" valign="TOP" height="10"> 
-            <div align="right"> 
-              <input type="submit" value="Send" name="image">
-            </div>
-          </td>
-          <td width="34%" valign="TOP" height="10"><input type = "button" value="Cancel" name = "cancel" onClick = "goBack()"></td>
-        </tr>
-      </table>
-                  
+                  <table width="480" border="0" cellspacing="0" cellpadding="5" align="center" class="Main">
+                    <tr> 
+                      <td><p align=RIGHT>&nbsp;Offer ID:</td>
+                      <td> <%= checker.get("offer") + " - " + checker.get("rev") %></td>
+                      <td><p align=RIGHT>Control Date:</td>
+                      <td><%= checker.get("offerdate") %></td>
+                      <td><p align=RIGHT>Expires:</td>
+                      <td><%= java.net.URLDecoder.decode( checker.get("expiredatetime") ) %><%= " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %></td>
+                    </tr>
+                  </table>
+                  <form action="user_ee.jsp?tab=confirm" method="post">
+                    <input type=hidden name="confirmed" value="true">
+                    <input type=hidden name="program" value=<%= checker.get("program") %>>
+                    <input type=hidden name="offer" value=<%= checker.get("offer") %>>
+                    <input type=hidden name="rev" value=<%= checker.get("rev") %>>
+                    <input type=hidden name="initials" value=<%= checker.get("initials") %>>
+                    <%
+                    for (int i = 0; i < 24; i++) {
+                    %>
+                    <input type=hidden name="amount" value=<%= newAmountStrs[i] %>>
+                    <% } %>
+                    <table width="650" border="0" cellspacing="0" cellpadding="5" align="center">
+                      <tr>
+                        <td width="50%">
+                          <center>
+                            <table width="300" border="1" cellspacing="0" cellpadding="2">
+                              <tr>
+                                <td width="75" height="23" valign="TOP" class="HeaderCell">Hour</td>
+                                <td width="75" height="23" valign="TOP" class="HeaderCell">Offer in $ per kWh</td>
+                                <td width="75" height="23" valign="TOP" class="HeaderCell">CLR in kW</td>
+<!--                                <td width="75" height="23" valign="TOP" class="HeaderCell">Baseline</td>-->
+                              </tr>
+                              <%
+                              for( int i = 0; i < 12; i++ ) {
+                                String hourStr = hourFormat.format(i+1) + ":00";
+                              %>
+                              <tr> 
+                                <td width="75" height="10" valign="TOP" class="TableCell"><%= hourStr %></td>
+                                <td width="75" height="10" valign="TOP" class="TableCell"><%= priceStrs[i] %></td>
+                                <td width="75" height="10" valign="TOP" class="TableCell"><%= amountStrs[i] %></td>
+<!--                                <td width="75" height="10" valign="TOP" class="TableCell">&nbsp;</td>-->
+                              </tr>
+                              <% } %>
+                            </table>
+                          </center>
+                        </td>
+                        <td width="50%" valign="top">
+                          <table width="300" border="1" cellspacing="0" cellpadding="2" align="center">
+                            <tr>
+                              <td width="75" height="23" valign="TOP" class="HeaderCell"> Hour</td>
+                              <td width="75" height="23" valign="TOP" class="HeaderCell">Offer in $ per kWh</td>
+                              <td width="75" height="23" valign="TOP" class="HeaderCell">CLR in kW</td>
+<!--                              <td width="75" height="23" valign="TOP" class="HeaderCell">Baseline</td>-->
+                            </tr>
+                            <%
+                            for( int i = 12; i < 24; i++ ) {
+                              String hourStr = hourFormat.format(i + 1) + ":00";
+                            %>
+                            <tr>
+                              <td width="75" height="10" valign="TOP" class="TableCell"><%= hourStr %></td>
+                              <td width="75" height="10" valign="TOP" class="TableCell"><%= priceStrs[i] %></td>
+                              <td width="75" height="10" valign="TOP" class="TableCell"><%= amountStrs[i] %></td>
+<!--                              <td width="75" height="10" valign="TOP" class="TableCell">&nbsp;</td>-->
+                            </tr>
+                            <% } %>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                    <br clear="ALL">
+                    <table width="600" border="0" cellspacing="0" cellpadding="0" align="center" class="Main">
+                      <tr>
+                        <td width="83" height="29"  class="Main">
+                          <div align="right">Comments:&nbsp; </div>
+                        </td>
+                        <td class="Main" width="511" height="29"><%= checker.get("comments") %></td>
+                      </tr>
+                    </table>
+                    <table width="580" border="0" cellspacing="0" cellpadding="4" height="10" align="center" class="Main">
+                      <tr>
+                        <td width="36%" valign="TOP" height="10">
+                          <p align=RIGHT>Initials:</td>
+                        <td width="13%" valign="TOP" height="10">
+                          <p align=LEFT><%= checker.get("initials") %>
+                        </td>
+                        <td width="17%" valign="TOP" height="10">
+                          <div align="right">
+                            <input type="submit" value="Send" name="image">
+                          </div>
+                        </td>
+                        <td width="34%" valign="TOP" height="10"><input type = "button" value="Cancel" name = "cancel" onClick = "goBack()"></td>
+                      </tr>
+                    </table>
+                  </FORM>
+<!--                  <form method="get" action="">
+                  <div align="center"><span class="Main">If you would like to review the terms of your energy contract, click</span> <br>
+                    <input type="submit" name="" value="Here">-->
+                    <br>
+                  <div align="center">
+                    <span class="Main">If you have questions or problems, call <cti:getProperty propertyid="<%=EnergyBuybackRole.SUPPORT_PHONE_NUMBER%>"/>
+                    </span>
+                  </div>
+<!--                  </form>-->
+                <p class="Main" align="center"></p>
+                <p>&nbsp;</p>
                 </td>
-  </tr>
-</table>
-</FORM>
-          <form method="get" action="">
-              <div align="center"><span class="Main">If you would like to review 
-                the terms of your energy contract, click</span> <br>
-                <input type="submit" name="" value="Here">
-                <br>
-                <span class="Main">If you have questions or problems, call <cti:getProperty propertyid="<%=EnergyBuybackRole.SUPPORT_PHONE_NUMBER%>"/>
-                </span></div>
-            </form>
-            <p class="Main" align="center">
-            </p>
-            <p>&nbsp;</p>
+              </tr>
+            </table>
           </td>
-        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-    </tr>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+        </tr>
       </table>
     </td>
-	</tr>
+  </tr>
 </table>
 <br>
 </body>
