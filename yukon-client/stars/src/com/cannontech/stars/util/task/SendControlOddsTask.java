@@ -33,7 +33,8 @@ public class SendControlOddsTask implements Runnable {
 			"============================================================\r\n";
 	private static final String blanks = "                                        ";
 	private static final String footer = "To unsubscribe from the notification list, " +
-			"contact the program administrator at 388-2926 or email ACProgram@idahopower.com";
+			"please go to http://www.wisewatts.com and login with your username and password. " +
+			"On the first page (or the \"General\" link), uncheck the notification box (or check the box to subscribe again).";
 	
 	private int energyCompanyID = 0;
 	
