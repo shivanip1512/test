@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2004/10/22 20:58:53 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/03/10 19:29:20 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,10 +37,12 @@
 #include "msg_pcreturn.h"
 #include "tbl_dv_scandata.h"
 #include "tbl_dv_wnd.h"
+#include "connection.h"
 #include "prot_base.h"
+using namespace Cti;  //  in preparation for moving devices to their own namespace
+
 //#include "verification_objects.h"
 class CtiVerificationBase;  //  this is so boost_time.h isn't included via verification_objects.h - for now
-
 
 /*
  *  A Single (as opposed to group) device entity which is physical device!
@@ -48,6 +50,14 @@ class CtiVerificationBase;  //  this is so boost_time.h isn't included via verif
 class IM_EX_DEVDB CtiDeviceSingle : public CtiDeviceBase
 {
 protected:
+
+    enum ScanPriorities
+    {
+        ScanPriority_General     = 11,
+        ScanPriority_Integrity   = 11,
+        ScanPriority_Accumulator = 12,
+        ScanPriority_LoadProfile = 6
+    };
 
     CtiTableDevice2Way           _twoWay;
 
@@ -68,7 +78,7 @@ protected:
 
     bool validatePendingStatus(bool status, int scantype, RWTime &now = RWTime());
 
-    virtual CtiProtocolBase *getProtocol() const;
+    virtual Protocol::Interface *getProtocol();
 
 private:
 
@@ -142,25 +152,26 @@ public:
     virtual int  recvCommRequest(OUTMESS *OutMessage);
     virtual int  sendCommResult(INMESS *InMessage);
     virtual bool isTransactionComplete();
+    virtual void sendDispatchResults(CtiConnection &vg_connection);
 
     virtual void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);
 
-    virtual INT ProcessResult(INMESS*,
-                              RWTime&,
-                              RWTPtrSlist< CtiMessage > &vgList,
-                              RWTPtrSlist< CtiMessage > &retList,
-                              RWTPtrSlist< OUTMESS > &outList);
+    virtual INT  ProcessResult(INMESS*,
+                               RWTime&,
+                               RWTPtrSlist< CtiMessage > &vgList,
+                               RWTPtrSlist< CtiMessage > &retList,
+                               RWTPtrSlist< OUTMESS > &outList);
 
     virtual RWTime adjustNextScanTime(const INT scanType = ScanRateGeneral);
-    RWTime      firstScan( const RWTime &When, INT rate );
-    void        validateScanTimes(bool force = false);
+    RWTime         firstScan( const RWTime &When, INT rate );
+    void           validateScanTimes(bool force = false);
 
     INT         doDeviceInit(void);
-    INT         initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = 11);
-    INT         initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = 11);
-    INT         initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = 12);
+    INT         initiateGeneralScan    (RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = ScanPriority_General);
+    INT         initiateIntegrityScan  (RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = ScanPriority_Integrity);
+    INT         initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = ScanPriority_Accumulator);
     //  Load Profile gets a low priority so it doesn't butt heads so hard with other reads
-    INT         initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = 6);
+    INT         initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = ScanPriority_LoadProfile);
 
     bool isScanDataValid() const;
     BOOL isScanWindowOpen(RWTime &aNow=RWTime()) const;
