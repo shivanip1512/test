@@ -443,6 +443,6 @@ public class EmailMessage
 			for (int i = 1; i < emailAddress.length; i++)
 				oldTo += ", " + emailAddress[i];
 		}
-		setTo(to);
+		setTo(oldTo);
 	}
 }
