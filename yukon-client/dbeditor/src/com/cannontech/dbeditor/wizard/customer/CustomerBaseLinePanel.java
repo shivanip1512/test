@@ -781,6 +781,8 @@ public Object getValue(Object o)
 
 	if( getJCheckBoxEnableBaseLine().isSelected() )
 	{
+		/*TODO REMOVING THS PANEL.  TEMPORARY COMMENT OUT UNTIL JON CHECKS IN HIS STUFF*/
+/*		
 		customer.getCustomerBaseLine().setDaysUsed( 
 				new Integer( Integer.parseInt(getJTextFieldPreviousDays().getText())) );
 		
@@ -793,16 +795,15 @@ public Object getValue(Object o)
 		customer.getCustomerBaseLine().setExcludedWeekDays(
 				getJCheckBoxDayChooser().getSelectedDays8Chars().substring(0,7) );
 
-		LitePoint pt = (LitePoint)getJComboBoxPoint().getSelectedItem();
-		if( !LitePoint.NONE_LITE_PT.equals(pt) )
-			customer.getCustomerBaseLinePoint().setPointID( new Integer(pt.getPointID()) );
-
-
 		if( getJComboBoxHoliday().getSelectedItem() != null )
 			customer.getCustomerBaseLine().setHolidaysUsed( 
 				new Integer( ((com.cannontech.database.data.lite.LiteHolidaySchedule)getJComboBoxHoliday().getSelectedItem()).getHolidayScheduleID() ) );
 		else
 			customer.getCustomerBaseLine().setHolidaysUsed( new Integer(0) );
+*/
+		LitePoint pt = (LitePoint)getJComboBoxPoint().getSelectedItem();
+		if( !LitePoint.NONE_LITE_PT.equals(pt) )
+			customer.getCustomerBaseLinePoint().setPointID( new Integer(pt.getPointID()) );
 	}
 	else
 	{
@@ -810,7 +811,8 @@ public Object getValue(Object o)
 		// dummy like base line so it gets deleted from the database if one already exists
 		com.cannontech.database.db.customer.CustomerBaseLine c = new com.cannontech.database.db.customer.CustomerBaseLine();
 		c.setCustomerID( customer.getCustomerID() );
-		customer.setCustomerBaseLine( c );
+		/*TODO REMOVING THS PANEL.  TEMPORARY COMMENT OUT UNTIL JON CHECKS IN HIS STUFF*/		
+//		customer.setCustomerBaseLine( c );
 	}
 	
 	return o;
@@ -964,7 +966,8 @@ public void setValue(Object o)
 	com.cannontech.database.data.customer.CICustomerBase customer = (com.cannontech.database.data.customer.CICustomerBase)o;
 	boolean usedBased = false;
 	
-	Integer temp = customer.getCustomerBaseLine().getDaysUsed();
+	/*TODO REMOVING THS PANEL.  TEMPORARY COMMENT OUT UNTIL JON CHECKS IN HIS STUFF*/	
+	/*Integer temp = customer.getCustomerBaseLine().getDaysUsed();
 	if( temp != null )
 	{
 		getJTextFieldPreviousDays().setText( temp.toString() );
@@ -1001,7 +1004,7 @@ public void setValue(Object o)
 				getJComboBoxHoliday().setSelectedIndex(i);
 				break;
 			}
-
+*/
 
 	if( customer.getCustomerBaseLinePoint().getPointID() != null )
 	{
