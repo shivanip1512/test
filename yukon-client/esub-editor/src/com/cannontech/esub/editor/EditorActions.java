@@ -50,8 +50,15 @@ class EditorActions {
 	public static final String DYNAMIC_GRAPH = "DYNAMIC GRAPH";
 	public static final String ALARM_TABLE_ELEMENT = "ALARM TABLE";
 	public static final String ALARM_TEXT_ELEMENT = "ALARM TEXT";
-		
+	
 	//Element or group of elements related actions
+	public static final String ALIGN_ELEMENTS_LEFT = "ALIGN LEFT";
+	public static final String ALIGN_ELEMENTS_RIGHT = "ALIGN RIGHT";
+	public static final String ALIGN_ELEMENTS_TOP = "ALIGN TOP";
+	public static final String ALIGN_ELEMENTS_BOTTOM = "ALIGN BOTTOM";
+	public static final String ALIGN_ELEMENTS_VERTICAL = "ALIGN VERTICAL";
+	public static final String ALIGN_ELEMENTS_HORIZONTAL = "ALIGN HORIZONTAL";
+	
 	public static final String ROTATE_ELEMENT_90 = "ROTATE 90";
 	public static final String ROTATE_ELEMENT_180 = "ROTATE 180";
 	public static final String ROTATE_ELEMENT_270 = "ROTATE 270";
@@ -195,6 +202,167 @@ class EditorActions {
 		}
 	};
 
+	private final LxAbstractAction alignLeft = 
+		new LxAbstractAction(
+			ALIGN_ELEMENTS_LEFT,
+			"Align Left",
+			"Align Left",
+			null,
+			true) {
+		public void processAction(ActionEvent e) {
+			LxGraph graph = editor.getDrawing().getLxGraph();
+			Object[] allSelected = graph.getSelectedObjects();
+			
+			double minX = Double.MAX_VALUE;
+			for(int i = 0; i < allSelected.length; i++) {
+				if(allSelected[i] instanceof LxComponent) {
+					LxComponent comp = (LxComponent) allSelected[i];
+					if(comp.getX() < minX) {
+						minX = comp.getX();
+					}
+				}
+			}
+			for(int i = 0; i < allSelected.length; i++) {
+				if(allSelected[i] instanceof LxComponent) {
+					LxComponent comp = (LxComponent) allSelected[i];
+					comp.setX(minX);
+				}
+			}
+		}
+	};
+	
+	private final LxAbstractAction alignRight = 
+		new LxAbstractAction(
+			ALIGN_ELEMENTS_RIGHT,
+			"Align Right",
+			"Align Right",
+			null,
+			true) {
+		public void processAction(ActionEvent e) {
+			LxGraph graph = editor.getDrawing().getLxGraph();
+			Object[] allSelected = graph.getSelectedObjects();
+			
+			double maxX = Double.MIN_VALUE;
+			for(int i = 0; i < allSelected.length; i++) {
+				if(allSelected[i] instanceof LxComponent) {
+					LxComponent comp = (LxComponent) allSelected[i];
+					if(comp.getX()+comp.getWidth() > maxX) {
+						maxX = comp.getX()+comp.getWidth();
+					}
+				}
+			}
+			for(int i = 0; i < allSelected.length; i++) {
+				if(allSelected[i] instanceof LxComponent) {
+					LxComponent comp = (LxComponent) allSelected[i];
+					comp.setX(maxX-comp.getWidth());
+				}
+			}
+		}
+	};
+	
+	private final LxAbstractAction alignTop = 
+		new LxAbstractAction(
+			ALIGN_ELEMENTS_TOP,
+			"Align Top",
+			"Align Top",
+			null,
+			true) {
+		public void processAction(ActionEvent e) {
+			LxGraph graph = editor.getDrawing().getLxGraph();
+			Object[] allSelected = graph.getSelectedObjects();
+			
+			double minY = Double.MAX_VALUE;
+			for(int i = 0; i < allSelected.length; i++) {
+				if(allSelected[i] instanceof LxComponent) {
+					LxComponent comp = (LxComponent) allSelected[i];
+					if(comp.getY() < minY) {
+						minY = comp.getY();
+					}
+				}
+			}
+			for(int i = 0; i < allSelected.length; i++) {
+				if(allSelected[i] instanceof LxComponent) {
+					LxComponent comp = (LxComponent) allSelected[i];
+					comp.setY(minY);
+				}
+			}
+		}
+	};
+	
+	private final LxAbstractAction alignBottom = 
+		new LxAbstractAction(
+			ALIGN_ELEMENTS_BOTTOM,
+			"Align Bottom",
+			"Align Bottom",
+			null,
+			true) {
+		public void processAction(ActionEvent e) {
+			LxGraph graph = editor.getDrawing().getLxGraph();
+			Object[] allSelected = graph.getSelectedObjects();
+			
+			double maxY = Double.MIN_VALUE;
+			for(int i = 0; i < allSelected.length; i++) {
+				if(allSelected[i] instanceof LxComponent) {
+					LxComponent comp = (LxComponent) allSelected[i];
+					if(comp.getY()+comp.getHeight() > maxY) {
+						maxY = comp.getY()+comp.getHeight();
+					}
+				}
+			}
+			for(int i = 0; i < allSelected.length; i++) {
+				if(allSelected[i] instanceof LxComponent) {
+					LxComponent comp = (LxComponent) allSelected[i];
+					comp.setY(maxY-comp.getHeight());
+				}
+			}
+		
+		
+		}
+	};
+		
+	private final LxAbstractAction alignVertical = 
+		new LxAbstractAction(
+			ALIGN_ELEMENTS_VERTICAL,
+			"Align Vertical",
+			"Align Vertical",
+			null,
+			true) {
+		public void processAction(ActionEvent e) {
+			LxGraph graph = editor.getDrawing().getLxGraph();
+			Object[] allSelected = graph.getSelectedObjects();
+			
+			int selComp = 0;
+			double avgX = 0.0;
+			for(int i = 0; i < allSelected.length; i++) {
+				if(allSelected[i] instanceof LxComponent) {
+					LxComponent comp = (LxComponent) allSelected[i];
+					avgX += comp.getCenterX();
+					selComp++;
+				}
+			}
+			avgX /= selComp;
+			
+			for(int i = 0; i < allSelected.length; i++) {
+				if(allSelected[i] instanceof LxComponent) {
+					LxComponent comp = (LxComponent) allSelected[i];
+					comp.setCenterX(avgX);
+				}
+			}		
+		}
+	};
+		
+	private final LxAbstractAction alignHorizontal = 
+		new LxAbstractAction(
+			ALIGN_ELEMENTS_HORIZONTAL,
+			"Align Horizontal",
+			"Align Horizontal",
+			null,
+			true) {
+		public void processAction(ActionEvent e) {
+		
+		}
+	};
+	
 	private final LxAbstractAction rotateElement90Action = 
 		new LxAbstractAction(
 			ROTATE_ELEMENT_90,
@@ -435,8 +603,7 @@ class EditorActions {
 			editor.setBehavior(image);
 			editor.elementPlacer.setElement(image);
 			editor.elementPlacer.setIsPlacing(true);
-			editor.getDrawing().getLxView().setCursor(
-				new java.awt.Cursor(java.awt.Cursor.CROSSHAIR_CURSOR));
+			editor.getDrawing().getLxView().setCursor(Util.CROSSHAIR_CURSOR);
 		}
 	};
 
@@ -612,6 +779,13 @@ class EditorActions {
 
 		actionMap.put(DELETE_ELEMENT, deleteElementAction);
 
+		actionMap.put(ALIGN_ELEMENTS_LEFT, alignLeft);
+		actionMap.put(ALIGN_ELEMENTS_RIGHT, alignRight);
+		actionMap.put(ALIGN_ELEMENTS_TOP, alignTop);
+		actionMap.put(ALIGN_ELEMENTS_BOTTOM, alignBottom);
+		actionMap.put(ALIGN_ELEMENTS_VERTICAL, alignVertical);
+		actionMap.put(ALIGN_ELEMENTS_HORIZONTAL, alignHorizontal);
+		
 		actionMap.put(ROTATE_ELEMENT_90, rotateElement90Action);
 		actionMap.put(ROTATE_ELEMENT_180, rotateElement180Action);
 		actionMap.put(ROTATE_ELEMENT_270, rotateElement270Action);
