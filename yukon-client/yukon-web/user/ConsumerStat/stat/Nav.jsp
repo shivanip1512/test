@@ -4,8 +4,7 @@
 						  {"TOU.jsp", "Usage"},
 						  {"ProgramHist.jsp", "Control History"},
 						  {"Programs.jsp", "Add/Change"},
-						  {"Util.jsp", "Utility"},
-						  {"Installer.jsp", "Installer"},
+						  {"Util.jsp", "Contact Us"},
 						  {"FAQ.jsp", "FAQ"},
 						  {"Enrollment.jsp", "Enrollment"},
 						  {"OptOut.jsp", "Opt Out"},
@@ -63,7 +62,6 @@
     <td> 
       <div align="left"><span class="NavHeader">Questions</span><br>
         <%= links.get("Util.jsp") %><br>
-        <%= links.get("Installer.jsp") %><br>
         <%= links.get("FAQ.jsp") %></div>
     </td>
   </tr>
