@@ -730,6 +730,17 @@ public void setValue(Object o) {
 		LMGroupSADigital digital = (LMGroupSADigital) o;
 		
 		StringBuffer address = new StringBuffer(digital.getLMGroupSASimple().getOperationalAddress());
+		//check for opcodes that are short of digits; add a zero to the front if they are
+		if(address.length() < 4)
+		{
+			address.reverse();
+			for(int j = 4 - address.length(); j > 0; j--)
+			{
+				address.append("0");
+			}
+			address.reverse();
+		}
+		
 		getOpAddress1JTextField().setText(address.substring(0,2));
 		//skip that hyphen at position 2
 		getOpAddress2JTextField().setText(address.substring(3,4));
