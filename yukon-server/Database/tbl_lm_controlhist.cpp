@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2004/04/26 22:45:19 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/05/19 14:50:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -475,12 +475,12 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
 
     if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
     {
-        #if 0
+#if 0
         if(getActiveRestore() != RWCString(LMAR_NEWCONTROL))
             setPreviousLogTime( getStopTime() );
         else
             setPreviousLogTime( getStartTime() );
-        #else
+#else
         if(isNewControl())
         {
             setPreviousLogTime( getStartTime() );
@@ -493,7 +493,7 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
         {
             setPreviousLogTime( getStopTime() );
         }
-        #endif
+#endif
 
         setDirty(false);
         setNotNewControl();
@@ -530,12 +530,12 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
             }
             else
             {
-                #if 0
+#if 0
                 if(getActiveRestore() != RWCString(LMAR_NEWCONTROL))
                     setPreviousLogTime( getStopTime() );
                 else
                     setPreviousLogTime( getStartTime() );
-                #else
+#else
                 if(isNewControl())
                 {
                     setPreviousLogTime( getStartTime() );
@@ -548,7 +548,7 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
                 {
                     setPreviousLogTime( getStopTime() );
                 }
-                #endif
+#endif
 
                 setDirty(false);
                 setNotNewControl();
@@ -625,6 +625,7 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const RWTime 
         ULONG todaysSeconds = now.seconds() - lastTimePrevious.seconds();
         partialIncrement = lastTimePrevious.seconds() - getPreviousLogTime().seconds();
 
+#if 0
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -632,7 +633,8 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const RWTime 
             dout << " now()              = " << now << endl;
             dout << " todaysSeconds      = " << todaysSeconds << endl;
             dout << " partialIncrement   = " << partialIncrement << endl;
-      }
+        }
+#endif
 
         if(partialIncrement <= increment )    // Be cautious since the last log may be many days ago.. We only want continuous controls to be recorded.
         {

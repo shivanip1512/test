@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/03/13 19:35:25 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/05/19 14:49:45 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -80,10 +80,6 @@ CtiStatistics::~CtiStatistics()
 {
     if(_dirty)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
         Update();
     }
 }
