@@ -41,7 +41,7 @@ class LoginSupport {
 			in = conn.getInputStream();
 			
 			String cookie = conn.getHeaderField("Set-Cookie");
-			CTILogger.debug("LoginController returned 'Set-Cookie' = " + cookie);
+			CTILogger.getStandardLog().debug("LoginController returned 'Set-Cookie' = " + cookie);
 			return cookie;
 		}
 		catch(IOException e) {
