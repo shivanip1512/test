@@ -957,8 +957,7 @@ System.out.println("user: " + user.getUserID() + " size: " + userRoleIDsLookupMa
 	private void addRolesAndPropertiesToLookupMap(final Map roleMap, final Map roleIDMap, final Map rolePropertyIDMap) {
 		Iterator roleIter = roleMap.keySet().iterator();
 		while(roleIter.hasNext()) {
-			LiteYukonRole groupRole = (LiteYukonRole) roleIter.next();
-System.out.println("putting: " + groupRole.getRoleID());			
+			LiteYukonRole groupRole = (LiteYukonRole) roleIter.next();	
 			roleIDMap.put(new Integer(groupRole.getRoleID()), groupRole);						
 						
 			// add roleproperties for this role
