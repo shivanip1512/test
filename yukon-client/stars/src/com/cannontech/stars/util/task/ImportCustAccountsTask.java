@@ -172,9 +172,11 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					if (custFile != null)
 						msg += numAcctImported + " customer accounts imported successfully" +
 							" (" + numAcctAdded + " added, " + numAcctUpdated + " updated, " + numAcctRemoved + " removed)";
-					if (hwFile != null)
-						msg += numHwImported + " hardwares imported successfully" +
+					if (hwFile != null) {
+						if (msg.length() > 0) msg += LINE_SEPARATOR;
+						msg += numHwImported + " hardware imported successfully" +
 							" (" + numHwAdded + " added, " + numHwUpdated + " updated, " + numHwRemoved + " removed)";
+					}
 				}
 				else {
 					if (custFile != null) {
@@ -187,9 +189,9 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					if (hwFile != null) {
 						if (msg.length() > 0) msg += LINE_SEPARATOR;
 						if (numHwTotal == 0)
-							msg += numHwImported + " hardwares imported successfully";
+							msg += numHwImported + " hardware imported successfully";
 						else
-							msg += numHwImported + " of " + numHwTotal + " hardwares imported";
+							msg += numHwImported + " of " + numHwTotal + " hardware imported";
 						msg += " (" + numHwAdded + " added, " + numHwUpdated + " updated, " + numHwRemoved + " removed)";
 					}
 				}

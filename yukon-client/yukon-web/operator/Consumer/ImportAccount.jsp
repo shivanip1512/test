@@ -37,24 +37,24 @@
                 <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportAccount.jsp">
                 <table width="600" border="0" cellspacing="0" cellpadding="0">
                   <tr> 
-                    <td class="MainText" align="center">Select or enter the import 
-                      file(s). Only the &quot;Customer File&quot; is required. 
-                      You can leave other fields empty if they don't apply. Don't 
-                      check the &quot;Pre-scan...&quot; box unless you are instructed 
-                      to do so.</td>
+                    <td class="MainText" align="center">Please enter the import 
+                      file(s). Leave the field empty if you do not have the corresponding 
+                      file.<br>
+                      Do not select the &quot;Pre-scan...&quot; check box unless 
+                      you are instructed to do so.</td>
                   </tr>
                 </table>
                 <br>
-                <table width="400" border="0" cellspacing="0" cellpadding="3" class="TableCell">
+                <table width="500" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                   <tr> 
-                    <td width="150" align="right">Customer File: </td>
-                    <td width="250"> 
+                    <td width="30%" align="right">Customer File: </td>
+                    <td width="70%"> 
                       <input type="file" name="CustFile" size="35">
                     </td>
                   </tr>
                   <tr> 
-                    <td width="150" align="right">Hardware File: </td>
-                    <td width="250"> 
+                    <td width="30%" align="right">Hardware File: </td>
+                    <td width="70%"> 
                       <input type="file" name="HwFile" size="35">
                     </td>
                   </tr>
