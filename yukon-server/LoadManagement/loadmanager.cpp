@@ -345,7 +345,7 @@ void CtiLoadManager::controlLoop()
                         if( currentControlArea->getControlAreaState() == CtiLMControlArea::FullyActiveState ||
                             currentControlArea->getControlAreaState() == CtiLMControlArea::ActiveState )
                         {
-                            if( currentControlArea->isControlStillNeeded() )
+//                            if( currentControlArea->isControlStillNeeded() )
                             {
                                 //CtiLockGuard<CtiLogger> logger_guard(dout);
                                 //dout << RWTime() << " - Maintaining current load reduction in control area: " << currentControlArea->getPAOName() << "." << endl;
