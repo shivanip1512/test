@@ -87,6 +87,8 @@ void CtiLMService::Init()
     RWCString str;
     char var[128];
 
+    _LM_DEBUG = LM_DEBUG_NONE;//default
+
     strcpy(var, "LOAD_MANAGEMENT_DEBUG");
     if( !(str = gConfigParms.getValueAsString(var)).isNull() )
     {
