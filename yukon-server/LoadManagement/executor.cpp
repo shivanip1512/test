@@ -479,36 +479,39 @@ void CtiLMCommandExecutor::ChangeDailyStartTime()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& controlAreas = *(store->getControlAreas(RWDBDateTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.entries();i++)
+    if( newStartTime >= 0 )
     {
-        CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)controlAreas[i];
-        if( currentLMControlArea->getPAOId() == commandPAOID )
+        for(LONG i=0;i<controlAreas.entries();i++)
         {
-            currentLMControlArea->setCurrentDailyStartTime(newStartTime);
-            currentLMControlArea->setUpdatedFlag(TRUE);
+            CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)controlAreas[i];
+            if( currentLMControlArea->getPAOId() == commandPAOID )
             {
-                char tempchar[80] = "";
-                RWCString text = RWCString("User Daily Start Change");
-                RWCString additional = RWCString("New Daily Start Time: ");
-                LONG startTimeHours = newStartTime / 3600;
-                LONG startTimeMinutes = (newStartTime - (startTimeHours * 3600)) / 60;
-                _snprintf(tempchar,80,"%d",startTimeHours);
-                additional += tempchar;
-                additional += ":";
-                _snprintf(tempchar,80,"%d",startTimeMinutes);
-                additional += tempchar;
-                additional += " changed in LMControlArea: ";
-                additional += currentLMControlArea->getPAOName();
-                additional += " PAO ID: ";
-                _snprintf(tempchar,80,"%d",currentLMControlArea->getPAOId());
-                additional += tempchar;
-                CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                currentLMControlArea->setCurrentDailyStartTime(newStartTime);
+                currentLMControlArea->setUpdatedFlag(TRUE);
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << text << ", " << additional << endl;
+                    char tempchar[80] = "";
+                    RWCString text = RWCString("User Daily Start Change");
+                    RWCString additional = RWCString("New Daily Start Time: ");
+                    LONG startTimeHours = newStartTime / 3600;
+                    LONG startTimeMinutes = (newStartTime - (startTimeHours * 3600)) / 60;
+                    _snprintf(tempchar,80,"%d",startTimeHours);
+                    additional += tempchar;
+                    additional += ":";
+                    _snprintf(tempchar,80,"%d",startTimeMinutes);
+                    additional += tempchar;
+                    additional += " changed in LMControlArea: ";
+                    additional += currentLMControlArea->getPAOName();
+                    additional += " PAO ID: ";
+                    _snprintf(tempchar,80,"%d",currentLMControlArea->getPAOId());
+                    additional += tempchar;
+                    CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - " << text << ", " << additional << endl;
+                    }
                 }
+                break;
             }
-            break;
         }
     }
 }
@@ -524,36 +527,39 @@ void CtiLMCommandExecutor::ChangeDailyStopTime()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& controlAreas = *(store->getControlAreas(RWDBDateTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.entries();i++)
+    if( newStopTime >= 0 )
     {
-        CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)controlAreas[i];
-        if( currentLMControlArea->getPAOId() == commandPAOID )
+        for(LONG i=0;i<controlAreas.entries();i++)
         {
-            currentLMControlArea->setCurrentDailyStopTime(newStopTime);
-            currentLMControlArea->setUpdatedFlag(TRUE);
+            CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)controlAreas[i];
+            if( currentLMControlArea->getPAOId() == commandPAOID )
             {
-                char tempchar[80] = "";
-                RWCString text = RWCString("User Daily Stop Change");
-                RWCString additional = RWCString("New Daily Stop Time: ");
-                LONG stopTimeHours = newStopTime / 3600;
-                LONG stopTimeMinutes = (newStopTime - (stopTimeHours * 3600)) / 60;
-                _snprintf(tempchar,80,"%d",stopTimeHours);
-                additional += tempchar;
-                additional += ":";
-                _snprintf(tempchar,80,"%d",stopTimeMinutes);
-                additional += tempchar;
-                additional += " changed in LMControlArea: ";
-                additional += currentLMControlArea->getPAOName();
-                additional += " PAO ID: ";
-                _snprintf(tempchar,80,"%d",currentLMControlArea->getPAOId());
-                additional += tempchar;
-                CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                currentLMControlArea->setCurrentDailyStopTime(newStopTime);
+                currentLMControlArea->setUpdatedFlag(TRUE);
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << text << ", " << additional << endl;
+                    char tempchar[80] = "";
+                    RWCString text = RWCString("User Daily Stop Change");
+                    RWCString additional = RWCString("New Daily Stop Time: ");
+                    LONG stopTimeHours = newStopTime / 3600;
+                    LONG stopTimeMinutes = (newStopTime - (stopTimeHours * 3600)) / 60;
+                    _snprintf(tempchar,80,"%d",stopTimeHours);
+                    additional += tempchar;
+                    additional += ":";
+                    _snprintf(tempchar,80,"%d",stopTimeMinutes);
+                    additional += tempchar;
+                    additional += " changed in LMControlArea: ";
+                    additional += currentLMControlArea->getPAOName();
+                    additional += " PAO ID: ";
+                    _snprintf(tempchar,80,"%d",currentLMControlArea->getPAOId());
+                    additional += tempchar;
+                    CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - " << text << ", " << additional << endl;
+                    }
                 }
+                break;
             }
-            break;
         }
     }
 }
@@ -611,6 +617,7 @@ void CtiLMCommandExecutor::ShedGroup()
                             currentLMGroup->setLastControlString(requestMsg->CommandString());
                             CtiLoadManager::getInstance()->sendMessageToPIL(requestMsg);
                             currentLMGroup->setLastControlSent(RWDBDateTime());
+                            currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
                             ((CtiLMControlArea*)controlAreas[i])->setUpdatedFlag(TRUE);
                         }
                         else
@@ -697,6 +704,7 @@ void CtiLMCommandExecutor::CycleGroup()
                             currentLMGroup->setLastControlString(requestMsg->CommandString());
                             CtiLoadManager::getInstance()->sendMessageToPIL(requestMsg);
                             currentLMGroup->setLastControlSent(RWDBDateTime());
+                            currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
                             ((CtiLMControlArea*)controlAreas[i])->setUpdatedFlag(TRUE);
                         }
                         else
@@ -776,6 +784,7 @@ void CtiLMCommandExecutor::RestoreGroup()
                         currentLMGroup->setLastControlString(requestMsg->CommandString());
                         CtiLoadManager::getInstance()->sendMessageToPIL(requestMsg);
                         currentLMGroup->setLastControlSent(RWDBDateTime());
+                        currentLMGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
                         ((CtiLMControlArea*)controlAreas[i])->setUpdatedFlag(TRUE);
 
                         found = TRUE;
@@ -919,6 +928,7 @@ void CtiLMCommandExecutor::DisableGroup()
                         CtiLoadManager::getInstance()->sendMessageToPIL(requestMsg);
                         currentLMGroup->setLastControlSent(RWDBDateTime());
                         CtiLMControlAreaStore::getInstance()->UpdateGroupDisableFlagInDB(currentLMGroup);
+                        currentLMGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
                         ((CtiLMControlArea*)controlAreas[i])->setUpdatedFlag(TRUE);
 
                         found = TRUE;
