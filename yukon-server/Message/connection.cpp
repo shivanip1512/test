@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2005/02/18 14:28:57 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2005/02/20 03:58:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -454,10 +454,10 @@ void CtiConnection::OutThread()
 
                     waitForConnect();
 
-                    if( _valid )
+                    if( _valid && _exchange )
                     {
-                        Out() << *MyMsg;
-                        Out().vflush();
+                        _exchange->Out() << *MyMsg;
+                        _exchange->Out().vflush();
 
                         messagePeek( MyMsg );
 
@@ -1205,9 +1205,14 @@ unsigned CtiConnection::hash(const CtiConnection& aRef)
     return(unsigned)&aRef;            // The address of the Object?
 }
 
-RWpistream& CtiConnection::In()                                { return _exchange->In();}
-RWpostream& CtiConnection::Out()                               { return _exchange->Out();}
-RWInetHost  CtiConnection::getPeer() const                     { return _exchange->getPeer();}
+RWInetHost  CtiConnection::getPeer() const
+{
+    RWInetHost host;
+    if(_exchange)
+        host = _exchange->getPeer();
+
+    return host;
+}
 
 void CtiConnection::ThreadTerminate()
 {
@@ -1230,8 +1235,7 @@ BOOL CtiConnection::isViable() const
 
 UINT CtiConnection::valid() const
 {
-    return
-    _valid;
+    return _valid;
 }
 
 void CtiConnection::cleanExchange()

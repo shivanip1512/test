@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/connection.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/02/18 14:28:57 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/02/20 03:58:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -109,10 +109,7 @@ public:
 
    void        Shutdown();
 
-   RWpistream& In();
-   RWpostream& Out();
    RWInetHost  getPeer() const;
-
 
    INT ConnectPortal();
    INT ManageSocketError( RWSockErr& msg );
