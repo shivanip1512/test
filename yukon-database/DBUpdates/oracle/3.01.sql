@@ -176,6 +176,25 @@ alter table DeviceRTC
       references DEVICE (DEVICEID);
 
 
+insert into YukonRoleProperty values(-10301,-103,'Versacom Serial','true','Show a Versacom Serial Number SortBy display');
+insert into YukonRoleProperty values(-10302,-103,'Expresscom Serial','true','Show an Expresscom Serial Number SortBy display');
+insert into YukonRoleProperty values(-10303,-103,'DCU SA203 Serial','false','Show a DCU SA205 Serial Number SortBy display');
+insert into YukonRoleProperty values(-10304,-103,'DCU SA305 Serial','false','Show a DCU SA305 Serial Number SortBy display');
+
+insert into YukonGroupRole values(-170,-100,-103,-10301,'true');
+insert into YukonGroupRole values(-170,-100,-103,-10302,'true');
+insert into YukonGroupRole values(-170,-100,-103,-10303,'false');
+insert into YukonGroupRole values(-170,-100,-103,-10304,'false');
+
+insert into YukonGroupRole values(-1070,-2,-103,-10301,'true');
+insert into YukonGroupRole values(-1070,-2,-103,-10302,'true');
+insert into YukonGroupRole values(-1070,-2,-103,-10303,'false');
+insert into YukonGroupRole values(-1070,-2,-103,-10304,'false');
+
+insert into YukonUserRole values(-170,-1,-103,-10301,'true');
+insert into YukonUserRole values(-170,-1,-103,-10302,'true');
+insert into YukonUserRole values(-170,-1,-103,-10303,'false');
+insert into YukonUserRole values(-170,-1,-103,-10304,'false');
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
