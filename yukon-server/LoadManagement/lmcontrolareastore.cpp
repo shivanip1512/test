@@ -25,6 +25,7 @@
 #include "lmenergyexchangehourlycustomer.h"
 #include "lmprogramcurtailment.h"
 #include "lmprogramdirect.h"
+#include "lmprogramthermostatgear.h"
 #include "lmprogramenergyexchange.h"
 #include "lmgroupversacom.h"
 #include "lmgroupemetcon.h"
@@ -460,30 +461,46 @@ void CtiLMControlAreaStore::reset()
     
                                 {
                                     RWDBTable lmProgramDirectGearTable = db.table("lmprogramdirectgear");
+                                    RWDBTable lmThermoStatGearTable = db.table("lmthermostatgear");
     
                                     RWDBSelector selector = db.selector();
                                     selector << lmProgramDirectGearTable["deviceid"]//will be paobjectid
-                                    << lmProgramDirectGearTable["gearname"]
-                                    << lmProgramDirectGearTable["gearnumber"]
-                                    << lmProgramDirectGearTable["controlmethod"]
-                                    << lmProgramDirectGearTable["methodrate"]
-                                    << lmProgramDirectGearTable["methodperiod"]
-                                    << lmProgramDirectGearTable["methodratecount"]
-                                    << lmProgramDirectGearTable["cyclerefreshrate"]
-                                    << lmProgramDirectGearTable["methodstoptype"]
-                                    << lmProgramDirectGearTable["changecondition"]
-                                    << lmProgramDirectGearTable["changeduration"]
-                                    << lmProgramDirectGearTable["changepriority"]
-                                    << lmProgramDirectGearTable["changetriggernumber"]
-                                    << lmProgramDirectGearTable["changetriggeroffset"]
-                                    << lmProgramDirectGearTable["percentreduction"]
-                                    << lmProgramDirectGearTable["groupselectionmethod"]
-                                    << lmProgramDirectGearTable["methodoptiontype"]
-                                    << lmProgramDirectGearTable["methodoptionmax"];
+                                             << lmProgramDirectGearTable["gearname"]
+                                             << lmProgramDirectGearTable["gearnumber"]
+                                             << lmProgramDirectGearTable["controlmethod"]
+                                             << lmProgramDirectGearTable["methodrate"]
+                                             << lmProgramDirectGearTable["methodperiod"]
+                                             << lmProgramDirectGearTable["methodratecount"]
+                                             << lmProgramDirectGearTable["cyclerefreshrate"]
+                                             << lmProgramDirectGearTable["methodstoptype"]
+                                             << lmProgramDirectGearTable["changecondition"]
+                                             << lmProgramDirectGearTable["changeduration"]
+                                             << lmProgramDirectGearTable["changepriority"]
+                                             << lmProgramDirectGearTable["changetriggernumber"]
+                                             << lmProgramDirectGearTable["changetriggeroffset"]
+                                             << lmProgramDirectGearTable["percentreduction"]
+                                             << lmProgramDirectGearTable["groupselectionmethod"]
+                                             << lmProgramDirectGearTable["methodoptiontype"]
+                                             << lmProgramDirectGearTable["methodoptionmax"]
+                                             << lmThermoStatGearTable["settings"]
+                                             << lmThermoStatGearTable["minvalue"]
+                                             << lmThermoStatGearTable["maxvalue"]
+                                             << lmThermoStatGearTable["valueb"]
+                                             << lmThermoStatGearTable["valued"]
+                                             << lmThermoStatGearTable["valuef"]
+                                             << lmThermoStatGearTable["random"]
+                                             << lmThermoStatGearTable["valueta"]
+                                             << lmThermoStatGearTable["valuetb"]
+                                             << lmThermoStatGearTable["valuetc"]
+                                             << lmThermoStatGearTable["valuetd"]
+                                             << lmThermoStatGearTable["valuete"]
+                                             << lmThermoStatGearTable["valuetf"];
     
                                     selector.from(lmProgramDirectGearTable);
+                                    selector.from(lmThermoStatGearTable);
     
-                                    selector.where( lmProgramDirectGearTable["deviceid"]==currentLMProgramDirect->getPAOId() );//will be paobjectid
+                                    selector.where( lmProgramDirectGearTable["deviceid"]==currentLMProgramDirect->getPAOId() &&
+                                                    lmProgramDirectGearTable["gearid"].leftOuterJoin(lmThermoStatGearTable["gearid"]) );
     
                                     selector.orderBy( lmProgramDirectGearTable["gearnumber"] );
     
@@ -495,39 +512,25 @@ void CtiLMControlAreaStore::reset()
     
                                     RWOrdered& lmProgramDirectGearList = currentLMProgramDirect->getLMProgramDirectGears();
                                     RWDBReader rdr = selector.reader(conn);
+                                    RWDBNullIndicator isNull;
                                     while( rdr() )
                                     {
-                                        lmProgramDirectGearList.insert( new CtiLMProgramDirectGear(rdr) );
+                                        rdr["settings"] >> isNull;
+                                        if( isNull )
+                                        {
+                                            lmProgramDirectGearList.insert( new CtiLMProgramDirectGear(rdr) );
+                                        }
+                                        else
+                                        {
+                                            lmProgramDirectGearList.insert( new CtiLMProgramThermoStatGear(rdr) );
+                                        }
                                     }
                                 }
-    
-                                BOOL cplHack = TRUE;
-                                {//HACK for CPL
-                                    RWDBSelector selector = db.selector();
-                                    selector << yukonPAObjectTable["type"];
-    
-                                    selector.from(yukonPAObjectTable);
-    
-                                    RWCString macroTypeString = desolveDeviceType(TYPE_MACRO);
-                                    macroTypeString.toUpper();
-                                    selector.where( yukonPAObjectTable["type"]==macroTypeString );
-    
-                                    /*if( _LM_DEBUG )
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << RWTime() << " - " << selector.asString().data() << endl;
-                                    }*/
-    
-                                    RWOrdered& lmProgramDirectGroupList = currentLMProgramDirect->getLMProgramDirectGroups();
-                                    RWDBReader rdr = selector.reader(conn);
-                                    if( rdr() )
-                                    {
-                                        cplHack = FALSE;
-                                    }
-                                }//HACK for CPL
-    
+
                                 {
                                     RWDBTable lmGroupMacroExpanderView = db.table("lmgroupmacroexpander_view");
+                                    RWDBTable lmGroupPointTable = db.table("lmgrouppoint");
+                                    RWDBTable lmGroupRippleTable = db.table("lmgroupripple");
                                     RWDBTable dynamicLMGroupTable = db.table("dynamiclmgroup");
                                     RWDBTable pointTable = db.table("point");
     
@@ -546,6 +549,10 @@ void CtiLMControlAreaStore::reset()
                                     << lmGroupMacroExpanderView["grouporder"]
                                     << lmGroupMacroExpanderView["childorder"]
                                     << lmGroupMacroExpanderView["deviceid"]
+                                    << rwdbName("pointdeviceidusage",lmGroupPointTable["deviceidusage"])
+                                    << rwdbName("pointpointidusage",lmGroupPointTable["pointidusage"])
+                                    << rwdbName("pointstartcontrolrawstate",lmGroupPointTable["startcontrolrawstate"])
+                                    << rwdbName("rippleshedtime",lmGroupRippleTable["shedtime"])
                                     << dynamicLMGroupTable["groupcontrolstate"]
                                     << dynamicLMGroupTable["currenthoursdaily"]
                                     << dynamicLMGroupTable["currenthoursmonthly"]
@@ -558,39 +565,21 @@ void CtiLMControlAreaStore::reset()
                                     << pointTable["pointtype"];
     
                                     selector.from(lmGroupMacroExpanderView);
+                                    selector.from(lmGroupPointTable);
+                                    selector.from(lmGroupRippleTable);
                                     selector.from(dynamicLMGroupTable);
                                     selector.from(pointTable);
     
-                                    if( !cplHack )
-                                    {//original where clause
-                                        selector.where( ( ( lmGroupMacroExpanderView["childid"].isNull() &&
-                                                            lmGroupMacroExpanderView["paobjectid"]==lmGroupMacroExpanderView["lmgroupdeviceid"] ) ||
-                                                          ( !lmGroupMacroExpanderView["childid"].isNull() &&
-                                                            lmGroupMacroExpanderView["paobjectid"]==lmGroupMacroExpanderView["childid"] ) ) &&
-                                                        lmGroupMacroExpanderView["deviceid"]==currentLMProgramDirect->getPAOId() &&
-                                                        lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(dynamicLMGroupTable["deviceid"]) &&
-                                                        lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(pointTable["paobjectid"]) );
+                                    selector.where( ( ( lmGroupMacroExpanderView["childid"].isNull() &&
+                                                        lmGroupMacroExpanderView["paobjectid"]==lmGroupMacroExpanderView["lmgroupdeviceid"] ) ||
+                                                      ( !lmGroupMacroExpanderView["childid"].isNull() &&
+                                                        lmGroupMacroExpanderView["paobjectid"]==lmGroupMacroExpanderView["childid"] ) ) &&
+                                                    lmGroupMacroExpanderView["deviceid"]==currentLMProgramDirect->getPAOId() &&
+                                                    lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(lmGroupPointTable["deviceid"]) &&
+                                                    lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(lmGroupRippleTable["deviceid"]) &&
+                                                    lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(dynamicLMGroupTable["deviceid"]) &&
+                                                    lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(pointTable["paobjectid"]) );
 
-                                        /*if( _LM_DEBUG )
-                                        {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << RWTime() << " - Original Query" << endl;
-                                        }*/
-                                    }
-                                    else
-                                    {//cplHack where clause
-                                        selector.where( lmGroupMacroExpanderView["childid"].isNull() &&
-                                                        lmGroupMacroExpanderView["paobjectid"]==lmGroupMacroExpanderView["lmgroupdeviceid"] &&
-                                                        lmGroupMacroExpanderView["deviceid"]==currentLMProgramDirect->getPAOId() &&
-                                                        lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(dynamicLMGroupTable["deviceid"]) &&
-                                                        lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(pointTable["paobjectid"]) );
-                                        /*if( _LM_DEBUG )
-                                        {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << RWTime() << " - CPL Hack Query" << endl;
-                                        }*/
-                                    }
-    
                                     selector.orderBy( lmGroupMacroExpanderView["grouporder"] );
                                     selector.orderBy( lmGroupMacroExpanderView["childorder"] );
     
@@ -680,6 +669,10 @@ void CtiLMControlAreaStore::reset()
                                             {
                                                 currentLMGroupBase = new CtiLMGroupPoint(rdr);
                                             }
+                                            else if( resolvePAOType(tempPAOCategory,tempPAOType) == TYPE_LMGROUP_EXPRESSCOM )
+                                            {
+                                                currentLMGroupBase = new CtiLMGroupExpresscom(rdr);
+                                            }
                                             else
                                             {
                                                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -689,160 +682,6 @@ void CtiLMControlAreaStore::reset()
                                             if( currentLMGroupBase != NULL )
                                             {
                                                 lmProgramDirectGroupList.insert(currentLMGroupBase);
-                                            }
-                                        }
-                                    }
-
-                                    for(int z=0;z<lmProgramDirectGroupList.entries();z++)
-                                    {
-                                        CtiLMGroupBase* currentLMGroupBase = (CtiLMGroupBase*)lmProgramDirectGroupList[z];
-    
-                                        {
-                                            if( currentLMGroupBase->getPAOType() == TYPE_LMGROUP_VERSACOM )
-                                            {
-                                                RWDBTable lmGroupVersacomTable = db.table("lmgroupversacom");
-    
-                                                RWDBSelector selector = db.selector();
-                                                selector << lmGroupVersacomTable["utilityaddress"]
-                                                << lmGroupVersacomTable["sectionaddress"]
-                                                << lmGroupVersacomTable["classaddress"]
-                                                << lmGroupVersacomTable["divisionaddress"]
-                                                << lmGroupVersacomTable["addressusage"]
-                                                << lmGroupVersacomTable["relayusage"]
-                                                << lmGroupVersacomTable["routeid"];
-    
-                                                selector.from(lmGroupVersacomTable);
-    
-                                                selector.where( lmGroupVersacomTable["deviceid"]==currentLMGroupBase->getPAOId() );//will be paobjectid
-    
-                                                /*if( _LM_DEBUG )
-                                                {
-                                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                    dout << RWTime() << " - " << selector.asString().data() << endl;
-                                                }*/
-    
-                                                RWDBReader rdr = selector.reader(conn);
-                                                if( rdr() )
-                                                {
-                                                    ((CtiLMGroupVersacom*)currentLMGroupBase)->restoreVersacomSpecificDatabaseEntries(rdr);
-                                                }
-                                            }
-                                            else if( currentLMGroupBase->getPAOType() == TYPE_LMGROUP_EMETCON )
-                                            {
-                                                RWDBTable lmGroupEmetconTable = db.table("lmgroupemetcon");
-    
-                                                RWDBSelector selector = db.selector();
-                                                selector << lmGroupEmetconTable["goldaddress"]
-                                                << lmGroupEmetconTable["silveraddress"]
-                                                << lmGroupEmetconTable["addressusage"]
-                                                << lmGroupEmetconTable["relayusage"]
-                                                << lmGroupEmetconTable["routeid"];
-    
-                                                selector.from(lmGroupEmetconTable);
-    
-                                                selector.where(lmGroupEmetconTable["deviceid"]==currentLMGroupBase->getPAOId() );//will be paobjectid
-    
-                                                /*if( _LM_DEBUG )
-                                                {
-                                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                    dout << RWTime() << " - " << selector.asString().data() << endl;
-                                                }*/
-    
-                                                RWDBReader rdr = selector.reader(conn);
-                                                if( rdr() )
-                                                {
-                                                    ((CtiLMGroupEmetcon*)currentLMGroupBase)->restoreEmetconSpecificDatabaseEntries(rdr);
-                                                }
-                                            }
-                                            else if( currentLMGroupBase->getPAOType() == TYPE_LMGROUP_RIPPLE )
-                                            {
-                                                RWDBTable lmGroupRippleTable = db.table("lmgroupripple");
-    
-                                                RWDBSelector selector = db.selector();
-                                                selector << lmGroupRippleTable["routeid"]
-                                                << lmGroupRippleTable["shedtime"]
-                                                << lmGroupRippleTable["controlvalue"]
-                                                << lmGroupRippleTable["restorevalue"];
-    
-                                                selector.from(lmGroupRippleTable);
-    
-                                                selector.where(lmGroupRippleTable["deviceid"]==currentLMGroupBase->getPAOId() );//will be paobjectid
-    
-                                                /*if( _LM_DEBUG )
-                                                {
-                                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                    dout << RWTime() << " - " << selector.asString().data() << endl;
-                                                }*/
-    
-                                                RWDBReader rdr = selector.reader(conn);
-                                                if( rdr() )
-                                                {
-                                                    ((CtiLMGroupRipple*)currentLMGroupBase)->restoreRippleSpecificDatabaseEntries(rdr);
-                                                }
-                                            }
-                                            else if( currentLMGroupBase->getPAOType() == TYPE_LMGROUP_POINT )
-                                            {
-                                                RWDBTable lmGroupPointTable = db.table("lmgrouppoint");
-    
-                                                RWDBSelector selector = db.selector();
-                                                selector << lmGroupPointTable["deviceidusage"]
-                                                << lmGroupPointTable["pointidusage"]
-                                                << lmGroupPointTable["startcontrolrawstate"];
-    
-                                                selector.from(lmGroupPointTable);
-    
-                                                selector.where(lmGroupPointTable["deviceid"]==currentLMGroupBase->getPAOId() );//will be paobjectid
-    
-                                                /*if( _LM_DEBUG )
-                                                {
-                                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                    dout << RWTime() << " - " << selector.asString().data() << endl;
-                                                }*/
-    
-                                                RWDBReader rdr = selector.reader(conn);
-                                                if( rdr() )
-                                                {
-                                                    ((CtiLMGroupPoint*)currentLMGroupBase)->restorePointSpecificDatabaseEntries(rdr);
-                                                }
-                                            }
-                                            else if( currentLMGroupBase->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
-                                            {
-                                                RWDBTable expresscomAddressView = db.table("expresscomaddress_view");
-    
-                                                RWDBSelector selector = db.selector();
-                                                selector << expresscomAddressView["routeid"]
-                                                         << expresscomAddressView["serialnumber"]
-                                                         << expresscomAddressView["serviceaddress"]
-                                                         << expresscomAddressView["geoaddress"]
-                                                         << expresscomAddressView["substationaddress"]
-                                                         << expresscomAddressView["feederaddress"]
-                                                         << expresscomAddressView["zipcodeaddress"]
-                                                         << expresscomAddressView["udaddress"]
-                                                         << expresscomAddressView["programaddress"]
-                                                         << expresscomAddressView["splinteraddress"]
-                                                         << expresscomAddressView["addressusage"]
-                                                         << expresscomAddressView["relayusage"];
-    
-                                                selector.from(expresscomAddressView);
-    
-                                                selector.where(expresscomAddressView["lmgroupid"]==currentLMGroupBase->getPAOId() );
-    
-                                                /*if( _LM_DEBUG )
-                                                {
-                                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                    dout << RWTime() << " - " << selector.asString().data() << endl;
-                                                }*/
-    
-                                                RWDBReader rdr = selector.reader(conn);
-                                                if( rdr() )
-                                                {
-                                                    ((CtiLMGroupExpresscom*)currentLMGroupBase)->restoreExpresscomSpecificDatabaseEntries(rdr);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                dout << RWTime() << " - Group device type = " << currentLMGroupBase->getPAOType() << " not supported yet.  In: " << __FILE__ << " at:" << __LINE__ << endl;
                                             }
                                         }
                                     }
