@@ -232,7 +232,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 			fw = null;
 			
 			position = null;
-			resumeLocation = "inventory.txt";
+			resumeLocation = "invent.txt";
 			
 			File hwConfigMapFile = new File(importDir, "_hwconfig.map");
 			fw = new PrintWriter(new FileWriter(hwConfigMapFile, true), true);
@@ -243,8 +243,8 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 			it = invFieldsList.listIterator();
 			while (it.hasNext()) {
 				String[] fields = (String[]) it.next();
-				position = "\"inventory.txt\" line #" + fields[ImportManagerUtil.IDX_LINE_NUM];
-				resumeLocation = "inventory.txt " + fields[ImportManagerUtil.IDX_LINE_NUM];
+				position = "\"invent.txt\" line #" + fields[ImportManagerUtil.IDX_LINE_NUM];
+				resumeLocation = "invent.txt " + fields[ImportManagerUtil.IDX_LINE_NUM];
 				
 				if (isCanceled) {
 					status = STATUS_CANCELED;
@@ -672,7 +672,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 					String fileName = st.nextToken();
 					if (fileName.equalsIgnoreCase("customer.txt"))
 						resumeFile = RESUME_FILE_CUSTOMER;
-					else if (fileName.equalsIgnoreCase("inventory.txt"))
+					else if (fileName.equalsIgnoreCase("invent.txt"))
 						resumeFile = RESUME_FILE_INVENTORY;
 					else if (fileName.equalsIgnoreCase("loadinfo.txt"))
 						resumeFile = RESUME_FILE_LOADINFO;
@@ -2018,7 +2018,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 			
 			File custFile = new File( importDir, "customer.txt" );
 			File servInfoFile = new File( importDir, "servinfo.txt" );
-			File invFile = new File( importDir, "inventory.txt" );
+			File invFile = new File( importDir, "invent.txt" );
 			File recvrFile = new File( importDir, "receiver.txt" );
 			File meterFile = new File( importDir, "meter.txt" );
 			File loadInfoFile = new File( importDir, "loadinfo.txt" );
@@ -2146,7 +2146,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 			
 			if (resumeFile <= RESUME_FILE_INVENTORY) {
 				if (invFile == null)
-					throw new WebClientException("File \"inventory.txt\" not found!");
+					throw new WebClientException("File \"invent.txt\" not found!");
 				BufferedReader fr = null;
 				
 				try {
