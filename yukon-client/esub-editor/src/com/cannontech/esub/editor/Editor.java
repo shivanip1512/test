@@ -25,10 +25,10 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.editor.PropertyPanelListener;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.esub.editor.element.DrawingElement;
 import com.cannontech.esub.editor.element.DynamicGraphElement;
 import com.cannontech.esub.util.DrawingUpdater;
+
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxElement;
 import com.loox.jloox.LxGraph;

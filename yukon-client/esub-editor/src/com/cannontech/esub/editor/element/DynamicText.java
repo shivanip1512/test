@@ -27,21 +27,9 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
 	static final Color DEFAULT_COLOR = java.awt.Color.white;
 	static final int INVALID_POINT = -1;	
 	
-	// Available display attributes
-	public static final int VALUE = 		0x00000001;
-	public static final int UOFM = 		0x00000002;
-	public static final int NAME = 		0x00000004;
-	public static final int LAST_UPDATE = 0x00000008;
-	public static final int PAO = 		0x00000010;
-	public static final int LOW_LIMIT = 	0x00000020;
-	public static final int HIGH_LIMIT =  0x00000040;
-	public static final int LIMIT_DURATION = 0x00000080;
-	public static final int ALARM_TEXT =  0x00000100;
-	public static final int STATE_TEXT = 0x000000200;
-	
 	private com.cannontech.database.data.lite.LitePoint point;	
 	private int displayAttribs = 0x00;
-
+	
 	private transient Drawing drawing = null;
 	private String linkTo = "";
 	

@@ -24,8 +24,10 @@ public class DynamicTextEditorPanel extends com.cannontech.common.gui.util.DataI
 	private static final String ATTRIBUTE_LOW_LIMIT = "Low Limit";
 	private static final String ATTRIBUTE_HIGH_LIMIT = "High Limit";
 	private static final String ATTRIBUTE_LIMIT_DURATION = "Limit Duration";
+	private static final String ATTRIBUTE_MULTIPLIER = "Multiplier";
+	private static final String ATTRIBUTE_DATA_OFFSET = "Data Offset";
 	private static final String ATTRIBUTE_ALARM_TEXT = "Alarm Text";
-	private static final String ATTRIBUTE_CURRENT_STATE = "Current State";
+	private static final String ATTRIBUTE_CURRENT_STATE = "Current State";	
 			
 	private DynamicText dynamicText;
 	private JColorChooser colorChooser;
@@ -202,6 +204,8 @@ private javax.swing.JComboBox getDisplayAttributesComboBox() {
 			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_LOW_LIMIT);
 			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_HIGH_LIMIT);
 			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_LIMIT_DURATION);
+			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_MULTIPLIER);
+			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_DATA_OFFSET);
 			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_ALARM_TEXT);
 			
 			// user code end
@@ -450,46 +454,54 @@ public Object getValue(Object o) {
 	dynamicText.setPaint(colorChooser.getColor());
 	dynamicText.setLinkTo( getLinkToPanel().getLinkTo());
 	
-	int att = DynamicText.VALUE;
+	int att = PointAttributes.VALUE;
 	String attStr = getDisplayAttributesComboBox().getSelectedItem().toString();
 	if( attStr.equals(ATTRIBUTE_CURRENT_VALUE) ) {
-		att = DynamicText.VALUE;
+		att = PointAttributes.VALUE;
 	}
 	else
 	if( attStr.equals(ATTRIBUTE_CURRENT_VALUE_AND_UNIT_OF_MEASURE) ) {
-		att = (DynamicText.VALUE | DynamicText.UOFM);
+		att = (PointAttributes.VALUE | PointAttributes.UOFM);
 	}
 	else
 	if( attStr.equals(ATTRIBUTE_DEVICE_NAME) ) {
-		att = DynamicText.PAO;
+		att = PointAttributes.PAO;
 	}
 	else
 	if( attStr.equals(ATTRIBUTE_LAST_UPDATE) ) {
-		att = DynamicText.LAST_UPDATE;
+		att = PointAttributes.LAST_UPDATE;
 	}
 	else
 	if( attStr.equals(ATTRIBUTE_POINT_NAME) ) {
-		att = DynamicText.NAME;
+		att = PointAttributes.NAME;
 	}
 	else
 	if( attStr.equals(ATTRIBUTE_LOW_LIMIT) ) {
-		att = DynamicText.LOW_LIMIT;			
+		att = PointAttributes.LOW_LIMIT;			
 	}
 	else
 	if( attStr.equals(ATTRIBUTE_HIGH_LIMIT) ) {
-		att = DynamicText.HIGH_LIMIT;
+		att = PointAttributes.HIGH_LIMIT;
 	}
 	else
 	if( attStr.equals(ATTRIBUTE_LIMIT_DURATION) ) {
-		att = DynamicText.LIMIT_DURATION;
+		att = PointAttributes.LIMIT_DURATION;
 	}
 	else
+	if( attStr.equals(ATTRIBUTE_MULTIPLIER) ) {
+		att = PointAttributes.MULTIPLIER;
+	}
+	else
+	if( attStr.equals(ATTRIBUTE_DATA_OFFSET) ) {
+		att = PointAttributes.DATA_OFFSET;
+	}		
+	else
 	if( attStr.equals(ATTRIBUTE_ALARM_TEXT) ) {
-		att = DynamicText.ALARM_TEXT;
+		att = PointAttributes.ALARM_TEXT;
 	}
 	else
 	if( attStr.equals(ATTRIBUTE_CURRENT_STATE)) {
-		att = DynamicText.STATE_TEXT;
+		att = PointAttributes.STATE_TEXT;
 	}
 
 	dynamicText.setDisplayAttribs(att);
@@ -628,8 +640,8 @@ public void setValue(Object o) {
 
 	String attStr = ATTRIBUTE_CURRENT_VALUE;
 	int att = dynamicText.getDisplayAttribs();	
-	if( (att & DynamicText.VALUE) != 0 ) {
-		if( (att & DynamicText.UOFM) != 0 ) {
+	if( (att & PointAttributes.VALUE) != 0 ) {
+		if( (att & PointAttributes.UOFM) != 0 ) {
 			attStr = ATTRIBUTE_CURRENT_VALUE_AND_UNIT_OF_MEASURE;
 		}
 		else {
@@ -637,34 +649,43 @@ public void setValue(Object o) {
 		}		
 	}
 	else
-	if( (att & DynamicText.NAME) != 0 ) {
+	if( (att & PointAttributes.NAME) != 0 ) {
 		attStr = ATTRIBUTE_POINT_NAME;
 	}
 	else 
-	if( (att & DynamicText.PAO) != 0 ) {
+	if( (att & PointAttributes.PAO) != 0 ) {
 		attStr = ATTRIBUTE_DEVICE_NAME;
 	}
 	else
-	if( (att & DynamicText.LAST_UPDATE) != 0 ) {
+	if( (att & PointAttributes.LAST_UPDATE) != 0 ) {
 		attStr = ATTRIBUTE_LAST_UPDATE;	
 	}
 	else
-	if( (att & DynamicText.LOW_LIMIT) != 0 ) {
+	if( (att & PointAttributes.LOW_LIMIT) != 0 ) {
 		attStr = ATTRIBUTE_LOW_LIMIT;
 	}
 	else
-	if( (att & DynamicText.HIGH_LIMIT) != 0 ) {
+	if( (att & PointAttributes.HIGH_LIMIT) != 0 ) {
 		attStr = ATTRIBUTE_HIGH_LIMIT;
 	}
 	else
-	if( (att & DynamicText.LIMIT_DURATION) != 0 ) {
+	if( (att & PointAttributes.LIMIT_DURATION) != 0 ) {
 		attStr = ATTRIBUTE_LIMIT_DURATION;
 	}
 	else
-	if( (att & DynamicText.ALARM_TEXT) != 0 ) {
+	if( (att & PointAttributes.MULTIPLIER) != 0 ) {
+		attStr = ATTRIBUTE_MULTIPLIER;
 	}
 	else
-	if( (att & DynamicText.STATE_TEXT) != 0 ) {
+	if( (att & PointAttributes.DATA_OFFSET) != 0 ) {
+		attStr = ATTRIBUTE_DATA_OFFSET;
+	}
+	else
+	if( (att & PointAttributes.ALARM_TEXT) != 0 ) {
+		attStr = ATTRIBUTE_ALARM_TEXT;
+	}
+	else
+	if( (att & PointAttributes.STATE_TEXT) != 0 ) {
 		attStr = ATTRIBUTE_CURRENT_STATE;
 	}
 		

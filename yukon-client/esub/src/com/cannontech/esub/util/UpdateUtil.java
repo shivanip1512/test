@@ -1,8 +1,10 @@
 package com.cannontech.esub.util;
 
 import java.text.DecimalFormat;
+import java.util.Map;
 
 import com.cannontech.common.cache.PointChangeCache;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
@@ -14,7 +16,9 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.esub.editor.element.DynamicText;
+import com.cannontech.esub.editor.element.PointAttributes;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.message.dispatch.message.Signal;
 
 /**
  * 
@@ -27,7 +31,7 @@ public class UpdateUtil {
 	
 		String text = "";
 		boolean prev = false;	
-		if( (displayAttrib & DynamicText.VALUE) != 0 ) {			
+		if( (displayAttrib & PointAttributes.VALUE) != 0 ) {			
 			PointData pData = pcc.getValue(pointID);
 	
 			if (pData != null) {
@@ -38,7 +42,7 @@ public class UpdateUtil {
 			}
 		}
 							
-		if( (displayAttrib & DynamicText.UOFM) != 0 ) {
+		if( (displayAttrib & PointAttributes.UOFM) != 0 ) {
 			if( prev ) 
 				text += " ";
 				
@@ -49,7 +53,7 @@ public class UpdateUtil {
 			}
 		}
 							
-		if( (displayAttrib & DynamicText.NAME) != 0 ) {
+		if( (displayAttrib & PointAttributes.NAME) != 0 ) {
 			if( prev ) 
 				text += " ";
 		
@@ -57,7 +61,7 @@ public class UpdateUtil {
 			prev = true;
 		}
 							
-		if( (displayAttrib & DynamicText.PAO) != 0 ) {
+		if( (displayAttrib & PointAttributes.PAO) != 0 ) {
 			if( prev ) 
 				text += " ";
 			//find the pao for this point
@@ -66,7 +70,7 @@ public class UpdateUtil {
 			prev = true;
 		}
 									
-		if( (displayAttrib & DynamicText.LAST_UPDATE) != 0 ) {
+		if( (displayAttrib & PointAttributes.LAST_UPDATE) != 0 ) {
 			PointData pData = pcc.getValue(pointID);
 			if( prev ) 
 				text += " ";
@@ -75,7 +79,7 @@ public class UpdateUtil {
  			prev = true;
 		}	
 		
-		if( (displayAttrib & DynamicText.LOW_LIMIT) != 0 ) {
+		if( (displayAttrib & PointAttributes.LOW_LIMIT) != 0 ) {
 			LitePointLimit lpl = PointFuncs.getPointLimit(pointID);
 			if( lpl != null ) {
 				text += Integer.toString(lpl.getLowLimit());
@@ -83,7 +87,7 @@ public class UpdateUtil {
 			}
 		}
 		
-		if( (displayAttrib & DynamicText.HIGH_LIMIT) != 0 ) {
+		if( (displayAttrib & PointAttributes.HIGH_LIMIT) != 0 ) {
 			LitePointLimit lpl = PointFuncs.getPointLimit(pointID);
 			if( lpl != null ) {
 				text += Integer.toString(lpl.getHighLimit());
@@ -91,7 +95,7 @@ public class UpdateUtil {
 			}
 		}
 		
-		if( (displayAttrib & DynamicText.LIMIT_DURATION) != 0 ) {		
+		if( (displayAttrib & PointAttributes.LIMIT_DURATION) != 0 ) {		
 			LitePointLimit lpl = PointFuncs.getPointLimit(pointID);
 			if( lpl != null ) {
 				text += Integer.toString(lpl.getLimitDuration());		
@@ -99,16 +103,39 @@ public class UpdateUtil {
 			}
 		}
 		
-		if( (displayAttrib & DynamicText.ALARM_TEXT) != 0 ) {
-			LitePoint lp = PointFuncs.getLitePoint(pointID);
-			PointData pData = pcc.getValue(pointID);
-		
-			LiteState ls = StateFuncs.getLiteState(lp.getStateGroupID(), (int) pData.getValue());
-			text += ls.getStateText();
+		if( (displayAttrib & PointAttributes.MULTIPLIER) != 0 ) {
+			Map multMap = DefaultDatabaseCache.getInstance().getAllPointidMultiplierHashMap();
+			Double mult = (Double) multMap.get( new Integer(pointID) );
+			
+			if( mult != null ) {
+				text += mult.toString();
+			}
+			else {
+				text += "-";
+			}
+			
 			prev = true;
 		}
 		
-		if( (displayAttrib & DynamicText.STATE_TEXT) != 0 ) {
+		if( (displayAttrib & PointAttributes.DATA_OFFSET) != 0 ) {
+			text += "Not Available";
+			prev = true;			
+		}
+		
+		if( (displayAttrib & PointAttributes.ALARM_TEXT) != 0 ) {
+			LitePoint lp = PointFuncs.getLitePoint(pointID);
+			Signal sig = pcc.getSignal(pointID);	
+			
+			if( sig != null ) {		
+				text += sig.getDescription();			
+			}
+			else {
+				text += "NOT IN ALARM";
+			}
+				prev = true;
+		}
+		
+		if( (displayAttrib & PointAttributes.STATE_TEXT) != 0 ) {
 			LitePoint lp = PointFuncs.getLitePoint(pointID);			
 			PointData pData = pcc.getValue(pointID);
 	
