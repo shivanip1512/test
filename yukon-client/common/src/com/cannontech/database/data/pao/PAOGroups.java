@@ -577,6 +577,7 @@ public static final boolean isDialupPort(int type)
 {
 	switch( type )
 	{
+		case DIALOUT_POOL:
 		case LOCAL_DIALUP:
 		case LOCAL_DIALBACK:
 		case TSERVER_DIALUP:
