@@ -229,13 +229,13 @@ public final static void purgeUnusedAddresses( java.sql.Connection conn )
 		{
 			//do not include the (none) addressID			
 			pstmt = conn.prepareStatement(
-							"delete "+ LMGroupExpressComAddress.TABLE_NAME + " from " + 
+							"delete from " + 
 							LMGroupExpressComAddress.TABLE_NAME +
-							" where addressid not in (select serviceproviderid from LMGroupExpressComm) " +
-							"and addressid not in (select GeoID from LMGroupExpressComm) " +
-							"and addressid not in (select SubstationID from LMGroupExpressComm)  " +
-							"and addressid not in (select FeederID from LMGroupExpressComm) " +
-							"and addressid not in (select ProgramID from LMGroupExpressComm) " +
+							" where addressid not in (select serviceproviderid from LMGroupExpressCom) " +
+							"and addressid not in (select GeoID from LMGroupExpressCom) " +
+							"and addressid not in (select SubstationID from LMGroupExpressCom)  " +
+							"and addressid not in (select FeederID from LMGroupExpressCom) " +
+							"and addressid not in (select ProgramID from LMGroupExpressCom) " +
 							"and addressid > " + IlmDefines.NONE_ADDRESS_ID );
 
 			pstmt.executeUpdate();
