@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/09/06 19:03:42 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/10/03 16:15:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,7 +54,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "portglob.h"
 #include "ctibase.h"
 #include "dllbase.h"
-#include "dll_msg.h"
 
 #include "logger.h"
 #include "guard.h"

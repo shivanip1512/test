@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2002/09/23 20:18:28 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2002/10/03 16:15:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -98,7 +98,6 @@ using namespace std;
 #include "configparms.h"
 #include "connection.h"
 
-#include "dll_msg.h"
 #include "utility.h"
 
 // #define DEBUG2 TRUE

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2002/09/16 21:51:31 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2002/10/03 16:15:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -108,7 +108,7 @@ using namespace std;
 #include <vector>
 
 #include <rw/thr/thrfunc.h>
-
+#include <rw/toolpro/winsock.h>
 
 #ifdef HARDLOCK
 
@@ -154,7 +154,6 @@ using namespace std;
 #include "msg_dbchg.h"
 #include "msg_trace.h"
 
-#include "dll_msg.h"
 #include "eventlog.h"
 #include "cparms.h"
 #include "configparms.h"
