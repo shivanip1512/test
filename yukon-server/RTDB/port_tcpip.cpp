@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/06/05 16:38:24 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/06/06 19:55:11 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -183,24 +183,29 @@ INT CtiPortTCPIPDirect::inClear() const
    if(_socket != INVALID_SOCKET)
    {
       // How many are available ??
-      ioctlsocket(_socket, FIONREAD, &ulTemp);
-
-      if(ulTemp == 0)
+      if( ioctlsocket(_socket, FIONREAD, &ulTemp) == SOCKET_ERROR )
       {
-         return(NORMAL);
+          return SOCKET_ERROR;
       }
-
-      if((Buffer = (PBYTE)malloc(ulTemp)) == NULL)
+      else
       {
-         return(MEMORY);
-      }
+          if(ulTemp == 0)
+          {
+             return(NORMAL);
+          }
 
-      if(recv (_socket, (PCHAR)Buffer, (int)ulTemp, 0) <= 0)
-      {
-         status = TCPREADERROR;
-      }
+          if((Buffer = (PBYTE)malloc(ulTemp)) == NULL)
+          {
+             return(MEMORY);
+          }
 
-      free (Buffer);
+          if(recv (_socket, (PCHAR)Buffer, (int)ulTemp, 0) == SOCKET_ERROR )
+          {
+              status = TCPREADERROR;
+          }
+
+          free (Buffer);
+      }
    }
 
    return status;
@@ -232,39 +237,39 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMe
 
    if(Xfer.getNonBlockingReads())         // We need to get all that are out there.
    {
-	   ULONG bytesavail = 0;
-	   INT   lpcnt = 0;
-	   ULONG expected = Xfer.getInCountExpected();
+       ULONG bytesavail = 0;
+       INT   lpcnt = 0;
+       ULONG expected = Xfer.getInCountExpected();
 
-	   while( Xfer.getInTimeout() * 4 >= lpcnt++ )  // Must do this at least once.
-	   {
-		   Sleep(250);
+       while( Xfer.getInTimeout() * 4 >= lpcnt++ )  // Must do this at least once.
+       {
+           Sleep(250);
 
-		   bytesavail = 0;
-		   if(_socket != INVALID_SOCKET)
-		   {
-			   ioctlsocket (_socket, FIONREAD, &bytesavail);
-		   }
+           bytesavail = 0;
+           if(_socket != INVALID_SOCKET)
+           {
+               ioctlsocket (_socket, FIONREAD, &bytesavail);
+           }
 
-		   if(0)
-		   {
-			   CtiLockGuard<CtiLogger> doubt_guard(dout);
-			   dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-			   dout << "   There are " << bytesavail << " on the port..  I wanted " << expected << "  I waited " << lpcnt << " 1/4 seconds " << endl;
-		   }
+           if(0)
+           {
+               CtiLockGuard<CtiLogger> doubt_guard(dout);
+               dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+               dout << "   There are " << bytesavail << " on the port..  I wanted " << expected << "  I waited " << lpcnt << " 1/4 seconds " << endl;
+           }
 
-		   if( (expected > 0 && bytesavail >= expected) ||  (expected == 0 && bytesavail > 0) )
-		   {
-			   /*
-				*   If we specified a byte count, we will wait one timeout amount of time before returning (and
-				*   return whatever is available). If not we will wait for any bytes to become available and
-				*   return them.
-				*/
-			   break; // the while loop
-		   }
-	   }
+           if( (expected > 0 && bytesavail >= expected) ||  (expected == 0 && bytesavail > 0) )
+           {
+               /*
+                *   If we specified a byte count, we will wait one timeout amount of time before returning (and
+                *   return whatever is available). If not we will wait for any bytes to become available and
+                *   return them.
+                */
+               break; // the while loop
+           }
+       }
 
-	   Xfer.setInCountExpected( bytesavail );
+       Xfer.setInCountExpected( bytesavail );
    }
 
    /* If getInCountExpected() is 0 just return */
@@ -453,7 +458,10 @@ INT CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiM
 
       /* Clear the Buffers */
       outClear();
-      inClear();
+      if( inClear() != NORMAL )
+      {
+          shutdownClose( __FILE__, __LINE__);
+      }
 
       /* Key the radio */
       raiseRTS();
@@ -681,6 +689,8 @@ INT CtiPortTCPIPDirect::sendData(PBYTE Message, ULONG Length, PULONG Written)
    USHORT CharsToSend;
    ULONG TimeToSend;
    INT retval;
+
+   init();      // OK, just do this every time in case!
 
    if( (retval = send (_socket, (CHAR*)Message, Length, 0)) == SOCKET_ERROR )
    {

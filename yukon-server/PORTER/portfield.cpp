@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/06/05 17:42:03 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/06/06 19:55:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -480,7 +480,7 @@ void RemoteReset (const CtiHashKey *key, CtiDeviceBase *&Device, void *ptr)
     ULONG j;
     INT   eRet = 0;
 
-    if(Port->getPortID() == Device->getPortID())
+    if(Port->getPortID() == Device->getPortID() && !Device->isInhibited())
     {
         if(0 <= Device->getAddress() && Device->getAddress() < MAXIDLC)
         {
@@ -496,7 +496,7 @@ void RemoteReset (const CtiHashKey *key, CtiDeviceBase *&Device, void *ptr)
                         if(!(Port->isDialup()))
                         {
                             j = 0;
-                            while((eRet = IDLCInit(Port, Device, &pInfo->RemoteSequence)) && j++ < 2);
+                            while((eRet = IDLCInit(Port, Device, &pInfo->RemoteSequence)) && j++ < 1);
                         }
 
                         if(!eRet)
@@ -723,7 +723,7 @@ INT ResetCommsChannel(CtiPort *Port, CtiDevice *Device, OUTMESS *OutMessage)
                 DeviceManager.getMap().apply(RemoteInitialize, (void*)Port);
 
                 // Need to do this seperately so that they all get initialized first...
-                DeviceManager.getMap().apply(RemoteReset, (void*)Port);
+                // 06062002 CGP..  This will be handled in line!  // DeviceManager.getMap().apply(RemoteReset, (void*)Port);
             }
 
             /* If neccessary start the TCPIP Interface */
@@ -1130,20 +1130,30 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
 
                     break;
                 }
-			case TYPE_WCTP:
-				{
-					CtiDeviceIED		*IED = (CtiDeviceIED*)Device;
+            case TYPE_WCTP:
+                {
+                    try
+                    {
+                        CtiDeviceIED        *IED = (CtiDeviceIED*)Device;
 
-					IED->setLogOnNeeded(FALSE);
-					IED->setInitialState(0);
-					IED->allocateDataBins(OutMessage);
+                        IED->setLogOnNeeded(FALSE);
+                        IED->setInitialState(0);
+                        IED->allocateDataBins(OutMessage);
 
-					status = PerformRequestedCmd(Port, IED, InMessage, OutMessage, traceList);
+                        status = PerformRequestedCmd(Port, IED, InMessage, OutMessage, traceList);
 
-					IED->freeDataBins();
+                        IED->freeDataBins();
 
-					break;
-				}
+                        Port->close(0);         // 06062002 CGP  Make it reopen when needed.
+                    }
+                    catch(...)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    break;
+                }
             case TYPE_TAPTERM:
                 {
                     LONG portConnectedUID = -1;
@@ -2587,7 +2597,6 @@ INT PerformRequestedCmd ( CtiPort *aPortRecord, CtiDeviceIED *aIED, INMESS *aInM
         {
             aPortRecord->traceXfer(transfer, traceList, aIED, status);
         }
-
         if( deviceCanSurviveThisStatus(status) )
         {
             status = aIED->decodeResponse (transfer, status, traceList);
@@ -2604,7 +2613,7 @@ INT PerformRequestedCmd ( CtiPort *aPortRecord, CtiDeviceIED *aIED, INMESS *aInM
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  status = " << status << endl;
+                dout << "  status = " << status << " " << FormatError( status ) << endl;
             }
         }
 
