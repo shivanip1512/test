@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/28 18:22:48 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/07/30 21:16:47 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -328,7 +328,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
                 outList.insert( NewOutMessage );
             }
         }
-		else
+        else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -377,7 +377,7 @@ inline ULONG CtiDeviceDLCBase::selectInitialMacroRouteOffset(LONG routeid) const
     }
     else
     {
-        offset = 1;
+        offset = 0;
     }
 
     return offset;

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2002/07/30 16:51:58 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2002/07/30 21:16:47 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -319,7 +319,7 @@ void CtiDeviceMCT::sendLPInterval( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > 
 
     // Tell the porter side to complete the assembly of the message.
     OutMessage->Request.BuildIt = TRUE;
-    strcpy(OutMessage->Request.CommandStr, "putconfig emetcon interval lp");
+    strncpy(OutMessage->Request.CommandStr, "putconfig emetcon interval lp", COMMAND_STR_SIZE );
 
     outList.insert(OutMessage);
     OutMessage = NULL;
@@ -640,7 +640,7 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
             {
                 // Tell the porter side to complete the assembly of the message.
                 pOut->Request.BuildIt = TRUE;
-                strcpy(pOut->Request.CommandStr, pReq->CommandString());
+                strncpy(pOut->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
 
                 outList.insert( pOut );       // May porter have mercy.
                 pOut = 0;
@@ -711,11 +711,11 @@ INT CtiDeviceMCT::GeneralScan(CtiRequestMsg *pReq,
             OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = CtiProtocolEmetcon::Scan_General;     // Helps us figure it out later!
             OutMessage->Retry     = 2;
-            OutMessage->Request.MacroOffset = selectInitialMacroRouteOffset(getRouteID());
+            OutMessage->Request.MacroOffset = 0; // 20020730 CGP // selectInitialMacroRouteOffset(getRouteID());
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
-            strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
+            strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
 
             outList.insert(OutMessage);
             OutMessage = NULL;
@@ -723,8 +723,7 @@ INT CtiDeviceMCT::GeneralScan(CtiRequestMsg *pReq,
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " Device " << getName() << endl;
+            dout << RWTime() << " **** Command lookup failed **** " << getName() << ".  Device Type " << desolveDeviceType(getType()) << endl;
 
             status = NoMethod;
         }
@@ -767,11 +766,11 @@ INT CtiDeviceMCT::IntegrityScan(CtiRequestMsg *pReq,
             OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = CtiProtocolEmetcon::Scan_Integrity;     // Helps us figure it out later!;
             OutMessage->Retry     = 2;
-            OutMessage->Request.MacroOffset = selectInitialMacroRouteOffset(getRouteID());
+            OutMessage->Request.MacroOffset = 0; // 20020730 CGP // selectInitialMacroRouteOffset(getRouteID());
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
-            strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
+            strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
             outList.insert(OutMessage);
             OutMessage = NULL;
         }
@@ -821,11 +820,11 @@ INT CtiDeviceMCT::AccumulatorScan(CtiRequestMsg *pReq,
             OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = CtiProtocolEmetcon::Scan_Accum;
             OutMessage->Retry     = 2;
-            OutMessage->Request.MacroOffset = selectInitialMacroRouteOffset(getRouteID());
+            OutMessage->Request.MacroOffset = 0; // 20020730 CGP // selectInitialMacroRouteOffset(getRouteID());
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
-            strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
+            strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
 
             outList.insert(OutMessage);
             OutMessage = NULL;
@@ -877,11 +876,11 @@ INT CtiDeviceMCT::LoadProfileScan(CtiRequestMsg *pReq,
             OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = CtiProtocolEmetcon::Scan_LoadProfile;
             OutMessage->Retry     = 2;
-            OutMessage->Request.MacroOffset = selectInitialMacroRouteOffset(getRouteID());
+            OutMessage->Request.MacroOffset = 0; // 20020730 CGP // selectInitialMacroRouteOffset(getRouteID());
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
-            strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
+            strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
 
             calcAndInsertLPRequests(OutMessage, outList);
 
@@ -1199,7 +1198,7 @@ INT CtiDeviceMCT::executeLoopback(CtiRequestMsg                  *pReq,
         OutMessage->Sequence  = function;     // Helps us figure it out later!
         OutMessage->Retry     = 2;
 
-        strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
 
         for( i = 0; i < parse.getiValue("count"); i++ )
         {
@@ -1295,7 +1294,7 @@ INT CtiDeviceMCT::executeScan(CtiRequestMsg                  *pReq,
         OutMessage->Sequence  = function;     // Helps us figure it out later!
         OutMessage->Retry     = 2;
 
-        strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
     }
 
     return nRet;
@@ -1425,7 +1424,7 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
         OutMessage->Sequence  = function;         // Helps us figure it out later!
         OutMessage->Retry     = 2;
 
-        strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
     }
 
 
@@ -1563,7 +1562,7 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
         OutMessage->Sequence  = function;         // Helps us figure it out later!
         OutMessage->Retry     = 2;
 
-        strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
     }
 
 
@@ -1628,7 +1627,7 @@ INT CtiDeviceMCT::executeGetStatus(CtiRequestMsg                  *pReq,
         OutMessage->Sequence  = function;         // Helps us figure it out later!
         OutMessage->Retry     = 2;
 
-        strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
     }
 
     return nRet;
@@ -1717,7 +1716,7 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
            }
        }
 
-       strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
+       strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
     }
 
     return nRet;
@@ -1869,7 +1868,7 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
         OutMessage->Sequence  = function;     // Helps us figure it out later!
         OutMessage->Retry     = 2;
 
-        strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
     }
 
     return nRet;
@@ -2217,7 +2216,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
        OutMessage->Sequence  = function;     // Helps us figure it out later!
        OutMessage->Retry     = 2;
 
-       strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
+       strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
     }
 
     return nRet;
@@ -2275,7 +2274,7 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
         OutMessage->Sequence  = function;         // Helps us figure it out later!
         OutMessage->Retry     = 2;
 
-        strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
 
         outList.append( OutMessage );
         OutMessage = NULL;

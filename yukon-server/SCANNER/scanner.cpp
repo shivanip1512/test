@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/06/24 21:04:07 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/07/30 21:16:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -828,6 +828,12 @@ VOID ResultThread (VOID *Arg)
 
             pBase = (CtiDevice*)ScannerDeviceManager.RemoteGetEqual(id);
 
+            if(ScannerDebugLevel & SCANNER_DEBUG_INREPLYS)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " InMessage from " << pBase->getName() << " " << FormatError(InMessage.EventCode & 0x3fff) << endl;
+            }
+
             if(pBase != NULL && pBase->isSingle())
             {
                 DeviceRecord = (CtiDeviceSingle*)pBase;
@@ -840,6 +846,14 @@ VOID ResultThread (VOID *Arg)
 
                 // Send any new porter requests to porter
                 if((ScannerDebugLevel & 0x00000080) && outList.entries() > 0)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+
+                if(outList.entries())
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1511,7 +1525,18 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
                                      (OutMessage->Sequence == CtiProtocolEmetcon::Scan_General) ||
                                      (OutMessage->Sequence == CtiProtocolEmetcon::Scan_Integrity))) )
             {
-                strncat( OutMessage->Request.CommandStr, " noqueue", 255 );
+                RWCString cmdStr(OutMessage->Request.CommandStr);
+
+                if( cmdStr.subString("noqueue",0,RWCString::ignoreCase).isNull() )  // Make sure we don't stuff it on there multiple times!
+                {
+                    _snprintf(OutMessage->Request.CommandStr, 254, "%s", cmdStr.data());
+                }
+            }
+
+            if(ScannerDebugLevel & SCANNER_DEBUG_OUTREQUESTS)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " OutMessage to " << ScannerDeviceManager.RemoteGetEqual(OutMessage->TargetID)->getName() << endl;
             }
 
             if(PorterNexus.CTINexusWrite (OutMessage, sizeof(OUTMESS), &BytesWritten, 0L) || BytesWritten == 0)

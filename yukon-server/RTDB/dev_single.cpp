@@ -8,8 +8,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/06/11 21:25:28 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/07/30 21:16:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -76,6 +76,11 @@ RWTime CtiDeviceSingle::firstScan( const RWTime &When, INT rate )
     else
     {
         first = RWTime(YUKONEOT);
+    }
+
+    while(first <= When)
+    {
+        first += getScanRate(rate);
     }
 
     return first;
@@ -481,7 +486,7 @@ INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT Sc
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << Now << " Error " << nRet << " sending general scan to Port: " << getPortID() << " Device: " <<getID() << endl;
+                            dout << Now << " Error " << FormatError(nRet) << " sending general scan to " << getName() << endl;
                         }
 
                         // Report the comm error and plug any points!

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/07/30 16:51:58 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/07/30 21:16:47 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -326,7 +326,7 @@ INT CtiDeviceRepeater900::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &par
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
-            strcpy(OutMessage->Request.CommandStr, "loop");
+            strncpy(OutMessage->Request.CommandStr, "loop", COMMAND_STR_SIZE);
 
             outList.insert(OutMessage);
             OutMessage = NULL;
@@ -377,7 +377,7 @@ INT CtiDeviceRepeater900::executeLoopback(CtiRequestMsg                  *pReq,
         OutMessage->Sequence  = function;     // Helps us figure it out later!
         OutMessage->Retry     = 3;
 
-        strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
     }
 
     return nRet;
@@ -440,7 +440,7 @@ INT CtiDeviceRepeater900::executeGetConfig(CtiRequestMsg                  *pReq,
         OutMessage->Sequence  = function;     // Helps us figure it out later!
         OutMessage->Retry     = 3;
 
-        strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
     }
 
     return nRet;
@@ -584,7 +584,7 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
            pOutMessage->Retry     = 3;
 
            // Tell the porter side to complete the assembly of the message.
-           strcpy(pOutMessage->Request.CommandStr, pReq->CommandString());
+           strncpy(pOutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
 
            outList.insert( pOutMessage );
        }
@@ -610,7 +610,7 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
        OutMessage->Retry     = 3;
 
        // Tell the porter side to complete the assembly of the message.
-       strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
+       strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
     }
 
     return nRet;
@@ -654,7 +654,7 @@ INT CtiDeviceRepeater900::executeGetValue(CtiRequestMsg                  *pReq,
       OutMessage->Retry     = 3;
 
       // Tell the porter side to complete the assembly of the message.
-      strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
+      strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
    }
 
    return nRet;
