@@ -618,8 +618,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return serviceCompanies;
 	}
 	
-	public synchronized void loadDefaultLMHardware() {
-		if (dftLMHardware != null) return;
+	public synchronized LiteStarsLMHardware getDefaultLMHardware() {
+		if (dftLMHardware != null) return dftLMHardware;
 		
 		LiteStarsThermostatSettings dftThermSettings = null;
 		int dftInventoryID = -1;
@@ -653,7 +653,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			else {
 				if (getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID) {
 					CTILogger.info( "No default thermostat settings found!!!" );
-					return;
+					return null;
 				}
 	        	
 				// Create a default LM hardware (InventoryID < 0),
@@ -708,9 +708,30 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			
 			dftThermSettings = getThermostatSettings( dftLMHardware );
 			dftLMHardware.setThermostatSettings( dftThermSettings );
+			
+			if (dftThermSettings == null || dftThermSettings.getThermostatSeasons().size() == 0 || dftThermSettings.getThermostatManualEvents().size() == 0) {
+				if (getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID) {
+					CTILogger.info( "Default thermostat settings not found!!!" );
+					return null;
+				}
+				
+				LiteStarsThermostatSettings dftSettings = SOAPServer.getDefaultEnergyCompany().getDefaultThermostatSettings();
+				if (dftThermSettings == null) {
+					dftThermSettings = new LiteStarsThermostatSettings();
+					dftThermSettings.setInventoryID( dftSettings.getInventoryID() );
+					dftLMHardware.setThermostatSettings( dftThermSettings );
+				}
+				if (dftThermSettings.getThermostatSeasons().size() == 0)
+					dftThermSettings.setThermostatSeasons( dftSettings.getThermostatSeasons() );
+				if (dftThermSettings.getThermostatManualEvents().size() == 0)
+					dftThermSettings.setThermostatManualEvents( dftSettings.getThermostatManualEvents() );
+			}
+			
+			CTILogger.info( "Default LM hardware loaded for energy company #" + getEnergyCompanyID() );
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			dftLMHardware = null;
 		}
 		finally {
 			try {
@@ -719,31 +740,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			catch (java.sql.SQLException e) {}
 		}
 		
-		if (dftThermSettings == null || dftThermSettings.getThermostatSeasons().size() == 0 || dftThermSettings.getThermostatManualEvents().size() == 0) {
-			if (getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID) {
-				CTILogger.info( "Default thermostat settings not found!!!" );
-				return;
-			}
-			
-			LiteStarsThermostatSettings dftSettings = SOAPServer.getDefaultEnergyCompany().getDefaultThermostatSettings();
-			if (dftThermSettings == null) {
-				dftThermSettings = new LiteStarsThermostatSettings();
-				dftThermSettings.setInventoryID( dftSettings.getInventoryID() );
-				dftLMHardware.setThermostatSettings( dftThermSettings );
-			}
-			if (dftThermSettings.getThermostatSeasons().size() == 0)
-				dftThermSettings.setThermostatSeasons( dftSettings.getThermostatSeasons() );
-			if (dftThermSettings.getThermostatManualEvents().size() == 0)
-				dftThermSettings.setThermostatManualEvents( dftSettings.getThermostatManualEvents() );
-		}
-		
-		CTILogger.info( "Default LM hardware loaded for energy company #" + getEnergyCompanyID() );
+		return dftLMHardware;
 	}
 	
 	public LiteStarsThermostatSettings getDefaultThermostatSettings() {
-		if (dftLMHardware == null)
-			loadDefaultLMHardware();
-		return dftLMHardware.getThermostatSettings();
+		if (getDefaultLMHardware() == null)
+			return null;
+		return getDefaultLMHardware().getThermostatSettings();
 	}
 	
 	public synchronized ArrayList getAllInterviewQuestions() {
