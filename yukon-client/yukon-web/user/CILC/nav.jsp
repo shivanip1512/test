@@ -23,8 +23,6 @@
 %>
 
 <table width="101" border="0" cellspacing="0" cellpadding="6" height="200">
-
-
   <cti:checkMultiRole roleid="<%=Integer.toString(EnergyBuybackRole.ROLEID) + ',' + Integer.toString(DirectCurtailmentRole.ROLEID)%>">
   <tr> 
     <td bgcolor="#FFFFFF"> 
@@ -59,6 +57,15 @@
 		}%></div>
     </td>
   </tr>
+  <cti:checkProperty propertyid="<%=CommercialMeteringRole.TRENDING_GET_DATA_NOW_BUTTON%>">
+  <tr>
+    <td height="30" valign="bottom">
+      <div align="left"><span class="NavHeader">Admin</span><br>
+        <img src='../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.NAV_BULLET%>"/>' width="12" height="12"><a href="<%=request.getContextPath()%>/user/CILC/user_trending.jsp?update=now" class="link2"><span class="NavText">Get Data Now</span></a><br>
+      </div>
+    </td>
+  </tr>
+  </cti:checkProperty>
   </cti:checkRole>
 
   <cti:checkMultiRole roleid="<%=Integer.toString(EnergyBuybackRole.ROLEID) + ',' + Integer.toString(DirectCurtailmentRole.ROLEID)%>">
