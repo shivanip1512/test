@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2004/05/19 14:49:23 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2004/05/20 22:45:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,6 +18,7 @@
 
 #include "rtdb.h"
 #include "mgr_device.h"
+#include "cparms.h"
 #include "dbaccess.h"
 #include "dev_macro.h"
 #include "dev_cbc.h"
@@ -72,7 +73,7 @@ bool findExecutingAndExcludedDevice(const long key, CtiDeviceSPtr devsptr, void*
 }
 
 // prevent any devB (proximity excluded device) which may be seleced to execute from interfereing with devA's next evaluation time.
-static void applyMustCompleteTimeIsEvaluateNext(const long key, CtiDeviceSPtr devB, void* devSelect)
+static void applyExecutionGrantExpiresIsEvaluateNext(const long key, CtiDeviceSPtr devB, void* devSelect)
 {
     CtiDevice *devA = (CtiDevice *)devSelect;
 
@@ -82,13 +83,13 @@ static void applyMustCompleteTimeIsEvaluateNext(const long key, CtiDeviceSPtr de
 
         // Use the most restrictive of it's current or devA's..
         if( devA->getExclusion().getEvaluateNextAt() > now &&
-            ( devB->getExclusion().getMustCompleteBy() > devA->getExclusion().getEvaluateNextAt()) )
+            ( devB->getExclusion().getExecutionGrantExpires() > devA->getExclusion().getEvaluateNextAt()) )
         {
-            devB->getExclusion().setMustCompleteBy( devA->getExclusion().getEvaluateNextAt() );                      // prevent any devB  which may be seleced below from taking our entire slot.
+            devB->getExclusion().setExecutionGrantExpires( devA->getExclusion().getEvaluateNextAt() );                      // prevent any devB  which may be seleced below from taking our entire slot.
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(slog);
-                slog << RWTime() << " " << devA->getName() << " requires " << devB->getName() << " to complete by " << devB->getExclusion().getMustCompleteBy() << " if grant occurs" << endl;
+                slog << RWTime() << " " << devA->getName() << " requires " << devB->getName() << " to complete by " << devB->getExclusion().getExecutionGrantExpires() << " if grant occurs" << endl;
             }
         }
     }
@@ -2427,17 +2428,17 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
                 if(devA->hasQueuedWork())
                 {
                     // We will preempt transmitter devS if and only if we have been waiting longer than it
-                    if( !devS || (devS && devS->getExclusion().getLastExclusionGrant() > devA->getExclusion().getLastExclusionGrant()) )
+                    if( !devS || (devS && devS->getExclusion().getExecutionGrant() < devA->getExclusion().getExecutionGrant()) )
                     {
                         // Select the transmitter with the oldest LastExclusionGrant.
                         devS = devA;
-                        devS->getExclusion().setMustCompleteBy(devS->selectCompletionTime());
+                        devS->getExclusion().setExecutionGrantExpires(devS->selectCompletionTime());
                     }
                     else
                     {
                         // Not sure if this case should ever occur.
                         // I would presume this problem becomes vastly more complex if two devS may be time excluded against one another.
-                        devA->getExclusion().setEvaluateNextAt( devS->getExclusion().getMustCompleteBy() );
+                        devA->getExclusion().setEvaluateNextAt( devS->getExclusion().getExecutionGrantExpires() );
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2447,13 +2448,18 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
                 }
                 else
                 {   // Allocate out some of devA's time window.
-                    devA->getExclusion().setEvaluateNextAt( now + 20 );
-                    _exclusionMap.apply(applyMustCompleteTimeIsEvaluateNext, (void*)(devA.get()));
+                    RWTime close = devA->getExclusion().getTimeSlotClose();
+                    unsigned alloc_increment = gConfigParms.getValueAsInt("YUKON_TIME_SLOT_ALLOCATION_INCREMENT", 20);
+                    RWTime alloc_out = close < now + alloc_increment ? close : now + alloc_increment;
+                    devA->getExclusion().setEvaluateNextAt( alloc_out );
+                    _exclusionMap.apply(applyExecutionGrantExpiresIsEvaluateNext, (void*)(devA.get()));
 
+                    #if 0
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(slog);
                         slog << RWTime() << " " << devA->getName() << " has no queued work.  Proximity excluded devices released until " << devA->getExclusion().getEvaluateNextAt() << endl;
                     }
+                    #endif
                 }
             }
             else
@@ -2462,7 +2468,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
                 if(now > opens) opens = devA->getExclusion().getNextTimeSlotOpen();
 
                 devA->getExclusion().setEvaluateNextAt( opens );  // offset may be the next window open, or the partial allocation given up in the case of no codes.
-                _exclusionMap.apply(applyMustCompleteTimeIsEvaluateNext, (void*)(devA.get()));
+                _exclusionMap.apply(applyExecutionGrantExpiresIsEvaluateNext, (void*)(devA.get()));
             }
         }
     }
@@ -2470,6 +2476,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
 
     if(devS)
     {
+        devS->getExclusion().setExecutionGrant(now);
         devS->getExclusion().setExecutionGrantExpires(devS->selectCompletionTime());
         devS->getExclusion().setExecutingUntil( devS->getExclusion().getExecutionGrantExpires() );           // Make sure we know who is executing.
         _exclusionMap.apply(applyEvaluateNextByExecutingUntil, (void*)(devS.get()));
@@ -2493,10 +2500,10 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
             {
                 if(devA->hasQueuedWork())
                 {
-                    if(!devS || devS->getExclusion().getLastExclusionGrant() > devA->getExclusion().getLastExclusionGrant())
+                    if(!devS || devS->getExclusion().getExecutionGrant() > devA->getExclusion().getExecutionGrant())
                     {
                         devS = devA;    // Select the transmitter with the oldest lastTx.
-                        devS->getExclusion().setMustCompleteBy(devS->selectCompletionTime());
+                        devS->getExclusion().setExecutionGrantExpires(devS->selectCompletionTime());
                     }
                 }
             }
@@ -2504,20 +2511,19 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
 
         if(devS)
         {
+            devS->getExclusion().setExecutionGrant(now);
             devS->getExclusion().setExecutionGrantExpires(devS->selectCompletionTime());
             devS->getExclusion().setExecutingUntil( devS->getExclusion().getExecutionGrantExpires() );           // Make sure we know who is executing.
             _exclusionMap.apply(applyEvaluateNextByExecutingUntil, (void*)(devS.get()));
         }
     }
 
-
     if(devS)
     {
         CtiLockGuard<CtiLogger> doubt_guard(slog);
+        slog << RWTime() << " " << devS->getName() << " Execution Granted          " << devS->getExclusion().getExecutionGrant() << endl;
         slog << RWTime() << " " << devS->getName() << " Execution Grant Expires at " << devS->getExclusion().getExecutionGrantExpires() << endl;
-        slog << RWTime() << " " << devS->getName() << " Execution Must Complete by " << devS->getExclusion().getMustCompleteBy() << endl;
     }
-
 
     return devS;
 }

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2004/05/19 14:48:53 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2004/05/20 22:42:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -938,10 +938,10 @@ RWTime CtiDeviceBase::selectCompletionTime() const
     RWTime now;
     RWTime bestTime(YUKONEOT);
 
-    if( now < _exclusion.getMustCompleteBy() && bestTime > _exclusion.getMustCompleteBy() )
+    if( now < _exclusion.getExecutionGrantExpires() && bestTime > _exclusion.getExecutionGrantExpires() )
     {
         // Must Complete is in the future and less than bestTime.
-        bestTime = _exclusion.getMustCompleteBy();
+        bestTime = _exclusion.getExecutionGrantExpires();
     }
 
     if( now < _exclusion.getTimeSlotClose() && _exclusion.getTimeSlotClose() < bestTime )
