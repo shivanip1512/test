@@ -1,5 +1,5 @@
 <td>
-<div align="left"><span class="PageHeader">Trends</span><br>
+<div align="left"><span class="NavHeader">Trends</span><br>
 	<%   /* Retrieve all the predefined graphs for this user*/                       
 	if( gData != null )
 	{

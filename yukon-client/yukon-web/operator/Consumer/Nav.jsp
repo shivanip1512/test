@@ -91,7 +91,7 @@
 <cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_GENERAL) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_RESIDENCE) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_CALL_TRACKING) %>">
   <tr> 
     <td> 
-      <div align="left"><span class="PageHeader">Account</span><br>
+      <div align="left"><span class="NavHeader">Account</span><br>
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_GENERAL %>">
         <%= links.get("Update.jsp") %><br>
         <%= links.get("Contacts.jsp") %><br>
@@ -110,7 +110,7 @@
 <cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_METERING_INTERVAL_DATA) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_METERING_USAGE) %>">
   <tr> 
     <td> 
-      <div align="left"><span class="PageHeader">Metering</span><br>
+      <div align="left"><span class="NavHeader">Metering</span><br>
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_METERING_INTERVAL_DATA %>">
         <%= links.get("Metering.jsp") %><br>
        <table>
@@ -143,7 +143,7 @@
 <cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT) %>">
   <tr> 
     <td> 
-      <div align="left"><span class="PageHeader">Programs</span><br>
+      <div align="left"><span class="NavHeader">Programs</span><br>
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY %>">
         <%= links.get("ProgramHist.jsp") %><br>
 </cti:checkProperty>
@@ -160,7 +160,7 @@
 <cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_APPLIANCES) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_APPLIANCES_CREATE) %>">
   <tr> 
     <td> 
-      <div align="left"><span class="PageHeader">Appliances</span><br>
+      <div align="left"><span class="NavHeader">Appliances</span><br>
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_APPLIANCES %>">
 <%
 	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
@@ -180,7 +180,7 @@
 <cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_HARDWARES) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE) %>">
   <tr> 
     <td> 
-      <div align="left"><span class="PageHeader">Hardware</span><br>
+      <div align="left"><span class="NavHeader">Hardware</span><br>
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES %>">
 <%
 	boolean showThermostat = AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT);
@@ -227,7 +227,7 @@
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS %>">
   <tr> 
     <td> 
-      <div align="left"><span class="PageHeader">Work Orders</span><br>
+      <div align="left"><span class="NavHeader">Work Orders</span><br>
         <%= links.get("Service.jsp") %><br>
         <%= links.get("ServiceSummary.jsp") %><br>
 	  </div>
@@ -237,7 +237,7 @@
 <cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ) %>">
   <tr> 
     <td> 
-      <div align="left"><span class="PageHeader">Administration</span><br>
+      <div align="left"><span class="NavHeader">Administration</span><br>
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN %>">
         <%= links.get("Password.jsp") %><br>
 </cti:checkProperty>
