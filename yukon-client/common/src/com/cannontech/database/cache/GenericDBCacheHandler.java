@@ -3,8 +3,8 @@ package com.cannontech.database.cache;
 import java.util.Observer;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -47,13 +47,11 @@ public class GenericDBCacheHandler implements DBChangeListener, Observer
 			int port = 1510;
 			try
 			{
-				host = ClientSession.getInstance().getRolePropertyValue(
-							SystemRole.DISPATCH_MACHINE, 
-							"127.0.0.1");
-            
-				port = (new Integer( ClientSession.getInstance().getRolePropertyValue(
-							SystemRole.DISPATCH_PORT, 
-							"1510"))).intValue();			
+				host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
+
+				port = Integer.parseInt( 
+					RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) );
+			
 			}
 			catch( Exception e)
 			{
