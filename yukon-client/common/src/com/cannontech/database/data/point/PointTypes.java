@@ -17,8 +17,6 @@ public final class PointTypes implements IPointOffsets
 	//System point id constants - client
 	public static final int SYS_PID_THRESHOLD	=	-100;
 
-
-	
 	//The following constants are keys into the private
 	//Array of strings (not related to any c/c++ defines!)
 	//The Point Types
@@ -38,9 +36,6 @@ public final class PointTypes implements IPointOffsets
 	public static final int CONTROLTYPE_NORMAL = 22;
 	public static final int CONTROLTYPE_PSEUDO = 23;
 
-	public static final int CONTROLTYPE_SBO_LATCH = 41;
-	public static final int CONTROLTYPE_SBO_PULSE = 42;
-	
 	//Accumulator point reading types
 	public static final int ACCUMULATOR_DIALREAD = 24;
 	public static final int ACCUMULATOR_DEMAND = 25;
@@ -65,6 +60,10 @@ public final class PointTypes implements IPointOffsets
 	public static final int OUTAGE_4 = 38;
 	public static final int OUTAGE_5 = 39;
 	public static final int OUTAGE_6 = 40;
+	
+	//More Control Type constants
+	public static final int CONTROLTYPE_SBO_LATCH = 41;
+	public static final int CONTROLTYPE_SBO_PULSE = 42;
 	
 	//All the strings associated with points and the database
 	private static final String[] pointStrings = 
