@@ -60,23 +60,23 @@ public class ProgramReenableAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
-        try {
+		try {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
 
-            StarsProgramReenable reEnable = new StarsProgramReenable();
-            if (req.getParameter("action").equalsIgnoreCase("CancelScheduledOptOut"))
-            	reEnable.setCancelScheduledOptOut( true );
+			StarsProgramReenable reEnable = new StarsProgramReenable();
+			if (req.getParameter("action").equalsIgnoreCase("CancelScheduledOptOut"))
+				reEnable.setCancelScheduledOptOut( true );
             
-            StarsOperation operation = new StarsOperation();
-            operation.setStarsProgramReenable( reEnable );
+			StarsOperation operation = new StarsOperation();
+			operation.setStarsProgramReenable( reEnable );
             
-            return SOAPUtil.buildSOAPMessage( operation );
-        }
-        catch (Exception e) {
-            CTILogger.error( e.getMessage(), e );
-            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
-        }
+			return SOAPUtil.buildSOAPMessage( operation );
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
+		}
 
 		return null;
 	}
@@ -85,30 +85,29 @@ public class ProgramReenableAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
-        StarsOperation respOper = new StarsOperation();
-        LiteStarsEnergyCompany energyCompany = null;
+		StarsOperation respOper = new StarsOperation();
+		LiteStarsEnergyCompany energyCompany = null;
         
-        try {
-            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+		try {
+			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-            if (user == null) {
-                respOper.setStarsFailure( StarsFactory.newStarsFailure(
-                		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
-                return SOAPUtil.buildSOAPMessage( respOper );
-            }
+			if (user == null) {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
             
-        	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-        	if (liteAcctInfo == null) {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-        	}
+			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+			if (liteAcctInfo == null) {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
 			
-        	energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
-			OptOutEventQueue queue = energyCompany.getOptOutEventQueue();
+			energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
             
-            StarsProgramReenable reenable = reqOper.getStarsProgramReenable();
+			StarsProgramReenable reenable = reqOper.getStarsProgramReenable();
 			StarsProgramReenableResponse resp = new StarsProgramReenableResponse();
 	        
 			// Get the notification message to send later
@@ -119,7 +118,7 @@ public class ProgramReenableAction implements ActionBase {
 			
 			if (reenable.getCancelScheduledOptOut()) {
 				// Cancel all the scheduled opt out events
-				OptOutEventQueue.OptOutEvent[] events = queue.findOptOutEvents( liteAcctInfo.getAccountID() );
+				OptOutEventQueue.OptOutEvent[] events = OptOutEventQueue.getInstance().findOptOutEvents( liteAcctInfo.getAccountID() );
 				if (events.length == 0) {
 					respOper.setStarsFailure( StarsFactory.newStarsFailure(
 							StarsConstants.FAILURE_CODE_OPERATION_FAILED, "There is no " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " event to be canceled") );
@@ -127,7 +126,7 @@ public class ProgramReenableAction implements ActionBase {
 				}
 				
 				for (int i = 0; i < events.length; i++)
-					queue.removeEvent( events[i] );
+					OptOutEventQueue.getInstance().removeEvent( events[i] );
 				
 				resp.setStarsLMProgramHistory( StarsLiteFactory.createStarsLMProgramHistory(liteAcctInfo, energyCompany) );
 				resp.setDescription( "The scheduled " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " event has been canceled" );
@@ -163,10 +162,10 @@ public class ProgramReenableAction implements ActionBase {
 					resp.addStarsLMHardwareHistory( hwHist );
 				}
 				
-				OptOutEventQueue.OptOutEvent[] events = queue.findReenableEvents( liteAcctInfo.getAccountID() );
+				OptOutEventQueue.OptOutEvent[] events = OptOutEventQueue.getInstance().findReenableEvents( liteAcctInfo.getAccountID() );
 				for (int i = 0; i < events.length; i++) {
 					if (events[i].getInventoryID() == reenable.getInventoryID()) {
-						queue.removeEvent( events[i] );
+						OptOutEventQueue.getInstance().removeEvent( events[i] );
 						break;
 					}
 				}
@@ -193,21 +192,21 @@ public class ProgramReenableAction implements ActionBase {
 				}
 			}
 			
-            respOper.setStarsProgramReenableResponse( resp );
-            return SOAPUtil.buildSOAPMessage( respOper );
-        }
-        catch (Exception e) {
-            CTILogger.error( e.getMessage(), e );
+			respOper.setStarsProgramReenableResponse( resp );
+			return SOAPUtil.buildSOAPMessage( respOper );
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
             
-            try {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) + " the programs.") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-            }
-            catch (Exception e2) {
-            	CTILogger.error( e2.getMessage(), e2 );
-            }
-        }
+			try {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) + " the programs.") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
+			catch (Exception e2) {
+				CTILogger.error( e2.getMessage(), e2 );
+			}
+		}
 
 		return null;
 	}
@@ -216,11 +215,11 @@ public class ProgramReenableAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#parse(SOAPMessage, SOAPMessage, HttpSession)
 	 */
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
-        try {
-            StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
+		try {
+			StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
 			StarsProgramReenableResponse resp = operation.getStarsProgramReenableResponse();
-            if (resp != null) {
+			if (resp != null) {
 				if (resp.getDescription() != null)
 					session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, resp.getDescription() );
 	            
@@ -231,7 +230,7 @@ public class ProgramReenableAction implements ActionBase {
 				LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 	            
 				parseResponse( resp, accountInfo, energyCompany );
-            }
+			}
             
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) {
@@ -239,25 +238,25 @@ public class ProgramReenableAction implements ActionBase {
 				return failure.getStatusCode();
 			}
 			
-            return 0;
-        }
-        catch (Exception e) {
-            CTILogger.error( e.getMessage(), e );
-        }
+			return 0;
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+		}
 
-        return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
 	private static StarsLMHardwareHistory processReenable(LiteStarsLMHardware liteHw, 
 		LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
 		throws com.cannontech.database.TransactionException
 	{
-        Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
-        Integer progEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMPROGRAM).getEntryID() );
-        Integer futureActEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION).getEntryID() );
-        Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
+		Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
+		Integer progEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMPROGRAM).getEntryID() );
+		Integer futureActEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION).getEntryID() );
+		Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
         
-        Date now = new Date();	// Current date, all customer events will use exactly the same date
+		Date now = new Date();	// Current date, all customer events will use exactly the same date
         
 		ProgramOptOutAction.removeFutureActivationEvents( liteHw, liteAcctInfo, energyCompany );
         
@@ -316,9 +315,9 @@ public class ProgramReenableAction implements ActionBase {
 				liteAcctInfo.getProgramHistory().add( liteEvent );
 				liteProg.updateProgramStatus( liteAcctInfo.getProgramHistory() );
 			}
-        }
+		}
         
-        return hwHist;
+		return hwHist;
 	}
 	
 	private static void parseResponse(StarsProgramReenableResponse resp,

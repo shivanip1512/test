@@ -93,6 +93,13 @@ public class InventoryManager extends HttpServlet {
 		redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
 		if (redirect == null) redirect = referer;
 		
+		// If parameter "ConfirmOnMessagePage" specified, the confirm/error message will be displayed on Message.jsp
+		if (req.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null) {
+			session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
+			session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
+			redirect = req.getContextPath() + "/operator/Admin/Message.jsp";
+		}
+		
 		action = req.getParameter( "action" );
 		if (action == null) action = "";
 		
@@ -817,14 +824,8 @@ public class InventoryManager extends HttpServlet {
 			}
 		}
 		
-		// If operation succeeded or failed, display the confirmation/error message on "Message.jsp";
 		// if operation completed, but not all serial numbers added, show the result on "ResultSet.jsp"
 		// (the REDIRECT parameter is set within the AddSNRangeTask.run() method)
-		session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
-		session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
-		redirect = req.getContextPath() +
-				(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
-		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
 		TimeConsumingTask task = new AddSNRangeTask( member, snFrom, snTo, devTypeID, recvDate, voltageID, companyID, routeID, req );
@@ -925,11 +926,6 @@ public class InventoryManager extends HttpServlet {
 		if (newDevTypeID == null && recvDate == null && voltageID == null && companyID == null && routeID == null)
 			return;
 		
-		session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
-		session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
-		redirect = req.getContextPath() +
-				(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
-		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
 		TimeConsumingTask task = new UpdateSNRangeTask( member, snFrom, snTo, devTypeID, newDevTypeID, recvDate, voltageID, companyID, routeID, req );
@@ -1003,11 +999,6 @@ public class InventoryManager extends HttpServlet {
 		
 		Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
 		
-		session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
-		session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
-		redirect = req.getContextPath() +
-				(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
-		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
 		TimeConsumingTask task = new DeleteSNRangeTask( member, snFrom, snTo, devTypeID, req );
@@ -1051,11 +1042,6 @@ public class InventoryManager extends HttpServlet {
 		
 		boolean configNow = req.getParameter("ConfigNow") != null;
 		
-		session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
-		session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
-		redirect = req.getContextPath() +
-				(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
-		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
 		TimeConsumingTask task = new ConfigSNRangeTask( energyCompany, configNow, req );
@@ -1098,15 +1084,28 @@ public class InventoryManager extends HttpServlet {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		try {
-			int[] invIDs = null;
-			if (req.getParameter("All") == null) {
+			if (req.getParameter("All") != null) {
+				int memberID = Integer.parseInt(req.getParameter("All"));
+				
+				ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+				for (int i = 0; i < descendants.size(); i++) {
+					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+					if (memberID >= 0 && company.getLiteID() != memberID) continue;
+					
+					SwitchCommandQueue.SwitchCommand[] commands = SwitchCommandQueue.getInstance().getCommands( company.getLiteID(), false );
+					for (int j = 0; j < commands.length; j++)
+						InventoryManagerUtil.sendSwitchCommand( commands[j] );
+				}
+			}
+			else {
 				String[] values = req.getParameterValues( "InvID" );
-				invIDs = new int[ values.length ];
-				for (int i = 0; i < values.length; i++)
-					invIDs[i] = Integer.parseInt( values[i] );
+				for (int i = 0; i < values.length; i++) {
+					int invID = Integer.parseInt( values[i] );
+					SwitchCommandQueue.SwitchCommand cmd = SwitchCommandQueue.getInstance().getCommand( invID, false );
+					InventoryManagerUtil.sendSwitchCommand( cmd );
+				}
 			}
 			
-			InventoryManagerUtil.sendSwitchCommands( energyCompany, invIDs );
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Switch commands sent out successfully");
 		}
 		catch (WebClientException e) {
@@ -1120,15 +1119,22 @@ public class InventoryManager extends HttpServlet {
 	 */
 	private void removeSwitchCommands(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
-		SwitchCommandQueue queue = energyCompany.getSwitchCommandQueue();
 		
 		if (req.getParameter("All") != null) {
-			queue.clearCommands( user.getEnergyCompanyID() );
+			int memberID = Integer.parseInt(req.getParameter("All"));
+			
+			ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+			for (int i = 0; i < descendants.size(); i++) {
+				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+				if (memberID >= 0 && company.getLiteID() != memberID) continue;
+				
+				SwitchCommandQueue.getInstance().clearCommands( company.getLiteID() );
+			}
 		}
 		else {
 			String[] values = req.getParameterValues( "InvID" );
 			for (int i = 0; i < values.length; i++)
-				queue.removeCommand( Integer.parseInt(values[i]) );
+				SwitchCommandQueue.getInstance().removeCommand( Integer.parseInt(values[i]) );
 		}
 		
 		session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Switch commands removed successfully");

@@ -1952,7 +1952,7 @@ public class StarsLiteFactory {
 		progHistMap.values().toArray( starsEvents );
 		starsProgHist.setStarsLMProgramEvent( starsEvents );
 		
-		OptOutEventQueue queue = energyCompany.getOptOutEventQueue();
+		OptOutEventQueue queue = OptOutEventQueue.getInstance();
 		if (queue != null) {
 			OptOutEventQueue.OptOutEvent[] optoutEvents = queue.findOptOutEvents( liteAcctInfo.getAccountID() );
 			ArrayList events = new ArrayList();

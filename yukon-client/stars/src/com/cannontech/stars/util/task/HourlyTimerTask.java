@@ -64,13 +64,7 @@ public class HourlyTimerTask extends StarsTimerTask {
 			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
 			if (ECUtils.isDefaultEnergyCompany( company )) continue;
 			
-			OptOutEventQueue queue = company.getOptOutEventQueue();
-			if (queue == null) {
-				CTILogger.debug("Cannot get the opt out event queue for energy company #" + company.getLiteID());
-				continue; 
-			}
-			
-			OptOutEventQueue.OptOutEvent[] dueEvents = queue.getDueEvents(company.getLiteID(), TIME_LIMIT);
+			OptOutEventQueue.OptOutEvent[] dueEvents = OptOutEventQueue.getInstance().getDueEvents(company.getLiteID(), TIME_LIMIT);
 			
 			for (int j = 0; j < dueEvents.length; j++) {
 				// If the opt out event has already expired, then do nothing
@@ -130,7 +124,7 @@ public class HourlyTimerTask extends StarsTimerTask {
 						e.setPeriod( OptOutEventQueue.PERIOD_REENABLE );
 						e.setAccountID( dueEvents[j].getAccountID() );
 						e.setInventoryID( dueEvents[j].getInventoryID() );
-						company.getOptOutEventQueue().addEvent( e, false );
+						OptOutEventQueue.getInstance().addEvent( e, false );
 					}
 				}
 				catch (Exception e) {
@@ -139,7 +133,7 @@ public class HourlyTimerTask extends StarsTimerTask {
 			}
 			
 			// Synchronize the event queue to disk file
-			company.getOptOutEventQueue().addEvent( null, true );
+			OptOutEventQueue.getInstance().addEvent( null, true );
 		}
 		
 		CTILogger.debug( "*** Hourly timer task stop ***" );

@@ -11,10 +11,10 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
@@ -216,49 +216,24 @@ public class InventoryManagerUtil {
 		return devList;
 	}
 	
-	public static void sendSwitchCommands(LiteStarsEnergyCompany energyCompany, int[] invIDs) throws WebClientException {
-		SwitchCommandQueue queue = energyCompany.getSwitchCommandQueue();
-		if (queue == null)
-			throw new WebClientException( "Failed to retrieve the batched switch commands" );
+	public static void sendSwitchCommand(SwitchCommandQueue.SwitchCommand cmd) throws WebClientException {
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( cmd.getEnergyCompanyID() );
+		LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory(cmd.getInventoryID(), true);
 		
-		SwitchCommandQueue.SwitchCommand[] commands = null;
-		if (invIDs == null) {
-			commands = queue.getCommands( energyCompany.getLiteID(), true );
-		}
-		else {
-			commands = new SwitchCommandQueue.SwitchCommand[ invIDs.length ];
-			for (int i = 0; i < invIDs.length; i++)
-				commands[i] = queue.getCommand( invIDs[i], true );
-		}
+		if (cmd.getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE ))
+			YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true, cmd.getInfoString() );
+		else if (cmd.getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_DISABLE ))
+			YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, null );
+		else if (cmd.getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_ENABLE ))
+			YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw, null );
 		
-		if (commands.length == 0)
-			throw new WebClientException( "There is no batched switch command" );
+		SwitchCommandQueue.getInstance().removeCommand( cmd.getInventoryID() );
 		
-		for (int i = 0; i < commands.length; i++) {
-			if (commands[i] == null) continue;
-			
-			try {
-				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory(commands[i].getInventoryID(), true);
-				
-				if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE ))
-					YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true, commands[i].getInfoString() );
-				else if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_DISABLE ))
-					YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, null );
-				else if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_ENABLE ))
-					YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw, null );
-				
-				if (liteHw.getAccountID() > 0) {
-					StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
-					if (starsAcctInfo != null) {
-						StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
-						YukonSwitchCommandAction.parseResponse( starsAcctInfo, starsInv );
-					}
-				}
-			}
-			catch (WebClientException e) {
-				String errorMsg = "Error in command '" + commands[i].toString() + "'" +
-						System.getProperty( "line.separator" ) + e.getMessage();
-				CTILogger.error( errorMsg, e );
+		if (liteHw.getAccountID() > 0) {
+			StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
+			if (starsAcctInfo != null) {
+				StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
+				YukonSwitchCommandAction.parseResponse( starsAcctInfo, starsInv );
 			}
 		}
 	}

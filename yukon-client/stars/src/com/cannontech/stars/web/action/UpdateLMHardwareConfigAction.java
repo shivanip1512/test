@@ -410,7 +410,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 		int customerID = (liteAcctInfo != null)? liteAcctInfo.getCustomer().getCustomerID() : 0;
 		ActivityLogger.logEvent(userID, liteHw.getAccountID(), energyCompany.getLiteID(), customerID, action, logMsg );
 	    
-	    if (liteAcctInfo != null) {
+		if (liteAcctInfo != null) {
 			StarsUpdateLMHardwareConfigResponse resp = new StarsUpdateLMHardwareConfigResponse();
 			resp.setStarsInventories( starsInvs );
 			resp.setStarsLMPrograms( StarsLiteFactory.createStarsLMPrograms(liteAcctInfo, energyCompany) );
@@ -434,17 +434,13 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 	public static void saveSwitchCommand(LiteStarsLMHardware liteHw, String commandType,
 		LiteStarsEnergyCompany energyCompany) throws WebClientException
 	{
-		SwitchCommandQueue queue = energyCompany.getSwitchCommandQueue();
-		if (queue == null)
-			throw new WebClientException( "Failed to save the configuration command to batch" );
-		
 		SwitchCommandQueue.SwitchCommand cmd = new SwitchCommandQueue.SwitchCommand();
 		cmd.setEnergyCompanyID( energyCompany.getLiteID() );
 		cmd.setAccountID( liteHw.getAccountID() );
 		cmd.setInventoryID( liteHw.getInventoryID() );
 		cmd.setCommandType( commandType );
 		
-		queue.addCommand( cmd, true );
+		SwitchCommandQueue.getInstance().addCommand( cmd, true );
 	}
 	
 	public static void parseResponse(StarsCustAccountInformation starsAcctInfo, StarsUpdateLMHardwareConfigResponse resp) {

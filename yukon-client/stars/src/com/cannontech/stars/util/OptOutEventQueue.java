@@ -140,7 +140,7 @@ public class OptOutEventQueue {
 	private boolean reCreateFile = false;
 	private ArrayList newEvents = new ArrayList();
 	
-	public static OptOutEventQueue getInstance() throws IOException {
+	public static OptOutEventQueue getInstance() {
 		if (instance == null) {
 			File tempDir = new File( ServerUtils.getStarsTempDir() );
 			if (!tempDir.exists())

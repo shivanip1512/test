@@ -117,7 +117,7 @@ public class SwitchCommandQueue {
 	private boolean reCreateFile = false;
 	private ArrayList newCommands = new ArrayList();
 	
-	public static SwitchCommandQueue getInstance() throws IOException {
+	public static SwitchCommandQueue getInstance() {
 		if (instance == null) {
 			File tempDir = new File( ServerUtils.getStarsTempDir() );
 			if (!tempDir.exists())

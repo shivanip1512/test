@@ -1,6 +1,5 @@
 package com.cannontech.database.data.lite.stars;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -387,41 +386,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		
 		return adminEmail;
 	}
-
-	/**
-	 * Returns the opt out event queue.
-	 * @return OptOutEventQueue
-	 */
-	public OptOutEventQueue getOptOutEventQueue() {
-		if (optOutEventQueue == null) {
-			try {
-				optOutEventQueue = OptOutEventQueue.getInstance();
-			}
-			catch (IOException e) {
-				CTILogger.error( e.getMessage(), e );
-			}
-		}
-		
-		return optOutEventQueue;
-	}
-	
-	/**
-	 * Returns the switch command queue
-	 * @return SwitchCommandQueue
-	 */
-	public SwitchCommandQueue getSwitchCommandQueue() {
-		if (switchCommandQueue == null) {
-			try {
-				switchCommandQueue = SwitchCommandQueue.getInstance();
-			}
-			catch (IOException e) {
-				CTILogger.error( e.getMessage(), e );
-			}
-		}
-		
-		return switchCommandQueue;
-	}
-	
 	
 	public boolean isAccountsLoaded() {
 		return accountsLoaded;
@@ -724,9 +688,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return pubPrograms;
 	}
     
-    /**
-     * Get all published programs including those inherited from the parent company
-     */
+	/**
+	 * Get all published programs including those inherited from the parent company
+	 */
 	public synchronized ArrayList getAllPrograms() {
 		ArrayList pubProgs = new ArrayList( getPrograms() );
 		if (getParent() != null)
@@ -768,10 +732,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return appCategories;
 	}
     
-    /**
-     * Get all appliance categories including those inherited from the parent company
-     * (may need to add a role property to control this in the future).
-     */
+	/**
+	 * Get all appliance categories including those inherited from the parent company
+	 * (may need to add a role property to control this in the future).
+	 */
 	public synchronized ArrayList getAllApplianceCategories() {
 		ArrayList appCats = new ArrayList( getApplianceCategories() );
 		if (getParent() != null)
@@ -2152,7 +2116,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public LiteWorkOrderBase getWorkOrderBase(int orderID, boolean autoLoad) {
 		LiteWorkOrderBase workOrder = (LiteWorkOrderBase) getWorkOrderMap().get( new Integer(orderID) );
-        if (workOrder != null) return workOrder;
+		if (workOrder != null) return workOrder;
         
 		if (autoLoad) {
 			try {
@@ -2430,7 +2394,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public void deleteCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo) {
 		// Remove from opt out event queue
-		getOptOutEventQueue().removeEvents( liteAcctInfo.getAccountID() );
+		OptOutEventQueue.getInstance().removeEvents( liteAcctInfo.getAccountID() );
 		
 		// Remove customer from the cache
 		ServerUtils.handleDBChange( liteAcctInfo.getCustomer(), DBChangeMsg.CHANGE_TYPE_DELETE );

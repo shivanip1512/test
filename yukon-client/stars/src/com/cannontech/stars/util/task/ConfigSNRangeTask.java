@@ -180,16 +180,6 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 				options = "RouteID:" + routeID;
 		}
 		
-		SwitchCommandQueue cmdQueue = null;
-		if (!configNow) {
-			cmdQueue = energyCompany.getSwitchCommandQueue();
-			if (cmdQueue == null) {
-				status = STATUS_ERROR;
-				errorMsg = "Failed to create queue for batching switch commands";
-				return;
-			}
-		}
-		
 		for (int i = 0; i < hwsToConfig.size(); i++) {
 			LiteStarsLMHardware liteHw = null;
 			LiteStarsEnergyCompany company = null;
@@ -225,7 +215,7 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 					cmd.setCommandType( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE );
 					cmd.setInfoString( options );
 					
-					cmdQueue.addCommand( cmd, false );
+					SwitchCommandQueue.getInstance().addCommand( cmd, false );
 				}
 				
 				numSuccess++;
@@ -243,7 +233,7 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 			}
 		}
 		
-		if (!configNow) cmdQueue.addCommand( null, true );
+		if (!configNow) SwitchCommandQueue.getInstance().addCommand( null, true );
 		
 		String logMsg = "Serial Range:";
 		for (int i = 0; i < invToConfig.size(); i++) {

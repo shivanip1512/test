@@ -357,7 +357,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 		text.append(LINE_SEPARATOR);
 		
 		if (reenable.getCancelScheduledOptOut()) {
-			OptOutEventQueue.OptOutEvent[] events = energyCompany.getOptOutEventQueue().findOptOutEvents( liteAcctInfo.getAccountID() );
+			OptOutEventQueue.OptOutEvent[] events = OptOutEventQueue.getInstance().findOptOutEvents( liteAcctInfo.getAccountID() );
 			if (events.length == 0) return null;
 			
 			text.append("SCHEDULED ").append(optOutTxt.toUpperCase()).append(" CANCELED").append(LINE_SEPARATOR);
