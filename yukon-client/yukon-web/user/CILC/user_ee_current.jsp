@@ -101,7 +101,7 @@
 		if (numAcceptedOffers > 0)
 		{
 %>
-                    <p class="Main"><b>RESPONDED OFFERS</b>
+                    <p class="Main"><b>RECENTLY RESPONDED OFFERS</b>
                     <table width="600" border="1" cellspacing="0" cellpadding="2">
                       <tr> 
                         <td width="15%" height="26" class="HeaderCell"> Offer 
@@ -160,7 +160,7 @@
 		    boolean foundReplies = false;
 		    com.cannontech.web.history.HEnergyExchangeCustomerReply[] replies = null;
                   
-		for (int i = 0; i < programs.length; i++)
+		for (int i = 0; i < historyPrograms.length; i++)
 		{
 		   com.cannontech.web.history.HEnergyExchangeCustomer[] customers = historyPrograms[i].getEnergyExchangeCustomers();
 
