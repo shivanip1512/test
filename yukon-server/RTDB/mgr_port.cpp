@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2003/05/15 22:36:40 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2003/09/22 14:20:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -374,7 +374,17 @@ void CtiPortManager::apply(void (*applyFun)(const long, ptr_type, void*), void* 
 {
     try
     {
-        CtiLockGuard<CtiMutex> gaurd(_mux);
+        LockGuard gaurd(getMux(), 30000);
+
+        while(!gaurd.isAcquired())
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            gaurd.tryAcquire(30000);
+        }
+
         spiterator itr;
 
         for(itr = begin(); itr != end(); itr++)
@@ -395,7 +405,17 @@ CtiPortManager::ptr_type CtiPortManager::find(bool (*findFun)(const long, ptr_ty
 
     try
     {
-        CtiLockGuard<CtiMutex> gaurd(_mux);
+        LockGuard gaurd(getMux(), 30000);
+
+        while(!gaurd.isAcquired())
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            gaurd.tryAcquire(30000);
+        }
+
         spiterator itr;
 
         for(itr = begin(); itr != end(); itr++)
@@ -421,7 +441,17 @@ void CtiPortManager::DumpList(void)
 {
     try
     {
-        CtiLockGuard<CtiMutex> gaurd(_mux);
+        LockGuard gaurd(getMux(), 30000);
+
+        while(!gaurd.isAcquired())
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            gaurd.tryAcquire(30000);
+        }
+
         spiterator itr;
 
         for(itr = begin(); itr != end(); itr++)
@@ -641,7 +671,17 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTableP
 
     try
     {
-        CtiLockGuard<CtiMutex> gaurd(_mux);
+        LockGuard gaurd(getMux(), 30000);
+
+        while(!gaurd.isAcquired())
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            gaurd.tryAcquire(30000);
+        }
+
 
         if(anxiousPort)
         {
@@ -772,7 +812,16 @@ void CtiPortManager::refreshExclusions(LONG id)
     LONG     lTemp = 0;
     ptr_type pTempPort;
 
-    CtiLockGuard<CtiMutex> gaurd(_mux);
+    LockGuard gaurd(getMux(), 30000);
+
+    while(!gaurd.isAcquired())
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        gaurd.tryAcquire(30000);
+    }
 
     // Reset everyone's Updated flag.
     if(!_smartMap.empty())
