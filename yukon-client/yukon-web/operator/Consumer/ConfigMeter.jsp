@@ -10,14 +10,6 @@
 <%@ page import="com.cannontech.database.data.pao.RouteTypes"%>
 <%@ page import="com.cannontech.device.range.*"%>
 
-<%
-	java.util.Enumeration enum1 = request.getParameterNames();
-	while (enum1.hasMoreElements()){
-		
-		java.lang.Object element = enum1.nextElement();
-		  	System.out.println(" --" + element.toString() + " = " + request.getParameter(element.toString()));
-	}
- %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } 
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
 	StarsInventory starsMCT = inventories.getStarsInventory(invNo);
@@ -30,15 +22,9 @@
   	//DeviceMeterGroup - meterNumber, collectionGroup
 	DeviceMeterGroup devMeterGroup = ((IDeviceMeterGroup)yukonPao).getDeviceMeterGroup();
 
-	int routeID = -1;	//Get the device's routeID
-	int address = -1;		//Get the device's physical Address
+	int routeID = liteYukonPao.getRouteID();	//Get the device's routeID
+	int address = liteYukonPao.getAddress();		//Get the device's physical Address
 	
-	if( yukonPao instanceof CarrierBase)
-	{
-		// DeviceTypesFuncs.isCarrier(liteYukonPao.getType())
-		routeID = ((CarrierBase)yukonPao).getDeviceRoutes().getRouteID().intValue();
-		address = ((CarrierBase)yukonPao).getDeviceCarrierSettings().getAddress().intValue();
-	}
 	int [] validRouteTypes = new int[]{
 		RouteTypes.ROUTE_CCU,
 		RouteTypes.ROUTE_MACRO
@@ -144,7 +130,7 @@ if (request.getParameter("Submit") != null)
 
 	//Update the database when change is true.
 	if( updateYukonPAO )
-		DBPersistentFuncs.update(yukonPao);	
+		DBPersistentFuncs.performDBChange(yukonPao, ycBean.getClientConnection(), com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE);
 }%>	
 
 
