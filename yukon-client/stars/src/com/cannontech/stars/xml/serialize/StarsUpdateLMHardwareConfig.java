@@ -48,6 +48,13 @@ public class StarsUpdateLMHardwareConfig implements java.io.Serializable {
     **/
     private boolean _has_saveToBatch;
 
+    private boolean _saveConfigOnly;
+
+    /**
+     * keeps track of state for field: _saveConfigOnly
+    **/
+    private boolean _has_saveConfigOnly;
+
     private java.util.Vector _starsLMHardwareConfigList;
 
 
@@ -97,6 +104,13 @@ public class StarsUpdateLMHardwareConfig implements java.io.Serializable {
 
     /**
     **/
+    public void deleteSaveConfigOnly()
+    {
+        this._has_saveConfigOnly= false;
+    } //-- void deleteSaveConfigOnly() 
+
+    /**
+    **/
     public void deleteSaveToBatch()
     {
         this._has_saveToBatch= false;
@@ -118,6 +132,16 @@ public class StarsUpdateLMHardwareConfig implements java.io.Serializable {
     {
         return this._inventoryID;
     } //-- int getInventoryID() 
+
+    /**
+     * Returns the value of field 'saveConfigOnly'.
+     * 
+     * @return the value of field 'saveConfigOnly'.
+    **/
+    public boolean getSaveConfigOnly()
+    {
+        return this._saveConfigOnly;
+    } //-- boolean getSaveConfigOnly() 
 
     /**
      * Returns the value of field 'saveToBatch'.
@@ -170,6 +194,13 @@ public class StarsUpdateLMHardwareConfig implements java.io.Serializable {
     {
         return this._has_inventoryID;
     } //-- boolean hasInventoryID() 
+
+    /**
+    **/
+    public boolean hasSaveConfigOnly()
+    {
+        return this._has_saveConfigOnly;
+    } //-- boolean hasSaveConfigOnly() 
 
     /**
     **/
@@ -244,6 +275,17 @@ public class StarsUpdateLMHardwareConfig implements java.io.Serializable {
         this._inventoryID = inventoryID;
         this._has_inventoryID = true;
     } //-- void setInventoryID(int) 
+
+    /**
+     * Sets the value of field 'saveConfigOnly'.
+     * 
+     * @param saveConfigOnly the value of field 'saveConfigOnly'.
+    **/
+    public void setSaveConfigOnly(boolean saveConfigOnly)
+    {
+        this._saveConfigOnly = saveConfigOnly;
+        this._has_saveConfigOnly = true;
+    } //-- void setSaveConfigOnly(boolean) 
 
     /**
      * Sets the value of field 'saveToBatch'.

@@ -80,7 +80,7 @@ function changeProgSelection(chkBox) {
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
 			  <form name="invForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
-                <input type="hidden" name="action" value="UpdateLMHardwareConfig">
+                <input type="hidden" name="action" value="SendLMHardwareConfig">
                 <input type="hidden" name="InvID" value="<%= inventory.getInventoryID() %>">
 				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
 				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
@@ -188,8 +188,9 @@ function changeProgSelection(chkBox) {
                 <table width="350" border="0" cellspacing="0" cellpadding="0">
                   <tr>
                     <td align="center"> 
-                      <input type="submit" name="UpdateConfig" value="Config Now">
-                      <input type="button" name="SaveConfig" value="Save To Batch" onclick="sendCommand('SaveLMHardwareConfig')">
+                      <input type="submit" name="Config" value="Config">
+                      <input type="button" name="SaveToBatch" value="Save To Batch" onclick="sendCommand('SaveLMHardwareConfig')">
+					  <input type="button" name="SaveConfig" value="Save Config Only" onclick="sendCommand('UpdateLMHardwareConfig')">
                     </td>
                   </tr>
                 </table>

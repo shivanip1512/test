@@ -1060,7 +1060,7 @@ public class InventoryManager extends HttpServlet {
 					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( commands[i].getAccountID(), true );
 					
 					StarsUpdateLMHardwareConfigResponse resp = UpdateLMHardwareConfigAction.updateLMHardwareConfig(
-							progSignUp, liteHw, liteAcctInfo, userID, energyCompany );
+							progSignUp, true, liteHw, liteAcctInfo, userID, energyCompany );
 					
 					if (starsAcctInfo != null)
 						UpdateLMHardwareConfigAction.parseResponse( starsAcctInfo, resp );

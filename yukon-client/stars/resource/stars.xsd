@@ -1174,6 +1174,7 @@
 			</xs:sequence>
 			<xs:attribute name="inventoryID" type="xs:int"/>
 			<xs:attribute name="saveToBatch" type="xs:boolean"/>
+			<xs:attribute name="saveConfigOnly" type="xs:boolean"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-UpdateLMHardwareConfigResponse">

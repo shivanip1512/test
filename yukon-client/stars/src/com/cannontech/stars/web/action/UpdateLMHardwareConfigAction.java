@@ -56,6 +56,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 			StarsUpdateLMHardwareConfig updateHwConfig = new StarsUpdateLMHardwareConfig();
 			updateHwConfig.setInventoryID( Integer.parseInt(req.getParameter("InvID")) );
 			updateHwConfig.setSaveToBatch( req.getParameter("action").equalsIgnoreCase("SaveLMHardwareConfig") );
+			updateHwConfig.setSaveConfigOnly( req.getParameter("action").equalsIgnoreCase("UpdateLMHardwareConfig") );
 			
 			String[] progIDs = req.getParameterValues( "ProgID" );
 			String[] grpIDs = req.getParameterValues( "GroupID" );
@@ -129,7 +130,8 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 					respOper.setStarsSuccess( success );
 				}
 				else {
-					StarsUpdateLMHardwareConfigResponse resp = updateLMHardwareConfig( progSignUp, liteHw, liteAcctInfo, user.getUserID(), energyCompany );
+					StarsUpdateLMHardwareConfigResponse resp = updateLMHardwareConfig(
+							progSignUp, !updateHwConfig.getSaveConfigOnly(), liteHw, liteAcctInfo, user.getUserID(), energyCompany );
 					respOper.setStarsUpdateLMHardwareConfigResponse( resp );
 				}
 			}
@@ -193,7 +195,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 	/**
 	 * @return Hardwares that have been configured
 	 */
-	public static StarsUpdateLMHardwareConfigResponse updateLMHardwareConfig(StarsProgramSignUp progSignUp, LiteStarsLMHardware liteHw,
+	public static StarsUpdateLMHardwareConfigResponse updateLMHardwareConfig(StarsProgramSignUp progSignUp, boolean sendConfig, LiteStarsLMHardware liteHw,
 		LiteStarsCustAccountInformation liteAcctInfo, int userID, LiteStarsEnergyCompany energyCompany) throws WebClientException
 	{
 		ArrayList hwsToConfig = ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteHw, energyCompany );
@@ -203,23 +205,26 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 		
 		StarsInventories starsInvs = new StarsInventories();
 		
-		// Send out the config/disable command
 		for (int i = 0; i < hwsToConfig.size(); i++) {
 			LiteStarsLMHardware lHw = (LiteStarsLMHardware) hwsToConfig.get(i);
-			boolean toConfig = false;
 			
-			for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-				if (liteApp.getInventoryID() == lHw.getInventoryID()) {
-					toConfig = true;
-					break;
+			if (sendConfig) {
+				// Send out config/disable command
+				boolean toConfig = false;
+				
+				for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
+					LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+					if (liteApp.getInventoryID() == lHw.getInventoryID()) {
+						toConfig = true;
+						break;
+					}
 				}
+				
+				if (toConfig)
+					YukonSwitchCommandAction.sendConfigCommand( energyCompany, lHw, true );
+				else
+					YukonSwitchCommandAction.sendDisableCommand( energyCompany, lHw );
 			}
-			
-			if (toConfig)
-				YukonSwitchCommandAction.sendConfigCommand( energyCompany, lHw, true );
-			else
-				YukonSwitchCommandAction.sendDisableCommand( energyCompany, lHw );
 			
 			StarsInventory starsInv = StarsLiteFactory.createStarsInventory( lHw, energyCompany );
 			starsInvs.addStarsInventory( starsInv );
@@ -238,8 +243,10 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 				logMsg += "," + lHw.getManufacturerSerialNumber();
 		}
 		
+		String action = (sendConfig)? ActivityLogActions.HARDWARE_CONFIGURATION_ACTION
+									: ActivityLogActions.HARDWARE_SAVE_CONFIGURATION_ACTION;
 		ActivityLogger.logEvent(userID, liteAcctInfo.getAccountID(), energyCompany.getLiteID(),
-				liteAcctInfo.getCustomer().getCustomerID(), ActivityLogActions.HARDWARE_CONFIGURATION_ACTION, logMsg );
+				liteAcctInfo.getCustomer().getCustomerID(), action, logMsg );
 		
 		return resp;
 	}
