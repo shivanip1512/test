@@ -140,7 +140,29 @@ public String[] getAllPoolsStrings()
 	  return conn;
    }      
    
-   static synchronized public void setDBProperties(Properties props) {
+   static synchronized public Properties loadDBProperties() 
+   {
+   		Properties props = null;
+   		
+		InputStream is = PoolManager.class.getResourceAsStream( DB_PROPERTIES_FILE );
+		try
+		{
+			props = new Properties();
+			props.load(is);
+		 }
+		 catch (Exception e)
+		 {
+		  CTILogger.error("Can't read the properties file. " +
+		 	"Make sure db.properties is in the CLASSPATH" );
+		 }	
+		 finally 
+		 {
+		 	return props;
+		 }
+   }
+   
+   static synchronized public void setDBProperties(Properties props) 
+   {
    		dbProps = props;
    }
    
@@ -153,39 +175,28 @@ public String[] getAllPoolsStrings()
 	  clients++;
 	  return instance;
    }
+   
    private void init()
    {
-   	  if(dbProps == null) {   	  
-		  InputStream is = getClass().getResourceAsStream( DB_PROPERTIES_FILE );
-		  dbProps = new Properties();
-		  try
-		  {
-			 dbProps.load(is);
-		  }
-		  catch (Exception e)
-		  {
-	       CTILogger.error("Can't read the properties file. " +
-   	      "Make sure db.properties is in the CLASSPATH" );
-         
-		  return;
-	  	}
-
-	  	String printSQLfile = dbProps.getProperty("PrintSQL");
-		  if (printSQLfile != null)
-		  {		 
-			 try
-			 {
-				ResourceFactory.getIYukon().getDBPersistent().setSQLFileName( printSQLfile );
-			 }
-			 catch (Exception e)
-			 {
-				 // no biggy!
-				 com.cannontech.clientutils.CTILogger.info("*** Unable to set the PrintSQL to the filenamed : " + com.cannontech.common.util.CtiUtilities.getLogDirPath() + "/" + printSQLfile );
-			 }
-		  }
+   	  if(dbProps == null) {  
+   	  	dbProps = loadDBProperties();
    	  }
    	  
-	  loadDrivers(dbProps);
+   	  String printSQLfile = dbProps.getProperty("PrintSQL");
+	  if (printSQLfile != null)
+	  {		 
+		 try
+		 {
+			ResourceFactory.getIYukon().getDBPersistent().setSQLFileName( printSQLfile );
+		 }
+		 catch (Exception e)
+		 {
+			 // no biggy!
+			 com.cannontech.clientutils.CTILogger.info("*** Unable to set the PrintSQL to the filenamed : " + com.cannontech.common.util.CtiUtilities.getLogDirPath() + "/" + printSQLfile );
+		 }
+	  }
+   	  
+   	  loadDrivers(dbProps);
 	  createPools(dbProps);
    }
                                                                               
