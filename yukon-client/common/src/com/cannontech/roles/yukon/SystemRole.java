@@ -25,6 +25,9 @@ public interface SystemRole
 	public static final int PRINT_INSERTS_SQL = YukonRoleDefs.YUKON_PROPERTYID_BASE - 12;
 	public static final int STARS_SOAP_SERVER = YukonRoleDefs.YUKON_PROPERTYID_BASE - 13;
 	
-	public static final int WEB_LOGO_URL = YukonRoleDefs.YUKON_PROPERTYID_BASE - 14;
+    public static final int WEB_LOGO_URL = YukonRoleDefs.YUKON_PROPERTYID_BASE - 14;
+    public static final int VOICE_HOST = YukonRoleDefs.YUKON_PROPERTYID_BASE - 15;
+    public static final int NOTIFICATION_HOST = YukonRoleDefs.YUKON_PROPERTYID_BASE - 16;
+    public static final int NOTIFICATION_PORT = YukonRoleDefs.YUKON_PROPERTYID_BASE - 17;
 	
 }
