@@ -8,6 +8,7 @@ package com.cannontech.common.gui.util;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Calendar;
+import java.util.Date;
 import java.text.SimpleDateFormat;
 
 import javax.swing.*;
@@ -29,7 +30,7 @@ import com.sun.java.swing.plaf.windows.WindowsComboBoxUI;
 public class DateComboBox extends JComboBox
 {
    protected SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy");
-
+   protected Object currentItem = null;
    public DateComboBox()
    {
       super();
@@ -57,7 +58,16 @@ public class DateComboBox extends JComboBox
          return null;
    }
    
-   public void setSelectedDate( java.util.Date newDate )
+   public Object getSelectedItem()
+   {
+   		Object selectedItem = super.getSelectedItem();
+   		if( selectedItem == null)
+   			return currentItem;
+		
+		return selectedItem;
+   }   		
+
+   public synchronized void setSelectedDate( java.util.Date newDate )
    {
       if( newDate == null )
          return;
@@ -72,6 +82,7 @@ public class DateComboBox extends JComboBox
    
    public synchronized void setDateFormat(SimpleDateFormat dateFormat)
    {
+   	System.out.println(" SET DATE  FORMAT ? = " + dateFormat);
       if( dateFormat != null )
       {         
          java.util.Date currSel = getSelectedDate();
@@ -86,11 +97,12 @@ public class DateComboBox extends JComboBox
       
    }
 
-   public void setSelectedItem(Object item)
+   public synchronized void setSelectedItem(Object item)
    {
-      removeAllItems(); // hides the popup if visible
-      addItem( item );
-      super.setSelectedItem(item);
+   	currentItem = item;
+	removeAllItems(); // hides the popup if visible
+    addItem( item );
+    super.setSelectedItem(item);
    }
 
    public void updateUI()
