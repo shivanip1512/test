@@ -98,10 +98,7 @@ INT CErrClient::Log(CErrMsg &Msg)
          i = Connect("");      // Member function
       }
 
-      if((i = ClientNexus->CTINexusWrite(Msg.getEMsgPtr(),
-                                         sizeof (CTIERRMSG),
-                                         &BytesWritten,
-                                         0L)) || BytesWritten != sizeof (CTIERRMSG))
+      if((i = ClientNexus->CTINexusWrite(Msg.getEMsgPtr(), sizeof (CTIERRMSG), &BytesWritten, 15L)) || BytesWritten != sizeof (CTIERRMSG))
       {
          if(ClientNexus->NexusState != CTINEXUS_STATE_NULL)
          {

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/28 18:29:00 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/08/01 22:16:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -719,57 +719,11 @@ static CHAR saveTelegraph[7] = {0,0,0,0,0,0,0};
 
 SendTelegraphStatusToMPC (ULONG Function, const BYTE *MyTelegraph)
 {
-#if 1
-
-    // FIX FIX FIX
-#else
-    INT            nRet;
-    TELEGRAPH      Telegraph;
-    ULONG          BytesWritten;
-
-    /* do a little extra for start message */
-    if(Function == TELEGRAPHSENT)
     {
-        /* Clear the MPC special status point */
-        MPCPointClear ("SEQUENCE COMPLETE");
-        MPCPointClear ("MISSED COMM");
-        memcpy(saveTelegraph, MyTelegraph, sizeof(saveTelegraph));
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-
-    if(TelegraphSentNexus.NexusState == CTINEXUS_STATE_NULL)
-    {
-
-        nRet = TelegraphSentNexus.CTINexusOpen( "", TELEGRAPHNEXUS, CTINEXUS_FLAG_READEXACTLY);
-        if(nRet)
-        {
-            return(PIPEWRITE);
-        }
-        else
-        {
-            CTISleep (750L);
-        }
-    }
-
-    if(TelegraphSentNexus.NexusState != CTINEXUS_STATE_NULL)
-    {
-        /* Write a Telegraph Message to MPC interface */
-        Telegraph.Function = Function;
-
-        /* copy in the telegraph we sent */
-        memcpy (Telegraph.Telegraph, saveTelegraph, sizeof (Telegraph.Telegraph));
-
-        if(TelegraphSentNexus.CTINexusWrite (&Telegraph, sizeof (Telegraph), &BytesWritten, 0L) || BytesWritten == 0)
-        {
-            if(TelegraphSentNexus.NexusState != CTINEXUS_STATE_NULL)
-            {
-                TelegraphSentNexus.CTINexusClose ();
-                return(PIPEWRITE);
-            }
-        }
-    }
-
-#endif
-    /* That all the initialization needed */
+    /* That's all the initialization needed */
     return(NORMAL);
 }
 

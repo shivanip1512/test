@@ -116,4 +116,10 @@ IM_EX_CTIBASE INT SearchQueue (HCTIQUEUE QueueHandle,
                                PULONG Element,
                                PBYTE  Priority);
 
+IM_EX_CTIBASE INT CleanQueue( HCTIQUEUE QueueHandle,
+                              void *ptr,
+                              bool (*myFindFunc)(void*, void*),
+                              void (*myCleanFunc)(void*, void*));
+
+
 #endif /* QUEUE_H */

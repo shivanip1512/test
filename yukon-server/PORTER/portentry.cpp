@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/07/30 21:15:37 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/08/01 22:16:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -570,7 +570,7 @@ VOID RouterThread (VOID *TPNumber)
         /* Now try to write it to the remote porter */
         if(MyNexus.NexusState != CTINEXUS_STATE_NULL)
         {
-            if(MyNexus.CTINexusWrite (OutMessage, sizeof (*OutMessage), &BytesWritten, 0L) || BytesWritten != sizeof (*OutMessage))
+            if(MyNexus.CTINexusWrite (OutMessage, sizeof (*OutMessage), &BytesWritten, 30L) || BytesWritten != sizeof (*OutMessage))
             {
                 if(MyNexus.NexusState != CTINEXUS_STATE_NULL)
                 {
@@ -620,7 +620,7 @@ VOID RouterThread (VOID *TPNumber)
                 continue;
             }
 
-            if(MyNexus.CTINexusWrite (OutMessage, sizeof (*OutMessage), &BytesWritten, 0L) || BytesWritten != sizeof (*OutMessage))
+            if(MyNexus.CTINexusWrite (OutMessage, sizeof (*OutMessage), &BytesWritten, 30L) || BytesWritten != sizeof (*OutMessage))
             {
                 if(MyNexus.NexusState != CTINEXUS_STATE_NULL)
                 {
@@ -705,7 +705,7 @@ VOID RouterThread (VOID *TPNumber)
             /* Send this one on to its source */
             if(InMessage.SaveNexus->NexusState != CTINEXUS_STATE_NULL)
             {
-                if(InMessage.SaveNexus->CTINexusWrite (&InMessage, sizeof (InMessage), &BytesWritten, 0L) || BytesWritten != sizeof (InMessage))
+                if(InMessage.SaveNexus->CTINexusWrite (&InMessage, sizeof (InMessage), &BytesWritten, 30L) || BytesWritten != sizeof (InMessage))
                 {
                     continue;   /* Not really much we can do... calling process disappeared */
                 }

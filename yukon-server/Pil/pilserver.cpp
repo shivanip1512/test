@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2002/07/30 21:15:16 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2002/08/01 22:16:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -600,8 +600,14 @@ void CtiPILServer::resultThread()
                     {
                         if(OutMessage->TargetID != 0 && OutMessage->DeviceID != 0 && OutMessage->Port > 0)
                         {
-                            if(PorterNexus.CTINexusWrite (OutMessage, sizeof (OUTMESS), &BytesWritten, 0L) || BytesWritten == 0)
+                            if(PorterNexus.CTINexusWrite (OutMessage, sizeof (OUTMESS), &BytesWritten, 30L) || BytesWritten == 0)
                             {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+                                DumpOutMessage(OutMessage);
+
                                 if(PorterNexus.NexusState != CTINEXUS_STATE_NULL)
                                 {
                                     PorterNexus.CTINexusClose();
@@ -797,8 +803,13 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
         /* And send them to porter */
         if(PorterNexus.NexusState != CTINEXUS_STATE_NULL)
         {
-            if(PorterNexus.CTINexusWrite(OutMessage, sizeof (OUTMESS), &BytesWritten, 0L) || BytesWritten == 0)
+            if(PorterNexus.CTINexusWrite(OutMessage, sizeof (OUTMESS), &BytesWritten, 30L) || BytesWritten == 0)
             {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
                 if(PorterNexus.NexusState != CTINEXUS_STATE_NULL)
                 {
                     PorterNexus.CTINexusClose();

@@ -13,6 +13,8 @@ using namespace std;
 #include "queues.h"
 #include "dllbase.h"
 
+static void RemoveQueueEntry(HCTIQUEUE QueueHandle, PQUEUEENT Entry, PQUEUEENT Previous);
+
 /* Routine to create a queue */
 IM_EX_CTIBASE INT CreateQueue (PHCTIQUEUE QueueHandle, ULONG Type, HANDLE QuitHandle)
 {
@@ -361,14 +363,7 @@ IM_EX_CTIBASE INT PeekQueue (HCTIQUEUE QueueHandle,
 
 
 /* Routine to read an entry from the queue */
-IM_EX_CTIBASE INT ReadQueue (HCTIQUEUE QueueHandle,
-                             PREQUESTDATA RequestData,
-                             PULONG  DataSize,
-                             PPVOID Data,
-                             ULONG Element,
-                             BOOL32 WaitFlag,
-                             PBYTE Priority,
-                             ULONG *pElementCount)
+IM_EX_CTIBASE INT ReadQueue (HCTIQUEUE QueueHandle, PREQUESTDATA RequestData, PULONG  DataSize, PPVOID Data, ULONG Element, BOOL32 WaitFlag, PBYTE Priority, ULONG *pElementCount)
 {
     PQUEUEENT Entry;
     PQUEUEENT Previous = NULL;
@@ -390,8 +385,6 @@ IM_EX_CTIBASE INT ReadQueue (HCTIQUEUE QueueHandle,
         if(WaitFlag == DCWW_WAIT)
         {
             /* Wait for an element */
-#if 1
-
             INT      WaitHandles = 2;
             DWORD    dwWait;
 
@@ -416,12 +409,6 @@ IM_EX_CTIBASE INT ReadQueue (HCTIQUEUE QueueHandle,
                     break;
                 }
             }
-#else
-            if(CTIWaitEventSem (QueueHandle->WaitArray[0], SEM_INDEFINITE_WAIT))
-            {
-                return(ERROR_QUE_UNABLE_TO_ACCESS);
-            }
-#endif
         }
     }
 
@@ -469,34 +456,7 @@ IM_EX_CTIBASE INT ReadQueue (HCTIQUEUE QueueHandle,
     *Data          = Entry->Data;
     *Priority      = Entry->Priority;
 
-    /* Now we gotta take it off the queue */
-    if(QueueHandle->First == Entry)
-    {
-        QueueHandle->First = Entry->Next;
-    }
-    else
-    {
-        Previous->Next = Entry->Next;
-    }
-
-    if(QueueHandle->Type & QUE_PRIORITY)
-    {
-        if(QueueHandle->Last[Entry->Priority] == Entry)
-        {
-            QueueHandle->Last[Entry->Priority] = NULL;
-        }
-    }
-    else
-    {
-        if(QueueHandle->Last[0] == Entry)
-        {
-            QueueHandle->Last[0] = NULL;
-        }
-    }
-
-    free (Entry);
-
-    QueueHandle->Elements--;
+    RemoveQueueEntry(QueueHandle, Entry, Previous);
 
     if(!(QueueHandle->Elements))
     {
@@ -656,4 +616,89 @@ IM_EX_CTIBASE INT SearchQueue (HCTIQUEUE     QueueHandle,
     CTIReleaseMutexSem (QueueHandle->BlockSem);
 
     return(NO_ERROR);
+}
+
+
+/*
+ *  This function sweeps through the queue removing any queue entries which return bool true from myFindFunc.
+ *  Returns the number of purged queue entries.
+ */
+IM_EX_CTIBASE INT CleanQueue( HCTIQUEUE QueueHandle,
+                              void *ptr,
+                              bool (*myFindFunc)(void*, void*),
+                              void (*myCleanFunc)(void*, void*))
+{
+    INT purgecnt = 0;
+    PQUEUEENT Entry;
+    PQUEUEENT DeleteEntry;
+    PQUEUEENT Previous = NULL;
+
+
+    if(QueueHandle != (HCTIQUEUE) NULL && (QueueHandle->Elements) > 0)
+    {
+        /* get the exclusion semaphore */
+        if( !CTIRequestMutexSem (QueueHandle->BlockSem, 2500) )
+        {
+            /* We the man so unless there has been a fubar...*/
+            if(QueueHandle->First != NULL)
+            {
+                Entry = QueueHandle->First;
+
+                while(Entry != NULL)
+                {
+                    DeleteEntry = Entry;        // This is our deletion candidate.
+                    Entry = Entry->Next;        // Hang on to the next guy, so we can continue;
+
+                    if( (*myFindFunc)(ptr, DeleteEntry->Data) )
+                    {
+                        purgecnt++;
+                        (*myFindFunc)( ptr, DeleteEntry->Data);         // Call the cleanup function.  It better delete the data
+                        RemoveQueueEntry(QueueHandle, DeleteEntry, Previous);     // No longer linked.
+                    }
+                    else
+                    {
+                        Previous = DeleteEntry;     // This holds the last entry NOT deleted!
+                    }
+                }
+
+                CTIReleaseMutexSem (QueueHandle->BlockSem);
+            }
+        }
+    }
+
+    return purgecnt;
+}
+
+void RemoveQueueEntry(HCTIQUEUE QueueHandle, PQUEUEENT Entry, PQUEUEENT Previous )
+{
+    /* Now we gotta take it off the queue */
+    if(QueueHandle->First == Entry)
+    {
+        QueueHandle->First = Entry->Next;
+    }
+    else
+    {
+        Previous->Next = Entry->Next;
+    }
+
+    if(QueueHandle->Type & QUE_PRIORITY)
+    {
+        if(QueueHandle->Last[Entry->Priority] == Entry)
+        {
+            QueueHandle->Last[Entry->Priority] = NULL;
+        }
+    }
+    else
+    {
+        if(QueueHandle->Last[0] == Entry)
+        {
+            QueueHandle->Last[0] = NULL;
+        }
+    }
+
+    free (Entry);
+
+    QueueHandle->Elements--;
+
+    return;
 }

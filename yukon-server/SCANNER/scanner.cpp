@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/07/30 21:16:48 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/08/01 22:16:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1539,8 +1539,12 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
                 dout << RWTime() << " OutMessage to " << ScannerDeviceManager.RemoteGetEqual(OutMessage->TargetID)->getName() << endl;
             }
 
-            if(PorterNexus.CTINexusWrite (OutMessage, sizeof(OUTMESS), &BytesWritten, 0L) || BytesWritten == 0)
+            if(PorterNexus.CTINexusWrite (OutMessage, sizeof(OUTMESS), &BytesWritten, 30L) || BytesWritten == 0)
             {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
                 PorterNexus.CTINexusClose();
                 status = PIPEWASBROKEN;
             }
@@ -1644,6 +1648,7 @@ INT RecordDynamicData()
 
                         if(DeviceRecord->getScanData().isDirty())
                         {
+                            if(ScannerDebugLevel & SCANNER_DEBUG_DYNAMICDATA)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << "   Updating DynamicDeviceScanData for device " << DeviceRecord->getName() << endl;

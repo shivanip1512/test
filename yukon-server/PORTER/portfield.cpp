@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2002/07/18 16:22:50 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2002/08/01 22:16:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2164,6 +2164,8 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
 
 INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device)
 {
+    extern void blitzNexusFromQueue(HCTIQUEUE q, CTINEXUS *&Nexus);
+
     INT            status = NORMAL;
     ULONG          j, QueueCount;
     struct timeb   TimeB;
@@ -2214,6 +2216,12 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                 InMessage->InLength = 0;
                 status = CCUResponseDecode (InMessage, Device, OutMessage);
                 InMessage->InLength = j;
+            }
+
+            if(status == BADSOCK)
+            {
+                blitzNexusFromQueue( Port->getPortQueueHandle(), InMessage->ReturnNexus);
+
             }
 
             /* Only break if this is not DTRAN */
@@ -2404,7 +2412,7 @@ INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *OutMessage)
         /* send message back to originating process */
         if(OutMessage->ReturnNexus != NULL)
         {
-            if(OutMessage->ReturnNexus->CTINexusWrite (InMessage, sizeof (INMESS), &BytesWritten, 0L))
+            if(OutMessage->ReturnNexus->CTINexusWrite(InMessage, sizeof (INMESS), &BytesWritten, 15L))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2686,7 +2694,7 @@ INT ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS 
     /* send message back to originating process */
     if(aOutMessage->ReturnNexus->NexusState != CTINEXUS_STATE_NULL)
     {
-        if(aOutMessage->ReturnNexus->CTINexusWrite (&MyInMessage, sizeof (INMESS), &bytesWritten, 0L))
+        if(aOutMessage->ReturnNexus->CTINexusWrite(&MyInMessage, sizeof (INMESS), &bytesWritten, 15L))
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2853,7 +2861,6 @@ BOOL areAnyOutMessagesForUniqueID(void *pId, void* d)
 
     return(OutMessage->Request.CheckSum == Id);
 }
-
 
 void commFail(CtiDeviceBase *Device, INT state)
 {

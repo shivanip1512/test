@@ -269,20 +269,6 @@ IM_EX_CTIBASE INT LoopBack (USHORT Port, USHORT Remote)
    ULONG ReadLength;
    ULONG QueueElements;
 
-   /* if pipe shut down return message */
-   if(PorterNexus.NexusState == CTINEXUS_STATE_NULL)
-   {
-      if(PortPipeInit (NOWAIT))
-      {
-         return(PIPEWASBROKEN);
-      }
-   }
-
-   /* No two way till FUBAR cleared by call to queue query */
-
-   if(FUBAR)
-      return(PIPEWASBROKEN);
-
    OutMessage.Port = Port;
    OutMessage.Remote = Remote;
    OutMessage.Priority = MAXPRIORITY;
@@ -290,15 +276,9 @@ IM_EX_CTIBASE INT LoopBack (USHORT Port, USHORT Remote)
    OutMessage.Sequence = 0;
    OutMessage.EventCode = COMMANDCODE | LOOPBACKCOMMAND | RESULT | WAIT;
 
-   // cerr <<" Progress: " << __FILE__ << " " << __LINE__ << endl;
-
-   /* And it to porter */
-   if(PorterNexus.CTINexusWrite(&OutMessage, sizeof (OutMessage), &BytesWritten, 0L) || BytesWritten == 0)
+   if( (i = sendToPorter(&OutMessage,BytesWritten) != NORMAL) )
    {
-      PorterNexus.CTINexusClose();     // Close it if it is open.
-
-      FUBAR = TRUE;
-      return(SOCKWRITE);
+       return i;
    }
 
    /* Wait till something is on the return queue or we lose the pipe */
@@ -317,13 +297,7 @@ IM_EX_CTIBASE INT LoopBack (USHORT Port, USHORT Remote)
    } while(!QueueElements);
 
    /* result on wait queue */
-   if(ReadQueue (MyWaitQueueHandle,
-                 &ReadResult,
-                 &ReadLength,
-                 (PVOID FAR *) &InMessage,
-                 0,
-                 DCWW_NOWAIT,
-                 &ReadPriority))
+   if(ReadQueue (MyWaitQueueHandle, &ReadResult,  &ReadLength, (PVOID FAR *) &InMessage, 0, DCWW_NOWAIT, &ReadPriority))
    {
       return(QUEUE_READ);
    }
@@ -356,7 +330,7 @@ INT sendToPorter(OUTMESS *OutMessage, ULONG &BytesWritten)
    }
 
    /* And send them to porter */
-   if(PorterNexus.CTINexusWrite(OutMessage, sizeof(OUTMESS), &BytesWritten, 0L) || BytesWritten == 0)
+   if(PorterNexus.CTINexusWrite(OutMessage, sizeof(OUTMESS), &BytesWritten, 30L) || BytesWritten == 0)
    {
       PorterNexus.CTINexusClose();     // Close it if it is open.
       FUBAR = TRUE;
@@ -857,11 +831,7 @@ IM_EX_CTIBASE INT DecodeDialupData(INMESS *InMessage, DIALUPSTRUCT *DUPst) // De
 }
 
 /* Routine to execute a versacom message */
-IM_EX_CTIBASE INT nfpexec (
-                       USHORT Function,
-                       USHORT PointOffset,
-                       DEVICE * DeviceRecord
-                       )       /* Fisher Pierce structure */
+IM_EX_CTIBASE INT nfpexec ( USHORT Function, USHORT PointOffset, DEVICE * DeviceRecord )       /* Fisher Pierce structure */
 {
    ULONG         BytesWritten;
    OUTMESS       OutMessage;

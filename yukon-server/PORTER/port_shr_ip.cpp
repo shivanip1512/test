@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr_ip.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/07/18 16:22:48 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/08/01 22:16:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -112,7 +112,7 @@ void CtiPortShareIP::inThread()
 
                     //  if we got no reply, it should be safe to write to the _scadaNexus - outThread won't wake up unless we get a
                     //    reply, and he's the only other thread that can write
-                    if(_scadaNexus.CTINexusWrite(Buffer, 2, &bytesWritten, 0) || (bytesWritten != 2))
+                    if(_scadaNexus.CTINexusWrite(Buffer, 2, &bytesWritten, 10) || (bytesWritten != 2))
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -438,7 +438,7 @@ void CtiPortShareIP::outThread()
                         }
                     }
 
-                    if(_scadaNexus.CTINexusWrite((char*)(InMessage.IDLCStat + 11), InMessage.InLength, &BytesWritten, 0) || (BytesWritten != InMessage.InLength))
+                    if(_scadaNexus.CTINexusWrite((char*)(InMessage.IDLCStat + 11), InMessage.InLength, &BytesWritten, 10) || (BytesWritten != InMessage.InLength))
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);

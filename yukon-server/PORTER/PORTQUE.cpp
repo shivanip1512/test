@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/07/18 16:22:51 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/08/01 22:16:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -80,6 +80,15 @@ extern HCTIQUEUE*       QueueHandle(LONG pid);
 USHORT QueSequence = {0x8000};
 
 static CHAR tempstr[100];
+
+bool findReturnNexusMatch(void *nid, void* d);
+void cleanupOrphanOutMessages(void *unusedptr, void* d);
+
+
+void blitzNexusFromQueue(HCTIQUEUE q, CTINEXUS *&Nexus)
+{
+    CleanQueue( q, (void*)Nexus, findReturnNexusMatch, cleanupOrphanOutMessages );
+}
 
 /* Thread to process and dispatch entries from Queue & ACTIN queues */
 VOID QueueThread (VOID *Arg)
@@ -162,6 +171,8 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
 {
     extern LoadRemoteRoutes(CtiDeviceBase *RemoteRecord);
 
+    INT status = NORMAL;
+    INT SocketError = NORMAL;
     ULONG i;
     INMESS ResultMessage;
     USHORT QueTabEnt;
@@ -181,8 +192,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
        InMessage->Sequence & 0x8000          &&
        !(ErrorReturnCode == REQACK && OutMessage->Retry > 0))
     {
-        DeQueue(InMessage);       // Removes all queue entries placed upon in the queue via this message.
-        return(NORMAL);
+        return DeQueue(InMessage);       // Removes all queue entries placed upon in the queue via this message.
     }
     else if(InMessage->Sequence & 0x8000)
     {
@@ -850,12 +860,17 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
                 }
                 /* this is a completed result so send it to originating process */
                 ResultMessage.EventCode |= DECODED;
-                if(ResultMessage.ReturnNexus->CTINexusWrite (&ResultMessage, sizeof (ResultMessage), &BytesWritten, 0L))
+                if( (SocketError = ResultMessage.ReturnNexus->CTINexusWrite(&ResultMessage, sizeof (ResultMessage), &BytesWritten, 15L)) != NORMAL)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Error Writing to Return Pipe" << endl;
-                        dout << "Wrote " << BytesWritten << "/" << sizeof(ResultMessage) << " bytes" << endl;
+                        dout << RWTime() << " Error writing to nexus. CCUResponseDecode().  "
+                            << "Wrote " << BytesWritten << "/" << sizeof(ResultMessage) << " bytes" << endl;
+                    }
+
+                    if(SocketError == BADSOCK)
+                    {
+                        status = SocketError;
                     }
                 }
             }
@@ -968,7 +983,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
         IDLCRColQ(Dev);
     }
 
-    return(NORMAL);
+    return(status);
 }
 
 
@@ -1114,9 +1129,12 @@ CCUQueueFlush (CtiDeviceBase *Dev)
                     }
 
                     /* send message back to originating process */
-                    if(InMessage.ReturnNexus->CTINexusWrite (&InMessage, sizeof (InMessage), &BytesWritten, 0L) || BytesWritten == 0)
+                    if(InMessage.ReturnNexus->CTINexusWrite (&InMessage, sizeof (InMessage), &BytesWritten, 30L) || BytesWritten == 0)
                     {
-                        printf("Error Writing to Pipe\n");
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Error Writing to nexus " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
                         InMessage.ReturnNexus->CTINexusClose();
                     }
                 }
@@ -1176,9 +1194,12 @@ QueueFlush (CtiDevice *Dev)
                     }
 
                     /* send message back to originating process */
-                    if(InMessage.ReturnNexus->CTINexusWrite(&InMessage, sizeof (InMessage), &BytesWritten, 0L) || BytesWritten == 0)
+                    if(InMessage.ReturnNexus->CTINexusWrite(&InMessage, sizeof (InMessage), &BytesWritten, 15L) || BytesWritten == 0)
                     {
-                        printf("Error Writing to Pipe\n");
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Error Writing to nexus " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
                         InMessage.ReturnNexus->CTINexusClose();
                     }
                 }
@@ -1646,6 +1667,8 @@ BuildActinShed (CtiDevice *Dev)
 /* Dequeues only those entries marked as having QueueEntrySequence equal to the inbound message sequence*/
 DeQueue (INMESS *InMessage)
 {
+    INT status = NORMAL;
+    INT SocketError = NORMAL;
     INMESS ResultMessage;
     struct timeb TimeB;
     ULONG i;
@@ -1698,12 +1721,17 @@ DeQueue (INMESS *InMessage)
                         }
 
                         /* Now send it back */
-                        if(ResultMessage.ReturnNexus->CTINexusWrite (&ResultMessage, sizeof (ResultMessage), &BytesWritten, 0L))
+                        if((SocketError = ResultMessage.ReturnNexus->CTINexusWrite (&ResultMessage, sizeof (ResultMessage), &BytesWritten, 15L)))
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Error Writing to Return Pipe" << endl;
-                                dout << "Wrote " << BytesWritten << "/" << sizeof(ResultMessage) << " bytes" << endl;
+                                dout << RWTime() << " Error writing to return nexus.  DeQueue().  "
+                                    << "Wrote " << BytesWritten << "/" << sizeof(ResultMessage) << " bytes" << endl;
+                            }
+
+                            if(SocketError == BADSOCK)
+                            {
+                                status = SocketError;
                             }
                         }
                     }
@@ -1716,5 +1744,32 @@ DeQueue (INMESS *InMessage)
         }
     }
 
-    return(NORMAL);
+    return(status);
 }
+
+
+bool findReturnNexusMatch(void *nid, void* d)
+{
+    CTINEXUS *rnid = (CTINEXUS *)nid;
+    OUTMESS *OutMessage = (OUTMESS *)d;
+
+    return(OutMessage->ReturnNexus == rnid);
+}
+
+void cleanupOrphanOutMessages(void *unusedptr, void* d)
+{
+    OUTMESS *OutMessage = (OUTMESS *)d;
+
+    if(PorterDebugLevel & PORTER_DEBUG_VERBOSE)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " OutMessage being cleaned up. " << endl;
+    }
+
+    delete OutMessage;
+
+    return;
+}
+
+
+

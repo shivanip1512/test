@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/07/18 16:22:49 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/08/01 22:16:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -124,7 +124,7 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode)
         /* send message back to originating process */
         if(InMessage.ReturnNexus != NULL)
         {
-            INT writeResult = InMessage.ReturnNexus->CTINexusWrite (&InMessage, sizeof (InMessage), &BytesWritten, 3L);
+            INT writeResult = InMessage.ReturnNexus->CTINexusWrite(&InMessage, sizeof (InMessage), &BytesWritten, 5L);
 
             if(writeResult || BytesWritten == 0)
             {

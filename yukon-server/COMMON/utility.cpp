@@ -839,7 +839,6 @@ bool pokeDigiPortserver(CHAR *server, INT port)
 
         for(int i = 0; i < 5; i++)
         {
-            //telnetNexus.CTINexusWrite((i % 2 ? "\n" : "\r"), 1, &cnt, 1);
             telnetNexus.CTINexusWrite("\r", 1, &cnt, 1);
 
             memset(buffer, '\0', 120);

@@ -402,7 +402,6 @@ INT CTINEXUS::CTINexusWrite(VOID *buf, ULONG len, PULONG BytesWritten, LONG Time
 
     RWTime  now;
     RWTime  then(now + TimeOut);
-    RWTime  wbtime(now + 300);  //  Would block time.
     int     wbLoops = 0;        //  number of "would block" loops
 
     try
@@ -446,18 +445,12 @@ INT CTINEXUS::CTINexusWrite(VOID *buf, ULONG len, PULONG BytesWritten, LONG Time
                 if(len > 10000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Nexus Write > 10000 bytes.  Are you OK? **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "**** Nexus Write > 10000 bytes. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 now = now.now();
 
-            } while(((nReason == WSAEWOULDBLOCK && now < wbtime) || now < then) && len > 0);
-
-            if(wbLoops > 60)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Outbound socket write (was blocked) complete. " << wbLoops / 2 << endl;
-            }
+            } while( (nReason == WSAEWOULDBLOCK && now < then) && len > 0);
         }
         else
         {
