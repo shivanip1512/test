@@ -22,6 +22,7 @@ public final static FileFormatBase createFileFormat(int type)
 		
 		case FileFormatTypes.SEDC:
 			retFFB =  new SEDCFormat();
+			((SEDCFormat)retFFB).setVersion(FileFormatTypes.NEW_VERSION);			
 			break;
 
 		case FileFormatTypes.CADP:
@@ -59,7 +60,13 @@ public final static FileFormatBase createFileFormat(int type)
 		case FileFormatTypes.MV_90:
 			retFFB =  new MV_90Format();
 			break;
+
+		case FileFormatTypes.SEDC_5_4:
+			retFFB =  new SEDCFormat();
+			((SEDCFormat)retFFB).setVersion(FileFormatTypes.OLD_VERSION);
+			break;
 			
+		
 		default: //this is bad
 			throw new Error("FileFormatFactory::createFileFormat - Unrecognized file format type");
 	}

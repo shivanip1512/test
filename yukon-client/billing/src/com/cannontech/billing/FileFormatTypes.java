@@ -24,6 +24,13 @@ public final class FileFormatTypes {
 	public static final int CTIStandard2 = 9;
 	public static final int MVRS = 10;
 	public static final int MV_90 = 11;
+	public static final int SEDC_5_4 = 12;
+	
+	//Used to represent what version of SEDC is being used.
+	//'Old' SEDC5.4 version doesn't accept the extra commas and semicolon.
+	//Default is 'new' version.
+	public static int NEW_VERSION = 0;
+	public static int OLD_VERSION = 1;
 /*
 
 	

@@ -15,6 +15,9 @@ public class SEDCFormat extends FileFormatBase
 	public static final String HEADER =
 		"H    Meter    Kwh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase\r\n";
 
+	public static final String HEADER_OLD =
+		"H    Meter    Kwh   Time   Date\r\n";
+
 	public static final java.text.SimpleDateFormat DATE_FORMATTER = 
 				new java.text.SimpleDateFormat("yy/MM/dd");
 				
@@ -23,6 +26,11 @@ public class SEDCFormat extends FileFormatBase
 
 	public static final java.text.DecimalFormat NUMBER_FORMATTER = 
 		new java.text.DecimalFormat();
+
+	//Used to represent what version of SEDC is being used.
+	//'Old' SEDC5.4 version doesn't accept the extra commas and semicolon.
+	//Default is 'new' version.
+	private int version = FileFormatTypes.NEW_VERSION;
 
 	static
 	{
@@ -152,7 +160,10 @@ public boolean retrieveBillingData(String dbAlias)
 			
 			if( !isAppending() )
 			{
-				getRecordVector().add( new com.cannontech.billing.record.StringRecord(HEADER) );
+				if( getVersion() == FileFormatTypes.OLD_VERSION)
+					getRecordVector().add( new com.cannontech.billing.record.StringRecord(HEADER_OLD) );
+				else
+					getRecordVector().add( new com.cannontech.billing.record.StringRecord(HEADER) );
 				recCount ++;
 			}
 
@@ -217,6 +228,8 @@ public boolean retrieveBillingData(String dbAlias)
 					{
 						com.cannontech.billing.record.SEDCRecord sedcRec = 
 							new com.cannontech.billing.record.SEDCRecord(meterNumber);
+						sedcRec.setVersion(getVersion());
+							
 						if (ptOffset == 1 || isKWH(ptOffset))
 						{
 							if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
@@ -263,5 +276,14 @@ public boolean retrieveBillingData(String dbAlias)
 	}
 	com.cannontech.clientutils.CTILogger.info(" @SEDC Data Collection : Took " + (System.currentTimeMillis() - timer));
 	return true;
+}
+
+private int getVersion()
+{
+	return version;
+}
+public void setVersion(int newVersionType)
+{
+	version = newVersionType;
 }
 }
