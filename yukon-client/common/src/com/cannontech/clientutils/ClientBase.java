@@ -15,7 +15,8 @@ import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.PointRegistration;
 import com.cannontech.message.dispatch.message.Signal;
 
-public abstract class ClientBase implements Runnable, ClientBaseInterface
+
+public abstract class ClientBase extends java.util.Observable implements Runnable, ClientBaseInterface
 {
 	private ClientConnection connection = null;
 	private Thread runningThread = null;
@@ -165,7 +166,13 @@ private void initialize()
 	connection = new com.cannontech.message.dispatch.ClientConnection();
 	
 	if( observer != null )
+   {
+      //connection list
 		getConnection().addObserver( observer );
+
+      //our own list
+      addObserver( observer );
+   }
 
 	getConnection().setAutoReconnect( true );
 	getConnection().setTimeToReconnect( 10 );
@@ -179,7 +186,7 @@ private void initialize()
  * Creation date: (3/22/00 3:02:24 PM)
  * @param mpc com.cannontech.message.dispatch.message.Multi
  */
-private void receivedMulti(Multi mpc) 
+/*private void receivedMulti(Multi mpc) 
 {
 	// loop through all the messages in the MULTI
 	for( int i = 0; i < mpc.getVector().size(); i++ )
@@ -203,6 +210,7 @@ private void receivedMulti(Multi mpc)
 
 	}	
 }
+*/
 /**
  * Insert the method's description here.
  * Creation date: (5/4/00 3:29:31 PM)
@@ -212,6 +220,38 @@ public void reRegister( Long[] ptIDs )
 {
 	getConnection().write( getPointRegistration(ptIDs) );
 }
+
+private void handleMessage( Object in )
+{
+   if( in instanceof Multi )
+   {           
+      Multi mpc = (Multi) in;
+
+      for( int i = 0; i < mpc.getVector().size(); i++ )
+         handleMessage( mpc.getVector().get(i) );
+   }
+   else if( in instanceof PointData )
+   {           
+      PointData point = (PointData) in;            
+      receivedPointData( point );
+   }
+   else if( in instanceof Signal )
+   {           
+      Signal sig = (Signal) in;           
+      receivedSignal( sig );
+      
+      //tell everyone about our signal
+      setChanged();
+      notifyObservers( sig );
+   }
+   else if( in instanceof DBChangeMsg )
+   {
+      DBChangeMsg dbChange = (DBChangeMsg) in;
+      receivedDBChangMsg( dbChange );
+   }              
+
+}
+
 /**
  * run method comment.
  */
@@ -228,26 +268,7 @@ public void run()
 
 			if( connected() && ((in = connection.read(0L)) != null) )
 			{
-				if( in instanceof Multi )
-				{				
-					Multi mpc = (Multi) in;
-					receivedMulti( mpc );
-				}
-				else if( in instanceof PointData )
-				{				
-					PointData point = (PointData) in;				
-					receivedPointData( point );
-				}
-				else if( in instanceof Signal )
-				{				
-					Signal point = (Signal) in;				
-					receivedSignal( point );
-				}
-				else if( in instanceof DBChangeMsg )
-				{
-					DBChangeMsg dbChange = (DBChangeMsg) in;
-					receivedDBChangMsg( dbChange );
-				}				
+            handleMessage( in );
 			}
 			else if( connected() && in == null ) // connection.read() == null
 			{
@@ -342,12 +363,6 @@ private void tryConnection()
 		getExternalResources();
 		
 		com.cannontech.clientutils.CTILogger.info("Trying to connect to:  " + HOST + " " + PORT );
-		//connection = new com.cannontech.message.dispatch.ClientConnection();
-		//if( observer != null )
-			//connection.addObserver( observer );
-
-		//connection.setAutoReconnect( true );
-		//connection.setTimeToReconnect( 10 );
 
 		getConnection().setHost(HOST);		
 		getConnection().setPort(PORT);		
