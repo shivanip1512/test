@@ -6,7 +6,7 @@ package com.cannontech.database.db.graph;
  * @author: 
  */
 public class GraphDefinition extends com.cannontech.database.db.DBPersistent implements java.io.Serializable {
-	private java.lang.Long graphDefinitionID = null;
+	private java.lang.Integer graphDefinitionID = null;
 	private java.lang.String name = null;
 	
 	private java.lang.Character autoScaleTimeAxis = new Character('Y');
@@ -139,7 +139,7 @@ public java.lang.Character getAutoScaleTimeAxis() {
  * Creation date: (12/9/99 11:37:49 AM)
  * @return java.lang.Long
  */
-public java.lang.Long getGraphDefinitionID() {
+public java.lang.Integer getGraphDefinitionID() {
 	return graphDefinitionID;
 }
 /**
@@ -171,7 +171,7 @@ public java.lang.String getName() {
  * Creation date: (12/14/99 10:31:33 AM)
  * @return java.lang.Long
  */
-public static synchronized Long getNextID() {
+public static synchronized Integer getNextID() {
 
 	return getNextID("yukon");
 }
@@ -180,13 +180,13 @@ public static synchronized Long getNextID() {
  * Creation date: (12/14/99 10:31:33 AM)
  * @return java.lang.Long
  */
-public static synchronized Long getNextID(String databaseAlias) {
+public static synchronized Integer getNextID(String databaseAlias) {
 
 	com.cannontech.database.SqlStatement stmt =
  		new com.cannontech.database.SqlStatement("SELECT MAX(GraphDefinitionID) FROM GraphDefinition",
  													databaseAlias );
 
-	Long returnVal = null;
+	Integer returnVal = null;
 	 														
 	try
 	{
@@ -194,7 +194,7 @@ public static synchronized Long getNextID(String databaseAlias) {
 
 		if( stmt.getRowCount() > 0 )
 		{
-			returnVal = new Long( ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue() + 1);
+			returnVal = new Integer( ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue() + 1);
 		}		
 
 	}
@@ -204,7 +204,7 @@ public static synchronized Long getNextID(String databaseAlias) {
 	}
 
 	if( returnVal == null )
-		returnVal = new Long(1);
+		returnVal = new Integer(1);
 		
 	return returnVal;
 }
@@ -366,7 +366,7 @@ public void setAutoScaleTimeAxis(java.lang.Character newAutoScaleTimeAxis) {
  * Creation date: (12/9/99 11:37:49 AM)
  * @param newGraphDefinitionID java.lang.Long
  */
-public void setGraphDefinitionID(java.lang.Long newGraphDefinitionID) {
+public void setGraphDefinitionID(java.lang.Integer newGraphDefinitionID) {
 	graphDefinitionID = newGraphDefinitionID;
 }
 /**

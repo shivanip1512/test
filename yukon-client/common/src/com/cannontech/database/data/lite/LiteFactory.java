@@ -62,7 +62,7 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 				break;
 			case LiteTypes.GRAPHDEFINITION:
 				returnObject = new com.cannontech.database.data.graph.GraphDefinition();
-				((com.cannontech.database.data.graph.GraphDefinition)returnObject).getGraphDefinition().setGraphDefinitionID(new Long(((LiteGraphDefinition)liteObject).getGraphDefinitionID()));
+				((com.cannontech.database.data.graph.GraphDefinition)returnObject).getGraphDefinition().setGraphDefinitionID(new Integer(((LiteGraphDefinition)liteObject).getGraphDefinitionID()));
 				((com.cannontech.database.data.graph.GraphDefinition)returnObject).getGraphDefinition().setName(((LiteGraphDefinition)liteObject).getName());
 				break;
 			case LiteTypes.NOTIFICATION_GROUP:

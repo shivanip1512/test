@@ -12,10 +12,10 @@ public class GraphDataSeries extends com.cannontech.database.db.DBPersistent {
 	public static final String PEAK_SERIES  = "peak";
 	public static final String USAGE_SERIES = "usage";
 	
-	private java.lang.Long graphDataSeriesID = null;
+	private java.lang.Integer graphDataSeriesID = null;
 	private java.lang.String type = GRAPH_SERIES;
-	private java.lang.Long graphDefinitionID = null;
-	private java.lang.Long pointID = null;	
+	private java.lang.Integer graphDefinitionID = null;
+	private java.lang.Integer pointID = null;	
 	private java.lang.String label = " ";
 	private java.lang.Character axis = new Character('L');
 	private java.lang.Integer color = null;
@@ -71,7 +71,7 @@ public void delete() throws java.sql.SQLException
  * Creation date: (12/9/99 1:46:08 PM)
  * @param userID java.lang.Long
  */
-public static void deleteAllGraphDataSeries(Long graphDefinitionID) 
+public static void deleteAllGraphDataSeries(Integer graphDefinitionID) 
 {	
 	deleteAllGraphDataSeries( graphDefinitionID, "yukon" );
 }
@@ -80,7 +80,7 @@ public static void deleteAllGraphDataSeries(Long graphDefinitionID)
  * Creation date: (12/9/99 1:46:08 PM)
  * @param userID java.lang.Long
  */
-public static void deleteAllGraphDataSeries(Long graphDefinitionID, String databaseAlias) 
+public static void deleteAllGraphDataSeries(Integer graphDefinitionID, String databaseAlias) 
 {	
 	String sqlString = "DELETE FROM GraphDataSeries WHERE GraphDefinitionID= " + graphDefinitionID.toString();
 
@@ -102,7 +102,7 @@ public static void deleteAllGraphDataSeries(Long graphDefinitionID, String datab
  * Creation date: (12/9/99 1:46:08 PM)
  * @param userID java.lang.Long
  */
-public static GraphDataSeries[] getAllGraphDataSeries(Long graphDefinitionID) 
+public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID) 
 {	
 	return getAllGraphDataSeries( graphDefinitionID, "yukon" );
 }
@@ -111,7 +111,7 @@ public static GraphDataSeries[] getAllGraphDataSeries(Long graphDefinitionID)
  * Creation date: (12/9/99 1:46:08 PM)
  * @param userID java.lang.Long
  */
-public static GraphDataSeries[] getAllGraphDataSeries(Long graphDefinitionID, String databaseAlias) 
+public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID, String databaseAlias) 
 {
 	
 	String sqlString = "SELECT gds.GRAPHDATASERIESID, gds.TYPE, gds.POINTID, gds.LABEL, gds.AXIS, gds.COLOR, pao.PAONAME, pu.UOMID FROM GRAPHDATASERIES gds, YUKONPAOBJECT pao, POINT p, POINTUNIT pu WHERE gds.GRAPHDEFINITIONID = " + graphDefinitionID.toString() + " AND p.POINTID = GDS.POINTID AND pao.PAOBJECTID = p.PAOBJECTID AND pu.PointID = p.POINTID ORDER BY p.POINTOFFSET";
@@ -142,10 +142,10 @@ public static GraphDataSeries[] getAllGraphDataSeries(Long graphDefinitionID, St
 		String deviceName = (String) sql.getRow(i)[6];
 		java.math.BigDecimal uomid = (java.math.BigDecimal) sql.getRow(i)[7];
 	
-		dataSeries.setGraphDataSeriesID ( new Long( gdsID.longValue() ) );		
+		dataSeries.setGraphDataSeriesID ( new Integer( gdsID.intValue() ) );		
 		dataSeries.setGraphDefinitionID(graphDefinitionID);
 		dataSeries.setType(type);
-		dataSeries.setPointID( new Long( pID.longValue() ) );		
+		dataSeries.setPointID( new Integer( pID.intValue() ) );
 		dataSeries.setLabel(label);		
 		dataSeries.setAxis( new Character( axis.charAt(0)) );
 		dataSeries.setColor( new Integer( color.intValue() ) );
@@ -189,7 +189,7 @@ public java.lang.String getDeviceName() {
  * Creation date: (12/13/99 1:41:17 PM)
  * @return java.lang.Long
  */
-public java.lang.Long getGraphDataSeriesID() {
+public java.lang.Integer getGraphDataSeriesID() {
 	return graphDataSeriesID;
 }
 /**
@@ -197,7 +197,7 @@ public java.lang.Long getGraphDataSeriesID() {
  * Creation date: (12/13/99 1:41:28 PM)
  * @return java.lang.Long
  */
-public java.lang.Long getGraphDefinitionID() {
+public java.lang.Integer getGraphDefinitionID() {
 	return graphDefinitionID;
 }
 /**
@@ -213,7 +213,7 @@ public java.lang.String getLabel() {
  * Creation date: (12/14/99 10:31:33 AM)
  * @return java.lang.Long
  */
-public static synchronized Long getNextID() {
+public static synchronized Integer getNextID() {
 	
 	return getNextID("yukon");
 }
@@ -222,12 +222,12 @@ public static synchronized Long getNextID() {
  * Creation date: (12/14/99 10:31:33 AM)
  * @return java.lang.Long
  */
-public static synchronized Long getNextID(String databaseAlias) {
+public static synchronized Integer getNextID(String databaseAlias) {
 	com.cannontech.database.SqlStatement stmt =
  		new com.cannontech.database.SqlStatement("SELECT MAX(GraphDataSeriesID) FROM GraphDataSeries",
  													databaseAlias );
 
-	Long returnVal = null;
+	Integer returnVal = null;
 														
 	try
 	{
@@ -235,7 +235,7 @@ public static synchronized Long getNextID(String databaseAlias) {
 
 		if( stmt.getRowCount() > 0 )
 		{
-			returnVal = new Long( ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue() + 1);
+			returnVal = new Integer( ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue() + 1);
 		}	
 
 	}
@@ -245,7 +245,7 @@ public static synchronized Long getNextID(String databaseAlias) {
 	}
 
 	if( returnVal == null )
-		returnVal = new Long(1);
+		returnVal = new Integer(1);
 		
 	return returnVal;
 }
@@ -254,7 +254,7 @@ public static synchronized Long getNextID(String databaseAlias) {
  * Creation date: (12/13/99 1:41:37 PM)
  * @return java.lang.Long
  */
-public java.lang.Long getPointID() {
+public java.lang.Integer getPointID() {
 	return pointID;
 }
 /**
@@ -295,8 +295,8 @@ public void retrieve() throws java.sql.SQLException
 	
 	if (results.length == selectColumns.length)
 	{
-		setGraphDefinitionID(new Long(((Integer) results[0]).longValue()));		
-		setPointID( new Long(((Integer) results[1]).longValue()));		
+		setGraphDefinitionID((Integer) results[0]);
+		setPointID((Integer) results[1]);
 		setLabel( (String) results[2] );
 		setAxis(  new Character( ((String) results[3]).charAt(0) ));
 		setColor( (Integer) results[4] );
@@ -332,7 +332,7 @@ public void setDeviceName(java.lang.String newDeviceName) {
  * Creation date: (12/13/99 1:41:17 PM)
  * @param newGraphDataSeriesID java.lang.Long
  */
-public void setGraphDataSeriesID(java.lang.Long newGraphDataSeriesID) {
+public void setGraphDataSeriesID(java.lang.Integer newGraphDataSeriesID) {
 	graphDataSeriesID = newGraphDataSeriesID;
 }
 /**
@@ -340,7 +340,7 @@ public void setGraphDataSeriesID(java.lang.Long newGraphDataSeriesID) {
  * Creation date: (12/13/99 1:41:28 PM)
  * @param newGraphDefinitionID java.lang.Long
  */
-public void setGraphDefinitionID(java.lang.Long newGraphDefinitionID) {
+public void setGraphDefinitionID(java.lang.Integer newGraphDefinitionID) {
 	graphDefinitionID = newGraphDefinitionID;
 }
 /**
@@ -356,7 +356,7 @@ public void setLabel(java.lang.String newLabel) {
  * Creation date: (12/13/99 1:41:37 PM)
  * @param newPointID java.lang.Long
  */
-public void setPointID(java.lang.Long newPointID) {
+public void setPointID(java.lang.Integer newPointID) {
 	pointID = newPointID;
 }
 /**
