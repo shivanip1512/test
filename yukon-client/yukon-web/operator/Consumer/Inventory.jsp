@@ -35,6 +35,10 @@
 			break;
 		}
 	}
+	
+	String hwGroupName = "Switch";
+	if (hardware.getStarsThermostatSettings() != null)
+		hwGroupName = "Thermostat";
 %>
 
 <html>
@@ -81,10 +85,14 @@ function validate(form) {
 	}
 	return true;
 }
+
+function init() {
+	showHardwareGroup("<%= hwGroupName %>");
+}
 </script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0">
+<body class="Background" leftmargin="0" topmargin="0" onload="init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -163,6 +171,21 @@ function validate(form) {
                                 </td>
                                 <td width="200"> 
                                   <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= hardware.getManufactureSerialNumber() %>">
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="100" class="TableCell"> 
+                                  <div align="right"></div>
+                                </td>
+                                <td width="200" class="TableCell" valign="middle"><img src="../../Images/Buttons/CheckInv.gif" width="87" height="18"> 
+                                  <img src="../../Images/Buttons/SelectInv.gif" width="87" height="18"></td>
+                              </tr>
+                              <tr> 
+                                <td width="100" class="TableCell"> 
+                                  <div align="right">Label: </div>
+                                </td>
+                                <td width="200">
+                                  <input type="text" name="DeviceLabel" maxlength="30" size="24" value="<%= hardware.getDeviceLabel() %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -248,31 +271,13 @@ function validate(form) {
                                   </td>
                                   <td width="200"> 
                                     <select name="ServiceCompany">
-<%
+                                      <%
 	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
 		StarsServiceCompany servCompany = companies.getStarsServiceCompany(i);
 		String selectedStr = (servCompany.equals(company)) ? "selected" : "";
 %>
-                              		  <option value="<%= servCompany.getCompanyID() %>" <%= selectedStr %>><%= servCompany.getCompanyName() %></option>
-<%
-	}
-%>
-                                    </select>
-                                  </td>
-                                </tr>
-                                <tr> 
-                                  <td width="100" class="TableCell"> 
-                                    <div align="right">Location: </div>
-                                  </td>
-                                  <td width="200"> 
-                                    <select name="Location">
-<%
-	StarsCustSelectionList locationList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_LOCATION );
-	for (int i = 0; i < locationList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = locationList.getStarsSelectionListEntry(i);
-%>
-                              		  <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-<%
+                                      <option value="<%= servCompany.getCompanyID() %>" <%= selectedStr %>><%= servCompany.getCompanyName() %></option>
+                                      <%
 	}
 %>
                                     </select>

@@ -96,13 +96,13 @@ function validate(form) {
                                 </td>
                                 <td width="200"> 
                                   <select name="DeviceType">
-                              <%
+                                    <%
 	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
 %>
-                              		<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-                              <%
+                                    <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                                    <%
 	}
 %>
                                   </select>
@@ -114,6 +114,21 @@ function validate(form) {
                                 </td>
                                 <td width="200"> 
                                   <input type="text" name="SerialNo" maxlength="30" size="24" value="">
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="100" class="TableCell"> 
+                                  <div align="right"></div>
+                                </td>
+                                <td width="200" class="TableCell" valign="middle"><img src="../../Images/Buttons/CheckInv.gif" width="87" height="18"> 
+                                  <img src="../../Images/Buttons/SelectInv.gif" width="87" height="18"></td>
+                              </tr>
+                              <tr> 
+                                <td width="100" class="TableCell"> 
+                                  <div align="right">Label: </div>
+                                </td>
+                                <td width="200"> 
+                                  <input type="text" name="DeviceLabel" maxlength="30" size="24" value="">
                                 </td>
                               </tr>
                               <tr> 
@@ -145,17 +160,17 @@ function validate(form) {
                                   <div align="right">Voltage: </div>
                                 </td>
                                 <td width="200"> 
-								  <select name="Voltage">
-                              <%
+                                  <select name="Voltage">
+                                    <%
 	StarsCustSelectionList voltageList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE );
 	for (int i = 0; i < voltageList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = voltageList.getStarsSelectionListEntry(i);
 %>
-                              		<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-                              <%
+                                    <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                                    <%
 	}
 %>
-								  </select>
+                                  </select>
                                 </td>
                               </tr>
                               <tr> 
@@ -164,13 +179,13 @@ function validate(form) {
                                 </td>
                                 <td width="200"> 
                                   <select name="Status">
-                              <%
+                                    <%
 	StarsCustSelectionList statusList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS );
 	for (int i = 0; i < statusList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = statusList.getStarsSelectionListEntry(i);
 %>
-                              		<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-                              <%
+                                    <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                                    <%
 	}
 %>
                                   </select>
@@ -209,30 +224,12 @@ function validate(form) {
                                 </td>
                                 <td width="200"> 
                                   <select name="ServiceCompany">
-<%
+                                    <%
 	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
 		StarsServiceCompany company = companies.getStarsServiceCompany(i);
 %>
-                              		<option value="<%= company.getCompanyID() %>"><%= company.getCompanyName() %></option>
-<%
-	}
-%>
-                                  </select>
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="100" class="TableCell"> 
-                                  <div align="right">Location: </div>
-                                </td>
-                                <td width="200"> 
-                                  <select name="Location">
-<%
-	StarsCustSelectionList locationList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_LOCATION );
-	for (int i = 0; i < locationList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = locationList.getStarsSelectionListEntry(i);
-%>
-                              		<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-<%
+                                    <option value="<%= company.getCompanyID() %>"><%= company.getCompanyName() %></option>
+                                    <%
 	}
 %>
                                   </select>
