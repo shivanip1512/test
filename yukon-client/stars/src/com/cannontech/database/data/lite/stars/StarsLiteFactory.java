@@ -553,6 +553,7 @@ public class StarsLiteFactory {
 		liteProg.setProgramID( pubProg.getLMProgramID().intValue() );
 		liteProg.setWebSettingsID( pubProg.getWebSettingsID().intValue() );
 		liteProg.setChanceOfControlID( pubProg.getChanceOfControlID().intValue() );
+		liteProg.setProgramOrder( pubProg.getProgramOrder().intValue() );
 		liteProg.setProgramCategory( "LMPrograms" );
 		
 		com.cannontech.database.data.lite.LiteYukonPAObject progPao =

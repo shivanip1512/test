@@ -101,14 +101,14 @@ import com.cannontech.user.UserUtils;
  */
 public class StarsAdmin extends HttpServlet {
     
-    public static final String ENERGY_COMPANY_TEMP = "ENERGY_COMPANY_TEMP";
-    public static final String SERVICE_COMPANY_TEMP = "SERVICE_COMPANY_TEMP";
+	public static final String ENERGY_COMPANY_TEMP = "ENERGY_COMPANY_TEMP";
+	public static final String SERVICE_COMPANY_TEMP = "SERVICE_COMPANY_TEMP";
     
 	private static final String NEW_ADDRESS = "NEW_ADDRESS";
 	private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
     
-    private String referer = null;
-    private String redirect = null;
+	private String referer = null;
+	private String redirect = null;
 	
 	/**
 	 * @see javax.servlet.http.HttpServlet#doPost(HttpServletRequest, HttpServletResponse)
@@ -116,18 +116,18 @@ public class StarsAdmin extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException, IOException {
 
-        HttpSession session = req.getSession(false);
-        if (session == null) {
-        	resp.sendRedirect( req.getContextPath() + SOAPClient.LOGIN_URL );
-        	return;
-        }
+		HttpSession session = req.getSession(false);
+		if (session == null) {
+			resp.sendRedirect( req.getContextPath() + SOAPClient.LOGIN_URL );
+			return;
+		}
         
-        StarsYukonUser user = (StarsYukonUser)
-        		session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+		StarsYukonUser user = (StarsYukonUser)
+				session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
         
-    	referer = req.getHeader( "referer" );
-    	redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
-    	if (redirect == null) redirect = referer;
+		referer = req.getHeader( "referer" );
+		redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
+		if (redirect == null) redirect = referer;
     	
 		String action = req.getParameter( "action" );
 		if (action == null) action = "";
@@ -204,7 +204,7 @@ public class StarsAdmin extends HttpServlet {
 		else if (action.equalsIgnoreCase("RemoveMemberEnergyCompany"))
 			removeMemberEnergyCompany( user, req, session );
         
-    	resp.sendRedirect( redirect );
+		resp.sendRedirect( redirect );
 	}
 	
 	private void deleteCustomerAccounts(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
@@ -252,7 +252,7 @@ public class StarsAdmin extends HttpServlet {
 	}
 	
 	private void updateAddress(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-        LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		try {
 			StarsEnergyCompanySettings ecSettings =
@@ -274,21 +274,21 @@ public class StarsAdmin extends HttpServlet {
 			
 			if (!newAddress) {
 				LiteAddress liteAddr = energyCompany.getAddress( starsAddr.getAddressID() );
-	        	com.cannontech.database.db.customer.Address addr =
-	        			(com.cannontech.database.db.customer.Address) StarsLiteFactory.createDBPersistent( liteAddr );
-	        	addr.setLocationAddress1( req.getParameter("StreetAddr1") );
-	        	addr.setLocationAddress2( req.getParameter("StreetAddr2") );
-	        	addr.setCityName( req.getParameter("City") );
-	        	addr.setStateCode( req.getParameter("State") );
-	        	addr.setZipCode( req.getParameter("Zip") );
-	        	addr.setCounty( req.getParameter("County") );
+				com.cannontech.database.db.customer.Address addr =
+						(com.cannontech.database.db.customer.Address) StarsLiteFactory.createDBPersistent( liteAddr );
+				addr.setLocationAddress1( req.getParameter("StreetAddr1") );
+				addr.setLocationAddress2( req.getParameter("StreetAddr2") );
+				addr.setCityName( req.getParameter("City") );
+				addr.setStateCode( req.getParameter("State") );
+				addr.setZipCode( req.getParameter("Zip") );
+				addr.setCounty( req.getParameter("County") );
 	        	
-	        	addr = (com.cannontech.database.db.customer.Address)
-	        			Transaction.createTransaction( Transaction.UPDATE, addr ).execute();
-	        	StarsLiteFactory.setLiteAddress( liteAddr, addr );
-	        	StarsLiteFactory.setStarsCustomerAddress( starsAddr, liteAddr );
+				addr = (com.cannontech.database.db.customer.Address)
+						Transaction.createTransaction( Transaction.UPDATE, addr ).execute();
+				StarsLiteFactory.setLiteAddress( liteAddr, addr );
+				StarsLiteFactory.setStarsCustomerAddress( starsAddr, liteAddr );
 	        	
-	        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Address information updated successfully");
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Address information updated successfully");
 			}
 			else {
 				starsAddr.setStreetAddr1( req.getParameter("StreetAddr1") );
@@ -298,7 +298,7 @@ public class StarsAdmin extends HttpServlet {
 				starsAddr.setZip( req.getParameter("Zip") );
 				starsAddr.setCounty( req.getParameter("County") );
 				
-	        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Address information created, you must submit this page to finally save it");
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Address information created, you must submit this page to finally save it");
 			}
 			
 		}
@@ -310,7 +310,7 @@ public class StarsAdmin extends HttpServlet {
 	}
 	
 	private void updateEnergyCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-        LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		try {
 			StarsEnergyCompanySettings ecSettings =
@@ -443,26 +443,26 @@ public class StarsAdmin extends HttpServlet {
 				ec.setCompanyName( compName );
 			}
 			
-	        // Update energy company role DEFAULT_TIME_ZONE if necessary
-	        LiteYukonGroup liteGroup = energyCompany.getOperatorDefaultGroup();
-	        String value = AuthFuncs.getRolePropValueGroup(liteGroup, EnergyCompanyRole.DEFAULT_TIME_ZONE, CtiUtilities.STRING_NONE);
+			// Update energy company role DEFAULT_TIME_ZONE if necessary
+			LiteYukonGroup liteGroup = energyCompany.getOperatorDefaultGroup();
+			String value = AuthFuncs.getRolePropValueGroup(liteGroup, EnergyCompanyRole.DEFAULT_TIME_ZONE, CtiUtilities.STRING_NONE);
 	        
-	        String timeZone = req.getParameter("TimeZone");
-	        if (!value.equalsIgnoreCase( timeZone )) {
-	        	String sql = "UPDATE YukonGroupRole SET Value = '" + timeZone + "'" +
-	        			" WHERE GroupID = " + liteGroup.getGroupID() +
-	        			" AND RoleID = " + EnergyCompanyRole.ROLEID +
-	        			" AND RolePropertyID = " + EnergyCompanyRole.DEFAULT_TIME_ZONE;
-	        	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-	        			sql, CtiUtilities.getDatabaseAlias() );
-	        	stmt.execute();
+			String timeZone = req.getParameter("TimeZone");
+			if (!value.equalsIgnoreCase( timeZone )) {
+				String sql = "UPDATE YukonGroupRole SET Value = '" + timeZone + "'" +
+						" WHERE GroupID = " + liteGroup.getGroupID() +
+						" AND RoleID = " + EnergyCompanyRole.ROLEID +
+						" AND RolePropertyID = " + EnergyCompanyRole.DEFAULT_TIME_ZONE;
+				com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+						sql, CtiUtilities.getDatabaseAlias() );
+				stmt.execute();
 	        	
-	        	ServerUtils.handleDBChange( liteGroup, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
-	        	ec.setTimeZone( timeZone );
-	        }
+				ServerUtils.handleDBChange( liteGroup, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
+				ec.setTimeZone( timeZone );
+			}
         	
-        	session.removeAttribute( ENERGY_COMPANY_TEMP );
-        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Energy company information updated successfully");
+			session.removeAttribute( ENERGY_COMPANY_TEMP );
+			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Energy company information updated successfully");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -507,10 +507,10 @@ public class StarsAdmin extends HttpServlet {
 	}
 	
 	private void updateApplianceCategory(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-        LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		StarsEnrollmentPrograms starsAppCats = energyCompany.getStarsEnrollmentPrograms();
 		
-        try {
+		try {
 			int appCatID = Integer.parseInt( req.getParameter("AppCatID") );
 			boolean newAppCat = (appCatID == -1);
 			
@@ -593,6 +593,7 @@ public class StarsAdmin extends HttpServlet {
 					pubProgDB.setApplianceCategoryID( applianceCategoryID );
 					pubProgDB.setLMProgramID( new Integer(progID) );
 					pubProgDB.setChanceOfControlID( Integer.valueOf(progCtrlOdds[i]) );
+					pubProgDB.setProgramOrder( new Integer(i+1) );
 					
 					if (progDispNames[i].indexOf(",") >= 0)
 						progDispNames[i] = "\"" + progDispNames[i] + "\"";
@@ -734,7 +735,7 @@ public class StarsAdmin extends HttpServlet {
 			StarsApplianceCategory starsAppCat = StarsLiteFactory.createStarsApplianceCategory( liteAppCat, energyCompany );
 			if (newAppCat) {
 				starsAppCats.addStarsApplianceCategory( starsAppCat );
-	        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Appliance category is created successfully");
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Appliance category is created successfully");
 			}
 			else {
 				for (int i = 0; i < starsAppCats.getStarsApplianceCategoryCount(); i++) {
@@ -743,20 +744,20 @@ public class StarsAdmin extends HttpServlet {
 						break;
 					}
 				}
-	        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Appliance category information updated successfully");
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Appliance category information updated successfully");
 			}
-        }
-        catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update appliance category information");
 			redirect = referer;
-        }
+		}
 	}
 	
 	private void deleteApplianceCategory(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-        LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
         
-        try {
+		try {
 			StarsEnergyCompanySettings ecSettings =
 					(StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsEnrollmentPrograms starsAppCats = ecSettings.getStarsEnrollmentPrograms();
@@ -861,15 +862,15 @@ public class StarsAdmin extends HttpServlet {
 			}
 			
 			if (deleteAll)
-	        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Appliance categories have been deleted successfully");
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Appliance categories have been deleted successfully");
 			else
-	        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Appliance category has been deleted successfully");
-        }
-        catch (Exception e) {
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Appliance category has been deleted successfully");
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to delete appliance category");
 			redirect = referer;
-        }
+		}
 	}
 	
 	public static LiteServiceCompany createServiceCompany(String companyName, LiteStarsEnergyCompany energyCompany)
@@ -902,10 +903,10 @@ public class StarsAdmin extends HttpServlet {
 	}
 
 	private void updateServiceCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-        LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		StarsServiceCompanies starsCompanies = energyCompany.getStarsServiceCompanies();
         
-        try {
+		try {
 			int companyID = Integer.parseInt( req.getParameter("CompanyID") );
 			boolean newCompany = (companyID == -1);
 			
@@ -929,7 +930,7 @@ public class StarsAdmin extends HttpServlet {
 				liteContact = ContactFuncs.getContact( liteCompany.getPrimaryContactID() );
 				StarsLiteFactory.setContact( contact, liteContact );
 				liteAddr = energyCompany.getAddress( liteCompany.getAddressID() );
-        	}
+			}
         	
 			companyDB.setCompanyName( req.getParameter("CompanyName") );
 			companyDB.setMainPhoneNumber( ServletUtils.formatPhoneNumber(req.getParameter("PhoneNo")) );
@@ -999,21 +1000,21 @@ public class StarsAdmin extends HttpServlet {
 			starsCompany.setMainPhoneNumber( liteCompany.getMainPhoneNumber() );
 			starsCompany.setMainFaxNumber( liteCompany.getMainFaxNumber() );
         	
-        	session.removeAttribute( SERVICE_COMPANY_TEMP );
-        	if (newCompany)
-	        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Service company created successfully");
-        	else
-	        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Service company information updated successfully");
-        }
-        catch (WebClientException we) {
+			session.removeAttribute( SERVICE_COMPANY_TEMP );
+			if (newCompany)
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Service company created successfully");
+			else
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Service company information updated successfully");
+		}
+		catch (WebClientException we) {
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, we.getMessage());
 			redirect = referer;
-        }
-        catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update service company information");
 			redirect = referer;
-        }
+		}
 	}
 	
 	public static void deleteServiceCompany(int companyID, LiteStarsEnergyCompany energyCompany)
@@ -1087,9 +1088,9 @@ public class StarsAdmin extends HttpServlet {
 	}
 	
 	private void deleteServiceCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-        LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
         
-        try {
+		try {
 			int companyID = Integer.parseInt( req.getParameter("CompanyID") );
 			if (companyID == -1) {
 				deleteAllServiceCompanies( energyCompany );
@@ -1099,37 +1100,37 @@ public class StarsAdmin extends HttpServlet {
 				deleteServiceCompany( companyID, energyCompany );
 				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Service company has been deleted successfully");
 			}
-        }
-        catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to delete the service company");
 			redirect = referer;
-        }
+		}
 	}
 	
 	private void updateCustomerFAQLink(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-        LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-        LiteYukonUser liteUser = user.getYukonUser();
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteYukonUser liteUser = user.getYukonUser();
         
-        try {
-        	boolean customizedFAQ = Boolean.valueOf( req.getParameter("CustomizedFAQ") ).booleanValue();
-    		String faqLink = req.getParameter("FAQLink");
-        	String value = AuthFuncs.getRolePropertyValue( liteUser, ConsumerInfoRole.WEB_LINK_FAQ, "(none)" );
+		try {
+			boolean customizedFAQ = Boolean.valueOf( req.getParameter("CustomizedFAQ") ).booleanValue();
+			String faqLink = req.getParameter("FAQLink");
+			String value = AuthFuncs.getRolePropertyValue( liteUser, ConsumerInfoRole.WEB_LINK_FAQ, "(none)" );
 			
-        	LiteYukonGroup[] customerGroups = energyCompany.getResidentialCustomerGroups();
-        	LiteYukonGroup[] operatorGroups = energyCompany.getWebClientOperatorGroups();
+			LiteYukonGroup[] customerGroups = energyCompany.getResidentialCustomerGroups();
+			LiteYukonGroup[] operatorGroups = energyCompany.getWebClientOperatorGroups();
         	
-    		String sql = null;
-    		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-    				sql, CtiUtilities.getDatabaseAlias() );
+			String sql = null;
+			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+					sql, CtiUtilities.getDatabaseAlias() );
         	
-        	if (customizedFAQ && !value.equals(faqLink) ||
-        		!customizedFAQ && ServerUtils.forceNotNone(value).length() > 0)
-        	{
-        		if (!customizedFAQ) faqLink = "(none)";
+			if (customizedFAQ && !value.equals(faqLink) ||
+				!customizedFAQ && ServerUtils.forceNotNone(value).length() > 0)
+			{
+				if (!customizedFAQ) faqLink = "(none)";
         		
-        		for (int i = 0; i < customerGroups.length; i++) {
-        			if (AuthFuncs.getRolePropValueGroup(customerGroups[i], ResidentialCustomerRole.WEB_LINK_FAQ, null) != null) {
+				for (int i = 0; i < customerGroups.length; i++) {
+					if (AuthFuncs.getRolePropValueGroup(customerGroups[i], ResidentialCustomerRole.WEB_LINK_FAQ, null) != null) {
 						sql = "UPDATE YukonGroupRole SET Value = '" + faqLink + "'" +
 								" WHERE GroupID = " + customerGroups[i].getGroupID() +
 								" AND RoleID = " + ResidentialCustomerRole.ROLEID +
@@ -1138,36 +1139,36 @@ public class StarsAdmin extends HttpServlet {
 						stmt.execute();
 						
 						ServerUtils.handleDBChange( customerGroups[i], DBChangeMsg.CHANGE_TYPE_UPDATE );
-        			}
-        		}
+					}
+				}
 	        	
-	        	for (int i = 0; i < operatorGroups.length; i++) {
-	        		if (AuthFuncs.getRolePropValueGroup(operatorGroups[i], ConsumerInfoRole.WEB_LINK_FAQ, null) != null) {
+				for (int i = 0; i < operatorGroups.length; i++) {
+					if (AuthFuncs.getRolePropValueGroup(operatorGroups[i], ConsumerInfoRole.WEB_LINK_FAQ, null) != null) {
 						sql = "UPDATE YukonGroupRole SET Value = '" + faqLink + "'" +
 								" WHERE GroupID = " + operatorGroups[i].getGroupID() +
 								" AND RoleID = " + ConsumerInfoRole.ROLEID +
 								" AND RolePropertyID = " + ConsumerInfoRole.WEB_LINK_FAQ;
 						stmt.setSQLString( sql );
 						stmt.execute();
-	        		}
+					}
 	        		
 					ServerUtils.handleDBChange( operatorGroups[i], DBChangeMsg.CHANGE_TYPE_UPDATE );
-	        	}
-        	}
+				}
+			}
         	
-        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "FAQ link updated successfully");
-        }
-        catch (Exception e) {
+			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "FAQ link updated successfully");
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update FAQ link");
 			redirect = referer;
-        }
+		}
 	}
 	
 	private void updateCustomerFAQSubjects(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-        LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
         
-        try {
+		try {
 			StarsEnergyCompanySettings ecSettings =
 					(StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsCustomerFAQs starsFAQs = ecSettings.getStarsCustomerFAQs();
@@ -1194,19 +1195,19 @@ public class StarsAdmin extends HttpServlet {
 				}
 			}
 
-        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "FAQ subjects updated successfully");
-        }
-        catch (Exception e) {
+			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "FAQ subjects updated successfully");
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update FAQ subjects");
 			redirect = referer;
-        }
+		}
 	}
 	
 	private void updateCustomerFAQs(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-        LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
         
-        try {
+		try {
 			StarsEnergyCompanySettings ecSettings =
 					(StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsCustomerFAQs starsFAQs = ecSettings.getStarsCustomerFAQs();
@@ -1310,19 +1311,19 @@ public class StarsAdmin extends HttpServlet {
 				}
 			}
 			
-        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Customer FAQs updated successfully");
-        }
-        catch (Exception e) {
+			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Customer FAQs updated successfully");
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update customer FAQs");
 			redirect = referer;
-        }
+		}
 	}
 	
 	private void deleteFAQSubject(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-        LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
         
-        try {
+		try {
 			StarsEnergyCompanySettings ecSettings =
 					(StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsCustomerFAQs starsFAQs = ecSettings.getStarsCustomerFAQs();
@@ -1365,21 +1366,21 @@ public class StarsAdmin extends HttpServlet {
 			}
 			
 			if (deleteAll)
-	        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Service companies have been deleted successfully");
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Service companies have been deleted successfully");
 			else
-	        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Service company has been deleted successfully");
-        }
-        catch (Exception e) {
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Service company has been deleted successfully");
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to delete service company");
 			redirect = referer;
-        }
+		}
 	}
 	
 	private void updateInterviewQuestions(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-        LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
         
-        try {
+		try {
 			StarsEnergyCompanySettings ecSettings =
 					(StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsExitInterviewQuestions starsExitQuestions = ecSettings.getStarsExitInterviewQuestions();
@@ -1442,13 +1443,13 @@ public class StarsAdmin extends HttpServlet {
 				}
 			}
 
-        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Interview questions updated successfully");
-        }
-        catch (Exception e) {
+			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Interview questions updated successfully");
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update interview questions");
 			redirect = referer;
-        }
+		}
 	}
 	
 	/**
@@ -1720,16 +1721,16 @@ public class StarsAdmin extends HttpServlet {
 	}
 	
 	private void updateThermostatSchedule(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-        LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
         
-        try {
-        	StarsThermostatTypes thermType = StarsThermostatTypes.valueOf( req.getParameter("type") );
+		try {
+			StarsThermostatTypes thermType = StarsThermostatTypes.valueOf( req.getParameter("type") );
 			int hwTypeDefID = ECUtils.getLMHardwareTypeDefID(thermType).intValue();
         	
-        	StarsUpdateThermostatSchedule updateSched = UpdateThermostatScheduleAction.getRequestOperation(req).getStarsUpdateThermostatSchedule();
+			StarsUpdateThermostatSchedule updateSched = UpdateThermostatScheduleAction.getRequestOperation(req).getStarsUpdateThermostatSchedule();
         	
-        	LiteStarsLMHardware liteHw = energyCompany.getDefaultLMHardware( hwTypeDefID );
-        	StarsUpdateThermostatScheduleResponse resp = UpdateThermostatScheduleAction.updateThermostatSchedule( updateSched, liteHw, energyCompany );
+			LiteStarsLMHardware liteHw = energyCompany.getDefaultLMHardware( hwTypeDefID );
+			StarsUpdateThermostatScheduleResponse resp = UpdateThermostatScheduleAction.updateThermostatSchedule( updateSched, liteHw, energyCompany );
         	
 			StarsDefaultThermostatSettings[] dftSettings = energyCompany.getStarsDefaultThermostatSettings();
 			for (int i = 0; i < dftSettings.length; i++) {
@@ -1739,13 +1740,13 @@ public class StarsAdmin extends HttpServlet {
 				}
 			}
 			
-        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Default thermostat schedule updated successfully");
-        }
-        catch (Exception e) {
+			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Default thermostat schedule updated successfully");
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update default thermostat schedule");
 			redirect = referer;
-        }
+		}
 	}
 	
 	private LiteYukonUser createOperatorLogin(String username, String password, boolean enabled, LiteYukonGroup[] operGroups,
@@ -2008,7 +2009,7 @@ public class StarsAdmin extends HttpServlet {
 						req.getParameter("Username2"), req.getParameter("Password2"), true, operGroups, energyCompany );
 			}
 			
-        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Energy company created successfully");
+			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Energy company created successfully");
 		}
 		catch (WebClientException e) {
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());

@@ -271,6 +271,26 @@ function showProgramConfig(form) {
 	}
 }
 
+function moveUp(form) {
+	var entries = form.ProgramsAssigned;
+	var idx = entries.selectedIndex;
+	if (idx > 0) {
+		var oOption = entries.options[idx];
+		entries.options.remove(idx);
+		entries.options.add(oOption, idx-1);
+	}
+}
+
+function moveDown(form) {
+	var entries = form.ProgramsAssigned;
+	var idx = entries.selectedIndex;
+	if (idx >= 0 && idx < entries.options.length - 1) {
+		var oOption = entries.options[idx];
+		entries.options.remove(idx);
+		entries.options.add(oOption, idx+1);
+	}
+}
+
 function prepareSubmit(form) {
 	saveProgramConfig(form);
 	
@@ -339,23 +359,23 @@ function prepareSubmit(form) {
                       <input type="hidden" name="action" value="UpdateApplianceCategory">
                       <input type="hidden" name="AppCatID" value="<%= category.getApplianceCategoryID() %>">
                       <tr> 
-                        <td width="18%" align="right" class="TableCell">Category 
+                        <td width="15%" align="right" class="TableCell">Category 
                           Name:</td>
-                        <td width="82%" class="TableCell"> 
+                        <td width="85%" class="TableCell"> 
                           <input type="text" name="Name" value="<%= category.getDescription() %>">
                         </td>
                       </tr>
                       <tr> 
-                        <td width="18%" align="right" class="TableCell">Display 
+                        <td width="15%" align="right" class="TableCell">Display 
                           Name:</td>
-                        <td width="82%" class="TableCell"> 
+                        <td width="85%" class="TableCell"> 
                           <input type="text" name="DispName" value="<%= category.getStarsWebConfig().getAlternateDisplayName() %>">
                           <input type="checkbox" name="SameAsName" value="true" onClick="sameAsName(this.form, this.checked)">
                           Same as category name </td>
                       </tr>
                       <tr> 
-                        <td width="18%" align="right" class="TableCell" height="7">Type:</td>
-                        <td width="82%" class="TableCell" valign="middle" height="7"> 
+                        <td width="15%" align="right" class="TableCell" height="7">Type:</td>
+                        <td width="85%" class="TableCell" valign="middle" height="7"> 
                           <select name="Category">
 <%
 	StarsCustSelectionList categoryList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY );
@@ -369,8 +389,8 @@ function prepareSubmit(form) {
                         </td>
                       </tr>
                       <tr> 
-                        <td width="18%" align="right" class="TableCell">Icon:</td>
-                        <td width="82%" class="TableCell"> 
+                        <td width="15%" align="right" class="TableCell">Icon:</td>
+                        <td width="85%" class="TableCell"> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
                               <td width="50%"> 
@@ -383,41 +403,21 @@ function prepareSubmit(form) {
                         </td>
                       </tr>
                       <tr> 
-                        <td width="18%" align="right" class="TableCell">Description:</td>
-                        <td width="82%" class="TableCell"> 
+                        <td width="15%" align="right" class="TableCell">Description:</td>
+                        <td width="85%" class="TableCell"> 
                           <textarea name="Description" rows="4" cols="50" wrap="soft"><%= category.getStarsWebConfig().getDescription().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                         </td>
                       </tr>
                       <tr> 
-                        <td width="18%" align="right" class="TableCell"> Programs:</td>
-                        <td width="82%" class="TableCell"> 
+                        <td width="15%" align="right" class="TableCell"> Programs:</td>
+                        <td width="85%" class="TableCell"> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                             <tr> 
                               <td> 
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                                   <tr> 
-                                    <td width="175" valign="top"> Assigned Programs:<br>
-                                      <select id="ProgramsAssigned" name="ProgramsAssigned" size="5" style="width:150" onclick="showProgramConfig(this.form)">
-<%
-	for (int i = 0; i < category.getStarsEnrLMProgramCount(); i++) {
-		StarsEnrLMProgram program = category.getStarsEnrLMProgram(i);
-%>
-                                        <option value="<%= program.getProgramID() %>"><%= program.getProgramName() %></option>
-<%	} %>
-                                      </select>
-                                      <br>
-                                      <font color="#0000FF">Click on a program 
-                                      to show and update its configuration.</font></td>
-                                    <td width="50" align="center"> 
-                                      <p> 
-                                        <input type="button" id="AddButton" name="Add" value="<<" onclick="addProgram(this.form)">
-                                        <br>
-                                        <input type="button" id="RemoveButton" name="Remove" value=">>" onclick="removeProgram(this.form)">
-                                      </p>
-                                      <p>&nbsp; </p>
-                                    </td>
                                     <td width="175" valign="top"> Available Programs<br>
-                                      <select id="ProgramsAvailable" name="ProgramsAvailable" size="5" style="width:150">
+                                      <select id="ProgramsAvailable" name="ProgramsAvailable" size="5" style="width:165">
 <%
 	for (int i = 0; i < availPrograms.size(); i++) {
 		LMProgramDirect program = (LMProgramDirect) availPrograms.get(i);
@@ -426,7 +426,27 @@ function prepareSubmit(form) {
 <%	} %>
                                       </select>
                                     </td>
-                                    <td align="center">&nbsp;</td>
+                                    <td width="50" align="center"> 
+                                      <input type="button" id="RemoveButton" name="Remove" value=">>" onClick="removeProgram(this.form)">
+                                      <br>
+                                      <input type="button" id="AddButton" name="Add" value="<<" onclick="addProgram(this.form)">
+                                    </td>
+                                    <td width="175" valign="top"> Assigned Programs:<br>
+                                      <select id="ProgramsAssigned" name="ProgramsAssigned" size="5" style="width:165" onClick="showProgramConfig(this.form)">
+<%
+	for (int i = 0; i < category.getStarsEnrLMProgramCount(); i++) {
+		StarsEnrLMProgram program = category.getStarsEnrLMProgram(i);
+%>
+                                        <option value="<%= program.getProgramID() %>"><%= program.getProgramName() %></option>
+<%	} %>
+                                      </select>
+                                      <br>
+                                    </td>
+                                    <td align="center">
+                                      <input type="button" name="MoveUp" value="Move Up" onclick="moveUp(this.form)">
+                                      <br>
+                                      <input type="button" name="MoveDown" value="Move Down" onclick="moveDown(this.form)">
+                                    </td>
                                   </tr>
                                 </table>
                               </td>
@@ -434,15 +454,16 @@ function prepareSubmit(form) {
                           </table>
                         </td>
                       </tr>
-                      <tr align="center"> 
-                        <td colspan="2" class="TableCell" height="2">
+                      <tr> 
+                        <td colspan="2">
                           <hr>
-                        </td>
+                          <span class="MainText">Click on a program in the &quot;Assigned 
+                          Programs&quot; list to show or update its configuration:</span></td>
                       </tr>
                       <tr> 
-                        <td width="18%" class="TableCell" align="right">Program 
+                        <td width="15%" class="TableCell" align="right">Program 
                           Configuration:</td>
-                        <td width="82%" class="TableCell"> 
+                        <td width="85%" class="TableCell"> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                             <tr> 
                               <td width="16%">Program Name:</td>

@@ -17,6 +17,7 @@ public class LiteLMProgram extends LiteBase {
 	private String programName = null;
 	private int webSettingsID = CtiUtilities.NONE_ID;
 	private int chanceOfControlID = CtiUtilities.NONE_ID;
+	private int programOrder = 0;
 	private String programCategory = null;
 	private int[] groupIDs = null;
 	
@@ -116,6 +117,20 @@ public class LiteLMProgram extends LiteBase {
 	 */
 	public void setChanceOfControlID(int chanceOfControlID) {
 		this.chanceOfControlID = chanceOfControlID;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getProgramOrder() {
+		return programOrder;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setProgramOrder(int i) {
+		programOrder = i;
 	}
 
 }
