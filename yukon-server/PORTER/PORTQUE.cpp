@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2002/12/03 17:56:45 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2003/02/07 15:03:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1818,7 +1818,8 @@ void cleanupOrphanOutMessages(void *unusedptr, void* d)
         dout << RWTime() << " OutMessage being cleaned up. " << endl;
     }
 
-    delete OutMessage;
+    SendError( OutMessage, ErrorQueuePurged );
+    // delete OutMessage;
 
     return;
 }

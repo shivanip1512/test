@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2003/01/17 21:32:18 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2003/02/07 15:03:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -137,6 +137,7 @@ void my_other_echo( char ch )
  */
 static ULONG   gQueSlot = 0;
 
+extern void applyPortQueuePurge(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr);
 extern void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, bool consume);
 extern HCTIQUEUE* QueueHandle(LONG pid);
 
@@ -174,6 +175,7 @@ void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDevice *Device, CtiOutMessage *Out
 VOID PortThread(void *pid)
 {
     INT            status;
+    INT            initFails = 0;
 
     ULONG          i, j, ReadLength;
     ULONG          BytesWritten;
@@ -215,6 +217,17 @@ VOID PortThread(void *pid)
 
         if( NORMAL != (status = ResetCommsChannel(Port, Device, OutMessage)) )
         {
+            if(initFails++ > 20)    // Every 5 minutes, we will purge the queue entries.
+            {
+                initFails = 0;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Port " << Port->getName() << " will not init. Queue entries are being purged." << endl;
+                }
+
+                PortManager.apply( applyPortQueuePurge, (void*)Port->getPortID() );
+            }
+
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Port " << Port->getName() << " will not init. Waiting 15 seconds " << endl;
@@ -414,8 +427,18 @@ VOID PortThread(void *pid)
             continue;
         }
 
-        /* Execute based on wrap protocol.  Sends OutMessage and fills in InMessage */
-        i = CommunicateDevice(Port, &InMessage, OutMessage, Device);
+        try
+        {
+            /* Execute based on wrap protocol.  Sends OutMessage and fills in InMessage */
+            i = CommunicateDevice(Port, &InMessage, OutMessage, Device);
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
 
         /* Non wrap protcol specific communications stuff */
         if(!i)      // No error yet.
@@ -996,69 +1019,442 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
     RWTPtrSlist< CtiMessage > traceList;
 
-    /* Load the post remote delay */
-    if(Port->isDialup())
-    {
-        Port->setDelay(POST_REMOTE_DELAY, 0);
-    }
-    else
-    {
-        Port->setDelay(POST_REMOTE_DELAY, Device->getPostDelay());
-    }
 
-    trx.setTraceMask(TraceFlag, TraceErrorsOnly, TracePort == Port->getPortID(), TraceRemote);
-
-    switch(Port->getProtocol())
+    try
     {
-    case ProtocolWrapNone:
+        /* Load the post remote delay */
+        if(Port->isDialup())
         {
-            /* check if this is a MasterComm or ILEX device */
-            switch(Device->getType())
+            Port->setDelay(POST_REMOTE_DELAY, 0);
+        }
+        else
+        {
+            Port->setDelay(POST_REMOTE_DELAY, Device->getPostDelay());
+        }
+
+        trx.setTraceMask(TraceFlag, TraceErrorsOnly, TracePort == Port->getPortID(), TraceRemote);
+
+        switch(Port->getProtocol())
+        {
+        case ProtocolWrapNone:
             {
-            case TYPE_ILEXRTU:
-            case TYPE_SES92RTU:
-            case TYPE_DAVIS:
+                /* check if this is a MasterComm or ILEX device */
+                switch(Device->getType())
                 {
-                    trx.setOutBuffer(OutMessage->Buffer.OutMessage + PREIDLEN);
-                    trx.setOutCount(OutMessage->OutLength);
-                    status = Port->outMess(trx, Device, traceList);
-                    break;
-                }
-
-            case TYPE_LCU415:
-            case TYPE_LCU415LG:
-            case TYPE_LCU415ER:
-            case TYPE_LCUT3026:
-            case TYPE_TCU5000:
-            case TYPE_TCU5500:
-                {
-                    PreMaster (OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT) OutMessage->OutLength);
-
-                    trx.setOutBuffer(OutMessage->Buffer.OutMessage + PREIDLEN);
-                    trx.setOutCount(OutMessage->OutLength + 2);
-                    status = Port->outMess(trx, Device, traceList);
-                    break;
-                }
-
-            case TYPE_ION7330:
-            case TYPE_ION7700:
-            case TYPE_ION8300:
-            case TYPECBC6510:
-            case TYPE_DNPRTU:
-                {
-                    CtiProtocolBase *protocol;
-
-                    if( (protocol = Device->getProtocol()) != NULL )
+                case TYPE_ILEXRTU:
+                case TYPE_SES92RTU:
+                case TYPE_DAVIS:
                     {
-                        protocol->recvCommRequest(OutMessage);
+                        trx.setOutBuffer(OutMessage->Buffer.OutMessage + PREIDLEN);
+                        trx.setOutCount(OutMessage->OutLength);
+                        status = Port->outMess(trx, Device, traceList);
+                        break;
+                    }
 
-                        while( !protocol->isTransactionComplete() )
+                case TYPE_LCU415:
+                case TYPE_LCU415LG:
+                case TYPE_LCU415ER:
+                case TYPE_LCUT3026:
+                case TYPE_TCU5000:
+                case TYPE_TCU5500:
+                    {
+                        PreMaster (OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT) OutMessage->OutLength);
+
+                        trx.setOutBuffer(OutMessage->Buffer.OutMessage + PREIDLEN);
+                        trx.setOutCount(OutMessage->OutLength + 2);
+                        status = Port->outMess(trx, Device, traceList);
+                        break;
+                    }
+
+                case TYPE_ION7330:
+                case TYPE_ION7700:
+                case TYPE_ION8300:
+                case TYPECBC6510:
+                case TYPE_DNPRTU:
+                    {
+                        CtiProtocolBase *protocol;
+
+                        if( (protocol = Device->getProtocol()) != NULL )
                         {
-                            protocol->generate(trx);
+                            protocol->recvCommRequest(OutMessage);
 
-                            status = Port->outInMess(trx, Device, traceList);
+                            while( !protocol->isTransactionComplete() )
+                            {
+                                protocol->generate(trx);
 
-                            protocol->decode(trx, status);
+                                status = Port->outInMess(trx, Device, traceList);
+
+                                protocol->decode(trx, status);
+
+                                // Prepare for tracing
+                                if(trx.doTrace(status))
+                                {
+                                    Port->traceXfer(trx, traceList, Device, status);
+                                }
+
+                                DisplayTraceList(Port, traceList, true);
+                            }
+
+                            //  ACH:  figure out how to allow for a single-OUTMESS request to generate multiple INMESS replies
+                            //          i.e. if we're returning a massive event log or something
+                            protocol->sendCommResult(InMessage);
+                        }
+                        else
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << RWTime() << " **** Device \'" << Device->getName() << "\' has no protocol object, aborting communication **** " << endl;
+                            }
+                        }
+
+                        break;
+                    }
+
+                case TYPE_KV2:
+                   {
+                      BYTE  inBuffer[512];
+                      BYTE  outBuffer[300];
+                      ULONG bytesReceived=0;
+
+                      CtiDeviceKV2 *kv2dev    = ( CtiDeviceKV2 *)Device;
+                      CtiProtocolANSI &ansi   = kv2dev->getProtocol();
+
+                      //allocate some space
+                      trx.setInBuffer( inBuffer );
+                      trx.setOutBuffer( outBuffer );
+                      trx.setInCountActual( &bytesReceived );
+
+                      //unwind the message we made in scanner
+                      if( ansi.recvOutbound( OutMessage ) != 0 )
+                      {
+                         while( !ansi.isTransactionComplete() )
+                         {
+                            //jump in, check for login, build packets, send messages, etc...
+                            ansi.generate( trx );
+
+                            status = Port->outInMess( trx, Device, traceList );
+
+                            if( status != NORMAL )
+                            {
+                               CtiLockGuard<CtiLogger> doubt_guard(dout);
+                               dout << RWTime() << " KV2 loop is A-B-N-O-R-M-A-L " << endl;
+                            }
+
+                            ansi.decode( trx, status );
+
+                            // Prepare for tracing
+                            if( trx.doTrace( status ) )
+                            {
+                               Port->traceXfer( trx, traceList, Device, status );
+                            }
+
+                            DisplayTraceList( Port, traceList, true );
+                         }
+
+                         {
+                             CtiLockGuard<CtiLogger> doubt_guard(dout);
+                             dout << RWTime() << " KV2 loop exited ******************************************************************" << endl;
+                         }
+                      }
+
+                      ansi.sendInbound( InMessage );
+                      ansi.setTransactionComplete(false);
+                      //ansi.reinitialize();
+                      break;
+                   }
+
+                case TYPE_SIXNET:
+                    {
+                        CtiDeviceIED         *IED= (CtiDeviceIED*)Device;
+                        // Copy the request into the InMessage side....
+                        memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
+
+                        IED->allocateDataBins(OutMessage);
+                        IED->setLogOnNeeded(TRUE);
+                        IED->setInitialState(0);
+
+                        if( (status = InitializeHandshake (Port, IED, traceList)) == NORMAL )
+                        {
+                            int dcstat;
+
+                            status = PerformRequestedCmd (Port, IED, InMessage, OutMessage, traceList);
+                            dcstat = TerminateHandshake (Port, IED, traceList);
+
+                            if(status == NORMAL)
+                                status = dcstat;
+                        }
+
+                        IED->freeDataBins();
+
+                        // 071901 CGP. For now, prevent the original outmessage from returning to the requestor.
+
+                        // OutMessage->EventCode &= ~RESULT;
+                        InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[0] = CtiDeviceIED::CmdScanData;
+
+                        break;
+                    }
+                case TYPE_WCTP:
+                    {
+                        try
+                        {
+                            CtiDeviceIED        *IED = (CtiDeviceIED*)Device;
+
+                            IED->setLogOnNeeded(FALSE);
+                            IED->setInitialState(0);
+                            IED->allocateDataBins(OutMessage);
+
+                            status = PerformRequestedCmd(Port, IED, InMessage, OutMessage, traceList);
+
+                            IED->freeDataBins();
+
+                            Port->close(0);         // 06062002 CGP  Make it reopen when needed.
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        break;
+                    }
+                case TYPE_TAPTERM:
+                    {
+                        LONG portConnectedUID = -1;
+                        CtiDeviceIED *IED= (CtiDeviceIED*)Device;
+
+                        verifyConnectedDevice(Port, Device, oldid, portConnectedUID);
+
+                        IED->allocateDataBins(OutMessage);
+                        IED->setInitialState(oldid);
+
+                        if( (status = InitializeHandshake (Port, IED, traceList)) == NORMAL )
+                        {
+                            Port->setConnectedDevice( IED->getID() );
+
+                            status = PerformRequestedCmd (Port, IED, NULL, NULL, traceList);
+
+                            if( status != NORMAL)
+                            {
+                                IED->setLogOnNeeded(TRUE);      // We did not come through it cleanly, let's kill this connection.
+                            }
+                            else
+                            {
+                                if( SearchQueue(Port->getPortQueueHandle(), (void*)portConnectedUID, areAnyOutMessagesForUniqueID) == 0 )
+                                {
+                                    IED->setLogOnNeeded(TRUE);      // We have zero queue entries!
+                                }
+                                else
+                                {
+                                    // We have queue entries!  This is what gets us through the terminate routine without a hangup!
+                                    IED->setLogOnNeeded(FALSE);
+                                }
+                            }
+
+                            INT dcstat = TerminateHandshake (Port, IED, traceList);
+
+                            if(status == NORMAL)
+                                status = dcstat;
+                        }
+
+                        IED->freeDataBins();
+
+                        break;
+                    }
+                case TYPE_ALPHA_A1:
+                case TYPE_ALPHA_PPLUS:
+                case TYPE_DR87:
+                case TYPE_LGS4:
+                    {
+                        // Copy the request into the InMessage side....
+                        memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
+
+                        // initialize the ied
+                        CtiDeviceIED *IED= (CtiDeviceIED*)Device;
+
+                        /***********************
+                        *
+                        *  allocating memory for the many different data internal structures the IED
+                        *  uses to gather data
+                        *
+                        ************************
+                        */
+
+                        IED->allocateDataBins(OutMessage);
+                        status = InitializeHandshake (Port,IED, traceList);
+
+                        if(!status)
+                        {
+                            // this will do the initial command requested
+                            if(!(status=PerformRequestedCmd (Port, IED, InMessage, OutMessage, traceList)))
+                            {
+                                /*********************************************
+                                * Use the byte 2 of the command message to keep the
+                                * final state of communications with the device
+                                * to send to scanner
+                                **********************************************
+                                */
+                                InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
+
+                                // check if there is load profile to do
+                                if(IED->getCurrentCommand() == CtiDeviceIED::CmdLoadProfileTransition)
+                                {
+                                    // set to load profile request
+                                    IED->setCurrentCommand(CtiDeviceIED::CmdLoadProfileData);
+
+                                    // note, current command must be reset to scan data before returning
+                                    // or the decode response routine will not work correctly
+                                    PerformRequestedCmd ( Port, IED, InMessage, OutMessage , traceList);
+
+                                    // reset to scan data once completed
+                                    IED->setCurrentCommand( CtiDeviceIED::CmdScanData );
+                                }
+
+                                // only do this if we were doing a scan data
+                                if(IED->getCurrentCommand() == CtiDeviceIED::CmdScanData)
+                                {
+                                    // will need to move these back
+                                    IED->reformatDataBuffer (InMessage->Buffer.DUPSt.DUPRep.Message,InMessage->InLength);
+                                }
+                            }
+                            else
+                            {
+                                InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
+                            }
+                        }
+                        else
+                        {
+                            InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
+                        }
+
+                        // free the memory we used
+                        IED->freeDataBins();
+
+                        break;
+                    }
+                case TYPE_VECTRON:
+                case TYPE_FULCRUM:
+                case TYPE_QUANTUM:
+                    {
+                        // Copy the request into the InMessage side....
+                        memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
+
+                        // initialize the ied
+                        CtiDeviceIED *IED= (CtiDeviceIED*)Device;
+
+                        /***********************
+                        *
+                        *  allocating memory for the many different data internal structures the IED
+                        *  uses to gather data
+                        *
+                        ************************
+                        */
+
+                        IED->allocateDataBins(OutMessage);
+
+                        /************************
+                        *
+                        *  initializes handshake and decides if there is a master/slave relationship
+                        *  to deal with
+                        *
+                        *************************
+                        */
+
+                        status = LogonToDevice (Port,IED,InMessage,OutMessage, traceList);
+
+                        if(!status)
+                        {
+                            // this will do the initial command requested
+                            if(!(status=PerformRequestedCmd (Port, IED, InMessage, OutMessage, traceList)))
+                            {
+                                /*********************************************
+                                * Use the byte 2 of the command message to keep the
+                                * final state of communications with the device
+                                * to send to scanner
+                                **********************************************
+                                */
+                                InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
+
+                                // check if there is load profile to do
+                                if(IED->getCurrentCommand() == CtiDeviceIED::CmdLoadProfileTransition)
+                                {
+                                    // set to load profile request
+                                    IED->setCurrentCommand(CtiDeviceIED::CmdLoadProfileData);
+
+                                    // note, current command must be reset to scan data before returning
+                                    // or the decode response routine will not work correctly
+                                    PerformRequestedCmd ( Port, IED, InMessage, OutMessage , traceList);
+
+                                    // reset to scan data once completed
+                                    IED->setCurrentCommand( CtiDeviceIED::CmdScanData );
+                                }
+
+                                // only do this if we were doing a scan data
+                                if(IED->getCurrentCommand() == CtiDeviceIED::CmdScanData)
+                                {
+                                    // will need to move these back
+                                    IED->reformatDataBuffer (InMessage->Buffer.DUPSt.DUPRep.Message,InMessage->InLength);
+                                }
+                            }
+                            else
+                            {
+                                InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
+                            }
+                        }
+                        else
+                        {
+                            InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
+                        }
+
+                        // free the memory we used
+                        IED->freeDataBins();
+
+                        break;
+                    }
+                case TYPE_WELCORTU:
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Invalid Port Protocol for Welco device **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        status = BADPORT;
+                        break;
+                    }
+                default:
+                    {
+                        /* output the message to the remote */
+                        trx.setOutBuffer(OutMessage->Buffer.OutMessage + PREIDLEN);
+                        trx.setOutCount(OutMessage->OutLength - 3);
+                        status = Port->outMess(trx, Device, traceList);
+                    }
+                }
+
+                /* get the time into the return message */
+                UCTFTime (&TimeB);
+                InMessage->Time = TimeB.time;
+                InMessage->MilliTime = TimeB.millitm;
+
+                if(TimeB.dstflag) InMessage->MilliTime |= DSTACTIVE;
+
+                /* !status is a successful return... This is a "post" successful send switch */
+                if(!status)
+                {
+                    switch(Device->getType())
+                    {
+                    case TYPE_CCU700:
+                    case TYPE_CCU710:
+                    case TYPE_DAVIS:
+                        {
+                            /* get the returned message from the remote */
+                            trx.setInBuffer(InMessage->Buffer.InMessage);
+                            trx.setInCountExpected(OutMessage->InLength);
+                            trx.setInCountActual(&InMessage->InLength);
+                            trx.setInTimeout(OutMessage->TimeOut);
+                            trx.setMessageStart();                          // This is the first "in" of this message
+                            trx.setMessageComplete();                       // This is the last "in" of this message
+
+                            status = Port->inMess(trx, Device, traceList);
 
                             // Prepare for tracing
                             if(trx.doTrace(status))
@@ -1066,626 +1462,142 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 Port->traceXfer(trx, traceList, Device, status);
                             }
 
-                            DisplayTraceList(Port, traceList, true);
+                            break;
                         }
+                    case TYPE_ILEXRTU:
 
-                        //  ACH:  figure out how to allow for a single-OUTMESS request to generate multiple INMESS replies
-                        //          i.e. if we're returning a massive event log or something
-                        protocol->sendCommResult(InMessage);
-                    }
-                    else
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << RWTime() << " **** Device \'" << Device->getName() << "\' has no protocol object, aborting communication **** " << endl;
-                        }
-                    }
-
-                    break;
-                }
-
-            case TYPE_KV2:
-               {
-                  BYTE  inBuffer[512];
-                  BYTE  outBuffer[300];
-                  ULONG bytesReceived=0;
-
-                  CtiDeviceKV2 *kv2dev    = ( CtiDeviceKV2 *)Device;
-                  CtiProtocolANSI &ansi   = kv2dev->getProtocol();
-
-                  //allocate some space
-                  trx.setInBuffer( inBuffer );
-                  trx.setOutBuffer( outBuffer );
-                  trx.setInCountActual( &bytesReceived );
-
-                  //unwind the message we made in scanner
-                  if( ansi.recvOutbound( OutMessage ) != 0 )
-                  {
-                     while( !ansi.isTransactionComplete() )
-                     {
-                        //jump in, check for login, build packets, send messages, etc...
-                        ansi.generate( trx );
-
-                        status = Port->outInMess( trx, Device, traceList );
-
-                        if( status != NORMAL )
-                        {
-                           CtiLockGuard<CtiLogger> doubt_guard(dout);
-                           dout << RWTime() << " KV2 loop is A-B-N-O-R-M-A-L " << endl;
-                        }
-
-                        ansi.decode( trx, status );
-
-                        // Prepare for tracing
-                        if( trx.doTrace( status ) )
-                        {
-                           Port->traceXfer( trx, traceList, Device, status );
-                        }
-
-                        DisplayTraceList( Port, traceList, true );
-                     }
-
-                     {
-                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                         dout << RWTime() << " KV2 loop exited ******************************************************************" << endl;
-                     }
-                  }
-
-                  ansi.sendInbound( InMessage );
-                  ansi.setTransactionComplete(false);
-                  //ansi.reinitialize();
-                  break;
-               }
-
-            case TYPE_SIXNET:
-                {
-                    CtiDeviceIED         *IED= (CtiDeviceIED*)Device;
-                    // Copy the request into the InMessage side....
-                    memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
-
-                    IED->allocateDataBins(OutMessage);
-                    IED->setLogOnNeeded(TRUE);
-                    IED->setInitialState(0);
-
-                    if( (status = InitializeHandshake (Port, IED, traceList)) == NORMAL )
-                    {
-                        int dcstat;
-
-                        status = PerformRequestedCmd (Port, IED, InMessage, OutMessage, traceList);
-                        dcstat = TerminateHandshake (Port, IED, traceList);
-
-                        if(status == NORMAL)
-                            status = dcstat;
-                    }
-
-                    IED->freeDataBins();
-
-                    // 071901 CGP. For now, prevent the original outmessage from returning to the requestor.
-
-                    // OutMessage->EventCode &= ~RESULT;
-                    InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[0] = CtiDeviceIED::CmdScanData;
-
-                    break;
-                }
-            case TYPE_WCTP:
-                {
-                    try
-                    {
-                        CtiDeviceIED        *IED = (CtiDeviceIED*)Device;
-
-                        IED->setLogOnNeeded(FALSE);
-                        IED->setInitialState(0);
-                        IED->allocateDataBins(OutMessage);
-
-                        status = PerformRequestedCmd(Port, IED, InMessage, OutMessage, traceList);
-
-                        IED->freeDataBins();
-
-                        Port->close(0);         // 06062002 CGP  Make it reopen when needed.
-                    }
-                    catch(...)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
-                    break;
-                }
-            case TYPE_TAPTERM:
-                {
-                    LONG portConnectedUID = -1;
-                    CtiDeviceIED *IED= (CtiDeviceIED*)Device;
-
-                    verifyConnectedDevice(Port, Device, oldid, portConnectedUID);
-
-                    IED->allocateDataBins(OutMessage);
-                    IED->setInitialState(oldid);
-
-                    if( (status = InitializeHandshake (Port, IED, traceList)) == NORMAL )
-                    {
-                        Port->setConnectedDevice( IED->getID() );
-
-                        status = PerformRequestedCmd (Port, IED, NULL, NULL, traceList);
-
-                        if( status != NORMAL)
-                        {
-                            IED->setLogOnNeeded(TRUE);      // We did not come through it cleanly, let's kill this connection.
-                        }
-                        else
-                        {
-                            if( SearchQueue(Port->getPortQueueHandle(), (void*)portConnectedUID, areAnyOutMessagesForUniqueID) == 0 )
-                            {
-                                IED->setLogOnNeeded(TRUE);      // We have zero queue entries!
-                            }
-                            else
-                            {
-                                // We have queue entries!  This is what gets us through the terminate routine without a hangup!
-                                IED->setLogOnNeeded(FALSE);
-                            }
-                        }
-
-                        INT dcstat = TerminateHandshake (Port, IED, traceList);
-
-                        if(status == NORMAL)
-                            status = dcstat;
-                    }
-
-                    IED->freeDataBins();
-
-                    break;
-                }
-            case TYPE_ALPHA_A1:
-            case TYPE_ALPHA_PPLUS:
-            case TYPE_DR87:
-            case TYPE_LGS4:
-                {
-                    // Copy the request into the InMessage side....
-                    memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
-
-                    // initialize the ied
-                    CtiDeviceIED *IED= (CtiDeviceIED*)Device;
-
-                    /***********************
-                    *
-                    *  allocating memory for the many different data internal structures the IED
-                    *  uses to gather data
-                    *
-                    ************************
-                    */
-
-                    IED->allocateDataBins(OutMessage);
-                    status = InitializeHandshake (Port,IED, traceList);
-
-                    if(!status)
-                    {
-                        // this will do the initial command requested
-                        if(!(status=PerformRequestedCmd (Port, IED, InMessage, OutMessage, traceList)))
-                        {
-                            /*********************************************
-                            * Use the byte 2 of the command message to keep the
-                            * final state of communications with the device
-                            * to send to scanner
-                            **********************************************
-                            */
-                            InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
-
-                            // check if there is load profile to do
-                            if(IED->getCurrentCommand() == CtiDeviceIED::CmdLoadProfileTransition)
-                            {
-                                // set to load profile request
-                                IED->setCurrentCommand(CtiDeviceIED::CmdLoadProfileData);
-
-                                // note, current command must be reset to scan data before returning
-                                // or the decode response routine will not work correctly
-                                PerformRequestedCmd ( Port, IED, InMessage, OutMessage , traceList);
-
-                                // reset to scan data once completed
-                                IED->setCurrentCommand( CtiDeviceIED::CmdScanData );
-                            }
-
-                            // only do this if we were doing a scan data
-                            if(IED->getCurrentCommand() == CtiDeviceIED::CmdScanData)
-                            {
-                                // will need to move these back
-                                IED->reformatDataBuffer (InMessage->Buffer.DUPSt.DUPRep.Message,InMessage->InLength);
-                            }
-                        }
-                        else
-                        {
-                            InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
-                        }
-                    }
-                    else
-                    {
-                        InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
-                    }
-
-                    // free the memory we used
-                    IED->freeDataBins();
-
-                    break;
-                }
-            case TYPE_VECTRON:
-            case TYPE_FULCRUM:
-            case TYPE_QUANTUM:
-                {
-                    // Copy the request into the InMessage side....
-                    memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
-
-                    // initialize the ied
-                    CtiDeviceIED *IED= (CtiDeviceIED*)Device;
-
-                    /***********************
-                    *
-                    *  allocating memory for the many different data internal structures the IED
-                    *  uses to gather data
-                    *
-                    ************************
-                    */
-
-                    IED->allocateDataBins(OutMessage);
-
-                    /************************
-                    *
-                    *  initializes handshake and decides if there is a master/slave relationship
-                    *  to deal with
-                    *
-                    *************************
-                    */
-
-                    status = LogonToDevice (Port,IED,InMessage,OutMessage, traceList);
-
-                    if(!status)
-                    {
-                        // this will do the initial command requested
-                        if(!(status=PerformRequestedCmd (Port, IED, InMessage, OutMessage, traceList)))
-                        {
-                            /*********************************************
-                            * Use the byte 2 of the command message to keep the
-                            * final state of communications with the device
-                            * to send to scanner
-                            **********************************************
-                            */
-                            InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
-
-                            // check if there is load profile to do
-                            if(IED->getCurrentCommand() == CtiDeviceIED::CmdLoadProfileTransition)
-                            {
-                                // set to load profile request
-                                IED->setCurrentCommand(CtiDeviceIED::CmdLoadProfileData);
-
-                                // note, current command must be reset to scan data before returning
-                                // or the decode response routine will not work correctly
-                                PerformRequestedCmd ( Port, IED, InMessage, OutMessage , traceList);
-
-                                // reset to scan data once completed
-                                IED->setCurrentCommand( CtiDeviceIED::CmdScanData );
-                            }
-
-                            // only do this if we were doing a scan data
-                            if(IED->getCurrentCommand() == CtiDeviceIED::CmdScanData)
-                            {
-                                // will need to move these back
-                                IED->reformatDataBuffer (InMessage->Buffer.DUPSt.DUPRep.Message,InMessage->InLength);
-                            }
-                        }
-                        else
-                        {
-                            InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
-                        }
-                    }
-                    else
-                    {
-                        InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
-                    }
-
-                    // free the memory we used
-                    IED->freeDataBins();
-
-                    break;
-                }
-            case TYPE_WELCORTU:
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Invalid Port Protocol for Welco device **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
-                    status = BADPORT;
-                    break;
-                }
-            default:
-                {
-                    /* output the message to the remote */
-                    trx.setOutBuffer(OutMessage->Buffer.OutMessage + PREIDLEN);
-                    trx.setOutCount(OutMessage->OutLength - 3);
-                    status = Port->outMess(trx, Device, traceList);
-                }
-            }
-
-            /* get the time into the return message */
-            UCTFTime (&TimeB);
-            InMessage->Time = TimeB.time;
-            InMessage->MilliTime = TimeB.millitm;
-
-            if(TimeB.dstflag) InMessage->MilliTime |= DSTACTIVE;
-
-            /* !status is a successful return... This is a "post" successful send switch */
-            if(!status)
-            {
-                switch(Device->getType())
-                {
-                case TYPE_CCU700:
-                case TYPE_CCU710:
-                case TYPE_DAVIS:
-                    {
-                        /* get the returned message from the remote */
-                        trx.setInBuffer(InMessage->Buffer.InMessage);
-                        trx.setInCountExpected(OutMessage->InLength);
-                        trx.setInCountActual(&InMessage->InLength);
-                        trx.setInTimeout(OutMessage->TimeOut);
-                        trx.setMessageStart();                          // This is the first "in" of this message
-                        trx.setMessageComplete();                       // This is the last "in" of this message
-
-                        status = Port->inMess(trx, Device, traceList);
-
-                        // Prepare for tracing
-                        if(trx.doTrace(status))
-                        {
-                            Port->traceXfer(trx, traceList, Device, status);
-                        }
-
+                        /* Add some code */
                         break;
-                    }
-                case TYPE_ILEXRTU:
 
-                    /* Add some code */
-                    break;
-
-                case TYPE_LCU415:
-                case TYPE_LCU415LG:
-                case TYPE_LCU415ER:
-                case TYPE_LCUT3026:
-                case TYPE_TCU5000:
-                case TYPE_TCU5500:
-                    {
-                        InMessage->InLength = 0;
-                        ReadLength = 0;
-
-                        /* get the first 4 chars of the message */
-                        trx.setInBuffer(InMessage->Buffer.InMessage);
-                        trx.setInCountExpected( 4 );
-                        trx.setInCountActual(&InMessage->InLength);
-                        trx.setInTimeout(OutMessage->TimeOut);
-                        trx.setMessageStart();                          // This is the first "in" of this message
-                        trx.setMessageComplete(0);                      // This is _NOT_ the last "in" of this message
-
-                        status = Port->inMess(trx, Device, traceList);
-
-                        if(!status)
+                    case TYPE_LCU415:
+                    case TYPE_LCU415LG:
+                    case TYPE_LCU415ER:
+                    case TYPE_LCUT3026:
+                    case TYPE_TCU5000:
+                    case TYPE_TCU5500:
                         {
-                            /* check out the message... How much follows */
-                            status = PostMaster (InMessage->Buffer.InMessage, Device->getAddress(), &ReadLength);
-                        }
+                            InMessage->InLength = 0;
+                            ReadLength = 0;
 
-                        if(!status)
-                        {
-                            /* get the rest of the message */
-                            trx.setInBuffer(InMessage->Buffer.InMessage + 4);
-                            trx.setInCountExpected( ReadLength + 2 );
-                            trx.setInCountActual(&ReadLength);
+                            /* get the first 4 chars of the message */
+                            trx.setInBuffer(InMessage->Buffer.InMessage);
+                            trx.setInCountExpected( 4 );
+                            trx.setInCountActual(&InMessage->InLength);
                             trx.setInTimeout(OutMessage->TimeOut);
-                            trx.setMessageStart(0);                         // This is _NOT_ the first "in" of this message
-                            trx.setMessageComplete();                       // This is the last "in" of this message
+                            trx.setMessageStart();                          // This is the first "in" of this message
+                            trx.setMessageComplete(0);                      // This is _NOT_ the last "in" of this message
 
                             status = Port->inMess(trx, Device, traceList);
+
+                            if(!status)
+                            {
+                                /* check out the message... How much follows */
+                                status = PostMaster (InMessage->Buffer.InMessage, Device->getAddress(), &ReadLength);
+                            }
+
+                            if(!status)
+                            {
+                                /* get the rest of the message */
+                                trx.setInBuffer(InMessage->Buffer.InMessage + 4);
+                                trx.setInCountExpected( ReadLength + 2 );
+                                trx.setInCountActual(&ReadLength);
+                                trx.setInTimeout(OutMessage->TimeOut);
+                                trx.setMessageStart(0);                         // This is _NOT_ the first "in" of this message
+                                trx.setMessageComplete();                       // This is the last "in" of this message
+
+                                status = Port->inMess(trx, Device, traceList);
+                            }
+
+                            InMessage->InLength += ReadLength;
+
+                            if(!status)
+                            {
+                                /* Check crc of message */
+                                status = MasterReply (InMessage->Buffer.InMessage, (USHORT)InMessage->InLength);
+                            }
+
+                            // Prepare for tracing
+                            trx.setInBuffer(InMessage->Buffer.InMessage);
+                            trx.setInCountActual(&InMessage->InLength);
+                            trx.setTraceMask(TraceFlag, TraceErrorsOnly, TracePort == Port->getPortID(), TraceRemote);
+
+                            if(trx.doTrace(status))
+                            {
+                                Port->traceXfer(trx, traceList, Device, status);
+                            }
+
+                            if(!status)
+                            {
+                                InMessage->InLength = ReadLength - 2;
+                            }
+
+                            break;
                         }
 
-                        InMessage->InLength += ReadLength;
-
-                        if(!status)
+                    case TYPECBC6510:
+                    case TYPE_DNPRTU:
+                    case TYPE_ION7330:
+                    case TYPE_ION7700:
+                    case TYPE_ION8300:
+                    case TYPE_SIXNET:
+                    case TYPE_TAPTERM:
+                    case TYPE_WCTP:
+                    case TYPE_ALPHA_PPLUS:
+                    case TYPE_ALPHA_A1:
+                    case TYPE_FULCRUM:
+                    case TYPE_VECTRON:
+                    case TYPE_QUANTUM:
+                    case TYPE_DR87:
+                    case TYPE_LGS4:
+                    case TYPE_KV2:
+                    default:
                         {
-                            /* Check crc of message */
-                            status = MasterReply (InMessage->Buffer.InMessage, (USHORT)InMessage->InLength);
+                            /*  These guys are handled in a special way...  */
+                            /*    they do all of their communications in the "outbound" block - typically in a loop, handling out/in pairs until they're complete.  */
+                            break;
                         }
-
-                        // Prepare for tracing
-                        trx.setInBuffer(InMessage->Buffer.InMessage);
-                        trx.setInCountActual(&InMessage->InLength);
-                        trx.setTraceMask(TraceFlag, TraceErrorsOnly, TracePort == Port->getPortID(), TraceRemote);
-
+                    }
+                }
+                else
+                {
+                    switch(Device->getType())
+                    {
+                    // none of these use the transfer struct defined in this function so it blows the thread
+                    case TYPE_SIXNET:
+                    case TYPE_TAPTERM:
+                    case TYPE_WCTP:
+                    case TYPE_ALPHA_PPLUS:
+                    case TYPE_ALPHA_A1:
+                    case TYPE_FULCRUM:
+                    case TYPE_VECTRON:
+                    case TYPE_QUANTUM:
+                    case TYPE_DR87:
+                    case TYPE_LGS4:
+                    case TYPE_KV2:
+                        break;
+                    default:
+                        // There was an outbound error, the Xfer was not traced...
                         if(trx.doTrace(status))
                         {
                             Port->traceXfer(trx, traceList, Device, status);
                         }
-
-                        if(!status)
-                        {
-                            InMessage->InLength = ReadLength - 2;
-                        }
-
-                        break;
-                    }
-
-                case TYPECBC6510:
-                case TYPE_DNPRTU:
-                case TYPE_ION7330:
-                case TYPE_ION7700:
-                case TYPE_ION8300:
-                case TYPE_SIXNET:
-                case TYPE_TAPTERM:
-                case TYPE_WCTP:
-                case TYPE_ALPHA_PPLUS:
-                case TYPE_ALPHA_A1:
-                case TYPE_FULCRUM:
-                case TYPE_VECTRON:
-                case TYPE_QUANTUM:
-                case TYPE_DR87:
-                case TYPE_LGS4:
-                case TYPE_KV2:
-                default:
-                    {
-                        /*  These guys are handled in a special way...  */
-                        /*    they do all of their communications in the "outbound" block - typically in a loop, handling out/in pairs until they're complete.  */
-                        break;
                     }
                 }
+
+                break;  /* No Wrap */
             }
-            else
+        case ProtocolWrapIDLC:
             {
-                switch(Device->getType())
-                {
-                // none of these use the transfer struct defined in this function so it blows the thread
-                case TYPE_SIXNET:
-                case TYPE_TAPTERM:
-                case TYPE_WCTP:
-                case TYPE_ALPHA_PPLUS:
-                case TYPE_ALPHA_A1:
-                case TYPE_FULCRUM:
-                case TYPE_VECTRON:
-                case TYPE_QUANTUM:
-                case TYPE_DR87:
-                case TYPE_LGS4:
-                case TYPE_KV2:
-                    break;
-                default:
-                    // There was an outbound error, the Xfer was not traced...
-                    if(trx.doTrace(status))
-                    {
-                        Port->traceXfer(trx, traceList, Device, status);
-                    }
-                }
-            }
-
-            break;  /* No Wrap */
-        }
-    case ProtocolWrapIDLC:
-        {
-            /* Check for broadcast type message */
-            if(OutMessage->Remote == CCUGLOBAL)
-            {
-                /* form the CCU IDLC preamble */
-                PreIDLC (OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength, CCUGLOBAL, 0, 1, 1, OutMessage->Source, OutMessage->Destination, OutMessage->Command);
-            }
-            else if(OutMessage->Remote == RTUGLOBAL)
-            {
-                /* form the RTU IDLC preamble */
-                PreUnSequenced (OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength, OutMessage->Port, RTUGLOBAL, Device);
-            }
-            else
-            {
-                switch(Device->getType())
-                {
-                case TYPE_ILEXRTU:
-                case TYPE_WELCORTU:
-                case TYPE_VTU:
-                case TYPE_SES92RTU:
-                case TYPE_LCU415:
-                case TYPE_LCU415LG:
-                case TYPE_LCU415ER:
-                case TYPE_LCUT3026:
-                case TYPE_TCU5000:
-                case TYPE_TCU5500:
-                    {
-                        PreUnSequenced (OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength,  Device->getPortID(),Device->getAddress(), Device);
-                        break;
-                    }
-                case TYPE_CCU700:
-                case TYPE_CCU710:
-                case TYPE_DAVIS:
-                case TYPECBC6510:
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "**** FIX FIX FIX FIX FIX THIS **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                        // PreVTU (OutMessage->Buffer.OutMessage, (USHORT)(OutMessage->OutLength - 3), (USHORT)Device->getAddress(), (USHORT)(VTURouteRecord->getBus()), (USHORT)OutMessage->InLength, (USHORT)(OutMessage->TimeOut));
-                        break;
-                    }
-                case TYPE_CCU711:
-                default:
-                    {
-                        CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
-                        PreIDLC (OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength, OutMessage->Remote, pInfo->RemoteSequence.Reply, pInfo->RemoteSequence.Request, 1, OutMessage->Source, OutMessage->Destination, OutMessage->Command);
-                        break;
-                    }
-                }
-            }
-
-            /* calculate the crc and output the message */
-            switch(Device->getType())
-            {
-            case TYPE_ILEXRTU:
-            case TYPE_WELCORTU:
-            case TYPE_VTU:
-            case TYPE_SES92RTU:
-            case TYPE_LCU415:
-            case TYPE_LCU415LG:
-            case TYPE_LCU415ER:
-            case TYPE_LCUT3026:
-            case TYPE_TCU5000:
-            case TYPE_TCU5500:
-            case TYPE_CCU700:
-            case TYPE_CCU710:
-            case TYPE_DAVIS:
-                {
-                    PostIDLC (OutMessage->Buffer.OutMessage, (USHORT)(OutMessage->OutLength + PREIDL + 1));
-
-                    trx.setOutBuffer(OutMessage->Buffer.OutMessage);
-                    trx.setOutCount(OutMessage->OutLength + PREIDL + 3);
-
-                    status = Port->outMess(trx, Device, traceList);
-
-                    break;
-                }
-            default:
-                {
-                    PostIDLC (OutMessage->Buffer.OutMessage, (USHORT)(OutMessage->OutLength + PREIDL - 2));
-
-                    trx.setOutBuffer(OutMessage->Buffer.OutMessage);
-                    trx.setOutCount(OutMessage->OutLength + PREIDL);
-
-                    status = Port->outMess(trx, Device, traceList);
-
-                    if(PorterDebugLevel & PORTER_DEBUG_CCUMESSAGES)
-                    {
-                        CtiProtocol711 ccu711;
-                        ccu711.setMasterRequest( OutMessage->Buffer.OutMessage );
-                        ccu711.describeMasterRequest();
-                    }
-
-                    break;
-                }
-            }
-
-            /* get the time into the return message */
-            UCTFTime (&TimeB);
-            InMessage->Time = TimeB.time;
-            InMessage->MilliTime = TimeB.millitm;
-            if(TimeB.dstflag)
-            {
-                InMessage->MilliTime |= DSTACTIVE;
-            }
-
-            if(!status)
-            {
+                /* Check for broadcast type message */
                 if(OutMessage->Remote == CCUGLOBAL)
                 {
-                    if(OutMessage->EventCode & DTRAN)
-                    {
-                        /* Calculate the time the command should take */
-                        if(OutMessage->EventCode & BWORD)
-                            CTISleep (3000L);
-                        else
-                            CTISleep(1000L);
-                    }
-                    status = NORMAL;
+                    /* form the CCU IDLC preamble */
+                    PreIDLC (OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength, CCUGLOBAL, 0, 1, 1, OutMessage->Source, OutMessage->Destination, OutMessage->Command);
                 }
                 else if(OutMessage->Remote == RTUGLOBAL)
                 {
-                    status = NORMAL;
+                    /* form the RTU IDLC preamble */
+                    PreUnSequenced (OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength, OutMessage->Port, RTUGLOBAL, Device);
                 }
                 else
                 {
@@ -1702,259 +1614,378 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_TCU5000:
                     case TYPE_TCU5500:
                         {
-                            InMessage->InLength = 0;
-                            ReadLength = 0;
-
-                            /* get the first 7 chars of the message */
-
-                            trx.setInBuffer( InMessage->IDLCStat + 11 );
-                            trx.setInCountExpected( PREIDLEN );
-                            trx.setInCountActual( &(InMessage->InLength) );
-                            trx.setInTimeout(OutMessage->TimeOut);
-                            trx.setMessageStart();                          // This is the first "in" of this message
-                            trx.setMessageComplete(0);                      // This is _NOT_ the last "in" of this message
-
-                            status = Port->inMess(trx, Device, traceList);
-
-                            if(!status)
-                            {
-                                /* check out the message... How much follows */
-                                status = RTUReplyHeader (Device->getType(), Device->getAddress(), InMessage->IDLCStat + 11, &ReadLength);
-
-                                if(!status && ReadLength)
-                                {
-                                    /* get the rest of the message */
-                                    trx.setInBuffer( InMessage->Buffer.InMessage );
-                                    trx.setInCountExpected( ReadLength );
-                                    trx.setInCountActual( &ReadLength );
-                                    trx.setInTimeout(OutMessage->TimeOut);
-                                    trx.setMessageStart(0);                         // This is _NOT_ the first "in" of this message
-                                    trx.setMessageComplete();                       // This is the last "in" of this message
-
-                                    status = Port->inMess(trx, Device, traceList);
-                                }
-                            }
-
-                            InMessage->InLength += ReadLength;
-
-                            if(!status)
-                            {
-                                /* Check crc of message */
-                                status = RTUReply (InMessage->IDLCStat + 11, (USHORT)InMessage->InLength);
-                            }
-
-                            if(trx.doTrace(status))
-                            {
-                                trx.setInBuffer(InMessage->IDLCStat + 11);
-                                trx.setInCountActual(&InMessage->InLength);
-                                Port->traceXfer(trx, traceList, Device, status);
-                            }
-
+                            PreUnSequenced (OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength,  Device->getPortID(),Device->getAddress(), Device);
                             break;
                         }
                     case TYPE_CCU700:
                     case TYPE_CCU710:
                     case TYPE_DAVIS:
+                    case TYPECBC6510:
                         {
-                            InMessage->InLength = 0;
-                            ReadLength = 0;
-
-                            trx.setInBuffer( InMessage->IDLCStat + 11 );
-                            trx.setInCountExpected( PREIDLEN );
-                            trx.setInCountActual( &(InMessage->InLength) );
-                            trx.setInTimeout(OutMessage->TimeOut);
-                            trx.setMessageStart();                          // This is the first "in" of this message
-                            trx.setMessageComplete(0);                      // This is _NOT_ the last "in" of this message
-
-                            status = Port->inMess(trx, Device, traceList);
-
-                            if(!status)
                             {
-                                /* check out the message... How much follows */
-                                status = RTUReplyHeader (Device->getType(), Device->getAddress(), InMessage->IDLCStat + 11, &ReadLength);
-
-                                if(!status && ReadLength)
-                                {
-                                    /* get the rest of the message */
-                                    trx.setInBuffer( InMessage->Buffer.InMessage );
-                                    trx.setInCountExpected( ReadLength );
-                                    trx.setInCountActual( &ReadLength );
-                                    trx.setInTimeout(OutMessage->TimeOut);
-                                    trx.setMessageStart(0);                          // This is _NOT_ the first "in" of this message
-                                    trx.setMessageComplete();                        // This is the last "in" of this message
-
-                                    status = Port->inMess(trx, Device, traceList);
-                                }
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << "**** FIX FIX FIX FIX FIX THIS **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
-                            InMessage->InLength += ReadLength;
-
-                            if(!status)
-                            {
-                                /* Check crc of message */
-                                status = RTUReply (InMessage->IDLCStat + 11, (USHORT)InMessage->InLength);
-                            }
-
-                            if(trx.doTrace(status))
-                            {
-                                trx.setInBuffer(InMessage->IDLCStat + 11);
-                                trx.setInCountActual(&InMessage->InLength);
-                                Port->traceXfer(trx, traceList, Device, status);
-                            }
-
-
-                            if(!status)
-                            {
-                                status = InMessage->Buffer.InMessage[2];
-                                InMessage->InLength = InMessage->Buffer.InMessage[1];
-                                if(InMessage->InLength)
-                                {
-                                    memmove (InMessage->Buffer.InMessage, InMessage->Buffer.InMessage + 3, InMessage->InLength);
-                                }
-                            }
-
+                            // PreVTU (OutMessage->Buffer.OutMessage, (USHORT)(OutMessage->OutLength - 3), (USHORT)Device->getAddress(), (USHORT)(VTURouteRecord->getBus()), (USHORT)OutMessage->InLength, (USHORT)(OutMessage->TimeOut));
                             break;
                         }
+                    case TYPE_CCU711:
                     default:
                         {
                             CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
-
-                            /* get the first 5 bytes in the return message */
-                            trx.setInBuffer( InMessage->IDLCStat );
-                            trx.setInCountExpected( 5 );
-                            trx.setInCountActual( &InMessage->InLength );
-                            trx.setInTimeout(OutMessage->TimeOut);
-                            trx.setMessageStart();                           // This is the first "in" of this message
-                            trx.setMessageComplete(0);                       // This is NOT the last "in" of this message
-                            trx.setCRCFlag(0);
-
-                            status = Port->inMess(trx, Device, traceList);
-
-                            if(!status)
-                            {
-                                /* Oh wow, I got me five bytes of datum! */
-                                if(InMessage->IDLCStat[2] & 0x01)    // Supervisory frame. Emetcon S-Spec Section 4.5
-                                {
-                                    /* Ack patooy What to do here now ya don't ya' know */
-                                    switch(InMessage->IDLCStat[2] & 0x0f)
-                                    {
-                                    case REJ:
-                                        {
-                                            if((reject_status = IDLCRej(InMessage->IDLCStat, &pInfo->RemoteSequence.Request)) != NORMAL)
-                                            {
-                                                status = reject_status;
-                                            }
-                                            break;
-                                        }
-                                    default:
-                                        {
-                                            {
-                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                dout << RWTime() << " *** Supervisory (Inbound) Message 0x" << hex << InMessage->IDLCStat[2] << " from CCU: " << Device->getName() << endl;
-                                            }
-
-                                            if(trx.doTrace(status))
-                                            {
-                                                trx.setInBuffer(InMessage->IDLCStat);
-                                                trx.setInCountActual(&InMessage->InLength);
-                                                Port->traceXfer(trx, traceList, Device, status);
-                                            }
-                                        }
-                                    }
-
-                                    /*
-                                     *  4/29/99 CGP There are others like Reset Acknowlege which may need to picked up here
-                                     */
-                                }
-                                else
-                                {
-                                    ReadLength = 0;
-                                    /* Go get the rest of the message */
-                                    /* Got first byte following length.. Must add two for CRC */
-                                    trx.setInBuffer( &InMessage->IDLCStat[5] );
-                                    trx.setInCountExpected( InMessage->IDLCStat[3] + 1 );
-                                    trx.setInCountActual( &ReadLength );
-                                    trx.setInTimeout(OutMessage->TimeOut);
-                                    trx.setMessageStart(FALSE);                           // This is the first "in" of this message
-                                    trx.setMessageComplete(TRUE);                   // This is NOT the last "in" of this message
-
-                                    status = Port->inMess(trx, Device, traceList);
-
-                                    InMessage->InLength += ReadLength;
-
-                                    if(!status)
-                                    {
-                                        /*
-                                         *  This is the guy who does some rudimentary checking on the CCU message
-                                         *  He will return REQACK in that case...
-                                         */
-                                        status = GenReply (InMessage->IDLCStat, InMessage->InLength, &pInfo->RemoteSequence.Request, &pInfo->RemoteSequence.Reply, Device->getAddress());
-                                    }
-                                }
-                            }
-
-                            if(status)
-                            {
-                                if(InMessage->InLength >= 5)
-                                {
-                                    if((reject_status = IDLCRej (InMessage->IDLCStat, &pInfo->RemoteSequence.Request)) != NORMAL)
-                                    {
-                                        status = reject_status;
-                                    }
-                                }
-                            }
-
-                            if(trx.doTrace(status))
-                            {
-                                trx.setInBuffer(InMessage->IDLCStat);
-                                trx.setInCountActual(&InMessage->InLength);
-                                Port->traceXfer(trx, traceList, Device, status);
-                            }
-
-                            if(!status)
-                            {
-                                InMessage->InLength -= 20;
-                            }
-
-                            if(PorterDebugLevel & PORTER_DEBUG_CCUMESSAGES)
-                            {
-                                CtiProtocol711 ccu711;
-                                ccu711.setSlaveResponse( InMessage->IDLCStat );
-                                ccu711.describeSlaveResponse();
-                            }
-
+                            PreIDLC (OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength, OutMessage->Remote, pInfo->RemoteSequence.Reply, pInfo->RemoteSequence.Request, 1, OutMessage->Source, OutMessage->Destination, OutMessage->Command);
                             break;
                         }
                     }
                 }
-            }
-            else
-            {
-                // There was an outbound error, the Xfer was not traced...
-                if(trx.doTrace(status))
+
+                /* calculate the crc and output the message */
+                switch(Device->getType())
                 {
-                    Port->traceXfer(trx, traceList, Device, status);
+                case TYPE_ILEXRTU:
+                case TYPE_WELCORTU:
+                case TYPE_VTU:
+                case TYPE_SES92RTU:
+                case TYPE_LCU415:
+                case TYPE_LCU415LG:
+                case TYPE_LCU415ER:
+                case TYPE_LCUT3026:
+                case TYPE_TCU5000:
+                case TYPE_TCU5500:
+                case TYPE_CCU700:
+                case TYPE_CCU710:
+                case TYPE_DAVIS:
+                    {
+                        PostIDLC (OutMessage->Buffer.OutMessage, (USHORT)(OutMessage->OutLength + PREIDL + 1));
+
+                        trx.setOutBuffer(OutMessage->Buffer.OutMessage);
+                        trx.setOutCount(OutMessage->OutLength + PREIDL + 3);
+
+                        status = Port->outMess(trx, Device, traceList);
+
+                        break;
+                    }
+                default:
+                    {
+                        PostIDLC (OutMessage->Buffer.OutMessage, (USHORT)(OutMessage->OutLength + PREIDL - 2));
+
+                        trx.setOutBuffer(OutMessage->Buffer.OutMessage);
+                        trx.setOutCount(OutMessage->OutLength + PREIDL);
+
+                        status = Port->outMess(trx, Device, traceList);
+
+                        if(PorterDebugLevel & PORTER_DEBUG_CCUMESSAGES)
+                        {
+                            CtiProtocol711 ccu711;
+                            ccu711.setMasterRequest( OutMessage->Buffer.OutMessage );
+                            ccu711.describeMasterRequest();
+                        }
+
+                        break;
+                    }
                 }
-            }
 
-            /* Do not do a retry if we REQACK */
-            if((status & ~DECODED) == REQACK)
-            {
-                OutMessage->Retry = 0;
-            }
+                /* get the time into the return message */
+                UCTFTime (&TimeB);
+                InMessage->Time = TimeB.time;
+                InMessage->MilliTime = TimeB.millitm;
+                if(TimeB.dstflag)
+                {
+                    InMessage->MilliTime |= DSTACTIVE;
+                }
 
-            break; /* IDLC */
-        }
-    default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                if(!status)
+                {
+                    if(OutMessage->Remote == CCUGLOBAL)
+                    {
+                        if(OutMessage->EventCode & DTRAN)
+                        {
+                            /* Calculate the time the command should take */
+                            if(OutMessage->EventCode & BWORD)
+                                CTISleep (3000L);
+                            else
+                                CTISleep(1000L);
+                        }
+                        status = NORMAL;
+                    }
+                    else if(OutMessage->Remote == RTUGLOBAL)
+                    {
+                        status = NORMAL;
+                    }
+                    else
+                    {
+                        switch(Device->getType())
+                        {
+                        case TYPE_ILEXRTU:
+                        case TYPE_WELCORTU:
+                        case TYPE_VTU:
+                        case TYPE_SES92RTU:
+                        case TYPE_LCU415:
+                        case TYPE_LCU415LG:
+                        case TYPE_LCU415ER:
+                        case TYPE_LCUT3026:
+                        case TYPE_TCU5000:
+                        case TYPE_TCU5500:
+                            {
+                                InMessage->InLength = 0;
+                                ReadLength = 0;
+
+                                /* get the first 7 chars of the message */
+
+                                trx.setInBuffer( InMessage->IDLCStat + 11 );
+                                trx.setInCountExpected( PREIDLEN );
+                                trx.setInCountActual( &(InMessage->InLength) );
+                                trx.setInTimeout(OutMessage->TimeOut);
+                                trx.setMessageStart();                          // This is the first "in" of this message
+                                trx.setMessageComplete(0);                      // This is _NOT_ the last "in" of this message
+
+                                status = Port->inMess(trx, Device, traceList);
+
+                                if(!status)
+                                {
+                                    /* check out the message... How much follows */
+                                    status = RTUReplyHeader (Device->getType(), Device->getAddress(), InMessage->IDLCStat + 11, &ReadLength);
+
+                                    if(!status && ReadLength)
+                                    {
+                                        /* get the rest of the message */
+                                        trx.setInBuffer( InMessage->Buffer.InMessage );
+                                        trx.setInCountExpected( ReadLength );
+                                        trx.setInCountActual( &ReadLength );
+                                        trx.setInTimeout(OutMessage->TimeOut);
+                                        trx.setMessageStart(0);                         // This is _NOT_ the first "in" of this message
+                                        trx.setMessageComplete();                       // This is the last "in" of this message
+
+                                        status = Port->inMess(trx, Device, traceList);
+                                    }
+                                }
+
+                                InMessage->InLength += ReadLength;
+
+                                if(!status)
+                                {
+                                    /* Check crc of message */
+                                    status = RTUReply (InMessage->IDLCStat + 11, (USHORT)InMessage->InLength);
+                                }
+
+                                if(trx.doTrace(status))
+                                {
+                                    trx.setInBuffer(InMessage->IDLCStat + 11);
+                                    trx.setInCountActual(&InMessage->InLength);
+                                    Port->traceXfer(trx, traceList, Device, status);
+                                }
+
+                                break;
+                            }
+                        case TYPE_CCU700:
+                        case TYPE_CCU710:
+                        case TYPE_DAVIS:
+                            {
+                                InMessage->InLength = 0;
+                                ReadLength = 0;
+
+                                trx.setInBuffer( InMessage->IDLCStat + 11 );
+                                trx.setInCountExpected( PREIDLEN );
+                                trx.setInCountActual( &(InMessage->InLength) );
+                                trx.setInTimeout(OutMessage->TimeOut);
+                                trx.setMessageStart();                          // This is the first "in" of this message
+                                trx.setMessageComplete(0);                      // This is _NOT_ the last "in" of this message
+
+                                status = Port->inMess(trx, Device, traceList);
+
+                                if(!status)
+                                {
+                                    /* check out the message... How much follows */
+                                    status = RTUReplyHeader (Device->getType(), Device->getAddress(), InMessage->IDLCStat + 11, &ReadLength);
+
+                                    if(!status && ReadLength)
+                                    {
+                                        /* get the rest of the message */
+                                        trx.setInBuffer( InMessage->Buffer.InMessage );
+                                        trx.setInCountExpected( ReadLength );
+                                        trx.setInCountActual( &ReadLength );
+                                        trx.setInTimeout(OutMessage->TimeOut);
+                                        trx.setMessageStart(0);                          // This is _NOT_ the first "in" of this message
+                                        trx.setMessageComplete();                        // This is the last "in" of this message
+
+                                        status = Port->inMess(trx, Device, traceList);
+                                    }
+                                }
+                                InMessage->InLength += ReadLength;
+
+                                if(!status)
+                                {
+                                    /* Check crc of message */
+                                    status = RTUReply (InMessage->IDLCStat + 11, (USHORT)InMessage->InLength);
+                                }
+
+                                if(trx.doTrace(status))
+                                {
+                                    trx.setInBuffer(InMessage->IDLCStat + 11);
+                                    trx.setInCountActual(&InMessage->InLength);
+                                    Port->traceXfer(trx, traceList, Device, status);
+                                }
+
+
+                                if(!status)
+                                {
+                                    status = InMessage->Buffer.InMessage[2];
+                                    InMessage->InLength = InMessage->Buffer.InMessage[1];
+                                    if(InMessage->InLength)
+                                    {
+                                        memmove (InMessage->Buffer.InMessage, InMessage->Buffer.InMessage + 3, InMessage->InLength);
+                                    }
+                                }
+
+                                break;
+                            }
+                        default:
+                            {
+                                CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
+
+                                /* get the first 5 bytes in the return message */
+                                trx.setInBuffer( InMessage->IDLCStat );
+                                trx.setInCountExpected( 5 );
+                                trx.setInCountActual( &InMessage->InLength );
+                                trx.setInTimeout(OutMessage->TimeOut);
+                                trx.setMessageStart();                           // This is the first "in" of this message
+                                trx.setMessageComplete(0);                       // This is NOT the last "in" of this message
+                                trx.setCRCFlag(0);
+
+                                status = Port->inMess(trx, Device, traceList);
+
+                                if(!status)
+                                {
+                                    /* Oh wow, I got me five bytes of datum! */
+                                    if(InMessage->IDLCStat[2] & 0x01)    // Supervisory frame. Emetcon S-Spec Section 4.5
+                                    {
+                                        /* Ack patooy What to do here now ya don't ya' know */
+                                        switch(InMessage->IDLCStat[2] & 0x0f)
+                                        {
+                                        case REJ:
+                                            {
+                                                if((reject_status = IDLCRej(InMessage->IDLCStat, &pInfo->RemoteSequence.Request)) != NORMAL)
+                                                {
+                                                    status = reject_status;
+                                                }
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << RWTime() << " *** Supervisory (Inbound) Message 0x" << hex << InMessage->IDLCStat[2] << " from CCU: " << Device->getName() << endl;
+                                                }
+
+                                                if(trx.doTrace(status))
+                                                {
+                                                    trx.setInBuffer(InMessage->IDLCStat);
+                                                    trx.setInCountActual(&InMessage->InLength);
+                                                    Port->traceXfer(trx, traceList, Device, status);
+                                                }
+                                            }
+                                        }
+
+                                        /*
+                                         *  4/29/99 CGP There are others like Reset Acknowlege which may need to picked up here
+                                         */
+                                    }
+                                    else
+                                    {
+                                        ReadLength = 0;
+                                        /* Go get the rest of the message */
+                                        /* Got first byte following length.. Must add two for CRC */
+                                        trx.setInBuffer( &InMessage->IDLCStat[5] );
+                                        trx.setInCountExpected( InMessage->IDLCStat[3] + 1 );
+                                        trx.setInCountActual( &ReadLength );
+                                        trx.setInTimeout(OutMessage->TimeOut);
+                                        trx.setMessageStart(FALSE);                           // This is the first "in" of this message
+                                        trx.setMessageComplete(TRUE);                   // This is NOT the last "in" of this message
+
+                                        status = Port->inMess(trx, Device, traceList);
+
+                                        InMessage->InLength += ReadLength;
+
+                                        if(!status)
+                                        {
+                                            /*
+                                             *  This is the guy who does some rudimentary checking on the CCU message
+                                             *  He will return REQACK in that case...
+                                             */
+                                            status = GenReply (InMessage->IDLCStat, InMessage->InLength, &pInfo->RemoteSequence.Request, &pInfo->RemoteSequence.Reply, Device->getAddress());
+                                        }
+                                    }
+                                }
+
+                                if(status)
+                                {
+                                    if(InMessage->InLength >= 5)
+                                    {
+                                        if((reject_status = IDLCRej (InMessage->IDLCStat, &pInfo->RemoteSequence.Request)) != NORMAL)
+                                        {
+                                            status = reject_status;
+                                        }
+                                    }
+                                }
+
+                                if(trx.doTrace(status))
+                                {
+                                    trx.setInBuffer(InMessage->IDLCStat);
+                                    trx.setInCountActual(&InMessage->InLength);
+                                    Port->traceXfer(trx, traceList, Device, status);
+                                }
+
+                                if(!status)
+                                {
+                                    InMessage->InLength -= 20;
+                                }
+
+                                if(PorterDebugLevel & PORTER_DEBUG_CCUMESSAGES)
+                                {
+                                    CtiProtocol711 ccu711;
+                                    ccu711.setSlaveResponse( InMessage->IDLCStat );
+                                    ccu711.describeSlaveResponse();
+                                }
+
+                                break;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // There was an outbound error, the Xfer was not traced...
+                    if(trx.doTrace(status))
+                    {
+                        Port->traceXfer(trx, traceList, Device, status);
+                    }
+                }
+
+                /* Do not do a retry if we REQACK */
+                if((status & ~DECODED) == REQACK)
+                {
+                    OutMessage->Retry = 0;
+                }
+
+                break; /* IDLC */
             }
-            break;
+        default:
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                break;
+            }
         }
+
+        DisplayTraceList(Port, traceList, true);
     }
-
-    DisplayTraceList(Port, traceList, true);
+    catch(...)
+    {
+        autopsy( __FILE__, __LINE__);
+    }
 
     return status;
 }
