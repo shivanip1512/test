@@ -1008,7 +1008,7 @@ go
 
 alter table ApplianceWaterHeater
    add constraint FK_AppWtHt_YkLst foreign key (NumberOfGallonsID)
-      reference YukonListEntry (EntryID)
+      references YukonListEntry (EntryID)
 go
 
 
