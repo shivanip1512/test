@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_season.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/06/28 20:13:21 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/06/30 19:00:31 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -63,123 +63,6 @@ bool CtiSeasonManager::isInSeason(long season_sched_id, const RWDate& date)
 {
     return isInSeason(date, season_sched_id);
 }
-#ifdef _BUNG_
-long CtiSeasonManager::getCurrentSeason(const RWDate& date, long season_sched_id)
-{
-    long returnSeason = SEASON_SCHEDULE_SUMMER;
-
-    sSchedMap::iterator iter;
-    iter = _ssched_map.find(season_sched_id);
-    if( iter != _ssched_map.end() )
-    {
-        LONG currentDayOfYear       = ((date.month())*31)+date.dayOfMonth();
-        LONG springStartDayOfYear   = ((iter->second.springstartmonth+1)*31)+iter->second.springstartday;
-        LONG summerStartDayOfYear   = ((iter->second.summerstartmonth+1)*31)+iter->second.summerstartday;
-        LONG fallStartDayOfYear     = ((iter->second.fallstartmonth+1)*31)+iter->second.fallstartday;
-        LONG winterStartDayOfYear   = ((iter->second.winterstartmonth+1)*31)+iter->second.winterstartday;
-        //determining which season stratles the new year
-        if( springStartDayOfYear < winterStartDayOfYear )
-        {//year increments during the winter i.e. Dec through Jan is Winter, first case will probably be most common
-            if( currentDayOfYear >= winterStartDayOfYear ||
-                currentDayOfYear < springStartDayOfYear )
-            {
-                returnSeason = SEASON_SCHEDULE_WINTER;
-            }
-            else if( currentDayOfYear >= springStartDayOfYear &&
-                     currentDayOfYear < summerStartDayOfYear )
-            {
-                returnSeason = SEASON_SCHEDULE_SPRING;
-            }
-            else if( currentDayOfYear >= summerStartDayOfYear &&
-                     currentDayOfYear < fallStartDayOfYear )
-            {
-                returnSeason = SEASON_SCHEDULE_SUMMER;
-            }
-            else if( currentDayOfYear >= fallStartDayOfYear &&
-                     currentDayOfYear < winterStartDayOfYear )
-            {
-                returnSeason = SEASON_SCHEDULE_FALL;
-            }
-        }
-        else if( winterStartDayOfYear < fallStartDayOfYear )
-        {//Dec through Jan are in the fall, this is also fairly common
-            if( currentDayOfYear >= fallStartDayOfYear ||
-                currentDayOfYear < winterStartDayOfYear )
-            {
-                returnSeason = SEASON_SCHEDULE_FALL;
-            }
-            else if( currentDayOfYear >= winterStartDayOfYear &&
-                     currentDayOfYear < springStartDayOfYear )
-            {
-                returnSeason = SEASON_SCHEDULE_WINTER;
-            }
-            else if( currentDayOfYear >= springStartDayOfYear &&
-                     currentDayOfYear < summerStartDayOfYear )
-            {
-                returnSeason = SEASON_SCHEDULE_SPRING;
-            }
-            else if( currentDayOfYear >= summerStartDayOfYear &&
-                     currentDayOfYear < fallStartDayOfYear )
-            {
-                returnSeason = SEASON_SCHEDULE_SUMMER;
-            }
-        }
-        else if( fallStartDayOfYear < summerStartDayOfYear )
-        {//must be in the southern hemisphere since the summer is through Dec and Jan
-            if( currentDayOfYear >= summerStartDayOfYear ||
-                currentDayOfYear < fallStartDayOfYear )
-            {
-                returnSeason = SEASON_SCHEDULE_SUMMER;
-            }
-            else if( currentDayOfYear >= fallStartDayOfYear &&
-                     currentDayOfYear < winterStartDayOfYear )
-            {
-                returnSeason = SEASON_SCHEDULE_FALL;
-            }
-            else if( currentDayOfYear >= winterStartDayOfYear &&
-                     currentDayOfYear < springStartDayOfYear )
-            {
-                returnSeason = SEASON_SCHEDULE_WINTER;
-            }
-            else if( currentDayOfYear >= springStartDayOfYear &&
-                     currentDayOfYear < summerStartDayOfYear )
-            {
-                returnSeason = SEASON_SCHEDULE_SPRING;
-            }
-        }
-        else if( summerStartDayOfYear < springStartDayOfYear )
-        {//the year changed over in spring, I guess I'll take your word for it
-            if( currentDayOfYear >= springStartDayOfYear ||
-                currentDayOfYear < summerStartDayOfYear )
-            {
-                returnSeason = SEASON_SCHEDULE_SPRING;
-            }
-            else if( currentDayOfYear >= summerStartDayOfYear &&
-                     currentDayOfYear < fallStartDayOfYear )
-            {
-                returnSeason = SEASON_SCHEDULE_SUMMER;
-            }
-            else if( currentDayOfYear >= fallStartDayOfYear &&
-                     currentDayOfYear < winterStartDayOfYear )
-            {
-                returnSeason = SEASON_SCHEDULE_FALL;
-            }
-            else if( currentDayOfYear >= winterStartDayOfYear &&
-                     currentDayOfYear < springStartDayOfYear )
-            {
-                returnSeason = SEASON_SCHEDULE_WINTER;
-            }
-        }
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> guard(dout);
-        dout << "Cannot find Season Schedule with Id: " << season_sched_id << " in: " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return returnSeason;
-}
-#endif
 
 void CtiSeasonManager::refresh()
 {
@@ -198,7 +81,7 @@ void CtiSeasonManager::refresh()
 
             while( rdr() )
             {
-                rdr["scheduleid"]      >> id;
+                rdr["seasonscheduleid"]      >> id;
 		rdr["seasonstartmonth"] >> dos_temp.start_month;
 		rdr["seasonstartday"] >> dos_temp.start_day;
 		rdr["seasonendmonth"] >> dos_temp.end_month;
