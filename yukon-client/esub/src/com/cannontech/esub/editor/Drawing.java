@@ -12,6 +12,7 @@ import com.cannontech.esub.element.DrawingMetaElement;
 import com.cannontech.esub.util.HTMLGenerator;
 import com.cannontech.esub.util.ImageExporter;
 import com.cannontech.esub.util.SVGGenerator;
+import com.cannontech.esub.util.SVGOptions;
 
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
@@ -65,10 +66,8 @@ public class Drawing implements Serializable {
 		getLxView().setSize( getMetaElement().getDrawingWidth(), getMetaElement().getDrawingHeight());
 	}
 
-	public synchronized void save(String fileName) {				
-		setFileName(writeJLX(fileName));
-        writeSVG(fileName);        
-        writeHTML(fileName);
+	public synchronized void save(String fileName) {						
+        exportAs(fileName);
 	}
 
 	
@@ -124,6 +123,11 @@ public class Drawing implements Serializable {
 		svgFileName = svgFileName.concat(".svg");
 		
 		try {
+				SVGOptions svgOptions = new SVGOptions();
+				svgOptions.setControlEnabled(false);
+				svgOptions.setEditEnabled(false);
+				svgOptions.setScriptingEnabled(false);
+				svgOptions.setStaticSVG(true);
 		        SVGGenerator gen2 = new SVGGenerator();
 		        FileWriter fw = new FileWriter(svgFileName);
 		
