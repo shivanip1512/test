@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     10/6/2003 3:16:08 PM                         */
+/* Created on:     12/10/2003 8:27:49 AM                        */
 /*==============================================================*/
 
 
@@ -1343,6 +1343,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('YukonServices')
+            and   type = 'U')
+   drop table YukonServices
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('YukonUser')
             and   type = 'U')
    drop table YukonUser
@@ -1497,6 +1505,7 @@ insert into BillingFileFormats values(4,'CTI-CSV');
 insert into BillingFileFormats values(5,'OPU');
 insert into BillingFileFormats values(6,'DAFRON');
 insert into BillingFileFormats values(7,'NCDC');
+insert into billingFileformats values (9, 'CTI2');
 insert into billingfileformats values( 12, 'SEDC 5.4');
 insert into billingfileformats values( 13, 'NISC-Turtle');
 insert into billingfileformats values( 14, 'NISC-NCDC');
@@ -1718,7 +1727,7 @@ Notes                varchar(300)         null
 go
 
 
-insert into CTIDatabase values('2.42', 'Ryan', '11-SEP-2003', 'Added some more roles, tag tables, new alarms, soe tables');
+insert into CTIDatabase values('3.00', 'Ryan', '11-JAN-2004', 'Added some more roles, tag tables, new alarms, soe tables');
 
 alter table CTIDatabase
    add constraint PK_CTIDATABASE primary key  (Version)
@@ -3005,7 +3014,8 @@ Label                varchar(40)          not null,
 Axis                 char(1)              not null,
 Color                numeric              not null,
 Type                 numeric              not null,
-Multiplier           float                not null
+Multiplier           float                not null,
+MoreData             varchar(100)         not null
 )
 go
 
@@ -4372,7 +4382,8 @@ CHANGEID             numeric              not null,
 POINTID              numeric              not null,
 TIMESTAMP            datetime             not null,
 QUALITY              numeric              not null,
-VALUE                float                not null
+VALUE                float                not null,
+millis               smallint             not null
 )
 go
 
@@ -4606,7 +4617,8 @@ PRIORITY             numeric              not null
      constraint SYS_C0013406 check ("PRIORITY" IS NOT NULL),
 ACTION               varchar(60)          null,
 DESCRIPTION          varchar(120)         null,
-USERNAME             varchar(30)          null
+USERNAME             varchar(30)          null,
+millis               smallint             not null
 )
 go
 
@@ -5540,6 +5552,29 @@ insert into YukonSelectionList values( 1, 'A', 'Contact', 'DBEditor contact type
 
 alter table YukonSelectionList
    add constraint PK_YUKONSELECTIONLIST primary key  (ListID)
+go
+
+
+/*==============================================================*/
+/* Table : YukonServices                                        */
+/*==============================================================*/
+create table YukonServices (
+ServiceID            numeric              not null,
+ServiceName          varchar(60)          not null,
+ServiceClass         varchar(100)         not null,
+ParamNames           varchar(300)         not null,
+ParamValues          varchar(300)         not null
+)
+go
+
+
+insert into YukonServices values( 1, 'Notification_Server', 'com.cannontech.jmx.services.DynamicNotifcationServer', '(none)', '(none)' );
+/*insert into YukonServices values( 2, 'WebGraph', 'com.cannontech.jmx.services.DynamicWebGraph', '(none)', '(none)' );*/
+/*insert into YukonServices values( 3, 'Calc_Historical', 'com.cannontech.jmx.services.DynamicCalcHist', '(none)', '(none)' );*/
+
+
+alter table YukonServices
+   add constraint PK_YUKSER primary key  (ServiceID)
 go
 
 

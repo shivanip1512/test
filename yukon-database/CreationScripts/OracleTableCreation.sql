@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     10/6/2003 3:15:03 PM                         */
+/* Created on:     12/10/2003 8:26:47 AM                        */
 /*==============================================================*/
 
 
@@ -673,6 +673,10 @@ drop table YukonSelectionList cascade constraints
 /
 
 
+drop table YukonServices cascade constraints
+/
+
+
 drop table YukonUser cascade constraints
 /
 
@@ -821,6 +825,7 @@ insert into BillingFileFormats values(4,'CTI-CSV');
 insert into BillingFileFormats values(5,'OPU');
 insert into BillingFileFormats values(6,'DAFRON');
 insert into BillingFileFormats values(7,'NCDC');
+insert into billingFileformats values (9, 'CTI2');
 insert into billingfileformats values( 12, 'SEDC 5.4');
 insert into billingfileformats values( 13, 'NISC-Turtle');
 insert into billingfileformats values( 14, 'NISC-NCDC');
@@ -1060,7 +1065,7 @@ create table CTIDatabase  (
 /
 
 
-insert into CTIDatabase values('2.42', 'Ryan', '11-SEP-2003', 'Added some more roles, tag tables, new alarms, soe tables');
+insert into CTIDatabase values('3.00', 'Ryan', '11-JAN-2004', 'Added some more roles, tag tables, new alarms, soe tables');
 
 alter table CTIDatabase
    add constraint PK_CTIDATABASE primary key (Version)
@@ -2457,7 +2462,8 @@ create table GRAPHDATASERIES  (
    Axis                 CHAR(1)                          not null,
    Color                NUMBER                           not null,
    Type                 NUMBER                           not null,
-   Multiplier           FLOAT                            not null
+   Multiplier           FLOAT                            not null,
+   MoreData             VARCHAR2(100)                    not null
 )
 /
 
@@ -3952,7 +3958,8 @@ create table RAWPOINTHISTORY  (
    POINTID              NUMBER                           not null,
    TIMESTAMP            DATE                             not null,
    QUALITY              NUMBER                           not null,
-   VALUE                FLOAT                            not null
+   VALUE                FLOAT                            not null,
+   millis               SMALLINT                         not null
 )
 /
 
@@ -4198,7 +4205,8 @@ create table SYSTEMLOG  (
          constraint SYS_C0013406 check ("PRIORITY" IS NOT NULL),
    ACTION               VARCHAR2(60),
    DESCRIPTION          VARCHAR2(120),
-   USERNAME             VARCHAR2(30)
+   USERNAME             VARCHAR2(30),
+   millis               SMALLINT                         not null
 )
 /
 
@@ -5162,6 +5170,31 @@ insert into YukonSelectionList values( 1, 'A', 'Contact', 'DBEditor contact type
 
 alter table YukonSelectionList
    add constraint PK_YUKONSELECTIONLIST primary key (ListID)
+/
+
+
+/*==============================================================*/
+/* Table : YukonServices                                        */
+/*==============================================================*/
+
+
+create table YukonServices  (
+   ServiceID            NUMBER                           not null,
+   ServiceName          VARCHAR2(60)                     not null,
+   ServiceClass         VARCHAR2(100)                    not null,
+   ParamNames           VARCHAR2(300)                    not null,
+   ParamValues          VARCHAR2(300)                    not null
+)
+/
+
+
+insert into YukonServices values( 1, 'Notification_Server', 'com.cannontech.jmx.services.DynamicNotifcationServer', '(none)', '(none)' );
+/*insert into YukonServices values( 2, 'WebGraph', 'com.cannontech.jmx.services.DynamicWebGraph', '(none)', '(none)' );*/
+/*insert into YukonServices values( 3, 'Calc_Historical', 'com.cannontech.jmx.services.DynamicCalcHist', '(none)', '(none)' );*/
+
+
+alter table YukonServices
+   add constraint PK_YUKSER primary key (ServiceID)
 /
 
 
