@@ -323,7 +323,7 @@ public void run()
 	{		
 		try
 		{
-			com.cannontech.clientutils.CTILogger.info("Attempting to open SOCKET");
+			com.cannontech.clientutils.CTILogger.info("Attempting to open SOCKET to: " + this.host + " " + this.port);
 
 			this.sock = new Socket( this.host, this.port );
 
