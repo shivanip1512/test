@@ -406,7 +406,7 @@ private javax.swing.JPanel getConfigurationPanel() {
 			constraintsControlInhibitCheckBox.gridwidth = 3;
 			constraintsControlInhibitCheckBox.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsControlInhibitCheckBox.ipadx = 185;
-			constraintsControlInhibitCheckBox.insets = new java.awt.Insets(18, 20, 4, 35);
+			constraintsControlInhibitCheckBox.insets = new java.awt.Insets(5, 20, 4, 35);
 			getConfigurationPanel().add(getControlInhibitCheckBox(), constraintsControlInhibitCheckBox);
 
 			java.awt.GridBagConstraints constraintsCommunicationRouteComboBox = new java.awt.GridBagConstraints();
@@ -1068,7 +1068,7 @@ private void initialize() {
 		constraintsIdentificationPanel.weighty = 1.0;
 		constraintsIdentificationPanel.ipadx = -10;
 		constraintsIdentificationPanel.ipady = 5;
-		constraintsIdentificationPanel.insets = new java.awt.Insets(14, 21, 2, 36);
+		constraintsIdentificationPanel.insets = new java.awt.Insets(14, 21, 2, 5);
 		add(getIdentificationPanel(), constraintsIdentificationPanel);
 
 		java.awt.GridBagConstraints constraintsDisableFlagCheckBox = new java.awt.GridBagConstraints();
@@ -1086,7 +1086,7 @@ private void initialize() {
 		constraintsConfigurationPanel.weighty = 1.0;
 		constraintsConfigurationPanel.ipadx = -10;
 		constraintsConfigurationPanel.ipady = -16;
-		constraintsConfigurationPanel.insets = new java.awt.Insets(2, 21, 2, 36);
+		constraintsConfigurationPanel.insets = new java.awt.Insets(2, 21, 2, 5);
 		add(getConfigurationPanel(), constraintsConfigurationPanel);
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
