@@ -12,6 +12,8 @@ import java.sql.Statement;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ImageFilter;
 import com.cannontech.database.PoolManager;
+import com.cannontech.dbtools.updater.MessageFrameAdaptor;
+import com.cannontech.tools.gui.IRunnableDBTool;
 
 /**
  * Utility program to insert an entire directory of images
@@ -21,7 +23,8 @@ import com.cannontech.database.PoolManager;
  * an ascending generated id.
  * @author alauinger
  */
-public class ImageInserter {
+public class ImageInserter extends MessageFrameAdaptor
+{
 
 	private static final String DB_TABLE = "YukonImage";
 	
@@ -36,19 +39,22 @@ public class ImageInserter {
 			return;
 		}
 		
-		ImageInserter ii = new ImageInserter();
-		ii.insertImages(args[0]);
+		ImageInserter ii = new ImageInserter();		
+		System.setProperty( IRunnableDBTool.PROP_VALUE, args[0] );
+		ii.run();
+
+		//ii.insertImages(args[0]);
 	}
 	
 	public void insertImages(String dir) {
 		File fDir = new File(dir);
 		
 		if( !fDir.exists() ) {
-			System.out.println("Directory does not exist");
+			getIMessageFrame().addOutput("Directory does not exist");
 			return;
 		}
 		if( !fDir.isDirectory() ) {
-			System.out.println("Directory specified is not actually a directory");
+			getIMessageFrame().addOutput("Directory specified is not actually a directory");
 			return;
 		}		
 	
@@ -80,7 +86,7 @@ public class ImageInserter {
 				pstmt.setBinaryStream(4, in, (int) len);
 				pstmt.execute();
             
-            System.out.println(" (success) Inserted " + yukName + " with id: " + id );
+            getIMessageFrame().addOutput(" (success) Inserted " + yukName + " with id: " + id );
 			}	
 		}
 			pstmt.executeBatch();
@@ -131,5 +137,43 @@ public class ImageInserter {
 		}
 		
 		return maxID;
+	}
+	
+	
+	public String getName()
+	{
+		return "Image Inserter";
+	}
+
+	public String getParamText()
+	{
+		return "Image Directory:";
+	}
+
+	public String getDefaultValue()
+	{
+		return CtiUtilities.USER_DIR;
+	}
+
+	public void run()
+	{
+		try
+		{
+			getIMessageFrame().addOutput("");
+			getIMessageFrame().addOutput("-------- Started " + getName() + "..." );
+
+			//Do the Stuff here
+			insertImages( System.getProperty(IRunnableDBTool.PROP_VALUE) );
+			
+			getIMessageFrame().addOutput("-------- " + getName() + " Completed" );
+			
+
+			getIMessageFrame().finish( getName() + " Completed" );
+		}
+		catch( Exception e )
+		{
+			getIMessageFrame().finish( "Completed with an EXCEPTION" );
+		}
+
 	}
 }

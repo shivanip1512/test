@@ -11,6 +11,7 @@ import javax.swing.filechooser.FileFilter;
 
 import com.cannontech.clientutils.popup.PopUpMenuShower;
 import com.cannontech.dbconverter.converter.DBConverter;
+import com.cannontech.dbtools.image.ImageInserter;
 import com.cannontech.dbtools.tools.ModifyConstraints;
 import com.cannontech.dbtools.updater.DBUpdater;
 
@@ -33,7 +34,8 @@ class DBToolsFrame extends javax.swing.JFrame implements IMessageFrame, java.awt
 	{
 		new DBUpdater(),
 		new DBConverter(),
-		new ModifyConstraints()
+		new ModifyConstraints(),
+		new ImageInserter()
 	};
 	
 	private TextMsgPanePopUp textMsgPanePopUp = null;
