@@ -198,6 +198,11 @@ CtiCommandMsg* CtiLMGroupPoint::createLatchingRequestMsg(ULONG rawState, int pri
 
     returnCommandMsg->setMessagePriority(priority);
 
+    if( _LM_DEBUG )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Sending point latch command, LM Group: " << getPAOName() << ", raw state: " << rawState << ", priority: " << priority << endl;
+    }
     return returnCommandMsg;
 }
 
