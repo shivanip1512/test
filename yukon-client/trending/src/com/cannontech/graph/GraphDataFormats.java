@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 
 public interface GraphDataFormats
 {
+	public static SimpleDateFormat timestampQueryFormat = new SimpleDateFormat("dd-MMM-yyyy");
 	public static SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 	public static SimpleDateFormat extendedDateFormat = new SimpleDateFormat( "MMM d, yyyy");//old datePopupFormat
 
@@ -24,4 +25,5 @@ public interface GraphDataFormats
 	public static SimpleDateFormat dwellValuesDateTimeformat = new SimpleDateFormat("MMM d, HH:mm:ss");
 
 	public static DecimalFormat valueFormat = new DecimalFormat();
+	public static DecimalFormat percentFormat = new DecimalFormat(" ##0.0% ");
 }
