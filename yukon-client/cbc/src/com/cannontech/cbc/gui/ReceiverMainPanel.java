@@ -146,9 +146,6 @@ private void capBankPopUpMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent 
 		getCapBankPopupMenu().setCapBankDevice( 
 				capBank,
 				getFeederTableModel().getCapBankFeederOwner(capBank) );
-
-		getCapBankPopupMenu().setObservedCapBankRow( getCapBankTableModel().getObservableRow() );
-
 	}
 
 }

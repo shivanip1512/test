@@ -4,7 +4,6 @@ import javax.swing.JSeparator;
 
 import com.cannontech.cbc.capbankeditor.CapControlEntryPanel;
 import com.cannontech.cbc.capbankeditor.CapBankTempMovePanel;
-import com.cannontech.cbc.capbankeditor.ObservableCapBankRow;
 import com.cannontech.cbc.data.CBCClientConnection;
 import com.cannontech.cbc.data.CapBankDevice;
 import com.cannontech.cbc.data.Feeder;
@@ -31,7 +30,6 @@ public class CapBankDevicePopUp extends javax.swing.JPopupMenu implements java.a
 	private CapBankDevice capBankDevice = null;
 	private javax.swing.JMenuItem ivjJMenuItemManualEntry = null;
 	private CBCClientConnection connectionWrapper = null;
-	private ObservableCapBankRow observedCapBankRow = null;
 /**
  * Constructor
  */
@@ -321,15 +319,6 @@ private javax.swing.JMenuItem getJMenuItemOpenClose() {
 	}
 	return ivjJMenuItemOpenClose;
 }
-
-/**
- * Insert the method's description here.
- * Creation date: (1/8/2001 2:29:07 PM)
- * @return com.cannontech.cbc.capbankeditor.ObservableCapBankRow
- */
-public com.cannontech.cbc.capbankeditor.ObservableCapBankRow getObservedCapBankRow() {
-	return observedCapBankRow;
-}
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
@@ -555,7 +544,6 @@ public void jMenuItemManualEntry_ActionPerformed(java.awt.event.ActionEvent acti
 
 	if( panel != null )
 	{
-		panel.setObservableCapBankRow( getObservedCapBankRow() );
 		panel.setCapObject( getCapBankDevice() );
 		
 		d.getContentPane().add(panel);
@@ -714,14 +702,6 @@ public void setJMenuItemAckAlarm(javax.swing.JMenuItem newJMenuItemAckAlarm) {
 public void setManualEntryEnabled(boolean value) 
 {
 	getJMenuItemManualEntry().setEnabled(value);
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/8/2001 2:29:07 PM)
- * @param newObservedCapBankRow com.cannontech.cbc.capbankeditor.ObservableCapBankRow
- */
-public void setObservedCapBankRow(com.cannontech.cbc.capbankeditor.ObservableCapBankRow newObservedCapBankRow) {
-	observedCapBankRow = newObservedCapBankRow;
 }
 /**
  * This method was created in VisualAge.

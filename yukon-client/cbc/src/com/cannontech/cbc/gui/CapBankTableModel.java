@@ -26,7 +26,6 @@ public class CapBankTableModel extends javax.swing.table.AbstractTableModel impl
 	/* ROW SPECIFIC DATA */
 	private java.util.Vector rows = null;
 	private int[] currentRowBGColors = null;
-	private com.cannontech.cbc.capbankeditor.ObservableCapBankRow observableRow = null;
 	private AlarmingRowVector alarmingRowVector = null;
 	/* END --- ROW SPECIFIC DATA */
 	
@@ -281,14 +280,7 @@ private int getCurrentRowBGColors( int rowNumber )
 public int getFeederRowSelected() {
 	return feederRowSelected;
 }
-/**
- * Insert the method's description here.
- * Creation date: (1/8/2001 2:23:47 PM)
- * @return com.cannontech.cbc.capbankeditor.ObservableCapBankRow
- */
-public com.cannontech.cbc.capbankeditor.ObservableCapBankRow getObservableRow() {
-	return observableRow;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (1/2/2001 2:01:14 PM)
@@ -631,12 +623,6 @@ public synchronized void setCapBankDevices(java.util.Vector newRows)
 			}
 		}
 
-		if ( observableRow == null )
-			observableRow = new com.cannontech.cbc.capbankeditor.ObservableCapBankRow();
-		
-		observableRow.setChangedCapBankVector( newRows );
-
-		
 		rows = newRows;
 
 
@@ -867,12 +853,7 @@ private void tableChanged_HandleSubBus( SubBus subBus )
 					}
 				}
 
-				setCapBankDevices( tempVector );
-				
-				if ( observableRow == null )
-					observableRow = new com.cannontech.cbc.capbankeditor.ObservableCapBankRow();
-				
-				observableRow.setChangedCapBankVector( tempVector );
+				setCapBankDevices( tempVector );				
 			}
 		}
 		else

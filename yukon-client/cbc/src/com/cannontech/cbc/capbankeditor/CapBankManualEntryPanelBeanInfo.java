@@ -450,7 +450,6 @@ public java.beans.MethodDescriptor[] getMethodDescriptors() {
 			,main_javalangString__MethodDescriptor()
 			,removeCapBankManualEntryPanelListener_comcannontechcbccapbankeditorCapBankManualEntryPanelListenerMethodDescriptor()
 			,setCapBankDevice_comcannontechcbcCapBankDeviceMethodDescriptor()
-			,setObservableCapBankRow_comcannontechcbccapbankeditorObservableCapBankRowMethodDescriptor()
 			,update_javautilObservable_javalangObjectMethodDescriptor()
 		};
 		return aDescriptorList;
@@ -468,7 +467,6 @@ public java.beans.PropertyDescriptor[] getPropertyDescriptors() {
 		java.beans.PropertyDescriptor aDescriptorList[] = {
 			capBankDevicePropertyDescriptor()
 			,componentOrientationPropertyDescriptor()
-			,observableCapBankRowPropertyDescriptor()
 		};
 		return aDescriptorList;
 	} catch (Throwable exception) {
@@ -706,49 +704,7 @@ public java.beans.MethodDescriptor main_javalangString__MethodDescriptor() {
 	};
 	return aDescriptor;
 }
-/**
- * Gets the observableCapBankRow property descriptor.
- * @return java.beans.PropertyDescriptor
- */
-public java.beans.PropertyDescriptor observableCapBankRowPropertyDescriptor() {
-	java.beans.PropertyDescriptor aDescriptor = null;
-	try {
-		try {
-			/* Using methods via getMethod is the faster way to create the observableCapBankRow property descriptor. */
-			java.lang.reflect.Method aGetMethod = null;
-			java.lang.reflect.Method aSetMethod = null;
-			try {
-				/* Attempt to find the method using getMethod with parameter types. */
-				java.lang.Class aSetMethodParameterTypes[] = {
-					com.cannontech.cbc.capbankeditor.ObservableCapBankRow.class
-				};
-				aSetMethod = getBeanClass().getMethod("setObservableCapBankRow", aSetMethodParameterTypes);
-			} catch (Throwable exception) {
-				/* Since getMethod failed, call findMethod. */
-				handleException(exception);
-				aSetMethod = findMethod(getBeanClass(), "setObservableCapBankRow", 1);
-			};
-			aDescriptor = new java.beans.PropertyDescriptor("observableCapBankRow"
-			, aGetMethod, aSetMethod);
-		} catch (Throwable exception) {
-			/* Since we failed using methods, try creating a default property descriptor. */
-			handleException(exception);
-			aDescriptor = new java.beans.PropertyDescriptor("observableCapBankRow"
-			, getBeanClass());
-		};
-		aDescriptor.setBound(true);
-		/* aDescriptor.setConstrained(false); */
-		/* aDescriptor.setDisplayName("observableCapBankRow"); */
-		/* aDescriptor.setShortDescription("observableCapBankRow"); */
-		/* aDescriptor.setExpert(false); */
-		/* aDescriptor.setHidden(false); */
-		/* aDescriptor.setValue("preferred", new Boolean(false)); */
-		/* aDescriptor.setValue("ivjDesignTimeProperty", new Boolean(true)); */
-	} catch (Throwable exception) {
-		handleException(exception);
-	};
-	return aDescriptor;
-}
+
 /**
  * Gets the removeCapBankManualEntryPanelListener(com.cannontech.cbc.capbankeditor.CapBankManualEntryPanelListener) method descriptor.
  * @return java.beans.MethodDescriptor
@@ -837,50 +793,7 @@ public java.beans.MethodDescriptor setCapBankDevice_comcannontechcbcCapBankDevic
 	};
 	return aDescriptor;
 }
-/**
- * Gets the setObservableCapBankRow(com.cannontech.cbc.capbankeditor.ObservableCapBankRow) method descriptor.
- * @return java.beans.MethodDescriptor
- */
-public java.beans.MethodDescriptor setObservableCapBankRow_comcannontechcbccapbankeditorObservableCapBankRowMethodDescriptor() {
-	java.beans.MethodDescriptor aDescriptor = null;
-	try {
-		/* Create and return the setObservableCapBankRow(com.cannontech.cbc.capbankeditor.ObservableCapBankRow) method descriptor. */
-		java.lang.reflect.Method aMethod = null;
-		try {
-			/* Attempt to find the method using getMethod with parameter types. */
-			java.lang.Class aParameterTypes[] = {
-				com.cannontech.cbc.capbankeditor.ObservableCapBankRow.class
-			};
-			aMethod = getBeanClass().getMethod("setObservableCapBankRow", aParameterTypes);
-		} catch (Throwable exception) {
-			/* Since getMethod failed, call findMethod. */
-			handleException(exception);
-			aMethod = findMethod(getBeanClass(), "setObservableCapBankRow", 1);
-		};
-		try {
-			/* Try creating the method descriptor with parameter descriptors. */
-			java.beans.ParameterDescriptor aParameterDescriptor1 = new java.beans.ParameterDescriptor();
-			aParameterDescriptor1.setName("arg1");
-			aParameterDescriptor1.setDisplayName("obsRow");
-			java.beans.ParameterDescriptor aParameterDescriptors[] = {
-				aParameterDescriptor1
-			};
-			aDescriptor = new java.beans.MethodDescriptor(aMethod, aParameterDescriptors);
-		} catch (Throwable exception) {
-			/* Try creating the method descriptor without parameter descriptors. */
-			handleException(exception);
-			aDescriptor = new java.beans.MethodDescriptor(aMethod);
-		};
-		/* aDescriptor.setDisplayName("setObservableCapBankRow(com.cannontech.cbc.capbankeditor.ObservableCapBankRow)"); */
-		/* aDescriptor.setShortDescription("setObservableCapBankRow(com.cannontech.cbc.capbankeditor.ObservableCapBankRow)"); */
-		/* aDescriptor.setExpert(false); */
-		/* aDescriptor.setHidden(false); */
-		/* aDescriptor.setValue("preferred", new Boolean(false)); */
-	} catch (Throwable exception) {
-		handleException(exception);
-	};
-	return aDescriptor;
-}
+
 /**
  * Gets the update(java.util.Observable, java.lang.Object) method descriptor.
  * @return java.beans.MethodDescriptor

@@ -19,7 +19,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.util.Message;
 
-public class CapControlEntryPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.util.Observer 
+public class CapControlEntryPanel extends javax.swing.JPanel implements java.awt.event.ActionListener 
 {
 	private CBCClientConnection connectionWrapper = null;
 	private javax.swing.JLabel ivjJLabelCapBank = null;
@@ -28,7 +28,6 @@ public class CapControlEntryPanel extends javax.swing.JPanel implements java.awt
 	private javax.swing.JComboBox ivjJComboBoxState = null;
 	private javax.swing.JButton ivjJButtonDismiss = null;
 	private javax.swing.JButton ivjJButtonUpdate = null;
-	private ObservableCapBankRow observableCapBankRow = null;
 	private StreamableCapObject capObject = null;
 	private javax.swing.JPanel ivjJPanel1 = null;
 
@@ -120,19 +119,6 @@ private void connEtoC2(java.awt.event.ActionEvent arg1) {
 		handleException(ivjExc);
 	}
 }
-
-
-/**
- * Insert the method's description here.
- * Creation date: (7/27/00 5:11:18 PM)
- */
-private void destroyObservers() 
-{
-	if( observableCapBankRow != null )
-		observableCapBankRow.deleteObserver( this );	
-}
-
-
 /**
  * Insert the method's description here.
  * Creation date: (12/14/00 4:50:21 PM)
@@ -558,9 +544,6 @@ private void initialize()
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
-
-	if( observableCapBankRow != null )
-		observableCapBankRow.addObserver(this);	
 }
 
 /**
@@ -568,8 +551,6 @@ private void initialize()
  */
 public void jButtonDismiss_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-
-	destroyObservers();
 	disposePanel();
 	
 	return;
@@ -636,7 +617,6 @@ public void jButtonUpdate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	}
 	finally
 	{	
-		destroyObservers();
 		disposePanel();
 	}
 	
@@ -695,41 +675,4 @@ public void setConnectionWrapper(com.cannontech.cbc.data.CBCClientConnection new
 	connectionWrapper = newConnectionWrapper;
 }
 
-
-/**
- * Insert the method's description here.
- * Creation date: (7/28/00 2:55:31 PM)
- * @param obsRow com.cannontech.tdc.ObservableRow
- */
-public void setObservableCapBankRow(ObservableCapBankRow obsRow) 
-{
-	observableCapBankRow = obsRow;
-
-	if( observableCapBankRow != null )
-		observableCapBankRow.addObserver( this );
-}
-
-
-/**
- * Insert the method's description here.
- * Creation date: (12/10/00 5:06:20 PM)
- */
-public void update( java.util.Observable originator, Object newValue ) 
-{
-	ObservedStreamableCapObject streamObj = null;
-	
-	if( newValue instanceof ObservedStreamableCapObject )
-		streamObj = (ObservedStreamableCapObject)newValue;
-
-	// make sure we are looking at the capbank that was changed		
-	if( streamObj != null &&
-		 streamObj.getCapObject().getCcId().intValue() == getCapObject().getCcId().intValue() )
-	{		
-		setCapObject( streamObj.getCapObject() );
-
-		this.revalidate();
-		this.repaint();
-	}
-
-}
 }
