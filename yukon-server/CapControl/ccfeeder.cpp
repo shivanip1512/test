@@ -25,6 +25,7 @@
 #include "resolvers.h"
 
 extern BOOL _CC_DEBUG;
+extern BOOL _IGNORE_NOT_NORMAL_FLAG;
 
 RWDEFINE_COLLECTABLE( CtiCCFeeder, CTICCFEEDER_ID )
 
@@ -371,6 +372,16 @@ DOUBLE CtiCCFeeder::getKVARSolution() const
 DOUBLE CtiCCFeeder::getEstimatedPowerFactorValue() const
 {
     return _estimatedpowerfactorvalue;
+}
+
+/*---------------------------------------------------------------------------
+    getCurrentVarPointQuality
+
+    Returns the CurrentVarPointQuality of the feeder
+---------------------------------------------------------------------------*/
+ULONG CtiCCFeeder::getCurrentVarPointQuality() const
+{
+    return _currentvarpointquality;
 }
 
 /*---------------------------------------------------------------------------
@@ -819,6 +830,25 @@ CtiCCFeeder& CtiCCFeeder::setEstimatedPowerFactorValue(DOUBLE epfval)
     return *this;
 }
 
+/*---------------------------------------------------------------------------
+    setCurrentVarPointQuality
+
+    Sets the CurrentVarPointQuality in the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setCurrentVarPointQuality(ULONG cvpq)
+{
+    if( _currentvarpointquality != cvpq )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _currentvarpointquality = cvpq;
+    return *this;
+}
+
 
 /*---------------------------------------------------------------------------
     findCapBankToDecreaseVars
@@ -1014,192 +1044,197 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
 
     //if current var load is outside of range defined by the set point plus/minus the bandwidths
     CtiRequestMsg* request = NULL;
-    if( controlUnits == CtiCCSubstationBus::KVARControlUnits )
+
+    if( !_IGNORE_NOT_NORMAL_FLAG ||
+        getCurrentVarPointQuality() == NormalQuality )
     {
-        if( (getCurrentVarLoadPointValue() < (setpoint - getUpperBandwidth())) ||
-            (getCurrentVarLoadPointValue() > (setpoint + getLowerBandwidth())) )
+        if( controlUnits == CtiCCSubstationBus::KVARControlUnits )
         {
-            try
+            if( (getCurrentVarLoadPointValue() < (setpoint - getUpperBandwidth())) ||
+                (getCurrentVarLoadPointValue() > (setpoint + getLowerBandwidth())) )
             {
-                if( setpoint < getCurrentVarLoadPointValue() )
+                try
                 {
-                    //if( _CC_DEBUG )
+                    if( setpoint < getCurrentVarLoadPointValue() )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Attempting to Reduce Var level in feeder: " << getPAOName().data() << endl;
-                    }
-
-                    request = createDecreaseVarRequest(findCapBankToChangeVars(getKVARSolution()) , pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
-
-                    if( request == NULL && _CC_DEBUG )
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Can Not Reduce Var level for feeder: " << getPAOName()
-                        << " any further.  All cap banks are already in the Close state in: " << __FILE__ << " at: " << __LINE__ << endl;
-
-                        CtiCCCapBank* currentCapBank = NULL;
-                        for(int i=0;i<_cccapbanks.entries();i++)
+                        //if( _CC_DEBUG )
                         {
-                            currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Attempting to Reduce Var level in feeder: " << getPAOName().data() << endl;
+                        }
+    
+                        request = createDecreaseVarRequest(findCapBankToChangeVars(getKVARSolution()) , pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
+    
+                        if( request == NULL && _CC_DEBUG )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Can Not Reduce Var level for feeder: " << getPAOName()
+                            << " any further.  All cap banks are already in the Close state in: " << __FILE__ << " at: " << __LINE__ << endl;
+    
+                            CtiCCCapBank* currentCapBank = NULL;
+                            for(int i=0;i<_cccapbanks.entries();i++)
+                            {
+                                currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
+                                dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //if( _CC_DEBUG )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Attempting to Increase Var level in feeder: " << getPAOName().data() << endl;
+                        }
+    
+                        request = createIncreaseVarRequest(findCapBankToChangeVars(getKVARSolution()), pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
+    
+                        if( request == NULL && _CC_DEBUG )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Can Not Increase Var level for feeder: " << getPAOName()
+                            << " any further.  All cap banks are already in the Open state in: " << __FILE__ << " at: " << __LINE__ << endl;
+    
+                            CtiCCCapBank* currentCapBank = NULL;
+                            for(int i=0;i<_cccapbanks.entries();i++)
+                            {
+                                currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
+                                dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
+                            }
+                        }
+                    }
+    
+                    if( request != NULL )
+                    {
+                        pilMessages.insert(request);
+                        setLastOperationTime(currentDateTime);
+                        if( getEstimatedVarLoadPointId() > 0 )
+                        {
+                            pointChanges.insert(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+                        }
+                    }
+    
+                    //regardless what happened the substation bus should be should be sent to the client
+                    returnBoolean = TRUE;
+                }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
+            }
+        }
+        else if( controlUnits == CtiCCSubstationBus::PF_BY_KVARControlUnits ||
+                 controlUnits == CtiCCSubstationBus::PF_BY_KQControlUnits )
+        {
+            if( getKVARSolution() < 0 )
+            {
+                //if( _CC_DEBUG )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Attempting to Decrease Var level in feeder: " << getPAOName() << endl;
+                }
+    
+                CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution());
+                if( capBank != NULL )
+                {
+                    DOUBLE adjustedBankKVARReduction = (getLowerBandwidth()/100.0)*((DOUBLE)capBank->getBankSize());
+                    if( adjustedBankKVARReduction <= (-1.0*getKVARSolution()) )
+                    {
+                        request = createDecreaseVarRequest(capBank, pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
+                    }
+                    else
+                    {//cap bank too big
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Cap Bank: " << capBank->getPAOName() << ", KVAR size too large to switch" << endl;
+                    }
+                }
+    
+                if( capBank == NULL && request == NULL && _CC_DEBUG )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Can Not Reduce Var level for feeder: " << getPAOName()
+                    << " any further.  All cap banks are already in the Close state in: " << __FILE__ << " at: " << __LINE__ << endl;
+    
+                    try
+                    {
+                        CtiCCCapBank* currentCapBank = NULL;
+                        for(int j=0;j<_cccapbanks.entries();j++)
+                        {
+                            currentCapBank = (CtiCCCapBank*)_cccapbanks[j];
                             dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
                         }
                     }
-                }
-                else
-                {
-                    //if( _CC_DEBUG )
+                    catch(...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Attempting to Increase Var level in feeder: " << getPAOName().data() << endl;
+                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
-
-                    request = createIncreaseVarRequest(findCapBankToChangeVars(getKVARSolution()), pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
-
-                    if( request == NULL && _CC_DEBUG )
+                }
+            }
+            else if( getKVARSolution() > 0 )
+            {
+                //if( _CC_DEBUG )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Attempting to Increase Var level in feeder: " << getPAOName() << endl;
+                }
+    
+                CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution());
+                if( capBank != NULL )
+                {
+                    DOUBLE adjustedBankKVARIncrease = (getUpperBandwidth()/100.0)*((DOUBLE)capBank->getBankSize());
+                    if( adjustedBankKVARIncrease <= getKVARSolution() )
                     {
+                        request = createIncreaseVarRequest(capBank, pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
+                    }
+                    else
+                    {//cap bank too big
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Can Not Increase Var level for feeder: " << getPAOName()
-                        << " any further.  All cap banks are already in the Open state in: " << __FILE__ << " at: " << __LINE__ << endl;
-
+                        dout << RWTime() << " - Cap Bank: " << capBank->getPAOName() << ", KVAR size too large to switch" << endl;
+                    }
+                }
+    
+                if( capBank == NULL && request == NULL && _CC_DEBUG )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Can Not Increase Var level for substation bus: " << getPAOName()
+                    << " any further.  All cap banks are already in the Open state in: " << __FILE__ << " at: " << __LINE__ << endl;
+    
+                    try
+                    {
                         CtiCCCapBank* currentCapBank = NULL;
-                        for(int i=0;i<_cccapbanks.entries();i++)
+                        for(int j=0;j<_cccapbanks.entries();j++)
                         {
-                            currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
+                            currentCapBank = (CtiCCCapBank*)_cccapbanks[j];
                             dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
                         }
                     }
-                }
-
-                if( request != NULL )
-                {
-                    pilMessages.insert(request);
-                    setLastOperationTime(currentDateTime);
-                    if( getEstimatedVarLoadPointId() > 0 )
+                    catch(...)
                     {
-                        pointChanges.insert(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                 }
-
-                //regardless what happened the substation bus should be should be sent to the client
+            }
+            if( request != NULL )
+            {
+                pilMessages.insert(request);
+                setLastOperationTime(currentDateTime);
+                if( getEstimatedVarLoadPointId() > 0 )
+                {
+                    pointChanges.insert(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+                }
                 returnBoolean = TRUE;
             }
-            catch(...)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Invalid control units: " << controlUnits << ", in feeder: " << getPAOName() << endl;
         }
     }
-    else if( controlUnits == CtiCCSubstationBus::PF_BY_KVARControlUnits ||
-             controlUnits == CtiCCSubstationBus::PF_BY_KQControlUnits )
-    {
-        if( getKVARSolution() < 0 )
-        {
-            //if( _CC_DEBUG )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Attempting to Decrease Var level in feeder: " << getPAOName() << endl;
-            }
-
-            CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution());
-            if( capBank != NULL )
-            {
-                DOUBLE adjustedBankKVARReduction = (getLowerBandwidth()/100.0)*((DOUBLE)capBank->getBankSize());
-                if( adjustedBankKVARReduction <= (-1.0*getKVARSolution()) )
-                {
-                    request = createDecreaseVarRequest(capBank, pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
-                }
-                else
-                {//cap bank too big
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Cap Bank: " << capBank->getPAOName() << ", KVAR size too large to switch" << endl;
-                }
-            }
-
-            if( capBank == NULL && request == NULL && _CC_DEBUG )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Can Not Reduce Var level for feeder: " << getPAOName()
-                << " any further.  All cap banks are already in the Close state in: " << __FILE__ << " at: " << __LINE__ << endl;
-
-                try
-                {
-                    CtiCCCapBank* currentCapBank = NULL;
-                    for(int j=0;j<_cccapbanks.entries();j++)
-                    {
-                        currentCapBank = (CtiCCCapBank*)_cccapbanks[j];
-                        dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
-                    }
-                }
-                catch(...)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                }
-            }
-        }
-        else if( getKVARSolution() > 0 )
-        {
-            //if( _CC_DEBUG )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Attempting to Increase Var level in feeder: " << getPAOName() << endl;
-            }
-
-            CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution());
-            if( capBank != NULL )
-            {
-                DOUBLE adjustedBankKVARIncrease = (getUpperBandwidth()/100.0)*((DOUBLE)capBank->getBankSize());
-                if( adjustedBankKVARIncrease <= getKVARSolution() )
-                {
-                    request = createIncreaseVarRequest(capBank, pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
-                }
-                else
-                {//cap bank too big
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Cap Bank: " << capBank->getPAOName() << ", KVAR size too large to switch" << endl;
-                }
-            }
-
-            if( capBank == NULL && request == NULL && _CC_DEBUG )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Can Not Increase Var level for substation bus: " << getPAOName()
-                << " any further.  All cap banks are already in the Open state in: " << __FILE__ << " at: " << __LINE__ << endl;
-
-                try
-                {
-                    CtiCCCapBank* currentCapBank = NULL;
-                    for(int j=0;j<_cccapbanks.entries();j++)
-                    {
-                        currentCapBank = (CtiCCCapBank*)_cccapbanks[j];
-                        dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
-                    }
-                }
-                catch(...)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                }
-            }
-        }
-        if( request != NULL )
-        {
-            pilMessages.insert(request);
-            setLastOperationTime(currentDateTime);
-            if( getEstimatedVarLoadPointId() > 0 )
-            {
-                pointChanges.insert(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
-            }
-            returnBoolean = TRUE;
-        }
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Invalid control units: " << controlUnits << ", in feeder: " << getPAOName() << endl;
-    }
-
+    
     return returnBoolean;
 }
 
@@ -1208,7 +1243,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
 
     Returns a boolean if the current day of the week can be a peak day
 ---------------------------------------------------------------------------*/
-BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, ULONG minConfirmPercent, ULONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue)
+BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, ULONG minConfirmPercent, ULONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, ULONG currentVarPointQuality)
 {
     BOOL returnBoolean = TRUE;
     char tempchar[64] = "";
@@ -1222,32 +1257,40 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, ULONG minC
         {
             if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
             {
-                DOUBLE change = currentVarLoadPointValue - varValueBeforeControl;
-                if( change < 0 )
+                if( !_IGNORE_NOT_NORMAL_FLAG ||
+                    currentVarPointQuality == NormalQuality )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
-                }
-                DOUBLE ratio = change/currentCapBank->getBankSize();
-                if( ratio < minConfirmPercent*.01 )
-                {
-                    if( ratio < failurePercent*.01 && failurePercent != 0 && minConfirmPercent != 0 )
+                    DOUBLE change = currentVarLoadPointValue - varValueBeforeControl;
+                    if( change < 0 )
                     {
-                        currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
-                        text = RWCString("Var Change = ");
-                        text += doubleToString(ratio*100.0);
-                        text += "%, OpenFail";
-                        additional = RWCString("Feeder: ");
-                        additional = getPAOName();
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                     }
-                    else if( minConfirmPercent != 0 )
+                    DOUBLE ratio = change/currentCapBank->getBankSize();
+                    if( ratio < minConfirmPercent*.01 )
                     {
-                        currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
-                        text = RWCString("Var Change = ");
-                        text += doubleToString(ratio*100.0);
-                        text += "%, OpenQuestionable";
-                        additional = RWCString("Feeder: ");
-                        additional = getPAOName();
+                        if( ratio < failurePercent*.01 && failurePercent != 0 && minConfirmPercent != 0 )
+                        {
+                            currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
+                            text = RWCString("Var Change = ");
+                            text += doubleToString(ratio*100.0);
+                            text += "%, OpenFail";
+                            additional = RWCString("Feeder: ");
+                            additional = getPAOName();
+                        }
+                        else if( minConfirmPercent != 0 )
+                        {
+                            currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                            text = RWCString("Var Change = ");
+                            text += doubleToString(ratio*100.0);
+                            text += "%, OpenQuestionable";
+                            additional = RWCString("Feeder: ");
+                            additional = getPAOName();
+                        }
+                        else
+                        {
+                            currentCapBank->setControlStatus(CtiCCCapBank::Open);
+                        }
                     }
                     else
                     {
@@ -1256,37 +1299,52 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, ULONG minC
                 }
                 else
                 {
-                    currentCapBank->setControlStatus(CtiCCCapBank::Open);
+                    char tempchar[80];
+                    currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                    text = RWCString("Non Normal Var Quality = ");
+                    _ltoa(currentVarPointQuality,tempchar,10);
+                    text += tempchar;
+                    text += "%, OpenQuestionable";
+                    additional = RWCString("Feeder: ");
+                    additional = getPAOName();
                 }
             }
             else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
             {
-                DOUBLE change = varValueBeforeControl - currentVarLoadPointValue;
-                if( change < 0 )
+                if( !_IGNORE_NOT_NORMAL_FLAG ||
+                    currentVarPointQuality == NormalQuality )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
-                }
-                DOUBLE ratio = change/currentCapBank->getBankSize();
-                if( ratio < minConfirmPercent*.01 )
-                {
-                    if( ratio < failurePercent*.01 && failurePercent != 0 && minConfirmPercent != 0 )
+                    DOUBLE change = varValueBeforeControl - currentVarLoadPointValue;
+                    if( change < 0 )
                     {
-                        currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
-                        text = RWCString("Var Change = ");
-                        text += doubleToString(ratio*100.0);
-                        text += "%, CloseFail";
-                        additional = RWCString("Feeder: ");
-                        additional = getPAOName();
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                     }
-                    else if( minConfirmPercent != 0 )
+                    DOUBLE ratio = change/currentCapBank->getBankSize();
+                    if( ratio < minConfirmPercent*.01 )
                     {
-                        currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
-                        text = RWCString("Var Change = ");
-                        text += doubleToString(ratio*100.0);
-                        text += "%, CloseQuestionable";
-                        additional = RWCString("Feeder: ");
-                        additional = getPAOName();
+                        if( ratio < failurePercent*.01 && failurePercent != 0 && minConfirmPercent != 0 )
+                        {
+                            currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
+                            text = RWCString("Var Change = ");
+                            text += doubleToString(ratio*100.0);
+                            text += "%, CloseFail";
+                            additional = RWCString("Feeder: ");
+                            additional = getPAOName();
+                        }
+                        else if( minConfirmPercent != 0 )
+                        {
+                            currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
+                            text = RWCString("Var Change = ");
+                            text += doubleToString(ratio*100.0);
+                            text += "%, CloseQuestionable";
+                            additional = RWCString("Feeder: ");
+                            additional = getPAOName();
+                        }
+                        else
+                        {
+                            currentCapBank->setControlStatus(CtiCCCapBank::Close);
+                        }
                     }
                     else
                     {
@@ -1295,7 +1353,14 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, ULONG minC
                 }
                 else
                 {
-                    currentCapBank->setControlStatus(CtiCCCapBank::Close);
+                    char tempchar[80];
+                    currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                    text = RWCString("Non Normal Var Quality = ");
+                    _ltoa(currentVarPointQuality,tempchar,10);
+                    text += tempchar;
+                    text += "%, OpenQuestionable";
+                    additional = RWCString("Feeder: ");
+                    additional = getPAOName();
                 }
             }
             else
@@ -1378,48 +1443,52 @@ BOOL CtiCCFeeder::isAlreadyControlled(ULONG minConfirmPercent)
 {
     BOOL returnBoolean = FALSE;
 
-    if( minConfirmPercent > 0 )
+    if( !_IGNORE_NOT_NORMAL_FLAG ||
+        getCurrentVarPointQuality() == NormalQuality )
     {
-        DOUBLE oldVarValue = getVarValueBeforeControl();
-        DOUBLE newVarValue = getCurrentVarLoadPointValue();
-        for(UINT i=0;i<_cccapbanks.entries();i++)
+        if( minConfirmPercent > 0 )
         {
-            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
-            if( currentCapBank->getPAOId() == getLastCapBankControlledDeviceId() )
+            DOUBLE oldVarValue = getVarValueBeforeControl();
+            DOUBLE newVarValue = getCurrentVarLoadPointValue();
+            for(UINT i=0;i<_cccapbanks.entries();i++)
             {
-                if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
+                if( currentCapBank->getPAOId() == getLastCapBankControlledDeviceId() )
                 {
-                    DOUBLE change = newVarValue - oldVarValue;
-                    DOUBLE ratio = change/currentCapBank->getBankSize();
-                    if( ratio >= minConfirmPercent*.01 )
+                    if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
                     {
-                        returnBoolean = TRUE;
+                        DOUBLE change = newVarValue - oldVarValue;
+                        DOUBLE ratio = change/currentCapBank->getBankSize();
+                        if( ratio >= minConfirmPercent*.01 )
+                        {
+                            returnBoolean = TRUE;
+                        }
+                        else
+                        {
+                            returnBoolean = FALSE;
+                        }
+                    }
+                    else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
+                    {
+                        DOUBLE change = oldVarValue - newVarValue;
+                        DOUBLE ratio = change/currentCapBank->getBankSize();
+                        if( ratio >= minConfirmPercent*.01 )
+                        {
+                            returnBoolean = TRUE;
+                        }
+                        else
+                        {
+                            returnBoolean = FALSE;
+                        }
                     }
                     else
                     {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
                         returnBoolean = FALSE;
                     }
+                    break;
                 }
-                else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
-                {
-                    DOUBLE change = oldVarValue - newVarValue;
-                    DOUBLE ratio = change/currentCapBank->getBankSize();
-                    if( ratio >= minConfirmPercent*.01 )
-                    {
-                        returnBoolean = TRUE;
-                    }
-                    else
-                    {
-                        returnBoolean = FALSE;
-                    }
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
-                    returnBoolean = FALSE;
-                }
-                break;
             }
         }
     }
@@ -1573,7 +1642,8 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDat
             updater << dynamicCCFeederTable["ctitimestamp"].assign((RWDBDateTime)currentDateTime)
             << dynamicCCFeederTable["powerfactorvalue"].assign( _powerfactorvalue )
             << dynamicCCFeederTable["kvarsolution"].assign( _kvarsolution )
-            << dynamicCCFeederTable["estimatedpfvalue"].assign( _estimatedpowerfactorvalue );
+            << dynamicCCFeederTable["estimatedpfvalue"].assign( _estimatedpowerfactorvalue )
+            << dynamicCCFeederTable["currentvarpointquality"].assign( _currentvarpointquality );
 
             updater.execute( conn );
 
@@ -1622,7 +1692,8 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDat
             << currentDateTime
             << _powerfactorvalue
             << _kvarsolution
-            << _estimatedpowerfactorvalue;
+            << _estimatedpowerfactorvalue
+            << _currentvarpointquality;
 
             /*if( _CC_DEBUG )
             {
@@ -1697,7 +1768,8 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
     >> _lastcapbankcontrolleddeviceid
     >> _powerfactorvalue
     >> _kvarsolution
-    >> _estimatedpowerfactorvalue;
+    >> _estimatedpowerfactorvalue
+    >> _currentvarpointquality;
     istrm >> numberOfCapBanks;
     for(UINT i=0;i<numberOfCapBanks;i++)
     {
@@ -1758,7 +1830,8 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _lastcapbankcontrolleddeviceid
     << temppowerfactorvalue
     << _kvarsolution
-    << tempestimatedpowerfactorvalue;
+    << tempestimatedpowerfactorvalue
+    << _currentvarpointquality;
     ostrm << _cccapbanks.entries();
     for(UINT i=0;i<_cccapbanks.entries();i++)
     {
@@ -1803,6 +1876,7 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _powerfactorvalue = right._powerfactorvalue;
         _kvarsolution = right._kvarsolution;
         _estimatedpowerfactorvalue = right._estimatedpowerfactorvalue;
+        _currentvarpointquality = right._currentvarpointquality;
 
         _cccapbanks.clearAndDestroy();
         for(UINT i=0;i<right._cccapbanks.entries();i++)
@@ -1895,6 +1969,7 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
         rdr["powerfactorvalue"] >> _powerfactorvalue;
         rdr["kvarsolution"] >> _kvarsolution;
         rdr["estimatedpfvalue"] >> _estimatedpowerfactorvalue;
+        rdr["currentvarpointquality"] >> _currentvarpointquality;
 
         _insertDynamicDataFlag = FALSE;
     }
@@ -1916,6 +1991,7 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
         _powerfactorvalue = -1000000.0;
         _kvarsolution = 0.0;
         _estimatedpowerfactorvalue = -1000000.0;
+        _currentvarpointquality = NormalQuality;
 
         _insertDynamicDataFlag = TRUE;
     }

@@ -98,7 +98,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     DOUBLE getPowerFactorValue() const;
     DOUBLE getKVARSolution() const;
     DOUBLE getEstimatedPowerFactorValue() const;
-    
+    ULONG getCurrentVarPointQuality() const;
+
     RWSortedVector& getCCCapBanks();
 
     CtiCCFeeder& setPAOId(ULONG id);
@@ -134,11 +135,12 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setPowerFactorValue(DOUBLE pfval);
     CtiCCFeeder& setKVARSolution(DOUBLE solution);
     CtiCCFeeder& setEstimatedPowerFactorValue(DOUBLE epfval);
+    CtiCCFeeder& setCurrentVarPointQuality(ULONG cvpq);
 
     CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution);
     CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, ULONG decimalPlaces);
     CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, ULONG decimalPlaces);
-    BOOL capBankControlStatusUpdate(RWOrdered& pointChanges, ULONG minConfirmPercent, ULONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue);
+    BOOL capBankControlStatusUpdate(RWOrdered& pointChanges, ULONG minConfirmPercent, ULONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, ULONG currentVarPointQuality);
     //BOOL isPeakDay();
     BOOL isPastResponseTime(const RWDBDateTime& currentDateTime, ULONG minResponseTime);
     BOOL checkForAndProvideNeededIndividualControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, BOOL peakTimeFlag, ULONG decimalPlaces, const RWCString& controlUnits);
@@ -201,6 +203,7 @@ private:
     DOUBLE _powerfactorvalue;
     DOUBLE _kvarsolution;
     DOUBLE _estimatedpowerfactorvalue;
+    ULONG _currentvarpointquality;
 
     RWSortedVector _cccapbanks;
 

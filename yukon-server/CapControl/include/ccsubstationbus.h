@@ -87,6 +87,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE getPowerFactorValue() const;
     DOUBLE getKVARSolution() const;
     DOUBLE getEstimatedPowerFactorValue() const;
+    ULONG getCurrentVarPointQuality() const;
 
     RWOrdered& getCCFeeders();
 
@@ -135,6 +136,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setPowerFactorValue(DOUBLE pfval);
     CtiCCSubstationBus& setKVARSolution(DOUBLE solution);
     CtiCCSubstationBus& setEstimatedPowerFactorValue(DOUBLE epfval);
+    CtiCCSubstationBus& setCurrentVarPointQuality(ULONG cvpq);
 
     BOOL isPastResponseTime(const RWDBDateTime& currentDateTime);
     BOOL isVarCheckNeeded(const RWDBDateTime& currentDateTime);
@@ -225,6 +227,7 @@ private:
     DOUBLE _powerfactorvalue;
     DOUBLE _kvarsolution;
     DOUBLE _estimatedpowerfactorvalue;
+    ULONG _currentvarpointquality;
 
     RWOrdered _ccfeeders;
 
