@@ -76,7 +76,7 @@ public class ProgramSignUpAction implements ActionBase {
 				
 				String[] catIDs = req.getParameterValues( "CatID" );
 				String[] progIDs = req.getParameterValues( "ProgID" );
-				if (progIDs != null)
+				if (progIDs != null) {
 					for (int i = 0; i < progIDs.length; i++) {
 						if (progIDs[i].length() == 0) continue;
 						
@@ -85,6 +85,7 @@ public class ProgramSignUpAction implements ActionBase {
 						program.setApplianceCategoryID( Integer.parseInt(catIDs[i]) );
 						programs.addSULMProgram( program );
 					}
+				}
 			}
 			else if (Boolean.valueOf( notEnrolled ).booleanValue()) {
 				StarsSULMPrograms programs = new StarsSULMPrograms();
@@ -430,9 +431,9 @@ public class ProgramSignUpAction implements ActionBase {
 							}
 			            	
 							if (invIDs[idx] > 0) {
-								liteApp.setAddressingGroupID( groupID );
 								if (liteApp.getAddressingGroupID() != groupID && !hwsToConfig.contains( liteHw ))
 									hwsToConfig.add( liteHw );
+								liteApp.setAddressingGroupID( groupID );
 							}
 							
 							liteApp.setLmProgramID( program.getProgramID() );
