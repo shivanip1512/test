@@ -2,8 +2,8 @@
 <%@ include file="StarsHeader.jsp" %>
 <%@ include file="metering_header.jsp" %>
 <%@ include file="../../trending_functions.jsp" %>
-<link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
+<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
@@ -32,7 +32,7 @@ function jumpPage(form)
 				<td valign="bottom" height="102"> 
 				<table width="657" cellspacing="0"  cellpadding="0" border="0">
 				<tr> 
-					<td colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+					<td colspan="4" height="74" background="../WebConfig/<cti:getProperty property="<%=WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
 				</tr>
 				<tr> 
 					<td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer Account Information&nbsp;&nbsp;</td>
@@ -111,7 +111,7 @@ function jumpPage(form)
 						</select>
 					</td>
 					<td width="10%"> 
-						<input type="image" src="../GoButton.gif" name="image2" border="0">
+						<input type="image" src="<%=request.getContextPath()%>/Images/GoButton.gif" name="image2" border="0">
 					</td>
 				</tr>
 				</table>
