@@ -45,7 +45,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    public void ejbPassivate() throws EJBException, java.rmi.RemoteException{}
    public void ejbCreate() throws javax.ejb.CreateException {}
 
-   private com.cannontech.yukon.IDatabaseCache getCache()
+   private synchronized com.cannontech.yukon.IDatabaseCache getCache()
    {  
    	if( dbCache == null )
    	{
@@ -280,7 +280,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 	* @ejb:interface-method
 	* tview-type="remote"
    **/
-	public List getAllPointLimits() 
+	public synchronized List getAllPointLimits() 
 	{
 		return getCache().getAllPointLimits();
 	}	
@@ -380,7 +380,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonGroupRoleMap()
 	 */
-	public Map getYukonGroupRolePropertyMap() {
+	public synchronized Map getYukonGroupRolePropertyMap() {
 		return getCache().getYukonGroupRolePropertyMap();
 	}
 
@@ -388,7 +388,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-	public List getAllYukonGroups() {
+	public synchronized List getAllYukonGroups() {
 		return getCache().getAllYukonGroups();
 	}
 
@@ -396,7 +396,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-	public Map getYukonGroupUserMap() {
+	public synchronized Map getYukonGroupUserMap() {
 		return getCache().getYukonGroupUserMap();
 	}
 
@@ -404,7 +404,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-	public List getAllYukonRoles() {
+	public synchronized List getAllYukonRoles() {
 		return getCache().getAllYukonRoles();
 	}
 	
@@ -412,7 +412,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-	public List getAllYukonRoleProperties() {
+	public synchronized List getAllYukonRoleProperties() {
 		return getCache().getAllYukonRoleProperties();
 	}
 
@@ -420,7 +420,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-	public Map getYukonUserGroupMap() {
+	public synchronized Map getYukonUserGroupMap() {
 		return getCache().getYukonUserGroupMap();
 	}
 
@@ -428,7 +428,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-	public Map getYukonUserRolePropertyMap() {
+	public synchronized Map getYukonUserRolePropertyMap() {
 		return getCache().getYukonUserRolePropertyMap();
 	}
 
@@ -436,7 +436,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-	public List getAllYukonUsers() {
+	public synchronized List getAllYukonUsers() {
 		return getCache().getAllYukonUsers();
 	}
 
@@ -444,7 +444,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 	 * @ejb:interface-method
 	 * tview-type="remote"
 	 */
-	public List getAllEnergyCompanies() {
+	public synchronized List getAllEnergyCompanies() {
 		return getCache().getAllEnergyCompanies();
 	}
 
@@ -452,7 +452,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 	 * @ejb:interface-method
 	 * tview-type="remote"
 	 */
-	public Map getAllUserEnergyCompanies() {
+	public synchronized Map getAllUserEnergyCompanies() {
 		return getCache().getAllUserEnergyCompanies();
 	}
 	
@@ -636,7 +636,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public void removeDBChangeListener(DBChangeListener listener) 
+   public synchronized  void removeDBChangeListener(DBChangeListener listener) 
    {
       getCache().removeDBChangeListener( listener );
    }
@@ -645,7 +645,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public void setDatabaseAlias(String newAlias)
+   public synchronized void setDatabaseAlias(String newAlias)
    {
       getCache().setDatabaseAlias( newAlias );
    }	
@@ -653,7 +653,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 	 * @ejb:interface-method
 	 * tview-type="remote"
 	 */
-	public Map getYukonUserRoleIDLookupMap() {
+	public synchronized Map getYukonUserRoleIDLookupMap() {
 		return getCache().getYukonUserRoleIDLookupMap();
 	}
 	
@@ -661,7 +661,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 	 * @ejb:interface-method
 	 * tview-type="remote"
 	 */
-	public boolean hasLoadedGlobals()
+	public synchronized boolean hasLoadedGlobals()
 	{
 		return getCache().hasLoadedGlobals();		
 	}
@@ -670,7 +670,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 	 * @ejb:interface-method
 	 * tview-type="remote"
 	 */
-	public Map getYukonUserRolePropertyIDLookupMap() {
+	public synchronized Map getYukonUserRolePropertyIDLookupMap() {
 		return getCache().getYukonUserRolePropertyIDLookupMap();
 	}
 	

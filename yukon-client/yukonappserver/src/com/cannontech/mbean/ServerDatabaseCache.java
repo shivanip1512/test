@@ -132,7 +132,7 @@ protected ServerDatabaseCache(String databaseAlias) {
  * Creation date: (12/20/2001 1:09:04 PM)
  * @param DBChangeListener
  */
-public void addDBChangeListener(DBChangeListener listener) 
+public synchronized void addDBChangeListener(DBChangeListener listener) 
 {
 	getDbChangeListener().addDBChangeListener( listener );
 }
@@ -1091,7 +1091,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 		return allYukonGroupUsers;				
 	}
 
-	private void loadUsersAndGroups() 
+	private synchronized void loadUsersAndGroups() 
 	{
 		allYukonUserGroups = new HashMap();
 		allYukonGroupUsers = new HashMap();
@@ -2750,7 +2750,7 @@ public synchronized void releaseAllYukonPAObjects()
  * Creation date: (12/20/2001 1:09:04 PM)
  * @param DBChangeListener
  */
-public void removeDBChangeListener(DBChangeListener listener) 
+public synchronized void removeDBChangeListener(DBChangeListener listener) 
 {
 	if( getDbChangeListener() != null )
 		getDbChangeListener().removeDBChangeListener( listener );
@@ -2762,7 +2762,7 @@ public void removeDBChangeListener(DBChangeListener listener)
  * We can only use the properties if the global Yukon Group is loaded.
  * @return
  */
-public boolean hasLoadedGlobals()
+public synchronized boolean hasLoadedGlobals()
 {
 	return allYukonGroups != null && allYukonGroups.size() > 0;
 }
@@ -2811,7 +2811,7 @@ private void runLoaders(Runnable[] loaders) throws Exception
  * Creation date: (3/14/00 3:22:47 PM)
  * @param newAlias java.lang.String
  */
-public void setDatabaseAlias(String newAlias){
+public synchronized void setDatabaseAlias(String newAlias){
 	databaseAlias = newAlias;
 }
 /**

@@ -36,7 +36,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
       return cache;
    }
 
-   private IDatabaseCache getDBCache()
+   private synchronized IDatabaseCache getDBCache()
    {
       return ResourceFactory.getIYukon().getDBCache();
    }
@@ -45,7 +45,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	 * @ejb:interface-method
 	 * tview-type="remote"
 	 */
-	public boolean hasLoadedGlobals()
+	public synchronized  boolean hasLoadedGlobals()
 	{
 		return getDBCache().hasLoadedGlobals();		
 	}
@@ -54,7 +54,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public void addDBChangeListener(DBChangeListener listener) 
+   public synchronized  void addDBChangeListener(DBChangeListener listener) 
    {
       getDBCache().addDBChangeListener( listener );
    }
@@ -298,7 +298,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	 * @ejb:interface-method
 	 * tview-type="remote"
 	 **/
-	public List getAllPointLimits() {
+	public synchronized List getAllPointLimits() {
 		return getDBCache().getAllPointLimits();
     }
     
@@ -565,7 +565,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public void removeDBChangeListener(DBChangeListener listener) 
+   public synchronized void removeDBChangeListener(DBChangeListener listener) 
    {
       getDBCache().removeDBChangeListener( listener );
    }
@@ -574,7 +574,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public void setDatabaseAlias(String newAlias)
+   public synchronized void setDatabaseAlias(String newAlias)
    {
       getDBCache().setDatabaseAlias( newAlias );
    }
@@ -583,7 +583,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
  	* @ejb:interface-method
  	* tview-type="remote"
  	*/
-	public Map getYukonUserRolePropertyMap() {
+	public synchronized Map getYukonUserRolePropertyMap() {
 		return getDBCache().getYukonUserRolePropertyMap();
 	}	
 
@@ -591,7 +591,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	 * @ejb:interface-method
 	 * tview-type="remote"
 	 */
-	public List getAllYukonGroups() {
+	public synchronized  List getAllYukonGroups() {
 		return getDBCache().getAllYukonGroups();
 	}
 
@@ -599,7 +599,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	 * @ejb:interface-method
 	 * tview-type="remote"
 	 */
-	public List getAllYukonRoles() {
+	public synchronized  List getAllYukonRoles() {
 		return getDBCache().getAllYukonRoles();
 	}
 
@@ -607,7 +607,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	 * @ejb:interface-method
 	 * tview-type="remote"
 	 */
-	public List getAllYukonRoleProperties() {
+	public synchronized  List getAllYukonRoleProperties() {
 		return getDBCache().getAllYukonRoleProperties();
 	}
 	
@@ -615,55 +615,55 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	 * @ejb:interface-method
 	 * tview-type="remote"
 	 */
-	public List getAllYukonUsers() {
+	public synchronized  List getAllYukonUsers() {
 		return getDBCache().getAllYukonUsers();
 	}
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroupRolePropertyMap()
 	 */
-	public Map getYukonGroupRolePropertyMap() {
+	public synchronized  Map getYukonGroupRolePropertyMap() {
 		return getDBCache().getYukonGroupRolePropertyMap();
 	}
 
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserGroupMap()
 	 */
-	public Map getYukonUserGroupMap() {
+	public synchronized  Map getYukonUserGroupMap() {
 		return getDBCache().getYukonUserGroupMap();
 	}
 
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonGroupUserMap()
 	 */
-	public Map getYukonGroupUserMap() {
+	public synchronized  Map getYukonGroupUserMap() {
 		return getDBCache().getYukonGroupUserMap();
 	}
 
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllEnergyCompanies()
 	 */
-	public List getAllEnergyCompanies() {
+	public synchronized  List getAllEnergyCompanies() {
 		return getDBCache().getAllEnergyCompanies();
 	}
 
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllUserEnergyCompanies()
 	 */
-	public Map getAllUserEnergyCompanies() {
+	public synchronized  Map getAllUserEnergyCompanies() {
 		return getDBCache().getAllUserEnergyCompanies();
 	}
 
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRoleIDLookupMap()
 	 */
-	public Map getYukonUserRoleIDLookupMap() {
+	public synchronized  Map getYukonUserRoleIDLookupMap() {
 		return getDBCache().getYukonUserRoleIDLookupMap();
 	}
 	
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRolePropertyIDLookupMap()
 	 */
-	public Map getYukonUserRolePropertyIDLookupMap() {
+	public synchronized  Map getYukonUserRolePropertyIDLookupMap() {
 		return getDBCache().getYukonUserRolePropertyIDLookupMap();
 	}
 	

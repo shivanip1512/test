@@ -96,51 +96,57 @@ public class CTILogger
 		logger.addAppender( new ConsoleAppender(DEF_LAYOUT, ConsoleAppender.SYSTEM_OUT) );
 	}
 
-   private static synchronized Logger getLogger()
+   private static Logger getLogger()
    {
-      if( !isCreated )
-      {
-         //Init our logger object for the first time
-         createLogger( STANDARD_LOGGER );
+   		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+   		synchronized(cache) {
+   			synchronized(CTILogger.class) {
+
+				if( !isCreated )
+				{
+				   //Init our logger object for the first time
+				   createLogger( STANDARD_LOGGER );
         
-			//create the extra loggers to keep our web folks sane
-			for( int i = 0; i < ALL_NAMES.length; i++ )
-				createLogger( ALL_NAMES[i][0].toString() );				
+					  //create the extra loggers to keep our web folks sane
+					  for( int i = 0; i < ALL_NAMES.length; i++ )
+						  createLogger( ALL_NAMES[i][0].toString() );				
 
-			isCreated = true;
+					  isCreated = true;
 			
-			//initLoggers();
-      }
+					  //initLoggers();
+				}
             
-	  //by default, use the standard logger
-      Logger log = LogManager.getLogger( STANDARD_LOGGER );
+				//by default, use the standard logger
+				Logger log = LogManager.getLogger( STANDARD_LOGGER );
 
-	  // If we are told to use the standard logger and if we
-	  // have loaded the global properties
-	  if( DefaultDatabaseCache.getInstance().hasLoadedGlobals() )
-	  {
-			t.fillInStackTrace();
+				// If we are told to use the standard logger and if we
+				// have loaded the global properties
+				if( cache.hasLoadedGlobals() )
+				{
+					  t.fillInStackTrace();
 			
-			//if( t.getStackTrace().length >= 2 )
-			for( int i = 0; i < t.getStackTrace().length; i++ )
-			{
-				if( t.getStackTrace()[i].getClassName().startsWith(CTILogger.class.getName()) )
-					continue;
+					  //if( t.getStackTrace().length >= 2 )
+					  for( int i = 0; i < t.getStackTrace().length; i++ )
+					  {
+						  if( t.getStackTrace()[i].getClassName().startsWith(CTILogger.class.getName()) )
+							  continue;
 			
-				Logger l = LogManager.exists(
-						t.getStackTrace()[i].getClassName().substring(
-						0,
-						t.getStackTrace()[i].getClassName().lastIndexOf(".") ) );
+						  Logger l = LogManager.exists(
+								  t.getStackTrace()[i].getClassName().substring(
+								  0,
+								  t.getStackTrace()[i].getClassName().lastIndexOf(".") ) );
 				
-				if( l != null )
-					log = l;
+						  if( l != null )
+							  log = l;
 					
-				break;
-			}
+						  break;
+					  }
 	  
-	  }
+				}
 
-	  return log;
+				return log;
+   			}
+   		}
    }
 
 
