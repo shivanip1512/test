@@ -52,6 +52,8 @@ fdrftpinterface.obj \
 fdrpointlist.obj \
 fdrsocketinterface.obj \
 fdrasciiimportbase.obj \
+textfileinterfaceparts.obj \
+fdrtextfilebase.obj \
 fdrsinglesocket.obj
 
 # socketinterface.obj \
