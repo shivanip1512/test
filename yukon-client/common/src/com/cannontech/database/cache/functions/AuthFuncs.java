@@ -5,13 +5,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
- * Handles authenticating and authorization.
+ * A collection of methods to handle authenticating, authorization, and the retrieval of role property values.
  * @author alauinger
  */
 public class AuthFuncs {
@@ -40,46 +41,64 @@ public class AuthFuncs {
 	}
 		
 	/**
-	 * Returns a Pair<LiteYukonRole,String> if the given user 
-	 * has been granted the given role.  The second element in the Pair
-	 * is the value of role for this user.
-	 * @param user
-	 * @param roleName
-	 * @return Pair
+	 * Returns LiteYukonRole if the given user 
+	 * has been granted the given role otherwise null.
+	 * @param LiteYukonUser
+	 * @param roleID
+	 * @return LiteYukonRole
 	 */
-	public static Pair checkRole(LiteYukonUser user, int roleID) {		
+	public static LiteYukonRole checkRole(LiteYukonUser user, int roleID) {		
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized(cache) {
-			Map lookupMap = cache.getAllYukonUserRoleIDLookupMap();
-			Map m = (Map) lookupMap.get(user);
-			if(m != null) {
-				Pair p = (Pair) m.get(new Integer(roleID));
-				return p;
+			Map lookupMap = cache.getYukonUserRoleIDLookupMap();
+			Map roleMap = (Map) lookupMap.get(user);
+			if(roleMap != null) {
+				LiteYukonRole role= (LiteYukonRole) roleMap.get(new Integer(roleID));
+				return role;
 			}
 		}			
 		return null;		
 	}
-		
+	
 	/**
-	 * Returns the value for a given user and role
+	 * Returns true if the given user has a true value for the given property
 	 * @param user
-	 * @param roleID
+	 * @param rolePropertyID
+	 * @return boolean
+	 */
+	public static boolean checkRoleProperty(LiteYukonUser user, int rolePropertyID) {
+		return CtiUtilities.isTrue(getRolePropertyValue(user, rolePropertyID, null));
+	}	
+	/**
+	 * Returns the value for a given user and role property.
+	 * @param user
+	 * @param rolePropertyID
 	 * @return String
 	 */
-	public static String getRoleValue(LiteYukonUser user, int roleID) {
-		return getRoleValue(user,roleID,null);
+	public static String getRolePropertyValue(LiteYukonUser user, int rolePropertyID) {
+		return getRolePropertyValue(user,rolePropertyID,null);
 	}
 	
 	/**
-	 * Returns the value for a given user and role.
+	 * Returns the value for a given user and role property.
 	 * If no value is found then defaultValue is returned for convenience.
 	 * @param user
-	 * @param roleID
+	 * @param roleProperty
 	 * @return String
 	 */
-	public static String getRoleValue(LiteYukonUser user, int roleID, String defaultValue) {
-		Pair p = checkRole(user,roleID);
-		return (p != null ? (String)p.second : defaultValue);
+	public static String getRolePropertyValue(LiteYukonUser user, int rolePropertyID, String defaultValue) {
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		synchronized(cache) {
+			Map lookupMap = cache.getYukonUserRolePropertyIDLookupMap();
+			Map propMap = (Map) lookupMap.get(user);
+			if(propMap != null) {
+				Pair p = (Pair) propMap.get(new Integer(rolePropertyID));
+				if(p != null) {
+					return (String) p.second;
+				}
+			}	
+		}
+		return defaultValue;	
 	}
 	
 	/**
