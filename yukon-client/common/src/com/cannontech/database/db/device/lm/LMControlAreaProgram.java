@@ -1,5 +1,7 @@
 package com.cannontech.database.db.device.lm;
 
+import java.util.Vector;
+
 /**
  * This type was created in VisualAge.
  */
@@ -153,6 +155,32 @@ public static final LMControlAreaProgram[] getAllControlAreaList(Integer ctrlAre
 	tmpList.toArray( retVal );
 	
 	return retVal;
+}
+
+public static final Vector getAllProgramsInControlAreas()
+{
+	String sql = "SELECT LMPROGRAMDEVICEID FROM " + TABLE_NAME;
+    	
+	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+			sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    			
+	try {
+		stmt.execute();
+		Vector containedPrograms = new Vector( stmt.getRowCount()) ;
+    		
+		for (int i = 0; i < stmt.getRowCount(); i++) 
+		{
+			Object[] row = stmt.getRow(i);
+			containedPrograms.addElement(new Integer(((java.math.BigDecimal) row[0]).intValue()));
+		}
+    		
+		return containedPrograms;
+	}
+	catch (Exception e) {
+		e.printStackTrace();
+	}
+    	
+	return null;
 }
 /**
  * Insert the method's description here.

@@ -15,6 +15,7 @@ import com.cannontech.common.gui.util.ComboBoxTableEditor;
 import java.awt.Component;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 
 /**
  * Insert the type's description here.
@@ -721,22 +722,27 @@ public void populateAvailableList()
 		java.util.List progs = cache.getAllLoadManagement();
 		java.util.Collections.sort( progs, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
 		allGears.addAll(cache.getAllGears());
+		Vector programsInAControlArea = LMControlAreaProgram.getAllProgramsInControlAreas();
 		try
 		{
-			//this baby takes some time
 			for( int i = 0; i < progs.size(); i++ )
 			{ 
 				Integer progID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)progs.get(i)).getLiteID());
-			
-				if( com.cannontech.database.data.device.DeviceTypesFuncs.isLMProgramDirect( ((com.cannontech.database.data.lite.LiteYukonPAObject)progs.get(i)).getType() )
-					&& LMProgramDirect.belongsToControlArea(progID))
+				
+				for( int j = 0; j < programsInAControlArea.size(); j++)
 				{
-					availablePrograms.addElement(((com.cannontech.database.data.lite.LiteYukonPAObject)progs.get(i)));
+					if(progID.compareTo((Integer)programsInAControlArea.elementAt(j)) == 0)
+					{
+						if( com.cannontech.database.data.device.DeviceTypesFuncs.isLMProgramDirect( ((com.cannontech.database.data.lite.LiteYukonPAObject)progs.get(i)).getType() ))
+						{
+							availablePrograms.addElement(((com.cannontech.database.data.lite.LiteYukonPAObject)progs.get(i)));
+							programsInAControlArea.removeElementAt(j);
+						}
+					}
 				}				
 			}
-			//at last, the end of the evil plodding for loop
 		}
-		catch (java.sql.SQLException e2)
+		catch (Exception e2)
 		{
 			e2.printStackTrace(); //something is up
 		}

@@ -238,7 +238,7 @@ public void update() throws java.sql.SQLException
 	{
 		((LMDirectNotificationGroupList)getLmProgramDirectNotifyGroupVector().elementAt(i)).setDeviceID( getDirectProgram().getDeviceID() );
 		((LMDirectNotificationGroupList)getLmProgramDirectNotifyGroupVector().elementAt(i)).add();
-	 }
+	}
 
 }
 
@@ -250,6 +250,8 @@ public final static boolean belongsToControlArea(Integer programID) throws java.
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer
  */
+
+//try to avoid using this...it is extremely slow for the big dawgs...
 public final static boolean belongsToControlArea(Integer programID, String databaseAlias) throws java.sql.SQLException 
 {
 	com.cannontech.database.SqlStatement stmt =
@@ -265,5 +267,6 @@ public final static boolean belongsToControlArea(Integer programID, String datab
 	{
 		return false;
 	}
+
 }
 }
