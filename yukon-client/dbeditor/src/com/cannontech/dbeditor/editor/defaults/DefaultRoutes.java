@@ -109,7 +109,7 @@ public final static java.util.Vector calculateDefaults()
 					dflt = true;
 				}
 			}
-			rpts = null;
+			
 		}
 		else
 		{
@@ -121,7 +121,7 @@ public final static java.util.Vector calculateDefaults()
 	
 		if (dflt) {
 			 ((RouteBase) rt).setDefaultRoute(CtiUtilities.getTrueCharacter().toString());
-			 
+			 rpts = null;
 		}
 		else
 			 ((RouteBase) rt).setDefaultRoute(CtiUtilities.getFalseCharacter().toString());
