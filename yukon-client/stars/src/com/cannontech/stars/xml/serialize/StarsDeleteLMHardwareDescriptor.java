@@ -11,11 +11,16 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import org.exolab.castor.mapping.AccessMode;
+import org.exolab.castor.mapping.ClassDescriptor;
+import org.exolab.castor.mapping.FieldDescriptor;
+import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.FieldValidator;
-import org.exolab.castor.xml.NodeType;
-import org.exolab.castor.xml.XMLFieldHandler;
+import org.exolab.castor.xml.TypeValidator;
+import org.exolab.castor.xml.XMLFieldDescriptor;
+import org.exolab.castor.xml.handlers.*;
 import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
-import org.exolab.castor.xml.validators.IntegerValidator;
+import org.exolab.castor.xml.validators.*;
 
 /**
  * 
@@ -89,6 +94,48 @@ public class StarsDeleteLMHardwareDescriptor extends org.exolab.castor.xml.util.
         { //-- local scope
             IntegerValidator iv = new IntegerValidator();
             fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _deleteFromInventory
+        desc = new XMLFieldDescriptorImpl(java.lang.Boolean.TYPE, "_deleteFromInventory", "deleteFromInventory", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsDeleteLMHardware target = (StarsDeleteLMHardware) object;
+                if(!target.hasDeleteFromInventory())
+                    return null;
+                return new Boolean(target.getDeleteFromInventory());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsDeleteLMHardware target = (StarsDeleteLMHardware) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteDeleteFromInventory();
+                        return;
+                    }
+                    target.setDeleteFromInventory( ((Boolean)value).booleanValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _deleteFromInventory
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            BooleanValidator bv = new BooleanValidator();
+            fieldValidator.setValidator(bv);
         }
         desc.setValidator(fieldValidator);
         

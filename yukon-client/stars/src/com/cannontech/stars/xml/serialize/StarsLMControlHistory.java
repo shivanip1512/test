@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMControlHistory.java,v 1.52 2003/09/26 16:46:28 zyao Exp $
+ * $Id: StarsLMControlHistory.java,v 1.53 2003/10/03 18:38:42 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,15 +11,21 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
+import java.util.Enumeration;
 import java.util.Vector;
-
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.*;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.ContentHandler;
 
 /**
  * 
  * 
- * @version $Revision: 1.52 $ $Date: 2003/09/26 16:46:28 $
+ * @version $Revision: 1.53 $ $Date: 2003/10/03 18:38:42 $
 **/
 public class StarsLMControlHistory implements java.io.Serializable {
 

@@ -11,8 +11,14 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
+import org.exolab.castor.xml.*;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.ContentHandler;
 
 /**
  * 
@@ -33,6 +39,13 @@ public class StarsDeleteLMHardware implements java.io.Serializable {
     **/
     private boolean _has_inventoryID;
 
+    private boolean _deleteFromInventory;
+
+    /**
+     * keeps track of state for field: _deleteFromInventory
+    **/
+    private boolean _has_deleteFromInventory;
+
 
       //----------------/
      //- Constructors -/
@@ -49,10 +62,27 @@ public class StarsDeleteLMHardware implements java.io.Serializable {
 
     /**
     **/
+    public void deleteDeleteFromInventory()
+    {
+        this._has_deleteFromInventory= false;
+    } //-- void deleteDeleteFromInventory() 
+
+    /**
+    **/
     public void deleteInventoryID()
     {
         this._has_inventoryID= false;
     } //-- void deleteInventoryID() 
+
+    /**
+     * Returns the value of field 'deleteFromInventory'.
+     * 
+     * @return the value of field 'deleteFromInventory'.
+    **/
+    public boolean getDeleteFromInventory()
+    {
+        return this._deleteFromInventory;
+    } //-- boolean getDeleteFromInventory() 
 
     /**
      * Returns the value of field 'inventoryID'.
@@ -63,6 +93,13 @@ public class StarsDeleteLMHardware implements java.io.Serializable {
     {
         return this._inventoryID;
     } //-- int getInventoryID() 
+
+    /**
+    **/
+    public boolean hasDeleteFromInventory()
+    {
+        return this._has_deleteFromInventory;
+    } //-- boolean hasDeleteFromInventory() 
 
     /**
     **/
@@ -107,6 +144,18 @@ public class StarsDeleteLMHardware implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'deleteFromInventory'.
+     * 
+     * @param deleteFromInventory the value of field
+     * 'deleteFromInventory'.
+    **/
+    public void setDeleteFromInventory(boolean deleteFromInventory)
+    {
+        this._deleteFromInventory = deleteFromInventory;
+        this._has_deleteFromInventory = true;
+    } //-- void setDeleteFromInventory(boolean) 
 
     /**
      * Sets the value of field 'inventoryID'.

@@ -11,7 +11,10 @@ package com.cannontech.stars.xml.serialize.types;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.Serializable;
+import java.util.Enumeration;
 import java.util.Hashtable;
+import org.exolab.castor.xml.*;
 
 /**
  * 
