@@ -5,7 +5,6 @@
     <classpathentry kind="src" path="/common"/>
     <classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
     <classpathentry kind="lib" path="/third-party/acme.jar"/>
-    <classpathentry kind="lib" path="/third-party/classes12.zip"/>
     <classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
     <classpathentry kind="lib" path="/third-party/jcchart401K.jar"/>
     <classpathentry kind="lib" path="/third-party/jcfield401K.jar"/>
@@ -16,5 +15,6 @@
     <classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
     <classpathentry kind="lib" path="/third-party/junit.jar"/>
     <classpathentry kind="lib" path="/third-party/jcommon.jar"/>
+    <classpathentry kind="lib" path="/third-party/classes12.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

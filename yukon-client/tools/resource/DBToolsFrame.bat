@@ -1,1 +1,1 @@
-java -Djava.class.path=.;../config;classes12.zip;common.jar;tools.jar;jtds.jar;SqlServer.jar;yukonappserver.jar;yukonclientserver.jar;log4j-1.2.4.jar;j2ee.jar; com.cannontech.tools.gui.DBToolsFrame
+java -Djava.class.path=.;../config;classes12.jar;common.jar;tools.jar;jtds.jar;SqlServer.jar;yukonappserver.jar;yukonclientserver.jar;log4j-1.2.4.jar;j2ee.jar; com.cannontech.tools.gui.DBToolsFrame

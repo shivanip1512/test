@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
 Main-Class: com.cannontech.logger.Logger
-Class-Path: ./ loadcontrol.jar cbc.jar common.jar log4j-1.2.4.jar yukonappclient.jar yukonappserver.jar j2ee.jar rwav.jar jcfield401k.jar jcpagelayout450k.jar classes12.zip jtds.jar SqlServer.jar ../config/ ../log/ ../export/
+Class-Path: ./ loadcontrol.jar cbc.jar common.jar log4j-1.2.4.jar yukonappclient.jar yukonappserver.jar j2ee.jar rwav.jar jcfield401k.jar jcpagelayout450k.jar classes12.jar jtds.jar SqlServer.jar ../config/ ../log/ ../export/

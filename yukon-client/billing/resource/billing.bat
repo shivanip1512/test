@@ -1,1 +1,1 @@
-java -Djava.class.path=.;../config/;billing.jar;common.jar;classes12.zip;jtds.jar;SqlServer.jar;yukonappserver.jar;yukonappclient.jar;rwav.jar;log4j-1.2.4.jar;j2ee.jar com.cannontech.billing.mainprograms.BillingFile outputfile=billing.csv collectiongroup=Default %1 %2 %3 %4 %5 %6 %7 %8
+java -Djava.class.path=.;../config/;billing.jar;common.jar;classes12.jar;jtds.jar;SqlServer.jar;yukonappserver.jar;yukonappclient.jar;rwav.jar;log4j-1.2.4.jar;j2ee.jar com.cannontech.billing.mainprograms.BillingFile outputfile=billing.csv collectiongroup=Default %1 %2 %3 %4 %5 %6 %7 %8
