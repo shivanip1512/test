@@ -837,6 +837,12 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
         rdr["tagscontrolstatus"] >> _tagscontrolstatus;
         rdr["ctitimestamp"] >> dynamicTimeStamp;
 
+        //if dynamic timestamp from yesterday, zero out operation count
+        if( dynamicTimeStamp.rwdate() < currentDateTime.rwdate() ||
+            currentDateTime.hour() == 0 )
+        {
+            setCurrentDailyOperations(0);
+        }
         _insertDynamicDataFlag = FALSE;
     }
     else
