@@ -173,28 +173,26 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					
 					if (liteEntries.size() == 4) {
 						// Update the season entries
-						LMThermostatSeasonEntry.deleteAllLMThermostatSeasonEntries( new Integer(liteSeason.getSeasonID()), towID );
 						for (int k = 0; k < 4; k++) {
 							LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteEntries.get(k);
 							liteEntry.setStartTime( times[k] );
 							liteEntry.setTemperature( temps[k] );
 							
 							LMThermostatSeasonEntry entry = (LMThermostatSeasonEntry) StarsLiteFactory.createDBPersistent( liteEntry );
-							Transaction.createTransaction(Transaction.INSERT, entry).execute();
+							Transaction.createTransaction(Transaction.UPDATE, entry).execute();
 						}
 					}
 					else {
 						// There is no season entries for the current day setting
 						for (int k = 0; k < 4; k++) {
-							LiteLMThermostatSeasonEntry liteEntry = new LiteLMThermostatSeasonEntry();
-							liteEntry.setSeasonID( liteSeason.getSeasonID() );
-							liteEntry.setTimeOfWeekID( towID.intValue() );
-							liteEntry.setStartTime( times[k] );
-							liteEntry.setTemperature( temps[k] );
+							LMThermostatSeasonEntry entry = new LMThermostatSeasonEntry();
+							entry.setSeasonID( new Integer(liteSeason.getSeasonID()) );
+							entry.setTimeOfWeekID( towID );
+							entry.setStartTime( new Integer(times[k]) );
+							entry.setTemperature( new Integer(temps[k]) );
+							entry = (LMThermostatSeasonEntry) Transaction.createTransaction(Transaction.INSERT, entry).execute();
 							
-							LMThermostatSeasonEntry entry = (LMThermostatSeasonEntry) StarsLiteFactory.createDBPersistent( liteEntry );
-							Transaction.createTransaction(Transaction.INSERT, entry).execute();
-							
+							LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) StarsLiteFactory.createLite( entry );
 							if (liteSeason.getSeasonEntries() == null)
 								liteSeason.setSeasonEntries( new ArrayList() );
 							liteSeason.getSeasonEntries().add( liteEntry );

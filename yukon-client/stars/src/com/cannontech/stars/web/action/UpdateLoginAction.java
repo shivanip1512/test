@@ -102,7 +102,7 @@ public class UpdateLoginAction implements ActionBase {
 	            	Iterator it = cache.getAllYukonGroups().iterator();
 	            	while (it.hasNext()) {
 	            		LiteYukonGroup g = (LiteYukonGroup) it.next();
-	            		if (g.getGroupName().equalsIgnoreCase("STARS Consumers")) {
+	            		if (g.getGroupName().equalsIgnoreCase("Web Demo Residential Customers")) {
 	            			liteGroup = g;
 	            			break;
 	            		}

@@ -248,8 +248,8 @@ public class ServerUtils {
 		return (AuthFuncs.getRoleValue(user, "WEB_OPERATOR") != null);
 	}
 	
-	public static boolean isConsumer(LiteYukonUser user) {
-		return (AuthFuncs.getRoleValue(user, "WEB_USER") != null);
+	public static boolean isResidentialCustomer(LiteYukonUser user) {
+		return (AuthFuncs.getRoleValue(user, "WEB_RESIDENTIAL_CUSTOMER") != null);
 	}
 	
 	public static void handleDBChange(com.cannontech.database.data.lite.LiteBase lite, int typeOfChange) {

@@ -14,21 +14,65 @@ import com.cannontech.database.db.DBPersistent;
  */
 public class LMThermostatSeasonEntry extends DBPersistent {
 	
+	public static final int NONE_INT = 0;
+	
+	private Integer entryID = null;
 	private Integer seasonID = new Integer(LMThermostatSeason.NONE_INT);
 	private Integer timeOfWeekID = new Integer(com.cannontech.database.db.stars.CustomerListEntry.NONE_INT);
 	private Integer startTime = new Integer(0);
 	private Integer temperature = new Integer(0);
 	
+	public static final String[] SETTER_COLUMNS = {
+		"SeasonID", "TimeOfWeekID", "StartTime", "Temperature"
+	};
+	
+	public static final String[] CONSTRAINT_COLUMNS = { "EntryID" };
+	
 	public static final String TABLE_NAME = "LMThermostatSeasonEntry";
+	
+	public static final String GET_NEXT_ENTRY_ID_SQL =
+			"SELECT MAX(EntryID) FROM " + TABLE_NAME;
 			
 	public LMThermostatSeasonEntry() {
 		super();
+	}
+	
+	public final Integer getNextEntryID() {
+        java.sql.PreparedStatement pstmt = null;
+        java.sql.ResultSet rset = null;
+
+        int nextEntryID = 1;
+
+        try {
+            pstmt = getDbConnection().prepareStatement( GET_NEXT_ENTRY_ID_SQL );
+            rset = pstmt.executeQuery();
+
+            if (rset.next())
+                nextEntryID = rset.getInt(1) + 1;
+        }
+        catch (java.sql.SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            try {
+                if (rset != null) rset.close();
+                if (pstmt != null) pstmt.close();
+            }
+            catch (java.sql.SQLException e2) {
+                e2.printStackTrace();
+            }
+        }
+
+        return new Integer( nextEntryID );
 	}
 
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
 	public void add() throws SQLException {
+		if (getEntryID() == null)
+			setEntryID( getNextEntryID() );
+			
 		Object[] addValues = {
 			getSeasonID(), getTimeOfWeekID(), getStartTime(), getTemperature()
 		};
@@ -39,26 +83,41 @@ public class LMThermostatSeasonEntry extends DBPersistent {
 	 * @see com.cannontech.database.db.DBPersistent#delete()
 	 */
 	public void delete() throws SQLException {
-		throw new SQLException( getClass() + " doesn't support this operation" );
+		Object[] constraintValues = { getEntryID() };
+		delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 	}
 
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#retrieve()
 	 */
 	public void retrieve() throws SQLException {
-		throw new SQLException( getClass() + " doesn't support this operation" );
+		Object[] constraintValues = { getEntryID() };
+		Object[] results = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
+		
+		if (results.length == SETTER_COLUMNS.length) {
+			setSeasonID( (Integer) results[0] );
+			setTimeOfWeekID( (Integer) results[1] );
+			setStartTime( (Integer) results[2] );
+			setTemperature( (Integer) results[3] );
+		}
+		else
+            throw new Error(getClass() + " - Incorrect number of results retrieved");
 	}
 
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
 	public void update() throws SQLException {
-		throw new SQLException( getClass() + " doesn't support this operation" );
+		Object[] setValues = {
+			getSeasonID(), getTimeOfWeekID(), getStartTime(), getTemperature()
+		};
+		Object[] constraintValues = { getEntryID() };
+		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 	}
 	
 	public static LMThermostatSeasonEntry[] getAllLMThermostatSeasonEntries(Integer seasonID) {
 		String sql = "SELECT * FROM " + TABLE_NAME + " WHERE SeasonID = " + seasonID.toString()
-				   + " ORDER BY TimeOfWeekID, StartTime";
+				   + " ORDER BY EntryID";
 		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
 				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 		
@@ -70,10 +129,11 @@ public class LMThermostatSeasonEntry extends DBPersistent {
 				Object[] row = stmt.getRow(i);
 				entries[i] = new LMThermostatSeasonEntry();
 				
-				entries[i].setSeasonID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
-				entries[i].setTimeOfWeekID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
-				entries[i].setStartTime( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
-				entries[i].setTemperature( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
+				entries[i].setEntryID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+				entries[i].setSeasonID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+				entries[i].setTimeOfWeekID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+				entries[i].setStartTime( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
+				entries[i].setTemperature( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
 			}
 			
 			return entries;
@@ -174,6 +234,22 @@ public class LMThermostatSeasonEntry extends DBPersistent {
 	 */
 	public void setTimeOfWeekID(Integer timeOfWeekID) {
 		this.timeOfWeekID = timeOfWeekID;
+	}
+
+	/**
+	 * Returns the entryID.
+	 * @return Integer
+	 */
+	public Integer getEntryID() {
+		return entryID;
+	}
+
+	/**
+	 * Sets the entryID.
+	 * @param entryID The entryID to set
+	 */
+	public void setEntryID(Integer entryID) {
+		this.entryID = entryID;
 	}
 
 }

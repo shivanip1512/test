@@ -13,6 +13,7 @@ import com.cannontech.database.data.lite.LiteTypes;
  */
 public class LiteLMThermostatSeasonEntry extends LiteBase {
 	
+	private int entryID = com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry.NONE_INT;
 	private int seasonID = com.cannontech.database.db.stars.hardware.LMThermostatSeason.NONE_INT;
 	private int timeOfWeekID = com.cannontech.database.db.stars.CustomerListEntry.NONE_INT;
 	private int startTime = 0;
@@ -21,6 +22,20 @@ public class LiteLMThermostatSeasonEntry extends LiteBase {
 	public LiteLMThermostatSeasonEntry() {
 		super();
 		setLiteType( LiteTypes.STARS_THERMOSTAT_SEASON_ENTRY );
+	}
+
+	public LiteLMThermostatSeasonEntry(int entryID) {
+		super();
+		setEntryID( entryID );
+		setLiteType( LiteTypes.STARS_THERMOSTAT_SEASON_ENTRY );
+	}
+	
+	public int getEntryID() {
+		return getLiteID();
+	}
+	
+	public void setEntryID(int entryID) {
+		setLiteID( entryID );
 	}
 	
 	/**

@@ -214,6 +214,7 @@ public class StarsLiteFactory {
 	}
 
 	public static void setLiteLMThermostatSeasonEntry(LiteLMThermostatSeasonEntry liteSeasonEntry, com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry seasonEntry) {
+		liteSeasonEntry.setEntryID( seasonEntry.getEntryID().intValue() );
 		liteSeasonEntry.setSeasonID( seasonEntry.getSeasonID().intValue() );
 		liteSeasonEntry.setTimeOfWeekID( seasonEntry.getTimeOfWeekID().intValue() );
 		liteSeasonEntry.setStartTime( seasonEntry.getStartTime().intValue() );
@@ -390,6 +391,7 @@ public class StarsLiteFactory {
 	}
 	
 	public static void setLMThermostatSeasonEntry(com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry entry, LiteLMThermostatSeasonEntry liteEntry) {
+		entry.setEntryID( new Integer(liteEntry.getEntryID()) );
 		entry.setSeasonID( new Integer(liteEntry.getSeasonID()) );
 		entry.setTimeOfWeekID( new Integer(liteEntry.getTimeOfWeekID()) );
 		entry.setStartTime( new Integer(liteEntry.getStartTime()) );

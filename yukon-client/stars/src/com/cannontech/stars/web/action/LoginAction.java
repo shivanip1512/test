@@ -84,7 +84,7 @@ public class LoginAction implements ActionBase {
             if (login.getLoginType().getType() == StarsLoginType.OPERATORLOGIN_TYPE)
         		typeMatch = ServerUtils.isOperator( user );
             else
-        		typeMatch = ServerUtils.isConsumer( user );
+        		typeMatch = ServerUtils.isResidentialCustomer( user );
             if (!typeMatch) {
                 respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
                 		StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Login failed, please check your username and password") );
