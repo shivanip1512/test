@@ -1,7 +1,3 @@
-function followLink(url) {
-	location = url;
-}
-
 function refreshDrawing() {
 	location.reload(true);
 }

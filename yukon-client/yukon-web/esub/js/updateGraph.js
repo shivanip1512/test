@@ -16,13 +16,18 @@ function updateGraphChange(evt) {
     var view = svgElement.getAttribute('view');
     var period = svgElement.getAttribute('period');
     var start = svgElement.getAttribute('start'); 
-    var url = 	"/jsp/GraphSettings.jsp" +
+    var url = 	"/esub/jsp/graph_settings.jsp" +
     		  	"?view=" + view +
     		  	"&period=" + period +
     		  	"&start=" + start;
-    		  	
+    
+    var width = 300;
+	var height = 240;
+	var winl = (screen.width - width) / 2; 
+	var wint = (screen.height - height) / 2; 
+			  	
     if (evt) {
-        w = parentWin.open(url, "GraphSettings", "width=400,height=250,resizable=yes");
+        w = parentWin.open(url, 'GraphSettings', 'width='+width+',height='+height+',top='+wint+',left='+winl+',resizable=yes');
         window.setTimeout("chckSubmit()", 250);
     }
 

@@ -19,7 +19,7 @@ var selectedRect = null;
    periodic updates */   
 function refresh(evt) {	
 	SVGDoc = evt.getTarget().getOwnerDocument();
-	
+
 	updateAll();
 	
 	setInterval('updateAllGraphs()', graphRefreshRate); 
@@ -104,7 +104,7 @@ function updateGraph(node) {
 			
 	getURL(url, fn2);
 	
-	function fn2(obj) {   		
+	function fn2(obj) {
 		var Newnode = parseXML(obj.content, SVGDoc);
 		var gdefid = node.getAttribute('gdefid');
 		var view = node.getAttribute('view');
@@ -218,53 +218,7 @@ function updateAlarmText(node) {
 	}
 }
 
-function underLine(elem) {
-	//Using non-standard Adobe SVG extension
-	var elemStyle = elem.getStyle();
-	elemStyle.setProperty('text-decoration','underline');
-} //end underLine
 
-function noUnderLine(elem) {
-	//Using non-standard Adobe SVG extension	
-	var elemStyle = elem.getStyle();
-	elemStyle.setProperty('text-decoration','none');
-} //end noUnderLine
-
-function addBorder(elem) {
-	var x = parseInt(elem.getAttribute('x'));
-	var y = parseInt(elem.getAttribute('y'));
-	var w = parseInt(elem.getAttribute('width'));
-	var h = parseInt(elem.getAttribute('height'));
-	
-	selectedRect = SVGDoc.createElement('rect');
-	selectedRect.setAttribute('x', x-2);
-	selectedRect.setAttribute('y', y-2);
-	selectedRect.setAttribute('width', w+4);
-	selectedRect.setAttribute('height', h+4);
-	
-	var rStyle = selectedRect.getStyle();
-	rStyle.setProperty('fill','none');
-	rStyle.setProperty('stroke','#CCCCCC');
-	
-	SVGDoc.getDocumentElement().appendChild(selectedRect);
-} //end addBorder
-
-function noBorder(elem) {
-	var b = findChild(selectedRect);
-	if(b != null) {
-		SVGDoc.documentElement.removeChild(b);
-	}	
-} //end noBorder
-
-function findChild(node) {
-	var kids = SVGDoc.getDocumentElement().getChildNodes();
-	for(var i = 0; i < kids.getLength(); i++) {
-		if(node == kids.item(i)) {
-			return kids.item(i);
-		}
-	}
-	return null;
-}
 function suppressErrors() {
 	return true;
 }
