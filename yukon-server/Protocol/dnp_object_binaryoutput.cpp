@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/10/17 18:42:39 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/11/12 19:54:30 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -201,12 +201,11 @@ CtiPointDataMsg *CtiDNPBinaryOutput::getPoint( void )
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "Binary output, value " << val << endl;
-        dout << "(currently not sent to Dispatch, as it interferes with normal statuses)" << endl;
     }
 
     //  the ID will be replaced by the offset by the object block, which will then be used by the
     //    device to figure out the true ID
-    //tmpMsg = CTIDBG_new CtiPointDataMsg(0, val, NormalQuality, StatusOutputPointType);
+    tmpMsg = CTIDBG_new CtiPointDataMsg(0, val, NormalQuality, StatusOutputPointType);
 
     tmpMsg = NULL;
 
