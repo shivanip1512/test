@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/05/13 19:21:31 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/05/21 15:13:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,6 +32,7 @@
 
 #include <time.h>
 #include <algorithm>
+#include <utility.h>
 
 /* The global debug level stored here, defined in mc.h */
 unsigned gMacsDebugLevel = 0x00000000;
@@ -63,6 +64,9 @@ void CtiMCServer::run()
             /* Main Loop */
             while(true)
             {
+	        // Workaround for bug in vc6 debug heap
+	        ResetBreakAlloc();
+
                 if( (msg =_main_queue.getQueue(delay*1000)) != NULL )
                 {
                     if( isSet( CtiThread::SHUTDOWN) )
