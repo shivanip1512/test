@@ -11,7 +11,7 @@
 			contacts[i].setFirstName("");
 			contacts[i].setHomePhone("");
 			contacts[i].setWorkPhone("");
-			contacts[i].setEmail( (Email) com.cannontech.stars.xml.StarsCustomerContactFactory
+			contacts[i].setEmail( (Email) com.cannontech.stars.xml.StarsFactory
 					.newStarsContactNotification(false, "", Email.class) );
 		}
 	}
