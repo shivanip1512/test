@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/03/10 21:15:17 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/03/17 05:22:46 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,8 +44,8 @@ Interface &Interface::operator=(const Interface &aRef)
 }
 
 
-int Interface::generate( CtiXfer &xfer )              {   return 0;   }
-int Interface::decode( CtiXfer &xfer, int status )    {   return 0;   }
+int Interface::generate( CtiXfer &xfer )              {   return NoMethod;   }
+int Interface::decode( CtiXfer &xfer, int status )    {   return NoMethod;   }
 
 int Interface::commOut( OUTMESS *&OutMessage )   {   return NoMethod;    }
 int Interface::commIn ( INMESS   *InMessage  )   {   return NoMethod;    }
@@ -58,8 +58,8 @@ int Interface::sendCommResult ( INMESS   *InMessage  )   {   return NoMethod;   
 
 bool Interface::isTransactionComplete( void ) {   return true;    }
 
-bool Interface::hasInboundPoints( void )      {   return false;   }
-void Interface::getInboundPoints( vector< CtiPointDataMsg > &pointList ) {   }
+void Interface::getInboundPoints ( pointlist_t  &point_list )   {  };
+void Interface::getInboundStrings( stringlist_t &string_list )  {  };
 
 
 }

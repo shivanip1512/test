@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/03/10 21:28:31 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/03/17 05:16:54 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,6 +18,9 @@
 #define __PROT_DNP_H__
 #pragma warning( disable : 4786)
 
+
+#include <list>
+using namespace std;
 
 #include "dlldefs.h"
 #include "pointtypes.h"
@@ -47,9 +50,10 @@ private:
     Command              _command;
     vector<output_point> _command_parameters;
 
-
     object_block_queue _object_blocks;
-    queue< string * > _results;
+
+    stringlist_t _string_results;
+    pointlist_t  _point_results;
 
     enum Retries
     {
@@ -103,8 +107,8 @@ public:
 
     bool isTransactionComplete( void );
 
-    void getInboundPoints ( queue< CtiPointDataMsg * > &pointList );
-    void getInboundStrings( queue< string * > &pointList );
+    virtual void getInboundPoints ( pointlist_t  &point_list );
+    virtual void getInboundStrings( stringlist_t &string_list );
 
     enum OutputPointType
     {

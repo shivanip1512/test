@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/03/10 21:03:21 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/03/17 05:18:59 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,6 +29,8 @@
 
 #include "msg_pdata.h"
 #include "pointtypes.h"
+
+#include "prot_base.h"
 
 using namespace std;
 
@@ -138,7 +140,7 @@ public:
 
     int  restore( const unsigned char *buf, int len );
 
-    void getPoints( queue< CtiPointDataMsg * > &points, const TimeCTO *cto ) const;
+    void getPoints( Interface::pointlist_t &points, const TimeCTO *cto ) const;
 };
 
 }

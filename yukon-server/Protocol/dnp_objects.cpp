@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/03/10 21:21:41 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/03/17 05:24:16 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -835,7 +835,7 @@ int ObjectBlock::restoreBitObject( const unsigned char *buf, int bitoffset, int 
     return bitpos - bitoffset;
 }
 
-void ObjectBlock::getPoints( queue< CtiPointDataMsg * > &points, const TimeCTO *cto ) const
+void ObjectBlock::getPoints( Interface::pointlist_t &points, const TimeCTO *cto ) const
 {
     CtiPointDataMsg *pMsg;
 
@@ -881,7 +881,7 @@ void ObjectBlock::getPoints( queue< CtiPointDataMsg * > &points, const TimeCTO *
                         i_itr++;
                     }
 
-                    points.push(pMsg);
+                    points.push_back(pMsg);
                 }
             }
         }

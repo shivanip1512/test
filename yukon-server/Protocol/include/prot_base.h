@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/03/10 19:22:50 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/03/17 05:17:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,7 @@
 #include <rw/tpslist.h>
 
 #include <vector>
+#include <string>
 using namespace std;
 
 #include "dlldefs.h"
@@ -41,6 +42,9 @@ protected:
 
 public:
 
+    typedef vector< CtiPointDataMsg * > pointlist_t;
+    typedef vector< string * >          stringlist_t;
+
     Interface();
     Interface(const Interface &aRef);
 
@@ -52,8 +56,8 @@ public:
     virtual int sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
     virtual int recvCommResult ( INMESS   *InMessage,  RWTPtrSlist< OUTMESS > &outList );
 
-    virtual bool hasInboundPoints( void );
-    virtual void getInboundPoints( vector< CtiPointDataMsg > &pointList );
+    virtual void getInboundPoints ( pointlist_t  &point_list );
+    virtual void getInboundStrings( stringlist_t &string_list );
 
     //  porter-side (portfield, specificially) functions
     virtual int recvCommRequest( OUTMESS *OutMessage );
