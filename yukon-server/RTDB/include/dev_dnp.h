@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/05/04 21:38:54 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/07/27 17:06:56 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,6 +43,8 @@ private:
 
 protected:
 
+    CtiProtocolBase *getProtocol() const;
+
     CtiProtocolDNP        _dnp;
     CtiTableDeviceAddress _dnpAddress;
 
@@ -59,11 +61,11 @@ public:
 
     CtiDeviceDNP& operator=(const CtiDeviceDNP& aRef);
 
+    bool hasProtocol() const    {  return true;  };
+
     virtual RWCString getDescription(const CtiCommandParser & parse) const;
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
-
-    CtiProtocolBase *getProtocol() const;
 
     //  virtual in case devices need to form up different DNP requests for the same command ("control open", for example)
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);

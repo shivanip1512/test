@@ -33,7 +33,6 @@ private:
 
     int _postControlScanCount;
 
-    CtiProtocolION        _ion;
     CtiTableDeviceAddress _address;
 
     RWCString _collectionGroup,
@@ -44,6 +43,9 @@ private:
     bool _scanGeneralPending, _scanIntegrityPending, _scanAccumulatorPending;
 
 protected:
+
+    CtiProtocolBase *getProtocol( void ) const;
+    CtiProtocolION  _ion;
 
     CtiTableDeviceMeterGroup MeterGroup;
 
@@ -66,6 +68,8 @@ public:
 
     CtiDeviceION& operator=(const CtiDeviceION& aRef);
 
+    bool hasProtocol() const    {  return true;  };
+
     //-------  these functions are copied from dev_meter to prevent nasty inheritance/decode problems.
     virtual RWCString getMeterGroupName() const;
     virtual RWCString getAlternateMeterGroupName() const;
@@ -84,7 +88,6 @@ public:
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
     virtual RWCString getDescription(const CtiCommandParser & parse) const;
-    CtiProtocolBase *getProtocol( void ) const;
 
     //  virtual in case different ION devices need to form up alternate requests for the same command
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
