@@ -33,6 +33,7 @@ a.Link4:hover {color: #666699; font-size: 9px}
 .Background {  background-color: #666699}
 .tooltip { position:absolute; font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-style: normal; color: #FFFFFF; background-color: #666699; border: 3px #666699 outset; visibility: hidden; clip:  rect(   ); padding-top: 3px; padding-right: 3px; padding-bottom: 3px; padding-left: 3px}
 .tempText1 {  font-family: Arial, Helvetica, sans-serif; font-size: 36px; color: #003366; height: 50px; width: 65px}
+.tempText2 {  font-family: Arial, Helvetica, sans-serif; font-size: 35px; font-style: normal; color: #FF0000}
 .Clickable { cursor: hand; text-decoration: underline }
 .ErrorMsg { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FF0000 }
 .ConfirmMsg { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0000FF }
