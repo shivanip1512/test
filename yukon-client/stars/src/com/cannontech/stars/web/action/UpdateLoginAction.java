@@ -136,6 +136,7 @@ public class UpdateLoginAction implements ActionBase {
 		        		StarsLiteFactory.createDBPersistent( liteUser );
 	            dbUser.setUsername( username );
 	            dbUser.setPassword( password );
+	            dbUser.setStatus( com.cannontech.user.UserUtils.STATUS_ENABLED );
 	            dbUser = (com.cannontech.database.db.user.YukonUser)
 	            		Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
 	            
@@ -257,7 +258,7 @@ public class UpdateLoginAction implements ActionBase {
         		dbUser.getUserID().intValue(),
         		dbUser.getUsername(),
         		dbUser.getPassword(),
-        		com.cannontech.user.UserUtils.STATUS_ENABLED
+        		dbUser.getStatus()
         		);
         ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD );
         

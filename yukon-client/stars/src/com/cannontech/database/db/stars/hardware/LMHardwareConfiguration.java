@@ -19,10 +19,10 @@ public class LMHardwareConfiguration extends DBPersistent {
     private Integer addressingGroupID = new Integer(0);
 
     public static final String[] SETTER_COLUMNS = {
-        "AddressingGroupID"
+        "InventoryID", "AddressingGroupID"
     };
 
-    public static final String[] CONSTRAINT_COLUMNS = { "InventoryID", "ApplianceID" };
+    public static final String[] CONSTRAINT_COLUMNS = { "ApplianceID" };
 
     public static final String TABLE_NAME = "LMHardwareConfiguration";
 
@@ -177,7 +177,7 @@ public class LMHardwareConfiguration extends DBPersistent {
     }
 
     public void delete() throws java.sql.SQLException {
-        Object[] constraintValues = { getInventoryID(), getApplianceID() };
+        Object[] constraintValues = { getApplianceID() };
 
         delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
     }
@@ -192,21 +192,22 @@ public class LMHardwareConfiguration extends DBPersistent {
 
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
-            getAddressingGroupID()
+            getInventoryID(), getAddressingGroupID()
         };
 
-        Object[] constraintValues = { getInventoryID(), getApplianceID() };
+        Object[] constraintValues = { getApplianceID() };
 
         update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
     }
 
     public void retrieve() throws java.sql.SQLException {
-        Object[] constraintValues = { getInventoryID(), getApplianceID() };
+        Object[] constraintValues = { getApplianceID() };
 
         Object[] results = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 
         if (results.length == SETTER_COLUMNS.length) {
-            setAddressingGroupID( (Integer) results[0] );
+        	setInventoryID( (Integer) results[0] );
+            setAddressingGroupID( (Integer) results[1] );
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");

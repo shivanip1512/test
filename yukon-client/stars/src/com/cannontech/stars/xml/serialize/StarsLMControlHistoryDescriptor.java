@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMControlHistoryDescriptor.java,v 1.44 2003/06/20 17:08:42 zyao Exp $
+ * $Id: StarsLMControlHistoryDescriptor.java,v 1.45 2003/06/27 17:27:51 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.44 $ $Date: 2003/06/20 17:08:42 $
+ * @version $Revision: 1.45 $ $Date: 2003/06/27 17:27:51 $
 **/
 public class StarsLMControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -76,9 +76,11 @@ public class StarsLMControlHistoryDescriptor extends org.exolab.castor.xml.util.
             {
                 try {
                     StarsLMControlHistory target = (StarsLMControlHistory) object;
-                    // ignore null values for non optional primitives
-                    if (value == null) return;
-                    
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteBeingControlled();
+                        return;
+                    }
                     target.setBeingControlled( ((Boolean)value).booleanValue());
                 }
                 catch (Exception ex) {
@@ -90,13 +92,11 @@ public class StarsLMControlHistoryDescriptor extends org.exolab.castor.xml.util.
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _beingControlled
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             BooleanValidator bv = new BooleanValidator();
             fieldValidator.setValidator(bv);

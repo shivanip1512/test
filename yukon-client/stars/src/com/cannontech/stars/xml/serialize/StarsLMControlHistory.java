@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMControlHistory.java,v 1.44 2003/06/20 17:08:45 zyao Exp $
+ * $Id: StarsLMControlHistory.java,v 1.45 2003/06/27 17:27:54 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.44 $ $Date: 2003/06/20 17:08:45 $
+ * @version $Revision: 1.45 $ $Date: 2003/06/27 17:27:54 $
 **/
 public class StarsLMControlHistory implements java.io.Serializable {
 
@@ -82,6 +82,13 @@ public class StarsLMControlHistory implements java.io.Serializable {
     {
         _controlHistoryList.insertElementAt(vControlHistory, index);
     } //-- void addControlHistory(int, ControlHistory) 
+
+    /**
+    **/
+    public void deleteBeingControlled()
+    {
+        this._has_beingControlled= false;
+    } //-- void deleteBeingControlled() 
 
     /**
     **/

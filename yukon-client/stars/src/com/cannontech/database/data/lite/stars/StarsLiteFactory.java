@@ -717,14 +717,14 @@ public class StarsLiteFactory {
 	
 	public static void setStarsCustomerContact(StarsCustomerContact starsContact, LiteCustomerContact liteContact) {
 		starsContact.setContactID( liteContact.getContactID() );
-		starsContact.setLastName( forceNotNull(liteContact.getLastName()) );
-		starsContact.setFirstName( forceNotNull(liteContact.getFirstName()) );
-		starsContact.setHomePhone( forceNotNull(liteContact.getHomePhone()) );
-		starsContact.setWorkPhone( forceNotNull(liteContact.getWorkPhone()) );
+		starsContact.setLastName( ServerUtils.forceNotNull(liteContact.getLastName()) );
+		starsContact.setFirstName( ServerUtils.forceNotNull(liteContact.getFirstName()) );
+		starsContact.setHomePhone( ServerUtils.forceNotNull(liteContact.getHomePhone()) );
+		starsContact.setWorkPhone( ServerUtils.forceNotNull(liteContact.getWorkPhone()) );
 		
 		if (liteContact.getEmail() != null)
 			starsContact.setEmail( (Email) StarsFactory.newStarsContactNotification(
-					liteContact.getEmail().isEnabled(), forceNotNull(liteContact.getEmail().getNotification()), Email.class) );
+					liteContact.getEmail().isEnabled(), ServerUtils.forceNotNull(liteContact.getEmail().getNotification()), Email.class) );
 		else
 			starsContact.setEmail( (Email) StarsFactory.newStarsContactNotification(
 					false, "", Email.class) );
@@ -732,19 +732,19 @@ public class StarsLiteFactory {
 	
 	public static void setStarsCustomerAddress(StarsCustomerAddress starsAddr, LiteAddress liteAddr) {
 		starsAddr.setAddressID( liteAddr.getAddressID() );
-		starsAddr.setStreetAddr1( forceNotNone(liteAddr.getLocationAddress1()) );
-		starsAddr.setStreetAddr2( forceNotNone(liteAddr.getLocationAddress2()) );
-		starsAddr.setCity( forceNotNone(liteAddr.getCityName()) );
-		starsAddr.setState( forceNotNone(liteAddr.getStateCode()) );
-		starsAddr.setZip( forceNotNone(liteAddr.getZipCode()) );
-		starsAddr.setCounty( forceNotNone(liteAddr.getCounty()) );
+		starsAddr.setStreetAddr1( ServerUtils.forceNotNone(liteAddr.getLocationAddress1()) );
+		starsAddr.setStreetAddr2( ServerUtils.forceNotNone(liteAddr.getLocationAddress2()) );
+		starsAddr.setCity( ServerUtils.forceNotNone(liteAddr.getCityName()) );
+		starsAddr.setState( ServerUtils.forceNotNone(liteAddr.getStateCode()) );
+		starsAddr.setZip( ServerUtils.forceNotNone(liteAddr.getZipCode()) );
+		starsAddr.setCounty( ServerUtils.forceNotNone(liteAddr.getCounty()) );
 	}
 	
 	public static void setStarsLMCustomerEvent(StarsLMCustomerEvent starsEvent, LiteLMCustomerEvent liteEvent) {
 		YukonListEntry entry = YukonListFuncs.getYukonListEntry( liteEvent.getActionID() );
 		starsEvent.setEventAction( entry.getEntryText() );
 		starsEvent.setEventDateTime( new Date(liteEvent.getEventDateTime()) );
-		starsEvent.setNotes( forceNotNull(liteEvent.getNotes()) );
+		starsEvent.setNotes( ServerUtils.forceNotNull(liteEvent.getNotes()) );
 		starsEvent.setYukonDefID( entry.getYukonDefID() );
 	}
 	
@@ -882,12 +882,12 @@ public class StarsLiteFactory {
 		StarsCustomerAccount starsAccount = new StarsCustomerAccount();
 		starsAccount.setAccountID( liteAccount.getAccountID() );
 		starsAccount.setCustomerID( liteAccount.getCustomerID() );
-		starsAccount.setAccountNumber( forceNotNull(liteAccount.getAccountNumber()) );
+		starsAccount.setAccountNumber( ServerUtils.forceNotNull(liteAccount.getAccountNumber()) );
 		starsAccount.setIsCommercial( liteCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI );
 		starsAccount.setCompany( "" );
-		starsAccount.setAccountNotes( forceNotNull(liteAccount.getAccountNotes()) );
-		starsAccount.setPropertyNumber( forceNotNull(liteAcctSite.getSiteNumber()) );
-		starsAccount.setPropertyNotes( forceNotNull(liteAcctSite.getPropertyNotes()) );
+		starsAccount.setAccountNotes( ServerUtils.forceNotNull(liteAccount.getAccountNotes()) );
+		starsAccount.setPropertyNumber( ServerUtils.forceNotNull(liteAcctSite.getSiteNumber()) );
+		starsAccount.setPropertyNotes( ServerUtils.forceNotNull(liteAcctSite.getPropertyNotes()) );
 		starsAccount.setTimeZone( liteCustomer.getTimeZone() );
 		starsAcctInfo.setStarsCustomerAccount( starsAccount );
 		
@@ -1125,10 +1125,10 @@ public class StarsLiteFactory {
 		StarsSiteInformation starsSite = new StarsSiteInformation();
 		
 		starsSite.setSiteID( liteSite.getSiteID() );
-		starsSite.setFeeder( forceNotNull(liteSite.getFeeder()) );
-		starsSite.setPole( forceNotNull(liteSite.getPole()) );
-		starsSite.setTransformerSize( forceNotNull(liteSite.getTransformerSize()) );
-		starsSite.setServiceVoltage( forceNotNull(liteSite.getServiceVoltage()) );
+		starsSite.setFeeder( ServerUtils.forceNotNull(liteSite.getFeeder()) );
+		starsSite.setPole( ServerUtils.forceNotNull(liteSite.getPole()) );
+		starsSite.setTransformerSize( ServerUtils.forceNotNull(liteSite.getTransformerSize()) );
+		starsSite.setServiceVoltage( ServerUtils.forceNotNull(liteSite.getServiceVoltage()) );
 		starsSite.setSubstation(
 			(Substation) StarsFactory.newStarsCustListEntry(
 				SOAPServer.getEnergyCompany(energyCompanyID).getYukonListEntry(
@@ -1156,15 +1156,15 @@ public class StarsLiteFactory {
 		starsHw.setReceiveDate( ServerUtils.translateDate(liteHw.getReceiveDate()) );
 		starsHw.setInstallDate( ServerUtils.translateDate(liteHw.getInstallDate()) );
 		starsHw.setRemoveDate( ServerUtils.translateDate(liteHw.getRemoveDate()) );
-		starsHw.setAltTrackingNumber( forceNotNull(liteHw.getAlternateTrackingNumber()) );
+		starsHw.setAltTrackingNumber( ServerUtils.forceNotNull(liteHw.getAlternateTrackingNumber()) );
 		
 		Voltage volt = new Voltage();
 		volt.setEntryID( liteHw.getVoltageID() );
 		volt.setContent( YukonListFuncs.getYukonListEntry(liteHw.getVoltageID()).getEntryText() );
 		starsHw.setVoltage( volt );
 		
-		starsHw.setNotes( forceNotNull(liteHw.getNotes()) );
-		starsHw.setManufactureSerialNumber( forceNotNull(liteHw.getManufactureSerialNumber()) );
+		starsHw.setNotes( ServerUtils.forceNotNull(liteHw.getNotes()) );
+		starsHw.setManufactureSerialNumber( ServerUtils.forceNotNull(liteHw.getManufactureSerialNumber()) );
 		
 		LMDeviceType hwType = new LMDeviceType();
 		hwType.setEntryID( liteHw.getLmHardwareTypeID() );
@@ -1199,7 +1199,7 @@ public class StarsLiteFactory {
 		StarsServiceRequest starsOrder = new StarsServiceRequest();
 		
 		starsOrder.setOrderID( liteOrder.getOrderID() );
-		starsOrder.setOrderNumber( forceNotNull(liteOrder.getOrderNumber()) );
+		starsOrder.setOrderNumber( ServerUtils.forceNotNull(liteOrder.getOrderNumber()) );
 		starsOrder.setServiceType(
 			(ServiceType) StarsFactory.newStarsCustListEntry(
 				YukonListFuncs.getYukonListEntry(liteOrder.getWorkTypeID()),
@@ -1221,9 +1221,9 @@ public class StarsLiteFactory {
 		starsOrder.setDateReported( new Date(liteOrder.getDateReported()) );
 		starsOrder.setDateScheduled( new Date(liteOrder.getDateScheduled()) );
 		starsOrder.setDateCompleted( new Date(liteOrder.getDateCompleted()) );
-		starsOrder.setOrderedBy( forceNotNull(liteOrder.getOrderedBy()) );
-		starsOrder.setDescription( forceNotNull(liteOrder.getDescription()) );
-		starsOrder.setActionTaken( forceNotNull(liteOrder.getActionTaken()) );
+		starsOrder.setOrderedBy( ServerUtils.forceNotNull(liteOrder.getOrderedBy()) );
+		starsOrder.setDescription( ServerUtils.forceNotNull(liteOrder.getDescription()) );
+		starsOrder.setActionTaken( ServerUtils.forceNotNull(liteOrder.getActionTaken()) );
 		
 		return starsOrder;
 	}
@@ -1240,7 +1240,7 @@ public class StarsLiteFactory {
 		StarsLMProgram starsProg = new StarsLMProgram();
 		starsProg.setProgramID( liteProg.getLmProgram().getProgramID() );
 		starsProg.setGroupID( liteProg.getGroupID() );
-		starsProg.setProgramName( forceNotNull(liteProg.getLmProgram().getProgramName()) );
+		starsProg.setProgramName( ServerUtils.forceNotNull(liteProg.getLmProgram().getProgramName()) );
 		starsProg.setApplianceCategoryID( liteApp.getApplianceCategoryID() );
 
 		// Temporarily use the "URL" field in YukonWebConfiguration table for program alias
@@ -1275,10 +1275,10 @@ public class StarsLiteFactory {
 	
 	public static StarsWebConfig createStarsWebConfig(LiteWebConfiguration liteWebConfig) {
 		StarsWebConfig starsWebConfig = new StarsWebConfig();
-		starsWebConfig.setLogoLocation( forceNotNull(liteWebConfig.getLogoLocation()) );
-		starsWebConfig.setDescription( forceNotNull(liteWebConfig.getDescription()) );
-		starsWebConfig.setAlternateDisplayName( forceNotNull(liteWebConfig.getAlternateDisplayName()) );
-		starsWebConfig.setURL( forceNotNull(liteWebConfig.getUrl()) );
+		starsWebConfig.setLogoLocation( ServerUtils.forceNotNull(liteWebConfig.getLogoLocation()) );
+		starsWebConfig.setDescription( ServerUtils.forceNotNull(liteWebConfig.getDescription()) );
+		starsWebConfig.setAlternateDisplayName( ServerUtils.forceNotNull(liteWebConfig.getAlternateDisplayName()) );
+		starsWebConfig.setURL( ServerUtils.forceNotNull(liteWebConfig.getUrl()) );
 		
 		return starsWebConfig;
 	}
@@ -1289,7 +1289,7 @@ public class StarsLiteFactory {
 		StarsApplianceCategory starsAppCat = new StarsApplianceCategory();
 		starsAppCat.setApplianceCategoryID( liteAppCat.getApplianceCategoryID() );
 		starsAppCat.setCategoryID( liteAppCat.getCategoryID() );
-		starsAppCat.setDescription( forceNotNull(liteAppCat.getDescription()) );
+		starsAppCat.setDescription( ServerUtils.forceNotNull(liteAppCat.getDescription()) );
 		starsAppCat.setStarsWebConfig( energyCompany.getStarsWebConfig(liteAppCat.getWebConfigurationID()) );
 		
 		if (liteProgs != null) {
@@ -1323,9 +1323,9 @@ public class StarsLiteFactory {
 	public static StarsServiceCompany createStarsServiceCompany(LiteServiceCompany liteCompany, int energyCompanyID) {
 		StarsServiceCompany starsCompany = new StarsServiceCompany();
 		starsCompany.setCompanyID( liteCompany.getCompanyID() );
-		starsCompany.setCompanyName( forceNotNull(liteCompany.getCompanyName()) );
-		starsCompany.setMainPhoneNumber( forceNotNone(liteCompany.getMainPhoneNumber()) );
-		starsCompany.setMainFaxNumber( forceNotNone(liteCompany.getMainFaxNumber()) );
+		starsCompany.setCompanyName( ServerUtils.forceNotNull(liteCompany.getCompanyName()) );
+		starsCompany.setMainPhoneNumber( ServerUtils.forceNotNone(liteCompany.getMainPhoneNumber()) );
+		starsCompany.setMainFaxNumber( ServerUtils.forceNotNone(liteCompany.getMainFaxNumber()) );
 		starsCompany.setCompanyAddress( (CompanyAddress) StarsFactory.newStarsCustomerAddress(CompanyAddress.class) );
 		
 		if (liteCompany.getAddressID() != CtiUtilities.NONE_ID) {
@@ -1340,8 +1340,8 @@ public class StarsLiteFactory {
 	
 	public static StarsUser createStarsUser(com.cannontech.database.data.lite.LiteYukonUser liteUser) {
 		StarsUser starsUser = new StarsUser();
-		starsUser.setUsername( forceNotNull(liteUser.getUsername()) );
-		starsUser.setPassword( forceNotNull(liteUser.getPassword()) );
+		starsUser.setUsername( ServerUtils.forceNotNull(liteUser.getUsername()) );
+		starsUser.setPassword( ServerUtils.forceNotNull(liteUser.getPassword()) );
 		
 		return starsUser;
 	}
@@ -1392,8 +1392,8 @@ public class StarsLiteFactory {
         starsApp.setApplianceCategoryID( liteApp.getApplianceCategoryID() );
     	starsApp.setInventoryID( liteApp.getInventoryID() );
     	starsApp.setLmProgramID( liteApp.getLmProgramID() );
-        starsApp.setNotes( forceNotNull(liteApp.getNotes()) );
-        starsApp.setModelNumber( forceNotNull(liteApp.getModelNumber()) );
+        starsApp.setNotes( ServerUtils.forceNotNull(liteApp.getNotes()) );
+        starsApp.setModelNumber( ServerUtils.forceNotNull(liteApp.getModelNumber()) );
         starsApp.setKWCapacity( liteApp.getKWCapacity() );
         starsApp.setEfficiencyRating( liteApp.getEfficiencyRating() );
         
@@ -1415,7 +1415,7 @@ public class StarsLiteFactory {
         LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
         LiteApplianceCategory liteAppCat = energyCompany.getApplianceCategory( liteApp.getApplianceCategoryID() );
         if (liteAppCat != null)
-	        starsApp.setDescription( forceNotNull(liteAppCat.getDescription()) );
+	        starsApp.setDescription( ServerUtils.forceNotNull(liteAppCat.getDescription()) );
 	    else
 	    	starsApp.setDescription( "(Unknown)" );
 	    
@@ -1697,51 +1697,41 @@ public class StarsLiteFactory {
 	}
 	
 	
-	public static String forceNotNull(String str) {
-		return (str == null) ? "" : str.trim();
-	}
-	
-	public static String forceNotNone(String str) {
-		String str1 = forceNotNull(str);
-		return (str1.equalsIgnoreCase("(none)")) ? "" : str1;
-	}
-	
-	
 	public static boolean isIdenticalContactNotification(LiteCustomerContact.ContactNotification liteNotif, StarsContactNotification starsNotif) {
 		if (liteNotif == null)
 			return (starsNotif.getNotification().length() == 0);
-		return (forceNotNull(liteNotif.getNotification()).equals( starsNotif.getNotification() )
+		return (ServerUtils.forceNotNull(liteNotif.getNotification()).equals( starsNotif.getNotification() )
 				&& liteNotif.isEnabled() == starsNotif.getEnabled());
 	}
 	
 	public static boolean isIdenticalCustomerContact(LiteCustomerContact liteContact, StarsCustomerContact starsContact) {
-		return (forceNotNull(liteContact.getLastName()).equals( starsContact.getLastName() )
-				&& forceNotNull(liteContact.getFirstName()).equals( starsContact.getFirstName() )
-				&& forceNotNull(liteContact.getHomePhone()).equals( starsContact.getHomePhone() )
-				&& forceNotNull(liteContact.getWorkPhone()).equals( starsContact.getWorkPhone() )
+		return (ServerUtils.forceNotNull(liteContact.getLastName()).equals( starsContact.getLastName() )
+				&& ServerUtils.forceNotNull(liteContact.getFirstName()).equals( starsContact.getFirstName() )
+				&& ServerUtils.forceNotNull(liteContact.getHomePhone()).equals( starsContact.getHomePhone() )
+				&& ServerUtils.forceNotNull(liteContact.getWorkPhone()).equals( starsContact.getWorkPhone() )
 				&& isIdenticalContactNotification( liteContact.getEmail(), starsContact.getEmail() ));
 	}
 	
 	public static boolean isIdenticalCustomerAddress(LiteAddress liteAddr, StarsCustomerAddress starsAddr) {
-		return (forceNotNull(liteAddr.getLocationAddress1()).equals( starsAddr.getStreetAddr1() )
-				&& forceNotNull(liteAddr.getLocationAddress2()).equals( starsAddr.getStreetAddr2() )
-				&& forceNotNull(liteAddr.getCityName()).equals( starsAddr.getCity() )
-				&& forceNotNull(liteAddr.getStateCode()).equals( starsAddr.getState() )
-				&& forceNotNull(liteAddr.getZipCode()).equals( starsAddr.getZip() )
-				&& forceNotNull(liteAddr.getCounty()).equals( forceNotNull(starsAddr.getCounty()) ));
+		return (ServerUtils.forceNotNull(liteAddr.getLocationAddress1()).equals( starsAddr.getStreetAddr1() )
+				&& ServerUtils.forceNotNull(liteAddr.getLocationAddress2()).equals( starsAddr.getStreetAddr2() )
+				&& ServerUtils.forceNotNull(liteAddr.getCityName()).equals( starsAddr.getCity() )
+				&& ServerUtils.forceNotNull(liteAddr.getStateCode()).equals( starsAddr.getState() )
+				&& ServerUtils.forceNotNull(liteAddr.getZipCode()).equals( starsAddr.getZip() )
+				&& ServerUtils.forceNotNull(liteAddr.getCounty()).equals( ServerUtils.forceNotNull(starsAddr.getCounty()) ));
 	}
 	
 	public static boolean isIdenticalSiteInformation(LiteSiteInformation liteSite, StarsSiteInformation starsSite) {
-		return (forceNotNull(liteSite.getFeeder()).equals( starsSite.getFeeder() )
-				&& forceNotNull(liteSite.getPole()).equals( starsSite.getPole() )
-				&& forceNotNull(liteSite.getTransformerSize()).equals( starsSite.getTransformerSize() )
-				&& forceNotNull(liteSite.getServiceVoltage()).equals( starsSite.getServiceVoltage() )
+		return (ServerUtils.forceNotNull(liteSite.getFeeder()).equals( starsSite.getFeeder() )
+				&& ServerUtils.forceNotNull(liteSite.getPole()).equals( starsSite.getPole() )
+				&& ServerUtils.forceNotNull(liteSite.getTransformerSize()).equals( starsSite.getTransformerSize() )
+				&& ServerUtils.forceNotNull(liteSite.getServiceVoltage()).equals( starsSite.getServiceVoltage() )
 				&& liteSite.getSubstationID() == starsSite.getSubstation().getEntryID());
 	}
 	
 	public static boolean isIdenticalCustomerAccount(LiteCustomerAccount liteAccount, StarsCustAccount starsAccount) {
-		return (forceNotNull(liteAccount.getAccountNumber()).equals( starsAccount.getAccountNumber() )
-				&& forceNotNull(liteAccount.getAccountNotes()).equals( starsAccount.getAccountNotes() ));
+		return (ServerUtils.forceNotNull(liteAccount.getAccountNumber()).equals( starsAccount.getAccountNumber() )
+				&& ServerUtils.forceNotNull(liteAccount.getAccountNotes()).equals( starsAccount.getAccountNotes() ));
 	}
 	
 	public static boolean isIdenticalCustomer(LiteCustomer liteCustomer, StarsCustAccount starsCustomer) {
@@ -1751,8 +1741,8 @@ public class StarsLiteFactory {
 	}
 	
 	public static boolean isIdenticalAccountSite(LiteAccountSite liteAcctSite, StarsCustAccount starsAcctSite) {
-		return (forceNotNull(liteAcctSite.getSiteNumber()).equals( starsAcctSite.getPropertyNumber() )
-				&& forceNotNull(liteAcctSite.getPropertyNotes()).equals( starsAcctSite.getPropertyNotes() ));
+		return (ServerUtils.forceNotNull(liteAcctSite.getSiteNumber()).equals( starsAcctSite.getPropertyNumber() )
+				&& ServerUtils.forceNotNull(liteAcctSite.getPropertyNotes()).equals( starsAcctSite.getPropertyNotes() ));
 	}
 	
 	public static boolean isIdenticalThermostatSchedule(LiteLMThermostatSeasonEntry[] liteSched, StarsThermostatSchedule starsSched) {

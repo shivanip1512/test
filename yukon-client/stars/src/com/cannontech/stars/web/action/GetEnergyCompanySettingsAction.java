@@ -94,7 +94,7 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
 					resp.setStarsServiceCompanies( energyCompany.getStarsServiceCompanies() );
             	if (AuthFuncs.checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ ))
 	            	resp.setStarsCustomerFAQs( energyCompany.getStarsCustomerFAQs() );
-				if (AuthFuncs.checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPTOUT))
+				if (AuthFuncs.checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT))
 					resp.setStarsExitInterviewQuestions( energyCompany.getStarsExitInterviewQuestions() );
 				if (AuthFuncs.checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT))
 					resp.setStarsDefaultThermostatSettings( energyCompany.getStarsDefaultThermostatSettings() );

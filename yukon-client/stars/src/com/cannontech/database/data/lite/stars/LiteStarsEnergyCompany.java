@@ -132,7 +132,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		setLiteID( energyCompany.getEnergyCompanyID().intValue() );
 		setName( energyCompany.getName() );
 		setPrimaryContactID( energyCompany.getPrimaryContactID().intValue() );
-		//setUserID( energyCompany.getUserID().intValue() );
+		setUserID( energyCompany.getUserID().intValue() );
 	}
 	
 	public Integer getEnergyCompanyID() {
@@ -1424,7 +1424,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			if (accounts == null || accounts.length == 0) return null;
 			
 			// If there are more than one account with the same account # (this shouldn't happen), we will only return the first of them
-			com.cannontech.database.data.stars.customer.CustomerAccount account = null;
+			com.cannontech.database.data.stars.customer.CustomerAccount account =
+					new com.cannontech.database.data.stars.customer.CustomerAccount();
 			account.setCustomerAccount( accounts[0] );
 			account = (com.cannontech.database.data.stars.customer.CustomerAccount)
 					Transaction.createTransaction( Transaction.RETRIEVE, account ).execute();
@@ -1490,7 +1491,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_CALL_TRACKING )) {
 				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE) );
 			}
-			if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPTOUT )) {
+			if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT )) {
 				StarsCustSelectionList list = getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
 				if (list != null) starsLists.addStarsCustSelectionList( list );
 			}

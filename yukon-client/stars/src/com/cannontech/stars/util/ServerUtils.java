@@ -351,4 +351,18 @@ public class ServerUtils {
 		return null;
 	}
 
+	public static String forceNotNull(String str) {
+		return (str == null) ? "" : str.trim();
+	}
+	
+
+
+	public static String forceNotNone(String str) {
+		String str1 = forceNotNull(str);
+		return (str1.equalsIgnoreCase("(none)")) ? "" : str1;
+	}
+	
+	
+
+
 }
