@@ -42,6 +42,9 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	 */
 	public void add() throws java.sql.SQLException 
 	{
+		if (getContactID() == null)
+			setContactID( getNextContactID(getDbConnection()) );
+			
 		Object addValues[] = 
 		{ 
 			getContactID(), getContFirstName(), getContLastName(),
