@@ -44,9 +44,25 @@ public:
       flag(0)
    {}
 
+   //  note the RWCSubString version of this below
    CtiParseValue(const RWCString str, const INT ival = INT_MIN) :
       flag(0),
       _str(str),
+      _int(ival)
+   {
+      _sValid = TRUE;
+      if(_int != INT_MIN)
+      {
+         _iValid = TRUE;
+         _dbl    = (DOUBLE)_int;
+         _dValid = TRUE;
+      }
+   }
+
+   //  this is the RWCSubString version of the above - make sure you implement any changes to the above down here as well
+   CtiParseValue(const RWCSubString substr, const INT ival = INT_MIN) :
+      flag(0),
+      _str(substr),
       _int(ival)
    {
       _sValid = TRUE;
