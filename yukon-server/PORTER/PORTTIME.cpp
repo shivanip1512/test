@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/12/16 16:40:19 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2002/12/19 20:26:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -649,6 +649,7 @@ VOID TimeSyncThread (PVOID Arg)
         return;     // If we get this we never really got to run...
     }
 
+    #if 0
     /*
     ** Check for a WWV Receiver and if one is found then setup port
     ** and induce clock synchronization between Receiver and computer.
@@ -661,6 +662,8 @@ VOID TimeSyncThread (PVOID Arg)
             SendTextToLogger ("Inf", "Synchronizing clock  with WWV Receiver.");
         }
     }
+
+    #endif
 
     /* send out time syncs for the first time... */
     PortManager.apply(applyPortSendTime, NULL);
@@ -711,6 +714,7 @@ VOID TimeSyncThread (PVOID Arg)
             }
         }
 
+        #if 0
         /*
         **     If a WWV Receiver exits then induce clock
         **  synchronization between Receiver and computer.
@@ -731,6 +735,7 @@ VOID TimeSyncThread (PVOID Arg)
                 }
             }
         }
+        #endif
 
         /* Send time Sync messages */
         PortManager.apply(applyPortSendTime, NULL);
