@@ -9,9 +9,9 @@
 #include "logger.h"
 
 //Boolean if debug messages are printed
-ULONG _LM_DEBUG;
+ULONG _LM_DEBUG = 0L;
 //Boolean if point enevts messages are created and sent to Dispatch
-BOOL _LM_POINT_EVENT_LOGGING;
+BOOL _LM_POINT_EVENT_LOGGING = FALSE;
 
 //Use this to indicate globally when ctrl-c was pressed
 //Kinda ugly... The Run() member function watches this
@@ -230,7 +230,7 @@ void CtiLMService::Run()
             {
                 trouble = false;
             }
-        } 
+        }
         } while ( trouble );
 
         SetStatus(SERVICE_START_PENDING, 33, 5000 );
