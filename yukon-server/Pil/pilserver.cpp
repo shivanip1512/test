@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2004/12/06 21:31:22 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2005/01/18 19:10:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -76,6 +76,10 @@ CtiPILExecutorFactory   ExecFactory;
 DLLIMPORT extern CTINEXUS PorterNexus;
 DLLIMPORT extern VOID PortPipeCleanup (ULONG Reason);
 
+static bool findShedDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice, void *vptrControlParent);
+static bool findRestoreDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice, void *vptrControlParent);
+static bool findAltMeterGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrAltGroupName);
+static bool findMeterGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrGroupName);
 
 int CtiPILServer::execute()
 {
@@ -1005,6 +1009,11 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
 
                 tempOutList.clearAndDestroy();              // Just make sure!
 
+                if(Dev->isGroup())                          // We must indicate any group which is protocol/heirarchy controlled!
+                {
+                    indicateControlOnSubGroups(Dev, pExecReq, parse, vgList, retList);
+                }
+
                 try
                 {
                     status = Dev->ExecuteRequest(pExecReq, parse, vgList, retList, tempOutList);    // Defined ONLY in dev_base.cpp
@@ -1349,25 +1358,24 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
     {
         // We are to do some magiks here.  Looking for names in groups
         RWCString gname = parse.getsValue("group");
+        gname.toLower();
 
         {
+            int groupsubmitcnt = 0;
             CtiDeviceManager::LockGuard dev_guard(DeviceManager->getMux());
             CtiDeviceManager::spiterator itr_dev;
 
-            int groupsubmitcnt = 0;
+            vector< CtiDeviceManager::ptr_type > match_coll;
+            DeviceManager->select(findMeterGroupName, (void*)(Dev.get()), match_coll);
+            CtiDeviceSPtr sptr;
 
-            for(itr_dev = DeviceManager->begin(); itr_dev != DeviceManager->end(); itr_dev++)
+            while(!match_coll.empty())
             {
-                CtiDeviceBase &device = *(itr_dev->second.get());
+                sptr = match_coll.back();
+                match_coll.pop_back();
 
-                if(device.isMeter() || isION(device.getType()))
-                {
-                    RWCString mgname = device.getMeterGroupName();
+                CtiDeviceBase &device = *(sptr.get());
 
-                    mgname.toLower();
-
-                    if( !mgname.isNull() && !gname.compareTo(mgname, RWCString::ignoreCase) )
-                    {
                         groupsubmitcnt++;
 
                         // We have a name match
@@ -1384,8 +1392,6 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
                         execList.insert( pNew );
                     }
-                }
-            }
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1399,23 +1405,21 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
         RWCString gname = parse.getsValue("altgroup");
 
         {
+            int groupsubmitcnt = 0;
             CtiDeviceManager::LockGuard dev_guard(DeviceManager->getMux());
             CtiDeviceManager::spiterator itr_dev;
 
-            int groupsubmitcnt = 0;
+            vector< CtiDeviceManager::ptr_type > match_coll;
+            DeviceManager->select(findAltMeterGroupName, (void*)(Dev.get()), match_coll);
+            CtiDeviceSPtr sptr;
 
-            for(itr_dev = DeviceManager->begin(); itr_dev != DeviceManager->end(); itr_dev++)
+            while(!match_coll.empty())
             {
-                CtiDeviceBase &device = *(itr_dev->second.get());
+                sptr = match_coll.back();
+                match_coll.pop_back();
 
-                if(device.isMeter() || isION(device.getType()))
-                {
-                    RWCString mgname = device.getAlternateMeterGroupName();
+                CtiDeviceBase &device = *(sptr.get());
 
-                    mgname.toLower();
-
-                    if( !mgname.isNull() && !gname.compareTo(mgname, RWCString::ignoreCase) )
-                    {
                         groupsubmitcnt++;
 
                         // We have a name match
@@ -1426,14 +1430,11 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
                         // Create a message for this one!
                         pReq->setDeviceId(device.getID());
-
                         CtiRequestMsg *pNew = (CtiRequestMsg*)pReq->replicateMessage();
                         pNew->setConnectionHandle( pReq->getConnectionHandle() );
 
                         execList.insert( pNew );
                     }
-                }
-            }
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1628,4 +1629,137 @@ void CtiPILServer::putQueue(CtiMessage *Msg)
     MainQueue_.putQueue( Msg );
 }
 
+
+void CtiPILServer::indicateControlOnSubGroups(CtiDeviceSPtr &Dev, CtiRequestMsg *&pReq, CtiCommandParser &parse, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList)
+{
+    bool shed = false;
+    try
+    {
+        if(parse.getCommand() == ControlRequest)
+        {
+            if(Dev->getType() == TYPE_MACRO)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** ACH indicateControlOnSubGroups for MACRO **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+            else
+            {
+                vector< CtiDeviceManager::ptr_type > match_coll;
+
+                if(parse.getFlags() & (CMD_FLAG_CTL_RESTORE|CMD_FLAG_CTL_TERMINATE|CMD_FLAG_CTL_CLOSE))
+                {
+                    shed = false;
+                    DeviceManager->select(findRestoreDeviceGroupControl, (void*)(Dev.get()), match_coll);
+                }
+                else
+                {
+                    shed = true;
+                    DeviceManager->select(findShedDeviceGroupControl, (void*)(Dev.get()), match_coll);
+                }
+
+                CtiDeviceSPtr sptr;
+                while(!match_coll.empty())
+                {
+                    sptr = match_coll.back();
+                    match_coll.pop_back();
+
+                    CtiMessage *pMsg = sptr->rsvpToDispatch(true);
+                    if(pMsg)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << sptr->getName() << " Produced a message" << endl;
+                            pMsg->dump();
+                        }
+                        vgList.insert(pMsg);
+                    }
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Protocol hierarchy match on group: " << sptr->getName() << endl;
+                    }
+                }
+            }
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    return;
+}
+
+static bool findShedDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice, void *vptrControlParent)
+{
+    bool bstat = false;
+    CtiDeviceBase *parentGroup = (CtiDeviceBase *)vptrControlParent;
+
+    if(parentGroup->getID() != otherdevice->getID() && parentGroup->getType() == otherdevice->getType())
+    {
+        // they are both groups and of the same type.  Now we need to try to determine if the other dev is a heirarchy match.
+        if( parentGroup->isShedProtocolParent(otherdevice.get()) )
+        {
+            bstat = true;
+        }
+    }
+    return bstat;
+}
+
+static bool findRestoreDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice, void *vptrControlParent)
+{
+    bool bstat = false;
+    CtiDeviceBase *parentGroup = (CtiDeviceBase *)vptrControlParent;
+
+    if(parentGroup->getID() != otherdevice->getID() && parentGroup->getType() == otherdevice->getType())
+    {
+        // they are both groups and of the same type.  Now we need to try to determine if the other dev is a heirarchy match.
+        if( parentGroup->isRestoreProtocolParent(otherdevice.get()) )
+        {
+            bstat = true;
+        }
+    }
+
+    return bstat;
+}
+
+
+static bool findMeterGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrGroupName)
+{
+    bool bstat = false;
+
+    if(otherdevice->isMeter() || isION(otherdevice->getType()))
+    {
+        RWCString gname((char*)vptrGroupName);
+        RWCString mgname = otherdevice->getMeterGroupName();
+        mgname.toLower();
+
+        if( !mgname.isNull() && !gname.compareTo(mgname, RWCString::ignoreCase) )
+        {
+            bstat = true;
+        }
+    }
+
+    return bstat;
+}
+
+static bool findAltMeterGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrAltGroupName)
+{
+    bool bstat = false;
+    RWCString gname((char*)vptrAltGroupName);
+    RWCString mgname = otherdevice->getAlternateMeterGroupName();
+    mgname.toLower();
+
+    if( !mgname.isNull() && !gname.compareTo(mgname, RWCString::ignoreCase) )
+    {
+        bstat = true;
+    }
+
+    return bstat;
+}
 

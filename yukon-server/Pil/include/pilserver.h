@@ -79,6 +79,8 @@ public:
    void putQueue(CtiMessage *Msg);
 
    bool isBroken() const { return _broken; }
+   void indicateControlOnSubGroups(CtiDeviceSPtr &Dev, CtiRequestMsg *&pReq, CtiCommandParser &parse, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList);
+
 };
 
 #endif // #ifndef __PILSERVER_H__
