@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/05/20 21:26:33 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/05/28 18:26:35 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -315,7 +315,7 @@ void CtiDeviceMCT::sendLPInterval( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > 
     OutMessage->RouteID   = getRouteID();
     OutMessage->TimeOut   = 2;
     OutMessage->Sequence  = CtiProtocolEmetcon::PutConfig_LoadProfileInterval;     // Helps us figure it out later!
-    OutMessage->Retry     = 3;
+    OutMessage->Retry     = 2;
 
     // Tell the porter side to complete the assembly of the message.
     OutMessage->Request.BuildIt = TRUE;
@@ -626,6 +626,15 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
                     delete pRet;
                 }
             }
+            else if( getRouteManager() == 0 )       // If there is no route manager, we need porter to do the route work!
+            {
+                // Tell the porter side to complete the assembly of the message.
+                pOut->Request.BuildIt = TRUE;
+                strcpy(pOut->Request.CommandStr, pReq->CommandString());
+
+                outList.insert( pOut );       // May porter have mercy.
+                pOut = 0;
+            }
             else
             {
                 nRet = NoRouteGroupDevice;
@@ -691,8 +700,8 @@ INT CtiDeviceMCT::GeneralScan(CtiRequestMsg *pReq,
             EstablishOutMessagePriority( OutMessage, ScanPriority );
             OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = CtiProtocolEmetcon::Scan_General;     // Helps us figure it out later!
-            OutMessage->Retry     = 3;
-            OutMessage->Request.MacroOffset = selectInitialMacroRouteOffset();
+            OutMessage->Retry     = 2;
+            OutMessage->Request.MacroOffset = selectInitialMacroRouteOffset(getRouteID());
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
@@ -747,8 +756,8 @@ INT CtiDeviceMCT::IntegrityScan(CtiRequestMsg *pReq,
             EstablishOutMessagePriority( OutMessage, ScanPriority );
             OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = CtiProtocolEmetcon::Scan_Integrity;     // Helps us figure it out later!;
-            OutMessage->Retry     = 3;
-            OutMessage->Request.MacroOffset = selectInitialMacroRouteOffset();
+            OutMessage->Retry     = 2;
+            OutMessage->Request.MacroOffset = selectInitialMacroRouteOffset(getRouteID());
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
@@ -801,8 +810,8 @@ INT CtiDeviceMCT::AccumulatorScan(CtiRequestMsg *pReq,
             EstablishOutMessagePriority( OutMessage, ScanPriority );
             OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = CtiProtocolEmetcon::Scan_Accum;
-            OutMessage->Retry     = 3;
-            OutMessage->Request.MacroOffset = selectInitialMacroRouteOffset();
+            OutMessage->Retry     = 2;
+            OutMessage->Request.MacroOffset = selectInitialMacroRouteOffset(getRouteID());
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
@@ -857,8 +866,8 @@ INT CtiDeviceMCT::LoadProfileScan(CtiRequestMsg *pReq,
             EstablishOutMessagePriority( OutMessage, ScanPriority );
             OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = CtiProtocolEmetcon::Scan_LoadProfile;
-            OutMessage->Retry     = 3;
-            OutMessage->Request.MacroOffset = selectInitialMacroRouteOffset();
+            OutMessage->Retry     = 2;
+            OutMessage->Request.MacroOffset = selectInitialMacroRouteOffset(getRouteID());
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
@@ -1070,7 +1079,12 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
                     resetForScan(ScanRateIntegrity);
 
                     break;
-
+                case ScanRateLoadProfile:
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                    break;
                 default:
                     break;
             }
@@ -1164,7 +1178,7 @@ INT CtiDeviceMCT::executeLoopback(CtiRequestMsg                  *pReq,
         OutMessage->RouteID   = getRouteID();
         OutMessage->TimeOut   = 2;
         OutMessage->Sequence  = function;     // Helps us figure it out later!
-        OutMessage->Retry     = 3;
+        OutMessage->Retry     = 2;
 
         strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
 
@@ -1260,7 +1274,7 @@ INT CtiDeviceMCT::executeScan(CtiRequestMsg                  *pReq,
         OutMessage->RouteID   = getRouteID();
         OutMessage->TimeOut   = 2;
         OutMessage->Sequence  = function;     // Helps us figure it out later!
-        OutMessage->Retry     = 3;
+        OutMessage->Retry     = 2;
 
         strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
     }
@@ -1390,7 +1404,7 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
         OutMessage->RouteID   = getRouteID();
         OutMessage->TimeOut   = 2;
         OutMessage->Sequence  = function;         // Helps us figure it out later!
-        OutMessage->Retry     = 3;
+        OutMessage->Retry     = 2;
 
         strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
     }
@@ -1528,7 +1542,7 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
         OutMessage->RouteID   = getRouteID();
         OutMessage->TimeOut   = 2;
         OutMessage->Sequence  = function;         // Helps us figure it out later!
-        OutMessage->Retry     = 3;
+        OutMessage->Retry     = 2;
 
         strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
     }
@@ -1593,7 +1607,7 @@ INT CtiDeviceMCT::executeGetStatus(CtiRequestMsg                  *pReq,
         OutMessage->RouteID   = getRouteID();
         OutMessage->TimeOut   = 2;
         OutMessage->Sequence  = function;         // Helps us figure it out later!
-        OutMessage->Retry     = 3;
+        OutMessage->Retry     = 2;
 
         strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
     }
@@ -1644,7 +1658,7 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
        OutMessage->RouteID   = getRouteID();
        OutMessage->TimeOut   = 2;
        OutMessage->Sequence  = function;     // Helps us figure it out later!
-       OutMessage->Retry     = 3;
+       OutMessage->Retry     = 2;
 
 
        if( OutMessage->Buffer.BSt.Function == 0x06 )  //  easiest way to tell it's an MCT3xx
@@ -1834,7 +1848,7 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
         OutMessage->RouteID   = getRouteID();
         OutMessage->TimeOut   = 2;
         OutMessage->Sequence  = function;     // Helps us figure it out later!
-        OutMessage->Retry     = 3;
+        OutMessage->Retry     = 2;
 
         strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
     }
@@ -2169,7 +2183,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
        OutMessage->RouteID   = getRouteID();
        OutMessage->TimeOut   = 2;
        OutMessage->Sequence  = function;     // Helps us figure it out later!
-       OutMessage->Retry     = 3;
+       OutMessage->Retry     = 2;
 
        strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
     }
@@ -2227,7 +2241,7 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
         OutMessage->RouteID   = getRouteID();
         OutMessage->TimeOut   = 2;
         OutMessage->Sequence  = function;         // Helps us figure it out later!
-        OutMessage->Retry     = 3;
+        OutMessage->Retry     = 2;
 
         strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
 
@@ -2252,7 +2266,7 @@ INT CtiDeviceMCT::decodeLoopback(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
 
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
@@ -2288,7 +2302,7 @@ INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
     RWCString resultStr;
 
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
 
@@ -2355,7 +2369,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
     RWCString resultStr;
 
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
 
@@ -2531,7 +2545,7 @@ INT CtiDeviceMCT::decodePutValue(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
 
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
@@ -2565,7 +2579,7 @@ INT CtiDeviceMCT::decodePutStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
 
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
@@ -2601,7 +2615,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
