@@ -1332,17 +1332,21 @@ public void setValue(Object val)
 		int assignedRouteID = 0;
 
 		if( lmGroup instanceof com.cannontech.database.data.device.lm.LMGroupEmetcon )
+      {
 			assignedRouteID = ((com.cannontech.database.data.device.lm.LMGroupEmetcon) lmGroup).getLmGroupEmetcon().getRouteID().intValue();
+      }
 		else if( lmGroup instanceof com.cannontech.database.data.device.lm.LMGroupVersacom )
+      {
 			assignedRouteID = ((com.cannontech.database.data.device.lm.LMGroupVersacom) lmGroup).getLmGroupVersacom().getRouteID().intValue();
+      }
 		else if (lmGroup instanceof com.cannontech.database.data.device.lm.LMGroupRipple)
+      {
 			assignedRouteID = ((com.cannontech.database.data.device.lm.LMGroupRipple)lmGroup).getLmGroupRipple().getRouteID().intValue();
-		else if (lmGroup instanceof com.cannontech.database.data.device.lm.LMGroupPoint)
-		{
-		}
-		else if (lmGroup instanceof com.cannontech.database.data.device.lm.MacroGroup )
-		{
-		}
+      }
+      else if (lmGroup instanceof com.cannontech.database.data.device.lm.LMGroupExpressComm)
+      {
+         assignedRouteID = ((com.cannontech.database.data.device.lm.LMGroupExpressComm)lmGroup).getLMGroupExpressComm().getRouteID().intValue();
+      }
 
 		for( int i = 0 ; i < routes.size(); i++ )
 			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i)).getYukonID() == assignedRouteID )
