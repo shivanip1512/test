@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/03/13 19:36:07 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/04/01 16:00:15 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -132,7 +132,7 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
     /* Load up the hunks of the B structure that we need */
     BSt.Port                = Device->getPortID();
     BSt.Remote              = Device->getAddress();
-    BSt.DlcRoute.Amp        = 0; // Carrier.getAmpUseType();
+    BSt.DlcRoute.Amp        = ((CtiDeviceCCU *)Device)->getIDLC().getAmp();
     BSt.DlcRoute.Feeder     = Carrier.getBus();
     BSt.DlcRoute.RepVar     = Carrier.getCCUVarBits();
     BSt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
