@@ -14,6 +14,9 @@ import javax.swing.JComponent;
 import com.cannontech.common.util.FileFilter;
 import com.cannontech.esub.editor.Drawing;
 
+import com.loox.jloox.LxGraph;
+import com.loox.jloox.LxRotatable;
+
 /**
  * Creation date: (1/14/2002 4:28:01 PM)
  * @author: 
@@ -185,5 +188,23 @@ public static Image findImage(String imageName)
          }
    
     return img;       
+ }
+ 
+/**
+ * Rotate all the selected elements in g by the number
+ * of radians specified by r
+ * @param g
+ * @param r
+ */
+ public static void rotateSelected(LxGraph g, double r) {
+ 	Object[] sel = g.getSelectedObjects();
+ 	for( int i = 0; i < sel.length; i++ ) {
+ 		if( sel[i] instanceof LxRotatable ) {
+ 			LxRotatable rot = (LxRotatable) sel[i];
+ 			rot.rotate(r);
+ 			//LxComponent comp = (LxComponent) sel[i]; 		
+ 			//comp.rotateCenter(r, comp.getCenter()); 
+ 		}
+ 	}
  }
 }

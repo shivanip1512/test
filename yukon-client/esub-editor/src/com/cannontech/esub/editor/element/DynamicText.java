@@ -124,21 +124,6 @@ public void readFromJLX(InputStream in, String version) throws IOException
 	super.readFromJLX(in, version);
 
 	setPointID(LxSaveUtils.readInt(in));
-
-	// read in font
-/*	String fontName = LxSaveUtils.readString(in);
-	int fontSize = LxSaveUtils.readInt(in);
-	
-	Font f = new Font(fontName, Font.PLAIN, fontSize );
-	setFont(f);
-
-	//read color
-	int r = LxSaveUtils.readInt(in);
-	int g = LxSaveUtils.readInt(in);
-	int b = LxSaveUtils.readInt(in);
-
-	Color c = new Color(r, g, b);
-	setPaint(c);*/
 	
 	//read link
 	setLinkTo( LxSaveUtils.readString(in));
@@ -155,16 +140,6 @@ public void saveAsJLX(OutputStream out) throws IOException
 	
 	LxSaveUtils.writeInt(out, getPointID());
 
-	//write out font into
-/*	LxSaveUtils.writeString(out, getFont().getName());
-	LxSaveUtils.writeInt(out, getFont().getSize());
-	
-	//save color
-	Color textColor = (Color) getPaint();
-	LxSaveUtils.writeInt(out, textColor.getRed());
-	LxSaveUtils.writeInt(out, textColor.getGreen());
-	LxSaveUtils.writeInt(out, textColor.getBlue());
-*/	
 	//save link
 	LxSaveUtils.writeString(out, getLinkTo() );
 	
@@ -217,6 +192,15 @@ public void setPointID(int newPointID) {
 	 */
 	public void setDrawing(Drawing d) {
 		this.drawing = d;
+	}
+ 
+	/**
+	 * @see java.lang.Object#clone()
+	 */
+	public Object clone()  {
+		Object v = super.clone();		 
+		return v;
+// 	return super.clone();
 	}
 
 }

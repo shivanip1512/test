@@ -43,6 +43,14 @@ class EditorActions {
 	public static final String STATIC_TEXT = "STATIC TEXT";
 	
 	//Element or group of elements related actions
+	public static final String ROTATE_ELEMENT_90 = "ROTATE 90";
+	public static final String ROTATE_ELEMENT_180 = "ROTATE 180";
+	public static final String ROTATE_ELEMENT_270 = "ROTATE 270";
+	
+	public static final String CUT_ELEMENT = "CUT ELEMENT";
+	public static final String COPY_ELEMENT = "COPY ELEMENT";
+	public static final String PASTE_ELEMENT = "PASTE ELEMENT";
+	
 	public static final String DELETE_ELEMENT = "DELETE ELEMENT";
 	public static final String TO_FRONT_LAYER = "TO FRONT";
 	public static final String TO_BACK_LAYER = "TO BACK";
@@ -163,6 +171,85 @@ class EditorActions {
 		}
 	};
 
+	private final LxAbstractAction rotateElement90Action = 
+		new LxAbstractAction(
+			ROTATE_ELEMENT_90,
+			"90",
+			"90",
+			null,
+			true) {
+		public void processAction(ActionEvent e) {
+			System.out.println("rotate 90");
+			Util.rotateSelected(editor.getDrawing().getLxGraph(), Math.PI/2.0);
+		}
+	};
+		
+	private final LxAbstractAction rotateElement180Action = 
+		new LxAbstractAction(
+			ROTATE_ELEMENT_180,
+			"180",
+			"180",
+			null,
+			true) {
+		public void processAction(ActionEvent e) {
+			System.out.println("rotate 180");
+			Util.rotateSelected(editor.getDrawing().getLxGraph(), Math.PI/1.0);
+		}
+	};
+	
+	private final LxAbstractAction rotateElement270Action = 
+		new LxAbstractAction (
+			ROTATE_ELEMENT_270,
+			"270",
+			"270",
+			null,
+			true) {
+		public void processAction(ActionEvent e) {
+			System.out.println("rotate 270");
+			Util.rotateSelected(editor.getDrawing().getLxGraph(), 3.0*Math.PI/2.0);
+		}
+	};
+		
+			
+	private final LxAbstractAction cutElementAction =
+		new LxAbstractAction(
+			CUT_ELEMENT,
+			"Cut",
+			"Cut",
+			null,
+			true) {
+		public void processAction(ActionEvent e) {
+			System.out.println("cut");
+			editor.getDrawing().getLxGraph().cutSelection();
+		}
+	};
+	
+	private final LxAbstractAction copyElementAction = 
+		new LxAbstractAction(
+			COPY_ELEMENT,
+			"Copy",
+			"Copy", 
+			null,
+			true) {
+		public void processAction(ActionEvent e) {
+			System.out.println("copy");
+			editor.getDrawing().getLxGraph().copySelection();
+		}
+	};
+	
+	private final LxAbstractAction pasteElementAction =
+		new LxAbstractAction(
+			PASTE_ELEMENT,
+			"Paste",
+			"Paste",
+			null,
+			true) {
+		public void processAction(ActionEvent e) {
+			System.out.println("paste");
+			editor.getDrawing().getLxGraph().pasteFromClipboard();
+		}
+	}; 
+			
 	private final LxAbstractAction toFrontLayerAction =
 		new LxAbstractAction(
 			TO_FRONT_LAYER,
@@ -428,6 +515,14 @@ class EditorActions {
 
 		actionMap.put(DELETE_ELEMENT, deleteElementAction);
 
+		actionMap.put(ROTATE_ELEMENT_90, rotateElement90Action);
+		actionMap.put(ROTATE_ELEMENT_180, rotateElement180Action);
+		actionMap.put(ROTATE_ELEMENT_270, rotateElement270Action);
+		
+		actionMap.put(CUT_ELEMENT, cutElementAction);
+		actionMap.put(COPY_ELEMENT, copyElementAction);
+		actionMap.put(PASTE_ELEMENT, pasteElementAction);
+		
 		actionMap.put(TO_FRONT_LAYER, toFrontLayerAction);
 		actionMap.put(TO_BACK_LAYER, toBackLayerAction);
 

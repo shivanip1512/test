@@ -275,7 +275,7 @@ public class Editor extends JPanel {
 	}
 	public void newDrawing() {
 
-		getDrawing().clear();
+		getDrawing().clear();		
 		/*			
 		JFileChooser fileChooser =
 			com.cannontech.esub.util.Util.getDrawingJFileChooser();
@@ -463,7 +463,8 @@ public class Editor extends JPanel {
 		if (elem instanceof com.cannontech.esub.editor.element.DynamicText
 			|| elem instanceof com.cannontech.esub.editor.element.StateImage
 			|| elem instanceof com.cannontech.esub.editor.element.StaticImage
-			|| elem instanceof com.cannontech.esub.editor.element.StaticText) {
+			|| elem instanceof com.cannontech.esub.editor.element.StaticText) {				
+			elem.setUserResizable(false);
 			elem.removeDefaultDoubleClickBehavior();
 			elem.addMouseListener(editElementMouseListener);
 		}

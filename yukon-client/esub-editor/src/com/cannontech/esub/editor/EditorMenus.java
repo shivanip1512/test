@@ -5,6 +5,7 @@ package com.cannontech.esub.editor;
  * @author: 
  */
 
+import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -12,6 +13,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
+import javax.swing.KeyStroke;
 
 import com.loox.jloox.LxAbstractAction;
 
@@ -93,20 +95,52 @@ private void initialize(EditorActions actions) {
 	fileMenu.add(exitItem);
 
 	JMenu editMenu = new JMenu("Edit");
+	
+	action = actions.getAction(EditorActions.CUT_ELEMENT);
+	JMenuItem cutItem = createMenuItem(action.getLabel(), action);
+	cutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK));
+	
+	action = actions.getAction(EditorActions.COPY_ELEMENT);
+	JMenuItem copyItem = createMenuItem(action.getLabel(), action);
+	copyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK));
+	
+	action = actions.getAction(EditorActions.PASTE_ELEMENT);
+	JMenuItem pasteItem = createMenuItem(action.getLabel(), action);
+	pasteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK));
 
+	action = actions.getAction(EditorActions.DELETE_ELEMENT);
+	JMenuItem deleteItem = createMenuItem(action.getLabel(), action);	
+			
+	JMenu rotateSubMenu = new JMenu("Rotate");
+	
+	action = actions.getAction(EditorActions.ROTATE_ELEMENT_90);
+	JMenuItem rotateNinetyItem = createMenuItem(action.getLabel(), action);
+	
+	action = actions.getAction(EditorActions.ROTATE_ELEMENT_180);
+	JMenuItem rotateOneEightyItem = createMenuItem(action.getLabel(), action);
+	
+	action = actions.getAction(EditorActions.ROTATE_ELEMENT_270);
+	JMenuItem rotateTwoSeventyItem = createMenuItem(action.getLabel(), action);
+	
 	action = actions.getAction(EditorActions.TO_FRONT_LAYER);
 	JMenuItem toFrontItem = createMenuItem(action.getLabel(), action);
 
 	action = actions.getAction(EditorActions.TO_BACK_LAYER);
 	JMenuItem toBackItem = createMenuItem(action.getLabel(), action);
 
-	action = actions.getAction(EditorActions.DELETE_ELEMENT);
-	JMenuItem deleteItem = createMenuItem(action.getLabel(), action);
-	
+	rotateSubMenu.add(rotateNinetyItem);
+	rotateSubMenu.add(rotateOneEightyItem);
+	rotateSubMenu.add(rotateTwoSeventyItem);	
+		
+	editMenu.add(cutItem);
+	editMenu.add(copyItem);
+	editMenu.add(pasteItem);	
+	editMenu.add(deleteItem);
+	editMenu.add(new JSeparator());
+	editMenu.add(rotateSubMenu);
+	editMenu.add(new JSeparator());	
 	editMenu.add(toFrontItem);
 	editMenu.add(toBackItem);
-	editMenu.add(new javax.swing.JSeparator());
-	editMenu.add(deleteItem);
 	
 	// Add cut copy paste here
 
