@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2004/02/16 20:59:32 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2004/05/19 14:59:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -248,6 +248,7 @@ public:
     void loadRTDB(bool force = false, CtiMessage *pMsg = NULL);     // Loads all relevant RTDB elements
     void loadDeviceNames();
     void loadCICustomers(LONG id = 0);
+    RWCString resolveDeviceNameByPaoId(const LONG PAOId);
     RWCString resolveDeviceName(const CtiPointBase &aPoint);
     RWCString resolveDeviceObjectType(const LONG devid);
     RWCString resolveDeviceDescription(LONG PAO);

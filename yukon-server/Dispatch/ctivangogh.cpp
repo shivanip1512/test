@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2004/04/29 20:08:51 $
+* REVISION     :  $Revision: 1.65 $
+* DATE         :  $Date: 2004/05/19 14:59:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -107,27 +107,29 @@ static int CntlStopInterval = 60;
 
 RWCString AlarmTagsToString(UINT tags)
 {
-    RWCString str;
+    RWCString rstr(" Alarm ");
 
-    if(tags & TAG_ACTIVE_ALARM)
+    if( (tags & TAG_ACTIVE_ALARM) && (tags & TAG_UNACKNOWLEDGED_ALARM) )
     {
-        str = gConfigParms.getValueAsString("DISPATCH_ACTIVE_ALARM_TEXT", "ABNORMAL") + " / ";
+        // Active and unacknowledged.. this is the toggling state
+        rstr += gConfigParms.getValueAsString("DISPATCH_UNACK_ALARM_TEXT", "Unacknowledged") + " (" + gConfigParms.getValueAsString("DISPATCH_ACTIVE_ALARM_TEXT", "Condition Active") + ")";
     }
-    else
+    else if( !(tags & TAG_ACTIVE_ALARM) && tags & TAG_UNACKNOWLEDGED_ALARM )
     {
-        str = gConfigParms.getValueAsString("DISPATCH_INACTIVE_ALARM_TEXT", "NORMAL") + " / ";
+        // Alarm condition is not active, but the alarm has not been acknowledged
+        rstr += gConfigParms.getValueAsString("DISPATCH_UNACK_ALARM_TEXT", "Unacknowledged") + " (" + gConfigParms.getValueAsString("DISPATCH_INACTIVE_ALARM_TEXT", "Condition Inactive") + ")";
+    }
+    else if( (tags & TAG_ACTIVE_ALARM) && !(tags & TAG_UNACKNOWLEDGED_ALARM) )
+    {
+        rstr += gConfigParms.getValueAsString("DISPATCH_ACK_ALARM_TEXT", "Acknowledged") + " (" + gConfigParms.getValueAsString("DISPATCH_ACTIVE_ALARM_TEXT", "Condition Active") + ")";
+    }
+    else if( !(tags & TAG_ACTIVE_ALARM) && !(tags & TAG_UNACKNOWLEDGED_ALARM) )
+    {
+        // There is no alarm condition anymore, this report ends the sequence
+        rstr += "Cleared";
     }
 
-    if(tags & TAG_UNACKNOWLEDGED_ALARM)
-    {
-        str += gConfigParms.getValueAsString("DISPATCH_UNACK_ALARM_TEXT", "UNACK") + ": ";
-    }
-    else
-    {
-        str += gConfigParms.getValueAsString("DISPATCH_ACK_ALARM_TEXT", "ACK") + ": ";
-    }
-
-    return str;
+    return rstr;
 }
 
 void ApplyBlankDeletedConnection(CtiMessage*&Msg, void *Conn);
@@ -267,7 +269,7 @@ void CtiVanGogh::VGMainThread()
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << "  Message reported itserf as invalid " << endl;
+                                    dout << "  Message reported itself as invalid " << endl;
                                 }
 
                                 delete MsgPtr;
@@ -1027,6 +1029,19 @@ int CtiVanGogh::postDBChange(const CtiDBChangeMsg &Msg)
             }
 
             RWCString desc = RWCString(temp) + resolveDBChangeType(Msg.getTypeOfChange()) + resolveDBChanged(Msg.getDatabase());
+
+            if(Msg.getDatabase() == ChangePAODb)
+            {
+                desc += " " + resolveDeviceNameByPaoId(Msg.getId());
+            }
+            else if(Msg.getDatabase() == ChangePointDb)
+            {
+                CtiPoint *pt = PointMgr.getEqual(Msg.getId());
+                if(pt)
+                {
+                    desc += " " + resolveDeviceNameByPaoId(pt->getDeviceID()) + " / " + pt->getName();
+                }
+            }
 
             CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(0, 0, desc, "DATABASE CHANGE");
 
@@ -2332,7 +2347,7 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
                                 sigMsg->setLogID(sig.getLogID());
                                 /*
                                  *  Last thing we do is add this signal to the pending signal list iff it is an alarm
-                                 *  AND it is not an cleared alarm....  This second condition prevents clear reports
+                                 *  AND it is not an cleared alarm....  This second condition prevents ack/clear reports
                                  *  from being kept on the pending list.
                                  */
 
@@ -4345,6 +4360,27 @@ RWCString CtiVanGogh::resolveDeviceName(const CtiPointBase &aPoint)
     if(devid > 0)
     {
         CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(devid);
+
+        if( dliteit != _deviceLiteSet.end() )
+        {
+            // dliteit should be an iterator which represents the lite device now!
+            CtiDeviceBaseLite &dLite = *dliteit;
+            rStr = dLite.getName();
+        }
+    }
+
+    return rStr;
+}
+
+/*
+ *  returns name of the device.
+ */
+RWCString CtiVanGogh::resolveDeviceNameByPaoId(const LONG PAOId)
+{
+    RWCString rStr;
+    if(PAOId > 0)
+    {
+        CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(PAOId);
 
         if( dliteit != _deviceLiteSet.end() )
         {
@@ -6759,8 +6795,15 @@ void CtiVanGogh::deactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPoin
         pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
         pDyn->getDispatch().setTags( _signalManager.getAlarmMask(point.getID()) );
 
-        pSigActive->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS | (point.getAlarming().getNotifyOnAcknowledge() ? 0 : TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL) );
-        pSigActive->setText(AlarmTagsToString(pSigActive->getTags()) + pSigActive->getText());
+        unsigned sigtags = (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS;
+
+        if( (pDyn->getDispatch().getTags() & MASK_ANY_ALARM) || !point.getAlarming().getNotifyOnClear() )
+        {
+            sigtags |= TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL;
+        }
+
+        pSigActive->setTags( sigtags );
+        pSigActive->setText( pSigActive->getText() + AlarmTagsToString(pSigActive->getTags()) );
         pSigActive->setMessageTime( RWTime() );
 
         aWrap.getMulti()->insert( pSigActive );
@@ -6777,8 +6820,8 @@ void CtiVanGogh::reactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPoin
         pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
         pDyn->getDispatch().setTags( _signalManager.getAlarmMask(point.getID()) );
 
-        pSigActive->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS | (point.getAlarming().getNotifyOnAcknowledge() ? 0 : TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL) );
-        pSigActive->setText(AlarmTagsToString(pSigActive->getTags()) + pSigActive->getText());
+        pSigActive->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS | TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL );
+        pSigActive->setText( pSigActive->getText() + AlarmTagsToString(pSigActive->getTags()) );
         pSigActive->setMessageTime( RWTime() );
 
         aWrap.getMulti()->insert( pSigActive );
@@ -6819,8 +6862,18 @@ void CtiVanGogh::acknowledgeAlarmCondition( CtiPointBase *&pPt, const CtiCommand
             if(pDyn != NULL)
             {
                 pSigNew->setUser( Cmd->getUser() );
-                pSigNew->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS | (pPt->getAlarming().getNotifyOnAcknowledge() ? 0 : TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL ));
-                pSigNew->setText(AlarmTagsToString(pSigNew->getTags()) + pSigNew->getText());
+
+                unsigned sigtags = (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS | TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL;
+
+                bool almclear = (_signalManager.getAlarmMask(pPt->getPointID()) & MASK_ANY_ALARM) == 0; // true if no bits are set.
+
+                if( ( almclear && pPt->getAlarming().getNotifyOnClear() ) || pPt->getAlarming().getNotifyOnAcknowledge())
+                {
+                    sigtags &= ~TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL;   // Remove this to send the emails.
+                }
+
+                pSigNew->setTags( sigtags );
+                pSigNew->setText( pSigNew->getText() + AlarmTagsToString(pSigNew->getTags()) );
 
                 if( !pPt->getAlarming().getNotifyOnAcknowledge() )
                 {
