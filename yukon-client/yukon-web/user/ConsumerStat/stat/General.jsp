@@ -164,7 +164,29 @@
  }
 %>
                                 </table>
-                              </td>
+<%
+	if (programHistory != null && programHistory.getStarsLMProgramEventCount() > 0) {
+		StarsLMProgramEvent lastEvent = programHistory.getStarsLMProgramEvent(programHistory.getStarsLMProgramEventCount() - 1);
+		if (lastEvent.hasDuration() && lastEvent.getEventDateTime().after(new Date())) {
+			String period = "";
+			if (lastEvent.getDuration() <= 24) {
+				period = "for " + datePart.format(lastEvent.getEventDateTime());
+			}
+			else {
+				Calendar endDate = Calendar.getInstance();
+				endDate.setTime(lastEvent.getEventDateTime());
+				endDate.add(Calendar.HOUR_OF_DAY, lastEvent.getDuration());
+				period = "from " + datePart.format(lastEvent.getEventDateTime()) + " to " + datePart.format(endDate.getTime());
+			}
+%>
+								<br>
+                                <span class="MainText"><i>You have <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_OPT_OUT_NOUN %>" format="add_article" defaultvalue="an opt out"/> 
+                                event scheduled <%= period %>.</i></span>
+<%
+		}
+	}
+%>
+							  </td>
                             </tr>
                           </table>
                         </td>

@@ -89,9 +89,9 @@
               <div align="center" class="SubtitleHeader">Program History</div>
               <table width="366" border="1" cellspacing="0" align="center" cellpadding="3">
                 <tr> 
-                  <td class="HeaderCell" width="80" >Date</td>
-                  <td class="HeaderCell" width="150" >Type - Duration</td>
-                  <td class="HeaderCell" width="110" >Program</td>
+                  <td class="HeaderCell" width="75" >Date</td>
+                  <td class="HeaderCell" width="120" >Type - Duration</td>
+                  <td class="HeaderCell" width="145" >Program</td>
                 </tr>
 <%
 	if (programHistory != null) {
@@ -116,13 +116,13 @@
 			if (progNames.equals("")) continue;
 %>
                 <tr> 
-                  <td class="TableCell" width="80" ><%= datePart.format(event.getEventDateTime()) %></td>
-                  <td class="TableCell" width="150" ><%= event.getEventAction() %> 
+                  <td class="TableCell" width="75" ><%= datePart.format(event.getEventDateTime()) %></td>
+                  <td class="TableCell" width="120" ><%= event.getEventAction() %> 
                     <% if (event.hasDuration()) { %>
                     - <%= durationStr %> 
                     <% } %>
                     <%= scheduledStr %> </td>
-                  <td class="TableCell" width="110" ><%= progNames %></td>
+                  <td class="TableCell" width="145" ><%= progNames %></td>
                 </tr>
 <%
 		}

@@ -35,6 +35,8 @@
               <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_OPT_OUT, "PROGRAMS - OPT OUT"); %>
               <%@ include file="include/InfoSearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+			  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
+			  
               <table width="550" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td><div align="center">
@@ -61,37 +63,24 @@
                           <select name="OptOutPeriod">
 <%
 	StarsCustSelectionList periodList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD );
-	if (periodList != null) {
-		for (int i = 0; i < periodList.getStarsSelectionListEntryCount(); i++) {
-			StarsSelectionListEntry entry = periodList.getStarsSelectionListEntry(i);
-			if (entry.getYukonDefID() > 0) {	// This is a special entry, e.g. "Today"
+	for (int i = 0; i < periodList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = periodList.getStarsSelectionListEntry(i);
+		if (entry.getYukonDefID() > 0) {	// This is a special entry, e.g. "Today"
 %>
 							<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
 <%
-			}
-			else {	// If entry.getYukonDefID() = x (<=0), then -x is the number of days to be opted out
+		}
+		else {	// If entry.getYukonDefID() = x (<=0), then -x is the number of days to be opted out
 %>
 							<option value="<%= entry.getYukonDefID() %>"><%= entry.getContent() %></option>
 <%
-			}
 		}
-	}
-	else {
-%>
-                            <option value="-1">One Day</option>
-                            <option value="-2">Two Days</option>
-                            <option value="-3">Three Days</option>
-                            <option value="-7">One Week</option>
-                            <option value="-14">Two Weeks</option>
-<%
 	}
 %>
                           </select>
                         </td>
                         <td width="180" align="center"> 
-                         
-                            <input type="submit" name="Submit" value="Submit" <% if (programs.getStarsLMProgramCount() == 0) out.print("disabled"); %>>
-                          
+                          <input type="submit" name="Submit" value="Submit" <% if (programs.getStarsLMProgramCount() == 0) out.print("disabled"); %>>
                         </td>
                       </tr>
                     </table>
@@ -99,11 +88,22 @@
                 </tr>
               </table>
               <p align="center" class="Subtext"><br>
-              <table width="150" border="0" cellspacing="0" cellpadding="3" align="center">
+              <table width="366" border="0" cellspacing="0" cellpadding="3" align="center">
                 <tr> 
-                  <td align="center">
-                    <input type="submit" value="Re-enable" onclick="this.form.action.value='ReenableProgram'"
+                    <td align="right" width="143"> 
+                      <input type="submit" value="Re-enable" onclick="this.form.action.value='ReenableProgram'"
 					 <% if (programs.getStarsLMProgramCount() == 0) out.print("disabled"); %>>
+                  </td>
+                    <td width="211"> 
+                      <%
+	String disabled = "disabled";
+	if (programHistory != null && programHistory.getStarsLMProgramEventCount() > 0) {
+		StarsLMProgramEvent lastEvent = programHistory.getStarsLMProgramEvent(programHistory.getStarsLMProgramEventCount() - 1);
+		if (lastEvent.hasDuration() && lastEvent.getEventDateTime().after(new Date()))
+			disabled = "";
+	}
+%>
+                      <input type="submit" value="Cancel Scheduled" onclick="this.form.action.value='CancelScheduledOptOut'" <%= disabled%>>
                   </td>
                 </tr>
               </table>
@@ -113,9 +113,9 @@
                 <p align="center" class="SubtitleHeader">Program History
                 <table width="366" border="1" cellspacing="0" align="center" cellpadding="3">
                   <tr> 
-                    <td class="HeaderCell" width="100">Date</td>
-                    <td class="HeaderCell" width="154">Type - Duration</td>
-                    <td class="HeaderCell" width="100">Program</td>
+                    <td class="HeaderCell" width="75">Date</td>
+                    <td class="HeaderCell" width="120">Type - Duration</td>
+                    <td class="HeaderCell" width="145">Program</td>
                   </tr>
 <%
 	if (programHistory != null) {
@@ -143,12 +143,13 @@
 			if (progNames.equals("")) continue;
 %>
                   <tr> 
-                    <td class="TableCell" width="100" ><%= datePart.format(event.getEventDateTime()) %></td>
-                    <td class="TableCell" width="154" ><%= event.getEventAction() %> 
-                      <% if (event.hasDuration()) { %>- <%= durationStr %><% } %>
-					  <%= scheduledStr %>
-                    </td>
-                    <td class="TableCell" width="100" ><%= progNames %></td>
+                    <td class="TableCell" width="75" ><%= datePart.format(event.getEventDateTime()) %></td>
+                    <td class="TableCell" width="120" ><%= event.getEventAction() %> 
+                      <% if (event.hasDuration()) { %>
+                      - <%= durationStr %> 
+                      <% } %>
+                      <%= scheduledStr %> </td>
+                    <td class="TableCell" width="145" ><%= progNames %></td>
                   </tr>
 <%
 		}
