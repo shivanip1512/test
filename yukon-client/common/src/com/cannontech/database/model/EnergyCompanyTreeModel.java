@@ -21,7 +21,7 @@ public class EnergyCompanyTreeModel extends DBTreeModel
 {
 	private static String TITLE_STRING = "Energy Company";
 	/**
-	 * CICustomerTableModel constructor comment.
+	 * EnergyCompanyTreeModel constructor comment.
 	 * @param root javax.swing.tree.TreeNode
 	 */
 	public EnergyCompanyTreeModel() {

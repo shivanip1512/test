@@ -19,7 +19,7 @@ import com.cannontech.database.data.lite.LiteContact;
 public class CICustomerTreeModel extends DBTreeModel 
 {
 /**
- * CICustomerTableModel constructor comment.
+ * CICustomerTreeModel constructor comment.
  * @param root javax.swing.tree.TreeNode
  */
 public CICustomerTreeModel() {

@@ -22,7 +22,7 @@ public class EnergyCompanyCheckBoxTreeModel extends CheckBoxDBTreeModel
 {
 	private static String TITLE_STRING = "Energy Company";
 	/**
-	 * CICustomerTableModel constructor comment.
+	 * EnergyCompanyCheckBoxTreeModel constructor comment.
 	 * @param root javax.swing.tree.TreeNode
 	 */
 	public EnergyCompanyCheckBoxTreeModel()
