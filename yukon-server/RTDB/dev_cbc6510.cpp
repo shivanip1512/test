@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/10/09 19:46:58 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/10/18 14:37:14 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,7 +66,18 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pars
         int offset;
         CtiDNPBinaryOutputControl::ControlCode controltype;
 
-        offset = (parse.getFlags() & CMD_FLAG_CTL_OPEN) ? 2 : 1;
+        if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
+        {
+            offset = 2;
+        }
+        else if( parse.getFlags() & CMD_FLAG_CTL_CLOSE )
+        {
+            offset = 1;
+        }
+        else
+        {
+            offset = 0;
+        }
 
         CtiProtocolDNP::dnp_output_point controlout;
 
