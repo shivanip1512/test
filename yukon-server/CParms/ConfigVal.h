@@ -1,11 +1,11 @@
 #ifndef  __CONFIGVAL_H__
 #define  __CONFIGVAL_H__
 
-#include "rw/collect.h"
-#include "rw/cstring.h"
+#include <rw/collect.h>
+#include <rw/cstring.h>
 
-#include "rw/pstream.h"
-#include "rw/rstream.h"
+#include <rw/pstream.h>
+#include <rw/rstream.h>
 
 class CtiConfigValue : public RWCollectable
 {
@@ -13,7 +13,7 @@ private:
    RWCString Value;
 public:
    RWDECLARE_COLLECTABLE(CtiConfigValue);
-   
+
    CtiConfigValue();
    CtiConfigValue(RWCString val);
    ~CtiConfigValue() {}

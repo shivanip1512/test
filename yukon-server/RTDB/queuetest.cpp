@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/queuetest.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/11/15 14:08:22 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/18 16:45:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,7 @@
 #include "queent.h"
 #include "queue.h"
 
-#include "rw\cstring.h"
+#include <rw\cstring.h>
 
 void main(int argc, char **argv)
 {
