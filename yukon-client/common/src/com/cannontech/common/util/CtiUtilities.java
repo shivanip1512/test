@@ -44,8 +44,11 @@ public final class CtiUtilities
 	public static final String ENABLED_STRING = "enabled";
 	public static final String DISABLED_STRING = "disabled";
 	
+	//PAOExclusion functionID constants
 	public static final String EXCLUSION_TIME_INFO = "TimeInfo";
 	public static final Integer EXCLUSION_TIMING_FUNC_ID = new Integer(2);
+	public static final String LM_SUBORDINATION_INFO = "LMMemberControl";
+	public static final Integer LM_SUBORDINATION_FUNC_ID = new Integer(3);
 	
 	private static java.util.GregorianCalendar gc1990 = null;
 	
