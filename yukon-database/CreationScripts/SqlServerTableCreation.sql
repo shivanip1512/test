@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     9/25/2003 6:20:23 PM                         */
+/* Created on:     9/26/2003 10:03:26 AM                        */
 /*==============================================================*/
 
 
@@ -4448,18 +4448,18 @@ go
 
 
 /*==============================================================*/
-/* Index: Indx_SYSLG_PtId                                       */
+/* Index: Indx_SOELG_PtId                                       */
 /*==============================================================*/
-create   index Indx_SYSLG_PtId on SOELog (
+create   index Indx_SOELG_PtId on SOELog (
 PointID
 )
 go
 
 
 /*==============================================================*/
-/* Index: Indx_SYSLG_Date                                       */
+/* Index: Indx_SOELG_Date                                       */
 /*==============================================================*/
-create   index Indx_SYSLG_Date on SOELog (
+create   index Indx_SOELG_Date on SOELog (
 SOEDateTime
 )
 go

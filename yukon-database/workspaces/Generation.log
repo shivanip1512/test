@@ -1058,8 +1058,8 @@ Creating Tables...
 -> Creating keys of the table SOELog (SOELog)...
 -> Key : SYS_SOELog_PK (SYS_SOELog_PK)
 -> Creating indexes of the table SOELog (SOELog)...
--> Index : Indx_SYSLG_PtId (Indx_SYSLG_PtId)
--> Index : Indx_SYSLG_Date (Indx_SYSLG_Date)
+-> Index : Indx_SOELG_PtId (Indx_SOELG_PtId)
+-> Index : Indx_SOELG_Date (Indx_SOELG_Date)
 -> Index : Indx_SOELog_PK (Indx_SOELog_PK)
 -> Table : STATE (STATE)
 -> Creating keys of the table STATE (STATE)...
@@ -1383,5 +1383,7 @@ Generation successful
 
 Usage:
   (1) Go to the directory D:\eclipse\head\yukon-database\CreationScripts\
-  (2) Run the database creation script:
-        isql -U<username> -P<password>  < SqlServerTableCreation.sql
+  (2) Start the SQL interpreter:
+        sqlplus <username>/<password>
+  (3) Run the database creation script:
+        start OracleTableCreation.sql

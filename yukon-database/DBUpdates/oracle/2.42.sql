@@ -90,10 +90,10 @@ create table SOELog  (
 );
 alter table SOELog
    add constraint SYS_SOELog_PK primary key (LogID);
-create index Indx_SYSLG_PtId on SOELog (
+create index Indx_SOELG_PtId on SOELog (
    PointID ASC
 );
-create index Indx_SYSLG_Date on SOELog (
+create index Indx_SOELG_Date on SOELog (
    SOEDateTime ASC
 );
 create unique index Indx_SOELog_PK on SOELog (

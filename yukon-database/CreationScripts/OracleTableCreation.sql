@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     9/25/2003 5:26:24 PM                         */
+/* Created on:     9/26/2003 10:07:04 AM                        */
 /*==============================================================*/
 
 
@@ -4034,18 +4034,18 @@ alter table SOELog
 
 
 /*==============================================================*/
-/* Index: Indx_SYSLG_PtId                                       */
+/* Index: Indx_SOELG_PtId                                       */
 /*==============================================================*/
-create index Indx_SYSLG_PtId on SOELog (
+create index Indx_SOELG_PtId on SOELog (
    PointID ASC
 )
 /
 
 
 /*==============================================================*/
-/* Index: Indx_SYSLG_Date                                       */
+/* Index: Indx_SOELG_Date                                       */
 /*==============================================================*/
-create index Indx_SYSLG_Date on SOELog (
+create index Indx_SOELG_Date on SOELog (
    SOEDateTime ASC
 )
 /
