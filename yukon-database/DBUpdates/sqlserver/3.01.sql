@@ -365,6 +365,14 @@ insert into yukongrouprole values (-888,-301,-201,-20888,'(none)');
 insert into yukongrouprole values (-889,-301,-201,-20889,'(none)');
 
 
+/* RADIUS (safeword) Role/Properties */
+insert into YukonRole values(-4,'Radius Login','Yukon','Settings for using RADIUS server to login instead of standard yukon login.');
+
+insert into YukonRoleProperty values(-1300,-4,'radius_server_address','(none)','Radius server machine address');
+insert into YukonRoleProperty values(-1301,-4,'radius_auth_port','1812','Radius authentication port.');
+insert into YukonRoleProperty values(-1302,-4,'radius_acct_port','1813','Radius accounting port.');
+insert into YukonRoleProperty values(-1303,-4,'radius_secret_key','(none)','Radius clients secret key value, defined by the radius server.');
+insert into YukonRoleProperty values(-1304,-4,'radius_auth_method','PAP','Radius authentication method. Possible values are PAP, [chap, others to follow soon]');
 
 
 
