@@ -2,6 +2,8 @@ package com.cannontech.common.cache;
 
 import java.util.logging.Logger;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * PointChangeCache provides the current value of all Yukon points.
  * 
@@ -183,6 +185,11 @@ public java.util.Date getLastChange() {
 public com.cannontech.message.dispatch.message.Signal getSignal(long pointId) {
 	return (com.cannontech.message.dispatch.message.Signal) signalData.get( new Long(pointId) );
 }
+
+public String getState(long pointId, double value) {
+	return getState(pointId, value, CtiUtilities.getDatabaseAlias());
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/31/00 1:03:43 PM)
