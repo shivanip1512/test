@@ -3,7 +3,6 @@
  */
 package com.cannontech.common.cache;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,14 +14,14 @@ import java.util.Timer;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
-import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.porter.ClientConnection;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
-import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.conns.ConnPool;
 
 /**
  * PILCommandCache provides stateless clients a way to have a converstation with PIL.
@@ -41,7 +40,7 @@ public class PILCommandCache implements MessageListener, Observer {
 	private static final int PURGE_INTERVAL = 300;// * 1000;
 	 
 	//connection to PIL
-	private ClientConnection pilConn = null;
+	//private ClientConnection pilConn = null;
 	
 	//message ID, this is how we match responses with requests
 	private int messageID = 1;
@@ -126,8 +125,9 @@ public class PILCommandCache implements MessageListener, Observer {
 
 			Pair reqEntry = new Pair(reqMsgList.getVector().subList(0, reqMsgList.getVector().size()), new ArrayList());
 			reqRetMap.put(new Integer(id), reqEntry);
-		}		
-		pilConn.write(reqMsgList);
+		}
+        
+		getPilConn().write(reqMsgList);
 		
 		
 		return id;
@@ -182,17 +182,18 @@ public class PILCommandCache implements MessageListener, Observer {
 	 */	
 	public void update(Observable o, Object arg) {
 		if(o instanceof ClientConnection) {
-			if( pilConn.isValid() )
-				CTILogger.debug("Connection established to " + pilConn.getHost() + ":" + pilConn.getPort());
+			if( getPilConn().isValid() )
+				CTILogger.debug("Connection established to " + getPilConn().getHost() + ":" + getPilConn().getPort());
 			else
-				CTILogger.debug("Connection to " + pilConn.getHost() + ":" + pilConn.getPort() + " is down");
+				CTILogger.debug("Connection to " + getPilConn().getHost() + ":" + getPilConn().getPort() + " is down");
 		}
 	}
 
-	/**
+    /**
 	 * Connect to PIL
 	 *
 	 */
+/*
 	private void connect() 
 	{
 		String host = RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_MACHINE );
@@ -221,7 +222,7 @@ public class PILCommandCache implements MessageListener, Observer {
 			CTILogger.warn("An error occured connecting with porter");
 		}			
 	}
-	
+*/
 	/**
 	 * accessor func to look up a message entry
 	 * @param messageID
@@ -243,6 +244,12 @@ public class PILCommandCache implements MessageListener, Observer {
 		}
 		return messageID;
 	}
+    
+    private IServerConnection getPilConn()
+    {
+        return ConnPool.getInstance().getDefPorterConn();        
+    }
+
 	
 	/**
 	 * Returns the singleton instance of this class
@@ -251,7 +258,7 @@ public class PILCommandCache implements MessageListener, Observer {
 	public static synchronized PILCommandCache getInstance() {
 		if(instance == null) {
 			instance = new PILCommandCache();
-			instance.connect();
+			//instance.connect();
 		}
 		return instance;
 	}
@@ -260,9 +267,12 @@ public class PILCommandCache implements MessageListener, Observer {
 	 * For now only allow a single instance of this
 	 *
 	 */
-	private PILCommandCache() {
+	private PILCommandCache()
+    {
 		//class cast when this runs, something is broken
 		//purgeTimer.scheduleAtFixedRate(new PurgeTask(), PURGE_INTERVAL, PURGE_INTERVAL);
+        
+        getPilConn().addObserver( this );        
 	}
 
 }

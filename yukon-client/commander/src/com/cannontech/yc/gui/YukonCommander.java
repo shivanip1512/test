@@ -38,6 +38,8 @@ import com.cannontech.yc.gui.menu.YCCommandMenu;
 import com.cannontech.yc.gui.menu.YCFileMenu;
 import com.cannontech.yc.gui.menu.YCHelpMenu;
 import com.cannontech.yc.gui.menu.YCViewMenu;
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.conns.ConnPool;
 
 public class YukonCommander extends javax.swing.JFrame implements com.cannontech.database.cache.DBChangeListener, java.awt.event.ActionListener, java.awt.event.FocusListener, java.awt.event.KeyListener, javax.swing.event.TreeSelectionListener, java.awt.event.MouseListener, java.util.Observer {
 	private YC yc;
@@ -185,7 +187,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		else if( event.getSource() == getCommandPanel().getStopButton() ||
 				event.getSource() == getYCCommandMenu().stopMenuItem )
 		{
-			if( !getConnToPorter().isValid() )
+			if( !getPilConn().isValid() )
 			{
 				getCommandLogPanel().addLogElement(" ** Warning: Not connected to port control service **");
 				return;
@@ -720,13 +722,15 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	}
 
 	/**
-	 * Returns ycClass.getConnToPorter().
+     * Gets the singleton connection to Pil
+     * 
 	 * @return ClientConnection
 	 */
-	private com.cannontech.message.porter.ClientConnection getConnToPorter() 
-	{
-		return getYC().getConnToPorter();
-	}
+    private IServerConnection getPilConn()
+    {
+        return ConnPool.getInstance().getDefPorterConn();        
+    }
+
 	/**
 	 * Returns the ivjDebugOutputScrollPane.
 	 * @return javax.swing.JScrollPane
@@ -1314,7 +1318,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	 */
 	private boolean isValidSetup()
 	{
-		if( getConnToPorter().isValid() )
+		if( getPilConn().isValid() )
 		{
 			if( getYC().getCommandMode() == YC.CGP_MODE )//CGPMode - User determines validity, not code.
 			{

@@ -25,8 +25,11 @@ import com.cannontech.common.gui.panel.*;
 import com.cannontech.common.gui.util.MessagePanel;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
 import com.cannontech.message.dispatch.message.Multi;
+import com.cannontech.message.util.ConnStateChange;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 
-public class ReceiverMainPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.MouseListener, javax.swing.event.ListSelectionListener, javax.swing.event.TableModelListener, java.util.Observer, javax.swing.event.PopupMenuListener 
+public class ReceiverMainPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.MouseListener, javax.swing.event.ListSelectionListener, javax.swing.event.TableModelListener, MessageListener, javax.swing.event.PopupMenuListener 
 {
 	//private javax.swing.JSplitPane jSplitPaneOuter = null;
 	//private javax.swing.JSplitPane jSplitPaneInner = null;
@@ -290,7 +293,7 @@ public String[] createPrintableText()
 public void destroy() 
 {
 	getCapBankTableModel().clear();
-	getConnectionWrapper().deleteObserver( this );
+	getConnectionWrapper().removeMessageListener( this );
 }
 
 /**
@@ -1285,9 +1288,9 @@ private void initialize()
 	createMessagePanel();	
 
 	//Observer connection state changes
-	getConnectionWrapper().addObserver(this);
-	update( getConnectionWrapper(), getConnectionWrapper() );
-	
+	getConnectionWrapper().addMessageListener(this);
+    messageReceived( 
+            new MessageEvent( this, new ConnStateChange(getConnectionWrapper().isValid())) );	
 }
 /**
  * This method was created in VisualAge.
@@ -1568,44 +1571,86 @@ public void tableChanged(TableModelEvent event )
  * @param o java.util.Observable
  * @param val java.lang.Object
  */
-public void update(java.util.Observable o, Object val)
+//public void update(java.util.Observable o, Object val)
+//{
+//	//Should be an instance of com.cannontech.cbc.data.CBCClientConnection
+//	//notifying us of a change in the connections state
+//	com.cannontech.cbc.data.CBCClientConnection conn = (com.cannontech.cbc.data.CBCClientConnection)o;
+//
+//	boolean validConn = conn.isValid();
+//	
+//	//Clear the list table of schedules if the connection isn't good
+//	if ( !validConn && (lastConnectionStatus || startingUp) )
+//	{
+//		getSubBusTableModel().clear();		
+//		messagePanel.messageEvent(new com.cannontech.common.util.MessageEvent(this, 
+//			"No connection to CBC server", com.cannontech.common.util.MessageEvent.ERROR_MESSAGE));
+//	}
+//	else if( validConn && (!lastConnectionStatus || startingUp) )
+//	{
+//		messagePanel.messageEvent(new com.cannontech.common.util.MessageEvent(this, 
+//			"Connection to CBC server established", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
+//	}	
+//	
+//	final java.awt.Frame f = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+//	
+//	if (f != null)
+//	{
+//		String title = TITLE;
+//		
+//		if (validConn)
+//			title += "   [Connected to CBCServer@" + conn.getHost() + ":" + conn.getPort() + "]";
+//		else
+//			title += "   [Not Connected to CBCServer]";
+//		
+//		f.setTitle( title );
+//	}
+//
+//	lastConnectionStatus = validConn;
+//	startingUp = false;
+//}
+
+public void messageReceived( MessageEvent msg )
 {
-	//Should be an instance of com.cannontech.cbc.data.CBCClientConnection
-	//notifying us of a change in the connections state
-	com.cannontech.cbc.data.CBCClientConnection conn = (com.cannontech.cbc.data.CBCClientConnection)o;
+    if( msg.getMessage() instanceof ConnStateChange )
+    {
+        ConnStateChange chgMsg = (ConnStateChange)msg.getMessage();
 
-	boolean validConn = conn.isValid();
-	
-	//Clear the list table of schedules if the connection isn't good
-	if ( !validConn && (lastConnectionStatus || startingUp) )
-	{
-		getSubBusTableModel().clear();		
-		messagePanel.messageEvent(new com.cannontech.common.util.MessageEvent(this, 
-			"No connection to CBC server", com.cannontech.common.util.MessageEvent.ERROR_MESSAGE));
-	}
-	else if( validConn && (!lastConnectionStatus || startingUp) )
-	{
-		messagePanel.messageEvent(new com.cannontech.common.util.MessageEvent(this, 
-			"Connection to CBC server established", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
-	}	
-	
-	final java.awt.Frame f = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
-	
-	if (f != null)
-	{
-		String title = TITLE;
-		
-		if (validConn)
-			title += "   [Connected to CBCServer@" + conn.getHost() + ":" + conn.getPort() + "]";
-		else
-			title += "   [Not Connected to CBCServer]";
-		
-		f.setTitle( title );
-	}
+        boolean validConn = chgMsg.isConnected();
+        
+        //Clear the list table of schedules if the connection isn't good
+        if ( !validConn && (lastConnectionStatus || startingUp) )
+        {
+            getSubBusTableModel().clear();      
+            messagePanel.messageEvent(new com.cannontech.common.util.MessageEvent(this, 
+                "No connection to CBC server", com.cannontech.common.util.MessageEvent.ERROR_MESSAGE));
+        }
+        else if( validConn && (!lastConnectionStatus || startingUp) )
+        {
+            messagePanel.messageEvent(new com.cannontech.common.util.MessageEvent(this, 
+                "Connection to CBC server established", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
+        }   
+        
+        final java.awt.Frame f = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+        
+        if (f != null)
+        {
+            String title = TITLE;
+            
+            if (validConn)
+                title += "   [Connected to CBCServer@" + getConnectionWrapper().getHost() + ":" + getConnectionWrapper().getPort() + "]";
+            else
+                title += "   [Not Connected to CBCServer]";
+            
+            f.setTitle( title );
+        }
 
-	lastConnectionStatus = validConn;
-	startingUp = false;
+        lastConnectionStatus = validConn;
+        startingUp = false;
+    }
+
 }
+
 /**
  * This method handles ListSelectionEvents generated by the strategy
  * JTable and the CapBankDeviceTable.

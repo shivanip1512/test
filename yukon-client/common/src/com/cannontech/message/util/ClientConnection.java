@@ -376,6 +376,9 @@ public void run()
 			
 			setChanged();
 			notifyObservers(this);
+            //use this for alerting clients to our connection state change
+            fireMessageEvent( new ConnStateChange(true) );
+            
 						
 			CTILogger.info("SOCKET open for " + this.getClass().getName() );
 
@@ -409,7 +412,10 @@ public void run()
 
 		setChanged();
 		notifyObservers(this);
+        //use this for alerting clients to our connection state change
+        fireMessageEvent( new ConnStateChange(false) );
 
+        
 
 		if( !getAutoReconnect() )
 			return;

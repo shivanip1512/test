@@ -9,6 +9,8 @@ import javax.swing.event.TableModelListener;
 import com.cannontech.cbc.data.CBCClientConnection;
 import com.cannontech.cbc.messages.CBCSubAreaNames;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
+import com.cannontech.message.util.ConnStateChange;
+import com.cannontech.message.util.MessageEvent;
 
 public class StrategyReceiver implements com.cannontech.tdc.SpecialTDCChild, TableModelListener
 {
@@ -427,7 +429,9 @@ public void setInitialTitle()
 {
 	// we must have the panel realize its the first time the connection
 	//  is being observed
-	mainPanel.update( getConnectionWrapper(), null );
+	mainPanel.messageReceived(
+	        new MessageEvent(
+                    this, new ConnStateChange(getConnectionWrapper().isValid())) );
 
 }
 /**

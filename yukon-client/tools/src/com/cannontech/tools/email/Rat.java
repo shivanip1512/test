@@ -4,6 +4,7 @@ package com.cannontech.tools.email;
  * Creation date: (11/8/2001 11:03:50 PM)
  * @author: 
  */
+
 import javax.mail.*;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.InternetAddress;
@@ -13,6 +14,9 @@ import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.porter.ClientConnection;
 import com.cannontech.message.porter.message.Request;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
+import com.cannontech.yukon.conns.ConnPool;
 
 class Rat
 {
@@ -289,19 +293,28 @@ private boolean executeCheckPorterConnection()
 	try
 	{
 		CTILogger.info("Trying to connect to:  " + getYukonHost() + " " + DISPATCH_PORT );
-		ClientConnection connection = new ClientConnection();
+        
+        //get his own porter connection
+        ClientConnection portConn = 
+            (ClientConnection)ConnPool.getInstance().getConn("rat_porter");
 
-		connection.setHost(getYukonHost());
-		connection.setPort(PORTER_PORT);
-		
-		connection.setAutoReconnect( false );
-		connection.setQueueMessages( true );
-		connection.connectWithoutWait();
+        portConn.setHost( getYukonHost() );
+        portConn.setPort( PORTER_PORT );
+
+        try 
+        {
+            portConn.connectWithoutWait();
+        }
+        catch( Exception e ) 
+        {
+            CTILogger.error( e.getMessage(), e );
+        }
+
 
 		//wait for our connection to connnect
 		for( int i = 0; i < 5; i++ )
 		{
-			if( connection.isValid() )
+			if( portConn.isValid() )
 				break;
 
 			try
@@ -310,34 +323,56 @@ private boolean executeCheckPorterConnection()
 			}
 			catch( InterruptedException e ) {}
 		}
-					
 
-		Object ret = null;	
+
+		boolean success = false;	
 		
-		if( connection.isValid() )
+		if( portConn.isValid() )
 		{	
 			CTILogger.info("Connection & Registration to Server Established.");
 			Request req = new Request();
 			req.setDeviceID(0);
 			req.setCommandString("control open select pointid -4");
 
-			connection.write(req);
-			
-			//wait 60 seconds at most for a response then stop
-			ret = connection.read( 60000 );
-			if(ret != null) 
+            //need a mutable final instance!
+            final boolean[] singleBool = { false };
+
+            portConn.addMessageListener(
+                new MessageListener()
+                {
+                    public void messageReceived(MessageEvent e)
+                    {
+                        singleBool[0] = true;
+                    }
+                });
+
+            try
+            {
+                portConn.write(req);
+
+                //wait 60 seconds at most for a response then stop
+                int i = 0;
+                while( i < 60 && !singleBool[0] )
+                    Thread.sleep(1000);
+            }
+            catch( InterruptedException e ) {}
+
+            
+            //how did we do?
+			if( singleBool[0] ) 
 			{
-				CTILogger.info("Control returned = " + ret.toString() );
+				CTILogger.info("Control returned ");
+                success = true;
 			}
 			else 
 			{
 				CTILogger.info("No message returned!");	
 			}
 
-			connection.disconnect();
+			portConn.disconnect();
 		}
 
-		return ret != null;
+		return success;
 	}	
 	catch( Exception e )
 	{

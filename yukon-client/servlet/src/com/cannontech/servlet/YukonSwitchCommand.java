@@ -32,6 +32,7 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.yukon.IServerConnection;
 
 public class YukonSwitchCommand extends javax.servlet.http.HttpServlet 
 {
@@ -249,7 +250,7 @@ private void sendCommand(String command)
 
 	if( connContainer != null )
 	{
-		com.cannontech.message.porter.ClientConnection conn = connContainer.getConnection();
+        IServerConnection conn = connContainer.getConnection();
 
 		if( conn != null )
 		{

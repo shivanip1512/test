@@ -4,50 +4,45 @@ package com.cannontech.servlet;
  * Maintains a connection to Port Control Server.
  * Stores itself in its servlet context so other
  * servlets can access the connection.
+ * 
  * Creation date: (3/21/2001 11:31:54 AM)
  * @author: Aaron Lauinger
  */
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.functions.RoleFuncs;
-import com.cannontech.message.porter.ClientConnection;
-import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.message.util.ConnStateChange;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.conns.ConnPool;
 
-public class PILConnectionServlet extends javax.servlet.http.HttpServlet implements java.util.Observer {
+public class PILConnectionServlet extends javax.servlet.http.HttpServlet implements MessageListener
+{
 
 	// Key used to store instances of this in the servlet context
 	public static String SERVLET_CONTEXT_ID = "PILConnection";
-	private ClientConnection conn;
+	//private ClientConnection conn;
 
 /**
  * Creation date: (3/21/2001 11:36:13 AM)
  */
 public void destroy() 
 {
-	// PUll this out of the servlet context
+	// Pull this out of the servlet context
 	getServletContext().removeAttribute(SERVLET_CONTEXT_ID);
-	
-	try
-	{
-		if( conn != null )
-		{
-			conn.disconnect();
-		}
-	}
-	catch( java.io.IOException ioe )
-	{
-		CTILogger.error("An exception occured disconnecting from PIL", ioe);
-	}
 
 	super.destroy();
 }
+
 /**
  * Creation date: (3/21/2001 1:41:38 PM)
  * @return com.cannontech.macs.MACSClientConnection
  */
-public ClientConnection getConnection() {
-	return conn;
+public IServerConnection getConnection()
+{
+    return ConnPool.getInstance().getDefPorterConn();        
 }
+
 /**
  * Makes a connection to MACS and stores a reference to this in
  * the servlet context.
@@ -58,57 +53,23 @@ public ClientConnection getConnection() {
 public void init(javax.servlet.ServletConfig config) throws javax.servlet.ServletException
 {
 	super.init(config);
-
-	String host = RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_MACHINE );
-
-	int port = Integer.parseInt(
-						RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_PORT ) );
-	
-	CTILogger.info("Will attempt to connect to porter @" + host + ":" + port);
-	conn = new ClientConnection();
-	conn.addObserver(this);
-	
-	if( host != null )
-		conn.setHost(host);
-
-	if( port != -1 )
-		conn.setPort(port);
-
-	conn.setAutoReconnect(true);
-	conn.setTimeToReconnect(30);
-
-	try
-	{
-		conn.connectWithoutWait();
-	}
-	catch( java.io.IOException io )
-	{
-		io.printStackTrace();
-		CTILogger.error("An error occured connecting with porter", io);
-	}
+    
+    getConnection().addMessageListener( this );
 
 	// Add this to the servlet context
 	getServletContext().setAttribute(SERVLET_CONTEXT_ID, this);
 }
-/**
- * This is registered with the PIL Connection to receive updates
- * on the connection state.
- * Creation date: (3/21/2001 11:43:09 AM)
- * @param conn java.util.Observable
- * @param o java.lang.Object
- */
-public void update(java.util.Observable obs, Object o) 
+
+public void messageReceived( MessageEvent msg )
 {
-	if( obs == conn )
-	{		
-		if( conn.isValid() )
-			CTILogger.info("Connection established to " + conn.getHost() + ":" + conn.getPort());
-		else
-			CTILogger.info("Connection to " + conn.getHost() + ":" + conn.getPort() + " is down");
-	}
-	else
-	{
-		CTILogger.info("Warning!  received an update from an unknown observable!");
-	}
+    if( msg.getMessage() instanceof ConnStateChange )
+    {
+        if( ((ConnStateChange)msg.getMessage()).isConnected() )
+            CTILogger.info("Connection established to " + getConnection().getHost() + ":" + getConnection().getPort());
+        else
+            CTILogger.info("Connection to " + getConnection().getHost() + ":" + getConnection().getPort() + " is down");        
+    }
+
 }
+
 }

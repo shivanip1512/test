@@ -15,7 +15,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.KeysAndValues;
 import com.cannontech.common.util.KeysAndValuesFile;
 import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -25,11 +24,11 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.model.ModelFactory;
-import com.cannontech.message.porter.ClientConnection;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.MessageEvent;
-import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.conns.ConnPool;
 
 public class YC extends Observable implements com.cannontech.message.util.MessageListener, javax.servlet.http.HttpSessionBindingListener
 {
@@ -94,7 +93,7 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	private int loopType = NOLOOP;
 	
 	/** A singleton instance for a connection to Pil */
-	public static ClientConnection connToPorter = null;
+	//public static ClientConnection connToPorter = null;
 	
 	/** KeysAndValues for readable command/actual command string*/
 	private KeysAndValuesFile keysAndValuesFile = null;
@@ -163,10 +162,15 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	{
 		super();
 		ycDefaults = new YCDefaults(loadDefaultsFromFile_);
-		getConnToPorter();
-		connToPorter.addMessageListener(this);
+		getPilConn().addMessageListener(this);
 	}
-	
+
+    private IServerConnection getPilConn()
+    {
+        return ConnPool.getInstance().getDefPorterConn();        
+    }
+
+    
 	/**
 	 * Execute the command, based on commandMode, selected object type, and YC properties.
 	 */
@@ -315,55 +319,43 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	{
 		return getYCDefaults().getCommandPriority();
 	}
-	
-	/**
-	 * Returns the singleton instance of this Porter connection
-	 * @return
-	 */
-	public synchronized ClientConnection getConnToPorter() {
-		if(connToPorter == null)
-		{
-			connect();
-		}
-		return connToPorter;
-	}	
 
 	/**
 	 * Creates a singleton connection to porter if it does not exist.
 	 * Messages from porter are set to not queue, so we don't overload memory with web calls.
 	 * @return com.cannontech.message.porter.ClientConnection
 	 */
-	private synchronized void connect()
-	{
-		String host = "127.0.0.1";
-		int port = 1540;
-		try
-		{
-			host = RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_MACHINE );
-			port = Integer.parseInt( RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_PORT ) ); 
-		}
-		catch( Exception e)
-		{
-			CTILogger.error( e.getMessage(), e );
-		}
-
-		connToPorter = new ClientConnection();
-		connToPorter.setQueueMessages(false);	//don't keep messages, toss once read.
-		connToPorter.setHost(host);
-		connToPorter.setPort(port);
-		connToPorter.setAutoReconnect(true);
-					
-		try 
-		{
-			connToPorter.connectWithoutWait();
-		}
-		catch( Exception e ) 
-		{
-			CTILogger.error( e.getMessage(), e );
-		}
-		CTILogger.info(" ************ CONNECTION TO PORTER ESTABLISHED ********************");
-		return;	
-	}	
+//	private synchronized void connect()
+//	{
+//		String host = "127.0.0.1";
+//		int port = 1540;
+//		try
+//		{
+//			host = RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_MACHINE );
+//			port = Integer.parseInt( RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_PORT ) ); 
+//		}
+//		catch( Exception e)
+//		{
+//			CTILogger.error( e.getMessage(), e );
+//		}
+//
+//		connToPorter = new ClientConnection();
+//		connToPorter.setQueueMessages(false);	//don't keep messages, toss once read.
+//		connToPorter.setHost(host);
+//		connToPorter.setPort(port);
+//		connToPorter.setAutoReconnect(true);
+//					
+//		try 
+//		{
+//			connToPorter.connectWithoutWait();
+//		}
+//		catch( Exception e ) 
+//		{
+//			CTILogger.error( e.getMessage(), e );
+//		}
+//		CTILogger.info(" ************ CONNECTION TO PORTER ESTABLISHED ********************");
+//		return;	
+//	}	
 	/**
 	 * Returns the loop command type
   	 * Valid loop types are:
@@ -678,18 +670,6 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 		CTILogger.info(" COMMAND FILE: " + getCommandFileDirectory()+ commandFileName);
 		keysAndValuesFile = new KeysAndValuesFile(getCommandFileDirectory(), commandFileName);
 	}
-			
-	/**
-	 * Set the connToPorter
-	 * @param connection_ com.cannontech.message.porter.ClientConnection
-	 */
-	public void setConnToPorter(ClientConnection connection_)
-	{
-		connToPorter = connection_;
-		//Must setup these options for this reference also.
-		connToPorter.setQueueMessages(false);	//don't keep messages, toss once read.
-		connToPorter.addMessageListener(this);
-	}
 	
 	/**
 	 * Set the commandMode
@@ -819,29 +799,22 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 
 		logCommand("[" + format.format(new java.util.Date(timer)) 
 			+ "] - {"+ currentUserMessageID + "} Command Sent to" + log + " -  \'" + getCommand() + "\'");
-		if( getConnToPorter() != null )
+		if( getPilConn().isValid() )
 		{
-			if( getConnToPorter().isValid())
-			{
-				getConnToPorter().write( request_ );
-				requestMessageIDs.add(new Long(currentUserMessageID));
-				generateMessageID();
-			}
-			else
-			{
-				String logOutput= "\n["+ displayFormat.format(new java.util.Date()) + "]- Command request not sent.\n" + 
-					"Connection to porter is not established.\n";
-				OutputMessage message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, logOutput);
-				setChanged();
-				this.notifyObservers(message);
-				setResultText( getResultText() + message.getText());
-			
-				CTILogger.info("REQUEST NOT SENT: CONNECTION TO PORTER IS NOT VALID");
-			}
+            getPilConn().write( request_ );
+			requestMessageIDs.add(new Long(currentUserMessageID));
+			generateMessageID();
 		}
 		else
 		{
-			CTILogger.info("REQUEST NOT SENT: CONNECTION TO PORTER IS NULL");
+			String logOutput= "\n["+ displayFormat.format(new java.util.Date()) + "]- Command request not sent.\n" + 
+				"Connection to porter is not established.\n";
+			OutputMessage message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, logOutput);
+			setChanged();
+			this.notifyObservers(message);
+			setResultText( getResultText() + message.getText());
+		
+			CTILogger.info("REQUEST NOT SENT: CONNECTION TO PORTER IS NOT VALID");
 		}
 			
 	}
@@ -1044,7 +1017,7 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 									getPorterRequest().setRouteID(rt.getYukonID());
 								}
 							}
-							getConnToPorter().write( getPorterRequest());	//do the saved loop request
+							getPilConn().write( getPorterRequest());	//do the saved loop request
 						}
 						else
 						{
@@ -1135,7 +1108,7 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	{
 		// TODO Is removing the messageListener enough?
 		System.out.println("***** Value UNBound " + arg0.getValue().toString() + "*****");
-		getConnToPorter().removeMessageListener(this);
+		getPilConn().removeMessageListener(this);
 	}
 	
 	/**
