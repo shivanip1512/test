@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2003/05/15 13:52:25 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2003/06/20 19:58:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,7 @@
 
 #include <windows.h>
 
+#include "cparms.h"
 #include "dsm2.h"
 #include "dllyukon.h"
 #include "porter.h"
@@ -505,6 +506,12 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         InEchoToOut(InMessage, OutMessage);
 
                         CtiCommandParser parse(InMessage->Return.CommandStr);
+
+                        int welcofreezedelay = gConfigParms.getValueAsInt("WELCO_FREEZE_TO_SCAN_MSEC_DELAY", 0);
+                        if(welcofreezedelay)
+                        {
+                            Sleep(welcofreezedelay);
+                        }
 
                         if((i = IntegrityScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4)) != NORMAL)
                         {
