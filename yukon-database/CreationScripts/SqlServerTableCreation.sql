@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     11/10/2004 2:48:44 PM                        */
+/* Created on:     12/1/2004 10:05:41 AM                        */
 /*==============================================================*/
 
 
@@ -2200,7 +2200,7 @@ create table CTIDatabase (
 go
 
 
-insert into CTIDatabase values('3.01', 'Ryan', '10-MAY-2004', 'Added many load control and protocol changes', 1);
+/* __YUKON_VERSION__ */
 alter table CTIDatabase
    add constraint PK_CTIDATABASE primary key  (Version, Build)
 go
@@ -5994,8 +5994,8 @@ create table TOUSchedule (
 )
 go
 
-insert into TOUSchedule values (0, '(none)', 0);
 
+insert into TOUSchedule values (0, '(none)', 0);
 alter table TOUSchedule
    add constraint PK_TOUSCHEDULE primary key  (TOUScheduleID)
 go
@@ -6534,6 +6534,7 @@ insert into YukonGroupRole values(-1027,-2,-101,-10107,'(none)');
 insert into YukonGroupRole values(-1028,-2,-101,-10108,'(none)');
 insert into YukonGroupRole values(-1029,-2,-101,-10109,'(none)');
 insert into YukonGroupRole values(-1030,-2,-101,-10111,'(none)');
+insert into YukonGroupRole values(-1031,-2,-101,-10112,'(none)');
 
 insert into YukonGroupRole values(-1050,-2,-102,-10200,'(none)');
 
@@ -7462,6 +7463,7 @@ insert into YukonRoleProperty values(-10107,-101,'tdc_alarm_count','3','Total nu
 insert into YukonRoleProperty values(-10108,-101,'decimal_places','2','How many decimal places to show for real values');
 insert into YukonRoleProperty values(-10109,-101,'pfactor_decimal_places','1','How many decimal places to show for real values for PowerFactor');
 insert into YukonRoleProperty values(-10111,-101,'lc_reduction_col','true','Tells TDC to show the LoadControl reduction column or not');
+insert into YukonRoleProperty values(-10112,-101,'cbc_allow_ovuv','false','Allows users to toggle OV/UV usage on capbanks');
 
 
 /* Trending Role */

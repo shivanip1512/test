@@ -1,0 +1,60 @@
+<?xml version="1.0" ?>
+<project name="WriteToFiles" default="build">
+
+    <target name="build" >
+        <antcall target="version_db_files"/>
+
+        <condition property="notFullBuild">
+            <not>
+              <isset property="isFullBuild" />
+            </not>
+        </condition>
+
+    	<!-- tell the user why we failed if we failed -->
+        <antcall target="output"/>
+    </target>
+
+
+    <target name="init">
+        <!-- Test here to see if we are an official build so developers can build locally -->
+        <property environment="env"/>
+
+        <!-- Get todays date since we need it in the insert -->
+        <tstamp>
+            <format property="today" pattern="dd-MMM-yyyy" />
+        </tstamp>
+
+        <condition property="isFullBuild">
+          <and>
+            <isset property="env.MAJOR" />
+            <isset property="env.MINOR" />
+            <isset property="env.BUILD" />
+            <isset property="yukon-db" />
+          </and>
+        </condition>
+    </target>
+
+
+    <target name="output" depends="init" if="notFullBuild" >
+        <echo message="Not able to write DB version to database files because one of the following is not set:" />
+        <echo message="  MAJOR, MINOR, BUILD or yukon-db" />
+    </target>
+
+
+    <target name="version_db_files" depends="init" if="isFullBuild" >
+        <!-- set up some local variables -->
+         <property name="sql.insert" 
+             value="insert into CTIDatabase values('${env.MAJOR}.${env.MINOR}', 'Ryan', '${today}', 'Latest Update', ${env.BUILD} );"/>
+
+         <property name="sql.filename" 
+             value="${env.MAJOR}.${env.MINOR}_${env.BUILD}.sql"/>
+
+        <!-- Add the yukon version to the DBUpdate and Creation script files -->
+        <replace file="${yukon-db}/DBUpdates/sqlserver/${sql.filename}" token="/* __YUKON_VERSION__ */" value="${sql.insert}"/>
+        <replace file="${yukon-db}/DBUpdates/oracle/${sql.filename}" token="/* __YUKON_VERSION__ */" value="${sql.insert}"/>
+
+        <replace file="${yukon-db}/CreationScripts/SqlServerTableCreation.sql" token="/* __YUKON_VERSION__ */" value="${sql.insert}"/>
+        <replace file="${yukon-db}/CreationScripts/OracleTableCreation.sql" token="/* __YUKON_VERSION__ */" value="${sql.insert}"/>
+    </target>
+   
+</project>

@@ -1741,4 +1741,4 @@ insert into YukonSelectionList values (1019,'N','(none)','Thermostat fan state s
 /******************************************************************************/
 /* VERSION INFO                                                               */
 /******************************************************************************/
-insert into CTIDatabase values('3.00', 'Ryan', '5-NOV-2004', 'Patch update to bring all other 3.00 up to date. Also applies any missing constraints', 27 );
+/* __YUKON_VERSION__ */

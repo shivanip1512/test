@@ -1460,3 +1460,4 @@ insert into YukonGroupRole values(-1031,-2,-101,-10112,'(none)');
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
+/* __YUKON_VERSION__ */
