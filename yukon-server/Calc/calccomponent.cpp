@@ -622,16 +622,6 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         }
     }
 
-    //added 7/31/03 JW
-    if( _isnan(retVal) )
-    {
-        retVal = 0.0;
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << __FILE__ << " (" << __LINE__ << ")  _doFunction tried to return a NaN for Calc Point Id: " << _parent->getPointId() << endl;
-        }
-    }
-
     _parent->push( retVal );       // Return it to the stack so it can be used properly by another callee.
 
     return retVal;
