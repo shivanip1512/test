@@ -50,8 +50,8 @@ public class UpdateLoginAction implements ActionBase {
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
 			StarsUpdateLogin updateLogin = new StarsUpdateLogin();
-			updateLogin.setUsername( req.getParameter("Username") );
-			updateLogin.setPassword( req.getParameter("Password") );
+			updateLogin.setUsername( req.getParameter("Username").trim() );
+			updateLogin.setPassword( req.getParameter("Password").trim() );
 			if (req.getParameter("Status") != null)
 				updateLogin.setStatus( StarsLoginStatus.valueOf(req.getParameter("Status")) );
 			else
@@ -103,7 +103,10 @@ public class UpdateLoginAction implements ActionBase {
 			}
             
 			StarsSuccess success = new StarsSuccess();
-			success.setDescription( "User login updated successfully" );
+			if (updateLogin.getUsername().equals(""))
+				success.setDescription( "User login deleted successfully" );
+			else
+				success.setDescription( "User login updated successfully" );
             
 			respOper.setStarsSuccess( success );
 			return SOAPUtil.buildSOAPMessage( respOper );
@@ -147,18 +150,23 @@ public class UpdateLoginAction implements ActionBase {
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
 					user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 			
-			StarsUser starsUser = accountInfo.getStarsUser();
-			if (starsUser == null) {
-				starsUser = new StarsUser();
-				accountInfo.setStarsUser( starsUser );
+			if (updateLogin.getUsername().equals("")) {
+				accountInfo.setStarsUser( null );
 			}
-			
-			starsUser.setUsername( updateLogin.getUsername() );
-			starsUser.setPassword( updateLogin.getPassword() );
-			if (updateLogin.getStatus() != null)
-				starsUser.setStatus( updateLogin.getStatus() );
-			if (updateLogin.hasGroupID())
-				starsUser.setGroupID( updateLogin.getGroupID() );
+			else {
+				StarsUser starsUser = accountInfo.getStarsUser();
+				if (starsUser == null) {
+					starsUser = new StarsUser();
+					accountInfo.setStarsUser( starsUser );
+				}
+				
+				starsUser.setUsername( updateLogin.getUsername() );
+				starsUser.setPassword( updateLogin.getPassword() );
+				if (updateLogin.getStatus() != null)
+					starsUser.setStatus( updateLogin.getStatus() );
+				if (updateLogin.hasGroupID())
+					starsUser.setGroupID( updateLogin.getGroupID() );
+			}
 			
 			if (reqOper.getStarsNewCustomerAccount() == null)	// If not from the new customer account page
 				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, success.getDescription() );
@@ -261,7 +269,7 @@ public class UpdateLoginAction implements ActionBase {
 			if (!updateLogin.hasGroupID())
 				throw new WebClientException( "Cannot create login without a customer group" );
 		    
-			if (username.trim().length() == 0 || password.trim().length() == 0)
+			if (username.length() == 0 || password.length() == 0)
 				throw new WebClientException( "Username and password cannot be empty" );
 		    
 			if (!checkLogin( updateLogin ))
@@ -269,9 +277,9 @@ public class UpdateLoginAction implements ActionBase {
 			
 			LiteYukonUser liteUser = createLogin( updateLogin, liteContact, energyCompany );
 		}
-		else if (username.trim().length() == 0) {
+		else if (username.length() == 0) {
 			// Remove customer login
-			if (password.trim().length() > 0)
+			if (password.length() > 0)
 				throw new WebClientException( "Username is empty. To remove the login, clear both username and password." );
 		    
 			deleteLogin( userID, liteContact );
@@ -284,7 +292,7 @@ public class UpdateLoginAction implements ActionBase {
 			
 			String status = (updateLogin.getStatus() != null)? ECUtils.getUserStatus(updateLogin.getStatus()) : liteUser.getStatus();
 			
-			if (password.trim().length() == 0) {
+			if (password.length() == 0) {
 				if (status.equalsIgnoreCase( liteUser.getStatus() ))
 					throw new WebClientException( "Password cannot be empty" );
 				// Only the login status is to be changed, ignore the password
