@@ -1532,7 +1532,7 @@ public void tableChanged(javax.swing.event.TableModelEvent event )
 	if( getSelectedControlArea() != null )
 	{
 		//set all the LMProgram values
-		//updateProgramTableModel();
+		updateProgramTableModel();
 		
 		//set all the LMGroup values
 		getGroupTableModel().setCurrentData( 
@@ -1614,7 +1614,7 @@ public void valueChanged(javax.swing.event.ListSelectionEvent event)
 	if( event.getSource() == getJTableControlArea().getSelectionModel()
 		 || event.getSource() == getJTableProgram().getSelectionModel() )
 	{
-		//updateProgramTableModel();
+		updateProgramTableModel();
 	}
 
 	//set all the LMGroup values from the Control Area
@@ -1625,9 +1625,11 @@ public void valueChanged(javax.swing.event.ListSelectionEvent event)
 }
 
 // Seems to cause a memory leak, the final object never gets GC'd
-/*
 private void updateProgramTableModel()
 {
+	getProgramTableModel().setCurrentControlArea( getSelectedControlArea() );
+
+/*	
 	final JDialogWait d = new JDialogWait( CtiUtilities.getParentFrame(this) );
 	
 	if( getProgramTableModel().showWaiting(getSelectedControlArea()) )
@@ -1648,9 +1650,8 @@ private void updateProgramTableModel()
 
 		}
 	}, "CtrlHstThread").start();
-	
-}
 */
+}
 
 /**
  * 
