@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2002/08/28 16:13:28 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2002/08/29 16:46:21 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1005,24 +1005,26 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
     INT retCode = NORMAL;
 
     CtiCommandParser  parse(InMessage->Return.CommandStr);
-    CtiReturnMsg     *pPIL = new CtiReturnMsg(getID(),
-                                              RWCString(InMessage->Return.CommandStr),
-                                              RWCString(),
-                                              InMessage->EventCode & 0x7fff,
-                                              InMessage->Return.RouteID,
-                                              InMessage->Return.MacroOffset,
-                                              InMessage->Return.Attempt,
-                                              InMessage->Return.TrxID,
-                                              InMessage->Return.UserID);
+    CtiReturnMsg     *retMsg = new CtiReturnMsg(getID(),
+                                                RWCString(InMessage->Return.CommandStr),
+                                                RWCString(),
+                                                InMessage->EventCode & 0x7fff,
+                                                InMessage->Return.RouteID,
+                                                InMessage->Return.MacroOffset,
+                                                InMessage->Return.Attempt,
+                                                InMessage->Return.TrxID,
+                                                InMessage->Return.UserID);
     CtiPointDataMsg  *commFailed;
     CtiPointBase     *commPoint;
+
+    int i;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
-    if( pPIL != NULL )
+    if( retMsg != NULL )
     {
         if( parse.getCommand() == ScanRequest )  //  we only plug values for failed scans
         {
@@ -1030,6 +1032,7 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
             {
                 case ScanRateGeneral:
                 case ScanRateStatus:
+                {
                     //  implemented as the same scan
                     switch( getType() )
                     {
@@ -1040,16 +1043,17 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
                         case TYPEMCT318L:
                         case TYPEMCT360:
                         case TYPEMCT370:
-                            insertPointFail( InMessage, pPIL, ScanRateStatus, 8, StatusPointType );
-                            insertPointFail( InMessage, pPIL, ScanRateStatus, 7, StatusPointType );
-                            insertPointFail( InMessage, pPIL, ScanRateStatus, 6, StatusPointType );
-                            insertPointFail( InMessage, pPIL, ScanRateStatus, 5, StatusPointType );
+                            insertPointFail( InMessage, retMsg, ScanRateStatus, 8, StatusPointType );
+                            insertPointFail( InMessage, retMsg, ScanRateStatus, 7, StatusPointType );
+                            insertPointFail( InMessage, retMsg, ScanRateStatus, 6, StatusPointType );
+                            insertPointFail( InMessage, retMsg, ScanRateStatus, 5, StatusPointType );
 
                         case TYPEMCT250:
-                            insertPointFail( InMessage, pPIL, ScanRateStatus, 4, StatusPointType );
-                            insertPointFail( InMessage, pPIL, ScanRateStatus, 3, StatusPointType );
-                            insertPointFail( InMessage, pPIL, ScanRateStatus, 2, StatusPointType );
-                            insertPointFail( InMessage, pPIL, ScanRateStatus, 1, StatusPointType );
+                            insertPointFail( InMessage, retMsg, ScanRateStatus, 4, StatusPointType );
+                            insertPointFail( InMessage, retMsg, ScanRateStatus, 3, StatusPointType );
+                            insertPointFail( InMessage, retMsg, ScanRateStatus, 2, StatusPointType );
+                            insertPointFail( InMessage, retMsg, ScanRateStatus, 1, StatusPointType );
+
                         default:
                             ;
                     }
@@ -1057,76 +1061,78 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
                     resetForScan(ScanRateGeneral);
 
                     break;
+                }
 
                 case ScanRateAccum:
+                {
                     switch( getType() )
                     {
                         case TYPEMCT318:
                         case TYPEMCT318L:
                         case TYPEMCT360:
                         case TYPEMCT370:
-                            insertPointFail( InMessage, pPIL, ScanRateAccum, 3, PulseAccumulatorPointType );
-                            insertPointFail( InMessage, pPIL, ScanRateAccum, 2, PulseAccumulatorPointType );
+                            insertPointFail( InMessage, retMsg, ScanRateAccum, 3, PulseAccumulatorPointType );
+                            insertPointFail( InMessage, retMsg, ScanRateAccum, 2, PulseAccumulatorPointType );
                         default:
-                            insertPointFail( InMessage, pPIL, ScanRateAccum, 1, PulseAccumulatorPointType );
+                            insertPointFail( InMessage, retMsg, ScanRateAccum, 1, PulseAccumulatorPointType );
                     }
 
                     resetForScan(ScanRateAccum);
 
                     break;
+                }
 
                 case ScanRateIntegrity:
+                {
                     switch( getType() )
                     {
                         case TYPEMCT318:
                         case TYPEMCT318L:
                         case TYPEMCT360:
                         case TYPEMCT370:
-                            insertPointFail( InMessage, pPIL, ScanRateIntegrity, 3, DemandAccumulatorPointType );
-                            insertPointFail( InMessage, pPIL, ScanRateIntegrity, 2, DemandAccumulatorPointType );
+                            insertPointFail( InMessage, retMsg, ScanRateIntegrity, 3, DemandAccumulatorPointType );
+                            insertPointFail( InMessage, retMsg, ScanRateIntegrity, 2, DemandAccumulatorPointType );
                         default:
-                            insertPointFail( InMessage, pPIL, ScanRateIntegrity, 1, DemandAccumulatorPointType );
+                            insertPointFail( InMessage, retMsg, ScanRateIntegrity, 1, DemandAccumulatorPointType );
                     }
 
                     resetForScan(ScanRateIntegrity);
 
                     break;
+                }
 
                 case ScanRateLoadProfile:
-                    /*for( i = 0; i < MAX_COLLECTED_CHANNEL; i++ )
+                {
+                    for( i = 0; i < MAX_COLLECTED_CHANNEL; i++ )
                     {
                         if( getLoadProfile().isChannelValid(i) )
                         {
-                            insertPointFail( InMessage, pPIL, ScanRateLoadProfile, i + 1 + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
-                            continue;
+                            insertPointFail( InMessage, retMsg, ScanRateLoadProfile, (i + 1) + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
                         }
                     }
 
-                    break;*/
+                    break;
+                }
 
                 default:
+                {
                     break;
-            }
-
-            if( commPoint = getDevicePointOffsetTypeEqual(2000, StatusPointType) )
-            {
-                commFailed = new CtiPointDataMsg(commPoint->getPointID(), 0.0, NormalQuality, StatusPointType);
-
-                pPIL->PointData().insert(commFailed);
-                commFailed = NULL;
+                }
             }
         }
 
         // send the whole mess to dispatch
-        if (pPIL->PointData().entries() > 0)
+        if( retMsg->PointData().entries() > 0 )
         {
-            retList.insert( pPIL );
+            retList.insert(retMsg);
         }
         else
         {
-            delete pPIL;
+            delete retMsg;
         }
-        pPIL = NULL;
+
+        //  set it to null, it's been sent off
+        retMsg = NULL;
     }
     else
     {
