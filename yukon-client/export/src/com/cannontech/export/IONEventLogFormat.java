@@ -180,7 +180,7 @@ public class IONEventLogFormat extends ExportFormatBase
 					String effectValue = ionDesc.ion_effect;
 					String nLog = ionDesc.ion_nlog;
 
-					if (isValid(ionDesc) )
+					if (isValid(ionDesc, ionAction) )
 					{
 						int logid = rset.getInt(1);
 						lastLogID = logid;
@@ -302,22 +302,19 @@ public class IONEventLogFormat extends ExportFormatBase
 	 * @param desc innerclass.IONDescription
 	 * @return boolean
 	 */
-	private boolean isValid(IONDescription desc)
+	private boolean isValid(IONDescription desc, IONAction action)
 	{
 		//ONLY continue on if we pass one of the checks:
-		//effect like 'Control%' OR effect like 'Notify%'
-		//pri == 51
+		//effect like 'Control%' OR effect like 'Notify%' OR pri == 51
 		
-		if(desc != null)
+		if(desc != null && action!= null)
 		{
-			if (desc.ion_pri == null || desc.ion_pri.compareTo(new Integer(VALID_PRIORITY)) != 0)
-				return false;
-			else if (desc.ion_effect == null ||
-					(desc.ion_effect.toLowerCase().indexOf("control") >= 0 ||
-						desc.ion_effect.toLowerCase().indexOf("notify") >= 0))
-				return false;
-
-			return true;
+			if (desc.ion_pri != null && desc.ion_pri.compareTo(new Integer(VALID_PRIORITY)) == 0)
+				return true;
+			else if (desc.ion_effect != null &&
+					(action.ion_effect_handle.toLowerCase().indexOf("control") >= 0 ||
+						action.ion_effect_handle.toLowerCase().indexOf("notify") >= 0))
+				return true;
 		}
 		return false;
 	}
