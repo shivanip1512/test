@@ -1437,38 +1437,14 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
 
 
 /*===========================================================================
-    CtiCCSubstationBusMsgExecutor
+    CtiCCClientMsgExecutor
 ===========================================================================*/
 /*---------------------------------------------------------------------------
     Execute
 ---------------------------------------------------------------------------*/    
-void CtiCCSubstationBusMsgExecutor::Execute()
+void CtiCCClientMsgExecutor::Execute()
 {
-    CtiCCClientListener::getInstance()->BroadcastMessage(_ccSubstationBusesMsg);
-}
-
-
-/*===========================================================================
-    CtiCCCapBankStatesMsgExecutor
-===========================================================================*/
-/*---------------------------------------------------------------------------
-    Execute
----------------------------------------------------------------------------*/    
-void CtiCCCapBankStatesMsgExecutor::Execute()
-{
-    CtiCCClientListener::getInstance()->BroadcastMessage(_ccCapBankStatesMsg);
-}
-
-
-/*===========================================================================
-    CtiCCGeoAreasMsgExecutor
-===========================================================================*/
-/*---------------------------------------------------------------------------
-    Execute
----------------------------------------------------------------------------*/    
-void CtiCCGeoAreasMsgExecutor::Execute()
-{
-    CtiCCClientListener::getInstance()->BroadcastMessage(_ccGeoAreasMsg);
+    CtiCCClientListener::getInstance()->BroadcastMessage(_ccMsg);
 }
 
 
@@ -1718,19 +1694,13 @@ CtiCCExecutor* CtiCCExecutorFactory::createExecutor(const CtiMessage* message)
     switch ( classId )
     {
         case CTICCSUBSTATIONBUS_MSG_ID:
-            ret_val = new CtiCCSubstationBusMsgExecutor( (CtiCCSubstationBusMsg*)message );
+        case CTICCCAPBANKSTATES_MSG_ID:
+        case CTICCGEOAREAS_MSG_ID:
+            ret_val = new CtiCCClientMsgExecutor( (CtiMessage*)message );
             break;
     
         case CTICCCOMMAND_ID:
             ret_val = new CtiCCCommandExecutor( (CtiCCCommand*)message );
-            break;
-    
-        case CTICCCAPBANKSTATES_MSG_ID:
-            ret_val = new CtiCCCapBankStatesMsgExecutor( (CtiCCCapBankStatesMsg*)message );
-            break;
-    
-        case CTICCGEOAREAS_MSG_ID:
-            ret_val = new CtiCCGeoAreasMsgExecutor( (CtiCCGeoAreasMsg*)message );
             break;
     
         case MSG_POINTDATA:

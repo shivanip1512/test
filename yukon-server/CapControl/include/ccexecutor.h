@@ -34,43 +34,17 @@ protected:
     void moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedCapBankId, LONG newFeederId, LONG capSwitchingOrder);
 };
 
-class CtiCCSubstationBusMsgExecutor : public CtiCCExecutor
+class CtiCCClientMsgExecutor : public CtiCCExecutor
 {
 public:
-    CtiCCSubstationBusMsgExecutor(CtiCCSubstationBusMsg* busMsg) : _ccSubstationBusesMsg(busMsg){};
-    virtual ~CtiCCSubstationBusMsgExecutor(){};
+    CtiCCClientMsgExecutor(CtiMessage* ccMsg) : _ccMsg(ccMsg){};
+    virtual ~CtiCCClientMsgExecutor(){};
 
     virtual void Execute();
 
 private:
 
-    CtiCCSubstationBusMsg* _ccSubstationBusesMsg;
-};
-
-class CtiCCCapBankStatesMsgExecutor : public CtiCCExecutor
-{
-public:
-    CtiCCCapBankStatesMsgExecutor(CtiCCCapBankStatesMsg* stateMsg) : _ccCapBankStatesMsg(stateMsg){};
-    virtual ~CtiCCCapBankStatesMsgExecutor(){};
-
-    virtual void Execute();
-
-private:
-
-    CtiCCCapBankStatesMsg* _ccCapBankStatesMsg;
-};
-
-class CtiCCGeoAreasMsgExecutor : public CtiCCExecutor
-{
-public:
-    CtiCCGeoAreasMsgExecutor(CtiCCGeoAreasMsg* ccGeoAreasMsg) : _ccGeoAreasMsg(ccGeoAreasMsg){};
-    virtual ~CtiCCGeoAreasMsgExecutor(){};
-
-    virtual void Execute();
-
-private:
-
-    CtiCCGeoAreasMsg* _ccGeoAreasMsg;
+    CtiMessage* _ccMsg;
 };
 
 class CtiCCCommandExecutor : public CtiCCExecutor
