@@ -23,6 +23,7 @@ import com.cannontech.common.util.KeysAndValuesFile;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceTypes;
@@ -1637,14 +1638,12 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 								if( ret.getStatus() != 0)
 								{
 									textColor = ycClass.getYCDefaults().getInvalidTextColor();
-//									textColor = java.awt.Color.red;
 									if( ret.getExpectMore() == 0)
 										displayOutput += "N\t\t" + ret.getStatus();
 								}
-								else
+								else	//status == 0 == successfull
 								{
 									textColor = ycClass.getYCDefaults().getValidTextColor();
-//									textColor = java.awt.Color.blue;
 									if( ret.getExpectMore() == 0)
 										displayOutput += "Y\t\t---";
 								}
@@ -1659,6 +1658,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 								debugOutput += ret.getResultString() + "\n";
 							}
 								
+//							if( textColor.equals(ycClass.getYCDefaults().getValidTextColor()))
+//								javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDisplayOutputTextPane(), debugOutput, textColor) );
+							
 							javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDebugOutputTextPane(), debugOutput, textColor) );
 							synchronized ( YukonCommander.class )
 							{
@@ -1958,7 +1960,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	public void valueChanged(TreeSelectionEvent event)
 	{
 		String savedCommandFileName = ycClass.getCommandFileName().toString();
-		
+		String displayTitle = YC_TITLE;
 		int index = getTreeViewPanel().getSortByComboBox().getSelectedIndex();
 		if( index < 0 )
 			return;
@@ -1966,38 +1968,29 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		setTreeItem( getTreeViewPanel().getSelectedItem());
 	
 		if (getTreeItem() == null)
+		{
+			setTitle(displayTitle);
 			return;
+		}
 	
 		if (getTreeViewPanel().getSelectedNode().getParent() == null)
+		{
+			setTitle(displayTitle);
 			return;
+		}
 	
 		getYCCommandMenu().locateRoute.setEnabled(false);	//init to false, will change below if valid state.
 		getYCCommandMenu().installAddressing.setEnabled(false);
-		
-		if ( getModelType() == ModelFactory.EDITABLELCRSERIAL)
-		{
-			getYCCommandMenu().installAddressing.setEnabled(true);
-			setSerialNumber( (String) getTreeItem());
-			getSerialRoutePanel().setSerialNumberText( getSerialNumber().toString() );
-			ycClass.setCommandFileName(ycClass.SERIALNUMBER_FILENAME);
-			if (!ycClass.getKeysAndValuesFile().exists())
-			{
-				getCommandLogPanel().addLogElement(" *** The command file: " + ycClass.getCommandFileName() + "     Does not exist.  Trying a backup - " + ycClass.ALT_SERIALNUMBER_FILENAME + ".txt ***");
-				//This is only temporary until all files have been changed from ALT_SERIALNUMBER_FILENAME to SERIALNUMBER_FILENAME.
-				ycClass.setCommandFileName(ycClass.ALT_SERIALNUMBER_FILENAME);
-			}
-		}
-		else if( getModelType() == ModelFactory.COLLECTIONGROUP ||
-				getModelType() == ModelFactory.TESTCOLLECTIONGROUP )
-		{
-			ycClass.setCommandFileName(ycClass.COLLECTION_GROUP_FILENAME);
-		}
-		else if ( getTreeItem() instanceof LiteBase)
+	
+		if ( getTreeItem() instanceof LiteBase)
 		{
 			com.cannontech.database.db.DBPersistent dbp = LiteFactory.createDBPersistent( (LiteBase) getTreeItem());
 					
 			if (dbp == null)
+			{
+				setTitle(displayTitle);
 				return;
+			}
 	
 			ycClass.setCommandFileName(dbp);
 	
@@ -2009,11 +2002,42 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 					getYCCommandMenu().locateRoute.setEnabled(true);
 				}
 			}
-		
+			if( getTreeItem() instanceof LiteCICustomer)
+				setTitle(displayTitle + " : " + getTreeItem().toString());
+			else
+			{
+				int extIndex = ycClass.getCommandFileName().indexOf(ycClass.getCommandFileExt());
+				displayTitle += " - " + ycClass.getCommandFileName().substring(0, extIndex);
+				setTitle(displayTitle);
+			}
+		}
+		else if ( getModelType() == ModelFactory.EDITABLELCRSERIAL)
+		{
+			getYCCommandMenu().installAddressing.setEnabled(true);
+			setSerialNumber( (String) getTreeItem());
+			getSerialRoutePanel().setSerialNumberText( getSerialNumber().toString() );
+			ycClass.setCommandFileName(ycClass.SERIALNUMBER_FILENAME);
+			if (!ycClass.getKeysAndValuesFile().exists())
+			{
+				getCommandLogPanel().addLogElement(" *** The command file: " + ycClass.getCommandFileName() + "     Does not exist.  Trying a backup - " + ycClass.ALT_SERIALNUMBER_FILENAME + ".txt ***");
+				//This is only temporary until all files have been changed from ALT_SERIALNUMBER_FILENAME to SERIALNUMBER_FILENAME.
+				ycClass.setCommandFileName(ycClass.ALT_SERIALNUMBER_FILENAME);
+			}
+
+			int extIndex = ycClass.getCommandFileName().indexOf(ycClass.getCommandFileExt());
+			displayTitle += " - " + ycClass.getCommandFileName().substring(0, extIndex) + " # " + getSerialNumber().toString();
+			setTitle(displayTitle);
+		}
+		else if( getModelType() == ModelFactory.COLLECTIONGROUP ||
+				getModelType() == ModelFactory.TESTCOLLECTIONGROUP )
+		{
+			ycClass.setCommandFileName(ycClass.COLLECTION_GROUP_FILENAME);
+			setTitle(displayTitle + " : " + getTreeItem().toString());
 		}
 		else
 		{
 			ycClass.setCommandFileName(ycClass.DEFAULT_FILENAME);
+			setTitle(displayTitle);
 		}
 		
 		if (!ycClass.getKeysAndValuesFile().exists())
@@ -2023,7 +2047,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			getCommandPanel().getExecuteCommandComboBox().setSelectedItem(""); //clear text field
 			return;
 		}
-	
 		
 		// Only update command boxes on a change in device type/ file name.
 		if( !ycClass.getCommandFileName().toString().equalsIgnoreCase( savedCommandFileName ) )
