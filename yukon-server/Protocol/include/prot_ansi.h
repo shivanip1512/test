@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_ansi.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/02/10 23:23:58 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/03/14 21:44:16 $
 *    History: 
       $Log: prot_ansi.h,v $
+      Revision 1.10  2005/03/14 21:44:16  jrichter
+      updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
+
       Revision 1.9  2005/02/10 23:23:58  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -64,6 +67,9 @@
 #include "std_ansi_tbl_two_three.h"
 #include "std_ansi_tbl_two_seven.h"
 #include "std_ansi_tbl_two_eight.h"
+#include "std_ansi_tbl_three_one.h"
+#include "std_ansi_tbl_three_two.h"
+#include "std_ansi_tbl_three_three.h"
 #include "std_ansi_tbl_five_one.h"
 #include "std_ansi_tbl_five_two.h"
 #include "std_ansi_tbl_six_one.h"
@@ -117,15 +123,6 @@ struct WANTS_HEADER
 #define ANSI_OPERATION_WRITE             11
 
 
-//this one's usable on both sides
-struct ANSI_TABLE_WANTS
-{
-   int   tableID;
-   int   tableOffset;
-   unsigned short   bytesExpected;
-   BYTE  type;
-   BYTE  operation;
-};
 
 /*struct TBL_IDB_BFLD
 {
@@ -233,6 +230,17 @@ struct TABLE_27_PRESENT_REGISTER_SELECTION
    unsigned char        present_value_select[255];
 };
 */
+
+//this one's usable on both sides
+struct ANSI_TABLE_WANTS
+{
+   short   tableID;
+   int   tableOffset;
+   unsigned int   bytesExpected;
+   BYTE  type;
+   BYTE  operation;
+};
+
 struct TIME
 {
    union CASES
@@ -295,7 +303,7 @@ class IM_EX_PROT CtiProtocolANSI
     void buildWantedTableList( BYTE *aPtr);
 
 
-      CtiANSIApplication &getApplicationLayer( void );
+    CtiANSIApplication &getApplicationLayer( void );
     void updateBytesExpected( );
     int sizeOfNonIntegerFormat( int aFormat );
 
@@ -304,21 +312,24 @@ class IM_EX_PROT CtiProtocolANSI
 
     // pure virtual functions
     virtual void destroyManufacturerTables( void )=0;
-    virtual void convertToManufacturerTable( BYTE *data, BYTE numBytes, int aTableID )=0;
+    virtual void convertToManufacturerTable( BYTE *data, BYTE numBytes, short aTableID )=0;
     virtual int calculateLPDataBlockStartIndex(ULONG lastLPTime) = 0;
     virtual int calculateLPDataBlockSize(int numChans) = 0;
     virtual int calculateLPLastDataBlockSize(int numChans, int numIntvlsLastDataBlock) = 0;
     virtual void setAnsiDeviceType() = 0;
     virtual int snapshotData() = 0;
+    virtual int batteryLifeData() = 0;
+    virtual int getGoodBatteryReading()=0;
+    virtual int getCurrentBatteryReading()=0;
+    virtual int getDaysOnBatteryReading()=0;
     virtual bool retreiveKV2PresentValue( int offset, double *value )=0;
 
     /**** JULIE *****/
-    void retreiveKWHValue( int *value );
-    void retreiveKVARHValue( int *value );
     bool retreiveSummation( int offset, double *value );
     bool retreiveDemand( int offset, double *value );
     bool retreivePresentValue( int offset, double *value );
     bool retreiveLPDemand( int offset, int dataSet );
+    bool retreiveBatteryLife(int x, double *value);
     double getLPValue( int index );
     ULONG getLPTime( int index );
 
@@ -328,20 +339,13 @@ class IM_EX_PROT CtiProtocolANSI
 
 
     int getSizeOfLPDataBlock(int dataSetNbr);
+    int getSizeOfLastLPDataBlock(int dataSetNbr);
     int getSizeOfLPReadingsRcd();
     int getSizeOfLPIntSetRcd(int dataSetNbr);
     int getSizeOfLPIntFmtRcd(int dataSetNbr);
 
     unsigned short getTotalWantedLPBlockInts();
-   /* int getLastNbrWantedLPBlockInts(int dataSetNbr, ULONG timeSinceLastLP);
 
-    int getFirstNbrWantedLPBlockInts(int dataSetNbr, ULONG timeSinceLastLP);
-    int getTotalWantedLPDataBlocks(int dataSetNbr, ULONG timeSinceLastLP);
-    int getEndLPDataBlockSet(int dataSetNbr, ULONG timeSinceLastLP);
-    int getStartLPDataBlockSet(int dataSetNbr, ULONG timeSinceLastLP);
-
-    int getLPDataBlkOffset(int dataSetNbr);
-     */
     int getNbrValidIntvls();
     int getNbrValidBlks();
     int getMaxIntervalTime();
@@ -349,19 +353,11 @@ class IM_EX_PROT CtiProtocolANSI
     int getLastBlockIndex();
     int getNbrBlksSet();
 
-
-  //  int UpdateLastLPReadBlksProcedure(int dataSetNbr, UINT8 tblList, UINT16 nbrEntriesRead);
-
-   // int proc05UpdateLastLPBlkRead(int dataSetNbr, UINT8 tblList, UINT16 nbrEntriesRead);
- //   int proc16StartLPRecording( void );
- //   int proc17StopLPRecording( void ) ;
     int proc09RemoteReset(UINT8 actionFlag);
     int proc22LoadProfileStartBlock( void );
 
-    void setCurrentAnsiWantsTableValues(int tableID,int tableOffset, unsigned short bytesExpected,BYTE  type, BYTE operation);
+    void setCurrentAnsiWantsTableValues(short tableID,int tableOffset, unsigned int bytesExpected,BYTE  type, BYTE operation);
     int getWriteSequenceNbr( void );
-//bool isReturnMsgMaxSize(void);
-   //void fillReturnMessage(BYTE *aBuffer);
 
     unsigned long getlastLoadProfileTime(void);
 
@@ -370,11 +366,12 @@ class IM_EX_PROT CtiProtocolANSI
                             unsigned char * mfgTblsUsed, int dimMfgTblsUsed);
 
 
-    list< int > getStdTblsAvailable(void);
-    list < int > getMfgTblsAvailable(void);
-    bool isStdTableAvailableInMeter(int tableNbr);
-    bool isMfgTableAvailableInMeter(int tableNbr);
+    list< short > getStdTblsAvailable(void);
+    list < short > getMfgTblsAvailable(void);
+    bool isStdTableAvailableInMeter(short tableNbr);
+    bool isMfgTableAvailableInMeter(short tableNbr);
 
+    int getScanOperation(void);
 
    protected:
 
@@ -409,6 +406,9 @@ class IM_EX_PROT CtiProtocolANSI
       CtiAnsiTableTwoThree             *_tableTwoThree;
       CtiAnsiTableTwoSeven             *_tableTwoSeven;
       CtiAnsiTableTwoEight             *_tableTwoEight;
+      CtiAnsiTableThreeOne             *_tableThreeOne;
+      CtiAnsiTableThreeTwo             *_tableThreeTwo;
+      CtiAnsiTableThreeThree           *_tableThreeThree;
       CtiAnsiTableFiveOne              *_tableFiveOne;
       CtiAnsiTableFiveTwo              *_tableFiveTwo;
       CtiAnsiTableSixOne               *_tableSixOne;
@@ -445,10 +445,11 @@ class IM_EX_PROT CtiProtocolANSI
      int _lpNbrFullBlocks;
      int _lpLastBlockSize;
 
-     list < int > _stdTblsAvailable;
-     list < int > _mfgTblsAvailable;
+     list < short > _stdTblsAvailable;
+     list < short > _mfgTblsAvailable;
 
      bool _currentTableNotAvailableFlag;
+     bool _requestingBatteryLifeFlag;
 
      ANSI_SCAN_OPERATION _scanOperation;  //General Scan, Demand Reset, 
 

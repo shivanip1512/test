@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_application.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/02/10 23:23:55 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/03/14 21:44:16 $
 *    History: 
       $Log: ansi_application.cpp,v $
+      Revision 1.11  2005/03/14 21:44:16  jrichter
+      updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
+
       Revision 1.10  2005/02/10 23:23:55  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -259,7 +262,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                 _requestedState = _currentState;
                 getDatalinkLayer().initializeForNewPacket();
             }
-            else if (_currentTableID != 7) 
+            else if (_currentTableID != 7 && _currentTableID != 2049) 
             {
                 // make this generic
                 BYTE operation; 
@@ -267,7 +270,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                 // sentinel likes full reads, kv2 likes partial read offsets
                 if  ((int)_ansiDeviceType == sentinel) 
                 { 
-                    if (_currentBytesExpected < _maxPktSize.sh)
+                    if (_currentBytesExpected < _maxPktSize.sh || _currentTableID == 23)
                         operation =  full_read;
                     else
                         operation = pread_offset;
@@ -388,7 +391,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-void CtiANSIApplication::initializeTableRequest( int aID, int aOffset, unsigned short aBytesExpected, BYTE aType, BYTE aOperation )
+void CtiANSIApplication::initializeTableRequest( short aID, int aOffset, unsigned int aBytesExpected, BYTE aType, BYTE aOperation )
 {
 
     _currentTableID = aID;
@@ -596,7 +599,7 @@ bool CtiANSIApplication::analyzePacket()
                          _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-8;
                      }
                  }
-                 else if (_currentTableID == 7) 
+                 else if (_currentTableID == 7 || _currentTableID == 2049) 
                  {
                      setTableComplete (true);
                      _currentState = _requestedState;
@@ -625,6 +628,11 @@ bool CtiANSIApplication::analyzePacket()
                      }
                      setTableComplete(false);
                      _currentState = passThrough;
+                     //_currentState = request;
+                     if (getDatalinkLayer().getPacketPart() && getDatalinkLayer().getSequence() == 0)
+                     {
+                         _currentState = request;
+                     }
                  }
                  else
                  {
@@ -644,6 +652,7 @@ bool CtiANSIApplication::analyzePacket()
         {
             _maxPktSize.ch[1] =  getDatalinkLayer().getCurrentPacket()[7];
             _maxPktSize.ch[0] =  getDatalinkLayer().getCurrentPacket()[8];
+            _maxPktSize.sh -= 12;        //total packet size - (8 bytes std overhead + 4 bytes overhead for a read request)
             _maxNbrPkts =  getDatalinkLayer().getCurrentPacket()[9];
             _negBaudRate = getDatalinkLayer().getCurrentPacket()[10];
             if (getDatalinkLayer().getCurrentPacket()[10] == 0xb0)
@@ -671,7 +680,7 @@ bool CtiANSIApplication::analyzePacket()
                       break;
             }
     }
-    else if (_currentTableID == 7)
+    else if (_currentTableID == 7 || _currentTableID == 2049)
     {
         setTableComplete (true);
 
@@ -844,10 +853,6 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
 void CtiANSIApplication::identificationData( BYTE *aPacket)
 {                                                                 
     _prot_version = aPacket[1];
-    {
-         CtiLockGuard< CtiLogger > doubt_guard( dout );
-         dout << RWTime::now() << "  _prot_version " <<(int) _prot_version<< endl;
-      }
     if( aPacket[4] == 0x00 )                //no authentication will be used
     {
      _authenticate = false;

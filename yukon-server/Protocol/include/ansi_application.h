@@ -12,10 +12,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_application.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/02/10 23:23:58 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/03/14 21:44:16 $
 *    History: 
       $Log: ansi_application.h,v $
+      Revision 1.10  2005/03/14 21:44:16  jrichter
+      updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
+
       Revision 1.9  2005/02/10 23:23:58  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -149,7 +152,7 @@ class IM_EX_PROT CtiANSIApplication
       void destroyMe( void );
       void reinitialize( void );
       bool generate( CtiXfer &xfer );
-      void initializeTableRequest( int aID, int aOffset, unsigned short aBytesExpected, BYTE aType, BYTE aOperation );
+      void initializeTableRequest( short aID, int aOffset, unsigned int aBytesExpected, BYTE aType, BYTE aOperation );
       BYTE* getCurrentTable( void );
 
 
@@ -208,9 +211,9 @@ class IM_EX_PROT CtiANSIApplication
        bool             _tableComplete;
 
 
-       int                  _currentTableID;
+       short                  _currentTableID;
        int                  _currentTableOffset;
-       unsigned short        _currentBytesExpected;
+       unsigned int        _currentBytesExpected;
        BYTE                  _currentType;
        BYTE                  _currentOperation;
 
@@ -232,7 +235,6 @@ class IM_EX_PROT CtiANSIApplication
        bool        _readFailed;
        int         _retries;
 
-       int _julieTest;
 
        BYTE _securityPassword[20];   
        int _negotiateRetry;

@@ -40,10 +40,6 @@ CtiAnsiTableSixOne::CtiAnsiTableSixOne( unsigned char *stdTblsUsed, int dimStdTb
             if (stdTblsUsed[(lpTbl[x]/8)] & y)
             {
                 _lpDataSetUsed[x] = true;
-                {
-                    CtiLockGuard< CtiLogger > doubt_guard( dout );
-                    dout << "       *******  lpDataSetUsed[ "<<x<<" ]"<<endl;
-                }
             }
             else
                 _lpDataSetUsed[x] = false;
@@ -79,10 +75,6 @@ CtiAnsiTableSixOne::CtiAnsiTableSixOne( BYTE *dataBlob,  unsigned char *stdTblsU
             if (stdTblsUsed[(lpTbl[x]/8)] & y)
             {
                 _lpDataSetUsed[x] = true;
-                {
-                    CtiLockGuard< CtiLogger > doubt_guard( dout );
-                    dout << "       *******  lpDataSetUsed[ "<<x<<" ]"<<endl;
-                }
             }
             else
                 _lpDataSetUsed[x] = false;

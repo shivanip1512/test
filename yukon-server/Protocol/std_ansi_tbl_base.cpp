@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_base.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/10 23:23:57 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/03/14 21:44:16 $
 *    History: 
       $Log: std_ansi_tbl_base.cpp,v $
+      Revision 1.8  2005/03/14 21:44:16  jrichter
+      updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
+
       Revision 1.7  2005/02/10 23:23:57  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -144,8 +147,8 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format )
                float32.ch[0] = source[3];
             }
 
-           //memcpy( &tempLong, source, sizeof( long ));
-           result = (double)float32.u32;
+           //result = (double)float32.u32;
+           result = float32.u32;
            offset = sizeof( unsigned char ) * 4;
            
 

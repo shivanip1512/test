@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_base.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/01/25 18:33:51 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/03/14 21:44:16 $
 *    History: 
       $Log: std_ansi_tbl_base.h,v $
+      Revision 1.5  2005/03/14 21:44:16  jrichter
+      updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
+
       Revision 1.4  2005/01/25 18:33:51  jrichter
       added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
 
@@ -63,7 +66,7 @@ typedef union
 typedef union
 {
    UCHAR    ch[4];
-   long       u32;
+   float      u32;
 } BYTEFLOAT32;
 
 

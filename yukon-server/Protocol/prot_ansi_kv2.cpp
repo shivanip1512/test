@@ -8,10 +8,19 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_ansi_kv2.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/17 19:02:58 $
+<<<<<<< prot_ansi_kv2.cpp
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/03/14 21:44:16 $
+*    History: 
+=======
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/03/14 21:44:16 $
 *    History:
+>>>>>>> 1.7
       $Log: prot_ansi_kv2.cpp,v $
+      Revision 1.8  2005/03/14 21:44:16  jrichter
+      updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
+
       Revision 1.7  2005/02/17 19:02:58  mfisher
       Removed space before CVS comment header, moved #include "yukon.h" after CVS header
 
@@ -82,7 +91,7 @@ void CtiProtocolANSI_kv2::destroyManufacturerTables( void )
 
 }
 
-void CtiProtocolANSI_kv2::convertToManufacturerTable( BYTE *data, BYTE numBytes, int aTableID )
+void CtiProtocolANSI_kv2::convertToManufacturerTable( BYTE *data, BYTE numBytes, short aTableID )
 {
 
     switch( aTableID - 0x0800)
@@ -133,13 +142,13 @@ int CtiProtocolANSI_kv2::calculateLPDataBlockStartIndex(ULONG lastLPTime)
     int nbrIntsPerBlock = getNbrIntervalsPerBlock();
     int nbrBlksSet = getNbrValidBlks();
     RWTime currentTime;
-
+    
 
     currentTime.now();
     nbrIntervals =  (abs(currentTime.seconds() - lastLPTime)/60) / getMaxIntervalTime();
     if (nbrIntervals > (((nbrBlksSet-1) * nbrIntsPerBlock) + nbrValidInts))
     {
-        nbrIntervals = (((nbrBlksSet-1) * nbrIntsPerBlock) + nbrValidInts);
+        nbrIntervals = (((nbrBlksSet-1) * nbrIntsPerBlock) + nbrValidInts); 
     }
 
     if (nbrIntervals <= nbrValidInts)
@@ -164,7 +173,7 @@ int CtiProtocolANSI_kv2::calculateLPDataBlockStartIndex(ULONG lastLPTime)
     setCurrentAnsiWantsTableValues(64,0,1,ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_READ);
     getApplicationLayer().initializeTableRequest (64, 0, 1, ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_READ);
       */
-
+    
 }
 
 int CtiProtocolANSI_kv2::calculateLPDataBlockSize(int numChans)
@@ -194,11 +203,11 @@ int CtiProtocolANSI_kv2::snapshotData()
     REQ_DATA_RCD reqData;
     reqData.proc.tbl_proc_nbr = 84;
     reqData.proc.std_vs_mfg_flag = 1;
-    reqData.proc.selector = 0;
+    reqData.proc.selector = 0;   
 
 
     getApplicationLayer().setProcBfld( reqData.proc );
-
+    
     reqData.seq_nbr = getWriteSequenceNbr();
     getApplicationLayer().setWriteSeqNbr( reqData.seq_nbr );
 
@@ -210,6 +219,10 @@ int CtiProtocolANSI_kv2::snapshotData()
 
     return -1;
 
+}
+int CtiProtocolANSI_kv2::batteryLifeData()
+{
+    return 1;
 }
 
 bool CtiProtocolANSI_kv2::retreiveKV2PresentValue( int offset, double *value )
@@ -225,42 +238,42 @@ bool CtiProtocolANSI_kv2::retreiveKV2PresentValue( int offset, double *value )
             break;
         }
         case OFFSET_INSTANTANEOUS_PHASE_B_VOLTAGE:
-        case OFFSET_LOADPROFILE_PHASE_B_VOLTAGE:
+        case OFFSET_LOADPROFILE_PHASE_B_VOLTAGE:   
         {
             *value = (_tableOneHundredTen->getVlnFundOnly()[1])/(float)10; //raw voltage quantities need to be scaled by factor of 1/10
             retVal = true;
             break;
         }
-        case OFFSET_INSTANTANEOUS_PHASE_C_VOLTAGE:
-        case OFFSET_LOADPROFILE_PHASE_C_VOLTAGE:
+        case OFFSET_INSTANTANEOUS_PHASE_C_VOLTAGE: 
+        case OFFSET_LOADPROFILE_PHASE_C_VOLTAGE:   
         {
             *value = (_tableOneHundredTen->getVlnFundOnly()[2])/(float)10; //raw voltage quantities need to be scaled by factor of 1/10
             retVal = true;
             break;
         }
-        case OFFSET_INSTANTANEOUS_PHASE_A_CURRENT:
-        case OFFSET_LOADPROFILE_PHASE_A_CURRENT:
+        case OFFSET_INSTANTANEOUS_PHASE_A_CURRENT: 
+        case OFFSET_LOADPROFILE_PHASE_A_CURRENT:   
         {
             *value = (_tableOneHundredTen->getCurrFundOnly()[0])/(float)10; //raw voltage quantities need to be scaled by factor of 1/10
             retVal = true;
             break;
         }
-        case OFFSET_INSTANTANEOUS_PHASE_B_CURRENT:
-        case OFFSET_LOADPROFILE_PHASE_B_CURRENT:
+        case OFFSET_INSTANTANEOUS_PHASE_B_CURRENT: 
+        case OFFSET_LOADPROFILE_PHASE_B_CURRENT:  
         {
             *value = (_tableOneHundredTen->getCurrFundOnly()[1])/(float)10; //raw voltage quantities need to be scaled by factor of 1/10
             retVal = true;
             break;
         }
-        case OFFSET_INSTANTANEOUS_PHASE_C_CURRENT:
-        case OFFSET_LOADPROFILE_PHASE_C_CURRENT:
+        case OFFSET_INSTANTANEOUS_PHASE_C_CURRENT: 
+        case OFFSET_LOADPROFILE_PHASE_C_CURRENT:   
         {
             *value = (_tableOneHundredTen->getCurrFundOnly()[2])/(float)10; //raw voltage quantities need to be scaled by factor of 1/10
             retVal = true;
             break;
         }
-        case OFFSET_INSTANTANEOUS_NEUTRAL_CURRENT:
-        case OFFSET_LOADPROFILE_NEUTRAL_CURRENT:
+        case OFFSET_INSTANTANEOUS_NEUTRAL_CURRENT: 
+        case OFFSET_LOADPROFILE_NEUTRAL_CURRENT:   
         {
             *value = (_tableOneHundredTen->getImputedNeutralCurr())/(float)10; //raw voltage quantities need to be scaled by factor of 1/10
             retVal = true;
@@ -273,4 +286,19 @@ bool CtiProtocolANSI_kv2::retreiveKV2PresentValue( int offset, double *value )
         }
     }
     return retVal;
+}
+
+
+int CtiProtocolANSI_kv2::getGoodBatteryReading()
+{
+    return  -1;
+}
+
+int CtiProtocolANSI_kv2::getCurrentBatteryReading()
+{
+    return -1;
+}
+int CtiProtocolANSI_kv2::getDaysOnBatteryReading()
+{
+    return -1;
 }

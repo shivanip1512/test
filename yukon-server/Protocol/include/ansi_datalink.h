@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_datalink.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/02/10 23:23:58 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/03/14 21:44:16 $
 *    History: 
       $Log: ansi_datalink.h,v $
+      Revision 1.9  2005/03/14 21:44:16  jrichter
+      updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
+
       Revision 1.8  2005/02/10 23:23:58  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -86,8 +89,8 @@ class IM_EX_PROT CtiANSIDatalink
       void buildSecure( BYTE aServiceCode, CtiXfer &xfer, BYTE *password );
      // void buildAuthenticate( BYTE aServiceCode, CtiXfer &xfer );
       void buildAuthenticate(BYTE aServiceCode, CtiXfer &xfer, BYTE *ini_auth_vector );
-      void buildTableRequest( CtiXfer &xfer, int aTableID, BYTE aOperation, int aOffset, BYTE aType, short maxPktSize, BYTE maxNbrPkts );
-      void buildWriteRequest(  CtiXfer &xfer, USHORT dataSize, int aTableID, BYTE aOperation, TBL_IDB_BFLD aProc, BYTE *parmPtr, BYTE aSeqNbr );
+      void buildTableRequest( CtiXfer &xfer, short aTableID, BYTE aOperation, int aOffset, BYTE aType, short maxPktSize, BYTE maxNbrPkts );
+      void buildWriteRequest(  CtiXfer &xfer, USHORT dataSize, short aTableID, BYTE aOperation, TBL_IDB_BFLD aProc, BYTE *parmPtr, BYTE aSeqNbr );
       void buildWaitRequest(CtiXfer &xfer );
       void buildLogOff( BYTE aServiceCode, CtiXfer &xfer );
       void buildTerminate( BYTE aServiceCode, CtiXfer &xfer );

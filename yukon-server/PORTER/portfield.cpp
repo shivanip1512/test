@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.136 $
-* DATE         :  $Date: 2005/03/14 01:24:50 $
+* REVISION     :  $Revision: 1.137 $
+* DATE         :  $Date: 2005/03/14 21:44:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1320,6 +1320,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 {
                                     delete retMsg;
                                 }
+                                InMessage->EventCode = NORMAL;
                             }
                             else
                             {
@@ -1328,6 +1329,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << RWTime() << " ansi TransactionFailed.  ReadFailed. " << endl;
                                 }
+                                InMessage->EventCode = NOTNORMAL;
                             }
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1399,6 +1401,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 {
                                     delete retMsg;
                                 }
+                                InMessage->EventCode = NORMAL;
                             }
                             else
                             {
@@ -1407,6 +1410,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << RWTime() << " ansi TransactionFailed.  ReadFailed. " << endl;
                                 }
+                                InMessage->EventCode = NOTNORMAL;
                             }
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);

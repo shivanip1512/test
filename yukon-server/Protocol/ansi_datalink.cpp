@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_datalink.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $                                                198
-* DATE         :  $Date: 2005/02/10 23:23:55 $
+* REVISION     :  $Revision: 1.11 $                                                198
+* DATE         :  $Date: 2005/03/14 21:44:16 $
 *    History: 
       $Log: ansi_datalink.cpp,v $
+      Revision 1.11  2005/03/14 21:44:16  jrichter
+      updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
+
       Revision 1.10  2005/02/10 23:23:55  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -208,7 +211,7 @@ bool CtiANSIDatalink::continueBuildingPacket( CtiXfer &xfer, int aCommStatus )
              {
                  retFlag = false;
 
-                 /****************************************
+                 /***************************************
                  //now we'll ask porter for the header
                 xfer.setInCountExpected( 6 );
                 xfer.setOutCount( 0 );
@@ -298,6 +301,10 @@ bool CtiANSIDatalink::continueBuildingPacket( CtiXfer &xfer, int aCommStatus )
             }
             else
             {
+                xfer.setInCountExpected( 0 );
+                xfer.setOutCount( 0 );
+                setExpectedBytes( 0 );
+
                 setPacketComplete (true);
                 retFlag = true;
 
@@ -397,11 +404,11 @@ void CtiANSIDatalink::buildNegotiate(BYTE aServiceCode, CtiXfer &xfer )
    data[0] = aServiceCode;
    data[1] = 0x00;               //176 bytes in a packet max
    data[2] = 0x80;
-   data[2] = 0xb0;
+   //data[2] = 0xb0;
    data[3] = 0xff;
-   data[3] = 0x03;
+  // data[3] = 0x03;
    data[4] = 0x06;
-   data[4] = 0x04;
+   //data[4] = 0x04;
 
 
    memset( xfer.getOutBuffer(), NULL, 100 );
@@ -574,7 +581,7 @@ void CtiANSIDatalink::buildAuthenticate(BYTE aServiceCode, CtiXfer &xfer, BYTE *
 //from all the tables have come in
 //=========================================================================================================================================
 
-void CtiANSIDatalink::buildTableRequest( CtiXfer &xfer, int aTableID, BYTE aOperation, int aOffset, BYTE aType, short maxPktSize, BYTE maxNbrPkts )
+void CtiANSIDatalink::buildTableRequest( CtiXfer &xfer, short aTableID, BYTE aOperation, int aOffset, BYTE aType, short maxPktSize, BYTE maxNbrPkts )
 {
    BYTE        data[10];
    BYTEUSHORT  flip;
@@ -634,7 +641,7 @@ void CtiANSIDatalink::buildTableRequest( CtiXfer &xfer, int aTableID, BYTE aOper
 }
 
 
-void CtiANSIDatalink::buildWriteRequest(  CtiXfer &xfer, USHORT dataSize, int aTableID, BYTE aOperation, TBL_IDB_BFLD aProc, BYTE *parmPtr, BYTE aSeqNbr )
+void CtiANSIDatalink::buildWriteRequest(  CtiXfer &xfer, USHORT dataSize, short aTableID, BYTE aOperation, TBL_IDB_BFLD aProc, BYTE *parmPtr, BYTE aSeqNbr )
 {
     int arraySize = 5 + dataSize + 1;
     BYTE        *data; //write 0x40 (1), tableID (2), count (2), data (dataSize), 
@@ -661,63 +668,78 @@ void CtiANSIDatalink::buildWriteRequest(  CtiXfer &xfer, USHORT dataSize, int aT
    data[3] = dataCount.ch[1];
    data[4] = dataCount.ch[0];
 
-   USHORT *temp;
-   temp = (USHORT *)&aProc;
-   proc.sh = (USHORT )*temp;
-   data[5] = proc.ch[0];
-   data[6] = proc.ch[1];
-
-   data[7] = aSeqNbr;
-
-
-   TBL_IDB_BFLD tblProcBfld = (TBL_IDB_BFLD )aProc;
-   switch((int)tblProcBfld.tbl_proc_nbr)
+   if (aTableID == 2049 && dataSize == 34) //batteryLifeInfo Request
    {
-       case 5:
-           {
-               data[8] = *parmPtr;
-               parmPtr++;
-               BYTEUSHORT entries;
-               entries.sh = (*parmPtr * 0x100) + *(parmPtr + 1);
-               entries.ch[0] = *parmPtr;
-               entries.ch[1] = *(parmPtr + 1);
-               data[9] = entries.ch[1];
-               data[10] = entries.ch[0];
-               break;
-           }
-       case 8:
+       //BYTEULONG lid;
+       for (int i = 0; i < dataSize; i++)
        {
-           break;
+           //lid.ul = (ULONG *)&parmPtr;
+
+           data[5+i] = *(parmPtr + i);
        }
-       case 9:
+   }
+   else
+   {
+       USHORT *temp;
+       temp = (USHORT *)&aProc;
+       proc.sh = (USHORT )*temp;
+       data[5] = proc.ch[0];
+       data[6] = proc.ch[1];
+
+       data[7] = aSeqNbr;
+
+
+       TBL_IDB_BFLD tblProcBfld = (TBL_IDB_BFLD )aProc;
+       switch((int)tblProcBfld.tbl_proc_nbr)
+       {
+           case 5:
+               {
+                   data[8] = *parmPtr;
+                   parmPtr++;
+                   BYTEUSHORT entries;
+                   entries.sh = (*parmPtr * 0x100) + *(parmPtr + 1);
+                   entries.ch[0] = *parmPtr;
+                   entries.ch[1] = *(parmPtr + 1);
+                   data[9] = entries.ch[1];
+                   data[10] = entries.ch[0];
+                   break;
+               }
+           case 8:
            {
-               data[8] = *parmPtr;
                break;
            }
-       case 16:
-       case 17:
-           {
-               break;
-           }
-           case 22:
-           {
-               data[8] = *parmPtr;
-               data[9] = *(parmPtr + 1);
-               data[10] = *(parmPtr + 2);
-               data[11] = *(parmPtr + 3);
-               break;
-           }
-           default:
-               break;
+           case 9:
+               {
+                   data[8] = *parmPtr;
+                   break;
+               }
+           case 16:
+           case 17:
+               {
+                   break;
+               }
+               case 22:
+               {
+                   data[8] = *parmPtr;
+                   data[9] = *(parmPtr + 1);
+                   data[10] = *(parmPtr + 2);
+                   data[11] = *(parmPtr + 3);
+                   break;
+               }
+               default:
+                   break;
+       }
    }
 
 
    data[5 + dataSize] = 0;
-   for (int xx = 0; xx < (5 + dataSize); xx++) 
+   for (int xx = 5; xx < dataSize + 5; xx++) 
    {
        data[5 + dataSize] += data[xx];    //2's complement cksm
    }
-   data[5 + dataSize] = 0xa4;
+   BYTE cksum = data[5 + dataSize];
+   data[5 + dataSize] = ~cksum + 1;
+
    memset( xfer.getOutBuffer(), NULL, 100 );
    assemblePacket( xfer.getOutBuffer(), data, arraySize, 0 );
 
@@ -743,7 +765,7 @@ void CtiANSIDatalink::buildWaitRequest(CtiXfer &xfer )
    BYTEUSHORT  flip;
 
    data[0] = 0x70;
-   data[1] = 0xff;
+   data[1] = 0x05;
 
    assemblePacket( xfer.getOutBuffer(), data, 2, 0 );
 
@@ -1041,4 +1063,5 @@ BYTE CtiANSIDatalink::getIdentityByte( void )
 {
     return _identityByte;
 }
+
 

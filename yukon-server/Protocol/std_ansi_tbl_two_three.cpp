@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_tbl_two_three.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/10 23:23:58 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/03/14 21:44:16 $
 *    History: 
       $Log: std_ansi_tbl_two_three.cpp,v $
+      Revision 1.8  2005/03/14 21:44:16  jrichter
+      updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
+
       Revision 1.7  2005/02/10 23:23:58  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -121,8 +124,9 @@ CtiAnsiTableTwoThree::CtiAnsiTableTwoThree( BYTE *dataBlob, int occur, int summa
        
        _tier_data_block[tierIndex].summations = new double[_sumNums];
 
-       populateSummations(dataBlob, &_tier_data_block[tierIndex], _totSize);
+       populateSummations(dataBlob, &_tier_data_block[tierIndex], offset);
        dataBlob += offset;
+       _totSize += offset;
 
            _tier_data_block[tierIndex].demands = new DEMANDS_RCD[_demandNums];
            _tier_data_block[tierIndex].coincidents = new COINCIDENTS_RCD[_coinNums];
@@ -130,11 +134,15 @@ CtiAnsiTableTwoThree::CtiAnsiTableTwoThree( BYTE *dataBlob, int occur, int summa
            //summations are not variable
 
            //demands record
-           populateDemandsRecord(dataBlob, &_tier_data_block[tierIndex], _totSize);
+           populateDemandsRecord(dataBlob, &_tier_data_block[tierIndex], offset);
            dataBlob += offset;
-             
-           populateCoincidentsRecord(dataBlob, &_tier_data_block[tierIndex], _totSize);
+           _totSize += offset;
+
+
+           populateCoincidentsRecord(dataBlob, &_tier_data_block[tierIndex], offset);
            dataBlob += offset;
+           _totSize += offset;
+
    }      
 }
 
@@ -770,7 +778,7 @@ void CtiAnsiTableTwoThree::printCoincidents( DATA_BLK_RCD data_block )
 
 double CtiAnsiTableTwoThree::getDemandValue ( int index )
 {
-    return _tot_data_block.demands->demand[index];
+    return *(_tot_data_block.demands[index].demand);
 }
 double CtiAnsiTableTwoThree::getSummationsValue ( int index )
 {

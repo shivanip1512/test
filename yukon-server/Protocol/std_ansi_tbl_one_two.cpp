@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_one_two.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:23:58 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/03/14 21:44:16 $
 *    History: 
       $Log: std_ansi_tbl_one_two.cpp,v $
+      Revision 1.7  2005/03/14 21:44:16  jrichter
+      updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
+
       Revision 1.6  2005/02/10 23:23:58  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -371,7 +374,7 @@ void CtiAnsiTableOneTwo::printResult(  )
             dout <<"  " << (bool)_uom_entries[x].harmonic;
             dout <<" (" << (int)_uom_entries[x].nfs <<")" << endl;
         }
-        Sleep(50);
+        //Sleep(50);
     }
 }
 

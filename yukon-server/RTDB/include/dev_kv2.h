@@ -9,11 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/03/10 20:21:07 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/03/14 21:44:16 $
 *
 *    History:
       $Log: dev_kv2.h,v $
+      Revision 1.9  2005/03/14 21:44:16  jrichter
+      updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
+
       Revision 1.8  2005/03/10 20:21:07  mfisher
       changed getProtocol to getKV2Protocol so it wouldn't interfere with the new dev_single getProtocol
 
@@ -51,6 +54,14 @@ public:
    CtiDeviceKV2();
    virtual ~CtiDeviceKV2();
 
+   virtual INT DemandReset( CtiRequestMsg *pReq, 
+                    CtiCommandParser &parse, 
+                    OUTMESS *&OutMessage, 
+                    RWTPtrSlist< CtiMessage > &vgList,
+                    RWTPtrSlist< CtiMessage > &retList, 
+                    RWTPtrSlist< OUTMESS > &outList, 
+                    INT ScanPriority = MAXPRIORITY-4);
+
    virtual INT GeneralScan(CtiRequestMsg              *pReq,
                            CtiCommandParser           &parse,
                            OUTMESS                    *&OutMessage,
@@ -70,10 +81,18 @@ public:
                            RWTPtrSlist< CtiMessage >  &vgList,
                            RWTPtrSlist< CtiMessage >  &retList,
                            RWTPtrSlist< OUTMESS >     &outList);
+   virtual INT ExecuteRequest( CtiRequestMsg         *pReq,
+                       CtiCommandParser           &parse,
+                       OUTMESS                   *&OutMessage,
+                       RWTPtrSlist< CtiMessage >  &vgList,
+                       RWTPtrSlist< CtiMessage >  &retList,
+                       RWTPtrSlist< OUTMESS >     &outList );
+
 
    CtiProtocolANSI & getKV2Protocol( void );
    void processDispatchReturnMessage( CtiReturnMsg *msgPtr );
    int buildScannerTableRequest (BYTE *ptr);
+   int buildCommanderTableRequest (BYTE *aMsg);
    INT sendCommResult( INMESS *InMessage);
 
    struct WANTS_HEADER

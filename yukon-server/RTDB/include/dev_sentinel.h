@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/03/10 19:30:14 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/03/14 21:44:16 $
 *
 
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
@@ -76,6 +76,7 @@ public:
    CtiProtocolANSI & getSentinelProtocol( void );
    void processDispatchReturnMessage( CtiReturnMsg *msgPtr );
    int buildScannerTableRequest (BYTE *ptr);
+   int buildCommanderTableRequest (BYTE *ptr);
    INT sendCommResult( INMESS *InMessage);
 
    struct WANTS_HEADER

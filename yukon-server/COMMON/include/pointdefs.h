@@ -196,6 +196,12 @@
 #define OFFSET_HIGHEST_CURRENT_OFFSET              160
 
 
+
+// Points 180 to 200 will be reserved for odds and ends information                                   
+// Sentinel to report battery life 
+#define OFFSET_BATTERY_LIFE                        180
+#define OFFSET_DAYS_ON_BATTERY                     181
+
 /*
  * Qualities are singular (non-bit-masked) and based upon point values in conjunction with the tags
  * They are priority based with higher enumerative values able to overwrite lower ones.  For example

@@ -27,7 +27,16 @@ CtiProtocolANSI_sentinel::CtiProtocolANSI_sentinel( void )
 {
     //_tableZero=NULL;
    // _tableSeventy=NULL;
-    _table_110=NULL;
+    //_table_110=NULL;
+    _daysSinceDemandReset = 0;   
+    _daysSinceLastTest = 0;      
+    _timeOfLastOutage = 0;       
+    _timeOfLastInterrogation = 0;
+    _daysOnBattery = 0;          
+    _currentBatteryReading = 0;  
+    _goodBatteryReading = 0;     
+    _dstConfigured = 0;          
+
 }
 
 CtiProtocolANSI_sentinel::~CtiProtocolANSI_sentinel( void )
@@ -50,14 +59,14 @@ void CtiProtocolANSI_sentinel::destroyManufacturerTables( void )
       _tableSeventy = NULL;
    } */
    
-   if( _table_110 != NULL )
+  /* if( _table_110 != NULL )
    {
       delete _table_110;
       _table_110 = NULL;
-   }
+   } */
 }
 
-void CtiProtocolANSI_sentinel::convertToManufacturerTable( BYTE *data, BYTE numBytes, int aTableID )
+void CtiProtocolANSI_sentinel::convertToManufacturerTable( BYTE *data, BYTE numBytes, short aTableID )
 {
 
     switch( aTableID - 0x0800)
@@ -72,7 +81,53 @@ void CtiProtocolANSI_sentinel::convertToManufacturerTable( BYTE *data, BYTE numB
                 _tableZero->printResult();
                 break;
             }
-        case 70:
+            */ 
+    case 1:
+        {
+            break;
+        }
+
+    case 2:
+      {
+          memcpy((void *)&_daysSinceDemandReset, data, sizeof(unsigned char) * 2);
+          data += 2;
+          memcpy((void *)&_daysSinceLastTest, data, sizeof(unsigned char) * 2);
+          data += 2;
+          memcpy((void *)&_timeOfLastOutage, data, sizeof(unsigned char) * 4);
+          data += 4;
+          memcpy((void *)&_timeOfLastInterrogation, data, sizeof(unsigned char) * 4);
+          data += 4;
+          memcpy((void *)&_daysOnBattery, data, sizeof(unsigned char) * 4);
+          data += 4;
+          memcpy((void *)&_currentBatteryReading, data, sizeof(unsigned char) * 2);
+          data += 2;
+          memcpy((void *)&_goodBatteryReading, data, sizeof(unsigned char) * 2);
+          data += 2;
+          memcpy((void *)&_dstConfigured, data, sizeof(unsigned char));
+          data += 1;
+
+          RWTime tempTime1 = RWTime(_timeOfLastOutage + RWTime(RWDate(1,1,2000)).seconds());
+          RWTime tempTime2 = RWTime(_timeOfLastInterrogation + RWTime(RWDate(1,1,2000)).seconds());
+
+
+          if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+          {
+                   CtiLockGuard<CtiLogger> doubt_guard(dout);
+                   dout << endl<<"=======================  Clock Related Data =========================" << endl;
+                   dout << "      Days Since Demand Reset      " << _daysSinceDemandReset << endl;
+                   dout << "      Days Since Last Test         " <<_daysSinceLastTest << endl;
+                   dout << "      Time Of Last Outage          " << tempTime1 << endl;
+                   dout << "      Time Of Last Interrogation   " << tempTime2 << endl;
+                   dout << "      Days On Battery              " << _daysOnBattery << endl;
+                   dout << "      Current Battery Reading      " << _currentBatteryReading << endl;
+                   dout << "      Good Battery Reading         " << _goodBatteryReading << endl;
+                   dout << "      DST Configured               " << _dstConfigured << endl << endl;
+          }
+
+          break;
+      }
+
+        /*case 70:
             {
                 {
                    CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -157,4 +212,109 @@ bool CtiProtocolANSI_sentinel::retreiveKV2PresentValue( int offset, double *valu
 {
     return false;
 }
+
+int CtiProtocolANSI_sentinel::batteryLifeData()
+{
+    //setWriteProcedureInProgress(true);
+
+    setCurrentAnsiWantsTableValues(2049,0,1,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
+    getApplicationLayer().initializeTableRequest (2049, 0, 1, ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
+
+    //Bogus - not used for this...just populating with dummy zeros.
+    REQ_DATA_RCD reqData;
+    reqData.proc.tbl_proc_nbr = 0;
+    reqData.proc.std_vs_mfg_flag = 0;
+    reqData.proc.selector = 0;   
+
+    getApplicationLayer().setProcBfld( reqData.proc );
+    
+    reqData.seq_nbr = getWriteSequenceNbr();
+    getApplicationLayer().setWriteSeqNbr( reqData.seq_nbr );
+    
+    BYTE clockRelatedData[34];
+
+    //READ #3 in Sentinel Developers Guide
+    clockRelatedData[0] = 0x00;   //Mode
+    clockRelatedData[1] = 0x08;    //Count 
+
+    BYTEULONG temp;
+    temp.ul = DAYS_SINCE_DEMAND_RESET;
+    clockRelatedData[2] = temp.ch[0];
+    clockRelatedData[3] = temp.ch[1];
+    clockRelatedData[4] = temp.ch[2];
+    clockRelatedData[5] = temp.ch[3];
+
+    temp.ul = DAYS_SINCE_LAST_TEST;
+    clockRelatedData[6] = temp.ch[0];
+    clockRelatedData[7] = temp.ch[1];
+    clockRelatedData[8] = temp.ch[2];
+    clockRelatedData[9] = temp.ch[3];
+
+    temp.ul = TIME_OF_LAST_OUTAGE;
+    clockRelatedData[10] = temp.ch[0];
+    clockRelatedData[11] = temp.ch[1];
+    clockRelatedData[12] = temp.ch[2];
+    clockRelatedData[13] = temp.ch[3];
+
+
+    temp.ul = TIME_OF_LAST_INTERROGATION;
+    clockRelatedData[14] = temp.ch[0];
+    clockRelatedData[15] = temp.ch[1];
+    clockRelatedData[16] = temp.ch[2];
+    clockRelatedData[17] = temp.ch[3];
+
+
+    temp.ul = DAYS_ON_BATTERY;
+    clockRelatedData[18] = temp.ch[0];
+    clockRelatedData[19] = temp.ch[1];
+    clockRelatedData[20] = temp.ch[2];
+    clockRelatedData[21] = temp.ch[3];
+
+
+    temp.ul = CURRENT_BATTERY_READING;
+    clockRelatedData[22] = temp.ch[0];
+    clockRelatedData[23] = temp.ch[1];
+    clockRelatedData[24] = temp.ch[2];
+    clockRelatedData[25] = temp.ch[3];
+
+    temp.ul = GOOD_BATTERY_READING;
+    clockRelatedData[26] = temp.ch[0];
+    clockRelatedData[27] = temp.ch[1];
+    clockRelatedData[28] = temp.ch[2];
+    clockRelatedData[29] = temp.ch[3];
+
+
+    temp.ul = DST_CONFIGURED;
+    clockRelatedData[30] = temp.ch[0];
+    clockRelatedData[31] = temp.ch[1];
+    clockRelatedData[32] = temp.ch[2];
+    clockRelatedData[33] = temp.ch[3]; 
+
+    getApplicationLayer().populateParmPtr(clockRelatedData, 34) ;
+
+
+    getApplicationLayer().setProcDataSize( 34 );
+
+    return -1;
+
+}
+
+int CtiProtocolANSI_sentinel::getGoodBatteryReading()
+{
+    return  (int)_goodBatteryReading;
+}
+
+int CtiProtocolANSI_sentinel::getCurrentBatteryReading()
+{
+    return (int)_currentBatteryReading;
+}
+
+int CtiProtocolANSI_sentinel::getDaysOnBatteryReading()
+{
+    return (int)_daysOnBattery;
+}
+
+
+
+
 

@@ -86,6 +86,9 @@ std_ansi_tbl_two_two.obj \
 std_ansi_tbl_two_three.obj \
 std_ansi_tbl_two_seven.obj \
 std_ansi_tbl_two_eight.obj \
+std_ansi_tbl_three_one.obj \
+std_ansi_tbl_three_two.obj \
+std_ansi_tbl_three_three.obj \
 std_ansi_tbl_five_one.obj \
 std_ansi_tbl_five_two.obj \
 std_ansi_tbl_six_one.obj \
