@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2004/10/12 20:14:16 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2004/12/07 18:47:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -319,10 +319,12 @@ INT CtiDeviceMCT2XX::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
-        INT    j;
-        ULONG  mread = 0;
+        INT    demand_interval;
+        ULONG  pulses;
         double Value;
         RWCString resultString;
+        PointQuality_t quality;
+        bool bad_data;
 
         CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
         CtiPointDataMsg *pData     = NULL;
@@ -338,29 +340,34 @@ INT CtiDeviceMCT2XX::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-                // 2 byte demand value.  Upper 2 bits are error indicators.
-        Value  = MAKEUSHORT(DSt->Message[1], (DSt->Message[0] & 0x3f) );
+        // 2 byte demand value.  Upper 2 bits are error indicators.
+        pulses = MAKEUSHORT(DSt->Message[1], (DSt->Message[0] & 0x3f) );
 
-        //  turn raw pulses into a demand reading
-        Value *= DOUBLE(3600 / getDemandInterval());
+        demand_interval = getDemandInterval();
 
         //  look for first defined DEMAND accumulator
         pPoint = getDevicePointOffsetTypeEqual( 1, DemandAccumulatorPointType );
 
-        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+        if( checkDemandQuality( pulses, quality, bad_data ) )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << (int)InMessage->Buffer.DSt.Message[0] << endl;
-            dout << (int)InMessage->Buffer.DSt.Message[1] << endl;
-            dout << getDemandInterval() << endl;
+            Value = 0.0;
+        }
+        else
+        {
+            //  if no fatal problems with the quality,
+            //    adjust for the demand interval
+            Value = pulses * (3600 / demand_interval);
+
+            if( pPoint )
+            {
+                //    and the UOM
+                Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM(Value);
+            }
         }
 
         if(pPoint != NULL)
         {
             RWTime pointTime;
-
-            Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
 
             resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                      ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
