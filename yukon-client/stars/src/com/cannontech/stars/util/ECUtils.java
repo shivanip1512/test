@@ -259,5 +259,21 @@ public class ECUtils {
 		YukonListEntry entry = YukonListFuncs.getYukonListEntry( categoryID );
 		return (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
 	}
+	
+	/**
+	 * Get all the energy companies that belongs to (directly or indirectly)
+	 * this energy company, including itself
+	 */
+	public static ArrayList getAllDescendants(LiteStarsEnergyCompany parent) {
+		ArrayList descendants = new ArrayList();
+		descendants.add( parent );
+		
+		for (int i = 0; i < parent.getChildren().size(); i++) {
+			LiteStarsEnergyCompany child = (LiteStarsEnergyCompany) parent.getChildren().get(i);
+			descendants.addAll( getAllDescendants(child) );
+		}
+		
+		return descendants;
+	}
 
 }

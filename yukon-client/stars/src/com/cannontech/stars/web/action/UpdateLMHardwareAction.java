@@ -17,6 +17,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -245,7 +246,8 @@ public class UpdateLMHardwareAction implements ActionBase {
 	}
 	
 	public static void updateInventory(StarsUpdateLMHardware updateHw, LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
-	throws WebClientException, java.sql.SQLException {
+		throws WebClientException, java.sql.SQLException
+	{
 		if (liteInv instanceof LiteStarsLMHardware) {
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
 			String serialNo = updateHw.getLMHardware().getManufacturerSerialNumber();
@@ -253,9 +255,14 @@ public class UpdateLMHardwareAction implements ActionBase {
 			if (serialNo.equals(""))
 				throw new WebClientException( "Serial # cannot be empty" );
 			
-			if (!liteHw.getManufacturerSerialNumber().equals(serialNo) &&
-				energyCompany.searchForLMHardware(updateHw.getDeviceType().getEntryID(), serialNo) != null)
-				throw new WebClientException( "Serial # already exists" );
+			try {
+				if (!liteHw.getManufacturerSerialNumber().equals(serialNo) &&
+					energyCompany.searchForLMHardware(updateHw.getDeviceType().getEntryID(), serialNo) != null)
+					throw new WebClientException( "Serial # already exists" );
+			}
+			catch (ObjectInOtherEnergyCompanyException e) {
+				throw new WebClientException( "The hardware is found in another energy company. Please contact " + energyCompany.getParent().getName() + " for more information." );
+			}
 			
 			com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
 					new com.cannontech.database.data.stars.hardware.LMHardwareBase();

@@ -26,6 +26,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
@@ -198,7 +199,15 @@ public class InventoryManager extends HttpServlet {
 		
 		int categoryID = Integer.parseInt( req.getParameter("CategoryID") );
 		int deviceID = Integer.parseInt( req.getParameter("DeviceID") );
-		LiteInventoryBase liteInv = energyCompany.getDevice( deviceID );
+		
+		LiteInventoryBase liteInv = null;
+		try {
+			liteInv = energyCompany.getDevice( deviceID );
+		}
+		catch (ObjectInOtherEnergyCompanyException e) {
+			redirect = req.getContextPath() + "/operator/Consumer/CheckInv.jsp?InOther=true";
+			return;
+		}
 		
 		if (liteInv == null) {
 			// The device in not in inventory yet
@@ -268,29 +277,43 @@ public class InventoryManager extends HttpServlet {
 		LiteInventoryBase liteInv = null;
 		int categoryID = ECUtils.getInventoryCategoryID( devTypeID, energyCompany );
 		
-		if (ECUtils.isLMHardware( categoryID )) {
-			liteInv = energyCompany.searchForLMHardware( devTypeID, searchVal );
-			session.setAttribute( INVENTORY_TO_CHECK, liteInv );
-		}
-		else {
-			liteInv = energyCompany.searchForDevice( categoryID, searchVal );
-			if (liteInv != null) {
+		try {
+			if (ECUtils.isLMHardware( categoryID )) {
+				liteInv = energyCompany.searchForLMHardware( devTypeID, searchVal );
 				session.setAttribute( INVENTORY_TO_CHECK, liteInv );
 			}
 			else {
-				if (ECUtils.isMCT( categoryID ))
-					redirect = req.getContextPath() + "/operator/Consumer/SelectMCT.jsp";
-				
-				try {
-					redirect += "?DeviceName=" + java.net.URLEncoder.encode(searchVal, "UTF-8");
+				liteInv = energyCompany.searchForDevice( categoryID, searchVal );
+				if (liteInv != null) {
+					session.setAttribute( INVENTORY_TO_CHECK, liteInv );
 				}
-				catch (java.io.UnsupportedEncodingException e) {}
-				
-				return;
+				else {
+					if (ECUtils.isMCT( categoryID ))
+						redirect = req.getContextPath() + "/operator/Consumer/SelectMCT.jsp";
+					
+					try {
+						redirect += "?DeviceName=" + java.net.URLEncoder.encode(searchVal, "UTF-8");
+					}
+					catch (java.io.UnsupportedEncodingException e) {}
+					
+					session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
+					return;
+				}
 			}
 		}
-		
-		redirect = req.getContextPath() + "/operator/Consumer/CheckInv.jsp";
+		catch (ObjectInOtherEnergyCompanyException e) {
+			if (action.equalsIgnoreCase("CreateLMHardware") ||
+				action.equalsIgnoreCase("UpdateLMHardware"))
+			{
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE,
+						"The hardware is found in another energy company. Please contact " + energyCompany.getParent().getName() + " for more information." );
+				redirect = referer;
+			}
+			else
+				redirect = req.getContextPath() + "/operator/Consumer/CheckInv.jsp?InOther=true";
+			
+			return;
+		}
 		
 		try {
 			if (action.equalsIgnoreCase("CreateLMHardware")) {
@@ -325,6 +348,8 @@ public class InventoryManager extends HttpServlet {
 				session.setAttribute( INVENTORY_TO_DELETE, liteInvOld );
 				redirect = req.getContextPath() + "/operator/Consumer/DeleteInv.jsp";
 			}
+			else
+				redirect = req.getContextPath() + "/operator/Consumer/CheckInv.jsp";
 		}
 		catch (ServletException se) {
 			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, se.getMessage() );
@@ -1037,7 +1062,12 @@ public class InventoryManager extends HttpServlet {
 			int[] inventoryIDs = null; 
 			
 			if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_SERIAL_NO) {
-				inventoryIDs = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySerialNumber(searchValue, user.getEnergyCompanyID(), conn);
+				com.cannontech.database.db.stars.hardware.LMHardwareBase[] hardwares =
+						com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySerialNumber(searchValue, user.getEnergyCompanyID(), conn);
+				
+				inventoryIDs = new int[ hardwares.length ];
+				for (int i = 0 ; i < hardwares.length; i++)
+					inventoryIDs[i] = hardwares[i].getInventoryID().intValue();
 			}
 			else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ACCT_NO) {
 				int[] acctIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber(energyCompany.getEnergyCompanyID(), searchValue);

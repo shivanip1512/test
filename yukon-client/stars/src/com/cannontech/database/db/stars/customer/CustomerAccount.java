@@ -189,13 +189,14 @@ public class CustomerAccount extends DBPersistent {
     		conn = com.cannontech.database.PoolManager.getInstance().getConnection(
     				com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
     		
-			int[] invIDs = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySerialNumber( serialNo, energyCompanyID, conn );
-			if (invIDs.length == 0) return new int[0];
+			com.cannontech.database.db.stars.hardware.LMHardwareBase[] hardwares =
+					com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySerialNumber( serialNo, energyCompanyID, conn );
+			if (hardwares.length == 0) return new int[0];
     		
 			String sql = "SELECT DISTINCT acct.AccountID FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + com.cannontech.database.db.stars.hardware.InventoryBase.TABLE_NAME + " inv "
-					   + "WHERE map.EnergyCompanyID = " + energyCompanyID + " AND map.AccountID = acct.AccountID AND acct.AccountID = inv.AccountID AND (inv.InventoryID = " + invIDs[0];
-			for (int i = 1; i < invIDs.length; i++)
-				sql += " OR inv.InventoryID = " + invIDs[i];
+					   + "WHERE map.EnergyCompanyID = " + energyCompanyID + " AND map.AccountID = acct.AccountID AND acct.AccountID = inv.AccountID AND (inv.InventoryID = " + hardwares[0].getInventoryID();
+			for (int i = 1; i < hardwares.length; i++)
+				sql += " OR inv.InventoryID = " + hardwares[i].getInventoryID();
 			sql += ")";
 			
 			java.sql.Statement stmt = conn.createStatement();
