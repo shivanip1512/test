@@ -133,23 +133,63 @@ insert into yukonuser values(14,'cti14','cti14',0,'01/01/1990','Enabled');
 insert into yukonuser values(15,'cti15','cti15',0,'01/01/1990','Enabled');
 insert into yukonuser values(16,'cti16','cti16',0,'01/01/1990','Enabled');
 
+insert into yukongroup values(236, 'lmcustomer', 'Custom lm user group');
+
 /* userid, groupid  */
-insert into yukonusergroup values(1,-2);
-insert into yukonusergroup values(2,-2);
-insert into yukonusergroup values(3,-2);
-insert into yukonusergroup values(4,-2);
-insert into yukonusergroup values(5,-2);
-insert into yukonusergroup values(6,-2);
-insert into yukonusergroup values(7,-2);
-insert into yukonusergroup values(8,-2);
-insert into yukonusergroup values(9,-2);
-insert into yukonusergroup values(10,-2);
-insert into yukonusergroup values(11,-2);
-insert into yukonusergroup values(12,-2);
-insert into yukonusergroup values(13,-2);
-insert into yukonusergroup values(14,-2);
-insert into yukonusergroup values(15,-2);
-insert into yukonusergroup values(16,-2);
+insert into yukonusergroup values(1,236);
+insert into yukonusergroup values(2,236);
+insert into yukonusergroup values(3,236);
+insert into yukonusergroup values(4,236);
+insert into yukonusergroup values(5,236);
+insert into yukonusergroup values(6,236);
+insert into yukonusergroup values(7,236);
+insert into yukonusergroup values(8,236);
+insert into yukonusergroup values(9,236);
+insert into yukonusergroup values(10,236);
+insert into yukonusergroup values(11,236);
+insert into yukonusergroup values(12,236);
+insert into yukonusergroup values(13,236);
+insert into yukonusergroup values(14,236);
+insert into yukonusergroup values(15,236);
+insert into yukonusergroup values(16,236);
+
+insert into yukonusergroup values(1,-1);
+insert into yukonusergroup values(2,-1);
+insert into yukonusergroup values(3,-1);
+insert into yukonusergroup values(4,-1);
+insert into yukonusergroup values(5,-1);
+insert into yukonusergroup values(6,-1);
+insert into yukonusergroup values(7,-1);
+insert into yukonusergroup values(8,-1);
+insert into yukonusergroup values(9,-1);
+insert into yukonusergroup values(10,-1);
+insert into yukonusergroup values(11,-1);
+insert into yukonusergroup values(12,-1);
+insert into yukonusergroup values(13,-1);
+insert into yukonusergroup values(14,-1);
+insert into yukonusergroup values(15,-1);
+insert into yukonusergroup values(16,-1);
+
+
+/* Web Client Role */
+insert into yukongrouprole values(2222, 236, -108, -10800, '/user/CILC/user_trending.jsp');
+insert into yukongrouprole values(2223, 236, -108, -10801, 'ALL');
+insert into yukongrouprole values(2224, 236, -108, -10802, '(none)');
+insert into yukongrouprole values(2225, 236, -108, -10803, '(none)');
+insert into yukongrouprole values(2226, 236, -108, -10804, '(none)');
+insert into yukongrouprole values(2227, 236, -108, -10805, '(none)');
+
+/* Customer Direct Loadcontrol role */
+insert into yukongrouprole values(2228, 236, -300, -30000, '(none)');
+insert into yukongrouprole values(2229, 236, -300, -30001, '(none)');
+
+/* Customer Curtailment role */
+insert into yukongrouprole values(2230, 236, -301, -30100, '(none)');
+insert into yukongrouprole values(2231, 236, -301, -30101, 'Xcel Energy');
+
+/* Customer Energy Buyback role */
+insert into yukongrouprole values(2232, 236, -302, -30200, 'Peak Day Partners');
+insert into yukongrouprole values(2233, 236, -302, -30201, '1-800-123-3456');
 
 /* addressid, locationaddress1, locationAddress2, cityname, statecode, zipcode, county */
 insert into address values(1, '1212 e wayzata blvd','suite 200','Wayzata','MN','55391','hennepin');
@@ -847,17 +887,65 @@ insert into yukonuser values(18,'op2','op2',0,'01/01/1990','Enabled');
 insert into yukonuser values(19,'op3','op3',0,'01/01/1990','Enabled');
 insert into yukonuser values(20,'op4','op4',0,'01/01/1990','Enabled');
 
-insert into yukonusergroup values(17,-3);
-insert into yukonusergroup values(18,-3);
-insert into yukonusergroup values(19,-3);
-insert into yukonusergroup values(20,-3);
+insert into contact values(17,'Harry','Polter',13,1);
+insert into contact values(18,'MIke','Tiger',14,1);
+insert into contact values(19,'Joey','Ramone',15,1);
+insert into contact values(20,'Matt','Rumsfield',16,1);
+
+
+insert into yukongroup values(235, 'lmoperator', 'Custom lm operator group');
+
+insert into yukonusergroup values(17,235);
+insert into yukonusergroup values(18,235);
+insert into yukonusergroup values(19,235);
+insert into yukonusergroup values(20,235);
+
+insert into yukonusergroup values(17, -1);
+insert into yukonusergroup values(18, -1);
+insert into yukonusergroup values(19, -1);
+insert into yukonusergroup values(20, -1);
 
 /* adds loadmanagement roles to the web operators */
-insert into yukongrouprole values(-3,-122,'(none)');
 
+/* Energy Company Role */
+insert into yukongrouprole values(3111, 235, -2, -1100, 'josh@cannontech.com');
+insert into yukongrouprole values(3112, 235, -2, -1101, 'josh@cannontech.com');
+insert into yukongrouprole values(3113, 235, -2, -1102, '(none)');
+insert into yukongrouprole values(3114, 235, -2, -1103, '(none)');
+insert into yukongrouprole values(3115, 235, -2, -1104, '(none)');
+insert into yukongrouprole values(3116, 235, -2, -1105, '(none)');
+
+/* Web Client Role */
+insert into yukongrouprole values(3333, 235, -108, -10800, '/operator/Operations.jsp');
+insert into yukongrouprole values(3334, 235, -108, -10801, 'ALL');
+insert into yukongrouprole values(2235, 235, -108, -10802, '(none)');
+insert into yukongrouprole values(2236, 235, -108, -10803, '(none)');
+insert into yukongrouprole values(2237, 235, -108, -10804, '(none)');
+insert into yukongrouprole values(2238, 235, -108, -10805, '(none)');
+
+/* Operator Direct Loadcontrol Role */
+insert into yukongrouprole values(3339, 235, -203, -20300, '(none)');
+insert into yukongrouprole values(3340, 235, -203, -20301, '(none)');
+
+/* Operator Direct Curtailment Role */
+insert into yukongrouprole values(3341, 235, -204, -20400, 'Notification');
+
+/* Operator Energy Buyback Role */
+insert into yukongrouprole values(3342, 235, -205, -20500, 'Peak Day Partners');
+
+/* Give the operators some direct programs */
+insert into lmdirectoperatorlist values(40, 17);
+insert into lmdirectoperatorlist values(50, 17);
+insert into lmdirectoperatorlist values(50, 18);
+insert into lmdirectoperatorlist values(60, 18);
+insert into lmdirectoperatorlist values(70, 19);
+insert into lmdirectoperatorlist values(80, 19);
+insert into lmdirectoperatorlist values(80, 20);
+insert into lmdirectoperatorlist values(90, 20);
+ 
 /* energycompanyid, name, routeid (routeid should be removed)*/
-insert into energycompany values(1, 'Acme Energy Corp',3);
-insert into energycompany values(2, 'Brooks Energy', 3);
+insert into energycompany values(1, 'Acme Energy Corp',17, -1);
+insert into energycompany values(2, 'Brooks Energy', 19, -1);
 
 /* energycompanyid, operatorloginid */
 insert into energycompanyoperatorloginlist values(1,17);
