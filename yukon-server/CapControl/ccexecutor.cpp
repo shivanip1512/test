@@ -20,6 +20,7 @@
 
 extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;
+extern ULONG _SEND_TRIES;
 
 /*===========================================================================
     CtiCCCommandExecutor
@@ -759,7 +760,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
                     else if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
                     {
                         if( savedFeederRecentlyControlledFlag ||
-                            ((savedFeederLastOperationTime.seconds()+currentSubstationBus->getMinResponseTime()) >= currentFeeder->getLastOperationTime().seconds()) )
+                            ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getMinResponseTime()/_SEND_TRIES)) >= currentFeeder->getLastOperationTime().seconds()) )
                         {
                             confirmImmediately = TRUE;
                         }
@@ -773,7 +774,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
                              !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
                     {
                         if( savedBusRecentlyControlledFlag ||
-                            ((savedBusLastOperationTime.seconds()+currentSubstationBus->getMinResponseTime()) >= currentSubstationBus->getLastOperationTime().seconds()) )
+                            ((savedBusLastOperationTime.seconds()+(currentSubstationBus->getMinResponseTime()/_SEND_TRIES)) >= currentSubstationBus->getLastOperationTime().seconds()) )
                         {
                             confirmImmediately = TRUE;
                         }
@@ -928,7 +929,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                     else if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
                     {
                         if( savedFeederRecentlyControlledFlag ||
-                            ((savedFeederLastOperationTime.seconds()+currentSubstationBus->getMinResponseTime()) >= currentFeeder->getLastOperationTime().seconds()) )
+                            ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getMinResponseTime()/_SEND_TRIES)) >= currentFeeder->getLastOperationTime().seconds()) )
                         {
                             confirmImmediately = TRUE;
                         }
@@ -942,7 +943,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                              !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
                     {
                         if( savedBusRecentlyControlledFlag ||
-                            ((savedBusLastOperationTime.seconds()+currentSubstationBus->getMinResponseTime()) >= currentSubstationBus->getLastOperationTime().seconds()) )
+                            ((savedBusLastOperationTime.seconds()+(currentSubstationBus->getMinResponseTime()/_SEND_TRIES)) >= currentSubstationBus->getLastOperationTime().seconds()) )
                         {
                             confirmImmediately = TRUE;
                         }

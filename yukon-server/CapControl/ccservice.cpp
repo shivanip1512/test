@@ -22,7 +22,7 @@
 ULONG _CC_DEBUG;
 //Boolean if we ignore non normal qualities
 BOOL _IGNORE_NOT_NORMAL_FLAG;
-ULONG _SEND_RETRIES;
+ULONG _SEND_TRIES;
 
 //Use this to indicate globally when ctrl-c was pressed
 //Kinda ugly... The Run() member function watches this
@@ -169,12 +169,12 @@ void CtiCCService::Init()
         dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
-    _SEND_RETRIES = 0;
+    _SEND_TRIES = 1;
 
     strcpy(var, "CAP_CONTROL_SEND_RETRIES");
     if( !(str = gConfigParms.getValueAsString(var)).isNull() )
     {
-        _SEND_RETRIES = atoi(str.data());
+        _SEND_TRIES = atoi(str.data())+1;
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
