@@ -47,6 +47,7 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_DEV_TYPE_SA205				= 1309;
 	public static final int YUK_DEF_ID_DEV_TYPE_SA305				= 1310;
 	public static final int YUK_DEF_ID_DEV_TYPE_LCR_5000_VCOM		= 1311;
+	public static final int YUK_DEF_ID_DEV_TYPE_ENERGYPRO			= 3100;
 	public static final int YUK_DEF_ID_APP_CAT_DEFAULT				= 1400;
 	public static final int YUK_DEF_ID_APP_CAT_AIR_CONDITIONER		= 1401;
 	public static final int YUK_DEF_ID_APP_CAT_WATER_HEATER			= 1402;
@@ -70,7 +71,7 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL		= 1702;
 	public static final int YUK_DEF_ID_DEV_STAT_UNAVAIL				= 1703;
 	public static final int YUK_DEF_ID_MANU_UNKNOWN					= 1801;
-	public static final int YUK_DEF_ID_LOC_UNKNOW					= 1901;
+	public static final int YUK_DEF_ID_LOC_UNKNOWN					= 1901;
 	public static final int YUK_DEF_ID_TOW_WEEKDAY					= 2101;
 	public static final int YUK_DEF_ID_TOW_WEEKEND					= 2102;
 	public static final int YUK_DEF_ID_TOW_SATURDAY					= 2103;
@@ -110,7 +111,6 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_INV_FILTER_BY_CONFIG			= 2904;
 	public static final int YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS		= 2905;
 	
-	public static final int YUK_DEF_ID_DEV_TYPE_ENERGYPRO			= 3100;
 	public static final int YUK_DEF_ID_GED_TIMESTAMP				= 3201;
 	public static final int YUK_DEF_ID_GED_SETPOINTS				= 3202;
 	public static final int YUK_DEF_ID_GED_FAN_SWITCH				= 3203;
