@@ -193,7 +193,7 @@
                     <%}
                     else{ 
                     %>
-                    <td width="75" height="10" valign="TOP" class="TableCell"><%=numberFormat.parse(amountStrs[i])%></td>
+                    <td width="75" height="10" valign="TOP" class="TableCell"><%=numberFormat.format(numberFormat.parse(amountStrs[i]))%></td>
                     <%}
                     }%>
 <!--                    <td width="75" height="10" class="TableCell"><% if(baseLineValues != null) { %><%= numberFormat.format(baseLineValues[i]) %><% } else { %>----<% } %></td>-->
@@ -234,7 +234,7 @@
                     <%}
                     else{ 
                     %>
-                    <td width="75" height="10" valign="TOP" class="TableCell"><%=numberFormat.parse(amountStrs[i])%></td>
+                    <td width="75" height="10" valign="TOP" class="TableCell"><%=numberFormat.format(numberFormat.parse(amountStrs[i]))%></td>
                     <%}
                     }%>
 <!--                    <td width="75" height="10" valign="TOP" class="TableCell"><% if(baseLineValues != null) { %><%= numberFormat.format(baseLineValues[i]) %><% } else { %>----<% } %></td>-->

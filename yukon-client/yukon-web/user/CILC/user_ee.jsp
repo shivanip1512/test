@@ -266,13 +266,15 @@
 		for (int i = 0; i < 24; i++)
 		{
 			try {
+				if( newAmountStrs[i].length() == 0)
+					newAmountStrs[i] = "0";
 				double amountVal = numberFormat.parse(newAmountStrs[i]).doubleValue();
 				if (amountVal < 0)	//'0' is a defined curtail amount so we must check for our default -999 value instead.
 					amountStrs[i] = "----";
 				else
 					amountStrs[i] = numberFormat.format(amountVal);
 			}
-			catch (NumberFormatException ne) {}
+			catch (NumberFormatException ne){}
 		}
 	}
 	else if (tab.equalsIgnoreCase("confirm")) {
@@ -303,6 +305,11 @@
 					checker.setError("formaterror", "Some of the values below have invalid format");
 					response.sendRedirect("user_ee.jsp?tab=accept&error=true");
 					tab = "";
+				}
+				catch (java.text.ParseException pe) {
+					checker.setError("formaterror", "Some of the values below have invalid format or characters");
+					response.sendRedirect("user_ee.jsp?tab=accept&error=true");
+					return;
 				}
 				if( isTooSmall) {
 					checker.setError("amounterror", "Offer amount(s) must be equal to or greater than 500 kW");
@@ -361,7 +368,12 @@ System.out.println("&&&&&&&&&&&&&&&& sending confirm message");
 			Double[] amount = new Double[24];
 			for( int i = 0; i < 24; i++ )
 			{
-				amount[i] = new Double( numberFormat.parse(amountStrs[i]).doubleValue());
+				try{
+					amount[i] = new Double( numberFormat.parse(amountStrs[i]).doubleValue());
+				}
+				catch(java.text.ParseException pe){
+					amount[i] = new Double(0);
+				}
 			}
 
 			msg.setAmountCommitted(amount);
