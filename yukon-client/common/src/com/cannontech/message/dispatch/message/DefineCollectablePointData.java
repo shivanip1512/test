@@ -73,7 +73,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	pData.setForced( vstr.extractUnsignedInt() );	
 	pData.setStr( (String) vstr.restoreObject(SimpleMappings.CString));
 	pData.setTime( (java.util.Date) vstr.restoreObject( SimpleMappings.Time ));	
-//	pData.setMillis( vstr.extractUnsignedInt() );
+	pData.setMillis( vstr.extractUnsignedInt() );
 }
 /**
  * saveGuts method comment.
@@ -93,6 +93,6 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertUnsignedInt( pData.getForced() );	
 	vstr.saveObject( pData.getStr(), SimpleMappings.CString );
 	vstr.saveObject( pData.getPointDataTimeStamp(), SimpleMappings.Time );
-//	vstr.insertUnsignedInt( pData.getMillis() );
+	vstr.insertUnsignedInt( pData.getMillis() );
 }
 }
