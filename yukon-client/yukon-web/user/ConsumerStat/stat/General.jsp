@@ -77,14 +77,19 @@
                               <td valign="top">
 								<p class="Main"><%= ecWebSettings.getDescription() %></p></td>
                               <td valign="top"> 
-                                <table width="200" border="1" cellspacing="0" cellpadding="3" align="center">
-                                  <tr bgcolor="#CCCCCC" class="Main"> 
-                                    <td width="139"> <div align="center"> 
-                                        <p class="TableCell3">Your Enrolled Programs</p>
+                                <table width="200" border="0" cellspacing="0" cellpadding="3" align="center">
+                                  <tr class="Main"> 
+                                    <td width="64"> <div align="center"> 
+                                        <p class="TableCell">Your Enrolled Programs
                                       </div></td>
-                                    <td width="134"> <div align="center" class="TableCell3"><cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROL %>" format="capitalized"/> 
+									  <td width="8" background="dot.gif">
+									  </td>
+                                    <td width="128"> <div align="center" class="TableCell"><cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROL %>" format="capitalized"/> 
                                         Since Midnight</div></td>
                                   </tr>
+								  <tr>
+								  <td colspan="3" background="dot.gif" height="8"></td>
+								  </tr>
 <%
 	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
 		StarsLMProgram program = programs.getStarsLMProgram(i);
@@ -100,40 +105,60 @@
 		}
 %>
                                   <tr> 
-                                    <td width="139"> <div align="center"> <span class="TableCell"> 
+                                    <td width="64"> <div align="center"> <span class="TableCell"> 
                                         <img src="../<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>
                                         <%= program.getProgramName() %></span> 
                                         
                                       </div></td>
-                                    <td width="134" class="Main"> 
-                                      <div align="center"> 
-                                        <%
+									  <td width="8" background="dot.gif">
+									  </td>
+                                    <td width="128" class="Main"> 
+                                      <div align="center">
+                                        <table width="128" border="0" cellspacing="0" cellpadding="0" class="TableCell">
+                                          <tr> 
+                                            <td> 
+                                              <%
 		if (program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) {
 %>
-                                        <b>Out of Service</b>
-<%
+                                              <div align="center">Out of Service 
+                                                <%
 		}
 		else if (todayCtrlHist.getBeingControlled()) {
 %>
-                                        <b>Currently<br>
-                                        <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLING %>"/></b> 
-<%
+                                                Currently<br>
+                                                <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLING %>"/> 
+                                                <%
 		}
 		else if (todayCtrlHist.getControlHistoryCount() > 0) {
 %>
-                                        <b>You have<br>
-                                        been <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLED %>"/></b> 
-                                        <%
+                                                You have<br>
+                                                been <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLED %>"/> 
+                                                <%
 		}
 		else {
 %>
-                                        <b>You have not<br>
-                                        been <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLED %>"/></b> 
-                                        <%
+                                                You have not<br>
+                                                been <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLED %>"/> 
+                                                <%
 		}
 %>
-                                      </div></td>
+                                              </div>
+                                            </td>
+                                          </tr>
+                                          <tr> 
+                                            <td> 
+                                              <div align="center">Control today 
+                                                is likely</div>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                        
+                                      </div>
+                                    </td>
                                 </tr>
+								<tr>
+								  <td colspan="3" background="dot.gif" height="8"></td>
+								  </tr>
 <%
 	}
 %>
