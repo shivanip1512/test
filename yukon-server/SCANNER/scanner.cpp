@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2003/05/23 22:15:40 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2003/08/12 13:06:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1295,32 +1295,36 @@ void LoadScannableDevices(void *ptr)
 
     if(pChg != NULL && pChg->getDatabase() == ChangePointDb)  // On a point specific message only!
     {
-        CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr_dev(ScannerDeviceManager.getMap());
-        for(; ++itr_dev ;)
+        LONG paoDeviceID = GetPAOIdOfPoint(pChg->getId());
+
         {
-            CtiDeviceBase *pBase = (CtiDeviceBase *)itr_dev.value();
-            RWRecursiveLock<RWMutexLock>::LockGuard devguard(pBase->getMux());
+            CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr_dev(ScannerDeviceManager.getMap());
 
-            if(pBase->isSingle())
+            CtiDeviceBase *pBase = (CtiDevice*)ScannerDeviceManager.getEqual(paoDeviceID);
+
+            if(pBase)
             {
-                CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)pBase;
+                RWRecursiveLock<RWMutexLock>::LockGuard devguard(pBase->getMux());
+                if(pBase->isSingle())
+                {
+                    CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)pBase;
 
-                if( (pChg->getTypeOfChange() == ChangeTypeAdd) ||
-                    (pChg->getTypeOfChange() == ChangeTypeUpdate && DeviceRecord->getDevicePointEqual(pChg->getId())))        // This device has this ID... Cool, blow it away and break out of the loop.
-                {
+                    if( (pChg->getTypeOfChange() == ChangeTypeAdd) || (pChg->getTypeOfChange() == ChangeTypeUpdate) )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " DBChange forced a reload of points for " << pBase->getName() << endl;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " DBChange forced a reload of points for " << pBase->getName() << endl;
+                            pChg->dump();
+                        }
+                        pBase->RefreshDevicePoints();
                     }
-                    pBase->RefreshDevicePoints();
-                    break;
-                }
-                else if(pChg->getTypeOfChange() == ChangeTypeDelete && DeviceRecord->getDevicePointEqual(pChg->getId()))
-                {
-                    pBase->orphanDevicePoint(pChg->getId());
-                    break;
+                    else if(pChg->getTypeOfChange() == ChangeTypeDelete)
+                    {
+                        pBase->orphanDevicePoint(pChg->getId());
+                    }
                 }
             }
+
         }
     }
 
@@ -1396,37 +1400,35 @@ void DispatchMsgHandlerThread(VOID *Arg)
                         {
                             if(Cmd->getOpArgList().entries() >= 4)
                             {
-                               LONG token       = Cmd->getOpArgList().at(0);
-                               LONG deviceId    = Cmd->getOpArgList().at(1);
-                               LONG open       = Cmd->getOpArgList().at(2);
-                               LONG duration   = Cmd->getOpArgList().at(3);
+                                LONG token      = Cmd->getOpArgList().at(0);
+                                LONG deviceId   = Cmd->getOpArgList().at(1);
+                                LONG open       = Cmd->getOpArgList().at(2);
+                                LONG duration   = Cmd->getOpArgList().at(3);
 
-                               {
-                                  RWRecursiveLock<RWMutexLock>::LockGuard guard(ScannerDeviceManager.getMux());
-                                  CtiDeviceBase     *device = NULL;
-                                  CtiDeviceSingle   *deviceSingle = NULL;
+                                {
+                                    CtiDeviceBase     *device = NULL;
+                                    CtiDeviceSingle   *deviceSingle = NULL;
+                                    RWRecursiveLock<RWMutexLock>::LockGuard guard(ScannerDeviceManager.getMux());
 
-                                  CtiHashKey key(deviceId);
-                                  if( ScannerDeviceManager.getMap().entries() > 0 &&
-                                      ((device = ScannerDeviceManager.getMap().findValue(&key)) != NULL) )
-                                  {
-                                      if( device->isSingle() )
-                                      {
-                                          CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)device;
-                                          DeviceRecord->applySignaledRateChange(open,duration);
-                                          DeviceRecord->validateScanTimes(true);
-                                          // 052203 CGP // DeviceRecord->checkSignaledAlternateRateForExpiration();
-                                          SetEvent(hScannerSyncs[ S_SCAN_EVENT ]);
-                                      }
-                                      else
-                                      {
-                                         {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") attempting to assign alternate rate to a non-scannable device" << endl;
-                                         }
-                                      }
-                                  }
-                               }
+                                    if( ((device = ScannerDeviceManager.getEqual( deviceId )) != NULL) )
+                                    {
+                                        if( device->isSingle() )
+                                        {
+                                            CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)device;
+                                            DeviceRecord->applySignaledRateChange(open,duration);
+                                            DeviceRecord->validateScanTimes(true);
+                                            // 052203 CGP // DeviceRecord->checkSignaledAlternateRateForExpiration();
+                                            SetEvent(hScannerSyncs[ S_SCAN_EVENT ]);
+                                        }
+                                        else
+                                        {
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") attempting to assign alternate rate to a non-scannable device" << endl;
+                                            }
+                                        }
+                                    }
+                                }
                             }
                             else
                             {
