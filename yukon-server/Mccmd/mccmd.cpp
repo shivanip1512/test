@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2002/06/13 22:38:14 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2002/08/12 20:07:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1573,6 +1573,7 @@ void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
         Tcl_Obj* sel_str = Tcl_NewStringObj( cmd_line.data() + end_index, -1 );
         Tcl_ListObjLength(interp, sel_str, &list_len );
 
+        cmd_line.replace("\n"," ");
         cmd_line.replace("select.*","");
 
         if( list_len > 0 )
