@@ -1,7 +1,7 @@
 package com.cannontech.stars.util.task;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ServerUtils;
 
@@ -18,9 +18,9 @@ public class SendConfigCommandTask implements Runnable {
 	public static int COMMAND_INTERVAL = 300;	// Wait 5 minutes in between sending commands
 	
 	private LiteStarsEnergyCompany energyCompany = null;
-	private LiteLMHardwareBase liteHw = null;
+	private LiteStarsLMHardware liteHw = null;
 
-	public SendConfigCommandTask(LiteStarsEnergyCompany energyCompany, LiteLMHardwareBase liteHw) {
+	public SendConfigCommandTask(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw) {
 		this.energyCompany = energyCompany;
 		this.liteHw = liteHw;
 	}

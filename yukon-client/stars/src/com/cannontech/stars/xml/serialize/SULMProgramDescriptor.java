@@ -139,6 +139,48 @@ public class SULMProgramDescriptor extends org.exolab.castor.xml.util.XMLClassDe
         }
         desc.setValidator(fieldValidator);
         
+        //-- _addressingGroupID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_addressingGroupID", "addressingGroupID", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                SULMProgram target = (SULMProgram) object;
+                if(!target.hasAddressingGroupID())
+                    return null;
+                return new Integer(target.getAddressingGroupID());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    SULMProgram target = (SULMProgram) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteAddressingGroupID();
+                        return;
+                    }
+                    target.setAddressingGroupID( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _addressingGroupID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
         //-- initialize element descriptors
         
     } //-- com.cannontech.stars.xml.serialize.SULMProgramDescriptor()

@@ -73,8 +73,8 @@ public class SOAPClient extends HttpServlet {
     private static SOAPMessenger soapMsgr = null;
     private static boolean serverLocal = true;
 
-    private static final String loginURL = "/login.jsp";
-    private static final String homeURL = "/operator/Operations.jsp";
+    public static final String LOGIN_URL = "/login.jsp";
+    public static final String HOME_URL = "/operator/Operations.jsp";
 
     public SOAPClient() {
         super();
@@ -166,11 +166,11 @@ public class SOAPClient extends HttpServlet {
 			ServletUtils.clear();
 			if (isServerLocal()) SOAPServer.refreshCache();
         	if (session != null) session.invalidate();
-			resp.sendRedirect( req.getContextPath() + loginURL ); return;
+			resp.sendRedirect( req.getContextPath() + LOGIN_URL ); return;
 		}
 		
         if (session == null && !action.endsWith("Login")) {
-        	resp.sendRedirect( req.getContextPath() + loginURL ); return;
+        	resp.sendRedirect( req.getContextPath() + LOGIN_URL ); return;
         }
         
         initSOAPServer( req );
@@ -178,7 +178,7 @@ public class SOAPClient extends HttpServlet {
         SOAPMessage reqMsg = null;
         SOAPMessage respMsg = null;
 
-        String nextURL = req.getContextPath() + loginURL;		// The next URL we're going to, operation succeed -> destURL, operation failed -> errorURL
+        String nextURL = req.getContextPath() + LOGIN_URL;		// The next URL we're going to, operation succeed -> destURL, operation failed -> errorURL
         String destURL = null;			// URL we should go to if action succeed
         String errorURL = null;		// URL we should go to if action failed
         ActionBase clientAction = null;
@@ -204,24 +204,20 @@ public class SOAPClient extends HttpServlet {
         }
 		else if (action.equalsIgnoreCase("NewCustAccount")) {
 			clientAction = new NewCustAccountAction();
+			destURL = req.getContextPath() + "/operator/Consumer/Update.jsp";
+			errorURL = req.getContextPath() + "/operator/Consumer/New.jsp";
 			if (req.getParameter("Wizard") != null) {
-				destURL = req.getContextPath() + "/operator/Consumer/CreateHardware.jsp?Wizard=true";
+				session.setAttribute(ServletUtils.ATT_REDIRECT, req.getContextPath() + "/operator/Consumer/CreateHardware.jsp?Wizard=true");
 				errorURL = req.getContextPath() + "/operator/Consumer/New.jsp?Wizard=true";
-			}
-			else {
-				destURL = req.getContextPath() + "/operator/Consumer/Update.jsp";
-				errorURL = req.getContextPath() + "/operator/Consumer/New.jsp";
 			}
 		}
 		else if (action.equalsIgnoreCase("ProgramSignUp")) {
 			clientAction = new ProgramSignUpAction();
+        	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
+        	errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
 			if (req.getParameter("Wizard") != null) {
-				destURL = req.getContextPath() + "/operator/Consumer/Update.jsp";
+				session.setAttribute(ServletUtils.ATT_REDIRECT, req.getContextPath() + "/operator/Consumer/Update.jsp");
 				errorURL = req.getContextPath() + "/operator/Consumer/Programs.jsp?Wizard=true";
-			}
-			else {
-	        	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
-	        	errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
 			}
 		}
         else if (action.equalsIgnoreCase("SearchCustAccount")) {
@@ -355,13 +351,11 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("CreateLMHardware")) {
         	clientAction = new CreateLMHardwareAction();
+        	destURL = req.getContextPath() + "/operator/Consumer/Inventory.jsp";
+        	errorURL = req.getContextPath() + "/operator/Consumer/CreateHardware.jsp";
         	if (req.getParameter("Wizard") != null) {
-        		destURL = req.getContextPath() + "/operator/Consumer/Programs.jsp?Wizard=true";
+        		session.setAttribute(ServletUtils.ATT_REDIRECT, req.getContextPath() + "/operator/Consumer/Programs.jsp?Wizard=true");
         		errorURL = req.getContextPath() + "/operator/Consumer/CreateHardware.jsp?Wizard=true";
-        	}
-        	else {
-	        	destURL = req.getContextPath() + "/operator/Consumer/Inventory.jsp";
-	        	errorURL = req.getContextPath() + "/operator/Consumer/CreateHardware.jsp";
         	}
         }
         else if (action.equalsIgnoreCase("UpdateLMHardware")) {
@@ -409,6 +403,10 @@ public class SOAPClient extends HttpServlet {
         	session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid action type '" + action + "'");
         	resp.sendRedirect( referer ); return;
         }
+    	
+    	session.removeAttribute( ServletUtils.ATT_REDIRECT );
+    	session.removeAttribute( ServletUtils.ATT_ERROR_MESSAGE );
+    	session.removeAttribute( ServletUtils.ATT_CONFIRM_MESSAGE );
 
         if (clientAction != null) {
         	nextURL = errorURL;
@@ -421,10 +419,6 @@ public class SOAPClient extends HttpServlet {
                 if (respMsg != null) {
                 	SOAPUtil.logSOAPMsgForOperation( respMsg, "*** Receive Message *** " );
                 	
-                	session.removeAttribute( ServletUtils.ATT_REDIRECT );
-                	session.removeAttribute( ServletUtils.ATT_ERROR_MESSAGE );
-                	session.removeAttribute( ServletUtils.ATT_CONFIRM_MESSAGE );
-                	
                 	int status = clientAction.parse(reqMsg, respMsg, session);
                 	if (session.getAttribute( ServletUtils.ATT_REDIRECT ) != null)
                 		destURL = req.getContextPath() + (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
@@ -432,7 +426,7 @@ public class SOAPClient extends HttpServlet {
                     if (status == 0)	// Operation succeed
                         nextURL = destURL;
                     else if (status == StarsConstants.FAILURE_CODE_SESSION_INVALID)
-                    	nextURL = req.getContextPath() + loginURL;
+                    	nextURL = req.getContextPath() + LOGIN_URL;
                     else {
                     	setErrorMsg( session, status );
                     	nextURL = errorURL;

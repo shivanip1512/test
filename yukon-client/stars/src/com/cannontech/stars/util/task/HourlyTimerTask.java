@@ -11,7 +11,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiProperties;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
-import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;

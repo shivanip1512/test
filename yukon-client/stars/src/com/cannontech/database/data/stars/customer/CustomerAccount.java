@@ -24,8 +24,8 @@ public class CustomerAccount extends DBPersistent {
     private com.cannontech.database.data.customer.Customer customer = null;
     private Integer energyCompanyID = null;
 
-    private Vector applianceVector = null;
-    private Vector inventoryVector = null;
+    private Vector applianceVector = null;	// Vector of appliance IDs (Integer)
+    private Vector inventoryVector = null;	// Vector of inventory IDs (Integer)
 
     public CustomerAccount() {
         super();
@@ -47,30 +47,27 @@ public class CustomerAccount extends DBPersistent {
         // delete from the mapping table
         delete( "ECToAccountMapping", "AccountID", getCustomerAccount().getAccountID() );
     	
-        com.cannontech.database.data.stars.hardware.LMHardwareBase hw = new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+        com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
+        		new com.cannontech.database.data.stars.hardware.LMHardwareBase();
 		for (int i = 0; i < getInventoryVector().size(); i++) {
-			com.cannontech.database.db.stars.hardware.InventoryBase inv =
-					(com.cannontech.database.db.stars.hardware.InventoryBase) getInventoryVector().get(i);
-			hw.setInventoryID( inv.getInventoryID() );
+			Integer invID = (Integer) getInventoryVector().get(i);
+			hw.setInventoryID( invID );
 			hw.setDbConnection( getDbConnection() );
 			// Don't delete hardware information from the database
 			hw.deleteLMHardwareBase( false );
-			
-			inv.setAccountID( new Integer(com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT) );
-			inv.setDbConnection( getDbConnection() );
-			inv.update();
 		}
 		
         com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
             getCustomerAccount().getAccountID(), getDbConnection() );
 
+    	// hardware configuration has already been deleted, so we just need to use the DB object here
+		com.cannontech.database.db.stars.appliance.ApplianceBase app =
+    			new com.cannontech.database.db.stars.appliance.ApplianceBase();
         for (int i = 0; i < getApplianceVector().size(); i++) {
-			com.cannontech.database.data.stars.appliance.ApplianceBase app =
-        			(com.cannontech.database.data.stars.appliance.ApplianceBase) getApplianceVector().get(i);
-        	// hardware configuration has already been deleted, so we just need to use the DB object here
-        	com.cannontech.database.db.stars.appliance.ApplianceBase appDB = app.getApplianceBase();
-            appDB.setDbConnection( getDbConnection() );
-            appDB.delete();
+        	Integer appID = (Integer) getApplianceVector().get(i);
+        	app.setApplianceID( appID );
+            app.setDbConnection( getDbConnection() );
+            app.delete();
         }
     	
     	// Delete work orders
@@ -149,26 +146,12 @@ public class CustomerAccount extends DBPersistent {
             customer.setDbConnection( getDbConnection() );
             customer.retrieve();
         }
-
-        com.cannontech.database.db.stars.appliance.ApplianceBase[] appliances =
-        		com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAppliances( getCustomerAccount().getAccountID() );
-        for (int i = 0; i < appliances.length; i++) {
-            com.cannontech.database.data.stars.appliance.ApplianceBase appliance =
-                        new com.cannontech.database.data.stars.appliance.ApplianceBase();
-            appliance.setApplianceBase( appliances[i] );
-            /* To reduce database hit, ApplianceBase(data).retrieve() is duplicated here */
-            appliance.setLMHardwareConfig( com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.getLMHardwareConfiguration(
-            		appliances[i].getApplianceID(), getDbConnection()) );
-            //appliance.setDbConnection( getDbConnection() );
-            //appliance.retrieve();
-            getApplianceVector().addElement( appliance );
-        }
-
-        com.cannontech.database.db.stars.hardware.InventoryBase[] inventories =
-                    com.cannontech.database.db.stars.hardware.InventoryBase.getAllInventories(
-                        getCustomerAccount().getAccountID(), getDbConnection() );
-        for (int i = 0; i < inventories.length; i++)
-            getInventoryVector().addElement( inventories[i] );
+		
+		setApplianceVector( com.cannontech.database.db.stars.appliance.ApplianceBase.getApplianceIDs(
+				getCustomerAccount().getAccountID(), getDbConnection()) );
+		
+		setInventoryVector( com.cannontech.database.db.stars.hardware.InventoryBase.getInventoryIDs(
+				getCustomerAccount().getAccountID(), getDbConnection()) );
 
         setDbConnection(null);
     }

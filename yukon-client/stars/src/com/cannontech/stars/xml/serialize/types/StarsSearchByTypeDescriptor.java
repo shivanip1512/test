@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsSearchByTypeDescriptor.java,v 1.49 2003/08/21 00:18:25 zyao Exp $
+ * $Id: StarsSearchByTypeDescriptor.java,v 1.50 2003/09/19 18:37:02 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize.types;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.49 $ $Date: 2003/08/21 00:18:25 $
+ * @version $Revision: 1.50 $ $Date: 2003/09/19 18:37:02 $
 **/
 public class StarsSearchByTypeDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 

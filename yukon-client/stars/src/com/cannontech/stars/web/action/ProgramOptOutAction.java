@@ -14,13 +14,14 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
-import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
@@ -185,7 +186,7 @@ public class ProgramOptOutAction implements ActionBase {
             	event.setCommand( cmd.toString() );
             	energyCompany.getOptOutEventQueue().addEvent( event );
             	
-            	resp.setDescription( "The " + energyCompany.getEnergyCompanySetting(EnergyCompanyRole.OPT_OUT_NOUN) + " event has been scheduled" );
+            	resp.setDescription( "The " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " event has been scheduled" );
             }
             else if (optOut.getPeriod() == OPTOUT_TODAY) {
             	int offHours = (int)((ServletUtil.getTomorrow(tz).getTime() - new Date().getTime()) * 0.001 / 3600 + 0.5);
@@ -211,16 +212,16 @@ public class ProgramOptOutAction implements ActionBase {
             	
             	resp = processOptOut( liteAcctInfo, energyCompany, optOut );
 		        if (ServerUtils.isOperator( user ))
-			        resp.setDescription( ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(EnergyCompanyRole.OPT_OUT_NOUN)) + " command has been sent out successfully" );
+			        resp.setDescription( ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " command has been sent out successfully" );
 			    else
-			        resp.setDescription( "Your programs have been " + energyCompany.getEnergyCompanySetting(EnergyCompanyRole.OPT_OUT_PAST) );
+			        resp.setDescription( "Your programs have been " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_PAST) );
             }
             else if (optOut.getPeriod() == REPEAT_LAST) {
             	// Repeat the last opt out command
             	if (repeatLast( liteAcctInfo, energyCompany ))
-	            	resp.setDescription( "The last " + energyCompany.getEnergyCompanySetting(EnergyCompanyRole.OPT_OUT_NOUN) + " command has been resent" );
+	            	resp.setDescription( "The last " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " command has been resent" );
 	            else
-	            	resp.setDescription( ERROR_MSG_LABEL + "There is no active " + energyCompany.getEnergyCompanySetting(EnergyCompanyRole.OPT_OUT_NOUN) + " event, command not sent" );
+	            	resp.setDescription( ERROR_MSG_LABEL + "There is no active " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " event, command not sent" );
             }
             else {
             	// Send opt out commands immediately, and store the reenable command in memory
@@ -248,9 +249,9 @@ public class ProgramOptOutAction implements ActionBase {
             	
             	resp = processOptOut( liteAcctInfo, energyCompany, optOut );
 		        if (ServerUtils.isOperator( user ))
-			        resp.setDescription( ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(EnergyCompanyRole.OPT_OUT_NOUN)) + " command has been sent out successfully" );
+			        resp.setDescription( ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " command has been sent out successfully" );
 			    else
-			        resp.setDescription( "Your programs have been " + energyCompany.getEnergyCompanySetting(EnergyCompanyRole.OPT_OUT_PAST) );
+			        resp.setDescription( "Your programs have been " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_PAST) );
             }
 
         	respOper.setStarsProgramOptOutResponse( resp );
@@ -261,7 +262,7 @@ public class ProgramOptOutAction implements ActionBase {
             
             try {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot " + energyCompany.getEnergyCompanySetting(EnergyCompanyRole.OPT_OUT_VERB) + " the programs") );
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_VERB) + " the programs") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             catch (Exception e2) {
@@ -378,7 +379,7 @@ public class ProgramOptOutAction implements ActionBase {
 
         for (int i = 0; i < hwIDList.size(); i++) {
         	Integer invID = (Integer) hwIDList.get(i);
-        	LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID.intValue(), true );
+        	LiteStarsLMHardware liteHw = energyCompany.getLMHardware( invID.intValue(), true );
         	
     		if (liteHw.getManufactureSerialNumber().trim().length() == 0)
     			throw new Exception( "The manufacturer serial # of the hardware cannot be empty" );
@@ -443,7 +444,7 @@ public class ProgramOptOutAction implements ActionBase {
         ArrayList hwIDList = getHardwareIDs( liteAcctInfo );
         for (int i = 0; i < hwIDList.size(); i++) {
         	Integer invID = (Integer) hwIDList.get(i);
-        	LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID.intValue(), true );
+        	LiteStarsLMHardware liteHw = energyCompany.getLMHardware( invID.intValue(), true );
         
     		// Add "Temp Opt Out" and "Future Activation" to hardware events
     		ServerUtils.removeFutureActivationEvents( liteHw.getLmHardwareHistory(), energyCompany );

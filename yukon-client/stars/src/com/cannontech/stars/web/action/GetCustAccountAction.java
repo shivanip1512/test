@@ -117,7 +117,7 @@ public class GetCustAccountAction implements ActionBase {
     		}
         	else
 				starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation(
-					liteAcctInfo, energyCompanyID, ServerUtils.isOperator(user) );
+					liteAcctInfo, energyCompany, ServerUtils.isOperator(user) );
 			
 			StarsGetCustomerAccountResponse resp = new StarsGetCustomerAccountResponse();
 			resp.setStarsCustAccountInformation( starsAcctInfo );

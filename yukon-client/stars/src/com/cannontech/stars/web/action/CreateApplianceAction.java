@@ -418,11 +418,11 @@ public class CreateApplianceAction implements ActionBase {
             else
 	            liteApp = new LiteStarsAppliance();
 	        
-	        StarsLiteFactory.setLiteApplianceBase( liteApp, app );
+	        StarsLiteFactory.setLiteStarsAppliance( liteApp, app );
             accountInfo.getAppliances().add( liteApp );
             
             StarsCreateApplianceResponse resp = new StarsCreateApplianceResponse();
-            resp.setStarsAppliance( StarsLiteFactory.createStarsAppliance(liteApp, energyCompanyID) );
+            resp.setStarsAppliance( StarsLiteFactory.createStarsAppliance(liteApp, energyCompany) );
             respOper.setStarsCreateApplianceResponse( resp );
 
             SOAPMessage respMsg = SOAPUtil.buildSOAPMessage( respOper );

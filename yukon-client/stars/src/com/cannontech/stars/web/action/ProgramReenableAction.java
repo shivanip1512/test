@@ -12,13 +12,13 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
-import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -111,7 +111,7 @@ public class ProgramReenableAction implements ActionBase {
         	// Send out reenable notification
         	SendOptOutNotificationAction.sendReenableNotification( energyCompany, liteAcctInfo, reqOper );
 			
-			String desc = ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(EnergyCompanyRole.TERM_REENABLE)) + " command has been sent out successfully";
+			String desc = ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE)) + " command has been sent out successfully";
 			
 			OptOutEventQueue queue = energyCompany.getOptOutEventQueue();
 			OptOutEventQueue.OptOutEvent e1 = queue.findOptOutEvent( liteAcctInfo.getCustomerAccount().getAccountID() );
@@ -119,7 +119,7 @@ public class ProgramReenableAction implements ActionBase {
 			queue.removeEvents( liteAcctInfo.getCustomerAccount().getAccountID() );
 			
 			if (e1 != null)
-				desc += ", a scheduled " + energyCompany.getEnergyCompanySetting(EnergyCompanyRole.OPT_OUT_NOUN) + " event is canceled";
+				desc += ", a scheduled " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " event is canceled";
 			//if (e2 != null)
 				resp = processReenable( liteAcctInfo, energyCompany, reenable );
 			resp.setDescription( desc );
@@ -132,7 +132,7 @@ public class ProgramReenableAction implements ActionBase {
             
             try {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot " + energyCompany.getEnergyCompanySetting(EnergyCompanyRole.TERM_REENABLE) + " the programs") );
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) + " the programs") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             catch (Exception e2) {
@@ -245,7 +245,7 @@ public class ProgramReenableAction implements ActionBase {
 
         for (int i = 0; i < hwIDList.size(); i++) {
         	Integer invID = (Integer) hwIDList.get(i);
-        	LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID.intValue(), true );
+        	LiteStarsLMHardware liteHw = energyCompany.getLMHardware( invID.intValue(), true );
         	
     		if (liteHw.getManufactureSerialNumber().trim().length() == 0)
     			throw new Exception( "The manufacturer serial # of the hardware cannot be empty" );
@@ -272,7 +272,7 @@ public class ProgramReenableAction implements ActionBase {
         ArrayList hwIDList = getHardwareIDs( liteAcctInfo );
         for (int i = 0; i < hwIDList.size(); i++) {
         	Integer invID = (Integer) hwIDList.get(i);
-        	LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID.intValue(), true );
+        	LiteStarsLMHardware liteHw = energyCompany.getLMHardware( invID.intValue(), true );
 			
     		// Add "Activation Completed" to hardware events
 			ServerUtils.removeFutureActivationEvents( liteHw.getLmHardwareHistory(), energyCompany );

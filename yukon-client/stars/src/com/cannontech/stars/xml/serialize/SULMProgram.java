@@ -46,6 +46,13 @@ public class SULMProgram implements java.io.Serializable {
     **/
     private boolean _has_applianceCategoryID;
 
+    private int _addressingGroupID;
+
+    /**
+     * keeps track of state for field: _addressingGroupID
+    **/
+    private boolean _has_addressingGroupID;
+
 
       //----------------/
      //- Constructors -/
@@ -62,6 +69,13 @@ public class SULMProgram implements java.io.Serializable {
 
     /**
     **/
+    public void deleteAddressingGroupID()
+    {
+        this._has_addressingGroupID= false;
+    } //-- void deleteAddressingGroupID() 
+
+    /**
+    **/
     public void deleteApplianceCategoryID()
     {
         this._has_applianceCategoryID= false;
@@ -73,6 +87,16 @@ public class SULMProgram implements java.io.Serializable {
     {
         this._has_programID= false;
     } //-- void deleteProgramID() 
+
+    /**
+     * Returns the value of field 'addressingGroupID'.
+     * 
+     * @return the value of field 'addressingGroupID'.
+    **/
+    public int getAddressingGroupID()
+    {
+        return this._addressingGroupID;
+    } //-- int getAddressingGroupID() 
 
     /**
      * Returns the value of field 'applianceCategoryID'.
@@ -93,6 +117,13 @@ public class SULMProgram implements java.io.Serializable {
     {
         return this._programID;
     } //-- int getProgramID() 
+
+    /**
+    **/
+    public boolean hasAddressingGroupID()
+    {
+        return this._has_addressingGroupID;
+    } //-- boolean hasAddressingGroupID() 
 
     /**
     **/
@@ -144,6 +175,18 @@ public class SULMProgram implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'addressingGroupID'.
+     * 
+     * @param addressingGroupID the value of field
+     * 'addressingGroupID'.
+    **/
+    public void setAddressingGroupID(int addressingGroupID)
+    {
+        this._addressingGroupID = addressingGroupID;
+        this._has_addressingGroupID = true;
+    } //-- void setAddressingGroupID(int) 
 
     /**
      * Sets the value of field 'applianceCategoryID'.

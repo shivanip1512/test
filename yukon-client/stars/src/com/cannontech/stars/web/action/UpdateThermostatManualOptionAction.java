@@ -8,7 +8,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatManualEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -106,7 +106,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 			StarsUpdateThermostatManualOptionResponse resp = new StarsUpdateThermostatManualOptionResponse();
 			resp.setInventoryID( starsOption.getInventoryID() );
 			
-			LiteLMHardwareBase liteHw = energyCompany.getLMHardware( starsOption.getInventoryID(), true );
+			LiteStarsLMHardware liteHw = energyCompany.getLMHardware( starsOption.getInventoryID(), true );
     		if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
     			if (ServerUtils.isOperator( user ))
 	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -162,7 +162,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 			event.getLmThermostatManualEvent().setInventoryID( new Integer(liteHw.getInventoryID()) );
 			event.getLmThermostatManualEvent().setPreviousTemperature( new Integer(starsOption.getTemperature()) );
 			event.getLmThermostatManualEvent().setHoldTemperature( starsOption.getHold() ? "Y" : "N" );
-			event.getLmThermostatManualEvent().setOperationStateID( ServerUtils.getThermOptionOpStateID(starsOption.getMode(), energyCompanyID) );
+			event.getLmThermostatManualEvent().setOperationStateID( new Integer(ServerUtils.getThermOptionOpStateID(starsOption.getMode(), energyCompanyID)) );
 			event.getLmThermostatManualEvent().setFanOperationID( ServerUtils.getThermOptionFanOpID(starsOption.getFan(), energyCompanyID) );
 			
 			event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );

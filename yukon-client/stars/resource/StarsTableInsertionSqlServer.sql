@@ -6,7 +6,9 @@ insert into LMProgram values(0, 'Automatic', 'NNNN', 'NNNNNNNN', 0, 0, 0, 0, 0, 
 INSERT INTO Route VALUES (0,0,'N');
 
 /* EnergyCompany */
-INSERT INTO EnergyCompany VALUES (-1,'Default Energy Company',0,-1);
+INSERT INTO YukonUser VALUES (-2,'DefaultCompany','DefaultCompany',0,'01-JAN-90','Enabled');
+INSERT INTO EnergyCompany VALUES (-1,'Default Energy Company',0,-2);
+INSERT INTO EnergyCompanyOperatorLoginList VALUES (-1,-2);
 
 /* YukonWebConfiguration */
 INSERT INTO YukonWebConfiguration VALUES (-1,'Summer.gif','Default Summer Settings','Cooling','Cool');
@@ -87,6 +89,9 @@ insert into YukonSelectionList values (1047,'N','(none)','Soil type selection', 
 insert into YukonSelectionList values (1048,'N','(none)','Device location selection', 'DeviceLocation','N');
 insert into YukonSelectionList values (1049,'O','(none)','Opt out period selection','OptOutPeriod','Y');
 insert into YukonSelectionList values (1050,'N','(none)','Gateway end device data description','GatewayEndDeviceDataDesc','N');
+insert into YukonSelectionList values (1051,'N','(none)','Hardware Inventory search by selection', 'InvSearchBy','N');
+insert into YukonSelectionList values (1052,'N','(none)','Hardware Inventory sort by selection', 'InvSortBy','N');
+insert into YukonSelectionList values (1053,'N','(none)','Hardware Inventory filter by selection', 'InvFilterBy','N');
 insert into YukonSelectionList values (2000,'N','(none)','Customer Selection Base','(none)','N');
 
 /* YukonListEntry */
@@ -202,6 +207,12 @@ insert into YukonListEntry values (1109,1003,0,'TwoWayRec',1202);
 insert into YukonListEntry values (1110,1005,0,'EnergyPro',3100);
 insert into YukonListEntry values (1111,1018,0,'Auto',2405);
 insert into YukonListEntry values (1112,1018,0,'Emergency Heat',2406);
+insert into YukonListEntry values (1113,1015,0,'Monday',2105);
+insert into YukonListEntry values (1114,1015,0,'Tuesday',2106);
+insert into YukonListEntry values (1115,1015,0,'Wednesday',2107);
+insert into YukonListEntry values (1116,1015,0,'Thursday',2108);
+insert into YukonListEntry values (1117,1015,0,'Friday',2109);
+insert into YukonListEntry values (1118,1002,0,'Uninstall',1111);
 insert into YukonListEntry values (1201,1050,0,'Last Updated Time',3201);
 insert into YukonListEntry values (1202,1050,0,'Setpoint',3202);
 insert into YukonListEntry values (1203,1050,0,'Fan',3203);
@@ -213,6 +224,17 @@ insert into YukonListEntry values (1208,1050,0,'Lower CoolSetpoint Limit,Upper H
 insert into YukonListEntry values (1209,1050,0,'Information String',3299);
 insert into YukonListEntry values (1210,1050,0,'Cool Runtime,Heat Runtime',3238);
 insert into YukonListEntry values (1211,1050,0,'Battery',3239);
+insert into YukonListEntry values (1301,1051,0,'Serial #',2701);
+insert into YukonListEntry values (1302,1051,0,'Acct #',2702);
+insert into YukonListEntry values (1303,1051,0,'Phone #',2703);
+insert into YukonListEntry values (1304,1051,0,'Last name',2704);
+insert into YukonListEntry values (1305,1051,0,'Order #',2705);
+insert into YukonListEntry values (1311,1052,0,'Serial #',2801);
+insert into YukonListEntry values (1312,1052,0,'Install date',2802);
+insert into YukonListEntry values (1321,1053,0,'Device type',2901);
+insert into YukonListEntry values (1322,1053,0,'Service company',2902);
+insert into YukonListEntry values (1323,1053,0,'Location',2903);
+insert into YukonListEntry values (1324,1053,0,'Configuration',2904);
 insert into YukonListEntry values (2000,0,0,'Customer List Entry Base',0);
 
 /* ECToGenericMapping */
@@ -266,6 +288,9 @@ insert into ECToGenericMapping values (-1, 1047, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1048, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1049, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1050, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1051, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1052, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1053, 'YukonSelectionList');
 
 /* CustomerFAQ */
 insert into CustomerFAQ values(1,1061,'How long does it take for my program to become effective after adding or changing a program?','Immediately! You can take advantage of energy savings the moment you decide to. Just make your selection on the "Programs - Add/Change" page, click the submit button, and select Yes at the prompt.');

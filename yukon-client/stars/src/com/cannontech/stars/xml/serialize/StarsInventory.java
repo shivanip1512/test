@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsInventory.java,v 1.49 2003/08/21 00:18:17 zyao Exp $
+ * $Id: StarsInventory.java,v 1.50 2003/09/19 18:36:48 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -24,7 +24,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.49 $ $Date: 2003/08/21 00:18:17 $
+ * @version $Revision: 1.50 $ $Date: 2003/09/19 18:36:48 $
 **/
 public abstract class StarsInventory implements java.io.Serializable {
 
@@ -41,6 +41,8 @@ public abstract class StarsInventory implements java.io.Serializable {
     private boolean _has_inventoryID;
 
     private java.lang.String _category;
+
+    private java.lang.String _deviceLabel;
 
     private InstallationCompany _installationCompany;
 
@@ -96,6 +98,16 @@ public abstract class StarsInventory implements java.io.Serializable {
     {
         return this._category;
     } //-- java.lang.String getCategory() 
+
+    /**
+     * Returns the value of field 'deviceLabel'.
+     * 
+     * @return the value of field 'deviceLabel'.
+    **/
+    public java.lang.String getDeviceLabel()
+    {
+        return this._deviceLabel;
+    } //-- java.lang.String getDeviceLabel() 
 
     /**
      * Returns the value of field 'installDate'.
@@ -223,6 +235,16 @@ public abstract class StarsInventory implements java.io.Serializable {
     {
         this._category = category;
     } //-- void setCategory(java.lang.String) 
+
+    /**
+     * Sets the value of field 'deviceLabel'.
+     * 
+     * @param deviceLabel the value of field 'deviceLabel'.
+    **/
+    public void setDeviceLabel(java.lang.String deviceLabel)
+    {
+        this._deviceLabel = deviceLabel;
+    } //-- void setDeviceLabel(java.lang.String) 
 
     /**
      * Sets the value of field 'installDate'.

@@ -9,7 +9,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -17,6 +17,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.servlet.InventoryManager;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.DeviceStatus;
@@ -54,31 +55,15 @@ public class UpdateLMHardwareAction implements ActionBase {
 			if (user == null) return null;
 
 			StarsUpdateLMHardware updateHw = new StarsUpdateLMHardware();
-			
-			LMDeviceType type = new LMDeviceType();
-			type.setContent( req.getParameter("DeviceType") );
-			updateHw.setLMDeviceType( type );
-			
-			Voltage volt = new Voltage();
-			volt.setContent( req.getParameter("Voltage") );
-			updateHw.setVoltage( volt );
-			
-			InstallationCompany company = new InstallationCompany();
-			company.setEntryID( Integer.parseInt(req.getParameter("ServiceCompany")) );
-			updateHw.setInstallationCompany( company );
-			
-			updateHw.setInventoryID( Integer.parseInt(req.getParameter("InvID")) );
-			updateHw.setCategory( "" );
-			updateHw.setManufactureSerialNumber( req.getParameter("SerialNo") );
-			updateHw.setAltTrackingNumber( req.getParameter("AltTrackNo") );
-			if (req.getParameter("ReceiveDate") != null && req.getParameter("ReceiveDate").length() > 0)
-				updateHw.setReceiveDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("ReceiveDate")) );
-			if (req.getParameter("InstallDate") != null && req.getParameter("InstallDate").length() > 0)
-				updateHw.setInstallDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("InstallDate")) );
-			if (req.getParameter("RemoveDate") != null && req.getParameter("RemoveDate").length() > 0)
-				updateHw.setRemoveDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("RemoveDate")) );
-			updateHw.setNotes( req.getParameter("Notes") );
-			updateHw.setInstallationNotes( req.getParameter("InstallNotes") );
+			if (req.getParameter("SerialNo") != null) {
+				// This comes from operator side
+				InventoryManager.setStarsLMHardware( updateHw, req );
+			}
+			else {
+				// This comes from consumer side
+				updateHw.setInventoryID( Integer.parseInt(req.getParameter("InvID")) );
+				updateHw.setDeviceLabel( req.getParameter("DeviceLabel") );
+			}
 			
 			StarsOperation operation = new StarsOperation();
 			operation.setStarsUpdateLMHardware( updateHw );
@@ -120,59 +105,75 @@ public class UpdateLMHardwareAction implements ActionBase {
         	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
             StarsUpdateLMHardware updateHw = reqOper.getStarsUpdateLMHardware();
-            LiteLMHardwareBase liteHw = energyCompany.getLMHardware( updateHw.getInventoryID(), true );
+            LiteStarsLMHardware liteHw = energyCompany.getLMHardware( updateHw.getInventoryID(), true );
             
             com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
             		(com.cannontech.database.data.stars.hardware.LMHardwareBase) StarsLiteFactory.createDBPersistent( liteHw );
-            hw.getLMHardwareBase().setManufacturerSerialNumber( updateHw.getManufactureSerialNumber() );
-            hw.getInventoryBase().setAlternateTrackingNumber( updateHw.getAltTrackingNumber() );
-            if (updateHw.getInstallDate() != null)
-	            hw.getInventoryBase().setInstallDate( updateHw.getInstallDate() );
-	        else
-	        	hw.getInventoryBase().setInstallDate( new Date(0) );
-	        if (updateHw.getReceiveDate() != null)
-	            hw.getInventoryBase().setReceiveDate( updateHw.getReceiveDate() );
-	        else
-	        	hw.getInventoryBase().setReceiveDate( new Date(0) );
-	        if (updateHw.getRemoveDate() != null)
-	            hw.getInventoryBase().setRemoveDate( updateHw.getRemoveDate() );
-	        else
-	        	hw.getInventoryBase().setRemoveDate( new Date(0) );
-            hw.getInventoryBase().setNotes( updateHw.getNotes() );
-            hw.getInventoryBase().setInstallationCompanyID( new Integer(updateHw.getInstallationCompany().getEntryID()) );
+            
+            boolean fromOperator = (updateHw.getManufactureSerialNumber() != null);
+            if (fromOperator) {
+	            hw.getLMHardwareBase().setManufacturerSerialNumber( updateHw.getManufactureSerialNumber() );
+	            hw.getInventoryBase().setAlternateTrackingNumber( updateHw.getAltTrackingNumber() );
+	            if (updateHw.getInstallDate() != null)
+		            hw.getInventoryBase().setInstallDate( updateHw.getInstallDate() );
+		        else
+		        	hw.getInventoryBase().setInstallDate( new Date(0) );
+		        if (updateHw.getReceiveDate() != null)
+		            hw.getInventoryBase().setReceiveDate( updateHw.getReceiveDate() );
+		        else
+		        	hw.getInventoryBase().setReceiveDate( new Date(0) );
+		        if (updateHw.getRemoveDate() != null)
+		            hw.getInventoryBase().setRemoveDate( updateHw.getRemoveDate() );
+		        else
+		        	hw.getInventoryBase().setRemoveDate( new Date(0) );
+	            hw.getInventoryBase().setNotes( updateHw.getNotes() );
+	            hw.getInventoryBase().setInstallationCompanyID( new Integer(updateHw.getInstallationCompany().getEntryID()) );
+	            if (updateHw.getDeviceLabel().trim().length() > 0)
+	            	hw.getInventoryBase().setDeviceLabel( updateHw.getDeviceLabel() );
+	            else
+	            	hw.getInventoryBase().setDeviceLabel( updateHw.getManufactureSerialNumber() );
+            }
+            else {
+	            if (updateHw.getDeviceLabel().trim().length() > 0)
+	            	hw.getInventoryBase().setDeviceLabel( updateHw.getDeviceLabel() );
+	            else
+	            	hw.getInventoryBase().setDeviceLabel( liteHw.getManufactureSerialNumber() );
+            }
             
             hw = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
             		Transaction.createTransaction( Transaction.UPDATE, hw ).execute();
-            StarsLiteFactory.setLiteLMHardware( liteHw, hw );
+            StarsLiteFactory.setLiteLMHardwareBase( liteHw, hw );
             
-            // Update the "install" event if necessary
-            int installEntryID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL).getEntryID();
-            
-            ArrayList hwHist = liteHw.getLmHardwareHistory();
-            for (int i = 0; i < hwHist.size(); i++) {
-            	LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) hwHist.get(i);
-            	if (liteEvent.getActionID() == installEntryID) {
-            		long installTime = liteEvent.getEventDateTime();
-            		boolean timeChanged = Math.abs(installTime - updateHw.getInstallDate().getTime()) > 1000;
-            		
-            		if (timeChanged || !liteEvent.getNotes().equals( updateHw.getInstallationNotes() )) {
-            			com.cannontech.database.data.stars.event.LMHardwareEvent event =
-            					(com.cannontech.database.data.stars.event.LMHardwareEvent) StarsLiteFactory.createDBPersistent( liteEvent );
-            			com.cannontech.database.db.stars.event.LMCustomerEventBase eventDB = event.getLMCustomerEventBase();
-            			
-            			eventDB.setEventDateTime( updateHw.getInstallDate() );
-            			eventDB.setNotes( updateHw.getInstallationNotes() );
-            			eventDB = (com.cannontech.database.db.stars.event.LMCustomerEventBase)
-            					Transaction.createTransaction( Transaction.UPDATE, eventDB ).execute();
-            					
-            			StarsLiteFactory.setLiteLMCustomerEvent( liteEvent, eventDB );
-            		}
-            		break;
-            	}
+            if (fromOperator) {
+	            // Update the "install" event if necessary
+	            int installEntryID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL).getEntryID();
+	            
+	            ArrayList hwHist = liteHw.getLmHardwareHistory();
+	            for (int i = 0; i < hwHist.size(); i++) {
+	            	LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) hwHist.get(i);
+	            	if (liteEvent.getActionID() == installEntryID) {
+	            		long installTime = liteEvent.getEventDateTime();
+	            		boolean timeChanged = Math.abs(installTime - updateHw.getInstallDate().getTime()) > 1000;
+	            		
+	            		if (timeChanged || !liteEvent.getNotes().equals( updateHw.getInstallationNotes() )) {
+	            			com.cannontech.database.data.stars.event.LMHardwareEvent event =
+	            					(com.cannontech.database.data.stars.event.LMHardwareEvent) StarsLiteFactory.createDBPersistent( liteEvent );
+	            			com.cannontech.database.db.stars.event.LMCustomerEventBase eventDB = event.getLMCustomerEventBase();
+	            			
+	            			eventDB.setEventDateTime( updateHw.getInstallDate() );
+	            			eventDB.setNotes( updateHw.getInstallationNotes() );
+	            			eventDB = (com.cannontech.database.db.stars.event.LMCustomerEventBase)
+	            					Transaction.createTransaction( Transaction.UPDATE, eventDB ).execute();
+	            					
+	            			StarsLiteFactory.setLiteLMCustomerEvent( liteEvent, eventDB );
+	            		}
+	            		break;
+	            	}
+	            }
             }
             
             StarsUpdateLMHardwareResponse resp = new StarsUpdateLMHardwareResponse();
-            resp.setStarsLMHardware( StarsLiteFactory.createStarsLMHardware(liteHw, energyCompanyID) );
+            resp.setStarsLMHardware( StarsLiteFactory.createStarsLMHardware(liteHw, energyCompany) );
             
             respOper.setStarsUpdateLMHardwareResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );

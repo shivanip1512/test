@@ -86,7 +86,7 @@ public class ReloadCustAccountAction implements ActionBase {
 				user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
 			}
 			else
-				starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID, true );
+				starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompany, true );
 			
 			StarsReloadCustomerAccountResponse resp = new StarsReloadCustomerAccountResponse();
 			resp.setStarsCustAccountInformation( starsAcctInfo );

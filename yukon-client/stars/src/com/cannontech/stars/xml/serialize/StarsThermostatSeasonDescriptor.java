@@ -190,7 +190,7 @@ public class StarsThermostatSeasonDescriptor extends org.exolab.castor.xml.util.
         //-- validation code for: _starsThermostatScheduleList
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(0);
-        fieldValidator.setMaxOccurs(3);
+        fieldValidator.setMaxOccurs(7);
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsThermostatSeasonDescriptor()

@@ -32,7 +32,7 @@
 			<xs:enumeration value="Weekend"/>
 			<xs:enumeration value="Saturday"/>
 			<xs:enumeration value="Sunday"/>
-		<xs:enumeration value="All"/></xs:restriction>
+		<xs:enumeration value="All"/><xs:enumeration value="Monday"/><xs:enumeration value="Tuesday"/><xs:enumeration value="Wednesday"/><xs:enumeration value="Thursday"/><xs:enumeration value="Friday"/></xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="stars-ThermoModeSettings">
 		<xs:restriction base="xs:NMTOKEN">
@@ -95,14 +95,14 @@
 	</xs:complexType>
 	<xs:complexType name="stars-Inventory">
 		<xs:sequence>
-			<xs:element name="Category" type="xs:string"/>
-			<xs:element name="InstallationCompany" type="stars-CustListEntry"/>
+			<xs:element name="Category" type="xs:string" minOccurs="0"/>
+			<xs:element name="DeviceLabel" type="xs:string" minOccurs="0"/><xs:element name="InstallationCompany" type="stars-CustListEntry" minOccurs="0"/>
 			<xs:element name="ReceiveDate" type="xs:dateTime" minOccurs="0"/>
 			<xs:element name="InstallDate" type="xs:dateTime" minOccurs="0"/>
 			<xs:element name="RemoveDate" type="xs:dateTime" minOccurs="0"/>
-			<xs:element name="AltTrackingNumber" type="xs:string"/>
-			<xs:element name="Voltage" type="stars-CustListEntry"/>
-			<xs:element name="Notes" type="xs:string"/>
+			<xs:element name="AltTrackingNumber" type="xs:string" minOccurs="0"/>
+			<xs:element name="Voltage" type="stars-CustListEntry" minOccurs="0"/>
+			<xs:element name="Notes" type="xs:string" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="inventoryID" type="xs:int"/>
 	</xs:complexType>
@@ -205,8 +205,8 @@
 		<xs:complexContent>
 			<xs:extension base="stars-Inventory">
 				<xs:sequence>
-					<xs:element name="ManufactureSerialNumber" type="xs:string"/>
-					<xs:element name="LMDeviceType" type="stars-CustListEntry"/>
+					<xs:element name="ManufactureSerialNumber" type="xs:string" minOccurs="0"/>
+					<xs:element name="LMDeviceType" type="stars-CustListEntry" minOccurs="0"/>
 					<xs:element name="DeviceStatus" minOccurs="0" type="stars-CustListEntry"/>
 					<xs:element name="InstallationNotes" minOccurs="0" type="xs:string"/>
 					<xs:element ref="stars-LMHardwareHistory" minOccurs="0"/>
@@ -382,6 +382,7 @@
 					<xs:complexType>
 						<xs:attribute name="programID" type="xs:int"/>
 						<xs:attribute name="applianceCategoryID" type="xs:int"/>
+						<xs:attribute name="addressingGroupID" type="xs:int"/>
 					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
@@ -884,7 +885,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="stars-WebConfig" minOccurs="0"/>
-				<xs:element ref="stars-ThermostatSchedule" minOccurs="0" maxOccurs="3"/>
+				<xs:element ref="stars-ThermostatSchedule" minOccurs="0" maxOccurs="7"/>
 			</xs:sequence>
 			<xs:attribute name="mode" type="stars-ThermoModeSettings"/>
 			<xs:attribute name="startDate" type="xs:date"/>

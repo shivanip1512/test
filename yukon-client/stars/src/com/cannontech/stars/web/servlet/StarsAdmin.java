@@ -37,6 +37,10 @@ import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 import com.cannontech.web.loadcontrol.LoadcontrolCache;
 
+interface ImportFileParser {
+	String[] populateFields(String line) throws Exception;
+}
+
 /**
  * @author yao
  *
@@ -49,8 +53,6 @@ public class StarsAdmin extends HttpServlet {
     
     public static final String ENERGY_COMPANY_TEMP = "ENERGY_COMPANY_TEMP";
     public static final String SERVICE_COMPANY_TEMP = "SERVICE_COMPANY_TEMP";
-
-    private static final String loginURL = "/login.jsp";
 	
 	private static final int IDX_ACCOUNT_NO = 0;
 	private static final int IDX_STREET_ADDR1 = 1;
@@ -58,20 +60,227 @@ public class StarsAdmin extends HttpServlet {
 	private static final int IDX_CITY = 3;
 	private static final int IDX_STATE = 4;
 	private static final int IDX_ZIP_CODE = 5;
-	private static final int IDX_LAST_NAME = 6;
-	private static final int IDX_FIRST_NAME = 7;
-	private static final int IDX_HOME_PHONE = 8;
-	private static final int IDX_WORK_PHONE = 9;
-	private static final int IDX_EMAIL = 10;
-	private static final int IDX_SERIAL_NO = 11;
-	private static final int IDX_INSTALL_DATE = 12;
-	private static final int IDX_DEVICE_TYPE = 13;
-	private static final int IDX_USERNAME = 14;
-	private static final int IDX_PASSWORD = 15;
-	private static final int IDX_SERVICE_COMPANY = 16;
-	private static final int NUM_FIELDS = 17;
+	private static final int IDX_COUNTY = 6;
+	private static final int IDX_LAST_NAME = 7;
+	private static final int IDX_FIRST_NAME = 8;
+	private static final int IDX_HOME_PHONE = 9;
+	private static final int IDX_WORK_PHONE = 10;
+	private static final int IDX_WORK_PHONE_EXT = 11;
+	private static final int IDX_EMAIL = 12;
+	private static final int IDX_SERIAL_NO = 13;
+	private static final int IDX_INSTALL_DATE = 14;
+	private static final int IDX_DEVICE_TYPE = 15;
+	private static final int IDX_USERNAME = 16;
+	private static final int IDX_PASSWORD = 17;
+	private static final int IDX_SERVICE_COMPANY = 18;
+	private static final int IDX_ADDR_GROUP = 19;
+	private static final int NUM_FIELDS = 20;
     
     private static final String NEW_ADDRESS = "NEW_ADDRESS";
+    private static final String IMPORT_ID = "IMPORT_ID:";
+    
+    private static final Hashtable parsers = new Hashtable();
+    static {
+    	parsers.put("Idaho", new ImportFileParser() {
+			/** Idaho Power Customer Information
+			 * COL_NUM:	COL_NAME
+			 * 1		----
+			 * 2		LASTNAME
+			 * 3		FIRSTNAME
+			 * 4		----
+			 * 5,6		STREETADDR1
+			 * 7		CITY
+			 * 8		STATE
+			 * 9		ZIPCODE
+			 * 10		HOMEPHONE
+			 * 11		ACCOUNTNO
+			 * 12		SERIALNO(THERMOSTAT)
+			 * 13		INSTALLDATE
+			 * 14		SERVICECOMPANY
+			 */
+			public String[] populateFields(String line) throws Exception {
+				String[] fields = new String[ NUM_FIELDS ];
+				for (int i = 0; i < NUM_FIELDS; i++)
+					fields[i] = "";
+					
+				StreamTokenizer st = new StreamTokenizer( new StringReader(line) );
+				st.resetSyntax();
+				st.ordinaryChar( ',' );
+				st.quoteChar( '"' );
+				st.wordChars( 'a', 'z' );
+				st.wordChars( 'A', 'Z' );
+				st.wordChars( '0', '9' );
+				st.wordChars( ' ', ' ' );
+				st.wordChars( '-', '-' );
+				st.wordChars( '/', '/' );
+				st.wordChars( '.', '.' );
+				st.wordChars( '#', '#' );
+				st.wordChars( '@', '@' );
+				st.wordChars( '(', ')' );
+				
+				st.nextToken();
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_LAST_NAME] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_FIRST_NAME] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_STREET_ADDR1] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_STREET_ADDR1] += " " + st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_CITY] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_STATE] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ZIP_CODE] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_HOME_PHONE] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_NO] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_SERIAL_NO] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_INSTALL_DATE] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_SERVICE_COMPANY] = st.sval;
+				
+				fields[IDX_USERNAME] = fields[IDX_FIRST_NAME].substring(0,1).toLowerCase()
+									 + fields[IDX_LAST_NAME].toLowerCase();
+				fields[IDX_PASSWORD] = fields[IDX_SERIAL_NO];
+				fields[IDX_DEVICE_TYPE] = "Thermostat";
+				if (fields[IDX_SERVICE_COMPANY].equalsIgnoreCase("Western"))
+					fields[IDX_SERVICE_COMPANY] = "Western Heating";
+				else if (fields[IDX_SERVICE_COMPANY].equalsIgnoreCase("Ridgeway"))
+					fields[IDX_SERVICE_COMPANY] = "Ridgeway Industrial";
+				else if (fields[IDX_SERVICE_COMPANY].equalsIgnoreCase("Access"))
+					fields[IDX_SERVICE_COMPANY] = "Access Heating";
+				
+				return fields;
+			}
+    	});
+    	
+    	parsers.put("Portland", new ImportFileParser() {
+			/** Portland General Customer Information
+			 * COL_NUM:	COL_NAME
+			 * 1		ACCOUNTNO
+			 * 2		COUNTY
+			 * 3		----
+			 * 4		LASTNAME
+			 * 5		FIRSTNAME
+			 * 6		HOMEPHONE
+			 * 7,8		WORKPHONE
+			 * 9		STREETADDR1
+			 * 10		CITY
+			 * 11		STATE
+			 * 12		ZIPCODE
+			 * 13		EMAIL
+			 * 14		----
+			 * 15		SERVICECOMPANY
+			 * 16		----
+			 * 17		INSTALLDATE
+			 * 18		SERIALNO(LCR)
+			 * 19		GROUP
+			 * 20		----
+			 */
+			public String[] populateFields(String line) throws Exception {
+				String[] fields = new String[ NUM_FIELDS ];
+				for (int i = 0; i < NUM_FIELDS; i++)
+					fields[i] = "";
+					
+				StreamTokenizer st = new StreamTokenizer( new StringReader(line) );
+				st.resetSyntax();
+				st.ordinaryChar( ',' );
+				st.quoteChar( '"' );
+				st.wordChars( 'a', 'z' );
+				st.wordChars( 'A', 'Z' );
+				st.wordChars( '0', '9' );
+				st.wordChars( ' ', ' ' );
+				st.wordChars( '-', '/' );
+				st.wordChars( '/', '/' );
+				st.wordChars( '.', '.' );
+				st.wordChars( '#', '#' );
+				st.wordChars( '@', '@' );
+				st.wordChars( '(', ')' );
+				
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_NO] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_COUNTY] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_LAST_NAME] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_FIRST_NAME] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_HOME_PHONE] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_WORK_PHONE] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_WORK_PHONE_EXT] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_STREET_ADDR1] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_CITY] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_STATE] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ZIP_CODE] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_EMAIL] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_SERVICE_COMPANY] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_INSTALL_DATE] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_SERIAL_NO] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ADDR_GROUP] = st.sval;
+				if (st.ttype != ',') st.nextToken();
+				
+				fields[IDX_USERNAME] = fields[IDX_EMAIL];
+				fields[IDX_PASSWORD] = fields[IDX_SERIAL_NO];
+				fields[IDX_DEVICE_TYPE] = "LCR-5000";
+				fields[IDX_ADDR_GROUP] = "PGE RIWH Group " + fields[IDX_ADDR_GROUP];
+				
+				return fields;
+			}
+    	});
+    }
 	
 	/**
 	 * @see javax.servlet.http.HttpServlet#doPost(HttpServletRequest, HttpServletResponse)
@@ -81,22 +290,22 @@ public class StarsAdmin extends HttpServlet {
 
         HttpSession session = req.getSession(false);
         if (session == null) {
-        	resp.sendRedirect( loginURL ); return;
+        	resp.sendRedirect( req.getContextPath() + SOAPClient.LOGIN_URL );
+        	return;
         }
         
         SOAPClient.initSOAPServer( req );
         
-        LiteYukonUser liteUser = (LiteYukonUser)
-        		session.getAttribute( ServletUtils.ATT_YUKON_USER );
-        if (liteUser == null) {
-        	resp.sendRedirect( loginURL ); return;
-        }
-        
         StarsYukonUser user = (StarsYukonUser)
         		session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+        if (user == null) {
+        	resp.sendRedirect( req.getContextPath() + SOAPClient.LOGIN_URL );
+        	return;
+        }
         
     	String referer = req.getHeader( "referer" );
-    	String redirect = req.getParameter( "REDIRECT" );
+    	String redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
+    	if (redirect == null) redirect = referer;
     	
 		String action = req.getParameter( "action" );
 		if (action == null) action = "";
@@ -136,99 +345,7 @@ public class StarsAdmin extends HttpServlet {
 		else if (action.equalsIgnoreCase("DeleteEnergyCompany"))
 			deleteEnergyCompany( user, req, session );
         
-        if (redirect != null)
-        	resp.sendRedirect( redirect );
-        else
-	    	resp.sendRedirect( referer );
-	}
-	
-	/** Idaho Power Customer Information
-	 * COL_NUM:	COL_NAME
-	 * 1		----
-	 * 2		LASTNAME
-	 * 3		FIRSTNAME
-	 * 4		----
-	 * 5,6		STREETADDR1
-	 * 7		CITY
-	 * 8		STATE
-	 * 9		ZIPCODE
-	 * 10		HOMEPHONE
-	 * 11		ACCOUNTNO
-	 * 12		SERIALNO(THERMOSTAT)
-	 * 13		INSTALLDATE
-	 * 14		SERVICECOMPANY
-	 */
-	private String[] populateFieldsIdaho(String line) throws Exception {
-		String[] fields = new String[ NUM_FIELDS ];
-		for (int i = 0; i < NUM_FIELDS; i++)
-			fields[i] = "";
-			
-		StreamTokenizer st = new StreamTokenizer( new StringReader(line) );
-		st.resetSyntax();
-		st.ordinaryChar( ',' );
-		st.quoteChar( '"' );
-		st.wordChars( 'a', 'z' );
-		st.wordChars( 'A', 'Z' );
-		st.wordChars( '0', '9' );
-		st.wordChars( ' ', ' ' );
-		st.wordChars( '-', '-' );
-		st.wordChars( '/', '/' );
-		st.wordChars( '.', '.' );
-		st.wordChars( '#', '#' );
-		
-		st.nextToken();
-		if (st.ttype != ',') st.nextToken();
-		st.nextToken();
-		if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_LAST_NAME] = st.sval;
-		if (st.ttype != ',') st.nextToken();
-		st.nextToken();
-		if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_FIRST_NAME] = st.sval;
-		if (st.ttype != ',') st.nextToken();
-		st.nextToken();
-		if (st.ttype != ',') st.nextToken();
-		st.nextToken();
-		if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_STREET_ADDR1] = st.sval;
-		if (st.ttype != ',') st.nextToken();
-		st.nextToken();
-		if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-			fields[IDX_STREET_ADDR1] += " " + st.sval;
-		if (st.ttype != ',') st.nextToken();
-		st.nextToken();
-		if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_CITY] = st.sval;
-		if (st.ttype != ',') st.nextToken();
-		st.nextToken();
-		if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_STATE] = st.sval;
-		if (st.ttype != ',') st.nextToken();
-		st.nextToken();
-		if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ZIP_CODE] = st.sval;
-		if (st.ttype != ',') st.nextToken();
-		st.nextToken();
-		if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_HOME_PHONE] = st.sval;
-		if (st.ttype != ',') st.nextToken();
-		st.nextToken();
-		if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_NO] = st.sval;
-		if (st.ttype != ',') st.nextToken();
-		st.nextToken();
-		if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_SERIAL_NO] = st.sval;
-		if (st.ttype != ',') st.nextToken();
-		st.nextToken();
-		if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_INSTALL_DATE] = st.sval;
-		if (st.ttype != ',') st.nextToken();
-		st.nextToken();
-		if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_SERVICE_COMPANY] = st.sval;
-		
-		fields[IDX_USERNAME] = fields[IDX_FIRST_NAME].substring(0,1).toLowerCase()
-							 + fields[IDX_LAST_NAME].toLowerCase();
-		fields[IDX_PASSWORD] = fields[IDX_SERIAL_NO];
-		fields[IDX_DEVICE_TYPE] = "Thermostat";
-		if (fields[IDX_SERVICE_COMPANY].equalsIgnoreCase("Western"))
-			fields[IDX_SERVICE_COMPANY] = "Western Heating";
-		else if (fields[IDX_SERVICE_COMPANY].equalsIgnoreCase("Ridgeway"))
-			fields[IDX_SERVICE_COMPANY] = "Ridgeway Industrial";
-		else if (fields[IDX_SERVICE_COMPANY].equalsIgnoreCase("Access"))
-			fields[IDX_SERVICE_COMPANY] = "Access Heating";
-		
-		return fields;
+    	resp.sendRedirect( redirect );
 	}
 	
 	private boolean searchCustomerAccount(String[] fields, LiteStarsEnergyCompany energyCompany, HttpSession session)
@@ -516,7 +633,7 @@ public class StarsAdmin extends HttpServlet {
 		return !liteHw.getManufactureSerialNumber().equals( fields[IDX_SERIAL_NO] );
 	}
 	
-	private void programSignUp(StarsYukonUser user, HttpSession session, HttpServletRequest req)
+	private void programSignUp(String[] fields, StarsYukonUser user, HttpSession session, HttpServletRequest req)
 		throws Exception {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
@@ -531,8 +648,22 @@ public class StarsAdmin extends HttpServlet {
 			for (int i = 0; i < progIDs.length; i++) {
 				if (progIDs[i].length() == 0) continue;
 				
+				int progID = Integer.parseInt(progIDs[i]);
+                LiteLMProgram liteProg = energyCompany.getLMProgram( progID );
+                int groupID = 0;
+                if (fields[IDX_ADDR_GROUP].length() > 0 && liteProg.getGroupIDs() != null) {
+                	for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
+                		if (com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] )
+                				.equalsIgnoreCase( fields[IDX_ADDR_GROUP] ))
+                		{
+                			groupID = liteProg.getGroupIDs()[j];
+                			break;
+                		}
+                	}
+                }
+				
 				SULMProgram program = new SULMProgram();
-				program.setProgramID( Integer.parseInt(progIDs[i]) );
+				program.setProgramID( progID );
 				program.setApplianceCategoryID( Integer.parseInt(catIDs[i]) );
 				programs.addSULMProgram( program );
 			}
@@ -595,20 +726,32 @@ public class StarsAdmin extends HttpServlet {
 			
 			BufferedReader fr = new BufferedReader( new FileReader(importFile) );
 			if (fr != null) {
-				String line = null;
 				int lineNo = 0;
 				int numAdded = 0;
 				int numUpdated = 0;
 				int numFailed = 0;
+				String importID = null;
 				
-				while ((line = fr.readLine()) != null) {
+				String line = fr.readLine();
+				if (line != null && line.startsWith(IMPORT_ID)) {
+					importID = line.substring( IMPORT_ID.length() ).trim();
+					line = fr.readLine();
+				}
+				if (importID == null || importID.length() == 0)
+					importID = energyCompany.getName().split(" ")[0];
+				
+				ImportFileParser parser = (ImportFileParser) parsers.get(importID);
+				if (parser == null)
+					throw new Exception("Invalid import ID: " + importID);
+				
+				while (line != null) {
 					lineNo++;
 					try {
-						String[] fields = populateFieldsIdaho( line );
+						String[] fields = parser.populateFields( line );
 						if (!searchCustomerAccount( fields, energyCompany, session )) {
 							newCustomerAccount( fields, energyCompany, session );
 							createLMHardware( fields, user, session );
-							programSignUp( user, session, req );
+							programSignUp( fields, user, session, req );
 							numAdded++;
 						}
 						else {
@@ -645,7 +788,7 @@ public class StarsAdmin extends HttpServlet {
 					    			if (numProgEnrolled != programs.size()) progEnrollChanged = true;
 						    	}
 */						    	
-				    		programSignUp( user, session, req );
+				    		programSignUp( fields, user, session, req );
 					    	numUpdated++;
 						}
 					}
@@ -654,6 +797,8 @@ public class StarsAdmin extends HttpServlet {
 						e2.printStackTrace();
 						numFailed++;
 					}
+					
+					line = fr.readLine();
 				}
 				
 				if (numAdded + numUpdated > 0) {
@@ -741,6 +886,9 @@ public class StarsAdmin extends HttpServlet {
 					(StarsGetEnergyCompanySettingsResponse) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsEnergyCompany ec = ecSettings.getStarsEnergyCompany();
 			
+        	boolean customizedEmail = Boolean.valueOf( req.getParameter("CustomizedEmail") ).booleanValue();
+        	String email = req.getParameter("Email");
+			
 			boolean newContact = (energyCompany.getPrimaryContactID() == CtiUtilities.NONE_ID);
 			LiteCustomerContact liteContact = null;
 			if (newContact) {
@@ -751,9 +899,10 @@ public class StarsAdmin extends HttpServlet {
 			else
 				liteContact = energyCompany.getCustomerContact( energyCompany.getPrimaryContactID() );
 				
-			liteContact.setHomePhone( req.getParameter("PhoneNo") );
-			liteContact.setWorkPhone( req.getParameter("FaxNo") );
-			liteContact.setEmail( LiteCustomerContact.ContactNotification.newInstance(false, req.getParameter("Email")) );
+			liteContact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("PhoneNo")) );
+			liteContact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("FaxNo")) );
+        	if (!customizedEmail)
+				liteContact.setEmail( LiteCustomerContact.ContactNotification.newInstance(false, email) );
 			
 			com.cannontech.database.data.customer.Contact contact =
 					new com.cannontech.database.data.customer.Contact();
@@ -762,6 +911,7 @@ public class StarsAdmin extends HttpServlet {
 			if (newContact) {
 				com.cannontech.database.db.customer.Address addr =
 						new com.cannontech.database.db.customer.Address();
+				addr.setStateCode( " " );
 				StarsEnergyCompany ecTemp = (StarsEnergyCompany) session.getAttribute( ENERGY_COMPANY_TEMP );
 				if (ecTemp != null)
 					StarsFactory.setCustomerAddress( addr, ecTemp.getCompanyAddress() );
@@ -770,6 +920,8 @@ public class StarsAdmin extends HttpServlet {
 				contact.setContactID( null );
 				contact = (com.cannontech.database.data.customer.Contact)
 						Transaction.createTransaction( Transaction.INSERT, contact ).execute();
+				StarsLiteFactory.setLiteCustomerContact( liteContact, contact );
+				energyCompany.addCustomerContact( liteContact );
 				
 				CompanyAddress starsAddr = new CompanyAddress();
 				StarsLiteFactory.setStarsCustomerAddress(
@@ -783,7 +935,8 @@ public class StarsAdmin extends HttpServlet {
 			
 			ec.setMainPhoneNumber( liteContact.getHomePhone() );
 			ec.setMainFaxNumber( liteContact.getWorkPhone() );
-			ec.setEmail( liteContact.getEmail().getNotification() );
+			if (liteContact.getEmail() != null)
+				ec.setEmail( liteContact.getEmail().getNotification() );
 			
 			String compName = req.getParameter("CompanyName");
 			if (newContact || !energyCompany.getName().equals( compName )) {
@@ -823,14 +976,16 @@ public class StarsAdmin extends HttpServlet {
 		        LiteYukonGroup liteGroup = energyCompany.getResidentialCustomerGroup();
 		        if (liteGroup != null) {
 		        	String value = AuthFuncs.getRolePropValueGroup(
-		        			liteGroup, ResidentialCustomerRole.CUSTOMIZED_UTIL_EMAIL_LINK, "(none)" );
+		        			liteGroup, ResidentialCustomerRole.WEB_LINK_UTIL_EMAIL, "(none)" );
 		        	
-		        	boolean customizedEmail = Boolean.valueOf( req.getParameter("CustomizedEmail") ).booleanValue();
-		        	if (CtiUtilities.isTrue(value) != customizedEmail) {
-			        	String sql = "UPDATE YukonGroupRole SET Value = '" + customizedEmail + "'" +
+		        	if (customizedEmail && !value.equals(email) ||
+		        		!customizedEmail && ServerUtils.forceNotNone(value).length() > 0)
+		        	{
+			        	if (!customizedEmail) email = "(none)";
+			        	String sql = "UPDATE YukonGroupRole SET Value = '" + email + "'" +
 			        			" WHERE GroupID = " + liteGroup.getGroupID() +
 			        			" AND RoleID = " + ResidentialCustomerRole.ROLEID +
-			        			" AND RolePropertyID = " + ResidentialCustomerRole.CUSTOMIZED_UTIL_EMAIL_LINK;
+			        			" AND RolePropertyID = " + ResidentialCustomerRole.WEB_LINK_UTIL_EMAIL;
 			        	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
 			        			sql, CtiUtilities.getDatabaseAlias() );
 			        	stmt.execute();
@@ -940,9 +1095,8 @@ public class StarsAdmin extends HttpServlet {
 					com.cannontech.database.db.web.YukonWebConfiguration cfg =
 							new com.cannontech.database.db.web.YukonWebConfiguration();
 					cfg.setLogoLocation( config.getLogoLocation() + "," + progIconNames[i] );
-					cfg.setAlternateDisplayName( progShortNames[i] );
+					cfg.setAlternateDisplayName( progDispNames[i] + "," + progShortNames[i] );
 					cfg.setDescription( progDescriptions[i].replaceAll("\r\n", "<br>") );
-					cfg.setURL( progDispNames[i] );
 					pubProg.setWebConfiguration( cfg );
 					
 					if (pubPrograms[i] != null) {
@@ -952,6 +1106,16 @@ public class StarsAdmin extends HttpServlet {
 						pubPrograms[i].setChanceOfControlID( pubProg.getLMProgramWebPublishing().getChanceOfControlID().intValue() );
 						
 						LiteWebConfiguration liteCfg = SOAPServer.getWebConfiguration( pubProg.getWebConfiguration().getConfigurationID().intValue() );
+						
+						// If program display name changed, we need to update all the accounts with this program
+						String[] dispNames = ServerUtils.forceNotNull( liteCfg.getAlternateDisplayName() ).split(",");
+						String oldDispName = (dispNames.length > 0)? dispNames[0] : "";
+						if (!oldDispName.equals( progDispNames[i] )) {
+							int[] accountIDs = com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAccountIDsWithProgram(new Integer(progID), energyCompany.getEnergyCompanyID());
+							for (int j = 0; j < accountIDs.length; j++)
+								energyCompany.deleteStarsCustAccountInformation( accountIDs[j] );
+						}
+						
 						StarsLiteFactory.setLiteWebConfiguration( liteCfg, pubProg.getWebConfiguration() );
 						energyCompany.updateStarsWebConfig( liteCfg.getConfigID() );
 					}
@@ -983,6 +1147,8 @@ public class StarsAdmin extends HttpServlet {
 				com.cannontech.database.db.stars.appliance.ApplianceBase appDB = app.getApplianceBase();
 				
 				for (int j = 0; j < accountIDs.length; j++) {
+					energyCompany.deleteStarsCustAccountInformation( accountIDs[j] );
+					
 					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[j], true );
 					for (int k = 0; k < liteAcctInfo.getAppliances().size(); k++) {
 						LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(k);
@@ -1015,7 +1181,7 @@ public class StarsAdmin extends HttpServlet {
 				energyCompany.deleteStarsWebConfig( liteProg.getWebSettingsID() );
 			}
 			
-			StarsApplianceCategory starsAppCat = StarsLiteFactory.createStarsApplianceCategory( liteAppCat, energyCompany.getLiteID() );
+			StarsApplianceCategory starsAppCat = StarsLiteFactory.createStarsApplianceCategory( liteAppCat, energyCompany );
 			if (newAppCat) {
 				starsAppCats.addStarsApplianceCategory( starsAppCat );
 	        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Appliance category is created successfully");
@@ -1088,9 +1254,23 @@ public class StarsAdmin extends HttpServlet {
 				appCat.delete();
 				
 				for (int j = 0; j < accountIDs.length; j++) {
-					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[j], false );
-					if (liteAcctInfo != null) energyCompany.deleteCustAccountInformation( liteAcctInfo );
 					energyCompany.deleteStarsCustAccountInformation( accountIDs[j] );
+					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[j], true );
+					
+					Iterator appIt = liteAcctInfo.getAppliances().iterator();
+					while (appIt.hasNext()) {
+						LiteStarsAppliance liteApp = (LiteStarsAppliance) appIt.next();
+						if (liteApp.getApplianceCategoryID() == appCatID.intValue()) {
+							appIt.remove();
+							
+							Iterator progIt = liteAcctInfo.getLmPrograms().iterator();
+							while (progIt.hasNext()) {
+								LiteLMProgram liteProg = (LiteLMProgram) progIt.next();
+								if (liteProg.getProgramID() == liteApp.getLmProgramID())
+									progIt.remove();
+							}
+						}
+					}
 				}
 				
 				energyCompany.deleteApplianceCategory( appCatID.intValue() );
@@ -1314,89 +1494,55 @@ public class StarsAdmin extends HttpServlet {
         LiteYukonUser liteUser = user.getYukonUser();
         
         try {
-        	boolean newCustomizedFAQ = Boolean.valueOf( req.getParameter("CustomizedFAQ") ).booleanValue();
-        	boolean oldCustomizedFAQ = AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CUSTOMIZED_FAQ_LINK );
+        	boolean customizedFAQ = Boolean.valueOf( req.getParameter("CustomizedFAQ") ).booleanValue();
+    		String faqLink = req.getParameter("FAQLink");
+        	String value = AuthFuncs.getRolePropertyValue( liteUser, ConsumerInfoRole.WEB_LINK_FAQ, "(none)" );
 			
         	LiteYukonGroup customerGroup = energyCompany.getResidentialCustomerGroup();
         	LiteYukonGroup operatorGroup = energyCompany.getWebClientOperatorGroup();
         	
-        	boolean updateCustGroup = AuthFuncs.getRolePropValueGroup(customerGroup, ResidentialCustomerRole.CUSTOMIZED_FAQ_LINK, null) != null;
-        	boolean updateOperGroup = AuthFuncs.getRolePropValueGroup(operatorGroup, ConsumerInfoRole.CUSTOMIZED_FAQ_LINK, null) != null;
+        	boolean updateCustGroup = AuthFuncs.getRolePropValueGroup(customerGroup, ResidentialCustomerRole.WEB_LINK_FAQ, null) != null;
+        	boolean updateOperGroup = AuthFuncs.getRolePropValueGroup(operatorGroup, ConsumerInfoRole.WEB_LINK_FAQ, null) != null;
         	
     		String sql = null;
     		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
     				sql, CtiUtilities.getDatabaseAlias() );
-        	boolean changed = false;
         	
-        	if (newCustomizedFAQ != oldCustomizedFAQ) {
-        		if (updateCustGroup) {
-		        	sql = "UPDATE YukonGroupRole SET Value = '" + newCustomizedFAQ + "'" +
+        	if (customizedFAQ && !value.equals(faqLink) ||
+        		!customizedFAQ && ServerUtils.forceNotNone(value).length() > 0)
+        	{
+        		if (!customizedFAQ) faqLink = "(none)";
+    			if (updateCustGroup) {
+		        	sql = "UPDATE YukonGroupRole SET Value = '" + faqLink + "'" +
 		        			" WHERE GroupID = " + customerGroup.getGroupID() +
 		        			" AND RoleID = " + ResidentialCustomerRole.ROLEID +
-		        			" AND RolePropertyID = " + ResidentialCustomerRole.CUSTOMIZED_FAQ_LINK;
+		        			" AND RolePropertyID = " + ResidentialCustomerRole.WEB_LINK_FAQ;
 		        	stmt.setSQLString( sql );
 		        	stmt.execute();
-        		}
+    			}
 	        	
-        		if (updateOperGroup) {
-		        	sql = "UPDATE YukonGroupRole SET Value = '" + newCustomizedFAQ + "'" +
+	        	if (updateOperGroup) {
+		        	sql = "UPDATE YukonGroupRole SET Value = '" + faqLink + "'" +
 		        			" WHERE GroupID = " + operatorGroup.getGroupID() +
 		        			" AND RoleID = " + ConsumerInfoRole.ROLEID +
-		        			" AND RolePropertyID = " + ConsumerInfoRole.CUSTOMIZED_FAQ_LINK;
-        		}
-        		else {
-        			sql = "UPDATE YukonUserRole SET Value = '" + newCustomizedFAQ + "'" +
-        					" WHERE UserID = " + liteUser.getUserID() +
+		        			" AND RolePropertyID = " + ConsumerInfoRole.WEB_LINK_FAQ;
+	        	}
+	        	else {
+		        	sql = "UPDATE YukonUserRole SET Value = '" + faqLink + "'" +
+		        			" WHERE UserID = " + liteUser.getUserID() +
 		        			" AND RoleID = " + ConsumerInfoRole.ROLEID +
-		        			" AND RolePropertyID = " + ConsumerInfoRole.CUSTOMIZED_FAQ_LINK;
-        		}
+		        			" AND RolePropertyID = " + ConsumerInfoRole.WEB_LINK_FAQ;
+	        	}
 	        	stmt.setSQLString( sql );
         		stmt.execute();
-	        	
-	        	changed = true;
         	}
         	
-        	if (newCustomizedFAQ) {
-        		String newFAQLink = req.getParameter("FAQLink");
-        		String oldFAQLink = AuthFuncs.getRolePropertyValue( liteUser, ConsumerInfoRole.WEB_LINK_FAQ );
-        		
-        		if (!newFAQLink.equals(oldFAQLink)) {
-        			if (updateCustGroup) {
-			        	sql = "UPDATE YukonGroupRole SET Value = '" + newFAQLink + "'" +
-			        			" WHERE GroupID = " + customerGroup.getGroupID() +
-			        			" AND RoleID = " + ResidentialCustomerRole.ROLEID +
-			        			" AND RolePropertyID = " + ResidentialCustomerRole.WEB_LINK_FAQ;
-			        	stmt.setSQLString( sql );
-			        	stmt.execute();
-        			}
-		        	
-		        	if (updateOperGroup) {
-			        	sql = "UPDATE YukonGroupRole SET Value = '" + newFAQLink + "'" +
-			        			" WHERE GroupID = " + operatorGroup.getGroupID() +
-			        			" AND RoleID = " + ConsumerInfoRole.ROLEID +
-			        			" AND RolePropertyID = " + ConsumerInfoRole.WEB_LINK_FAQ;
-		        	}
-		        	else {
-			        	sql = "UPDATE YukonUserRole SET Value = '" + newFAQLink + "'" +
-			        			" WHERE UserID = " + liteUser.getUserID() +
-			        			" AND RoleID = " + ConsumerInfoRole.ROLEID +
-			        			" AND RolePropertyID = " + ConsumerInfoRole.WEB_LINK_FAQ;
-		        	}
-		        	stmt.setSQLString( sql );
-	        		stmt.execute();
-	        		
-		        	changed = true;
-        		}
-        	}
-        	
-        	if (changed) {
-        		if (updateCustGroup)
-		        	ServerUtils.handleDBChange( customerGroup, DBChangeMsg.CHANGE_TYPE_UPDATE );
-		        if (updateOperGroup)
-		        	ServerUtils.handleDBChange( operatorGroup, DBChangeMsg.CHANGE_TYPE_UPDATE );
-		        else
-		        	ServerUtils.handleDBChange( liteUser, DBChangeMsg.CHANGE_TYPE_UPDATE );
-        	}
+    		if (updateCustGroup)
+	        	ServerUtils.handleDBChange( customerGroup, DBChangeMsg.CHANGE_TYPE_UPDATE );
+	        if (updateOperGroup)
+	        	ServerUtils.handleDBChange( operatorGroup, DBChangeMsg.CHANGE_TYPE_UPDATE );
+	        else
+	        	ServerUtils.handleDBChange( liteUser, DBChangeMsg.CHANGE_TYPE_UPDATE );
 
         	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "FAQ link updated successfully");
         }

@@ -18,28 +18,7 @@ import com.cannontech.database.db.stars.report.WorkOrderBase;
 import com.cannontech.database.db.web.YukonWebConfiguration;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.serialize.BillingAddress;
-import com.cannontech.stars.xml.serialize.CallType;
-import com.cannontech.stars.xml.serialize.Email;
-import com.cannontech.stars.xml.serialize.PrimaryContact;
-import com.cannontech.stars.xml.serialize.StarsApp;
-import com.cannontech.stars.xml.serialize.StarsCallReport;
-import com.cannontech.stars.xml.serialize.StarsCallRprt;
-import com.cannontech.stars.xml.serialize.StarsContactNotification;
-import com.cannontech.stars.xml.serialize.StarsCustAccount;
-import com.cannontech.stars.xml.serialize.StarsCustListEntry;
-import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
-import com.cannontech.stars.xml.serialize.StarsCustResidence;
-import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
-import com.cannontech.stars.xml.serialize.StarsCustomerContact;
-import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsLMHw;
-import com.cannontech.stars.xml.serialize.StarsSiteInformation;
-import com.cannontech.stars.xml.serialize.StarsSrvReq;
-import com.cannontech.stars.xml.serialize.StarsThermostatSchedule;
-import com.cannontech.stars.xml.serialize.StarsWebConfig;
-import com.cannontech.stars.xml.serialize.StreetAddress;
-import com.cannontech.stars.xml.serialize.Substation;
+import com.cannontech.stars.xml.serialize.*;
 
 /**
  * @author yao
@@ -423,12 +402,37 @@ public class StarsFactory {
     
     /* StarsLMHw factory methods */
 
+	public static StarsLMHw newStarsLMHw(Class type) {
+		try {
+			StarsLMHw starsHw = (StarsLMHw) type.newInstance();
+			
+			starsHw.setInventoryID( -1 );
+			starsHw.setDeviceLabel( "" );
+			starsHw.setInstallationCompany( (InstallationCompany) newEmptyStarsCustListEntry(InstallationCompany.class) );
+			starsHw.setInstallDate( new java.util.Date() );
+			starsHw.setAltTrackingNumber( "" );
+			starsHw.setVoltage( (Voltage) newEmptyStarsCustListEntry(Voltage.class) );
+			starsHw.setNotes( "" );
+			starsHw.setInstallationNotes( "" );
+			starsHw.setManufactureSerialNumber( "" );
+			starsHw.setLMDeviceType( (LMDeviceType) newEmptyStarsCustListEntry(LMDeviceType.class) );
+			
+			return starsHw;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
 	public static StarsLMHw newStarsLMHw(StarsLMHw hw, Class type) {
 		try {
 			StarsLMHw starsHw = (StarsLMHw) type.newInstance();
 			
 			starsHw.setInventoryID( hw.getInventoryID() );
 			starsHw.setCategory( hw.getCategory() );
+			starsHw.setDeviceLabel( hw.getDeviceLabel() );
 			starsHw.setInstallationCompany( hw.getInstallationCompany() );
 			starsHw.setReceiveDate( hw.getReceiveDate() );
 			starsHw.setInstallDate( hw.getInstallDate() );

@@ -139,7 +139,7 @@ public class DeleteCustAccountAction implements ActionBase {
 				com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 		
     	com.cannontech.database.data.stars.customer.CustomerAccount account =
-    			StarsLiteFactory.createCustomerAccount(liteAcctInfo, energyCompany.getEnergyCompanyID().intValue());
+    			StarsLiteFactory.createCustomerAccount(liteAcctInfo, energyCompany);
     	account.setDbConnection( conn );
     	account.delete();
     	

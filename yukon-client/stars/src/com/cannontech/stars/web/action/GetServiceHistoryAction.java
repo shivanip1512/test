@@ -96,7 +96,7 @@ public class GetServiceHistoryAction implements ActionBase {
         	StarsServiceRequestHistory orderHist = new StarsServiceRequestHistory();
         	for (int i = 0; i < accountInfo.getServiceRequestHistory().size(); i++) {
         		LiteWorkOrderBase liteOrder = energyCompany.getWorkOrderBase( ((Integer) accountInfo.getServiceRequestHistory().get(i)).intValue() );
-        		orderHist.addStarsServiceRequest( StarsLiteFactory.createStarsServiceRequest( liteOrder, energyCompanyID ) );
+        		orderHist.addStarsServiceRequest( StarsLiteFactory.createStarsServiceRequest(liteOrder, energyCompany) );
         	}
         	
         	StarsGetServiceRequestHistoryResponse resp = new StarsGetServiceRequestHistoryResponse();

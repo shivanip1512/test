@@ -15,7 +15,7 @@ import com.cannontech.common.util.CtiProperties;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
-import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -205,7 +205,7 @@ public class YukonSwitchCommandAction implements ActionBase {
     }
     
 	public static StarsLMHardware sendDisableCommand(LiteStarsEnergyCompany energyCompany, int invID) throws Exception {
-		LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID, true );
+		LiteStarsLMHardware liteHw = energyCompany.getLMHardware( invID, true );
 		if (liteHw == null)
 			throw new Exception( "Cannot find the hardware to be configured" );
 		if (liteHw.getManufactureSerialNumber().trim().length() == 0)
@@ -238,12 +238,12 @@ public class YukonSwitchCommandAction implements ActionBase {
 		liteHw.getLmHardwareHistory().add( liteEvent );
 		liteHw.updateDeviceStatus();
 		
-		StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany.getLiteID() );
+		StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany );
 		return starsHw;
 	}
     
 	public static StarsLMHardware sendEnableCommand(LiteStarsEnergyCompany energyCompany, int invID) throws Exception {
-		LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID, true );
+		LiteStarsLMHardware liteHw = energyCompany.getLMHardware( invID, true );
 		if (liteHw == null)
 			throw new Exception( "Cannot find the hardware to be configured" );
 		if (liteHw.getManufactureSerialNumber().trim().length() == 0)
@@ -276,12 +276,12 @@ public class YukonSwitchCommandAction implements ActionBase {
 		liteHw.getLmHardwareHistory().add( liteEvent );
 		liteHw.updateDeviceStatus();
 		
-		StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany.getLiteID() );
+		StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany );
 		return starsHw;
 	}
 	
 	public static StarsLMHardware sendConfigCommand(LiteStarsEnergyCompany energyCompany, int invID, boolean forceInService) throws Exception {
-		LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID, true );
+		LiteStarsLMHardware liteHw = energyCompany.getLMHardware( invID, true );
 		if (liteHw == null)
 			throw new Exception( "Cannot find the hardware to be configured" );
 		if (liteHw.getManufactureSerialNumber().trim().length() == 0)
@@ -355,7 +355,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 			liteHw.getLmHardwareHistory().add( liteEvent );
 		}
 		
-		StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany.getLiteID() );
+		StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany );
 		return starsHw;
 	}
 }

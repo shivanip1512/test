@@ -7,7 +7,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -50,11 +50,13 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 			
 			String[] appIDs = req.getParameterValues( "AppID" );
 			String[] grpIDs = req.getParameterValues( "GroupID" );
-			for (int i = 0; i < appIDs.length; i++) {
-				StarsLMHardwareConfig config = new StarsLMHardwareConfig();
-				config.setApplianceID( Integer.parseInt(appIDs[i]) );
-				config.setGroupID( Integer.parseInt(grpIDs[i]) );
-				updateHwConfig.addStarsLMHardwareConfig( config );
+			if (appIDs != null) {
+				for (int i = 0; i < appIDs.length; i++) {
+					StarsLMHardwareConfig config = new StarsLMHardwareConfig();
+					config.setApplianceID( Integer.parseInt(appIDs[i]) );
+					config.setGroupID( Integer.parseInt(grpIDs[i]) );
+					updateHwConfig.addStarsLMHardwareConfig( config );
+				}
 			}
 			
 			StarsOperation operation = new StarsOperation();
@@ -96,7 +98,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
         	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
             
             StarsUpdateLMHardwareConfig updateHwConfig = reqOper.getStarsUpdateLMHardwareConfig();
-            LiteLMHardwareBase liteHw = energyCompany.getLMHardware( updateHwConfig.getInventoryID(), true );
+            LiteStarsLMHardware liteHw = energyCompany.getLMHardware( updateHwConfig.getInventoryID(), true );
             
             ArrayList appList = new ArrayList();		// Appliances connected to the hardware before
             for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {

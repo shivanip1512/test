@@ -179,7 +179,7 @@ public class CreateServiceRequestAction implements ActionBase {
             synchronized (workOrderList) { workOrderList.add( liteOrder ); }
             accountInfo.getServiceRequestHistory().add( 0, new Integer(liteOrder.getOrderID()) );
             
-            StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, energyCompanyID );
+            StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, energyCompany );
             StarsCreateServiceRequestResponse resp = new StarsCreateServiceRequestResponse();
             resp.setStarsServiceRequest( starsOrder );
 

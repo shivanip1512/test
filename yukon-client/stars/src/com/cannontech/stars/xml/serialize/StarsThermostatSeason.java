@@ -66,7 +66,7 @@ public class StarsThermostatSeason implements java.io.Serializable {
     public void addStarsThermostatSchedule(StarsThermostatSchedule vStarsThermostatSchedule)
         throws java.lang.IndexOutOfBoundsException
     {
-        if (!(_starsThermostatScheduleList.size() < 3)) {
+        if (!(_starsThermostatScheduleList.size() < 7)) {
             throw new IndexOutOfBoundsException();
         }
         _starsThermostatScheduleList.addElement(vStarsThermostatSchedule);
@@ -81,7 +81,7 @@ public class StarsThermostatSeason implements java.io.Serializable {
     public void addStarsThermostatSchedule(int index, StarsThermostatSchedule vStarsThermostatSchedule)
         throws java.lang.IndexOutOfBoundsException
     {
-        if (!(_starsThermostatScheduleList.size() < 3)) {
+        if (!(_starsThermostatScheduleList.size() < 7)) {
             throw new IndexOutOfBoundsException();
         }
         _starsThermostatScheduleList.insertElementAt(vStarsThermostatSchedule, index);
@@ -238,7 +238,7 @@ public class StarsThermostatSeason implements java.io.Serializable {
         if ((index < 0) || (index > _starsThermostatScheduleList.size())) {
             throw new IndexOutOfBoundsException();
         }
-        if (!(index < 3)) {
+        if (!(index < 7)) {
             throw new IndexOutOfBoundsException();
         }
         _starsThermostatScheduleList.setElementAt(vStarsThermostatSchedule, index);
