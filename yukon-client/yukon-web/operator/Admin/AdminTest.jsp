@@ -160,7 +160,11 @@ function confirmDeleteAllCompanies() {
 		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
 %>
                                   <tr> 
-                                    <td width="15%" class="TableCell" align="center"><img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"></td>
+                                    <td width="15%" class="TableCell" align="center">
+<%		if (!category.getStarsWebConfig().getLogoLocation().equals("")) { %>
+									  <img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>">
+<%		} %>
+									</td>
                                     <td width="60%" class="TableCell" valign="top"><%= category.getDescription() %> 
 <%		if (!category.getStarsWebConfig().getAlternateDisplayName().equals( category.getDescription() )) { %>
                                       (<%= category.getStarsWebConfig().getAlternateDisplayName() %>) 

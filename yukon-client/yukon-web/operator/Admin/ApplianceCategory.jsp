@@ -142,6 +142,7 @@ function sameAsDispName(form, checked) {
 
 function init() {
 	sameAsName(document.form1, <%= category.getStarsWebConfig().getAlternateDisplayName().equals(category.getDescription()) %>);
+	changeIcon(document.form1);
 	removeProgram(document.form1);
 	addProgram(document.form1);
 	removeWarned = false;
@@ -398,7 +399,7 @@ function prepareSubmit(form) {
                                 <input type="text" name="IconName" size="20" value="<%= category.getStarsWebConfig().getLogoLocation() %>">
                                 <input type="button" name="Preview" value="Preview" onClick="changeIcon(this.form)">
                               </td>
-                              <td width="50%"> <img id="CategoryIcon" src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" align="middle"></td>
+                              <td width="50%"> <img id="CategoryIcon" align="middle"></td>
                             </tr>
                           </table>
                         </td>
