@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/05/09 14:26:03 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/05/13 22:46:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -317,6 +317,7 @@ int Mccmd_Connect()
     //Send a registration message
     CtiRegistrationMsg* reg = new CtiRegistrationMsg("MCCMD", 0, false );
     PILConnection->WriteConnQue( reg );
+    PILConnection->setAutoExtend();
 
     VanGoghConnection = new CtiConnection( vangogh_port, vangogh_host );
 
@@ -653,6 +654,7 @@ int mcu8100wepco(ClientData clientData, Tcl_Interp* interp, int argc, char* argv
     {
         RWCollectableString* str = (RWCollectableString*) iter.key();
         Tcl_Eval( interp, (char*) str->data());
+        Sleep(100); // CGP 051302  Buy some sanity.
     }
 
     results.clearAndDestroy();
@@ -1135,10 +1137,10 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
         WriteOutput( (char*) req->CommandString().data() );
         PILConnection->WriteConnQue(req);
     }
-    
+
     if( timeout == 0 )
         return TCL_OK;
-        
+
     long start = time(NULL);
 
     set< long, less<long> > device_set;
@@ -1408,23 +1410,19 @@ void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
 
     size_t index;
     size_t end_index;
-        
-    int priority = 7;    
+
+    int priority = 7;
     char* pStr = Tcl_GetVar(interp, PILRequestPriorityVariable, TCL_GLOBAL_ONLY);
-    if( pStr != NULL ) 
+    if( pStr != NULL )
     {
         priority = atoi(pStr);
-        if( priority < 1 || priority > 15 ) 
+        if( priority < 1 || priority > 15 )
         {
             priority = 7;
             WriteOutput("MessagePriority is invalid, defaulting to 7");
         }
     }
-    else
-    {
-        //WriteOutput("MessagePriority not set, defaulting to 7");
-    }
-   
+
     if( cmd_line.index(".*select[ ]+list[ ]+", &end_index) != RW_NPOS )
     {
         int list_len;
@@ -1451,7 +1449,7 @@ void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
 
                 CtiRequestMsg *msg = new CtiRequestMsg();
                 msg->setDeviceId(0);
-                msg->setCommandString(cmd);                
+                msg->setCommandString(cmd);
                 msg->setMessagePriority(priority);
                 req_set.insert(msg);
             }
@@ -1462,10 +1460,10 @@ void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
     }
     else //dont add quotes if it is an id
         if( cmd_line.index(".*select[ ]+[^ ]+[ ]+id", &end_index) != RW_NPOS )
-    {        
+    {
         CtiRequestMsg *msg = new CtiRequestMsg();
         msg->setDeviceId(0);
-        msg->setCommandString(cmd_line);                
+        msg->setCommandString(cmd_line);
         msg->setMessagePriority(priority);
         req_set.insert(msg);
     }
@@ -1491,8 +1489,8 @@ void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
 
         CtiRequestMsg *msg = new CtiRequestMsg();
         msg->setDeviceId(0);
-        msg->setCommandString(cmd_line);                
+        msg->setCommandString(cmd_line);
         msg->setMessagePriority(priority);
-        req_set.insert(msg);        
+        req_set.insert(msg);
     }
 }
