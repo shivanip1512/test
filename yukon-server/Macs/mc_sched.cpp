@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_sched.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/08 22:16:08 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/08/08 14:04:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -133,7 +133,8 @@ CtiMCSchedule::CtiMCSchedule()
 {
     _pao_table.setCategory("Schedule");
     _pao_table.setClassStr("Schedule");
-    
+    _pao_table.setStatisticsStr("-");
+     
     setScheduleType(DefaultType);
     setCategoryName(DefaultCategory);
     setCurrentState(DefaultState);
