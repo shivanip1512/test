@@ -128,7 +128,13 @@ public class CapControlWebAnnex implements java.util.Observer
 	public synchronized CapBankTableModel getCapBankTableModel()
 	{
 		if( capBankTableModel == null )
+		{
 			capBankTableModel = new CapBankTableModel();
+			
+			//the browser cant flash and blink! 
+			capBankTableModel.toggleAlarms( false );
+		}
+		
 		
 		return capBankTableModel;
 	}
