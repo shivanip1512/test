@@ -55,7 +55,8 @@ public class Graph implements GraphDefines
 	private int options_mask_holder = 0x00;	
 	private boolean updateTrend = true;
 	private StringBuffer htmlString = null;
-
+	
+	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
 
 /**
  * Graph constructor comment.
@@ -80,6 +81,76 @@ public Graph()
 		}
 	}		*/
 } 
+
+/**
+ * Insert the method's description here.
+ * Creation date: (5/31/2001 2:48:47 PM)
+ * @return com.klg.jclass.chart.JCChart
+ */
+/*
+public JCChart getChart()
+{
+	return getGraph().getChart();
+}
+*/
+/**
+ * Insert the method's description here.
+ * Creation date: (12/20/2001 5:14:03 PM)
+ * @return com.cannontech.message.util.ClientConnection
+ */
+public com.cannontech.message.util.ClientConnection getClientConnection()
+{
+	if( connToDispatch == null)
+		initDispatchConnection();	
+	return connToDispatch;
+}
+private void initDispatchConnection() 
+{
+	String host = null;
+	int port;
+	try
+	{
+		java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
+		host = bundle.getString("dispatch_machine");
+		port = (new Integer(bundle.getString("dispatch_port"))).intValue();
+	}
+	catch ( java.util.MissingResourceException mre )
+	{
+		mre.printStackTrace();
+		host = "127.0.0.1";
+		port = 1510;
+	}
+	catch ( NumberFormatException nfe )
+	{
+		nfe.printStackTrace();
+		port = 1510;
+	}
+
+	connToDispatch = new com.cannontech.message.dispatch.ClientConnection();
+
+	com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
+	reg.setAppName("Yukon Trending");
+	reg.setAppIsUnique(0);
+	reg.setAppKnownPort(0);
+	reg.setAppExpirationDelay( 1000000 );
+	
+	connToDispatch.setHost(host);
+	connToDispatch.setPort(port);
+	connToDispatch.setAutoReconnect(true);
+	connToDispatch.setRegistrationMsg(reg);
+
+	try
+	{
+		connToDispatch.connectWithoutWait();
+	}
+	catch ( Exception e )
+	{
+		e.printStackTrace();
+	}
+
+	//dbChangeListener = new DBChangeMessageListener();
+	//dbChangeListener.start();
+}
 
 public void encodeCSV(java.io.OutputStream out) throws java.io.IOException
 {
@@ -707,4 +778,39 @@ public void update()
 	freeChart = getTrendModel().refresh(getViewType());
 }
 
+public void getDataNow()
+{
+	getDataNow(-1);
+}
+
+public void getDataNow(int devID)
+{
+	com.cannontech.message.dispatch.message.Multi multi = new com.cannontech.message.dispatch.message.Multi();
+	
+	com.cannontech.database.cache.DefaultDatabaseCache cache = new com.cannontech.database.cache.DefaultDatabaseCache();
+	java.util.List devices = cache.getAllDevices();
+	
+	for (int i = 0; i < devices.size(); i++)
+	{
+		com.cannontech.database.data.lite.LiteYukonPAObject paobject = (com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i);
+		if(com.cannontech.database.data.device.DeviceTypesFuncs.hasDeviceScanRate(paobject.getLiteID()))
+		{
+			com.cannontech.message.dispatch.message.Command messageCommand = new com.cannontech.message.dispatch.message.Command();
+			messageCommand.setOperation(com.cannontech.message.dispatch.message.Command.ALTERNATE_SCAN_RATE);
+			messageCommand.setPriority(14);
+			
+			java.util.Vector opArgList = new java.util.Vector(4);
+			opArgList.add(new Long(-1));	//token
+			opArgList.add(new Long(new Integer(paobject.getLiteID()).longValue()));	//deviceID
+			opArgList.add(new Long(-1));	//open?
+			opArgList.add(new Long(0));	//duration in secs
+			
+			messageCommand.setOpArgList(opArgList);
+			multi.getVector().add(messageCommand);
+		}
+	}
+	
+	if( multi.getVector().size() > 0 )
+		getClientConnection().write(multi);
+}
 }
