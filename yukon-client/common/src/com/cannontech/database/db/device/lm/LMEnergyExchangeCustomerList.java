@@ -6,12 +6,12 @@ package com.cannontech.database.db.device.lm;
 public class LMEnergyExchangeCustomerList extends com.cannontech.database.db.DBPersistent implements DeviceListItem
 {
 	private Integer deviceID = null;
-	private Integer lmCustomerDeviceID = null;
+	private Integer customerID = null;
 	private Integer customerOrder = null;
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"LMCustomerDeviceID", "CustomerOrder"
+		"CustomerID", "CustomerOrder"
 	};
 
 
@@ -29,7 +29,7 @@ public LMEnergyExchangeCustomerList() {
  */
 public void add() throws java.sql.SQLException 
 {
-	Object addValues[] = { getDeviceID(), getLmCustomerDeviceID(), 
+	Object addValues[] = { getDeviceID(), getCustomerID(), 
 					getCustomerOrder() };
 
 	add( TABLE_NAME, addValues );
@@ -61,8 +61,8 @@ public Integer getDeviceID() {
  * Creation date: (5/7/2001 2:20:23 PM)
  * @return java.lang.Integer
  */
-public java.lang.Integer getLmCustomerDeviceID() {
-	return lmCustomerDeviceID;
+public java.lang.Integer getCustomerID() {
+	return customerID;
 }
 /**
  * retrieve method comment.
@@ -74,7 +74,7 @@ public void retrieve() throws java.sql.SQLException
 
 	if( results.length == SETTER_COLUMNS.length )
 	{
-		setLmCustomerDeviceID( (Integer) results[0] );
+		setCustomerID( (Integer) results[0] );
 		setCustomerOrder( (Integer) results[1] );
 	}
 	else
@@ -99,17 +99,17 @@ public void setDeviceID(Integer newValue) {
 /**
  * Insert the method's description here.
  * Creation date: (5/7/2001 2:20:23 PM)
- * @param newLmCustomerDeviceID java.lang.Integer
+ * @param newCustomerID java.lang.Integer
  */
-public void setLmCustomerDeviceID(java.lang.Integer newLmCustomerDeviceID) {
-	lmCustomerDeviceID = newLmCustomerDeviceID;
+public void setCustomerID(java.lang.Integer newCustomerID) {
+	customerID = newCustomerID;
 }
 /**
  * update method comment.
  */
 public void update() throws java.sql.SQLException 
 {
-	Object setValues[] = { getLmCustomerDeviceID(), 
+	Object setValues[] = { getCustomerID(), 
 					getCustomerOrder() };
 
 	Object constraintValues[] = { getDeviceID() };

@@ -81,7 +81,7 @@ private com.cannontech.common.gui.util.AddRemoveJTablePanel getAddRemoveJTablePa
 			{
 				LMProgramCurtailCustomerList localCustomer = new LMProgramCurtailCustomerList();
 
-				localCustomer.getLmProgramCurtailCustomerList().setLmCustomerDeviceID( ciCustomers[i].getCiCustomerBase().getCustomerID() );
+				localCustomer.getLmProgramCurtailCustomerList().setCustomerID( ciCustomers[i].getCiCustomerBase().getCustomerID() );
 				localCustomer.setCustomerName( ciCustomers[i].getCiCustomerBase().getCompanyName() );
 				localCustomer.getLmProgramCurtailCustomerList().setRequireAck("N");
 
@@ -126,7 +126,7 @@ public Object getValue(Object o)
 		LMProgramCurtailCustomerList customer = row.customer;//new com.cannontech.database.data.device.lm.LMProgramCurtailCustomerList();
 
 		customer.setDeviceID( program.getPAObjectID() );
-		customer.getLmProgramCurtailCustomerList().setLmCustomerDeviceID( row.customer.getLmProgramCurtailCustomerList().getLmCustomerDeviceID() );
+		customer.getLmProgramCurtailCustomerList().setCustomerID( row.customer.getLmProgramCurtailCustomerList().getCustomerID() );
 		customer.getLmProgramCurtailCustomerList().setRequireAck( (row.reqAck.booleanValue() ? "Y" : "N") );
 		customer.getLmProgramCurtailCustomerList().setCustomerOrder( new Integer(i+1) );
 

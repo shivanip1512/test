@@ -60,7 +60,7 @@ public static final LMEnergyExchangeCustomerList[] getAllCustomerList(Integer pr
 	java.sql.ResultSet rset = null;
 
 	
-	String sql = "select l.deviceid, l.LMCustomerDeviceID, l.customerorder " +
+	String sql = "select l.deviceid, l.CustomerID, l.customerorder " +
 				 "from LMEnergyExchangeCustomerList l where l.deviceid = ? " +
 				 "order by l.customerorder";
 
@@ -85,7 +85,7 @@ public static final LMEnergyExchangeCustomerList[] getAllCustomerList(Integer pr
 				LMEnergyExchangeCustomerList customer = new LMEnergyExchangeCustomerList();
 				
 				customer.setDeviceID( new Integer(rset.getInt("DeviceID")) );
-				customer.setLmCustomerDeviceID( new Integer(rset.getInt("LMCustomerDeviceID")) );
+				customer.setCustomerID( new Integer(rset.getInt("CustomerID")) );
 				customer.setCustomerOrder( new Integer(rset.getInt("CustomerOrder")) );
 
 				tmpList.add( customer );

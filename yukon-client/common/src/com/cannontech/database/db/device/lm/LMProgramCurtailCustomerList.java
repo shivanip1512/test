@@ -6,7 +6,7 @@ package com.cannontech.database.db.device.lm;
 public class LMProgramCurtailCustomerList extends com.cannontech.database.db.DBPersistent implements DeviceListItem
 {
 	private Integer deviceID = null;
-	private Integer lmCustomerDeviceID = null;
+	private Integer customerID = null;
 	private Integer customerOrder = null;
 	private String requireAck = null;
 
@@ -31,7 +31,7 @@ public LMProgramCurtailCustomerList() {
  */
 public void add() throws java.sql.SQLException 
 {
-	Object addValues[] = { getDeviceID(), getLmCustomerDeviceID(), 
+	Object addValues[] = { getDeviceID(), getCustomerID(), 
 					getCustomerOrder(), getRequireAck() };
 
 	add( TABLE_NAME, addValues );
@@ -61,14 +61,6 @@ public Integer getDeviceID() {
 /**
  * Insert the method's description here.
  * Creation date: (5/7/2001 2:20:23 PM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getLmCustomerDeviceID() {
-	return lmCustomerDeviceID;
-}
-/**
- * Insert the method's description here.
- * Creation date: (5/7/2001 2:20:23 PM)
  * @return java.lang.String
  */
 public java.lang.String getRequireAck() {
@@ -84,7 +76,7 @@ public void retrieve() throws java.sql.SQLException
 
 	if( results.length == SETTER_COLUMNS.length )
 	{
-		setLmCustomerDeviceID( (Integer) results[0] );
+		setCustomerID( (Integer) results[0] );
 		setCustomerOrder( (Integer) results[1] );
 		setRequireAck( (String) results[2] );
 	}
@@ -110,14 +102,6 @@ public void setDeviceID(Integer newValue) {
 /**
  * Insert the method's description here.
  * Creation date: (5/7/2001 2:20:23 PM)
- * @param newLmCustomerDeviceID java.lang.Integer
- */
-public void setLmCustomerDeviceID(java.lang.Integer newLmCustomerDeviceID) {
-	lmCustomerDeviceID = newLmCustomerDeviceID;
-}
-/**
- * Insert the method's description here.
- * Creation date: (5/7/2001 2:20:23 PM)
  * @param newRequireAck java.lang.String
  */
 public void setRequireAck(java.lang.String newRequireAck) {
@@ -128,11 +112,27 @@ public void setRequireAck(java.lang.String newRequireAck) {
  */
 public void update() throws java.sql.SQLException 
 {
-	Object setValues[] = { getLmCustomerDeviceID(), 
+	Object setValues[] = { getCustomerID(), 
 					getCustomerOrder(), getRequireAck() };
 
 	Object constraintValues[] = { getDeviceID() };
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
+	/**
+	 * Returns the customerID.
+	 * @return Integer
+	 */
+	public Integer getCustomerID() {
+		return customerID;
+	}
+
+	/**
+	 * Sets the customerID.
+	 * @param customerID The customerID to set
+	 */
+	public void setCustomerID(Integer customerID) {
+		this.customerID = customerID;
+	}
+
 }

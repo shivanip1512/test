@@ -75,15 +75,11 @@ public static final com.cannontech.database.data.device.lm.LMProgramCurtailCusto
 	java.sql.ResultSet rset = null;
 
 	
-	String sql = "select l.deviceid, y.paoname, l.requireAck, l.customerorder, l.LMCustomerDeviceID " +
+	String sql = "select l.deviceid, y.paoname, l.requireAck, l.customerorder, l.CustomerID " +
 				 "from yukonpaobject y, lmProgramCurtailCustomerList l where l.deviceid = ? " +
-				 "and y.paobjectid = l.lmCustomerDeviceID order by l.customerorder";
-
+				 "and y.paobjectid = l.CustomerID order by l.customerorder";
 	try
 	{		
-		//conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-					//com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-
 		if( conn == null )
 		{
 			throw new IllegalStateException("Database connection should not be null.");
@@ -103,7 +99,7 @@ public static final com.cannontech.database.data.device.lm.LMProgramCurtailCusto
 				customer.setCustomerName( rset.getString("paoname") );
 				customer.getLmProgramCurtailCustomerList().setRequireAck( rset.getString("RequireAck") );
 				customer.getLmProgramCurtailCustomerList().setCustomerOrder( new Integer(rset.getInt("CustomerOrder")) );
-				customer.getLmProgramCurtailCustomerList().setLmCustomerDeviceID( new Integer(rset.getInt("LMCustomerDeviceID")) );
+				customer.getLmProgramCurtailCustomerList().setCustomerID( new Integer(rset.getInt("CustomerID")) );
 
 				tmpList.add( customer );
 			}

@@ -104,7 +104,7 @@ public Object getValue(Object o)
 
 		customer.setDeviceID( program.getPAObjectID() );
 		customer.setCustomerOrder( new Integer(i+1) );
-		customer.setLmCustomerDeviceID( new Integer(
+		customer.setCustomerID( new Integer(
 					((com.cannontech.database.data.lite.LiteYukonPAObject)getAddRemovePanel().rightListGetModel().getElementAt(i)).getYukonID() ) );
 		
 		program.getLmProgramStorageVector().addElement( customer );
@@ -333,7 +333,7 @@ public void setValue(Object o)
 		for( int j = 0; j < allItems.size(); j++ )
 		{
 			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)allItems.get(j)).getYukonID() ==
-				  group.getLmCustomerDeviceID().intValue() )
+				  group.getCustomerID().intValue() )
 			{
 				usedItems.add( allItems.get(j) );
 				allItems.removeElementAt(j);				
