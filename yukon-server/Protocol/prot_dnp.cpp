@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2005/03/10 20:59:24 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2005/03/17 05:22:22 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -335,114 +335,160 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
     int  retVal;
     bool final = true;
 
-    retVal = _app_layer.decode(xfer, status);
+    const TimeCTO *cto = 0;
 
-    if( _app_layer.isTransactionComplete() )
+    if( retVal = _app_layer.decode(xfer, status) )
+    {
+        _string_results.push_back(CTIDBG_new string("Operation failed"));
+    }
+    else if( _app_layer.isTransactionComplete() )
     {
         _app_layer.getObjects(_object_blocks);
 
-        //  this block is for commands that return strings instead of pointdata messages.  we must decode and prepare
-        //    these here so they don't get misused and abused by the getInboundPoints function
-        if( !_object_blocks.empty() )
+        //  this block is for commands that return anything besides non-pointdata
+        switch( _command )
         {
-            switch( _command )
+            case Command_SetDigitalOut_Direct:
+            case Command_SetDigitalOut_SBO_Select:
+            case Command_SetDigitalOut_SBO_SelectOnly:
+            case Command_SetDigitalOut_SBO_Operate:
             {
-                case Command_SetDigitalOut_Direct:
-                case Command_SetDigitalOut_SBO_Select:
-                case Command_SetDigitalOut_SBO_SelectOnly:
-                case Command_SetDigitalOut_SBO_Operate:
+                const ObjectBlock *ob = _object_blocks.front();
+
+                if( ob &&
+                    ob->getGroup()     == BinaryOutputControl::Group &&
+                    ob->getVariation() == BinaryOutputControl::ControlRelayOutputBlock )
                 {
-                    const ObjectBlock *ob = _object_blocks.front();
+                    ObjectBlock::object_descriptor od = ob->at(0);
 
-                    if( ob->getGroup()     == BinaryOutputControl::Group &&
-                        ob->getVariation() == BinaryOutputControl::ControlRelayOutputBlock )
+                    if( od.object )
                     {
-                        ObjectBlock::object_descriptor od = ob->at(0);
+                        const BinaryOutputControl *boc = reinterpret_cast<const BinaryOutputControl *>(od.object);
 
-                        if( od.object )
+                        //  if the select went successfully, transition to operate
+                        if( _command == Command_SetDigitalOut_SBO_Select && boc->getStatus() == BinaryOutputControl::Status_RequestAccepted )
                         {
-                            const BinaryOutputControl *boc = reinterpret_cast<const BinaryOutputControl *>(od.object);
-
-                            //  if the select went successfully, transition to operate
-                            if( _command == Command_SetDigitalOut_SBO_Select &&
-                                boc->getStatus() == BinaryOutputControl::Status_RequestAccepted )
+                            if( !_command_parameters.empty() )
                             {
-                                if( !_command_parameters.empty() )
+                                //  make a copy because _command_parameters will be cleared out when setCommand is called...  freaky deaky
+                                output_point op = _command_parameters.at(0);
+
+                                if( od.index == op.control_offset )
                                 {
-                                    //  make a copy because _command_parameters will be cleared out when setCommand is called...  freaky deaky
-                                    output_point op = _command_parameters.at(0);
+                                    //  transition to the operate phase
+                                    setCommand(Command_SetDigitalOut_SBO_Operate, op);
+                                    final = false;
 
-                                    if( od.index == op.control_offset )
-                                    {
-                                        //  transition to the operate phase
-                                        setCommand(Command_SetDigitalOut_SBO_Operate, op);
-                                        final = false;
+                                    _string_results.push_back(CTIDBG_new string("Select successful, sending operate"));
+                                }
+                                else
+                                {
+                                    string str;
 
-                                        _results.push(CTIDBG_new string("Select successful, sending operate"));
-                                    }
-                                    else
-                                    {
-                                        string str;
+                                    str += "Select returned mismatched control offset (";
+                                    str += CtiNumStr(od.index);
+                                    str += " != ";
+                                    str += CtiNumStr(op.control_offset);
+                                    str += ")";
 
-                                        str += "Select returned mismatched control offset (";
-                                        str += CtiNumStr(od.index);
-                                        str += " != ";
-                                        str += CtiNumStr(op.control_offset);
-                                        str += ")";
-
-                                        _results.push(CTIDBG_new string(str));
-                                    }
+                                    _string_results.push_back(CTIDBG_new string(str));
+                                    retVal = NOTNORMAL;
                                 }
                             }
+                            else
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint - empty command parameters for SBO operate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
 
-                            _results.push(CTIDBG_new string(getControlResultString(boc->getStatus())));
-                        }
-                    }
-
-                    break;
-                }
-
-                case Command_ReadTime:
-                {
-                    const ObjectBlock *ob = _object_blocks.front();
-
-                    if( ob->getGroup()     == DNP::Time::Group &&
-                        ob->getVariation() == DNP::Time::TimeAndDate )
-                    {
-                        ObjectBlock::object_descriptor od = ob->at(0);
-                        string s = "Empty time result block";
-
-                        if( od.object )
-                        {
-                            const DNP::Time *time = reinterpret_cast<const DNP::Time *>(od.object);
-
-                            //  change to ptime
-                            RWTime t(time->getSeconds() + rwEpoch);
-
-                            s = "Device time: ";
-                            s.append(t.asString());
-
+                                _string_results.push_back(CTIDBG_new string("Empty command parameter list for operate"));
+                                retVal = NOTNORMAL;
+                            }
                         }
 
-                        _results.push(CTIDBG_new string(s));
+                        _string_results.push_back(CTIDBG_new string(getControlResultString(boc->getStatus())));
                     }
-
-                    break;
-                }
-
-                case Command_WriteTime:
-                {
-                    if( !_app_layer.errorCondition() )
+                    else
                     {
-                        _results.push(CTIDBG_new string("Time sync sent"));
+                        _string_results.push_back(CTIDBG_new string("Device did not return a control result"));
+                        retVal = NOTNORMAL;
                     }
                 }
-
-                /*default:
+                else
                 {
-                    break;
-                }*/
+                    _string_results.push_back(CTIDBG_new string("Device did not return a control result"));
+                    retVal = NOTNORMAL;
+                }
+
+                break;
             }
+
+            case Command_ReadTime:
+            {
+                const ObjectBlock *ob = _object_blocks.front();
+
+                if( ob &&
+                    ob->getGroup()     == DNP::Time::Group &&
+                    ob->getVariation() == DNP::Time::TimeAndDate )
+                {
+                    ObjectBlock::object_descriptor od = ob->at(0);
+
+                    if( od.object )
+                    {
+                        const DNP::Time *time = reinterpret_cast<const DNP::Time *>(od.object);
+                        string s;
+
+                        //  change to ptime
+                        RWTime t(time->getSeconds() + rwEpoch);
+
+                        s = "Device time: ";
+                        s.append(t.asString());
+
+                        _string_results.push_back(CTIDBG_new string(s));
+                    }
+                    else
+                    {
+                        _string_results.push_back(CTIDBG_new string("Device did not return a time result"));
+                        retVal = NOTNORMAL;
+                    }
+                }
+                else
+                {
+                    _string_results.push_back(CTIDBG_new string("Device did not return a time result"));
+                    retVal = NOTNORMAL;
+                }
+
+                break;
+            }
+
+            case Command_WriteTime:
+            {
+                _string_results.push_back(CTIDBG_new string("Time sync sent"));
+            }
+
+            /*default:
+            {
+                break;
+            }*/
+        }
+
+        //  and this is where the pointdata gets harvested
+        while( !_object_blocks.empty() )
+        {
+            const ObjectBlock *ob = _object_blocks.front();
+
+            if( ob->getGroup() == TimeCTO::Group && !ob->empty() )
+            {
+                cto = reinterpret_cast<const TimeCTO *>(ob->at(0).object);
+            }
+            else
+            {
+                ob->getPoints(_point_results, cto);
+            }
+
+            _object_blocks.pop();
+            delete ob;
         }
 
         if( final )
@@ -456,37 +502,19 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
 }
 
 
-void DNPInterface::getInboundPoints( queue< CtiPointDataMsg * > &points )
+void DNPInterface::getInboundPoints( pointlist_t &points )
 {
-    const TimeCTO *cto = 0;
+    points.insert(points.end(), _point_results.begin(), _point_results.end());
 
-    while( !_object_blocks.empty() )
-    {
-        const ObjectBlock *ob = _object_blocks.front();
-
-        if( ob->getGroup() == TimeCTO::Group && !ob->empty() )
-        {
-            cto = reinterpret_cast<const TimeCTO *>(ob->at(0).object);
-        }
-        else
-        {
-            ob->getPoints(points, cto);
-        }
-
-        _object_blocks.pop();
-        delete ob;
-    }
+    _point_results.erase(_point_results.begin(), _point_results.end());
 }
 
 
-void DNPInterface::getInboundStrings( queue< string * > &strings )
+void DNPInterface::getInboundStrings( stringlist_t &strings )
 {
-    while( !_results.empty() )
-    {
-        strings.push(_results.front());
+    strings.insert(strings.end(), _string_results.begin(), _string_results.end());
 
-        _results.pop();
-    }
+    _string_results.erase(_string_results.begin(), _string_results.end());
 }
 
 
