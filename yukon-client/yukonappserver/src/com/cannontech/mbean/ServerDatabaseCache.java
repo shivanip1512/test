@@ -24,6 +24,8 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 import com.cannontech.yukon.IDatabaseCache;
@@ -50,7 +52,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allUnitMeasures = null;
 	private ArrayList allNotificationGroups = null;
 	
-	//private java.util.ArrayList allUsedContactNotifications = null;
+	//private ArrayList allUsedContactNotifications = null;
 	private ArrayList allContactNotifications = null;
 	
 	private ArrayList allAlarmCategories = null;
@@ -152,7 +154,7 @@ public synchronized java.util.List getAllAlarmCategories(){
 		return allAlarmCategories;
 	else
 	{
-		allAlarmCategories = new java.util.ArrayList();
+		allAlarmCategories = new ArrayList();
 		AlarmCategoryLoader alarmStateLoader = new AlarmCategoryLoader(allAlarmCategories, databaseAlias);
 		alarmStateLoader.run();
 		return allAlarmCategories;
@@ -171,7 +173,7 @@ public synchronized java.util.List getAllContactNotifications()
 	else
 	{
 		// FIXFIX ---should not return the NotifGroups!!!!!
-		allContactNotifications = new java.util.ArrayList();
+		allContactNotifications = new ArrayList();
 		ContactNotificationGroupLoader alarmStateLoader = new ContactNotificationGroupLoader(allContactNotifications, databaseAlias);
 		alarmStateLoader.run();
 		return allContactNotifications;
@@ -190,7 +192,7 @@ public synchronized java.util.List getAllYukonImages()
       return allYukonImages;
    else
    {
-      allYukonImages = new java.util.ArrayList();
+      allYukonImages = new ArrayList();
       YukonImageLoader imageLoader = new YukonImageLoader(allYukonImages, databaseAlias);
       imageLoader.run();
       return allYukonImages;
@@ -205,12 +207,12 @@ public synchronized java.util.List getAllCapControlFeeders()
 {
 	if( allCapControlFeeders == null )
 	{
-		allCapControlFeeders = new java.util.ArrayList( getAllYukonPAObjects().size() / 2 );
+		allCapControlFeeders = new ArrayList( getAllYukonPAObjects().size() / 2 );
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)getAllYukonPAObjects().get(i)).getCategory() == com.cannontech.database.data.pao.PAOGroups.CAT_CAPCONTROL
-				 && ((com.cannontech.database.data.lite.LiteYukonPAObject)getAllYukonPAObjects().get(i)).getType() == com.cannontech.database.data.pao.PAOGroups.CAP_CONTROL_FEEDER )
+			if( ((LiteYukonPAObject)getAllYukonPAObjects().get(i)).getCategory() == PAOGroups.CAT_CAPCONTROL
+				 && ((LiteYukonPAObject)getAllYukonPAObjects().get(i)).getType() == PAOGroups.CAP_CONTROL_FEEDER )
 				allCapControlFeeders.add( getAllYukonPAObjects().get(i) );
 		}
 
@@ -226,12 +228,12 @@ public synchronized java.util.List getAllCapControlSubBuses()
 {
 	if( allCapControlSubBuses == null )
 	{
-		allCapControlSubBuses = new java.util.ArrayList( getAllYukonPAObjects().size() / 2 );
+		allCapControlSubBuses = new ArrayList( getAllYukonPAObjects().size() / 2 );
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)getAllYukonPAObjects().get(i)).getCategory() == com.cannontech.database.data.pao.PAOGroups.CAT_CAPCONTROL
-				 && ((com.cannontech.database.data.lite.LiteYukonPAObject)getAllYukonPAObjects().get(i)).getType() == com.cannontech.database.data.pao.PAOGroups.CAP_CONTROL_SUBBUS )
+			if( ((LiteYukonPAObject)getAllYukonPAObjects().get(i)).getCategory() == PAOGroups.CAT_CAPCONTROL
+				 && ((LiteYukonPAObject)getAllYukonPAObjects().get(i)).getType() == PAOGroups.CAP_CONTROL_SUBBUS )
 				allCapControlSubBuses.add( getAllYukonPAObjects().get(i) );
 		}
 
@@ -250,7 +252,7 @@ public synchronized java.util.List getAllContacts()
 		return allContacts;
 	else
 	{
-		allContacts = new java.util.ArrayList();
+		allContacts = new ArrayList();
 		ContactLoader contactLoader = new ContactLoader(allContacts, databaseAlias);
 		contactLoader.run();
 		return allContacts;
@@ -264,7 +266,7 @@ public synchronized java.util.List getAllCICustomers()
 {
 	if( allCICustomers == null )
 	{
-		allCICustomers = new java.util.ArrayList( getAllCustomers().size());
+		allCICustomers = new ArrayList( getAllCustomers().size());
 
 		for( int i = 0; i < getAllCustomers().size(); i++ )
 		{
@@ -286,7 +288,7 @@ public synchronized java.util.List getAllDeviceMeterGroups()
 		return allDeviceMeterGroups;
 	else
 	{
-		allDeviceMeterGroups = new java.util.ArrayList();
+		allDeviceMeterGroups = new ArrayList();
 		DeviceMeterGroupLoader deviceMeterGroupLoader = new DeviceMeterGroupLoader (allDeviceMeterGroups, databaseAlias);
 		deviceMeterGroupLoader.run();
 		return allDeviceMeterGroups;
@@ -301,12 +303,12 @@ public synchronized java.util.List getAllDevices()
 {
 	if( allDevices == null )
 	{
-		allDevices = new java.util.ArrayList( getAllYukonPAObjects().size() );
+		allDevices = new ArrayList( getAllYukonPAObjects().size() );
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)getAllYukonPAObjects().get(i)).getCategory() 
-				  == com.cannontech.database.data.pao.PAOGroups.CAT_DEVICE )
+			if( ((LiteYukonPAObject)getAllYukonPAObjects().get(i)).getCategory() 
+				  == PAOGroups.CAT_DEVICE )
 				allDevices.add( getAllYukonPAObjects().get(i) );
 		}
 
@@ -321,11 +323,11 @@ public synchronized java.util.List getAllDevices()
  */
 public synchronized java.util.List getAllMCTs() {
 	if (allMCTs == null) {
-		allMCTs = new java.util.ArrayList( getAllDevices().size() / 2 );
+		allMCTs = new ArrayList( getAllDevices().size() / 2 );
 		
 		for (int i = 0; i < getAllDevices().size(); i++) {
 			if (com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(
-					((com.cannontech.database.data.lite.LiteYukonPAObject) getAllDevices().get(i)).getType() ))
+					((LiteYukonPAObject) getAllDevices().get(i)).getType() ))
 				allMCTs.add( getAllDevices().get(i) );
 		}
 		
@@ -345,7 +347,7 @@ public synchronized java.util.List getAllGraphDefinitions()
 		return allGraphDefinitions;
 	else
 	{
-		allGraphDefinitions = new java.util.ArrayList();
+		allGraphDefinitions = new ArrayList();
 		GraphDefinitionLoader graphDefinitionLoader = new GraphDefinitionLoader(allGraphDefinitions, databaseAlias);
 		graphDefinitionLoader.run();
 		return allGraphDefinitions;
@@ -367,7 +369,7 @@ public synchronized java.util.List getAllGraphTaggedPoints()
 		  timerStart = new java.util.Date();
 		  //temp code
 
-		  allGraphTaggedPoints = new java.util.ArrayList();
+		  allGraphTaggedPoints = new ArrayList();
 
 
 		  String sqlString = "SELECT PU.POINTID, UM.FORMULA " +
@@ -457,7 +459,7 @@ public synchronized java.util.List getAllHolidaySchedules()
 		return allHolidaySchedules;
 	else
 	{
-		allHolidaySchedules = new java.util.ArrayList();
+		allHolidaySchedules = new ArrayList();
 		HolidayScheduleLoader holidayScheduleLoader = new HolidayScheduleLoader(allHolidaySchedules, databaseAlias);
 		holidayScheduleLoader.run();
 		return allHolidaySchedules;
@@ -475,7 +477,7 @@ public synchronized java.util.List getAllBaselines()
 		return allBaselines;
 	else
 	{
-		allBaselines = new java.util.ArrayList();
+		allBaselines = new ArrayList();
 		BaselineLoader baselineLoader = new BaselineLoader(allBaselines, databaseAlias);
 		baselineLoader.run();
 		return allBaselines;
@@ -489,7 +491,7 @@ public synchronized java.util.List getAllConfigs()
 		return allConfigs;
 	else
 	{
-		allConfigs = new java.util.ArrayList();
+		allConfigs = new ArrayList();
 		ConfigLoader configLoader = new ConfigLoader(allConfigs, databaseAlias);
 		configLoader.run();
 		return allConfigs;
@@ -503,7 +505,7 @@ public synchronized java.util.List getAllLMProgramConstraints()
 		return allLMProgramConstraints;
 	else
 	{
-		allLMProgramConstraints = new java.util.ArrayList();
+		allLMProgramConstraints = new ArrayList();
 		LMConstraintLoader lmConstraintsLoader = new LMConstraintLoader(allLMProgramConstraints, databaseAlias);
 		lmConstraintsLoader.run();
 		return allLMProgramConstraints;
@@ -515,13 +517,13 @@ public synchronized java.util.List getAllLMScenarios()
 
 	if( allLMScenarios == null )
 	{
-		allLMScenarios = new java.util.ArrayList( getAllYukonPAObjects().size() );
+		allLMScenarios = new ArrayList( getAllYukonPAObjects().size() / 2 );
 
 		for( int i = 0; i < getAllLoadManagement().size(); i++ )
 		{
-			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)getAllYukonPAObjects().get(i)).getType() 
-				  == com.cannontech.database.data.pao.PAOGroups.LM_SCENARIO )
-			allLMScenarios.add( getAllYukonPAObjects().get(i) );
+			if( ((LiteYukonPAObject)getAllLoadManagement().get(i)).getType() 
+				  == PAOGroups.LM_SCENARIO )
+			allLMScenarios.add( getAllLoadManagement().get(i) );
 		}
 
 		allLMScenarios.trimToSize();		
@@ -538,13 +540,13 @@ public synchronized java.util.List getAllLMPrograms()
 	if( allLMPrograms == null )
 	{
 		//java.util.List allDevices = getAllLoadManagement();
-		allLMPrograms = new java.util.ArrayList( getAllLoadManagement().size() / 2 );
+		allLMPrograms = new ArrayList( getAllLoadManagement().size() / 2 );
 
 		for( int i = 0; i < getAllLoadManagement().size(); i++ )
 		{
-			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)getAllLoadManagement().get(i)).getType() == com.cannontech.database.data.pao.PAOGroups.LM_CURTAIL_PROGRAM
-				 || ((com.cannontech.database.data.lite.LiteYukonPAObject)getAllLoadManagement().get(i)).getType() == com.cannontech.database.data.pao.PAOGroups.LM_DIRECT_PROGRAM
-				 || ((com.cannontech.database.data.lite.LiteYukonPAObject)getAllLoadManagement().get(i)).getType() == com.cannontech.database.data.pao.PAOGroups.LM_ENERGY_EXCHANGE_PROGRAM )
+			if( ((LiteYukonPAObject)getAllLoadManagement().get(i)).getType() == PAOGroups.LM_CURTAIL_PROGRAM
+				 || ((LiteYukonPAObject)getAllLoadManagement().get(i)).getType() == PAOGroups.LM_DIRECT_PROGRAM
+				 || ((LiteYukonPAObject)getAllLoadManagement().get(i)).getType() == PAOGroups.LM_ENERGY_EXCHANGE_PROGRAM )
 				allLMPrograms.add( getAllLoadManagement().get(i) );				
 		}
 
@@ -563,12 +565,12 @@ public synchronized java.util.List getAllLoadManagement()
 {
 	if( allLoadManagement == null )
 	{
-		allLoadManagement = new java.util.ArrayList( getAllYukonPAObjects().size() / 2 );
+		allLoadManagement = new ArrayList( getAllYukonPAObjects().size() / 2 );
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)getAllYukonPAObjects().get(i)).getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.LOADMANAGEMENT ||
-					((com.cannontech.database.data.lite.LiteYukonPAObject)getAllYukonPAObjects().get(i)).getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.GROUP )
+			if( ((LiteYukonPAObject)getAllYukonPAObjects().get(i)).getPaoClass() == DeviceClasses.LOADMANAGEMENT ||
+					((LiteYukonPAObject)getAllYukonPAObjects().get(i)).getPaoClass() == DeviceClasses.GROUP )
 				allLoadManagement.add( getAllYukonPAObjects().get(i) );
 		}
 
@@ -588,7 +590,7 @@ public synchronized java.util.List getAllContactNotificationGroups()
 		return allNotificationGroups;
 	else
 	{
-		allNotificationGroups = new java.util.ArrayList();
+		allNotificationGroups = new ArrayList();
 		ContactNotificationGroupLoader notifLoader = new ContactNotificationGroupLoader(allNotificationGroups, databaseAlias);
 		notifLoader.run();
 		
@@ -608,7 +610,7 @@ public synchronized java.util.List getAllPoints(){
 		return allPoints;
 	else
 	{
-		allPoints = new java.util.ArrayList();
+		allPoints = new ArrayList();
 		allPointsMap = new HashMap();
 		PointLoader pointLoader = new PointLoader(allPoints, allPointsMap, databaseAlias);
 		pointLoader.run();
@@ -682,7 +684,7 @@ public synchronized java.util.List getAllPointsUnits(){
 		return allPointsUnits;
 	else
 	{
-		allPointsUnits = new java.util.ArrayList();
+		allPointsUnits = new ArrayList();
 		PointUnitLoader pointUnitLoader = new PointUnitLoader(allPointsUnits, databaseAlias);
 		pointUnitLoader.run();
 		return allPointsUnits;
@@ -694,7 +696,7 @@ public synchronized java.util.List getAllPointLimits() {
 		return allPointLimits;
 	else
 	{
-		allPointLimits = new java.util.ArrayList();
+		allPointLimits = new ArrayList();
 		PointLimitLoader pointLimitLoader = new PointLimitLoader(allPointLimits, databaseAlias);
 		pointLimitLoader.run();
 		return allPointLimits;
@@ -804,12 +806,12 @@ public synchronized java.util.List getAllPorts()
 {
 	if( allPorts == null )
 	{
-		allPorts = new java.util.ArrayList( getAllYukonPAObjects().size() / 2 );
+		allPorts = new ArrayList( getAllYukonPAObjects().size() / 2 );
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)getAllYukonPAObjects().get(i)).getCategory() 
-				 == com.cannontech.database.data.pao.PAOGroups.CAT_PORT )
+			if( ((LiteYukonPAObject)getAllYukonPAObjects().get(i)).getCategory() 
+				 == PAOGroups.CAT_PORT )
 				allPorts.add( getAllYukonPAObjects().get(i) );
 		}
 
@@ -827,11 +829,11 @@ public synchronized java.util.List getAllRoutes()
 {
 	if( allRoutes == null )
 	{
-		allRoutes = new java.util.ArrayList( getAllYukonPAObjects().size() / 2 );
+		allRoutes = new ArrayList( getAllYukonPAObjects().size() / 2 );
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)getAllYukonPAObjects().get(i)).getCategory() == com.cannontech.database.data.pao.PAOGroups.CAT_ROUTE )
+			if( ((LiteYukonPAObject)getAllYukonPAObjects().get(i)).getCategory() == PAOGroups.CAT_ROUTE )
 				allRoutes.add( getAllYukonPAObjects().get(i) );
 		}
 
@@ -851,7 +853,7 @@ public synchronized java.util.List getAllStateGroups(){
 		return allStateGroups;
 	else
 	{
-		allStateGroups = new java.util.ArrayList();
+		allStateGroups = new ArrayList();
 		StateGroupLoader stateGroupLoader = new StateGroupLoader(allStateGroups, databaseAlias);
 		stateGroupLoader.run();
 		return allStateGroups;
@@ -880,7 +882,7 @@ public synchronized java.util.List getAllUnitMeasures(){
 		return allUnitMeasures;
 	else
 	{
-		allUnitMeasures = new java.util.ArrayList();
+		allUnitMeasures = new ArrayList();
 		UnitMeasureLoader unitMeasureLoader = new UnitMeasureLoader(allUnitMeasures, databaseAlias);
 		unitMeasureLoader.run();
 		return allUnitMeasures;
@@ -909,7 +911,7 @@ public synchronized java.util.List getAllUnusedCCDevices()
 		{
 			java.util.List allDevices = getAllDevices();
 			java.util.Collections.sort(allDevices, com.cannontech.database.data.lite.LiteComparators.liteYukonPAObjectIDComparator);
-			allUnusedCCDevices = new java.util.ArrayList( (int)(allDevices.size() * 0.7)  );
+			allUnusedCCDevices = new ArrayList( (int)(allDevices.size() * 0.7)  );
 			
 			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 			stmt = conn.createStatement();
@@ -971,7 +973,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 		return allYukonPAObjects;
 	else
 	{
-		allYukonPAObjects = new java.util.ArrayList();
+		allYukonPAObjects = new ArrayList();
 		allPAOsMap = new HashMap();
 		YukonPAOLoader yukLoader = new YukonPAOLoader(allYukonPAObjects, allPAOsMap, databaseAlias);
 		yukLoader.run();
@@ -985,7 +987,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 	 */
 	public List getAllYukonGroups() {		
 		if(allYukonGroups == null) {
-			allYukonGroups = new java.util.ArrayList();
+			allYukonGroups = new ArrayList();
 			YukonGroupLoader l = new YukonGroupLoader(allYukonGroups, databaseAlias);
 			l.run();
 		}
@@ -997,7 +999,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 	 */
 	public List getAllYukonRoles() {		
 		if( allYukonRoles == null) {
-			allYukonRoles = new java.util.ArrayList();
+			allYukonRoles = new ArrayList();
 			YukonRoleLoader l = new YukonRoleLoader(allYukonRoles, databaseAlias);
 			l.run();
 		}
@@ -1017,7 +1019,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 	 */
 	public List getAllYukonUsers() {		
 		if(allYukonUsers == null) {
-			allYukonUsers = new java.util.ArrayList();
+			allYukonUsers = new ArrayList();
 			YukonUserLoader l = new YukonUserLoader(allYukonUsers, databaseAlias);
 			l.run();
 		}
@@ -1183,7 +1185,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 	 */
 	public List getAllEnergyCompanies() {
 		if(allEnergyCompanies == null) {
-			allEnergyCompanies = new java.util.ArrayList();
+			allEnergyCompanies = new ArrayList();
 			EnergyCompanyLoader l = new EnergyCompanyLoader(allEnergyCompanies, databaseAlias);
 			l.run();
 		}
@@ -1484,7 +1486,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 
 		//if any device changes, 
 		// reload all the DeviceMeterGroup data (may be inefficient!!)
-		if( dbCategory.equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE) )
+		if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_DEVICE) )
 		{
 			allDevices = null;
 			allMCTs = null;
@@ -1496,27 +1498,27 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 			//retLBase = handleDeviceMeterGroupChange( dbType, id);
 			
 			//Verify that this a device that even cares about DeviceMeterGroups
-			int type = com.cannontech.database.data.pao.PAOGroups.getDeviceType(objectType);
+			int type = PAOGroups.getDeviceType(objectType);
 			if(com.cannontech.database.data.device.DeviceTypesFuncs.usesDeviceMeterGroup(type))
 			{
 				handleDeviceMeterGroupChange( dbType, id);
 			}
 		}
-		else if( dbCategory.equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CAT_LOADMANAGEMENT) )
+		else if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_LOADMANAGEMENT) )
 		{
 			allLoadManagement = null;
 			allLMPrograms = null;
 		}
-		else if( dbCategory.equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CAT_CAPCONTROL) )
+		else if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_CAPCONTROL) )
 		{
 			allCapControlFeeders = null;
 			allCapControlSubBuses = null;	
 		}
-		else if( dbCategory.equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CAT_PORT) )
+		else if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_PORT) )
 		{
 			allPorts = null;
 		}
-		else if( dbCategory.equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CAT_ROUTE) )
+		else if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_ROUTE) )
 		{
 			allRoutes = null;	
 		}
@@ -2502,7 +2504,7 @@ private synchronized LiteBase handleYukonPAOChange( int changeType, int id )
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allYukonPAObjects.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteYukonPAObject)allYukonPAObjects.get(i)).getYukonID() == id )
+					if( ((LiteYukonPAObject)allYukonPAObjects.get(i)).getYukonID() == id )
 					{
 						allPAOsMap.remove( new Integer(id) );
 						lBase = (LiteBase)allYukonPAObjects.remove(i);
