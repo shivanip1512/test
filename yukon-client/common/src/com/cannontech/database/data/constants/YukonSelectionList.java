@@ -62,6 +62,10 @@ public class YukonSelectionList extends DBPersistent {
     	};
     	delete("ECToGenericMapping", constraintColumns, constraintValues);
     	
+    	// Delete all selection list entries
+    	com.cannontech.database.db.constants.YukonListEntry.deleteAllListEntries(
+    			getYukonSelectionList().getListID() );
+    	
     	getYukonSelectionList().delete();
 	}
 
