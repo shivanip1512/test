@@ -56,335 +56,394 @@ public abstract class FileFormatBase
 	public static final int validAccPtOffsets_MASK = 0x0016;
 	public static final int kwDemandAccOffsets_MASK = 0x0032;
 
-/**
- * FileFormatBase constructor comment.
- */
-public FileFormatBase()
-{
-	super();
-}
-/**
- * Insert the method's description here.
- * Creation date: (8/31/2001 5:03:58 PM)
- */
-// Override me if you want to manually close the DBConnection
-public void closeDBConnection() 
-{
-	com.cannontech.clientutils.CTILogger.info(this.getClass().getName() + ".closeDBConnection() must be overriden");
-}
-public String endDateString()
-{
-	java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("dd-MMM-yyyy");
-	return format.format(getBillingDefaults().getEndDate());
-}
-public BillingFileDefaults getBillingDefaults()
-{
-	return billingDefaults;
-}
-/**
- * Insert the method's description here.
- * Creation date: (8/31/2001 2:34:47 PM)
- * @return java.lang.String
- */
-public java.lang.String getInputFileName()
-{
-	return getBillingDefaults().getInputFileDir();
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/29/00)
- */
-public StringBuffer getOutputAsStringBuffer()
-{
-	StringBuffer returnBuffer = new StringBuffer();
-	java.util.Vector records = getRecordVector();
+	/**
+	 * FileFormatBase constructor comment.
+	 */
+	public FileFormatBase()
+	{
+		super();
+	}
 	
-	for(int i=0;i<records.size();i++)
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (8/31/2001 5:03:58 PM)
+	 */
+	// Override me if you want to manually close the DBConnection
+	public void closeDBConnection() 
 	{
-		String dataString = ((BillingRecordBase)records.get(i)).dataToString();
-		if( dataString != null)
-			returnBuffer.append(dataString);
+		com.cannontech.clientutils.CTILogger.info(this.getClass().getName() + ".closeDBConnection() must be overriden");
 	}
 
-	return returnBuffer;
-}
-/**
- * Insert the method's description here.
- * Creation date: (8/31/2001 2:34:47 PM)
- * @return java.lang.String
- */
-public java.lang.String getOutputFileName() 
-{
-	return getBillingDefaults().getOutputFileDir();
-}
-
-public java.util.Hashtable getPointIDMultiplierHashTable()
-{
-	if( pointIDMultiplierHashTable == null)
+	/**
+	 * Returns the billingDefault endDate as a string (dd-MMM-yyyy).
+	 * @return java.lang.String
+	 */
+	public String endDateString()
 	{
-		pointIDMultiplierHashTable = retrievePointIDMultiplierHashTable();
+		java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("dd-MMM-yyyy");
+		return format.format(getBillingDefaults().getEndDate());
 	}
-	return pointIDMultiplierHashTable;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/29/00)
- */
-public java.util.Vector getRecordVector()
-{
-	if( recordVector == null )
-		recordVector = new java.util.Vector(150);
+
+	/**
+	 * Returns the Billing File Defaults.
+	 * @return BillingFileDefaults
+	 */
+	public BillingFileDefaults getBillingDefaults()
+	{
+		return billingDefaults;
+	}
+	
+	/**
+	 * Returns the billingDefault inputFileDir string.
+	 * Creation date: (8/31/2001 2:34:47 PM)
+	 * @return java.lang.String
+	 */
+	public java.lang.String getInputFileName()
+	{
+		return getBillingDefaults().getInputFileDir();
+	}
+
+	/**
+	 * Returns the record vector as a string buffer formatted
+	 *  by each BillingRecordBase dataToString() format.
+	 * Creation date: (11/29/00)
+	 * @return java.lang.StringBuffer
+	 */
+	public StringBuffer getOutputAsStringBuffer()
+	{
+		StringBuffer returnBuffer = new StringBuffer();
+		java.util.Vector records = getRecordVector();
 		
-	return recordVector;
-}
-/**
- * Insert the method's description here.
- * Creation date: (8/29/2001 12:09:57 PM)
- * @return boolean
- */
-public boolean isAppending() {
-	return appending;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/11/2002 3:11:08 PM)
- * @return boolean
- * @param offset int
- */
-public boolean isKVAR(int offset) 
-{
-	for (int i = 0; i < kvarAnalogOffsets.length; i++)
-	{
-		if( offset == kvarAnalogOffsets[i])
-			return true;
-	}
-	return false;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/11/2002 3:11:08 PM)
- * @return boolean
- * @param offset int
- */
-public boolean isKW(int offset) 
-{
-	for (int i = 0; i < kwAnalogOffsets.length; i++)
-	{
-		if( offset == kwAnalogOffsets[i])
-			return true;
-	}
-	return false;
-}
-
-
-public boolean isKW_demand(int offset) 
-{
-	for (int i = 0; i < validDemandAccOffsets.length; i++)
-	{
-		if( offset == validDemandAccOffsets[i])
-			return true;
-	}
-	return false;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/11/2002 3:11:08 PM)
- * @return boolean
- * @param offset int
- */
-public boolean isKWH(int offset) 
-{
-	for (int i = 0; i < kwhAnalogOffsets.length; i++)
-	{
-		if( offset == kwhAnalogOffsets[i])
-			return true;
-	}
-	return false;
-}
-/**
- * Insert the method's description here.
- * Creation date: (5/13/2002 2:35:25 PM)
- * @param args java.lang.String[]
- */
-public void main(String[] args)
-{
-	try
-	{
-		FileFormatBase billingFile = null;
-	} 
-	catch (Throwable exception)
-	{
-		System.err.println("Exception occurred in main() of javax.swing.JFrame");
-		exception.printStackTrace(System.out);
-	}
-}
-/**
-// This method creates a hash table of MeterNumbers (keys) and AccountNumbers(values).
- */
-public java.util.Hashtable retrieveAccountNumbers(String dbAlias)
-{
-	java.util.Vector returnBillingAccountNumber = new java.util.Vector();
-
-	java.util.Vector linesInFile = new java.util.Vector();
-	java.util.Hashtable accountNumberHashTable = null;
+		for(int i=0;i<records.size();i++)
+		{
+			String dataString = ((BillingRecordBase)records.get(i)).dataToString();
+			if( dataString != null)
+				returnBuffer.append(dataString);
+		}
 	
-	if (dbAlias == null)
-		dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
-		
-	try
-	{
-		java.io.FileReader meterAndAccountNumbersFileReader = new java.io.FileReader("../config/meterAndAccountNumbers.txt");
-		//java.io.FileReader meterAndAccountNumbersFileReader = new java.io.FileReader("D:/yukon/client/config/meterAndAccountNumbers.txt");
-		java.io.BufferedReader readBuffer = new java.io.BufferedReader(meterAndAccountNumbersFileReader);
-
-		try
-		{
-			String tempLineString = readBuffer.readLine();
-						
-			while(tempLineString != null)
-			{
-				linesInFile.add(new String(tempLineString));
-				tempLineString = readBuffer.readLine();	
-			}
-		}
-		catch(java.io.IOException ioe)
-		{
-			ioe.printStackTrace();
-		}
-	}
-	catch(java.io.FileNotFoundException fnfe)
-	{
-		//fnfe.printStackTrace();
-		com.cannontech.clientutils.CTILogger.info("***********************************************************************************************");
-		com.cannontech.clientutils.CTILogger.info("Cannot find meterAndAccountNumbers.txt attempting to get account numbers from the device names.");
-		com.cannontech.clientutils.CTILogger.info("***********************************************************************************************");
-		return null;	//with null return, meternumbers will be used in place of accountnumbers
+		return returnBuffer;
 	}
 
-	if(linesInFile != null)
-	{	
-		java.util.Collections.sort(linesInFile);
-		int hashCapacity = (linesInFile.size() + 1);
-		accountNumberHashTable = new java.util.Hashtable(hashCapacity);
+	/**
+	 * Returns the billingDefault outputFileDir string.
+	 * Creation date: (8/31/2001 2:34:47 PM)
+	 * @return java.lang.String
+	 */
+	public java.lang.String getOutputFileName() 
+	{
+		return getBillingDefaults().getOutputFileDir();
+	}
 
-		for (int i = 0; i < linesInFile.size(); i++)
+	/**
+	 * Returns a hashtable of pointid as key and multiplier as value.
+	 * @return java.util.Hashtable
+	 */
+	public java.util.Hashtable getPointIDMultiplierHashTable()
+	{
+		if( pointIDMultiplierHashTable == null)
 		{
-			String line = (String)linesInFile.get(i);
-			int commaIndex = line.indexOf(",");
+			pointIDMultiplierHashTable = retrievePointIDMultiplierHashTable();
+		}
+		return pointIDMultiplierHashTable;
+	}
+
+	/**
+	 * Returns a vector of (billingRecordBase) records.
+	 * Creation date: (11/29/00)
+	 * @return java.util.Vector
+	 */
+	public java.util.Vector getRecordVector()
+	{
+		if( recordVector == null )
+			recordVector = new java.util.Vector(150);
 			
-			String keyMeterNumber = line.substring(0, commaIndex);
-			String valueAccountNumber = line.substring(commaIndex + 1);
-			accountNumberHashTable.put(keyMeterNumber, valueAccountNumber);
-		}
+		return recordVector;
 	}
-	return accountNumberHashTable;
-}
-/**
- * Retrieves values from the database and inserts them in a FileFormatBase object
- * Creation date: (11/30/00)
- */
-//returns true if the data retrieval was successfull
-abstract public boolean retrieveBillingData(String dbAlias);
-
-//returns the number of valid readings gathered during retrieveBillingData(String dbAlias)
-public int getRecordCount()
-{
-	if( getRecordVector() != null)
-	{
-		return getRecordVector().size();
-	}
-	return 0;
-}
-public java.util.Hashtable retrievePointIDMultiplierHashTable()
-{
-//	java.util.Vector returnMultipliers = new java.util.Vector();
-	java.util.Hashtable multiplierHashTable = new java.util.Hashtable();
 	
-	String sql = new String("SELECT ACC.POINTID, ACC.MULTIPLIER FROM POINTACCUMULATOR ACC");
-
-	java.sql.Connection conn = null;
-	java.sql.PreparedStatement pstmt = null;
-	java.sql.ResultSet rset = null;
-	try
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-
-		if( conn == null )
-		{
-			com.cannontech.clientutils.CTILogger.info(":  Error getting database connection.");
-			return null;
-		}
-		else
-		{
-			pstmt = conn.prepareStatement(sql.toString());
-			rset = pstmt.executeQuery();
-
-			while( rset.next() )
-			{
-				Integer pointID = new Integer(rset.getInt(1));
-				Double multiplier = new Double(rset.getDouble(2));
-				multiplierHashTable.put(pointID, multiplier);				
-			}
-			
-			sql = new String("SELECT ANA.POINTID, ANA.MULTIPLIER FROM POINTANALOG ANA");
-			pstmt = conn.prepareStatement(sql.toString());
-			rset = pstmt.executeQuery();
-			
-			while( rset.next())
-			{
-				Integer pointID = new Integer( rset.getInt(1));
-				Double multiplier = new Double( rset.getDouble(2));
-				multiplierHashTable.put(pointID, multiplier);
-			}
-		}
+	/**
+	 * Returns the flag that determines if the output file will be appended to or over-written.
+	 * @return boolean
+	 */
+	public boolean isAppending() {
+		return appending;
 	}
-	catch( java.sql.SQLException e )
+
+	/**
+	 * Returns the flag that determines if offset is valid for the static kvarAnalogOffsets values.
+	 * Creation date: (3/11/2002 3:11:08 PM)
+	 * @return boolean
+	 * @param offset int
+	 */
+	public boolean isKVAR(int offset) 
 	{
-		e.printStackTrace();
+		for (int i = 0; i < kvarAnalogOffsets.length; i++)
+		{
+			if( offset == kvarAnalogOffsets[i])
+				return true;
+		}
+		return false;
 	}
-	finally
+	
+	/**
+	 * Returns the flag that determines if offset is valid for the static kwAnalogOffsets values.
+	 * Creation date: (3/11/2002 3:11:08 PM)
+	 * @return boolean
+	 * @param offset int
+	 */
+	public boolean isKW(int offset) 
+	{
+		for (int i = 0; i < kwAnalogOffsets.length; i++)
+		{
+			if( offset == kwAnalogOffsets[i])
+				return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Returns the flag that determines if offset is valid for the static validDemandAccOffsets values.
+	 * Creation date: (3/11/2002 3:11:08 PM)
+	 * @return boolean
+	 * @param offset int
+	 */
+	public boolean isKW_demand(int offset) 
+	{
+		for (int i = 0; i < validDemandAccOffsets.length; i++)
+		{
+			if( offset == validDemandAccOffsets[i])
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Returns the flag that determines if offset is valid for the static kwhAnalogOffsets values.
+	 * Creation date: (3/11/2002 3:11:08 PM)
+	 * @return boolean
+	 * @param offset int
+	 */
+	public boolean isKWH(int offset) 
+	{
+		for (int i = 0; i < kwhAnalogOffsets.length; i++)
+		{
+			if( offset == kwhAnalogOffsets[i])
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (5/13/2002 2:35:25 PM)
+	 * @param args java.lang.String[]
+	 */
+	public void main(String[] args)
 	{
 		try
 		{
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
+			FileFormatBase billingFile = null;
 		} 
-		catch( java.sql.SQLException e2 )
+		catch (Throwable exception)
 		{
-			e2.printStackTrace();//sometin is up
-			return null;
-		}	
+			System.err.println("Exception occurred in main() of javax.swing.JFrame");
+			exception.printStackTrace(System.out);
+		}
+	}
+	
+	/**
+	 * Returns a hashtable of meternumber as key and account number as value.
+	 * Collects the meterNumber/Account number set from the database unless the file 
+	 *  meterAndAccountNumbers.txt exists containing this mapping.
+	 * @return java.util.Hashtable
+	 * @param dbAlias the database string name alias.
+	 */
+	public java.util.Hashtable retrieveAccountNumbers(String dbAlias)
+	{
+		java.util.Vector returnBillingAccountNumber = new java.util.Vector();
+	
+		java.util.Vector linesInFile = new java.util.Vector();
+		java.util.Hashtable accountNumberHashTable = null;
+		
+		if (dbAlias == null)
+			dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
+		try
+		{
+			java.io.FileReader meterAndAccountNumbersFileReader = new java.io.FileReader("../config/meterAndAccountNumbers.txt");
+			//java.io.FileReader meterAndAccountNumbersFileReader = new java.io.FileReader("D:/yukon/client/config/meterAndAccountNumbers.txt");
+			
+			java.io.BufferedReader readBuffer = new java.io.BufferedReader(meterAndAccountNumbersFileReader);
+	
+			try
+			{
+				String tempLineString = readBuffer.readLine();
+							
+				while(tempLineString != null)
+				{
+					linesInFile.add(new String(tempLineString));
+					tempLineString = readBuffer.readLine();	
+				}
+			}
+			catch(java.io.IOException ioe)
+			{
+				ioe.printStackTrace();
+			}
+		}
+		catch(java.io.FileNotFoundException fnfe)
+		{
+			com.cannontech.clientutils.CTILogger.info("***********************************************************************************************");
+			com.cannontech.clientutils.CTILogger.info("Cannot find meterAndAccountNumbers.txt attempting to get account numbers from the device names.");
+			com.cannontech.clientutils.CTILogger.info("***********************************************************************************************");
+			return null;	//with null return, meternumbers will be used in place of accountnumbers
+		}
+	
+		if(linesInFile != null)
+		{	
+			java.util.Collections.sort(linesInFile);
+			int hashCapacity = (linesInFile.size() + 1);
+			accountNumberHashTable = new java.util.Hashtable(hashCapacity);
+	
+			for (int i = 0; i < linesInFile.size(); i++)
+			{
+				String line = (String)linesInFile.get(i);
+				int commaIndex = line.indexOf(",");
+				
+				String keyMeterNumber = line.substring(0, commaIndex);
+				String valueAccountNumber = line.substring(commaIndex + 1);
+				accountNumberHashTable.put(keyMeterNumber, valueAccountNumber);
+			}
+		}
+		return accountNumberHashTable;
+	}
+	
+	/**
+	 * Returns true if the billing data retrieval was successfull
+	 * Retrieves values from the database and inserts them in a FileFormatBase object.
+	 * @param dbAlias the database name string alias
+	 * @return boolean
+	 */
+	abstract public boolean retrieveBillingData(String dbAlias);
+	
+	/**
+	 * Returns the number of records collected.
+	 * @return int
+	 */
+	public int getRecordCount()
+	{
+		if( getRecordVector() != null)
+		{
+			return getRecordVector().size();
+		}
+		return 0;
+	}
+	
+	/**
+	 * Returns a hashtable of pointid as key and multiplier as value.
+	 * Collects the pointid/multiplier from the database.
+	 * @return java.util.Hashtable
+	 */
+	public java.util.Hashtable retrievePointIDMultiplierHashTable()
+	{
+
+		java.util.Hashtable multiplierHashTable = new java.util.Hashtable();
+		
+		String sql = new String("SELECT ACC.POINTID, ACC.MULTIPLIER FROM POINTACCUMULATOR ACC");
+	
+		java.sql.Connection conn = null;
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
+		try
+		{
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+	
+			if( conn == null )
+			{
+				com.cannontech.clientutils.CTILogger.info(":  Error getting database connection.");
+				return null;
+			}
+			else
+			{
+				pstmt = conn.prepareStatement(sql.toString());
+				rset = pstmt.executeQuery();
+	
+				while( rset.next() )
+				{
+					Integer pointID = new Integer(rset.getInt(1));
+					Double multiplier = new Double(rset.getDouble(2));
+					multiplierHashTable.put(pointID, multiplier);				
+				}
+				
+				sql = new String("SELECT ANA.POINTID, ANA.MULTIPLIER FROM POINTANALOG ANA");
+				pstmt = conn.prepareStatement(sql.toString());
+				rset = pstmt.executeQuery();
+				
+				while( rset.next())
+				{
+					Integer pointID = new Integer( rset.getInt(1));
+					Double multiplier = new Double( rset.getDouble(2));
+					multiplierHashTable.put(pointID, multiplier);
+				}
+			}
+		}
+		catch( java.sql.SQLException e )
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				if( pstmt != null ) pstmt.close();
+				if( conn != null ) conn.close();
+			} 
+			catch( java.sql.SQLException e2 )
+			{
+				e2.printStackTrace();//sometin is up
+				return null;
+			}	
+		}
+	
+		return multiplierHashTable;
+	}
+	
+	/**
+	 * Set the billingFileDefaults field.
+	 * @param newBillingFileDefaults com.cannontech.billing.mainprograms.BillingFileDefaults
+	 */
+	public void setBillingDefaults(BillingFileDefaults newBillingDefaults)
+	{
+		billingDefaults = newBillingDefaults;
+	}
+	
+	/**
+	 * Sets the flag that determines if records will be appended to an existing file or over-written.
+	 * @param newAppending boolean
+	 */
+	public void setIsAppending(boolean newAppending) {
+		appending = newAppending;
 	}
 
-	return multiplierHashTable;
-}
+	/**
+	 * Writes the record string to the output file.
+	 */
+	public void writeToFile() throws java.io.IOException
+	{
+		java.io.FileWriter outputFileWriter = new java.io.FileWriter( getOutputFileName(), isAppending() );
+		outputFileWriter.write( getOutputAsStringBuffer().toString() );
+		outputFileWriter.flush();
+		outputFileWriter.close();
+	}
 
-public void setBillingDefaults(BillingFileDefaults newBillingDefaults)
-{
-	billingDefaults = newBillingDefaults;
-}
-/**
- * Insert the method's description here.
- * Creation date: (8/29/2001 12:08:32 PM)
- * @param newAppending boolean
- */
-public void setIsAppending(boolean newAppending) {
-	appending = newAppending;
-}
-/**
- * Insert the method's description here.
- * Creation date: (8/29/2001 12:09:57 PM)
- */
-public void writeToFile() throws java.io.IOException
-{
-	java.io.FileWriter outputFileWriter = new java.io.FileWriter( getOutputFileName(), isAppending() );
-	outputFileWriter.write( getOutputAsStringBuffer().toString() );
-	outputFileWriter.flush();
-	outputFileWriter.close();
-}
-public void writeToFile(java.io.OutputStream out) throws java.io.IOException
-{
-	out.write(getOutputAsStringBuffer().toString().getBytes());
-}
-
+	/**
+	 * Writes the record string to the output stream.
+	 * @param out java.io.OutputStream
+	 */
+	public void writeToFile(java.io.OutputStream out) throws java.io.IOException
+	{
+		out.write(getOutputAsStringBuffer().toString().getBytes());
+	}
+	
+	public String toString()
+	{
+		return FileFormatTypes.getFormatType(billingDefaults.getFormatID());
+	}
 }
