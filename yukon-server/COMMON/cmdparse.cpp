@@ -31,32 +31,32 @@ static RWCRExpr   re_anynum("0x[0-9a-f]+|[0-9]+");
 CtiCommandParser::CtiCommandParser(const RWCString str) :
   _cmdString(str)
 {
-  _actionItems.clear();
-  _cmd.clear();
-  doParse(_cmdString);
+    _actionItems.clear();
+    _cmd.clear();
+    doParse(_cmdString);
 }
 
 CtiCommandParser::CtiCommandParser(const CtiCommandParser& aRef)
 {
-  _cmd.clear();
-  _actionItems.clear();
-  *this = aRef;
+    _cmd.clear();
+    _actionItems.clear();
+    *this = aRef;
 }
 
 CtiCommandParser::~CtiCommandParser()
 {
-  _actionItems.clear();
+    _actionItems.clear();
 }
 
 CtiCommandParser& CtiCommandParser::operator=(const CtiCommandParser& aRef)
 {
-  if(this != &aRef)
-  {
-      _cmdString = aRef._cmdString;
-      _actionItems = aRef._actionItems;
-     _cmd = aRef.getMap();
-  }
-  return *this;
+    if(this != &aRef)
+    {
+        _cmdString = aRef._cmdString;
+        _actionItems = aRef._actionItems;
+        _cmd = aRef.getMap();
+    }
+    return *this;
 }
 
 
@@ -1145,7 +1145,7 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
     RWCString   token;
     RWCRExpr    rolenum("role *[0-9][0-9]?");
     RWCRExpr    rawcmd("raw +(func(tion)? +)?start=0x[0-9a-f]+( +[0-9]+)?");
-    RWCRExpr    interval("interval +(lp|li)");  //  match "interval lp" and "interval li"
+    RWCRExpr    interval("interval(s| +(lp|li))");  //  match "intervals", "interval lp", and "interval li"
     RWCRExpr    multiplier("mult.* *(kyz *[123])?");
     RWCRExpr    address("address (group|uniq)");
 
@@ -1265,11 +1265,18 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
             {
                 RWCTokenizer cmdtok(token);
                 //  go past "interval"
-                cmdtok();
-
                 temp2 = cmdtok();
-                //  "li" or "lp"
-                _cmd["interval"] = temp2;
+
+                if( temp2.compareTo("intervals") == 0 )
+                {
+                    _cmd["interval"] = CtiParseValue("intervals");
+                }
+                else
+                {
+                    temp2 = cmdtok();
+                    //  "li" or "lp"
+                    _cmd["interval"] = temp2;
+                }
             }
         }
     }
@@ -1402,7 +1409,7 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
 void  CtiCommandParser::doParseScan(const RWCString &CmdStr)
 {
     RWCString   token;
-    RWCRExpr    re_loadprofile("loadprofile( +channel +[1-4])?( +block +[1-8])?");
+    RWCRExpr    re_loadprofile("loadprofile( +channel +[1-4])?( +block +[0-9]+)?");
 
     RWCTokenizer   tok(CmdStr);
 
@@ -1539,7 +1546,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
                             " +[0-9]+" \
                             " +[0-9]+" \
                             " +[0-9]+");
-    RWCRExpr    interval("interval +l[pi]");  //  match "interval lp" and "interval li"
+    RWCRExpr    interval("interval(s| +(lp|li))");  //  match "intervals", "interval lp" and "interval li"
     RWCRExpr    multiplier("mult(iplier)? +kyz *[123] +[0-9]+(\\.[0-9]+)?");  //  match "mult kyz # #(.###)
     RWCRExpr    iedClass("ied +class +[0-9]+ +[0-9]+");
     RWCRExpr    iedScan("ied +scan +[0-9]+ +[0-9]+");
@@ -1670,10 +1677,17 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
             {
                 RWCTokenizer cmdtok(token);
                 //  go past "interval"
-                cmdtok();
+                RWCString temp = cmdtok();
 
-                //  "li" or "lp"
-                _cmd["interval"] = CtiParseValue(cmdtok());
+                if( temp.contains("intervals") )
+                {
+                    _cmd["interval"] = CtiParseValue("intervals");
+                }
+                else
+                {
+                    //  "all", "li", or "lp"
+                    _cmd["interval"] = CtiParseValue(cmdtok());
+                }
             }
         }
         if(!(CmdStr.match("armc")).isNull())
