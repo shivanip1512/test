@@ -43,7 +43,6 @@ public:
         {
             autopsy( __FILE__, __LINE__ );
         }
-
         #else
         _res.acquire();
         _acquired = true;

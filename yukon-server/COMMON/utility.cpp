@@ -1226,11 +1226,25 @@ void autopsy(char *calleefile, int calleeline)
         }
 
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            identifyProject(CompileInfo);
-            dout << endl << RWTime() << " **** STACK TRACE **** called from " << calleefile << " line: " << calleeline << endl;
-            ShowStack( hThread, c );
-            dout << RWTime() << " **** STACK TRACE ENDS ****" << endl << endl ;
+            CtiLockGuard<CtiLogger> doubt_guard(dout, 10000);
+
+            if(doubt_guard.isAcquired())
+            {
+                identifyProject(CompileInfo);
+                dout << endl << RWTime() << " **** STACK TRACE **** called from " << calleefile << " line: " << calleeline << endl;
+                dout << endl << " Thread 0x" << hex << GetCurrentThreadId() << dec << "  " << GetCurrentThreadId() << endl;
+                ShowStack( hThread, c );
+                dout << RWTime() << " **** STACK TRACE ENDS ****" << endl << endl ;
+            }
+            else    // This is a bit rough!
+            {
+                dout << endl << RWTime() << " **** STACK TRACE **** called from " << calleefile << " line: " << calleeline << endl;
+                dout << endl << " Thread 0x" << hex << GetCurrentThreadId() << dec << "  " << GetCurrentThreadId() << endl;
+                ShowStack( hThread, c );
+                dout << RWTime() << " **** STACK TRACE ENDS ****" << endl << endl ;
+                dout.flush();
+            }
+
         }
 
         CloseHandle( hThread );
@@ -1258,7 +1272,7 @@ void ShowStack( HANDLE hThread, CONTEXT& c )
         if( hImagehlpDll == NULL )
         {
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                //CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "LoadLibrary( \"imagehlp.dll\" ): gle = " << gle << endl;;
             }
             return;
@@ -1354,7 +1368,7 @@ void ShowStack( HANDLE hThread, CONTEXT& c )
 
 #ifdef _PRINT_SYMBOLS
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        //CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "symbols path: " << symSearchPath.c_str() << endl;
     }
 #endif
@@ -1367,7 +1381,7 @@ void ShowStack( HANDLE hThread, CONTEXT& c )
     if( ! pSI( hProcess, tt, false ) )
     {
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            //CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "SymInitialize(): gle = " <<  gle << endl;
         }
         goto cleanup;
@@ -1416,7 +1430,7 @@ void ShowStack( HANDLE hThread, CONTEXT& c )
         // display its contents
 #ifdef _PRINT_SYMBOLS
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            //CtiLockGuard<CtiLogger> doubt_guard(dout);
             char of = dout.fill('0');
             dout << setw(3) << frameNum <<
                 (s.Far ? 'F': '.') <<
@@ -1433,7 +1447,7 @@ void ShowStack( HANDLE hThread, CONTEXT& c )
         if( s.AddrPC.Offset == 0 )
         {
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                //CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "(-nosymbols- PC == 0)" << endl;
             }
         }
@@ -1444,7 +1458,7 @@ void ShowStack( HANDLE hThread, CONTEXT& c )
             {
                 if( gle != 487 )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    //CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << "SymGetSymFromAddr(): gle = " << gle << endl;
                 }
             }
@@ -1454,7 +1468,7 @@ void ShowStack( HANDLE hThread, CONTEXT& c )
                 pUDSN( pSym->Name, undName, MAXNAMELEN, UNDNAME_NAME_ONLY );
                 pUDSN( pSym->Name, undFullName, MAXNAMELEN, UNDNAME_COMPLETE );
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    //CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << undName;
 
                     #ifdef _PRINT_SYMBOLS
@@ -1492,7 +1506,7 @@ void ShowStack( HANDLE hThread, CONTEXT& c )
             if( ! pSGMI( hProcess, s.AddrPC.Offset, &Module ) )
             {
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    //CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << "SymGetModuleInfo): gle = " << gle << endl;
                 }
             }
@@ -1529,7 +1543,7 @@ void ShowStack( HANDLE hThread, CONTEXT& c )
 
 #ifdef _PRINT_SYMBOLS
                 {
-                   CtiLockGuard<CtiLogger> doubt_guard(dout);
+                   //CtiLockGuard<CtiLogger> doubt_guard(dout);
                    char of = dout.fill('0');
                    dout << "    Mod:  " << Module.ModuleName << "[" << Module.ImageName << "], base: " << hex << setw(8) << Module.BaseOfImage << "h" << dec << endl;
                    dout << "    Sym:  type: " << ty << ", file: " << Module.LoadedImageName << endl;
@@ -1551,7 +1565,7 @@ void ShowStack( HANDLE hThread, CONTEXT& c )
 
     if( gle != 0 )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        //CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "StackWalk(): gle = " << gle << endl;
     }
 
@@ -1585,13 +1599,13 @@ void enumAndLoadModuleSymbols( HANDLE hProcess, DWORD pid )
 
         if( pSLM( hProcess, 0, img, mod, (*it).baseAddress, (*it).size ) == 0 )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            //CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Error " << gle << " loading symbols for \"" << (*it).moduleName.c_str() << "\"" << endl;
         }
 #ifdef _PRINT_SYMBOLS
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            //CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Symbols loaded: \"" << (*it).moduleName.c_str() << "\"" << endl;
         }
 #endif
@@ -1662,7 +1676,7 @@ bool fillModuleListPSAPI( ModuleList& modules, DWORD pid, HANDLE hProcess )
     if( ! pEPM( hProcess, hMods, TTBUFLEN, &cbNeeded ) )
     {
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            //CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "EPM failed, gle = " << gle << endl;
         }
         goto cleanup;
@@ -1671,7 +1685,7 @@ bool fillModuleListPSAPI( ModuleList& modules, DWORD pid, HANDLE hProcess )
     if( cbNeeded > TTBUFLEN )
     {
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            //CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "More than " << lenof( hMods ) << " module handles. Huh?" << endl;
         }
         goto cleanup;
@@ -1693,7 +1707,7 @@ bool fillModuleListPSAPI( ModuleList& modules, DWORD pid, HANDLE hProcess )
         pGMBN( hProcess, hMods[i], tt, TTBUFLEN );
         e.moduleName = tt;
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            //CtiLockGuard<CtiLogger> doubt_guard(dout);
             char of = dout.fill('0');
             dout << hex << setw(8) << e.baseAddress << " " <<
                 dec << setw(6) << e.size << " " << setw(15) <<
@@ -1787,7 +1801,7 @@ bool fillModuleListTH32( ModuleList& modules, DWORD pid )
         // here, we have a filled-in MODULEENTRY32
 #ifdef _PRINT_SYMBOLS
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            //CtiLockGuard<CtiLogger> doubt_guard(dout);
             char of = dout.fill('0');
             dout << hex << setw(8) << me.modBaseAddr << "h " <<
                 dec << setw(6) << me.modBaseSize << " " << setw(15) <<
