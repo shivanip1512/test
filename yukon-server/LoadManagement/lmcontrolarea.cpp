@@ -989,7 +989,8 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, ULONG
                 }
             }
         }
-        else if( currentLMProgram->getControlType() != CtiLMProgramBase::ManualOnlyType )
+        else if( currentLMProgram->getControlType() != CtiLMProgramBase::ManualOnlyType &&
+                 currentLMProgram->getControlType() != CtiLMProgramBase::AutomaticType )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Unknown LM Program Control Type: " << currentLMProgram->getControlType() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -1130,6 +1131,8 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(ULONG secondsFromBeginn
 BOOL CtiLMControlArea::maintainCurrentControl(ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
     BOOL returnBoolean = FALSE;
+    ULONG numberOfActivePrograms = 0;
+    ULONG numberOfFullyActivePrograms = 0;
     for(ULONG i=0;i<_lmprograms.entries();i++)
     {
         CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
@@ -1142,7 +1145,31 @@ BOOL CtiLMControlArea::maintainCurrentControl(ULONG secondsFromBeginningOfDay, U
             {
                 returnBoolean = TRUE;
             }
+            if( currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState ||
+                currentLMProgram->getProgramState() == CtiLMProgramBase::ManualActiveState )
+            {
+                numberOfFullyActivePrograms++;
+                numberOfActivePrograms++;
+            }
+            else if( currentLMProgram->getProgramState() == CtiLMProgramBase::ActiveState )
+            {
+                numberOfActivePrograms++;
+            }
         }
+    }
+    if( numberOfActivePrograms == 0 )
+    {
+        setControlAreaState(CtiLMControlArea::InactiveState);
+        setCurrentPriority(-1);
+    }
+    else if( numberOfFullyActivePrograms > 0 &&
+             numberOfFullyActivePrograms == _lmprograms.entries() )
+    {
+        setControlAreaState(CtiLMControlArea::FullyActiveState);
+    }
+    else
+    {
+        setControlAreaState(CtiLMControlArea::ActiveState);
     }
     return returnBoolean;
 }
