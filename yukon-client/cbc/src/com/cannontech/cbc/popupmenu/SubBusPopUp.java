@@ -234,7 +234,8 @@ private void initialize()
  */
 public void jMenuItemConfirm_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	if( getSubBus() == null )
+   //do not confirm disabled subs
+	if( getSubBus() == null || getSubBus().getCcDisableFlag().booleanValue() )
 		return;
 
 	com.cannontech.message.dispatch.message.Multi multi = 
@@ -244,13 +245,23 @@ public void jMenuItemConfirm_ActionPerformed(java.awt.event.ActionEvent actionEv
 	{
 		com.cannontech.cbc.data.Feeder feeder = 
 				(com.cannontech.cbc.data.Feeder)getSubBus().getCcFeeders().get(i);
-				
+	
+      //do not confirm disabled feeders
+      if( feeder.getCcDisableFlag().booleanValue() )
+         continue;
+
+   			
 		for( int j = 0; j < feeder.getCcCapBanks().size(); j++ )
 		{
 			com.cannontech.cbc.data.CapBankDevice bank =
 				(com.cannontech.cbc.data.CapBankDevice)feeder.getCcCapBanks().get(j);
 
-			if( bank.isInAnyCloseState(bank) )
+         //do not confirm disabled banks
+         if( bank.getCcDisableFlag().booleanValue() )
+         {
+            continue;
+         }
+			else if( bank.isInAnyCloseState(bank) )
 			{
 				multi.getVector().add( new CBCCommand(
 							CBCCommand.CONFIRM_CLOSE, 
@@ -355,7 +366,11 @@ public void setSubBus(com.cannontech.cbc.data.SubBus newSubBus)
 			getJMenuItemEnableDisable().setText("Enable");
 		else
 			getJMenuItemEnableDisable().setText("Disable");
+
+               
+      getJMenuItemConfirm().setEnabled( !getSubBus().getCcDisableFlag().booleanValue() );
 	}
+
 }
 /**
  * This method was created in VisualAge.

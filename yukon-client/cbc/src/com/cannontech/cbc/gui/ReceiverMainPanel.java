@@ -282,6 +282,11 @@ public void destroy()
  */
 private void execute_ConfirmAreaButton(ActionEvent event) 
 {
+   String filter = getSubBusTableModel().getFilter();
+   
+   if( filter.equalsIgnoreCase(SubBusTableModel.ALL_FILTER) )
+      return;
+   
 	String actionString = "Are you sure you want to confirm " +
 						  		 "the area '" + getSubBusTableModel().getFilter() + "'?";
 
@@ -295,10 +300,8 @@ private void execute_ConfirmAreaButton(ActionEvent event)
 		for( int i = 0; i < getSubBusTableModel().getRowCount(); i++ )
 		{
 			SubBus sub = getSubBusTableModel().getRowAt(i);
-			String filter = getSubBusTableModel().getFilter();
 			
-			if( filter.equalsIgnoreCase(SubBusTableModel.ALL_FILTER)
-				 || sub.getCcArea().equals(filter) )
+			if( sub.getCcArea().equals(filter) )
 			{
 				getSubBusPopUp().setSubBus(sub);
 				getSubBusPopUp().jMenuItemConfirm_ActionPerformed(null);
@@ -339,7 +342,10 @@ private void execute_CurrentViewButton( ActionEvent event )
  */
 private void execute_DisableAreaButton(ActionEvent event) 
 {
-	if( getSubBusTableModel().getRowCount() <= 0 )
+   String filter = getSubBusTableModel().getFilter();
+   
+	if( getSubBusTableModel().getRowCount() <= 0
+       || filter.equalsIgnoreCase(SubBusTableModel.ALL_FILTER) )
 		return;
 
 	String actionString = "Are you sure you want to " + getDisableAreaButton().getActionCommand() +
@@ -361,10 +367,8 @@ private void execute_DisableAreaButton(ActionEvent event)
 		for( int i = 0; i < getSubBusTableModel().getRowCount(); i++ )
 		{
 			SubBus sub = getSubBusTableModel().getRowAt(i);
-			String filter = getSubBusTableModel().getFilter();
 			
-			if( filter.equalsIgnoreCase(SubBusTableModel.ALL_FILTER)
-				 || sub.getCcArea().equals(filter) )
+			if( sub.getCcArea().equals(filter) )
 			{
 				//only send the command if the state of the sub != disabled
 				if( !sub.getCcDisableFlag().booleanValue() )
@@ -386,7 +390,10 @@ private void execute_DisableAreaButton(ActionEvent event)
  */
 private void execute_EnableAreaButton(ActionEvent event) 
 {
-	if( getSubBusTableModel().getRowCount() <= 0 )
+   String filter = getSubBusTableModel().getFilter();
+   
+	if( getSubBusTableModel().getRowCount() <= 0
+       || filter.equalsIgnoreCase(SubBusTableModel.ALL_FILTER) )
 		return;
 
 	String actionString = "Are you sure you want to " + getEnableAreaButton().getActionCommand() +
@@ -408,10 +415,8 @@ private void execute_EnableAreaButton(ActionEvent event)
 		for( int i = 0; i < getSubBusTableModel().getRowCount(); i++ )
 		{
 			SubBus sub = getSubBusTableModel().getRowAt(i);
-			String filter = getSubBusTableModel().getFilter();
 			
-			if( filter.equalsIgnoreCase(SubBusTableModel.ALL_FILTER)
-				 || sub.getCcArea().equals(filter) )
+			if( sub.getCcArea().equals(filter) )
 			{
 				//only send the command if the state of the sub != our wanted command
 				if( sub.getCcDisableFlag().booleanValue() )
@@ -1356,33 +1361,14 @@ private void subBusPopUpMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e
  * @param selected SubBus
  */
 protected void synchTableAndButtons(SubBus selected) 
-{	
-/*	if( enableDisableAreaButton == null )
-		return;
+{	   
+   String filter = getSubBusTableModel().getFilter();
 
-	if( selected == null )
-	{
-		enableDisableAreaButton.setEnabled(false);
-	}
-	else if( selected.getRecentlyControlledFlag().booleanValue() )
-	{
-		enableDisableAreaButton.setEnabled(true);
-	}		
-	else if( selected.getCcDisableFlag().booleanValue()  )
-	{
-		enableDisableAreaButton.setText("Enable Area");
-		enableDisableAreaButton.setEnabled(true);
-		enableDisableAreaButton.setActionCommand("Enable");
-	}
-	else
-	{			
-		enableDisableAreaButton.setText("Disable Area");
-		enableDisableAreaButton.setEnabled(true);
-		enableDisableAreaButton.setActionCommand("Disable");
-	}
-*/
-
+   confirmAreaButton.setEnabled( !filter.equalsIgnoreCase(SubBusTableModel.ALL_FILTER) );
+   enableAreaButton.setEnabled( !filter.equalsIgnoreCase(SubBusTableModel.ALL_FILTER) );
+   disableAreaButton.setEnabled( !filter.equalsIgnoreCase(SubBusTableModel.ALL_FILTER) );   
 }
+
 /**
  * This method was created in VisualAge.
  * @param event javax.swing.event.TableModelEvent

@@ -238,7 +238,11 @@ public Object getValueAt(int row, int col)
 			{
 				String state = null;
 				
-				if( feeder.getRecentlyControlledFlag().booleanValue() )
+            if( feeder.getCcDisableFlag().booleanValue() )
+            {
+               state = "DISABLED";
+            }
+				else if( feeder.getRecentlyControlledFlag().booleanValue() )
 				{
 					state = getFeederPendingState( feeder );
 					
@@ -251,8 +255,6 @@ public Object getValueAt(int row, int col)
 					}
 					
 				}
-				else if( feeder.getCcDisableFlag().booleanValue() )
-					state = "DISABLED";
 				else
 					state = "ENABLED";
 					

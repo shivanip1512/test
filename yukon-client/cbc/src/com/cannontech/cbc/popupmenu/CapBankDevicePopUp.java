@@ -544,6 +544,8 @@ public void setCapBankDevice(CapBankDevice newCapDevice)
 			getJMenuItemOpenClose().setText("Close");
 
 
+      getJMenuItemConfirm().setEnabled( !getCapBankDevice().getCcDisableFlag().booleanValue() );
+      
 		// set the state of the alarm menu items
 		setAlarmMenuItems();			
 	}

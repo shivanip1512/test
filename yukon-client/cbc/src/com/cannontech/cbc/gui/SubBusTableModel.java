@@ -306,7 +306,11 @@ public Object getValueAt(int row, int col)
 		{
 			String state = null;
 			
-			if( sub.getRecentlyControlledFlag().booleanValue() )
+         if( sub.getCcDisableFlag().booleanValue() )
+         {
+            state = "DISABLED";
+         }
+			else if( sub.getRecentlyControlledFlag().booleanValue() )
 			{
 				state = getSubBusPendingState( sub );
 				
@@ -320,8 +324,6 @@ public Object getValueAt(int row, int col)
 				}
 				
 			}
-			else if( sub.getCcDisableFlag().booleanValue() )
-				state = "DISABLED";
 			else
 				state = "ENABLED";
 				

@@ -34,6 +34,8 @@ public class Feeder extends StreamableCapObject
 
    private Double powerFactorValue = null;
 
+   private Double kVarSolution = null;
+   
 	//should only contain objects of type CapBankDevice
 	private java.util.Vector ccCapBanks = null;
 /**
@@ -435,6 +437,24 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	public void setUpperBandWidth(Double upperBandWidth)
 	{
 		this.upperBandWidth = upperBandWidth;
+	}
+
+	/**
+	 * Returns the kVarSolution.
+	 * @return Double
+	 */
+	public Double getKVarSolution()
+	{
+		return kVarSolution;
+	}
+
+	/**
+	 * Sets the kVarSolution.
+	 * @param kVarSolution The kVarSolution to set
+	 */
+	public void setKVarSolution(Double kVarSolution)
+	{
+		this.kVarSolution = kVarSolution;
 	}
 
 }

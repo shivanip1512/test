@@ -88,6 +88,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 
    feeder.setPowerFactorValue( new Double( vstr.extractDouble() ) );
 
+   feeder.setKVarSolution( new Double( vstr.extractDouble() ) );
+
 	/*	we have to do this manually because the new Rogue Wave object in the server
 			doesn't stream correctly */
 	int numberOfCapBanks = (int)vstr.extractUnsignedInt();
@@ -141,6 +143,8 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertUnsignedInt( feeder.getLastCapBankControlledDeviceID().intValue() );
 
    vstr.insertDouble( feeder.getPowerFactorValue().doubleValue() );
+
+   vstr.insertDouble( feeder.getKVarSolution().doubleValue() );
 
 	/*	we have to do this manually because the new Rogue Wave object in the server
 			doesn't stream correctly */

@@ -50,6 +50,7 @@ public class SubBus extends StreamableCapObject
 	private Integer lastFeederControlledPosition = null;
 
    private Double powerFactorValue = null;
+   private Double kVarSolution = null;
 
 	//should only contain objects of type Feeder
 	private java.util.Vector ccFeeders = null;
@@ -689,6 +690,24 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	public void setUpperBandWidth(Double upperBandWidth)
 	{
 		this.upperBandWidth = upperBandWidth;
+	}
+
+	/**
+	 * Returns the kVarSolution.
+	 * @return Double
+	 */
+	public Double getKVarSolution()
+	{
+		return kVarSolution;
+	}
+
+	/**
+	 * Sets the kVarSolution.
+	 * @param kVarSolution The kVarSolution to set
+	 */
+	public void setKVarSolution(Double kVarSolution)
+	{
+		this.kVarSolution = kVarSolution;
 	}
 
 }
