@@ -110,10 +110,32 @@ where u.ConstraintID = t.ConstraintID;
 go
 
 
+insert into LMProgramConstraints 
+select deviceid, CONCAT('Constraint: ', LTRIM(deviceid) ), AvailableSeasons, AvailableWeekdays, MaxHoursDaily,
+MaxHoursMonthly, MaxHoursSeasonal, MaxHoursAnnually, MinActivateTime, MinRestartTime,
+0, 0, HolidayScheduleID, SeasonScheduleID from LMProgram;
+
+
+update LMProgram set constraintid = deviceid;
+
+alter table LMProgram drop column AvailableSeasons;
+alter table LMProgram drop column AvailableWeekdays;
+alter table LMProgram drop column MaxHoursDaily;
+alter table LMProgram drop column MaxHoursMonthly;
+alter table LMProgram drop column MaxHoursSeasonal;
+alter table LMProgram drop column MaxHoursAnnually;
+alter table LMProgram drop column MinActivateTime;
+alter table LMProgram drop column MinRestartTime;
+alter table LMProgram drop column HolidayScheduleID;
+alter table LMProgram drop column SeasonScheduleID;
+
+
+
+
+
+
 /* @error ignore */
 drop table portstatistics;
-
-
 
 
 
