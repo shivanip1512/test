@@ -219,7 +219,19 @@ public class DateComboBox extends JComboBox
          {
          }
          updatePopup();
-         popup.show(comboBox, 0, comboBox.getHeight());
+         
+         //CTI 12/17/02	- Altered Paul's code in order to have a left 
+         //justified popup when the popup is larger than the combobox.
+         // The xStart is 0 unless it needs to be shifted left, 
+         // then it becomes a negative value.
+         int cWidth = (int)comboBox.getWidth();
+         int pWidth = (int)popup.getPreferredSize().getWidth();
+         int xStart = 0;
+         if( pWidth > cWidth)
+         	xStart = cWidth - pWidth;
+		 ///////////////////////////////////////////////////////////////////
+		          
+         popup.show(comboBox, xStart, comboBox.getHeight());
       }
 
       public void hide()
