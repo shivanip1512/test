@@ -16,7 +16,8 @@ public class TrendSerie
 	private String label = null;
 	private Color color = null;
 	private String deviceName = null;
-	private Double multiplier = null;	//This is different then the point multiplier, this is a GDS `
+	private Double multiplier = null;	//This is different then the point multiplier, this is a GDS
+	private Character axis = null;
 	private String type = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES;		
 	public int typeMask = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_MASK;
 	
@@ -24,15 +25,6 @@ public class TrendSerie
 	public boolean useMultiplier = false;
 	private com.jrefinery.data.TimeSeriesDataPair minimumTSDataPair = null;
 	private com.jrefinery.data.TimeSeriesDataPair maximumTSDataPair = null;
-
-	// Multiple axis setup
-    private Character autoScaleRight = new Character('Y');
-    private Double rightScaleMin = new Double(0.0);
-    private Double rightScaleMax = new Double(100.0);
-    private Character autoScaleLeft = new Character('Y');
-    private Double leftScaleMin = new Double(0.0);
-    private Double leftScaleMax = new Double(100.0);
-
 
 	// Load factor values computed for each point in the model, stored in an array that
 	//  is in accordance to the order of the pointIds.
@@ -237,32 +229,6 @@ public class TrendSerie
 		return periodsArray;
 	}	
 	
-	public Character getAutoScaleLeft()
-	{
-		return autoScaleLeft;
-	}
-	public Character getAutoScaleRight()
-	{
-		return autoScaleRight;
-	}
-	public Double getLeftScaleMin()
-	{
-		return leftScaleMin;
-	}
-	public Double getLeftScaleMax()
-	{
-		return leftScaleMax;
-	}
-	public Double getRightScaleMin()
-	{
-		return rightScaleMin;
-	}
-	public Double getRightScaleMax()
-	{
-		return rightScaleMax;
-	}
-	
-
 	protected void setColor(Color newColor)
 	{
 		color = newColor;
@@ -302,30 +268,5 @@ public class TrendSerie
 	protected void setTypeMask(int newTypeMask)
 	{
 		typeMask = newTypeMask;
-	}
-	
-	public void setAutoScaleLeft(Character newAutoScale)
-	{
-		autoScaleLeft = newAutoScale;
-	}
-	public void setAutoScaleRight(Character newAutoScale)
-	{
-		autoScaleRight = newAutoScale;
-	}
-	public void setLeftScaleMin(Double newMin)
-	{
-		leftScaleMin = newMin;
-	}
-	public void setLeftScaleMax(Double newMax)
-	{
-		leftScaleMax = newMax;
-	}
-	public void setRightScaleMin(Double newMin)
-	{
-		rightScaleMin = newMin;
-	}
-	public void setRightScaleMax(Double newMax)
-	{
-		rightScaleMax = newMax;
 	}
 }
