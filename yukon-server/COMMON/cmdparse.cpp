@@ -2551,6 +2551,10 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
         {
             _cmd["type"] = CtiParseValue( "expresscom", ProtocolExpresscomType );
         }
+        else if(CmdStr.contains("vcom") || CmdStr.contains("versacom"))
+        {
+            _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
+        }
         else
         {
             int xcom_base = gConfigParms.getValueAsInt("LCR_EXPRESSCOM_SERIAL_BASE", -1);
