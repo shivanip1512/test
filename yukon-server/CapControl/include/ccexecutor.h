@@ -91,6 +91,7 @@ private:
     void CloseCapBank();
     void ConfirmOpen();
     void ConfirmClose();
+    void doConfirmImmediately(CtiCCSubstationBus* currentSubstationBus, RWOrdered& pointChanges);
     void SendAllSubstationBuses();
 
     CtiCCCommand* _command;
