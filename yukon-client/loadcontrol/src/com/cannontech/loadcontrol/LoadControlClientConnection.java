@@ -7,10 +7,12 @@ package com.cannontech.loadcontrol;
  */
 import java.util.Vector;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.events.LCChangeEvent;
 import com.cannontech.loadcontrol.messages.LMControlAreaMsg;
+import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.roguewave.vsj.CollectableStreamer;
@@ -307,6 +309,9 @@ public synchronized void messageReceived( MessageEvent e )
 
 		for( int i = 0; i < msg.getNumberOfLMControlAreas(); i++ )
 			handleLMControlArea( msg.getLMControlArea(i) );
+	}
+	else if( obj instanceof ServerResponseMsg ) {
+//		CTILogger.debug("Received a ServerResponseMsg, ignoring it since I didn't send a request");
 	}
 	else
 	{
