@@ -14,6 +14,7 @@ public class LMControlArea
 	public static final int STATE_MANUAL_ACTIVE = 2;
 	public static final int STATE_SCHEDULED = 3;
 	public static final int STATE_FULLY_ACTIVE = 4;
+	public static final int STATE_CNTRL_ATTEMPT = 5;
 
 	private Integer yukonID = null;
 	private String yukonCategory = null;
@@ -113,6 +114,9 @@ public static String getControlAreaStateString(int state)
 
 		case STATE_FULLY_ACTIVE:
 		return "FULLY ACTIVE";
+
+		case STATE_CNTRL_ATTEMPT:
+		return "CONTROL ATTEMPT";
 		
 		default:
 		throw new RuntimeException("*** Unknown state(" + state + ") in getControlAreaStateString(int) in : " + LMControlArea.class.getName() );

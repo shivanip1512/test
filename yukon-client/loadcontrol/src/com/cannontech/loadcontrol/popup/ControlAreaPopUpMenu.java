@@ -573,6 +573,7 @@ private void syncMenuItems()
 			break;
 			
 		case LMControlArea.STATE_SCHEDULED:
+		case LMControlArea.STATE_CNTRL_ATTEMPT:
 			getJMenuItemDisable().setEnabled(true);
 			break;
 

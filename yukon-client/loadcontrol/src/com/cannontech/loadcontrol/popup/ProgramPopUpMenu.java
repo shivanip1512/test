@@ -402,6 +402,7 @@ private void syncButtons()
 			
 		case LMProgramBase.STATUS_NOTIFIED:
 		case LMProgramBase.STATUS_SCHEDULED:
+		case LMProgramBase.STATUS_CNTRL_ATTEMPT:
 			getJMenuItemStartStop().setText("Stop...");
 			getJMenuItemStartStop().setEnabled(true);
 			getJMenuItemDisable().setEnabled(true);

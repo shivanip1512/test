@@ -18,6 +18,7 @@ public class ControlAreaActionListener implements java.awt.event.ActionListener
 	public static final String SEL_ALL_CONTROL_AREAS	= "All Control Areas";
 	public static final String SEL_ACTIVE_AREAS			= "Active Areas";
 	public static final String SEL_INACTIVE_AREAS		= "Inactive Areas";
+	public static final String SEL_SCHEDULED_AREAS		= "Scheduled Areas";
 	public static final String SEL_CNTRL_PT_HISTORY		= "Control Point History";
 
 

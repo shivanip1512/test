@@ -177,8 +177,6 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 					getGroupTableModel() } );
 
 
-
-
 		LCDisplayItem d3 =
 			new LCDisplayItem( ControlAreaActionListener.SEL_INACTIVE_AREAS );
 		d3.setLocalTableModels(
@@ -199,10 +197,23 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 					EMPTY_TABLE_MODEL } );
 
 
+		LCDisplayItem d5 = 
+			new LCDisplayItem( ControlAreaActionListener.SEL_SCHEDULED_AREAS );
+		d2.setLocalTableModels(
+			new TableModel[] { 
+					new FilteredControlAreaTableModel(
+						new int[] {LMControlArea.STATE_SCHEDULED,
+										LMControlArea.STATE_CNTRL_ATTEMPT},
+						getControlAreaTableModel().getTableModelListeners()),
+					getProgramTableModel(),
+					getGroupTableModel() } );
+
+
 		getComboBox().addItem( d1 );		
 		getComboBox().addItem( d2 );
 		getComboBox().addItem( d3 );
 		getComboBox().addItem( d4 );
+		getComboBox().addItem( d5 );
 
 
 		getComboBox().addActionListener( getControlAreaActionListener() );
