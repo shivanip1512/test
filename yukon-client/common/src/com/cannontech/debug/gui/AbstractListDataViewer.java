@@ -158,15 +158,15 @@ private javax.swing.JPanel getJDialogContentPane() {
 			constraintsJScrollPaneInfoList.fill = java.awt.GridBagConstraints.BOTH;
 			constraintsJScrollPaneInfoList.weightx = 1.0;
 			constraintsJScrollPaneInfoList.weighty = 1.0;
-			constraintsJScrollPaneInfoList.ipadx = 381;
-			constraintsJScrollPaneInfoList.ipady = 335;
-			constraintsJScrollPaneInfoList.insets = new java.awt.Insets(16, 11, 17, 12);
+			constraintsJScrollPaneInfoList.ipadx = 0;
+			constraintsJScrollPaneInfoList.ipady = 0;
+			constraintsJScrollPaneInfoList.insets = new java.awt.Insets(16, 11, 10, 12);
 			getJDialogContentPane().add(getJScrollPaneInfoList(), constraintsJScrollPaneInfoList);
 
 			java.awt.GridBagConstraints constraintsJButtonOk = new java.awt.GridBagConstraints();
 			constraintsJButtonOk.gridx = 1; constraintsJButtonOk.gridy = 2;
-			constraintsJButtonOk.ipadx = 34;
-			constraintsJButtonOk.insets = new java.awt.Insets(18, 172, 47, 169);
+			constraintsJButtonOk.ipadx = 0;
+			constraintsJButtonOk.insets = new java.awt.Insets(5, 172, 10, 169);
 			getJDialogContentPane().add(getJButtonOk(), constraintsJButtonOk);
 			// user code begin {1}
 			// user code end
