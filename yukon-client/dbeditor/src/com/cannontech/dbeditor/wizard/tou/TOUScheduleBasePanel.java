@@ -449,6 +449,7 @@ private javax.swing.JTextField getJTextFieldTOUScheduleName() {
 			ivjJTextFieldTOUScheduleName.setHighlighter(new javax.swing.plaf.basic.BasicTextUI.BasicHighlighter());
 			ivjJTextFieldTOUScheduleName.setMinimumSize(new java.awt.Dimension(150, 21));
 			// user code begin {1}
+			ivjJTextFieldTOUScheduleName.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_TOU_SCHEDULE_NAME_LENGTH));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}

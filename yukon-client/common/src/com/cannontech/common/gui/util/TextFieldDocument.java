@@ -28,6 +28,10 @@ public class TextFieldDocument extends javax.swing.text.PlainDocument
 	public static int MAX_CAP_BANK_ADDRESS_LENGTH = 40;
 	public static int MAX_CAP_SUBBUS_NAME_LENGTH = 30;
 	public static int MAX_CAP_GEO_NAME_LENGTH = 30;
+	public static int MAX_SEASON_SCHEDULE_NAME_LENGTH = 20;
+	public static int MAX_HOLIDAY_SCHEDULE_NAME_LENGTH = 40;
+	public static int MAX_TOU_SCHEDULE_NAME_LENGTH = 30;
+	
 
 	// some simple int defined lengths
 	public static int STRING_LENGTH_4 = 4;
