@@ -52,9 +52,10 @@
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
               
-            <div align="center"> <br>
-              <span class="Main">The following search results were found:</span></div>
-              
+            <div align="center"><% String header = "SEARCH RESULTS"; %><%@ include file="InfoSearchBar3.jsp" %></div> 
+            <div align="center">
+              <span class="Main">The following search results were found:</span> 
+            </div>
             <table width="615" border="1" cellspacing="0" cellpadding="3" align="center">
               <tr> 
                 <td width="187" class="HeaderCell">Name</td>
