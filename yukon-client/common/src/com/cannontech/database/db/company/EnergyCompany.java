@@ -9,13 +9,12 @@ public class EnergyCompany extends com.cannontech.database.db.DBPersistent
 {
 	private Integer energyCompanyID = null;
 	private String name = null;
-	private Integer routeID = null;
-	private Integer webConfigID = new Integer(CtiUtilities.NONE_ID);
 	private Integer primaryContactID = new Integer(CtiUtilities.NONE_ID);
-
+	private Integer userID = new Integer(CtiUtilities.NONE_ID);
+	
 	public static final String[] SETTER_COLUMNS = 
 	{ 
-		"Name", "RouteID", "WebConfigID", "PrimaryContactID"
+		"Name", "PrimaryContactID", "UserID"
 	};
 	
 	public static final String[] CONSTRAINT_COLUMNS = { "EnergyCompanyID" };
@@ -42,9 +41,8 @@ public void add() throws java.sql.SQLException
 	{ 
 		getEnergyCompanyID(),
 		getName(),
-		getRouteID(),
-		getWebConfigID(),
-		getPrimaryContactID()
+		getPrimaryContactID(),
+		getUserID()
 	};
 
 	//if any of the values are null, return
@@ -168,9 +166,8 @@ public static final EnergyCompany[] getEnergyCompanies(java.sql.Connection conn)
 				EnergyCompany ex = new EnergyCompany();
 				ex.setEnergyCompanyID( new Integer(rset.getInt(CONSTRAINT_COLUMNS[0])) );
 				ex.setName( rset.getString(SETTER_COLUMNS[0]) );
-				ex.setRouteID( new Integer(rset.getInt(SETTER_COLUMNS[1])) );
-				ex.setWebConfigID( new Integer(rset.getInt(SETTER_COLUMNS[2])) );
-				ex.setPrimaryContactID( new Integer(rset.getInt(SETTER_COLUMNS[3])) );
+				ex.setPrimaryContactID( new Integer(rset.getInt(SETTER_COLUMNS[1])) );
+				ex.setUserID(new Integer(rset.getInt(SETTER_COLUMNS[2])));
 
 				list.add( ex );
 			}
@@ -258,14 +255,6 @@ public static final Integer getNextEnergyCompanyID()
 }
 /**
  * Insert the method's description here.
- * Creation date: (2/28/2002 10:21:44 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getRouteID() {
-	return routeID;
-}
-/**
- * Insert the method's description here.
  * Creation date: (9/27/2001 10:30:24 AM)
  * @return boolean
  */
@@ -292,9 +281,8 @@ public void retrieve() throws java.sql.SQLException
 	if( results.length == SETTER_COLUMNS.length )
 	{
 		setName( (String) results[0] );
-		setRouteID( (Integer)results[1] );
-		setWebConfigID( (Integer)results[2] );
-		setPrimaryContactID( (Integer)results[3] );
+		setPrimaryContactID( (Integer)results[1] );
+		setUserID((Integer)results[2]);
 	}
 	else
 		throw new RuntimeException("Incorrect number of columns in result");
@@ -317,14 +305,6 @@ public void setName(java.lang.String newName) {
 	name = newName;
 }
 /**
- * Insert the method's description here.
- * Creation date: (2/28/2002 10:21:44 AM)
- * @param newRouteID java.lang.Integer
- */
-public void setRouteID(java.lang.Integer newRouteID) {
-	routeID = newRouteID;
-}
-/**
  * toString() override
  */
 public String toString()
@@ -340,9 +320,8 @@ public void update() throws java.sql.SQLException
 	{
 		getEnergyCompanyID(),
 		getName(),
-		getRouteID(),
-		getWebConfigID(),
-		getPrimaryContactID()
+		getPrimaryContactID(),
+		getUserID()
 	};
 
 	//if any of the values are null, return
@@ -357,22 +336,6 @@ public void update() throws java.sql.SQLException
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
 	/**
-	 * Returns the webConfigID.
-	 * @return Integer
-	 */
-	public Integer getWebConfigID() {
-		return webConfigID;
-	}
-
-	/**
-	 * Sets the webConfigID.
-	 * @param webConfigID The webConfigID to set
-	 */
-	public void setWebConfigID(Integer webConfigID) {
-		this.webConfigID = webConfigID;
-	}
-
-	/**
 	 * Returns the primaryContactID.
 	 * @return Integer
 	 */
@@ -386,6 +349,20 @@ public void update() throws java.sql.SQLException
 	 */
 	public void setPrimaryContactID(Integer primaryContactID) {
 		this.primaryContactID = primaryContactID;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getUserID() {
+		return userID;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setUserID(Integer integer) {
+		userID = integer;
 	}
 
 }
