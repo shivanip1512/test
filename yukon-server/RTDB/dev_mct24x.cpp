@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/28 18:18:22 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/09/18 21:29:33 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -441,7 +441,7 @@ INT CtiDeviceMCT24X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
     resetScanFreezePending( );
     resetScanFreezeFailed( );
 
-    if( !decodeCheckErrorReturn( InMessage, retList, outList ) )
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
 
@@ -554,7 +554,7 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtr
     resetScanFreezePending( );
     resetScanFreezeFailed( );
 
-    if( !decodeCheckErrorReturn( InMessage, retList, outList ) )
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
 
@@ -690,7 +690,7 @@ INT CtiDeviceMCT24X::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNo
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
 
-    if(!decodeCheckErrorReturn(InMessage, retList, outList))
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
 
@@ -767,19 +767,12 @@ INT CtiDeviceMCT24X::decodeGetStatusLoadProfile( INMESS *InMessage, RWTime &Time
 {
     INT status = NORMAL;
 
-    CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-    CtiPointDataMsg      *pData = NULL;
-
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
-
-    ULONG pulseCount = 0;
+    CtiReturnMsg *ReturnMsg = NULL;
     RWCString resultString;
 
-    resetScanFreezePending();
-    resetScanFreezeFailed();
+    DSTRUCT *DSt = &InMessage->Buffer.DSt;
 
-    if(!decodeCheckErrorReturn(InMessage, retList, outList))
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
 
@@ -814,13 +807,9 @@ INT CtiDeviceMCT24X::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
 {
    INT status = NORMAL;
 
-   INT ErrReturn  = InMessage->EventCode & 0x3fff;
    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-   resetScanFreezePending();
-   resetScanFreezeFailed();
-
-   if(!decodeCheckErrorReturn(InMessage, retList, outList))
+   if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
    {
       // No error occured, we must do a real decode!
 
