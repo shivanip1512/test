@@ -1,6 +1,7 @@
 package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -24,6 +25,7 @@ import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
@@ -283,10 +285,15 @@ public class UpdateLMHardwareAction implements ActionBase {
 				LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) hwHist.get(i);
 				
 				if (liteEvent.getActionID() == installEntryID) {
-					if (!liteEvent.getNotes().equals( updateHw.getInstallationNotes() )) {
+					if (updateHw.getInstallDate() != null &&
+						!StarsUtils.isDateEqual( new Date(liteEvent.getEventDateTime()), updateHw.getInstallDate() )
+						|| !liteEvent.getNotes().equals( updateHw.getInstallationNotes() ))
+					{
 						com.cannontech.database.data.stars.event.LMHardwareEvent event =
 								(com.cannontech.database.data.stars.event.LMHardwareEvent) StarsLiteFactory.createDBPersistent( liteEvent );
 						com.cannontech.database.db.stars.event.LMCustomerEventBase eventDB = event.getLMCustomerEventBase();
+						if (updateHw.getInstallDate() != null)
+							eventDB.setEventDateTime( updateHw.getInstallDate() );
 						eventDB.setNotes( updateHw.getInstallationNotes() );
 						
 						eventDB = (com.cannontech.database.db.stars.event.LMCustomerEventBase)
