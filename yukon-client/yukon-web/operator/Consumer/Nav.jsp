@@ -1,6 +1,6 @@
 <%
 	// Map of page name / link text
-	String linkMap[][] = {{"Update.jsp", "General"},
+	String linkPairs[][] = {{"Update.jsp", "General"},
 						  {"Contacts.jsp", "Contacts"},
 						  {"Residence.jsp", "Residence"},
 						  {"Calls.jsp", "Call Tracking"},
@@ -19,29 +19,15 @@
 						  {"FAQ.jsp", "FAQ"},
 						  {"CreateAppliances.jsp", "New"},
 						  {"CreateHardware.jsp", "New"},
-						  {"ThermSchedule.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED, "Schedule")},
-						  {"Thermostat.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL, "Manual")},
-						  {"Thermostat2.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL, "Manual")},
 						 };
-						   
-	String bulletImg = "../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED);
-	if (bulletImg == null) bulletImg = "../../WebConfig/Bullet.gif";
-	String bulletImg2 = "../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET);
-	if (bulletImg2 == null) bulletImg2 = "../../WebConfig/Bullet2.gif";
-	
-	Hashtable links = new Hashtable();
-	for (int i = 0; i < linkMap.length; i++) {
-		if (linkMap[i][0].equalsIgnoreCase(pageName))
-			links.put(linkMap[i][0], "<img src='" + bulletImg + "' width='12' height='12'><span class='Nav'>" + linkMap[i][1] + "</span>");
-		else
-			links.put(linkMap[i][0], "<img src='" + bulletImg2 + "' width='12' height='12'><a href='" + linkMap[i][0] + "' class='Link2'><span class='NavText'>" + linkMap[i][1] + "</span></a>");
-	}
+
+	ArrayList linkList = new ArrayList();
+	for (int i = 0; i < linkPairs.length; i++)
+		linkList.add( linkPairs[i] );
 		
-	String[] appLinks = new String[ appliances.getStarsApplianceCount() ];
 	int lastItemType = 0;
 	int itemNo = 1;
-	
-    for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
+	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
         StarsAppliance app = appliances.getStarsAppliance(i);
 		String linkText = app.getDescription();
 		
@@ -53,17 +39,12 @@
 			itemNo++;
 			linkText = linkText + " (" + Integer.toString(itemNo) + ")";
 		}
-			
-		if (pageName.equalsIgnoreCase("Appliance.jsp?AppNo=" + i))
-			appLinks[i] = "<img src='" + bulletImg + "' width='12' height='12'><span class='Nav'>" + linkText + "</span>";
-		else
-			appLinks[i] = "<img src='" + bulletImg2 + "' width='12' height='12'><a href='Appliance.jsp?AppNo=" + i + "' class='Link2'><span class='NavText'>" + linkText + "</span></a>";
-    }
+		
+		linkList.add( new String[] {"Appliance.jsp?AppNo=" + i, linkText} );
+	}
 	
-	String[] invLinks = new String[ inventories.getStarsLMHardwareCount() ];
 	lastItemType = 0;
 	itemNo = 1;
-	
 	for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
 		StarsLMHardware hw = inventories.getStarsLMHardware(i);
 		String linkText = hw.getLMDeviceType().getContent();
@@ -77,10 +58,29 @@
 			linkText = linkText + " (" + Integer.toString(itemNo) + ")";
 		}
 		
-		if (pageName.equalsIgnoreCase("Inventory.jsp?InvNo=" + i))
-			invLinks[i] = "<img src='" + bulletImg + "' width='12' height='12'><span class='Nav'>" + linkText + "</span>";
+		linkList.add( new String[] {"Inventory.jsp?InvNo=" + i, linkText} );
+		
+		if (hw.getStarsThermostatSettings() != null) {
+			linkList.add( new String[] {"ThermSchedule.jsp?InvNo=" + i, AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED, "Schedule")} );
+			if (hw.getStarsThermostatSettings().getStarsThermostatDynamicData() == null)
+				linkList.add( new String[] {"Thermostat.jsp?InvNo=" + i, AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL, "Manual")} );
+			else
+				linkList.add( new String[] {"Thermostat2.jsp?InvNo=" + i, AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL, "Manual")} );
+		}
+	}
+
+	String bulletImg = "../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED);
+	if (bulletImg == null) bulletImg = "../../WebConfig/Bullet.gif";
+	String bulletImg2 = "../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET);
+	if (bulletImg2 == null) bulletImg2 = "../../WebConfig/Bullet2.gif";
+	
+	Hashtable links = new Hashtable();
+	for (int i = 0; i < linkList.size(); i++) {
+		String[] linkPair = (String[]) linkList.get(i);
+		if (linkPair[0].equalsIgnoreCase(pageName))
+			links.put(linkPair[0], "<img src='" + bulletImg + "' width='12' height='12'><span class='Nav'>" + linkPair[1] + "</span>");
 		else
-			invLinks[i] = "<img src='" + bulletImg2 + "' width='12' height='12'><a href='Inventory.jsp?InvNo=" + i + "' class='Link2'><span class='NavText'>" + linkText + "</span></a>";
+			links.put(linkPair[0], "<img src='" + bulletImg2 + "' width='12' height='12'><a href='" + linkPair[0] + "' class='Link2'><span class='NavText'>" + linkPair[1] + "</span></a>");
 	}
 %>
 
@@ -140,9 +140,13 @@
     <td> 
       <div align="left"><span class="PageHeader">Appliances</span><br>
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_APPLIANCES %>">
-<%	for (int i = 0; i < appLinks.length; i++) { %>
-        <%= appLinks[i] %><br>
-<%	} %>
+<%
+	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
+%>
+        <%= links.get("Appliance.jsp?AppNo=" + i) %><br>
+<%
+	}
+%>
 </cti:checkProperty>
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_APPLIANCES_CREATE %>">
         <%= links.get("CreateAppliances.jsp") %><br>
@@ -156,27 +160,38 @@
     <td> 
       <div align="left"><span class="PageHeader">Hardware</span><br>
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES %>">
-<%	for (int i = 0; i < invLinks.length; i++) { %>
-        <%= invLinks[i] %><br>
-<%		if (thermoSettings != null
-				&& inventories.getStarsLMHardware(i).getInventoryID() == thermoSettings.getInventoryID()
-				&& AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)) {
+<%
+	boolean showThermostat = AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT);
+	for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
+%>
+        <%= links.get("Inventory.jsp?InvNo=" + i) %><br>
+<%
+		StarsThermostatSettings settings = inventories.getStarsLMHardware(i).getStarsThermostatSettings();
+		if (settings != null && showThermostat) {
 %>
 	    <table width="90" border="0" cellspacing="0" cellpadding="0">
           <tr> 
             <td width="12">&nbsp;</td>
             <td width="78">
-			  <%= links.get("ThermSchedule.jsp") %><br>
-<%			if (thermoSettings.getStarsThermostatDynamicData() == null) { %>
-              <%= links.get("Thermostat.jsp") %><br>
-<%			} else { %>
-              <%= links.get("Thermostat2.jsp") %><br>
-<%			} %>
+			  <%= links.get("ThermSchedule.jsp?InvNo=" + i) %><br>
+<%
+			if (settings.getStarsThermostatDynamicData() == null) {
+%>
+              <%= links.get("Thermostat.jsp?InvNo=" + i) %><br>
+<%
+			}
+			else {
+%>
+              <%= links.get("Thermostat2.jsp?InvNo=" + i) %><br>
+<%
+			}
+%>
 			</td>
           </tr>
         </table>
-<%		}
+<%
 		}
+	}
 %>
 </cti:checkProperty>
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE %>">

@@ -33,6 +33,7 @@ import com.cannontech.stars.xml.serialize.StarsDefaultThermostatSettings;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
 import com.cannontech.stars.xml.serialize.StarsInventories;
+import com.cannontech.stars.xml.serialize.StarsLMHardware;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareEvent;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsThermostatSchedule;
@@ -73,15 +74,11 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 	        StarsDefaultThermostatSettings dftThermSettings = ecSettings.getStarsDefaultThermostatSettings();
             
-            StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-            		user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-	        StarsThermostatSettings thermSettings = accountInfo.getStarsThermostatSettings();
+            StarsUpdateThermostatSchedule updateSched = new StarsUpdateThermostatSchedule();
+            updateSched.setInventoryID( Integer.parseInt(req.getParameter("invID")) );
 	        
 	        StarsThermoModeSettings mode = StarsThermoModeSettings.valueOf( req.getParameter("mode") );
 	        StarsThermoDaySettings day = StarsThermoDaySettings.valueOf( req.getParameter("day") );
-            
-            StarsUpdateThermostatSchedule updateSched = new StarsUpdateThermostatSchedule();
-            updateSched.setInventoryID( thermSettings.getInventoryID() );
 /*            
             // Send only those schedules that have been changed
             ArrayList changedSchedules = (ArrayList) user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CHANGED_THERMOSTAT_SETTINGS );
@@ -188,6 +185,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			
 			StarsUpdateThermostatSchedule updateSched = reqOper.getStarsUpdateThermostatSchedule();
     		StarsUpdateThermostatScheduleResponse resp = new StarsUpdateThermostatScheduleResponse();
+    		resp.setInventoryID( updateSched.getInventoryID() );
     		
 			LiteLMHardwareBase liteHw = energyCompany.getLMHardware( updateSched.getInventoryID(), true );
     		if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
@@ -212,8 +210,8 @@ public class UpdateThermostatScheduleAction implements ActionBase {
     		boolean isTwoWay = ServerUtils.isTwoWayThermostat( liteHw, energyCompany );
 			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID());
 			
-			LiteStarsThermostatSettings liteSettings = liteAcctInfo.getThermostatSettings();
 			LiteStarsThermostatSettings liteDftSettings = energyCompany.getDefaultThermostatSettings();
+			LiteStarsThermostatSettings liteSettings = energyCompany.getLMHardware( updateSched.getInventoryID(), true ).getThermostatSettings();
 			
 			for (int i = 0; i < updateSched.getStarsThermostatSeasonCount(); i++) {
 				StarsThermostatSeason starsSeason = updateSched.getStarsThermostatSeason(i);
@@ -534,72 +532,69 @@ public class UpdateThermostatScheduleAction implements ActionBase {
             StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
             		user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             
-            if (accountInfo.getStarsThermostatSettings().getStarsThermostatDynamicData() == null) {
-	            // Update thermostat schedules
-	            for (int i = 0; i < resp.getStarsThermostatSeasonCount(); i++) {
-	            	StarsThermostatSeason season = resp.getStarsThermostatSeason(i);
-	            	StarsThermostatSchedule schedule = season.getStarsThermostatSchedule(0);
-	            	if (schedule.getDay().getType() == StarsThermoDaySettings.ALL_TYPE) {
-	            		schedule.setDay( StarsThermoDaySettings.WEEKDAY );
-	            		
-	            		StarsThermostatSchedule sched = StarsFactory.newStarsThermostatSchedule( schedule );
-	            		sched.setDay( StarsThermoDaySettings.SATURDAY );
-	            		season.addStarsThermostatSchedule( sched );
-	            		
-	            		sched = StarsFactory.newStarsThermostatSchedule( schedule );
-	            		sched.setDay( StarsThermoDaySettings.SUNDAY );
-	            		season.addStarsThermostatSchedule( sched );
-	            	}
-	            	
-	            	StarsThermostatSeason oldSeason = null;
-	            	for (int j = 0; j < accountInfo.getStarsThermostatSettings().getStarsThermostatSeasonCount(); j++) {
-	            		StarsThermostatSeason ssn = accountInfo.getStarsThermostatSettings().getStarsThermostatSeason(j);
-	            		if (ssn.getMode().getType() == season.getMode().getType()) {
-	            			oldSeason = ssn;
-	            			break;
-	            		}
-	            	}
-	            	
-	            	if (oldSeason == null)
-	            		accountInfo.getStarsThermostatSettings().addStarsThermostatSeason( season );
-	            	else {
-	            		for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
-	            			schedule = season.getStarsThermostatSchedule(j);
-	            			boolean foundSchedule = false;
-	            			
-	            			for (int k = 0; k < oldSeason.getStarsThermostatScheduleCount(); k++) {
-	            				if (oldSeason.getStarsThermostatSchedule(k).getDay().getType() ==
-	            					schedule.getDay().getType()) {
-	            					oldSeason.setStarsThermostatSchedule( k, schedule );
-	            					foundSchedule = true;
-	            					break;
-	            				}
-	            			}
-	            			if (!foundSchedule) oldSeason.addStarsThermostatSchedule( schedule );
-	            		}
-	            	}
-	            }
-            }
+            String confirmMsg = "Command has been sent.";
             
-            // Append the new hardware event to hardware history
-            StarsUpdateThermostatSchedule updateSched =
-            		SOAPUtil.parseSOAPMsgForOperation( reqMsg ).getStarsUpdateThermostatSchedule();
-            int invID = updateSched.getInventoryID();
-            
-            StarsInventories inventories = accountInfo.getStarsInventories();
-            for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
-            	if (inventories.getStarsLMHardware(i).getInventoryID() == invID) {
-            		inventories.getStarsLMHardware(i).getStarsLMHardwareHistory().addStarsLMHardwareEvent(
-            				resp.getStarsLMHardwareEvent() );
-            		break;
+            for (int i = 0; i < accountInfo.getStarsInventories().getStarsLMHardwareCount(); i++) {
+            	StarsLMHardware hardware = accountInfo.getStarsInventories().getStarsLMHardware(i);
+            	if (hardware.getInventoryID() == resp.getInventoryID()) {
+            		hardware.getStarsLMHardwareHistory().addStarsLMHardwareEvent( resp.getStarsLMHardwareEvent() );
+	            	StarsThermostatSettings settings = hardware.getStarsThermostatSettings();
+	            	
+		            if (hardware.getStarsThermostatSettings().getStarsThermostatDynamicData() == null) {
+			            // Update thermostat schedules
+			            for (int j = 0; j < resp.getStarsThermostatSeasonCount(); j++) {
+			            	StarsThermostatSeason season = resp.getStarsThermostatSeason(j);
+			            	StarsThermostatSchedule schedule = season.getStarsThermostatSchedule(0);
+			            	if (schedule.getDay().getType() == StarsThermoDaySettings.ALL_TYPE) {
+			            		schedule.setDay( StarsThermoDaySettings.WEEKDAY );
+			            		
+			            		StarsThermostatSchedule sched = StarsFactory.newStarsThermostatSchedule( schedule );
+			            		sched.setDay( StarsThermoDaySettings.SATURDAY );
+			            		season.addStarsThermostatSchedule( sched );
+			            		
+			            		sched = StarsFactory.newStarsThermostatSchedule( schedule );
+			            		sched.setDay( StarsThermoDaySettings.SUNDAY );
+			            		season.addStarsThermostatSchedule( sched );
+			            	}
+			            	
+			            	StarsThermostatSeason oldSeason = null;
+			            	for (int k = 0; k < settings.getStarsThermostatSeasonCount(); k++) {
+			            		StarsThermostatSeason ssn = settings.getStarsThermostatSeason(k);
+			            		if (ssn.getMode().getType() == season.getMode().getType()) {
+			            			oldSeason = ssn;
+			            			break;
+			            		}
+			            	}
+			            	
+			            	if (oldSeason == null)
+			            		settings.addStarsThermostatSeason( season );
+			            	else {
+			            		for (int k = 0; k < season.getStarsThermostatScheduleCount(); k++) {
+			            			schedule = season.getStarsThermostatSchedule(k);
+			            			boolean foundSchedule = false;
+			            			
+			            			for (int l = 0; l < oldSeason.getStarsThermostatScheduleCount(); l++) {
+			            				if (oldSeason.getStarsThermostatSchedule(l).getDay().getType() == schedule.getDay().getType()) {
+			            					oldSeason.setStarsThermostatSchedule( l, schedule );
+			            					foundSchedule = true;
+			            					break;
+			            				}
+			            			}
+			            			if (!foundSchedule) oldSeason.addStarsThermostatSchedule( schedule );
+			            		}
+			            	}
+			            }
+		            }
+		            
+		            if (settings.getStarsThermostatDynamicData() != null)
+		            	confirmMsg += " Changes may take a few minutes to get to the thermostat.";
+		            break;
             	}
             }
             
-            String confirmMsg = "Thermostat schedule has been sent.";
-            if (accountInfo.getStarsThermostatSettings().getStarsThermostatDynamicData() != null)
-            	confirmMsg += " It may take a few minutes before the changes are reflected on the webpage.";
-            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, confirmMsg);
+            Thread.sleep(5 * 1000);		// Wait 5 seconds.
             
+            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, confirmMsg);
             return 0;
         }
         catch (Exception e) {

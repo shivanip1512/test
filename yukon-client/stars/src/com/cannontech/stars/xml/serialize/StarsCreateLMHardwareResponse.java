@@ -34,8 +34,6 @@ public class StarsCreateLMHardwareResponse implements java.io.Serializable {
 
     private StarsLMHardware _starsLMHardware;
 
-    private StarsThermostatSettings _starsThermostatSettings;
-
 
       //----------------/
      //- Constructors -/
@@ -59,16 +57,6 @@ public class StarsCreateLMHardwareResponse implements java.io.Serializable {
     {
         return this._starsLMHardware;
     } //-- StarsLMHardware getStarsLMHardware() 
-
-    /**
-     * Returns the value of field 'starsThermostatSettings'.
-     * 
-     * @return the value of field 'starsThermostatSettings'.
-    **/
-    public StarsThermostatSettings getStarsThermostatSettings()
-    {
-        return this._starsThermostatSettings;
-    } //-- StarsThermostatSettings getStarsThermostatSettings() 
 
     /**
     **/
@@ -116,17 +104,6 @@ public class StarsCreateLMHardwareResponse implements java.io.Serializable {
     {
         this._starsLMHardware = starsLMHardware;
     } //-- void setStarsLMHardware(StarsLMHardware) 
-
-    /**
-     * Sets the value of field 'starsThermostatSettings'.
-     * 
-     * @param starsThermostatSettings the value of field
-     * 'starsThermostatSettings'.
-    **/
-    public void setStarsThermostatSettings(StarsThermostatSettings starsThermostatSettings)
-    {
-        this._starsThermostatSettings = starsThermostatSettings;
-    } //-- void setStarsThermostatSettings(StarsThermostatSettings) 
 
     /**
      * 

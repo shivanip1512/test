@@ -223,6 +223,19 @@ public class CreateLMHardwareAction implements ActionBase {
             ArrayList lmHardwareList = energyCompany.getAllLMHardwares();
             synchronized (lmHardwareList) { lmHardwareList.add( liteHw ); }
             liteAcctInfo.getInventories().add( new Integer(liteHw.getInventoryID()) );
+            
+            // If this is a thermostat, add lite object for thermostat settings
+        	if (ServerUtils.isOneWayThermostat(liteHw, energyCompany)) {
+            	liteHw.setThermostatSettings( energyCompany.getThermostatSettings(liteHw, false) );
+        	}
+        	else if (ServerUtils.isTwoWayThermostat(liteHw, energyCompany)) {
+        		populateThermostatTables( liteHw.getInventoryID(), energyCompany );
+            	liteHw.setThermostatSettings( energyCompany.getThermostatSettings(liteHw, true) );
+	            java.util.ArrayList accountList = energyCompany.getAccountsWithGatewayEndDevice();
+	            synchronized (accountList) {
+	            	if (!accountList.contains( liteAcctInfo )) accountList.add( liteAcctInfo );
+	            }
+        	}
 
             // Send config command
             YukonSwitchCommandAction.sendConfigCommand( energyCompany, invID.intValue(), false );
@@ -230,25 +243,6 @@ public class CreateLMHardwareAction implements ActionBase {
             StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompanyID );
             StarsCreateLMHardwareResponse resp = new StarsCreateLMHardwareResponse();
             resp.setStarsLMHardware( starsHw );
-            
-            // If this is a thermostat, add lite object for thermostat settings
-        	if (ServerUtils.isOneWayThermostat(liteHw, energyCompany)) {
-            	liteAcctInfo.setThermostatSettings( energyCompany.getThermostatSettings(liteHw.getInventoryID(), false) );
-        	}
-        	else if (ServerUtils.isTwoWayThermostat(liteHw, energyCompany)) {
-        		populateThermostatTables( liteHw.getInventoryID(), energyCompany );
-            	liteAcctInfo.setThermostatSettings( energyCompany.getThermostatSettings(liteHw.getInventoryID(), true) );
-	            java.util.ArrayList accountList = energyCompany.getAccountsWithGatewayEndDevice();
-	            synchronized (accountList) {
-	            	if (!accountList.contains( liteAcctInfo )) accountList.add( liteAcctInfo );
-	            }
-        	}
-            
-            if (liteAcctInfo.getThermostatSettings() != null) {
-				StarsThermostatSettings starsThermSettings = new StarsThermostatSettings();
-				StarsLiteFactory.setStarsThermostatSettings( starsThermSettings, liteAcctInfo.getThermostatSettings(), energyCompanyID );
-            	resp.setStarsThermostatSettings( starsThermSettings );
-        	}
             
             respOper.setStarsCreateLMHardwareResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
@@ -299,9 +293,6 @@ public class CreateLMHardwareAction implements ActionBase {
 					break;
 			}
 			starsInvs.addStarsLMHardware( idx+1, hw );
-			
-			if (resp.getStarsLMHardware() != null)
-				accountInfo.setStarsThermostatSettings( resp.getStarsThermostatSettings() );
 			
 			StarsCreateLMHardware createHw = SOAPUtil.parseSOAPMsgForOperation( reqMsg ).getStarsCreateLMHardware();
 			for (int i = 0; i < createHw.getStarsLMHardwareConfigCount(); i++) {

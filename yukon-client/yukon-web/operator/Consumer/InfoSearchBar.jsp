@@ -30,7 +30,7 @@
 	}
 %>
         </select>
-        <input type="text" name="SearchValue" size = "15">
+        <input type="text" name="SearchValue" size="14">
         <input type="submit" name="Search" value="Search">
 		<cti:checkProperty propertyid="<%= ConsumerInfoRole.SUPER_OPERATOR %>">
 		  <input type="submit" name="Refresh" value="Refresh" onclick="javascript:this.form.action.value='ReloadCustAccount'">

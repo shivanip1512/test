@@ -364,5 +364,15 @@ public class ServerUtils {
 				return true;
 		return false;
 	}
+	
+	public static boolean hasTwoWayThermostat(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany) {
+		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
+			int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
+			LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID, true );
+			if (isTwoWayThermostat(liteHw, energyCompany))
+				return true;
+		}
+		return false;
+	}
 
 }

@@ -73,13 +73,6 @@ public class StarsThermostatDynamicData implements java.io.Serializable {
     **/
     private boolean _has_setpointHold;
 
-    private int _outdoorTemperature;
-
-    /**
-     * keeps track of state for field: _outdoorTemperature
-    **/
-    private boolean _has_outdoorTemperature;
-
     private int _lowerCoolSetpointLimit;
 
     /**
@@ -154,13 +147,6 @@ public class StarsThermostatDynamicData implements java.io.Serializable {
     {
         this._has_lowerCoolSetpointLimit= false;
     } //-- void deleteLowerCoolSetpointLimit() 
-
-    /**
-    **/
-    public void deleteOutdoorTemperature()
-    {
-        this._has_outdoorTemperature= false;
-    } //-- void deleteOutdoorTemperature() 
 
     /**
     **/
@@ -299,16 +285,6 @@ public class StarsThermostatDynamicData implements java.io.Serializable {
     } //-- com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings getMode() 
 
     /**
-     * Returns the value of field 'outdoorTemperature'.
-     * 
-     * @return the value of field 'outdoorTemperature'.
-    **/
-    public int getOutdoorTemperature()
-    {
-        return this._outdoorTemperature;
-    } //-- int getOutdoorTemperature() 
-
-    /**
      * Returns the value of field 'setpointHold'.
      * 
      * @return the value of field 'setpointHold'.
@@ -355,13 +331,6 @@ public class StarsThermostatDynamicData implements java.io.Serializable {
     {
         return this._has_lowerCoolSetpointLimit;
     } //-- boolean hasLowerCoolSetpointLimit() 
-
-    /**
-    **/
-    public boolean hasOutdoorTemperature()
-    {
-        return this._has_outdoorTemperature;
-    } //-- boolean hasOutdoorTemperature() 
 
     /**
     **/
@@ -549,18 +518,6 @@ public class StarsThermostatDynamicData implements java.io.Serializable {
     {
         this._mode = mode;
     } //-- void setMode(com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings) 
-
-    /**
-     * Sets the value of field 'outdoorTemperature'.
-     * 
-     * @param outdoorTemperature the value of field
-     * 'outdoorTemperature'.
-    **/
-    public void setOutdoorTemperature(int outdoorTemperature)
-    {
-        this._outdoorTemperature = outdoorTemperature;
-        this._has_outdoorTemperature = true;
-    } //-- void setOutdoorTemperature(int) 
 
     /**
      * Sets the value of field 'setpointHold'.

@@ -34,6 +34,13 @@ public class StarsUpdateThermostatScheduleResponse implements java.io.Serializab
      //- Class/Member Variables -/
     //--------------------------/
 
+    private int _inventoryID;
+
+    /**
+     * keeps track of state for field: _inventoryID
+    **/
+    private boolean _has_inventoryID;
+
     private StarsLMHardwareEvent _starsLMHardwareEvent;
 
     private java.util.Vector _starsThermostatSeasonList;
@@ -84,10 +91,27 @@ public class StarsUpdateThermostatScheduleResponse implements java.io.Serializab
 
     /**
     **/
+    public void deleteInventoryID()
+    {
+        this._has_inventoryID= false;
+    } //-- void deleteInventoryID() 
+
+    /**
+    **/
     public java.util.Enumeration enumerateStarsThermostatSeason()
     {
         return _starsThermostatSeasonList.elements();
     } //-- java.util.Enumeration enumerateStarsThermostatSeason() 
+
+    /**
+     * Returns the value of field 'inventoryID'.
+     * 
+     * @return the value of field 'inventoryID'.
+    **/
+    public int getInventoryID()
+    {
+        return this._inventoryID;
+    } //-- int getInventoryID() 
 
     /**
      * Returns the value of field 'starsLMHardwareEvent'.
@@ -133,6 +157,13 @@ public class StarsUpdateThermostatScheduleResponse implements java.io.Serializab
     {
         return _starsThermostatSeasonList.size();
     } //-- int getStarsThermostatSeasonCount() 
+
+    /**
+    **/
+    public boolean hasInventoryID()
+    {
+        return this._has_inventoryID;
+    } //-- boolean hasInventoryID() 
 
     /**
     **/
@@ -189,6 +220,17 @@ public class StarsUpdateThermostatScheduleResponse implements java.io.Serializab
         _starsThermostatSeasonList.removeElementAt(index);
         return (StarsThermostatSeason) obj;
     } //-- StarsThermostatSeason removeStarsThermostatSeason(int) 
+
+    /**
+     * Sets the value of field 'inventoryID'.
+     * 
+     * @param inventoryID the value of field 'inventoryID'.
+    **/
+    public void setInventoryID(int inventoryID)
+    {
+        this._inventoryID = inventoryID;
+        this._has_inventoryID = true;
+    } //-- void setInventoryID(int) 
 
     /**
      * Sets the value of field 'starsLMHardwareEvent'.

@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import com.cannontech.common.constants.YukonListEntry;
@@ -809,22 +810,37 @@ public class StarsLiteFactory {
 		starsEvent.setYukonDefID( entry.getYukonDefID() );
 	}
 	
-	public static void setStarsThermostatDynamicData(StarsThermostatDynamicData starsDynData, LiteStarsGatewayEndDevice liteDynData) {
+	public static void setStarsThermostatDynamicData(StarsThermostatDynamicData starsDynData, LiteStarsGatewayEndDevice liteDynData, LiteStarsEnergyCompany energyCompany) {
 		starsDynData.setLastUpdateTime( new Date(liteDynData.getTimestamp()) );
 		starsDynData.setDisplayedTemperature( liteDynData.getDisplayedTemperature() );
-		starsDynData.setDisplayedTempUnit( liteDynData.getDisplayedTempUnit() );
+		if (liteDynData.getDisplayedTempUnit() != null)
+			starsDynData.setDisplayedTempUnit( liteDynData.getDisplayedTempUnit().equalsIgnoreCase("C") ? "Celsius" : "Fahrenheit" );
 		starsDynData.setFan( ServerUtils.getThermFanSetting(liteDynData.getFanSwitch()) );
 		starsDynData.setMode( ServerUtils.getThermModeSetting(liteDynData.getSystemSwitch()) );
 		starsDynData.setCoolSetpoint( liteDynData.getCoolSetpoint() );
 		starsDynData.setHeatSetpoint( liteDynData.getHeatSetpoint() );
-		if (liteDynData.getSetpointStatus() != null && liteDynData.getSetpointStatus().equalsIgnoreCase("HOLD"))
+		if (liteDynData.getSetpointStatus() != null &&
+			(liteDynData.getSetpointStatus().equalsIgnoreCase("HOLD") ||
+			liteDynData.getSetpointStatus().equalsIgnoreCase("VACATION")))
 			starsDynData.setSetpointHold( true );
-		starsDynData.setOutdoorTemperature( liteDynData.getOutdoorTemperature() );
+		else
+			starsDynData.setSetpointHold( false );
 		starsDynData.setLowerCoolSetpointLimit( liteDynData.getLowerCoolSetpointLimit() );
 		starsDynData.setUpperHeatSetpointLimit( liteDynData.getUpperHeatSetpointLimit() );
-		String[] infoStrings = new String[ liteDynData.getInfoStrings().size() ];
-		liteDynData.getInfoStrings().toArray( infoStrings );
-		starsDynData.setInfoString( infoStrings );
+		
+		starsDynData.removeAllInfoString();
+		if (liteDynData.getOutdoorTemperature() > 0) {
+			String desc = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_GED_OUTDOOR_TEMP ).getEntryText();
+			starsDynData.addInfoString( desc + ": " + liteDynData.getOutdoorTemperature() + "&deg;" );
+		}
+		if (liteDynData.getFilterRemaining() > 0) {
+			StringTokenizer st = new StringTokenizer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_GED_FILTER).getEntryText(), "," );
+			String desc = st.nextToken();
+			String dayUnit = (liteDynData.getFilterRemaining() > 1)? "days" : "day";
+			starsDynData.addInfoString( desc + ": " + liteDynData.getFilterRemaining() + " " + dayUnit );
+		}
+		for (int i = 0; i < liteDynData.getInfoStrings().size(); i++)
+			starsDynData.addInfoString( (String) liteDynData.getInfoStrings().get(i) );
 	}
 	
 	public static void setStarsThermostatSettings(StarsThermoSettings starsSettings, LiteStarsThermostatSettings liteSettings, int energyCompanyID) {
@@ -849,7 +865,7 @@ public class StarsLiteFactory {
 		
 		if (liteSettings.getDynamicData() != null) {
 			StarsThermostatDynamicData starsDynData = new StarsThermostatDynamicData();
-			setStarsThermostatDynamicData( starsDynData, liteSettings.getDynamicData() );
+			setStarsThermostatDynamicData( starsDynData, liteSettings.getDynamicData(), energyCompany );
 			starsSettings.setStarsThermostatDynamicData( starsDynData );
 		}
 	}
@@ -989,13 +1005,13 @@ public class StarsLiteFactory {
 			
 			starsProgs.addStarsLMProgram( createStarsLMProgram(liteProg, liteApp, energyCompanyID) );
 		}
-		
+/*		
 		if (liteAcctInfo.getThermostatSettings() != null) {
 			StarsThermostatSettings starsThermSettings = new StarsThermostatSettings();
 			setStarsThermostatSettings( starsThermSettings, liteAcctInfo.getThermostatSettings(), energyCompanyID );
 			starsAcctInfo.setStarsThermostatSettings( starsThermSettings );
 		}
-		
+*/		
 		if (isOperator) {
 			ArrayList liteApps = liteAcctInfo.getAppliances();
 			StarsAppliances starsApps = new StarsAppliances();
@@ -1246,6 +1262,12 @@ public class StarsLiteFactory {
 				starsHw.setInstallationNotes( hwHist.getStarsLMHardwareEvent(i).getNotes() );
 				break;
 			}
+		}
+		
+		if (liteHw.getThermostatSettings() != null) {
+			StarsThermostatSettings starsSettings = new StarsThermostatSettings();
+			setStarsThermostatSettings( starsSettings, liteHw.getThermostatSettings(), energyCompanyID );
+			starsHw.setStarsThermostatSettings( starsSettings );
 		}
 		
 		return starsHw;

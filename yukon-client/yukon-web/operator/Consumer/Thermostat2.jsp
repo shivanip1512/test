@@ -1,6 +1,10 @@
 <%@ include file="StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
+	int invNo = Integer.parseInt(request.getParameter("InvNo"));
+	StarsLMHardware hardware = inventories.getStarsLMHardware(invNo);
+	StarsThermostatSettings thermoSettings = hardware.getStarsThermostatSettings();
+
 	StarsThermostatDynamicData curSettings = thermoSettings.getStarsThermostatDynamicData();
 	
 	StarsThermostatManualEvent lastEvent = null;
@@ -23,15 +27,11 @@
 	String fanStr = "";
 	
 	if (curSettings != null) {
-		if (System.currentTimeMillis() - curSettings.getLastUpdateTime().getTime() > 1000 * 60 * 30) {
-			// If the timestamp is more than 30 minutes old, we consider the data not up-to-date
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The displayed thermostat settings are not up-to-date");
-		}
-		
 		if (curSettings.getCoolSetpoint() > 0)
 			coolSetpoint = curSettings.getCoolSetpoint();
 		if (curSettings.getHeatSetpoint() > 0)
 			heatSetpoint = curSettings.getHeatSetpoint();
+		hold = curSettings.getSetpointHold();
 		if (curSettings.getMode() != null) {
 			if (curSettings.getMode().getType() == StarsThermoModeSettings.COOL_TYPE)
 				setpoint = coolSetpoint;
@@ -115,7 +115,7 @@ function disableRefresh() {
 	if (timeoutId != -1) {
 		clearTimeout(timeoutId);
 		timeoutId = -1;
-		document.getElementById("RefreshPrompt").style.visibility = "visible";
+		document.getElementById("PromptMsg").innerText = "Settings changed. Refresh the page to view current settings.";
 	}
 }
 <%	} %>
@@ -190,7 +190,7 @@ function modeChange(mode) {
 <%	} %>
 		}
 		else {
-			//document.MForm.tempField.style.color = "#CCCCCC";
+			document.MForm.tempField.style.color = "#CCCCCC";
 			disableFlag = true;
 		}
 	}
@@ -203,9 +203,10 @@ function modeChange(mode) {
 <%	} %>
 	}
 	
-	document.MForm.tempField.disabled = disableFlag;
+	document.MForm.tempField.readOnly = disableFlag;
 	document.getElementById("IncTemp").disabled = disableFlag;
 	document.getElementById("DecTemp").disabled = disableFlag;
+	disableRefresh();
 }
 
 function fanChange(fan) {
@@ -221,10 +222,19 @@ function fanChange(fan) {
 		document.getElementById(fan).style.visibility = "hidden";
 		document.MForm.fan.value = "";
 	}
+	
+	disableRefresh();
 }
 
 function submitIt() {
+	prepareSubmit();
 	document.MForm.submit();
+}
+
+function prepareSubmit() {
+<%	if (curSettings != null) { %>
+	document.getElementById("PromptMsg").innerText = "Sending command to gateway, please wait...";
+<%	} %>
 }
 //-->
 </script>
@@ -272,32 +282,33 @@ function submitIt() {
         </tr>
         <tr> 
           <td  valign="top" width="101">
-		  <% String pageName = "Thermostat2.jsp"; %>
+		  <% String pageName = "Thermostat2.jsp?InvNo=" + invNo; %>
           <%@ include file="Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           
 		  <td width="657" valign="top" bgcolor="#FFFFFF" bordercolor="#333399"> 
-            <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_THERM_MANUAL, "THERMOSTAT - MANUAL"); %>
-            <%@ include file="InfoSearchBar.jsp" %>
-            <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-            <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
-			
+            <div align="center">
+              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_THERM_MANUAL, "THERMOSTAT - MANUAL"); %>
+              <%@ include file="InfoSearchBar.jsp" %>
+              <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
+			</div>
             <table width="632" border="0">
               <tr> 
                 <td width="25">&nbsp;</td>
                 <td width="597" class="TableCell">Please use the thermostat below 
                   to temporarily change your current settings. To adjust your 
-                  thermostat's programming, please click the Thermostat - Schedule 
-                  link at the left.</td>
+                  thermostat's programming, please click the Schedule link at 
+                  the left.</td>
               </tr>
             </table>
-			<div id="RefreshPrompt" style="visibility:hidden" align="center" class="ConfirmMsg">Settings 
-              changed. Refresh the page to view current settings.</div>
-            <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
+			<div id="PromptMsg" align="center" class="ConfirmMsg">&nbsp;</div>
+            <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="prepareSubmit()">
               <input type="hidden" name="action" value="UpdateThermostatOption">
-              <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Thermostat2.jsp">
-              <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/Thermostat2.jsp">
+			  <input type="hidden" name="invID" value="<%= hardware.getInventoryID() %>">
+              <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Thermostat2.jsp?InvNo=<%= invNo %>">
+              <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/Thermostat2.jsp?InvNo=<%= invNo %>">
               <input type="hidden" name="mode" value="">
               <input type="hidden" name="fan" value="">
               <input type="hidden" name="RunProgram" value="false">
@@ -328,7 +339,7 @@ function submitIt() {
                           <table width="79%" border="0" cellpadding = "0" cellspacing = "0">
                             <tr> 
                               <td> 
-                                <input type="checkbox" name="hold" value="true" <%= (hold)? "checked" : "" %>>
+                                <input type="checkbox" name="hold" value="true" <%= (hold)? "checked" : "" %> onclick="disableRefresh()">
                                 <img src="../../Images/ThermImages/Hold.gif" width="34" height="9"></td>
                             </tr>
                           </table>
@@ -340,19 +351,15 @@ function submitIt() {
                                 <div id="CurrentSettings" style="display:none"> 
                                   <b>Current Settings:</b><br>
 <%
-	String unit = "F";
+	String unit = "Fahrenheit";
 	if (curSettings.getDisplayedTempUnit() != null)
 		unit = curSettings.getDisplayedTempUnit();
 	String displayTemp = "(Unknown)";
 	if (curSettings.getDisplayedTemperature() > 0)
 		displayTemp = curSettings.getDisplayedTemperature() + "&deg;";
-	String outdoorTemp = "(Unknown)";
-	if (curSettings.getOutdoorTemperature() > 0)
-		outdoorTemp = curSettings.getOutdoorTemperature() + "&deg;";
 %>
-                                  Unit: &deg;<%= unit %><br>
-                                  Display: <%= displayTemp %><br>
-                                  Outdoor: <%= outdoorTemp %><br>
+                                  Unit: <%= unit %><br>
+                                  Room: <%= displayTemp %><br>
 <%
 	for (int i = 0; i < curSettings.getInfoStringCount(); i++) {
 		String infoString = (String) curSettings.getInfoString(i);

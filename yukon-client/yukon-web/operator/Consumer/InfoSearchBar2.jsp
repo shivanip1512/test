@@ -25,7 +25,7 @@
 	}
 %>
         </select>
-        <input type="text" name="SearchValue" size = "15">
+        <input type="text" name="SearchValue" size="14">
         <input type="submit" name="Submit2" value="Search">
         </b></span></td>
     </tr>

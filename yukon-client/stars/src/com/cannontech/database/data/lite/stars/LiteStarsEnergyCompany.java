@@ -1037,6 +1037,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 						Transaction.createTransaction( Transaction.RETRIEVE, hw ).execute();
 				liteHw = (LiteLMHardwareBase) StarsLiteFactory.createLite( hw );
 				
+            	if (ServerUtils.isOneWayThermostat(liteHw, this))
+                	liteHw.setThermostatSettings( getThermostatSettings(liteHw, false) );
+            	else if (ServerUtils.isTwoWayThermostat(liteHw, this))
+                	liteHw.setThermostatSettings( getThermostatSettings(liteHw, true) );
+				
 				synchronized (lmHardwareList) { lmHardwareList.add( liteHw ); }
 				return liteHw;
 			}
@@ -1150,12 +1155,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
         }
 	}
 	
-	public LiteStarsThermostatSettings getThermostatSettings(int inventoryID, boolean isTwoWay) {
+	public LiteStarsThermostatSettings getThermostatSettings(LiteLMHardwareBase liteHw, boolean isTwoWay) {
 		LiteStarsThermostatSettings settings = new LiteStarsThermostatSettings();
-        settings.setInventoryID( inventoryID );
+        settings.setInventoryID( liteHw.getInventoryID() );
         
         com.cannontech.database.data.stars.hardware.LMThermostatSeason[] seasons =
-        		com.cannontech.database.data.stars.hardware.LMThermostatSeason.getAllLMThermostatSeasons( new Integer(inventoryID) );
+        		com.cannontech.database.data.stars.hardware.LMThermostatSeason.getAllLMThermostatSeasons( new Integer(liteHw.getInventoryID()) );
         if (seasons != null) {
 	        settings.setThermostatSeasons( new ArrayList() );
 	        
@@ -1166,7 +1171,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         }
         
         com.cannontech.database.data.stars.event.LMThermostatManualEvent[] events =
-        		com.cannontech.database.data.stars.event.LMThermostatManualEvent.getAllLMThermostatManualEvents( new Integer(inventoryID) );
+        		com.cannontech.database.data.stars.event.LMThermostatManualEvent.getAllLMThermostatManualEvents( new Integer(liteHw.getInventoryID()) );
         if (events != null) {
         	for (int i = 0; i < events.length; i++)
         		settings.getThermostatManualEvents().add(
@@ -1175,29 +1180,41 @@ public class LiteStarsEnergyCompany extends LiteBase {
         
         if (isTwoWay) {
         	settings.setDynamicData( new LiteStarsGatewayEndDevice() );
-        	settings.updateThermostatSettings( this );
+        	settings.updateThermostatSettings( liteHw, this );
         }
         
         return settings;
 	}
 	
 	public void updateThermostatSettings(LiteStarsCustAccountInformation liteAcctInfo) {
-		liteAcctInfo.getThermostatSettings().updateThermostatSettings( this );
 		StarsCustAccountInformation starsAcctInfo = getStarsCustAccountInformation( liteAcctInfo );
 		
-		LiteStarsThermostatSettings liteSettings = liteAcctInfo.getThermostatSettings();
-		StarsThermostatSettings starsSettings = starsAcctInfo.getStarsThermostatSettings();
-		
-		starsSettings.removeAllStarsThermostatSeason();
-		for (int i = 0; i < liteSettings.getThermostatSeasons().size(); i++) {
-			LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSettings.getThermostatSeasons().get(i);
-			StarsThermostatSeason starsSeason = StarsLiteFactory.createStarsThermostatSeason( liteSeason, this );
-			starsSettings.addStarsThermostatSeason( starsSeason );
-		}
-		
-		if (starsSettings.getStarsThermostatDynamicData() != null) {
-			StarsLiteFactory.setStarsThermostatDynamicData(
-					starsSettings.getStarsThermostatDynamicData(), liteSettings.getDynamicData() );
+		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
+			int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
+			LiteLMHardwareBase liteHw = getLMHardware( invID, true );
+			if (!ServerUtils.isTwoWayThermostat(liteHw, this)) continue;
+			
+			LiteStarsThermostatSettings liteSettings = liteHw.getThermostatSettings();
+			liteSettings.updateThermostatSettings( liteHw, this );
+			
+			for (int j = 0; j < starsAcctInfo.getStarsInventories().getStarsLMHardwareCount(); j++) {
+				if (starsAcctInfo.getStarsInventories().getStarsLMHardware(j).getInventoryID() == invID) {
+					StarsThermostatSettings starsSettings = starsAcctInfo.getStarsInventories().getStarsLMHardware(j).getStarsThermostatSettings();
+					
+					starsSettings.removeAllStarsThermostatSeason();
+					for (int k = 0; k < liteSettings.getThermostatSeasons().size(); k++) {
+						LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSettings.getThermostatSeasons().get(k);
+						StarsThermostatSeason starsSeason = StarsLiteFactory.createStarsThermostatSeason( liteSeason, this );
+						starsSettings.addStarsThermostatSeason( starsSeason );
+					}
+					if (starsSettings.getStarsThermostatDynamicData() != null) {
+						StarsLiteFactory.setStarsThermostatDynamicData(
+								starsSettings.getStarsThermostatDynamicData(), liteSettings.getDynamicData(), this );
+					}
+					
+					break;
+				}
+			}
 		}
 	}
 	
@@ -1347,23 +1364,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
             for (int i = 0; i < inventoryVector.size(); i++) {
                 com.cannontech.database.db.stars.hardware.InventoryBase inventory =
                 		(com.cannontech.database.db.stars.hardware.InventoryBase) inventoryVector.elementAt(i);
-
-                com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
-						new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-				hardware.setInventoryID( inventory.getInventoryID() );
-				hardware = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
-						Transaction.createTransaction( Transaction.RETRIEVE, hardware ).execute();
-				
-				LiteLMHardwareBase liteHw = (LiteLMHardwareBase) StarsLiteFactory.createLite( hardware );
-                addLMHardware( liteHw );
+                LiteLMHardwareBase liteHw = getLMHardware( inventory.getInventoryID().intValue(), true );
                 accountInfo.getInventories().add( inventory.getInventoryID() );
-
-            	if (ServerUtils.isOneWayThermostat(liteHw, this))
-                	accountInfo.setThermostatSettings(
-                			getThermostatSettings(inventory.getInventoryID().intValue(), false) );
-            	else if (ServerUtils.isTwoWayThermostat(liteHw, this))
-                	accountInfo.setThermostatSettings(
-                			getThermostatSettings(inventory.getInventoryID().intValue(), true) );
             }
 
             accountInfo.setLmPrograms( new ArrayList() );

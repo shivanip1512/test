@@ -371,49 +371,6 @@ public class StarsThermostatDynamicDataDescriptor extends org.exolab.castor.xml.
         }
         desc.setValidator(fieldValidator);
         
-        //-- _outdoorTemperature
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_outdoorTemperature", "OutdoorTemperature", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsThermostatDynamicData target = (StarsThermostatDynamicData) object;
-                if(!target.hasOutdoorTemperature())
-                    return null;
-                return new Integer(target.getOutdoorTemperature());
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsThermostatDynamicData target = (StarsThermostatDynamicData) object;
-                    // if null, use delete method for optional primitives 
-                    if (value == null) {
-                        target.deleteOutdoorTemperature();
-                        return;
-                    }
-                    target.setOutdoorTemperature( ((Integer)value).intValue());
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _outdoorTemperature
-        fieldValidator = new FieldValidator();
-        { //-- local scope
-            IntegerValidator iv = new IntegerValidator();
-            fieldValidator.setValidator(iv);
-        }
-        desc.setValidator(fieldValidator);
-        
         //-- _lowerCoolSetpointLimit
         desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_lowerCoolSetpointLimit", "LowerCoolSetpointLimit", NodeType.Element);
         handler = (new XMLFieldHandler() {

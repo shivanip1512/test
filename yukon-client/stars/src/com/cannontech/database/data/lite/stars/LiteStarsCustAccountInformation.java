@@ -25,7 +25,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	private ArrayList inventories = null;	// List of IDs of LiteLMHardware
 	private ArrayList callReportHistory = null;	// List of StarsCallReport
 	private ArrayList serviceRequestHistory = null;	// List of IDs of LiteWorkOrderBase
-	private LiteStarsThermostatSettings thermostatSettings = null;
+	//private LiteStarsThermostatSettings thermostatSettings = null;
 	
 	private long lastLoginTime = 0;
 	
@@ -201,22 +201,6 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 */
 	public void setSiteInformation(LiteSiteInformation siteInformation) {
 		this.siteInformation = siteInformation;
-	}
-
-	/**
-	 * Returns the thermostatSettings.
-	 * @return LiteStarsThermostatSettings
-	 */
-	public LiteStarsThermostatSettings getThermostatSettings() {
-		return thermostatSettings;
-	}
-
-	/**
-	 * Sets the thermostatSettings.
-	 * @param thermostatSettings The thermostatSettings to set
-	 */
-	public void setThermostatSettings(LiteStarsThermostatSettings thermostatSettings) {
-		this.thermostatSettings = thermostatSettings;
 	}
 
 	/**

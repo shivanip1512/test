@@ -8,6 +8,9 @@ var thermometerLen = 100;
 var arrowTopBnd = arrowBottomBnd - thermometerLen;
 
 var thermMode = 'C';	// Thermostat mode flag, 'C'/'H'
+var tempUnit = 'F';
+var lowerLimit = 45;
+var upperLimit = 88;
 
 var browser = new Object();
 browser.isNetscape = false;
@@ -74,14 +77,14 @@ showTempIE(a, div);
 function showTempIE(a, div)
 { 
   var curPos = parseInt(a.style.top, 10);
-  var temp = Math.floor((arrowBottomBnd - curPos) / thermometerLen * 43) + 45;
-  div.innerHTML = temp + '&deg;';
+  var temp = Math.floor((arrowBottomBnd - curPos) / thermometerLen * (upperLimit - lowerLimit)) + lowerLimit;
+  div.innerHTML = temp + '&deg;' + tempUnit;
 }
 
 
 function moveTempArrow(divIdArrow, newTemp) {
 var arrow = document.getElementById(divIdArrow);
-var pos = Math.floor((45 - newTemp) / 43 * thermometerLen) + arrowBottomBnd;
+var pos = Math.floor((lowerLimit - newTemp) / (upperLimit - lowerLimit) * thermometerLen) + arrowBottomBnd;
 arrow.style.top = pos;
 }
 

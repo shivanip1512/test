@@ -270,6 +270,38 @@ public class StarsLMHwDescriptor extends com.cannontech.stars.xml.serialize.Star
         fieldValidator.setMinOccurs(0);
         desc.setValidator(fieldValidator);
         
+        //-- _starsThermostatSettings
+        desc = new XMLFieldDescriptorImpl(StarsThermostatSettings.class, "_starsThermostatSettings", "stars-ThermostatSettings", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsLMHw target = (StarsLMHw) object;
+                return target.getStarsThermostatSettings();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsLMHw target = (StarsLMHw) object;
+                    target.setStarsThermostatSettings( (StarsThermostatSettings) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsThermostatSettings();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsThermostatSettings
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
     } //-- com.cannontech.stars.xml.serialize.StarsLMHwDescriptor()
 
 

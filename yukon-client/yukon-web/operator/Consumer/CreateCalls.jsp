@@ -4,7 +4,7 @@
 	String callNo = (String) user.getAttribute(ServletUtils.ATT_CALL_TRACKING_NUMBER);
 	if (callNo == null) {
 		if (request.getParameter("GetCallNo") == null)
-			response.sendRedirect("<%= request.getContextPath() %>/servlet/SOAPClient?action=GetNextCallNo");
+			response.sendRedirect(request.getContextPath() + "/servlet/SOAPClient?action=GetNextCallNo");
 		else
 			callNo = "";
 	}

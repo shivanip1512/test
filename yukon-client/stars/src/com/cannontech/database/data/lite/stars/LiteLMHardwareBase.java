@@ -29,6 +29,7 @@ public class LiteLMHardwareBase extends LiteBase {
 	private int lmHardwareTypeID = CtiUtilities.NONE_ID;
 	private ArrayList lmHardwareHistory = null;	// List of LiteLMCustomerEvent
 	private int deviceStatus = CtiUtilities.NONE_ID;
+	private LiteStarsThermostatSettings thermostatSettings = null;
 	
 	public LiteLMHardwareBase() {
 		super();
@@ -279,6 +280,22 @@ public class LiteLMHardwareBase extends LiteBase {
 		}
 		
 		deviceStatus = YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL;
+	}
+
+	/**
+	 * Returns the thermostatSettings.
+	 * @return LiteStarsThermostatSettings
+	 */
+	public LiteStarsThermostatSettings getThermostatSettings() {
+		return thermostatSettings;
+	}
+
+	/**
+	 * Sets the thermostatSettings.
+	 * @param thermostatSettings The thermostatSettings to set
+	 */
+	public void setThermostatSettings(LiteStarsThermostatSettings thermostatSettings) {
+		this.thermostatSettings = thermostatSettings;
 	}
 
 }

@@ -14,6 +14,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.customer.AccountSite;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPClient;
 import com.cannontech.stars.web.servlet.SOAPServer;
@@ -133,7 +134,7 @@ public class SearchCustAccountAction implements ActionBase {
 			
             if (liteAcctInfo != null) {
 	            liteAcctInfo.setLastLoginTime( System.currentTimeMillis() );	// Update the last login time
-	            if (liteAcctInfo.getThermostatSettings() != null && liteAcctInfo.getThermostatSettings().getDynamicData() != null) {
+	            if (ServerUtils.hasTwoWayThermostat(liteAcctInfo, energyCompany)) {
 		            java.util.ArrayList accountList = energyCompany.getAccountsWithGatewayEndDevice();
 		            synchronized (accountList) {
 		            	if (!accountList.contains( liteAcctInfo )) accountList.add( liteAcctInfo );

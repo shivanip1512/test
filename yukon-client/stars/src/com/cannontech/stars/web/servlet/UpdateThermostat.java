@@ -13,6 +13,7 @@ import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDefaultThermostatSettings;
 import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
+import com.cannontech.stars.xml.serialize.StarsLMHardware;
 import com.cannontech.stars.xml.serialize.StarsThermostatSchedule;
 import com.cannontech.stars.xml.serialize.StarsThermostatSeason;
 import com.cannontech.stars.xml.serialize.StarsThermostatSettings;
@@ -48,7 +49,16 @@ public class UpdateThermostat extends HttpServlet {
 		
         StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) user.getAttribute(
         		ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-        StarsThermostatSettings thermSettings = accountInfo.getStarsThermostatSettings();
+        int invID = Integer.parseInt( req.getParameter("invID") );
+        		
+        StarsThermostatSettings thermSettings = null;
+        for (int i = 0; i < accountInfo.getStarsInventories().getStarsLMHardwareCount(); i++) {
+        	StarsLMHardware hardware = accountInfo.getStarsInventories().getStarsLMHardware(i);
+        	if (hardware.getInventoryID() == invID) {
+        		thermSettings = hardware.getStarsThermostatSettings();
+        		break;
+        	}
+        }
         
         StarsThermoModeSettings mode = StarsThermoModeSettings.valueOf( req.getParameter("mode") );
         StarsThermoDaySettings day = StarsThermoDaySettings.valueOf( req.getParameter("day") );

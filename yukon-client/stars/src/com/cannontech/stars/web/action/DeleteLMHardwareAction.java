@@ -13,6 +13,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
@@ -122,18 +123,18 @@ public class DeleteLMHardwareAction implements ActionBase {
         		}
         	}
         	
-        	if (liteAcctInfo.getThermostatSettings() != null &&
-        		liteAcctInfo.getThermostatSettings().getInventoryID() == liteHw.getInventoryID())
-        	{
-        		if (liteAcctInfo.getThermostatSettings().getDynamicData() != null) {
+        	invIDs.remove( inv.getInventoryBase().getInventoryID() );
+        	
+        	if (liteHw.getThermostatSettings() != null) {
+        		if (ServerUtils.isTwoWayThermostat(liteHw, energyCompany) &&
+        			!ServerUtils.hasTwoWayThermostat(liteAcctInfo, energyCompany))
+        		{
         			ArrayList accountList = energyCompany.getAccountsWithGatewayEndDevice();
         			synchronized (accountList) {
         				accountList.remove( liteAcctInfo );
         			}
         		}
-        		liteAcctInfo.setThermostatSettings( null );
         	}
-        	invIDs.remove( inv.getInventoryBase().getInventoryID() );
         	
             StarsSuccess success = new StarsSuccess();
             success.setDescription("Hardware deleted successfully");

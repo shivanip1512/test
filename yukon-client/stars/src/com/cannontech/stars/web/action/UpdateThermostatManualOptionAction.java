@@ -20,6 +20,7 @@ import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsLMHardware;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsThermostatManualEvent;
 import com.cannontech.stars.xml.serialize.StarsUpdateThermostatManualOption;
@@ -60,7 +61,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 	            option.setMode( StarsThermoModeSettings.valueOf(req.getParameter("mode")) );
 	        if (req.getParameter("fan").length() > 0)
 	            option.setFan( StarsThermoFanSettings.valueOf(req.getParameter("fan")) );
-            option.setInventoryID( accountInfo.getStarsThermostatSettings().getInventoryID() );
+            option.setInventoryID( Integer.parseInt(req.getParameter("invID")) );
             
             StarsOperation operation = new StarsOperation();
             operation.setStarsUpdateThermostatManualOption( option );
@@ -103,6 +104,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 			
 			StarsUpdateThermostatManualOption starsOption = reqOper.getStarsUpdateThermostatManualOption();
 			StarsUpdateThermostatManualOptionResponse resp = new StarsUpdateThermostatManualOptionResponse();
+			resp.setInventoryID( starsOption.getInventoryID() );
 			
 			LiteLMHardwareBase liteHw = energyCompany.getLMHardware( starsOption.getInventoryID(), true );
     		if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
@@ -168,7 +170,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 					Transaction.createTransaction(Transaction.INSERT, event).execute();
 			
 			LiteLMThermostatManualEvent liteEvent = (LiteLMThermostatManualEvent) StarsLiteFactory.createLite( event );
-			liteAcctInfo.getThermostatSettings().getThermostatManualEvents().add( liteEvent );
+			liteHw.getThermostatSettings().getThermostatManualEvents().add( liteEvent );
 			
 			StarsThermostatManualEvent starsEvent = StarsLiteFactory.createStarsThermostatManualEvent( liteEvent );
 			resp.setStarsThermostatManualEvent( starsEvent );
@@ -213,13 +215,23 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
             		user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-            accountInfo.getStarsThermostatSettings().addStarsThermostatManualEvent( event );
             
-            String confirmMsg = "Thermostat settings have been sent.";
-            if (accountInfo.getStarsThermostatSettings().getStarsThermostatDynamicData() != null)
-            	confirmMsg += " It may take a few minutes before the changes are reflected on the webpage.";
+            String confirmMsg = "Command has been sent.";
+            
+            for (int i = 0; i < accountInfo.getStarsInventories().getStarsLMHardwareCount(); i++) {
+            	StarsLMHardware hardware = accountInfo.getStarsInventories().getStarsLMHardware(i);
+            	if (hardware.getInventoryID() == resp.getInventoryID()) {
+            		hardware.getStarsThermostatSettings().addStarsThermostatManualEvent( event );
+            		
+		            if (hardware.getStarsThermostatSettings().getStarsThermostatDynamicData() != null)
+		            	confirmMsg += " Changes may take a few minutes to get to the thermostat.";
+            		break;
+            	}
+            }
+            
+            Thread.sleep(5 * 1000);		// Wait 5 seconds
+            
             session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, confirmMsg);
-            
             return 0;
         }
         catch (Exception e) {

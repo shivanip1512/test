@@ -4,7 +4,7 @@
 	String orderNo = (String) user.getAttribute(ServletUtils.ATT_ORDER_TRACKING_NUMBER);
 	if (orderNo == null) {
 		if (request.getParameter("getOrderNo") == null)
-			response.sendRedirect("<%= request.getContextPath() %>/servlet/SOAPClient?action=GetNextOrderNo");
+			response.sendRedirect(request.getContextPath() + "/servlet/SOAPClient?action=GetNextOrderNo");
 		else
 			orderNo = "";
 	}

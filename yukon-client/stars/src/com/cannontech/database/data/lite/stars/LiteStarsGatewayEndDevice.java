@@ -1,7 +1,6 @@
 package com.cannontech.database.data.lite.stars;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
@@ -28,9 +27,10 @@ public class LiteStarsGatewayEndDevice extends LiteBase {
 	private int lowerCoolSetpointLimit = 0;
 	private int upperHeatSetpointLimit = 0;
 	private int outdoorTemperature = 0;
+	private int filterRemaining = 0;
+	private int filterRestart = 0;
 	
 	private ArrayList infoStrings = null;
-	private Hashtable extraInformation = null;
 	
 	public LiteStarsGatewayEndDevice() {
 		super();
@@ -65,16 +65,6 @@ public class LiteStarsGatewayEndDevice extends LiteBase {
 	 */
 	public String getDisplayedTempUnit() {
 		return displayedTempUnit;
-	}
-
-	/**
-	 * Returns the extraInformation.
-	 * @return Hashtable
-	 */
-	public Hashtable getExtraInformation() {
-		if (extraInformation == null)
-			extraInformation = new Hashtable();
-		return extraInformation;
 	}
 
 	/**
@@ -176,14 +166,6 @@ public class LiteStarsGatewayEndDevice extends LiteBase {
 	}
 
 	/**
-	 * Sets the extraInformation.
-	 * @param extraInformation The extraInformation to set
-	 */
-	public void setExtraInformation(Hashtable extraInformation) {
-		this.extraInformation = extraInformation;
-	}
-
-	/**
 	 * Sets the fanSwitch.
 	 * @param fanSwitch The fanSwitch to set
 	 */
@@ -269,6 +251,38 @@ public class LiteStarsGatewayEndDevice extends LiteBase {
 	 */
 	public void setSetpointStatus(String setpointStatus) {
 		this.setpointStatus = setpointStatus;
+	}
+
+	/**
+	 * Returns the filterRemaining.
+	 * @return int
+	 */
+	public int getFilterRemaining() {
+		return filterRemaining;
+	}
+
+	/**
+	 * Returns the filterRestart.
+	 * @return int
+	 */
+	public int getFilterRestart() {
+		return filterRestart;
+	}
+
+	/**
+	 * Sets the filterRemaining.
+	 * @param filterRemaining The filterRemaining to set
+	 */
+	public void setFilterRemaining(int filterRemaining) {
+		this.filterRemaining = filterRemaining;
+	}
+
+	/**
+	 * Sets the filterRestart.
+	 * @param filterRestart The filterRestart to set
+	 */
+	public void setFilterRestart(int filterRestart) {
+		this.filterRestart = filterRestart;
 	}
 
 }

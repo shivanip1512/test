@@ -1,6 +1,10 @@
 <%@ include file="StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
+	int invNo = Integer.parseInt(request.getParameter("InvNo"));
+	StarsLMHardware hardware = inventories.getStarsLMHardware(invNo);
+	StarsThermostatSettings thermoSettings = hardware.getStarsThermostatSettings();
+
 	String dayStr = request.getParameter("day");
 	if (dayStr == null) dayStr = StarsThermoDaySettings.WEEKDAY.toString();
 	String modeStr = request.getParameter("mode");
@@ -68,6 +72,14 @@
 		}
 		if (schedule == null) schedule = dftSchedule;
 	}
+	
+	StarsThermostatDynamicData curSettings = thermoSettings.getStarsThermostatDynamicData();
+	char tempUnit = 'F';
+	
+	if (curSettings != null) {
+		if (curSettings.getDisplayedTempUnit() != null)
+			tempUnit = curSettings.getDisplayedTempUnit().charAt(0);
+	}
 %>
 <html>
 <head>
@@ -81,7 +93,23 @@
 <script language="JavaScript" src ="../../JavaScript/thermostat2.js">
 </script>
 <script language = "JavaScript">
-thermMode = '<%= isCooling ? "C" : "H" %>';	// Set global variable in thermostat2.js
+// Set global variable in thermostat2.js
+thermMode = '<%= isCooling ? "C" : "H" %>';
+tempUnit = '<%= tempUnit %>';
+<%
+	if (curSettings != null) {
+		if (curSettings.getLowerCoolSetpointLimit() > 0) {
+%>
+	lowerLimit = <%= curSettings.getLowerCoolSetpointLimit() %>;
+<%
+		}
+		if (curSettings.getUpperHeatSetpointLimit() > 0) {
+%>
+	upperLimit = <%= curSettings.getUpperHeatSetpointLimit() %>;
+<%
+		}
+	}
+%>
 
 function updateLayout(hour1, min1, temp1C, temp1H, hour2, min2, temp2C, temp2H, hour3, min3, temp3C, temp3H, hour4, min4, temp4C, temp4H) {
 	moveLayer('MovingLayer1', hour1, min1);
@@ -106,7 +134,9 @@ var schedChanged = false;
 
 function setScheduleChanged() {
 	schedChanged = true;
+<%	if (thermoSettings.getStarsThermostatDynamicData() != null) { %>
 	disableRefresh();
+<%	} %>
 }
 
 function prepareSubmit(form) {
@@ -115,11 +145,14 @@ function prepareSubmit(form) {
 	form.tempval3.value = document.getElementById('temp3').innerHTML.substr(0,2);
 	form.tempval4.value = document.getElementById('temp4').innerHTML.substr(0,2);
 	schedChanged = false;
+<%	if (curSettings != null) { %>
+	document.getElementById("PromptMsg").innerText = "Sending command to gateway, please wait...";
+<%	} %>
 }
 
 function switchSettings(day, mode) {
 	var form = document.form1;
-	form.REDIRECT.value = "<%=request.getContextPath()%>/operator/Consumer/ThermSchedule.jsp?day=" + day + "&mode=" + mode;
+	form.REDIRECT.value = "<%=request.getContextPath()%>/operator/Consumer/ThermSchedule.jsp?InvNo=<%= invNo %>&day=" + day + "&mode=" + mode;
 	location.href = form.REDIRECT.value;
 }
 
@@ -171,7 +204,7 @@ function disableRefresh() {
 	if (timeoutId != -1) {
 		clearTimeout(timeoutId);
 		timeoutId = -1;
-		document.getElementById("RefreshPrompt").style.visibility = "visible";
+		document.getElementById("PromptMsg").innerText = "Schedule changed. Refresh the page to view current schedule.";
 	}
 }
 
@@ -241,7 +274,7 @@ MM_reloadPage(true);
         </tr>
         <tr> 
           <td  valign="top" width="101">
-		  <% String pageName = "ThermSchedule.jsp"; %>
+		  <% String pageName = "ThermSchedule.jsp?InvNo=" + invNo; %>
           <%@ include file="Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
@@ -256,10 +289,11 @@ MM_reloadPage(true);
 			  
 			<form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="prepareSubmit(this)">
 			  <input type="hidden" name="action" value="UpdateThermostatSchedule">
+			  <input type="hidden" name="invID" value="<%= hardware.getInventoryID() %>">
 			  <input type="hidden" name="day" value="<%= dayStr %>">
 			  <input type="hidden" name="mode" value="<%= modeStr %>">
-			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStr %>">
-			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/ThermSchedule.jsp?InvNo=<%= invNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/ThermSchedule.jsp?InvNo=<%= invNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
 			  <input type="hidden" name="tempval1">
 			  <input type="hidden" name="tempval2">
 			  <input type="hidden" name="tempval3">
@@ -318,8 +352,7 @@ MM_reloadPage(true);
                             here</a>.</i> </td>
                         </tr>
                       </table>
-					  <div id="RefreshPrompt" style="visibility:hidden" class="ConfirmMsg">Schedule 
-                        changed. Refresh the page to view current schedule.</div>
+					  <div id="PromptMsg" class="ConfirmMsg">&nbsp;</div>
                       <table width="175" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                           <td width="68"> 
@@ -344,7 +377,7 @@ MM_reloadPage(true);
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
-                                    <div id="temp1" class="TableCell2" onChange="setScheduleChanged()"><%= schedule.getTemperature1() %>&deg</div>
+                                    <div id="temp1" class="TableCell2" onChange="setScheduleChanged()"><%= schedule.getTemperature1() %>&deg;<%= tempUnit %></div>
                                   </td>
                                 </tr>
                                 <tr> 
@@ -373,7 +406,7 @@ MM_reloadPage(true);
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
-                                    <div id="temp2" class="TableCell2" onChange="setScheduleChanged()"><%= schedule.getTemperature2() %>&deg</div>
+                                    <div id="temp2" class="TableCell2" onChange="setScheduleChanged()"><%= schedule.getTemperature2() %>&deg;<%= tempUnit %></div>
                                   </td>
                                 </tr>
                                 <tr> 
@@ -402,7 +435,7 @@ MM_reloadPage(true);
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
-                                    <div id="temp3" class="TableCell2" onChange="setScheduleChanged()"><%= schedule.getTemperature3() %>&deg</div>
+                                    <div id="temp3" class="TableCell2" onChange="setScheduleChanged()"><%= schedule.getTemperature3() %>&deg;<%= tempUnit %></div>
                                   </td>
                                 </tr>
                                 <tr> 
@@ -431,7 +464,7 @@ MM_reloadPage(true);
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
-                                    <div id="temp4" class="TableCell2" onChange="setScheduleChanged()"><%= schedule.getTemperature4() %>&deg</div>
+                                    <div id="temp4" class="TableCell2" onChange="setScheduleChanged()"><%= schedule.getTemperature4() %>&deg;<%= tempUnit %></div>
                                   </td>
                                 </tr>
                                 <tr> 

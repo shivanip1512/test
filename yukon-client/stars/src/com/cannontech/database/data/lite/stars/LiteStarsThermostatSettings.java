@@ -20,6 +20,7 @@ public class LiteStarsThermostatSettings extends LiteBase {
 	
 	private static final java.text.SimpleDateFormat dateFormat =
 			new java.text.SimpleDateFormat( "yyyy/MM/dd HH:mm:ss z" );
+	private static final String UNKNOWN_STRING = "(UNKNOWN)";
 				
 	private ArrayList thermostatSeasons = null;		// List of LiteLMThermostatSeason
 	private ArrayList thermostatManualEvents = null;	// List of LMThermostatManualEvent
@@ -42,9 +43,8 @@ public class LiteStarsThermostatSettings extends LiteBase {
 		setLiteID( inventoryID );
 	}
 	
-	public void updateThermostatSettings(LiteStarsEnergyCompany energyCompany) {
+	public void updateThermostatSettings(LiteLMHardwareBase liteHw, LiteStarsEnergyCompany energyCompany) {
 		try {
-			LiteLMHardwareBase liteHw = energyCompany.getLMHardware( getInventoryID(), true );
 			int hwTypeDefID = energyCompany.getYukonListEntry(
 					YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, liteHw.getLmHardwareTypeID()
 					).getYukonDefID();
@@ -61,7 +61,8 @@ public class LiteStarsThermostatSettings extends LiteBase {
 				for (int j= 0; j < 4; j++)
 					schedules[i][j][0] = -1;	// -1 means values of schedules[i][j][0...3] haven't been set yet
 			
-			ArrayList infoStrings = new ArrayList();
+			ArrayList infoStrings = getDynamicData().getInfoStrings();
+			infoStrings.clear();
 			
 			int fanStateDftID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_DEFAULT ).getEntryID();
 			int fanStateAutoID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_AUTO ).getEntryID();
@@ -74,6 +75,7 @@ public class LiteStarsThermostatSettings extends LiteBase {
 			for (int i = 0; i < data.length; i++) {
 				int dataType = ((Integer) data[i][0]).intValue();
 				String dataValue = (String) data[i][1];
+				if (dataValue.equalsIgnoreCase(UNKNOWN_STRING)) continue;
 				
 				if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_TIMESTAMP) {
 					dynamicData.setTimestamp( dateFormat.parse(dataValue).getTime() );
@@ -206,6 +208,11 @@ public class LiteStarsThermostatSettings extends LiteBase {
 				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_OUTDOOR_TEMP) {
 					dynamicData.setOutdoorTemperature( Integer.parseInt(dataValue) );
 				}
+				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_FILTER) {
+					StringTokenizer st = new StringTokenizer( dataValue, "," );
+					dynamicData.setFilterRemaining( Integer.parseInt(st.nextToken()) );
+					dynamicData.setFilterRestart( Integer.parseInt(st.nextToken()) );
+				}
 				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SETPOINT_LIMITS) {
 					StringTokenizer st = new StringTokenizer( dataValue, "," );
 					dynamicData.setLowerCoolSetpointLimit( Integer.parseInt(st.nextToken()) );
@@ -214,12 +221,7 @@ public class LiteStarsThermostatSettings extends LiteBase {
 				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_STRING) {
 					infoStrings.add( dataValue );
 				}
-				else {
-					dynamicData.getExtraInformation().put( data[i][0], dataValue );
-				}
 			}
-			
-			dynamicData.setInfoStrings( infoStrings );
 			
 			int weekdayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY ).getEntryID();
 			int saturdayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_SATURDAY ).getEntryID();

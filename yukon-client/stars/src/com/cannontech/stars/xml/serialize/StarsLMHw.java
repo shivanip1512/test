@@ -48,6 +48,8 @@ implements java.io.Serializable
 
     private java.util.Vector _starsLMHardwareConfigList;
 
+    private StarsThermostatSettings _starsThermostatSettings;
+
 
       //----------------/
      //- Constructors -/
@@ -179,6 +181,16 @@ implements java.io.Serializable
     } //-- StarsLMHardwareHistory getStarsLMHardwareHistory() 
 
     /**
+     * Returns the value of field 'starsThermostatSettings'.
+     * 
+     * @return the value of field 'starsThermostatSettings'.
+    **/
+    public StarsThermostatSettings getStarsThermostatSettings()
+    {
+        return this._starsThermostatSettings;
+    } //-- StarsThermostatSettings getStarsThermostatSettings() 
+
+    /**
     **/
     public boolean isValid()
     {
@@ -308,6 +320,17 @@ implements java.io.Serializable
     {
         this._starsLMHardwareHistory = starsLMHardwareHistory;
     } //-- void setStarsLMHardwareHistory(StarsLMHardwareHistory) 
+
+    /**
+     * Sets the value of field 'starsThermostatSettings'.
+     * 
+     * @param starsThermostatSettings the value of field
+     * 'starsThermostatSettings'.
+    **/
+    public void setStarsThermostatSettings(StarsThermostatSettings starsThermostatSettings)
+    {
+        this._starsThermostatSettings = starsThermostatSettings;
+    } //-- void setStarsThermostatSettings(StarsThermostatSettings) 
 
     /**
     **/
