@@ -375,15 +375,11 @@ public void alarmToolBar_JToolBarButtonSilenceAlarmsAction_actionPerformed(java.
 /**
  * Comment
  */
-public void alarmToolBar_JToolBarJCDateChange_actionPerformed(com.klg.jclass.util.value.JCValueEvent event)
+public void alarmToolBar_JToolBarJCDateChange_actionPerformed(java.beans.PropertyChangeEvent event)
 {
-	if( event.getNewValue() instanceof java.util.Date )
-	{
-		getMainPanel().executeDateChange( (java.util.Date)event.getNewValue() );
-	}
-	else
-		System.out.println("*** Found a " + event.getNewValue().getClass().getName() + " in Event View Calendar Box " +
-				"when expecting a java.util.Date");		
+   if( event.getNewValue() instanceof java.util.Date )
+	  getMainPanel().executeDateChange( (java.util.Date)event.getNewValue() );
+
 }
 /**
  * Insert the method's description here.
@@ -3460,9 +3456,9 @@ public void JToolBarButtonSilenceAlarmsAction_actionPerformed(java.util.EventObj
 }
 /**
  * 
- * @param newEvent com.klg.jclass.util.value.JCValueEvent
+ * @param newEvent java.beans.PropertyChangeEvent
  */
-public void JToolBarJCDateChange_actionPerformed(com.klg.jclass.util.value.JCValueEvent event) {
+public void JToolBarJCDateChange_actionPerformed(java.beans.PropertyChangeEvent event) {
 	// user code begin {1}
 	if (event.getSource() == getAlarmToolBar()) 
 		alarmToolBar_JToolBarJCDateChange_actionPerformed(event);

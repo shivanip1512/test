@@ -82,9 +82,9 @@ public void JToolBarButtonSilenceAlarmsAction_actionPerformed(java.util.EventObj
 }
 /**
  * 
- * @param newEvent com.klg.jclass.util.value.JCValueEvent
+ * @param newEvent java.awt.event.ActionEvent
  */
-public void JToolBarJCDateChange_actionPerformed(com.klg.jclass.util.value.JCValueEvent newEvent)
+public void JToolBarJCDateChange_actionPerformed(java.beans.PropertyChangeEvent newEvent)
 {
 	((com.cannontech.tdc.toolbar.AlarmToolBarListener)a).JToolBarJCDateChange_actionPerformed(newEvent);
 	((com.cannontech.tdc.toolbar.AlarmToolBarListener)b).JToolBarJCDateChange_actionPerformed(newEvent);
