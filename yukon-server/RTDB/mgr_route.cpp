@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_route.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/09/16 13:49:10 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/09/30 14:55:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -497,7 +497,7 @@ CtiRouteManager::spiterator CtiRouteManager::nextPos(CtiRouteManager::spiterator
     return my_itr++;
 }
 
-bool CtiRouteManager::buildRoleVector( long id, vector< CtiDeviceRepeaterRole > & roleVector )
+bool CtiRouteManager::buildRoleVector( long id, CtiRequestMsg& Req, RWTPtrSlist< CtiMessage > &retList, vector< CtiDeviceRepeaterRole > & roleVector )
 {
     LockGuard guard(_mux);
     spiterator itr_rte;
@@ -506,7 +506,7 @@ bool CtiRouteManager::buildRoleVector( long id, vector< CtiDeviceRepeaterRole > 
     int stagestofollow;
     bool foundit;
 
-    for(itr_rte = begin(); itr_rte != end(); ++itr_rte)
+    for(itr_rte = begin(); itr_rte != end(); nextPos(itr_rte))
     {
         foundit = false;
         stagestofollow = 0;
@@ -522,12 +522,24 @@ bool CtiRouteManager::buildRoleVector( long id, vector< CtiDeviceRepeaterRole > 
                 // This CCURoute has repeater entries.
                 if(ccuroute->getCarrier().getCCUVarBits() == 7)
                 {
+                    RWCString resStr = "*** WARNING *** " + ccuroute->getName() + " Has CCU variable bits set to 7 AND has repeaters. ";
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << ccuroute->getName() << " Has variable bits set to 7 AND has repeaters. " << endl;
+                        dout << RWTime() << " " << resStr << endl;
+                        dout << "  It will be skipped. for role generation." << endl;
                     }
 
-                    break;
+                    retList.insert( new CtiReturnMsg( Req.DeviceId(),
+                                                      Req.CommandString(),
+                                                      resStr,
+                                                      BADPARAM,
+                                                      Req.RouteId(),
+                                                      Req.MacroOffset(),
+                                                      Req.AttemptNum(),
+                                                      Req.TransmissionId(),
+                                                      Req.UserMessageId()) );
+
+                    continue;
                 }
                 else
                 {

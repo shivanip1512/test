@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_route.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/09/16 13:49:10 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/09/30 14:55:31 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -79,7 +79,7 @@ public:
     }
 
     bool empty() const;
-    bool buildRoleVector( long id, vector< CtiDeviceRepeaterRole > & roleVector );
+    bool buildRoleVector( long id, CtiRequestMsg& Req, RWTPtrSlist< CtiMessage > &retList, vector< CtiDeviceRepeaterRole > & roleVector );
 
 };
 
