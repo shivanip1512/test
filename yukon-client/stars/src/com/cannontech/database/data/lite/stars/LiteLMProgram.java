@@ -1,5 +1,6 @@
 package com.cannontech.database.data.lite.stars;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
 
@@ -14,7 +15,7 @@ import com.cannontech.database.data.lite.LiteTypes;
 public class LiteLMProgram extends LiteBase {
 
 	private String programName = null;
-	private int webSettingsID = com.cannontech.database.db.web.YukonWebConfiguration.NONE_INT;
+	private int webSettingsID = CtiUtilities.NONE_ID;
 	private String programCategory = null;
 	private int[] groupIDs = null;
 	

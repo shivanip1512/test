@@ -1,5 +1,6 @@
 package com.cannontech.database.db.stars.appliance;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -19,7 +20,7 @@ public class ApplianceCategory extends DBPersistent {
     private Integer applianceCategoryID = null;
     private String description = "";
     private Integer categoryID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ID );
-    private Integer webConfigurationID = new Integer( com.cannontech.database.db.web.YukonWebConfiguration.NONE_INT );
+    private Integer webConfigurationID = new Integer( CtiUtilities.NONE_ID );
 
     public static final String[] SETTER_COLUMNS = {
         "Description", "CategoryID", "WebConfigurationID"

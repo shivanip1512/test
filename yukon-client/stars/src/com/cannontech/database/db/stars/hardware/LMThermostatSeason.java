@@ -3,6 +3,7 @@ package com.cannontech.database.db.stars.hardware;
 import java.sql.SQLException;
 import java.util.Date;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -19,7 +20,7 @@ public class LMThermostatSeason extends DBPersistent {
 	
 	private Integer seasonID = null;
 	private Integer inventoryID = new Integer(InventoryBase.NONE_INT);
-	private Integer webConfigurationID = new Integer(com.cannontech.database.db.web.YukonWebConfiguration.NONE_INT);
+	private Integer webConfigurationID = new Integer(CtiUtilities.NONE_ID);
 	private Date startDate = new Date(0);
 	private Integer displayOrder = new Integer(0);
 	

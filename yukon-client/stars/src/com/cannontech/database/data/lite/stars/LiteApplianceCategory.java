@@ -1,5 +1,6 @@
 package com.cannontech.database.data.lite.stars;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
 
@@ -15,7 +16,7 @@ public class LiteApplianceCategory extends LiteBase {
 	
 	private String description = null;
 	private int categoryID = com.cannontech.common.util.CtiUtilities.NONE_ID;
-	private int webConfigurationID = com.cannontech.database.db.web.YukonWebConfiguration.NONE_INT;
+	private int webConfigurationID = CtiUtilities.NONE_ID;
 	
 	// Array of published programs
 	private LiteLMProgram[] publishedPrograms = null;
