@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pdata.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:22 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/22 17:46:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,6 +28,41 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 
 RWDEFINE_COLLECTABLE( CtiPointDataMsg, MSG_POINTDATA );
+
+CtiPointDataMsg::CtiPointDataMsg(long id,
+                double     value       ,
+                unsigned   quality     ,
+                int        type        ,
+                RWCString  valReport   ,
+                unsigned   tags        ,
+                unsigned   attrib      ,
+                unsigned   limit       ,
+                int        pri         ) :
+   _id(id),
+   _value(value),
+   _quality(quality),
+   _type(type),
+   _str(valReport),
+   _time(RWTime()),
+   _tags(tags),
+   _attrib(attrib),
+   _limit(limit),
+   CtiMessage(pri)
+{
+    if(_type == StatusPointType)
+    {
+        setExemptionStatus(TRUE); // Status data must always default to exemptable!
+    }
+}
+
+CtiPointDataMsg::CtiPointDataMsg(const CtiPointDataMsg &aRef)
+{
+   *this = aRef;
+}
+
+CtiPointDataMsg::~CtiPointDataMsg()
+{
+}
 
 CtiPointDataMsg& CtiPointDataMsg::operator=(const CtiPointDataMsg& aRef)
 {
@@ -238,37 +273,8 @@ CtiPointDataMsg& CtiPointDataMsg::setExemptionStatus( const unsigned a_ex )
    return *this;
 }
 
-CtiPointDataMsg::CtiPointDataMsg(long id,
-                double     value       ,
-                unsigned   quality     ,
-                int        type        ,
-                RWCString  valReport   ,
-                unsigned   tags        ,
-                unsigned   attrib      ,
-                unsigned   limit       ,
-                int        pri         ) :
-   _id(id),
-   _value(value),
-   _quality(quality),
-   _type(type),
-   _str(valReport),
-   _time(RWTime()),
-   _tags(tags),
-   _attrib(attrib),
-   _limit(limit),
-   CtiMessage(pri)
+bool CtiPointDataMsg::isValid()
 {
-    if(_type == StatusPointType)
-    {
-        setExemptionStatus(TRUE); // Status data must always default to exemptable!
-    }
+    return _time.isValid();
 }
 
-CtiPointDataMsg::CtiPointDataMsg(const CtiPointDataMsg &aRef)
-{
-   *this = aRef;
-}
-
-CtiPointDataMsg::~CtiPointDataMsg()
-{
-}
