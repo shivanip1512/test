@@ -9,6 +9,7 @@ import java.awt.print.Book;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.io.IOException;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -188,6 +189,21 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			
 			CustomCommandEditPanel commandEditPanel = new CustomCommandEditPanel();
 			KeysAndValuesFile keysAndValuesFile = new KeysAndValuesFile(ycClass.getCustomCommandFileDirectory(), ycClass.getCommandFileName());
+			
+			//if not there, lets create the file
+			if( !keysAndValuesFile.exists() )
+			{
+				try
+				{
+					keysAndValuesFile.createNewFile();
+				}
+				catch( IOException ioe ) 
+				{
+					handleException( ioe );
+				}
+			}
+
+
 			keysAndValuesFile.retrieve();
 			commandEditPanel.setDialogTitle("File: " + keysAndValuesFile.getPath().toString());
 			commandEditPanel.setValue(keysAndValuesFile.getKeysAndValues());
