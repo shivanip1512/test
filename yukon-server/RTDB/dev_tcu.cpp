@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tcu.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/03/13 19:36:01 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/03/11 17:27:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -235,7 +235,7 @@ INT CtiDeviceTCU::TCUDecode (INMESS *InMessage, RWTime &ScanTime, RWTPtrSlist< C
       {
          CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(),
                                                   RWCString(InMessage->Return.CommandStr),
-                                                  RWCString("Loopback Successful"),
+                                                  RWCString(getName() + " / successful ping"),
                                                   InMessage->EventCode & 0x7fff,
                                                   InMessage->Return.RouteID,
                                                   InMessage->Return.MacroOffset,
@@ -392,7 +392,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                   }
                   retList.insert( CTIDBG_new CtiReturnMsg(getID(),
                                                    RWCString(OutMessage->Request.CommandStr),
-                                                   RWCString("Loopback Request for TCU failed"),
+                                                   RWCString(getName() + " / ping failed to TCU"),
                                                    nRet,
                                                    OutMTemp->Request.RouteID,
                                                    OutMTemp->Request.MacroOffset,

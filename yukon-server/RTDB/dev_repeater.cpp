@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2004/01/26 21:53:19 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2004/03/11 17:27:44 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -641,7 +641,7 @@ INT CtiDeviceRepeater900::decodeLoopback(INMESS *InMessage, RWTime &TimeNow, RWT
 
       ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-      ReturnMsg->setResultString( getName() + " / loopback successful" );
+      ReturnMsg->setResultString( getName() + " / successful ping" );
 
       retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
    }

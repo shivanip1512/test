@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/12/22 21:45:03 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/03/11 17:27:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -151,7 +151,7 @@ INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
 
             CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(),
                                                             cmd,
-                                                            RWCString("Loopback Successful"),
+                                                            RWCString(getName() + " / successful ping"),
                                                             InMessage->EventCode & 0x7fff,
                                                             InMessage->Return.RouteID,
                                                             InMessage->Return.MacroOffset,
@@ -171,7 +171,7 @@ INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         {
             CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(),
                                                             InMessage->Return.CommandStr,
-                                                            "Reset Submitted",
+                                                            RWCString(getName() + " / reset submitted"),
                                                             InMessage->EventCode & 0x7fff,
                                                             InMessage->Return.RouteID,
                                                             InMessage->Return.MacroOffset,

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2004/02/11 05:03:04 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2004/03/11 17:27:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2584,7 +2584,7 @@ INT CtiDeviceMCT::decodeLoopback(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        resultString = getName( ) + " / Loopback successful";
+        resultString = getName( ) + " / successful ping";
         ReturnMsg->setResultString( resultString );
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );

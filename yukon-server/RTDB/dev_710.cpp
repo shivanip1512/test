@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/03/24 22:22:35 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/03/11 17:27:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -115,14 +115,14 @@ INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
                 if( retMsg != NULL )
                 {
-                    retMsg->setResultString("Loopback successful");
+                    retMsg->setResultString(getName() + " / successful ping");
                 }
             }
             else
             {
                 if( retMsg != NULL)
                 {
-                    retMsg->setResultString("Loopback failed");
+                    retMsg->setResultString(getName() + " / ping failed");
                     retVal = FRAMEERR;
                     retMsg->setStatus(retVal);
                 }

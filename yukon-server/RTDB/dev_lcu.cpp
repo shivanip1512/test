@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/11/06 21:15:55 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/03/11 17:27:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -500,7 +500,7 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< Cti
             }
         case MASTERLOOPBACK:
             {
-                CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(), RWCString(InMessage->Return.CommandStr), RWCString("Loopback Successful"), InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID);
+                CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(), RWCString(InMessage->Return.CommandStr), RWCString(getName() + " / successful ping"), InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID);
 
                 if(pLoop != NULL)
                 {
@@ -591,7 +591,7 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " error looping " << getName()<< endl;
                 }
-                retList.insert( CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr),  RWCString("Loopback Request for LCU failed"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
+                retList.insert( CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr),  RWCString(getName() + " / unsuccessful ping to LCU"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
             }
             else
             {
