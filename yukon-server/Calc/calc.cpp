@@ -11,6 +11,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "calc.h"
 #include "logger.h"
 
+extern BOOL _CALC_DEBUG;
 
 RWDEFINE_NAMED_COLLECTABLE( CtiCalc, "CtiCalc" );
 
@@ -111,6 +112,16 @@ double CtiCalc::calculate( void )
 //    _countdown = _updateInterval;
 
     //  Iterate through all of the calculations in the collection
+    if( _CALC_DEBUG )
+    {
+        CtiPointStore* pointStore = CtiPointStore::getInstance();
+
+        CtiHashKey calcPointHashKey(_pointId);
+        CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore)[&calcPointHashKey]);
+
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " - CtiCalc::calculate(); Calc Point ID:" << _pointId << "; Start Value:" << calcPointPtr->getPointValue() << endl;
+    }
     for( ; iter( ) && _valid; )
     {
         CtiCalcComponent *tmpComponent = (CtiCalcComponent *)iter.key( );
@@ -125,6 +136,11 @@ double CtiCalc::calculate( void )
         retVal = 0.0;
     }
 
+    if( _CALC_DEBUG )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "CtiCalc::calculate(); Calc Point ID:" << _pointId << "; Return Value:" << retVal << endl;
+    }
     return retVal;
 }
 
