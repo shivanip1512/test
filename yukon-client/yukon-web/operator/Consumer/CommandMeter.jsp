@@ -1,5 +1,13 @@
-<html>
 <%@ include file="include/StarsHeader.jsp" %>
+<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
+<%
+	int invNo = Integer.parseInt(request.getParameter("InvNo"));
+	StarsMCT mct = inventories.getStarsMCT(invNo - inventories.getStarsLMHardwareCount());
+	// Stacey, here are the fields useful to you:
+	int deviceID = mct.getDeviceID();
+	String deviceName = mct.getDeviceName();
+%>
+<html>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
