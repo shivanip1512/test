@@ -1,3 +1,4 @@
+<%@ page import="com.cannontech.common.constants.RoleTypes" %>
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 <html>
 <head>
@@ -30,7 +31,7 @@
     <td width="555" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
     <td width="1" background="VerticalRule.gif" height="1"></td>
   </tr>
-<cti:checkRole name="OPERATOR_CONSUMER_INFO">
+<cti:checkRole roleid="<%= RoleTypes.OPERATOR_CONSUMER_INFO %>">
   <tr> 
     <td width="102" background="ConsumerImage.jpg" height="102">&nbsp;</td>
     <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="ConsumerHeader.gif" width="229" height="15" border="0"><br>
@@ -77,6 +78,7 @@
     <td width="1" background="VerticalRule.gif" height="102"></td>
   </tr>
 </cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.OPERATOR_COMMERCIAL_METERING %>">
   <tr> 
     <td width="102" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
     <td width="555" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
@@ -112,6 +114,8 @@
     </td>
     <td width="1" background="VerticalRule.gif" height="102"></td>
   </tr>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.OPERATOR_LOADCONTROL %>">
   <tr> 
     <td width="102" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
     <td width="555" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
@@ -126,35 +130,7 @@
           <td width="110" >&nbsp;</td>
           <td width="110" >&nbsp;</td>
           <td width="4" >&nbsp;</td>
-          <td class="TableCell" align = "center" rowspan = "3" width="161" valign = "top"> 
-            <table width="85%" border="0" cellspacing = "0" bordercolor="#666999">
-              <tr> 
-                <td colspan = "2" class = "TableCell">Today's Odds for Control: 
-                </td>
-              </tr>
-              <tr> 
-                <td class = "TableCell" width="49%"> 
-                  <input type="radio" name="radiobutton" value="radiobutton" checked>
-                  Likely&nbsp;</td>
-                <td width="51%" rowspan = "2" valign = "bottom" align = "center"> 
-                  <table width="100%" border="0" height="18">
-                    <tr> 
-                      <td class = "TableCell">
-                        <div align = "center" style = "border:solid 1px #666999;">Submit 
-                          </div>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-              <tr> 
-                <td class = "TableCell" width="49%"> 
-                  <input type="radio" name="radiobutton" value="radiobutton">
-                  Unlikely</td>
-                
-              </tr>
-            </table>
-          </td>
+         
         </tr>
         <tr> 
           <form method="post" action="LoadControl/oper_direct.jsp">
@@ -191,6 +167,8 @@
     </td>
     <td width="1" background="VerticalRule.gif" height="102"></td>
   </tr>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.OPERATOR_HARDWARE_INVENTORY %>">
   <tr> 
     <td width="102" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
     <td width="555" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
@@ -222,6 +200,8 @@
     <td width="555" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
     <td width="1" background="VerticalRule.gif" height="1"></td>
   </tr>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.OPERATOR_WORK_ORDERS %>">
   <tr> 
     <td width="102" height="102" background="WorkImage.jpg">&nbsp;</td>
     <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="WorkHeader.gif" width="104" height="15"><br>
@@ -255,6 +235,8 @@
     <td width="555" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
     <td width="1" background="VerticalRule.gif" height="1"></td>
   </tr>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.OPERATOR_ADMINISTRATION %>">
   <tr>
     <td width="102" bgcolor="#000000" height="102" background="AdminImage.jpg">&nbsp;</td>
     <td bgcolor="#FFFFFF" height="102" valign="top"><img src="AdminHeader.gif" width="129" height="15"><br>
@@ -281,6 +263,7 @@
     <td width="555" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
     <td width="1" background="VerticalRule.gif" height="1"></td>
   </tr>
+</cti:checkRole>
   </table>
 <div align="center"></div>
 </body>
