@@ -4,27 +4,37 @@ package com.cannontech.dbeditor.editor.point;
  * This type was created in VisualAge.
  */
 
+import java.util.Collections;
+
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.data.lite.LiteComparators;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.point.CalculatedPoint;
+import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 
 public class PointCalcComponentEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.awt.event.MouseListener {
 
 	private class DevicePointOperandLite
 	{
-		private com.cannontech.database.data.lite.LiteYukonPAObject liteDevice = null;
-		private com.cannontech.database.data.lite.LitePoint litePoint = null;
+		private LiteYukonPAObject liteDevice = null;
+		private LitePoint litePoint = null;
 
-		public DevicePointOperandLite(com.cannontech.database.data.lite.LiteYukonPAObject ld, com.cannontech.database.data.lite.LitePoint lp)
+		public DevicePointOperandLite(LiteYukonPAObject ld, com.cannontech.database.data.lite.LitePoint lp)
 		{
 			liteDevice = ld;
 			litePoint = lp;
 		}
 
-		public com.cannontech.database.data.lite.LiteYukonPAObject getLiteDevice()
+		public LiteYukonPAObject getLiteDevice()
 		{
 			return this.liteDevice;
 		}
 
-		public com.cannontech.database.data.lite.LitePoint getLitePoint()
+		public LitePoint getLitePoint()
 		{
 			return this.litePoint;
 		}
@@ -47,7 +57,7 @@ public class PointCalcComponentEditorPanel extends com.cannontech.common.gui.uti
 	private javax.swing.JLabel ivjOperandLabel = null;
 	private javax.swing.JLabel ivjOperationFunctionLabel = null;
 	private javax.swing.JLabel ivjTypeLabel = null;
-	private java.util.List points = null;
+	//private java.util.List points = null;
 	private javax.swing.JCheckBox ivjUsePointCheckBox = null;
 	private javax.swing.JPanel ivjJPanelOperations = null;
 /**
@@ -90,14 +100,16 @@ public void addComponentButton_ActionPerformed(java.awt.event.ActionEvent action
 	java.util.Vector calcComponentVector = new java.util.Vector(3);
 
 	calcComponentVector.addElement(getComponentTypeComboBox().getSelectedItem());
-	if( ((String)getComponentTypeComboBox().getSelectedItem()).equalsIgnoreCase("Operation") )
+	String selType = getComponentTypeComboBox().getSelectedItem().toString();
+
+	if( CalcComponentTypes.OPERATION_COMP_TYPE.equalsIgnoreCase(selType) )
 	{
 		calcComponentVector.addElement( new DevicePointOperandLite (
-																		(com.cannontech.database.data.lite.LiteYukonPAObject)getDeviceComboBox().getSelectedItem(),
-																		(com.cannontech.database.data.lite.LitePoint)getPointComboBox().getSelectedItem() ) );
+																		(LiteYukonPAObject)getDeviceComboBox().getSelectedItem(),
+																		(LitePoint)getPointComboBox().getSelectedItem() ) );
 		componentValid = true;
 	}
-	else if( ((String)getComponentTypeComboBox().getSelectedItem()).equalsIgnoreCase("Constant") )
+	else if( CalcComponentTypes.CONSTANT_COMP_TYPE.equalsIgnoreCase(selType) )
 	{
 		try
 		{
@@ -114,13 +126,14 @@ public void addComponentButton_ActionPerformed(java.awt.event.ActionEvent action
 	{
 		if( getUsePointCheckBox().isSelected() )
 			calcComponentVector.addElement( new DevicePointOperandLite (
-																			(com.cannontech.database.data.lite.LiteYukonPAObject)getDeviceComboBox().getSelectedItem(),
-																			(com.cannontech.database.data.lite.LitePoint)getPointComboBox().getSelectedItem() ) );
+																			(LiteYukonPAObject)getDeviceComboBox().getSelectedItem(),
+																			(LitePoint)getPointComboBox().getSelectedItem() ) );
 		else
 			calcComponentVector.addElement("");
 
 		componentValid = true;
 	}
+
 	calcComponentVector.addElement(getOperationFunctionComboBox().getSelectedItem());
 
 	if( componentValid )
@@ -142,16 +155,16 @@ public void componentsTable_MousePressed(java.awt.event.MouseEvent mouseEvent) {
 		String operation = (String)getComponentsTable().getModel().getValueAt(selectedRow,2);
 		getComponentTypeComboBox().setSelectedItem(type);
 
-		if( type.equalsIgnoreCase("Operation") )
+		if( CalcComponentTypes.OPERATION_COMP_TYPE.equalsIgnoreCase(type) )
 		{
 			getDeviceComboBox().setSelectedItem(((DevicePointOperandLite)operand).getLiteDevice());
 			getPointComboBox().setSelectedItem(((DevicePointOperandLite)operand).getLitePoint());
 		}
-		else if( type.equalsIgnoreCase("Constant") )
+		else if( CalcComponentTypes.CONSTANT_COMP_TYPE.equalsIgnoreCase(type) )
 		{
 			getConstantTextField().setText(operand.toString());
 		}
-		else if( type.equalsIgnoreCase("Function") )
+		else if( CalcComponentTypes.FUNCTION_COMP_TYPE.equalsIgnoreCase(type) )
 		{
 			if( operand instanceof DevicePointOperandLite )
 			{
@@ -354,21 +367,17 @@ private void connEtoC7(java.awt.event.MouseEvent arg1) {
  */
 public void deviceComboBox_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 {
-	int deviceID = ((com.cannontech.database.data.lite.LiteYukonPAObject) getDeviceComboBox().getSelectedItem()).getYukonID();
+	int deviceID = ((LiteYukonPAObject) getDeviceComboBox().getSelectedItem()).getYukonID();
 
-	if (getPointComboBox().getModel().getSize() > 0)
+	if( getPointComboBox().getModel().getSize() > 0 )
 		getPointComboBox().removeAllItems();
 
-	for (int i = 0; i < points.size(); i++)
-	{
-		if (deviceID == ((com.cannontech.database.data.lite.LitePoint) points.get(i)).getPaobjectID())
-		{
 
-			getPointComboBox().addItem(((com.cannontech.database.data.lite.LitePoint) points.get(i)));
-		}
-		else if (deviceID < ((com.cannontech.database.data.lite.LitePoint) points.get(i)).getPaobjectID())
-			break;
-	}
+	LitePoint[] paoPoints =
+			PAOFuncs.getLitePointsForPAObject( deviceID );
+	
+	for( int j = 0; j < paoPoints.length; j++ )
+		getPointComboBox().addItem( paoPoints[j] );
 }
 /**
  * Comment
@@ -380,13 +389,15 @@ public void editComponentButton_ActionPerformed(java.awt.event.ActionEvent actio
 	java.util.Vector calcComponentVector = new java.util.Vector(3);
 
 	calcComponentVector.addElement(getComponentTypeComboBox().getSelectedItem());
-	if( ((String)getComponentTypeComboBox().getSelectedItem()).equalsIgnoreCase("Operation") )
+	String selType = getComponentTypeComboBox().getSelectedItem().toString();
+	
+	if( CalcComponentTypes.OPERATION_COMP_TYPE.equalsIgnoreCase(selType) )
 	{
-		calcComponentVector.addElement( new DevicePointOperandLite( (com.cannontech.database.data.lite.LiteYukonPAObject)getDeviceComboBox().getSelectedItem(),
-																		(com.cannontech.database.data.lite.LitePoint)getPointComboBox().getSelectedItem()) );
+		calcComponentVector.addElement( new DevicePointOperandLite( (LiteYukonPAObject)getDeviceComboBox().getSelectedItem(),
+																		(LitePoint)getPointComboBox().getSelectedItem()) );
 		componentValid = true;
 	}
-	else if( ((String)getComponentTypeComboBox().getSelectedItem()).equalsIgnoreCase("Constant") )
+	else if( CalcComponentTypes.CONSTANT_COMP_TYPE.equalsIgnoreCase(selType) )
 	{
 		try
 		{
@@ -402,8 +413,8 @@ public void editComponentButton_ActionPerformed(java.awt.event.ActionEvent actio
 	else
 	{
 		if( getUsePointCheckBox().isSelected() )
-			calcComponentVector.addElement( new DevicePointOperandLite( (com.cannontech.database.data.lite.LiteYukonPAObject)getDeviceComboBox().getSelectedItem(),
-																		(com.cannontech.database.data.lite.LitePoint)getPointComboBox().getSelectedItem()) );
+			calcComponentVector.addElement( new DevicePointOperandLite( (LiteYukonPAObject)getDeviceComboBox().getSelectedItem(),
+																		(LitePoint)getPointComboBox().getSelectedItem()) );
 		else
 			calcComponentVector.addElement("");
 
@@ -555,6 +566,33 @@ private javax.swing.JComboBox getDeviceComboBox() {
 			ivjDeviceComboBox.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjDeviceComboBox.setMinimumSize(new java.awt.Dimension(130, 28));
 			// user code begin {1}
+			
+
+
+			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			synchronized( cache )
+			{
+				java.util.List devices = cache.getAllDevices();
+				Collections.sort( devices, LiteComparators.liteStringComparator );
+
+				for (int i = 0; i < devices.size(); i++)
+				{
+					LiteYukonPAObject pao = (LiteYukonPAObject)devices.get(i);
+
+					ivjDeviceComboBox.addItem( pao );
+
+					if( i == 0 )
+					{
+						LitePoint[] paoPoints =
+								PAOFuncs.getLitePointsForPAObject( pao.getYukonID() );
+				
+						for( int j = 0; j < paoPoints.length; j++ )
+							getPointComboBox().addItem( paoPoints[j] ); 
+					}						
+				}
+			}
+
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -872,7 +910,8 @@ private javax.swing.JCheckBox getUsePointCheckBox() {
  */
 public Object getValue(Object val)
 {
-	com.cannontech.database.data.point.CalculatedPoint calcPoint = (com.cannontech.database.data.point.CalculatedPoint) val;
+	CalculatedPoint calcPoint = (CalculatedPoint) val;
+
 	Integer pointID = calcPoint.getPoint().getPointID();
 	com.cannontech.database.db.point.calculation.CalcComponent newCalcComponent = null;
 	java.util.Vector calcComponentsVector = null;
@@ -900,17 +939,17 @@ public Object getValue(Object val)
 					new Double(0.0),
 					com.cannontech.common.util.CtiUtilities.STRING_NONE );
 
-			if (type.equalsIgnoreCase("Operation"))
+			if( CalcComponentTypes.OPERATION_COMP_TYPE.equalsIgnoreCase(type) )
 			{
 				newCalcComponent.setComponentPointID(new Integer(((DevicePointOperandLite) operand).getLitePoint().getPointID()));
 				newCalcComponent.setOperation((String) operation);
 			}
-			else if (type.equalsIgnoreCase("Constant"))
+			else if( CalcComponentTypes.CONSTANT_COMP_TYPE.equalsIgnoreCase(type) )
 			{
 				newCalcComponent.setConstant(new Double(operand.toString()));
 				newCalcComponent.setOperation((String) operation);
 			}
-			else if (type.equalsIgnoreCase("Function"))
+			else if( CalcComponentTypes.FUNCTION_COMP_TYPE.equalsIgnoreCase(type) )
 			{
 				if (operand instanceof DevicePointOperandLite)
 					newCalcComponent.setComponentPointID(new Integer(((DevicePointOperandLite) operand).getLitePoint().getPointID()));
@@ -989,9 +1028,9 @@ private void initialize() {
 	// user code begin {2}
 
 	//fill up Component Type combo box
-	getComponentTypeComboBox().addItem("Operation");
-	getComponentTypeComboBox().addItem("Constant");
-	getComponentTypeComboBox().addItem("Function");
+	getComponentTypeComboBox().addItem( CalcComponentTypes.OPERATION_COMP_TYPE );
+	getComponentTypeComboBox().addItem( CalcComponentTypes.CONSTANT_COMP_TYPE );
+	getComponentTypeComboBox().addItem( CalcComponentTypes.FUNCTION_COMP_TYPE );
 
 	getComponentsTable().setModel(new com.cannontech.common.gui.util.CalcComponentTableModel());
 	((com.cannontech.common.gui.util.CalcComponentTableModel)getComponentsTable().getModel()).makeTable();
@@ -1112,140 +1151,111 @@ public void removeComponentButton_ActionPerformed(java.awt.event.ActionEvent act
  */
 public void setValue(Object val)
 {
-	com.cannontech.database.data.point.CalculatedPoint calcPoint = (com.cannontech.database.data.point.CalculatedPoint) val;
+	CalculatedPoint calcPoint = (CalculatedPoint) val;
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
-		com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized (cache)
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	synchronized( cache )
 	{
-		//this code makes copies of points in the cache and sets the "showPointOffset" variable to
-		//false so that the point offsets are not shown  -- this is done so the points in the cache
-		//remained unchanged 
+//		java.util.List devices = cache.getAllDevices();
+//		Collections.sort( devices, LiteComparators.liteStringComparator );
 
-		java.util.List devices = cache.getAllDevices();
-		java.util.Collections.sort( devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
+		//points = new java.util.Vector();
+/*
+		List cachePoints = cache.getAllPoints();
+		LitePoint point = null;
 
-		points = new java.util.Vector();
-		java.util.List cachePoints = cache.getAllPoints();
-		com.cannontech.database.data.lite.LitePoint point = null;
 
-		for (int i = 0; i < cachePoints.size(); i++)
-		{
-			com.cannontech.database.data.lite.LitePoint cachePoint = (com.cannontech.database.data.lite.LitePoint) cachePoints.get(i);
-			point =
-				new com.cannontech.database.data.lite.LitePoint(
-					cachePoint.getPointID(),
-					cachePoint.getPointName(),
-					cachePoint.getPointType(),
-					cachePoint.getPaobjectID(),
-					cachePoint.getPointOffset(),
-					cachePoint.getStateGroupID(),
-					cachePoint.getTags());
-			point.setShowPointOffsets(false);
-			points.add(point);
+		Collections.sort( cachePoints, LiteComparators.litePointDeviceIDComparator);
+*/
+//		for (int i = 0; i < devices.size(); i++)
+//		{
+//			LiteYukonPAObject pao = (LiteYukonPAObject)devices.get(i);
+//
+//			getDeviceComboBox().addItem( pao );
+//
+//			if( i == 0 )
+//			{
+//				LitePoint[] paoPoints =
+//						PAOFuncs.getLitePointsForPAObject( pao.getYukonID() );
+//				
+//				for( int j = 0; j < paoPoints.length; j++ )
+//					getPointComboBox().addItem( paoPoints[j] ); 
+//			}
+//		}
 
-		}
 
-		java.util.Collections.sort(points, com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator);
 
-		if (getDeviceComboBox().getModel().getSize() > 0)
-			getDeviceComboBox().removeAllItems();
-		for (int i = 0; i < devices.size(); i++)
-		{
-			for (int j = 0; j < points.size(); j++)
-			{
-				if (((com.cannontech.database.data.lite.LiteYukonPAObject) devices.get(i)).getYukonID()
-					== ((com.cannontech.database.data.lite.LitePoint) points.get(j)).getPaobjectID())
-				{
-					getDeviceComboBox().addItem(devices.get(i));
-					break;
-				}
-				else if (
-					((com.cannontech.database.data.lite.LiteYukonPAObject) devices.get(i)).getYukonID()
-						< ((com.cannontech.database.data.lite.LitePoint) points.get(j)).getPaobjectID())
-					break;
-			}
-		}
 
+		//fill in the calc components of this point
 		java.util.Vector calcComponents = calcPoint.getCalcComponentVector();
+		
 		String type = null;
 		Object operand = null;
-		String operation = null;
-		com.cannontech.database.data.lite.LitePoint litePoint = null;
+		LitePoint litePoint = null;
+		
 		int componentPointID = 0;
-		int pointDeviceID = 0;
 		java.util.Vector calcComponentEntry = null;
-		com.cannontech.database.db.point.calculation.CalcComponent singleCalcComponent = null;
+		CalcComponent singleCalcComponent = null;
+
+
 		for (int i = 0; i < calcComponents.size(); i++)
 		{
 			calcComponentEntry = new java.util.Vector(3);
-			singleCalcComponent = (com.cannontech.database.db.point.calculation.CalcComponent) calcComponents.get(i);
+			singleCalcComponent = (CalcComponent) calcComponents.get(i);
 
+			//get and add the type
 			type = singleCalcComponent.getComponentType();
 			calcComponentEntry.addElement(type);
-			if (type.equalsIgnoreCase("Operation"))
+
+			if( CalcComponentTypes.OPERATION_COMP_TYPE.equalsIgnoreCase(type) )
 			{
 				componentPointID = singleCalcComponent.getComponentPointID().intValue();
-				for (int j = 0; j < points.size(); j++)
-				{
-					if (componentPointID == ((com.cannontech.database.data.lite.LitePoint) points.get(j)).getPointID())
-					{
-						litePoint = (com.cannontech.database.data.lite.LitePoint) points.get(j);
-						pointDeviceID = litePoint.getPaobjectID();
-						for (int k = 0; k < devices.size(); k++)
-						{
-							if (pointDeviceID == ((com.cannontech.database.data.lite.LiteYukonPAObject) devices.get(k)).getYukonID())
-							{
-								operand = new DevicePointOperandLite((com.cannontech.database.data.lite.LiteYukonPAObject) devices.get(k), litePoint);
-								break;
-							}
-						}
-						calcComponentEntry.addElement(operand);
-						break;
-					}
-				}
-				operation = singleCalcComponent.getOperation();
-				calcComponentEntry.addElement(operation);
+
+				litePoint = PointFuncs.getLitePoint(componentPointID);
+
+				operand = new DevicePointOperandLite(
+									PAOFuncs.getLiteYukonPAO( litePoint.getPaobjectID() ), 
+									litePoint);
+
+				calcComponentEntry.addElement( operand );
+
+				calcComponentEntry.addElement( 
+						singleCalcComponent.getOperation() );
 			}
-			else if (type.equalsIgnoreCase("Constant"))
+			else if( CalcComponentTypes.CONSTANT_COMP_TYPE.equalsIgnoreCase(type) )
 			{
-				operand = ((com.cannontech.database.db.point.calculation.CalcComponent) calcComponents.get(i)).getConstant().toString();
+				operand = ((CalcComponent) calcComponents.get(i)).getConstant().toString();
 				calcComponentEntry.addElement(operand);
-				operation = singleCalcComponent.getOperation();
-				calcComponentEntry.addElement(operation);
+
+				calcComponentEntry.addElement(
+						singleCalcComponent.getOperation() );
 			}
-			else if (type.equalsIgnoreCase("Function"))
+			else if( CalcComponentTypes.FUNCTION_COMP_TYPE.equalsIgnoreCase(type) )
 			{
 				componentPointID = singleCalcComponent.getComponentPointID().intValue();
 				if (componentPointID > 0)
 				{
-					for (int j = 0; j < points.size(); j++)
-					{
-						if (componentPointID == ((com.cannontech.database.data.lite.LitePoint) points.get(j)).getPointID())
-						{
-							litePoint = (com.cannontech.database.data.lite.LitePoint) points.get(j);
-							pointDeviceID = litePoint.getPaobjectID();
-							for (int k = 0; k < devices.size(); k++)
-							{
-								if (pointDeviceID == ((com.cannontech.database.data.lite.LiteYukonPAObject) devices.get(k)).getYukonID())
-								{
-									operand = new DevicePointOperandLite((com.cannontech.database.data.lite.LiteYukonPAObject) devices.get(k), litePoint);
-									break;
-								}
-							}
+					litePoint = PointFuncs.getLitePoint(componentPointID);
 
-							break;
-						}
-					}
+					operand = new DevicePointOperandLite(
+										PAOFuncs.getLiteYukonPAO( litePoint.getPaobjectID() ), 
+										litePoint);
+
+					calcComponentEntry.addElement( operand );
+
+					calcComponentEntry.addElement( 
+							singleCalcComponent.getOperation() );
 				}
 				else
 				{
 					operand = "";
 				}
 
-				calcComponentEntry.addElement(operand);
+				calcComponentEntry.addElement( operand );
 				calcComponentEntry.addElement( singleCalcComponent.getFunctionName() );
 			}
+			
+			
 			getTableModel().addRow(calcComponentEntry);
 		}
 	}
