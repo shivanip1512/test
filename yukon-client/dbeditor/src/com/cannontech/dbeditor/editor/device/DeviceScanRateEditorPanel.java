@@ -14,6 +14,7 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IEDMeter;
 import com.cannontech.database.data.device.LCUBase;
 import com.cannontech.database.data.device.MCTBase;
+import com.cannontech.database.data.device.MCT410IL;
 import com.cannontech.database.data.device.PagingTapTerminal;
 import com.cannontech.database.data.device.RTUBase;
 import com.cannontech.database.data.device.DNPBase;
@@ -1910,7 +1911,10 @@ public void setDeviceType(int type)
 	{		
 		if( DeviceTypesFuncs.isMCT3xx(type) || DeviceTypesFuncs.isMCT4XX(type)  )
 		{
-			getIntegrityRateCheckBox().setText("Demand & Status Rate");
+			if(DeviceTypesFuncs.is410(type))
+				getIntegrityRateCheckBox().setText("Demand & Voltage Rate");
+			else
+				getIntegrityRateCheckBox().setText("Demand & Status Rate");
 			getAccumulatorRateCheckBox().setText("Accumulator (Energy) Rate");
 		}
 		else if (DeviceTypesFuncs.isMCT(type))
