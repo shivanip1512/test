@@ -41,7 +41,7 @@
 		links.put(linkPageName, new String[] {linkImg, linkHtml});
 	}
 	
-	// List of String[] (inventory no., bullet image, link html, expand bullet image)
+	// List of String[] (inventory no., link html, expand bullet image)
 	ArrayList switches = new ArrayList();
 	ArrayList thermostats = new ArrayList();
 	ArrayList meters = new ArrayList();
@@ -104,17 +104,17 @@
 			
 			if(linkURL.equalsIgnoreCase(pageName))
 			{
-				linkHtml = "<span class='NavGroup' style='cursor:default'>Interval Data</span>";
+				linkHtml = "<span class='Nav' style='cursor:default'>Interval Data</span>";
 				linkImgExp = bulletImg;
 			}
 			else
 			{
-				linkHtml = "<span class='NavGroup' style='cursor:default'>Interval Data</span>";
+				linkHtml = "<span class='NavTextNoLink' style='cursor:default'>Interval Data</span>";
 				linkImgExp = bulletImgExp;
 			}
 			%>
                 <tr onmouseover="trendMenuAppear(event, this, 'intervalDataMenu')"> 
-                  <td><span class='NavGroup' style='cursor:default'><%=linkHtml%></span></td>
+                  <td><%=linkHtml%></td>
                   <td width="10" valign="bottom" style="padding-bottom:1"><%=linkImgExp%></td>
                 </tr>
                 
@@ -228,22 +228,19 @@
 		StarsLMHardware hw = inventories.getStarsLMHardware(i);
 		String linkLabel = hw.getDeviceLabel();
 		
-		String linkImg = null;
 		String linkHtml = null;
 		String linkImgExp = null;
 		int pos = pageName.lastIndexOf("InvNo=");
 		if (pos >= 0 && pageName.substring(pos).equals("InvNo=" + i)) {
-			linkImg = bulletImg;
 			linkHtml = "<span class='Nav' style='cursor:default'>" + linkLabel + "</span>";
 			linkImgExp = bulletImg;
 		}
 		else {
-			linkImg = "";
-			linkHtml = "<span class='NavText' style='cursor:default; color:#FFFFFF'>" + linkLabel + "</span>";
+			linkHtml = "<span class='NavTextNoLink' style='cursor:default'>" + linkLabel + "</span>";
 			linkImgExp = bulletImgExp;
 		}
 		
-		String[] linkFields = new String[] {String.valueOf(i), linkImg, linkHtml, linkImgExp};
+		String[] linkFields = new String[] {String.valueOf(i), linkHtml, linkImgExp};
 		if (hw.getStarsThermostatSettings() != null)
 			thermostats.add( linkFields );
 		else
@@ -265,9 +262,9 @@
 				String[] linkFields = (String[]) switches.get(i);
 %>
                 <tr onmouseover="hardwareMenuAppear(event, this, 'switchMenu', <%= linkFields[0] %>)"> 
-                  <td width="10" valign="top" style="padding-top:1"><%= linkFields[1] %></td>
-                  <td><%= linkFields[2] %></td>
-                  <td width="10" valign="bottom" style="padding-bottom:1"><%= linkFields[3] %></td>
+                  <td width="10" class="Nav">&nbsp;</td>
+                  <td><%= linkFields[1] %></td>
+                  <td width="10" valign="bottom" style="padding-bottom:1"><%= linkFields[2] %></td>
                 </tr>
 <%
 			}
@@ -284,9 +281,9 @@
 				String[] linkFields = (String[]) thermostats.get(i);
 %>
                 <tr onmouseover="hardwareMenuAppear(event, this, 'thermostatMenu', <%= linkFields[0] %>)"> 
-                  <td width="10" valign="top" style="padding-top:1"><%= linkFields[1] %></td>
-                  <td><%= linkFields[2] %></td>
-                  <td width="10" valign="bottom" style="padding-bottom:1"><%= linkFields[3] %></td>
+                  <td width="10" class="Nav">&nbsp;</td>
+                  <td><%= linkFields[1] %></td>
+                  <td width="10" valign="bottom" style="padding-bottom:1"><%= linkFields[2] %></td>
                 </tr>
 <%
 			}
@@ -303,9 +300,9 @@
 				String[] linkFields = (String[]) meters.get(i);
 %>
                 <tr onmouseover="hardwareMenuAppear(event, this, 'meterMenu', <%= linkFields[0] %>)"> 
-                  <td width="10" valign="top" style="padding-top:1"><%= linkFields[1] %></td>
-                  <td><%= linkFields[2] %></td>
-                  <td width="10" valign="bottom" style="padding-bottom:1"><%= linkFields[3] %></td>
+                  <td width="10" class="Nav">&nbsp;</td>
+                  <td><%= linkFields[1] %></td>
+                  <td width="10" valign="bottom" style="padding-bottom:1"><%= linkFields[2] %></td>
                 </tr>
 <%
 			}
@@ -317,7 +314,7 @@
             </td>
           </tr>
 <%
-	}
+	}	// if (inventories.getStarsLMHardware() > 0)
 %>
 		  </cti:checkProperty>
 		  <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE %>"> 
