@@ -142,7 +142,7 @@ function prepareSubmit(form) {
                   <tr> 
                     <input type="hidden" name="ProgID" value="<%= suProg.getProgramID() %>">
                     <input type="hidden" name="InvIDs" value="">
-                    <td width="30%" class="TableCell"><%= enrProg.getProgramName() %></td>
+                    <td width="30%" class="TableCell"><%= ServletUtils.getProgramDisplayNames(enrProg)[0] %></td>
                     <td width="30%" class="TableCell"> 
                       <select name="GroupID">
                         <%

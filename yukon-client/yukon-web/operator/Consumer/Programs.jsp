@@ -100,17 +100,8 @@
 			StarsLMProgramEvent event = programHistory.getStarsLMProgramEvent(i);
 			
 			String durationStr = "";
-			if (event.hasDuration()) {
-				if (event.getDuration() >= 12) {
-					int numDays = (int) (event.getDuration() / 24.0 + 0.5);
-					durationStr = numDays + " Day";
-					if (numDays > 1) durationStr += "s";
-				}
-				else {
-					durationStr = event.getDuration() + " Hour";
-					if (event.getDuration() > 1) durationStr += "s";
-				}
-			}
+			if (event.hasDuration())
+				durationStr = ServletUtils.getDurationFromHours(event.getDuration());
 			
 			String scheduledStr = "";
 			if (event.hasDuration() && event.getEventDateTime().after(new Date()))

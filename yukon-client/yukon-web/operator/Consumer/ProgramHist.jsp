@@ -120,7 +120,7 @@
                       <tr> 
                         <td width="61" class="TableCell"><%= timePart.format(hist.getStartDateTime()) %></td>
                         <td width="61" class="TableCell"><%= timePart.format(stopTime) %></td>
-                        <td width="60" class="TableCell"><%= ServletUtils.getDurationString(durationSec) %></td>
+                        <td width="60" class="TableCell"><%= ServletUtils.getDurationFromSeconds(durationSec) %></td>
                       </tr>
                       <%
 				}
@@ -132,7 +132,7 @@
                         <td width="61" class="TableCell"> 
                           <div align="right">Total:</div>
                         </td>
-                        <td width="60" class="TableCell"><%= ServletUtils.getDurationString(totalSec) %></td>
+                        <td width="60" class="TableCell"><%= ServletUtils.getDurationFromSeconds(totalSec) %></td>
                       </tr>
                       <%
 			}
@@ -150,19 +150,19 @@
                     <table width="150" border="0" cellspacing="0" bgcolor="white" cellpadding="2" align="center">
                       <tr> 
                         <td height="23" class="TableCell" width="117">Today</td>
-                        <td height="23" class="TableCell" width="95"><%= ServletUtils.getDurationString(summary.getDailyTime()) %></td>
+                        <td height="23" class="TableCell" width="95"><%= ServletUtils.getDurationFromSeconds(summary.getDailyTime()) %></td>
                       </tr>
                       <tr> 
                         <td height="23" class="TableCell" width="117">Past Month</td>
-                        <td height="23" class="TableCell" width="95"><%= ServletUtils.getDurationString(summary.getMonthlyTime()) %></td>
+                        <td height="23" class="TableCell" width="95"><%= ServletUtils.getDurationFromSeconds(summary.getMonthlyTime()) %></td>
                       </tr>
                       <tr> 
                         <td height="23" class="TableCell" width="117">Seasonal</td>
-                        <td height="23" class="TableCell" width="95"><%= ServletUtils.getDurationString(summary.getSeasonalTime()) %></td>
+                        <td height="23" class="TableCell" width="95"><%= ServletUtils.getDurationFromSeconds(summary.getSeasonalTime()) %></td>
                       </tr>
                       <tr> 
                         <td height="23" class="TableCell" width="117">Annual</td>
-                        <td height="23" class="TableCell" width="95"><%= ServletUtils.getDurationString(summary.getAnnualTime()) %></td>
+                        <td height="23" class="TableCell" width="95"><%= ServletUtils.getDurationFromSeconds(summary.getAnnualTime()) %></td>
                       </tr>
                     </table>
                   </td>

@@ -92,7 +92,7 @@
                           <tr> 
                             <td class="TableCell" width="110"><%= histDateFormat.format(hist.getStartDateTime()) %></td>
                             <td class="TableCell" width="110"><%= histDateFormat.format(stopTime) %></td>
-                            <td class="TableCell" width="79"><%= ServletUtils.getDurationString(durationSec) %></td>
+                            <td class="TableCell" width="79"><%= ServletUtils.getDurationFromSeconds(durationSec) %></td>
                           </tr>
                           <%
 	}
@@ -101,7 +101,7 @@
                             <td class="TableCell" colspan="2"> 
                               <div align="right">Total:</div>
                             </td>
-                            <td class="TableCell" width="79"><%= ServletUtils.getDurationString(totalSec) %></td>
+                            <td class="TableCell" width="79"><%= ServletUtils.getDurationFromSeconds(totalSec) %></td>
                           </tr>
                         </table>
                       </td>

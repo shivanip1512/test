@@ -132,7 +132,7 @@ function setRedirect(form) {
                       <tr> 
                         <td width="61" class="TableCell"><%= timePart.format(hist.getStartDateTime()) %></td>
                         <td width="61" class="TableCell"><%= timePart.format(stopTime) %></td>
-                        <td width="60" class="TableCell"><%= ServletUtils.getDurationString(durationSec) %></td>
+                        <td width="60" class="TableCell"><%= ServletUtils.getDurationFromSeconds(durationSec) %></td>
                       </tr>
 <%
 				}
@@ -144,7 +144,7 @@ function setRedirect(form) {
                         <td width="61" class="TableCell">
                           <div align="right">Total:</div>
                         </td>
-                        <td width="60" class="TableCell"><%= ServletUtils.getDurationString(totalSec) %></td>
+                        <td width="60" class="TableCell"><%= ServletUtils.getDurationFromSeconds(totalSec) %></td>
                       </tr>
 <%
 			}
