@@ -19,12 +19,14 @@ public class DynamicVerification extends com.cannontech.database.db.DBPersistent
 	private Integer receiverID;
 	private Integer transmitterID;
 	private String command;
-	private String status;
+	private String received;
+	private Integer codeSequence;
+	private String codeStatus;
 	
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"LOGID", "TIMESTAMP", "RECEIVERID", 
-		"TRANSMITTERID", "COMMAND", "STATUS"
+		"TRANSMITTERID", "COMMAND", "CODESEQUENCE", "CODESTATUS"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "LOGID" };
@@ -35,14 +37,15 @@ public DynamicVerification() {
 	super();
 }
 
-public DynamicVerification(Integer lgID, Integer stamp, Integer recID, Integer transID, String com, String stat) {
+public DynamicVerification(Integer lgID, Integer stamp, Integer recID, Integer transID, String com, Integer codeSeq, String stat) {
 	super();
 	logID = lgID;
 	timestamp = stamp;
 	receiverID = recID;
 	transmitterID = transID;
 	command = com;
-	status = stat;
+	codeSequence = codeSeq;
+	codeStatus = stat;
 	
 }
 
@@ -52,7 +55,8 @@ public void add() throws java.sql.SQLException
 	{ 
 		getLogID(), getTimestamp(),
 		getReceiverID(), getTransmitterID(), 
-		getCommand(), getStatus()
+		getCommand(), getCodeSequence(),
+		getCodeStatus()
 	};
 
 	add( TABLE_NAME, addValues );
@@ -121,8 +125,12 @@ public String getCommand() {
 	return command;
 }
 
-public String getStatus() {
-	return status;
+public Integer getCodeSequence() {
+	return codeSequence;
+}
+
+public String getCodeStatus() {
+	return codeStatus;
 }
 
 public void retrieve() 
@@ -139,7 +147,8 @@ public void retrieve()
 			setReceiverID( (Integer) results[2] );
 			setTransmitterID( (Integer) results[3] );
 			setCommand( (String) results[4] );
-			setStatus( (String) results[5] );
+			setCodeSequence( (Integer) results[5]);
+			setCodeStatus( (String) results[6] );
 		}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -170,8 +179,12 @@ public void setCommand(String com) {
 	command = com;
 }
 
-public void setStatus(String stat) {
-	status = stat;
+public void setCodeSequence(Integer seq) {
+	codeSequence = seq;
+}
+
+public void setCodeStatus(String stat) {
+	codeStatus = stat;
 }
 
 public void update() 
@@ -180,7 +193,8 @@ public void update()
 	{ 
 		getLogID(), getTimestamp(),
 		getReceiverID(), getTransmitterID(), 
-		getCommand(), getStatus()
+		getCommand(), getCodeSequence(),
+		getCodeStatus()
 	};
 	
 	Object constraintValues[] = { getLogID() };
