@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/06/04 15:15:55 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/06/20 20:57:32 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -145,7 +145,7 @@ public:
     INT         initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = 11);
     INT         initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = 12);
     //  Load Profile gets a low priority so it doesn't butt heads so hard with other reads
-    INT         initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = 8);
+    INT         initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = 6);
 
     bool isScanDataValid() const;
     BOOL isScanWindowOpen(RWTime &aNow=RWTime().now()) const;
