@@ -39,7 +39,7 @@ public void delete() throws java.sql.SQLException
 {
 /*	delete(
 		com.cannontech.database.db.device.lm.LMEnergyExchangeCustomerList.TABLE_NAME,
-		"LMCustomerDeviceID",
+		"CustomerID",
 		getCiCustomerBase().getDeviceID());
 
 	// delete all the ownership of meters for this customer

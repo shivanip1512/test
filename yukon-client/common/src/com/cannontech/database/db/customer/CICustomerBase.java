@@ -105,7 +105,7 @@ public class CICustomerBase extends com.cannontech.database.db.DBPersistent
 		String sql = "select c.CustomerID, c.CompanyName " +
 						 "from " + TABLE_NAME + " c " +
 						 "and c.CustomerID not in " +
-						 "(select lmcustomerdeviceid " + 
+						 "(select customerid " + 
 						 "from " + LMProgramCurtailCustomerList.TABLE_NAME + ")";
 	
 		try

@@ -151,7 +151,7 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	{
 		delete(
 			com.cannontech.database.db.device.lm.LMEnergyExchangeCustomerList.TABLE_NAME,
-			"LMCustomerDeviceID",
+			"CustomerID",
 			getCustomerID() );
 	
 		//just delete the bridge value to the EnergyCompanyCustomerList table
