@@ -7,40 +7,62 @@ package com.cannontech.database.db.graph;
  */
 public class GraphDataSeries extends com.cannontech.database.db.DBPersistent {
 
-	// GraphDataSeries valid types
-	public static final String GRAPH_TYPE_STRING = "graph";
-	public static final String PEAK_TYPE_STRING  = "peak";
-	public static final String USAGE_TYPE_STRING = "usage";
-	public static final String YESTERDAY_TYPE_STRING = "yesterday";
-	public static final String PEAK_INTERVAL_TYPE_STRING = "peakinterval";
+	// GraphDataSeries valid types (public int's only)
+	// the private int's are for completeness only and are NOT valid GDS strings.
+	private static final String GRAPH_TYPE_STRING = "Graph Only";
+	private static final String PRIMARY_TYPE_STRING  = "Primary";	//old peak
+	private static final String BASIC_TYPE_STRING = "Basic";
+	private static final String PEAK_TYPE_STRING = "Peak";
+	private static final String YESTERDAY_TYPE_STRING = "Yesterday Only";
+
+	public static final String USAGE_TYPE_STRING = "Usage";
+	public static final String BASIC_GRAPH_TYPE_STRING = "Graph";
+	public static final String USAGE_GRAPH_TYPE_STRING = "Usage Graph";
+	public static final String PEAK_GRAPH_TYPE_STRING = "Peak Graph";
+	public static final String YESTERDAY_GRAPH_TYPE_STRING = "Yesterday";
+
 	
-	public static final int GRAPH_TYPE= 0x0001;
-	public static final int PEAK_TYPE = 0x0002;
-	public static final int USAGE_TYPE = 0x0004;
-	public static final int YESTERDAY_TYPE = 0x0008;
-	public static final int PEAK_INTERVAL_TYPE = 0x0010;
+	public static final int GRAPH_TYPE= 0x0001;	//will be 'graphed' in trending (INTERVAL)
+	public static final int PRIMARY_TYPE = 0x0002;	//the coincidental point (summary info) (only one gds can be this)
+	public static final int USAGE_TYPE = 0x0004;	//energy usage (summary info)
+	public static final int BASIC_TYPE = 0x0008;	//interval/normal point readings
+	public static final int PEAK_TYPE = 0x0010;	//actual peak day data used
+	public static final int YESTERDAY_TYPE = 0x0020;	//yesterday data used
+	
+	//COMBINATION DATA SERIES TYPES
+	public static final int BASIC_GRAPH_TYPE = 0x0009; //BASIC + GRAPH
+	public static final int USAGE_GRAPH_TYPE = 0x0005;	//USAGE + GRAPH
+	public static final int PEAK_GRAPH_TYPE = 0x0011;	//PEAK + GRAPH
+	public static final int YESTERDAY_GRAPH_TYPE = 0x0021;	//YESTERDAY + GRAPH
+	
+	//VALID TYPES FOR GDS TABLE	
 	public static String[] validTypeStrings = 
 	{
 		GRAPH_TYPE_STRING,
-		PEAK_TYPE_STRING, 
 		USAGE_TYPE_STRING, 
-		YESTERDAY_TYPE_STRING, 
-		PEAK_INTERVAL_TYPE_STRING
+		BASIC_TYPE_STRING,
+		PEAK_TYPE_STRING,
+		YESTERDAY_TYPE_STRING,
+		BASIC_GRAPH_TYPE_STRING,
+		USAGE_GRAPH_TYPE_STRING,
+		PEAK_GRAPH_TYPE_STRING,
+		YESTERDAY_GRAPH_TYPE_STRING
 	};	
 	public static int[] validTypeInts =
 	{
 		GRAPH_TYPE,
-		PEAK_TYPE, 
 		USAGE_TYPE, 
-		YESTERDAY_TYPE, 
-		PEAK_INTERVAL_TYPE
+		BASIC_TYPE,
+		PEAK_TYPE,
+		YESTERDAY_TYPE,
+		BASIC_GRAPH_TYPE,
+		USAGE_GRAPH_TYPE,
+		PEAK_GRAPH_TYPE,
+		YESTERDAY_GRAPH_TYPE
 	}; 	
-	public static final int NORMAL_QUERY_TYPE = 0x0007; // graph, peak, usage
-//	public static final int VALID_INTERVAL_TYPE = 0x0019;	// graph, yesterday, peakinterval
-	
 	
 	private java.lang.Integer graphDataSeriesID = null;
-	private java.lang.String type = GRAPH_TYPE_STRING;
+	private Integer type = new Integer(BASIC_GRAPH_TYPE);
 	private java.lang.Integer graphDefinitionID = null;
 	private java.lang.Integer pointID = null;	
 	private java.lang.String label = " ";
@@ -63,26 +85,30 @@ public static int getTypeInt(String type)
 			return validTypeInts[i];
 	}
 	// TYPE NOT FOUND, default to Graph
-	return GRAPH_TYPE;
+	return BASIC_GRAPH_TYPE;
 }
 public static String getType(int type)
 {
+	// must take off primary point mask because there is no string representation of it.
+	if( isPrimaryType(type))
+		type = type - PRIMARY_TYPE;
+	
 	for( int i = 0; i < validTypeInts.length; i++)
 	{
 		if( validTypeInts[i] == type )
 			return validTypeStrings[i];
 	}
 	// TYPE NOT FOUND, default to Graph
-	return GRAPH_TYPE_STRING;
+	return BASIC_GRAPH_TYPE_STRING;
 }
-
+/*
 public static boolean isValidIntervalType(int type)
 {
-	if(isGraphType(type) || isYesterdayType(type) || isPeakIntervalType(type))
+	if(isGraphType(type) || isYesterdayType(type) || isPeakType(type))
 		return true;
 
 	return false;
-}
+}*/
 public static boolean isGraphType(int type)
 {
 	if((type & GRAPH_TYPE) == GRAPH_TYPE)
@@ -97,9 +123,9 @@ public static boolean isYesterdayType(int type)
 
 	return false;
 }
-public static boolean isPeakIntervalType(int type)
+public static boolean isPeakType(int type)
 {
-	if ((type & PEAK_INTERVAL_TYPE) == PEAK_INTERVAL_TYPE)
+	if ((type & PEAK_TYPE) == PEAK_TYPE)
 		return true;
 
 	return false;
@@ -111,20 +137,21 @@ public static boolean isUsageType(int type)
 
 	return false;
 }
-public static boolean isPeakType(int type)
+public static boolean isPrimaryType(int type)	//OLD PEAK
 {
-	if ((type & PEAK_TYPE) == PEAK_TYPE)
+	if ((type & PRIMARY_TYPE) == PRIMARY_TYPE)
 		return true;
 
 	return false;
 }
+/*
 public static boolean isBasicQueryType(int type)
 {
-	if( isGraphType(type) || isPeakType(type) || isUsageType(type))
+	if( isGraphType(type) || isPrimaryType(type) || isUsageType(type))
 		return true;
 	
 	return false;
-}
+}*/
 /**
  * GraphDataSeries constructor comment.
  */
@@ -237,7 +264,8 @@ public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID,
 		GraphDataSeries dataSeries = new GraphDataSeries();
 
 		java.math.BigDecimal gdsID = (java.math.BigDecimal) sql.getRow(i)[0];
-		String type = (String) sql.getRow(i)[1];
+//		String type = (String) sql.getRow(i)[1];
+		java.math.BigDecimal type = (java.math.BigDecimal) sql.getRow(i)[1];
 		java.math.BigDecimal pID = (java.math.BigDecimal) sql.getRow(i)[2];		
 		String label = (String) sql.getRow(i)[3];
 		String axis = (String) sql.getRow(i)[4];
@@ -249,7 +277,7 @@ public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID,
 	
 		dataSeries.setGraphDataSeriesID ( new Integer( gdsID.intValue() ) );		
 		dataSeries.setGraphDefinitionID(graphDefinitionID);
-		dataSeries.setType(type);
+		dataSeries.setType(new Integer(type.intValue()));
 		dataSeries.setPointID( new Integer( pID.intValue() ) );
 		dataSeries.setLabel(label);		
 		dataSeries.setAxis( new Character( axis.charAt(0)) );
@@ -377,14 +405,15 @@ public java.lang.Integer getPointID() {
  * Creation date: (1/30/2001 2:09:16 PM)
  * @return java.lang.String
  */
-public java.lang.String getType() {
+//public java.lang.String getType() {
+public java.lang.Integer getType() {
 	return type;
 }
-
+/*
 public int getTypeInt()
 {
 	return getTypeInt(getType());
-}
+}*/
 /**
  * Insert the method's description here.
  * Creation date: (10/6/00 2:49:54 PM)
@@ -421,7 +450,8 @@ public void retrieve() throws java.sql.SQLException
 		setLabel( (String) results[2] );
 		setAxis(  new Character( ((String) results[3]).charAt(0) ));
 		setColor( (Integer) results[4] );
-		setType( (String) results[5] );
+//		setType( (String) results[5] );
+		setType( (Integer) results[5] );
 		setMultiplier((Double)results[6]);
 	}
 }
@@ -494,7 +524,8 @@ public void setPointID(java.lang.Integer newPointID) {
  * Creation date: (1/30/2001 2:09:16 PM)
  * @param newType java.lang.String
  */
-public void setType(java.lang.String newType) {
+//public void setType(java.lang.String newType) {
+public void setType(java.lang.Integer newType) {
 	type = newType;
 }
 
