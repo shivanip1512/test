@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.util.CtiProperties;
 import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.dbeditor.wizard.port.PooledPortListPanel;
@@ -47,7 +48,14 @@ public class PortEditorPanel extends com.cannontech.common.editor.PropertyPanel 
 		},
 		{		//5 - PortPool
 			PortTypes.DIALOUT_POOL
-		}
+		},
+		
+		{		//6 - PAOExclusionEditorPanel
+			PortTypes.LOCAL_DIRECT, PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO,
+			PortTypes.LOCAL_DIALUP, PortTypes.TSERVER_DIRECT, PortTypes.TSERVER_SHARED,
+			PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP, PortTypes.LOCAL_DIALBACK,
+			PortTypes.DIALOUT_POOL
+		}		
 
 	};
 	private JTabbedPane ivjPortEditorTabbedPane = null;
@@ -104,6 +112,19 @@ public Object[] createNewPanel(int panelIndex)
 			objs[1] = "Pooled Ports";
 			break;
 
+		case 6:
+			String showIt = 
+					CtiProperties.getInstance().getProperty(CtiProperties.KEY_EDITOR_EXCLUSION, "false");
+
+			if( "TRUE".equalsIgnoreCase(showIt) )
+			{
+				objs[0] = new com.cannontech.dbeditor.editor.device.PAOExclusionEditorPanel();
+				objs[1] = "Exclusion List";
+			}
+			else
+				objs = null;
+
+			break;
 	}
 		
 	return objs;
@@ -230,7 +251,11 @@ public void setValue(Object val) {
 		 	if( type == EDITOR_TYPES[i][j] )
 			{
 				Object[] panelTabs = createNewPanel(i);
-
+				
+				//do not add null panels
+				if( panelTabs == null )
+					continue;
+				
 				tempPanel = (DataInputPanel)panelTabs[0];
 				panels.addElement( tempPanel );
 				tabs.addElement( panelTabs[1] );

@@ -1,13 +1,23 @@
 package com.cannontech.database.data.pao;
 
+import java.util.Vector;
+
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.pao.PAOExclusion;
+
 /**
  * This type was created in VisualAge.
  */
 public abstract class YukonPAObject extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange
 {
 	private com.cannontech.database.db.pao.YukonPAObject yukonPAObject = null;
+	
+	//contains com.cannontech.database.db.pao.PAOExclusion
+	private Vector paoExclusionVector = null;
+
+
 /**
- * IEDMeter constructor comment.
+ * YukonPAObject constructor comment.
  */
 public YukonPAObject() {
 	super();
@@ -18,6 +28,10 @@ public YukonPAObject() {
 public void add() throws java.sql.SQLException 
 {
 	getYukonPAObject().add();
+	
+	for( int i = 0; i < getPAOExclusionVector().size(); i++ )
+		((DBPersistent)getPAOExclusionVector().get(i)).add();
+
 }
 /**
  * Insert the method's description here.
@@ -27,8 +41,9 @@ public void add() throws java.sql.SQLException
  */
 public void addPartial() throws java.sql.SQLException 
 {
-	getYukonPAObject().add();	
+	add();
 }
+
 /**
  * This method was created in VisualAge.
  */
@@ -44,6 +59,8 @@ public void delete() throws java.sql.SQLException
    delete( "LMControlHistory", "PAObjectID", getPAObjectID() );
    delete( "PAOOwner", "ChildID", getPAObjectID() );
 
+	PAOExclusion.deleteAllPAOExclusions( getPAObjectID().intValue(), getDbConnection() );
+	
 	getYukonPAObject().delete();
 }
 /**
@@ -54,6 +71,7 @@ public void delete() throws java.sql.SQLException
 public void deletePartial() throws java.sql.SQLException 
 {
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (10/31/2001 1:40:47 PM)
@@ -210,7 +228,15 @@ protected com.cannontech.database.db.pao.YukonPAObject getYukonPAObject()
 public void retrieve() throws java.sql.SQLException 
 {
 	getYukonPAObject().retrieve();
+	
+	PAOExclusion[] exc =
+		PAOExclusion.getAllPAOExclusions( getPAObjectID().intValue(), getDbConnection() );
+	
+	getPAOExclusionVector().removeAllElements();
+	for( int i = 0; i < exc.length; i++ )
+		getPAOExclusionVector().add( exc[i] );	
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (1/4/00 3:32:03 PM)
@@ -221,7 +247,11 @@ public void setDbConnection(java.sql.Connection conn)
 	super.setDbConnection(conn);
 
 	getYukonPAObject().setDbConnection(conn);
+
+	for( int i = 0; i < getPAOExclusionVector().size(); i++ )
+		((DBPersistent)getPAOExclusionVector().get(i)).setDbConnection( conn );
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (9/12/2001 10:25:35 AM)
@@ -229,7 +259,17 @@ public void setDbConnection(java.sql.Connection conn)
 protected void setPAObjectID( Integer id )
 {
 	getYukonPAObject().setPaObjectID( id );
+	
+	for( int i = 0; i < getPAOExclusionVector().size(); i++ )
+	{
+		//we must null out the PK since there is a new PAObjectID owner
+		((PAOExclusion)getPAOExclusionVector().get(i)).setExclusionID( null );
+
+		((PAOExclusion)getPAOExclusionVector().get(i)).setPaoID( id );
+	}
+	
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (9/12/2001 10:25:35 AM)
@@ -262,19 +302,12 @@ public void setPAOStatistics( String newStats )
 {
 	getYukonPAObject().setPaoStatistics( newStats );
 }
-/**
- * Insert the method's description here.
- * Creation date: (9/12/2001 3:52:13 PM)
- * @param newYukonPAObject com.cannontech.database.db.pao.YukonPAObject
- */
-protected void setYukonPAObject(com.cannontech.database.db.pao.YukonPAObject newYukonPAObject) {
-	yukonPAObject = newYukonPAObject;
-}
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.String
  */
-public String toString() 
+public String toString()
 {
 	return getYukonPAObject().getPaoName();
 }
@@ -284,5 +317,22 @@ public String toString()
 public void update() throws java.sql.SQLException 
 {
 	getYukonPAObject().update();
+
+
+	PAOExclusion.deleteAllPAOExclusions( getPAObjectID().intValue(), getDbConnection() );
+	for( int i = 0; i < getPAOExclusionVector().size(); i++ )
+		((DBPersistent)getPAOExclusionVector().get(i)).add();
 }
+
+	/**
+	 * @return Vector
+	 */
+	public Vector getPAOExclusionVector()
+	{
+		if( paoExclusionVector == null )
+			paoExclusionVector = new Vector(8);
+
+		return paoExclusionVector;
+	}
+
 }

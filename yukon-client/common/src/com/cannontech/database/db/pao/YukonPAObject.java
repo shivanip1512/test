@@ -14,10 +14,6 @@ public class YukonPAObject extends com.cannontech.database.db.DBPersistent
 	private Character disableFlag = new Character('N');
 	private String paoStatistics = "-----";
 
-
-	public static final char STAT_HOURLY  = 'H';
-	public static final char STAT_DAILY   = 'D';
-	public static final char STAT_MONTHLY = 'M';
 	
 	public static final String SETTER_COLUMNS[] = 
 	{ 

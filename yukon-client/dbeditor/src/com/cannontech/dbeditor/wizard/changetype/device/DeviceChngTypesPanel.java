@@ -405,6 +405,11 @@ public Object getValue(Object val)
 		((com.cannontech.database.data.device.DeviceBase) val).setPAOStatistics(
 			((com.cannontech.database.data.device.DeviceBase) oldDevice).getPAOStatistics() );
 
+		//remove then add the new elements for PAOExclusion
+		((com.cannontech.database.data.device.DeviceBase) val).getPAOExclusionVector().removeAllElements();
+		((com.cannontech.database.data.device.DeviceBase) val).getPAOExclusionVector().addAll(
+			((com.cannontech.database.data.device.DeviceBase) oldDevice).getPAOExclusionVector() );
+
 
 
 		if( val instanceof com.cannontech.database.data.device.CarrierBase

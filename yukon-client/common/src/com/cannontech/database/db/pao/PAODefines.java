@@ -22,8 +22,8 @@ public interface PAODefines
 
 
 	// -------------- PAO Exclusions -----------------------------
-	public static final String EXCL_OPTIMAL		= "Optimal";
-	public static final String EXCL_MAINTAIN		= "Maintain Order";
-	public static final String EXCL_PRIORITY		= "Priority";
+	public static final String EXCL_REQ_OPTIMAL		= "Optimal";  //id 0 in C++
+	public static final String EXCL_REQ_MAINTAIN		= "Maintain Order"; //id 1 in C++
+	public static final String EXCL_REQ_PRIORITY		= "Priority"; //id 2 in C++
 
 }

@@ -1,6 +1,7 @@
 package com.cannontech.dbeditor.editor.device;
 
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.util.CtiProperties;
 import com.cannontech.database.data.pao.PAOGroups;
 
 /**
@@ -81,6 +82,20 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 		},
 		{	//9 - MCTBroadcastListEditorPanel
 			PAOGroups.MCTBROADCAST
+		},
+		{	//10 - PAOExclusionEditorPanel
+			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.TCU5000, PAOGroups.TCU5500, 
+			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER, PAOGroups.ALPHA_A1, 
+			PAOGroups.ALPHA_PPLUS, PAOGroups.FULCRUM, PAOGroups.VECTRON, PAOGroups.QUANTUM,
+			PAOGroups.DAVISWEATHER, PAOGroups.LANDISGYRS4, PAOGroups.SIXNET, PAOGroups.MCT310, 
+			PAOGroups.MCT318, PAOGroups.MCT310ID, PAOGroups.MCT310IL, PAOGroups.MCT318L, 
+			PAOGroups.MCT360, PAOGroups.MCT370, PAOGroups.MCT240, PAOGroups.LMT_2, 
+			PAOGroups.MCT248, PAOGroups.MCT250, PAOGroups.MCT210, PAOGroups.MCT213,
+			PAOGroups.REPEATER, PAOGroups.REPEATER_800, PAOGroups.RTUILEX, PAOGroups.RTUWELCO, 
+			PAOGroups.DR_87, PAOGroups.TAPTERMINAL, PAOGroups.WCTP_TERMINAL,
+			PAOGroups.VIRTUAL_SYSTEM, PAOGroups.DCT_501, PAOGroups.RTU_DNP, PAOGroups.RTU_DART,
+			PAOGroups.ION_7700, PAOGroups.ION_7330, PAOGroups.ION_8300,
+			PAOGroups.MCTBROADCAST, PAOGroups.MCT310CT, PAOGroups.MCT310IM, PAOGroups.MCT310IDL
 		}
 
 };
@@ -150,9 +165,26 @@ public Object[] createNewPanel(int panelIndex)
 			objs[0] = new com.cannontech.dbeditor.editor.device.capcontrol.CapBankInfoPanel();
 			objs[1] = "Information";
 			break;
+
 		case 9:
 			objs[0] = new com.cannontech.dbeditor.wizard.device.MCTBroadcastListEditorPanel();
 			objs[1] = "MCT Assignment";
+			break;
+
+		case 10:
+			String showIt = 
+					CtiProperties.getInstance().getProperty(CtiProperties.KEY_EDITOR_EXCLUSION, "false");
+	
+			if( "TRUE".equalsIgnoreCase(showIt) )
+			{
+				objs[0] = new com.cannontech.dbeditor.editor.device.PAOExclusionEditorPanel();
+				objs[1] = "Exclusion List";
+			}
+			else
+				objs = null;
+			
+			break;
+
 	}
 		
 	return objs;
@@ -268,6 +300,10 @@ public void setValue(Object val) {
 		 	if( type == EDITOR_TYPES[i][j] )
 			{
 				Object[] panelTabs = createNewPanel(i);
+
+				//do not add null panels
+				if( panelTabs == null )
+					continue;
 
 				tempPanel = (DataInputPanel)panelTabs[0];
 				panels.addElement( tempPanel );

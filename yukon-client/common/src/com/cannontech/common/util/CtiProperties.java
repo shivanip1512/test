@@ -41,6 +41,8 @@ public class CtiProperties extends java.util.Properties implements ClientRights
 	public static final String KEY_EDITOR_CAPCONTROL = "dbeditor_cap_control";
 	public static final String KEY_EDITOR_SYSTEM = "dbeditor_system";
 	public static final String KEY_DECIMAL_PLACES = "decimal_places";
+	public static final String KEY_EDITOR_EXCLUSION = "dbeditor_trans_exclusion";
+
 
 	public static final String KEY_CAP_CONTROL_MACHINE = "cap_control_machine";
 	public static final String KEY_CAP_CONTROL_PORT = "cap_control_port";
@@ -92,6 +94,9 @@ public class CtiProperties extends java.util.Properties implements ClientRights
 		KEY_EDITOR_CAPCONTROL,
 		KEY_EDITOR_SYSTEM,
 		KEY_DECIMAL_PLACES,
+		KEY_EDITOR_EXCLUSION,
+		
+		
       KEY_DISPATCH_MACHINE,
       KEY_DISPATCH_PORT,
 
