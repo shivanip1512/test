@@ -11,9 +11,9 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.esub.element.DrawingMetaElement;
+import com.cannontech.roles.yukon.SystemRole;
 
 /**
- * Insert the type's description here.
  * Creation date: (12/5/2002 4:16:03 PM)
  * @author: 
  */
@@ -403,6 +403,10 @@ private javax.swing.JComboBox getYukonRoleComboBox() {
 			ivjYukonRoleComboBox = new javax.swing.JComboBox();
 			ivjYukonRoleComboBox.setName("YukonRoleComboBox");
 			// user code begin {1}
+			//allow them to pick the 'everybody' role
+			LiteYukonRole sysRole = AuthFuncs.getRole(SystemRole.ROLEID);
+			ivjYukonRoleComboBox.addItem(sysRole);
+			
 			Iterator i = AuthFuncs.getRoles("Esubstation").iterator();
 			while(i.hasNext()) {
 				LiteYukonRole r = (LiteYukonRole) i.next();
@@ -501,6 +505,9 @@ public static void main(java.lang.String[] args) {
 		Object selected = getYukonRoleComboBox().getSelectedItem();
 		if(selected != null) {
 			e.setRoleID(((LiteYukonRole)selected).getRoleID());
+		}
+		else {
+			e.setRoleID(SystemRole.ROLEID);
 		}
 		return e;			
 	}
