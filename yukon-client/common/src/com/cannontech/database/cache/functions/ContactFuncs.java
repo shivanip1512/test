@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
  * Insert the type's description here.
@@ -143,4 +144,23 @@ public final class ContactFuncs
 			
 		return liteCICust;
 	}
+	
+	public static LiteYukonUser getYukonUser(int contactID_) 
+	{
+		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		synchronized(cache) 
+		{
+			Iterator iter = cache.getAllContacts().iterator();
+			while(iter.hasNext())
+			{
+				LiteContact contact = (LiteContact) iter.next();
+				if(contact.getContactID() == contactID_)
+				{
+					LiteYukonUser liteYukonUser = YukonUserFuncs.getLiteYukonUser(contact.getLoginID());
+					return liteYukonUser;
+				}
+			}		
+		}
+		return null;
+	}	
 }
