@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2002/07/09 20:12:28 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2002/07/10 16:29:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -616,7 +616,7 @@ int CtiVanGogh::registration(CtiVanGoghConnectionManager *CM, const CtiPointRegi
     return nRet;
 }
 
-int  CtiVanGogh::commandMsgHandler(const CtiCommandMsg *Cmd)
+int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 {
     int status = NORMAL;
     int i;
@@ -1083,11 +1083,11 @@ int CtiVanGogh::postDBChange(const CtiDBChangeMsg &Msg)
     {
         if(Msg.getId())
         {
-            _snprintf(temp, sizeof(temp), "ID %ld", Msg.getId());
+            _snprintf(temp, sizeof(temp) - 1, "ID %ld", Msg.getId());
         }
         else
         {
-            _snprintf(temp, sizeof(temp), "ENTRY");
+            _snprintf(temp, sizeof(temp) - 1, "ENTRY");
         }
 
         loadAlarmToDestinationTranslation();
@@ -1098,15 +1098,16 @@ int CtiVanGogh::postDBChange(const CtiDBChangeMsg &Msg)
 
         pSig->setUser(Msg.getUser());
 
+        // Send the message out to every connected client.
         {
             CtiLockGuard<CtiMutex> guard(server_mux);
             CtiServer::iterator  iter(mConnectionTable);
 
             for(;(Mgr = (CtiVanGoghConnectionManager *)iter());)
             {
-                Mgr->WriteConnQue( Msg.replicateMessage() );
+                Mgr->WriteConnQue( Msg.replicateMessage() );        // Send a copy of DBCHANGE on to each clients.
 
-                if(((CtiVanGoghConnectionManager*)Mgr)->getEvent())
+                if(((CtiVanGoghConnectionManager*)Mgr)->getEvent()) // If the client cares about events...
                 {
                     Mgr->WriteConnQue(pSig->replicateMessage());    // Copy pSig out to any event registered client
                 }
@@ -4246,7 +4247,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
             }
             Now = Now.now();
 
-            if(pChg != NULL)
+            if(pChg != NULL && (pChg->getDatabase() == ChangeNotificationGroupDb || pChg->getDatabase() == ChangeNotificationRecipientDb))
             {
                 CtiLockGuard<CtiMutex> guard(server_mux, 1000);
 

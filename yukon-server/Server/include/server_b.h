@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/server_b.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:50 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/07/10 16:29:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -88,7 +88,7 @@ public:
    virtual void  clientConnect(CtiConnectionManager *CM);
    virtual void  clientShutdown(CtiConnectionManager *&CM);
    virtual int   clientRegistration(CtiConnectionManager *CM);
-   virtual int   commandMsgHandler(const CtiCommandMsg *Cmd);
+   virtual int   commandMsgHandler(CtiCommandMsg *Cmd);
    virtual int   clientArbitrationWinner(CtiConnectionManager *CM);
    virtual int   clientConfrontEveryone(PULONG pClientCount = NULL);
    virtual int   clientPurgeQuestionables(PULONG pDeadClients = NULL);

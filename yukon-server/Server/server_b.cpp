@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/18 15:04:06 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/07/10 16:29:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -194,12 +194,117 @@ int  CtiServer::clientRegistration(CtiConnectionManager *CM)
 /*----------------------------------------------------------------------------*
  * This is a passthrough to handle specific commands on the server.
  *----------------------------------------------------------------------------*/
-int  CtiServer::commandMsgHandler(const CtiCommandMsg *Cmd)
+int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
 {
     int status = NORMAL;
 
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << "Unhandled command message " << Cmd->getOperation() << " sent to Main.." << endl;
+    CtiConnectionManager *pConn = (CtiConnectionManager *)Cmd->getConnectionHandle();
+
+    if(pConn)
+    {
+        switch(Cmd->getOperation())
+        {
+        case (CtiCommandMsg::Shutdown):
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " MainThread: SHUTDOWN received from queue" << endl;
+                }
+
+                /*
+                 *  We must wait until the requesting connection closes up the barnyard doors,
+                 *  Then we release VGMain to do the same for all remaining connections.
+                 */
+                // This will block on return until the Out and In threads have stopped executing
+                clientShutdown(pConn);
+
+                /*
+                 *  Shutdown / delete the VGMain Listener socket which releases ConnectionHandler
+                 *  Send a Client Shutdown message to each ConnecionManager's InThread to init
+                 *  A general closeout from VGMain.
+                 */
+                shutdown();
+                break;
+            }
+        case (CtiCommandMsg::LoopClient):
+        case (CtiCommandMsg::NoOp):
+            {
+                // cout << "VGMain: Looping the Client " << endl;
+                // "new" memory is deleted in the connection machinery!.
+                // use the copy constructor to return to the client.
+                pConn->WriteConnQue(new CtiCommandMsg(*Cmd));
+                break;
+            }
+        case (CtiCommandMsg::AreYouThere):
+            {
+                if(pConn->getClientQuestionable())
+                {
+                    if( DebugLevel & 0x00001000)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Client " << pConn->getClientName() <<
+                        " responded to AreYouThere " << endl;
+                    }
+                    // OK, the client responded... drop our bad connection flag...
+                    pConn->setClientQuestionable(FALSE);
+                    pConn->setClientRegistered(TRUE);
+
+                    clientArbitrationWinner( pConn );
+                }
+                else  // Client wants to hear from us?
+                {
+                    pConn->WriteConnQue(new CtiCommandMsg(*Cmd));
+                }
+
+                break;
+            }
+        case (CtiCommandMsg::ClientAppShutdown):
+            {
+                try
+                {
+                    RWCString name;
+
+                    name = pConn->getClientName();
+                    if( DebugLevel & 0x00001000)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " MainThread: Client " << name << " has requested shutdown via InThread" << endl;
+                    }
+                    // This will block on return until the Out and In threads have stopped executing
+                    clientShutdown(pConn);
+
+                    if( DebugLevel & 0x00001000)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " MainThread: Connection " << name << "'s threads have terminated" << endl;
+                    }
+                }
+                catch(...)
+                {
+                    cout << "**** Exception caught **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                break;
+            }
+        case (CtiCommandMsg::NewClient):
+            {
+                if( DebugLevel & 0x00000001)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " MainThread: " << rwThreadId() << " New connection" << endl;
+                    dout << RWTime() << " *** WARNING *** Use of this message is deprecated " << endl;
+                }
+                clientConnect(pConn);
+
+                break;
+            }
+        default:
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Unhandled command message " << Cmd->getOperation() << " sent to Main.." << endl;
+            }
+        }
+    }
 
     return status;
 }

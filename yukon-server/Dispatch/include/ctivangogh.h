@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/07/09 20:12:29 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/07/10 16:29:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -139,7 +139,7 @@ public:
     virtual ~CtiVanGogh();
 
     virtual void  clientShutdown(CtiConnectionManager *&CM);
-    virtual int   commandMsgHandler(const CtiCommandMsg *Cmd);
+    virtual int   commandMsgHandler(CtiCommandMsg *Cmd);
 
     virtual void  shutdown();
     int   postDBChange(const CtiDBChangeMsg &Msg);
