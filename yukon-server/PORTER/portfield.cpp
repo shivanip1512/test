@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.95 $
-* DATE         :  $Date: 2004/02/16 19:06:46 $
+* REVISION     :  $Revision: 1.96 $
+* DATE         :  $Date: 2004/02/17 15:09:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -118,27 +118,6 @@ using namespace std;
 
 extern RWCString GetDeviceName( ULONG id );
 
-
-void my_echo( char ch )
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << ch;
-    }
-}
-
-void my_other_echo( char ch )
-{
-    unsigned char uch = (unsigned char)ch;
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << ch;
-    }
-}
-
-
-
 /*
  *  gQueSlot is used by dialup ports to pluck the next item from within the queue's guts.
  */
@@ -153,9 +132,9 @@ bool deviceCanSurviveThisStatus(INT status);
 void commFail(CtiDeviceBase *Device, INT state);
 BOOL isTAPTermPort(LONG PortNumber);
 INT RequeueReportError(INT status, OUTMESS *OutMessage);
-INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage);
+INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device);
 INT VerifyPortStatus(CtiPortSPtr Port);
-INT ResetCommsChannel(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage);
+INT ResetCommsChannel(CtiPortSPtr Port, CtiDevice *Device);
 INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device);
 INT ValidateDevice(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *&OutMessage);
 INT VTUPrep(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device);
@@ -178,7 +157,7 @@ INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDevice *Device );
 INT ClearExclusions(CtiPortSPtr Port, CtiDevice *Device);
 BOOL areAnyQueueEntriesOkToSend(void *data, void* d);
 bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDevice *device );
-static INT VerifyOutMessage(OUTMESS *&OutMessage);
+static INT CheckIfOutMessageIsExpired(OUTMESS *&OutMessage);
 
 /* Threads that handle each port for communications */
 VOID PortThread(void *pid)
@@ -224,7 +203,7 @@ VOID PortThread(void *pid)
             continue;
         }
 
-        if( NORMAL != (status = ResetCommsChannel(Port, Device, OutMessage)) )
+        if( NORMAL != (status = ResetCommsChannel(Port, Device)) )
         {
             if(initFails++ > PorterPortInitQueuePurgeDelay)  // Every 5 minutes (default, can be CPARM'd), we will purge the queue entries.
             {
@@ -346,7 +325,7 @@ VOID PortThread(void *pid)
          *  Must verify that the outmessage has not expired.  The OM will be consumed and error returned to any
          *   requesting client.
          */
-        if( VerifyOutMessage(OutMessage) != NORMAL )
+        if( CheckIfOutMessageIsExpired(OutMessage) != NORMAL )
         {
             continue;
         }
@@ -363,6 +342,10 @@ VOID PortThread(void *pid)
         }
 
 
+        /*
+         * This seems like a bad way to decide if we have this device and port reserved already.. I think I am
+         * checking if the last device managed by this port was the same device as the new OM.
+         */
         if(Device && Device->getID() != OutMessage->DeviceID)
         {
             ClearExclusions(Port, Device);
@@ -623,7 +606,7 @@ bool RemoteReset(CtiDeviceBase *&Device, CtiPortSPtr Port)
  * doing so to verify that no entries exist for this device.  It will peek
  * 4 times per second for the post comm wait number of seconds.
  *----------------------------------------------------------------------------*/
-INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
+INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device)
 {
     INT    i = 0;
     INT    status = NORMAL;
@@ -717,7 +700,7 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
  * This function prepares or resets the communications port for (re)use.
  * it checks it for proper state and setup condition.
  *----------------------------------------------------------------------------*/
-INT ResetCommsChannel(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
+INT ResetCommsChannel(CtiPortSPtr Port, CtiDevice *Device)
 {
     INT status = NORMAL;
 
@@ -780,7 +763,7 @@ INT ResetCommsChannel(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
             {
                 if(Port->isDialup())
                 {
-                    PostCommQueuePeek(Port, Device, OutMessage);
+                    PostCommQueuePeek(Port, Device);
                 }
             }
         }
@@ -1415,7 +1398,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         ansi.reinitialize();
                         break;
                     }
-                
+
                 case TYPE_TDMARKV:
                     {
                        extern CtiConnection VanGoghConnection;
@@ -1434,11 +1417,11 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                        trx.setInCountActual( &bytesReceived );
 
                        transdata.reinitalize();
-                       
+
                        while( !transdata.isTransactionComplete() )
                        {
                           transdata.generate( trx );
-                          
+
                           status = Port->outInMess( trx, Device, traceList );
 
                           error = transdata.decode( trx, status );
@@ -1460,7 +1443,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                               dout << RWTime() << " ! comm error !" << endl;
                           }
                        }
-                       
+
                        CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg();
 
                        //send dispatch lp data directly
@@ -1477,7 +1460,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                        //send the billing data back to scanner
                        markv->sendCommResult( InMessage );
-                          
+
                        transdata.destroy();
                        markv = NULL;
                        break;
@@ -3413,264 +3396,6 @@ INT verifyConnectedDevice(CtiPortSPtr Port, CtiDevice *pDevice, LONG &oldid, LON
     return status;
 }
 
-VOID PortDialbackThread(void *pid)
-{
-    extern CtiConnection  VanGoghConnection;
-    extern CtiPILServer     PIL;
-
-    INT            i, status = NORMAL;
-    LONG           portid = (LONG)pid;      // NASTY CAST HERE!!!
-    CtiPortSPtr    Port( PortManager.PortGetEqual( portid ) );      // Bump the reference count on the shared object!
-    DWORD oldmask = 0, inmask = 0;
-    ULONG bytesRead;
-    RWCString byteString;
-    bool copyBytes;
-    int failedattempts;
-    ULONG bytesWritten = 0;
-
-    if(!Port)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " PortDialbackThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << " UNABLE TO START!" << endl;
-        }
-
-        return;
-    }
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " PortDialbackThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
-    }
-
-    while(!PorterQuit)
-    {
-        try
-        {
-            pair< bool, INT > portpair = Port->checkCommStatus(NULL);
-
-            if(portpair.first)  // Port was opened on this pass.
-            {
-                if( portpair.second != NORMAL )
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Error initializing Virtual Port " << Port->getPortID() <<" on " << Port->getName() << endl;
-                    }
-                    continue;
-                }
-                else
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Initializing Virtual Port " << Port->getPortID() <<" on " << Port->getName() << " for dialback" << endl;
-                    }
-                }
-            }
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << Port->getName() << " Waiting for CD" << endl;
-            }
-
-            int tout = 0;
-
-            try
-            {
-                while( !PorterQuit )
-                {
-                    if(!(tout++ % (4*3600)))
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << Port->getName() << " - Waiting for DCD" << endl;
-                        }
-                    }
-
-                    if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 500L) )
-                    {
-                        PorterQuit = TRUE;
-                        break;
-                    }
-                    else if(Port->dcdTest())
-                        break;
-                }
-            }
-            catch(...)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            if(PorterQuit)
-            {
-                break;
-            }
-
-            if(Port->dcdTest())
-            {
-                char mych = '\0';
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << Port->getName() << " line has been answered..." << endl;
-                }
-
-                bytesRead = -1;
-                copyBytes = false;
-                byteString = RWCString();
-
-                failedattempts = 0;
-
-                while(failedattempts < 30)
-                {
-                    Port->readPort(&mych, 1, 1, &bytesRead);
-
-                    if(bytesRead != 0)
-                    {
-                        if(mych == 'B' || copyBytes)
-                        {
-                            copyBytes = true;
-                            byteString.append(mych);
-
-                            if(byteString.contains("END"))
-                            {
-                                break; // the while!
-                            }
-                        }
-                    }
-                    else
-                    {
-                        failedattempts++;
-                    }
-                }
-
-                if(!byteString.isNull())
-                {
-                    // We need to look for the message.
-                    RWCTokenizer tok(byteString);
-                    RWCString tstr;
-                    RWCString strdev;
-                    RWCString strtime;
-                    RWCString strpriority;
-                    RWCString strmsg;
-                    RWTime msgtime;
-
-
-                    tstr = tok(); // Grab "BEGIN"
-                    tstr = tok(); // Grab "ALARM"
-                    if(!tstr.compareTo("ALARM"))
-                    {
-                        strdev = tok();         // Get the translation name from the ion.
-                        strtime = tok();        // Unix time value!
-                        strpriority = tok();    // Priority.
-
-                        while(!(tstr = tok()).isNull())
-                        {
-                            tstr = tstr.strip(RWCString::trailing, '\r');
-
-                            if(!tstr.compareTo("END"))
-                            {
-                                Port->writePort("ACK\r\n", 5, 5, &bytesWritten);
-                                break;
-                            }
-                            else
-                                strmsg += tstr + " ";
-                        }
-                    }
-
-                    if(!strtime.isNull())
-                    {
-                        msgtime = RWTime( atoi(strtime.data()) + rwEpoch );
-                    }
-
-                    if(!strdev.isNull())
-                    {
-                        CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(SYS_PID_PORTER, 0, strdev + ": " + strmsg, RWCString("Priority ") + strpriority );
-                        if(pSig)
-                        {
-                            pSig->setMessageTime(msgtime);
-                            pSig->setUser("Port Control");
-                            pSig->setSource("Port Control");
-                            // pSig->dump();
-
-                            VanGoghConnection.WriteConnQue( pSig );
-                        }
-
-
-                        CtiDevice *pDevice = DeviceManager.RemoteGetEqualbyName( strdev );
-                        if(pDevice)
-                        {
-                            CtiCommandMsg *pAltRate = CTIDBG_new CtiCommandMsg( CtiCommandMsg::AlternateScanRate );
-
-                            if(pAltRate)
-                            {
-                                pAltRate->insert(-1);                       // token, not yet used.
-                                pAltRate->insert( pDevice->getID() );       // Device to poke.
-
-                                int dbdelay = gConfigParms.getValueAsInt("PORTER_DIALBACK_DELAY", 0);
-
-                                if( dbdelay )
-                                {
-                                    RWTime now;
-                                    pAltRate->insert( (now.hour() * 3600) + (now.minute() * 60) + now.second() + dbdelay );  // Seconds since midnight, or NOW if negative.
-                                }
-                                else
-                                {
-                                    pAltRate->insert( -1 );                      // Seconds since midnight, or NOW if negative.
-                                }
-
-                                pAltRate->insert( 0 );                      // Duration of zero should cause 1 scan.
-
-                                VanGoghConnection.WriteConnQue(pAltRate);
-
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " Requesting scans at the alternate scan rate for " << pDevice->getName() << endl;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Device " << strdev << " not found in the yukon database." << endl;
-                        }
-
-                        if(PorterDebugLevel & PORTER_DEBUG_DIALBACK_PILDIRECT)
-                        {
-                            PIL.putQueue( new CtiRequestMsg(pDevice->getID(), "scan general") );
-                        }
-                    }
-                }
-            }
-            else
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Phone has NOT been answered..." << endl;
-                }
-            }
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << Port->getName() << " Hanging up the phone." << endl;
-            }
-            Port->disconnect(0, true);
-        }
-        catch(...)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Shutdown PortDialbackThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
-    }
-
-
-    return;
-}
 
 void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDevice *Device, CtiOutMessage *OutMessage )
 {
@@ -3870,7 +3595,7 @@ BOOL areAnyQueueEntriesOkToSend(void *data, void* d)
  * This function is responsible for verifying that the message is good and will
  * not cause any immediate problems in the Porter internals.
  *----------------------------------------------------------------------------*/
-INT VerifyOutMessage(OUTMESS *&OutMessage)
+INT CheckIfOutMessageIsExpired(OUTMESS *&OutMessage)
 {
     INT     nRet = NoError;
 
