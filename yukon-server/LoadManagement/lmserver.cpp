@@ -44,7 +44,26 @@ CtiLMServer* CtiLMServer::getInstance()
 ---------------------------------------------------------------------------*/
 void CtiLMServer::start()
 {
-    char temp[80];
+    RWCString str;
+    char var[128];
+
+    strcpy(var, "LOAD_MANAGEMENT_PORT");
+    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    {
+        _defaultport = atoi(str);
+        if( _LM_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    /*char temp[80];
 
     HINSTANCE hLib = LoadLibrary("cparms.dll");
 
@@ -80,7 +99,7 @@ void CtiLMServer::start()
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Unable to load cparms.dll" << endl;
-    }
+    }*/
 
     if ( !_running && !_dostop )
     {

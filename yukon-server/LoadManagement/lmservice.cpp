@@ -80,7 +80,45 @@ void CtiLMService::Init()
     dout.setToStdOut(true);
     dout.setWriteInterval(1);
 
-    char temp[80];
+    RWCString str;
+    char var[128];
+
+    strcpy(var, "LOAD_MANAGEMENT_DEBUG");
+    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    {
+        str.toLower();
+        _LM_DEBUG = (str=="true"?TRUE:FALSE);
+        if( _LM_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    strcpy(var, "LOAD_MANAGEMENT_LOG_FILE");
+    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    {
+        logFile = str;
+        dout.setOutputFile(logFile.data());
+        if( _LM_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        dout.setOutputFile(logFile.data());
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    /*char temp[80];
 
     HINSTANCE hLib = LoadLibrary("cparms.dll");
 
@@ -133,7 +171,7 @@ void CtiLMService::Init()
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime().asString() << " - Unable to load cparms.dll" << endl;
-    }
+    }*/
 
     _quit = false;
 }

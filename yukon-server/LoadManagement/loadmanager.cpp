@@ -445,7 +445,42 @@ CtiConnection* CtiLoadManager::getDispatchConnection()
         INT dispatch_port = VANGOGHNEXUS;
         RWCString dispatch_host = "127.0.0.1";
 
-        HINSTANCE hLib = LoadLibrary("cparms.dll");
+        RWCString str;
+        char var[128];
+
+        strcpy(var, "DISPATCH_MACHINE");
+        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+        {
+            dispatch_host = str;
+            if( _LM_DEBUG )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+        strcpy(var, "DISPATCH_PORT");
+        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+        {
+            dispatch_port = atoi(str);
+            if( _LM_DEBUG )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+        /*HINSTANCE hLib = LoadLibrary("cparms.dll");
 
         if (hLib)
         {
@@ -489,7 +524,7 @@ CtiConnection* CtiLoadManager::getDispatchConnection()
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Unable to load cparms dll." << endl;
-        }
+        }*/
 
         //Connect to Dispatch
         _dispatchConnection = new CtiConnection( dispatch_port, dispatch_host );
@@ -516,7 +551,42 @@ CtiConnection* CtiLoadManager::getPILConnection()
         INT pil_port = PORTERINTERFACENEXUS;
         RWCString pil_host = "127.0.0.1";
 
-        HINSTANCE hLib = LoadLibrary("cparms.dll");
+        RWCString str;
+        char var[128];
+
+        strcpy(var, "PIL_MACHINE");
+        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+        {
+            pil_host = str;
+            if( _LM_DEBUG )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+        strcpy(var, "PIL_PORT");
+        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+        {
+            pil_port = atoi(str);
+            if( _LM_DEBUG )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+        /*HINSTANCE hLib = LoadLibrary("cparms.dll");
 
         if (hLib)
         {
@@ -560,7 +630,7 @@ CtiConnection* CtiLoadManager::getPILConnection()
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Unable to load cparms dll." << endl;
-        }
+        }*/
 
         //Connect to Pil
         _pilConnection = new CtiConnection( pil_port, pil_host );
