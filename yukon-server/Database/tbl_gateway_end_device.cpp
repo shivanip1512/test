@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/07/21 22:25:21 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/07/23 20:52:30 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -161,10 +161,6 @@ RWDBStatus CtiTableGatewayEndDevice::Insert(RWDBConnection &conn)
 
     if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
         setDirty(false);
     }
     else
