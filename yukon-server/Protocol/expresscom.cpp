@@ -11,8 +11,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/11/05 19:31:36 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/12/19 20:26:52 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -935,12 +935,14 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
         INT period     = parse.getiValue("cycle_period", 30);
         INT repeat     = parse.getiValue("cycle_count", 8);
         INT delay      = parse.getiValue("delaytime_sec", 0) / 60;
+        bool noramp    = (parse.getiValue("xcnoramp", 0) ? false: true);
+        bool tc        = (parse.getiValue("xctruecycle", 0) ? false: true);
 
         // Add these two items to the list for control accounting!
         parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
         parse.setValue("control_interval", 60 * period * repeat);
 
-        cycleLoadControl(relaymask, parse.getiValue("cycle", 0), period, repeat, delay);
+        cycleLoadControl(relaymask, parse.getiValue("cycle", 0), period, repeat, delay, noramp, tc);
     }
     else if(CtlReq == CMD_FLAG_CTL_RESTORE)
     {
