@@ -25,4 +25,6 @@ public interface IProgramTableModel extends TableModel, TableModelListener, ISel
 	
 	//tells us if we should display a waiting messaging while updating the model
 	boolean showWaiting( LMControlArea newCntrlArea );
+	
+	Object getRowAt(int row);
 }

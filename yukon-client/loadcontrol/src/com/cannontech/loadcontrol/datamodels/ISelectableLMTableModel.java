@@ -38,12 +38,7 @@ int getColumnCount();
  * @param index int
  */
 String getColumnName(int index);
-/**
- * Insert the method's description here.
- * Creation date: (1/2/2002 9:23:28 AM)
- * @return Object
- */
-Object getRowAt(int row);
+
 /**
  * Insert the method's description here.
  * Creation date: (1/2/2002 9:23:28 AM)
