@@ -16,8 +16,20 @@ using namespace std;
 #include <rw/cstring.h>
 
 
+void usage()
+{
+    cout << endl;
+    cout << "Arg 1: cvs log file -l filename" << endl;
+    cout << "  Output from (cvs log projfile > projfile.log)?" << endl << endl;
+    cout << "Arg 2: output type                " << endl;
+    cout << "                    -M (Major Rev)" << endl;
+    cout << "                    -m (Minor Rev)" << endl;
+    cout << "                    -b (Build Rev)" << endl << endl;
+}
+
 int main(int argc, char **argv)
 {
+    INT errorCode = -1;
     INT i;
     INT flag = 0;
 
@@ -25,21 +37,55 @@ int main(int argc, char **argv)
     INT minorRevisionVal = 0;
     INT buildRevisionVal = 0;
 
-
-
-    if(argc < 2)
-    {
-        cout << "What log file file please?" << endl;
-        return -1;
-    }
+    bool incrementMajor = false;
+    bool incrementMinor = false;
+    bool incrementBuild = true;
 
     FILE *fp;
 
     char temp[128];
 
-
     RWCString tstr;
-    RWCString filename(argv[1]);
+    RWCString filename;
+
+    for(i = 1; i < argc; i++)
+    {
+        if(argv[i][0] == '-')
+        {
+            switch(argv[i][1])
+            {
+            case 'l':
+                {
+                    filename = RWCString(argv[i+1]);
+                    i++; // Hop over two positions here!
+                    break;
+                }
+            case 'M':
+                {
+                    incrementMajor = true;
+                    incrementBuild = false;
+                    break;
+                }
+            case 'm':
+                {
+                    incrementMinor = true;
+                    incrementBuild = false;
+                    break;
+                }
+            case 'b':
+                {
+                    incrementBuild = true;
+                    break;
+                }
+            default:
+                {
+                    cout << "Bad argument" << endl;
+                    usage();
+                    break;
+                }
+            }
+        }
+    }
 
     {
         cout << endl << "Opening " << filename << " for processing" << endl << endl;
@@ -96,7 +142,7 @@ int main(int argc, char **argv)
                 }
             }
 
-            cout << endl << " The largest existing revision is " << majorRevisionVal << "." << minorRevisionVal << "." << buildRevisionVal << endl;
+            cout << endl << " CURRENT REVISION " << majorRevisionVal << "." << minorRevisionVal << "." << buildRevisionVal << endl;
 
             fclose(fp);
         }
@@ -106,6 +152,21 @@ int main(int argc, char **argv)
         }
     }
 
-    return(0);
+    if(incrementMajor)
+    {
+        errorCode = ++majorRevisionVal;
+    }
+    else if(incrementMinor)
+    {
+        errorCode = ++minorRevisionVal;
+    }
+    else if(incrementBuild)
+    {
+        errorCode = ++buildRevisionVal;
+    }
+
+    cout << " NEXT REVISION    " << majorRevisionVal << "." << minorRevisionVal << "." << buildRevisionVal << endl;
+
+    return errorCode;
 }
 
