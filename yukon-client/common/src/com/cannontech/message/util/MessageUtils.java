@@ -58,8 +58,8 @@ public class MessageUtils
 				Integer dbMin = new Integer( vers[1] );
 
 
-				if( !(dbMaj.equals(build)
-					  && dbMin.equals(build)
+				if( !(dbMaj.equals(majVers)
+					  && dbMin.equals(minVers)
 					  && ctiDB.getBuild().equals(build)) )
 				{
 					String retStr =
