@@ -630,29 +630,32 @@ public Object getValue(Object o)
 {
 	LMProgramDirect program = (LMProgramDirect)o;
 
-	program.getDirectProgram().setHeading( getJTextFieldSubject().getText() );
+	if( getJTextFieldSubject().getText() == null || getJTextFieldSubject().getText().length() <= 0)
+		program.getDirectProgram().setHeading( "(none)" );
+	else
+		program.getDirectProgram().setHeading( getJTextFieldSubject().getText() );
 
 	if( getJTextPaneMsgHeader().getText() == null 
 		 || getJTextPaneMsgHeader().getText().length() <= 0 )
-		program.getDirectProgram().setMessageHeader(" ");
+		program.getDirectProgram().setMessageHeader("(none)");
 	else
 		program.getDirectProgram().setMessageHeader( getJTextPaneMsgHeader().getText() );
 
 	if( getJTextPaneMsgFooter().getText() == null 
 		 || getJTextPaneMsgFooter().getText().length() <= 0 )
-		program.getDirectProgram().setMessageFooter(" ");
+		program.getDirectProgram().setMessageFooter("(none)");
 	else
 		program.getDirectProgram().setMessageFooter( getJTextPaneMsgFooter().getText() );
 
 	if( getJTextPaneMsgCanceled().getText() == null 
 		 || getJTextPaneMsgCanceled().getText().length() <= 0 )
-		program.getDirectProgram().setCanceledMsg(" ");
+		program.getDirectProgram().setCanceledMsg("(none)");
 	else
 		program.getDirectProgram().setCanceledMsg( getJTextPaneMsgCanceled().getText() );
 
 	if( getJTextPaneMsgStoppedEarly().getText() == null 
 		 || getJTextPaneMsgStoppedEarly().getText().length() <= 0 )
-		program.getDirectProgram().setStoppedEarlyMsg(" ");
+		program.getDirectProgram().setStoppedEarlyMsg("(none)");
 	else
 		program.getDirectProgram().setStoppedEarlyMsg( getJTextPaneMsgStoppedEarly().getText() );
 
@@ -779,12 +782,20 @@ public void setValue(Object o)
 {
 	LMProgramDirect program = (LMProgramDirect)o;
 
-	getJTextFieldSubject().setText( program.getDirectProgram().getHeading() );
-
-	getJTextPaneMsgHeader().setText( program.getDirectProgram().getMessageHeader() );
-	getJTextPaneMsgFooter().setText( program.getDirectProgram().getMessageFooter() );
-	getJTextPaneMsgCanceled().setText( program.getDirectProgram().getCanceledMsg() );
-	getJTextPaneMsgStoppedEarly().setText( program.getDirectProgram().getStoppedEarlyMsg() );
+	if(program.getDirectProgram().getHeading().compareTo("(none)") != 0)
+		getJTextFieldSubject().setText( program.getDirectProgram().getHeading() );
+	
+	if(program.getDirectProgram().getMessageHeader().compareTo("(none)") != 0)
+		getJTextPaneMsgHeader().setText( program.getDirectProgram().getMessageHeader() );
+		
+	if(program.getDirectProgram().getMessageFooter().compareTo("(none)") != 0)
+		getJTextPaneMsgFooter().setText( program.getDirectProgram().getMessageFooter() );
+		
+	if(program.getDirectProgram().getCanceledMsg().compareTo("(none)") != 0)
+		getJTextPaneMsgCanceled().setText( program.getDirectProgram().getCanceledMsg() );
+	
+	if( program.getDirectProgram().getStoppedEarlyMsg().compareTo("(none)") != 0)
+		getJTextPaneMsgStoppedEarly().setText( program.getDirectProgram().getStoppedEarlyMsg() );
 
 	getJCSpinFieldMinNotifyTime().setValue( new Integer(program.getDirectProgram().getNotifyInterval().intValue() / 60) );
 	
