@@ -6,7 +6,7 @@ import com.cannontech.roles.*;
  * TDC Role Definition
  * @author aaron
  */
-public interface TDCRoleDef {
+public interface TDCRole {
 	public static final int ROLEID = ApplicationRoleDefs.TABULAR_DISPLAY_CONSOLE_ROLEID;
 	
 	public static final int LOADCONTROL_EDIT = ApplicationRoleDefs.TABULAR_DISPLAY_CONSOLE_PROPERTYID_BASE;

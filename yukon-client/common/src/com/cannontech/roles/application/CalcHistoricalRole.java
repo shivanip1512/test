@@ -5,7 +5,7 @@ import com.cannontech.roles.*;
 /**
  * @author aaron
  */
-public interface CalHistoricalRole {
+public interface CalcHistoricalRole {
 	public static final int ROLEID = ApplicationRoleDefs.CALC_HISTORICAL_ROLEID;
 	
 	public static final int INTERVAL = ApplicationRoleDefs.CALC_HISTORICAL_PROPERTYID_BASE;
