@@ -86,7 +86,10 @@ public:
 
     virtual void dumpDynamicData();
     virtual void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
-    virtual CtiCommandMsg* createLatchingRequestMsg(ULONG rawState, int priority) const;
+
+    //virtuals but not pure because only one type of group can handle either of the messages
+    virtual CtiCommandMsg* createLatchingRequestMsg(ULONG rawState, int priority) const;// in CtiLMGroupPoint
+    virtual CtiRequestMsg* createTrueCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount, int priority) const;// in CtiLMGroupExpresscom
 
     //pure virtuals
     virtual CtiLMGroupBase* replicate() const = 0;
