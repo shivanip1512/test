@@ -239,10 +239,14 @@ private javax.swing.JComboBox getJComboBoxBankSize() {
 			ivjJComboBoxBankSize.addItem( new Integer(50) );
 			ivjJComboBoxBankSize.addItem( new Integer(100) );
 			ivjJComboBoxBankSize.addItem( new Integer(150) );
+         ivjJComboBoxBankSize.addItem( new Integer(275) );
 			ivjJComboBoxBankSize.addItem( new Integer(300) );
 			ivjJComboBoxBankSize.addItem( new Integer(450) );
+         ivjJComboBoxBankSize.addItem( new Integer(550) );         
 			ivjJComboBoxBankSize.addItem( new Integer(600) );
+         ivjJComboBoxBankSize.addItem( new Integer(825) );         
 			ivjJComboBoxBankSize.addItem( new Integer(900) );
+         ivjJComboBoxBankSize.addItem( new Integer(1100) );         
 			ivjJComboBoxBankSize.addItem( new Integer(1200) );
 
 			

@@ -625,14 +625,18 @@ private javax.swing.JComboBox getJComboBankSize() {
 			ivjJComboBankSize.setMinimumSize(new java.awt.Dimension(33, 20));
 			// user code begin {1}
 
-			ivjJComboBankSize.addItem( new Integer(50) );
-			ivjJComboBankSize.addItem( new Integer(100) );
-			ivjJComboBankSize.addItem( new Integer(150) );
-			ivjJComboBankSize.addItem( new Integer(300) );
-			ivjJComboBankSize.addItem( new Integer(450) );
-			ivjJComboBankSize.addItem( new Integer(600) );
-			ivjJComboBankSize.addItem( new Integer(900) );
-			ivjJComboBankSize.addItem( new Integer(1200) );
+         ivjJComboBankSize.addItem( new Integer(50) );
+         ivjJComboBankSize.addItem( new Integer(100) );
+         ivjJComboBankSize.addItem( new Integer(150) );
+         ivjJComboBankSize.addItem( new Integer(275) );
+         ivjJComboBankSize.addItem( new Integer(300) );
+         ivjJComboBankSize.addItem( new Integer(450) );
+         ivjJComboBankSize.addItem( new Integer(550) );         
+         ivjJComboBankSize.addItem( new Integer(600) );
+         ivjJComboBankSize.addItem( new Integer(825) );         
+         ivjJComboBankSize.addItem( new Integer(900) );
+         ivjJComboBankSize.addItem( new Integer(1100) );         
+         ivjJComboBankSize.addItem( new Integer(1200) );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1025,7 +1029,27 @@ public void setValue(Object val)
 	getTypeTextField().setText( capBank.getPAOType() );
 	getJTextFieldName().setText( capBank.getPAOName() );
 	getJTextFieldAddress().setText( capBank.getLocation() );
-	getJComboBankSize().setSelectedItem( capBank.getCapBank().getBankSize() );
+   
+   
+   //look for the bank size, if not found add it and set it selected
+   boolean found = false;
+   Integer bankSize = capBank.getCapBank().getBankSize();
+   for( int i = 0; i < getJComboBankSize().getItemCount(); i++ )
+   {
+      if( getJComboBankSize().getItemAt(i).equals(bankSize) )
+      {
+         found = true;
+         getJComboBankSize().setSelectedItem( capBank.getCapBank().getBankSize() );
+         break;
+      }
+   }
+   
+   if( !found )
+   {
+      getJComboBankSize().addItem( bankSize );
+      getJComboBankSize().setSelectedItem( capBank.getCapBank().getBankSize() );
+   }
+
 
 	Integer controlPointID = capBank.getCapBank().getControlPointID();
 	Integer controlDeviceID = capBank.getCapBank().getControlDeviceID();

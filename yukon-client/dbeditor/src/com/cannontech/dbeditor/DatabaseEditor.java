@@ -10,6 +10,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.*;
 import com.cannontech.dbeditor.menu.*;
+import com.cannontech.dbeditor.editor.regenerate.*;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.model.*;
@@ -25,7 +26,7 @@ import com.cannontech.common.util.FileMessageLog;
 import com.cannontech.common.gui.util.MessagePanel;
 import com.cannontech.dbeditor.defines.CommonDefines;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-
+import com.cannontech.dbeditor.regenerate.RegenerateDialog;
 
 public class DatabaseEditor
 	implements
@@ -61,6 +62,7 @@ public class DatabaseEditor
 	private CapControlCreateMenu capControlCreateMenu;
 	private ViewMenu viewMenu;
 	private HelpMenu helpMenu;
+	private ToolsMenu toolsMenu;
 	private java.awt.Frame owner = null;
 	//File logger
 	private FileMessageLog fileMessageLog;
@@ -259,6 +261,10 @@ public void actionPerformed(ActionEvent event)
 	{
 		executeFindButton_ActionPerformed( event );
 	}
+	else if ( item == toolsMenu.regenerateMenuItem )
+	{
+		executeRegenerateButton_ActionPerformed( event);
+	}
 	else
 	if( item == viewMenu.refreshMenuItem )
 	{
@@ -330,6 +336,43 @@ public void addMessageListener(MessageEventListener listener) {
 
 	if( !messageListeners.contains(listener) )
 		messageListeners.addElement(listener);
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (5/31/2001 2:36:20 PM)
+ * @return java.lang.String
+ * @param pointID int
+ */
+private boolean createDeleteString(int pointID, String nodeName, StringBuffer message ) throws java.sql.SQLException
+{
+	Integer ptID = new Integer( pointID );
+
+	if( com.cannontech.database.data.point.PointBase.hasRawPointHistorys( ptID ) || com.cannontech.database.data.point.PointBase.hasSystemLogEntry( ptID ) )
+		message.append("\nThis Point has historical data that will be lost if removed.");
+
+	if( com.cannontech.database.data.point.PointBase.hasCapControlSubstationBus( ptID ) )
+	{
+		message.delete( 0, message.length() );
+		message.append("\nbecause it is used by a CapControl Substation Bus.");
+		return false;
+	}
+
+	if( com.cannontech.database.data.point.PointBase.hasCapBank( ptID ) )
+	{
+		message.delete( 0, message.length() );
+		message.append("\nbecause it is used by a CapBank Device.");
+		return false;
+	}
+
+	if( com.cannontech.database.data.point.PointBase.hasLMTrigger( ptID ) )
+	{
+		message.delete( 0, message.length() );
+		message.append("\nbecause it is used by a LoadManagement Trigger.");
+		return false;
+	}
+
+	//this point is deleteable
+	return true;
 }
 /**
  * Insert the method's description here.
@@ -1103,6 +1146,42 @@ public void executeFindButton_ActionPerformed(ActionEvent event)
 	}
 }
 /**
+ * Insert the method's description here.
+ * Creation date: (5/31/2002 11:02:30 AM)
+ */
+public void executeRegenerateButton_ActionPerformed(ActionEvent event) {
+
+	java.awt.Frame f = getParentFrame();
+	java.awt.Cursor savedCursor = f.getCursor();
+	f.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+	
+	Vector carrierRoutes = RegenerateRoute.getAllCarrierRoutes();
+	RegenerateDialog r = new RegenerateDialog( f, "Regenerate", true, carrierRoutes);
+	r.setLocationRelativeTo( f );
+	
+	f.setCursor(savedCursor);
+	
+	r.show();
+
+	savedCursor = f.getCursor();
+	f.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+	
+	if (r.getResponse() == r.PRESSED_OK)
+	{
+		boolean all = r.getRegenerateAll();
+		Vector routesChanged = RegenerateRoute.resetRptSettings(carrierRoutes,all,null);
+		RegenerateRoute.updateRouteRoles(routesChanged);
+		for (int i=0; i<routesChanged.size(); i++) {
+			updateObject((com.cannontech.database.db.DBPersistent) routesChanged.get(i));
+		}
+	} 
+
+	f.setCursor(savedCursor);
+
+return;
+	
+}
+/**
 * Insert the method's description here.
 * Creation date: (7/9/2001 10:25:56 AM)
 */
@@ -1536,7 +1615,14 @@ private JMenuBar getMenuBar(int whichDatabase) {
 			if( item != null )
 				helpMenu.getItem(i).addActionListener(this);
 		}
-		
+		for( int i = 0; i < toolsMenu.getItemCount() ; i++ )
+		{
+			item = toolsMenu.getItem(i);
+			if( item != null )
+				toolsMenu.getItem(i).addActionListener(this);
+                }
+
+		           
 			
 		this.menuBar.add( fileMenu );
 		this.menuBar.add( editMenu );		
