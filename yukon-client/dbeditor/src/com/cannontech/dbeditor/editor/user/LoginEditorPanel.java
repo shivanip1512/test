@@ -33,6 +33,14 @@ public class LoginEditorPanel extends com.cannontech.common.editor.PropertyPanel
 				objs[0] = new UserLoginBasePanel();
 				objs[1] = "General";
 				break;
+
+/*
+			case 1: 
+				objs[0] = new UserRolePanel();
+				objs[1] = "Roles";
+				break;
+*/
+
 		}
 			
 		return objs;
