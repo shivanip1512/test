@@ -123,6 +123,7 @@ public void retrieve() throws java.sql.SQLException
  */
 public void setDbConnection(java.sql.Connection conn)
 {
+	super.setDbConnection(conn);
 	getEnergyCompany().setDbConnection(conn);
 
 /*	for (int i = 0; i < getCustomerContactVector().size(); i++)
