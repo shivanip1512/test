@@ -43,7 +43,7 @@ public class LoadControlMainPanel extends javax.swing.JPanel implements ButtonBa
 	private ControlAreaPopUpMenu controlAreaPopUpMenu = null;
 	private GroupPopUpMenu groupPopUpMenu = null;
 	private ProgramPopUpMenu programPopUpMenu = null;
-	private CurtailPopUpMenu curtailCustomerPopUpMenu = null;
+	//private CurtailPopUpMenu curtailCustomerPopUpMenu = null;
 	private com.cannontech.common.gui.util.MessagePanel ivjMessagePanel = null;
 	private javax.swing.JSplitPane ivjJSplitPane = null;
 	private ButtonBarPanel ivjButtonBarPanel = null;
@@ -677,7 +677,7 @@ private ControlAreaTableModel getControlAreaTableModel()
  * Insert the method's description here.
  * Creation date: (4/19/2001 12:56:35 PM)
  * @return com.cannontech.loadcontrol.popup.CurtailPopUpMenu
- */
+ *
 private com.cannontech.loadcontrol.popup.CurtailPopUpMenu getCurtailCustomerPopUpMenu() 
 {
 	if( curtailCustomerPopUpMenu == null )
@@ -685,6 +685,8 @@ private com.cannontech.loadcontrol.popup.CurtailPopUpMenu getCurtailCustomerPopU
 
 	return curtailCustomerPopUpMenu;
 }
+*/
+
 /**
  * Insert the method's description here.
  * Creation date: (1/3/2002 12:32:26 PM)
@@ -1190,9 +1192,11 @@ private void initConnections() throws java.lang.Exception {
 				Object row = getJTableBottomTableModel().getRowAt( getJTableBottom().rowAtPoint(e.getPoint()) );
 
 				//determines what popupBox is shown
+/*				
 				if( row instanceof com.cannontech.loadcontrol.data.LMCurtailCustomer )
 					getCurtailCustomerPopUpMenu().show( e.getComponent(), e.getX(), e.getY() );
-				else if( row instanceof com.cannontech.loadcontrol.data.LMGroupBase )
+*/
+				if( row instanceof com.cannontech.loadcontrol.data.LMGroupBase )
 					getGroupPopUpMenu().show( e.getComponent(), e.getX(), e.getY() );
 				else if( row instanceof LMProgramBase )
 					getProgramPopUpMenu().show( e.getComponent(), e.getX(), e.getY() );
@@ -1208,7 +1212,7 @@ private void initConnections() throws java.lang.Exception {
 
 	getJTableBottom().addMouseListener( groupListener );
 	getGroupPopUpMenu().addPopupMenuListener( this );
-	getCurtailCustomerPopUpMenu().addPopupMenuListener( this );
+	//getCurtailCustomerPopUpMenu().addPopupMenuListener( this );
 	getProgramPopUpMenu().addPopupMenuListener( this );
 	getCustomerReplyPopUpMenu().addPopupMenuListener( this );
 	getOfferPopUpMenu().addPopupMenuListener( this );
@@ -1517,9 +1521,12 @@ public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e)
 		getGroupPopUpMenu().setLoadControlGroup( 
 			(com.cannontech.loadcontrol.data.LMGroupBase)getSelectedBottomRow() );
 
+/*
 	if( e.getSource() == LoadControlMainPanel.this.getCurtailCustomerPopUpMenu() )
 		getCurtailCustomerPopUpMenu().setLoadControlGroup( 
 			(com.cannontech.loadcontrol.data.LMGroupBase)getSelectedBottomRow() );
+*/
+
 
 	if( e.getSource() == LoadControlMainPanel.this.getProgramPopUpMenu() )
 	{

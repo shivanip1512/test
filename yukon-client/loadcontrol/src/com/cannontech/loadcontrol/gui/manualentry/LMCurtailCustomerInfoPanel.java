@@ -5,10 +5,12 @@ package com.cannontech.loadcontrol.gui.manualentry;
  * Creation date: (4/17/2001 2:09:06 PM)
  * @author: 
  */
-import com.cannontech.loadcontrol.data.LMGroupBase;
+import com.cannontech.loadcontrol.data.LMCICustomerBase;
+import com.cannontech.loadcontrol.data.LMCurtailCustomer;
 
-public class LMGroupInfoPanel extends javax.swing.JPanel implements java.awt.event.ActionListener {
-	private LMGroupBase lmGroup = null;
+public class LMCurtailCustomerInfoPanel extends javax.swing.JPanel implements java.awt.event.ActionListener 
+{
+	private LMCICustomerBase lmGroup = null;
 	private javax.swing.JLabel ivjJLabelAckDateTime = null;
 	private javax.swing.JLabel ivjJLabelAckLate = null;
 	private javax.swing.JLabel ivjJLabelAckPerson = null;
@@ -35,7 +37,7 @@ public class LMGroupInfoPanel extends javax.swing.JPanel implements java.awt.eve
 /**
  * LMGroupInfoPanel constructor comment.
  */
-public LMGroupInfoPanel() {
+public LMCurtailCustomerInfoPanel() {
 	super();
 	initialize();
 }
@@ -43,7 +45,7 @@ public LMGroupInfoPanel() {
  * LMGroupInfoPanel constructor comment.
  * @param layout java.awt.LayoutManager
  */
-public LMGroupInfoPanel(java.awt.LayoutManager layout) {
+public LMCurtailCustomerInfoPanel(java.awt.LayoutManager layout) {
 	super(layout);
 }
 /**
@@ -51,14 +53,14 @@ public LMGroupInfoPanel(java.awt.LayoutManager layout) {
  * @param layout java.awt.LayoutManager
  * @param isDoubleBuffered boolean
  */
-public LMGroupInfoPanel(java.awt.LayoutManager layout, boolean isDoubleBuffered) {
+public LMCurtailCustomerInfoPanel(java.awt.LayoutManager layout, boolean isDoubleBuffered) {
 	super(layout, isDoubleBuffered);
 }
 /**
  * LMGroupInfoPanel constructor comment.
  * @param isDoubleBuffered boolean
  */
-public LMGroupInfoPanel(boolean isDoubleBuffered) {
+public LMCurtailCustomerInfoPanel(boolean isDoubleBuffered) {
 	super(isDoubleBuffered);
 }
 /**
@@ -680,9 +682,9 @@ private javax.swing.JPanel getJPanelAckPanel() {
 /**
  * Insert the method's description here.
  * Creation date: (4/17/2001 2:12:39 PM)
- * @return com.cannontech.loadcontrol.data.LMGroupBase
+ * @return com.cannontech.loadcontrol.data.LMCICustomerBase
  */
-public com.cannontech.loadcontrol.data.LMGroupBase getLmGroup() {
+public LMCICustomerBase getLmGroup() {
 	return lmGroup;
 }
 /**
@@ -845,8 +847,8 @@ public void jButtonOk_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 public static void main(java.lang.String[] args) {
 	try {
 		javax.swing.JFrame frame = new javax.swing.JFrame();
-		LMGroupInfoPanel aLMGroupInfoPanel;
-		aLMGroupInfoPanel = new LMGroupInfoPanel();
+		LMCurtailCustomerInfoPanel aLMGroupInfoPanel;
+		aLMGroupInfoPanel = new LMCurtailCustomerInfoPanel();
 		frame.setContentPane(aLMGroupInfoPanel);
 		frame.setSize(aLMGroupInfoPanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -866,24 +868,24 @@ public static void main(java.lang.String[] args) {
 /**
  * Insert the method's description here.
  * Creation date: (4/17/2001 2:12:39 PM)
- * @param newLmGroup com.cannontech.loadcontrol.data.LMGroupBase
+ * @param newLmGroup com.cannontech.loadcontrol.data.LMCICustomerBase
  */
-public void setLmGroup(com.cannontech.loadcontrol.data.LMGroupBase newLmGroup) 
+public void setLmGroup(LMCICustomerBase newLmGroup) 
 {
 	lmGroup = newLmGroup;
 
-	if( getLmGroup() instanceof com.cannontech.loadcontrol.data.LMCurtailCustomer )
+	if( getLmGroup() instanceof LMCurtailCustomer )
 	{
-		final com.cannontech.loadcontrol.data.LMCurtailCustomer customer = (com.cannontech.loadcontrol.data.LMCurtailCustomer)getLmGroup();
+		final LMCurtailCustomer customer = (LMCurtailCustomer)getLmGroup();
 
 		javax.swing.SwingUtilities.invokeLater( new Runnable()
 		{
 
 			public void run()
 			{
-				getJLabelActualName().setText( customer.getYukonName() );
-				getJLabelActualTimeZone().setText( customer.getCustTimeZone() );
-				getJLabelActualPDL().setText( customer.getCustomerPDL().toString() );
+				getJLabelActualName().setText( customer.getCompanyName() );
+				getJLabelActualTimeZone().setText( customer.getTimeZone() );
+				getJLabelActualPDL().setText( customer.getCustomerDemandLevel().toString() );
 
 				com.cannontech.clientutils.commonutils.ModifiedDate date = new com.cannontech.clientutils.commonutils.ModifiedDate(customer.getAckDateTime().getTime());
 				getJLabelActualDateTime().setText( date.toString() );

@@ -8,7 +8,7 @@ package com.cannontech.loadcontrol.popup;
 
 
 import com.cannontech.loadcontrol.data.LMGroupBase;
-import com.cannontech.loadcontrol.gui.manualentry.LMGroupInfoPanel;
+import com.cannontech.loadcontrol.gui.manualentry.LMCurtailCustomerInfoPanel;
 
 public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.event.ActionListener
 {
@@ -78,6 +78,7 @@ private void executeDisableEnable(java.awt.event.ActionEvent e)
  * Creation date: (9/28/00 3:43:40 PM)
  * @param e java.awt.event.ActionEvent
  */
+/*
 private void executeGroupInfo(java.awt.event.ActionEvent e) 
 {
 	java.awt.Frame frame = com.cannontech.common.util.CtiUtilities.getParentFrame( this.getInvoker() );
@@ -121,6 +122,7 @@ private void executeGroupInfo(java.awt.event.ActionEvent e)
 	}
 	
 }
+*/
 /**
  * Insert the method's description here.
  * Creation date: (9/28/00 3:43:40 PM)

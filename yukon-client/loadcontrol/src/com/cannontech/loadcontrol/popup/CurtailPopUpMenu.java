@@ -8,9 +8,9 @@ package com.cannontech.loadcontrol.popup;
 
 
 import com.cannontech.loadcontrol.data.LMCurtailCustomer;
-import com.cannontech.loadcontrol.data.LMGroupBase;
+import com.cannontech.loadcontrol.data.LMCICustomerBase;
 import com.cannontech.loadcontrol.gui.manualentry.AckUserPanel;
-import com.cannontech.loadcontrol.gui.manualentry.LMGroupInfoPanel;
+import com.cannontech.loadcontrol.gui.manualentry.LMCurtailCustomerInfoPanel;
 import com.cannontech.loadcontrol.messages.LMCurtailmentAcknowledgeMsg;
 
 public class CurtailPopUpMenu extends javax.swing.JPopupMenu implements java.awt.event.ActionListener
@@ -98,8 +98,9 @@ private void executeAcknowledgement(java.awt.event.ActionEvent e)
 
 			msg.setAcknowledgeStatus( LMCurtailmentAcknowledgeMsg.VERBAL );
 			msg.setUserIdName( msg.getUserName() );
-			msg.setYukonID( getLoadControlGroup().getYukonID().intValue() );
-			msg.setCurtailReferenceID( getLoadControlGroup().getCurtailRefID() );
+			
+			msg.setYukonID( getLoadControlGroup().getCustomerID().intValue() );
+			msg.setCurtailReferenceID( getLoadControlGroup().getCurtailRefID().intValue() );
 			msg.setIpAddressOfAckUser( com.cannontech.common.util.CtiUtilities.getUserIPAddress() );
 
 
@@ -149,7 +150,7 @@ private void executeGroupInfo(java.awt.event.ActionEvent e)
 			
 		final javax.swing.JDialog dialog = new javax.swing.JDialog( frame, "Mandatory Curtailment Notice", true);
 
-		LMGroupInfoPanel panel = new LMGroupInfoPanel()
+		LMCurtailCustomerInfoPanel panel = new LMCurtailCustomerInfoPanel()
 		{
 			public void jButtonOk_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 			{
@@ -307,9 +308,9 @@ private void initialize()
 /**
  * Insert the method's description here.
  * Creation date: (8/25/00 10:40:12 AM)
- * @param LMGroupBase
+ * @param LMCICustomerBase
  */
-public void setLoadControlGroup(LMGroupBase newGroup) 
+public void setLoadControlGroup(LMCICustomerBase newGroup) 
 {
 	if( !(newGroup instanceof LMCurtailCustomer) )
 		throw new RuntimeException("Trying to set the CurtailPopUpMenu()'s LMGroup to a none LMCurtailCustomer!!");
@@ -325,6 +326,7 @@ public void setLoadControlGroup(LMGroupBase newGroup)
 
 
 	//lastly, check for disablement
+/*
 	if( getLoadControlGroup().getDisableFlag().booleanValue() )
 	{
 		getJMenuItemDisable().setText("Enable");
@@ -334,6 +336,7 @@ public void setLoadControlGroup(LMGroupBase newGroup)
 	{
 		getJMenuItemDisable().setText("Disable");
 	}
+*/
 
 }
 }
