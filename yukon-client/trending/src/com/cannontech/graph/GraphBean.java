@@ -690,6 +690,12 @@ public void setStartStr(String newStartStr)
 		e.printStackTrace();
 	}
 }
+
+public void setSize( int width, int height)
+{
+	getGraph().setSize(width, height);
+}  
+
 /**
  * Return the DateComboBox property value.
  * @return com.cannontech.common.gui.util.DateComboBox
