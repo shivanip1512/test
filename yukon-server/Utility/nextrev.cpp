@@ -27,6 +27,7 @@ void usage()
     cout << "                    -M[:MajorBaseNum]  (Major Rev)" << endl;
     cout << "                    -m[:MinorBaseNum]  (Minor Rev)" << endl;
     cout << "                    -b                 (Build Rev)" << endl << endl;
+    cout << "                    -t                 (Base all decisions on TG labels (notBR))" << endl << endl;
     cout << "output type (program exit code)" << endl;
     cout << "                    -R (Major Rev)" << endl;
     cout << "                    -r (Minor Rev)" << endl;
@@ -42,11 +43,11 @@ int main(int argc, char **argv)
     INT errorCode = -1;
     INT i;
     INT flag = 0;
-
     INT majorRevisionVal = -1;
     INT minorRevisionVal = -1;
     INT buildRevisionVal = -1;
 
+    bool versionsFromTags = false;
     bool verbose = false;
     bool incrementMajor = false;
     bool incrementMinor = false;
@@ -134,6 +135,11 @@ int main(int argc, char **argv)
                     incrementBuild = true;
                     break;
                 }
+            case 't':
+                {
+                    versionsFromTags = true;
+                    break;
+                }
             case 'R':
                 {
                     returnMajor = true;
@@ -177,6 +183,14 @@ int main(int argc, char **argv)
 
         if(fp != NULL)
         {
+            RWCRExpr keyre("BR");
+
+            if(versionsFromTags)
+            {
+                keyre = RWCRExpr("TG");
+            }
+
+
             if(reportTagsOnly || reportBranchesOnly) cout << endl;
             while( fgets(temp, 127, fp))
             {
@@ -193,7 +207,7 @@ int main(int argc, char **argv)
                     RWCString token = next(":");
                     cout << "    " << token << endl;
                 }
-                else if(!str.match("BR").isNull())
+                else if(!str.match(keyre).isNull())     // Might be looking for BR's or TG's based upon -t
                 {
                     RWCTokenizer next(str);
                     RWCString token = next(":");
@@ -203,11 +217,13 @@ int main(int argc, char **argv)
                         cout << "    " << str << endl;
                     }
 
-                    if(!(str = token.match("_[0-9]_[0-9]+(_[0-9]+)?")).isNull())
+                    if(!(str = token.match("[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_[0-9][0-9][0-9][0-9]?_[0-9]_[0-9]+(_[0-9]+)?")).isNull())
                     {
                         str = str.strip(RWCString::both, '_');
 
                         RWCTokenizer next(str);
+                        RWCString datestr = next("_");
+                        RWCString timestr = next("_");
                         RWCString majorRevision = next("_");
                         RWCString minorRevision = next("_ \0");
                         RWCString buildRevision = next(" \0");
