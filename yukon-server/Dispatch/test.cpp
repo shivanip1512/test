@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2004/01/05 15:38:52 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2004/02/16 21:03:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -52,6 +52,7 @@ void tagExecute(int argc, char **argv);
 void tagHelp();
 void defaultExecute(int argc, char **argv);
 void defaultHelp();
+void seasonExecute(int argc, char **argv);
 
 typedef void (*XFUNC)(int argc, char **argv);       // Execution function
 typedef void (*HFUNC)();                           // Help Function
@@ -67,6 +68,7 @@ typedef struct
 } TESTFUNC_t;
 
 TESTFUNC_t testfunction[] = {
+    {"seasonreset", seasonExecute, defaultHelp},
     {"tags", tagExecute, tagHelp},
     {"default", defaultExecute, defaultHelp},
     {"", 0, 0}
@@ -147,6 +149,12 @@ void main(int argc, char **argv)
         return;
     }
 
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     for(i = 0; testfunction[i].xecute != 0 && i < sizeof(testfunction) / sizeof(TESTFUNC_t); i++ )
     {
         if(!strnicmp(testfunction[i].cmd, argv[1], strlen(testfunction[i].cmd)))
@@ -169,6 +177,11 @@ void main(int argc, char **argv)
 
 void DoTheNasty(int argc, char **argv)
 {
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     try
     {
         int Op, k;
@@ -177,11 +190,11 @@ void DoTheNasty(int argc, char **argv)
         unsigned    pt = 1;
         CtiMessage  *pMsg;
 
-        CtiConnection  Connect(VANGOGHNEXUS, argv[1]);
+        CtiConnection  Connect(VANGOGHNEXUS, argv[2]);
 
         CtiMultiMsg   *pM  = CTIDBG_new CtiMultiMsg;
         pM->setMessagePriority(15);
-        pM->getData().insert(CTIDBG_new CtiRegistrationMsg(argv[2], rwThreadId(), TRUE));
+        pM->getData().insert(CTIDBG_new CtiRegistrationMsg(argv[3], rwThreadId(), TRUE));
 
         CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
 
@@ -189,12 +202,14 @@ void DoTheNasty(int argc, char **argv)
 
         Connect.WriteConnQue( pM );
 
+        Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ResetControlHours, 0));
+
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        for(k = 0; k < atoi(argv[4]); k++ )
+        for(k = 0; k < atoi(argv[5]); k++ )
         {
             pMsg = Connect.ReadConnQue(1000);
 
@@ -417,12 +432,11 @@ void defaultExecute(int argc, char **argv)
 
     if(argc < 5)
     {
-        cout << "Arg 1:   vangogh server machine name" << endl;
-        cout << "Arg 2:   this app's registration name" << endl;
-        cout << "Arg 3:   # of loops to send data     " << endl;
-        cout << "Arg 4:   sleep duration between loops" << endl;
-
-        exit(-1);
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Arg 1:   vangogh server machine name" << endl;
+        dout << "Arg 2:   this app's registration name" << endl;
+        dout << "Arg 3:   # of loops to send data     " << endl;
+        dout << "Arg 4:   sleep duration between loops" << endl;
     }
 
     if(argc == 5)
@@ -655,8 +669,12 @@ void defaultExecute(int argc, char **argv)
     }
     else
     {
-        cout << " This is interesting " << endl;
-        for(int i = 0; i < atoi(argv[3]); i++)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        for(int i = 0; i < atoi(argv[4]); i++)
         {
             DoTheNasty(argc, argv);
             Sleep(atoi(argv[4]));
@@ -700,4 +718,105 @@ int tagProcessInbounds(CtiMessage *&pMsg, int clientId)
     }
 
     return instance;
+}
+
+
+
+void seasonExecute(int argc, char **argv)
+{
+    int Op, k;
+
+    unsigned    timeCnt = rwEpoch;
+    unsigned    pt = 1;
+    CtiMessage  *pMsg;
+
+    CtiPointManager PointMgr;
+
+    try
+    {
+        int Op, k;
+
+        unsigned    timeCnt = rwEpoch;
+        unsigned    pt = 1;
+        CtiMessage  *pMsg;
+
+
+        srand(1);   // This is replicable.
+
+        PointMgr.refreshList();     // This should give me all the points in the box.
+        CtiConnection  Connect(VANGOGHNEXUS, "127.0.0.1");
+
+        CtiMultiMsg   *pM  = CTIDBG_new CtiMultiMsg;
+
+        pM->setMessagePriority(15);
+
+        Connect.WriteConnQue(CTIDBG_new CtiRegistrationMsg("SeasonReset", rwThreadId(), FALSE));
+        CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_PTS_MASK | REG_ALARMS);
+        PtRegMsg->setMessagePriority(15);
+        Connect.WriteConnQue( PtRegMsg );
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Reading inbound messages from registration" << endl;
+        }
+
+        while( NULL != (pMsg = Connect.ReadConnQue(1000)))
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                pMsg->dump();
+            }
+
+            delete pMsg;
+        }
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Done reading registration messages" << endl;
+        }
+
+        CtiCommandMsg *pCmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::ResetControlHours, 7);
+        pCmd->insert(-1);
+        Connect.WriteConnQue(pCmd);
+
+
+        // Wait for our message back with the instance id...
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "  Looking for a response from dispatch!" << endl;
+        }
+
+
+        while( NULL != (pMsg = Connect.ReadConnQue(2500)))
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                pMsg->dump();
+            }
+
+            delete pMsg;
+        }
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Request application shutdown." << endl;
+        }
+
+        Sleep(1000);
+        Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
+        Connect.ShutdownConnection();
+        Sleep(2500);
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+
+    return;
 }
