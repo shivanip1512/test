@@ -1,3 +1,10 @@
+<%@ include file="StarsHeader.jsp" %>
+<%
+	StarsGetCallReportHistoryResponse callTrackingResp = (StarsGetCallReportHistoryResponse) operator.getAttribute("CALL_TRACKING");
+	if (callTrackingResp == null) {
+		response.sendRedirect("/servlet/SOAPClient?action=CallTracking"); return;
+	}
+%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -66,33 +73,22 @@
                     <td class="HeaderCell" width="217">Description</td>
                     <td class="HeaderCell" width="69">Taken By</td>
                   </tr>
+<%
+	for (int i = 0; i < callTrackingResp.getStarsCallReportHistoryCount(); i++) {
+		StarsCallReportHistory callHist = callTrackingResp.getStarsCallReportHistory(i);
+%>
                   <tr> 
-                    <td class="TableCell" width="61">17855</td>
-                    <td class="TableCell" width="65">06/01/02</td>
-                    <td class="TableCell" width="69">Credit</td>
+                    <td class="TableCell" width="61"><%= callHist.getCallNumber() %></td>
+                    <td class="TableCell" width="65"><%= dateFormat.format( callHist.getCallDate() ) %></td>
+                    <td class="TableCell" width="69"><%= callHist.getCallType().getContent() %></td>
                     <td class="TableCell" width="217"> 
-                      <textarea name="textarea" rows="3"" wrap="soft" cols="50" class = "TableCell"></textarea>
+                      <textarea name="textarea" rows="3"" wrap="soft" cols="50" class = "TableCell"><%= callHist.getDescription() %></textarea>
                     </td>
-                    <td class="TableCell" width="69">eah</td>
+                    <td class="TableCell" width="69"><%= callHist.getTakenBy() %></td>
                   </tr>
-                  <tr> 
-                    <td class="TableCell" width="61">16234</td>
-                    <td class="TableCell" width="65">11/23/01</td>
-                    <td class="TableCell" width="69">General</td>
-                    <td class="TableCell" width="217"> 
-                      <textarea name="textarea2" rows="3"" wrap="soft" cols="50" class = "TableCell"></textarea>
-                    </td>
-                    <td class="TableCell" width="69" >trs</td>
-                  </tr>
-                  <tr> 
-                    <td class="TableCell" width="61">13897</td>
-                    <td class="TableCell" width="65">02/15/01</td>
-                    <td class="TableCell" width="69">General</td>
-                    <td class="TableCell" width="217"> 
-                      <textarea name="textarea3" rows="3"" wrap="soft" cols="50" class = "TableCell"></textarea>
-                    </td>
-                    <td class="TableCell" width="69">trs</td>
-                  </tr>
+<%
+	}
+%>
                 </table>
               </form>
                 <br>
