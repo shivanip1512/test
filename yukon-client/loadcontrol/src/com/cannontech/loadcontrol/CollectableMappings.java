@@ -21,8 +21,7 @@ public class CollectableMappings
 		
 		//data received
 		new com.cannontech.message.dispatch.message.DefineCollectableMulti(),
-		new com.cannontech.loadcontrol.data.DefColl_LMGroupVersacom(),
-		new com.cannontech.loadcontrol.data.DefColl_LMGroupRipple(),
+		
 		new com.cannontech.loadcontrol.data.DefColl_LMControlArea(),
 		new com.cannontech.loadcontrol.data.DefColl_LMProgramDirect(),
 		new com.cannontech.loadcontrol.data.DefColl_LMProgramDirectGear(),
@@ -36,12 +35,19 @@ public class CollectableMappings
 		new com.cannontech.loadcontrol.data.DefColl_LMEnergyExchangeCustomer(),
 		new com.cannontech.loadcontrol.data.DefColl_LMEnergyExchangeHourlyOffer(),
 		new com.cannontech.loadcontrol.data.DefColl_LMProgramEnergyExchange(),
-		new com.cannontech.loadcontrol.data.DefColl_LMGroupEmetcon(),
+		
 		new com.cannontech.loadcontrol.data.DefColl_LMProgramControlWindow(),
-		new com.cannontech.loadcontrol.data.DefColl_LMGroupPoint(),
+      	new com.cannontech.loadcontrol.data.DefColl_LMProgramThermostatGear(),
       
-      new com.cannontech.loadcontrol.data.DefColl_LMGroupExpresscom(),
-      new com.cannontech.loadcontrol.data.DefColl_LMProgramThermostatGear()
+	 	new com.cannontech.loadcontrol.data.DefColl_LMGroupEmetcon(),
+	  	new com.cannontech.loadcontrol.data.DefColl_LMGroupExpresscom(),
+	  	new com.cannontech.loadcontrol.data.DefColl_LMGroupMCT(),
+	  	new com.cannontech.loadcontrol.data.DefColl_LMGroupPoint(),
+	  	new com.cannontech.loadcontrol.data.DefColl_LMGroupRipple(),
+	  	new com.cannontech.loadcontrol.data.DefColl_LMGroupSADigitalOrGolay(),
+	  	new com.cannontech.loadcontrol.data.DefColl_LMGroupSA205Or105(),
+	  	new com.cannontech.loadcontrol.data.DefColl_LMGroupSA305(),
+	    new com.cannontech.loadcontrol.data.DefColl_LMGroupVersacom()
 	};
    
 
