@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_scheduler.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/05/02 12:33:58 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/05/13 20:45:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -421,11 +421,14 @@ void CtiMCScheduler::handleEvent(const ScheduledEvent& event)
             // then don't bother with figuring out a new stop
             // (it would be based on the old start time anyways)
             {
-            
-            RWTime start = schedulePolicyStart(event.timestamp, *schedule );
+				// Don't calculate any new events if we are disabled
+				if(schedule->getCurrentState() != CtiMCSchedule::Disabled)
+				{
+					RWTime start = schedulePolicyStart(event.timestamp, *schedule );
 
-            if( start.isValid() )
-                schedulePolicyStop( start, *schedule );
+					if( start.isValid() )
+						schedulePolicyStop( start, *schedule );
+				}
             }
 
         break;
