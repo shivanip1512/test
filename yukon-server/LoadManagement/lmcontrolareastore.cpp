@@ -1599,12 +1599,6 @@ void CtiLMControlAreaStore::doResetThr()
                     dout << RWTime() << " - Periodic restore of control area list from the database" << endl;
                 }
     
-                if( currenttime.rwdate() != RWDBDateTime().rwdate() )
-                {//check to see if it is midnight
-                    checkMidnightDefaultsForReset();
-                }
-                currenttime = RWDBDateTime();
-
                 setValid(false);
 
                 tempsum = currenttime.seconds()+refreshrate;
@@ -1614,6 +1608,12 @@ void CtiLMControlAreaStore::doResetThr()
             {
                 rwRunnable().sleep(500);
             }
+
+            if( currenttime.rwdate() != RWDBDateTime().rwdate() )
+            {//check to see if it is midnight
+                checkMidnightDefaultsForReset();
+            }
+            currenttime = RWDBDateTime();
         }
     }
     catch(RWCancellation& )
