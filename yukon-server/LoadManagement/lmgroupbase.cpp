@@ -615,7 +615,24 @@ CtiRequestMsg* CtiLMGroupBase::createTrueCycleRequestMsg(LONG percent, LONG peri
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Can not true cycle a non-Expresscom Load Management Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << RWTime() << " - Can not True Cycle a non-Expresscom Load Management Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+    return NULL;
+}
+
+/*-------------------------------------------------------------------------
+    createTrueCycleRequestMsg
+
+    .
+--------------------------------------------------------------------------*/
+CtiRequestMsg* CtiLMGroupBase::createSetPointRequestMsg(RWCString settings, LONG minValue, LONG maxValue,
+                                                        LONG valueB, LONG valueD, LONG valueF, LONG random,
+                                                        LONG valueTA, LONG valueTB, LONG valueTC, LONG valueTD,
+                                                        LONG valueTE, LONG valueTF, int priority) const
+{
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Can not create a Set Point command to a non-Expresscom Load Management Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return NULL;
 }
@@ -757,20 +774,20 @@ RWCString CtiLMGroupBase::convertSecondsToEvenTimeString(LONG shedTime) const
     if( (shedTime % 3600) == 0 )
     {
         LONG hourShedTime = shedTime/3600;
-        _ultoa(hourShedTime,tempchar,10);
+        _ltoa(hourShedTime,tempchar,10);
         retStr += tempchar;
         retStr += "h";
     }
     else if( (shedTime % 60) == 0 )
     {
         LONG minuteShedTime = shedTime/60;
-        _ultoa(minuteShedTime,tempchar,10);
+        _ltoa(minuteShedTime,tempchar,10);
         retStr += tempchar;
         retStr += "m";
     }
     else
     {
-        _ultoa(shedTime,tempchar,10);
+        _ltoa(shedTime,tempchar,10);
         retStr += tempchar;
         retStr += "s";
     }

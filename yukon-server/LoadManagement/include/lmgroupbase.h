@@ -87,9 +87,13 @@ public:
     virtual void dumpDynamicData();
     virtual void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 
-    //virtuals but not pure because only one type of group can handle either of the messages
+    //virtuals but not pure because only one type of group can handle each of the messages
     virtual CtiCommandMsg* createLatchingRequestMsg(LONG rawState, int priority) const;// in CtiLMGroupPoint
     virtual CtiRequestMsg* createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const;// in CtiLMGroupExpresscom
+    virtual CtiRequestMsg* createSetPointRequestMsg(RWCString settings, LONG minValue, LONG maxValue,
+                                                    LONG valueB, LONG valueD, LONG valueF, LONG random,
+                                                    LONG valueTA, LONG valueTB, LONG valueTC, LONG valueTD,
+                                                    LONG valueTE, LONG valueTF, int priority) const;// in CtiLMGroupExpresscom
 
     //pure virtuals
     virtual CtiLMGroupBase* replicate() const = 0;

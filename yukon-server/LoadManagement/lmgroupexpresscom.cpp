@@ -78,10 +78,10 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(LONG percent, LO
 {
     char tempchar[64];
     RWCString controlString = RWCString("control xcom cycle ");
-    _ultoa(percent,tempchar,10);
+    _ltoa(percent,tempchar,10);
     controlString += tempchar;
     controlString += " count ";
-    _ultoa(defaultCount,tempchar,10);
+    _ltoa(defaultCount,tempchar,10);
     controlString += tempchar;
     controlString += " period ";
     controlString += convertSecondsToEvenTimeString(period);
@@ -104,10 +104,10 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(LONG percent, LON
 {
     char tempchar[64];
     RWCString controlString = RWCString("control xcom cycle ");
-    _ultoa(percent,tempchar,10);
+    _ltoa(percent,tempchar,10);
     controlString += tempchar;
     controlString += " count ";
-    _ultoa(defaultCount,tempchar,10);
+    _ltoa(defaultCount,tempchar,10);
     controlString += tempchar;
     controlString += " period ";
     controlString += convertSecondsToEvenTimeString(period);
@@ -169,6 +169,146 @@ CtiRequestMsg* CtiLMGroupExpresscom::createMasterCycleRequestMsg(LONG offTime, L
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+    }
+    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+}
+
+/*-------------------------------------------------------------------------
+    createThermoStatRequestMsg
+
+    Creates a new CtiRequestMsg pointer for a thermostat program gear with
+    all the appropriate settings.
+--------------------------------------------------------------------------*/
+CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(RWCString settings, LONG minValue, LONG maxValue,
+                                                              LONG valueB, LONG valueD, LONG valueF, LONG random,
+                                                              LONG valueTA, LONG valueTB, LONG valueTC, LONG valueTD,
+                                                              LONG valueTE, LONG valueTF, int priority) const
+{
+    RWCString controlString = RWCString("control xcom setpoint ");
+
+    settings.toUpper();
+    if( settings.length() > 0 && settings[(size_t)0]=='D' )
+    {
+        controlString += "delta ";
+    }
+    if( settings.length() > 1 && settings[(size_t)1]=='C' )
+    {
+        controlString += "celsius ";
+    }
+    if( settings.length() > 3 && settings[(size_t)2]=='H' && settings[(size_t)3]=='I' )
+    {
+        controlString += "mode both ";
+    }
+    if( settings.length() > 2 && settings[(size_t)2]=='H' )
+    {
+        controlString += "mode heat ";
+    }
+    if( settings.length() > 3 && settings[(size_t)3]=='I' )
+    {
+        controlString += "mode cool ";
+    }
+
+    if( minValue != 0 )
+    {
+        controlString += "min ";
+        char tempchar[64];
+        _ltoa(minValue,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+    }
+    if( maxValue != 0 )
+    {
+        controlString += "max ";
+        char tempchar[64];
+        _ltoa(maxValue,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+    }
+    if( random != 0 )
+    {
+        controlString += "tr ";
+        char tempchar[64];
+        _ltoa(random,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+    }
+    if( valueTA != 0 )
+    {
+        controlString += "ta ";
+        char tempchar[64];
+        _ltoa(valueTA,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+    }
+    if( valueTB != 0 )
+    {
+        controlString += "tb ";
+        char tempchar[64];
+        _ltoa(valueTB,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+    }
+    if( valueB != 0 )
+    {
+        controlString += "dsb ";
+        char tempchar[64];
+        _ltoa(valueB,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+    }
+    if( valueTC != 0 )
+    {
+        controlString += "tc ";
+        char tempchar[64];
+        _ltoa(valueTC,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+    }
+    if( valueTD != 0 )
+    {
+        controlString += "td ";
+        char tempchar[64];
+        _ltoa(valueTD,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+    }
+    if( valueD != 0 )
+    {
+        controlString += "dsd ";
+        char tempchar[64];
+        _ltoa(valueD,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+    }
+    if( valueTE != 0 )
+    {
+        controlString += "te ";
+        char tempchar[64];
+        _ltoa(valueTE,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+    }
+    if( valueTF != 0 )
+    {
+        controlString += "tf ";
+        char tempchar[64];
+        _ltoa(valueTF,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+    }
+    if( valueF != 0 )
+    {
+        controlString += "dsf ";
+        char tempchar[64];
+        _ltoa(valueF,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+    }
+
+    if( _LM_DEBUG )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Sending set point command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
