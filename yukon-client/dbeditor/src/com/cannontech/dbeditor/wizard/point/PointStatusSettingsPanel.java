@@ -1,5 +1,8 @@
 package com.cannontech.dbeditor.wizard.point;
 
+import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.db.state.StateGroupUtils;
+
 /**
  * This type was created in VisualAge.
  */
@@ -274,7 +277,13 @@ public void setValue(Object val) {
 	{
 		allStateGroups = cache.getAllStateGroups();
 		for(int i=0;i<allStateGroups.size();i++)
-			getStateTableComboBox().addItem( ((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)) );
+		{
+			LiteStateGroup grp = (LiteStateGroup)allStateGroups.get(i);
+			
+			if( grp.getStateGroupID() > StateGroupUtils.SYSTEM_STATEGROUPID )
+				getStateTableComboBox().addItem( grp );
+		}
+		
 	}
 
 	setInitialComboBoxes();

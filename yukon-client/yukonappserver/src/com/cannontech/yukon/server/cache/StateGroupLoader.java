@@ -31,7 +31,9 @@ java.util.Date timerStop = null;
 //temp code
 timerStart = new java.util.Date();
 //temp code
-	String sqlString = "SELECT STATEGROUPID,NAME,GroupType FROM STATEGROUP WHERE STATEGROUPID > 0 ORDER BY STATEGROUPID";
+	String sqlString = 
+		"SELECT STATEGROUPID,NAME,GroupType FROM STATEGROUP " + 
+		"ORDER BY STATEGROUPID";
 
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
@@ -57,8 +59,8 @@ timerStart = new java.util.Date();
 
 		sqlString =
 			"SELECT StateGroupID, RawState, Text, ForegroundColor, BackgroundColor, ImageID " + 
-			"FROM " + State.TABLE_NAME + " WHERE STATEGROUPID > 0 " + 
-			"AND RAWSTATE >= 0 ORDER BY STATEGROUPID,RAWSTATE";
+			"FROM " + State.TABLE_NAME + " WHERE " + 
+			"RAWSTATE >= 0 ORDER BY STATEGROUPID,RAWSTATE";
 		
 		rset = stmt.executeQuery(sqlString);
 		while (rset.next())

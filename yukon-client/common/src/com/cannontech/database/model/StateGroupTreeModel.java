@@ -1,5 +1,8 @@
 package com.cannontech.database.model;
 
+import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.db.state.StateGroupUtils;
+
 /**
  * This type was created in VisualAge.
  */
@@ -47,8 +50,15 @@ public void update() {
 		
 		for( int i = 0; i < stateGroups.size(); i++ )
 		{
-			DBTreeNode stateGroupNode = new DBTreeNode( stateGroups.get(i));	
-			rootNode.add( stateGroupNode );
+			LiteStateGroup grp = (LiteStateGroup)stateGroups.get(i);
+			
+			//only show the editable states
+			if( grp.getStateGroupID() > StateGroupUtils.SYSTEM_STATEGROUPID )
+			{
+				DBTreeNode stateGroupNode = new DBTreeNode( grp );	
+				rootNode.add( stateGroupNode );
+			}
+			
 		}
 	}
 

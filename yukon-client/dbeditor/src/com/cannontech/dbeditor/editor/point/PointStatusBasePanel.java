@@ -1,5 +1,8 @@
 package com.cannontech.dbeditor.editor.point;
 
+import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.db.state.StateGroupUtils;
+
 /**
  * This type was created in VisualAge.
  */
@@ -238,7 +241,7 @@ public Object getValue(Object val) {
 	//Assume that defaultObject is an instance of com.cannontech.database.data.point.StatusPoint
 	com.cannontech.database.data.point.StatusPoint point = (com.cannontech.database.data.point.StatusPoint) val;
 
-	com.cannontech.database.data.lite.LiteStateGroup stateGroup = (com.cannontech.database.data.lite.LiteStateGroup) getStateTableComboBox().getSelectedItem();
+	LiteStateGroup stateGroup = (LiteStateGroup) getStateTableComboBox().getSelectedItem();
 	com.cannontech.database.data.lite.LiteState initialState = (com.cannontech.database.data.lite.LiteState) getInitialStateComboBox().getSelectedItem();
 
 	point.getPoint().setStateGroupID( new Integer(stateGroup.getStateGroupID()) );
@@ -371,9 +374,9 @@ private void loadStateComboBoxes(int stateGroupID)
 
 	for(int i=0;i<allStateGroups.size();i++)
 	{
-		if( ((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStateGroupID() == stateGroupID )
+		if( ((LiteStateGroup)allStateGroups.get(i)).getStateGroupID() == stateGroupID )
 		{
-			java.util.List statesList = ((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStatesList();
+			java.util.List statesList = ((LiteStateGroup)allStateGroups.get(i)).getStatesList();
 			for(int j=0;j<statesList.size();j++)
 			{
 				com.cannontech.database.data.lite.LiteState ls = ((com.cannontech.database.data.lite.LiteState)statesList.get(j));
@@ -429,9 +432,16 @@ public void setValue(Object val)
 		//Load the state table combo box
 		for(int i=0;i<allStateGroups.size();i++)
 		{
-			getStateTableComboBox().addItem( ((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)) );
-			if( ((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStateGroupID() == stateGroupID )
-				getStateTableComboBox().setSelectedIndex(i);
+			LiteStateGroup grp = (LiteStateGroup)allStateGroups.get(i);
+			
+			//only show the editable states
+			if( grp.getStateGroupID() > StateGroupUtils.SYSTEM_STATEGROUPID )
+			{			
+				getStateTableComboBox().addItem( grp );
+				if( grp.getStateGroupID() == stateGroupID )
+					getStateTableComboBox().setSelectedItem( grp );
+			}
+			
 		}
 	}
 		
@@ -458,7 +468,7 @@ public void stateTableComboBox_ItemStateChanged(java.awt.event.ItemEvent itemEve
 
 	if( itemEvent.getStateChange() == java.awt.event.ItemEvent.SELECTED )
 	{
-		com.cannontech.database.data.lite.LiteStateGroup selected = (com.cannontech.database.data.lite.LiteStateGroup) getStateTableComboBox().getSelectedItem();
+		LiteStateGroup selected = (LiteStateGroup) getStateTableComboBox().getSelectedItem();
 		loadStateComboBoxes( selected.getStateGroupID() );
 	}
 }
