@@ -5,19 +5,17 @@ package com.cannontech.database.data.pao;
  * Creation date: (10/2/2001 1:18:50 PM)
  * @author: 
  */
-public interface PortTypes 
+public interface PortTypes extends TypeBase
 {
-
 	//Specific Types - map to basic types
-	public final static int LOCAL_DIRECT = 1000;
-	public final static int LOCAL_SHARED = 1001;
-	public final static int LOCAL_RADIO = 1002;
-	public final static int LOCAL_DIALUP = 1003;
-
-	public final static int TSERVER_DIRECT = 1010;
-	public final static int TSERVER_SHARED = 1011;
-	public final static int TSERVER_RADIO = 1012;
-	public final static int TSERVER_DIALUP = 1013;
+	public final static int LOCAL_DIRECT        = PORT_OFFSET + 0;
+	public final static int LOCAL_SHARED        = PORT_OFFSET + 1;
+	public final static int LOCAL_RADIO         = PORT_OFFSET + 2;
+	public final static int LOCAL_DIALUP        = PORT_OFFSET + 3;
+	public final static int TSERVER_DIRECT      = PORT_OFFSET + 4;
+	public final static int TSERVER_SHARED      = PORT_OFFSET + 5;
+	public final static int TSERVER_RADIO       = PORT_OFFSET + 6;
+	public final static int TSERVER_DIALUP      = PORT_OFFSET + 7;
 
 
 	//Strings of port types

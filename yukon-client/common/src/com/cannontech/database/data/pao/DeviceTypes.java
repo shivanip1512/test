@@ -4,76 +4,70 @@ package com.cannontech.database.data.pao;
  * Creation date: (10/2/2001 1:45:23 PM)
  * @author: 
  */
-public interface DeviceTypes
+public interface DeviceTypes extends TypeBase
 {
-	public final static int CCU710A = 	10;
-	public final static int CCU711 	= 	11;
-	public final static int TCU5000	=	12;
-	public final static int TCU5500	=	13;
-	public final static int LCU415	=	14;
-	public final static int LCULG	=	15;
-	public final static int LCU_ER = 16;
-	public final static int LCU_T3026 = 17;
+	public final static int CCU710A       = DEVICE_OFFSET + 1;
+	public final static int CCU711        = DEVICE_OFFSET + 2;
+	public final static int TCU5000       = DEVICE_OFFSET + 3;
+	public final static int TCU5500       = DEVICE_OFFSET + 4;
+	public final static int LCU415        = DEVICE_OFFSET + 5;
+	public final static int LCULG         = DEVICE_OFFSET + 6;
+	public final static int LCU_ER        = DEVICE_OFFSET + 7;
+	public final static int LCU_T3026     = DEVICE_OFFSET + 8;	
+	public final static int ALPHA_PPLUS   = DEVICE_OFFSET + 9; //replaced ALPHA
+	public final static int FULCRUM       = DEVICE_OFFSET + 10;  // replaces SCHLUMBERGER
+	public final static int VECTRON       = DEVICE_OFFSET + 11;	// is a type of SCHLUMBERGER
+	public final static int LANDISGYRS4   = DEVICE_OFFSET + 12;
+	public final static int DAVISWEATHER  = DEVICE_OFFSET + 13;
+	public final static int ALPHA_A1      = DEVICE_OFFSET + 14;
+	public final static int DR_87         = DEVICE_OFFSET + 15;
+	public final static int QUANTUM       = DEVICE_OFFSET + 16;
+	public final static int SIXNET        = DEVICE_OFFSET + 17;
+	public final static int REPEATER_800  = DEVICE_OFFSET + 18;
+	public final static int MCT310        = DEVICE_OFFSET + 19;
+	public final static int MCT318        = DEVICE_OFFSET + 20;
+	public final static int MCT360        = DEVICE_OFFSET + 21;
+	public final static int MCT370        = DEVICE_OFFSET + 22;
+	public final static int MCT240        = DEVICE_OFFSET + 23;
+	public final static int MCT248        = DEVICE_OFFSET + 24;
+	public final static int MCT250        = DEVICE_OFFSET + 25;
+	public final static int MCT210        = DEVICE_OFFSET + 26;
+	public final static int REPEATER      = DEVICE_OFFSET + 27;
+	public final static int LMT_2         = DEVICE_OFFSET + 28;	
+	public final static int RTUILEX       = DEVICE_OFFSET + 29;
+	public final static int RTUWELCO      = DEVICE_OFFSET + 30;
+	public final static int DCT_501       = DEVICE_OFFSET + 31;
+   public final static int RTU_DNP       = DEVICE_OFFSET + 32;
 	
-	public final static int ALPHA_PPLUS	=	20; //replaced ALPHA
-	public final static int FULCRUM = 21;  // replaces SCHLUMBERGER
-	public final static int VECTRON = 22;	// is a type of SCHLUMBERGER
-	public final static int LANDISGYRS4 = 23;
-	public final static int DAVISWEATHER = 24;
-	public final static int ALPHA_A1	=	25;
-	public final static int DR_87	=	26;
-	public final static int QUANTUM = 27;
-	public final static int SIXNET = 28;
+	public final static int TAPTERMINAL    = DEVICE_OFFSET + 33;
+	public final static int MCT310ID       = DEVICE_OFFSET + 34;
+	public final static int MCT310IL       = DEVICE_OFFSET + 35;
+	public final static int MCT318L        = DEVICE_OFFSET + 36;
+	public final static int MCT213         = DEVICE_OFFSET + 37;
+	public final static int WCTP_TERMINAL  = DEVICE_OFFSET + 38;
+   public final static int MCT310CT       = DEVICE_OFFSET + 39;
+   public final static int MCT310IM       = DEVICE_OFFSET + 40;
 
-	public final static int REPEATER_800 =	29;
-	public final static int MCT310	=	30;
-	public final static int MCT318	=	31;
-	public final static int MCT360	=	32;
-	public final static int MCT370	=	33;
-	public final static int MCT240	=	34;
-	public final static int MCT248	=	35;
-	public final static int MCT250	=	36;
-	public final static int MCT210	=	37;
-	public final static int REPEATER	=	38;
-	public final static int LMT_2	=	39;
-	
-	public final static int RTUILEX	=	40;
-	public final static int RTUWELCO	=	41;
-	public final static int DCT_501	=	42;
-   public final static int RTU_DNP  =  43;
-	
-	public final static int TAPTERMINAL	=	50;
-	public final static int MCT310ID	=	51;
-	public final static int MCT310IL =	52;
-	public final static int MCT318L	=	53;
-	public final static int MCT213 = 54;
-	public final static int WCTP_TERMINAL	=	55;
-   public final static int MCT310CT =  56;
-   public final static int MCT310IM =  57;
+	public final static int LM_GROUP_EMETCON             = DEVICE_OFFSET + 41;
+	public final static int LM_GROUP_VERSACOM            = DEVICE_OFFSET + 42;
+	public final static int LM_GROUP_EXPRESSCOMM         = DEVICE_OFFSET + 43;
+	public final static int LM_GROUP_RIPPLE              = DEVICE_OFFSET + 44;
+	public final static int LM_DIRECT_PROGRAM            = DEVICE_OFFSET + 45;
+	public final static int LM_CURTAIL_PROGRAM           = DEVICE_OFFSET + 46;
+	public final static int LM_CONTROL_AREA              = DEVICE_OFFSET + 47;
+	public final static int LM_ENERGY_EXCHANGE_PROGRAM   = DEVICE_OFFSET + 48;
+	public final static int MACRO_GROUP                  = DEVICE_OFFSET + 49;	
+	public final static int CAPBANK                      = DEVICE_OFFSET + 50;
+	public final static int CAPBANKCONTROLLER            = DEVICE_OFFSET + 51;
+	public final static int VIRTUAL_SYSTEM               = DEVICE_OFFSET + 52;
+	public final static int CBC_FP_2800                  = DEVICE_OFFSET + 53;
+	public final static int LM_GROUP_POINT               = DEVICE_OFFSET + 54;		
+   public final static int DNP_CBC_6510                 = DEVICE_OFFSET + 55;
+	public final static int SYSTEM                       = DEVICE_OFFSET + 56;
+	public final static int EDITABLEVERSACOMSERIAL       = DEVICE_OFFSET + 57;
+	public final static int MCTBROADCAST                 = DEVICE_OFFSET + 58;
 
-	public final static int LM_GROUP_EMETCON = 100;
-	public final static int LM_GROUP_VERSACOM = 101;
-	public final static int LM_GROUP_EXPRESSCOMM = 102;
-	public final static int LM_GROUP_RIPPLE = 103;
-	public final static int LM_DIRECT_PROGRAM = 104;
-	public final static int LM_CURTAIL_PROGRAM = 105;
-	public final static int LM_CONTROL_AREA = 106;
-	public final static int LM_ENERGY_EXCHANGE_PROGRAM = 107;
-	public final static int MACRO_GROUP = 108;
-	
-	public final static int CAPBANK = 110;
-	public final static int CAPBANKCONTROLLER = 111;
-	public final static int VIRTUAL_SYSTEM = 112;
-	public final static int CBC_FP_2800 = 113;
-	public final static int LM_GROUP_POINT = 114;
-		
-   public final static int DNP_CBC_6510  = 130;
-   
-      
-	public final static int SYSTEM = 200;
-	public final static int EDITABLEVERSACOMSERIAL = 210;
 
-	public final static int MCTBROADCAST = 220;
 
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]

@@ -1547,29 +1547,14 @@ public boolean isInputValid()
 	if( getPhysicalAddressTextField().isVisible() )
 		address = Integer.parseInt( getPhysicalAddressTextField().getText() );
 
-	if( com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(getDeviceType()) )
-	{
-		//check the range for the MCT's
-		if( address < 0  
-			 || address > 2796201 
-			 || address == 1398101 )
-		{
-			setErrorString("Valid range for MCT addresses is 0 to 2796201 and can not be 1398101");
-			return false;
-		}
+   if( !com.cannontech.dbeditor.range.DeviceAddressRange.isValidRange( getDeviceType(), address ) )
+   {
+      setErrorString( com.cannontech.dbeditor.range.DeviceAddressRange.getRangeMessage( getDeviceType() ) );
+      return false;
+   }
 
-		return checkMCTAddresses( address );
-	}
-	else if( com.cannontech.database.data.pao.PAOGroups.REPEATER == getDeviceType() )
-	{
-		if( address < 464  
-			 || address > 4302 )
-		{
-			setErrorString("Valid range for Repeater900 addresses is 464 to 4302");
-			return false;
-		}
-	}
-
+   if( com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(getDeviceType()) )
+      return checkMCTAddresses( address );
 	
 	return true;
 }
@@ -1809,8 +1794,13 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
 		getPasswordLabel().setVisible(true);
 		getPasswordTextField().setVisible(true);
 		String password = ((IEDBase)rBase).getDeviceIED().getPassword();
-		if( password.equalsIgnoreCase("0") )
+      
+		if( CtiUtilities.STRING_NONE.equalsIgnoreCase(password)
+          || "None".equalsIgnoreCase(password) //keep the old (none) value valid
+          || "0".equalsIgnoreCase(password) )  //keep the old '0' value valid
+      {
 			getPasswordTextField().setText( "" );
+      }
 		else
 			getPasswordTextField().setText( password );
 
@@ -1876,7 +1866,6 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
       
       getPasswordLabel().setVisible(false);
       getPasswordTextField().setVisible(false);
-      
    }
 	else
 	{

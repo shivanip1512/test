@@ -5,17 +5,17 @@ package com.cannontech.database.data.pao;
  * Creation date: (10/2/2001 1:28:29 PM)
  * @author: 
  */
-public interface RouteTypes 
+public interface RouteTypes extends TypeBase
 {
-
 	//Specific Types - map to basic types
-	public final static int ROUTE_CCU = 2000;
-	public final static int ROUTE_TCU = 2001;
-	public final static int ROUTE_LCU = 2002;
-	public final static int ROUTE_MACRO = 2003;
-	public final static int ROUTE_VERSACOM = 2004;
-	public final static int ROUTE_TAP_PAGING = 2005;
-	public final static int ROUTE_WCTP_TERMINAL = 2006;
+	public final static int ROUTE_CCU           = ROUTE_OFFSET + 0;
+	public final static int ROUTE_TCU           = ROUTE_OFFSET + 1;
+	public final static int ROUTE_LCU           = ROUTE_OFFSET + 2;
+	public final static int ROUTE_MACRO         = ROUTE_OFFSET + 3;
+	public final static int ROUTE_VERSACOM      = ROUTE_OFFSET + 4;
+	public final static int ROUTE_TAP_PAGING    = ROUTE_OFFSET + 5;
+	public final static int ROUTE_WCTP_TERMINAL = ROUTE_OFFSET + 6;
+
 
 	public static final String STRING_CCU = "CCU";
 	public static final String STRING_TCU = "TCU";

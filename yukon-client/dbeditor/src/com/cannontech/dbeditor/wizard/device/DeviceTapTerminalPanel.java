@@ -355,7 +355,8 @@ public Dimension getPreferredSize() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
-public Object getValue(Object val) {
+public Object getValue(Object val) 
+{
 	PagingTapTerminal tapTerm = (PagingTapTerminal)val;
 
 	String nameString = getNameTextField().getText();
@@ -366,11 +367,11 @@ public Object getValue(Object val) {
 
 	if( getPasswordCheckBox().isSelected() )
 	{
-		String password = getPasswordTextField().getText();
-		tapTerm.getDeviceIED().setPassword(password);
+		tapTerm.getDeviceIED().setPassword( getPasswordTextField().getText() );
 	}
 	else
-		tapTerm.getDeviceIED().setPassword("None");
+		tapTerm.getDeviceIED().setPassword(
+            com.cannontech.common.util.CtiUtilities.STRING_NONE );
 
 	//Tap Terminals cannot be slaves like some IED meters
 	tapTerm.getDeviceIED().setSlaveAddress("Master");
@@ -437,14 +438,14 @@ public boolean isInputValid() {
 		return false;
 	}
 
-	if( getPasswordCheckBox().isSelected() &&
-			( getPasswordTextField().getText() == null ||
-				getPasswordTextField().getText().length() < 1) )
-	{
-		setErrorString("The Password text field must be filled in");
-		return false;
-	}
-	
+   if( getPasswordCheckBox().isSelected() &&
+         ( getPasswordTextField().getText() == null ||
+            getPasswordTextField().getText().length() < 1) )
+   {
+      setErrorString("The Password text field must be filled in");
+      return false;
+   }
+   
 
 	return true;
 }
@@ -487,11 +488,11 @@ public void passwordCheckBox_ItemStateChanged(java.awt.event.ItemEvent itemEvent
 	{
 		getPasswordLabel().setEnabled(true);
 		getPasswordTextField().setEnabled(true);
-		getPasswordTextField().setText("");
+//		getPasswordTextField().setText("");
 	}
 	else
 	{
-		getPasswordTextField().setText("None");
+//		getPasswordTextField().setText("None");
 		getPasswordLabel().setEnabled(false);
 		getPasswordTextField().setEnabled(false);
 	}
