@@ -165,9 +165,7 @@
                         </td>
                       </tr>
                     </table>
-                    <p><cti:checkProperty propertyid="<%= ResidentialCustomerRole.NOTIFICATION_ON_GENERAL_PAGE %>"></cti:checkProperty> 
-                    </p>
-                    <cti:checkProperty propertyid="<%= ResidentialCustomerRole.NOTIFICATION_ON_GENERAL_PAGE %>"> 
+                    <br>
 <%
 	boolean showNotification = false;
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
@@ -196,10 +194,10 @@
                       <table width="328" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >
                         <tr> 
                           <td height="58"> 
-                            <p align="center" class="TableCell1"> 
+                            <p align="center"> 
                               <input type="checkbox" name="NotifyControl" value="true"
 							   <% if (primContact.getEmail().getEnabled()) out.print("checked"); %>>
-                              <span class="TableCell3"> 
+                              <span class="TableCell2"> 
                               I would like to be notified by e-mail of the 
                               <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_ODDS_FOR_CONTROL %>"/>.<br>
                               My e-mail address is:</span><br>
@@ -213,7 +211,6 @@
 <%
 	}
 %>
-                    </cti:checkProperty>
                   </td>
                   <td width="171" valign="top"><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br> 
                     <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
