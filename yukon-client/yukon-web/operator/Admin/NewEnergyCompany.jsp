@@ -62,39 +62,40 @@ function validate(form) {
                     <table width="100%" border="0" cellspacing="0" cellpadding="5">
                       <input type="hidden" name="action" value="NewEnergyCompany">
                       <tr> 
-                        <td width="15%" align="right" class="TableCell" valign="top">Step 
+                        <td width="10%" align="right" class="TableCell" valign="top">Step 
                           1:</td>
-                        <td width="85%" class="TableCell"> <span class="ConfirmMsg">Enter 
+                        <td width="90%" class="TableCell"> <span class="ConfirmMsg">Enter 
                           the energy company information:</span> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                             <tr> 
                               <td width="25%" align="right">Company Name:</td>
                               <td width="75%"> 
                                 <input type="text" name="CompanyName" size="30">
-                              </td>
+                                <span class="ErrorMsg">*</span> </td>
                             </tr>
                             <tr> 
                               <td width="25%" align="right">Email:</td>
-                              <td width="75%">
+                              <td width="75%"> 
                                 <input type="text" name="Email" size="30">
+                                <font color="#FF0000">(Required for password request)</font> 
                               </td>
                             </tr>
                           </table>
                         </td>
                       </tr>
                       <tr> 
-                        <td width="15%" align="right" class="TableCell" valign="top">Step 
+                        <td width="10%" align="right" class="TableCell" valign="top">Step 
                           2:</td>
-                        <td width="85%" class="TableCell"><span class="ConfirmMsg">Create 
-                          one or more groups for operators and one or more groups 
-                          for residential customers in DBEditor. Enter the group 
-                          names below, separated by comma:</span> 
+                        <td width="90%" class="TableCell"><span class="ConfirmMsg">Create 
+                          one or more groups for operators, and one or more groups 
+                          for residential customers (optional) in DBEditor. Enter 
+                          the group names below, separated by comma:</span> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                             <tr> 
                               <td width="25%" align="right">Operator Groups:</td>
                               <td width="75%"> 
                                 <input type="text" name="OperatorGroup" size="30">
-                              </td>
+                                <span class="ErrorMsg">*</span> </td>
                             </tr>
                             <tr> 
                               <td width="25%" align="right">Res. Customer Groups:</td>
@@ -106,9 +107,9 @@ function validate(form) {
                         </td>
                       </tr>
                       <tr> 
-                        <td width="15%" align="right" class="TableCell" valign="top">Step 
+                        <td width="10%" align="right" class="TableCell" valign="top">Step 
                           3:</td>
-                        <td width="85%" class="TableCell"><span class="ConfirmMsg">Create 
+                        <td width="90%" class="TableCell"><span class="ConfirmMsg">Create 
                           a default operator login (A default login not only belongs 
                           to the first operator group you just created, but also 
                           has the privilege to edit energy company configuration):</span> 
@@ -117,27 +118,27 @@ function validate(form) {
                               <td width="25%" align="right">Username:</td>
                               <td width="75%"> 
                                 <input type="text" name="Username" size="30">
-                              </td>
+                                <span class="ErrorMsg">*</span> </td>
                             </tr>
                             <tr> 
                               <td width="25%" align="right">Password:</td>
                               <td width="75%"> 
                                 <input type="password" name="Password" size="30">
-                              </td>
+                                <span class="ErrorMsg">*</span> </td>
                             </tr>
                             <tr> 
                               <td width="25%" align="right">Confirm Password:</td>
                               <td width="75%"> 
                                 <input type="password" name="PasswordC" size="30">
-                              </td>
+                                <span class="ErrorMsg">*</span> </td>
                             </tr>
                           </table>
                         </td>
                       </tr>
                       <tr> 
-                        <td width="15%" align="right" class="TableCell" valign="top">Step 
-                          4 (optional):</td>
-                        <td width="85%" class="ConfirmMsg"><span class="ConfirmMsg">Create 
+                        <td width="10%" align="right" class="TableCell" valign="top">Step 
+                          4:</td>
+                        <td width="90%" class="ConfirmMsg"><span class="ConfirmMsg">Create 
                           a second operator login (with only the privileges defined 
                           in the first operator group you just created):</span> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
@@ -163,23 +164,20 @@ function validate(form) {
                         </td>
                       </tr>
                       <tr> 
-                        <td width="15%" align="right" class="TableCell" valign="top"> 
+                        <td width="10%" align="right" class="TableCell" valign="top"> 
                           Step 5:</td>
-                        <td width="85%" class="MainText"> 
+                        <td width="90%" class="MainText"> 
                           <p class="ConfirmMsg">After the energy company is created, 
-                            you should:</p>
-                          <ol>
-                            <li>Assign a default route to the energy company (more 
-                              details later).</li>
-                            <li>Assign direct programs to the operator login.</li>
-                            <li>Login as the default operator you just created. 
-                              Click the &quot;Config Energy Company&quot; button 
-                              under &quot;Administration&quot;, and edit the energy 
-                              company settings. The email address of the energy 
-                              company must be set in order for password request 
-                              to work.</li>
-                          </ol>
+                            <u>login as the default operator</u> you just created, 
+                            and edit the energy company settings by <u>clicking 
+                            the &quot;Config Energy Company&quot; button</u> on 
+                            the home page.</p>
                         </td>
+                      </tr>
+                      <tr> 
+                        <td width="10%" align="right" class="TableCell" valign="top">&nbsp;</td>
+                        <td width="90%" class="MainText"><span class="ErrorMsg">* 
+                          Required fields</span></td>
                       </tr>
                     </table>
                   </td>
