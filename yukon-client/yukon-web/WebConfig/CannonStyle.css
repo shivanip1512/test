@@ -16,6 +16,7 @@ a.Link4:link {color: #666699}
 a.Link4:hover {color: #666699}
 
 .MainText {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #000000}
+.defaultText {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #6666FF}
 .TitleHeader {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #000000; font-weight:bold}
 .esubTitleHeader {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #000000; background-color: #CCCC80; font-weight:bold}
 
@@ -50,6 +51,7 @@ a.Link4:hover {color: #666699}
 .tempText2 {  font-family: Arial, Helvetica, sans-serif; font-size: 35px; font-style: normal; color: #FF0000}
 .Clickable { cursor:pointer; text-decoration: underline }
 .ErrorMsg { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FF0000 }
+.OkMsg { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #339900 }
 .ConfirmMsg { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0000FF }
 
 .bgmenu {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FFFFFF; text-decoration: none; background-color: #FFFFFF;  position:absolute; border: 1px #666699 outset; visibility: hidden; cursor:default; width:120 px;}
