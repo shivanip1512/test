@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_system.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/04/09 22:46:27 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/05/09 15:48:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -303,6 +303,17 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                 if(NewOMess)
                 {
                     Route->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
+
+                    if(NewOMess)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << "  Route " << Route->getName() << " did not clean up his mess." << endl;
+                        }
+                        delete NewOMess;
+                        NewOMess = 0;
+                    }
                 }
                 else
                 {
@@ -393,6 +404,17 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                                             dout << RWTime() << " Memory error " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                         }
                                     }
+
+                                    if(NewOMess)
+                                    {
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                            dout << "  Route " << Route->getName() << " did not clean up his mess." << endl;
+                                        }
+                                        delete NewOMess;
+                                        NewOMess = 0;
+                                    }
                                 }
 
                                 break;
@@ -414,7 +436,6 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
 
         }
     }
-
 
     if(OutMessage != NULL)                // And get rid of our memory....
     {
