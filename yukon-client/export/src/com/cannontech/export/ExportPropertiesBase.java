@@ -11,7 +11,7 @@ package com.cannontech.export;
 
 public class ExportPropertiesBase
 {
-	private int formatType = -1;
+	private int formatID = -1;
 	
 	//CSVBILLING PROPERTIES
 	private java.util.GregorianCalendar runDate = null;
@@ -39,28 +39,28 @@ public class ExportPropertiesBase
 	/**
 	 * Constructor for ExportPropertiesBase.
 	 */
-	public ExportPropertiesBase(int formatType)
+	public ExportPropertiesBase(int formatID)
 	{
 		super();
-		this.formatType = formatType;
+		this.formatID = formatID;
 	}
 	
 	/**
-	 * Returns the formatType.
+	 * Returns the formatID.
 	 * @return int
 	 */
-	public int getFormatType()
+	public int getFormatID()
 	{
-		return formatType;
+		return formatID;
 	}
 
 	/**
-	 * Sets the formatType.
-	 * @param formatType The formatType to set
+	 * Sets the formatID.
+	 * @param formatID The formatID to set
 	 */
-	public void setFormatType(int formatType)
+	public void setFormatID(int formatID)
 	{
-		this.formatType = formatType;
+		this.formatID = formatID;
 	}
 
 	/**

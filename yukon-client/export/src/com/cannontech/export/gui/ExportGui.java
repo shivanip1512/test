@@ -81,7 +81,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	if ( event.getSource() == getFileFormatComboBox())
 	{
 		String format = getFileFormatComboBox().getSelectedItem().toString();
-		getExportProperties().setFormatType(ExportFormatTypes.getFormatTypeInt(format));
+		getExportProperties().setFormatID(ExportFormatTypes.getFormatTypeInt(format));
 	}
 	else if (event.getSource() == getRunOnceButton())
 	{
@@ -124,7 +124,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	}
 	else if(event.getSource() == getGenerateFileButton())
 	{
-		formatBase = ExportFormatBase.createFileFormat(getExportProperties().getFormatType());
+		formatBase = ExportFormatBase.createFileFormat(getExportProperties().getFormatID());
 		formatBase.setExportProperties(getExportProperties());
 		formatBase.setDirectory(getFileDirectoryTextField().getText());
 		formatBase.setIsService(false);

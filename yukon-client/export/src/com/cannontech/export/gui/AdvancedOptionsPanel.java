@@ -940,15 +940,15 @@ public void setValue(Object object)
 	{
 		ExportPropertiesBase props = (ExportPropertiesBase)object;
 		setExportProperties(props);
-		setPanelsEnabled(props.getFormatType());
+		setPanelsEnabled(props.getFormatID());
 		
-		if(((ExportPropertiesBase)object).getFormatType() == ExportFormatTypes.DBPURGE_FORMAT)
+		if(((ExportPropertiesBase)object).getFormatID() == ExportFormatTypes.DBPURGE_FORMAT)
 		{
 			getDaysToRetainTextBox().setText(String.valueOf(props.getDaysToRetain()));
 			getRunAtHourTextBox().setText(String.valueOf(props.getRunTimeHour()));
 			getPurgeDataCheckBox().setSelected(props.isPurgeData());
 		}
-		else if( ((ExportPropertiesBase)object).getFormatType() == ExportFormatTypes.CSVBILLING_FORMAT)
+		else if( ((ExportPropertiesBase)object).getFormatID() == ExportFormatTypes.CSVBILLING_FORMAT)
 		{
 			getStartDateComboBox().setSelectedDate(props.getMinTimestamp().getTime());
 			getStopDateComboBox().setSelectedDate(props.getMaxTimestamp().getTime());
@@ -968,13 +968,13 @@ public Object getValue(Object object)
 	ExportPropertiesBase exportProps = (ExportPropertiesBase)object;
 	
 		
-	if( getExportProperties().getFormatType() == ExportFormatTypes.DBPURGE_FORMAT )
+	if( getExportProperties().getFormatID() == ExportFormatTypes.DBPURGE_FORMAT )
 	{
 		exportProps.setDaysToRetain(Integer.valueOf(getDaysToRetainTextBox().getText()).intValue());
 		exportProps.setRunTimeHour(Integer.valueOf(getRunAtHourTextBox().getText()).intValue());
 		exportProps.setPurgeData(getPurgeDataCheckBox().isSelected());
 	}
-	else if(getExportProperties().getFormatType() == ExportFormatTypes.CSVBILLING_FORMAT )
+	else if(getExportProperties().getFormatID() == ExportFormatTypes.CSVBILLING_FORMAT )
 	{
 		java.util.GregorianCalendar calTemp = new java.util.GregorianCalendar();			
 		Object date = getStartDateComboBox().getSelectedDate();

@@ -54,7 +54,7 @@ public final static ExportFormatBase createFileFormat(int formatID)
 	{
 		com.cannontech.clientutils.CTILogger.info("No file format found - Unrecognized file format type");
 	}
-	returnFormat.getExportProperties().setFormatType(formatID);
+	returnFormat.getExportProperties().setFormatID(formatID);
 	return returnFormat;
 }
 /**
@@ -293,7 +293,7 @@ abstract public void retrieveExportData();
  */
 public static void runMainWithGui(ExportFormatBase formatBase) 
 {
-	if( formatBase.getExportProperties().getFormatType() < 0)
+	if( formatBase.getExportProperties().getFormatID() < 0)
 	{
 		com.cannontech.clientutils.CTILogger.info("** Missing FORMAT=<format type> from commandline.");
 		com.cannontech.clientutils.CTILogger.info("** No File Format Specified, Exporting process will exit...");
