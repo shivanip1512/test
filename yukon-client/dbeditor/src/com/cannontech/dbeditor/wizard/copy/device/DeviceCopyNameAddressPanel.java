@@ -455,6 +455,8 @@ public Object getValue(Object val)
 			 ((CarrierBase) val).getDeviceCarrierSettings().setAddress(new Integer(getAddressTextField().getText()));
 		else if (val instanceof CapBank)
 			 ((CapBank) val).setLocation(getAddressTextField().getText());
+		else if (val instanceof ICapBankController )
+			 ((ICapBankController) val).assignAddress( new Integer(getAddressTextField().getText()) );
 		else if (val instanceof Ion7700)
 			 ((Ion7700) val).assignAddress( new Integer(getAddressTextField().getText()) );
 		else //didn't find it
