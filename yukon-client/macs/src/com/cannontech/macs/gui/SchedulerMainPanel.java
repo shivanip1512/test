@@ -921,9 +921,10 @@ public void selectionPerformed( PropertyPanelEvent event)
 	{
 		try
 		{
-			// use a clone of the desired Schedule since we do not want our client
-			// to change its meaning of the Schedule
-			Schedule object = (Schedule) panel.getValue( com.cannontech.common.util.CtiUtilities.copyObject(getSelectedSchedule()) );
+			// use a clone of the Schedule passed into the panel.setValue(Object) call
+			// since we do not want our client to change its meaning of the Schedule
+			Schedule object = (Schedule) panel.getValue( null );
+
 			getIMACSConnection().sendUpdateSchedule( object );
 		}
 		catch( java.io.IOException e )

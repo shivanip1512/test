@@ -344,8 +344,6 @@ public void setFilter(java.lang.String newFilter)
 {
 	filter = newFilter;
 
-System.out.println("SETFILT = " + getFilter() );
-
 		
    //need to refresh all of our schedules   
    if( ALL_FILTER.equalsIgnoreCase(getFilter()) )
@@ -447,7 +445,11 @@ public synchronized void update(Observable source, Object obj )
 				{
 					//we may have to redo our Sublists if the Category changed
 					if( !row.getCategoryName().equalsIgnoreCase( sched.getCategoryName() ) )
-						changeSize = true;
+					{
+						getAllSchedules().remove( row );
+						found = false;
+						break;  //act like we did not find the schedule
+					}
 	
 					getAllSchedules().setElementAt( sched, j );
 					found = true;
