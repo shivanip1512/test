@@ -500,7 +500,6 @@ private void updateAreaList(CBCSubAreaNames areaNames)
 		}
 
 	}
-
-com.cannontech.clientutils.CTILogger.info( "			SIZEJCOMB = " + getJComboBox().getModel().getSize() );
 }
+
 }

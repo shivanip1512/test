@@ -16,9 +16,6 @@ import com.cannontech.cbc.data.CapControlConst;
 
 public class SubBusTableModel extends javax.swing.table.AbstractTableModel implements java.util.Observer, com.cannontech.tdc.alarms.gui.AlarmTableModel, com.cannontech.common.gui.util.SortableTableModel
 {
-	//private int rowCount = 0;
-	private String fontName = "dialog";
-	private int fontSize = 12;
 	private CBCClientConnection connection = null;
 
 	/* ROW DATA */
@@ -30,6 +27,12 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
 
 	/* END - ROW DATA */
 
+   // the string for filtering all areas
+   public static final String ALL_FILTER = "All Areas";
+
+   // the holder for the current filter, default to all
+   private String filter = ALL_FILTER;
+
 	//The columns and their column index	
 	public static final int AREA_NAME_COLUMN  = 0;
 	public static final int SUB_NAME_COLUMN = 1;
@@ -37,16 +40,10 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
   	public static final int OP_RANGE_COLUMN  = 3;
   	public static final int CURRENT_VAR_LOAD_COLUMN  = 4;
   	public static final int TIME_STAMP_COLUMN  = 5;
-	public static final int POWER_FACTOR_COLUMN = 6; //99%
-  	public static final int WATTS_COLUMN  = 7; //2400
+	public static final int POWER_FACTOR_COLUMN = 6;
+  	public static final int WATTS_COLUMN  = 7;
   	public static final int ESTIMATED_VARS_COLUMN  = 8;
   	public static final int DAILY_OPERATIONS_COLUMN  = 9;
-
-  	// the string for filtering all areas
- 	public static final String ALL_FILTER = "All Areas";
-
-  	// the holder for the current filter, default to all
-	private String filter = ALL_FILTER;
 	
 	//The column names based on their column index
 	private static final String[] COLUMN_NAMES =
@@ -73,15 +70,9 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
 		//Pending subbus
 		Color.yellow
 	};
-	
-	//The font schemes - based on the schedule status
-	private Font[] cellFonts =
-	{
-		//Enabled schedule
-		new java.awt.Font(fontName, Font.PLAIN, fontSize),
-		//Disabled schedule
-		new java.awt.Font(fontName, Font.PLAIN, fontSize)
-	};
+
+   //the default font of our model	
+   private Font cellFont = new Font("dialog", Font.PLAIN, 12);
 
 	public static final java.util.Comparator SUB_AREA_COMPARATOR = new java.util.Comparator()
 	{
@@ -154,21 +145,7 @@ public java.awt.Color getCellBackgroundColor(int row, int col)
  */
 public Font getCellFont(int row, int col) 
 {
-	if( getRowCount() > row 
-		 && col <= getColumnCount()
-		 && getRowAt(row) != null )
-	{
-		if( getRowAt(row).getCcDisableFlag().booleanValue() )
-		{
-			return cellFonts[1];	
-		}
-		else
-		{
-			return cellFonts[0];
-		}
-	}
-
-	return new Font(fontName, 0, fontSize);
+	return cellFont;
 }
 /**
  * This method was created in VisualAge.
@@ -531,24 +508,17 @@ public synchronized void setFilter(java.lang.String newFilter)
  */
 public void setFontValues(String name, int size) 
 {
-	fontName = name;
-	fontSize = size;
-	
-	for( int i = 0; i < cellFonts.length; i++ )
-	{
-		Font fnt = new Font( name, 
-							 cellFonts[i].getStyle(), 
-							 size );
-
-		cellFonts[i] = fnt;
-	}
+	cellFont = new Font( 
+                  name, 
+                  cellFont.getStyle(), 
+                  size );
 }
 /**
  * This method was created in VisualAge.
  * @param source Observable
  * @param obj java.lang.Object
  */
-public void update(Observable source, Object obj ) 
+public synchronized void update(Observable source, Object obj ) 
 {
 	if( source instanceof CBCClientConnection )
 	{
@@ -567,10 +537,7 @@ public void update(Observable source, Object obj )
 		}
 		else if( obj instanceof SubBus[] )
 		{
-			synchronized( this )
-			{
-				updateSubBuses( (SubBus[])obj );
-			}
+			updateSubBuses( (SubBus[])obj );
 		}
 
 		//by using fireTableRowsUpdated(int,int) we do not clear the table selection		
