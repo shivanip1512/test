@@ -43,7 +43,7 @@ public CustomerContact() {
 public void add() throws java.sql.SQLException 
 {
 	if( getContactID() == null )
-		setContactID( getNextContactID2() );
+		setContactID( getNextContactID() );
 		
 	Object addValues[] = { getContactID(), getContFirstName(), getContLastName(),
 					getContPhone1(), getContPhone2(), getLocationID(),
