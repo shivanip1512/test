@@ -1,5 +1,8 @@
 package com.cannontech.database.data.capcontrol;
 
+import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointFactory;
+
 /**
  * This type was created in VisualAge.
  */
@@ -85,4 +88,38 @@ public void update() throws java.sql.SQLException{
 	super.update();
 	getDeviceCBC().update();
 }
+
+public static PointBase createStatusControlPoint( int cbcDeviceID )
+{
+	//a status point is automatically added to all capbank controllers
+	PointBase newPoint = PointFactory.createPoint(
+			com.cannontech.database.data.point.PointTypes.STATUS_POINT);
+
+	Integer pointID = new Integer( com.cannontech.database.db.point.Point.getNextPointID() );
+
+
+	//set default for point tables
+	newPoint = com.cannontech.database.data.point.PointBase.createNewPoint(		
+			pointID,
+			com.cannontech.database.data.point.PointTypes.STATUS_POINT,
+			"BANK STATUS",
+			new Integer(cbcDeviceID),
+			new Integer(1) );
+
+	newPoint.getPoint().setStateGroupID( 
+         new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_TWO_STATE_STATUS) );
+
+	((com.cannontech.database.data.point.StatusPoint)newPoint).getPointStatus().setControlOffset(
+			new Integer(1) );
+
+	((com.cannontech.database.data.point.StatusPoint)newPoint).getPointStatus().setControlType(
+			com.cannontech.database.data.point.PointTypes.getType(
+			com.cannontech.database.data.point.PointTypes.CONTROLTYPE_NORMAL) );
+	
+	((com.cannontech.database.data.point.StatusPoint) newPoint).setPointStatus(
+			new com.cannontech.database.db.point.PointStatus(pointID));
+
+	return newPoint;
+}
+
 }

@@ -1,5 +1,6 @@
 package com.cannontech.dbeditor.editor.device.capcontrol;
 
+import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.pao.DeviceTypes;
 
@@ -918,29 +919,9 @@ public com.cannontech.database.data.device.DeviceBase createNewCBC(
 
    //a status point is automatically added to all capbank controllers
    com.cannontech.database.data.point.PointBase newPoint =
-      com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.STATUS_POINT);
-   Integer pointID = new Integer( newPoint.getPoint().getNextPointID() );
+   	CapBankController.createStatusControlPoint( 
+   			capBankController.getDevice().getDeviceID().intValue() );
 
-   //set default for point tables
-   newPoint = com.cannontech.database.data.point.PointBase.createNewPoint(    
-         pointID,
-         com.cannontech.database.data.point.PointTypes.STATUS_POINT,
-         "BANK STATUS",
-         capBankController.getDevice().getDeviceID(),
-         new Integer(1) );
-
-   newPoint.getPoint().setStateGroupID( new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_TWO_STATE_STATUS) );
-
-   ((com.cannontech.database.data.point.StatusPoint)newPoint).getPointStatus().setControlOffset(
-         new Integer(1) );
-
-   ((com.cannontech.database.data.point.StatusPoint)newPoint).getPointStatus().setControlType(
-         com.cannontech.database.data.point.PointTypes.getType(
-         com.cannontech.database.data.point.PointTypes.CONTROLTYPE_NORMAL) );
-   
-   ((com.cannontech.database.data.point.StatusPoint) newPoint).setPointStatus(
-         new com.cannontech.database.db.point.PointStatus(pointID));
-   
    multiVal.getDBPersistentVector().add(newPoint);      
 
    return capBankController;

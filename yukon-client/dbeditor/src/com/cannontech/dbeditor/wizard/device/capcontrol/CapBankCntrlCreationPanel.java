@@ -7,6 +7,7 @@ import java.awt.Dimension;
 
 import com.cannontech.common.util.CtiProperties;
 import com.cannontech.database.data.capcontrol.CapBank;
+import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.device.DeviceFactory;
  
 public class CapBankCntrlCreationPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
@@ -294,31 +295,9 @@ private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObj
 
 	
 	//a status point is automatically added to all capbank controllers
-	com.cannontech.database.data.point.PointBase newPoint =
-		com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.STATUS_POINT);
-	Integer pointID = new Integer( com.cannontech.database.db.point.Point.getNextPointID() );
-
-
-	//set default for point tables
-	newPoint = com.cannontech.database.data.point.PointBase.createNewPoint(		
-			pointID,
-			com.cannontech.database.data.point.PointTypes.STATUS_POINT,
-			"BANK STATUS",
-			newCBC.getDevice().getDeviceID(),
-			new Integer(1) );
-
-	newPoint.getPoint().setStateGroupID( 
-         new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_TWO_STATE_STATUS) );
-
-	((com.cannontech.database.data.point.StatusPoint)newPoint).getPointStatus().setControlOffset(
-			new Integer(1) );
-
-	((com.cannontech.database.data.point.StatusPoint)newPoint).getPointStatus().setControlType(
-			com.cannontech.database.data.point.PointTypes.getType(
-			com.cannontech.database.data.point.PointTypes.CONTROLTYPE_NORMAL) );
-	
-	((com.cannontech.database.data.point.StatusPoint) newPoint).setPointStatus(
-			new com.cannontech.database.db.point.PointStatus(pointID));
+   com.cannontech.database.data.point.PointBase newPoint =
+   	CapBankController.createStatusControlPoint( 
+   			newCBC.getDevice().getDeviceID().intValue() );
 
 	ogMulti.insertDBPersistentAt( newCBC, 0 );
 	ogMulti.insertDBPersistentAt( newPoint, 1 );
