@@ -539,8 +539,28 @@ public void setLmControlArea(com.cannontech.loadcontrol.data.LMControlArea newLm
 
 	if( getLmControlArea() != null )
 	{
-		getTimeComboStart().setTimeInSeconds( getLmControlArea().getCurrentDailyStartTime().intValue() );
-		getTimeComboStop().setTimeInSeconds( getLmControlArea().getCurrentDailyStopTime().intValue() );
+		
+		//try to use the CurrentDaily first, then try the DefDaily
+		getTimeComboStart().setTimeInSeconds(
+				(getLmControlArea().getCurrentDailyStartTime() == null 
+					? (getLmControlArea().getDefDailyStartTime() == null
+						? LMControlArea.INVAID_INT
+						: getLmControlArea().getDefDailyStartTime().intValue())
+					: getLmControlArea().getCurrentDailyStartTime().intValue() ) );
+
+		//try to use the CurrentDaily first, then try the DefDaily
+		getTimeComboStop().setTimeInSeconds(
+				(getLmControlArea().getCurrentDailyStopTime() == null 
+					? (getLmControlArea().getDefDailyStopTime() == null
+						? LMControlArea.INVAID_INT
+						: getLmControlArea().getDefDailyStopTime().intValue())
+					: getLmControlArea().getCurrentDailyStopTime().intValue() ) );
+		
+		
+		
+//		getTimeComboStart().setTimeInSeconds( getLmControlArea().getCurrentDailyStartTime().intValue() );
+//		getTimeComboStop().setTimeInSeconds( getLmControlArea().getCurrentDailyStopTime().intValue() );
+
 	}
 
 }

@@ -5,11 +5,8 @@ package com.cannontech.loadcontrol.popup;
  * Creation date: (1/21/2001 4:40:03 PM)
  * @author: 
  */
-import java.awt.FlowLayout;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.panel.ManualChangeJPanel;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
@@ -20,7 +17,6 @@ import com.cannontech.loadcontrol.gui.manualentry.ControlAreaTriggerJPanel;
 import com.cannontech.loadcontrol.gui.manualentry.DirectControlJPanel;
 import com.cannontech.loadcontrol.gui.manualentry.MultiSelectProg;
 import com.cannontech.loadcontrol.messages.LMCommand;
-import com.cannontech.loadcontrol.messages.LMManualControlMsg;
 
 public class ControlAreaPopUpMenu extends com.cannontech.tdc.observe.ObservableJPopupMenu implements java.awt.event.ActionListener
 {
@@ -369,7 +365,7 @@ private void jMenuItemDailyTime_ActionPerformed(java.awt.event.ActionEvent actio
 				frame.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 			}
 				
-			final javax.swing.JDialog dialog = new javax.swing.JDialog( frame, "Triggers", true);
+			final javax.swing.JDialog dialog = new javax.swing.JDialog( frame, "Daily Time Change", true);
 
 			ControlAreaTimeChangeJPanel panel = new ControlAreaTimeChangeJPanel()
 			{
@@ -399,18 +395,20 @@ private void jMenuItemDailyTime_ActionPerformed(java.awt.event.ActionEvent actio
 				com.cannontech.message.dispatch.message.Multi multi = new com.cannontech.message.dispatch.message.Multi();
 				
 				//send a message to the server telling it to change the START time
-				multi.getVector().add(
-						new LMCommand( LMCommand.CHANGE_CURRENT_START_TIME,
-						 				getLoadControlArea().getYukonID().intValue(),
-						 				0, 
-						 				(double)panel.getStartTime()) );
+				if( panel.getStartTime() != LMControlArea.INVAID_INT )
+					multi.getVector().add(
+							new LMCommand( LMCommand.CHANGE_CURRENT_START_TIME,
+							 				getLoadControlArea().getYukonID().intValue(),
+							 				0, 
+							 				(double)panel.getStartTime()) );
 
 				//send a message to the server telling it to change the STOP time
-				multi.getVector().add(
-							new LMCommand( LMCommand.CHANGE_CURRENT_STOP_TIME,
-						 				getLoadControlArea().getYukonID().intValue(),
-						 				0,
-						 				(double)panel.getStopTime()) );
+				if( panel.getStopTime() != LMControlArea.INVAID_INT )
+					multi.getVector().add(
+								new LMCommand( LMCommand.CHANGE_CURRENT_STOP_TIME,
+							 				getLoadControlArea().getYukonID().intValue(),
+							 				0,
+							 				(double)panel.getStopTime()) );
 
 				//only send the multi if we have some junk to send.
 				if( multi.getVector().size() > 0 )
