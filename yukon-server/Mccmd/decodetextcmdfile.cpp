@@ -228,9 +228,19 @@ bool outputLogFile (vector<RWCString> &aLog)
                 retCode=SetEndOfFile (logFileHandle);
                 memset (workString, '\0',500);
                 strcpy (workString,aLog[lineCnt].data());
-                workString[aLog[lineCnt].length()-1] = '\r';
-                workString[aLog[lineCnt].length()] = '\n';
-                retCode=WriteFile (logFileHandle,workString,aLog[lineCnt].length()+1,&bytesWritten,NULL);
+                if (workString[aLog[lineCnt].length()-1] == '\n')
+                {
+                    workString[aLog[lineCnt].length()-1] = '\r';
+                    workString[aLog[lineCnt].length()] = '\n';
+                    retCode=WriteFile (logFileHandle,workString,aLog[lineCnt].length()+1,&bytesWritten,NULL);
+                }
+                else
+                {
+                    workString[aLog[lineCnt].length()] = '\r';
+                    workString[aLog[lineCnt].length()+1] = '\n';
+                    retCode=WriteFile (logFileHandle,workString,aLog[lineCnt].length()+2,&bytesWritten,NULL);
+                }
+
                 lineCnt++;
             }
             CloseHandle (logFileHandle);
@@ -956,7 +966,50 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                         // make sure we found something
                                         if (haveSomething)
                                         {
-                                            if ((loadCnt == splinterCnt) && (loadCnt == programCnt))
+                                            bool programMatches=false;
+                                            bool splinterMatches=false;
+                                            bool sendCmd=false;
+
+                                            if (haveLoad && haveProgram)
+                                            {
+                                                if (loadCnt == programCnt)
+                                                {
+                                                    programMatches = true;
+                                                }
+                                            }
+
+                                            if (haveLoad && haveSplinter)
+                                            {
+                                                if (loadCnt == splinterCnt)
+                                                {
+                                                    splinterMatches = true;
+                                                }
+                                            }
+
+
+                                            if (haveProgram && haveSplinter)
+                                            {
+                                                if (programMatches && splinterMatches)
+                                                {
+                                                    sendCmd=true;
+                                                }
+                                            }
+                                            else if (haveProgram)
+                                            {
+                                                if (programMatches)
+                                                {
+                                                    sendCmd=true;
+                                                }
+                                            }
+                                            else if (haveSplinter)
+                                            {
+                                                if (splinterMatches)
+                                                {
+                                                    sendCmd=true;
+                                                }
+                                            }
+
+                                            if  (sendCmd)
                                             {
                                                 *programming = currentCmd;
                                             }
