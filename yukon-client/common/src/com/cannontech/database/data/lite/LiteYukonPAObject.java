@@ -8,8 +8,8 @@ public class LiteYukonPAObject extends LiteBase
 	// that allow the user not to choose a LitYukonPAObject
 	public static final com.cannontech.database.data.lite.LiteYukonPAObject LITEPAOBJECT_NONE = new com.cannontech.database.data.lite.LiteYukonPAObject
 	(
-		com.cannontech.database.data.pao.PAOGroups.INVALID,
-		com.cannontech.common.util.CtiUtilities.STRING_NONE,
+		0,
+		"System Device",
 		com.cannontech.database.data.pao.PAOGroups.INVALID,
 		com.cannontech.database.data.pao.PAOGroups.INVALID,
 		com.cannontech.database.data.pao.PAOGroups.INVALID,

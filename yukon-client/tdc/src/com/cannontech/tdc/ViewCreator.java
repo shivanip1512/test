@@ -128,8 +128,6 @@ public class ViewCreator
 //				" and s.logid <= ? " +
 //				" order by s.soedatetime, s.millis";
 
-
-
 		String rowCountQuery = "select min(s.logid), max(s.logid)" +
 						  " from " + SystemLog.TABLE_NAME + " s, " + Point.TABLE_NAME + " p " +
 						  " where s.datetime >= ?" +
@@ -247,12 +245,13 @@ public class ViewCreator
 				tableModel.getRows().addElement( newRow );
 			
 			// put a holder value for the model in row location i
-			tableModel.createDummyPointValue(
-						Integer.parseInt(rowData[i][6].toString()), //pointID
-						((Timestamp)rowData[i][0]).getTime(), //TimeStamp
-						CommonUtils.createString( rowData[i][1] ), //DeviceName
-						0, //SOE_Tag
-						0 );
+			tableModel.createDummyPointValue( 0 );
+//			tableModel.createDummyPointValue(
+//						Integer.parseInt(rowData[i][6].toString()), //pointID
+//						((Timestamp)rowData[i][0]).getTime(), //TimeStamp
+//						CommonUtils.createString( rowData[i][1] ), //DeviceName
+//						0, //SOE_Tag
+//						0 );
 
 			tableModel.addBlankRowIfNeeded();
 		}
@@ -397,13 +396,15 @@ public class ViewCreator
 			else
 				tableModel.getRows().addElement( newRow );
 			
+			tableModel.createDummyPointValue( 0 );
+
 			// put a holder value for the model in row location i
-			tableModel.createDummyPointValue(
-						Integer.parseInt(rowData[i][6].toString()), //pointID
-						((Timestamp)rowData[i][0]).getTime(), //TimeStamp
-						CommonUtils.createString( rowData[i][1] ), //DeviceName
-						0, //SOE_Tag
-						0 );
+//			tableModel.createDummyPointValue(
+//						Integer.parseInt(rowData[i][6].toString()), //pointID
+//						((Timestamp)rowData[i][0]).getTime(), //TimeStamp
+//						CommonUtils.createString( rowData[i][1] ), //DeviceName
+//						0, //SOE_Tag
+//						0 );
 
 			tableModel.addBlankRowIfNeeded();
 		}
@@ -638,11 +639,13 @@ public class ViewCreator
 			
 			// put a holder value for the model in row location i
 			if( rowData[i].length >= 7 && rowData[i][6] != null )
-				tableModel.createDummyPointValue( Long.parseLong(rowData[i][6].toString()),
-								((Timestamp)rowData[i][0]).getTime(), //TimeStamp
-								CommonUtils.createString( rowData[i][1] ), //DeviceName
-								Integer.parseInt(rowData[i][7].toString()), //SOE_Tag
-								0 );
+//				tableModel.createDummyPointValue( Long.parseLong(rowData[i][6].toString()),
+//								((Timestamp)rowData[i][0]).getTime(), //TimeStamp
+//								CommonUtils.createString( rowData[i][1] ), //DeviceName
+//								Integer.parseInt(rowData[i][7].toString()), //SOE_Tag
+//								0 );
+				tableModel.createDummyPointValue( 0 );
+
 
 			tableModel.addBlankRowIfNeeded();
 		}
@@ -771,12 +774,13 @@ public class ViewCreator
 			
 			// put a holder value for the model in row location i
 			if( rowData[i].length >= 7 && rowData[i][6] != null )
-				tableModel.createDummyPointValue( 
-						Long.parseLong( rowData[i][6].toString() ),
-						new Date().getTime(),
-						"DUMMY",
-						0,		
-						0 );
+				tableModel.createDummyPointValue( 0 );
+//				tableModel.createDummyPointValue( 
+//						Long.parseLong( rowData[i][6].toString() ),
+//						new Date().getTime(),
+//						"DUMMY",
+//						0,		
+//						0 );
 
 			tableModel.addBlankRowIfNeeded();
 		}
