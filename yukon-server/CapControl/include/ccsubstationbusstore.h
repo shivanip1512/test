@@ -33,9 +33,9 @@ class CtiCCSubstationBusStore
 {
 public:   
 
-    RWOrdered* getCCSubstationBuses();
-    RWOrdered* getCCCapBankStates();
-    RWOrdered* getCCGeoAreas();
+    RWOrdered* getCCSubstationBuses(ULONG secondsFrom1901);
+    RWOrdered* getCCCapBankStates(ULONG secondsFrom1901);
+    RWOrdered* getCCGeoAreas(ULONG secondsFrom1901);
 
     static CtiCCSubstationBusStore* getInstance();
     static void deleteInstance();
@@ -47,6 +47,7 @@ public:
     void setReregisterForPoints(BOOL reregister);
     BOOL getReloadFromAMFMSystemFlag() const;
     void setReloadFromAMFMSystemFlag(BOOL reload);
+    const RWDBDateTime& getLastDBReloadTime() const;
 
     bool UpdateBusDisableFlagInDB(CtiCCSubstationBus* bus);
     bool UpdateFeederDisableFlagInDB(CtiCCFeeder* feeder);
@@ -92,6 +93,7 @@ private:
     BOOL _isvalid;
     BOOL _reregisterforpoints;
     BOOL _reloadfromamfmsystemflag;
+    RWDBDateTime _lastdbreloadtime;
 
     //The singleton instance of CtiCCSubstationBusStore
     static CtiCCSubstationBusStore* _instance;
