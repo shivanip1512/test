@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.70 $
-* DATE         :  $Date: 2003/07/21 22:07:37 $
+* REVISION     :  $Revision: 1.71 $
+* DATE         :  $Date: 2003/09/03 18:10:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -98,6 +98,7 @@ using namespace std;
 #include "dev_schlum.h"
 #include "dev_remote.h"
 #include "dev_kv2.h"
+#include "dev_mark_v.h"
 #include "msg_trace.h"
 #include "msg_cmd.h"
 #include "pilserver.h"
@@ -1309,57 +1310,88 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                 case TYPE_KV2:
                    {
-                       BYTE  inBuffer[512];
-                       BYTE  outBuffer[300];
-                       ULONG bytesReceived = 0;
+                      BYTE  inBuffer[512];
+                      BYTE  outBuffer[300];
+                      ULONG bytesReceived = 0;
 
-                       CtiDeviceKV2 *kv2dev    = ( CtiDeviceKV2 *)Device;
-                       CtiProtocolANSI &ansi   = kv2dev->getProtocol();
+                      CtiDeviceKV2 *kv2dev    = ( CtiDeviceKV2 *)Device;
+                      CtiProtocolANSI &ansi   = kv2dev->getProtocol();
 
-                       //allocate some space
-                       trx.setInBuffer( inBuffer );
-                       trx.setOutBuffer( outBuffer );
-                       trx.setInCountActual( &bytesReceived );
+                      //allocate some space
+                      trx.setInBuffer( inBuffer );
+                      trx.setOutBuffer( outBuffer );
+                      trx.setInCountActual( &bytesReceived );
 
-                       //unwind the message we made in scanner
-                       if( ansi.recvOutbound( OutMessage ) != 0 )
-                       {
-                          {
-                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                             dout << RWTime() << " KV2 loop entered ******************************************************************" << endl;
-                          }
+                      //unwind the message we made in scanner
+                      if( ansi.recvOutbound( OutMessage ) != 0 )
+                      {
+                         {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " KV2 loop entered **********************************************" << endl;
+                         }
 
-                          while( !ansi.isTransactionComplete() )
-                          {
-                             //jump in, check for login, build packets, send messages, etc...
-                             ansi.generate( trx );
-                             status = Port->outInMess( trx, Device, traceList );
-                             if( status != NORMAL )
-                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " KV2 loop is A-B-N-O-R-M-A-L " << endl;
-                             }
-                             ansi.decode( trx, status );
+                         while( !ansi.isTransactionComplete() )
+                         {
+                            //jump in, check for login, build packets, send messages, etc...
+                            ansi.generate( trx );
+                            status = Port->outInMess( trx, Device, traceList );
+                            if( status != NORMAL )
+                            {
+                               CtiLockGuard<CtiLogger> doubt_guard(dout);
+                               dout << RWTime() << " KV2 loop is A-B-N-O-R-M-A-L " << endl;
+                            }
+                            ansi.decode( trx, status );
 
-                             // Prepare for tracing
-                             if( trx.doTrace( status ))
-                             {
-                                Port->traceXfer( trx, traceList, Device, status );
-                             }
-                             DisplayTraceList( Port, traceList, true );
-                          }
+                            // Prepare for tracing
+                            if( trx.doTrace( status ))
+                            {
+                               Port->traceXfer( trx, traceList, Device, status );
+                            }
+                            DisplayTraceList( Port, traceList, true );
+                         }
 
-                          {
-                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                             dout << RWTime() << " KV2 loop exited  ******************************************************************" << endl;
-                          }
-                       }
-                       // return value to tell us if we are successful or not
-                       status = ansi.sendCommResult( InMessage );
+                         {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " KV2 loop exited  **********************************************" << endl;
+                         }
+                      }
+                      // return value to tell us if we are successful or not
+                      status = ansi.sendCommResult( InMessage );
 
-                       ansi.reinitialize();
-                       break;
+                      ansi.reinitialize();
+                      break;
                    }
+
+                case TYPE_TDMARKV:
+                  {
+                     BYTE  inBuffer[5000];
+                     BYTE  outBuffer[5000];
+                     ULONG bytesReceived = 0;
+
+                     CtiDeviceMarkV       *markv = ( CtiDeviceMarkV *)Device;
+                     CtiProtocolTransdata &transdata = markv->getProtocol();
+
+                     trx.setInBuffer( inBuffer );
+                     trx.setOutBuffer( outBuffer );
+                     trx.setInCountActual( &bytesReceived );
+
+                     while( !transdata.isTransactionComplete() )
+                     {
+                        transdata.generate( trx );
+
+                        status = Port->outInMess( trx, Device, traceList );
+
+                        transdata.decode( trx, status );
+
+                        if( trx.doTrace( status ))
+                        {
+                           Port->traceXfer( trx, traceList, Device, status );
+                        }
+
+                        DisplayTraceList( Port, traceList, true );
+                     }
+                  }
+
                 case TYPE_SIXNET:
                     {
                         CtiDeviceIED         *IED= (CtiDeviceIED*)Device;
@@ -1776,6 +1808,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_DR87:
                     case TYPE_LGS4:
                     case TYPE_KV2:
+                    case TYPE_TDMARKV:
                     default:
                         {
                             /*  These guys are handled in a special way...  */
@@ -1800,6 +1833,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_DR87:
                     case TYPE_LGS4:
                     case TYPE_KV2:
+                    case TYPE_TDMARKV:
                     case TYPE_ION7330:
                     case TYPE_ION7700:
                     case TYPE_ION8300:
@@ -2836,8 +2870,8 @@ INT VTUPrep(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice 
       Device->getType() != TYPE_LGS4 &&
       Device->getType() != TYPE_DR87 &&
       Device->getType() != TYPE_KV2 &&
-      Device->getType() != TYPE_ALPHA_A1
-
+      Device->getType() != TYPE_ALPHA_A1 &&
+      Device->getType() != TYPE_TDMARKV
       )
     {
         /* Check if this device is on a VTU and if so get it's record */
