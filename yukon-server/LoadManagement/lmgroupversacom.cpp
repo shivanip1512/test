@@ -216,15 +216,12 @@ CtiLMGroupVersacom& CtiLMGroupVersacom::setRouteId(ULONG rteid)
     Creates a new CtiRequestMsg pointer for a program gear with a control
     method of time refresh with the appropriate refresh rate and shed time.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupVersacom::createTimeRefreshRequestMsg(ULONG refreshRate, ULONG shedTime) const
+CtiRequestMsg* CtiLMGroupVersacom::createTimeRefreshRequestMsg(ULONG refreshRate, ULONG shedTime, int priority) const
 {
-    char tempchar[64];
     RWCString controlString = RWCString("control shed ");
-    _ultoa(shedTime,tempchar,10);
-    controlString += tempchar;
-    controlString += "s";
+    controlString += convertSecondsToEvenTimeString(shedTime);
 
-    return new CtiRequestMsg(getPAOId(), controlString);
+    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -234,7 +231,7 @@ CtiRequestMsg* CtiLMGroupVersacom::createTimeRefreshRequestMsg(ULONG refreshRate
     method of smart cycle with the appropriate cycle percent, period length
     in minutes, and the default count of periods.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupVersacom::createSmartCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount) const
+CtiRequestMsg* CtiLMGroupVersacom::createSmartCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount, int priority) const
 {
     char tempchar[64];
     RWCString controlString = RWCString("control cycle ");
@@ -244,10 +241,9 @@ CtiRequestMsg* CtiLMGroupVersacom::createSmartCycleRequestMsg(ULONG percent, ULO
     _ultoa(defaultCount,tempchar,10);
     controlString += tempchar;
     controlString += " period ";
-    _ultoa((period/60),tempchar,10);//period can ONLY be in minutes for cycle sheds with no time
-    controlString += tempchar;      //measure qualifiers, period is stored as seconds
+    controlString += convertSecondsToEvenTimeString(period);
 
-    return new CtiRequestMsg(getPAOId(), controlString);
+    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -256,15 +252,26 @@ CtiRequestMsg* CtiLMGroupVersacom::createSmartCycleRequestMsg(ULONG percent, ULO
     Creates a new CtiRequestMsg pointer for a program gear with a control
     method of rotation with the appropriate send rate and shed time.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupVersacom::createRotationRequestMsg(ULONG sendRate, ULONG shedTime) const
+CtiRequestMsg* CtiLMGroupVersacom::createRotationRequestMsg(ULONG sendRate, ULONG shedTime, int priority) const
 {
-    char tempchar[64];
     RWCString controlString = RWCString("control shed ");
-    _ultoa(shedTime,tempchar,10);
-    controlString += tempchar;
-    controlString += "s";
+    controlString += convertSecondsToEvenTimeString(shedTime);
 
-    return new CtiRequestMsg(getPAOId(), controlString);
+    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+}
+
+/*-------------------------------------------------------------------------
+    createMasterCycleRequestMsg
+
+    Creates a new CtiRequestMsg pointer for a program gear with a control
+    method of master cycle with the appropriate off time, period length.
+--------------------------------------------------------------------------*/
+CtiRequestMsg* CtiLMGroupVersacom::createMasterCycleRequestMsg(ULONG offTime, ULONG period, int priority) const
+{
+    RWCString controlString = RWCString("control shed ");
+    controlString += convertSecondsToEvenTimeString(offTime-60);
+
+    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------

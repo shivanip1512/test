@@ -169,15 +169,12 @@ CtiLMGroupEmetcon& CtiLMGroupEmetcon::setRouteId(ULONG rteid)
     Creates a new CtiRequestMsg pointer for a program gear with a control
     method of time refresh with the appropriate refresh rate and shed time.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupEmetcon::createTimeRefreshRequestMsg(ULONG refreshRate, ULONG shedTime) const
+CtiRequestMsg* CtiLMGroupEmetcon::createTimeRefreshRequestMsg(ULONG refreshRate, ULONG shedTime, int priority) const
 {
-    char tempchar[64];
     RWCString controlString = RWCString("control shed ");
-    _ultoa(shedTime,tempchar,10);
-    controlString += tempchar;
-    controlString += "s";
+    controlString += convertSecondsToEvenTimeString(shedTime);
 
-    return new CtiRequestMsg(getPAOId(), controlString);
+    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -187,7 +184,7 @@ CtiRequestMsg* CtiLMGroupEmetcon::createTimeRefreshRequestMsg(ULONG refreshRate,
     method of smart cycle with the appropriate cycle percent, period length,
     and the default count of periods.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupEmetcon::createSmartCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount) const
+CtiRequestMsg* CtiLMGroupEmetcon::createSmartCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount, int priority) const
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -202,15 +199,65 @@ CtiRequestMsg* CtiLMGroupEmetcon::createSmartCycleRequestMsg(ULONG percent, ULON
     Creates a new CtiRequestMsg pointer for a program gear with a control
     method of rotation with the appropriate send rate and shed time.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupEmetcon::createRotationRequestMsg(ULONG sendRate, ULONG shedTime) const
+CtiRequestMsg* CtiLMGroupEmetcon::createRotationRequestMsg(ULONG sendRate, ULONG shedTime, int priority) const
 {
-    char tempchar[64];
     RWCString controlString = RWCString("control shed ");
-    _ultoa(shedTime,tempchar,10);
-    controlString += tempchar;
-    controlString += "s";
+    controlString += convertSecondsToEvenTimeString(shedTime);
 
-    return new CtiRequestMsg(getPAOId(), controlString);
+    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+}
+
+/*-------------------------------------------------------------------------
+    createMasterCycleRequestMsg
+
+    Creates a new CtiRequestMsg pointer for a program gear with a control
+    method of master cycle with the appropriate off time, period length.
+--------------------------------------------------------------------------*/
+CtiRequestMsg* CtiLMGroupEmetcon::createMasterCycleRequestMsg(ULONG offTime, ULONG period, int priority) const
+{
+    RWCString controlString = RWCString("control shed ");
+    ULONG shedTime = 450;
+    if( offTime > 570 && offTime <= 1220 )
+    {
+        shedTime = 900;
+    }
+    else if( offTime > 1220 && offTime <= 1920 )
+    {
+        shedTime = 1800;
+    }
+    else if( offTime > 1920 )
+    {
+        shedTime = 3600;
+    }
+
+    controlString += convertSecondsToEvenTimeString(shedTime);
+
+    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+}
+
+/*---------------------------------------------------------------------------
+    doesMasterCycleNeedToBeUpdated
+
+    
+---------------------------------------------------------------------------*/
+BOOL CtiLMGroupEmetcon::doesMasterCycleNeedToBeUpdated(ULONG nowInSeconds, ULONG groupControlDone, ULONG offTime)
+{
+    BOOL returnBOOL = FALSE;
+
+    ULONG controlTimeLeft = groupControlDone - nowInSeconds;
+    if( !_refreshsent &&
+        controlTimeLeft < 572 &&
+        controlTimeLeft >= 569 )
+    {
+        returnBOOL = TRUE;
+        _refreshsent = TRUE;
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - PAOId: " << getPAOId() << " is to be Master Cycle refreshed." << endl;
+        }
+    }
+
+    return returnBOOL;
 }
 
 /*-------------------------------------------------------------------------
@@ -268,6 +315,7 @@ CtiLMGroupEmetcon& CtiLMGroupEmetcon::operator=(const CtiLMGroupEmetcon& right)
         _addressusage = right._addressusage;
         _relayusage = right._relayusage;
         _routeid = right._routeid;
+        _refreshsent = right._refreshsent;
     }
 
     return *this;
@@ -328,5 +376,7 @@ void CtiLMGroupEmetcon::restoreEmetconSpecificDatabaseEntries(RWDBReader& rdr)
     rdr["addressusage"] >> _addressusage;
     rdr["relayusage"] >> _relayusage;
     rdr["routeid"] >> _routeid;
+
+    _refreshsent = FALSE;
 }
 

@@ -123,7 +123,7 @@ CtiLMGroupPoint& CtiLMGroupPoint::setStartControlRawState(ULONG startcontrolstat
     Creates a new CtiRequestMsg pointer for a program gear with a control
     method of time refresh with the appropriate refresh rate and shed time.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupPoint::createTimeRefreshRequestMsg(ULONG refreshRate, ULONG shedTime) const
+CtiRequestMsg* CtiLMGroupPoint::createTimeRefreshRequestMsg(ULONG refreshRate, ULONG shedTime, int priority) const
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -139,7 +139,7 @@ CtiRequestMsg* CtiLMGroupPoint::createTimeRefreshRequestMsg(ULONG refreshRate, U
     method of smart cycle with the appropriate cycle percent, period length,
     and the default count of periods.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupPoint::createSmartCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount) const
+CtiRequestMsg* CtiLMGroupPoint::createSmartCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount, int priority) const
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -154,7 +154,22 @@ CtiRequestMsg* CtiLMGroupPoint::createSmartCycleRequestMsg(ULONG percent, ULONG 
     Creates a new CtiRequestMsg pointer for a program gear with a control
     method of rotation with the appropriate send rate and shed time.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupPoint::createRotationRequestMsg(ULONG sendRate, ULONG shedTime) const
+CtiRequestMsg* CtiLMGroupPoint::createRotationRequestMsg(ULONG sendRate, ULONG shedTime, int priority) const
+{
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Can not do this to an Load Management Point Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+    return NULL;
+}
+
+/*-------------------------------------------------------------------------
+    createMasterCycleRequestMsg
+
+    Creates a new CtiRequestMsg pointer for a program gear with a control
+    method of master cycle with the appropriate off time, period length.
+--------------------------------------------------------------------------*/
+CtiRequestMsg* CtiLMGroupPoint::createMasterCycleRequestMsg(ULONG offTime, ULONG period, int priority) const
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -168,7 +183,7 @@ CtiRequestMsg* CtiLMGroupPoint::createRotationRequestMsg(ULONG sendRate, ULONG s
 
     .
 --------------------------------------------------------------------------*/
-CtiCommandMsg* CtiLMGroupPoint::createLatchingRequestMsg(ULONG rawState) const
+CtiCommandMsg* CtiLMGroupPoint::createLatchingRequestMsg(ULONG rawState, int priority) const
 {
     CtiCommandMsg* returnCommandMsg = new CtiCommandMsg();
     returnCommandMsg->setOperation(CtiCommandMsg::ControlRequest);
@@ -180,6 +195,8 @@ CtiCommandMsg* CtiLMGroupPoint::createLatchingRequestMsg(ULONG rawState) const
     opArgList.insert(RWInteger(rawState));
 
     returnCommandMsg->setOpArgList(opArgList);
+
+    returnCommandMsg->setMessagePriority(priority);
 
     return returnCommandMsg;
 }

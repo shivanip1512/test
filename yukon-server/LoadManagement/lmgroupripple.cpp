@@ -147,11 +147,11 @@ CtiLMGroupRipple& CtiLMGroupRipple::setRestoreValue(const RWCString& restore)
     Creates a new CtiRequestMsg pointer for a program gear with a control
     method of time refresh with the appropriate refresh rate and shed time.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupRipple::createTimeRefreshRequestMsg(ULONG refreshRate, ULONG shedTime) const
+CtiRequestMsg* CtiLMGroupRipple::createTimeRefreshRequestMsg(ULONG refreshRate, ULONG shedTime, int priority) const
 {
     RWCString controlString = RWCString("control shed");
 
-    return new CtiRequestMsg(getPAOId(), controlString);
+    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -161,7 +161,7 @@ CtiRequestMsg* CtiLMGroupRipple::createTimeRefreshRequestMsg(ULONG refreshRate, 
     method of smart cycle with the appropriate cycle percent, period length,
     and the default count of periods.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupRipple::createSmartCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount) const
+CtiRequestMsg* CtiLMGroupRipple::createSmartCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount, int priority) const
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -176,11 +176,71 @@ CtiRequestMsg* CtiLMGroupRipple::createSmartCycleRequestMsg(ULONG percent, ULONG
     Creates a new CtiRequestMsg pointer for a program gear with a control
     method of rotation with the appropriate send rate and shed time.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupRipple::createRotationRequestMsg(ULONG sendRate, ULONG shedTime) const
+CtiRequestMsg* CtiLMGroupRipple::createRotationRequestMsg(ULONG sendRate, ULONG shedTime, int priority) const
 {
     RWCString controlString = RWCString("control shed");
 
-    return new CtiRequestMsg(getPAOId(), controlString);
+    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+}
+
+/*-------------------------------------------------------------------------
+    createMasterCycleRequestMsg
+
+    Creates a new CtiRequestMsg pointer for a program gear with a control
+    method of master cycle with the appropriate off time, period length.
+--------------------------------------------------------------------------*/
+CtiRequestMsg* CtiLMGroupRipple::createMasterCycleRequestMsg(ULONG offTime, ULONG period, int priority) const
+{
+    RWCString controlString = RWCString("control shed");
+
+    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+}
+
+/*---------------------------------------------------------------------------
+    doesMasterCycleNeedToBeUpdated
+
+    
+---------------------------------------------------------------------------*/
+BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(ULONG nowInSeconds, ULONG groupControlDone, ULONG offTime)
+{
+    BOOL returnBOOL = FALSE;
+
+    ULONG controlTimeLeft = groupControlDone - nowInSeconds;
+    ULONG trueShedTime = getShedTime()+60;
+    if( !_refreshsent &&
+        controlTimeLeft < trueShedTime+2 &&
+        controlTimeLeft >= trueShedTime-1 )
+    {
+        returnBOOL = TRUE;
+        _refreshsent = TRUE;
+        /*{
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - PAOId: " << getPAOId() << " is to be Master Cycle refreshed in: " << __FILE__ << " at:" << __LINE__ << endl;
+        }*/
+    }
+    else if( (offTime/trueShedTime) >= 2 )
+    {
+        ULONG numberOfTimesToExtend = (offTime/trueShedTime)-1;
+        ULONG controlStartedInSeconds = (getLastControlSent().hour() * 3600) +
+                                        (getLastControlSent().minute() * 60) +
+                                        getLastControlSent().second();
+        ULONG timeToExtendInSeconds = controlStartedInSeconds + trueShedTime;
+        for(ULONG i=0;i<numberOfTimesToExtend;i++)
+        {
+            if( nowInSeconds < timeToExtendInSeconds+2 &&
+                nowInSeconds >= timeToExtendInSeconds-1 )
+            {
+                returnBOOL = TRUE;
+                /*{
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - PAOId: " << getPAOId() << " is to be Master Cycle extended in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }*/
+            }
+            timeToExtendInSeconds += trueShedTime;
+        }
+    }
+
+    return returnBOOL;
 }
 
 /*-------------------------------------------------------------------------

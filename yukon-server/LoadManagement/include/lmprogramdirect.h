@@ -56,7 +56,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     BOOL maintainProgramControl(ULONG currentPriority, RWOrdered& controlAreaTriggers, ULONG nowInSeconds, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     BOOL hasGearChanged(ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG nowInSeconds);
     CtiLMProgramDirectGear* getCurrentGearObject();
-    void updateProgramControlForGearChange(ULONG previousGearNumber, ULONG nowInSeconds, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    DOUBLE updateProgramControlForGearChange(ULONG previousGearNumber, ULONG nowInSeconds, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     BOOL refreshStandardProgramControl(ULONG nowInSeconds, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     DOUBLE manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     BOOL doesGroupHaveAmpleControlTime(CtiLMGroupBase* currentLMGroup, ULONG estimatedControlTimeInSeconds) const;
@@ -78,6 +78,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     int operator!=(const CtiLMProgramDirect& right) const;
 
     // Static Members
+    static int defaultLMStartPriority;
+    static int defaultLMRefreshPriority;
 
 private:
 
