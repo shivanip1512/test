@@ -378,7 +378,7 @@ function hideMenu(event) {
                         </td>
                           <td width="45%"><font face="Arial, Helvetica, sans-serif" size="1">Time 
                             Period: </font> 
-                            <select name="select">
+                            <select name="period">
                             <% /* Fill in the period drop down and attempt to match the current period
                  with one of the options */                           
                 for( int j = 0; j < com.cannontech.util.ServletUtil.historicalPeriods.length; j++ )
