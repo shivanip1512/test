@@ -28,8 +28,10 @@ public final class PointTypes implements IPointOffsets
 	public static final int STATUS_OUTPUT_POINT = 5;
 	public static final int ANALOG_OUTPUT_POINT = 6;
 	public static final int SYSTEM_POINT = 7;
-	public static final int INVALID_POINT = 8;
+	public static final int CALCULATED_STATUS_POINT = 8;
 
+	public static final int INVALID_POINT = 9;
+	
 	//Control Type constants
 	public static final int CONTROLTYPE_NONE = 20;
 	public static final int CONTROLTYPE_LATCH = 21;
@@ -65,7 +67,6 @@ public final class PointTypes implements IPointOffsets
 	public static final int CONTROLTYPE_SBO_LATCH = 41;
 	public static final int CONTROLTYPE_SBO_PULSE = 42;
 	
-	public static final int CALCULATED_STATUS_POINT = 43;
 	
 	//All the strings associated with points and the database
 	private static final String[] pointStrings = 
@@ -76,11 +77,12 @@ public final class PointTypes implements IPointOffsets
 		"PulseAccumulator",
 		"DemandAccumulator",
 		"CalcAnalog",
-		"StatusOutput",
+		"StatusOutput", //5
 		"AnalogOutput",
 		"System",
-		"INVALID",   //8
-		"","","","","","","","","","","",  //9-19 (room for future point types)
+		"CalcStatus",
+		"INVALID",   //9
+		"","","","","","","","","","",  //room for future point types
 		"None",  	//20
 		"Latch",
 		"Normal",
@@ -103,8 +105,7 @@ public final class PointTypes implements IPointOffsets
 		"Outage 5",
 		"Outage 6", //40		
 		"SBO Latch",
-		"SBO Pulse",
-		"CalcStatus"
+		"SBO Pulse"		
 	};	
 /**
  * This method was created in VisualAge.
