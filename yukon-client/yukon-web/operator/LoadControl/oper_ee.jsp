@@ -8,16 +8,16 @@
 <%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeCustomer" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeCustomerReply" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeHourlyCustomer" %>
-
+ 
 <%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
-
+  
 <cti:checkRole roleid="<%=EnergyBuybackRole.ROLEID%>">
 <jsp:useBean id="checker" scope="session" class="com.cannontech.validate.PageBean"/>
 
-<%  
+<%   
     String tab = request.getParameter("tab");
     tab = request.getParameter("tab");
-
+ 
     if( tab == null )
         tab = "current";
 
@@ -36,11 +36,11 @@
 	String expireDateStr = "";
 	String expireTimeStr = "";
 
-	String progIdStr = "";
+	String progIdStr = "";    
 	String offerIdStr = "";
 	String revNumStr = "";
 
-	String[] priceStrs = new String[24];
+	String[] priceStrs = new String[24]; 
 	String[] amountStrs = new String[24];
 	String[] newPriceStrs = new String[24];
 	String[] newAmountStrs = new String[24];
@@ -49,6 +49,10 @@
 	java.text.SimpleDateFormat eeTimeFormat = new java.text.SimpleDateFormat("HH:mm");
 	java.text.SimpleDateFormat eeDateTimeFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
 	java.text.DecimalFormat numberFormat = new java.text.DecimalFormat("#,###.00");
+
+	eeDateFormat.setTimeZone(tz);
+	eeTimeFormat.setTimeZone(tz);
+	eeDateTimeFormat.setTimeZone(tz);
 
 	session.putValue("referrer", request.getRequestURI() + "?" + request.getQueryString());
 	
@@ -82,11 +86,11 @@
 				}
 				checker.set("prices", priceStrs);
 				checker.set("amount", amountStrs);
-System.out.println("bar: " + eeDateFormat.format(com.cannontech.util.ServletUtil.getToday()));
-				checker.set("date", eeDateFormat.format(com.cannontech.util.ServletUtil.getToday()));
-				checker.set("notifydate", eeDateFormat.format(com.cannontech.util.ServletUtil.getToday()));
+
+				checker.set("date", eeDateFormat.format(com.cannontech.util.ServletUtil.getToday(tz)));
+				checker.set("notifydate", eeDateFormat.format(com.cannontech.util.ServletUtil.getToday(tz)));
 				checker.set("notifytime", eeTimeFormat.format(new java.util.Date()));
-				checker.set("expiredate", eeDateFormat.format(com.cannontech.util.ServletUtil.getToday()));
+				checker.set("expiredate", eeDateFormat.format(com.cannontech.util.ServletUtil.getToday(tz)));
 				checker.set("expiretime", "18:00");
 			}
 			else {
@@ -99,9 +103,10 @@ System.out.println("bar: " + eeDateFormat.format(com.cannontech.util.ServletUtil
 					else
 						checker.set(name, value);
 				}
-                System.out.println("foobar: " + com.cannontech.validate.PageBean.parseDate(checker.get("date")));
+
 				if (checker.validate()) {
 					response.sendRedirect("oper_ee.jsp?tab=newconfirm");
+					return;
 				}
 			}
 		}
@@ -111,15 +116,14 @@ System.out.println("bar: " + eeDateFormat.format(com.cannontech.util.ServletUtil
 		}
 	}
 	else if (tab.equalsIgnoreCase("newconfirm"))
-	{
+	{ 
 		if (request.getParameter("confirmed") == null) {
-            System.out.println("foobar2: " + com.cannontech.validate.PageBean.parseDate(checker.get("date")));
 			programStr = checker.get("programname");
-			dateStr = eeDateFormat.format( com.cannontech.validate.PageBean.parseDate(checker.get("date")) );
-			notifyDateStr = eeDateFormat.format( com.cannontech.validate.PageBean.parseDate(checker.get("notifydate")) );
-			notifyTimeStr = eeTimeFormat.format( com.cannontech.validate.PageBean.parseTime(checker.get("notifytime")) );
-			expireDateStr = eeDateFormat.format( com.cannontech.validate.PageBean.parseDate(checker.get("expiredate")) );
-			expireTimeStr = eeTimeFormat.format( com.cannontech.validate.PageBean.parseTime(checker.get("expiretime")) );
+			dateStr = checker.get("date");
+			notifyDateStr = checker.get("notifydate");
+			notifyTimeStr = checker.get("notifytime");
+			expireDateStr = checker.get("expiredate");
+			expireTimeStr = checker.get("expiretime");
 
 			newAmountStrs = (String[]) checker.getObject("amount");
 			newPriceStrs = (String[]) checker.getObject("prices");
@@ -146,6 +150,7 @@ System.out.println("bar: " + eeDateFormat.format(com.cannontech.util.ServletUtil
 				catch (NumberFormatException ne) {
 					checker.setError("formaterror", "Some of the values below have invalid format");
 					response.sendRedirect("oper_ee.jsp?tab=new&error=true");
+					return;
 				}
 			}
 			totAmountStr = String.valueOf(totAmount);
@@ -158,12 +163,10 @@ System.out.println("bar: " + eeDateFormat.format(com.cannontech.util.ServletUtil
 			msg.setAdditionalInfo("(none)");
 
 			String offerDateStr = request.getParameter("date") + " 00:00";
-			//String endOfOfferDateStr = request.getParameter("date") + " 23:59";
 			String notifyDateTimeStr = request.getParameter("notifydate") + " " + request.getParameter("notifytime");
 			String expireDateTimeStr = request.getParameter("expiredate") + " " + request.getParameter("expiretime");
 			
 			java.util.Date offerDate = eeDateTimeFormat.parse(offerDateStr);
-			//java.util.Date endOfOfferDate = new java.util.Date(endOfOfferDateStr);			
 			java.util.Date notifyDateTime = eeDateTimeFormat.parse(notifyDateTimeStr);
 			java.util.Date expireDateTime = eeDateTimeFormat.parse(expireDateTimeStr);
 			
@@ -174,10 +177,13 @@ System.out.println("bar: " + eeDateFormat.format(com.cannontech.util.ServletUtil
 
 			if (!notifyDateTime.before(expireDateTime))
 			{
-				if (checker == null)
+				if (checker == null) {
 					response.sendRedirect("oper_ee.jsp");
+					return;
+				}
 				checker.setError("notifytime", "Notification time must be earlier than expiration time");
 				response.sendRedirect("oper_ee.jsp?tab=new&error=true");
+				return;
 			}
 			else if (!expireDateTime.before(endOfOfferDate))
 			{
@@ -185,11 +191,11 @@ System.out.println("bar: " + eeDateFormat.format(com.cannontech.util.ServletUtil
 					response.sendRedirect("oper_ee.jsp");
 				checker.setError("expiretime", "Expiration time must be earlier than the end of offer day");
 				response.sendRedirect("oper_ee.jsp?tab=new&error=true");
+				return;
 			}
 			else {
                 
                 msg.setOfferID(new Integer(0) ); //irrelevant
-                System.out.println("setting msg offer id: " + msg.getOfferID() );
 				msg.setOfferDate( offerDate );
 				msg.setNotificationDateTime( notifyDateTime );
 				msg.setExpirationDateTime( expireDateTime );
@@ -215,6 +221,7 @@ System.out.println("bar: " + eeDateFormat.format(com.cannontech.util.ServletUtil
 				if (checker != null)
 					checker.clear();
 				response.sendRedirect("oper_ee.jsp?pending=new");
+				return;
 			}
 		}
 	}
@@ -230,9 +237,9 @@ System.out.println("bar: " + eeDateFormat.format(com.cannontech.util.ServletUtil
 				checker.set("offer", request.getParameter("offer"));
 				checker.set("rev", request.getParameter("rev"));
 
-				checker.set("notifydate", eeDateFormat.format(com.cannontech.util.ServletUtil.getToday() ));
+				checker.set("notifydate", eeDateFormat.format(com.cannontech.util.ServletUtil.getToday(tz) ));
 				checker.set("notifytime", eeTimeFormat.format( new java.util.Date() ));
-				checker.set("expiredate", eeDateFormat.format( com.cannontech.util.ServletUtil.getToday() ));
+				checker.set("expiredate", eeDateFormat.format( com.cannontech.util.ServletUtil.getToday(tz) ));
 				checker.set("expiretime", "18:00");
 			}
 			else {                
@@ -248,23 +255,24 @@ System.out.println("bar: " + eeDateFormat.format(com.cannontech.util.ServletUtil
 
 				if (checker.validate()) {                     
 					response.sendRedirect("oper_ee.jsp?tab=reviseconfirm");
+					return;
 				}
 			}
-		}
+		} 
 	}
 	else if (tab.equalsIgnoreCase("reviseconfirm"))
 	{        
 		if (request.getParameter("confirmed") == null) {
 			programStr = checker.get("progname");           
-			dateStr = datePart.format( com.cannontech.validate.PageBean.parseDate(checker.get("date")) );
+			dateStr = checker.get("date");
             
 			progIdStr = checker.get("prog");
 			offerIdStr = checker.get("offer");
 			revNumStr = checker.get("rev");
-			notifyDateStr = eeDateFormat.format( com.cannontech.validate.PageBean.parseDate(checker.get("notifydate")) );
-			notifyTimeStr = eeTimeFormat.format( com.cannontech.validate.PageBean.parseTime(checker.get("notifytime")) );
-			expireDateStr = eeDateFormat.format( com.cannontech.validate.PageBean.parseDate(checker.get("expiredate")) );
-			expireTimeStr = eeTimeFormat.format( com.cannontech.validate.PageBean.parseTime(checker.get("expiretime")) );
+			notifyDateStr = checker.get("notifydate");
+			notifyTimeStr = checker.get("notifytime");
+			expireDateStr = checker.get("expiredate");
+			expireTimeStr = checker.get("expiretime");
 
 			newAmountStrs = (String[]) checker.getObject("amount");
 			newPriceStrs = (String[]) checker.getObject("prices");
@@ -291,6 +299,7 @@ System.out.println("bar: " + eeDateFormat.format(com.cannontech.util.ServletUtil
 				catch (NumberFormatException ne) {
 					checker.setError("formaterror", "Some of the values below have invalid format");
 					response.sendRedirect("oper_ee.jsp?tab=revise&prog=" + checker.get("prog") + "&offer=" + checker.get("offer") + "&rev=" + checker.get("rev") + "&error=true");
+					return;
 				}
 			}
 			totAmountStr = String.valueOf(totAmount);
@@ -319,20 +328,25 @@ System.out.println("bar: " + eeDateFormat.format(com.cannontech.util.ServletUtil
 
 			if (!notifyDateTime.before(expireDateTime))
 			{
-				if (checker == null)
+				if (checker == null) {
 					response.sendRedirect("oper_ee.jsp");
+					return;
+				}
 				checker.setError("notifytime", "Notification time must be earlier than expiration time");
 				response.sendRedirect("oper_ee.jsp?tab=revise&prog=" + checker.get("prog") + "&offer=" + checker.get("offer") + "&rev=" + checker.get("rev") + "&error=true");
+				return;
 			}
 			else if (!expireDateTime.before(endOfOfferDate))
 			{
-				if (checker == null)
+				if (checker == null) {
 					response.sendRedirect("oper_ee.jsp");
+					return;
+				}
 				checker.setError("expiretime", "Expiration time must be earlier than the end of offer day");
 				response.sendRedirect("oper_ee.jsp?tab=new&error=true");
+				return;
 			}
 			else {
-                //System.out.println("##" + checker.getObject("offer").toString() + "##");
                 msg.setOfferID(new Integer(checker.getObject("offer").toString()));
 				msg.setOfferDate( offerDate );
 				msg.setNotificationDateTime( notifyDateTime );
@@ -359,6 +373,7 @@ System.out.println("bar: " + eeDateFormat.format(com.cannontech.util.ServletUtil
 				if (checker != null)
 					checker.clear();
 				response.sendRedirect("oper_ee.jsp?pending=revise");
+				return;
 			}
 		}
 	}
@@ -419,6 +434,7 @@ System.out.println("bar: " + eeDateFormat.format(com.cannontech.util.ServletUtil
 		conn.write(msg);
 
 		response.sendRedirect("oper_ee.jsp?pending=close");
+		return;
 	}
 %>
 
@@ -427,7 +443,7 @@ System.out.println("bar: " + eeDateFormat.format(com.cannontech.util.ServletUtil
 <link id="StyleSheet" rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 </head>
 
-<body text="#000000" link="#000000" vlink="#000000" alink="#000000"> -->
+<body text="#000000" link="#000000" vlink="#000000" alink="#000000"> 
 <%
             // Determine which tab was selected and include the appropriate file
             if( tab.equalsIgnoreCase("new") )
@@ -462,8 +478,8 @@ System.out.println("bar: " + eeDateFormat.format(com.cannontech.util.ServletUtil
             {
             %>
 <%@ include file="oper_ee_history.jsp" %>
-<%
-			}
+<% 
+			} 
 			else
 			if( tab.equalsIgnoreCase("historydetail" ) )
 			{

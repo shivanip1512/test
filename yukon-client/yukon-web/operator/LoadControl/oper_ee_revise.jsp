@@ -11,7 +11,7 @@
 	LMEnergyExchangeOffer offer = null;
 	LMEnergyExchangeOfferRevision revision = null;
 
-	if( programs != null )
+	if( programs != null ) 
 	{
 		for( int k = 0; k < programs.length; k++ )
 		{
@@ -200,6 +200,8 @@
                       </td>
             <td width="15%" class="MainHeader" valign = "top"><struts:text property="notifytime" size="10" pattern="@time"/> 
               <span class = "TableCell"><%= checker.getError("notifytime") %></span></td>
+              <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
+              </td>
           </tr>
           <tr> 
             <td width="7%" class="MainHeader" valign = "top"> 
@@ -216,6 +218,8 @@
                       </td>
             <td width="15%" class="MainHeader" valign = "top"><struts:text property="expiretime" size="10" pattern="@time"/> 
               <span class = "TableCell"><%= checker.getError("expiretime") %></span></td>
+            <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
+            </td>
           </tr>
         </table>
         <table width="640" border="0" cellspacing="0" cellpadding="5" align="center">

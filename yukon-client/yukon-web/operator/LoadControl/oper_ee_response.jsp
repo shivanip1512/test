@@ -179,22 +179,23 @@
                 <b>  - CUSTOMER SUMMARY<br>
                 <%= customer.getCompanyName() %></b><br>
               </p>
-            </div>
+            </div> 
             <table width="600" border="0" cellspacing="0"
     cellpadding="5" align="center">
           <tr> 
             <td width="75" class="MainHeader"> 
                   <p align=RIGHT>&nbsp;<b>Offer ID: </b>
-                </td>
+                </td> 
             <td width="35" class="MainHeader"><%= offerID + "-" + revisionNumber %></td>
             <td width="75" class="MainHeader"> 
                   <p align=RIGHT><b>Date: </b>
                 </td>
-            <td width="75" class="MainHeader"><%= datePart.format( offer.getOfferDate() ) %></td>
+            <td width="75" class="MainHeader"><%= eeDateFormat.format( offer.getOfferDate() ) %>
+            </td>
             <td width="75" class="MainHeader"> 
                   <p align=RIGHT><b>Expires: </b>
                 </td>
-            <td width="115" class="MainHeader"><%= timePart.format( revision.getOfferExpirationDateTime() ) + " " + datePart.format( revision.getOfferExpirationDateTime() ) %></td>
+            <td width="115" class="MainHeader"><%= eeTimeFormat.format( revision.getOfferExpirationDateTime() ) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + eeDateFormat.format( revision.getOfferExpirationDateTime() ) %>
             <td width="75" class="MainHeader"> 
                   <p align=RIGHT><b>User: </b>
                 </td>

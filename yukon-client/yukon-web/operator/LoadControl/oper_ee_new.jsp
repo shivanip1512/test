@@ -114,7 +114,9 @@ function confirm_form(f) {
                         <p align=RIGHT><b>Notify Time:</b>&nbsp; 
                       </td>
                       <td width="12%" class="MainHeader" valign = "top"><struts:text property="notifytime" size="10" pattern="@time"/><span class = "TableCell"><%= checker.getError("notifytime") %></span></td>
-          </tr>
+                      <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
+                      </td>
+          </tr> 
           <tr> 
                       <td width="21%" class="MainHeader" valign = "top"> 
                         <p align=RIGHT><b>Date:</b> 
@@ -128,6 +130,8 @@ function confirm_form(f) {
                         <p align=RIGHT><b>Expire Time:</b>&nbsp; 
                       </td>
                       <td width="12%" class="MainHeader" valign = "top"><struts:text property="expiretime" size="10" pattern="@time"/><span class = "TableCell"><%= checker.getError("expiretime") %></span></td>
+                      <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
+                      </td>
           </tr>
         </table>
         <p><%= checker.getError("formaterror") %></p>

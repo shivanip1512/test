@@ -181,18 +181,19 @@
             <div align="center"> 
           <table width="480" border="0" cellspacing="0" cellpadding="5">
             <tr> 
-              <td width="15%" class="MainHeader"> 
+              <td class="MainHeader">  
                     <p align=RIGHT><b>Offer ID:</b> 
                   </td>
-              <td width="15%" class="MainHeader"><%= offerId + "-" + revisionNumber %></td>
-              <td width="18%" class="MainHeader"> 
+              <td class="MainHeader"><%= offerId + "-" + revisionNumber %></td>
+              <td class="MainHeader"> 
                     <p align=RIGHT><b>Offer Date:</b> 
                   </td>
-              <td width="17%" class="MainHeader"><%= dateFormat.format( offer.getOfferDate() ) %></td>
-              <td width="20%" class="MainHeader"> 
+              <td class="MainHeader"><%= eeTimeFormat.format( offer.getOfferDate() ) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + eeDateFormat.format( offer.getOfferDate() ) %>
+              </td>
+              <td class="MainHeader"> 
                     <p align=RIGHT><b>Accept User:</b> 
                   </td>
-              <td width="15%" class="MainHeader"><%= reply.getNameOfAcceptPerson() %></td>
+              <td class="MainHeader"><%= reply.getNameOfAcceptPerson() %></td>
             </tr>
           </table>
           <table width="600" border="0" cellspacing="0" cellpadding="5">

@@ -86,14 +86,14 @@
               the offer summary.</p>
               <table width="600" border="1" cellspacing="0" bgcolor="white" cellpadding="2" align="center">
                 <tr valign="top"> 
-                  <td width="80" class="HeaderCell">Offer ID</td>
-                  <td width="150" class="HeaderCell">Program</td>
-                  <td width="90" class="HeaderCell">Status</td>
-                  <td width="90" class="HeaderCell">Offer Date</td>
+                  <td class="HeaderCell">Offer ID</td>
+                  <td class="HeaderCell">Program</td>
+                  <td class="HeaderCell">Status</td>
+                  <td class="HeaderCell">Offer Date</td>
                   
-                <td width="100" class="HeaderCell">Total Committed (kW)</td>
+                <td class="HeaderCell">Total Committed (kW)</td>
                   
-                <td width="90" class="HeaderCell">Target Total (kW)</td>
+                <td class="HeaderCell">Target Total (kW)</td>
                 </tr>
                 <%
 	com.cannontech.web.history.EnergyExchangeHistory history = null;
@@ -104,7 +104,7 @@
 
 		java.util.GregorianCalendar nowCal = new java.util.GregorianCalendar();
 		nowCal.setTime( new java.util.Date() );
-
+ 
 		for (int i = 0; i < offers.length; i++) {
 			java.util.GregorianCalendar offerCal = new java.util.GregorianCalendar();
 			offerCal.setTime(offers[i].getOfferDate());
@@ -125,7 +125,7 @@
                     </a></td>
                   <td height="23" class="TableCell"><%= program.getProgramName() %></td>
                   <td height="23" class="TableCell"><%= offers[i].getRunStatus() %></td>
-                  <td height="23" class="TableCell"><%= dateFormat.format( revisions[j].getActionDateTime() ) %></td>
+                  <td height="23" class="TableCell"><%= eeTimeFormat.format( revisions[j].getActionDateTime() ) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + eeDateFormat.format( revisions[j].getActionDateTime() ) %> </td>
                   <td height="23" class="TableCell"><%= numberFormat.format(amountCommitted) %></td>
                   <td height="23" class="TableCell"><%= numberFormat.format(amountRequested) %></td>
                 </tr>

@@ -84,17 +84,17 @@
                     <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - CURRENT SUMMARY</b> <br>
                     <br>
                   <p align="center">Click on an Offer ID to view the offer summary.</p>
-      <p align="center"><span class="MainHeader"><b>Today's <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getToday()) %></b></span> 
+      <p align="center"><span class="MainHeader"><b>Today's <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getToday(tz)) %></b></span> 
       <center>
         <table width="620" border="1" cellspacing="0" cellpadding="2">
           <tr valign="top"> 
-            <td width="10%" class="HeaderCell">Offer ID</td>
-            <td width="18%" class="HeaderCell">Program</td>
-            <td width="12%" class="HeaderCell">Status</td>
-            <td width="18%" class="HeaderCell">Notify Date/Time</td>
-            <td width="18%" class="HeaderCell">Expire Date/Time</td>
-                        <td width="12%" class="HeaderCell">Committed Total (kW)</td>
-                        <td width="12%" class="HeaderCell">Target Total (kW)</td>
+            <td class="HeaderCell">Offer ID</td>
+            <td class="HeaderCell">Program</td>
+            <td class="HeaderCell">Status</td>
+            <td class="HeaderCell">Notify Date/Time</td>
+            <td class="HeaderCell">Expire Date/Time</td>
+            <td class="HeaderCell">Committed Total (kW)</td>
+            <td class="HeaderCell">Target Total (kW)</td>
           </tr>
           <%
                           {
@@ -145,7 +145,7 @@
                                                          {
                                                               LMEnergyExchangeCustomerReply reply = (LMEnergyExchangeCustomerReply) replies.elementAt(n);
                                                               if( reply.getOfferID().intValue() == revision.getOfferID().intValue() &&
-                                                                  reply.getRevisionNumber().intValue() == revision.getRevisionNumber().intValue() )
+                                                                  reply.getRevisionNumber().intValue() == revision.getRevisionNumber().intValue() ) 
                                                               {                                                              
                                                                 java.util.Vector hourlyReplies = reply.getEnergyExchangeHourlyCustomer();
                                                                 for( int o = 0; o < hourlyReplies.size(); o++ )
@@ -162,32 +162,32 @@
             <td class="TableCell"><a href="oper_ee.jsp?tab=current&prog=<%= offer.getYukonID() %>&offer=<%= offer.getOfferID() %>&rev=<%= revision.getRevisionNumber() %>" class="Link1"><%= offer.getOfferID() + "-" + revision.getRevisionNumber() %></a></td>
             <td class="TableCell"><%= eeProgs[i].getYukonName() %></td>
             <td class="TableCell"><%= offer.getRunStatus() %></td>
-            <td class="TableCell"><%= timePart.format(revision.getNotificationDateTime()) + " " + datePart.format(revision.getNotificationDateTime()) %></td>
-            <td class="TableCell"><%= timePart.format(revision.getOfferExpirationDateTime()) + " " + datePart.format(revision.getOfferExpirationDateTime()) %></td>
+            <td class="TableCell"><%= timePart.format(revision.getNotificationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(revision.getNotificationDateTime()) %></td>
+            <td class="TableCell"><%= timePart.format(revision.getOfferExpirationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(revision.getOfferExpirationDateTime()) %></td>
             <td class="TableCell"><%= committedTotal %></td>
             <td class="TableCell"><%= targetTotal %></td>
           </tr>
           <%        
                                            }
                                         }
-                                    }                                    
+                                    }                                     
                                 }
                              }
                           %>
         </table>
-      </center>
+      </center> 
       <p>&nbsp; 
       <p align="center"><span class="MainHeader"><b>Tomorrow's 
-        <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getTommorow()) %></b></span>
+        <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getTomorrow(tz)) %></b></span>
       <table width="620" border="1" cellspacing="0" cellpadding="2" align="center">
         <tr valign="top"> 
-          <td width="10%" class="HeaderCell">Offer ID</td>
-          <td width="18%" class="HeaderCell">Program</td>
-          <td width="12%" class="HeaderCell">Status</td>
-          <td width="18%" class="HeaderCell">Notify Date/Time</td>
-          <td width="18%" class="HeaderCell">Expire Date/Time</td>
-                      <td width="12%" class="HeaderCell">Committed Total (kW)</td>
-                      <td width="12%" class="HeaderCell">Target Total (kW)</td>
+          <td class="HeaderCell">Offer ID</td>
+          <td class="HeaderCell">Program</td>
+          <td class="HeaderCell">Status</td>
+          <td class="HeaderCell">Notify Date/Time</td>
+          <td class="HeaderCell">Expire Date/Time</td>
+          <td class="HeaderCell">Committed Total (kW)</td>
+          <td class="HeaderCell">Target Total (kW)</td>
         </tr>
         <%
                           {
@@ -258,8 +258,8 @@
           <td class="TableCell"><a href="oper_ee.jsp?tab=current&prog=<%= offer.getYukonID() %>&offer=<%= offer.getOfferID() %>&rev=<%= revision.getRevisionNumber() %>" class="Link1"><%= offer.getOfferID() + "-" + revision.getRevisionNumber() %></a></td>
           <td class="TableCell"><%= eeProgs[i].getYukonName() %></td>
           <td class="TableCell"><%= offer.getRunStatus() %></td>
-          <td class="TableCell"> <%= timePart.format(revision.getNotificationDateTime()) + " " + datePart.format(revision.getNotificationDateTime()) %></td>
-          <td class="TableCell"> <%= timePart.format(revision.getOfferExpirationDateTime()) + " " + datePart.format(revision.getOfferExpirationDateTime()) %></td>
+          <td class="TableCell"> <%= timePart.format(revision.getNotificationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(revision.getNotificationDateTime()) %></td>
+          <td class="TableCell"> <%= timePart.format(revision.getOfferExpirationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(revision.getOfferExpirationDateTime()) %></td>
           <td class="TableCell"> <%= committedTotal %></td>
           <td class="TableCell"> <%= targetTotal %></td>
         </tr>

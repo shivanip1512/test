@@ -126,7 +126,9 @@
                           <p align=RIGHT><b>Notify Time: </b> 
                         </td>
               <td width="10%" valign="TOP" class="MainHeader"><%= notifyTimeStr %></td>
-            </tr>
+              <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
+              </td>
+            </tr> 
             <tr> 
               <td width="11%" valign="TOP" class="MainHeader"> 
                           <p align=RIGHT><b>Date: </b> 
@@ -140,6 +142,8 @@
                           <p align=RIGHT><b>Expire Time: </b> 
                         </td>
               <td width="10%" valign="TOP" class="MainHeader"><%= expireTimeStr %></td>
+              <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
+              </td>
             </tr>
           </table>
           <table width="600" border="0" cellspacing="0" cellpadding="5">

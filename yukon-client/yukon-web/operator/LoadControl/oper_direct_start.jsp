@@ -170,9 +170,6 @@
 
             // Find all the gears for this program
             gears = program.getDirectGearVector();
-
-            for( int j = 0; j < gears.size(); j++ )
-                System.out.println( ((LMProgramDirectGear) gears.get(j)).getGearName());
             break;
         }
     }
