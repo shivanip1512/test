@@ -122,7 +122,7 @@ public String getDate()
 public String getMeasureLabel()
 {
 	if( measureLabel == null)
-		return "KWH";
+		return "kWh";
 	return measureLabel;
 }
 /**

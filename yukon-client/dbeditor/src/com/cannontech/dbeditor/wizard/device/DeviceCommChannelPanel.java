@@ -312,7 +312,7 @@ private SmartMultiDBPersistent createPoints( Integer paoID )
 	//add all ther point to the smart object
 	smartDB.addDBPersistent( 
 		PointFactory.createAnalogPoint(
-			"Total KWH",
+			"Total kWh",
 			paoID,
 			new Integer(ids[0]),
 			PointTypes.PT_OFFSET_TOTAL_KWH,
@@ -320,7 +320,7 @@ private SmartMultiDBPersistent createPoints( Integer paoID )
 
 	smartDB.addDBPersistent( 
 		PointFactory.createAnalogPoint(
-			"Total KVARH",
+			"Total kVArh",
 			paoID,
 			new Integer(ids[1]),
 			PointTypes.PT_OFFSET_TOTAL_KVARH,
@@ -328,7 +328,7 @@ private SmartMultiDBPersistent createPoints( Integer paoID )
 				
 	smartDB.addDBPersistent( 
 		PointFactory.createAnalogPoint(
-			"LP KW Demand",
+			"LP kW Demand",
 			paoID,
 			new Integer(ids[2]),
 			PointTypes.PT_OFFSET_LP_KW_DEMAND,
@@ -336,7 +336,7 @@ private SmartMultiDBPersistent createPoints( Integer paoID )
 
 	smartDB.addDBPersistent( 
 		PointFactory.createAnalogPoint(
-			"KVAR Demand",
+			"kVAr Demand",
 			paoID,
 			new Integer(ids[3]),
 			PointTypes.PT_OFFSET_KVAR_DEMAND,

@@ -177,7 +177,7 @@ public class DeviceRoutePanel
 			//always create the PulseAccum point
          newVal.getDBPersistentVector().add( 
             PointFactory.createPulseAccumPoint(
-               "KWH",
+               "kWh",
                ((DeviceBase) val).getDevice().getDeviceID(),
                new Integer(++pointID),
                PointTypes.PT_OFFSET_TOTAL_KWH,

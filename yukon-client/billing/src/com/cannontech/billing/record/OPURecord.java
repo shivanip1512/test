@@ -122,7 +122,7 @@ public String getName()
 public String getPointName()
 {
 	if( pointName == null)
-		return "KWH";
+		return "kWh";
 	return pointName;
 }
 /**

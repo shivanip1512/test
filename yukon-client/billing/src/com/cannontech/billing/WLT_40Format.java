@@ -502,19 +502,19 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 				for(int k=0;k<unitOfMeasureIdVector.size();k++)
 				{
 					String unitMeasureName = com.cannontech.database.cache.functions.UnitMeasureFuncs.getLiteUnitMeasure(((Integer)unitOfMeasureIdVector.get(k)).intValue()).getUnitMeasureName();
-					if( unitMeasureName.equalsIgnoreCase("KWH") )
+					if( unitMeasureName.equalsIgnoreCase("kWh") )
 					{
 						unitOfMeasureCodeVector.addElement(new Integer(1));
 					}
-					else if( unitMeasureName.equalsIgnoreCase("KW") )
+					else if( unitMeasureName.equalsIgnoreCase("kW") )
 					{
 						unitOfMeasureCodeVector.addElement(new Integer(2));
 					}
-					else if( unitMeasureName.equalsIgnoreCase("KVARH") )
+					else if( unitMeasureName.equalsIgnoreCase("kVArh") )
 					{
 						unitOfMeasureCodeVector.addElement(new Integer(3));
 					}
-					else if( unitMeasureName.equalsIgnoreCase("KVAR") )
+					else if( unitMeasureName.equalsIgnoreCase("kVAr") )
 					{
 						unitOfMeasureCodeVector.addElement(new Integer(4));
 					}
@@ -1028,19 +1028,19 @@ public boolean retrieveBillingData(String dbAlias)
 				for(int k=0;k<unitOfMeasureIdVector.size();k++)
 				{
 					String unitMeasureName = com.cannontech.database.cache.functions.UnitMeasureFuncs.getLiteUnitMeasure(((Integer)unitOfMeasureIdVector.get(k)).intValue()).getUnitMeasureName();
-					if( unitMeasureName.equalsIgnoreCase("KWH") )
+					if( unitMeasureName.equalsIgnoreCase("kWh") )
 					{
 						unitOfMeasureCodeVector.addElement(new Integer(1));
 					}
-					else if( unitMeasureName.equalsIgnoreCase("KW") )
+					else if( unitMeasureName.equalsIgnoreCase("kW") )
 					{
 						unitOfMeasureCodeVector.addElement(new Integer(2));
 					}
-					else if( unitMeasureName.equalsIgnoreCase("KVARH") )
+					else if( unitMeasureName.equalsIgnoreCase("kVArh") )
 					{
 						unitOfMeasureCodeVector.addElement(new Integer(3));
 					}
-					else if( unitMeasureName.equalsIgnoreCase("KVAR") )
+					else if( unitMeasureName.equalsIgnoreCase("kVAr") )
 					{
 						unitOfMeasureCodeVector.addElement(new Integer(4));
 					}

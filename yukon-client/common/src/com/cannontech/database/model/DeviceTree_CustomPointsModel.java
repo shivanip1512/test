@@ -10,12 +10,12 @@ public class DeviceTree_CustomPointsModel extends DeviceTreeModel
 {
 	public static final String[] POINT_UNIT_ARRAY =
 	{
-		"KWH",
-		"KVAH",
-		"KVARH",
-		"MWH",
-		"MWVAH",
-		"MWVARH"
+		"kWh",
+		"kVAh",
+		"kVArh",
+		"MWh",
+		"MWVAh",
+		"MWVArh"
 	};
 
 	private long includePoints = 0x00000000;
