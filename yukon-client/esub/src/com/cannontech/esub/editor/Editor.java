@@ -10,12 +10,18 @@ import java.awt.Cursor;
 
 
 import javax.swing.*;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.awt.Dimension;
 
 import com.loox.jloox.LxElement;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
+import com.loox.jloox.LxSVGExtraData;
+import com.loox.jloox.LxSVGGenerator;
 import com.loox.jloox.LxView;
 
 import com.loox.jloox.LxMouseListener;
@@ -24,6 +30,7 @@ import com.loox.jloox.LxMouseEvent;
 
 import com.cannontech.common.editor.PropertyPanelListener;
 import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.esub.util.SVGGenerator;
 
 /**
  * Creation date: (12/11/2001 3:53:52 PM)
@@ -324,6 +331,32 @@ void saveFile(){
 	if(returnVal == JFileChooser.APPROVE_OPTION){
 		openFile = fileChooser.getSelectedFile().getPath();
 		lxGraph.save(openFile.concat(".jlx"));
+		
+		//svg
+		LxSVGGenerator gen = new LxSVGGenerator();
+		/*LxSVGExtraData extra = new LxSVGExtraData();
+		gen.setExtraData(extra);
+		LxComponent[] comps = lxGraph.getComponents();
+		for( int i = 0; i < comps.length; i++ ) {
+			//extra.setObjectChildElement(comps[i], "<a xlink:href=\"happy.svg\"/>");
+			//extra.setObjectLinkTarget(comps[i], "xlink:href=\"hell.svg\"");
+			gen.writeComponent(System.out, comps[i]);
+		}
+		
+		//extra.setObjectChildElement(lxView,"<rect width=\"100%\" height=\"100%\" style=\"fill: #000000;\"/>");*/
+		gen.saveAsSVG(lxGraph, openFile.concat("j.svg"));
+		
+		try {
+		SVGGenerator gen2 = new SVGGenerator();
+		FileWriter fw = new FileWriter( openFile.concat("c.svg"));
+		
+		
+		gen2.generate(fw, lxGraph);
+		fw.close();
+		} catch(IOException e ) {
+			e.printStackTrace();
+		}
+		
        }
 
 	// Just saved so graph is not modified.

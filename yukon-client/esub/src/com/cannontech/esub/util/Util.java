@@ -1,5 +1,10 @@
 package com.cannontech.esub.util;
 
+import java.awt.Component;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.net.URL;
+
 /**
  * Creation date: (1/14/2002 4:28:01 PM)
  * @author: 
@@ -71,4 +76,12 @@ public static String getRelativePath(java.io.File f1, java.io.File f2) throws ja
 	
 	return p2;
 }
+
+public static Image loadImage(String imageName)
+{
+  URL imageURL = Util.class.getResource(imageName);
+  return(Toolkit.getDefaultToolkit().getImage(imageURL));
+ }
+
+
 }

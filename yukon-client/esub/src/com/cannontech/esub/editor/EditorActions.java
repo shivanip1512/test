@@ -7,12 +7,15 @@ package com.cannontech.esub.editor;
 
 import java.util.HashMap;
 
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
 
+import com.cannontech.esub.util.Util;
+import com.loox.jloox.Lx;
 import com.loox.jloox.LxAbstractAction;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxView;
@@ -261,8 +264,9 @@ class EditorActions {
 
 		LxView v = e.getLxView();
 		
-		LxAbstractAction action = (LxAbstractAction) v.getAction(LxView.CREATE_LINE_ACTION);		
-		action.setIcon(new ImageIcon("LineIcon.gif"));		
+		LxAbstractAction action = (LxAbstractAction) v.getAction(LxView.CREATE_LINE_ACTION);					
+		action.setIcon(new ImageIcon( Util.loadImage("/LineIcon.gif")));
+	
 		actionMap.put(CREATE_LINE, action);
 
 //		action = (LxAbstractAction) v.getAction(LxView.CREATE_LINK_ACTION);
@@ -270,7 +274,7 @@ class EditorActions {
 //		actionMap.put(CREATE_LINK, action);
 		 
 		action = (LxAbstractAction) v.getAction(LxView.CREATE_RECTANGLE_ACTION); 
-		action.setIcon(new ImageIcon("SquareIcon.gif"));		
+		action.setIcon(new ImageIcon( Util.loadImage("/SquareIcon.gif")));	
 		actionMap.put(CREATE_RECTANGLE, action);
 //		actionMap.put(CREATE_IMAGE, v.getAction(LxView.CREATE_IMAGE_ACTION));
 
