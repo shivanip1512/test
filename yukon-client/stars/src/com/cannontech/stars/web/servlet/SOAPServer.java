@@ -31,7 +31,6 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.SystemRole;
-import com.cannontech.servlet.PILConnectionServlet;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -81,7 +80,6 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	// Map from user ID (Integer) to stars users (StarsYukonUser)
 	private static Hashtable starsYukonUsers = null;
 	
-	private PILConnectionServlet connToPIL = null;
 	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
     
 
@@ -94,10 +92,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	 */
 	public void init() throws javax.servlet.ServletException {
 		instance = this;
-		initSOAPServer( instance );
-		
-//		connToPIL = (com.cannontech.servlet.PILConnectionServlet)
-//				getServletContext().getAttribute(com.cannontech.servlet.PILConnectionServlet.SERVLET_CONTEXT_ID);
+		initSOAPServer( instance );		
 	}
 
 	public SOAPMessage onMessage(SOAPMessage message) {
@@ -162,11 +157,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		return connToDispatch;
 	}
 	
-	public com.cannontech.message.porter.ClientConnection getPILConnection() {
-		if (connToPIL == null) return null;
-		return connToPIL.getConnection();
-	}
-	
+
 	private static void initSOAPServer(SOAPServer instance) {
 		instance.initDispatchConnection();
 		
