@@ -121,21 +121,6 @@ public void fireApplyButtonPressed()
 	
 }
 
-public void fireOKButtonPressed() 
-{
-	javax.swing.SwingUtilities.invokeLater( new Runnable()
-	{
-		public void run()
-		{
-			java.awt.event.ActionEvent newEvent = new java.awt.event.ActionEvent( getPropertyButtonPanel().getApplyJButton(),
-									java.awt.event.ActionEvent.ACTION_PERFORMED,
-									"okButtonPressed");
-			actionPerformed( newEvent );
-		}	
-		
-	});
-	
-}
 /**
  * Insert the method's description here.
  * Creation date: (3/15/2001 10:01:29 AM)
@@ -285,7 +270,7 @@ public void inputUpdate( DataInputPanelEvent event) {
 	
 	else if( event.getEventID() == DataInputPanelEvent.EVENT_FORCE_OK)
 	    {
-			fireOKButtonPressed();
+			fireOkButtonPressed();
 	    }	
 	
 }
