@@ -24,6 +24,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	private ArrayList lmPrograms = null;	// List of LiteStarsLMProgram
 	private ArrayList appliances = null;	// List of LiteStarsAppliance
 	private ArrayList inventories = null;	// List of IDs of LiteLMHardware
+	private ArrayList programHistory = null;	// List of LiteLMProgramEvent
 	private ArrayList callReportHistory = null;	// List of StarsCallReport
 	private ArrayList serviceRequestHistory = null;	// List of IDs of LiteWorkOrderBase
 	//private LiteStarsThermostatSettings thermostatSettings = null;
@@ -48,6 +49,19 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	
 	public void setAccountID(int accountID) {
 		setLiteID( accountID );
+	}
+	
+	public boolean hasTwoWayThermostat(LiteStarsEnergyCompany energyCompany) {
+		for (int i = 0; i < getInventories().size(); i++) {
+			int invID = ((Integer) getInventories().get(i)).intValue();
+			LiteInventoryBase liteInv = energyCompany.getInventory( invID, true );
+			
+			if (liteInv instanceof LiteStarsLMHardware &&
+				((LiteStarsLMHardware) liteInv).isTwoWayThermostat())
+				return true;
+		}
+		
+		return false;
 	}
 	
 	/**
@@ -261,18 +275,21 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	public void setExtended(boolean extended) {
 		this.extended = extended;
 	}
-	
-	public boolean hasTwoWayThermostat(LiteStarsEnergyCompany energyCompany) {
-		for (int i = 0; i < getInventories().size(); i++) {
-			int invID = ((Integer) getInventories().get(i)).intValue();
-			LiteInventoryBase liteInv = energyCompany.getInventory( invID, true );
-			
-			if (liteInv instanceof LiteStarsLMHardware &&
-				((LiteStarsLMHardware) liteInv).isTwoWayThermostat())
-				return true;
-		}
-		
-		return false;
+
+	/**
+	 * @return
+	 */
+	public ArrayList getProgramHistory() {
+		if (programHistory == null)
+			programHistory = new ArrayList();
+		return programHistory;
+	}
+
+	/**
+	 * @param list
+	 */
+	public void setProgramHistory(ArrayList list) {
+		programHistory = list;
 	}
 
 }

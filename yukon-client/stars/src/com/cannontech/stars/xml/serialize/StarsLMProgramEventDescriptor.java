@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsLMProgramEventDescriptor extends StarsLMCustomerEventDescriptor {
+public class StarsLMProgramEventDescriptor extends com.cannontech.stars.xml.serialize.StarsLMCustomerEventDescriptor {
 
 
       //--------------------------/
@@ -49,14 +49,101 @@ public class StarsLMProgramEventDescriptor extends StarsLMCustomerEventDescripto
 
     public StarsLMProgramEventDescriptor() {
         super();
-        setExtendsWithoutFlatten(new StarsLMCustomerEventDescriptor());
+        setExtendsWithoutFlatten(new com.cannontech.stars.xml.serialize.StarsLMCustomerEventDescriptor());
         xmlName = "stars-LMProgramEvent";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
+        
+        //-- _programIDList
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_programIDList", "ProgramID", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsLMProgramEvent target = (StarsLMProgramEvent) object;
+                return target.getProgramID();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsLMProgramEvent target = (StarsLMProgramEvent) object;
+                    // ignore null values for non optional primitives
+                    if (value == null) return;
+                    
+                    target.addProgramID( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(true);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _programIDList
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _duration
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_duration", "Duration", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsLMProgramEvent target = (StarsLMProgramEvent) object;
+                if(!target.hasDuration())
+                    return null;
+                return new Integer(target.getDuration());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsLMProgramEvent target = (StarsLMProgramEvent) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteDuration();
+                        return;
+                    }
+                    target.setDuration( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _duration
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsLMProgramEventDescriptor()
 

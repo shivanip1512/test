@@ -116,7 +116,6 @@
 			<xs:element name="AltTrackingNumber" type="xs:string" minOccurs="0"/>
 			<xs:element name="Voltage" type="stars-CustListEntry" minOccurs="0"/>
 			<xs:element name="Notes" type="xs:string" minOccurs="0"/>
-
 			<xs:element name="DeviceStatus" type="stars-CustListEntry" minOccurs="0"/>
 			<xs:element name="InstallationNotes" type="xs:string" minOccurs="0"/>
 			<xs:element ref="stars-LMHardwareHistory" minOccurs="0"/>
@@ -449,6 +448,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="stars-LMProgram" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="stars-LMProgramHistory" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -470,7 +470,6 @@
 				<xs:element name="ProgramName" type="xs:string"/>
 				<xs:element name="Status" type="xs:string" minOccurs="0"/>
 				<xs:element ref="stars-LMControlHistory" minOccurs="0"/>
-				<xs:element ref="stars-LMProgramHistory" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="programID" type="xs:int" use="required"/>
 			<xs:attribute name="groupID" type="xs:int"/>
@@ -749,13 +748,23 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="stars-LMProgramEvent" type="stars-LMCustomerEvent"/>
+	<xs:element name="stars-LMProgramEvent">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="stars-LMCustomerEvent">
+					<xs:sequence>
+						<xs:element name="ProgramID" type="xs:int" maxOccurs="unbounded"/>
+						<xs:element name="Duration" type="xs:int" minOccurs="0"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="stars-LMProgramHistory">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="stars-LMProgramEvent"/>
 			</xs:sequence>
-			<xs:attribute name="programID" type="xs:int"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-LMHardwareEvent" type="stars-LMCustomerEvent"/>
@@ -981,7 +990,7 @@
 	<xs:element name="stars-ProgramOptOutResponse">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="stars-LMProgramHistory" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="stars-LMProgramHistory" minOccurs="0"/>
 				<xs:element ref="stars-LMHardwareHistory" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="Description" minOccurs="0" type="xs:string"/>
 			</xs:sequence>
@@ -997,7 +1006,7 @@
 	<xs:element name="stars-ProgramReenableResponse">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="stars-LMProgramHistory" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="stars-LMProgramHistory" minOccurs="0"/>
 				<xs:element ref="stars-LMHardwareHistory" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="Description" minOccurs="0" type="xs:string"/>
 			</xs:sequence>

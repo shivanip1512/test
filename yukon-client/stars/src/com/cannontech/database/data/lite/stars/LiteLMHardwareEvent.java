@@ -12,6 +12,8 @@ import com.cannontech.database.data.lite.LiteTypes;
  */
 public class LiteLMHardwareEvent extends LiteLMCustomerEvent {
 	
+	private int inventoryID = 0;
+	
 	public LiteLMHardwareEvent() {
 		super();
 		setLiteType( LiteTypes.STARS_LMHARDWARE_EVENT );
@@ -22,4 +24,18 @@ public class LiteLMHardwareEvent extends LiteLMCustomerEvent {
 		setLiteType( LiteTypes.STARS_LMHARDWARE_EVENT );
 	}
 	
+	/**
+	 * @return
+	 */
+	public int getInventoryID() {
+		return inventoryID;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setInventoryID(int i) {
+		inventoryID = i;
+	}
+
 }

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
@@ -60,11 +61,11 @@ public class StarsLiteFactory {
 		}
 		else if (db instanceof com.cannontech.database.data.stars.event.LMHardwareEvent) {
 			lite = new LiteLMHardwareEvent();
-			setLiteLMCustomerEvent( (LiteLMCustomerEvent) lite, ((com.cannontech.database.data.stars.event.LMHardwareEvent) db).getLMCustomerEventBase() );
+			setLiteLMHardwareEvent( (LiteLMHardwareEvent) lite, (com.cannontech.database.data.stars.event.LMHardwareEvent) db );
 		}
 		else if (db instanceof com.cannontech.database.data.stars.event.LMProgramEvent) {
 			lite = new LiteLMProgramEvent();
-			setLiteLMCustomerEvent( (LiteLMCustomerEvent) lite, ((com.cannontech.database.data.stars.event.LMProgramEvent) db).getLMCustomerEventBase() );
+			setLiteLMProgramEvent( (LiteLMProgramEvent) lite, (com.cannontech.database.data.stars.event.LMProgramEvent) db );
 		}
 		else if (db instanceof com.cannontech.database.db.stars.report.WorkOrderBase) {
 			lite = new LiteWorkOrderBase();
@@ -192,7 +193,7 @@ public class StarsLiteFactory {
 		com.cannontech.database.data.stars.event.LMHardwareEvent[] events =
 				com.cannontech.database.data.stars.event.LMHardwareEvent.getAllLMHardwareEvents( new Integer(liteInv.getInventoryID()) );
 		for (int i = 0; i < events.length; i++) {
-			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) createLite( events[i] );
+			LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) createLite( events[i] );
 			invHist.add( liteEvent );
 		}
 		
@@ -213,6 +214,16 @@ public class StarsLiteFactory {
         liteEvent.setEventDateTime( event.getEventDateTime().getTime() );
         liteEvent.setEventTypeID( event.getEventTypeID().intValue() );
         liteEvent.setNotes( event.getNotes() );
+	}
+	
+	public static void setLiteLMHardwareEvent(LiteLMHardwareEvent liteEvent, com.cannontech.database.data.stars.event.LMHardwareEvent event) {
+		setLiteLMCustomerEvent( liteEvent, event.getLMCustomerEventBase() );
+		liteEvent.setInventoryID( event.getLMHardwareEvent().getInventoryID().intValue() );
+	}
+	
+	public static void setLiteLMProgramEvent(LiteLMProgramEvent liteEvent, com.cannontech.database.data.stars.event.LMProgramEvent event) {
+		setLiteLMCustomerEvent( liteEvent, event.getLMCustomerEventBase() );
+		liteEvent.setProgramID( event.getLMProgramEvent().getLMProgramID().intValue() );
 	}
 	
 	public static void setLiteWorkOrderBase(LiteWorkOrderBase liteOrder, com.cannontech.database.db.stars.report.WorkOrderBase order) {
@@ -1209,6 +1220,7 @@ public class StarsLiteFactory {
 		setStarsCustomerContact( primContact, liteContact );
 		starsAccount.setPrimaryContact( primContact );
 		
+		starsAccount.removeAllAdditionalContact();
 		for (int i = 0; i < liteCustomer.getAdditionalContacts().size(); i++) {
 			LiteContact lContact = (LiteContact) liteCustomer.getAdditionalContacts().get(i);
 			AdditionalContact contact = new AdditionalContact();
@@ -1241,6 +1253,9 @@ public class StarsLiteFactory {
 			
 			starsProgs.addStarsLMProgram( createStarsLMProgram(liteProg, liteApp, energyCompany) );
 		}
+		
+		ArrayList liteProgHist = liteAcctInfo.getProgramHistory();
+		starsProgs.setStarsLMProgramHistory( createStarsLMProgramHistory(liteProgHist) );
 		
 		ArrayList liteInvs = liteAcctInfo.getInventories();
 		StarsInventories starsInvs = new StarsInventories();
@@ -1649,7 +1664,7 @@ public class StarsLiteFactory {
 		// AlternativeDisplayName field: (program alias),(short name used in enrollment page)
 		StarsWebConfig starsConfig = energyCompany.getStarsWebConfig( liteProg.getLmProgram().getWebSettingsID() );
 		String[] dispNames = starsConfig.getAlternateDisplayName().split(",");
-		if (dispNames.length > 0 && dispNames[0].trim().length() > 0)
+		if (dispNames.length > 0 && dispNames[0].length() > 0)
 			starsProg.setProgramName( dispNames[0] );
 		
 		LiteStarsLMControlHistory liteCtrlHist = energyCompany.getLMControlHistory( liteProg.getGroupID() );
@@ -1658,23 +1673,85 @@ public class StarsLiteFactory {
 		else
 			starsProg.setStarsLMControlHistory( new StarsLMControlHistory() );
 		
-		if (liteProg.getProgramHistory() != null) {
-			StarsLMProgramHistory progHist = new StarsLMProgramHistory();
-			for (int k = 0; k < liteProg.getProgramHistory().size(); k++) {
-				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) liteProg.getProgramHistory().get(k);
-				StarsLMProgramEvent starsEvent = new StarsLMProgramEvent();
-				setStarsLMCustomerEvent( starsEvent, liteEvent );
-				progHist.addStarsLMProgramEvent( starsEvent );
-			}
-			starsProg.setStarsLMProgramHistory( progHist );
-		}
-		
 		if (liteProg.isInService())
 			starsProg.setStatus( ServletUtils.IN_SERVICE );
 		else
 			starsProg.setStatus( ServletUtils.OUT_OF_SERVICE );
 		
 		return starsProg;
+	}
+	
+	public static StarsLMProgramHistory createStarsLMProgramHistory(ArrayList liteProgHist) {
+		StarsLMProgramHistory starsProgHist = new StarsLMProgramHistory();
+		ArrayList liteProgHist2 = new ArrayList( liteProgHist );
+		TreeMap progHistMap = new TreeMap();
+		
+		for (int i = 0; i < liteProgHist2.size(); i++) {
+			LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) liteProgHist2.get(i);
+    		
+			StarsLMProgramEvent starsEvent = new StarsLMProgramEvent();
+			setStarsLMCustomerEvent( starsEvent, liteEvent );
+			starsEvent.addProgramID( liteEvent.getProgramID() );
+			
+			if (starsEvent.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION) {
+				// Get opt out duration (in number of hours)
+				boolean foundDuration = false;
+				
+				Iterator it = liteProgHist2.listIterator(i + 1);
+				while (it.hasNext()) {
+					LiteLMProgramEvent liteEvent2 = (LiteLMProgramEvent) it.next();
+					if (liteEvent2.getProgramID() != liteEvent.getProgramID())
+						continue;
+					
+					YukonListEntry entry = YukonListFuncs.getYukonListEntry( liteEvent2.getActionID() );
+					
+					if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION
+						|| entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED
+						|| entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION)
+					{
+						int duration = (int) ((liteEvent2.getEventDateTime() - liteEvent.getEventDateTime()) * 0.001 / 3600 + 0.5);
+						starsEvent.setDuration( duration );
+						foundDuration = true;
+						
+						it.remove();
+						break;
+					}
+					else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION) {
+						it.remove();
+					}
+					else {
+						CTILogger.error( "Invalid event action after opt out event, event id=" + liteEvent.getEventID() + "," + liteEvent2.getEventID() );
+						break;
+					}
+				}
+				
+				if (!foundDuration) continue;
+			}
+			
+			StarsLMProgramEvent starsEvent2 = (StarsLMProgramEvent) progHistMap.get( starsEvent.getEventDateTime() );
+			if (starsEvent2 == null)	// No other events happened at the same time
+				progHistMap.put( starsEvent.getEventDateTime(), starsEvent );
+			else {	// Found events happened at the same time
+				if (starsEvent2.getYukonDefID() != starsEvent.getYukonDefID())	// Not the same action
+					progHistMap.put( starsEvent.getEventDateTime(), starsEvent );
+				else {	// Same event action
+					if (!starsEvent.hasDuration())	// Not Temporary opt out action
+						starsEvent2.addProgramID( liteEvent.getProgramID() );
+					else {	// Temporary opt out action
+						if (starsEvent2.getDuration() == starsEvent.getDuration())	// Same duration
+							starsEvent2.addProgramID( liteEvent.getProgramID() );
+						else	// Different duration
+							progHistMap.put( starsEvent.getEventDateTime(), starsEvent );
+					}
+				}
+			}
+		}
+		
+		StarsLMProgramEvent[] starsEvents = new StarsLMProgramEvent[ progHistMap.size() ];
+		progHistMap.values().toArray( starsEvents );
+		starsProgHist.setStarsLMProgramEvent( starsEvents );
+		
+		return starsProgHist;
 	}
 	
 	public static StarsWebConfig createStarsWebConfig(LiteWebConfiguration liteWebConfig) {

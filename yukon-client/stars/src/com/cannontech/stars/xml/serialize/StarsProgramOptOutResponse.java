@@ -34,7 +34,7 @@ public class StarsProgramOptOutResponse implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private java.util.Vector _starsLMProgramHistoryList;
+    private StarsLMProgramHistory _starsLMProgramHistory;
 
     private java.util.Vector _starsLMHardwareHistoryList;
 
@@ -47,7 +47,6 @@ public class StarsProgramOptOutResponse implements java.io.Serializable {
 
     public StarsProgramOptOutResponse() {
         super();
-        _starsLMProgramHistoryList = new Vector();
         _starsLMHardwareHistoryList = new Vector();
     } //-- com.cannontech.stars.xml.serialize.StarsProgramOptOutResponse()
 
@@ -80,41 +79,11 @@ public class StarsProgramOptOutResponse implements java.io.Serializable {
     } //-- void addStarsLMHardwareHistory(int, StarsLMHardwareHistory) 
 
     /**
-     * 
-     * 
-     * @param vStarsLMProgramHistory
-    **/
-    public void addStarsLMProgramHistory(StarsLMProgramHistory vStarsLMProgramHistory)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _starsLMProgramHistoryList.addElement(vStarsLMProgramHistory);
-    } //-- void addStarsLMProgramHistory(StarsLMProgramHistory) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsLMProgramHistory
-    **/
-    public void addStarsLMProgramHistory(int index, StarsLMProgramHistory vStarsLMProgramHistory)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _starsLMProgramHistoryList.insertElementAt(vStarsLMProgramHistory, index);
-    } //-- void addStarsLMProgramHistory(int, StarsLMProgramHistory) 
-
-    /**
     **/
     public java.util.Enumeration enumerateStarsLMHardwareHistory()
     {
         return _starsLMHardwareHistoryList.elements();
     } //-- java.util.Enumeration enumerateStarsLMHardwareHistory() 
-
-    /**
-    **/
-    public java.util.Enumeration enumerateStarsLMProgramHistory()
-    {
-        return _starsLMProgramHistoryList.elements();
-    } //-- java.util.Enumeration enumerateStarsLMProgramHistory() 
 
     /**
      * Returns the value of field 'description'.
@@ -162,39 +131,14 @@ public class StarsProgramOptOutResponse implements java.io.Serializable {
     } //-- int getStarsLMHardwareHistoryCount() 
 
     /**
+     * Returns the value of field 'starsLMProgramHistory'.
      * 
-     * 
-     * @param index
+     * @return the value of field 'starsLMProgramHistory'.
     **/
-    public StarsLMProgramHistory getStarsLMProgramHistory(int index)
-        throws java.lang.IndexOutOfBoundsException
+    public StarsLMProgramHistory getStarsLMProgramHistory()
     {
-        //-- check bounds for index
-        if ((index < 0) || (index > _starsLMProgramHistoryList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        
-        return (StarsLMProgramHistory) _starsLMProgramHistoryList.elementAt(index);
-    } //-- StarsLMProgramHistory getStarsLMProgramHistory(int) 
-
-    /**
-    **/
-    public StarsLMProgramHistory[] getStarsLMProgramHistory()
-    {
-        int size = _starsLMProgramHistoryList.size();
-        StarsLMProgramHistory[] mArray = new StarsLMProgramHistory[size];
-        for (int index = 0; index < size; index++) {
-            mArray[index] = (StarsLMProgramHistory) _starsLMProgramHistoryList.elementAt(index);
-        }
-        return mArray;
-    } //-- StarsLMProgramHistory[] getStarsLMProgramHistory() 
-
-    /**
-    **/
-    public int getStarsLMProgramHistoryCount()
-    {
-        return _starsLMProgramHistoryList.size();
-    } //-- int getStarsLMProgramHistoryCount() 
+        return this._starsLMProgramHistory;
+    } //-- StarsLMProgramHistory getStarsLMProgramHistory() 
 
     /**
     **/
@@ -241,13 +185,6 @@ public class StarsProgramOptOutResponse implements java.io.Serializable {
     } //-- void removeAllStarsLMHardwareHistory() 
 
     /**
-    **/
-    public void removeAllStarsLMProgramHistory()
-    {
-        _starsLMProgramHistoryList.removeAllElements();
-    } //-- void removeAllStarsLMProgramHistory() 
-
-    /**
      * 
      * 
      * @param index
@@ -258,18 +195,6 @@ public class StarsProgramOptOutResponse implements java.io.Serializable {
         _starsLMHardwareHistoryList.removeElementAt(index);
         return (StarsLMHardwareHistory) obj;
     } //-- StarsLMHardwareHistory removeStarsLMHardwareHistory(int) 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public StarsLMProgramHistory removeStarsLMProgramHistory(int index)
-    {
-        java.lang.Object obj = _starsLMProgramHistoryList.elementAt(index);
-        _starsLMProgramHistoryList.removeElementAt(index);
-        return (StarsLMProgramHistory) obj;
-    } //-- StarsLMProgramHistory removeStarsLMProgramHistory(int) 
 
     /**
      * Sets the value of field 'description'.
@@ -312,33 +237,14 @@ public class StarsProgramOptOutResponse implements java.io.Serializable {
     } //-- void setStarsLMHardwareHistory(StarsLMHardwareHistory) 
 
     /**
+     * Sets the value of field 'starsLMProgramHistory'.
      * 
-     * 
-     * @param index
-     * @param vStarsLMProgramHistory
+     * @param starsLMProgramHistory the value of field
+     * 'starsLMProgramHistory'.
     **/
-    public void setStarsLMProgramHistory(int index, StarsLMProgramHistory vStarsLMProgramHistory)
-        throws java.lang.IndexOutOfBoundsException
+    public void setStarsLMProgramHistory(StarsLMProgramHistory starsLMProgramHistory)
     {
-        //-- check bounds for index
-        if ((index < 0) || (index > _starsLMProgramHistoryList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        _starsLMProgramHistoryList.setElementAt(vStarsLMProgramHistory, index);
-    } //-- void setStarsLMProgramHistory(int, StarsLMProgramHistory) 
-
-    /**
-     * 
-     * 
-     * @param starsLMProgramHistoryArray
-    **/
-    public void setStarsLMProgramHistory(StarsLMProgramHistory[] starsLMProgramHistoryArray)
-    {
-        //-- copy array
-        _starsLMProgramHistoryList.removeAllElements();
-        for (int i = 0; i < starsLMProgramHistoryArray.length; i++) {
-            _starsLMProgramHistoryList.addElement(starsLMProgramHistoryArray[i]);
-        }
+        this._starsLMProgramHistory = starsLMProgramHistory;
     } //-- void setStarsLMProgramHistory(StarsLMProgramHistory) 
 
     /**

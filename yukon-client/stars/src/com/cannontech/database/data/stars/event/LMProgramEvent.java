@@ -55,9 +55,10 @@ public class LMProgramEvent extends LMCustomerEventBase {
     public static void deleteAllLMProgramEvents(Integer accountID, java.sql.Connection conn) {
     	try {
 	    	Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getAllLMProgramEventIDs( accountID, conn );
-	    	com.cannontech.database.db.stars.event.LMProgramEvent.deleteAllLMProgramEvents( accountID, conn );
 	    	
-	    	LMCustomerEventBase event = new LMCustomerEventBase();
+	    	com.cannontech.database.data.stars.event.LMProgramEvent event =
+	    			new com.cannontech.database.data.stars.event.LMProgramEvent();
+	    	
 	    	for (int i = 0; i < eventIDs.length; i++) {
 	    		event.setEventID( eventIDs[i] );
 	    		event.setDbConnection( conn );
@@ -69,7 +70,7 @@ public class LMProgramEvent extends LMCustomerEventBase {
     	}
     }
     
-    public static void deleteAllLMProgramEvents(Integer accountID, Integer programID) {
+    public static void deleteLMProgramEvents(Integer accountID, Integer programID) {
     	java.sql.Connection conn = null;
 
     	try {
@@ -77,10 +78,11 @@ public class LMProgramEvent extends LMCustomerEventBase {
                         com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
             if (conn == null) return;
             
-    		Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getAllLMProgramEventIDs( accountID, programID );
-    		com.cannontech.database.db.stars.event.LMProgramEvent.deleteAllLMProgramEvents( accountID, programID, conn );
+    		Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getLMProgramEventIDs( accountID, programID );
     		
-	    	LMCustomerEventBase event = new LMCustomerEventBase();
+    		com.cannontech.database.data.stars.event.LMProgramEvent event =
+    				new com.cannontech.database.data.stars.event.LMProgramEvent();
+    		
 	    	for (int i = 0; i < eventIDs.length; i++) {
 	    		event.setEventID( eventIDs[i] );
 	    		event.setDbConnection( conn );
@@ -100,9 +102,50 @@ public class LMProgramEvent extends LMCustomerEventBase {
     	}
     }
     
-    public static LMProgramEvent[] getAllLMProgramEvents(Integer accountID, Integer programID) {
+	public static void deleteAllLMProgramEvents(Integer energyCompanyID, Integer programID, java.sql.Connection conn) {
+		try {
+			Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getAllLMProgramEventIDs(
+					energyCompanyID, programID, conn );
+	    	
+			com.cannontech.database.data.stars.event.LMProgramEvent event =
+					new com.cannontech.database.data.stars.event.LMProgramEvent();
+			
+			for (int i = 0; i < eventIDs.length; i++) {
+				event.setEventID( eventIDs[i] );
+				event.setDbConnection( conn );
+				event.delete();
+			}
+		}
+		catch (java.sql.SQLException e) {
+			e.printStackTrace();
+		}
+	}
+    
+	public static LMProgramEvent[] getAllLMProgramEvents(Integer accountID, java.sql.Connection conn) {
+		try {
+			Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getAllLMProgramEventIDs( accountID, conn );
+			com.cannontech.database.data.stars.event.LMProgramEvent[] events =
+					new com.cannontech.database.data.stars.event.LMProgramEvent[ eventIDs.length ];
+	        
+			for (int i = 0; i < events.length; i++) {
+				events[i] = new com.cannontech.database.data.stars.event.LMProgramEvent();
+				events[i].setEventID( eventIDs[i] );
+				events[i].setDbConnection( conn );
+				events[i].retrieve();
+			}
+	        
+			return events;
+		}
+		catch (java.sql.SQLException e) {
+			e.printStackTrace();
+		}
+    	
+		return null;
+	}
+    
+    public static LMProgramEvent[] getLMProgramEvents(Integer accountID, Integer programID) {
     	try {
-	        Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getAllLMProgramEventIDs( accountID, programID );
+	        Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getLMProgramEventIDs( accountID, programID );
 	        com.cannontech.database.data.stars.event.LMProgramEvent[] events =
 	        		new com.cannontech.database.data.stars.event.LMProgramEvent[ eventIDs.length ];
 	        

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMPrograms.java,v 1.60 2003/12/23 21:20:37 zyao Exp $
+ * $Id: StarsLMPrograms.java,v 1.61 2004/01/15 23:00:41 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.60 $ $Date: 2003/12/23 21:20:37 $
+ * @version $Revision: 1.61 $ $Date: 2004/01/15 23:00:41 $
 **/
 public class StarsLMPrograms implements java.io.Serializable {
 
@@ -35,6 +35,8 @@ public class StarsLMPrograms implements java.io.Serializable {
     //--------------------------/
 
     private java.util.Vector _starsLMProgramList;
+
+    private StarsLMProgramHistory _starsLMProgramHistory;
 
 
       //----------------/
@@ -115,6 +117,16 @@ public class StarsLMPrograms implements java.io.Serializable {
     {
         return _starsLMProgramList.size();
     } //-- int getStarsLMProgramCount() 
+
+    /**
+     * Returns the value of field 'starsLMProgramHistory'.
+     * 
+     * @return the value of field 'starsLMProgramHistory'.
+    **/
+    public StarsLMProgramHistory getStarsLMProgramHistory()
+    {
+        return this._starsLMProgramHistory;
+    } //-- StarsLMProgramHistory getStarsLMProgramHistory() 
 
     /**
     **/
@@ -201,6 +213,17 @@ public class StarsLMPrograms implements java.io.Serializable {
             _starsLMProgramList.addElement(starsLMProgramArray[i]);
         }
     } //-- void setStarsLMProgram(StarsLMProgram) 
+
+    /**
+     * Sets the value of field 'starsLMProgramHistory'.
+     * 
+     * @param starsLMProgramHistory the value of field
+     * 'starsLMProgramHistory'.
+    **/
+    public void setStarsLMProgramHistory(StarsLMProgramHistory starsLMProgramHistory)
+    {
+        this._starsLMProgramHistory = starsLMProgramHistory;
+    } //-- void setStarsLMProgramHistory(StarsLMProgramHistory) 
 
     /**
      * 

@@ -38,7 +38,6 @@ public class ServerUtils {
     // If date in database is earlier than this, than the date is actually empty
     private static long VERY_EARLY_TIME = 1000 * 3600 * 24;
 	
-	// Date/Time pattern strings that will be tried when attempting to interprate starting dates
 	private static final java.text.SimpleDateFormat[] dateFormat =
 	{
 		new java.text.SimpleDateFormat("MM/dd/yy HH:mm"),
@@ -48,12 +47,21 @@ public class ServerUtils {
 		new java.text.SimpleDateFormat("MM-dd-yyyy HH:mm"),
 		new java.text.SimpleDateFormat("MM.dd.yyyy HH:mm"),
 	};
+	
+	private static final java.text.SimpleDateFormat[] timeFormat =
+	{
+		new java.text.SimpleDateFormat("hh:mm a"),
+		new java.text.SimpleDateFormat("hh:mma"),
+		new java.text.SimpleDateFormat("HH:mm"),
+	};
 
 	//this static initializer sets all the simpledateformat to lenient
 	static
 	{
 		for( int i = 0; i < dateFormat.length; i++ )
 			dateFormat[i].setLenient(true);
+		for (int i = 0; i < timeFormat.length; i++)
+			timeFormat[i].setLenient( true );
 	}
     
 	
@@ -105,7 +113,7 @@ public class ServerUtils {
 	}
 	
 	/**
-	 * Parse date with the format like MM/dd/yy HH:mm,
+	 * Parse date/time in the format of MM/dd/yy HH:mm,
 	 * MM-dd-yyyy HH:mm, etc., in the specified time zone
 	 */
 	public static Date parseDate(String dateStr, TimeZone tz) {
@@ -119,7 +127,25 @@ public class ServerUtils {
 			}
 			catch( java.text.ParseException pe ) {}
 		}
+		
+		return retVal;	
+	}
 
+	/**
+	 * Parse time in the specified time zone 
+	 */
+	public static Date parseTime(String timeStr, TimeZone tz) {
+		Date retVal = null;
+		
+		for( int i = 0; i < timeFormat.length; i++ ) {
+			try {
+				timeFormat[i].setTimeZone(tz);
+				retVal = timeFormat[i].parse(timeStr);
+				break;
+			}
+			catch( java.text.ParseException pe ) {}
+		}
+		
 		return retVal;	
 	}
 	

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsMCT.java,v 1.4 2003/12/23 21:20:37 zyao Exp $
+ * $Id: StarsMCT.java,v 1.5 2004/01/15 23:00:42 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.4 $ $Date: 2003/12/23 21:20:37 $
+ * @version $Revision: 1.5 $ $Date: 2004/01/15 23:00:42 $
 **/
 public class StarsMCT extends StarsDevice 
 implements java.io.Serializable

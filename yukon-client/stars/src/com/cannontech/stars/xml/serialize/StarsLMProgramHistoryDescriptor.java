@@ -58,48 +58,6 @@ public class StarsLMProgramHistoryDescriptor extends org.exolab.castor.xml.util.
         setCompositorAsSequence();
         //-- initialize attribute descriptors
         
-        //-- _programID
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_programID", "programID", NodeType.Attribute);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsLMProgramHistory target = (StarsLMProgramHistory) object;
-                if(!target.hasProgramID())
-                    return null;
-                return new Integer(target.getProgramID());
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsLMProgramHistory target = (StarsLMProgramHistory) object;
-                    // if null, use delete method for optional primitives 
-                    if (value == null) {
-                        target.deleteProgramID();
-                        return;
-                    }
-                    target.setProgramID( ((Integer)value).intValue());
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _programID
-        fieldValidator = new FieldValidator();
-        { //-- local scope
-            IntegerValidator iv = new IntegerValidator();
-            fieldValidator.setValidator(iv);
-        }
-        desc.setValidator(fieldValidator);
-        
         //-- initialize element descriptors
         
         //-- _starsLMProgramEventList

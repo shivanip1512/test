@@ -1,7 +1,8 @@
 package com.cannontech.database.db.stars.event;
 
-import com.cannontech.database.db.DBPersistent;
+import java.util.ArrayList;
 
+import com.cannontech.database.db.DBPersistent;
 
 /**
  * <p>Title: </p>
@@ -72,7 +73,7 @@ public class LMProgramEvent extends DBPersistent {
 
         java.sql.PreparedStatement pstmt = null;
         java.sql.ResultSet rset = null;
-        java.util.ArrayList eventList = new java.util.ArrayList();
+        ArrayList eventList = new ArrayList();
 
         try
         {
@@ -112,7 +113,7 @@ public class LMProgramEvent extends DBPersistent {
         return eventIDs;
     }
     
-    public static Integer[] getAllLMProgramEventIDs(Integer accountID, Integer programID) {
+    public static Integer[] getLMProgramEventIDs(Integer accountID, Integer programID) {
         String sql = "SELECT EventID FROM " + TABLE_NAME + " WHERE AccountID = " + accountID.toString()
         		   + " AND LMProgramID = " + programID.toString() + " ORDER BY EventID";
 
@@ -135,74 +136,45 @@ public class LMProgramEvent extends DBPersistent {
 
         return null;
     }
-
-    public static void deleteAllLMProgramEvents(Integer accountID, java.sql.Connection conn) {
-        String sql = "DELETE FROM " + TABLE_NAME + " WHERE AccountID = ?";
-
-        java.sql.PreparedStatement pstmt = null;
-        try
-        {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
-            }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, accountID.intValue() );
-                pstmt.execute();
-            }
-        }
-        catch( java.sql.SQLException e )
-        {
-                e.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
-        }
-    }
     
-    public static void deleteAllLMProgramEvents(Integer accountID, Integer programID, java.sql.Connection conn) {
-    	String sql = "DELETE FROM " + TABLE_NAME + " WHERE AccountID = ? AND LMProgramID = ?";
-
-        java.sql.PreparedStatement pstmt = null;
-        try
-        {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
-            }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, accountID.intValue() );
-                pstmt.setInt( 2, programID.intValue() );
-                pstmt.execute();
-            }
-        }
-        catch( java.sql.SQLException e )
-        {
-                e.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
-        }
+    public static Integer[] getAllLMProgramEventIDs(Integer energyCompanyID, Integer programID, java.sql.Connection conn) {
+    	String sql = "SELECT event.EventID FROM " +
+    			TABLE_NAME + " event, ECToAccountMapping map " +
+				"WHERE event.LMProgramID = " + programID +
+				" AND event.AccountID = map.AccountID" +
+				" AND map.EnergyCompanyID = " + energyCompanyID;
+		
+		java.sql.Statement stmt = null;
+		java.sql.ResultSet rset = null;
+		ArrayList eventList = new ArrayList();
+		
+		try {
+			if( conn == null ) {
+				throw new IllegalStateException("Database connection should not be null.");
+			}
+			else {
+				stmt = conn.createStatement();
+				rset = stmt.executeQuery( sql );
+				while (rset.next())
+					eventList.add( new Integer(rset.getInt(1)) );
+			}
+		}
+		catch (java.sql.SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (rset != null) rset.close();
+				if (stmt != null) stmt.close();
+			}
+			catch (java.sql.SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		Integer[] eventIDs = new Integer[ eventList.size() ];
+		eventList.toArray( eventIDs );
+		return eventIDs;
     }
 
     public Integer getEventID() {

@@ -1,15 +1,12 @@
 package com.cannontech.stars.util;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
-import java.util.TreeMap;
 
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.ControlHistory;
 import com.cannontech.stars.xml.serialize.StarsCustListEntry;
@@ -17,10 +14,6 @@ import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
-import com.cannontech.stars.xml.serialize.StarsLMProgram;
-import com.cannontech.stars.xml.serialize.StarsLMProgramEvent;
-import com.cannontech.stars.xml.serialize.StarsLMProgramHistory;
-import com.cannontech.stars.xml.serialize.StarsLMPrograms;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
@@ -35,32 +28,6 @@ import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
  */
 
 public class ServletUtils {
-	
-	public static class ProgramHistory {
-		private Date date = null;
-		private String action = null;
-		private String duration = null;
-		private ArrayList programList = new ArrayList();
-
-		public Date getDate() {
-			return date;
-		}
-
-		public String getDuration() {
-			return duration;
-		}
-
-		public String[] getPrograms() {
-			String[] programs = new String[ programList.size() ];
-			programList.toArray( programs );
-			return programs;
-		}
-
-		public String getAction() {
-			return action;
-		}
-
-	}
 	
 	// Attribute names to store objects in session or StarsYukonUser object
 	public static final String TRANSIENT_ATT_LEADING = "$$";
@@ -114,19 +81,12 @@ public class ServletUtils {
      */
     private static Hashtable ecPropTable = null;
     
-    /* Table of program history
-     * key: Integer (account ID)
-     * value: ProgramHistory[]
-     */
-    private static Hashtable progHistTable = null;
-    
 
     public ServletUtils() {
     }
 	
 	public static void clear() {
 		ecPropTable = null;
-		progHistTable = null;
 	}
 
     public static String getDurationString(int sec) {
@@ -138,86 +98,6 @@ public class ServletUtils {
             durationStr = String.valueOf(sec / 60) + " Minutes";
 
         return durationStr;
-    }
-    
-    public static String getDurationString(Date startDate, Date stopDate) {
-    	if (startDate == null || stopDate == null) return "";
-    	
-    	int duration = (int) ((stopDate.getTime() - startDate.getTime()) * 0.001 / (3600 * 24) + 0.5);
-    	if (duration > 1)
-    		return duration + " Days";
-    	else
-    		return "1 Day";
-    }
-    
-    public static ProgramHistory[] getProgramHistory(int accountID, StarsLMPrograms programs) {
-    	if (progHistTable == null) progHistTable = new Hashtable();
-    	ProgramHistory[] progHists = (ProgramHistory[]) progHistTable.get( new Integer(accountID) );
-    	if (progHists != null) return progHists;
-    	
-    	TreeMap progHistMap = new TreeMap();
-    	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
-    		StarsLMProgram program = programs.getStarsLMProgram(i);
-    		StarsLMProgramHistory starsProgHist = program.getStarsLMProgramHistory();
-    		if (starsProgHist == null) continue;
-    		
-    		for (int j = 0; j < starsProgHist.getStarsLMProgramEventCount(); j++) {
-    			StarsLMProgramEvent event = starsProgHist.getStarsLMProgramEvent(j);
-    			
-    			ProgramHistory progHist = new ProgramHistory();
-    			progHist.date = event.getEventDateTime();
-    			progHist.action = event.getEventAction();
-    			progHist.programList.add( program.getProgramName() );
-    			
-    			if (event.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION) {
-    				// Getting opt out duration by looking at the next "Future Activation" event,
-    				boolean foundDuration = false;
-    				while (j < starsProgHist.getStarsLMProgramEventCount() - 1) {
-	    				StarsLMProgramEvent event2 = starsProgHist.getStarsLMProgramEvent(++j);
-	    				if (event2.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION
-	    					|| event2.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED
-	    					|| event2.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION)
-	    				{
-	    					progHist.duration = getDurationString( event.getEventDateTime(), event2.getEventDateTime() );
-	    					foundDuration = true;
-	    					break;
-	    				}
-	    				if (event2.getYukonDefID() != YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION)
-	    					return null;
-    				}
-    				
-    				if (!foundDuration) return null;
-    			}
-    			
-	    		ProgramHistory progHist2 = (ProgramHistory) progHistMap.get( progHist.date );
-	    		if (progHist2 == null)	// No other events happened at the same time
-	    			progHistMap.put( progHist.date, progHist );
-	    		else {	// Found events happened at the same time
-	    			if (!progHist2.action.equals( progHist.action ))	// Not the same action
-	    				progHistMap.put( progHist.date, progHist );
-		    		else {	// Same event action
-		    			if (progHist.duration == null)	// Not Temporary opt out action
-		    				progHist2.programList.add( program.getProgramName() );
-		    			else {	// Temporary opt out action
-		    				if (progHist.duration.equals( progHist2.duration ))	// Same duration
-		    					progHist2.programList.add( program.getProgramName() );
-		    				else	// Different duration
-		    					progHistMap.put( progHist.date, progHist );
-		    			}
-		    		}
-	    		}
-    		}
-    	}
-    	
-    	progHists = new ProgramHistory[ progHistMap.size() ];
-    	progHistMap.values().toArray( progHists );
-    	progHistTable.put( new Integer(accountID), progHists );
-    	return progHists;
-    }
-    
-    public static void removeProgramHistory(int accountID) {
-    	if (progHistTable != null)
-    		progHistTable.remove( new Integer(accountID) );
     }
     
     public static String formatDate(Date date, java.text.SimpleDateFormat format) {

@@ -36,7 +36,7 @@ public class LiteInventoryBase extends LiteBase {
 	private String deviceLabel = null;
 	
 	// Extended fields
-	private ArrayList inventoryHistory = null;		// List of LiteLMCustomerEvent
+	private ArrayList inventoryHistory = null;		// List of LiteLMHardwareEvent
 	private int deviceStatus = CtiUtilities.NONE_ID;
 	
 	private boolean extended = false;
@@ -246,7 +246,7 @@ public class LiteInventoryBase extends LiteBase {
 		ArrayList invHist = getInventoryHistory();
 		
 		for (int i = invHist.size() - 1; i >= 0; i--) {
-			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) invHist.get(i);
+			LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) invHist.get(i);
 			YukonListEntry entry = YukonListFuncs.getYukonListEntry( liteEvent.getActionID() );
 			
 			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED ||

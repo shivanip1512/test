@@ -60,8 +60,8 @@ public class StarsProgramReenableResponseDescriptor extends org.exolab.castor.xm
         
         //-- initialize element descriptors
         
-        //-- _starsLMProgramHistoryList
-        desc = new XMLFieldDescriptorImpl(StarsLMProgramHistory.class, "_starsLMProgramHistoryList", "stars-LMProgramHistory", NodeType.Element);
+        //-- _starsLMProgramHistory
+        desc = new XMLFieldDescriptorImpl(StarsLMProgramHistory.class, "_starsLMProgramHistory", "stars-LMProgramHistory", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -74,7 +74,7 @@ public class StarsProgramReenableResponseDescriptor extends org.exolab.castor.xm
             {
                 try {
                     StarsProgramReenableResponse target = (StarsProgramReenableResponse) object;
-                    target.addStarsLMProgramHistory( (StarsLMProgramHistory) value);
+                    target.setStarsLMProgramHistory( (StarsLMProgramHistory) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -85,12 +85,11 @@ public class StarsProgramReenableResponseDescriptor extends org.exolab.castor.xm
             }
         } );
         desc.setHandler(handler);
-        desc.setMultivalued(true);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsLMProgramHistoryList
+        //-- validation code for: _starsLMProgramHistory
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(0);
         desc.setValidator(fieldValidator);
         
         //-- _starsLMHardwareHistoryList

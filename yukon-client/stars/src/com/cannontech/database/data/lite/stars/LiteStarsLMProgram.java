@@ -18,7 +18,6 @@ public class LiteStarsLMProgram {
 
 	private LiteLMProgram lmProgram = null;
 	private int groupID = 0;
-	private ArrayList programHistory = null;	// List of LiteLMCustomerEvent
 	private boolean inService = false;
 	
 	public LiteStarsLMProgram() {
@@ -50,24 +49,6 @@ public class LiteStarsLMProgram {
 	}
 
 	/**
-	 * Returns the programHistory.
-	 * @return java.util.ArrayList
-	 */
-	public ArrayList getProgramHistory() {
-		if (programHistory == null)
-			programHistory = new ArrayList();
-		return programHistory;
-	}
-
-	/**
-	 * Sets the programHistory.
-	 * @param programHistory The programHistory to set
-	 */
-	public void setProgramHistory(ArrayList programHistory) {
-		this.programHistory = programHistory;
-	}
-
-	/**
 	 * Returns the lmProgram.
 	 * @return LiteLMProgram
 	 */
@@ -91,11 +72,12 @@ public class LiteStarsLMProgram {
 		return inService;
 	}
 	
-	public void updateProgramStatus() {
-		ArrayList progHist = getProgramHistory();
-		
-		for (int i = progHist.size() - 1; i >= 0 ; i--) {
-			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) progHist.get(i);
+	public void updateProgramStatus(ArrayList programHistory) {
+		for (int i = programHistory.size() - 1; i >= 0 ; i--) {
+			LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) programHistory.get(i);
+			if (liteEvent.getProgramID() != getLmProgram().getProgramID())
+				continue;
+			
 			YukonListEntry entry = YukonListFuncs.getYukonListEntry( liteEvent.getActionID() );
 			
 			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED ||

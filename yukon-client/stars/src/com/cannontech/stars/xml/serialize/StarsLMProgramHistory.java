@@ -34,13 +34,6 @@ public class StarsLMProgramHistory implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private int _programID;
-
-    /**
-     * keeps track of state for field: _programID
-    **/
-    private boolean _has_programID;
-
     private java.util.Vector _starsLMProgramEventList;
 
 
@@ -83,27 +76,10 @@ public class StarsLMProgramHistory implements java.io.Serializable {
 
     /**
     **/
-    public void deleteProgramID()
-    {
-        this._has_programID= false;
-    } //-- void deleteProgramID() 
-
-    /**
-    **/
     public java.util.Enumeration enumerateStarsLMProgramEvent()
     {
         return _starsLMProgramEventList.elements();
     } //-- java.util.Enumeration enumerateStarsLMProgramEvent() 
-
-    /**
-     * Returns the value of field 'programID'.
-     * 
-     * @return the value of field 'programID'.
-    **/
-    public int getProgramID()
-    {
-        return this._programID;
-    } //-- int getProgramID() 
 
     /**
      * 
@@ -139,13 +115,6 @@ public class StarsLMProgramHistory implements java.io.Serializable {
     {
         return _starsLMProgramEventList.size();
     } //-- int getStarsLMProgramEventCount() 
-
-    /**
-    **/
-    public boolean hasProgramID()
-    {
-        return this._has_programID;
-    } //-- boolean hasProgramID() 
 
     /**
     **/
@@ -202,17 +171,6 @@ public class StarsLMProgramHistory implements java.io.Serializable {
         _starsLMProgramEventList.removeElementAt(index);
         return (StarsLMProgramEvent) obj;
     } //-- StarsLMProgramEvent removeStarsLMProgramEvent(int) 
-
-    /**
-     * Sets the value of field 'programID'.
-     * 
-     * @param programID the value of field 'programID'.
-    **/
-    public void setProgramID(int programID)
-    {
-        this._programID = programID;
-        this._has_programID = true;
-    } //-- void setProgramID(int) 
 
     /**
      * 

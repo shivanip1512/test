@@ -14,6 +14,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
+import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
@@ -31,13 +32,42 @@ public class ECUtils {
 	public static final int YUK_WEB_CONFIG_ID_COOL = -1;
 	public static final int YUK_WEB_CONFIG_ID_HEAT = -2;
 	
+	/**
+	 * Remove all future activation events from the hardware or program event list
+	 */
 	public static void removeFutureActivationEvents(ArrayList custEventHist, LiteStarsEnergyCompany energyCompany) {
+		int futureActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION ).getEntryID();
+		
+		try {
+			java.util.Iterator it = custEventHist.iterator();
+			while (it.hasNext()) {
+				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) it.next();
+				
+				if (liteEvent.getActionID() == futureActID) {
+					com.cannontech.database.data.stars.event.LMCustomerEventBase event = (com.cannontech.database.data.stars.event.LMCustomerEventBase)
+							StarsLiteFactory.createDBPersistent( liteEvent );
+					Transaction.createTransaction( Transaction.DELETE, event ).execute();
+					it.remove();
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Remove future activation events of a particular program from the program event list
+	 */
+	public static void removeFutureActivationEvents(ArrayList custEventHist, int programID, LiteStarsEnergyCompany energyCompany) {
 		int futureActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION ).getEntryID();
 		int termID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION ).getEntryID();
 		
 		try {
 			for (int i = custEventHist.size() - 1; i >= 0; i--) {
-				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) custEventHist.get(i);
+				LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) custEventHist.get(i);
+				if (liteEvent.getProgramID() != programID) continue;
+				
 				if (liteEvent.getActionID() == termID) break;
 				
 				if (liteEvent.getActionID() == futureActID) {

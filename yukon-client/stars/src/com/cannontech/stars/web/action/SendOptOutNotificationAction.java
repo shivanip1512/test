@@ -14,7 +14,7 @@ import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteInterviewQuestion;
-import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
+import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -237,14 +237,17 @@ public class SendOptOutNotificationAction implements ActionBase {
         return text.toString();
 	}
 	
-	private static LiteLMCustomerEvent findLastOptOutEvent(ArrayList custEventHist, LiteStarsEnergyCompany energyCompany) {
+	private static LiteLMProgramEvent findLastOptOutEvent(ArrayList custEventHist, int programID, LiteStarsEnergyCompany energyCompany) {
 		int tempTermID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION ).getEntryID();
 		int termID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION ).getEntryID();
 		
 		try {
 			for (int i = custEventHist.size() - 1; i >= 0; i--) {
-				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) custEventHist.get(i);
+				LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) custEventHist.get(i);
+				if (liteEvent.getProgramID() != programID) continue;
+				
 				if (liteEvent.getActionID() == termID) break;
+				
 				if (liteEvent.getActionID() == tempTermID)
 					return liteEvent;
 			}
@@ -359,7 +362,9 @@ public class SendOptOutNotificationAction implements ActionBase {
 		boolean foundLastOptOutEvent = false;
 		for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
 			LiteStarsLMProgram program = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
-			LiteLMCustomerEvent event = findLastOptOutEvent( program.getProgramHistory(), energyCompany );
+			LiteLMProgramEvent event = findLastOptOutEvent(
+					liteAcctInfo.getProgramHistory(), program.getLmProgram().getProgramID(), energyCompany );
+			
 			if (event != null) {
 				text.append("Last ").append(ServletUtils.capitalize2(energyCompany.getEnergyCompanySetting( ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
 					.append(" Time: ").append(ServerUtils.formatDate( new Date(event.getEventDateTime()), energyCompany.getDefaultTimeZone() )).append("\r\n");

@@ -3,6 +3,7 @@ package com.cannontech.stars.web.action;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -54,12 +55,6 @@ import com.cannontech.stars.xml.util.StarsConstants;
  */
 public class UpdateThermostatScheduleAction implements ActionBase {
 	
-	private static final java.text.SimpleDateFormat[] timeFormat =
-	{
-		new java.text.SimpleDateFormat("hh:mm a"),
-		new java.text.SimpleDateFormat("HH:mm"),
-	};
-
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
 	 */
@@ -100,7 +95,11 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 	        boolean noScript = (req.getParameter("temp1") != null);
 	        
 	        if (req.getParameter("time1") != null) {
-		        cal.setTime( parseTime(req.getParameter("time1")) );
+	        	Date time1 = ServerUtils.parseTime(req.getParameter("time1"), TimeZone.getDefault());
+	        	if (time1 == null)
+	        		throw new Exception("Invalid time format '" + req.getParameter("time1") + "'");
+	        	
+		        cal.setTime( time1 );
 		        schedule.setTime1( new org.exolab.castor.types.Time(
 		        		(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60) * 1000) );
 		        schedule.setTemperature1( (noScript)?
@@ -113,7 +112,11 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 	        }
 	        
 	        if (req.getParameter("time2") != null) {
-		        cal.setTime( parseTime(req.getParameter("time2")) );
+				Date time2 = ServerUtils.parseTime(req.getParameter("time2"), TimeZone.getDefault());
+				if (time2 == null)
+					throw new Exception("Invalid time format '" + req.getParameter("time2") + "'");
+	        	
+				cal.setTime( time2 );
 		        schedule.setTime2( new org.exolab.castor.types.Time(
 		        		(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60) * 1000) );
 		        schedule.setTemperature2( (noScript)?
@@ -126,7 +129,11 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 	        }
 	        
 	        if (req.getParameter("time3") != null) {
-		        cal.setTime( parseTime(req.getParameter("time3")) );
+				Date time3 = ServerUtils.parseTime(req.getParameter("time3"), TimeZone.getDefault());
+				if (time3 == null)
+					throw new Exception("Invalid time format '" + req.getParameter("time3") + "'");
+	        	
+				cal.setTime( time3 );
 		        schedule.setTime3( new org.exolab.castor.types.Time(
 		        		(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60) * 1000) );
 		        schedule.setTemperature3( (noScript)?
@@ -139,7 +146,11 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 	        }
 	        
 	        if (req.getParameter("time4") != null) {
-		        cal.setTime( parseTime(req.getParameter("time4")) );
+				Date time4 = ServerUtils.parseTime(req.getParameter("time4"), TimeZone.getDefault());
+				if (time4 == null)
+					throw new Exception("Invalid time format '" + req.getParameter("time4") + "'");
+	        	
+				cal.setTime( time4 );
 		        schedule.setTime4( new org.exolab.castor.types.Time(
 		        		(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60) * 1000) );
 		        schedule.setTemperature4( (noScript)?
@@ -906,19 +917,6 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				}
     		}
         }
-	}
-	
-	private Date parseTime(String timeStr) {
-		java.util.Date retVal = null;
-		for( int i = 0; i < timeFormat.length; i++ ) {
-			try {
-				retVal = timeFormat[i].parse( timeStr );
-				break;
-			}
-			catch( java.text.ParseException pe ) {}
-		}
-			
-		return retVal;
 	}
 
 }
