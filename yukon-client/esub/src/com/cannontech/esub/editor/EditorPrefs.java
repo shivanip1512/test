@@ -1,7 +1,6 @@
 package com.cannontech.esub.editor;
 
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
+import com.cannontech.common.util.CtiPreferences;
 
 /**
  * @author alauinger
@@ -9,7 +8,7 @@ import java.util.prefs.Preferences;
  * Stores various preferences for the esubstation editor application.
  * i.e. remember the current working directory between invocations
  */
-public class EditorPrefs {
+public class EditorPrefs extends CtiPreferences {
 
 	// Keys for settigs/getting preferences
 	public static final String DEFAULT_WORKING_DIR = "Default Working";
@@ -22,9 +21,6 @@ public class EditorPrefs {
 	// Singleton instance
 	private static EditorPrefs instance;
 	
-	// instance variables
-	private Preferences prefs;
-		
 	public static synchronized EditorPrefs getPreferences() {
 		if( instance == null ) {
 			instance = new EditorPrefs();
@@ -34,23 +30,9 @@ public class EditorPrefs {
 	}
 	
 	private EditorPrefs() {
- 		prefs = Preferences.userNodeForPackage(EditorPrefs.class);
+ 		super();
 	}
-	
-	private String get(String key, String def) {
-		return prefs.get(key, def);
-	}
-	
-	private void put(String key, String value) {
-		try {
-			prefs.put(key, value);
-			prefs.flush();				
-		}
-		catch(BackingStoreException e) {
-			e.printStackTrace();
-		}
-	}
-	
+		
 	public int getDefaultDrawingWidth() {
 		String widthStr = get(DEFAULT_DRAWING_WIDTH, "1024");
 		return Integer.parseInt(widthStr);
