@@ -186,25 +186,29 @@ void CtiLMClientListener::_listen()
                     }
                     CtiLMExecutorFactory f;
                     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-                    CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(*store->getControlAreas(RWDBDateTime().seconds())));
-                    try
                     {
-                        executor->Execute();
+                        RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+                        CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(*store->getControlAreas(RWDBDateTime().seconds())));
+                        try
+                        {
+                            executor->Execute();
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }
+                        delete executor;
                     }
-                    catch(...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }
-                    delete executor;
                 }
             }
             catch(RWSockErr& msg)
             {
                 if( msg.errorNumber() == 10004 )
                 {    
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << "CtiLMClientListener thread interupted" << endl;
+                    /*CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << "CtiLMClientListener thread interupted" << endl;*/
                     break;
                 }
                 else
