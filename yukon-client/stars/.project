@@ -4,7 +4,6 @@
 	<comment></comment>
 	<projects>
 		<project>common</project>
-		<project>loadcontrol</project>
 		<project>servlet</project>
 	</projects>
 	<buildSpec>
