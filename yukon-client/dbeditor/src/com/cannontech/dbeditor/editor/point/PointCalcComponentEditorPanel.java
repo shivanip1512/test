@@ -4,6 +4,7 @@ package com.cannontech.dbeditor.editor.point;
  * This type was created in VisualAge.
  */
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 
 public class PointCalcComponentEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.awt.event.MouseListener {
 
@@ -48,36 +49,6 @@ public class PointCalcComponentEditorPanel extends com.cannontech.common.gui.uti
 	private javax.swing.JLabel ivjTypeLabel = null;
 	private java.util.List points = null;
 	private javax.swing.JCheckBox ivjUsePointCheckBox = null;
-	public static final String OP_PLUS = "+";
-	public static final String OP_MINUS = "-";
-	public static final String OP_MULTIPLY = "*";
-	public static final String OP_DIVIDE = "/";
-	public static final String OP_MIN = "Min";
-	public static final String OP_MAX = "Max";
-	public static final String OP_BASELINE = "Baseline";
-	public static final String OP_DEMAND_AVG15 = "DemandAvg15";
-	public static final String OP_DEMAND_AVG30 = "DemandAvg30";
-	public static final String OP_DEMAND_AVG60 = "DemandAvg60";
-	public static final String OP_PFACTOR = "P-Factor KW/KVar";
-	//our operation function strings
-	public static String[] OP_FUNCTIONS =
-	{
-		OP_MIN,
-		OP_MAX,
-		OP_BASELINE,
-		OP_DEMAND_AVG15,
-		OP_DEMAND_AVG30,
-		OP_DEMAND_AVG60,
-		OP_PFACTOR
-	};
-	//our operation symbols
-	public static String[] OP_OPERATIONS =
-	{
-		OP_PLUS,
-		OP_MINUS,
-		OP_MULTIPLY,
-		OP_DIVIDE
-	};
 	private javax.swing.JPanel ivjJPanelOperations = null;
 /**
  * Constructor
@@ -201,7 +172,7 @@ public void componentTypeComboBox_ActionPerformed(java.awt.event.ActionEvent act
 	if( getOperationFunctionComboBox().getModel().getSize() > 0 )
 		getOperationFunctionComboBox().removeAllItems();
 
-	if( ((String)getComponentTypeComboBox().getSelectedItem()).equalsIgnoreCase("Operation") )
+	if( ((String)getComponentTypeComboBox().getSelectedItem()).equalsIgnoreCase(CalcComponentTypes.OPERATION_COMP_TYPE) )
 	{
 		getDeviceComboBox().setVisible(true);
 		getPointComboBox().setVisible(true);
@@ -210,13 +181,13 @@ public void componentTypeComboBox_ActionPerformed(java.awt.event.ActionEvent act
 		getConstantTextField().setVisible(false);
 		getUsePointCheckBox().setVisible(false);
 
-		for( int i = 0; i < OP_OPERATIONS.length; i++ )
-			getOperationFunctionComboBox().addItem( OP_OPERATIONS[i] );
+		for( int i = 0; i < CalcComponentTypes.CALC_OPERATIONS.length; i++ )
+			getOperationFunctionComboBox().addItem( CalcComponentTypes.CALC_OPERATIONS[i] );
 
 		revalidate();
 		repaint();
 	}
-	else if( ((String)getComponentTypeComboBox().getSelectedItem()).equalsIgnoreCase("Constant") )
+	else if( ((String)getComponentTypeComboBox().getSelectedItem()).equalsIgnoreCase(CalcComponentTypes.CONSTANT_COMP_TYPE) )
 	{
 		// we want the textfield and the comboBox to be the same size so the
 		// layout manager does not need to do any work!
@@ -228,13 +199,13 @@ public void componentTypeComboBox_ActionPerformed(java.awt.event.ActionEvent act
 		getDeviceComboBox().setEnabled(true);
 		getUsePointCheckBox().setVisible(false);
 
-		for( int i = 0; i < OP_OPERATIONS.length; i++ )
-			getOperationFunctionComboBox().addItem( OP_OPERATIONS[i] );
+		for( int i = 0; i < CalcComponentTypes.CALC_OPERATIONS.length; i++ )
+			getOperationFunctionComboBox().addItem( CalcComponentTypes.CALC_OPERATIONS[i] );
 
 		revalidate();
 		repaint();
 	}
-	else if( ((String)getComponentTypeComboBox().getSelectedItem()).equalsIgnoreCase("Function") )
+	else if( ((String)getComponentTypeComboBox().getSelectedItem()).equalsIgnoreCase(CalcComponentTypes.FUNCTION_COMP_TYPE) )
 	{
 		getDeviceComboBox().setVisible(true);
 		getPointComboBox().setVisible(true);
@@ -243,8 +214,8 @@ public void componentTypeComboBox_ActionPerformed(java.awt.event.ActionEvent act
 		getPointComboBox().setEnabled(true);
 		getUsePointCheckBox().setSelected(true);
 
-		for( int i = 0; i < OP_FUNCTIONS.length; i++ )
-			getOperationFunctionComboBox().addItem( OP_FUNCTIONS[i] );
+		for( int i = 0; i < CalcComponentTypes.CALC_FUNCTIONS.length; i++ )
+			getOperationFunctionComboBox().addItem( CalcComponentTypes.CALC_FUNCTIONS[i] );
 
 		revalidate();
 		repaint();
