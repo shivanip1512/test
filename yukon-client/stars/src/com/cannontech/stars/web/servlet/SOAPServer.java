@@ -21,6 +21,7 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
+import com.cannontech.database.data.lite.stars.LiteLMProgram;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -32,8 +33,11 @@ import com.cannontech.servlet.PILConnectionServlet;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
+import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
+import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
@@ -415,7 +419,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( msg.getId(), false );
 				if (liteAcctInfo != null) {
 					handleCustomerAccountChange( msg, energyCompany, liteAcctInfo );
-					break;
+					return;
 				}
 			}
 		}
@@ -445,20 +449,29 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				
 				if (contOwner != null) {
 					handleContactChange( msg, energyCompany, contOwner );
-					break;
+					return;
 				}
 			}
 		}
 		else if (msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
 			for (int i = 0; i < companies.size(); i++) {
 				LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
-				ArrayList inventory = energyCompany.getAllInventory();
 				
+				ArrayList programs = energyCompany.getAllLMPrograms();
+				for (int j = 0; j < programs.size(); j++) {
+					LiteLMProgram liteProg = (LiteLMProgram) programs.get(j);
+					if (liteProg.getProgramID() == msg.getId()) {
+						handleLMProgramChange( msg, energyCompany, liteProg );
+						return;
+					}
+				}
+				
+				ArrayList inventory = energyCompany.getAllInventory();
 				for (int j = 0; j < inventory.size(); j++) {
 					LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(j);
 					if (liteInv.getDeviceID() == msg.getId()) {
-						handlePAOChange( msg, energyCompany, liteInv );
-						break;
+						handleDeviceChange( msg, energyCompany, liteInv );
+						return;
 					}
 				}
 			}
@@ -472,7 +485,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 						LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInfoByContact( liteContact.getContactID() );
 						if (liteAcctInfo != null) {
 							handleYukonUserChange( msg, energyCompany, liteAcctInfo );
-							break;
+							return;
 						}
 					}
 				}
@@ -604,7 +617,37 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		}
 	}
 	
-	private void handlePAOChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteInventoryBase liteInv) {
+	private void handleLMProgramChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteLMProgram liteProg) {
+		switch( msg.getTypeOfChange() )
+		{
+			case DBChangeMsg.CHANGE_TYPE_ADD:
+				// Don't need to do anything
+				break;
+				
+			case DBChangeMsg.CHANGE_TYPE_UPDATE :
+				liteProg.setProgramName( PAOFuncs.getYukonPAOName(msg.getId()) );
+				
+				StarsEnrollmentPrograms programs = energyCompany.getStarsEnrollmentPrograms();
+				for (int i = 0; i < programs.getStarsApplianceCategoryCount(); i++) {
+					StarsApplianceCategory appCat = programs.getStarsApplianceCategory(i);
+					for (int j = 0; j < appCat.getStarsEnrLMProgramCount(); j++) {
+						StarsEnrLMProgram program = appCat.getStarsEnrLMProgram(j);
+						if (program.getProgramID() == liteProg.getProgramID()) {
+							program.setProgramName( liteProg.getProgramName() );
+							return;
+						}
+					}
+				}
+				
+				break;
+				
+			case DBChangeMsg.CHANGE_TYPE_DELETE :
+				// Don't need to do anything
+				break;
+		}
+	}
+	
+	private void handleDeviceChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteInventoryBase liteInv) {
 		switch( msg.getTypeOfChange() )
 		{
 			case DBChangeMsg.CHANGE_TYPE_ADD:
