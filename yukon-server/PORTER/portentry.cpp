@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2003/09/22 15:37:51 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2004/01/15 21:44:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,6 +59,7 @@ using namespace std;
 #include <stdio.h>
 #include <string.h>
 
+#include "cparms.h"
 #include "connection.h"
 #include "queues.h"
 #include "queue.h"
@@ -319,7 +320,20 @@ VOID ConnectionThread (VOID *Arg)
          */
         if( OutMessage->MessageFlags & MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD )
         {
-            GatewayOutMessageQueue.putQueue( OutMessage );
+            if(!gConfigParms.getValueAsString("PORTER_GATEWAY_SUPPORT").compareTo("true", RWCString::ignoreCase))
+            {
+                GatewayOutMessageQueue.putQueue( OutMessage );
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " ***** Gateway message request, but the gateway code was not configured to operate." << endl;
+                }
+
+                SendError(OutMessage, BADPARAM);
+            }
+
             continue;
         }
 
