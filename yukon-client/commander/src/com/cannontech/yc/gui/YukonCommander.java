@@ -1475,8 +1475,8 @@ private void reloadDevices()
 		savedCursor = frame.getCursor();
 		frame.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 		
-		//load all data from the database to the cache for update to catch anything new.
-		com.cannontech.database.cache.DefaultDatabaseCache.getInstance().loadAllCache();
+		//load all data from the database to the cache for update to catch anything new.		
+		com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
 		
 		restoreCurrentTree();
 	}
