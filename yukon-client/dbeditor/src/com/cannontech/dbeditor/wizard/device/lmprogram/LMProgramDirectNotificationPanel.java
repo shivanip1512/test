@@ -740,13 +740,6 @@ private void initialize() {
 
 public boolean isInputValid() 
 {
-	if( getJTextFieldSubject().getText() == null || getJTextFieldSubject().getText().length() <= 0 )
-	{
-		setErrorString("The Field Subject text field must be filled in");
-		return false;
-	}
-
-
 	return true;
 }
 /**
