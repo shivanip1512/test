@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:34 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/28 18:29:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -311,7 +311,7 @@ LCUPreSend(OUTMESS *&OutMessage, CtiDeviceBase *Dev)
         }
         else
         {
-            if( (status = ReleaseAnLCU( OutMessage, lcu )) == MESSAGEREQUEUED )
+            if( (status = ReleaseAnLCU( OutMessage, lcu )) == RETRY_SUBMITTED )
             {
                 // Queues have been shuffled
                 {
@@ -386,7 +386,7 @@ LCUResultDecode (OUTMESS *OutMessage, INMESS *InMessage, CtiDeviceBase *Dev, ULO
                     CTISleep( CtiDeviceLCU::getSlowScanDelay() );
                 }
                 QueueForScan( lcu, mayqueuescans );     // Make porter do a fast scan!
-                status = MESSAGEREQUEUED;               // Keep the decode from happening on this stupid thing.
+                status = RETRY_SUBMITTED;               // Keep the decode from happening on this stupid thing.
             }
             else if( lcu->getNumberStarted() == 0 )
             {
@@ -429,7 +429,7 @@ LCUResultDecode (OUTMESS *OutMessage, INMESS *InMessage, CtiDeviceBase *Dev, ULO
                 else
                 {
                     // We need to requeue this guy if possible.
-                    if( RequeueLCUCommand(lcu) == MESSAGEREQUEUED )
+                    if( RequeueLCUCommand(lcu) == RETRY_SUBMITTED )
                     {
                         status = RETRY_SUBMITTED;
 
@@ -999,7 +999,7 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
     case CtiDeviceLCU::eLCURequeueDeviceControl:
         {
 
-            if( RequeueLCUCommand( lcu ) == MESSAGEREQUEUED )
+            if( RequeueLCUCommand( lcu ) == RETRY_SUBMITTED )
             {
                 /* This means we did not complete the message so log it */
                 Send4PartToDispatch ("Rre", (char*)lcu->getName().data(), "Command Resubmited", "Injector Error");
@@ -1021,7 +1021,7 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
         {
             if(GlobalLCUDev!= NULL && GlobalLCUDev->getLastControlMessage()->Sequence)
             {
-                if( RequeueLCUCommand(GlobalLCUDev) == MESSAGEREQUEUED )
+                if( RequeueLCUCommand(GlobalLCUDev) == RETRY_SUBMITTED )
                 {
                     Send4PartToDispatch ("Rlc", (char*)GlobalLCUDev->getName().data(), "Command Resubmited", "Injector Error");
                     MPCPointSet ("MISSED COMM");
@@ -1169,7 +1169,7 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
         {
             if(GlobalLCUDev != NULL && GlobalLCUDev->getLastControlMessage() && GlobalLCUDev->getLastControlMessage()->Sequence)
             {
-                if( (status = RequeueLCUCommand(GlobalLCUDev)) == MESSAGEREQUEUED )
+                if( (status = RequeueLCUCommand(GlobalLCUDev)) == RETRY_SUBMITTED )
                 {
                     Send4PartToDispatch ("Rmc", (char *)GlobalLCUDev->getName().data(), "Command Resubmited", "Missed Comm 2");
                     SendTelegraphStatusToMPC (TELEGRAPHEND_ERROR, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
@@ -1178,7 +1178,7 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
             }
             else if(lcu != NULL && lcu->getLastControlMessage() != NULL && lcu->getLastControlMessage()->Sequence)
             {
-                if( (status = RequeueLCUCommand(lcu)) == MESSAGEREQUEUED )
+                if( (status = RequeueLCUCommand(lcu)) == RETRY_SUBMITTED )
                 {
                     Send4PartToDispatch ("Rmc", (char *)lcu->getName().data(), "Command Resubmited", "Missed Comm 3");
                     SendTelegraphStatusToMPC (TELEGRAPHEND_ERROR, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
@@ -1315,7 +1315,7 @@ INT RequeueLCUCommand( CtiDeviceLCU *lcu )
         {
             // we need to retry this message - put is back on queue
             OutMessage->Sequence--;
-            successflag = MESSAGEREQUEUED;
+            successflag = RETRY_SUBMITTED;
 
             lcu->setNextCommandTime( rwEpoch );
             lcu->resetFlags(LCUTRANSMITSENT | LCUWASTRANSMITTING);
@@ -1417,7 +1417,7 @@ INT ReleaseAnLCU(OUTMESS *&OutMessage, CtiDeviceLCU *lcu)
         else if( AnyLCUCanExecute( OutMessage, lcu, Now ) ||    // Some other non-excluded LCU has a control ready on this port, and has been substituted
                  LCUPortHasAnLCUScan( OutMessage, lcu, Now) )   // Some scan or non-lcu device type has been substituted
         {
-            status = MESSAGEREQUEUED;                           // We need to re-ReadQueue as it has been shuffled.
+            status = RETRY_SUBMITTED;                           // We need to re-ReadQueue as it has been shuffled.
         }
         else                                                    // We have nothing better to do, we may as well hang out here.
         {
