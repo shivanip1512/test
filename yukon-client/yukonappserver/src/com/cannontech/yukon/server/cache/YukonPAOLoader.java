@@ -54,7 +54,7 @@ public class YukonPAOLoader implements Runnable
 				"y.Type, y.PAOClass, y.Description, d.PORTID, dcs.ADDRESS, dr.ROUTEID " +
 				"FROM " + YukonPAObject.TABLE_NAME+ " y left outer join " + DeviceDirectCommSettings.TABLE_NAME + " d " +
 				"on y.paobjectid = d.deviceid " +
-				"left outer join " + DeviceRoutes.TABLE_NAME + " DR ON Y.PAOBJECTID = DR.DEVICEID " +				
+				"left outer join " + DeviceRoutes.TABLE_NAME + " DR ON Y.PAOBJECTID = DR.DEVICEID AND Y.PAOBJECTID = DR.ROUTEID " +				
 				"left outer join " + DeviceCarrierSettings.TABLE_NAME + " DCS ON Y.PAOBJECTID = DCS.DEVICEID " +				
 				"WHERE y.PAObjectID > 0 " +
 				"ORDER BY y.Category, y.PAOClass, y.PAOName";
