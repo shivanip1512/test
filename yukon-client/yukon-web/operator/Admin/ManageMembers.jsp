@@ -3,6 +3,8 @@
 <%@ page import="com.cannontech.database.cache.functions.YukonUserFuncs" %>
 <%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
 <%
+	if (request.getParameter("failed") != null)
+		errorMsg = "Failed to log into member energy company";
 	LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
 %>
 <html>
@@ -54,7 +56,6 @@ function memberLogin(userID) {
               <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/StarsAdmin">
 			    <input type="hidden" name="action" value="MemberLogin">
 				<input type="hidden" name="UserID" value="-1">
-				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?LoginFailed=true">
                 <table width="50%" border="0" cellspacing="0" cellpadding="5" class="MainText">
                   <%
 	for (int i = 0; i < liteEC.getChildren().size(); i++) {
