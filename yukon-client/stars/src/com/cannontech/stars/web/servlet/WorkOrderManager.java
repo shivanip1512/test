@@ -159,7 +159,7 @@ public class WorkOrderManager extends HttpServlet {
 		}
 		
 		if (orderIDs == null || orderIDs.length == 0) {
-			session.setAttribute(WORK_ORDER_SET_DESC, "<div class='ErrorMsg' align='center'>No service orders found matching the search criteria.</div>");
+			session.setAttribute(WORK_ORDER_SET_DESC, "<div class='ErrorMsg' align='center'>No service order found matching the search criteria.</div>");
 		}
 		else if (orderIDs.length == 1) {
 			redirect = req.getContextPath() + "/operator/WorkOrder/WorkOrder.jsp?OrderId=" + orderIDs[0];
@@ -259,7 +259,7 @@ public class WorkOrderManager extends HttpServlet {
 			Date dateReported = ServletUtils.parseDateTime(
 					req.getParameter("DateReported"), req.getParameter("TimeReported"), tz );
 			if (dateReported == null)
-				throw new WebClientException("Invalid date/time format '" + req.getParameter("DateReported") + " " + req.getParameter("TimeReported") + "'");
+				throw new WebClientException("Invalid date/time format '" + req.getParameter("DateReported") + " " + req.getParameter("TimeReported") + "', the date/time must be in the form of 'mm/dd/yy hh:mm'");
 			starsOrder.setDateReported( dateReported );
 		}
 		
@@ -267,7 +267,7 @@ public class WorkOrderManager extends HttpServlet {
 			Date dateScheduled = ServletUtils.parseDateTime(
 					req.getParameter("DateScheduled"), req.getParameter("TimeScheduled"), tz );
 			if (dateScheduled == null)
-				throw new WebClientException("Invalid date/time format '" + req.getParameter("DateScheduled") + " " + req.getParameter("TimeScheduled") + "'");
+				throw new WebClientException("Invalid date/time format '" + req.getParameter("DateScheduled") + " " + req.getParameter("TimeScheduled") + "', the date/time must be in the form of 'mm/dd/yy hh:mm'");
 			starsOrder.setDateScheduled( dateScheduled );
 		}
 		
@@ -275,7 +275,7 @@ public class WorkOrderManager extends HttpServlet {
 			Date dateCompleted = ServletUtils.parseDateTime(
 					req.getParameter("DateCompleted"), req.getParameter("TimeCompleted"), tz );
 			if (dateCompleted == null)
-				throw new WebClientException("Invalid date/time format '" + req.getParameter("DateCompleted") + " " + req.getParameter("TimeCompleted") + "'");
+				throw new WebClientException("Invalid date/time format '" + req.getParameter("DateCompleted") + " " + req.getParameter("TimeCompleted") + "', the date/time must be in the form of 'mm/dd/yy hh:mm'");
 			starsOrder.setDateCompleted( dateCompleted );
 		}
 	}

@@ -1260,10 +1260,13 @@ public class StarsLiteFactory {
 		StarsLMProgramHistory starsProgHist = createStarsLMProgramHistory( liteProgHist );
 		starsProgs.setStarsLMProgramHistory( starsProgHist );
 		
-		OptOutEventQueue.OptOutEvent event = energyCompany.getOptOutEventQueue().findOptOutEvent( liteAcctInfo.getAccountID() );
-		if (event != null) {
-			StarsLMProgramEvent starsEvent = createStarsOptOutEvent( event, liteProgs, energyCompany );
-			starsProgHist.addStarsLMProgramEvent( starsEvent );
+		OptOutEventQueue queue = energyCompany.getOptOutEventQueue();
+		if (queue != null) {
+			OptOutEventQueue.OptOutEvent event = queue.findOptOutEvent( liteAcctInfo.getAccountID() );
+			if (event != null) {
+				StarsLMProgramEvent starsEvent = createStarsOptOutEvent( event, liteProgs, energyCompany );
+				starsProgHist.addStarsLMProgramEvent( starsEvent );
+			}
 		}
 		
 		ArrayList liteInvs = liteAcctInfo.getInventories();

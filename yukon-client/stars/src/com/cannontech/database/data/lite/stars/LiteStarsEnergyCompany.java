@@ -176,6 +176,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private int nextOrderNo = 0;
 	private boolean inventoryLoaded = false;
 	private boolean workOrdersLoaded = false;
+	private boolean hierarchyLoaded = false;
 	
 	// When the energy company is initiated, this object is created to load the inventory
 	// It will be set to null and inventoryLoaded set to true after the loading is done
@@ -469,6 +470,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		nextOrderNo = 0;
 		inventoryLoaded = false;
 		workOrdersLoaded = false;
+		hierarchyLoaded = false;
 		
 		dftRouteID = CtiUtilities.NONE_ID;
 		dftTimeZone = null;
@@ -2369,7 +2371,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		liteAcctInfo.setCustomerAccount( (LiteCustomerAccount) StarsLiteFactory.createLite(account.getCustomerAccount()) );
 		liteAcctInfo.setAccountSite( (LiteAccountSite) StarsLiteFactory.createLite(site.getAccountSite()) );
 		liteAcctInfo.setSiteInformation( (LiteSiteInformation) StarsLiteFactory.createLite(site.getSiteInformation().getSiteInformation()) );
-		liteAcctInfo.setCustomer( (LiteCustomer)DefaultDatabaseCache.getInstance().getAllCustomersMap().get(account.getCustomerAccount().getCustomerID()) );
+		
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		synchronized (cache) {
+			liteAcctInfo.setCustomer( (LiteCustomer)cache.getAllCustomersMap().get(account.getCustomerAccount().getCustomerID()) );
+		}
 		
 		Hashtable contactAcctInfoMap = getContactCustAccountInfoMap();
 		synchronized (contactAcctInfoMap) {
@@ -2458,6 +2464,15 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				LiteStarsAppliance liteApp = (LiteStarsAppliance) appliances.get(i);
 				int progID = liteApp.getLmProgramID();
 				if (progID == 0) continue;
+				
+				boolean progExists = false;
+				for (int j = 0; j < programs.size(); j++) {
+					if (((LiteStarsLMProgram) programs.get(j)).getLmProgram().getProgramID() == progID) {
+						progExists = true;
+						break;
+					}
+				}
+				if (progExists) continue;
 	            
 				LiteLMProgram liteProg = getLMProgram( progID );
 				LiteStarsLMProgram prog = new LiteStarsLMProgram( liteProg );
@@ -2566,7 +2581,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
 			int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
 			deleteInventory( invID );
-			getInventoryBrief( invID, true );
+			loadInventory( invID );
 		}
 		
 		// Remove all work orders from the cache
@@ -3167,6 +3182,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 					parent = SOAPServer.getEnergyCompany( parentID );
 			}
 			
+			hierarchyLoaded = true;
 			CTILogger.info( "Energy company hierarchy loaded for energy company #" + getEnergyCompanyID() );
 		}
 		catch (CommandExecutionException e) {
@@ -3175,13 +3191,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public synchronized LiteStarsEnergyCompany getParent() {
-		if (parent == null)
+		if (!hierarchyLoaded)
 			loadEnergyCompanyHierarchy();
 		return parent;
 	}
 	
 	public synchronized ArrayList getChildren() {
-		if (children == null)
+		if (!hierarchyLoaded)
 			loadEnergyCompanyHierarchy();
 		return children;
 	}

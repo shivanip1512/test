@@ -17,10 +17,13 @@ import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.xml.serialize.StreetAddress;
 
 /**
  * @author yao
@@ -66,6 +69,7 @@ public class InventoryBean {
 		public int compare(Object o1, Object o2) {
 			LiteInventoryBase inv1 = (LiteInventoryBase) o1;
 			LiteInventoryBase inv2 = (LiteInventoryBase) o2;
+			int result = 0;
 			
 			if ((inv1 instanceof LiteStarsLMHardware) && (inv2 instanceof LiteStarsLMHardware)) {
 				LiteStarsLMHardware hw1 = (LiteStarsLMHardware) inv1;
@@ -83,14 +87,16 @@ public class InventoryBean {
 				}
 				catch (NumberFormatException e) {}
 				
-				if (sn1 != null && sn2 != null)
-					return sn1.compareTo( sn2 );
+				if (sn1 != null && sn2 != null) {
+					result = sn1.compareTo( sn2 );
+					if (result == 0) result = hw1.getManufacturerSerialNumber().compareTo( hw2.getManufacturerSerialNumber() );
+				}
 				else if (sn1 != null && sn2 == null)
 					return -1;
 				else if (sn1 == null && sn2 != null)
 					return 1;
 				else
-					return hw1.getManufacturerSerialNumber().compareTo( hw2.getManufacturerSerialNumber() );
+					result = hw1.getManufacturerSerialNumber().compareTo( hw2.getManufacturerSerialNumber() );
 			}
 			else if ((inv1 instanceof LiteStarsLMHardware) && !(inv2 instanceof LiteStarsLMHardware))
 				return -1;
@@ -110,7 +116,7 @@ public class InventoryBean {
 					devName2 = inv2.getDeviceLabel();
 				
 				if (devName1 != null && devName2 != null)
-					return devName1.compareTo( devName2 );
+					result = devName1.compareTo( devName2 );
 				else if (devName1 != null && devName2 == null)
 					return -1;
 				else if (devName1 == null && devName2 != null)
@@ -118,6 +124,9 @@ public class InventoryBean {
 				else
 					return -1;
 			}
+			
+			if (result == 0) result = inv1.getInventoryID() - inv2.getInventoryID();
+			return result;
 		}
 	};
 	
@@ -126,7 +135,11 @@ public class InventoryBean {
 			LiteInventoryBase inv1 = (LiteInventoryBase) o1;
 			LiteInventoryBase inv2 = (LiteInventoryBase) o2;
 			
-			return new java.util.Date(inv1.getInstallDate()).compareTo( new java.util.Date(inv2.getInstallDate()) );
+			int result = new java.util.Date(inv1.getInstallDate()).compareTo( new java.util.Date(inv2.getInstallDate()) );
+			if (result == 0)
+				result = inv1.getInventoryID() - inv2.getInventoryID();
+			
+			return result;
 		}
 	};
 	
@@ -342,31 +355,31 @@ public class InventoryBean {
 		int minInvNo = (page - 1) * pageSize + 1;
 		int maxInvNo = Math.min(page * pageSize, hwList.size());
         
-        StringBuffer navBuf = new StringBuffer();
-        navBuf.append(minInvNo);
-        if (maxInvNo > minInvNo)
-        	navBuf.append("-").append(maxInvNo);
-        navBuf.append(" of ").append(hwList.size());
-        navBuf.append(" | ");
-        if (page == 1)
-        	navBuf.append("<font color='#CCCCCC'>First</font>");
-        else
-        	navBuf.append("<a class='Link1' href='").append(pageName).append("?page=1'>First</a>");
-        navBuf.append(" | ");
-        if (page == 1)
-        	navBuf.append("<font color='#CCCCCC'>Previous</font>");
-        else
-        	navBuf.append("<a class='Link1' href='").append(pageName).append("?page=").append(page-1).append("'>Previous</a>");
-        navBuf.append(" | ");
-        if (page == maxPageNo)
-        	navBuf.append("<font color='#CCCCCC'>Next</font>");
-        else
-        	navBuf.append("<a class='Link1' href='").append(pageName).append("?page=").append(page+1).append("'>Next</a>");
-        navBuf.append(" | ");
-        if (page == maxPageNo)
-        	navBuf.append("<font color='#CCCCCC'>Last</font>");
-        else
-        	navBuf.append("<a class='Link1' href='").append(pageName).append("?page=").append(maxPageNo).append("'>Last</a>");
+		StringBuffer navBuf = new StringBuffer();
+		navBuf.append(minInvNo);
+		if (maxInvNo > minInvNo)
+			navBuf.append("-").append(maxInvNo);
+		navBuf.append(" of ").append(hwList.size());
+		navBuf.append(" | ");
+		if (page == 1)
+			navBuf.append("<font color='#CCCCCC'>First</font>");
+		else
+			navBuf.append("<a class='Link1' href='").append(pageName).append("?page=1'>First</a>");
+		navBuf.append(" | ");
+		if (page == 1)
+			navBuf.append("<font color='#CCCCCC'>Previous</font>");
+		else
+			navBuf.append("<a class='Link1' href='").append(pageName).append("?page=").append(page-1).append("'>Previous</a>");
+		navBuf.append(" | ");
+		if (page == maxPageNo)
+			navBuf.append("<font color='#CCCCCC'>Next</font>");
+		else
+			navBuf.append("<a class='Link1' href='").append(pageName).append("?page=").append(page+1).append("'>Next</a>");
+		navBuf.append(" | ");
+		if (page == maxPageNo)
+			navBuf.append("<font color='#CCCCCC'>Last</font>");
+		else
+			navBuf.append("<a class='Link1' href='").append(pageName).append("?page=").append(maxPageNo).append("'>Last</a>");
 		
 		if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
 			htmlBuf.append("<form name='InventoryBeanForm' method='post' action='").append(req.getContextPath()).append("/servlet/InventoryManager'>").append(LINE_SEPARATOR);
@@ -375,46 +388,46 @@ public class InventoryBean {
 		
 		htmlBuf.append("<table width='80%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>").append(LINE_SEPARATOR);
 		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
-        htmlBuf.append("    <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
-        htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
-        htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
-        htmlBuf.append("    <td>").append(LINE_SEPARATOR);
-        htmlBuf.append("      <table width='100%' border='1' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
-        htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
-        if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
-	        htmlBuf.append("          <td class='HeaderCell' width='1%'>&nbsp;</td>").append(LINE_SEPARATOR);
-        }
-        htmlBuf.append("          <td class='HeaderCell' width='17%'>Serial # / Device Name</td>").append(LINE_SEPARATOR);
-        htmlBuf.append("          <td class='HeaderCell' width='17%'>Device Type</td>").append(LINE_SEPARATOR);
-        htmlBuf.append("          <td class='HeaderCell' width='15%'>Install Date</td>").append(LINE_SEPARATOR);
-        htmlBuf.append("          <td class='HeaderCell'>Location</td>").append(LINE_SEPARATOR);
-        if (showEnergyCompany)
+		htmlBuf.append("    <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
+		htmlBuf.append("      <table width='100%' border='1' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
+		htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
+		if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
+			htmlBuf.append("          <td class='HeaderCell' width='1%'>&nbsp;</td>").append(LINE_SEPARATOR);
+		}
+		htmlBuf.append("          <td class='HeaderCell' width='17%'>Serial # / Device Name</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td class='HeaderCell' width='17%'>Device Type</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td class='HeaderCell' width='15%'>Install Date</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td class='HeaderCell'>Location</td>").append(LINE_SEPARATOR);
+		if (showEnergyCompany)
 			htmlBuf.append("          <td class='HeaderCell' width='17%'>Energy Company</td>").append(LINE_SEPARATOR);
-        htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
         
-        for (int i = minInvNo; i <= maxInvNo; i++) {
-        	LiteInventoryBase liteInv = (LiteInventoryBase) hwList.get(i-1);
+		for (int i = minInvNo; i <= maxInvNo; i++) {
+			LiteInventoryBase liteInv = (LiteInventoryBase) hwList.get(i-1);
         	
-        	String deviceType = "(none)";
-        	String deviceName = "(none)";
-        	if (liteInv instanceof LiteStarsLMHardware) {
+			String deviceType = "(none)";
+			String deviceName = "(none)";
+			if (liteInv instanceof LiteStarsLMHardware) {
 				deviceType = YukonListFuncs.getYukonListEntry( ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID() ).getEntryText();
 				deviceName = ((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber();
-        	}
-        	else if (liteInv.getDeviceID() > 0) {
+			}
+			else if (liteInv.getDeviceID() > 0) {
 				LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( liteInv.getDeviceID() );
 				deviceType = PAOGroups.getPAOTypeString( litePao.getType() );
 				deviceName = litePao.getPaoName();
-        	}
-        	else if (ECUtils.isMCT( liteInv.getCategoryID() )) {
-        		deviceType = getEnergyCompany().getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT).getEntryText();
-        		if (liteInv.getDeviceLabel() != null && liteInv.getDeviceLabel().length() > 0)
-        			deviceName = liteInv.getDeviceLabel();
-        	}
+			}
+			else if (ECUtils.isMCT( liteInv.getCategoryID() )) {
+				deviceType = getEnergyCompany().getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT).getEntryText();
+				if (liteInv.getDeviceLabel() != null && liteInv.getDeviceLabel().length() > 0)
+					deviceName = liteInv.getDeviceLabel();
+			}
         	
-        	java.util.Date installDate = ServerUtils.translateDate( liteInv.getInstallDate() );
-        	dateFormat.setTimeZone( getEnergyCompany().getDefaultTimeZone() );
-        	String instDate = (installDate != null)? dateFormat.format(installDate) : "----";
+			java.util.Date installDate = ServerUtils.translateDate( liteInv.getInstallDate() );
+			dateFormat.setTimeZone( getEnergyCompany().getDefaultTimeZone() );
+			String instDate = (installDate != null)? dateFormat.format(installDate) : "----";
         	
 			LiteStarsEnergyCompany member = getEnergyCompany();
 			if (showEnergyCompany) {
@@ -427,59 +440,66 @@ public class InventoryBean {
 				}
 			}
 			
-            htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
+			htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
             
-	        if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
-	        	htmlBuf.append("          <td class='TableCell' width='1%'>");
-	        	htmlBuf.append("<input type='radio' name='InvID' value='").append(liteInv.getInventoryID()).append("'>");
-	        	htmlBuf.append("</td>").append(LINE_SEPARATOR);
-	        }
+			if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
+				htmlBuf.append("          <td class='TableCell' width='1%'>");
+				htmlBuf.append("<input type='radio' name='InvID' value='").append(liteInv.getInventoryID()).append("'>");
+				htmlBuf.append("</td>").append(LINE_SEPARATOR);
+			}
 	        
-            htmlBuf.append("          <td class='TableCell' width='17%'>");
-            if (showEnergyCompany)
+			htmlBuf.append("          <td class='TableCell' width='17%'>");
+			if (showEnergyCompany)
 				htmlBuf.append("<a href='' onclick='selectMemberInventory(").append(liteInv.getInventoryID()).append(",").append(member.getLiteID()).append("); return false;'>").append(deviceName).append("</a>");
-            else
+			else
 				htmlBuf.append("<a href='").append(req.getContextPath()).append("/operator/Hardware/InventoryDetail.jsp?InvId=").append(liteInv.getInventoryID()).append(srcStr).append("'>").append(deviceName).append("</a>");
-            htmlBuf.append("</td>").append(LINE_SEPARATOR);
+			htmlBuf.append("</td>").append(LINE_SEPARATOR);
             
-            htmlBuf.append("          <td class='TableCell' width='17%'>").append(deviceType).append("</td>").append(LINE_SEPARATOR);
-            htmlBuf.append("          <td class='TableCell' width='15%'>").append(instDate).append("</td>").append(LINE_SEPARATOR);
+			htmlBuf.append("          <td class='TableCell' width='17%'>").append(deviceType).append("</td>").append(LINE_SEPARATOR);
+			htmlBuf.append("          <td class='TableCell' width='15%'>").append(instDate).append("</td>").append(LINE_SEPARATOR);
             
-            htmlBuf.append("          <td class='TableCell'>");
-            if (liteInv.getAccountID() == 0) {
+			htmlBuf.append("          <td class='TableCell'>");
+			if (liteInv.getAccountID() == 0) {
 				htmlBuf.append("Warehouse");
-            }
-            else {
-            	LiteStarsCustAccountInformation liteAcctInfo = member.getBriefCustAccountInfo( liteInv.getAccountID(), true );
-            	LiteContact liteCont = member.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
-            	LiteAddress liteAddr = member.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
+			}
+			else {
+				LiteStarsCustAccountInformation liteAcctInfo = member.getBriefCustAccountInfo( liteInv.getAccountID(), true );
+				LiteContact liteCont = member.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
+				LiteAddress liteAddr = member.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
             	
-            	if (showEnergyCompany)
+				String name = ServerUtils.formatName( liteCont );
+				StreetAddress starsAddr = new StreetAddress();
+				StarsLiteFactory.setStarsCustomerAddress( starsAddr, liteAddr );
+				String address = ServletUtils.getOneLineAddress( starsAddr );
+            	
+				if (showEnergyCompany)
 					htmlBuf.append("<a href='' class='Link1' onclick='selectMemberAccount(").append(liteAcctInfo.getAccountID()).append(",").append(member.getLiteID()).append("); return false;'>");
-            	else
-            		htmlBuf.append("<a href='' class='Link1' onclick='selectAccount(").append(liteAcctInfo.getAccountID()).append("); return false;'>");
-            	htmlBuf.append("Acct # ").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append("</a>");
-            	htmlBuf.append(" ").append(ServerUtils.getFormattedName(liteCont));
-            	htmlBuf.append(", ").append(ServerUtils.getOneLineAddress(liteAddr));
-            }
-            htmlBuf.append("</td>").append(LINE_SEPARATOR);
+				else
+					htmlBuf.append("<a href='' class='Link1' onclick='selectAccount(").append(liteAcctInfo.getAccountID()).append("); return false;'>");
+				htmlBuf.append("Acct # ").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append("</a>");
+				if (name.length() > 0)
+					htmlBuf.append(" ").append(name);
+				if (address.length() > 0)
+					htmlBuf.append(", ").append(address);
+			}
+			htmlBuf.append("</td>").append(LINE_SEPARATOR);
             
-            if (showEnergyCompany)
+			if (showEnergyCompany)
 				htmlBuf.append("          <td class='TableCell' width='17%'>").append(member.getName()).append("</td>").append(LINE_SEPARATOR);
             
-            htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
-        }
+			htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
+		}
         
-        htmlBuf.append("      </table>").append(LINE_SEPARATOR);
-        htmlBuf.append("    </td>").append(LINE_SEPARATOR);
-        htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
-        htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
-        htmlBuf.append("    <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
-        htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
-        htmlBuf.append("</table>").append(LINE_SEPARATOR);
+		htmlBuf.append("      </table>").append(LINE_SEPARATOR);
+		htmlBuf.append("    </td>").append(LINE_SEPARATOR);
+		htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("    <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("</table>").append(LINE_SEPARATOR);
         
-        if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
-        	htmlBuf.append("<br>").append(LINE_SEPARATOR);
+		if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
+			htmlBuf.append("<br>").append(LINE_SEPARATOR);
 			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
 			htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
 			htmlBuf.append("    <td align='right'>").append(LINE_SEPARATOR);
@@ -494,9 +514,9 @@ public class InventoryBean {
 			htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
 			htmlBuf.append("</table>").append(LINE_SEPARATOR);
 			htmlBuf.append("</form>").append(LINE_SEPARATOR);
-        }
+		}
         
-        if (getHtmlStyle() == HTML_STYLE_INVENTORY_SET) {
+		if (getHtmlStyle() == HTML_STYLE_INVENTORY_SET) {
 			htmlBuf.append("<br>").append(LINE_SEPARATOR);
 			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
 			htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
@@ -508,26 +528,26 @@ public class InventoryBean {
 			htmlBuf.append("    </td>").append(LINE_SEPARATOR);
 			htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
 			htmlBuf.append("</table>").append(LINE_SEPARATOR);
-        }
+		}
         
-        htmlBuf.append("<form name='cusForm' method='post' action='").append(req.getContextPath()).append("/servlet/SOAPClient'>").append(LINE_SEPARATOR);
-        htmlBuf.append("  <input type='hidden' name='action' value='GetCustAccount'>").append(LINE_SEPARATOR);
-        htmlBuf.append("  <input type='hidden' name='AccountID' value=''>").append(LINE_SEPARATOR);
-        if (showEnergyCompany)
+		htmlBuf.append("<form name='cusForm' method='post' action='").append(req.getContextPath()).append("/servlet/SOAPClient'>").append(LINE_SEPARATOR);
+		htmlBuf.append("  <input type='hidden' name='action' value='GetCustAccount'>").append(LINE_SEPARATOR);
+		htmlBuf.append("  <input type='hidden' name='AccountID' value=''>").append(LINE_SEPARATOR);
+		if (showEnergyCompany)
 			htmlBuf.append("  <input type='hidden' name='SwitchContext' value=''>").append(LINE_SEPARATOR);
-        htmlBuf.append("  <input type='hidden' name='REDIRECT' value='").append(req.getContextPath()).append("/operator/Consumer/Update.jsp'>").append(LINE_SEPARATOR);
-        htmlBuf.append("  <input type='hidden' name='REFERRER' value='").append(req.getRequestURI()).append("'>").append(LINE_SEPARATOR);
-        htmlBuf.append("</form>").append(LINE_SEPARATOR);
+		htmlBuf.append("  <input type='hidden' name='REDIRECT' value='").append(req.getContextPath()).append("/operator/Consumer/Update.jsp'>").append(LINE_SEPARATOR);
+		htmlBuf.append("  <input type='hidden' name='REFERRER' value='").append(req.getRequestURI()).append("'>").append(LINE_SEPARATOR);
+		htmlBuf.append("</form>").append(LINE_SEPARATOR);
         
-        if (showEnergyCompany) {
+		if (showEnergyCompany) {
 			htmlBuf.append("<form name='invForm' method='post' action='").append(req.getContextPath()).append("/servlet/StarsAdmin'>").append(LINE_SEPARATOR);
 			htmlBuf.append("  <input type='hidden' name='action' value='SwitchContext'>").append(LINE_SEPARATOR);
 			htmlBuf.append("  <input type='hidden' name='ContextID' value=''>").append(LINE_SEPARATOR);
 			htmlBuf.append("  <input type='hidden' name='REDIRECT' value=''>").append(LINE_SEPARATOR);
 			htmlBuf.append("</form>").append(LINE_SEPARATOR);
-        }
+		}
         
-        htmlBuf.append("<script language='JavaScript'>").append(LINE_SEPARATOR);
+		htmlBuf.append("<script language='JavaScript'>").append(LINE_SEPARATOR);
 		htmlBuf.append("function validate(form) {").append(LINE_SEPARATOR);
 		htmlBuf.append("  var radioBtns = document.getElementsByName('InvID');").append(LINE_SEPARATOR);
 		htmlBuf.append("  if (radioBtns != null) {").append(LINE_SEPARATOR);
@@ -537,13 +557,13 @@ public class InventoryBean {
 		htmlBuf.append("  return false;").append(LINE_SEPARATOR);
 		htmlBuf.append("}").append(LINE_SEPARATOR);
 		
-        htmlBuf.append("function selectAccount(accountID) {").append(LINE_SEPARATOR);
-        htmlBuf.append("  var form = document.cusForm;").append(LINE_SEPARATOR);
-        htmlBuf.append("  form.AccountID.value = accountID;").append(LINE_SEPARATOR);
-        htmlBuf.append("  form.submit();").append(LINE_SEPARATOR);
-        htmlBuf.append("}").append(LINE_SEPARATOR);
+		htmlBuf.append("function selectAccount(accountID) {").append(LINE_SEPARATOR);
+		htmlBuf.append("  var form = document.cusForm;").append(LINE_SEPARATOR);
+		htmlBuf.append("  form.AccountID.value = accountID;").append(LINE_SEPARATOR);
+		htmlBuf.append("  form.submit();").append(LINE_SEPARATOR);
+		htmlBuf.append("}").append(LINE_SEPARATOR);
         
-        if (showEnergyCompany) {
+		if (showEnergyCompany) {
 			htmlBuf.append("function selectMemberAccount(accountID, contextID) {").append(LINE_SEPARATOR);
 			htmlBuf.append("  var form = document.cusForm;").append(LINE_SEPARATOR);
 			htmlBuf.append("  form.AccountID.value = accountID;").append(LINE_SEPARATOR);
@@ -558,9 +578,9 @@ public class InventoryBean {
 			htmlBuf.append(" + invID + '").append(srcStr).append("';").append(LINE_SEPARATOR);
 			htmlBuf.append("  form.submit();").append(LINE_SEPARATOR);
 			htmlBuf.append("}").append(LINE_SEPARATOR);
-        }
+		}
 		
-        htmlBuf.append("</script>").append(LINE_SEPARATOR);
+		htmlBuf.append("</script>").append(LINE_SEPARATOR);
         
 		return htmlBuf.toString();
 	}

@@ -201,13 +201,15 @@ public class SOAPClient extends HttpServlet {
 			if (errorURL == null) errorURL = req.getContextPath() + "/operator/Consumer/New.jsp";
 			
 			if (req.getParameter("Wizard") != null) {
-				MultiAction actions = (MultiAction) session.getAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD );;
-				if (actions == null) actions = new MultiAction();
-				if (!actions.addAction( clientAction, req, session)) {
-					resp.sendRedirect( req.getContextPath() + "/operator/Consumer/New.jsp?Wizard=true" );
+				SOAPMessage msg = clientAction.build( req, session );
+				if (msg == null) {
+					resp.sendRedirect( errorURL + "?Wizard=true" );
 					return;
 				}
 				
+				MultiAction actions = (MultiAction) session.getAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD );
+				if (actions == null) actions = new MultiAction();
+				actions.addAction( clientAction, msg );
 				session.setAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD, actions );
 				
 				if (req.getParameter("Submit").equals("Done")) {
@@ -217,7 +219,7 @@ public class SOAPClient extends HttpServlet {
 					clientAction = actions;
 				}
 				else {
-					resp.sendRedirect( req.getContextPath() + "/operator/Consumer/CreateHardware.jsp?Wizard=true" );
+					resp.sendRedirect( req.getParameter(ServletUtils.ATT_REDIRECT2) );
 					return;
 				}
 			}
@@ -226,16 +228,66 @@ public class SOAPClient extends HttpServlet {
 			clientAction = new ProgramSignUpAction();
 			
 			if (req.getParameter("Wizard") != null) {
-				MultiAction actions = (MultiAction) session.getAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD );
-				if (!actions.addAction( clientAction, req, session)) {
-					resp.sendRedirect( req.getContextPath() + "/operator/Consumer/Programs.jsp?Wizard=true" );
+				SOAPMessage msg = clientAction.build( req, session );
+				if (msg == null) {
+					resp.sendRedirect( errorURL + "?Wizard=true" );
 					return;
 				}
 				
+				MultiAction actions = (MultiAction) session.getAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD );
+				actions.addAction( clientAction, msg );
+				
+				if (Boolean.valueOf(req.getParameter("NeedMoreInfo")).booleanValue()) {
+					resp.sendRedirect( req.getContextPath() + "/operator/Consumer/Programs2.jsp?Wizard=true" );
+					return;
+				}
+				else {
+					destURL = errorURL = req.getContextPath() + "/operator/Consumer/NewFinal.jsp?Wizard=true";
+					session.setAttribute( ServletUtils.ATT_REDIRECT, destURL );
+					clientAction = actions;
+				}
+			}
+			else {
+				if (Boolean.valueOf(req.getParameter("NeedMoreInfo")).booleanValue()) {
+					SOAPMessage msg = clientAction.build( req, session );
+					if (msg == null) {
+						resp.sendRedirect( errorURL );
+						return;
+					}
+					
+					MultiAction actions = new MultiAction();
+					actions.addAction( clientAction, msg );
+					session.setAttribute( ServletUtils.ATT_MULTI_ACTIONS, actions );
+					
+					resp.sendRedirect( req.getContextPath() + "/operator/Consumer/Programs2.jsp" );
+					return;
+				}
+			}
+		}
+		else if (action.equalsIgnoreCase("SetAddtEnrollInfo")) {
+			clientAction = new ProgramSignUpAction();
+			MultiAction actions = (req.getParameter("Wizard") == null)?
+					(MultiAction) session.getAttribute( ServletUtils.ATT_MULTI_ACTIONS ) :
+					(MultiAction) session.getAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD );
+			
+			try {
+				SOAPMessage msg = actions.getRequestMessage( clientAction );
+				SOAPMessage msg2 = ProgramSignUpAction.setAdditionalEnrollmentInfo( msg, req );
+				actions.addAction( clientAction, msg2 );
+			}
+			catch (Exception e) {
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to set additional enrollment information" );
+				resp.sendRedirect( errorURL );
+				return;
+			}
+			
+			if (req.getParameter("Wizard") != null) {
 				destURL = errorURL = req.getContextPath() + "/operator/Consumer/NewFinal.jsp?Wizard=true";
 				session.setAttribute( ServletUtils.ATT_REDIRECT, destURL );
-				clientAction = actions;
 			}
+			else
+				session.removeAttribute( ServletUtils.ATT_MULTI_ACTIONS );
+			clientAction = actions;
 		}
 		else if (action.equalsIgnoreCase("SearchCustAccount")) {
 			clientAction = new SearchCustAccountAction();
@@ -266,11 +318,15 @@ public class SOAPClient extends HttpServlet {
 			if (errorURL == null) errorURL = req.getContextPath() + "/operator/Consumer/Update.jsp";
 		}
 		else if (action.equalsIgnoreCase("OptOutProgram")) {
-			MultiAction actions = new MultiAction();
-			if (!actions.addAction( new ProgramOptOutAction(), req, session )) {
+			clientAction = new ProgramOptOutAction();
+			SOAPMessage msg = clientAction.build( req, session );
+			if (msg == null) {
 				resp.sendRedirect( req.getRequestURI() );
 				return;
 			}
+			
+			MultiAction actions = new MultiAction();
+			actions.addAction( clientAction, msg );
         	
 			StarsExitInterviewQuestions questions = null;
 			if (user != null) {
@@ -281,26 +337,33 @@ public class SOAPClient extends HttpServlet {
 			}
             
 			if (questions != null && questions.getStarsExitInterviewQuestionCount() > 0) {
-				session.setAttribute( ServletUtils.ATT_OVER_PAGE_ACTION, actions );
+				session.setAttribute( ServletUtils.ATT_MULTI_ACTIONS, actions );
 				resp.sendRedirect( req.getParameter(ServletUtils.ATT_REDIRECT2) );
 				return;
 			}
 			else {	// if no exit interview questions, then skip the next page and send out the command immediately
-				if (!actions.addAction( new SendOptOutNotificationAction(), req, session )) {
+				SendOptOutNotificationAction action2 = new SendOptOutNotificationAction();
+				SOAPMessage msg2 = action2.build( req, session );
+				if (msg2 == null) {
 					resp.sendRedirect( req.getRequestURI() );
 					return;
 				}
 				
+				actions.addAction( action2, msg2 );
 				clientAction = actions;
 			}
 		}
 		else if (action.equalsIgnoreCase("SendOptOutNotification")) {
-			MultiAction actions = (MultiAction) session.getAttribute( ServletUtils.ATT_OVER_PAGE_ACTION );
-			if (!actions.addAction( new SendOptOutNotificationAction(), req, session )) {
+			clientAction = new SendOptOutNotificationAction();
+			SOAPMessage msg = clientAction.build( req, session );
+			if (msg == null) {
 				resp.sendRedirect( req.getRequestURI() );
 				return;
 			}
-			session.removeAttribute( ServletUtils.ATT_OVER_PAGE_ACTION );
+			
+			MultiAction actions = (MultiAction) session.getAttribute( ServletUtils.ATT_MULTI_ACTIONS );
+			actions.addAction( clientAction, msg );
+			session.removeAttribute( ServletUtils.ATT_MULTI_ACTIONS );
         	
 			clientAction = actions;
 		}
@@ -311,10 +374,23 @@ public class SOAPClient extends HttpServlet {
 			clientAction = new YukonSwitchCommandAction();
 		}
 		else if (action.equalsIgnoreCase("UpdateLMHardwareConfig")) {
+			UpdateLMHardwareConfigAction action1 = new UpdateLMHardwareConfigAction();
+			SOAPMessage msg1 = action1.build( req, session );
+			if (msg1 == null) {
+				resp.sendRedirect( errorURL );
+				return;
+			}
+			
+			YukonSwitchCommandAction action2 = new YukonSwitchCommandAction();
+			SOAPMessage msg2 = action2.build( req, session );
+			if (msg2 == null) {
+				resp.sendRedirect( errorURL );
+				return;
+			}
+			
 			MultiAction actions = new MultiAction();
-			actions.addAction( new UpdateLMHardwareConfigAction(), req, session );
-			actions.addAction( new YukonSwitchCommandAction(), req, session );
-        		
+			actions.addAction( action1, msg1 );
+			actions.addAction( action2, msg2 );
 			clientAction = (ActionBase) actions;
 		}
 		else if (action.equalsIgnoreCase("SaveLMHardwareConfig")) {
@@ -371,14 +447,17 @@ public class SOAPClient extends HttpServlet {
 			if (errorURL == null) errorURL = req.getContextPath() + "/operator/Consumer/CreateHardware.jsp";
 			
 			if (req.getParameter("Wizard") != null) {
-				MultiAction actions = (MultiAction) session.getAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD );
-				if (!actions.addAction( clientAction, req, session )) {
-					resp.sendRedirect( req.getContextPath() + "/operator/Consumer/CreateHardware.jsp?Wizard=true" );
+				SOAPMessage msg = clientAction.build( req, session );
+				if (msg == null) {
+					resp.sendRedirect( errorURL + "?Wizard=true" );
 					return;
 				}
 				
+				MultiAction actions = (MultiAction) session.getAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD );
+				actions.addAction( clientAction, msg );
+				
 				if (req.getParameter("Done") == null) {
-					resp.sendRedirect( req.getContextPath() + "/operator/Consumer/Programs.jsp?Wizard=true" );
+					resp.sendRedirect( req.getParameter(ServletUtils.ATT_REDIRECT2) );
 					return;
 				}
 				else {	// Wizard terminated and submitted in the middle

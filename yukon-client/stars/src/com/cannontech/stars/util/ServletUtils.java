@@ -6,6 +6,7 @@ import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.ControlHistory;
 import com.cannontech.stars.xml.serialize.StarsCustListEntry;
@@ -39,7 +40,6 @@ public class ServletUtils {
 	public static final String ATT_REDIRECT2 = ServletUtil.ATT_REDIRECT2;
 	public static final String ATT_REFERRER = ServletUtil.ATT_REFERRER;
 	public static final String ATT_REFERRER2 = ServletUtil.ATT_REFERRER2;
-	public static final String ATT_OVER_PAGE_ACTION = "OVER_PAGE_ACTION";
 	
 	public static final String ATT_YUKON_USER = ServletUtil.ATT_YUKON_USER;
 	public static final String ATT_STARS_YUKON_USER = "STARS_YUKON_USER";
@@ -53,11 +53,11 @@ public class ServletUtils {
 	public static final String ATT_APPLY_TO_WEEKEND = "APPLY_TO_WEEKEND";
 	public static final String ATT_APPLY_TO_WEEKDAYS = "APPLY_TO_WEEKDAYS";
 	public static final String ATT_ACCOUNT_SEARCH_RESULTS = "ACCOUNT_SEARCH_RESULTS";
-	public static final String ATT_CALL_TRACKING_NUMBER = "CALL_TRACKING_NUMBER";
-	public static final String ATT_ORDER_TRACKING_NUMBER = "ORDER_TRACKING_NUMBER";
-	public static final String ATT_NEW_ACCOUNT_WIZARD = "NEW_ACCOUNT_WIZARD";
 	public static final String ATT_NEW_CUSTOMER_ACCOUNT = "NEW_CUSTOMER_ACCOUNT";
 	public static final String ATT_LAST_SEARCH_OPTION = "LAST_SEARCH_OPTION";
+	
+	public static final String ATT_MULTI_ACTIONS = "MULTI_ACTIONS";
+	public static final String ATT_NEW_ACCOUNT_WIZARD = "NEW_ACCOUNT_WIZARD";
 	
 	public static final String ATT_OMIT_GATEWAY_TIMEOUT = "OMIT_GATEWAY_TIMEOUT";
 	public static final String ATT_THERMOSTAT_INVENTORY_IDS = "THERMOSTAT_INVENTORY_IDS";
@@ -74,7 +74,7 @@ public class ServletUtils {
 	public static final String UTIL_FAX_NUMBER = "<<FAX_NUMBER>>";
 	public static final String UTIL_EMAIL = "<<EMAIL>>";
 
-    private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
+	private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
 	
 	private static final java.text.SimpleDateFormat[] timeFormat =
 	{
@@ -91,31 +91,31 @@ public class ServletUtils {
 	}
     
 
-    public static String forceNotEmpty(String str) {
-    	if (str == null || str.equals(""))
-    		return "&nbsp;";
-    	return str;
-    }
+	public static String forceNotEmpty(String str) {
+		if (str == null || str.equals(""))
+			return "&nbsp;";
+		return str;
+	}
 
-    public static String getDurationString(int sec) {
-        String durationStr = null;
+	public static String getDurationString(int sec) {
+		String durationStr = null;
 
-        if (sec >= 3600)
-            durationStr = decFormat.format(1.0 * sec / 3600) + " Hours";
-        else
-            durationStr = String.valueOf(sec / 60) + " Minutes";
+		if (sec >= 3600)
+			durationStr = decFormat.format(1.0 * sec / 3600) + " Hours";
+		else
+			durationStr = String.valueOf(sec / 60) + " Minutes";
 
-        return durationStr;
-    }
+		return durationStr;
+	}
     
-    public static String formatDate(Date date, java.text.SimpleDateFormat format) {
-    	return formatDate( date, format, "" );
-    }
+	public static String formatDate(Date date, java.text.SimpleDateFormat format) {
+		return formatDate( date, format, "" );
+	}
     
-    public static String formatDate(Date date, java.text.SimpleDateFormat format, String emptyStr) {
+	public static String formatDate(Date date, java.text.SimpleDateFormat format, String emptyStr) {
 		if (date == null) return emptyStr;
 		return format.format( date );
-    }
+	}
 
 	/**
 	 * Parse time in the specified time zone 
@@ -158,184 +158,126 @@ public class ServletUtils {
 		return dateCal.getTime();
 	}
     
-    public static StarsLMControlHistory getControlHistory(StarsLMControlHistory ctrlHist, StarsCtrlHistPeriod period, TimeZone tz) {
-    	Date date = LMControlHistoryUtil.getPeriodStartTime( period, tz );
+	public static StarsLMControlHistory getControlHistory(StarsLMControlHistory ctrlHist, StarsCtrlHistPeriod period, TimeZone tz) {
+		Date date = LMControlHistoryUtil.getPeriodStartTime( period, tz );
     	
-        StarsLMControlHistory ctrlHistToday = new StarsLMControlHistory();
-        ctrlHistToday.setBeingControlled( ctrlHist.getBeingControlled() );
+		StarsLMControlHistory ctrlHistToday = new StarsLMControlHistory();
+		ctrlHistToday.setBeingControlled( ctrlHist.getBeingControlled() );
         
-        for (int i = ctrlHist.getControlHistoryCount() - 1; i >= 0; i--) {
-        	ControlHistory hist = ctrlHist.getControlHistory(i);
-        	if ( hist.getStartDateTime().before(date) ) break;
-        	ctrlHistToday.addControlHistory( hist );
-        }
+		for (int i = ctrlHist.getControlHistoryCount() - 1; i >= 0; i--) {
+			ControlHistory hist = ctrlHist.getControlHistory(i);
+			if ( hist.getStartDateTime().before(date) ) break;
+			ctrlHistToday.addControlHistory( hist );
+		}
         
-        return ctrlHistToday;
-    }
+		return ctrlHistToday;
+	}
     
-    /**
-     * Format phone number to format "[...-#-###-]###-####"
-     * In the original string, each segment between adjacent "-" above must be consecutive
-     */
-    public static String formatPhoneNumber(String phoneNo) throws WebClientException {
-    	if (phoneNo.trim().equals("")) return "";
+	/**
+	 * Format phone number to format "[...-#-###-]###-#### x#..."
+	 * E.g. 763-595-7777 x5529 (5529 is the extension number)
+	 * In the original string, each segment between adjacent "-" above must be consecutive
+	 */
+	public static String formatPhoneNumber(String phoneNo) throws WebClientException {
+		phoneNo = phoneNo.trim();
+		if (phoneNo.equals("")) return "";
     	
-    	StringBuffer formatedPhoneNo = new StringBuffer();
-    	int n = phoneNo.length() - 1;	// position of digit counted from the last
+		StringBuffer formatedPhoneNo = new StringBuffer();
+		int n = phoneNo.length() - 1;	// position of digit counted from the last
+		
+		// Everything after the first character "x" is considered extension number and copied into the phone number
+		int extStartIdx = phoneNo.indexOf( 'x' );
+		if (extStartIdx < 0) extStartIdx = phoneNo.indexOf( 'X' );
+		
+		if (extStartIdx >= 0) {
+			formatedPhoneNo.append(" x").append( phoneNo.substring(extStartIdx+1) );
+			n = extStartIdx - 1;
+		}
     	
-    	/* Find the last 4 digits */
-    	while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
-    		n--;
-    	if (n < 0)
+		/* Find the last 4 digits */
+		while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
+			n--;
+		if (n < 0)
 			throw new WebClientException("Invalid phone number format '" + phoneNo + "'");
     	
-    	for (int i = 1; i < 4; i++) {
-    		n--;
-    		if (n < 0 || !Character.isDigit( phoneNo.charAt(n) ))
-    			throw new WebClientException("Invalid phone number format '" + phoneNo + "'");
-    	}
-    	formatedPhoneNo.insert( 0, phoneNo.substring(n, n+4) );
+		for (int i = 1; i < 4; i++) {
+			n--;
+			if (n < 0 || !Character.isDigit( phoneNo.charAt(n) ))
+				throw new WebClientException("Invalid phone number format '" + phoneNo + "'");
+		}
+		formatedPhoneNo.insert( 0, phoneNo.substring(n, n+4) );
     	
-    	/* Find the middle 3 digits */
-    	n--;
-    	while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
-    		n--;
-    	if (n < 0)
+		/* Find the middle 3 digits */
+		n--;
+		while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
+			n--;
+		if (n < 0)
 			throw new WebClientException("Invalid phone number format '" + phoneNo + "'");
     	
-    	for (int i = 1; i < 3; i++) {
-    		n--;
-    		if (n < 0 || !Character.isDigit( phoneNo.charAt(n) ))
+		for (int i = 1; i < 3; i++) {
+			n--;
+			if (n < 0 || !Character.isDigit( phoneNo.charAt(n) ))
 				throw new WebClientException("Invalid phone number format '" + phoneNo + "'");
-    	}
-    	formatedPhoneNo.insert( 0, '-' );
-    	formatedPhoneNo.insert( 0, phoneNo.substring(n, n+3) );
+		}
+		formatedPhoneNo.insert( 0, '-' );
+		formatedPhoneNo.insert( 0, phoneNo.substring(n, n+3) );
     	
-    	/* Find the 3-digit area code */
-    	n--;
-    	while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
-    		n--;
-    	if (n < 0) return formatedPhoneNo.toString();
+		/* Find the 3-digit area code */
+		n--;
+		while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
+			n--;
+		if (n < 0) return formatedPhoneNo.toString();
     	
-    	for (int i = 1; i < 3; i++) {
-    		n--;
-    		if (n < 0 || !Character.isDigit( phoneNo.charAt(n) ))
+		for (int i = 1; i < 3; i++) {
+			n--;
+			if (n < 0 || !Character.isDigit( phoneNo.charAt(n) ))
 				throw new WebClientException("Invalid phone number format '" + phoneNo + "'");
-    	}
-    	formatedPhoneNo.insert( 0, '-' );
-    	formatedPhoneNo.insert( 0, phoneNo.substring(n, n+3) );
+		}
+		formatedPhoneNo.insert( 0, '-' );
+		formatedPhoneNo.insert( 0, phoneNo.substring(n, n+3) );
     	
-    	/* Find the 1 digit before area code of 800 number or long distance */
-    	n--;
-    	while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
-    		n--;
-    	if (n < 0) return formatedPhoneNo.toString();
-    	formatedPhoneNo.insert( 0, '-' );
-    	formatedPhoneNo.insert( 0, phoneNo.charAt(n) );
+		/* Find the 1 digit before area code of 800 number or long distance */
+		n--;
+		while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
+			n--;
+		if (n < 0) return formatedPhoneNo.toString();
+		formatedPhoneNo.insert( 0, '-' );
+		formatedPhoneNo.insert( 0, phoneNo.charAt(n) );
     	
-    	/* Save all the remaining digits (country code etc.) in one segment */
-    	n--;
-    	while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
-    		n--;
-    	if (n < 0) return formatedPhoneNo.toString();
-    	formatedPhoneNo.insert( 0, '-' );
-    	for (; n >= 0; n--) {
-    		if (Character.isDigit( phoneNo.charAt(n) ))
-    			formatedPhoneNo.insert( 0, phoneNo.charAt(n) );
-    	}
+		/* Save all the remaining digits (country code etc.) in one segment */
+		n--;
+		while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
+			n--;
+		if (n < 0) return formatedPhoneNo.toString();
+		formatedPhoneNo.insert( 0, '-' );
+		for (; n >= 0; n--) {
+			if (Character.isDigit( phoneNo.charAt(n) ))
+				formatedPhoneNo.insert( 0, phoneNo.charAt(n) );
+		}
     	
-    	return formatedPhoneNo.toString();
-    }
+		return formatedPhoneNo.toString();
+	}
     
-    public static TimeZone getTimeZone(String timeZoneStr) {
-    	if (timeZoneStr.equalsIgnoreCase("AST"))
-    		return TimeZone.getTimeZone( "US/Alaska" );
-    	else if (timeZoneStr.equalsIgnoreCase("PST"))
-    		return TimeZone.getTimeZone( "US/Pacific" );
-    	else if (timeZoneStr.equalsIgnoreCase("MST"))
-    		return TimeZone.getTimeZone( "US/Mountain" );
-    	else if (timeZoneStr.equalsIgnoreCase("CST"))
-    		return TimeZone.getTimeZone( "US/Central" );
-    	else if (timeZoneStr.equalsIgnoreCase("EST"))
-    		return TimeZone.getTimeZone( "US/Eastern" );
-    	else
-    		return null;
-    }
-    
-    public static String getTimeZoneStr(TimeZone timeZone) {
-    	if (timeZone.equals( TimeZone.getTimeZone("AST") ))
-    		return "AST";
-    	else if (timeZone.equals( TimeZone.getTimeZone("PST") ))
-    		return "PST";
-    	else if (timeZone.equals( TimeZone.getTimeZone("MST") ))
-    		return "MST";
-    	else if (timeZone.equals( TimeZone.getTimeZone("CST") ))
-    		return "CST";
-    	else if (timeZone.equals( TimeZone.getTimeZone("EST") ))
-    		return "EST";
-    	else
-    		return null;
-    }
-    
-    public static void removeTransientAttributes(StarsYukonUser user) {
-        Enumeration enum = user.getAttributeNames();
-        while (enum.hasMoreElements()) {
-        	String attName = (String) enum.nextElement();
-        	if (attName.startsWith( ServletUtils.TRANSIENT_ATT_LEADING ))
-    			user.removeAttribute(attName);
-        }
-    }
-    
-    // Return image names: large icon, small icon, saving icon, control icon, environment icon
-    public static String[] getImageNames(String imageStr) {
-    	String[] names = imageStr.split(",");
-    	String[] imgNames = new String[ MAX_NUM_IMAGES ];
-    	for (int i = 0; i < MAX_NUM_IMAGES; i++) {
-    		if (i < names.length)
-    			imgNames[i] = names[i].trim();
-    		else
-    			imgNames[i] = "";
-    	}
+	public static String formatAddress(StarsCustomerAddress starsAddr) {
+		if (starsAddr == null) return "";
     	
-    	return imgNames;
-    }
-    
-    // Return program display names: display name, short name (used in enrollment page)
-    public static String[] getProgramDisplayNames(StarsEnrLMProgram starsProg) {
-    	String[] names = ServerUtils.splitString( starsProg.getStarsWebConfig().getAlternateDisplayName(), "," );
-    	String[] dispNames = new String[2];
-    	for (int i = 0; i < 2; i++) {
-    		if (i < names.length)
-    			dispNames[i] = names[i].trim();
-    		else
-    			dispNames[i] = "";
-    	}
+		StringBuffer sBuf = new StringBuffer();
+		if (starsAddr.getStreetAddr1().trim().length() > 0)
+			sBuf.append( starsAddr.getStreetAddr1() ).append( "<br>" );
+		if (starsAddr.getStreetAddr2().trim().length() > 0)
+			sBuf.append( starsAddr.getStreetAddr2() ).append( "<br>" );
+		if (starsAddr.getCity().trim().length() > 0)
+			sBuf.append( starsAddr.getCity() ).append( ", " );
+		if (starsAddr.getState().trim().length() > 0)
+			sBuf.append( starsAddr.getState() ).append( " " );
+		if (starsAddr.getZip().trim().length() > 0)
+			sBuf.append( starsAddr.getZip() );
     	
-    	// If not provided, default display name to program name, and short name to display name
-    	if (dispNames[0].length() == 0)
-    		dispNames[0] = starsProg.getProgramName();
-    	if (dispNames[1].length() == 0)
-    		dispNames[1] = dispNames[0];
-    	return dispNames;
-    }
+		return sBuf.toString();
+	}
     
-    public static String getFormattedAddress(StarsCustomerAddress starsAddr) {
-    	if (starsAddr == null) return "";
-    	
-    	StringBuffer sBuf = new StringBuffer( starsAddr.getStreetAddr1() );
-    	sBuf.append( "<br>" );
-    	if (starsAddr.getStreetAddr2().trim().length() > 0)
-    		sBuf.append( starsAddr.getStreetAddr2() ).append( "<br>" );
-    	if (starsAddr.getCity().trim().length() > 0)
-	    	sBuf.append( starsAddr.getCity() ).append( ", " );
-    	sBuf.append( starsAddr.getState() ).append( " " )
-    		.append( starsAddr.getZip() );
-    	
-    	return sBuf.toString();
-    }
-    
-    public static String getOneLineAddress(StarsCustomerAddress starsAddr) {
-    	if (starsAddr == null) return "(none)";
+	public static String getOneLineAddress(StarsCustomerAddress starsAddr) {
+		if (starsAddr == null) return "(none)";
     	
 		StringBuffer sBuf = new StringBuffer();
 		if (starsAddr.getStreetAddr1().trim().length() > 0)
@@ -352,28 +294,99 @@ public class ServletUtils {
 			if (sBuf.length() > 0) sBuf.append( ", " );
 			sBuf.append( starsAddr.getState() ).append( " " ).append( starsAddr.getZip() );
 		}
-		if (sBuf.length() == 0) sBuf.append( "(none)" );
     	
-    	return sBuf.toString();
-    }
+		return sBuf.toString();
+	}
     
-    public static String capitalize(String word) {
-    	return word.substring(0,1).toUpperCase().concat( word.substring(1).toLowerCase() );
-    }
+	public static TimeZone getTimeZone(String timeZoneStr) {
+		if (timeZoneStr.equalsIgnoreCase("AST"))
+			return TimeZone.getTimeZone( "US/Alaska" );
+		else if (timeZoneStr.equalsIgnoreCase("PST"))
+			return TimeZone.getTimeZone( "US/Pacific" );
+		else if (timeZoneStr.equalsIgnoreCase("MST"))
+			return TimeZone.getTimeZone( "US/Mountain" );
+		else if (timeZoneStr.equalsIgnoreCase("CST"))
+			return TimeZone.getTimeZone( "US/Central" );
+		else if (timeZoneStr.equalsIgnoreCase("EST"))
+			return TimeZone.getTimeZone( "US/Eastern" );
+		else
+			return null;
+	}
     
-    public static String capitalize2(String phrase) {
-    	StringTokenizer st = new StringTokenizer( phrase, " ", true );
-    	StringBuffer sb = new StringBuffer();
-    	while (st.hasMoreTokens()) {
-    		String word = st.nextToken();
-    		if (word.equals(" "))
-    			sb.append( word );
-    		else
-    			sb.append( word.substring(0,1).toUpperCase() ).append( word.substring(1).toLowerCase() );
-    	}
+	public static String getTimeZoneStr(TimeZone timeZone) {
+		if (timeZone.equals( TimeZone.getTimeZone("AST") ))
+			return "AST";
+		else if (timeZone.equals( TimeZone.getTimeZone("PST") ))
+			return "PST";
+		else if (timeZone.equals( TimeZone.getTimeZone("MST") ))
+			return "MST";
+		else if (timeZone.equals( TimeZone.getTimeZone("CST") ))
+			return "CST";
+		else if (timeZone.equals( TimeZone.getTimeZone("EST") ))
+			return "EST";
+		else
+			return null;
+	}
+    
+	public static void removeTransientAttributes(StarsYukonUser user) {
+		Enumeration enum = user.getAttributeNames();
+		while (enum.hasMoreElements()) {
+			String attName = (String) enum.nextElement();
+			if (attName.startsWith( ServletUtils.TRANSIENT_ATT_LEADING ))
+				user.removeAttribute(attName);
+		}
+	}
+    
+	// Return image names: large icon, small icon, saving icon, control icon, environment icon
+	public static String[] getImageNames(String imageStr) {
+		String[] names = imageStr.split(",");
+		String[] imgNames = new String[ MAX_NUM_IMAGES ];
+		for (int i = 0; i < MAX_NUM_IMAGES; i++) {
+			if (i < names.length)
+				imgNames[i] = names[i].trim();
+			else
+				imgNames[i] = "";
+		}
     	
-    	return sb.toString();
-    }
+		return imgNames;
+	}
+    
+	// Return program display names: display name, short name (used in enrollment page)
+	public static String[] getProgramDisplayNames(StarsEnrLMProgram starsProg) {
+		String[] names = ServerUtils.splitString( starsProg.getStarsWebConfig().getAlternateDisplayName(), "," );
+		String[] dispNames = new String[2];
+		for (int i = 0; i < 2; i++) {
+			if (i < names.length)
+				dispNames[i] = names[i].trim();
+			else
+				dispNames[i] = "";
+		}
+    	
+		// If not provided, default display name to program name, and short name to display name
+		if (dispNames[0].length() == 0)
+			dispNames[0] = starsProg.getProgramName();
+		if (dispNames[1].length() == 0)
+			dispNames[1] = dispNames[0];
+		return dispNames;
+	}
+    
+	public static String capitalize(String word) {
+		return word.substring(0,1).toUpperCase().concat( word.substring(1).toLowerCase() );
+	}
+    
+	public static String capitalize2(String phrase) {
+		StringTokenizer st = new StringTokenizer( phrase, " ", true );
+		StringBuffer sb = new StringBuffer();
+		while (st.hasMoreTokens()) {
+			String word = st.nextToken();
+			if (word.equals(" "))
+				sb.append( word );
+			else
+				sb.append( word.substring(0,1).toUpperCase() ).append( word.substring(1).toLowerCase() );
+		}
+    	
+		return sb.toString();
+	}
 
 	public static StarsCustListEntry getStarsCustListEntry(java.util.Hashtable selectionLists, String listName, int yukonDefID) {
 		StarsCustSelectionList list = (StarsCustSelectionList) selectionLists.get( listName );

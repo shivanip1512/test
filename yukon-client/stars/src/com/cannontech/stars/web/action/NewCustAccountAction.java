@@ -62,82 +62,83 @@ public class NewCustAccountAction implements ActionBase {
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
-            StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-            if (user == null) return null;
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+			if (user == null) return null;
             
 			StarsNewCustomerAccount newAccount = new StarsNewCustomerAccount();
 			StarsCustomerAccount account = new StarsCustomerAccount();
 			
-            account.setAccountNumber( req.getParameter("AcctNo") );
-            account.setIsCommercial( Boolean.valueOf(req.getParameter("Commercial")).booleanValue() );
-            account.setCompany( req.getParameter("Company") );
-            account.setAccountNotes( req.getParameter("AcctNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
-            account.setPropertyNumber( req.getParameter("PropNo") );
-            account.setPropertyNotes( req.getParameter("PropNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
+			account.setAccountNumber( req.getParameter("AcctNo") );
+			account.setIsCommercial( Boolean.valueOf(req.getParameter("Commercial")).booleanValue() );
+			account.setCompany( req.getParameter("Company") );
+			account.setAccountNotes( req.getParameter("AcctNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
+			account.setPropertyNumber( req.getParameter("PropNo") );
+			account.setPropertyNotes( req.getParameter("PropNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
 
-            StreetAddress propAddr = new StreetAddress();
-            propAddr.setStreetAddr1( req.getParameter("SAddr1") );
-            propAddr.setStreetAddr2( req.getParameter("SAddr2") );
-            propAddr.setCity( req.getParameter("SCity") );
-            propAddr.setState( req.getParameter("SState") );
-            propAddr.setZip( req.getParameter("SZip") );
-            propAddr.setCounty( req.getParameter("SCounty") );
-            account.setStreetAddress( propAddr );
+			StreetAddress propAddr = new StreetAddress();
+			propAddr.setStreetAddr1( req.getParameter("SAddr1") );
+			propAddr.setStreetAddr2( req.getParameter("SAddr2") );
+			propAddr.setCity( req.getParameter("SCity") );
+			propAddr.setState( req.getParameter("SState") );
+			propAddr.setZip( req.getParameter("SZip") );
+			propAddr.setCounty( req.getParameter("SCounty") );
+			account.setStreetAddress( propAddr );
 
 			Substation starsSub = new Substation();
 			starsSub.setEntryID( Integer.parseInt(req.getParameter("Substation")) );
 			
-            StarsSiteInformation siteInfo = new StarsSiteInformation();
-            siteInfo.setSubstation( starsSub );
-            siteInfo.setFeeder( req.getParameter("Feeder") );
-            siteInfo.setPole( req.getParameter("Pole") );
-            siteInfo.setTransformerSize( req.getParameter("TranSize") );
-            siteInfo.setServiceVoltage( req.getParameter("ServVolt") );
-            account.setStarsSiteInformation( siteInfo );
+			StarsSiteInformation siteInfo = new StarsSiteInformation();
+			siteInfo.setSubstation( starsSub );
+			siteInfo.setFeeder( req.getParameter("Feeder") );
+			siteInfo.setPole( req.getParameter("Pole") );
+			siteInfo.setTransformerSize( req.getParameter("TranSize") );
+			siteInfo.setServiceVoltage( req.getParameter("ServVolt") );
+			account.setStarsSiteInformation( siteInfo );
 
-            BillingAddress billAddr = new BillingAddress();
-            if (req.getParameter("CopyAddress") != null) {
-	            billAddr.setStreetAddr1( req.getParameter("SAddr1") );
-	            billAddr.setStreetAddr2( req.getParameter("SAddr2") );
-	            billAddr.setCity( req.getParameter("SCity") );
-	            billAddr.setState( req.getParameter("SState") );
-	            billAddr.setZip( req.getParameter("SZip") );
-            }
-            else {
-	            billAddr.setStreetAddr1( req.getParameter("BAddr1") );
-	            billAddr.setStreetAddr2( req.getParameter("BAddr2") );
-	            billAddr.setCity( req.getParameter("BCity") );
-	            billAddr.setState( req.getParameter("BState") );
-	            billAddr.setZip( req.getParameter("BZip") );
-            }
-            account.setBillingAddress( billAddr );
+			BillingAddress billAddr = new BillingAddress();
+			if (req.getParameter("CopyAddress") != null) {
+				billAddr.setStreetAddr1( req.getParameter("SAddr1") );
+				billAddr.setStreetAddr2( req.getParameter("SAddr2") );
+				billAddr.setCity( req.getParameter("SCity") );
+				billAddr.setState( req.getParameter("SState") );
+				billAddr.setZip( req.getParameter("SZip") );
+			}
+			else {
+				billAddr.setStreetAddr1( req.getParameter("BAddr1") );
+				billAddr.setStreetAddr2( req.getParameter("BAddr2") );
+				billAddr.setCity( req.getParameter("BCity") );
+				billAddr.setState( req.getParameter("BState") );
+				billAddr.setZip( req.getParameter("BZip") );
+			}
+			account.setBillingAddress( billAddr );
 
-            PrimaryContact primContact = new PrimaryContact();
-            primContact.setLastName( req.getParameter("LastName") );
-            primContact.setFirstName( req.getParameter("FirstName") );
-            primContact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("HomePhone")) );
-            primContact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone")) );
+			PrimaryContact primContact = new PrimaryContact();
+			primContact.setLastName( req.getParameter("LastName") );
+			primContact.setFirstName( req.getParameter("FirstName") );
+			primContact.setHomePhone( req.getParameter("HomePhone") );
+			primContact.setWorkPhone( req.getParameter("WorkPhone") );
             
-            Email email = new Email();
-            email.setNotification( req.getParameter("Email") );
-            email.setEnabled( Boolean.valueOf(req.getParameter("NotifyControl")).booleanValue() );
-            primContact.setEmail( email );
-            account.setPrimaryContact( primContact );
+			Email email = new Email();
+			email.setNotification( req.getParameter("Email") );
+			email.setEnabled( Boolean.valueOf(req.getParameter("NotifyControl")).booleanValue() );
+			primContact.setEmail( email );
+			account.setPrimaryContact( primContact );
             
-	        for (int i = 2; i <= 4; i++) {
-	            String lastName = req.getParameter("LastName" + i);
-	            String firstName = req.getParameter("FirstName" + i);
+			for (int i = 2; i <= 4; i++) {
+				String lastName = req.getParameter("LastName" + i);
+				String firstName = req.getParameter("FirstName" + i);
 	
-	            if (lastName != null && lastName.trim().length() > 0
-	                && firstName != null && firstName.trim().length() > 0) {
-	                AdditionalContact contact = new AdditionalContact();
-	                contact.setLastName( lastName );
-	                contact.setFirstName( firstName );
-	                contact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("HomePhone" + i)) );
-	                contact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone" + i)) );
-	                account.addAdditionalContact( contact );
-	            }
-	        }
+				if (lastName != null && lastName.trim().length() > 0
+					&& firstName != null && firstName.trim().length() > 0) {
+					AdditionalContact contact = new AdditionalContact();
+					contact.setLastName( lastName );
+					contact.setFirstName( firstName );
+					contact.setHomePhone( req.getParameter("HomePhone" + i) );
+					contact.setWorkPhone( req.getParameter("WorkPhone" + i) );
+					account.addAdditionalContact( contact );
+				}
+			}
+			
 			newAccount.setStarsCustomerAccount( account );
 			
 			String username = req.getParameter( "Username" );
@@ -150,19 +151,28 @@ public class NewCustAccountAction implements ActionBase {
 				newAccount.setStarsUpdateLogin( login );
 			}
 			
-			user.setAttribute( ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT, newAccount );
+			session.setAttribute( ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT, newAccount );
 			
-            StarsOperation operation = new StarsOperation();
-            operation.setStarsNewCustomerAccount( newAccount );
+			// Format the phone number after the information has been saved
+			primContact.setHomePhone( ServletUtils.formatPhoneNumber(primContact.getHomePhone()) );
+			primContact.setWorkPhone( ServletUtils.formatPhoneNumber(primContact.getWorkPhone()) );
+			
+			for (int i = 0; i < account.getAdditionalContactCount(); i++) {
+				account.getAdditionalContact(i).setHomePhone( account.getAdditionalContact(i).getHomePhone() );
+				account.getAdditionalContact(i).setWorkPhone( account.getAdditionalContact(i).getWorkPhone() );
+			}
+			
+			StarsOperation operation = new StarsOperation();
+			operation.setStarsNewCustomerAccount( newAccount );
 
-            return SOAPUtil.buildSOAPMessage( operation );
+			return SOAPUtil.buildSOAPMessage( operation );
 		}
 		catch (WebClientException we) {
 			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, we.getMessage() );
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
 		}
 		
 		return null;
@@ -172,66 +182,66 @@ public class NewCustAccountAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
-        StarsOperation respOper = new StarsOperation();
+		StarsOperation respOper = new StarsOperation();
         
-        try {
-            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+		try {
+			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 			StarsNewCustomerAccount newAccount = reqOper.getStarsNewCustomerAccount();
 			
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-            if (user == null) {
-                respOper.setStarsFailure( StarsFactory.newStarsFailure(
-                		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
-                return SOAPUtil.buildSOAPMessage( respOper );
-            }
+			if (user == null) {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
             
-            LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 			LiteStarsCustAccountInformation liteAcctInfo = null;
             
-            try {
+			try {
 				liteAcctInfo = newCustomerAccount( newAccount, user, energyCompany );
-            }
-            catch (WebClientException e) {
+			}
+			catch (WebClientException e) {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
 						StarsConstants.FAILURE_CODE_OPERATION_FAILED, e.getMessage()) );
 				return SOAPUtil.buildSOAPMessage( respOper );
-            }
+			}
             
-            if (SOAPServer.isClientLocal()) {
-            	StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
+			if (SOAPServer.isClientLocal()) {
+				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
 				ServletUtils.removeTransientAttributes( user );
 				user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo );
-            }
+			}
             
 			StarsSuccess success = new StarsSuccess();
 			success.setDescription( "Customer account created successfully" );
 			respOper.setStarsSuccess( success );
 			
-            return SOAPUtil.buildSOAPMessage( respOper );
-        }
-        catch (Exception e) {
-            e.printStackTrace();
+			return SOAPUtil.buildSOAPMessage( respOper );
+		}
+		catch (Exception e) {
+			e.printStackTrace();
             
-            try {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to create the customer account") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-            }
-            catch (Exception e2) {
-            	e2.printStackTrace();
-            }
-        }
+			try {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to create the customer account") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
+			catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
 
-        return null;
+		return null;
 	}
 
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#parse(SOAPMessage, HttpSession)
 	 */
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
-        try {
-            StarsOperation respOper = SOAPUtil.parseSOAPMsgForOperation( respMsg );
-            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+		try {
+			StarsOperation respOper = SOAPUtil.parseSOAPMsgForOperation( respMsg );
+			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 
 			StarsFailure failure = respOper.getStarsFailure();
 			if (failure != null) {
@@ -243,8 +253,7 @@ public class NewCustAccountAction implements ActionBase {
 			if (success == null)
 				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-			user.removeAttribute( ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT );
+			session.removeAttribute( ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT );
 			
 			if (!SOAPClient.isServerLocal()) {
 				StarsNewCustomerAccount newAccount = reqOper.getStarsNewCustomerAccount();
@@ -264,17 +273,18 @@ public class NewCustAccountAction implements ActionBase {
 				accountInfo.setStarsCallReportHistory( new StarsCallReportHistory() );
 				accountInfo.setStarsServiceRequestHistory( new StarsServiceRequestHistory() );
 				
+				StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 				ServletUtils.removeTransientAttributes( user );
 				user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo );
 			}
 			
-            return 0;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+			return 0;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
 	public static LiteStarsCustAccountInformation newCustomerAccount(StarsNewCustomerAccount newAccount, StarsYukonUser user,
@@ -295,15 +305,15 @@ public class NewCustAccountAction implements ActionBase {
 				
 				if (stmt.getRowCount() > 0)
 					throw new WebClientException( "The account number already exists" );
-        		
-				// Check to see if the login is valid
-				if (updateLogin != null) {
-					if (updateLogin.getUsername().trim().length() == 0 || updateLogin.getPassword().trim().length() == 0)
-						throw new WebClientException( "Username and password cannot be empty" );
-		    		
-					if (!UpdateLoginAction.checkLogin( updateLogin ))
-						throw new WebClientException( "Username already exists" );
-				}
+			}
+    		
+			// Check to see if the login is valid
+			if (updateLogin != null) {
+				if (updateLogin.getUsername().trim().length() == 0 || updateLogin.getPassword().trim().length() == 0)
+					throw new WebClientException( "Username and password cannot be empty" );
+	    		
+				if (!UpdateLoginAction.checkLogin( updateLogin ))
+					throw new WebClientException( "Username already exists" );
 			}
     		
 			/* Create yukon user */

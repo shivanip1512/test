@@ -53,6 +53,8 @@ public class SULMProgram implements java.io.Serializable {
     **/
     private boolean _has_addressingGroupID;
 
+    private java.lang.String _inventoryID;
+
 
       //----------------/
      //- Constructors -/
@@ -107,6 +109,16 @@ public class SULMProgram implements java.io.Serializable {
     {
         return this._applianceCategoryID;
     } //-- int getApplianceCategoryID() 
+
+    /**
+     * Returns the value of field 'inventoryID'.
+     * 
+     * @return the value of field 'inventoryID'.
+    **/
+    public java.lang.String getInventoryID()
+    {
+        return this._inventoryID;
+    } //-- java.lang.String getInventoryID() 
 
     /**
      * Returns the value of field 'programID'.
@@ -199,6 +211,16 @@ public class SULMProgram implements java.io.Serializable {
         this._applianceCategoryID = applianceCategoryID;
         this._has_applianceCategoryID = true;
     } //-- void setApplianceCategoryID(int) 
+
+    /**
+     * Sets the value of field 'inventoryID'.
+     * 
+     * @param inventoryID the value of field 'inventoryID'.
+    **/
+    public void setInventoryID(java.lang.String inventoryID)
+    {
+        this._inventoryID = inventoryID;
+    } //-- void setInventoryID(java.lang.String) 
 
     /**
      * Sets the value of field 'programID'.

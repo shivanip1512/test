@@ -1,6 +1,7 @@
 package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -21,45 +22,52 @@ import com.cannontech.stars.xml.util.StarsConstants;
  */
 public class MultiAction implements ActionBase {
 	
-	private SOAPMessage reqMsg = null;
 	private ArrayList actionList = new ArrayList();
+	private Hashtable actionMsgMap = new Hashtable();
 	private ActionBase failedAction = null;
 	
-	public boolean addAction(ActionBase action, HttpServletRequest req, HttpSession session) {
-		// Remove all action of the same type first
-		java.util.Iterator it = actionList.iterator();
-		while (it.hasNext()) {
-			ActionBase act = (ActionBase) it.next();
-			if (action.getClass().equals( act.getClass() ))
-				it.remove();
-		}
-		actionList.add( action );
-		
-		try {
-			if (reqMsg == null) {
-				reqMsg = SOAPUtil.createMessage();
-				reqMsg.getSOAPPart().getEnvelope().getBody().addChildElement( StarsConstants.STARS_OPERATION );
+	public void addAction(ActionBase action, SOAPMessage message) {
+		// Look for action of the same class. If found, replace it; otherwise add the new action
+		boolean actionFound = false;
+		for (int i = 0; i < actionList.size(); i++) {
+			ActionBase act = (ActionBase) actionList.get(i);
+			if (action.getClass().equals( act.getClass() )) {
+				actionList.set(i, action);
+				actionFound = true;
+				break;
 			}
-			
-			SOAPMessage message = action.build(req, session);
-			if (message == null) return false;
-			
-			SOAPUtil.mergeSOAPMsgOfOperation( reqMsg, message );
-			return true;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to build request message" );
 		}
 		
-		return false;
+		if (!actionFound) actionList.add( action );
+		actionMsgMap.put( action.getClass(), message );
+	}
+	
+	public SOAPMessage getRequestMessage(ActionBase action) {
+		return (SOAPMessage) actionMsgMap.get( action.getClass() );
 	}
 
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
-		return reqMsg;
+		try {
+			SOAPMessage reqMsg = SOAPUtil.createMessage();
+			reqMsg.getSOAPPart().getEnvelope().getBody().addChildElement( StarsConstants.STARS_OPERATION );
+			
+			for (int i = 0; i < actionList.size(); i++) {
+				ActionBase action = (ActionBase) actionList.get(i);
+				SOAPMessage message = (SOAPMessage) actionMsgMap.get( action.getClass() );
+				SOAPUtil.mergeSOAPMsgOfOperation( reqMsg, message );
+			}
+			
+			return reqMsg;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to build request message" );
+		}
+		
+		return null;
 	}
 
 	/**
@@ -100,20 +108,20 @@ public class MultiAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#parse(SOAPMessage, SOAPMessage, HttpSession)
 	 */
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
-        try {
-            for (int i = 0; i < actionList.size(); i++) {
-            	ActionBase action = (ActionBase) actionList.get(i);
-            	int res = action.parse(reqMsg, respMsg, session);
-            	if (res != 0) return res;
-            }
+		try {
+			for (int i = 0; i < actionList.size(); i++) {
+				ActionBase action = (ActionBase) actionList.get(i);
+				int res = action.parse(reqMsg, respMsg, session);
+				if (res != 0) return res;
+			}
             
 			return 0;
-        }
-        catch (Exception e) {
-        	e.printStackTrace();
-        }
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
         
-        return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
 	public ActionBase getFailedAction() {

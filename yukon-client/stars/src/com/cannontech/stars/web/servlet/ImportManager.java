@@ -30,6 +30,7 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
@@ -117,7 +118,6 @@ import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsInv;
-import com.cannontech.stars.xml.serialize.StarsLMHardwareConfig;
 import com.cannontech.stars.xml.serialize.StarsNewCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
@@ -757,7 +757,7 @@ public class ImportManager extends HttpServlet {
 	private String redirect = null;
 	
 
-	private static void setStarsCustAccount(StarsCustAccount account, String[] fields, LiteStarsEnergyCompany energyCompany) {
+	private static void setStarsCustAccount(StarsCustAccount account, String[] fields, LiteStarsEnergyCompany energyCompany) throws WebClientException {
 	    account.setAccountNumber( fields[IDX_ACCOUNT_NO] );
 	    account.setIsCommercial( fields[IDX_CUSTOMER_TYPE].equalsIgnoreCase("COM") );
 	    account.setCompany( fields[IDX_COMPANY_NAME] );
@@ -816,11 +816,8 @@ public class ImportManager extends HttpServlet {
 	    PrimaryContact primContact = new PrimaryContact();
 	    primContact.setLastName( fields[IDX_LAST_NAME] );
 	    primContact.setFirstName( fields[IDX_FIRST_NAME] );
-	    try {
-			primContact.setHomePhone( ServletUtils.formatPhoneNumber(fields[IDX_HOME_PHONE]) );
-			primContact.setWorkPhone( ServletUtils.formatPhoneNumber(fields[IDX_WORK_PHONE]) + fields[IDX_WORK_PHONE_EXT] );
-	    }
-	    catch (WebClientException se) {}
+		primContact.setHomePhone( ServletUtils.formatPhoneNumber(fields[IDX_HOME_PHONE]) );
+		primContact.setWorkPhone( ServletUtils.formatPhoneNumber(fields[IDX_WORK_PHONE]) + fields[IDX_WORK_PHONE_EXT] );
 	    
 	    Email email = new Email();
 	    email.setNotification( fields[IDX_EMAIL] );
@@ -843,6 +840,11 @@ public class ImportManager extends HttpServlet {
 			StarsUpdateLogin login = new StarsUpdateLogin();
 			login.setUsername( fields[IDX_USERNAME] );
 			login.setPassword( fields[IDX_PASSWORD] );
+			
+			LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();
+			if (custGroups != null && custGroups.length > 0)
+				login.setGroupID( custGroups[0].getGroupID() );
+			
 			newAccount.setStarsUpdateLogin( login );
 		}
 		
@@ -895,7 +897,7 @@ public class ImportManager extends HttpServlet {
 		return -1;
 	}
 
-	private static void setStarsInventory(StarsInv inv, String[] fields, LiteStarsEnergyCompany energyCompany) {
+	private static void setStarsInventory(StarsInv inv, String[] fields, LiteStarsEnergyCompany energyCompany) throws WebClientException {
 		if (fields[IDX_ALT_TRACK_NO].length() > 0)
 			inv.setAltTrackingNumber( fields[IDX_ALT_TRACK_NO] );
 		if (fields[IDX_INV_NOTES].length() > 0)
@@ -908,6 +910,9 @@ public class ImportManager extends HttpServlet {
 				inv.setReceiveDate( ServerUtils.starsDateFormat.parse(fields[IDX_RECEIVE_DATE]) );
 			}
 			catch (java.text.ParseException e) {}
+			
+			if (inv.getReceiveDate() == null)
+				throw new WebClientException("Invalid receive date format: " + fields[IDX_RECEIVE_DATE]);
 		}
 		
 		if (fields[IDX_INSTALL_DATE].length() > 0) {
@@ -920,11 +925,17 @@ public class ImportManager extends HttpServlet {
 				}
 				catch (java.text.ParseException e) {}
 			}
+			
+			if (inv.getInstallDate() == null)
+				throw new WebClientException("Invalid install date format: " + fields[IDX_INSTALL_DATE]);
 		}
 		
 		if (fields[IDX_REMOVE_DATE].length() > 0) {
 			inv.setRemoveDate( ServletUtil.parseDateStringLiberally(
 					fields[IDX_REMOVE_DATE], energyCompany.getDefaultTimeZone()) );
+			
+			if (inv.getRemoveDate() == null)
+				throw new WebClientException("Invalid remove date format: " + fields[IDX_REMOVE_DATE]);
 		}
 		
 		if (fields[IDX_DEVICE_VOLTAGE].length() > 0) {
@@ -1013,15 +1024,15 @@ public class ImportManager extends HttpServlet {
 		}
 		else {
 			if (fields[IDX_DEVICE_NAME].equals(""))
-				throw new ImportProblem( ImportProblem.NO_DEVICE_NAME );
+				throw new WebClientException( ImportProblem.NO_DEVICE_NAME );
 			liteInv = energyCompany.searchForDevice( categoryID, fields[IDX_DEVICE_NAME] );
 			if (liteInv == null)
-				throw new ImportProblem( ImportProblem.DEVICE_NAME_NOT_FOUND );
+				throw new WebClientException( ImportProblem.DEVICE_NAME_NOT_FOUND );
 		}
 		
 		if (liteInv != null) {
 			if (liteInv.getAccountID() > 0)
-				throw new ImportProblem( ImportProblem.DUPLICATE_HARDWARE );
+				throw new WebClientException( "Hardware already exists and assigned to an account" );
 			
 			createHw = new StarsCreateLMHardware();
 			StarsLiteFactory.setStarsInv( createHw, liteInv, energyCompany );
@@ -1039,69 +1050,25 @@ public class ImportManager extends HttpServlet {
 	    return CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany );
 	}
 
-	public static LiteInventoryBase updateLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteStarsEnergyCompany energyCompany) throws Exception
+	public static LiteInventoryBase updateLMHardware(String[] fields, LiteInventoryBase liteInv,
+		LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany) throws Exception
 	{
-		if (liteAcctInfo.getInventories().size() != 1)
-			throw new WebClientException( "More than one hardware in the account, cannot determine which one to be updated" );
-		
 		// Check inventory and build request message
 		int devTypeID = getDeviceTypeID( energyCompany, fields[IDX_DEVICE_TYPE] );
 		if (devTypeID == -1)
 			throw new WebClientException("Invalid device type '" + fields[IDX_DEVICE_TYPE] + "'");
 		
-		StarsUpdateLMHardware updateHw = null;
-		LiteStarsLMHardware liteHw = energyCompany.searchForLMHardware( devTypeID, fields[IDX_SERIAL_NO] );
-		
-		if (liteHw != null) {
-			updateHw = new StarsUpdateLMHardware();
-			StarsLiteFactory.setStarsInv( updateHw, liteHw, energyCompany );
-			updateHw.setInstallDate( new java.util.Date() );
-			updateHw.setRemoveDate( new java.util.Date(0) );
-			updateHw.setInstallationNotes( "" );
-		}
-		else {
-			updateHw = (StarsUpdateLMHardware) StarsFactory.newStarsInv(StarsUpdateLMHardware.class);
-		}
+		StarsUpdateLMHardware updateHw = new StarsUpdateLMHardware();
+		StarsLiteFactory.setStarsInv( updateHw, liteInv, energyCompany );
+		updateHw.setInstallDate( new java.util.Date() );
+		updateHw.setRemoveDate( new java.util.Date(0) );
+		updateHw.setInstallationNotes( "" );
 		
 		fields[IDX_DEVICE_TYPE] = String.valueOf( devTypeID );
 		ImportManager.setStarsInventory( updateHw, fields, energyCompany );
 		
-		int invIDOld = ((Integer) liteAcctInfo.getInventories().get(0)).intValue();
-		
-		if (liteHw == null || liteHw.getInventoryID() != invIDOld) {
-			// Update information doesn't match the old hardware, remove the old one
-			StarsDeleteLMHardware deleteHw = new StarsDeleteLMHardware();
-			deleteHw.setInventoryID( invIDOld );
-			deleteHw.setDeleteFromInventory( false );
-			if (fields[IDX_REMOVE_DATE].length() > 0) {
-				deleteHw.setRemoveDate( ServletUtil.parseDateStringLiberally(
-						fields[IDX_REMOVE_DATE], energyCompany.getDefaultTimeZone()) );
-			}
-			
-			// Build up request message for adding new hardware and preserving old hardware configuration
-			StarsCreateLMHardware createHw = (StarsCreateLMHardware)
-					StarsFactory.newStarsInv( updateHw, StarsCreateLMHardware.class );
-	        
-			if (createHw.getLMHardware() != null) {
-				for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
-					LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
-					if (liteApp.getInventoryID() == deleteHw.getInventoryID()) {
-						StarsLMHardwareConfig starsConfig = new StarsLMHardwareConfig();
-						starsConfig.setApplianceID( liteApp.getApplianceID() );
-						starsConfig.setGroupID( liteApp.getAddressingGroupID() );
-						createHw.getLMHardware().addStarsLMHardwareConfig( starsConfig );
-					}
-				}
-			}
-	        
-			DeleteLMHardwareAction.removeInventory( deleteHw, liteAcctInfo, energyCompany );
-			return CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany );
-		}
-		else {
-			UpdateLMHardwareAction.updateInventory( updateHw, liteHw, energyCompany );
-			return energyCompany.getInventory( liteHw.getInventoryID(), true );
-		}
+		UpdateLMHardwareAction.updateInventory( updateHw, liteInv, energyCompany );
+		return energyCompany.getInventory( liteInv.getInventoryID(), true );
 	}
 
 	public static void removeLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
@@ -1150,13 +1117,15 @@ public class ImportManager extends HttpServlet {
 				suProg.setApplianceCategoryID( programs[i][1] );
 			if (programs[i][2] != -1)
 				suProg.setAddressingGroupID( programs[i][2] );
+			if (invID != null)
+				suProg.setInventoryID( invID.toString() );
 			suPrograms.addSULMProgram( suProg );
 		}
 		
 		StarsProgramSignUp progSignUp = new StarsProgramSignUp();
 		progSignUp.setStarsSULMPrograms( suPrograms );
 	    
-	    ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, invID, energyCompany );
+	    ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, energyCompany );
 	}
 	
 	private static int getApplianceCategoryID(LiteStarsEnergyCompany energyCompany, String appType) {

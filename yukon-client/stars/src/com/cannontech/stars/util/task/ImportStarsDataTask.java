@@ -79,7 +79,6 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 	int numOrderAdded = 0;
 	int numResAdded = 0;
 	
-	int numDuplicateHardware = 0;
 	int numNoDeviceName = 0;
 	int numDeviceNameNotFound = 0;
 	int numNoLoadDescription = 0;
@@ -298,12 +297,12 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				try {
 					liteInv = ImportManager.insertLMHardware( fields, liteAcctInfo, energyCompany, first );
 				}
-				catch (ImportProblem ipe) {
-					if (ipe.getMessage().equals( ImportProblem.DUPLICATE_HARDWARE ))
-						numDuplicateHardware++;
-					else if (ipe.getMessage().equals( ImportProblem.NO_DEVICE_NAME ))
+				catch (WebClientException e) {
+					if (e.getMessage().equals( ImportProblem.NO_DEVICE_NAME )) {
 						numNoDeviceName++;
-					else if (ipe.getMessage().equals( ImportProblem.DEVICE_NAME_NOT_FOUND )) {
+						continue;
+					}
+					else if (e.getMessage().equals( ImportProblem.DEVICE_NAME_NOT_FOUND )) {
 						numDeviceNameNotFound++;
 						
 						if (fields[ImportManager.IDX_SERIAL_NO].length() > 0) {
@@ -328,9 +327,11 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 										+ "matches Yukon device (dev_id=" + deviceID + ",dev_name=" + litePao.getPaoName() + ") by serial number");
 							}
 						}
+						
+						continue;
 					}
-					
-					continue;
+					else
+						throw e;
 				}
 				finally {
 					first = false;
@@ -650,8 +651,6 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			msg += " (" + numRecvrAdded + " receivers, " + numMeterAdded + " meters)";
 			logMsg.add(msg);
 			
-			if (numDuplicateHardware > 0)
-				logMsg.add(numDuplicateHardware + " hardwares ignored because they already exist and assigned to customer accounts");
 			if (numNoDeviceName > 0)
 				logMsg.add(numNoDeviceName + " hardwares ignored because device name is empty");
 			if (numDeviceNameNotFound > 0)

@@ -188,106 +188,109 @@ public class StarsFactory {
 	}
 
 	public static StarsCallReport[] getStarsCallReports(Integer accountID) {
-        com.cannontech.database.db.stars.report.CallReportBase[] calls =
-        		CallReportBase.getAllCallReports( accountID );
-        if (calls == null) return null;
+		com.cannontech.database.db.stars.report.CallReportBase[] calls =
+				CallReportBase.getAllCallReports( accountID );
+		if (calls == null) return null;
         
-        StarsCallReport[] callRprts = new StarsCallReport[ calls.length ];
-        for (int i = 0; i < calls.length; i++) {
-        	callRprts[i] = new StarsCallReport();
+		StarsCallReport[] callRprts = new StarsCallReport[ calls.length ];
+		for (int i = 0; i < calls.length; i++) {
+			callRprts[i] = new StarsCallReport();
         	
-        	callRprts[i].setCallID( calls[i].getCallID().intValue() );
-        	callRprts[i].setCallDate( calls[i].getDateTaken() );
-        	callRprts[i].setTakenBy( ServerUtils.forceNotNull(calls[i].getTakenBy()) );
-        	callRprts[i].setDescription( ServerUtils.forceNotNull(calls[i].getDescription()) );
+			callRprts[i].setCallID( calls[i].getCallID().intValue() );
+			callRprts[i].setCallDate( calls[i].getDateTaken() );
+			callRprts[i].setTakenBy( ServerUtils.forceNotNull(calls[i].getTakenBy()) );
+			callRprts[i].setDescription( ServerUtils.forceNotNull(calls[i].getDescription()) );
         	
-        	String callNo = ServerUtils.forceNotNull(calls[i].getCallNumber());
-        	if (callNo.startsWith( ServerUtils.AUTO_GEN_NUM_PREC ))
-        		callNo = callNo.substring( ServerUtils.AUTO_GEN_NUM_PREC.length() );
+			String callNo = ServerUtils.forceNotNull(calls[i].getCallNumber());
+			if (callNo.startsWith( ServerUtils.AUTO_GEN_NUM_PREC ))
+				callNo = callNo.substring( ServerUtils.AUTO_GEN_NUM_PREC.length() );
 			callRprts[i].setCallNumber( callNo );
         	
-        	CallType callType = new CallType();
-        	StarsLiteFactory.setStarsCustListEntry( callType, YukonListFuncs.getYukonListEntry(calls[i].getCallTypeID().intValue()) );
-        	callRprts[i].setCallType( callType );
-        }
+			CallType callType = new CallType();
+			StarsLiteFactory.setStarsCustListEntry( callType, YukonListFuncs.getYukonListEntry(calls[i].getCallTypeID().intValue()) );
+			callRprts[i].setCallType( callType );
+		}
         
-        return callRprts;
+		return callRprts;
 	}
 	
 	
 	/* StarsCustAccount factory methods */
 
 	public static StarsCustAccount newStarsCustAccount(StarsCustAccount account, Class type) {
-        try {
-            StarsCustAccount newAccount = (StarsCustAccount) type.newInstance();
+		try {
+			StarsCustAccount newAccount = (StarsCustAccount) type.newInstance();
+            
+			newAccount.setAccountID( account.getAccountID() );
+			newAccount.setCustomerID( account.getCustomerID() );
+			newAccount.setAccountNumber( account.getAccountNumber() );
+			newAccount.setIsCommercial( account.getIsCommercial() );
+			newAccount.setCompany( account.getCompany() );
+			newAccount.setAccountNotes( account.getAccountNotes() );
+			newAccount.setPropertyNumber( account.getPropertyNumber() );
+			newAccount.setPropertyNotes( account.getPropertyNotes() );
+			newAccount.setStreetAddress( account.getStreetAddress() );
+			newAccount.setStarsSiteInformation( account.getStarsSiteInformation() );
+			newAccount.setBillingAddress( account.getBillingAddress() );
+			newAccount.setPrimaryContact( account.getPrimaryContact() );
+			newAccount.setAdditionalContact( account.getAdditionalContact() );
+			newAccount.setTimeZone( account.getTimeZone() );
+            
+			return newAccount;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
-            newAccount.setAccountNumber( account.getAccountNumber() );
-            newAccount.setIsCommercial( account.getIsCommercial() );
-            newAccount.setCompany( account.getCompany() );
-            newAccount.setAccountNotes( account.getAccountNotes() );
-            newAccount.setPropertyNumber( account.getPropertyNumber() );
-            newAccount.setPropertyNotes( account.getPropertyNotes() );
-            newAccount.setStreetAddress( account.getStreetAddress() );
-            newAccount.setStarsSiteInformation( account.getStarsSiteInformation() );
-            newAccount.setBillingAddress( account.getBillingAddress() );
-            newAccount.setPrimaryContact( account.getPrimaryContact() );
-            newAccount.setAdditionalContact( account.getAdditionalContact() );
-
-            return newAccount;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
+		return null;
+	}
 
 	public static void setCustomerAccount(CustomerAccount account, StarsCustAccount starsAccount) {
-    	account.setAccountNumber( starsAccount.getAccountNumber() );
-    	account.setAccountNotes( starsAccount.getAccountNotes() );
-    }
+		account.setAccountNumber( starsAccount.getAccountNumber() );
+		account.setAccountNotes( starsAccount.getAccountNotes() );
+	}
 
 	public static void setAccountSite(AccountSite acctSite, StarsCustAccount starsAccount) {
-    	acctSite.setSiteNumber( starsAccount.getPropertyNumber() );
-    	acctSite.setPropertyNotes( starsAccount.getPropertyNotes() );
-    }
+		acctSite.setSiteNumber( starsAccount.getPropertyNumber() );
+		acctSite.setPropertyNotes( starsAccount.getPropertyNotes() );
+	}
 
 	public static void setSiteInformation(SiteInformation siteInfo, StarsCustAccount starsAccount) {
-    	StarsSiteInformation starsSiteInfo = starsAccount.getStarsSiteInformation();
-    	siteInfo.setSubstationID( new Integer(starsSiteInfo.getSubstation().getEntryID()) );
-    	siteInfo.setFeeder( starsSiteInfo.getFeeder() );
-    	siteInfo.setPole( starsSiteInfo.getPole() );
-    	siteInfo.setTransformerSize( starsSiteInfo.getTransformerSize() );
-    	siteInfo.setServiceVoltage( starsSiteInfo.getServiceVoltage() );
-    }
+		StarsSiteInformation starsSiteInfo = starsAccount.getStarsSiteInformation();
+		siteInfo.setSubstationID( new Integer(starsSiteInfo.getSubstation().getEntryID()) );
+		siteInfo.setFeeder( starsSiteInfo.getFeeder() );
+		siteInfo.setPole( starsSiteInfo.getPole() );
+		siteInfo.setTransformerSize( starsSiteInfo.getTransformerSize() );
+		siteInfo.setServiceVoltage( starsSiteInfo.getServiceVoltage() );
+	}
     
-    public static StarsCustomerAccount newStarsCustomerAccount() {
-    	StarsCustomerAccount newAccount = new StarsCustomerAccount();
-        newAccount.setAccountNumber( "" );
-        newAccount.setIsCommercial( false );
-        newAccount.setCompany( "" );
-        newAccount.setAccountNotes( "" );
-        newAccount.setPropertyNumber( "" );
-        newAccount.setPropertyNotes( "" );
-        newAccount.setStreetAddress( (StreetAddress)newStarsCustomerAddress(StreetAddress.class) );
-        newAccount.setBillingAddress( (BillingAddress)newStarsCustomerAddress(BillingAddress.class) );
-        newAccount.setPrimaryContact( (PrimaryContact)newStarsCustomerContact(PrimaryContact.class) );
+	public static StarsCustomerAccount newStarsCustomerAccount() {
+		StarsCustomerAccount newAccount = new StarsCustomerAccount();
+		newAccount.setAccountNumber( "" );
+		newAccount.setIsCommercial( false );
+		newAccount.setCompany( "" );
+		newAccount.setAccountNotes( "" );
+		newAccount.setPropertyNumber( "" );
+		newAccount.setPropertyNotes( "" );
+		newAccount.setStreetAddress( (StreetAddress)newStarsCustomerAddress(StreetAddress.class) );
+		newAccount.setBillingAddress( (BillingAddress)newStarsCustomerAddress(BillingAddress.class) );
+		newAccount.setPrimaryContact( (PrimaryContact)newStarsCustomerContact(PrimaryContact.class) );
         
-        Substation sub = new Substation();
-        sub.setEntryID( CtiUtilities.NONE_ID );
-        StarsSiteInformation siteInfo = new StarsSiteInformation();
-        siteInfo.setSubstation( sub );
-        siteInfo.setFeeder( "" );
-        siteInfo.setPole( "" );
-        siteInfo.setTransformerSize( "" );
-        siteInfo.setServiceVoltage( "" );
-        newAccount.setStarsSiteInformation( siteInfo );
+		Substation sub = new Substation();
+		sub.setEntryID( CtiUtilities.NONE_ID );
+		StarsSiteInformation siteInfo = new StarsSiteInformation();
+		siteInfo.setSubstation( sub );
+		siteInfo.setFeeder( "" );
+		siteInfo.setPole( "" );
+		siteInfo.setTransformerSize( "" );
+		siteInfo.setServiceVoltage( "" );
+		newAccount.setStarsSiteInformation( siteInfo );
     	
-    	return newAccount;
-    }
+		return newAccount;
+	}
     
     
-    /* StarsFailure factory methods */
+	/* StarsFailure factory methods */
 
 	public static StarsFailure newStarsFailure(int statusCode, String description) {
 		StarsFailure failure = new StarsFailure();
@@ -301,122 +304,122 @@ public class StarsFactory {
 	/* StarsCustomerAddress factory methods */
 	
 	public static StarsCustomerAddress newStarsCustomerAddress(Class type) {
-        try {
-            StarsCustomerAddress newAddr = (StarsCustomerAddress) type.newInstance();
-	        newAddr.setStreetAddr1( "" );
-	        newAddr.setStreetAddr2( "" );
-	        newAddr.setCity( "" );
-	        newAddr.setState( "" );
-	        newAddr.setZip( "" );
-	        newAddr.setCounty( "" );
+		try {
+			StarsCustomerAddress newAddr = (StarsCustomerAddress) type.newInstance();
+			newAddr.setStreetAddr1( "" );
+			newAddr.setStreetAddr2( "" );
+			newAddr.setCity( "" );
+			newAddr.setState( "" );
+			newAddr.setZip( "" );
+			newAddr.setCounty( "" );
 	        
-	        return newAddr;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+			return newAddr;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        return null;
+		return null;
 	}
 
 	public static StarsCustomerAddress newStarsCustomerAddress(StarsCustomerAddress addr, Class type) {
-        try {
-            StarsCustomerAddress newAddr = (StarsCustomerAddress) type.newInstance();
+		try {
+			StarsCustomerAddress newAddr = (StarsCustomerAddress) type.newInstance();
 
-            newAddr.setStreetAddr1( addr.getStreetAddr1() );
-            newAddr.setStreetAddr2( addr.getStreetAddr2() );
-            newAddr.setCity( addr.getCity() );
-            newAddr.setState( addr.getState() );
-            newAddr.setZip( addr.getZip() );
-            newAddr.setCounty( addr.getCounty() );
+			newAddr.setStreetAddr1( addr.getStreetAddr1() );
+			newAddr.setStreetAddr2( addr.getStreetAddr2() );
+			newAddr.setCity( addr.getCity() );
+			newAddr.setState( addr.getState() );
+			newAddr.setZip( addr.getZip() );
+			newAddr.setCounty( addr.getCounty() );
 
-            return newAddr;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+			return newAddr;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        return null;
-    }
+		return null;
+	}
 
 	public static void setCustomerAddress(Address addr, StarsCustomerAddress starsAddr) {
-    	addr.setLocationAddress1( starsAddr.getStreetAddr1() );
-    	addr.setLocationAddress2( starsAddr.getStreetAddr2() );
-    	addr.setCityName( starsAddr.getCity() );
-    	addr.setStateCode( starsAddr.getState() );
-    	addr.setZipCode( starsAddr.getZip() );
-    	if (starsAddr.getCounty() != null) addr.setCounty( starsAddr.getCounty() );
-    }
+		addr.setLocationAddress1( starsAddr.getStreetAddr1() );
+		addr.setLocationAddress2( starsAddr.getStreetAddr2() );
+		addr.setCityName( starsAddr.getCity() );
+		addr.setStateCode( starsAddr.getState() );
+		addr.setZipCode( starsAddr.getZip() );
+		if (starsAddr.getCounty() != null) addr.setCounty( starsAddr.getCounty() );
+	}
     
     
-    /* StarsCustomerContact factory methods */
+	/* StarsCustomerContact factory methods */
 
 	public static StarsContactNotification newStarsContactNotification(boolean enabled, String notification, Class type) {
-        try {
-            StarsContactNotification newNotif = (StarsContactNotification) type.newInstance();
-            // If notification is empty, enabled is automatically set to false
-            newNotif.setEnabled( (notification.length() > 0)? enabled : false );
-            newNotif.setNotification( notification );
+		try {
+			StarsContactNotification newNotif = (StarsContactNotification) type.newInstance();
+			// If notification is empty, enabled is automatically set to false
+			newNotif.setEnabled( (notification.length() > 0)? enabled : false );
+			newNotif.setNotification( notification );
             
-            return newNotif;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+			return newNotif;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        return null;
-    }
+		return null;
+	}
     
 	public static StarsCustomerContact newStarsCustomerContact(Class type) {
-        try {
-            StarsCustomerContact newContact = (StarsCustomerContact) type.newInstance();
-            newContact.setContactID( CtiUtilities.NONE_ID );
-            newContact.setLastName( "" );
-            newContact.setFirstName( "" );
-            newContact.setHomePhone( "" );
-            newContact.setWorkPhone( "" );
-            newContact.setEmail( (Email)newStarsContactNotification(false, "", Email.class) );
+		try {
+			StarsCustomerContact newContact = (StarsCustomerContact) type.newInstance();
+			newContact.setContactID( CtiUtilities.NONE_ID );
+			newContact.setLastName( "" );
+			newContact.setFirstName( "" );
+			newContact.setHomePhone( "" );
+			newContact.setWorkPhone( "" );
+			newContact.setEmail( (Email)newStarsContactNotification(false, "", Email.class) );
 
-            return newContact;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+			return newContact;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        return null;
-    }
+		return null;
+	}
     
 	public static StarsCustomerContact newStarsCustomerContact(StarsCustomerContact contact, Class type) {
-        try {
-            StarsCustomerContact newContact = (StarsCustomerContact) type.newInstance();
-            newContact.setContactID( contact.getContactID() );
-            newContact.setLastName( contact.getLastName() );
-            newContact.setFirstName( contact.getFirstName() );
-            newContact.setHomePhone( contact.getHomePhone() );
-            newContact.setWorkPhone( contact.getWorkPhone() );
-            newContact.setEmail( (Email) newStarsContactNotification(
-            		contact.getEmail().getEnabled(), contact.getEmail().getNotification(), Email.class) );
+		try {
+			StarsCustomerContact newContact = (StarsCustomerContact) type.newInstance();
+			newContact.setContactID( contact.getContactID() );
+			newContact.setLastName( contact.getLastName() );
+			newContact.setFirstName( contact.getFirstName() );
+			newContact.setHomePhone( contact.getHomePhone() );
+			newContact.setWorkPhone( contact.getWorkPhone() );
+			newContact.setEmail( (Email) newStarsContactNotification(
+					contact.getEmail().getEnabled(), contact.getEmail().getNotification(), Email.class) );
 
-            return newContact;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+			return newContact;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        return null;
-    }
+		return null;
+	}
 
 	public static void setCustomerContact(Contact contact, StarsCustomerContact starsContact) {
-    	//contact.setContactID( new Integer(starsContact.getContactID()) );
-        contact.getContact().setContLastName( starsContact.getLastName() );
-        contact.getContact().setContFirstName( starsContact.getFirstName() );
+		//contact.setContactID( new Integer(starsContact.getContactID()) );
+		contact.getContact().setContLastName( starsContact.getLastName() );
+		contact.getContact().setContFirstName( starsContact.getFirstName() );
         
-        ContactNotification notifHPhone = null;
-        ContactNotification notifWPhone = null;
-        ContactNotification notifEmail = null;
+		ContactNotification notifHPhone = null;
+		ContactNotification notifWPhone = null;
+		ContactNotification notifEmail = null;
         
-        Vector contactNotifVect = contact.getContactNotifVect();
-        for (int i = 0; i < contactNotifVect.size(); i++) {
+		Vector contactNotifVect = contact.getContactNotifVect();
+		for (int i = 0; i < contactNotifVect.size(); i++) {
 			ContactNotification notif = (ContactNotification) contactNotifVect.get(i);
 			// Set all the opcode to DELETE first, then change them to UPDATE or add INSERT accordingly
 			notif.setOpCode( Transaction.DELETE );
@@ -427,14 +430,14 @@ public class StarsFactory {
 				notifWPhone = notif;
 			else if (notif.getNotificationCatID().intValue() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL)
 				notifEmail = notif;
-        }
+		}
         
-        if (starsContact.getHomePhone().length() > 0) {
-        	if (notifHPhone != null) {
-        		notifHPhone.setNotification( starsContact.getHomePhone() );
-        		notifHPhone.setOpCode( Transaction.UPDATE );
-        	}
-        	else {
+		if (starsContact.getHomePhone().length() > 0) {
+			if (notifHPhone != null) {
+				notifHPhone.setNotification( starsContact.getHomePhone() );
+				notifHPhone.setOpCode( Transaction.UPDATE );
+			}
+			else {
 				notifHPhone = new ContactNotification();
 				notifHPhone.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
 				notifHPhone.setNotification( starsContact.getHomePhone() );
@@ -442,15 +445,15 @@ public class StarsFactory {
 				notifHPhone.setOpCode( Transaction.INSERT );
 				
 				contactNotifVect.add( notifHPhone );
-        	}
-        }
+			}
+		}
         
-        if (starsContact.getWorkPhone().length() > 0) {
-        	if (notifWPhone != null) {
-        		notifWPhone.setNotification( starsContact.getWorkPhone() );
-        		notifWPhone.setOpCode( Transaction.UPDATE );
-        	}
-        	else {
+		if (starsContact.getWorkPhone().length() > 0) {
+			if (notifWPhone != null) {
+				notifWPhone.setNotification( starsContact.getWorkPhone() );
+				notifWPhone.setOpCode( Transaction.UPDATE );
+			}
+			else {
 				notifWPhone = new ContactNotification();
 				notifWPhone.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
 				notifWPhone.setNotification( starsContact.getWorkPhone() );
@@ -458,16 +461,16 @@ public class StarsFactory {
 				notifWPhone.setOpCode( Transaction.INSERT );
 				
 				contactNotifVect.add( notifWPhone );
-        	}
-        }
+			}
+		}
         
-        if (starsContact.getEmail() != null && starsContact.getEmail().getNotification().length() > 0) {
-        	if (notifEmail != null) {
+		if (starsContact.getEmail() != null && starsContact.getEmail().getNotification().length() > 0) {
+			if (notifEmail != null) {
 				notifEmail.setNotification( starsContact.getEmail().getNotification() );
 				notifEmail.setDisableFlag( starsContact.getEmail().getEnabled()? "N" : "Y" );
 				notifEmail.setOpCode( Transaction.UPDATE );
-        	}
-        	else {
+			}
+			else {
 				notifEmail = new ContactNotification();
 				notifEmail.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
 				notifEmail.setNotification( starsContact.getEmail().getNotification() );
@@ -475,12 +478,12 @@ public class StarsFactory {
 				notifEmail.setOpCode( Transaction.INSERT );
 				
 				contactNotifVect.add( notifEmail );
-        	}
-        }
-    }
+			}
+		}
+	}
     
     
-    /* StarsInventory factory methods */
+	/* StarsInventory factory methods */
 
 	public static StarsInv newStarsInv(Class type) {
 		try {

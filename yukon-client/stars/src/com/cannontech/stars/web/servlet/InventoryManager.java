@@ -80,17 +80,17 @@ public class InventoryManager extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException, IOException {
-        HttpSession session = req.getSession(false);
-        if (session == null) {
-        	resp.sendRedirect( req.getContextPath() + SOAPClient.LOGIN_URL ); return;
-        }
+		HttpSession session = req.getSession(false);
+		if (session == null) {
+			resp.sendRedirect( req.getContextPath() + SOAPClient.LOGIN_URL ); return;
+		}
         
-        StarsYukonUser user = (StarsYukonUser)
-        		session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-        if (user == null) {
-        	resp.sendRedirect( req.getContextPath() + SOAPClient.LOGIN_URL );
-        	return;
-        }
+		StarsYukonUser user = (StarsYukonUser)
+				session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+		if (user == null) {
+			resp.sendRedirect( req.getContextPath() + SOAPClient.LOGIN_URL );
+			return;
+		}
         
 		referer = req.getHeader( "referer" );
 		redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
@@ -111,7 +111,7 @@ public class InventoryManager extends HttpServlet {
 			selectDevice( user, req, session );
 		else if (action.equalsIgnoreCase( "CheckInventory" )) {
 			session.setAttribute( ServletUtils.ATT_REDIRECT, redirect );
-			session.setAttribute( ServletUtils.ATT_REFERRER, referer );
+			//session.setAttribute( ServletUtils.ATT_REFERRER, referer );
 			checkInventory( user, req, session );
 		}
 		else if (action.equalsIgnoreCase("CreateLMHardware")) {
@@ -1107,7 +1107,7 @@ public class InventoryManager extends HttpServlet {
 		}
 		
 		if (hardwares == null || hardwares.length == 0) {
-			session.setAttribute(INVENTORY_SET_DESC, "<div class='ErrorMsg' align='center'>No hardwares found matching the search criteria.</div>");
+			session.setAttribute(INVENTORY_SET_DESC, "<div class='ErrorMsg' align='center'>No hardware found matching the search criteria.</div>");
 		}
 		else {
 			LiteInventoryBase liteInv = null;
@@ -1150,7 +1150,7 @@ public class InventoryManager extends HttpServlet {
 		if (recvDateStr != null && recvDateStr.length() > 0) {
 			Date recvDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(recvDateStr, tz);
 			if (recvDate == null)
-				throw new WebClientException("Invalid date format '" + recvDateStr + "'");
+				throw new WebClientException("Invalid date format '" + recvDateStr + "', the date should be in the form of 'mm/dd/yy'");
 			starsInv.setReceiveDate( recvDate );
 		}
 		
@@ -1158,7 +1158,7 @@ public class InventoryManager extends HttpServlet {
 		if (instDateStr != null && instDateStr.length() > 0) {
 			Date instDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(instDateStr, tz);
 			if (instDate == null)
-				throw new WebClientException("Invalid date format '" + instDateStr + "'");
+				throw new WebClientException("Invalid date format '" + instDateStr + "', the date should be in the form of 'mm/dd/yy'");
 			starsInv.setInstallDate( instDate );
 		}
 		
@@ -1166,7 +1166,7 @@ public class InventoryManager extends HttpServlet {
 		if (remvDateStr != null && remvDateStr.length() > 0) {
 			Date remvDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(remvDateStr, tz);
 			if (remvDate == null)
-				throw new WebClientException("Invalid date format '" + remvDateStr + "'");
+				throw new WebClientException("Invalid date format '" + remvDateStr + "', the date should be in the form of 'mm/dd/yy'");
 			starsInv.setRemoveDate( remvDate );
 		}
 		

@@ -12,18 +12,9 @@ package com.cannontech.stars.util;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class ImportProblem extends Exception {
+public interface ImportProblem {
 	
-	public static final String DUPLICATE_HARDWARE = "Hardware already exists and assigned to an account";
 	public static final String NO_DEVICE_NAME = "No device name";
 	public static final String DEVICE_NAME_NOT_FOUND = "Device name not found in Yukon";
-	
-	public ImportProblem() {
-		super();
-	}
-	
-	public ImportProblem(String s) {
-		super(s);
-	}
 	
 }

@@ -18,7 +18,6 @@ import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteTypes;
-import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -38,11 +37,11 @@ public class ServerUtils {
     
 	public static final String AUTO_GEN_NUM_PREC = "##";
 
-    // Increment this for every message
-    private static long userMessageIDCounter = 1;
+	// Increment this for every message
+	private static long userMessageIDCounter = 1;
     
-    // If date in database is earlier than this, than the date is actually empty
-    private static long VERY_EARLY_TIME = 1000 * 3600 * 24;
+	// If date in database is earlier than this, than the date is actually empty
+	private static long VERY_EARLY_TIME = 1000 * 3600 * 24;
 	
 	private static final java.text.SimpleDateFormat dateTimeFormat =
 			new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
@@ -56,23 +55,23 @@ public class ServerUtils {
 	private static final String UPLOAD_PATH = "C:/yukon/upload";
     
 	
-    public static void sendCommand(String command)
-    {
-    	com.cannontech.message.porter.ClientConnection conn = SOAPServer.getInstance().getPILConnection();
-    	if (conn == null) {
+	public static void sendCommand(String command)
+	{
+		com.cannontech.message.porter.ClientConnection conn = SOAPServer.getInstance().getPILConnection();
+		if (conn == null) {
 			CTILogger.error( "Cannot get PIL client connection" );
 			return;
 		}
 		
-        com.cannontech.message.porter.message.Request req = // no need for deviceid so send 0
-            new com.cannontech.message.porter.message.Request( 0, command, userMessageIDCounter++ );
-        conn.write( req );
+		com.cannontech.message.porter.message.Request req = // no need for deviceid so send 0
+			new com.cannontech.message.porter.message.Request( 0, command, userMessageIDCounter++ );
+		conn.write( req );
         
-        CTILogger.debug( "Sent command to PIL: " + command );
-    }
+		CTILogger.debug( "Sent command to PIL: " + command );
+	}
     
-    public static void saveCommands(String fileName, String[] commands) throws IOException {
-    	if (fileName == null) return;
+	public static void saveCommands(String fileName, String[] commands) throws IOException {
+		if (fileName == null) return;
     	
 		File f = new File( fileName );
 		if (!f.exists()) {
@@ -90,7 +89,7 @@ public class ServerUtils {
 		finally {
 			if (fw != null) fw.close();
 		}
-    }
+	}
 	
 	/**
 	 * Return date in the format of MM/dd/yy HH:mm in the specified time zone
@@ -127,13 +126,13 @@ public class ServerUtils {
 				);
 		}
 		else if (lite.getLiteType() == LiteTypes.YUKON_USER) {
-	    	msg = new DBChangeMsg(
-	    		lite.getLiteID(),
-	    		DBChangeMsg.CHANGE_YUKON_USER_DB,
-	    		DBChangeMsg.CAT_YUKON_USER,
-	    		DBChangeMsg.CAT_YUKON_USER,
-	    		typeOfChange
-	    		);
+			msg = new DBChangeMsg(
+				lite.getLiteID(),
+				DBChangeMsg.CHANGE_YUKON_USER_DB,
+				DBChangeMsg.CAT_YUKON_USER,
+				DBChangeMsg.CAT_YUKON_USER,
+				typeOfChange
+				);
 		}
 		else if (lite.getLiteType() == LiteTypes.CONTACT) {
 			msg = new DBChangeMsg(
@@ -213,7 +212,7 @@ public class ServerUtils {
 		return forceNotNull(notification);
 	}
 	
-	public static String getFormattedName(LiteContact liteContact) {
+	public static String formatName(LiteContact liteContact) {
 		StringBuffer name = new StringBuffer();
 		
 		String firstName = forceNotNone( liteContact.getContFirstName() ).trim();
@@ -223,69 +222,8 @@ public class ServerUtils {
 		String lastName = forceNotNone( liteContact.getContLastName() ).trim();
 		if (lastName.length() > 0)
 			name.append(" ").append( lastName );
-			
-		if (name.length() == 0) name.append("(none)");
+		
 		return name.toString();
-	}
-	
-	public static String getFormattedAddress(LiteAddress liteAddr) {
-		StringBuffer addr = new StringBuffer();
-    	
-		String locationAddr1 = forceNotNone( liteAddr.getLocationAddress1() ).trim();
-		if (locationAddr1.length() > 0)
-			addr.append( locationAddr1 ).append( "<br>" );
-			
-		String locationAddr2 = forceNotNone( liteAddr.getLocationAddress2() ).trim();
-		if (locationAddr2.length() > 0)
-			addr.append( locationAddr2 ).append( "<br>" );
-			
-		String cityName = forceNotNone( liteAddr.getCityName() ).trim();
-		if (cityName.length() > 0)
-			addr.append( cityName ).append( ", " );
-		
-		String stateCode = forceNotNone( liteAddr.getStateCode() ).trim();
-		if (stateCode.length() > 0) {
-			addr.append( stateCode );
-			String zipCode = forceNotNone( liteAddr.getZipCode() ).trim();
-			if (zipCode.length() > 0)
-				addr.append(" ").append( zipCode );
-		}
-    	
-		if (addr.length() == 0) addr.append("Address N/A");
-		return addr.toString();
-	}
-	
-	public static String getOneLineAddress(LiteAddress liteAddr) {
-		StringBuffer addr = new StringBuffer();
-		
-		String locationAddr1 = forceNotNone( liteAddr.getLocationAddress1() ).trim();
-		if (locationAddr1.length() > 0)
-			addr.append( locationAddr1 );
-			
-		String locationAddr2 = forceNotNone( liteAddr.getLocationAddress2() ).trim();
-		if (locationAddr2.length() > 0) {
-			if (addr.length() > 0) addr.append(", ");
-			addr.append( locationAddr2 );
-		}
-		
-		String cityName = forceNotNone( liteAddr.getCityName() ).trim();
-		if (cityName.length() > 0) {
-			if (addr.length() > 0) addr.append(", ");
-			addr.append( cityName );
-		}
-		
-		String stateCode = forceNotNone( liteAddr.getStateCode() ).trim();
-		if (stateCode.length() > 0) {
-			if (addr.length() > 0) addr.append(", ");
-			addr.append( stateCode );
-			
-			String zipCode = forceNotNone( liteAddr.getZipCode() ).trim();
-			if (zipCode.length() > 0)
-				addr.append(" ").append( zipCode );
-		}
-		
-		if (addr.length() == 0) addr.append("(Address N/A)");
-		return addr.toString();
 	}
 	
 	public static String[] readFile(File file, boolean returnEmpty) {

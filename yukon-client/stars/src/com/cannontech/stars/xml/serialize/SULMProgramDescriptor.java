@@ -181,6 +181,43 @@ public class SULMProgramDescriptor extends org.exolab.castor.xml.util.XMLClassDe
         }
         desc.setValidator(fieldValidator);
         
+        //-- _inventoryID
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_inventoryID", "inventoryID", NodeType.Attribute);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                SULMProgram target = (SULMProgram) object;
+                return target.getInventoryID();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    SULMProgram target = (SULMProgram) object;
+                    target.setInventoryID( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _inventoryID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+        
         //-- initialize element descriptors
         
     } //-- com.cannontech.stars.xml.serialize.SULMProgramDescriptor()

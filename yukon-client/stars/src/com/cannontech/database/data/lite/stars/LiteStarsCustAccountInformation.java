@@ -234,15 +234,6 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	public void setCustomerResidence(LiteCustomerResidence customerResidence) {
 		this.customerResidence = customerResidence;
 	}
-	
-	public LiteStarsLMProgram getLMProgram(int programID) {
-		for (int i = 0; i < getLmPrograms().size(); i++) {
-			LiteStarsLMProgram liteProg = (LiteStarsLMProgram) getLmPrograms().get(i);
-			if (liteProg.getLmProgram().getProgramID() == programID)
-				return liteProg;
-		}
-		return null;
-	}
 
 	/**
 	 * Returns the lastLoginTime.

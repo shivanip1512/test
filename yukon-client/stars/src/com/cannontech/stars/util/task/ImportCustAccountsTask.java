@@ -15,9 +15,12 @@ import com.cannontech.database.data.lite.stars.LiteLMProgram;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.action.DeleteCustAccountAction;
 import com.cannontech.stars.web.servlet.ImportManager;
 import com.cannontech.stars.web.servlet.SOAPServer;
 
@@ -282,8 +285,9 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 					if (hwFile == null && hwColIdx[COL_SERIAL_NO] != -1) {
 						if (hwFieldsList == null) hwFieldsList = new ArrayList();
 						String[] hwFields = ImportManager.prepareFields( ImportManager.NUM_INV_FIELDS );
-						hwFields[ImportManager.IDX_LINE_NUM] = String.valueOf( custLineNo );
 						setHardwareFields( hwFields, columns, hwColIdx );
+						hwFields[ImportManager.IDX_LINE_NUM] = String.valueOf( custLineNo );
+						hwFields[ImportManager.IDX_HARDWARE_ACTION] = "";	// Let the program determine which hardware action should be taken
 						hwFieldsList.add( hwFields );
 						
 						if (hwColIdx[COL_APP_TYPE] != -1) {
@@ -394,48 +398,26 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 					if (action.equalsIgnoreCase( "INSERT" )) {
 						if (liteAcctInfo != null)
 							throw new WebClientException( "Cannot insert customer account: account #" + custFields[ImportManager.IDX_ACCOUNT_NO] + " already exists" );
-						
 						liteAcctInfo = ImportManager.newCustomerAccount( custFields, user, energyCompany, false );
 					}
 					else if (action.equalsIgnoreCase( "UPDATE" )) {
 						if (liteAcctInfo == null)
 							throw new WebClientException( "Cannot update customer account: account #" + custFields[ImportManager.IDX_ACCOUNT_NO] + " doesn't exist" );
-						
 						ImportManager.updateCustomerAccount( custFields, liteAcctInfo, energyCompany );
 					}
 					else if (action.equalsIgnoreCase( "REMOVE" )) {
 						if (liteAcctInfo == null)
 							throw new WebClientException( "Cannot delete customer account: account #" + custFields[ImportManager.IDX_ACCOUNT_NO] + " doesn't exist" );
-						
-						energyCompany.deleteCustAccountInformation( liteAcctInfo );
+						DeleteCustAccountAction.deleteCustomerAccount( liteAcctInfo, energyCompany );
 					}
-					else {
+					else
 						throw new WebClientException( "Unrecognized action type '" + action + "'" );
-					}
 					
 					if (!action.equals("REMOVE") && hwFields != null && !hwFields[ImportManager.IDX_SERIAL_NO].trim().equals("")) {
-						LiteInventoryBase liteInv = null;
-						if (liteAcctInfo.getInventories().size() == 0)
-							liteInv = ImportManager.insertLMHardware( hwFields, liteAcctInfo, energyCompany, true );
-						else
-							liteInv = ImportManager.updateLMHardware( hwFields, liteAcctInfo, energyCompany );
+						LiteInventoryBase liteInv = importHardware( hwFields, liteAcctInfo, energyCompany );
 						
-						if (programs != null) {
-							ImportManager.programSignUp( programs, liteAcctInfo, new Integer(liteInv.getInventoryID()), energyCompany );
-							
-							if (appFields != null && !appFields[ImportManager.IDX_APP_TYPE].trim().equals("")) {
-								int appID = -1;
-								for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-									LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-									if (liteApp.getLmProgramID() == programs[0][0]) {
-										appID = liteApp.getApplianceID();
-										break;
-									}
-								}
-								
-								ImportManager.updateAppliance( appFields, appID, liteAcctInfo, energyCompany );
-							}
-						}
+						if (programs != null)
+							programSignUp( programs, appFields, liteAcctInfo, liteInv, energyCompany );
 					}
 					
 					numAcctImported++;
@@ -469,43 +451,10 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 					if (liteAcctInfo == null)
 						throw new WebClientException( "Account #" + hwFields[ImportManager.IDX_ACCOUNT_ID] + " doesn't exist" );
 					
-					String action = hwFields[ImportManager.IDX_HARDWARE_ACTION];
-					if (action.trim().equals("")) action = "UPDATE";
+					LiteInventoryBase liteInv = importHardware( hwFields, liteAcctInfo, energyCompany );
 					
-					LiteInventoryBase liteInv = null;
-					if (action.equalsIgnoreCase( "INSERT" ))
-						liteInv = ImportManager.insertLMHardware( hwFields, liteAcctInfo, energyCompany, true );
-					else if (action.equalsIgnoreCase( "UPDATE" ))
-						liteInv = ImportManager.updateLMHardware( hwFields, liteAcctInfo, energyCompany );
-					else if (action.equalsIgnoreCase( "REMOVE" ))
-						ImportManager.removeLMHardware( hwFields, liteAcctInfo, energyCompany );
-					else
-						throw new WebClientException( "Unrecognized action type '" + action + "'" );
-					
-					if (!action.equalsIgnoreCase("REMOVE") && programs != null) {
-						ImportManager.programSignUp( programs, liteAcctInfo, new Integer(liteInv.getInventoryID()), energyCompany );
-						
-						if (appFields != null && !appFields[ImportManager.IDX_APP_TYPE].trim().equals("")) {
-							int appID = -1;
-							for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-								LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-								if (liteApp.getLmProgramID() == programs[0][0]) {
-									appID = liteApp.getApplianceID();
-									break;
-								}
-							}
-							
-							ImportManager.updateAppliance( appFields, appID, liteAcctInfo, energyCompany );
-						}
-					}
-					
-					numHwImported++;
-					if (action.equalsIgnoreCase( "INSERT" ))
-						numHwAdded++;
-					else if (action.equalsIgnoreCase( "UPDATE" ))
-						numHwUpdated++;
-					else
-						numHwRemoved++;
+					if (!hwFields[ImportManager.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE") && programs != null)
+						programSignUp( programs, appFields, liteAcctInfo, liteInv, energyCompany );
 					
 					if (isCanceled) {
 						status = STATUS_CANCELED;
@@ -636,6 +585,71 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 		}
 		
 		throw new WebClientException( "Program '" + fields[ImportManager.IDX_PROGRAM_NAME] + "' is not found in the published programs" );
+	}
+	
+	private LiteInventoryBase importHardware(String[] hwFields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
+		throws Exception
+	{
+		LiteInventoryBase liteInv = null;
+		for (int j = 0; j < liteAcctInfo.getInventories().size(); j++) {
+			int invID = ((Integer) liteAcctInfo.getInventories().get(j)).intValue();
+			LiteInventoryBase lInv = energyCompany.getInventoryBrief( invID, true );
+			if (lInv instanceof LiteStarsLMHardware && ((LiteStarsLMHardware)lInv).getManufacturerSerialNumber().equals(hwFields[ImportManager.IDX_SERIAL_NO])) {
+				liteInv = lInv;
+				break;
+			}
+		}
+		
+		String action = hwFields[ImportManager.IDX_HARDWARE_ACTION];
+		if (action.trim().equals("")) {
+			if (liteInv == null)
+				action = "INSERT";
+			else
+				action = "UPDATE";
+		} 
+		
+		if (action.equalsIgnoreCase( "INSERT" )) {
+			liteInv = ImportManager.insertLMHardware( hwFields, liteAcctInfo, energyCompany, true );
+			numHwAdded++;
+		}
+		else if (action.equalsIgnoreCase( "UPDATE" )) {
+			liteInv = ImportManager.updateLMHardware( hwFields, liteInv, liteAcctInfo, energyCompany );
+			numHwUpdated++;
+		}
+		else if (action.equalsIgnoreCase( "REMOVE" )) {
+			ImportManager.removeLMHardware( hwFields, liteAcctInfo, energyCompany );
+			numHwRemoved++;
+		}
+		else
+			throw new WebClientException( "Unrecognized action type '" + action + "'" );
+					
+		numHwImported++;
+		return liteInv;
+	}
+	
+	private void programSignUp(int[][] programs, String[] appFields, LiteStarsCustAccountInformation liteAcctInfo,
+		LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) throws Exception
+	{
+		for (int j = 0; j < liteAcctInfo.getLmPrograms().size(); j++) {
+			LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(j);
+			if (liteProg.getLmProgram().getProgramID() == programs[0][0])
+				return;
+		}
+		
+		ImportManager.programSignUp( programs, liteAcctInfo, new Integer(liteInv.getInventoryID()), energyCompany );
+		
+		if (appFields != null && !appFields[ImportManager.IDX_APP_TYPE].trim().equals("")) {
+			int appID = -1;
+			for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
+				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+				if (liteApp.getLmProgramID() == programs[0][0]) {
+					appID = liteApp.getApplianceID();
+					break;
+				}
+			}
+			
+			ImportManager.updateAppliance( appFields, appID, liteAcctInfo, energyCompany );
+		}
 	}
 
 }

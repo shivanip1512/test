@@ -48,142 +48,143 @@ import com.cannontech.stars.xml.util.StarsConstants;
 
 public class UpdateCustAccountAction implements ActionBase {
 
-    public SOAPMessage build(HttpServletRequest req, HttpSession session) {
-        try {
+	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
+		try {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
 			
 			StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation)
 					user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 
-            StarsUpdateCustomerAccount updateAccount = new StarsUpdateCustomerAccount();
+			StarsUpdateCustomerAccount updateAccount = (StarsUpdateCustomerAccount)
+					StarsFactory.newStarsCustAccount( starsAcctInfo.getStarsCustomerAccount(), StarsUpdateCustomerAccount.class );
 
-            updateAccount.setAccountNumber( req.getParameter("AcctNo") );
-            updateAccount.setIsCommercial( starsAcctInfo.getStarsCustomerAccount().getIsCommercial() );
-            if (req.getParameter("Company") != null)
+			updateAccount.setAccountNumber( req.getParameter("AcctNo") );
+			updateAccount.setIsCommercial( starsAcctInfo.getStarsCustomerAccount().getIsCommercial() );
+			if (req.getParameter("Company") != null)
 				updateAccount.setCompany( req.getParameter("Company") );
-            updateAccount.setAccountNotes( req.getParameter("AcctNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
+			updateAccount.setAccountNotes( req.getParameter("AcctNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
 
-            updateAccount.setPropertyNumber( req.getParameter("PropNo") );
-            updateAccount.setPropertyNotes( req.getParameter("PropNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
+			updateAccount.setPropertyNumber( req.getParameter("PropNo") );
+			updateAccount.setPropertyNotes( req.getParameter("PropNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
 
-            StreetAddress propAddr = new StreetAddress();
-            propAddr.setStreetAddr1( req.getParameter("SAddr1") );
-            propAddr.setStreetAddr2( req.getParameter("SAddr2") );
-            propAddr.setCity( req.getParameter("SCity") );
-            propAddr.setState( req.getParameter("SState") );
-            propAddr.setZip( req.getParameter("SZip") );
-            propAddr.setCounty( req.getParameter("SCounty") );
-            updateAccount.setStreetAddress( propAddr );
+			StreetAddress propAddr = new StreetAddress();
+			propAddr.setStreetAddr1( req.getParameter("SAddr1") );
+			propAddr.setStreetAddr2( req.getParameter("SAddr2") );
+			propAddr.setCity( req.getParameter("SCity") );
+			propAddr.setState( req.getParameter("SState") );
+			propAddr.setZip( req.getParameter("SZip") );
+			propAddr.setCounty( req.getParameter("SCounty") );
+			updateAccount.setStreetAddress( propAddr );
 
 			Substation starsSub = new Substation();
 			starsSub.setEntryID( Integer.parseInt(req.getParameter("Substation")) );
 			
-            StarsSiteInformation siteInfo = new StarsSiteInformation();
-            siteInfo.setSubstation( starsSub );
-            siteInfo.setFeeder( req.getParameter("Feeder") );
-            siteInfo.setPole( req.getParameter("Pole") );
-            siteInfo.setTransformerSize( req.getParameter("TranSize") );
-            siteInfo.setServiceVoltage( req.getParameter("ServVolt") );
-            updateAccount.setStarsSiteInformation( siteInfo );
+			StarsSiteInformation siteInfo = new StarsSiteInformation();
+			siteInfo.setSubstation( starsSub );
+			siteInfo.setFeeder( req.getParameter("Feeder") );
+			siteInfo.setPole( req.getParameter("Pole") );
+			siteInfo.setTransformerSize( req.getParameter("TranSize") );
+			siteInfo.setServiceVoltage( req.getParameter("ServVolt") );
+			updateAccount.setStarsSiteInformation( siteInfo );
 
-            BillingAddress billAddr = new BillingAddress();
-            if (req.getParameter("CopyAddress") != null) {
-	            billAddr.setStreetAddr1( req.getParameter("SAddr1") );
-	            billAddr.setStreetAddr2( req.getParameter("SAddr2") );
-	            billAddr.setCity( req.getParameter("SCity") );
-	            billAddr.setState( req.getParameter("SState") );
-	            billAddr.setZip( req.getParameter("SZip") );
-	            //billAddr.setCounty( req.getParameter("BCounty") );
-            }
-            else {
-	            billAddr.setStreetAddr1( req.getParameter("BAddr1") );
-	            billAddr.setStreetAddr2( req.getParameter("BAddr2") );
-	            billAddr.setCity( req.getParameter("BCity") );
-	            billAddr.setState( req.getParameter("BState") );
-	            billAddr.setZip( req.getParameter("BZip") );
-            }
-            updateAccount.setBillingAddress( billAddr );
+			BillingAddress billAddr = new BillingAddress();
+			if (req.getParameter("CopyAddress") != null) {
+				billAddr.setStreetAddr1( req.getParameter("SAddr1") );
+				billAddr.setStreetAddr2( req.getParameter("SAddr2") );
+				billAddr.setCity( req.getParameter("SCity") );
+				billAddr.setState( req.getParameter("SState") );
+				billAddr.setZip( req.getParameter("SZip") );
+				//billAddr.setCounty( req.getParameter("BCounty") );
+			}
+			else {
+				billAddr.setStreetAddr1( req.getParameter("BAddr1") );
+				billAddr.setStreetAddr2( req.getParameter("BAddr2") );
+				billAddr.setCity( req.getParameter("BCity") );
+				billAddr.setState( req.getParameter("BState") );
+				billAddr.setZip( req.getParameter("BZip") );
+			}
+			updateAccount.setBillingAddress( billAddr );
 
-            PrimaryContact primContact = new PrimaryContact();
-            primContact.setLastName( req.getParameter("LastName") );
-            primContact.setFirstName( req.getParameter("FirstName") );
-            primContact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("HomePhone")) );
-            primContact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone")) );
+			PrimaryContact primContact = new PrimaryContact();
+			primContact.setLastName( req.getParameter("LastName") );
+			primContact.setFirstName( req.getParameter("FirstName") );
+			primContact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("HomePhone")) );
+			primContact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone")) );
 			primContact.setEmail( (Email) StarsFactory.newStarsContactNotification(
 					Boolean.valueOf(req.getParameter("NotifyControl")).booleanValue(),
 					req.getParameter("Email").trim(), Email.class) );
             
-            updateAccount.setPrimaryContact( primContact );
-            updateAccount.setAdditionalContact( starsAcctInfo.getStarsCustomerAccount().getAdditionalContact() );
+			updateAccount.setPrimaryContact( primContact );
+			updateAccount.setAdditionalContact( starsAcctInfo.getStarsCustomerAccount().getAdditionalContact() );
 
-            StarsOperation operation = new StarsOperation();
-            operation.setStarsUpdateCustomerAccount( updateAccount );
+			StarsOperation operation = new StarsOperation();
+			operation.setStarsUpdateCustomerAccount( updateAccount );
 
-            return SOAPUtil.buildSOAPMessage( operation );
-        }
+			return SOAPUtil.buildSOAPMessage( operation );
+		}
 		catch (WebClientException we) {
 			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, we.getMessage() );
 		}
-        catch (Exception e) {
-            e.printStackTrace();
-            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
-        }
+		catch (Exception e) {
+			e.printStackTrace();
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
-        StarsOperation respOper = new StarsOperation();
+	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
+		StarsOperation respOper = new StarsOperation();
         
-        try {
-            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-            StarsUpdateCustomerAccount updateAccount = reqOper.getStarsUpdateCustomerAccount();
+		try {
+			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+			StarsUpdateCustomerAccount updateAccount = reqOper.getStarsUpdateCustomerAccount();
             
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-            if (user == null) {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-            }
+			if (user == null) {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
             
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-        	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
             
-            try {
-            	updateCustomerAccount( updateAccount, liteAcctInfo, energyCompany );
-            }
-            catch (WebClientException e) {
+			try {
+				updateCustomerAccount( updateAccount, liteAcctInfo, energyCompany );
+			}
+			catch (WebClientException e) {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
 						StarsConstants.FAILURE_CODE_OPERATION_FAILED, e.getMessage()) );
 				return SOAPUtil.buildSOAPMessage( respOper );
-            }
+			}
             
-            StarsSuccess success = new StarsSuccess();
-            success.setDescription( "Customer account updated successfully" );
+			StarsSuccess success = new StarsSuccess();
+			success.setDescription( "Customer account updated successfully" );
             
-            respOper.setStarsSuccess( success );
-            return SOAPUtil.buildSOAPMessage( respOper );
-        }
-        catch (Exception e) {
-            e.printStackTrace();
+			respOper.setStarsSuccess( success );
+			return SOAPUtil.buildSOAPMessage( respOper );
+		}
+		catch (Exception e) {
+			e.printStackTrace();
             
-            try {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to update the customer account information") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-            }
-            catch (Exception e2) {
-            	e2.printStackTrace();
-            }
-        }
+			try {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to update the customer account information") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
+			catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
         
-        return null;
-    }
+		return null;
+	}
 
-    public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
-        try {
-            StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
+	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
+		try {
+			StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) {
@@ -202,25 +203,25 @@ public class UpdateCustAccountAction implements ActionBase {
 			accountInfo.setStarsCustomerAccount( (StarsCustomerAccount)
 					StarsFactory.newStarsCustAccount(updateAccount, StarsCustomerAccount.class) );
 
-            return 0;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+			return 0;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
-    }
+		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+	}
     
-    public static void updateCustomerAccount(StarsUpdateCustomerAccount updateAccount, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
-    	throws WebClientException
-    {
-    	java.sql.Connection conn = null;
-    	boolean autoCommit = true;
+	public static void updateCustomerAccount(StarsUpdateCustomerAccount updateAccount, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
+		throws WebClientException
+	{
+		java.sql.Connection conn = null;
+		boolean autoCommit = true;
     	
-    	try {
-    		conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-    		autoCommit = conn.getAutoCommit();
-    		conn.setAutoCommit( false );
+		try {
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+			autoCommit = conn.getAutoCommit();
+			conn.setAutoCommit( false );
     		
 			/* Update customer account */
 			LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
@@ -343,23 +344,23 @@ public class UpdateCustAccountAction implements ActionBase {
 			if (primContChanged) ServerUtils.handleDBChange( litePrimContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
 			if (ciCustChanged) ServerUtils.handleDBChange( liteCustomer, DBChangeMsg.CHANGE_TYPE_UPDATE );
 			//ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_UPDATE );
-    	}
-    	catch (java.sql.SQLException e) {
-    		try {
+		}
+		catch (java.sql.SQLException e) {
+			try {
 				if (conn != null) conn.rollback();
-    		}
-    		catch (java.sql.SQLException e2) {}
+			}
+			catch (java.sql.SQLException e2) {}
     		
-    		throw new WebClientException( "Failed to update the customer account information" );
-    	}
-    	finally {
-    		try {
+			throw new WebClientException( "Failed to update the customer account information" );
+		}
+		finally {
+			try {
 				if (conn != null) {
 					conn.setAutoCommit( autoCommit );
 					conn.close();
 				}
-    		}
-    		catch (java.sql.SQLException e) {}
-    	}
-    }
+			}
+			catch (java.sql.SQLException e) {}
+		}
+	}
 }
