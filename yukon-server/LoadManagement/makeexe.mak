@@ -48,6 +48,7 @@ executor.obj \
 lmcontrolarea.obj \
 lmcontrolareastore.obj \
 lmcontrolareatrigger.obj \
+lmcicustomerbase.obj \
 lmcurtailcustomer.obj \
 lmenergyexchangecustomer.obj \
 lmenergyexchangecustomerreply.obj \
