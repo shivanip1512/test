@@ -126,6 +126,7 @@ private:
 
 
 IM_EX_CTIBASE extern CtiLogger   dout;       // Global instance
+IM_EX_CTIBASE extern CtiLogger   slog;       // Global instance. Simulator log
 
 #endif // #ifndef __PROCLOG_HPP__
 
