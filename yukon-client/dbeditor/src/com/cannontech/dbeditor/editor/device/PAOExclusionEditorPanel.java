@@ -328,8 +328,19 @@ public Object getValue(Object val)
 				pao.getPAObjectID(),
 				new Integer( ((LiteYukonPAObject)getAddRemovePanelPAOExcl().rightListGetModel().getElementAt(i)).getYukonID() ),
 				new Integer(getJComboBoxRequeue().getSelectedIndex()) );
+		
+		/*for each new entry in this transmitter's exclusion list, there needs to be
+		a corresponding entry in that added transmitter's own exclusion list.
+		It is simple: just make a second entry for the database with the current paoID and
+		current excluded deviceID switched.
+		*/	
+		PAOExclusion correspondingPaoExcl = new PAOExclusion(
+				new Integer( ((LiteYukonPAObject)getAddRemovePanelPAOExcl().rightListGetModel().getElementAt(i)).getYukonID() ),
+				pao.getPAObjectID(),
+				new Integer(getJComboBoxRequeue().getSelectedIndex()) );
       
       pao.getPAOExclusionVector().add( paoExcl );
+	  pao.getPAOExclusionVector().add( correspondingPaoExcl );
    }
 
    
