@@ -104,12 +104,6 @@ insert into YukonUser (UserID,UserName,Password,LoginCount,LastLogin,Status)
 select LoginID,UserName,Password,LoginCount,LastLogin,Status from OperatorLogin;
 /
 
-/* Assign all users to the default user group, this may not be what is wanted */
-insert into YukonUserGroup (UserID, GroupID)
-select UserID,-1 from YukonUser
-where UserID >= 0;
-/
-
 
 /*==============================================================*/
 /* Table : YukonRole                                            */
@@ -218,6 +212,12 @@ create table YukonUserGroup  (
 insert into YukonUserGroup values(-1,-1);
 insert into YukonUserGroup values(-2,-2);
 insert into YukonUserGroup values(-3,-3);
+/
+
+/* Assign all users to the default user group, this may not be what is wanted */
+insert into YukonUserGroup (UserID, GroupID)
+select UserID,-1 from YukonUser
+where UserID >= 0;
 /
 
 
