@@ -723,24 +723,28 @@ private void initialize() {
  * Comment
  */
 public void keTextField_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+	fireInputUpdate();
 	return;
 }
 /**
  * Comment
  */
 public void keTextField_CaretUpdate(javax.swing.event.CaretEvent caretEvent) {
+	fireInputUpdate();
 	return;
 }
 /**
  * Comment
  */
 public void kY2WireButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+	fireInputUpdate();
 	return;
 }
 /**
  * Comment
  */
 public void kYZ3WireButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+	fireInputUpdate();
 	return;
 }
 /**
@@ -764,12 +768,14 @@ public static void main(java.lang.String[] args) {
  * Comment
  */
 public void nameTextField_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+	fireInputUpdate();
 	return;
 }
 /**
  * Comment
  */
 public void nameTextField_CaretUpdate(javax.swing.event.CaretEvent caretEvent) {
+	fireInputUpdate();
 	return;
 }
 /**

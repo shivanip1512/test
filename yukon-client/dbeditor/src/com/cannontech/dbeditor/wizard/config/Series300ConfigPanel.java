@@ -2083,54 +2083,63 @@ constraintsChannel2EnableJCheckBox.gridheight = 2;
  * Comment
  */
 public void keTextField_CaretUpdate(javax.swing.event.CaretEvent caretEvent) {
+	fireInputUpdate();
 	return;
 }
 /**
  * Comment
  */
 public void keTextField2_CaretUpdate(javax.swing.event.CaretEvent caretEvent) {
+	fireInputUpdate();
 	return;
 }
 /**
  * Comment
  */
 public void keTextField3_CaretUpdate(javax.swing.event.CaretEvent caretEvent) {
+	fireInputUpdate();
 	return;
 }
 /**
  * Comment
  */
 public void kY2WireButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+	fireInputUpdate();
 	return;
 }
 /**
  * Comment
  */
 public void kY2WireButton2_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+	fireInputUpdate();
 	return;
 }
 /**
  * Comment
  */
 public void kY2WireButton3_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+	fireInputUpdate();
 	return;
 }
 /**
  * Comment
  */
 public void kYZ3WireButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+	fireInputUpdate();
 	return;
 }
 /**
  * Comment
  */
 public void kYZ3WireButton2_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+	fireInputUpdate();
 	return;
 }
 /**
  * Comment
  */
 public void kYZ3WireButton3_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+	fireInputUpdate();
 	return;
 }
 /**
@@ -2154,18 +2163,21 @@ public static void main(java.lang.String[] args) {
  * Comment
  */
 public void minMaxModeButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+	fireInputUpdate();
 	return;
 }
 /**
  * Comment
  */
 public void nameTextField_CaretUpdate(javax.swing.event.CaretEvent caretEvent) {
+	fireInputUpdate();
 	return;
 }
 /**
  * Comment
  */
 public void peakModeButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+	fireInputUpdate();
 	return;
 }
 /**
@@ -2260,7 +2272,7 @@ public void setValue(Object val ) {
 	
 	//channel 2
 	temp = conMan.getMCTWire2();
-	if( temp != null )
+	if(! (temp == null || temp.compareTo(ConfigTwoWay.NONVALUE) == 0) )
 	{
 		if(temp.compareTo(ConfigTwoWay.TWOWIRE) == 0)
 			getKY2WireButton2().setSelected(true);
@@ -2270,7 +2282,7 @@ public void setValue(Object val ) {
 	}		
 	
 	temp2 = conMan.getKe2();
-	if( temp2 != null )
+	if(! (temp2 == null || temp2.compareTo(ConfigTwoWay.NOVALUE) == 0) )
 	{
 		getKeTextField2().setText( temp2.toString() );
 		getChannel2EnableJCheckBox().setSelected(true);
@@ -2296,7 +2308,7 @@ public void setValue(Object val ) {
 	  
 	//channel 3
 	temp = conMan.getMCTWire3();
-	if( temp != null )
+	if(! (temp == null || temp.compareTo(ConfigTwoWay.NONVALUE) == 0) )
 	{
 		if(temp.compareTo(ConfigTwoWay.TWOWIRE) == 0)
 			  getKY2WireButton3().setSelected(true);
@@ -2306,7 +2318,7 @@ public void setValue(Object val ) {
     }		
 	
 	temp2 = conMan.getKe3();
-	if( temp2 != null )
+	if(! (temp2 == null || temp2.compareTo(ConfigTwoWay.NOVALUE) == 0) )
 	{
 		getKeTextField3().setText( temp2.toString() );
 		getChannel3EnableJCheckBox1().setSelected(true);
