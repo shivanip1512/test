@@ -1,11 +1,14 @@
 package com.cannontech.message.porter.message;
 
+import java.util.Vector;
+
 /**
  * Insert the type's description here.
  * Creation date: (5/17/00 1:12:51 PM)
  * @author: 
  */
-public class Return extends com.cannontech.message.dispatch.message.Multi {
+public class Return extends com.cannontech.message.util.Message
+{
 	private int deviceID;
 	private java.lang.String commandString;
 	private java.lang.String resultString;
@@ -16,6 +19,10 @@ public class Return extends com.cannontech.message.dispatch.message.Multi {
 	private int expectMore;
 	private long transmissionID;
 	private long userMessageID;
+	
+	
+	private Vector vector = null;
+	
 /**
  * Return constructor comment.
  */
@@ -181,5 +188,19 @@ public void setTransmissionID(long newTransmissionID) {
  */
 public void setUserMessageID(long newUserMessageID) {
 	userMessageID = newUserMessageID;
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (1/28/00 11:50:21 AM)
+ * @return java.util.Vector
+ */
+public java.util.Vector getVector() {
+	if( vector == null )
+	{
+		vector = new Vector();
+	}
+	
+	return vector;
 }
 }

@@ -61,7 +61,7 @@ public void processMsg( Object o )
 {
 	System.out.println(o);
 
-	if( o instanceof Multi && !(o instanceof Return))
+	if( o instanceof Multi )
 	{           
 		Multi mpc = (Multi)o;
 
