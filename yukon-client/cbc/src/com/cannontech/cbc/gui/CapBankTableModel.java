@@ -42,9 +42,9 @@ public class CapBankTableModel extends javax.swing.table.AbstractTableModel impl
 	//The columns and their column index
 	public static final int CB_NAME_COLUMN = 0;
 	public static final int BANK_ADDRESS_COLUMN = 1;
-	public static final int STATUS_COLUMN = 2;
-  	public static final int TIME_STAMP_COLUMN = 3;
- 	public static final int BANK_SIZE_COLUMN = 4;
+ 	public static final int BANK_SIZE_COLUMN = 2;
+	public static final int STATUS_COLUMN = 3;
+  	public static final int TIME_STAMP_COLUMN = 4;
  	public static final int OP_COUNT_COLUMN = 5;
   		
 	//The column names based on their column index
@@ -52,9 +52,9 @@ public class CapBankTableModel extends javax.swing.table.AbstractTableModel impl
 	{
 		"CB Name (Order)",
 		"Bank Address",
-		"Status",
-		"Time",
 		"Bank Size",
+		"Status",
+		"Date/Time",
 		"Op Count",
 	};
 

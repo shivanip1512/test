@@ -951,36 +951,8 @@ public javax.swing.JTable getSubBusTable()
 
 						//store the last selected rows id!
 						int sID = getSubBusTableModel().getRowAt(prevSelectedSubRow).getCcId().intValue();
-						
-
-
-                  final javax.swing.JDialog diag = 
-                        new javax.swing.JDialog(owner,true);
-
-                  diag.setTitle("Sorting data...");
-                  diag.pack();
-                  diag.setSize( 180, diag.getHeight() );
-                  diag.setResizable(false);
-                  diag.setLocationRelativeTo( ReceiverMainPanel.this );
-
-                  
-                  Thread t = new Thread( new Runnable()
-                  {
-                     public void run()
-                     { 
-                        diag.show();
-                     }
-                  });
-                  
-                  t.start();
 
                   s.sort( mc );
-
-                  t.interrupt();
-                  diag.dispose();
-
-
-
 
 						//Set the last selected row selected
 						for( int i = 0 ; i < getSubBusTableModel().getRowCount(); i++ )

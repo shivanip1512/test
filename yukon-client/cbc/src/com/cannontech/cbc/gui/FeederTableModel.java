@@ -31,10 +31,10 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
 	public static final int CURRENT_STATE_COLUMN		= 1;
   	public static final int TARGET_COLUMN				= 2;
   	public static final int CURRENT_VAR_LOAD_COLUMN	= 3;
-  	public static final int TIME_STAMP_COLUMN			= 4;
+  	public static final int ESTIMATED_VARS_COLUMN	= 4;
   	public static final int WATTS_COLUMN				= 5;
    public static final int POWER_FACTOR_COLUMN		= 6;
-  	public static final int ESTIMATED_VARS_COLUMN	= 7;
+  	public static final int TIME_STAMP_COLUMN			= 7;
   	public static final int DAILY_OPERATIONS_COLUMN	= 8;
 
 
@@ -48,10 +48,10 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
 		"State",
 		"Target",
 		"VAR Load",
-		"Time",
+		"Estimated VARS",
 		"Watts",		
       "PFactor/Estimated",
-		"Estimated VARS",
+		"Date/Time",
 		"Daily Ops"
 	};
 	
@@ -343,9 +343,15 @@ public Object getValueAt(int row, int col)
 	      {
             if( feeder.getCurrentWattLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
                return DASH_LINE;
-            else
-		         return new Double( com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
-	                  feeder.getCurrentWattLoadPointValue().doubleValue(), getCurrentSubBus().getDecimalPlaces().intValue() ) );
+	         else {
+	         	if( getCurrentSubBus().getDecimalPlaces().intValue() == 0 )
+						return new Integer( CommonUtils.formatDecimalPlaces( 
+		               feeder.getCurrentWattLoadPointValue().doubleValue(), getCurrentSubBus().getDecimalPlaces().intValue() ) );         	
+	         	else
+			         return new Double( CommonUtils.formatDecimalPlaces( 
+		                  feeder.getCurrentWattLoadPointValue().doubleValue(), getCurrentSubBus().getDecimalPlaces().intValue() ) );
+	         }
+
 	      }
 
 			case TIME_STAMP_COLUMN:
