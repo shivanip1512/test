@@ -67,26 +67,11 @@
 		YukonSelectionList list = liteEC.getYukonSelectionList(listName);
 %>
                 <tr> 
-                  <td width="50%"><%= dispName %>
+                  <td width="60%"><%= dispName %>
 				    <% if (unAssigned) { %><font color="#FF0000">*</font><% } %>
 				  </td>
-                  <td width="25%"> 
-                    <div align="center"> 
-                      <input type="button" name="Assign" value="Assign" onclick="location.href='AssignSelectionList.jsp?List=<%= listName %>'">
-                    </div>
-                  </td>
-                  <td width="25%">
-                    <div align="center"> 
-<%
-		if (list != null && list.getUserUpdateAvailable().equalsIgnoreCase("Y") ||
-			listName.equals("ServiceCompany"))
-		{
-%> 
-                      <input type="button" name="New" value="New" onclick="location.href='AssignSelectionList.jsp?List=<%= listName %>&New=true'">
-<%
-		}
-%>
-                    </div>
+                  <td width="40%" align="center"> 
+                    <input type="button" name="Assign" value="Assign" onclick="location.href='AssignSelectionList.jsp?List=<%= listName %>'">
                   </td>
                 </tr>
 <%

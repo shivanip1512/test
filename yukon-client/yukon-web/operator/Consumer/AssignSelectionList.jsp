@@ -4,12 +4,12 @@
 <%@ page import="com.cannontech.stars.web.servlet.ImportManager" %>
 <%
 	String listName = request.getParameter("List");
-	boolean newList = request.getParameter("New") != null;
+	YukonSelectionList list = liteEC.getYukonSelectionList(listName);
 	
 	Hashtable preprocessedData = (Hashtable) session.getAttribute(ImportManager.PREPROCESSED_DATA);
 	TreeMap valueIDMap = (TreeMap) preprocessedData.get(listName);
 	
-	YukonSelectionList list = liteEC.getYukonSelectionList(listName);
+	boolean updateAvail = (list != null) && list.getUserUpdateAvailable().equalsIgnoreCase("Y") || listName.equals("ServiceCompany");
 %>
 <html>
 <head>
@@ -19,16 +19,39 @@
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <script language="JavaScript">
 function setEnabled(form, checked, idx) {
+	var radioBtn = eval("form.ListEntry" + idx);
+	if (radioBtn != null) {
+		radioBtn[0].disabled = !checked;
+		radioBtn[1].disabled = !checked;
+	}
+	
+	if (checked && radioBtn != null) {
+		var value = radioBtn[0].checked ? radioBtn[0].value : radioBtn[1].value;
+		setListEntry(form, value, idx);
+	}
+	else {
 <% if (valueIDMap.size() > 1) { %>
-	if (form.EntryText != null)
-		form.EntryText[idx].disabled = !checked;
-	else
 		form.EntryID[idx].disabled = !checked;
+		if (form.EntryText != null)
+			form.EntryText[idx].disabled = !checked;
 <% } else { %>
-	if (form.EntryText != null)
-		form.EntryText.disabled = !checked;
-	else
 		form.EntryID.disabled = !checked;
+		if (form.EntryText != null)
+			form.EntryText.disabled = !checked;
+<% } %>
+	}
+}
+
+function setListEntry(form, value, idx) {
+	var isNew = (value == "New");
+<% if (valueIDMap.size() > 1) { %>
+	form.EntryID[idx].disabled = isNew;
+	form.EntryText[idx].disabled = !isNew;
+	if (isNew) form.EntryText[idx].focus();
+<% } else { %>
+	form.EntryID.disabled = isNew;
+	form.EntryText.disabled = !isNew;
+	if (isNew) form.EntryText.focus();
 <% } %>
 }
 </script>
@@ -79,110 +102,115 @@ function setEnabled(form, checked, idx) {
                   <td width="5%" class="HeaderCell">&nbsp;</td>
                   <td width="45%" class="HeaderCell">Import Value</td>
                   <td width="50%" class="HeaderCell">Selection List Entry</td>
+<% if (updateAvail) { %>
+                  <td width="50%" class="HeaderCell">New Entry</td>
+<% } %>
                 </tr>
 <%
 	int idx = 0;
-	Iterator it = valueIDMap.entrySet().iterator();
+	Iterator it = valueIDMap.keySet().iterator();
 	while (it.hasNext()) {
-		Map.Entry valueIDPair = (Map.Entry) it.next();
-		String value = (String) valueIDPair.getKey();
-		Integer id = (Integer) valueIDPair.getValue();
+		String value = (String) it.next();
+		Integer id = (Integer) valueIDMap.get(value);
 		boolean enabled = (id != null) && (value.length() > 0 || id.intValue() > 0);
 %>
                 <input type="hidden" name="ImportValue" value="<%= value %>">
                 <tr> 
-                  <td width="5%" class="TableCell">
-                    <input type="checkbox" name="Enabled" value="<%= idx %>" <% if (enabled) out.write("checked"); %>
-					  onclick="setEnabled(this.form, this.checked, <%= idx++ %>)">
+                  <td width="5%" class="TableCell"> 
+                    <input type="checkbox" name="Enabled" value="<%= idx %>" <% if (enabled) { %>checked<% } %>
+					  onclick="setEnabled(this.form, this.checked, <%= idx %>)">
                   </td>
                   <td width="45%" class="TableCell"><%= (value.length() > 0)? value : "(Empty Value)" %></td>
-                  <td width="50%" class="TableCell"> 
+                  <td width="50%" class="TableCell" nowrap> 
+<% if (updateAvail) { %>
+                    <input type="radio" name="ListEntry<%= idx %>" value="" checked <% if (!enabled) { %>disabled<% } %>
+					  onclick="setListEntry(this.form, this.value, <%= idx %>)">
+<% } %>
+                    <select name="EntryID" <% if (!enabled) { %>disabled<% } %>>
 <%
-		if (newList) {
-			String entryText = value;
-			if (id != null) {
-				if (list != null) {
-					for (int j = 0; j < list.getYukonListEntries().size(); j++) {
-						YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(j);
-						if (entry.getEntryID() == id.intValue()) {
-							entryText = entry.getEntryText();
-							break;
-						}
-					}
-				}
-				else if (listName.equals("ServiceCompany")) {
-					for (int j = 0; j < companies.getStarsServiceCompanyCount(); j++) {
-						StarsServiceCompany company = companies.getStarsServiceCompany(j);
-						if (company.getCompanyID() == id.intValue()) {
-							entryText = company.getCompanyName();
-							break;
-						}
-					}
-				}
-			}
-%>
-                    <input type="text" name="EntryText" value="<%= entryText %>" <% if (!enabled) out.write("disabled"); %>>
-<%
-		}
-		else {
-%>
-                    <select name="EntryID" <% if (!enabled) out.write("disabled"); %>>
-<%
-			if (list != null) {		
-				for (int j = 0; j < list.getYukonListEntries().size(); j++) {
-					YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(j);
-					String selected = (id != null && entry.getEntryID() == id.intValue())? "selected" : "";
+		if (list != null) {		
+			for (int j = 0; j < list.getYukonListEntries().size(); j++) {
+				YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(j);
+				String selected = (id != null && entry.getEntryID() == id.intValue())? "selected" : "";
 %>
                       <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getEntryText() %></option>
 <%
-				}
 			}
-			else if (listName.equals("LoadType")) {
-				for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
-					StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
-					String selected = (id != null && category.getApplianceCategoryID() == id.intValue())? "selected" : "";
+		}
+		else if (listName.equals("LoadType")) {
+			for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
+				StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
+				String selected = (id != null && category.getApplianceCategoryID() == id.intValue())? "selected" : "";
 %>
                       <option value="<%= category.getApplianceCategoryID() %>" <%= selected %>><%= category.getDescription() %></option>
 <%
+			}
+		}
+		else if (listName.equals("ServiceCompany")) {
+			for (int j = 0; j < companies.getStarsServiceCompanyCount(); j++) {
+				StarsServiceCompany company = companies.getStarsServiceCompany(j);
+				String selected = (id != null && company.getCompanyID() == id.intValue())? "selected" : "";
+%>
+                      <option value="<%= company.getCompanyID() %>" <%= selected %>><%= company.getCompanyName() %></option>
+<%
+			}
+		}
+		else if (listName.equals("LoadGroup")) {
+			for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
+				StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
+				for (int k = 0; k < category.getStarsEnrLMProgramCount(); k++) {
+					StarsEnrLMProgram program = category.getStarsEnrLMProgram(k);
+					for (int l = 0; l < program.getAddressingGroupCount(); l++) {
+						AddressingGroup group = program.getAddressingGroup(l);
+						String selected = (id != null && group.getEntryID() == id.intValue())? "selected" : "";
+%>
+                      <option value="<%= group.getEntryID() %>" <%= selected %>><%= group.getContent() %></option>
+<%
+					}
+				}
+			}
+		}
+		else {
+%>
+                      <option value="0">(none)</option>
+<%
+		}
+%>
+                    </select>
+                  </td>
+<% if (updateAvail) { %>
+                  <td width="50%" class="TableCell" nowrap> 
+                    <input type="radio" name="ListEntry<%= idx %>" value="New" <% if (!enabled) { %>disabled<% } %>
+					  onclick="setListEntry(this.form, this.value, <%= idx %>)">
+<%
+		String entryText = value;
+		if (id != null && id.intValue() > 0) {
+			if (list != null) {
+				for (int j = 0; j < list.getYukonListEntries().size(); j++) {
+					YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(j);
+					if (entry.getEntryID() == id.intValue()) {
+						entryText = entry.getEntryText();
+						break;
+					}
 				}
 			}
 			else if (listName.equals("ServiceCompany")) {
 				for (int j = 0; j < companies.getStarsServiceCompanyCount(); j++) {
 					StarsServiceCompany company = companies.getStarsServiceCompany(j);
-					String selected = (id != null && company.getCompanyID() == id.intValue())? "selected" : "";
-%>
-                      <option value="<%= company.getCompanyID() %>" <%= selected %>><%= company.getCompanyName() %></option>
-<%
-				}
-			}
-			else if (listName.equals("LoadGroup")) {
-				for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
-					StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
-					for (int k = 0; k < category.getStarsEnrLMProgramCount(); k++) {
-						StarsEnrLMProgram program = category.getStarsEnrLMProgram(k);
-						for (int l = 0; l < program.getAddressingGroupCount(); l++) {
-							AddressingGroup group = program.getAddressingGroup(l);
-							String selected = (id != null && group.getEntryID() == id.intValue())? "selected" : "";
-%>
-                      <option value="<%= group.getEntryID() %>" <%= selected %>><%= group.getContent() %></option>
-<%
-						}
+					if (company.getCompanyID() == id.intValue()) {
+						entryText = company.getCompanyName();
+						break;
 					}
 				}
 			}
-			else {
+		}
 %>
-                      <option value="0">(none)</option>
-<%
-			}
-%>
-                    </select>
-<%
-		}	// if (newList)
-%>
+                    <input type="text" name="EntryText" value="<%= entryText %>" size="14" disabled>
                   </td>
+<% } %>
                 </tr>
 <%
+		idx++;
 	}
 %>
               </table>
