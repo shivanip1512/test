@@ -1,3 +1,0 @@
-Esub Tan - 204,204,153 - #cccc99
-Oneline Blue - 102,153,255 - #6699ff
-Oneline yellow - 255,255, 102 - #ffff66
