@@ -3,7 +3,9 @@ package com.cannontech.stars.web.servlet;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -1720,6 +1722,10 @@ public class StarsAdmin extends HttpServlet {
 				}
 				
 				conn.commit();
+				
+				// Order the substation list alphabetically
+				Collections.sort( newEntries, ServerUtils.YUK_LIST_ENTRY_ALPHA_CMPTR );
+				
 				cList.setYukonListEntries( newEntries );
 			}
 			else {
@@ -1790,18 +1796,26 @@ public class StarsAdmin extends HttpServlet {
 				}
 				
 				conn.commit();
+				
+				// Sort the entry list by the ordering specified in the selection list
+				if (cList.getOrdering().equalsIgnoreCase("A"))
+					Collections.sort( newEntries, ServerUtils.YUK_LIST_ENTRY_ALPHA_CMPTR );
+				
+				// Update the constant objects
+				Properties cListEntries = YukonListFuncs.getYukonListEntries();
+				synchronized (cListEntries) {
+					for (int i = 0; i < cList.getYukonListEntries().size(); i++) {
+						YukonListEntry entry = (YukonListEntry) cList.getYukonListEntries().get(i);
+						YukonListFuncs.getYukonListEntries().remove( new Integer(entry.getEntryID()) );
+					}
+					
+					for (int i = 0; i < newEntries.size(); i++) {
+						YukonListEntry entry = (YukonListEntry) newEntries.get(i);
+						YukonListFuncs.getYukonListEntries().put( new Integer(entry.getEntryID()), entry );
+					}
+				}
+				
 				cList.setYukonListEntries( newEntries );
-				
-				// Update the constant objects (in both stars and core yukon cache)
-				for (int i = 0; i < cList.getYukonListEntries().size(); i++) {
-					YukonListEntry entry = (YukonListEntry) cList.getYukonListEntries().get(i);
-					YukonListFuncs.getYukonListEntries().remove( new Integer(entry.getEntryID()) );
-				}
-				
-				for (int i = 0; i < newEntries.size(); i++) {
-					YukonListEntry entry = (YukonListEntry) newEntries.get(i);
-					YukonListFuncs.getYukonListEntries().put( new Integer(entry.getEntryID()), entry );
-				}
 			}
 		}
 		finally {
@@ -1871,8 +1885,6 @@ public class StarsAdmin extends HttpServlet {
 				}
 			}
 			
-			updateYukonListEntries( cList, entryData, energyCompany );
-			
 			if (!listName.equalsIgnoreCase(com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION)) {
 				// Update yukon selection list
 				com.cannontech.database.db.constants.YukonSelectionList list =
@@ -1886,6 +1898,8 @@ public class StarsAdmin extends HttpServlet {
 				
 				StarsLiteFactory.setConstantYukonSelectionList( cList, list );
 			}
+			
+			updateYukonListEntries( cList, entryData, energyCompany );
 			
 			energyCompany.updateStarsCustomerSelectionLists();
 			

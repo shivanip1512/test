@@ -3,6 +3,7 @@ package com.cannontech.database.data.lite.stars;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -609,13 +610,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			YukonSelectionList subList = new YukonSelectionList();
 			subList.setListID( FAKE_LIST_ID );
 			subList.setListName( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION );
-			subList.setOrdering( "O" );
+			subList.setOrdering( "A" );
 			subList.setSelectionLabel( "" );
 			subList.setWhereIsList( "" );
 			subList.setUserUpdateAvailable( "Y" );
 	        
 			com.cannontech.database.db.stars.Substation[] subs =
 					com.cannontech.database.db.stars.Substation.getAllSubstations( getEnergyCompanyID() );
+			
 			if (subs != null) {
 				ArrayList entries = subList.getYukonListEntries();
 				for (int i = 0; i < subs.length; i++) {
@@ -624,7 +626,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 					entry.setEntryText( subs[i].getSubstationName() );
 					entries.add( entry );
 				}
-		        
+				
+				// Order the substation list alphabetically
+				Collections.sort( entries, ServerUtils.YUK_LIST_ENTRY_ALPHA_CMPTR );
+				
 				selectionLists.add( subList );
 			}
 			

@@ -5,10 +5,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.TimeZone;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -50,6 +52,16 @@ public class ServerUtils {
 	
 	// Default sender email address from Stars
 	public static final String ADMIN_EMAIL_ADDRESS = "info@cannontech.com";
+	
+	public static final Comparator YUK_LIST_ENTRY_ALPHA_CMPTR = new Comparator() {
+		public int compare(Object o1, Object o2) {
+			YukonListEntry entry1 = (YukonListEntry) o1;
+			YukonListEntry entry2 = (YukonListEntry) o2;
+			int res = entry1.getEntryText().compareTo( entry2.getEntryText() );
+			if (res == 0) res = entry1.getEntryID() - entry2.getEntryID();
+			return res;
+		}
+	};
 	
 	
 	public static void sendSerialCommand(String command, int routeID) throws WebClientException
