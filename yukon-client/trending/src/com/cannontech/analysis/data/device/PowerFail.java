@@ -10,12 +10,12 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.Reportable;
 
 /**
- * @author snebben
+ * @author bjonasson
  *
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class MissedMeter implements Reportable
+public class PowerFail implements Reportable
 {	
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 5;
@@ -24,7 +24,7 @@ public class MissedMeter implements Reportable
 	public String deviceName = null;
 	public String pointName = null;
 	public Integer pointID = null;
-	public String routeName = null;
+	public Integer powerFailCount = null;
 
 	
 	/** Enum values for column representation */
@@ -32,14 +32,14 @@ public class MissedMeter implements Reportable
 	public final static int DEVICE_NAME_COLUMN = 1;
 	public final static int POINT_NAME_COLUMN = 2;
 	public final static int POINT_ID_COLUMN = 3;
-	public final static int ROUTE_NAME_COLUMN = 4;
+	public final static int POWER_FAIL_COUNT_COLUMN = 4;
 
 	/** String values for column representation */
 	public final static String COLL_GROUP_NAME_STRING = "Collection Group";
 	public final static String DEVICE_NAME_STRING = "Device Name";
 	public final static String POINT_NAME_STRING = "Point Name";
 	public final static String POINT_ID_STRING = "Point ID";
-	public final static String ROUTE_NAME_STRING = "Route Name";
+	public final static String POWER_FAIL_COUNT_STRING = "Power Fail Count";
 
 	/** Array of Strings representing the column names */
 	private static String[] columnNames = null;
@@ -48,13 +48,13 @@ public class MissedMeter implements Reportable
 	/** Array of Classes representing the data in each column */
 	private static Class[] columnTypes = null;
 	/** A string for the title of the data */
-	private static String title = "Missed Meter Reads By Collection Group";
+	private static String title = "Power Fail Count By Collection Group";
 
 
 	/**
 	 * 
 	 */
-	public MissedMeter()
+	public PowerFail()
 	{
 		super();
 	}
@@ -64,24 +64,24 @@ public class MissedMeter implements Reportable
 	 * @param deviceName_
 	 * @param pointName_
 	 * @param pointID_
-	 * @param routeName_
+	 * @param powerFailCount_
 	 */
-	public MissedMeter(String collGroup_, String deviceName_, String pointName_, Integer pointID_, String routeName_)
+	public PowerFail(String collGroup_, String deviceName_, String pointName_, Integer pointID_, Integer powerFailCount_)
 	{
 		collGroup = collGroup_;
 		deviceName = deviceName_;
 		pointName = pointName_;
 		pointID = pointID_;
-		routeName = routeName_;			
+		powerFailCount = powerFailCount_;			
 	}
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
 	public Object getAttribute(int columnIndex, Object o)
 	{
-		if ( o instanceof MissedMeter)
+		if ( o instanceof PowerFail)
 		{
-			MissedMeter meter = ((MissedMeter)o); 
+			PowerFail meter = ((PowerFail)o); 
 			switch( columnIndex)
 			{
 				case COLL_GROUP_NAME_COLUMN:
@@ -96,8 +96,8 @@ public class MissedMeter implements Reportable
 				case POINT_ID_COLUMN:
 					return meter.pointID;
 					
-				case ROUTE_NAME_COLUMN:
-					return meter.routeName;
+				case POWER_FAIL_COUNT_COLUMN:
+					return meter.powerFailCount;
 			}
 		}
 		return null;
@@ -114,7 +114,7 @@ public class MissedMeter implements Reportable
 				DEVICE_NAME_STRING,
 				POINT_NAME_STRING,
 				POINT_ID_STRING,
-				ROUTE_NAME_STRING
+				POWER_FAIL_COUNT_STRING
 			};
 		}
 		return columnNames;
@@ -132,7 +132,7 @@ public class MissedMeter implements Reportable
 				String.class,
 				String.class,
 				Integer.class,
-				String.class
+				Integer.class
 			};
 		}
 		return columnTypes;

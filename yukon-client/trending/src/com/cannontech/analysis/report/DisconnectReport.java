@@ -1,6 +1,9 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
+import java.util.Calendar;
+//import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.jfree.report.Boot;
 import org.jfree.report.ElementAlignment;
@@ -13,6 +16,7 @@ import org.jfree.report.JFreeReport;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
+import org.jfree.report.elementfactory.DateFieldElementFactory;
 import org.jfree.report.function.ExpressionCollection;
 import org.jfree.report.function.FunctionInitializeException;
 import org.jfree.report.modules.gui.base.PreviewDialog;
@@ -20,16 +24,17 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
-import com.cannontech.analysis.data.device.MissedMeter;
-import com.cannontech.analysis.tablemodel.MissedMeterModel;
+import com.cannontech.analysis.tablemodel.DisconnectModel;
+//import com.cannontech.analysis.data.device.Disconnect;
 
 /**
- * Created on Dec 15, 2003
- * Creates a MissedMeterReport using the com.cannontech.analysis.data.MissedMeterData tableModel
+ * Created on Feb 06, 2003
+ * Creates a DisconnectReport using the com.cannontech.analysis.data.DisconnectData tableModel
  * Groups data by Collection Group and then by Device.  
  * @author snebben
+ * @author bjonasson
  */
-public class MissedMeterReport extends YukonReportBase
+public class DisconnectReport extends YukonReportBase
 {
 	/**
 	 * Runs this report and shows a preview dialog.
@@ -42,10 +47,18 @@ public class MissedMeterReport extends YukonReportBase
 		Boot.start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
-		MissedMeterReport missedMeterReport = new MissedMeterReport();
+		DisconnectReport DisconnectReport = new DisconnectReport();
 		
-		missedMeterReport.data = new MissedMeterModel();
-		missedMeterReport.data.collectData();
+		DisconnectReport.data = new DisconnectModel("History");
+		GregorianCalendar cal = new GregorianCalendar();
+		DisconnectReport.data.setStopTime(cal.getTime().getTime());
+		cal.set(Calendar.MONTH,0);
+	
+		DisconnectReport.data.setStartTime(cal.getTime().getTime());
+		DisconnectReport.data.setCollectionGroups(new String[] {"Cycle 1"});
+		
+		DisconnectReport.data.collectData();
+		
 		
 		//Define the report Paper properties and format.
 		java.awt.print.Paper reportPaper = new java.awt.print.Paper();
@@ -54,9 +67,10 @@ public class MissedMeterReport extends YukonReportBase
 		pageFormat.setPaper(reportPaper);
 		
 		//Create the report
-		JFreeReport report = missedMeterReport.createReport();
+		JFreeReport report = DisconnectReport.createReport();
 		report.setDefaultPageFormat(pageFormat);
-		report.setData(missedMeterReport.data);
+		report.setData(DisconnectReport.data);
+		//report.addGroup(createDeviceGroup());
 				
 		final PreviewDialog dialog = new PreviewDialog(report);
 		// Add a window closeing event, even though I think it's already handled by setDefaultCloseOperation(..)
@@ -109,7 +123,7 @@ public class MissedMeterReport extends YukonReportBase
 	  tfactory.setFieldname("Collection Group");
 	  header.addElement(tfactory.createElement());
 
-	  header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 22, 0, 22)));
+	  header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(1.5f), new java.awt.geom.Line2D.Float(0, 22, 0, 22)));
 	  collGrpGroup.setHeader(header);
 
 	  final GroupFooter footer = new GroupFooter();
@@ -122,12 +136,14 @@ public class MissedMeterReport extends YukonReportBase
 	 * Create a Group for Device, (by collectionGroup).  
 	 * @return Group
 	 */
+	 
 	private Group createDeviceGroup()
 	{
-		final Group collGrpGroup = new Group();
-		collGrpGroup.setName("Device Name Group");
-		collGrpGroup.addField("Collection Group");
-		collGrpGroup.addField("Device Name");
+		final Group deviceGroup = new Group();
+		deviceGroup.setName("Device Name");
+		deviceGroup.addField("Collection Group");
+		deviceGroup.addField("Device Name");
+		
 		  
 		final GroupHeader header = new GroupHeader();
 
@@ -135,34 +151,86 @@ public class MissedMeterReport extends YukonReportBase
 		header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
 
 		LabelElementFactory factory = new LabelElementFactory();
-		factory.setName("Label 5");
-		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(0, 1));
-		factory.setMinimumSize(new FloatDimension(100, 18));
-		factory.setHorizontalAlignment(ElementAlignment.RIGHT);
+		factory.setName("Label Device");
+		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(10, 1));
+		factory.setMinimumSize(new FloatDimension(40, 20));
+		factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		factory.setVerticalAlignment(ElementAlignment.BOTTOM);
 		factory.setText("DEVICE:");
+		
 		header.addElement(factory.createElement());
 
 		final TextFieldElementFactory tfactory = new TextFieldElementFactory();
 		tfactory.setName("Device Name Group Element");
-		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(110, 1));
-		tfactory.setMinimumSize(new FloatDimension(300, 18));
+		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(60, 1));
+		tfactory.setMinimumSize(new FloatDimension(400, 20));
 		tfactory.setHorizontalAlignment(ElementAlignment.LEFT);
 		tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
 		tfactory.setNullString("<null>");
 		tfactory.setFieldname("Device Name");
 		header.addElement(tfactory.createElement());
 
-		header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 20, 0, 20)));
+		//header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 20, 0, 20)));
+		deviceGroup.setHeader(header);
 		
 		final GroupFooter footer = new GroupFooter();
 		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 12));
 		footer.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
-		footer.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 4, 0, 4)));
+		//footer.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 4, 0, 4)));
 	
-		collGrpGroup.setFooter(footer);
-		return collGrpGroup;
+		deviceGroup.setFooter(footer);
+		return deviceGroup;
+		
 	}
+
+	private Group createPointGroup()
+		{
+			final Group deviceGroup = new Group();
+			deviceGroup.setName("Point Name");
+			deviceGroup.addField("Collection Group");
+			deviceGroup.addField("Device Name");
+			deviceGroup.addField("Point Name");
+		  
+			final GroupHeader header = new GroupHeader();
+
+			header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 22));
+			header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
+
+			
+			LabelElementFactory factory = new LabelElementFactory();
+		 	factory.setName("Label Point");
+			 factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(10, 1));
+			 factory.setMinimumSize(new FloatDimension(40, 10));
+			 factory.setHorizontalAlignment(ElementAlignment.LEFT);
+			 factory.setVerticalAlignment(ElementAlignment.BOTTOM);
+		 	factory.setText("POINT:");
+			 header.addElement(factory.createElement());
+	 
+	
+		
+			header.addElement(factory.createElement());
+			final TextFieldElementFactory tfactory = new TextFieldElementFactory();
+			tfactory.setName("Point Name Group Element");
+			tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(60, 1));
+			tfactory.setMinimumSize(new FloatDimension(400, 10));
+			tfactory.setHorizontalAlignment(ElementAlignment.LEFT);
+			tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
+			tfactory.setNullString("<null>");
+			tfactory.setFieldname("Point Name" + "Device Name");
+			header.addElement(tfactory.createElement());
+
+			header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 20, 0, 20)));
+			deviceGroup.setHeader(header);
+		
+			final GroupFooter footer = new GroupFooter();
+			footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 12));
+			footer.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
+			footer.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 4, 0, 4)));
+	
+			deviceGroup.setFooter(footer);
+			return deviceGroup;
+		
+		}
 
 
 	/**
@@ -174,12 +242,12 @@ public class MissedMeterReport extends YukonReportBase
 	{
 		super.getFunctions();
 		
-		org.jfree.report.function.ItemHideFunction hideItem = new org.jfree.report.function.ItemHideFunction();
+		/*org.jfree.report.function.ItemHideFunction hideItem = new org.jfree.report.function.ItemHideFunction();
 		hideItem.setName("hideItem");
-		hideItem.setProperty("field", MissedMeter.DEVICE_NAME_STRING);
+		hideItem.setProperty("field", Disconnect.DEVICE_NAME_STRING);
 		hideItem.setProperty("element", "Device Element");
 		functions.add(hideItem);
-
+*/
 		return functions;
 	}
 
@@ -193,6 +261,7 @@ public class MissedMeterReport extends YukonReportBase
 	  final GroupList list = new GroupList();
 	  list.add(createCollGrpGroup());
 	  list.add(createDeviceGroup());
+	  list.add(createPointGroup());
 	  return list;
 	}
 
@@ -206,7 +275,7 @@ public class MissedMeterReport extends YukonReportBase
 		final ItemBand items = new ItemBand();
 
 		items.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 10));
-	  	items.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 10));
+		items.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 10));
 
 		if(showBackgroundColor)
 		{
@@ -220,7 +289,7 @@ public class MissedMeterReport extends YukonReportBase
 				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
 				new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
 		}
-
+		/*
 		TextFieldElementFactory factory = new TextFieldElementFactory();
 		factory.setName("Device Element");
 		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(0, 1));
@@ -228,9 +297,9 @@ public class MissedMeterReport extends YukonReportBase
 		factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 		factory.setNullString("<null>");
-		factory.setFieldname(MissedMeter.DEVICE_NAME_STRING);
+		factory.setFieldname(Disconnect.DEVICE_NAME_STRING);
 		items.addElement(factory.createElement());
-
+		
 		factory = new TextFieldElementFactory();
 		factory.setName("Point Element");
 		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(200, 1));
@@ -238,19 +307,44 @@ public class MissedMeterReport extends YukonReportBase
 		factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 		factory.setNullString("<null>");
-		factory.setFieldname(MissedMeter.POINT_NAME_STRING);
+		factory.setFieldname(Disconnect.POINT_NAME_STRING);
 		items.addElement(factory.createElement());
 		
-		factory = new TextFieldElementFactory();
-		factory.setName("Route Element");
-		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(300, 1));
+		factory = new DateFieldElementFactory();
+		factory.setName("Timestamp Element");
+		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(350, 1));
 		factory.setMinimumSize(new FloatDimension(200, 10));
 		factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
-		factory.setNullString("<null>");
-		factory.setFieldname(MissedMeter.ROUTE_NAME_STRING);
+		factory.setNullString("MM/dd/yyyy");
+		factory.setFieldname(Disconnect.TIMESTAMP_STRING);
 		items.addElement(factory.createElement());
-	
+		*/
+		
+		for (int i = 3; i < data.getColumnNames().length; i++)
+		{
+			TextFieldElementFactory factory = new TextFieldElementFactory();
+			if( data.getColumnClass(i).equals(String.class))
+				factory = new TextFieldElementFactory();
+			else if( data.getColumnClass(i).equals(java.util.Date.class))
+			{
+				factory = new DateFieldElementFactory();
+				((DateFieldElementFactory)factory).setFormatString(data.getColumnProperties(i).getValueFormat());
+			}
+			
+			if( factory != null)
+			{
+				factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(data.getColumnProperties(i).getPositionX(),data.getColumnProperties(i).getPositionY()));
+				factory.setMinimumSize(new FloatDimension(data.getColumnProperties(i).getWidth(), 10));
+				factory.setHorizontalAlignment(ElementAlignment.LEFT);
+				factory.setVerticalAlignment(ElementAlignment.MIDDLE);
+				factory.setNullString("<null>");
+				factory.setFieldname(data.getColumnNames()[i]);
+				items.addElement(factory.createElement());
+			}
+			
+		}
 		return items;
+		
 	}
 }

@@ -20,16 +20,16 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
-import com.cannontech.analysis.data.device.MissedMeter;
-import com.cannontech.analysis.tablemodel.MissedMeterModel;
+import com.cannontech.analysis.data.device.PowerFail;
+import com.cannontech.analysis.tablemodel.PowerFailModel;
 
 /**
- * Created on Dec 15, 2003
- * Creates a MissedMeterReport using the com.cannontech.analysis.data.MissedMeterData tableModel
+ * Created on Feb 17, 2004
+ * Creates a MissedMeterReport using the com.cannontech.analysis.data.PowerFailData tableModel
  * Groups data by Collection Group and then by Device.  
- * @author snebben
+ * @author bjonasson
  */
-public class MissedMeterReport extends YukonReportBase
+public class PowerFailReport extends YukonReportBase
 {
 	/**
 	 * Runs this report and shows a preview dialog.
@@ -42,10 +42,10 @@ public class MissedMeterReport extends YukonReportBase
 		Boot.start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
-		MissedMeterReport missedMeterReport = new MissedMeterReport();
+		PowerFailReport powerFailReport = new PowerFailReport();
 		
-		missedMeterReport.data = new MissedMeterModel();
-		missedMeterReport.data.collectData();
+		powerFailReport.data = new PowerFailModel();
+		powerFailReport.data.collectData();
 		
 		//Define the report Paper properties and format.
 		java.awt.print.Paper reportPaper = new java.awt.print.Paper();
@@ -54,9 +54,9 @@ public class MissedMeterReport extends YukonReportBase
 		pageFormat.setPaper(reportPaper);
 		
 		//Create the report
-		JFreeReport report = missedMeterReport.createReport();
+		JFreeReport report = powerFailReport.createReport();
 		report.setDefaultPageFormat(pageFormat);
-		report.setData(missedMeterReport.data);
+		report.setData(powerFailReport.data);
 				
 		final PreviewDialog dialog = new PreviewDialog(report);
 		// Add a window closeing event, even though I think it's already handled by setDefaultCloseOperation(..)
@@ -154,11 +154,11 @@ public class MissedMeterReport extends YukonReportBase
 		header.addElement(tfactory.createElement());
 
 		header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 20, 0, 20)));
-		
+
 		final GroupFooter footer = new GroupFooter();
 		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 12));
 		footer.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
-		footer.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 4, 0, 4)));
+		//footer.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 4, 0, 4)));
 	
 		collGrpGroup.setFooter(footer);
 		return collGrpGroup;
@@ -176,7 +176,7 @@ public class MissedMeterReport extends YukonReportBase
 		
 		org.jfree.report.function.ItemHideFunction hideItem = new org.jfree.report.function.ItemHideFunction();
 		hideItem.setName("hideItem");
-		hideItem.setProperty("field", MissedMeter.DEVICE_NAME_STRING);
+		hideItem.setProperty("field", PowerFail.DEVICE_NAME_STRING);
 		hideItem.setProperty("element", "Device Element");
 		functions.add(hideItem);
 
@@ -206,7 +206,7 @@ public class MissedMeterReport extends YukonReportBase
 		final ItemBand items = new ItemBand();
 
 		items.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 10));
-	  	items.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 10));
+		items.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 10));
 
 		if(showBackgroundColor)
 		{
@@ -228,7 +228,7 @@ public class MissedMeterReport extends YukonReportBase
 		factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 		factory.setNullString("<null>");
-		factory.setFieldname(MissedMeter.DEVICE_NAME_STRING);
+		factory.setFieldname(PowerFail.DEVICE_NAME_STRING);
 		items.addElement(factory.createElement());
 
 		factory = new TextFieldElementFactory();
@@ -238,17 +238,17 @@ public class MissedMeterReport extends YukonReportBase
 		factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 		factory.setNullString("<null>");
-		factory.setFieldname(MissedMeter.POINT_NAME_STRING);
+		factory.setFieldname(PowerFail.POINT_NAME_STRING);
 		items.addElement(factory.createElement());
 		
 		factory = new TextFieldElementFactory();
-		factory.setName("Route Element");
+		factory.setName("Power Fail Element");
 		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(300, 1));
 		factory.setMinimumSize(new FloatDimension(200, 10));
 		factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 		factory.setNullString("<null>");
-		factory.setFieldname(MissedMeter.ROUTE_NAME_STRING);
+		factory.setFieldname(PowerFail.POWER_FAIL_COUNT_STRING);
 		items.addElement(factory.createElement());
 	
 		return items;

@@ -22,14 +22,9 @@ import com.cannontech.analysis.data.lm.LGAccounting;
  */
 public class LoadGroupModel extends ReportModelBase
 {
-	/** Class fields */
-	/** Start time for query in millis */
-	private long startTime = Long.MIN_VALUE;
-	/** Stop time for query in millis */
-	private long stopTime = Long.MIN_VALUE;
-	
-	/** Vector of IDs (of loadGroup paoNames)*/
-	private java.util.Vector loadGroups = null;
+		
+	/** Array of IDs (of loadGroup paobjectIDs)*/
+	private int loadGroups[] = null;
 
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 10;
@@ -37,57 +32,50 @@ public class LoadGroupModel extends ReportModelBase
 	
 	public LoadGroupModel()
 	{
-		this(null, Long.MIN_VALUE, Long.MAX_VALUE, ReportTypes.LG_ACCOUNTING_DATA);
+		super();
+				setReportType(ReportTypes.LG_ACCOUNTING_DATA);
 	}	
 
 	
 	/**
 	 * Constructor class
 	 * @param startTime_ LMControlHistory.startDateTime
-	 * @param stopTime_ LMControlHistory.stopDateTiem
+	 * @param stopTime_ LMControlHistory.stopDateTime
 	 * 
 	 * A null loadGroup is specified, which means ALL Load Groups!
 	 */
 	public LoadGroupModel(long startTime_, long stopTime_)
-	{
-		this(null, startTime_, stopTime_, ReportTypes.LG_ACCOUNTING_DATA);
-	}	
+		{
+			this(null, startTime_, stopTime_, ReportTypes.LG_ACCOUNTING_DATA);
+		}	
 	/**
 	 * Constructor class
-	 * @param loadGroup_ YukonPaobject.paoName (of single load group)
+	 * @param loadGroup_ YukonPaobject.paobjectID (of array of load groups)
 	 * @param startTime_ LMControlHistory.startDateTime
 	 * @param stopTime_ LMControlHistory.stopDateTiem
 	 */
-	public LoadGroupModel(long startTime_, long stopTime_, String loadGroup_ )
-	{
-		this( null, startTime_, stopTime_, ReportTypes.LG_ACCOUNTING_DATA);
-		setLoadGroups(loadGroup_);	//Must add here after the constructor called.
-	}
+	public LoadGroupModel(int[] paoIDs_,long startTime_, long stopTime_ )
+		{
+			
+			this(paoIDs_,startTime_, stopTime_, ReportTypes.LG_ACCOUNTING_DATA);
+		}
+	
 	/**
 	 * Constructor class
-	 * @param loadGroups_ (Vector of)YukonPaobject.paoName (of single load group)
+	 * @param loadGroups_ (Array of)YukonPaobject.paobjectID (of single load group)
 	 * @param startTime_ LMControlHistory.startDateTime
-	 * @param stopTime_ LMControlHistory.stopDateTiem
+	 * @param stopTime_ LMControlHistory.stopDateTime
 	 */
-	public LoadGroupModel(java.util.Vector loadGroups_, long startTime_, long stopTime_)
-	{
-		this(loadGroups_, startTime_, stopTime_, ReportTypes.LG_ACCOUNTING_DATA);
-	}
-	/**
-	 * Constructor class
-	 * @param loadGroups_ (Vector of)YukonPaobject.paoName (of single load group)
-	 * @param startTime_ LMControlHistory.startDateTime
-	 * @param stopTime_ LMControlHistory.stopDateTiem
-	 */
-	public LoadGroupModel(java.util.Vector loadGroups_, long startTime_, long stopTime_, int reportType_)
+	public LoadGroupModel( int[] paoIDs_,long startTime_, long stopTime_, int reportType_)
 	{
 		super();
 		setStartTime(startTime_);
 		setStopTime(stopTime_);
-		setLoadGroups(loadGroups_);
 		setReportType(reportType_);
+		setPaoIDs(paoIDs_);
+		
 	}	
-	
+		
 	/**
 	 * Add LGAccounting objects to data, retrieved from rset.
 	 * @param ResultSet rset
@@ -125,18 +113,19 @@ public class LoadGroupModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
+		
 		StringBuffer sql = new StringBuffer("SELECT PAO.PAOName, LMCH.StartDateTime, LMCH.StopDateTime, "+
 				" LMCH.ControlDuration, LMCH.ControlType, "+
 				" LMCH.CurrentDailyTime, LMCH.CurrentMonthlyTime, "+
 				" LMCH.CurrentSeasonalTime, LMCH.CurrentAnnualTime "+
 				" FROM YukonPAObject PAO, LMControlHistory LMCH "+
 				" WHERE PAO.PAObjectID = LMCH.PAObjectID ");
-				if( getLoadGroups()!= null)	//null load groups means ALL groups!
+				if( getPaoIDs()!= null)	//null load groups means ALL groups!
 				{
-					sql.append(" AND PAO.paoname in ('" + getLoadGroups().get(0) + "'"); 
-					for (int i = 1; i < getLoadGroups().size(); i++)
+					sql.append(" AND PAO.paobjectid in (" + getPaoIDs()[0] ); 
+					for (int i = 1; i < getPaoIDs().length; i++)
 					{
-						sql.append(", '" + getLoadGroups().get(i)+"' ");
+						sql.append(", " + getPaoIDs()[i]+" ");
 					}
 					sql.append(") ");
 				}
@@ -172,9 +161,12 @@ public class LoadGroupModel extends ReportModelBase
 			else
 			{
 				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime() ));
+				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime()));
 				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopTime()));
 				com.cannontech.clientutils.CTILogger.info("START DATE > " + new java.sql.Timestamp(getStartTime()) + "  -  STOP DATE <= " + new java.sql.Timestamp(getStopTime()));
+				
+				com.cannontech.clientutils.CTILogger.info(sql.toString());
+				
 				/*java.util.GregorianCalendar tempCal = new java.util.GregorianCalendar();
 				tempCal.add(java.util.Calendar.DATE, -90);
 				stmt.setTimestamp(1, new java.sql.Timestamp(tempCal.getTime().getTime()));
@@ -209,61 +201,6 @@ public class LoadGroupModel extends ReportModelBase
 		return;
 	}
 
-	/**
-	 * Returns the startTime in millis
-	 * @return long startTime
-	 */
-	public long getStartTime()
-	{
-		return startTime;
-	}
-	/**
-	 * Returns the stopTime in millis
-	 * @return long stopTime
-	 */
-	public long getStopTime()
-	{
-		return stopTime;
-	}
-	/**
-	 * Set the startTime in millis
-	 * @param long time
-	 */
-	public void setStartTime(long time)
-	{
-		startTime = time;
-	}
-	/**
-	 * Set the stopTime in millis
-	 * @param long time
-	 */
-	public void setStopTime(long time)
-	{
-		stopTime = time;
-	}
-	/**
-	 * Return Vector of strings of loadGroups
-	 * @return
-	 */
-	public java.util.Vector getLoadGroups()
-	{
-		return loadGroups;
-	}
-
-	/**
-	 * Sets vector of string values (of loadGroup Paonames)
-	 * @param Vector laodGroups_
-	 */
-	public void setLoadGroups(java.util.Vector loadGroups_)
-	{
-		loadGroups = loadGroups_;
-	}
-	/**
-	 * @param String loadGroup_
-	 */
-	public void setLoadGroups(String loadGroup_)
-	{
-		loadGroups = new java.util.Vector(1);
-		loadGroups.add(loadGroup_);
-	}
+	
 }
+	

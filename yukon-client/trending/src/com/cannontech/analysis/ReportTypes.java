@@ -15,6 +15,8 @@ import com.cannontech.analysis.data.statistic.CarrierCommData;
 import com.cannontech.analysis.data.statistic.CommChannelData;
 import com.cannontech.analysis.data.statistic.DeviceCommData;
 import com.cannontech.analysis.data.statistic.TransmitterCommData;
+import com.cannontech.analysis.data.device.PowerFail;
+import com.cannontech.analysis.data.device.Disconnect;
 
 /**
  * @author snebben
@@ -36,6 +38,8 @@ public class ReportTypes
 	
 	public static final int MISSED_METER_DATA = 7;
 	public static final int CARRIER_DATA = 8;
+	public static final int POWER_FAIL_DATA =9;
+	public static final int DISCONNECT_DATA =10;
 	
 	private static Class[] typeToClassMap =
 	{	
@@ -49,7 +53,9 @@ public class ReportTypes
 		LGAccounting.class,
 		
 		MissedMeter.class,
-		Carrier.class
+		Carrier.class,
+		PowerFail.class,
+		Disconnect.class
 	};
 	
 	public static Object create(int type) {

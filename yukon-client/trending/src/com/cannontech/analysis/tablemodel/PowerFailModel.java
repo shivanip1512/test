@@ -3,7 +3,7 @@ package com.cannontech.analysis.tablemodel;
 import java.sql.ResultSet;
 
 import com.cannontech.analysis.ReportTypes;
-import com.cannontech.analysis.data.device.MissedMeter;
+import com.cannontech.analysis.data.device.PowerFail;
 
 /**
  * Created on Dec 15, 2003
@@ -16,7 +16,7 @@ import com.cannontech.analysis.data.device.MissedMeter;
  *  String routeName  
  * @author snebben
  */
-public class MissedMeterModel extends ReportModelBase
+public class PowerFailModel extends ReportModelBase
 {
 	/** Class fields */
 	/** Start time for query in millis */
@@ -27,18 +27,18 @@ public class MissedMeterModel extends ReportModelBase
 	/**
 	 * 
 	 */
-	public MissedMeterModel()
+	public PowerFailModel()
 	{
-		this(ReportTypes.MISSED_METER_DATA);
+		this(ReportTypes.POWER_FAIL_DATA);
 	}
 	
 	/**
 	 * 
 	 */
-	public MissedMeterModel(int reportType_)
+	public PowerFailModel(int reportType_)
 	{
 		super();
-		setReportType(ReportTypes.MISSED_METER_DATA);
+		setReportType(ReportTypes.POWER_FAIL_DATA);
 	}
 	/**
 	 * Add MissedMeter objects to data, retrieved from rset.
@@ -52,10 +52,10 @@ public class MissedMeterModel extends ReportModelBase
 			String paoName = rset.getString(2);
 			String pointName = rset.getString(3);					
 			Integer pointID = new Integer(rset.getInt(4));
-			String routeName = rset.getString(5);
-			MissedMeter missedMeter = new MissedMeter(collGrp, paoName, pointName, pointID, routeName);
+			Integer powerFailCount = new Integer(rset.getInt(5));
+			PowerFail powerFail = new PowerFail(collGrp, paoName, pointName, pointID, powerFailCount);
 
-			data.add(missedMeter);
+			data.add(powerFail);
 		}
 		catch(java.sql.SQLException e)
 		{
@@ -64,22 +64,16 @@ public class MissedMeterModel extends ReportModelBase
 	}
 
 	/**
-	 * Build the SQL statement to retrieve MissedMeter data.
+	 * Build the SQL statement to retrieve PowerFail data.
 	 * @return StringBuffer  an sqlstatement
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT DISTINCT DMG.COLLECTIONGROUP, PAO.PAONAME, P.POINTNAME, P.POINTID, " + 
-			" PAO2.PAONAME ROUTENAME " +
-			" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, POINT P, YUKONPAOBJECT PAO2, DEVICEROUTES DR, POINTUNIT PU, RAWPOINTHISTORY RPH, "+
-			" UNITMEASURE UM " +
-			" WHERE PAO.PAOBJECTID = DMG.DEVICEID " +
-			" AND PAO.PAOBJECTID = DR.DEVICEID " +
-			" AND P.POINTID = PU.POINTID " +
-			" AND  PU.UOMID = UM.UOMID " +
-			" AND UM.FORMULA ='USAGE' " +
-			" AND PAO2.PAOBJECTID = DR.ROUTEID " +
-			" AND P.PAOBJECTID = PAO.PAOBJECTID ");
+		StringBuffer sql = new StringBuffer	("SELECT DMG.COLLECTIONGROUP, PAO.PAONAME, P.POINTNAME, P.POINTID, " + 
+			" RPH.VALUE " +
+			" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, POINT P, RAWPOINTHISTORY RPH "+
+			" WHERE PAO.PAOBJECTID = DMG.DEVICEID  AND P.POINTID = RPH.POINTID"+
+			" AND P.PAOBJECTID = PAO.PAOBJECTID AND P.POINTOFFSET = 20 ");
 			
 		if(getCollectionGroups() != null)
 				{
@@ -92,9 +86,7 @@ public class MissedMeterModel extends ReportModelBase
 					sql.append("')");
 				}
 			 
-			sql.append(" AND P.POINTID !=  RPH.POINTID  AND TIMESTAMP > ? " +
-			" AND PAO.PAOCLASS = 'CARRIER' " +
-			" ORDER BY DMG.COLLECTIONGROUP, PAO.PAONAME, P.POINTNAME");
+			sql.append(" AND RPH.TIMESTAMP > ? ORDER BY DMG.COLLECTIONGROUP, PAO.PAONAME, P.POINTNAME");
 		return sql;
 	
 	}

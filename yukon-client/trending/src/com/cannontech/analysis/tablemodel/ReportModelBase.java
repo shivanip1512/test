@@ -1,8 +1,11 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.util.Vector;
+
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.Reportable;
+
 
 /**
  * Created on Dec 15, 2003
@@ -37,12 +40,23 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	
 	/** Yukon.paobjectid's to query for, null means all */
 	private int[] paoIDs = null;
+	
+	/** Yukon.DeviceMeterGroup's to query for, null means all */
+	private String [] collectionGroups = null;
 
 	/** Vector of data (of inner class type from implementors)*/
 	protected java.util.Vector data = new java.util.Vector(100);
 
 	/** The report type, valid types are in com.cannontech.analysis.data.ReportTypes*/
-	protected int reportType;	
+	protected int reportType;
+	
+	/** Class fields */
+		/** Start time for query in millis */
+	private long startTime = Long.MIN_VALUE;
+	
+	/** Stop time for query in millis */
+	private long stopTime = Long.MIN_VALUE;	
+	
 	/**
 	 * Default Constructor
 	 */
@@ -94,6 +108,11 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	 */
 	public java.util.Vector getData()
 	{
+		if (data == null)
+		{
+			data = new Vector();
+		}
+		
 		return data;
 	}
 	
@@ -228,6 +247,63 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	public void setReportType(int i)
 	{
 		reportType = i;
+	}
+	
+	/**
+		 * Returns the startTime in millis
+		 * @return long startTime
+		 */
+		public long getStartTime()
+		{
+			return startTime;
+		}
+		/**
+		 * Returns the stopTime in millis
+		 * @return long stopTime
+		 */
+		public long getStopTime()
+		{
+			return stopTime;
+		}
+		/**
+		 * Set the startTime in millis
+		 * @param long time
+		 */
+		public void setStartTime(long time)
+		{
+			startTime = time;
+		}
+		/**
+		 * Set the stopTime in millis
+		 * @param long time
+		 */
+		public void setStopTime(long time)
+		{
+			stopTime = time;
+		}
+
+	/**
+	 * @return
+	 */
+	public String[] getCollectionGroups()
+	{
+		return collectionGroups;
+	}
+
+	/**
+	 * @param strings
+	 */
+	public void setCollectionGroups(String[] strings)
+	{
+		collectionGroups = strings;
+	}
+
+	/**
+	 * @param vector
+	 */
+	public void setData(java.util.Vector vector)
+	{
+		data = vector;
 	}
 
 }

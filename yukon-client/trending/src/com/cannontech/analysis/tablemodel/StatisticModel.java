@@ -1,5 +1,7 @@
 package com.cannontech.analysis.tablemodel;
 
+
+
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.data.statistic.StatisticData;
 import com.cannontech.database.data.pao.DeviceClasses;
@@ -42,6 +44,13 @@ public class StatisticModel extends ReportModelBase
 	 * Constructor class
 	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
+	
+	public StatisticModel()
+		{
+			this("Daily", ReportTypes.CARRIER_COMM_DATA);//default type		
+		}
+	
+	
 	public StatisticModel(String statType_)
 	{
 		this(statType_, ReportTypes.CARRIER_COMM_DATA);//default type		
@@ -85,7 +94,7 @@ public class StatisticModel extends ReportModelBase
 			{
 				pstmt = conn.prepareStatement(sql.toString());
 				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime() ));
-				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopTime()));
+				//pstmt.setTimestamp(2, new java.sql.Timestamp( getStopTime()));
 				com.cannontech.clientutils.CTILogger.info("START DATE > " + new java.sql.Timestamp(getStartTime()) + "  -  STOP DATE <= " + new java.sql.Timestamp(getStopTime()));
 				/*java.util.GregorianCalendar tempCal = new java.util.GregorianCalendar();
 				tempCal.add(java.util.Calendar.DATE, -90);
@@ -148,9 +157,11 @@ public class StatisticModel extends ReportModelBase
 			sql.append(" AND PAO.CATEGORY = '" + getCategory() + "' "); 
 		if (getStatType() != null )
 			sql.append(" AND DPS.STATISTICTYPE='" + getStatType() + "' ");
-
-		sql.append(" AND (STARTDATETIME >= ? AND STARTDATETIME < ? ) ORDER BY PAO.PAOName");
+			
+		
+		sql.append(" AND (STARTDATETIME >= ? ) ORDER BY PAO.PAOName");
 		return sql;
+		
 	}
 
 	/**
@@ -191,34 +202,34 @@ public class StatisticModel extends ReportModelBase
 	 * Return the startTime in millis.
 	 * @return long startTime
 	 */
-	public long getStartTime()
-	{
-		return startTime;
-	}
+//	public long getStartTime()
+	//{
+	//	return startTime;
+	//}
 	/**
 	 * Reuturn the stopTime in millis.
 	 * @return long stopTime
 	 */
-	public long getStopTime()
-	{
-		return stopTime;
-	}
+	//public long getStopTime()
+	//{
+	//	return stopTime;
+	//}
 	/**
 	 * Set the startTime
 	 * @param long time
 	 */
-	public void setStartTime(long time)
-	{
-		startTime = time;
-	}
+	//public void setStartTime(long time)
+	//{
+	//	startTime = time;
+	//}
 	/**
 	 * Set the stopTime
 	 * @param long time
 	 */
-	public void setStopTime(long time)
-	{
-		stopTime = time;
-	}
+	//public void setStopTime(long time)
+	//{
+	//	stopTime = time;
+	//}
 	/**
 	 * Return the category (YukonPaobject.Category)
 	 * @return String category.
@@ -334,6 +345,7 @@ public class StatisticModel extends ReportModelBase
 			setStartTime(cal.getTime().getTime());
 			cal.add(java.util.Calendar.MONTH, 1);
 			setStopTime(cal.getTime().getTime());
+			
 		}
 		else if (statType_.equalsIgnoreCase("Yesterday"))
 		{
@@ -346,6 +358,20 @@ public class StatisticModel extends ReportModelBase
 			setStartTime(cal.getTime().getTime());
 			cal.add(java.util.Calendar.DATE, 1);
 			setStopTime(cal.getTime().getTime());
+		}
+		else if (statType_.equalsIgnoreCase("LastMonth"))
+		{
+			java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
+			cal.set(java.util.Calendar.DAY_OF_MONTH, 1);
+			cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+			cal.set(java.util.Calendar.MINUTE, 0);
+			cal.set(java.util.Calendar.SECOND, 0);
+			cal.set(java.util.Calendar.MILLISECOND, 0);
+			cal.add(java.util.Calendar.MONTH, -1);
+			setStartTime(cal.getTime().getTime());
+			
+			setStopTime(cal.getTime().getTime());
+	
 		}		
 		statType = statType_;
 	}
@@ -360,11 +386,21 @@ public class StatisticModel extends ReportModelBase
 			java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM dd, yyyy");
 			return "Daily: " + format.format(new java.util.Date(getStartTime()));
 		}
+		else if( getStatType().equalsIgnoreCase("Yesterday"))
+		{
+			java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM dd, yyyy");
+			return "Yesterday: " + format.format(new java.util.Date(getStartTime()));
+		}
 		else if( getStatType().equalsIgnoreCase("Monthly"))
 		{
 			java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMMMM yyyy");
 			return "Monthly: " + format.format(new java.util.Date(getStartTime()));
-		}		
+		}
+		else if( getStatType().equalsIgnoreCase("LastMonth"))
+		{
+			java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMMMM yyyy");
+			return "Previous Month: " + format.format(new java.util.Date(getStartTime()));
+		}				
 		return String.valueOf(getStartTime());
 	}
 }

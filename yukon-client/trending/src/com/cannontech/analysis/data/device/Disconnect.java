@@ -10,12 +10,12 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.Reportable;
 
 /**
- * @author snebben
+ * @author bjonasson
  *
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class MissedMeter implements Reportable
+public class Disconnect implements Reportable
 {	
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 5;
@@ -23,23 +23,23 @@ public class MissedMeter implements Reportable
 	public String collGroup = null;
 	public String deviceName = null;
 	public String pointName = null;
-	public Integer pointID = null;
-	public String routeName = null;
+		public java.util.Date timeStamp = null;
+	public Float value = null;
 
 	
 	/** Enum values for column representation */
 	public final static int COLL_GROUP_NAME_COLUMN = 0;
 	public final static int DEVICE_NAME_COLUMN = 1;
 	public final static int POINT_NAME_COLUMN = 2;
-	public final static int POINT_ID_COLUMN = 3;
-	public final static int ROUTE_NAME_COLUMN = 4;
+	public final static int TIMESTAMP_COLUMN = 3;
+	public final static int DISCONNECT_STATUS_COLUMN = 4;
 
 	/** String values for column representation */
 	public final static String COLL_GROUP_NAME_STRING = "Collection Group";
 	public final static String DEVICE_NAME_STRING = "Device Name";
 	public final static String POINT_NAME_STRING = "Point Name";
-	public final static String POINT_ID_STRING = "Point ID";
-	public final static String ROUTE_NAME_STRING = "Route Name";
+	public final static String TIMESTAMP_STRING = "Timestamp";
+	public final static String DISCONNECT_STATUS_STRING = "Disconnect Status";
 
 	/** Array of Strings representing the column names */
 	private static String[] columnNames = null;
@@ -48,13 +48,13 @@ public class MissedMeter implements Reportable
 	/** Array of Classes representing the data in each column */
 	private static Class[] columnTypes = null;
 	/** A string for the title of the data */
-	private static String title = "Missed Meter Reads By Collection Group";
+	private static String title = "Disconnect Status By Collection Group";
 
 
 	/**
 	 * 
 	 */
-	public MissedMeter()
+	public Disconnect()
 	{
 		super();
 	}
@@ -64,24 +64,25 @@ public class MissedMeter implements Reportable
 	 * @param deviceName_
 	 * @param pointName_
 	 * @param pointID_
-	 * @param routeName_
+	 * @param timestamp_
+	 * @param value_
 	 */
-	public MissedMeter(String collGroup_, String deviceName_, String pointName_, Integer pointID_, String routeName_)
+	public Disconnect(String collGroup_, String deviceName_, String pointName_, java.util.Date timeStamp_, Float value_)
 	{
 		collGroup = collGroup_;
 		deviceName = deviceName_;
 		pointName = pointName_;
-		pointID = pointID_;
-		routeName = routeName_;			
+		timeStamp = timeStamp_;
+		value = value_;			
 	}
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
 	public Object getAttribute(int columnIndex, Object o)
 	{
-		if ( o instanceof MissedMeter)
+		if ( o instanceof Disconnect)
 		{
-			MissedMeter meter = ((MissedMeter)o); 
+			Disconnect meter = ((Disconnect)o); 
 			switch( columnIndex)
 			{
 				case COLL_GROUP_NAME_COLUMN:
@@ -92,12 +93,12 @@ public class MissedMeter implements Reportable
 	
 				case POINT_NAME_COLUMN:
 					return meter.pointName;
-	
-				case POINT_ID_COLUMN:
-					return meter.pointID;
+						
+				case TIMESTAMP_COLUMN:
+					return meter.timeStamp;
 					
-				case ROUTE_NAME_COLUMN:
-					return meter.routeName;
+				case DISCONNECT_STATUS_COLUMN:
+					return meter.value;
 			}
 		}
 		return null;
@@ -113,8 +114,8 @@ public class MissedMeter implements Reportable
 				COLL_GROUP_NAME_STRING,
 				DEVICE_NAME_STRING,
 				POINT_NAME_STRING,
-				POINT_ID_STRING,
-				ROUTE_NAME_STRING
+				TIMESTAMP_STRING,
+				DISCONNECT_STATUS_STRING
 			};
 		}
 		return columnNames;
@@ -131,8 +132,8 @@ public class MissedMeter implements Reportable
 				String.class,
 				String.class,
 				String.class,
-				Integer.class,
-				String.class
+				java.util.Date.class,
+				Integer.class
 			};
 		}
 		return columnTypes;
@@ -148,10 +149,10 @@ public class MissedMeter implements Reportable
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
 				new ColumnProperties(0, 1, 100, 18, null),
-				new ColumnProperties(100, 1, 100, 18, null),
-				new ColumnProperties(200, 1, 100, 18, null),
-				new ColumnProperties(300, 1, 100, 18, null),
-				new ColumnProperties(400, 1, 100, 18, null)
+				new ColumnProperties(0, 1, 200, 18, null),
+				new ColumnProperties(5, 1, 150, 18, null),
+				new ColumnProperties(155, 1, 100, 18, "MM/dd/yyyy HH:MM:SS"),
+				new ColumnProperties(260, 1, 100, 18, null)
 			};
 		}
 		return columnProperties;
