@@ -6,14 +6,17 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/06/02 18:21:41 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/10/12 01:13:41 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #pragma warning( disable : 4786)
 
+
+#include <map>
+using namespace std;
 
 #include <windows.h>
 
@@ -23,6 +26,7 @@
 #include "pt_base.h"
 #include "pt_numeric.h"
 #include "pt_status.h"
+#include "pt_accum.h"
 #include "master.h"
 #include "dllyukon.h"
 
@@ -148,34 +152,73 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                 control = (CtiPointStatus*)getDeviceControlPointOffsetEqual(offset);
             }
 
-            if( control != NULL && (control->getPointStatus().getControlType() == NormalControlType) )
+            if( control != NULL )
             {
-                //  ACH FIX BLAH BLAH BLAH - NOTE - the control duration is completely arbitrary here.  Fix sometime if necessary
-                //                                    (i.e. customer doing sheds/restores that need to be accurately LMHist'd)
-                CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg(getID(), control->getPointID(), 1, RWTime(), 86400, 100);
-
-                hist->setMessagePriority(hist->getMessagePriority() + 1);
-                vgList.insert(hist);
-
-                if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
+                if( control->getPointStatus().getControlType() > NoneControlType &&
+                    control->getPointStatus().getControlType() < InvalidControlType )
                 {
-                    controltype = CtiDNPBinaryOutputControl::PulseOn;
+                    //  NOTE - the control duration is completely arbitrary here.  Fix sometime if necessary
+                    //           (i.e. customer doing sheds/restores that need to be accurately LMHist'd)
+                    CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg(getID(), control->getPointID(), 0, RWTime(), 86400, 100);
 
-                    offset      = control->getPointStatus().getControlOffset();
+                    //  ACH:  This is where we'd make a decision about PULSE vs LATCH.
+                    //          Currently, if we get in here, it's all pulse.
 
-                    trip_close  = CtiDNPBinaryOutputControl::Trip;
-                    on_time     = control->getPointStatus().getCloseTime1();
-                    off_time    = 0;
+                    if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
+                    {
+                        controltype = CtiDNPBinaryOutputControl::PulseOn;
+
+                        offset      = control->getPointStatus().getControlOffset();
+
+                        trip_close  = CtiDNPBinaryOutputControl::Trip;
+                        on_time     = control->getPointStatus().getCloseTime1();
+                        off_time    = 0;
+
+                        hist->setRawState(0);
+                    }
+                    else if( parse.getFlags() & CMD_FLAG_CTL_CLOSE )
+                    {
+                        controltype = CtiDNPBinaryOutputControl::PulseOn;
+
+                        offset      = control->getPointStatus().getControlOffset();
+
+                        trip_close  = CtiDNPBinaryOutputControl::Close;
+                        on_time     = control->getPointStatus().getCloseTime2();
+                        off_time    = 0;
+
+                        hist->setRawState(1);
+                    }
+
+                    hist->setMessagePriority(MAXPRIORITY - 1);
+                    vgList.insert(hist);
+
+                    if(control->isPseudoPoint() )
+                    {
+                        if( (control->getPointStatus().getControlType() == SBOPulseControlType ||
+                             control->getPointStatus().getControlType() == SBOLatchControlType) && !parse.isKeyValid("sbo_operate") )
+                        {
+                            //  we have to wait until we're sending the operate to send the pseudo data
+                        }
+                        else
+                        {
+                            // There is no physical point to observe and respect.  We lie to the control point.
+                            CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(control->getID(),
+                                                                                (DOUBLE)hist->getRawState(),
+                                                                                NormalQuality,
+                                                                                StatusPointType,
+                                                                                RWCString("This point has been controlled"));
+                            pData->setUser(pReq->getUser());
+                            vgList.insert(pData);
+                        }
+
+                    }
                 }
-                else if( parse.getFlags() & CMD_FLAG_CTL_CLOSE )
+                else
                 {
-                    controltype = CtiDNPBinaryOutputControl::PulseOn;
-
-                    offset      = control->getPointStatus().getControlOffset();
-
-                    trip_close  = CtiDNPBinaryOutputControl::Close;
-                    on_time     = control->getPointStatus().getCloseTime2();
-                    off_time    = 0;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
                 }
             }
             else
@@ -212,7 +255,26 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
             }
             else
             {
-                _dnp.setCommand(CtiProtocolDNP::DNP_SetDigitalOut, &controlout, 1);
+                if( parse.isKeyValid("sbo_selectonly") )
+                {
+                    _dnp.setCommand(CtiProtocolDNP::DNP_SetDigitalOut_SBO_SelectOnly, &controlout, 1);
+                }
+                else if( parse.isKeyValid("sbo_operate") )
+                {
+                    _dnp.setCommand(CtiProtocolDNP::DNP_SetDigitalOut_SBO_Operate, &controlout, 1);
+                }
+                else if( control != NULL &&
+                         (control->getPointStatus().getControlType() == SBOPulseControlType ||
+                          control->getPointStatus().getControlType() == SBOLatchControlType) )
+                {
+                    //  This command will send a DNP_SetDigitalOut_SBO_Operate to finish the command
+                    //    when it gets to ResultDecode
+                    _dnp.setCommand(CtiProtocolDNP::DNP_SetDigitalOut_SBO_Select, &controlout, 1);
+                }
+                else
+                {
+                    _dnp.setCommand(CtiProtocolDNP::DNP_SetDigitalOut_Direct, &controlout, 1);
+                }
 
                 nRet = NoError;
             }
@@ -318,7 +380,8 @@ INT CtiDeviceDNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     RWTPtrSlist<CtiPointDataMsg> dnpPoints;
 
-    resetScanPending();
+    RWCString resultString;
+    CtiReturnMsg *retMsg;
 
     if( !ErrReturn && !_dnp.recvCommResult(InMessage, outList) )
     {
@@ -331,31 +394,144 @@ INT CtiDeviceDNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
 
         switch( _dnp.getCommand() )
         {
-            case CtiProtocolDNP::DNP_SetDigitalOut:
+            case CtiProtocolDNP::DNP_Class0Read:
+            case CtiProtocolDNP::DNP_Class0123Read:
+            case CtiProtocolDNP::DNP_Class123Read:
+            case CtiProtocolDNP::DNP_Class1Read:
+            case CtiProtocolDNP::DNP_Class2Read:
+            case CtiProtocolDNP::DNP_Class3Read:
             {
-                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                resetScanPending();
+                break;
+            }
+            case CtiProtocolDNP::DNP_SetDigitalOut_SBO_SelectOnly:
+            case CtiProtocolDNP::DNP_SetDigitalOut_SBO_Select:
+            {
+                retMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+                retMsg->setUserMessageId(InMessage->Return.UserID);
+
+                if( _dnp.hasControlResult() )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    resultString = getName() + " / SBO select: " + _dnp.getControlResultString();
+
+                    retMsg->setResultString(resultString);
+
+                    if( _dnp.getCommand() == CtiProtocolDNP::DNP_SetDigitalOut_SBO_Select &&
+                        _dnp.getControlResultSuccess() )
+                    {
+                        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint - sending SBO operate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        if( InMessage->Return.Attempt >= 0 )
+                        {
+                            RWCString newRequest(InMessage->Return.CommandStr);
+
+                            newRequest += " sbo_operate";
+
+                            //  just to make sure the "sbo_operate" token isn't cropped off
+                            CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
+                                                                             newRequest,
+                                                                             InMessage->Return.UserID,
+                                                                             InMessage->Return.TrxID,
+                                                                             InMessage->Return.RouteID,
+                                                                             InMessage->Return.MacroOffset,
+                                                                             -1);
+
+                            newReq->setMessagePriority(MAXPRIORITY - 1);
+
+                            newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+
+                            CtiCommandParser parse(newReq->CommandString());
+
+                            CtiDeviceBase::ExecuteRequest(newReq, parse, vgList, retList, outList);
+
+                            delete newReq;
+                        }
+                        else
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint - averted SBO select loop for device " << getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint - SBO select failed for device " << getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                    }
+                }
+                else
+                {
+                    retMsg->setResultString("Incorrect control response from DNP device");
                 }
 
-                CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
-                                                                 "scan integrity",
-                                                                 InMessage->Return.UserID,
-                                                                 InMessage->Return.TrxID,
-                                                                 InMessage->Return.RouteID,
-                                                                 InMessage->Return.MacroOffset,
-                                                                 InMessage->Return.Attempt);
+                retList.append(retMsg);
 
-                newReq->setMessagePriority(15);
+                break;
+            }
+            case CtiProtocolDNP::DNP_SetDigitalOut_Direct:
+            case CtiProtocolDNP::DNP_SetDigitalOut_SBO_Operate:
+            {
+                //  check the return from the control
 
-                newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+                retMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
-                CtiCommandParser parse(newReq->CommandString());
+                retMsg->setUserMessageId(InMessage->Return.UserID);
 
-                CtiDeviceBase::ExecuteRequest(newReq, parse, vgList, retList, outList);
+                if( _dnp.hasControlResult() )
+                {
+                    resultString = getName() + " / control result: " + _dnp.getControlResultString();
 
-                delete newReq;
+                    retMsg->setResultString(resultString);
+
+                    if( !_dnp.getControlResultSuccess() )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - control failed for device " << getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+                else
+                {
+                    retMsg->setResultString("Incorrect control response from DNP device");
+                }
+
+                retList.append(retMsg);
+
+                //  scan the statuses to verify control, but only if we were successful
+                if( _dnp.hasControlResult() && _dnp.getControlResultSuccess() )
+                {
+                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
+                                                                     "scan integrity",
+                                                                     InMessage->Return.UserID,
+                                                                     InMessage->Return.TrxID,
+                                                                     InMessage->Return.RouteID,
+                                                                     InMessage->Return.MacroOffset,
+                                                                     InMessage->Return.Attempt);
+
+                    newReq->setMessagePriority(MAXPRIORITY - 1);
+
+                    newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+
+                    CtiCommandParser parse(newReq->CommandString());
+
+                    CtiDeviceBase::ExecuteRequest(newReq, parse, vgList, retList, outList);
+
+                    delete newReq;
+                }
 
                 break;
             }
@@ -388,6 +564,7 @@ void CtiDeviceDNP::processInboundPoints(INMESS *InMessage, RWTime &TimeNow, RWTP
     CtiPointBase    *point;
     CtiPointNumeric *pNumeric;
     RWCString        resultString;
+    RWTime           Now;
 
     retMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
     vgMsg  = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
@@ -404,6 +581,95 @@ void CtiDeviceDNP::processInboundPoints(INMESS *InMessage, RWTime &TimeNow, RWTP
         //  !!! tmpMsg->getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
         if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId(), tmpMsg->getType())) != NULL )
         {
+            //  if it's a pulse accumulator, we must attempt to calculate its demand accumulator
+            if( point->getType() == PulseAccumulatorPointType )
+            {
+                CtiPointAccumulator *demandPoint;
+
+                //  is there an accompanying demand accumulator for this pulse accumulator?
+                if( (demandPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(point->getPointOffset(), DemandAccumulatorPointType)) != NULL )
+                {
+                    dnp_accumulator_pointdata_map::iterator itr;
+                    dnp_accumulator_pointdata previous, current;
+
+                    //  get the raw pulses from the pulse accumulator
+                    current.point_value = tmpMsg->getValue();
+                    current.point_time  = Now.seconds();
+
+                    itr = _lastIntervalAccumulatorData.find(demandPoint->getPointOffset());
+
+                    if( itr != _lastIntervalAccumulatorData.end() )
+                    {
+                        float demandValue;
+                        previous = itr->second;
+
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint - demand accumulator calculation data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << "current.point_value  = " << current.point_value << endl;
+                            dout << "current.point_time   = " << current.point_time << endl;
+                            dout << "previous.point_value = " << previous.point_value << endl;
+                            dout << "previous.point_time  = " << previous.point_time << endl;
+                        }
+
+                        if( previous.point_value <= current.point_value )
+                        {
+                            demandValue = current.point_value - previous.point_value;
+                        }
+                        if( previous.point_value > current.point_value )
+                        {
+                            //  rollover has occurred - figure out how big the accumulator was
+                            if( previous.point_value > 0x0000ffff )
+                            {
+                                //  it was a 32-bit accumulator
+                                demandValue = (numeric_limits<unsigned long>::max() - previous.point_value) + current.point_value;
+                            }
+                            else
+                            {
+                                //  it was a 16-bit accumulator
+                                demandValue = (numeric_limits<unsigned short>::max() - previous.point_value) + current.point_value;
+                            }
+                        }
+
+                        demandValue *= 3600.0;
+                        demandValue /= (current.point_time - previous.point_time);
+
+                        demandValue = demandPoint->computeValueForUOM(demandValue);
+
+                        resultString = getName() + " / " + demandPoint->getName() + ": " + CtiNumStr(demandValue, ((CtiPointNumeric *)demandPoint)->getPointUnits().getDecimalPlaces());
+
+                        CtiPointDataMsg *demandMsg = new CtiPointDataMsg(demandPoint->getID(), demandValue, NormalQuality, DemandAccumulatorPointType, resultString);
+
+                        if( !useScanFlags() )  //  if we're not Scanner, send it to VG as well (scanner will do this on his own)
+                        {
+                            //  maybe (parse.isKeyValid("flag") && (parse.getFlags( ) & CMD_FLAG_UPDATE)) someday
+                            vgMsg->PointData().append(demandMsg->replicateMessage());
+                        }
+                        retMsg->PointData().append(demandMsg);
+
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint - updating demand accumulator calculation data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << "current.point_value  = " << current.point_value << endl;
+                            dout << "current.point_time   = " << current.point_time << endl;
+                        }
+
+                        itr->second = current;
+                    }
+                    else
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint - inserting demand accumulator calculation data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << "current.point_value  = " << current.point_value << endl;
+                            dout << "current.point_time   = " << current.point_time << endl;
+                        }
+
+                        _lastIntervalAccumulatorData.insert(dnp_accumulator_pointdata_map::value_type(point->getPointOffset(), current));
+                    }
+                }
+            }
+
             tmpMsg->setId(point->getID());
 
             if( point->isNumeric() )
