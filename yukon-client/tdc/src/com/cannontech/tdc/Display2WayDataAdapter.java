@@ -343,9 +343,7 @@ private void checkRowExceedance()
 public void clearSystemViewerDisplay( boolean forceRepaint )
 {
 	// FOR NOW, ONLY CLEAR THE EVENT VIEWER AND HISTORICAL VIEWERS
-	if( getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER ||
-		getCurrentDisplayNumber() == Display.HISTORY_EVENT_VIEWER_DISPLAY_NUMBER ||
-		getCurrentDisplayNumber() == Display.RAW_POINT_HISTORY_VIEWER_DISPLAY_NUMBER )
+	if( Display.isReadOnlyDisplay(getCurrentDisplayNumber()) )
 	{
 		// remove all alarms if any exists
 		synchronized ( getAlarmingRowVector() )
@@ -1351,11 +1349,11 @@ private void handleAlarm(Signal signal)
 		//find out what type of alarm signal this is  (1100)
 		if( TagUtils.isAlarm(signal.getTags()) )  // we need to flash
 		{
-			if( currentDisplayNumber == Display.EVENT_VIEWER_DISPLAY_NUMBER )
+			if( Display.isReadOnlyDisplay(currentDisplayNumber) )
 				addColumnDefinedRow( signal );
 			else if( isAlarmDisplay() )
 				insertAlarmDisplayAlarmedRow( signal );
-			else if( currentDisplayNumber != Display.EVENT_VIEWER_DISPLAY_NUMBER )
+			else if( !Display.isReadOnlyDisplay(currentDisplayNumber) )
 				setRowAlarmed( signal );
 		}
 		else if( TagUtils.isAlarmAcked(signal.getTags()) )
@@ -1363,7 +1361,7 @@ private void handleAlarm(Signal signal)
 			// check if we need to stop the flashing of the alarm
 			if( isAlarmDisplay() )
 				insertAlarmDisplayAlarmedRow( signal );
-			else if( currentDisplayNumber != Display.EVENT_VIEWER_DISPLAY_NUMBER )
+			else if( !Display.isReadOnlyDisplay(currentDisplayNumber) )
 				setRowUnAlarmed( signal );
 		}
 			
@@ -1651,17 +1649,7 @@ public boolean isCellEditable(int row, int column) {
 	return false;
 
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/12/00 12:56:16 PM)
- * Version: <version>
- * @return boolean
- */
-public boolean isHistoricalDisplay() 
-{
-	return ( currentDisplayNumber == Display.HISTORY_EVENT_VIEWER_DISPLAY_NUMBER ||
-			 currentDisplayNumber == Display.RAW_POINT_HISTORY_VIEWER_DISPLAY_NUMBER );
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/7/00 2:40:18 PM)
@@ -1849,8 +1837,7 @@ public boolean pointExists(String ptID)
 public synchronized void processDBChangeMessage( DBChangeMsg msg ) 
 {
 
-	if( getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER ||
-		 getCurrentDisplayNumber() == Display.HISTORY_EVENT_VIEWER_DISPLAY_NUMBER )
+	if( Display.isReadOnlyDisplay(getCurrentDisplayNumber())  )
 	{
 		return;  // do nothing
 	}
@@ -1894,8 +1881,11 @@ public synchronized void processPointDataReceived( PointData point )
 public synchronized void processSignalReceived( Signal signal )
 {
 	// make sure we have a point and we are not looking at historical data
-	if ( signal == null || currentDisplayNumber == Display.HISTORY_EVENT_VIEWER_DISPLAY_NUMBER )
+	if( signal == null 
+		 || currentDisplayNumber == Display.HISTORY_EVENT_VIEWER_DISPLAY_NUMBER )
+	{
 		return;
+	}
 
 	int location = getRowNumber(signal.getId());
 
@@ -1907,7 +1897,7 @@ public synchronized void processSignalReceived( Signal signal )
 	if( location >= 0 )
 		dataRow.setSignal( signal );
 
-	if( getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
+	if( Display.isReadOnlyDisplay(getCurrentDisplayNumber())  )
 	{
 		addColumnDefinedRow( signal );
 		

@@ -1,5 +1,8 @@
 package com.cannontech.tdc.data;
 
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 /**
  * Insert the type's description here.
  * Creation date: (10/3/00 2:53:36 PM)
@@ -85,6 +88,34 @@ public boolean equals(Object o)
 			   (o instanceof Display) &&
 			   ( ((Display)o).getDisplayNumber() == getDisplayNumber() ) );
 }
+
+
+/**
+ * Insert the method's description here.
+ * Creation date: (4/12/00 12:56:16 PM)
+ * Version: <version>
+ * @return boolean
+ */
+public static boolean isReadOnlyDisplay( long displayNum ) 
+{
+	return 
+		displayNum == Display.HISTORY_EVENT_VIEWER_DISPLAY_NUMBER 
+		|| displayNum == Display.EVENT_VIEWER_DISPLAY_NUMBER
+		|| displayNum == Display.RAW_POINT_HISTORY_VIEWER_DISPLAY_NUMBER;
+}
+
+public static boolean isTodaysDisplay( Date date_ )
+{
+	GregorianCalendar newCal = new GregorianCalendar();
+	GregorianCalendar todayCal = new GregorianCalendar();
+	newCal.setTime( date_ );			
+	todayCal.setTime( new Date() );
+
+	return 
+		 newCal.get(GregorianCalendar.DAY_OF_YEAR) == todayCal.get( GregorianCalendar.DAY_OF_YEAR )
+		 && newCal.get(GregorianCalendar.YEAR) == todayCal.get( GregorianCalendar.YEAR );
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (1/24/2002 9:38:17 AM)

@@ -7,9 +7,12 @@ package com.cannontech.tdc;
  */
 import java.awt.Cursor;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import javax.swing.JPanel;
+
+import sun.util.calendar.Gregorian;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
@@ -706,7 +709,7 @@ public void executeDateChange( java.util.Date newDate )
 
 	//only accepet the change if we are looking at the event viewer
 	//  and there is at least a 1 minute difference between the new date and the old date
-	if( getTableDataModel().getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER 
+	if( Display.isReadOnlyDisplay(getTableDataModel().getCurrentDisplayNumber())
 		 && (int)(newDate.getTime() / 600000) != (int)(getPreviousDate().getTime() / 600000) )
 	{
 		java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
@@ -715,15 +718,27 @@ public void executeDateChange( java.util.Date newDate )
 		
 		try
 		{
+
+			if( Display.isTodaysDisplay(newDate) )
+			{
+				//we are looking at today
+				setDisplayTitle( getCurrentDisplay().getTitle(), null );
+				getTableDataModel().setCurrentDisplayNumber( Display.EVENT_VIEWER_DISPLAY_NUMBER );
+			}
+			else
+			{
+				setDisplayTitle( getCurrentDisplay().getTitle(), newDate );
+				getTableDataModel().setCurrentDisplayNumber( Display.HISTORY_EVENT_VIEWER_DISPLAY_NUMBER );				
+			}
 		
+			
+			
 			//setUpTable();
 			getTableDataModel().clearSystemViewerDisplay( true );
 			resetPagingProperties();
 
 			getReadOnlyDisplayData( new java.util.Date(newDate.getTime()) );
-			previousDate = newDate;
-			
-			setDisplayTitle( getCurrentDisplay().getName(), newDate );
+			previousDate = newDate;			
 		}
 		finally
 		{
@@ -1735,7 +1750,7 @@ private void getReadOnlyDisplayData( java.util.Date date )
 				
 
 		//see if we need to add paging capability here
-		if( getTableDataModel().isHistoricalDisplay() || getTableDataModel().getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
+		if( Display.isReadOnlyDisplay(getTableDataModel().getCurrentDisplayNumber()) )
 		{
 			getJRadioButtonPage1().setSelected( true );
 			
@@ -2053,7 +2068,9 @@ public boolean initComboCurrentDisplay()
 				if( getCurrentDisplay().getType().equalsIgnoreCase(getAllDisplays()[i].getType()) )
 					getJComboCurrentDisplay().addItem( getAllDisplays()[i].getName() );
 			}
-			else if( initOnce && getCurrentDisplay() == null && getAllDisplays()[i].getDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
+			else if( initOnce 
+						&& getCurrentDisplay() == null 
+						&& Display.isReadOnlyDisplay(getAllDisplays()[i].getDisplayNumber()) )
 			{
 				// we must not have a currentDisplay set yet, set it to the EVENT VIEWER
 				setCurrentDisplay( getAllDisplays()[i] );
@@ -2302,17 +2319,27 @@ public void initializeTable()
  */
 protected void initSystemDisplays() 
 {
-	if( getTableDataModel().isHistoricalDisplay() )
-	{		
-		showCalendarDialog();
-	}
-	else if( getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
+	if( Display.isReadOnlyDisplay(getTableDataModel().getCurrentDisplayNumber()) )
 	{
 		// add in todays data
 		java.util.Date newDate = new java.util.Date();
       if( getPreviousDate() != null )
-         newDate = getPreviousDate();
+      {      	
+        	newDate = getPreviousDate();
+      }
 
+		if( Display.isTodaysDisplay(newDate) )
+		{
+			//we are looking at today
+			setDisplayTitle( getCurrentDisplay().getTitle(), null );
+			getTableDataModel().setCurrentDisplayNumber( Display.EVENT_VIEWER_DISPLAY_NUMBER );
+		}
+		else
+		{
+			setDisplayTitle( getCurrentDisplay().getTitle(), newDate );
+			getTableDataModel().setCurrentDisplayNumber( Display.HISTORY_EVENT_VIEWER_DISPLAY_NUMBER );				
+		}
+			
 		getReadOnlyDisplayData( newDate );
 	}
 }
@@ -2625,7 +2652,7 @@ public void jPopupMenu_PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEve
 {
 	if( getDisplayTable().getSelectedRow() >= 0 
 		 && getTableDataModel().getPointID(getDisplayTable().getSelectedRow()) != TDCDefines.ROW_BREAK_ID
-		 && getCurrentDisplay().getDisplayNumber() != Display.EVENT_VIEWER_DISPLAY_NUMBER )
+		 && !Display.isReadOnlyDisplay(getCurrentDisplay().getDisplayNumber()) )
 	{
 		int selectedRow = getDisplayTable().getSelectedRow();
 			
@@ -2883,7 +2910,7 @@ public void jRadioButtonPage_ActionPerformed(java.awt.event.ActionEvent actionEv
 
 	try
 	{
-		if( getTableDataModel().isHistoricalDisplay() || getTableDataModel().getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
+		if( Display.isReadOnlyDisplay(getTableDataModel().getCurrentDisplayNumber()) )
 		{
 			getTableDataModel().clearSystemViewerDisplay( false );
 
@@ -3631,7 +3658,7 @@ private void showCalendarDialog()
 	}
 
 		
-	if( getTableDataModel().isHistoricalDisplay() )
+	if( Display.isReadOnlyDisplay(getTableDataModel().getCurrentDisplayNumber()) )
 	{		
 		getReadOnlyDisplayData( newDate );
 	}

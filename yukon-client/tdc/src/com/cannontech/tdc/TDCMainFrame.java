@@ -3922,13 +3922,13 @@ public void mainPanel_JComboCurrentDisplayAction_actionPerformed(java.util.Event
 
 		// enable/disable the correct corresponding buttons for the the current view
 		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMPONENT_INDEX_CLEAR,
-			(source.getTableDataModel().getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER) );
+			Display.isReadOnlyDisplay(source.getTableDataModel().getCurrentDisplayNumber())  );
 		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMPONENT_INDEX_ACKALL, true );
 		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMPONENT_INDEX_CLEARVIEWABLE, true );
 		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMPONENT_INDEX_DATELABEL,
-			(source.getTableDataModel().getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER) );
+			Display.isReadOnlyDisplay(source.getTableDataModel().getCurrentDisplayNumber())  );
 		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMPONENT_INDEX_DATE,
-			(source.getTableDataModel().getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER) );
+			Display.isReadOnlyDisplay(source.getTableDataModel().getCurrentDisplayNumber())  );
 
 		
 		setTitleFromDisplay();				
@@ -3937,7 +3937,7 @@ public void mainPanel_JComboCurrentDisplayAction_actionPerformed(java.util.Event
 		
 	//JMenuItems disabling needs to go here
 	getJMenuItemPrint().setEnabled(
-		(source.getTableDataModel().getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER) );
+			Display.isReadOnlyDisplay(source.getTableDataModel().getCurrentDisplayNumber())  );
 		
 	return;
 }

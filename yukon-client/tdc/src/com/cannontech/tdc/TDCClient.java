@@ -75,13 +75,12 @@ private PointRegistration getPtRegMsg()
 		displayName = caller.getCurrentDisplay().getName();
 		
 	//Register for points
-	if( callerModel.isAlarmDisplay()
-       || callerModel.isHistoricalDisplay() )
+	if( callerModel.isAlarmDisplay() )
 	{
 		TDCMainFrame.messageLog.addMessage("Registering display " + displayName + " for ALARMS", MessageBoxFrame.INFORMATION_MSG);
 		pReg.setRegFlags( PointRegistration.REG_ALARMS );
 	}
-	else if( callerModel.getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
+	else if( Display.isReadOnlyDisplay(callerModel.getCurrentDisplayNumber()) )	
 	{
 		TDCMainFrame.messageLog.addMessage("Registering display " + displayName + " for ALARMS, EVENTS and NO_UPLOAD", MessageBoxFrame.INFORMATION_MSG);
 		pReg.setRegFlags( PointRegistration.REG_EVENTS | 
