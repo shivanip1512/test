@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -361,7 +360,6 @@ public final class ContactFuncs
 		if (liteCICust != null) return liteCICust;
 		
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		
 		synchronized (cache) {
 			List customers = cache.getAllCustomers();
 			for (int i = 0; i < customers.size(); i++) {
@@ -369,21 +367,6 @@ public final class ContactFuncs
 				if (liteCustomer.getPrimaryContactID() == contactID)
 					return liteCustomer;
 			}
-		}
-		
-		try {
-			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-					"SELECT CustomerID FROM Customer WHERE PrimaryContactID=" + contactID,
-					CtiUtilities.getDatabaseAlias() );
-			stmt.execute();
-			
-			if (stmt.getRowCount() != 1)
-				throw new Exception( "Cannot determine the residential customer with PrimaryContactID=" + contactID );
-			
-			return (LiteCustomer)cache.getAllCustomersMap().get(new Integer( (((java.math.BigDecimal) stmt.getRow(0)[0]).intValue() )));
-		}
-		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
