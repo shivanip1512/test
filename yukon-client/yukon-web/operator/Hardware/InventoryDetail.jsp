@@ -11,10 +11,8 @@
 	LiteInventoryBase liteInv = liteEC.getInventoryBrief(invID, true);
 	StarsInventory inventory = StarsLiteFactory.createStarsInventory(liteInv, liteEC);
 	
-	String devTypeStr = "(none)";
-	if (inventory.getLMHardware() != null)
-		devTypeStr = inventory.getLMHardware().getLMHardwareType().getContent();
-	else if (inventory.getDeviceID() > 0)
+	String devTypeStr = inventory.getDeviceType().getContent();
+	if (inventory.getDeviceID() > 0)
 		devTypeStr = PAOGroups.getPAOTypeString( PAOFuncs.getLiteYukonPAO(inventory.getDeviceID()).getType() );
 	
 	String src = request.getParameter("src");
@@ -147,6 +145,7 @@ function validate(form) {
 			    <input type="hidden" name="action" value="UpdateInventory">
                 <input type="hidden" name="InvID" value="<%= inventory.getInventoryID() %>">
 				<input type="hidden" name="DeviceID" value="<%= inventory.getDeviceID() %>">
+				<input type="hidden" name="DeviceType" value="<%= inventory.getDeviceType().getEntryID() %>">
 				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvId=<%= invID %>">
 				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvId=<%= invID %>">
                 <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
@@ -163,8 +162,7 @@ function validate(form) {
                                 </td>
                                 <td width="210" class="MainText"><%= devTypeStr %></td>
                               </tr>
-<% if (inventory.getLMHardware() != null) { %>
-							  <input type="hidden" name="DeviceType" value="<%= inventory.getLMHardware().getLMHardwareType().getEntryID() %>">
+<%	if (inventory.getLMHardware() != null) { %>
                               <tr> 
                                 <td width="88" class="TableCell"> 
                                   <div align="right">Serial #:</div>
@@ -173,14 +171,21 @@ function validate(form) {
                                   <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= inventory.getLMHardware().getManufacturerSerialNumber() %>">
                                 </td>
                               </tr>
-<% } else { %>
-                              <tr> 
+<%	}
+	else {
+		String deviceName = "(none)";
+		if (inventory.getDeviceID() > 0)
+			deviceName = PAOFuncs.getYukonPAOName(inventory.getDeviceID());
+		else if (inventory.getMCT() != null)
+			deviceName = inventory.getMCT().getDeviceName();
+%>
+							  <tr> 
                                 <td width="88" class="TableCell"> 
                                   <div align="right">Device Name:</div>
                                 </td>
-                                <td width="210" class="MainText"><%= PAOFuncs.getYukonPAOName(inventory.getDeviceID()) %></td>
+                                <td width="210" class="MainText"><%= deviceName %></td>
                               </tr>
-<% } %>
+<%	} %>
                               <tr> 
                                 <td width="88" class="TableCell"> 
                                   <div align="right">Label:</div>

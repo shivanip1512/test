@@ -8,8 +8,8 @@
 		return;
 	}
 	
-	boolean invCheckEarly = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING_TIME).equalsIgnoreCase(InventoryManager.INVENTORY_CHECKING_TIME_EARLY);
-	if (!invCheckEarly)
+	boolean invChecking = AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING);
+	if (!invChecking)
 		session.removeAttribute(InventoryManager.STARS_INVENTORY_TEMP);
 	
 	StarsInventory inventory = (StarsInventory) session.getAttribute(InventoryManager.STARS_INVENTORY_TEMP);
@@ -23,17 +23,15 @@
 				StarsCreateLMHardware createHw = reqOper.getStarsCreateLMHardware();
 				if (createHw != null) {
 					inventory = (StarsInventory) StarsFactory.newStarsInv(createHw, StarsInventory.class);
-					if (createHw.getLMHardware() != null) {
-						inventory.getLMHardware().getLMHardwareType().setContent(
-								YukonListFuncs.getYukonListEntry(createHw.getLMHardware().getLMHardwareType().getEntryID()).getEntryText());
-					}
+					inventory.getDeviceType().setContent(
+							YukonListFuncs.getYukonListEntry(createHw.getDeviceType().getEntryID()).getEntryText());
 				}
 			}
 		}
 	}
 	
 	if (inventory == null) {	
-		if (invCheckEarly) {
+		if (invChecking) {
 			String redirect = request.getContextPath() + "/operator/Consumer/SerialNumber.jsp?action=New";
 			if (inWizard) redirect += "&Wizard=true";
 			response.sendRedirect(redirect);
@@ -42,26 +40,24 @@
 		
 		inventory = (StarsInventory) StarsFactory.newStarsInv(StarsInventory.class);
 		LMHardware hw = new LMHardware();
-		hw.setLMHardwareType( (LMHardwareType)
-				StarsFactory.newEmptyStarsCustListEntry(LMHardwareType.class) );
 		hw.setManufacturerSerialNumber("");
 		inventory.setLMHardware(hw);
 	}
 	
 	String devTypeStr = "(none)";
-	String deviceName = "(none)";
-	String devNameLabel = "(none)";
+	String serialNo = "(none)";
+	String serialLabel = "(none)";
 	
 	if (inventory.getLMHardware() != null) {
-		devTypeStr = inventory.getLMHardware().getLMHardwareType().getContent();
-		deviceName = inventory.getLMHardware().getManufacturerSerialNumber();
-		devNameLabel = "Serial #";
+		devTypeStr = inventory.getDeviceType().getContent();
+		serialNo = inventory.getLMHardware().getManufacturerSerialNumber();
+		serialLabel = "Serial #";
 	}
-	else {
+	else if (inventory.getDeviceID() > 0) {
 		com.cannontech.database.data.lite.LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO(inventory.getDeviceID());
 		devTypeStr = com.cannontech.database.data.pao.PAOGroups.getPAOTypeString(litePao.getType());
-		deviceName = litePao.getPaoName();
-		devNameLabel = "Device Name";
+		serialNo = litePao.getPaoName();
+		serialLabel = "Device Name";
 	}
 %>
 <html>
@@ -82,7 +78,7 @@ function validate(form) {
 		alert("Serial # cannot be empty");
 		return false;
 	}
-<% if (!invCheckEarly) { %>
+<% if (!invChecking) { %>
 	form.attributes["action"].value = "<%= request.getContextPath() %>/servlet/InventoryManager";
 <% } %>
 	return true;
@@ -151,7 +147,7 @@ function changeSerialNo() {
 <% } %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
-              <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
+              <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)">
 			    <input type="hidden" name="action" value="CreateLMHardware">
 				<input type="hidden" name="InvID" value="<%= inventory.getInventoryID() %>">
 				<input type="hidden" name="DeviceID" value="<%= inventory.getDeviceID() %>">
@@ -163,11 +159,9 @@ function changeSerialNo() {
                         <tr> 
                           <td valign="top"><span class="SubtitleHeader">DEVICE</span> 
                             <hr>
-<%	if (invCheckEarly) { %>
-<%		if (inventory.getLMHardware() != null) { %>
-							<input type="hidden" name="DeviceType" value="<%= inventory.getLMHardware().getLMHardwareType().getEntryID() %>">
-							<input type="hidden" name="SerialNo" value="<%= deviceName %>">
-<%		} %>
+<%	if (invChecking) { %>
+							<input type="hidden" name="DeviceType" value="<%= inventory.getDeviceType().getEntryID() %>">
+							<input type="hidden" name="SerialNo" value="<%= serialNo %>">
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr> 
                                 <td width="100" class="TableCell" align="right">Type: 
@@ -178,13 +172,13 @@ function changeSerialNo() {
                                 </td>
                               </tr>
                               <tr> 
-                                <td width="100" class="TableCell" align="right"><%= devNameLabel %>: </td>
-                                <td width="120" class="MainText"><%= deviceName %></td>
+                                <td width="100" class="TableCell" align="right"><%= serialLabel %>: </td>
+                                <td width="120" class="MainText"><%= serialNo %></td>
                               </tr>
                             </table>
 <%	} %>
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-<%	if (!invCheckEarly && inventory.getLMHardware() != null) { %>
+<%	if (!invChecking) { %>
                               <tr> 
                                 <td width="100" class="TableCell"> 
                                   <div align="right">Type: </div>
@@ -195,9 +189,8 @@ function changeSerialNo() {
 	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
-		String selected = (entry.getEntryID() == inventory.getLMHardware().getLMHardwareType().getEntryID())? "selected" : "";
 %>
-                                    <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
+                                    <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
                                     <%
 	}
 %>
@@ -208,7 +201,7 @@ function changeSerialNo() {
                                 <td width="100" class="TableCell" align="right">Serial 
                                   #: </td>
                                 <td width="200"> 
-                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= inventory.getLMHardware().getManufacturerSerialNumber() %>">
+                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="">
                                 </td>
                               </tr>
 <%	} %> 
@@ -391,9 +384,9 @@ function changeSerialNo() {
                 <tr>
                   <td align ="right" width = "50%"> 
 <% if (!inWizard) { %>
-                    <input type="submit" name="Submit" value="Save" onclick="return validate(this.form)">
+                    <input type="submit" name="Submit" value="Save">
 <% } else { %>
-                    <input type="submit" name="Next" value="Next" onclick="return validate(this.form)">
+                    <input type="submit" name="Next" value="Next">
 <% } %>
                   </td>
                   <td> 

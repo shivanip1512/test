@@ -19,22 +19,28 @@
 		session.setAttribute(InventoryManager.STARS_INVENTORY_TEMP + String.valueOf(invNo), inventory);
 	}
 	
-	boolean invCheckEarly = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING_TIME).equalsIgnoreCase(InventoryManager.INVENTORY_CHECKING_TIME_EARLY);
-
+	boolean invChecking = AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING);
+	
 	String devTypeStr = "(none)";
-	String deviceName = "(none)";
-	String devNameLabel = "(none)";
+	String serialNo = "(none)";
+	String serialLabel = "(none)";
 	
 	if (newInv.getLMHardware() != null) {
-		devTypeStr = newInv.getLMHardware().getLMHardwareType().getContent();
-		deviceName = newInv.getLMHardware().getManufacturerSerialNumber();
-		devNameLabel = "Serial #";
+		devTypeStr = newInv.getDeviceType().getContent();
+		serialNo = newInv.getLMHardware().getManufacturerSerialNumber();
+		serialLabel = "Serial #";
 	}
-	else if (newInv.getDeviceID() > 0) {
-		LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO(newInv.getDeviceID());
-		devTypeStr = PAOGroups.getPAOTypeString(litePao.getType());
-		deviceName = litePao.getPaoName();
-		devNameLabel = "Device Name";
+	else {
+		if (newInv.getDeviceID() > 0) {
+			LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO(newInv.getDeviceID());
+			devTypeStr = PAOGroups.getPAOTypeString(litePao.getType());
+			serialNo = litePao.getPaoName();
+		}
+		else if (newInv.getMCT() != null) {
+			devTypeStr = newInv.getDeviceType().getContent();
+			serialNo = newInv.getMCT().getDeviceName();
+		}
+		serialLabel = "Device Name";
 	}
 	
 	StarsServiceCompany company = null;
@@ -70,7 +76,10 @@ function validate(form) {
 		return false;
 	}
 	
-	if (form.InvID.value != form.OrigInvID.value)
+	if (form.DeviceType.value != <%= inventory.getDeviceType().getEntryID() %>
+	<% if (inventory.getLMHardware() != null) { %>
+		|| form.SerialNo.value != "<%= inventory.getLMHardware().getManufacturerSerialNumber() %>"
+	<% } %>)
 	{
 		form.attributes["action"].value = "<%= request.getContextPath() %>/servlet/InventoryManager";
 	}
@@ -148,11 +157,9 @@ function changeSerialNo() {
                       <tr> 
                           <td valign="top"><span class="SubtitleHeader">DEVICE</span> 
                             <hr>
-<%	if (invCheckEarly) { %>
-<%		if (newInv.getLMHardware() != null) { %>
-                            <input type="hidden" name="DeviceType" value="<%= newInv.getLMHardware().getLMHardwareType().getEntryID() %>">
-							<input type="hidden" name="SerialNo" value="<%= deviceName %>">
-<%		} %>
+<%	if (invChecking) { %>
+                            <input type="hidden" name="DeviceType" value="<%= newInv.getDeviceType().getEntryID() %>">
+							<input type="hidden" name="SerialNo" value="<%= serialNo %>">
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr> 
                                 <td width="100" class="TableCell" align="right">Type: 
@@ -163,39 +170,40 @@ function changeSerialNo() {
                                 </td>
                               </tr>
                               <tr> 
-                                <td width="100" class="TableCell" align="right"><%= devNameLabel %>: </td>
-                                <td width="120" class="MainText"><%= deviceName %></td>
+                                <td width="100" class="TableCell" align="right"><%= serialLabel %>: </td>
+                                <td width="120" class="MainText"><%= serialNo %></td>
                               </tr>
                             </table>
 <%	} %>
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-<%	if (!invCheckEarly) { %>
+<%	if (!invChecking) { %>
                               <tr> 
                                 <td width="100" class="TableCell"> 
                                   <div align="right">Type: </div>
                                 </td>
-                                <td width="200" class="MainText"><%= devTypeStr %></td>
+                                <td width="200" class="MainText">
+                                  <select name="DeviceType">
+<%
+		StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
+		for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
+			String selected = (entry.getEntryID() == newInv.getDeviceType().getEntryID())? "selected" : "";
+%>
+                                    <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
+<%
+		}
+%>
+                                  </select>
+                                </td>
                               </tr>
-<%		if (newInv.getLMHardware() != null) { %>
-                              <input type="hidden" name="DeviceType" value="<%= newInv.getLMHardware().getLMHardwareType().getEntryID() %>">
                               <tr> 
                                 <td width="100" class="TableCell" align="right">Serial 
                                   #: </td>
                                 <td width="200"> 
-                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= newInv.getLMHardware().getManufacturerSerialNumber() %>">
+                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= serialNo %>">
                                 </td>
                               </tr>
-<%		}
-		else {
-%>
-                              <tr> 
-                                <td width="100" class="TableCell" align="right">Device 
-                                  Name: </td>
-                                <td width="200"><%= deviceName %></td>
-                              </tr>
-<%		}
-	}
-%>
+<%	} %>
                               <tr> 
                                 <td width="100" class="TableCell"> 
                                   <div align="right">Label: </div>
@@ -359,44 +367,41 @@ function changeSerialNo() {
               <input type="hidden" name="action" value="Change">
             </form>
             </div>
+<%	if (newInv.getStarsLMHardwareHistory() != null) { %>
             <hr>
             <div align="center"> 
-              <div align="center"><span class="TitleHeader">Hardware History</span><br>
-                <table width="300" border="1" cellspacing="0" cellpadding="3" align="center">
-                  <tr> 
-                    <td width="50%" class="HeaderCell">Date</td>
-                    <td width="50%" class="HeaderCell">Action</td>
-                  </tr>
-                  <%
-	StarsLMHardwareHistory hwHist = newInv.getStarsLMHardwareHistory();
-	for (int i = hwHist.getStarsLMHardwareEventCount() - 1; i >= 0 && i >= hwHist.getStarsLMHardwareEventCount() - 5; i--) {
-		StarsLMHardwareEvent event = hwHist.getStarsLMHardwareEvent(i);
+              <span class="TitleHeader">Hardware History</span><br>
+              <table width="300" border="1" cellspacing="0" cellpadding="3" align="center">
+                <tr> 
+                  <td width="50%" class="HeaderCell">Date</td>
+                  <td width="50%" class="HeaderCell">Action</td>
+                </tr>
+<%
+		StarsLMHardwareHistory hwHist = newInv.getStarsLMHardwareHistory();
+		for (int i = hwHist.getStarsLMHardwareEventCount() - 1; i >= 0 && i >= hwHist.getStarsLMHardwareEventCount() - 5; i--) {
+			StarsLMHardwareEvent event = hwHist.getStarsLMHardwareEvent(i);
 %>
-                  <tr valign="top"> 
-                    <td width="50%" class="TableCell" bgcolor="#FFFFFF"><%= ServletUtils.formatDate(event.getEventDateTime(), datePart, "----") %></td>
-                    <td width="50%" class="TableCell" bgcolor="#FFFFFF"><%= event.getEventAction() %></td>
-                  </tr>
-                  <%
-	}
+                <tr valign="top"> 
+                  <td width="50%" class="TableCell" bgcolor="#FFFFFF"><%= ServletUtils.formatDate(event.getEventDateTime(), datePart, "----") %></td>
+                  <td width="50%" class="TableCell" bgcolor="#FFFFFF"><%= event.getEventAction() %></td>
+                </tr>
+<%
+		}
 %>
-                </table>
-                <%
-	if (hwHist.getStarsLMHardwareEventCount() > 5) {
-%>
-                <table width="300" border="0" cellspacing="0" cellpadding="0">
-                  <tr> 
-                    <td> 
-                      <div align="right"> 
-                        <input type="button" name="More2" value="More" onClick="location='InventoryHist.jsp?InvNo=<%= invNo %>'">
-                      </div>
-                    </td>
-                  </tr>
-                </table>
-                <%
-	}
-%>
-              </div>
+              </table>
+<%		if (hwHist.getStarsLMHardwareEventCount() > 5) { %>
+              <table width="300" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td> 
+                    <div align="right"> 
+                      <input type="button" name="More2" value="More" onClick="location='InventoryHist.jsp?InvNo=<%= invNo %>'">
+                    </div>
+                  </td>
+                </tr>
+              </table>
+<%		} %>
             </div>
+<%	} %>
             <p>&nbsp;</p>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>

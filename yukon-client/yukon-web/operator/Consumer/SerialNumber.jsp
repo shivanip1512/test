@@ -1,4 +1,5 @@
 <%@ include file="include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
 <%
 	String action = request.getParameter("action");
 	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
@@ -23,9 +24,14 @@
 			// Came from CreateHardware.jsp or Inventory.jsp
 			StarsInventory inventory = (StarsInventory) session.getAttribute(InventoryManager.STARS_INVENTORY_TEMP + invNo);
 			
-			if (inventory != null && inventory.getLMHardware() != null) {
-				deviceType = inventory.getLMHardware().getLMHardwareType().getEntryID();
-				serialNo = inventory.getLMHardware().getManufacturerSerialNumber();
+			if (inventory != null) {
+				deviceType = inventory.getDeviceType().getEntryID();
+				if (inventory.getLMHardware() != null)
+					serialNo = inventory.getLMHardware().getManufacturerSerialNumber();
+				else if (inventory.getDeviceID() > 0)
+					serialNo = PAOFuncs.getYukonPAOName(inventory.getDeviceID());
+				else if (inventory.getMCT() != null)
+					serialNo = inventory.getMCT().getDeviceName();
 			}
 			
 			referer = request.getHeader("referer");
@@ -43,7 +49,7 @@
 		StarsInventory inventory = (StarsInventory) session.getAttribute(InventoryManager.STARS_INVENTORY_TEMP + invNo);
 		
 		if (inventory != null && inventory.getLMHardware() != null) {
-			deviceType = inventory.getLMHardware().getLMHardwareType().getEntryID();
+			deviceType = inventory.getDeviceType().getEntryID();
 			serialNo = inventory.getLMHardware().getManufacturerSerialNumber();
 		}
 	}
@@ -53,6 +59,9 @@
 		response.sendRedirect("../Operations.jsp");
 		return;
 	}
+	
+	boolean hasMCT = ServletUtils.getStarsCustListEntry(selectionListTable,
+			YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) != null;
 %>
 <html>
 <head>
@@ -75,8 +84,8 @@ function selectInventory(form) {
 	form.submit();
 }
 
-function selectMeter(form) {
-	form.attributes["action"].value = "SelectMeter.jsp";
+function selectMCT(form) {
+	form.attributes["action"].value = "SelectMCT.jsp";
 	form.submit();
 }
 </script>
@@ -141,9 +150,9 @@ function selectMeter(form) {
 			    <input type="hidden" name="action" value="CheckInventory">
 				<input type="hidden" name="REDIRECT" value="<%= redirect %>">
                 Please select a device from the current inventory (Select Inventory),<br>
-<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_METER %>">
+<% if (hasMCT) { %>
                 select a meter from the list of all MCTs (Select Meter),<br>
-</cti:checkProperty>
+<% } %>
                 or check the inventory for a specific device type and serial number 
                 (Check Inventory).<br>
                 <br>
@@ -161,7 +170,7 @@ function selectMeter(form) {
                       </table>
                     </td>
                   </tr>
-<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_METER %>">
+<% if (hasMCT) { %>
                   <tr> 
                     <td> 
                       <div align="center" class="TableCell">or</div>
@@ -173,14 +182,14 @@ function selectMeter(form) {
                         <tr> 
                           <td height="30"> 
                             <div align="center">
-                              <input type="button" name="SelectMCT" value="Select Meter" onClick="selectMeter(this.form)">
+                              <input type="button" name="SelectMCT" value="Select Meter" onClick="selectMCT(this.form)">
                             </div>
                           </td>
                         </tr>
                       </table>
                     </td>
                   </tr>
-</cti:checkProperty>
+<% } %>
                   <tr> 
                     <td> 
                       <div align="center" class="TableCell">or</div>
