@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/03/02 21:13:51 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/03/04 16:03:55 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,8 +42,7 @@ _notifGroupID(0)
 
 CtiNotifEmailMsg::~CtiNotifEmailMsg()
 {
-   // _attachments.clearAndDestroy()
-
+   _attachments.clearAndDestroy();
 }
 
 //=====================================================================================================================
@@ -87,7 +86,7 @@ void CtiNotifEmailMsg::dump() const
 {
    CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-   dout << " ------- SMessage ------- " << isA() << endl;
+   dout << " ------- Message ------- " << isA() << endl;
    dout << "Notification Group ID    " << _notifGroupID << endl;
    dout << "To                       " << _to << endl;
    dout << "Subject                  " << _subject << endl;
@@ -108,8 +107,9 @@ RWOrdered& CtiNotifEmailMsg::getAttachments( void )
 
 void CtiNotifEmailMsg::setAttachment( RWCString file )
 {
-   _attachment = new CtiNotifEmailAttachmentMsg( file );
-   _attachments.insert( _attachment );
+   _notifAttachment = new CtiNotifEmailAttachmentMsg( file );
+   _notifAttachment->dump();
+   _attachments.insert( _notifAttachment );
 }
 
 //=====================================================================================================================

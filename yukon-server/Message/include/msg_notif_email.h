@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/03/02 21:17:00 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/03/04 16:03:55 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -41,7 +41,7 @@ private:
    RWCString                     _toBCC;       
    RWOrdered                     _attachments;
 
-   CtiNotifEmailAttachmentMsg    *_attachment;
+   CtiNotifEmailAttachmentMsg    *_notifAttachment;
 
 public:
 
