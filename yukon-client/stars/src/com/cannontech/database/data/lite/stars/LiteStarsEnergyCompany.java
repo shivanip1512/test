@@ -147,7 +147,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	private String name = null;
 	private int primaryContactID = CtiUtilities.NONE_ID;
-	private int userID = com.cannontech.user.UserUtils.USER_YUKON_ID;
+	private int userID = com.cannontech.user.UserUtils.USER_NONE_ID;
 	
 	private ArrayList custAccountInfos = null;	// List of LiteStarsCustAccountInformation
 	private ArrayList addresses = null;			// List of LiteAddress
@@ -2360,7 +2360,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return starsExitQuestions;
 	}
 	
-	private void updateStarsDefaultThermostatSettings() {
+	public void updateStarsDefaultThermostatSettings() {
 		boolean hasBasic = false;
 		boolean hasEpro = false;
 		

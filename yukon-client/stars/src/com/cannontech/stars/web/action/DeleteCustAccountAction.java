@@ -158,7 +158,7 @@ public class DeleteCustAccountAction implements ActionBase {
     		
 			// Delete login
 			int userID = liteContact.getLoginID();
-			if (userID > com.cannontech.user.UserUtils.USER_YUKON_ID)
+			if (userID > com.cannontech.user.UserUtils.USER_NONE_ID)
 				UpdateLoginAction.deleteLogin( userID, null );
     		
 			// Delete lite and stars objects

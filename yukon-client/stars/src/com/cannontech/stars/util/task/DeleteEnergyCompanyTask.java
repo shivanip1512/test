@@ -365,7 +365,9 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 					ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
 				}
 				
-				if (energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_YUKON_ID) {
+				if (energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_YUKON_ID &&
+					energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_NONE_ID)
+				{
 					com.cannontech.database.data.user.YukonUser yukonUser =
 							new com.cannontech.database.data.user.YukonUser();
 					yukonUser.setUserID( new Integer(energyCompany.getUserID()) );

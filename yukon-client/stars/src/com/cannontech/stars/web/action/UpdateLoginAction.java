@@ -214,7 +214,7 @@ public class UpdateLoginAction implements ActionBase {
 	public static void deleteLogin(int userID, LiteContact liteContact)
 	throws CommandExecutionException {
 		if (liteContact != null) {
-	        liteContact.setLoginID( com.cannontech.user.UserUtils.USER_YUKON_ID );
+	        liteContact.setLoginID( com.cannontech.user.UserUtils.USER_NONE_ID );
 	        com.cannontech.database.data.customer.Contact contact =
 	        		(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
 	        Transaction.createTransaction(Transaction.UPDATE, contact.getContact()).execute();
@@ -237,7 +237,9 @@ public class UpdateLoginAction implements ActionBase {
 		String username = updateLogin.getUsername();
 		String password = updateLogin.getPassword();
 	    	
-		if (userID == com.cannontech.user.UserUtils.USER_YUKON_ID) {
+		if (userID == com.cannontech.user.UserUtils.USER_YUKON_ID ||
+			userID == com.cannontech.user.UserUtils.USER_NONE_ID)
+		{
 			// Create new customer login
 			if (username.trim().length() == 0 || password.trim().length() == 0)
 				throw new WebClientException( "Username and password cannot be empty" );
