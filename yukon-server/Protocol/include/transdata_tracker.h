@@ -14,13 +14,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/12/02 15:48:11 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/12/09 17:55:26 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
 
+#include <rw/db/datetime.h>
+
 #include "xfer.h"
+#include "numstr.h"
 #include "transdata_datalink.h"
 #include "prot_ymodem.h"
 
@@ -41,6 +44,7 @@ class IM_EX_PROT CtiTransdataTracker
       //loadprofile
       doEnabledChannels,
       doIntervalSize,
+      doTime,
       doRecordDump,
       doRecordNumber,
       doProt1,
@@ -57,14 +61,33 @@ class IM_EX_PROT CtiTransdataTracker
       failed
    };
 
-   struct mark_v_lp
-   {
-      bool  enabledChannels[8];
-      int   lpFormat[3];
-      BYTE  lpData[2000];
-   };
-
    public:
+      /*
+      struct lpRecord
+      {
+         union
+         {
+            BYTE     rec[2];
+            DOUBLE   value;
+         };
+      };
+        */
+      typedef union
+      {
+         BYTE     rec[2];
+         DOUBLE   value;
+      }lpRecord;
+        
+      struct mark_v_lp
+      {
+         bool     enabledChannels[8];
+         int      lpFormat[3];
+         int      numLpRecs;
+         ULONG    meterTime;
+         lpRecord lpData[1000];
+//         BYTE     lpData[2000];
+      };
+
 
       CtiTransdataTracker();
       ~CtiTransdataTracker();
@@ -85,17 +108,18 @@ class IM_EX_PROT CtiTransdataTracker
       bool gotRetry( const BYTE *data, int length );
       bool grabChannels( BYTE *data, int bytes );
       bool grabFormat( BYTE *data, int bytes );
-
+      bool grabTime( BYTE *data, int bytes );
       void injectData( RWCString str );
       void setNextState( void );
       void reset( void );
-
+      void setLastLPTime( ULONG lpTime );
       int retreiveData( BYTE *data );
       int getError( void );
       void setError( void );
       bool goodCRC( void );
       void reinitalize( void );
       void destroy( void );
+      int calcLPRecs( void );
 
    protected:
 
@@ -156,19 +180,19 @@ class IM_EX_PROT CtiTransdataTracker
       bool                 _sec;
       bool                 _hold;
       bool                 _dataIsExpected;
-//      bool                 _enabledChannels[8];
 
       int                  _lastState;
       int                  _bytesReceived;
       int                  _meterBytes;
       int                  _failCount;
       int                  _error;
-//      int                  _lpFormat[3];
 
       BYTE                 *_storage;
       BYTE                 *_meterData;
       BYTE                 *_lastCommandSent;
 
+      ULONG                _lastLPTime;
+      
       mark_v_lp            *_lp;
 
       CtiTransdataDatalink _datalink;

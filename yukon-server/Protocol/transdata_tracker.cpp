@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/12/02 15:48:11 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/12/09 17:55:26 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -141,7 +141,7 @@ void CtiTransdataTracker::reinitalize( void )
    _storage          = new BYTE[4000];    //supposedly, we'd only need 1k, but...
    _meterData        = new BYTE[4000];
    _lastCommandSent  = new BYTE[30];
-
+//   _lastLPTime       = 0;
    _password         = "22222222\r\n";       //silly hard-codedness for now
 }
 
@@ -243,6 +243,7 @@ bool CtiTransdataTracker::decode( CtiXfer &xfer, int status )
    case doIntervalSize:
    case doRecordDump:
    case doRecordNumber:
+   case doTime:
       {
          decodeLink( xfer, status );
       }
@@ -273,10 +274,25 @@ bool CtiTransdataTracker::decode( CtiXfer &xfer, int status )
 bool CtiTransdataTracker::grabChannels( BYTE *data, int bytes )
 {
    char  *ptr = NULL;
+   char  *temp = NULL;
    char  fluff[400];
    
    memcpy( fluff, data, bytes );
    ptr = fluff;
+
+   for( ;; )
+   {
+      temp = strstr( ( const char*)ptr, "DC" );
+
+      if( temp != NULL )
+      {
+         ptr = temp + 2;
+      }
+      else
+      {
+         break;
+      }
+   }
 
    for( int index = 0; index < 8; index++ )
    {
@@ -306,11 +322,26 @@ bool CtiTransdataTracker::grabChannels( BYTE *data, int bytes )
 bool CtiTransdataTracker::grabFormat( BYTE *data, int bytes )
 {
    char  *ptr = NULL;
+   char  *temp = NULL;
    char  fluff[400];
    
    memcpy( fluff, data, bytes );
    ptr = fluff;
    
+   for( ;; )
+   {
+      temp = strstr( ( const char*)ptr, "IS" );
+
+      if( temp != NULL )
+      {
+         ptr = temp + 2;
+      }
+      else
+      {
+         break;
+      }
+   }
+
    for( int index = 0; index < 3; index++ )
    {
       ptr = strstr( ( const char*)ptr, "\n" );
@@ -327,6 +358,61 @@ bool CtiTransdataTracker::grabFormat( BYTE *data, int bytes )
       }
    }
    
+   return( true );
+}
+
+//=====================================================================================================================
+//there may be a better way to get the time of the last complete load profile interval, but I don't know what it is 
+//right now, so we'll just ask the meter what time it is and send that up with the other LP data
+//=====================================================================================================================
+
+bool CtiTransdataTracker::grabTime( BYTE *data, int bytes )
+{
+   char           *ptr = NULL;
+   char           *temp = NULL;
+   char           fluff[400];
+   unsigned       timeBits[6];
+
+   memcpy( fluff, data, bytes );
+   ptr = fluff;
+
+   //shoud trim off any excess crap in the front....
+   //make this a general thing and run everybody through it...!
+   for( ;; )
+   {
+      temp = strstr( ( const char*)ptr, "GT" );
+
+      if( temp != NULL )
+      {
+         ptr = temp + 2;
+      }
+      else
+      {
+         break;
+      }
+   }
+   
+   for( int index = 0; index < 6; index++ )
+   {
+      ptr = strstr( ( const char*)ptr, "\n" );
+
+      if( ptr != NULL )
+      {
+         ptr++;
+         timeBits[index] = atoi( ptr );
+         ptr += 2;
+      }
+   }
+
+   RWTime t( RWDate( timeBits[3], timeBits[4], timeBits[5] + 2000 ), timeBits[2], timeBits[1], timeBits[0] );
+   
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " Looky at what Tracker got! " << t.asString() << endl;
+   }
+
+   _lp->meterTime = t.seconds();
+
    return( true );
 }
 
@@ -348,6 +434,9 @@ bool CtiTransdataTracker::processComms( BYTE *data, int bytes )
       if( _lastState == doIntervalSize )
          grabFormat( data, bytes );
 
+      if( _lastState == doTime )
+         grabTime( data, bytes );
+      
       setNextState();
 
       if( _moveAlong )
@@ -366,7 +455,44 @@ bool CtiTransdataTracker::processComms( BYTE *data, int bytes )
 
    return( valid );
 }
+/*
+bool CtiTransdataTracker::processComms( BYTE *data, int bytes )
+{
+   bool  valid = false;
+   char  *ptr = NULL;
+   char  fluff[400];
 
+   if( gotRetry( data, bytes ) )
+   {
+      reset();
+   }
+   
+   if( gotValidResponse( data, bytes ) )
+   {
+      if( _lastState == doEnabledChannels )
+         grabChannels( data, bytes );
+
+      if( _lastState == doIntervalSize )
+         grabFormat( data, bytes );
+
+      if( _lastState == doTime )
+         grabTime( data, bytes );
+      
+      setNextState();
+
+      if( _moveAlong )
+      {
+         _moveAlong = false;
+         _finished = true;
+      }
+
+      valid = true;
+   }
+
+
+   return( valid );
+}
+*/
 //=====================================================================================================================
 //if we collected billing data, we don't get here as we can work with the raw data later
 //if we collected loadprofile data, we need to add our raw data to our lp struct, then copy it back into the main
@@ -377,9 +503,11 @@ bool CtiTransdataTracker::processData( BYTE *data, int bytes )
 {
    if( _lastState == doProt2 )
    {
-      memcpy( _lp->lpData, data, bytes );
+//      memcpy( _lp->lpData, data, bytes );
+//      memcpy( _meterData + 3/* offset used in retrieve */, _lp, sizeof( *_lp ) );
+
+      memcpy( _lp->lpData, data + 3, bytes );
       memcpy( _meterData, _lp, sizeof( *_lp ) );
-//      _finished = true;/////////////////////////////////////////////////////////////////////
    }
 
    return( true );
@@ -450,7 +578,7 @@ bool CtiTransdataTracker::billing( CtiXfer &xfer )
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << RWTime() << " track billing" << endl;
    }
-
+/*
    if( _waiting )
    {
       if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
@@ -461,7 +589,7 @@ bool CtiTransdataTracker::billing( CtiXfer &xfer )
       setXfer(xfer, "", 1, true, 1 );
       _datalink.buildMsg( xfer );
    }
-   else
+   else */
    {
       switch( _lastState )
       {
@@ -526,7 +654,7 @@ bool CtiTransdataTracker::loadProfile( CtiXfer &xfer )
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << RWTime() << " track lp" << endl;
    }
-
+/*
    if( _waiting )
    {
       if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
@@ -538,7 +666,7 @@ bool CtiTransdataTracker::loadProfile( CtiXfer &xfer )
       setXfer(xfer, "", 1, true, 1 );
       _datalink.buildMsg( xfer );
    }
-   else
+   else*/
    {
       switch( _lastState )
       {
@@ -559,6 +687,14 @@ bool CtiTransdataTracker::loadProfile( CtiXfer &xfer )
          }
          break;
 
+      case doTime:
+         {
+            setXfer( xfer, _get_clock, 24, true, 1 );
+            _datalink.buildMsg( xfer );
+            _waiting = true;
+         }
+         break;
+
       case doRecordDump:
          {
             setXfer( xfer, _dump_demands, 47, true, 1 );
@@ -569,7 +705,10 @@ bool CtiTransdataTracker::loadProfile( CtiXfer &xfer )
         
       case doRecordNumber:
          {
-            setXfer( xfer, "6\r\n", 25, true, 1 );  //get this number from layers above
+            _lp->numLpRecs = calcLPRecs();
+            RWCString recNum( CtiNumStr( _lp->numLpRecs ));
+            recNum.append( "\r\n" );
+            setXfer( xfer, recNum, 25, true, 1 );  //get this number from layers above
             _datalink.buildMsg( xfer );
             _waiting = true;
          }
@@ -646,6 +785,29 @@ bool CtiTransdataTracker::logOff( CtiXfer &xfer )
 //=====================================================================================================================
 //=====================================================================================================================
 
+void CtiTransdataTracker::setLastLPTime( ULONG lpTime )
+{
+   _lastLPTime = ( ULONG)lpTime;
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+ 
+int CtiTransdataTracker::calcLPRecs( void )
+{
+   int numberLPRecs = 0;
+      
+   numberLPRecs = ( _lp->meterTime - _lastLPTime ) / ( _lp->lpFormat[0] * 60 );
+
+   if( numberLPRecs > 9999 )     //the max records that a markV can return
+      numberLPRecs = 9999;
+
+   return( numberLPRecs );
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
 bool CtiTransdataTracker::isTransactionComplete( void )
 {
    return( _finished );
@@ -678,7 +840,11 @@ int CtiTransdataTracker::retreiveData( BYTE *data )
 {
    int temp = _meterBytes;
 
-   memcpy( ( void *)data, ( void *)(_meterData + 3 ), _meterBytes /*1024*/ );
+   //this is just the result of a stupid decision... we'll fix it later
+   if( _lastState == doStartProt1 )
+      memcpy( ( void *)data, ( void *)(_meterData + 3 ), _meterBytes /*1024*/ );
+   else
+      memcpy( ( void *)data, ( void *)(_meterData ), _meterBytes /*1024*/ );
 
    _meterBytes = 0;
    
@@ -765,7 +931,7 @@ bool CtiTransdataTracker::gotValidResponse( const BYTE *data, int length )
    int         offset = 0;
    bool        success = false;
 
-   const char  *ptr = ( const char *)data;
+   const char *ptr = ( const char *)data;
 
    while( offset < length )
    {

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/12/02 15:48:11 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/12/09 17:55:26 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -135,7 +135,6 @@ bool CtiTransdataApplication::decode( CtiXfer &xfer, int status )
       if( _lastState == doLogOff )
          _finished = true;
       
-      
       setNextState();
    }
 
@@ -247,7 +246,13 @@ bool CtiTransdataApplication::isTransactionComplete( void )
    return( _finished );
 }
 
+//=====================================================================================================================
+//=====================================================================================================================
 
+void CtiTransdataApplication::setLastLPTime( ULONG lpTime )
+{
+   _tracker.setLastLPTime( lpTime );
+}
 
 
 

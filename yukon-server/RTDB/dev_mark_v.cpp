@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/12/02 15:47:45 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/12/09 17:55:26 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,7 +28,7 @@
 
 CtiDeviceMarkV::CtiDeviceMarkV()
 {
-
+//   _storage = NULL;
 }
 
 //=====================================================================================================================
@@ -36,7 +36,12 @@ CtiDeviceMarkV::CtiDeviceMarkV()
 
 CtiDeviceMarkV::~CtiDeviceMarkV()
 {
-
+   /*
+   if( _storage )
+   {
+      delete [] _storage;
+      _storage = NULL;
+   } */
 }
 
 //=====================================================================================================================
@@ -56,7 +61,7 @@ INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg             *pReq,
    {
        case ScanRequest:
        {
-           switch(parse.getiValue("scantype"))
+           switch( parse.getiValue( "scantype" ) )
            {
             case ScanRateGeneral:
               {
@@ -92,16 +97,16 @@ INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg             *pReq,
       OutMessage->Retry     = 3;
 
       ptr = ( CtiProtocolTransdata::mkv *)OutMessage->Buffer.OutMessage;
+      
       ptr->command = _transdataProtocol.getCommand();
       ptr->getLP = _transdataProtocol.getAction();
-      
+
       outList.insert( OutMessage );
       
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << RWTime() << " ----Execution In Progress----" << endl;
       }
-   
    }
    else
    {
@@ -123,10 +128,10 @@ INT CtiDeviceMarkV::GeneralScan( CtiRequestMsg              *pReq,
                                  INT                        ScanPriority)
 {
    INT status = NORMAL;
-   CtiCommandParser newParse("scan general");
+   CtiCommandParser newParse( "scan general" );
 
    ULONG lastLPTime = getLastLPTime().seconds();
-   pReq->setCommandString("scan general");
+   pReq->setCommandString( "scan general" );
    
    status = ExecuteRequest( pReq, newParse, OutMessage, vgList, retList, outList );
 
@@ -150,9 +155,9 @@ INT CtiDeviceMarkV::LoadProfileScan( CtiRequestMsg              *pReq,
                                      INT                        ScanPriority)
 {
    INT status = NORMAL;
-   CtiCommandParser newParse("scan loadprofile");
+   CtiCommandParser newParse( "scan loadprofile" );
    
-   pReq->setCommandString("scan loadprofile");
+   pReq->setCommandString( "scan loadprofile" );
    
    status = ExecuteRequest( pReq, newParse, OutMessage, vgList, retList, outList );
 
@@ -936,14 +941,12 @@ RWTime CtiDeviceMarkV::getMsgTime( int timeID, int dateID, vector<CtiTransdataDa
    {
       if( transVector[index]->getID() == timeID )
       {
-         //
-         // FIXME need to incorporate the date into the time before returning
-         //
          RWDate aDate( transVector[index]->getDay(),
                        transVector[index]->getMonth(),
                        transVector[index]->getYear() );
 
-         RWTime aTime( transVector[index]->getHour(),
+         RWTime aTime( aDate, 
+                       transVector[index]->getHour(),
                        transVector[index]->getMinute(),
                        transVector[index]->getSecond(),
                        RWZone::local() );
@@ -963,6 +966,69 @@ CtiProtocolTransdata & CtiDeviceMarkV::getProtocol( void )
    return _transdataProtocol;
 }
 
+//=====================================================================================================================
+//=====================================================================================================================
+
+void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
+{
+   CtiTransdataTracker::mark_v_lp   *lp = NULL;
+   CtiMultiMsg                      *msgMulti = new CtiMultiMsg;
+   CtiPointDataMsg                  *pData = NULL;
+   CtiPointBase                     *pPoint = NULL;
+   BYTE                             *storage = NULL;
+   int                              index;
+   int                              numEnabledChannels = 0;
+
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " ----Process Dispatch Message In Progress----" << endl;
+   }
+
+   storage = new BYTE[10000];
+   _transdataProtocol.retreiveData( storage );
+   lp = ( CtiTransdataTracker::mark_v_lp *)storage;
+
+   RWTime mTime( lp->meterTime );
+
+   for( index = 0; index < 8; index++ )
+   {
+      if( lp->enabledChannels[index] == true )
+         numEnabledChannels++;
+   }
+
+   //
+   //the meter hands us the lp data in order of youngest to oldest
+   //
+   for( index = 0; index < lp->numLpRecs; index += numEnabledChannels )
+   {
+      for( int x = 7; x >= 0; x-- )
+      {
+         if( lp->enabledChannels[x] == true )
+         {
+            pPoint = getDevicePointOffsetTypeEqual( CH1_OFFSET + LOAD_PROFILE, AnalogPointType );
+
+            if( pPoint != NULL )
+            {
+               pData = new CtiPointDataMsg();
+               pData->setId( pPoint->getID() );
+               pData->setValue( lp->lpData[index].value );
+               pData->setQuality( NormalQuality );             //just for now
+               pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
+               pData->setMessageTime( mTime );
+
+               index += 2; //lp data is 2 bytes per
+               
+               msgMulti->getData().insert( pData );
+            }
+         }
+      }
+
+      //decrement the time to the interval previous to the current one...
+      mTime -= lp->lpFormat[0] * 60; 
+   }
+
+   conn.WriteConnQue( msgMulti );
+}
 
 //=====================================================================================================================
 //=====================================================================================================================

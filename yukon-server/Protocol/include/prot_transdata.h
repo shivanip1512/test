@@ -14,15 +14,25 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/12/02 15:47:59 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/12/09 17:55:26 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
 
 #include <windows.h>
 #include <rw\cstring.h>
-#include "connection.h"
+ /*
+#include "dev_meter.h"
+#include "dev_base.h"
+#include "dlldefs.h"
+#include "dsm2.h"
+#include "ctitypes.h"
+#include "types.h"
+#include "mgr_point.h"
+#include "device.h"
+#include "pt_numeric.h"
+#include "connection.h"*/
 #include "transdata_application.h"
 #include "transdata_data.h"
 #include "xfer.h"
@@ -56,8 +66,8 @@ class IM_EX_PROT CtiProtocolTransdata
       bool getAction( void );
       void processLPData( BYTE *data );
       void processBillingData( BYTE *data );
-      void processDispatchReturnMessage( CtiConnection &conn );
-
+//      void processDispatchReturnMessage( CtiConnection &conn );
+      int retreiveData( BYTE *data );
       vector<CtiTransdataData *> resultDecode( INMESS *InMessage );
 
    protected:
@@ -72,8 +82,6 @@ class IM_EX_PROT CtiProtocolTransdata
       BYTE                       *_storage;
       BYTE                       *_billingBytes;
       BYTE                       *_lpBytes;
-
-      ULONG                      _lastLPTime;
       
       int                        _numBytes;
       int                        _command;

@@ -14,15 +14,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/12/02 15:47:58 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/12/09 17:55:26 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
 
 #include <rw/rwtime.h>
 #include <rw/rwdate.h>
-
+#include "prot_transdata.h"  
 #include "dev_meter.h"
 #include "dlldefs.h"
 #include "prot_transdata.h"
@@ -32,9 +32,10 @@
 #include "mgr_point.h"
 #include "device.h"
 #include "pt_numeric.h"
+#include "connection.h"      
 
 class IM_EX_DEVDB CtiDeviceMarkV : public CtiDeviceMeter
-{
+{   
    enum
    {
       TOTAL_USAGE      = 1,
@@ -59,19 +60,19 @@ class IM_EX_DEVDB CtiDeviceMarkV : public CtiDeviceMeter
       RATEC_PEAK_DATE,
       RATED_PEAK_DATE,
       PREVIOUS_DEMAND,
+      LOAD_PROFILE,
       CH1_OFFSET       = 200,
       CH2_OFFSET       = 250,
       CH3_OFFSET       = 300,
       CH4_OFFSET       = 350
    };
 
-
 protected:
 
 private:
 
-   CtiProtocolTransdata          _transdataProtocol;
-   CtiTransdataData              *_converted;
+   CtiProtocolTransdata    _transdataProtocol;
+   CtiTransdataData        *_converted;
 
 public:
 
@@ -134,8 +135,11 @@ public:
                           RWTPtrSlist< CtiMessage > &retList,
                           vector<CtiTransdataData *> transVector );
 
+   void processDispatchReturnMessage( CtiConnection &conn );
+   
    CtiProtocolTransdata & getProtocol( void );
    RWTime getMsgTime( int timeID, int dateID, vector<CtiTransdataData *> transVector );
+   
    CtiPointDataMsg* fillPDMsg( vector<CtiTransdataData *> transVector,
                                CtiPointBase *point, 
                                int index,
