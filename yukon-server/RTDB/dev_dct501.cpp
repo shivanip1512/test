@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dct501.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/06/27 20:59:50 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/07/10 21:12:42 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -117,14 +117,9 @@ ULONG CtiDeviceDCT501::calcNextLPScanTime( void )
     unsigned long channelTime,
     nextTime,
     midnightOffset;
-    int           lpBlockSize,
-    lpDemandRate;
+    int lpBlockSize, lpDemandRate, lpMaxBlocks, lpBlockEvacuationTime = 300;
 
     nextTime = YUKONEOT;
-
-    lpDemandRate = getLoadProfile().getLoadProfileDemandRate();
-    //  we read 6 intervals at a time - it's all the reads will allow
-    lpBlockSize  = lpDemandRate * 6;
 
     if( !_lpIntervalSent )
     {
@@ -137,6 +132,13 @@ ULONG CtiDeviceDCT501::calcNextLPScanTime( void )
     }
     else
     {
+        lpDemandRate = getLoadProfile().getLoadProfileDemandRate();
+        //  we read 6 intervals at a time - it's all the reads will allow
+        lpBlockSize  = lpDemandRate * 6;
+
+        //  DCT is quite limited, and only keeps 12 intervals per channel
+        lpMaxBlocks = 2;
+
         for( int i = 0; i < 4; i++ )
         {
             //  if we're not collecting load profile, don't scan
@@ -218,10 +220,10 @@ ULONG CtiDeviceDCT501::calcNextLPScanTime( void )
             //    after one block (6 intervals) has passed
             plannedLPTime  = blockStart + lpBlockSize;
             //  also make sure we allow time for it to move out of the memory we're requesting
-            plannedLPTime += 300;
+            plannedLPTime += lpBlockEvacuationTime;
 
-            //  we start to worry if 30 minutes have passed and we haven't heard back
-            panicLPTime    = plannedLPTime + 30 * 60;
+            //  we start to worry if half the intervals have passed and we haven't heard back
+            panicLPTime    = plannedLPTime + ((lpBlockSize * lpMaxBlocks) / 2);
 
             //  if we're still on schedule for our normal request
             //    (and we haven't already made our request for this block)
@@ -239,11 +241,25 @@ ULONG CtiDeviceDCT501::calcNextLPScanTime( void )
             //  we're overdue
             else
             {
-                //  try again on the next 'loadprofileinterval' minutes boundary
-                channelTime  = Now.seconds() + lpDemandRate;
-                if( channelTime % lpDemandRate )
+                if( lpBlockSize > 3600 )
                 {
-                    channelTime -= channelTime % lpDemandRate;
+                    if( Now.seconds() % lpBlockSize )
+                    {
+                        //  we're on a block boundary - try after it's out of this block
+                        channelTime = Now.seconds() + lpBlockEvacuationTime;
+                    }
+                    else
+                    {
+                        //  try as soon as it's out of the current block
+                        channelTime  = Now.seconds() + lpBlockSize;
+                        channelTime -= Now.seconds() % lpBlockSize;  //  make sure we're on the trailing edge of the block
+
+                        channelTime += lpBlockEvacuationTime;
+                    }
+                }
+                else
+                {
+                    channelTime = Now.seconds() + 3600;
                 }
             }
 
@@ -318,7 +334,7 @@ INT CtiDeviceDCT501::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
                     _lastLPRequestAttempt[i]    = Now;
 
                     //  adjust for wraparound
-                    lpBlockAddress = lpMidnightOffset % (lpBlockSize * 2);
+                    lpBlockAddress = lpMidnightOffset % (lpBlockSize * 2);  //  only has 12 (= 2 * 6) blocks for each channel
 
                     //  which block to grab?
                     lpBlockAddress /= lpBlockSize;

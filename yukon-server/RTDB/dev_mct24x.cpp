@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/06/27 21:10:35 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/07/10 21:12:43 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -210,7 +210,7 @@ ULONG CtiDeviceMCT24X::calcNextLPScanTime( void )
 {
     RWTime Now, blockStart, plannedLPTime, panicLPTime;
     unsigned long nextTime, midnightOffset;
-    int lpBlockSize, lpDemandRate;
+    int lpBlockSize, lpDemandRate, lpMaxBlocks, lpBlockEvacuationTime = 300;
 
     //  if we're not collecting load profile, we never scan
     if( !getLoadProfile().isChannelValid(0) )
@@ -243,6 +243,12 @@ ULONG CtiDeviceMCT24X::calcNextLPScanTime( void )
 
         blockStart   = getLastLPTime();
 
+        //  if we collect hour data, we only keep a day;  anything less, we keep 48 intervals
+        if( lpDemandRate == 3600 )
+            lpMaxBlocks = 4;
+        else
+            lpMaxBlocks = 8;
+
         //  figure out seconds from midnight
         midnightOffset  = blockStart.hour() * 3600;
         midnightOffset += blockStart.minute() * 60;
@@ -255,10 +261,10 @@ ULONG CtiDeviceMCT24X::calcNextLPScanTime( void )
         //    after one block (6 intervals) has passed
         plannedLPTime  = blockStart + lpBlockSize;
         //  also make sure we allow time for it to move out of the memory we're requesting
-        plannedLPTime += 300;
+        plannedLPTime += lpBlockEvacuationTime;
 
-        //  we start to worry if 60 minutes have passed and we haven't heard back
-        panicLPTime    = plannedLPTime + 60 * 60;
+        //  we start to worry if half the intervals have passed and we haven't heard back
+        panicLPTime    = plannedLPTime + ((lpMaxBlocks * lpBlockSize) / 2);
 
         //  if we're still on schedule for our normal request
         //    (and we haven't already made our request for this block)
@@ -276,11 +282,25 @@ ULONG CtiDeviceMCT24X::calcNextLPScanTime( void )
         //  we're overdue
         else
         {
-            //  try again on the next 'loadprofileinterval' minutes boundary
-            nextTime  = Now.seconds() + lpDemandRate;
-            if( nextTime % lpDemandRate )
+            if( lpBlockSize > 3600 )
             {
-                nextTime -= nextTime % lpDemandRate;
+                if( Now.seconds() % lpBlockSize )
+                {
+                    //  we're on a block boundary - try after it's out of this block
+                    nextTime = Now.seconds() + lpBlockEvacuationTime;
+                }
+                else
+                {
+                    //  try as soon as it's out of the current block
+                    nextTime  = Now.seconds() + lpBlockSize;
+                    nextTime -= Now.seconds() % lpBlockSize;  //  make sure we're on the trailing edge of the block
+
+                    nextTime += lpBlockEvacuationTime;
+                }
+            }
+            else
+            {
+                nextTime = Now.seconds() + 3600;
             }
         }
     }

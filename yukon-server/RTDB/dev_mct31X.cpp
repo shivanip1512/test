@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2003/07/07 19:56:29 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2003/07/10 21:12:43 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -232,32 +232,33 @@ bool CtiDeviceMCT31X::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 
 ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
 {
-
-    #define LPINTERVAL31X 300       // 300
-
-
-
     RWTime        Now, blockStart, plannedLPTime, panicLPTime;
     unsigned long channelTime, nextTime, midnightOffset;
-    int           lpBlockSize, lpDemandRate;
+    int           lpBlockSize, lpDemandRate, lpMaxBlocks, lpBlockEvacuationTime = 300;
 
     nextTime = YUKONEOT;
-
-    lpDemandRate = getLoadProfile().getLoadProfileDemandRate();
-    //  we read 6 intervals at a time - it's all the function reads will allow
-    lpBlockSize  = lpDemandRate * 6;
 
     if( !_lpIntervalSent )
     {
         //  send load profile interval on the next 5 minute boundary
-        nextTime = Now.seconds() + LPINTERVAL31X;
-        if( nextTime % LPINTERVAL31X )
+        nextTime = Now.seconds() + 300;
+        if( nextTime % 300 )
         {
-            nextTime -= nextTime % LPINTERVAL31X;
+            nextTime -= nextTime % 300;
         }
     }
     else
     {
+        lpDemandRate = getLoadProfile().getLoadProfileDemandRate();
+        //  we read 6 intervals at a time - it's all the function reads will allow
+        lpBlockSize  = lpDemandRate * 6;
+
+        //  if we collect hour data, we only keep a day;  anything less, we keep 48 intervals
+        if( lpDemandRate == 3600 )
+            lpMaxBlocks = 4;
+        else
+            lpMaxBlocks = 8;
+
         for( int i = 0; i < 3; i++ )
         {
             //  if we're not collecting load profile, don't scan
@@ -339,10 +340,10 @@ ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
             //    after one block (6 intervals) has passed
             plannedLPTime  = blockStart + lpBlockSize;
             //  also make sure we allow time for it to move out of the memory we're requesting
-            plannedLPTime += LPINTERVAL31X;
+            plannedLPTime += lpBlockEvacuationTime;
 
-            //  we start to worry if 30 minutes have passed and we haven't heard back
-            panicLPTime    = plannedLPTime + 30 * 60;
+            //  we start to worry if half the intervals have passed and we haven't heard back
+            panicLPTime    = plannedLPTime + ((lpMaxBlocks * lpBlockSize) / 2);
 
             //  if we're still on schedule for our normal request
             //    (and we haven't already made our request for this block)
@@ -360,11 +361,25 @@ ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
             //  we're overdue
             else
             {
-                //  try again on the next 'loadprofileinterval' minutes boundary
-                channelTime  = Now.seconds() + lpDemandRate;
-                if( channelTime % lpDemandRate )
+                if( lpBlockSize > 3600 )
                 {
-                    channelTime -= channelTime % lpDemandRate;
+                    if( Now.seconds() % lpBlockSize )
+                    {
+                        //  we're on a block boundary - try after it's out of this block
+                        channelTime = Now.seconds() + lpBlockEvacuationTime;
+                    }
+                    else
+                    {
+                        //  try as soon as it's out of the current block
+                        channelTime  = Now.seconds() + lpBlockSize;
+                        channelTime -= Now.seconds() % lpBlockSize;  //  make sure we're on the trailing edge of the block
+
+                        channelTime += lpBlockEvacuationTime;
+                    }
+                }
+                else
+                {
+                    channelTime = Now.seconds() + 3600;
                 }
             }
 
