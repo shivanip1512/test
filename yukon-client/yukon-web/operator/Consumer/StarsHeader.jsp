@@ -5,11 +5,10 @@
 <%@ page import="com.cannontech.graph.model.TrendModelType" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%
-    java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
+	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
+	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
     java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
     java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
-	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
-	String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 	
 	StarsYukonUser user = null;
 	try {
@@ -19,9 +18,6 @@
 	if (user == null) {
 		response.sendRedirect("/login.jsp"); return;
 	}
-
-	LiteYukonUser liteYukonUser = user.getYukonUser();
-	
 	Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 	
 	StarsCustAccountInformation accountInfo = null;
@@ -38,6 +34,7 @@
 	StarsCallReportHistory callHist = null;
 	StarsServiceRequestHistory serviceHist = null;
 	StarsUser userLogin = null;
+	StarsGetEnrollmentProgramsResponse categories = null;
 	
 	accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 	if (accountInfo != null) {
@@ -72,12 +69,3 @@
 	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
 	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);
 %>
-	<jsp:useBean id="graphBean" class="com.cannontech.graph.GraphBean" scope="session">
-		<%-- this body is executed only if the bean is created --%>
-	<jsp:setProperty name="graphBean" property="viewType" value="<%=TrendModelType.LINE_VIEW%>"/>
-	<jsp:setProperty name="graphBean" property="start" value="<%=datePart.format(com.cannontech.util.ServletUtil.getToday())%>"/>
-	<jsp:setProperty name="graphBean" property="period" value="<%=com.cannontech.util.ServletUtil.historicalPeriods[0]%>"/>
-	<jsp:setProperty name="graphBean" property="gdefid" value="-1"/>	
-	    <%-- intialize bean properties --%>
-	</jsp:useBean>
-
