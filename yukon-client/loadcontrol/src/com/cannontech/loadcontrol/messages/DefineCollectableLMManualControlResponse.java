@@ -3,6 +3,11 @@ package com.cannontech.loadcontrol.messages;
 /**
  * This type was created in VisualAge.
  */
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Vector;
+
+import com.cannontech.common.util.CtiUtilities;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 
@@ -62,7 +67,11 @@ public Class getJavaClass() {
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException
 {
 	super.restoreGuts( obj, vstr, polystr );
-	LMManualControlResponse lmManualControlResponse = (LMManualControlResponse) obj;	
+	LMManualControlResponse lmManualControlResponse = (LMManualControlResponse) obj;
+	Vector v = (Vector) vstr.restoreObject(polystr);
+	HashSet hs = new HashSet(v);
+	
+	lmManualControlResponse.setConstraintViolations(hs);								
 }
 /**
  * saveGuts method comment.

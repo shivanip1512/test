@@ -16,7 +16,8 @@ public class LMManualControlRequest extends LMMessage
 	private int startGear = 0;
 	private int startPriority = 0;
 	private String addditionalInfo = new String();
-
+	private boolean overrideConstraints = false;
+	
 	//The following are the different commands that
 	//can be applied to control area, trigger, or program and map into the C++ side
   public static final int SCHEDULED_START = 0;
@@ -174,4 +175,18 @@ public void setStopTime(java.util.GregorianCalendar newStopTime) {
 public void setYukonID(int newYukonID) {
 	yukonID = newYukonID;
 }
+	/**
+	 * @return
+	 */
+	public boolean isOverrideConstraints() {
+		return overrideConstraints;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setOverrideConstraints(boolean b) {
+		overrideConstraints = b;
+	}
+
 }
