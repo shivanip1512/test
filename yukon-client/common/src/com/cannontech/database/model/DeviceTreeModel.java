@@ -167,7 +167,7 @@ private boolean createDevicePointList(java.util.List points, java.util.List dest
 						
 	for( int i = destList.size()-1; i >= 0; i-- )
 	{
-		com.cannontech.database.data.lite.LitePoint lp = (LitePoint)points.get(i);		
+		com.cannontech.database.data.lite.LitePoint lp = (LitePoint)destList.get(i);
 		if( !isPointValid(lp) )
 			destList.remove(i);
 	}
