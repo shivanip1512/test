@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2004/10/25 16:19:55 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2004/11/12 21:37:10 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2829,7 +2829,7 @@ INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                     pfCount = (pfCount << 8) + InMessage->Buffer.DSt.Message[i];
                 }
 
-                resultStr = getName() + " / powerfail count = " + CtiNumStr(pfCount);
+                resultStr = getName() + " / Blink Counter = " + CtiNumStr(pfCount);
 
                 if( (pPoint = getDevicePointOffsetTypeEqual( MCT_PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType )) != NULL )
                 {
