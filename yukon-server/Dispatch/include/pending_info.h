@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/pending_info.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/01/09 18:09:02 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/04/30 17:17:27 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,6 +35,7 @@ public:
     {
         invalid,
         intervalcrossing,
+        intervalpointpostcrossing,  // Control history points are posted at this interval if there is no other post to be performed!
         stopintervalcrossing,   // This is an interval used to post time remaining in control.
         delayeddatamessage,     // Expected completion occured.  Requires time of new data
         datachange,             // Point went to the alter state either by force, or restore.

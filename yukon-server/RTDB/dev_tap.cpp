@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/04/29 13:43:57 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/04/30 17:17:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1475,18 +1475,11 @@ ULONG CtiDeviceTapPagingTerminal::getUniqueIdentifier() const
 {
     ULONG CSum = 0;
 
-    if( !gConfigParms.getValueAsString("TCPARM_USE_NEW_TAP_GUID").compareTo("true", RWCString::ignoreCase) )
-    {
-        if(isDialup())
-        {
-            CSum = Inherited::getUniqueIdentifier();
-        }
-        else
-        {
-            CSum = getPortID();     // Use the port ID as a GUID for all TAPs on this port!
-        }
-    }
-    else
+    /*
+     *  This is an undocumented cparm.  It is in here only due to a lack of clarity on the effects of making the change in the else
+     *  clause.  Can you say emergency backup?
+     */
+    if( !gConfigParms.getValueAsString("TCPARM_USE_OLD_TAP_GUID").compareTo("true", RWCString::ignoreCase) )
     {
         RWCString num;
 
@@ -1502,6 +1495,17 @@ ULONG CtiDeviceTapPagingTerminal::getUniqueIdentifier() const
 
         // Now get a standard CRC
         CSum = (ULONG)CCITT16CRC( 0, (BYTE*)num.data(), num.length(), FALSE);
+    }
+    else
+    {
+        if(isDialup())
+        {
+            CSum = Inherited::getUniqueIdentifier();
+        }
+        else
+        {
+            CSum = getPortID();     // Use the port ID as a GUID for all TAPs on this port!
+        }
     }
 
     return CSum;

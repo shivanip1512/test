@@ -412,14 +412,17 @@ INT CtiDeviceWctpTerminal::traceOut (PCHAR Message, ULONG Count, RWTPtrSlist< Ct
 
     trace.setBrightYellow();
     trace.setTrace(  RWTime().asString() + RWCString(" ") );
+    trace.setEnd(false);
     traceList.insert( trace.replicateMessage() );
 
     trace.setBrightCyan();
     trace.setTrace(  getName() + RWCString(" ") );
+    trace.setEnd(false);
     traceList.insert( trace.replicateMessage() );
 
     trace.setBrightWhite();
     trace.setTrace(  RWCString("SENT: ") );
+    trace.setEnd(true);
     traceList.insert( trace.replicateMessage() );
 
     trace.setBrightGreen();
@@ -447,14 +450,17 @@ INT CtiDeviceWctpTerminal::traceIn(PCHAR  Message, ULONG  Count, RWTPtrSlist< Ct
 
         trace.setBrightYellow();
         trace.setTrace(  RWTime().asString() + RWCString(" ") );
+        trace.setEnd(false);
         traceList.insert( trace.replicateMessage() );
 
         trace.setBrightCyan();
         trace.setTrace(  getName() + RWCString(" ") );
+        trace.setEnd(false);
         traceList.insert( trace.replicateMessage() );
 
         trace.setBrightWhite();
         trace.setTrace(  RWCString("RECV: ") );
+        trace.setEnd(true);
         traceList.insert( trace.replicateMessage() );
 
         trace.setBrightMagenta();

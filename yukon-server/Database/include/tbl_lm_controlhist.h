@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_lm_controlhist.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/12/24 18:48:45 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/04/30 17:17:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,6 +43,7 @@ protected:
    LONG        _lmControlHistID;
    LONG        _paoID;
    RWTime      _startDateTime;          // represents the time at which control was begun
+   RWTime      _controlCompleteTime;    // represents the time at which control was last sent
    RWTime      _stopDateTime;           // represents the time at which the current log interval completed.
    LONG        _soeTag;
    INT         _controlDuration;
@@ -100,6 +101,9 @@ public:
 
    const RWTime& getStartTime() const;
    CtiTableLMControlHistory& setStartTime( const RWTime& st );
+
+   const RWTime& getControlCompleteTime() const;
+   CtiTableLMControlHistory& setControlCompleteTime( const RWTime& cst );
 
    const RWTime& getStopTime() const;
    CtiTableLMControlHistory& setStopTime( const RWTime& st );

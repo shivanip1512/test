@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/01/09 18:10:59 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/04/30 17:17:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,6 +61,7 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::operator=(const CtiTableLMCo
         _paoID               = aRef.getPAOID();
         _startDateTime       = aRef.getStartTime();
         _stopDateTime        = aRef.getStopTime();
+        _controlCompleteTime = aRef.getControlCompleteTime();
         _soeTag              = aRef.getSoeTag();
         _controlDuration     = aRef.getControlDuration();
         _controlType         = aRef.getControlType();
@@ -104,6 +105,17 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::setPAOID( const LONG pao )
 {
     setDirty();
     _paoID = pao;
+    return *this;
+}
+
+const RWTime& CtiTableLMControlHistory::getControlCompleteTime() const
+{
+    return _controlCompleteTime;
+}
+
+CtiTableLMControlHistory& CtiTableLMControlHistory::setControlCompleteTime( const RWTime& cst )
+{
+    _controlCompleteTime = cst;
     return *this;
 }
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2003/04/21 22:08:00 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2003/04/30 17:17:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -100,6 +100,7 @@ CtiVanGoghExecutorFactory  ExecFactory;
 
 static const RWTime MAXTime(YUKONEOT);
 static int CntlHistInterval = 3600;
+static int CntlHistPointPostInterval = 60;
 static int CntlStopInterval = 60;
 
 void ApplyBlankDeletedConnection(CtiMessage*&Msg, void *Conn);
@@ -1956,6 +1957,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                 pendingControlLMMsg.getControl().setReductionRatio(pMsg->getReductionRatio());
                 pendingControlLMMsg.getControl().setStartTime(pMsg->getStartDateTime());
                 pendingControlLMMsg.getControl().setStopTime(pMsg->getStartDateTime().seconds() + pMsg->getControlDuration());
+                pendingControlLMMsg.getControl().setControlCompleteTime(pMsg->getStartDateTime().seconds() + pMsg->getControlDuration());
                 pendingControlLMMsg.getControl().setSoeTag( CtiTableLMControlHistory::getNextSOE() );
 
                 CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), 0, "Control " + ResolveStateName(pPoint->getStateGroupID(), pMsg->getRawState()) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure), pMsg->getUser());
@@ -2804,6 +2806,16 @@ void CtiVanGogh::refreshCParmGlobals(bool force)
         {
             CntlHistInterval = 3600;
             if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_CNTLHIST_INTERVAL default : " << CntlHistInterval << endl;
+        }
+
+        if( !(str = gConfigParms.getValueAsString("DISPATCH_CNTLHISTPOINTPOST_INTERVAL")).isNull() )
+        {
+            CntlHistPointPostInterval = atoi(str.data());
+            if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_CNTLHISTPOINT_INTERVAL found : " << str << endl;
+        }
+        else
+        {
+            if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_CNTLHIST_INTERVAL default : " << CntlHistPointPostInterval << endl;
         }
 
         if( !(str = gConfigParms.getValueAsString("DISPATCH_CNTL_STOP_REPORT_INTERVAL")).isNull() )
@@ -4015,30 +4027,53 @@ void CtiVanGogh::doPendingOperations()
                              *  Order is important here.  Please do not rearrange the else if conditionals.
                              */
                             if( ppo.getControl().getControlDuration() >= 0 &&
-                                now.seconds() >= ppo.getControl().getStartTime().seconds() + ppo.getControl().getControlDuration())
+                                now.seconds() == ppo.getControl().getStartTime().seconds() + ppo.getControl().getControlDuration())
                             {
                                 /*
                                  *  Do NOTHING.  CONTROL IS COMPLETE!
                                  *  delayed data will pick this up...
                                  *  Don't tally any more time though..
                                  */
+                                if(gDispatchDebugLevel & 0x00000001)
+                                {
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        dout << " Start + control duration are < now not gonna write any more..." << endl;
+                                    }
+                                }
                             }
-                            else if(ppo.getControl().getControlDuration() < 0)
+                            else
+                            if(ppo.getControl().getControlDuration() < 0)
                             {
                                 /*
                                  *  Do NOTHING.  This is a restore command.
                                  *  delayed data will pick this up...
                                  *  Don't tally any more time though..
                                  */
+                                if(gDispatchDebugLevel & 0x00000001)
+                                {
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        dout << "  Control Duration is less than zero" << endl;
+                                    }
+                                }
                             }
                             else if(now.seconds() >= prevLogSec - (prevLogSec % CntlHistInterval) + CntlHistInterval)
                             {
                                 // We have accumulated enough time against this control to warrant a new log entry!
                                 updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::intervalcrossing, now);
                             }
+                            else if(CntlHistPointPostInterval && !(now.seconds() % CntlHistPointPostInterval))
+                            {
+                                // This rate posts history points and stop point.
+                                updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::intervalpointpostcrossing, now);
+                            }
                             else if(ppo.getControl().getControlDuration() > 0 &&
                                     now.seconds() >= ppo.getControl().getPreviousStopReportTime().seconds() - (ppo.getControl().getPreviousStopReportTime().seconds() % CntlStopInterval) + CntlStopInterval)
                             {
+                                // This rate posts stop point.
                                 updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::stopintervalcrossing, now);
                             }
                         }
@@ -5425,6 +5460,7 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
                     RWTime writetime = ppc.getControl().getStopTime();
                     ppc.getControl().incrementTimes( thetime, 0 );                                      // This effectively primes the entry for the next write.  Critical.
                     ppc.getControl().setStopTime( writetime );
+                    ppc.getControl().setControlCompleteTime( writetime );                               // This is when we think this control should complete.
 
                     ppc.getControl().setActiveRestore( LMAR_NEWCONTROL );                               // Record this as a start interval.
 
@@ -5459,6 +5495,30 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
 
                         // insertAndPostControlHistoryPoints(ppc, now, false, false, true);    // Post the AI now that the lies are covered up..
                         postControlStopPoint(ppc,now);
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+
+                break;
+            }
+        case (CtiPendingPointOperations::intervalpointpostcrossing):
+            {
+                if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress)
+                {
+                    LONG addnlseconds = thetime.seconds() - ppc.getControl().getPreviousLogTime().seconds();
+
+                    if(addnlseconds >= 0)
+                    {
+                        verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
+
+                        CtiPendingPointOperations temporaryPPC(ppc);
+                        temporaryPPC.getControl().incrementTimes( thetime, addnlseconds );
+                        postControlHistoryPoints(temporaryPPC, now);
+                        postControlStopPoint(temporaryPPC, now);
                     }
                     else
                     {
@@ -6516,20 +6576,17 @@ void CtiVanGogh::postControlStopPoint( CtiPendingPointOperations &ppc, const RWT
     {
         CtiPointNumeric *pPoint = 0;
 
-        // if(postctlstopaipnt)
         {
             if(ppc.getControl().getControlDuration() > 0 &&
                ((now.seconds() >= ppc.getControl().getPreviousStopReportTime().seconds() - (ppc.getControl().getPreviousStopReportTime().seconds() % CntlStopInterval) + CntlStopInterval) ||
                 (now > ppc.getControl().getStartTime() + ppc.getControl().getControlDuration())) )
             {
                 // We want to post to the analog which records seconds until control STOPS.
-
-                RWTime stoptime( ppc.getControl().getStartTime() + ppc.getControl().getControlDuration() );
                 ULONG remainingseconds = 0;
 
-                if(now < stoptime)
+                if( ppc.getControl().getControlCompleteTime() > now )
                 {
-                    remainingseconds = stoptime.seconds() - now.seconds();
+                    remainingseconds = ppc.getControl().getControlCompleteTime().seconds() - now.seconds();
                 }
 
 #if 0
