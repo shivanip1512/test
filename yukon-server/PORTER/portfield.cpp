@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2003/03/31 15:13:07 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2003/04/02 16:38:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1250,69 +1250,79 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 case TYPE_DR87:
                 case TYPE_LGS4:
                     {
-                        // Copy the request into the InMessage side....
-                        memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
-
-                        // initialize the ied
-                        CtiDeviceIED *IED= (CtiDeviceIED*)Device;
-
-                        /***********************
-                        *
-                        *  allocating memory for the many different data internal structures the IED
-                        *  uses to gather data
-                        *
-                        ************************
-                        */
-
-                        IED->allocateDataBins(OutMessage);
-                        status = InitializeHandshake (Port,IED, traceList);
-
-                        if(!status)
+                        try
                         {
-                            // this will do the initial command requested
-                            if(!(status=PerformRequestedCmd (Port, IED, InMessage, OutMessage, traceList)))
+                            // Copy the request into the InMessage side....
+                            memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
+
+                            // initialize the ied
+                            CtiDeviceIED *IED= (CtiDeviceIED*)Device;
+
+                            /***********************
+                            *
+                            *  allocating memory for the many different data internal structures the IED
+                            *  uses to gather data
+                            *
+                            ************************
+                            */
+
+                            IED->allocateDataBins(OutMessage);
+                            status = InitializeHandshake (Port,IED, traceList);
+
+                            if(!status)
                             {
-                                /*********************************************
-                                * Use the byte 2 of the command message to keep the
-                                * final state of communications with the device
-                                * to send to scanner
-                                **********************************************
-                                */
-                                InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
-
-                                // check if there is load profile to do
-                                if(IED->getCurrentCommand() == CtiDeviceIED::CmdLoadProfileTransition)
+                                // this will do the initial command requested
+                                if(!(status=PerformRequestedCmd (Port, IED, InMessage, OutMessage, traceList)))
                                 {
-                                    // set to load profile request
-                                    IED->setCurrentCommand(CtiDeviceIED::CmdLoadProfileData);
+                                    /*********************************************
+                                    * Use the byte 2 of the command message to keep the
+                                    * final state of communications with the device
+                                    * to send to scanner
+                                    **********************************************
+                                    */
+                                    InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
 
-                                    // note, current command must be reset to scan data before returning
-                                    // or the decode response routine will not work correctly
-                                    PerformRequestedCmd ( Port, IED, InMessage, OutMessage , traceList);
+                                    // check if there is load profile to do
+                                    if(IED->getCurrentCommand() == CtiDeviceIED::CmdLoadProfileTransition)
+                                    {
+                                        // set to load profile request
+                                        IED->setCurrentCommand(CtiDeviceIED::CmdLoadProfileData);
 
-                                    // reset to scan data once completed
-                                    IED->setCurrentCommand( CtiDeviceIED::CmdScanData );
+                                        // note, current command must be reset to scan data before returning
+                                        // or the decode response routine will not work correctly
+                                        PerformRequestedCmd ( Port, IED, InMessage, OutMessage , traceList);
+
+                                        // reset to scan data once completed
+                                        IED->setCurrentCommand( CtiDeviceIED::CmdScanData );
+                                    }
+
+                                    // only do this if we were doing a scan data
+                                    if(IED->getCurrentCommand() == CtiDeviceIED::CmdScanData)
+                                    {
+                                        // will need to move these back
+                                        IED->reformatDataBuffer (InMessage->Buffer.DUPSt.DUPRep.Message,InMessage->InLength);
+                                    }
                                 }
-
-                                // only do this if we were doing a scan data
-                                if(IED->getCurrentCommand() == CtiDeviceIED::CmdScanData)
+                                else
                                 {
-                                    // will need to move these back
-                                    IED->reformatDataBuffer (InMessage->Buffer.DUPSt.DUPRep.Message,InMessage->InLength);
+                                    InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
                                 }
                             }
                             else
                             {
                                 InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
                             }
-                        }
-                        else
-                        {
-                            InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
-                        }
 
-                        // free the memory we used
-                        IED->freeDataBins();
+                            // free the memory we used
+                            IED->freeDataBins();
+                        }
+                        catch(...)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
 
                         break;
                     }
@@ -2648,65 +2658,88 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *a
     transfer.setInCountActual( &bytesReceived );
     transfer.setTraceMask(TraceFlag, TraceErrorsOnly);
 
-    do
+    try
     {
-        status = aIED->generateCommand ( transfer , traceList);
-        status = aPortRecord->outInMess( transfer, aIED, traceList );
+        do
+        {
+            status = aIED->generateCommand ( transfer , traceList);
+            status = aPortRecord->outInMess( transfer, aIED, traceList );
 
-        if( transfer.doTrace( status ) )
-        {
-            aPortRecord->traceXfer(transfer, traceList, aIED, status);
-        }
-        if( deviceCanSurviveThisStatus(status) )
-        {
-            status = aIED->decodeResponse (transfer, status, traceList);
-        }
-
-        // check if we are sending load profile to scanner
-        if(!status && aIED->getCurrentState() == CtiDeviceIED::StateScanReturnLoadProfile)
-        {
-            status = ReturnLoadProfileData ( aPortRecord, aIED, aInMessage, aOutMessage, traceList);
-        }
-
-        if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && status != NORMAL)
-        {
+            if( transfer.doTrace( status ) )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " Device " << aIED->getName() << endl;
-                dout << " status was returned as " << status << ".  This may be a ied state or an actual error status." << endl;
+                aPortRecord->traceXfer(transfer, traceList, aIED, status);
             }
-        }
+            if( deviceCanSurviveThisStatus(status) )
+            {
+                status = aIED->decodeResponse (transfer, status, traceList);
+            }
 
-        if(!(++infLoopPrevention % INF_LOOP_COUNT))  // If we go INF_LOOP_COUNT loops we're considering this infinite...
+            // check if we are sending load profile to scanner
+            if(!status && aIED->getCurrentState() == CtiDeviceIED::StateScanReturnLoadProfile)
+            {
+                status = ReturnLoadProfileData ( aPortRecord, aIED, aInMessage, aOutMessage, traceList);
+            }
+
+            if(status != NORMAL)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  status = " << status << " " << FormatError( status ) << endl;
+                }
+            }
+
+            if(!(++infLoopPrevention % INF_LOOP_COUNT))  // If we go INF_LOOP_COUNT loops we're considering this infinite...
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  Possible infinite loop on device " << aIED->getName() << endl;
+                    dout << "  breaking loop, forcing abort state." << endl;
+                }
+
+                status = !NORMAL;
+            }
+
+            DisplayTraceList(aPortRecord, traceList, true);
+
+        } while( status == NORMAL &&
+                 !((aIED->getCurrentState() == CtiDeviceIED::StateScanAbort) ||
+                   (aIED->getCurrentState() == CtiDeviceIED::StateScanComplete)));
+
+        if( (status == NORMAL && aIED->getCurrentState() == CtiDeviceIED::StateScanAbort) ||
+            (PorterDebugLevel & PORTER_DEBUG_VERBOSE && status != NORMAL) )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  Possible infinite loop on device " << aIED->getName() << endl;
-                dout << "  breaking loop, forcing abort state." << endl;
+                dout << "  " << aIED->getName() << " State set to abort" << endl;
+                dout << "  status was returned as " << status << ".  This may be a ied state or an actual error status." << endl;
             }
 
             status = !NORMAL;
         }
 
-        DisplayTraceList(aPortRecord, traceList, true);
-
-    } while( status == NORMAL &&
-             !((aIED->getCurrentState() == CtiDeviceIED::StateScanAbort) ||
-               (aIED->getCurrentState() == CtiDeviceIED::StateScanComplete)));
-
-    if( status == NORMAL && aIED->getCurrentState() == CtiDeviceIED::StateScanAbort)
+        try
+        {
+            DisplayTraceList(aPortRecord, traceList, true);
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+    catch(...)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "  " << aIED->getName() << " State set to abort" << endl;
         }
-        status = !NORMAL;
     }
 
-    DisplayTraceList(aPortRecord, traceList, true);
     return status;
 }
 
