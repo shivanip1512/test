@@ -33,7 +33,7 @@
 	
 	StarsDefaultThermostatSettings dftThermoSettings = null;
 	for (int i = 0; i < allDftThermoSettings.length; i++) {
-		if (allDftThermoSettings[i].getThermostatType().getType() == StarsThermostatTypes.BASIC_TYPE) {
+		if (allDftThermoSettings[i].getThermostatType().getType() == StarsThermostatTypes.EXPRESSSTAT_TYPE) {
 			dftThermoSettings = allDftThermoSettings[i];
 			break;
 		}

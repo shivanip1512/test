@@ -219,15 +219,22 @@ public class CreateLMHardwareAction implements ActionBase {
 		};
 		
 		int hwTypeDefID = YukonListFuncs.getYukonListEntry(liteHw.getLmHardwareTypeID()).getYukonDefID();
+		// If we are populating the default commercial thermostat tables
+		boolean isDftCommTstat = (hwTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT)
+				&& (energyCompany.getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID);
+		
 		ArrayList liteSeasons = energyCompany.getDefaultLMHardware(hwTypeDefID).getThermostatSettings().getThermostatSeasons();
 		LMThermostatSeason[] seasons = new LMThermostatSeason[ liteSeasons.size() ];
 		
 		for (int i = 0; i < liteSeasons.size(); i++) {
 			LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSeasons.get(i);
+			
 			seasons[i] = new LMThermostatSeason();
 			StarsLiteFactory.setLMThermostatSeason( seasons[i].getLMThermostatSeason(), liteSeason );
 			seasons[i].getLMThermostatSeason().setSeasonID( null );
 			seasons[i].getLMThermostatSeason().setInventoryID( new Integer(liteHw.getInventoryID()) );
+			
+			ArrayList entries = seasons[i].getLMThermostatSeasonEntries();
 			
 			for (int j = 0; j < liteSeason.getSeasonEntries().size(); j++) {
 				LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(j);
@@ -237,7 +244,23 @@ public class CreateLMHardwareAction implements ActionBase {
 							new com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry();
 					StarsLiteFactory.setLMThermostatSeasonEntry( entry, liteEntry );
 					entry.setEntryID( null );
-					seasons[i].getLMThermostatSeasonEntries().add( entry );
+					
+					if (isDftCommTstat) {
+						// Because Occupied(Sleep) time should be earlier than Unoccupied(Wake) time,
+						// the insert order of time schedules need to be changed to Sleep, Leave, Return, Wake
+						if (j % 4 == 0) {	// Wake(Unoccupied)
+							entries.add( entry );
+						}
+						else if (j % 4 == 1 || j % 4 == 2) {	// Leave, Return
+							entry.setTemperature( new Integer(-1) );
+							entries.add( entries.size() - 1, entry );
+						}
+						else {	// Sleep(Occupied)
+							entries.add( entries.size() - 3, entry );
+						}
+					}
+					else
+						entries.add( entry );
 				}
 				else {
 					for (int k= 0; k < weekdayIDs.length; k++) {

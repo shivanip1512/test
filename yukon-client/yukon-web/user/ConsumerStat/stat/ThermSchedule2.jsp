@@ -172,22 +172,18 @@ tempUnit = '<%= tempUnit %>';
 %>
 
 function updateLayout(hour1, min1, temp1C, temp1H, hour2, min2, temp2C, temp2H, hour3, min3, temp3C, temp3H, hour4, min4, temp4C, temp4H) {
-	moveLayer('MovingLayer1', hour1, min1);
-	if (temp1C) moveTempArrow('div1C', temp1C);
-	if (temp1H) moveTempArrow('div1H', temp1H);
-	showTemp1();
-	moveLayer('MovingLayer2', hour2, min2);
-	if (temp2C) moveTempArrow('div2C', temp2C);
-	if (temp2H) moveTempArrow('div2H', temp2H);
-	showTemp2();
-	moveLayer('MovingLayer3', hour3, min3);
-	if (temp3C) moveTempArrow('div3C', temp3C);
-	if (temp3H) moveTempArrow('div3H', temp3H);
-	showTemp3();
-	moveLayer('MovingLayer4', hour4, min4);
-	if (temp4C) moveTempArrow('div4C', temp4C);
-	if (temp4H) moveTempArrow('div4H', temp4H);
-	showTemp4();
+	moveLayer(1, hour1, min1);
+	moveTempArrows(1, temp1C, temp1H);
+	showTemp(1);
+	moveLayer(2, hour2, min2);
+	moveTempArrows(2, temp2C, temp2H);
+	showTemp(2);
+	moveLayer(3, hour3, min3);
+	moveTempArrows(3, temp3C, temp3H);
+	showTemp(3);
+	moveLayer(4, hour4, min4);
+	moveTempArrows(4, temp4C, temp4H);
+	showTemp(4);
 }
 
 var changed = false;
@@ -524,13 +520,13 @@ MM_reloadPage(true);
                                 <tr> 
                                   <td width="50%"> 
                                     <div id="div1C" align="left" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow1C" src="../../../Images/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp1()','vertical','div1C');setChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
+                                      <img id="arrow1C" src="../../../Images/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(1)','vertical','div1C');setChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
                                       <img id="arrow1C_Gray" src="../../../Images/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
                                     </div>
                                   </td>
                                   <td width="50%"> 
                                     <div id="div1H" align="right" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow1H" src="../../../Images/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp1()','vertical','div1H');setChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
+                                      <img id="arrow1H" src="../../../Images/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(1)','vertical','div1H');setChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
                                       <img id="arrow1H_Gray" src="../../../Images/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
                                     </div>
                                   </td>
@@ -553,13 +549,13 @@ MM_reloadPage(true);
                                 <tr> 
                                   <td width="50%"> 
                                     <div id="div2C" align="left" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow2C" src="../../../Images/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp2()','vertical','div2C');setChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
+                                      <img id="arrow2C" src="../../../Images/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(2)','vertical','div2C');setChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
                                       <img id="arrow2C_Gray" src="../../../Images/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
                                     </div>
                                   </td>
                                   <td width="50%"> 
                                     <div id="div2H" align="right" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow2H" src="../../../Images/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp2()','vertical','div2H');setChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
+                                      <img id="arrow2H" src="../../../Images/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(2)','vertical','div2H');setChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
                                       <img id="arrow2H_Gray" src="../../../Images/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
                                     </div>
                                   </td>
@@ -582,13 +578,13 @@ MM_reloadPage(true);
                                 <tr> 
                                   <td width="50%"> 
                                     <div id="div3C" align="left" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow3C" src="../../../Images/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp3()','vertical','div3C');setChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
+                                      <img id="arrow3C" src="../../../Images/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(3)','vertical','div3C');setChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
                                       <img id="arrow3C_Gray" src="../../../Images/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
                                     </div>
                                   </td>
                                   <td width="50%"> 
                                     <div id="div3H" align="right" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow3H" src="../../../Images/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp3()','vertical','div3H');setChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
+                                      <img id="arrow3H" src="../../../Images/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(3)','vertical','div3H');setChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
                                       <img id="arrow3H_Gray" src="../../../Images/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
                                     </div>
                                   </td>
@@ -611,13 +607,13 @@ MM_reloadPage(true);
                                 <tr> 
                                   <td width="50%"> 
                                     <div id="div4C" align="left" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow4C" src="../../../Images/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp4()','vertical','div4C');setChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
+                                      <img id="arrow4C" src="../../../Images/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(4)','vertical','div4C');setChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
                                       <img id="arrow4C_Gray" src="../../../Images/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
                                     </div>
                                   </td>
                                   <td width="50%"> 
                                     <div id="div4H" align="right" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow4H" src="../../../Images/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp4()','vertical','div4H');setChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
+                                      <img id="arrow4H" src="../../../Images/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(4)','vertical','div4H');setChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
                                       <img id="arrow4H_Gray" src="../../../Images/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
                                     </div>
                                   </td>

@@ -207,19 +207,23 @@ public class ECUtils {
 	public static StarsThermostatTypes getThermostatType(int hwTypeID) {
 		YukonListEntry entry = YukonListFuncs.getYukonListEntry( hwTypeID );
 		
-		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_THERMOSTAT)
-			return StarsThermostatTypes.BASIC;
+		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT)
+			return StarsThermostatTypes.EXPRESSSTAT;
 		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO)
 			return StarsThermostatTypes.ENERGYPRO;
+		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT)
+			return StarsThermostatTypes.COMMERCIAL;
 		else
 			return null;
 	}
 	
 	public static Integer getLMHardwareTypeDefID(StarsThermostatTypes type) {
-		if (type.getType() == StarsThermostatTypes.BASIC_TYPE)
-			return new Integer(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_THERMOSTAT);
+		if (type.getType() == StarsThermostatTypes.EXPRESSSTAT_TYPE)
+			return new Integer(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT);
 		else if (type.getType() == StarsThermostatTypes.ENERGYPRO_TYPE)
 			return new Integer(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO);
+		else if (type.getType() == StarsThermostatTypes.COMMERCIAL_TYPE)
+			return new Integer(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT);
 		else
 			return null;
 	}
@@ -228,7 +232,8 @@ public class ECUtils {
 		YukonListEntry entry = YukonListFuncs.getYukonListEntry( deviceTypeID );
 		
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR ||
-			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_THERMOSTAT)
+			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT ||
+			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT)
 		{
 			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC).getEntryID();
 		}

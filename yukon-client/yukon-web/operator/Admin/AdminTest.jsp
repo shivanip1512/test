@@ -366,7 +366,7 @@ function confirmDeleteAllCompanies() {
 	{
 %>
                     <tr>
-                      <td><b><font color="#0000FF">Default Thermostat Settings:</font></b> 
+                      <td><b><font color="#0000FF">Default Thermostat Schedule:</font></b> 
                         <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
                           <tr>
                             <td>
@@ -374,16 +374,24 @@ function confirmDeleteAllCompanies() {
 <%
 		for (int i = 0; i < allDftThermoSettings.length; i++) {
 			StarsThermostatTypes type = allDftThermoSettings[i].getThermostatType();
+			String typeName = "";
 			String url = "";
-			if (type.getType() == StarsThermostatTypes.BASIC_TYPE)
+			if (type.getType() == StarsThermostatTypes.EXPRESSSTAT_TYPE) {
+				typeName = "ExpressStat";
 				url = "ThermSchedule.jsp";
-			else if (type.getType() == StarsThermostatTypes.ENERGYPRO_TYPE)
+			}
+			else if (type.getType() == StarsThermostatTypes.COMMERCIAL_TYPE) {
+				typeName = "Commercial ExpressStat";
+				url = "ThermSchedule1.jsp";
+			}
+			else if (type.getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
+				typeName = "EnergyPro";
 				url = "ThermSchedule2.jsp";
+			}
 %>
                                 <tr> 
                                   <td width="5%">&nbsp;</td>
-                                  <td width="70%"><%= type.toString() %> Thermostat 
-                                    Schedule</td>
+                                  <td width="70%"><%= typeName %></td>
                                   <td width="25%"> 
                                     <input type="button" name="Edit2" value="Edit" onClick="location.href = '<%= url %>'">
                                   </td>

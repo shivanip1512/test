@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
@@ -25,7 +26,6 @@ import com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
@@ -66,6 +66,9 @@ public class UpdateThermostatScheduleAction implements ActionBase {
             StarsOperation operation = getRequestOperation( req );
             return SOAPUtil.buildSOAPMessage( operation );
         }
+		catch (ServletException se) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, se.getMessage() );
+		}
         catch (Exception e) {
             e.printStackTrace();
             session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
@@ -434,9 +437,9 @@ public class UpdateThermostatScheduleAction implements ActionBase {
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	public static StarsOperation getRequestOperation(HttpServletRequest req) throws WebClientException {
+	public static StarsOperation getRequestOperation(HttpServletRequest req) throws ServletException {
 		StarsUpdateThermostatSchedule updateSched = new StarsUpdateThermostatSchedule();
-            
+        
 		String[] invIDStrs = req.getParameterValues("InvIDs");
 		if (invIDStrs == null || invIDStrs.length == 0) {
 			updateSched.setInventoryID( Integer.parseInt(req.getParameter("InvID")) );
@@ -448,25 +451,25 @@ public class UpdateThermostatScheduleAction implements ActionBase {
             	
 			updateSched.setInventoryIDs( invIDStr.toString() );
 		}
-	        
+	    
 		StarsThermoModeSettings mode = StarsThermoModeSettings.valueOf( req.getParameter("mode") );
 		StarsThermoDaySettings day = StarsThermoDaySettings.valueOf( req.getParameter("day") );
-
+		
 		StarsThermostatSeason season = new StarsThermostatSeason();
 		season.setMode( mode );
 		updateSched.addStarsThermostatSeason( season );
 		StarsThermostatSchedule schedule = new StarsThermostatSchedule();
 		schedule.setDay( day );
 		season.addStarsThermostatSchedule( schedule );
-	        
+	    
 		Calendar cal = Calendar.getInstance();
 		boolean noScript = (req.getParameter("temp1") != null);
-	        
+	    
 		if (req.getParameter("time1") != null) {
 			Date time1 = ServletUtils.parseTime(req.getParameter("time1"), TimeZone.getDefault());
 			if (time1 == null)
-				throw new WebClientException("Invalid time format '" + req.getParameter("time1") + "'");
-	        	
+				throw new ServletException("Invalid time format '" + req.getParameter("time1") + "'");
+	        
 			cal.setTime( time1 );
 			schedule.setTime1( new org.exolab.castor.types.Time(
 					(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60) * 1000) );
@@ -478,12 +481,12 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			schedule.setTime1( new org.exolab.castor.types.Time(0) );
 			schedule.setTemperature1( -1 );
 		}
-	        
+	    
 		if (req.getParameter("time2") != null) {
 			Date time2 = ServletUtils.parseTime(req.getParameter("time2"), TimeZone.getDefault());
 			if (time2 == null)
-				throw new WebClientException("Invalid time format '" + req.getParameter("time2") + "'");
-	        	
+				throw new ServletException("Invalid time format '" + req.getParameter("time2") + "'");
+	        
 			cal.setTime( time2 );
 			schedule.setTime2( new org.exolab.castor.types.Time(
 					(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60) * 1000) );
@@ -495,12 +498,12 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			schedule.setTime2( new org.exolab.castor.types.Time(0) );
 			schedule.setTemperature2( -1 );
 		}
-	        
+	    
 		if (req.getParameter("time3") != null) {
 			Date time3 = ServletUtils.parseTime(req.getParameter("time3"), TimeZone.getDefault());
 			if (time3 == null)
-				throw new WebClientException("Invalid time format '" + req.getParameter("time3") + "'");
-	        	
+				throw new ServletException("Invalid time format '" + req.getParameter("time3") + "'");
+	        
 			cal.setTime( time3 );
 			schedule.setTime3( new org.exolab.castor.types.Time(
 					(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60) * 1000) );
@@ -512,12 +515,12 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			schedule.setTime3( new org.exolab.castor.types.Time(0) );
 			schedule.setTemperature3( -1 );
 		}
-	        
+	    
 		if (req.getParameter("time4") != null) {
 			Date time4 = ServletUtils.parseTime(req.getParameter("time4"), TimeZone.getDefault());
 			if (time4 == null)
-				throw new WebClientException("Invalid time format '" + req.getParameter("time4") + "'");
-	        	
+				throw new ServletException("Invalid time format '" + req.getParameter("time4") + "'");
+	        
 			cal.setTime( time4 );
 			schedule.setTime4( new org.exolab.castor.types.Time(
 					(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60) * 1000) );
@@ -529,7 +532,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			schedule.setTime4( new org.exolab.castor.types.Time(0) );
 			schedule.setTemperature4( -1 );
 		}
-
+		
 		if (req.getParameter("isTwoWay") == null) {
 			// This is a one-way thermostat or the default thermostat
 			if (ServletUtils.isWeekday( day )) {
@@ -541,7 +544,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			// This is a two-way thermostat
 			String applyToWeekdaysStr = req.getParameter( "ApplyToWeekdays" );
 			String applyToWeekendStr = req.getParameter( "ApplyToWeekend" );
-				
+			
 			if (applyToWeekdaysStr != null && applyToWeekendStr != null) {
 				schedule.setDay( StarsThermoDaySettings.ALL );
 			}
@@ -566,7 +569,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				}
 			}
 		}
-            
+        
 		StarsOperation operation = new StarsOperation();
 		operation.setStarsUpdateThermostatSchedule( updateSched );
 		
@@ -814,6 +817,19 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 						StarsThermostatSchedule starsRespSched2 = StarsLiteFactory.createStarsThermostatSchedule( towIDs[k], liteEntries2 );
 						starsRespSeason2.addStarsThermostatSchedule( starsRespSched2 );
 					}
+					
+					// Log activity
+					String tempUnit = "F";
+					if (liteSettings.getDynamicData() != null && liteSettings.getDynamicData().getDisplayedTempUnit() != null)
+						tempUnit = liteSettings.getDynamicData().getDisplayedTempUnit();
+					
+					String logMsg = "Serial #:" + liteHw.getManufacturerSerialNumber() + ", " +
+							"Mode:" + starsSeason.getMode().toString() + ", " +
+							"Day:" + starsSched.getDay().toString() + ", " +
+							"Wake:" + ((starsSched.getTemperature1() < 0)? "(NONE)" : starsSched.getTime1().toString().substring(0, 5) + "," + starsSched.getTemperature1() + tempUnit) + ", " +
+							"Leave:" + ((starsSched.getTemperature2() < 0)? "(NONE)" : starsSched.getTime2().toString().substring(0, 5) + "," + starsSched.getTemperature2() + tempUnit) + ", " +
+							"Return:" + ((starsSched.getTemperature3() < 0)? "(NONE)" : starsSched.getTime3().toString().substring(0, 5) + "," + starsSched.getTemperature3() + tempUnit) + ", " +
+							"Sleep:" + ((starsSched.getTemperature4() < 0)? "(NONE)" : starsSched.getTime4().toString().substring(0, 5) + "," + starsSched.getTemperature4() + tempUnit);
 				}
 			}
 		}
@@ -828,8 +844,6 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 	}
 	
 	public static void parseResponse(StarsUpdateThermostatScheduleResponse resp, StarsThermoSettings settings) {
-        boolean isTwoWay = settings.getStarsThermostatDynamicData() != null;
-        
         for (int i = 0; i < resp.getStarsThermostatSeasonCount(); i++) {
         	StarsThermostatSeason newSeason = resp.getStarsThermostatSeason(i);
         	
@@ -853,15 +867,6 @@ public class UpdateThermostatScheduleAction implements ActionBase {
     			StarsThermostatSchedule newSched = newSeason.getStarsThermostatSchedule(j);
     			StarsThermoDaySettings daySetting = newSched.getDay();
     			
-    			if (!isTwoWay && daySetting.getType() != StarsThermoDaySettings.WEEKDAY_TYPE &&
-    				ServletUtils.isWeekday( daySetting ))
-    			{
-    				if (daySetting.getType() == StarsThermoDaySettings.MONDAY_TYPE)
-    					daySetting = StarsThermoDaySettings.WEEKDAY;
-    				else
-    					continue;
-    			}
-    			
     			StarsThermostatSchedule oldSched = null;
     			for (int k = 0; k < oldSeason.getStarsThermostatScheduleCount(); k++) {
     				StarsThermostatSchedule sched = oldSeason.getStarsThermostatSchedule(k);
@@ -877,22 +882,14 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					oldSeason.addStarsThermostatSchedule( oldSched );
 				}
 				
-				if (isTwoWay || newSched.getTemperature1() > 0) {
-					oldSched.setTime1( newSched.getTime1() );
-					oldSched.setTemperature1( newSched.getTemperature1() );
-				}
-				if (isTwoWay || newSched.getTemperature2() > 0) {
-					oldSched.setTime2( newSched.getTime2() );
-					oldSched.setTemperature2( newSched.getTemperature2() );
-				}
-				if (isTwoWay || newSched.getTemperature3() > 0) {
-					oldSched.setTime3( newSched.getTime3() );
-					oldSched.setTemperature3( newSched.getTemperature3() );
-				}
-				if (isTwoWay || newSched.getTemperature4() > 0) {
-					oldSched.setTime4( newSched.getTime4() );
-					oldSched.setTemperature4( newSched.getTemperature4() );
-				}
+				oldSched.setTime1( newSched.getTime1() );
+				oldSched.setTemperature1( newSched.getTemperature1() );
+				oldSched.setTime2( newSched.getTime2() );
+				oldSched.setTemperature2( newSched.getTemperature2() );
+				oldSched.setTime3( newSched.getTime3() );
+				oldSched.setTemperature3( newSched.getTemperature3() );
+				oldSched.setTime4( newSched.getTime4() );
+				oldSched.setTemperature4( newSched.getTemperature4() );
     		}
         }
 	}

@@ -207,6 +207,8 @@ public class InventoryManager extends HttpServlet {
 			if (ECUtils.isMCT( categoryID )) {
 				StarsInventory starsInv = (StarsInventory) StarsFactory.newStarsInv(StarsInventory.class);
 				starsInv.setDeviceID( deviceID );
+				starsInv.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
+						energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT), DeviceType.class) );
 				
 				MCT mct = new MCT();
 				mct.setDeviceName( PAOFuncs.getYukonPAOName(deviceID) );

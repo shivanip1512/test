@@ -255,27 +255,28 @@ pageName = "<%= pageName %>";
 pageLinks = new Array(<%= thermostats.getStarsInventoryCount() %>);
 <%
 	int tstatCnt = thermostats.getStarsInventoryCount();
-	int[] selectedInvIDs = (int[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
-	boolean hasTwoWay = false;
-	
 	for (int i = 0; i < tstatCnt; i++) {
-		StarsInventory tstat = thermostats.getStarsInventory(i);
 %>
 	pageLinks[<%= i %>] = new Array(3);
 	pageLinks[<%= i %>][0] = "NewLabel.jsp?Item=<%= i %>";
 <%
-		if (tstat.getLMHardware().getStarsThermostatSettings().getStarsThermostatDynamicData() == null) {
+		StarsThermostatTypes type = thermostats.getStarsInventory(i).getLMHardware().getStarsThermostatSettings().getThermostatType();
+		if (type.getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
 %>
-	pageLinks[<%= i %>][1] = "ThermSchedule.jsp?Item=<%= i %>";
+	pageLinks[<%= i %>][1] = "ThermSchedule2.jsp?Item=<%= i %>";
+	pageLinks[<%= i %>][2] = "Thermostat2.jsp?Item=<%= i %>";
+<%
+		}
+		else if (type.getType() == StarsThermostatTypes.COMMERCIAL_TYPE) {
+%>
+	pageLinks[<%= i %>][1] = "ThermSchedule1.jsp?Item=<%= i %>";
 	pageLinks[<%= i %>][2] = "Thermostat.jsp?Item=<%= i %>";
 <%
 		}
 		else {
-			if (selectedInvIDs != null && Arrays.binarySearch(selectedInvIDs, tstat.getInventoryID()) >= 0)
-				hasTwoWay = true;
 %>
-	pageLinks[<%= i %>][1] = "ThermSchedule2.jsp?Item=<%= i %>";
-	pageLinks[<%= i %>][2] = "Thermostat2.jsp?Item=<%= i %>";
+	pageLinks[<%= i %>][1] = "ThermSchedule.jsp?Item=<%= i %>";
+	pageLinks[<%= i %>][2] = "Thermostat.jsp?Item=<%= i %>";
 <%
 		}
 	}
@@ -284,10 +285,34 @@ pageLinks = new Array(<%= thermostats.getStarsInventoryCount() %>);
 	pageLinks[<%= tstatCnt %>] = new Array(3);
 	pageLinks[<%= tstatCnt %>][0] = "AllTherm.jsp";
 <%
-	if (hasTwoWay) {
+	int[] selectedInvIDs = (int[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
+	StarsThermostatTypes allType = null;
+	if (selectedInvIDs != null && selectedInvIDs.length > 0) {
+		for (int i = 0; i < tstatCnt; i++) {
+			StarsInventory tstat = thermostats.getStarsInventory(i);
+			if (tstat.getInventoryID() == selectedInvIDs[0]) {
+				allType = tstat.getLMHardware().getStarsThermostatSettings().getThermostatType();
+				break;
+			}
+		}
+	}
+	
+	if (allType == null) {
+%>
+	pageLinks[<%= tstatCnt %>][1] = "AllTherm.jsp";
+	pageLinks[<%= tstatCnt %>][2] = "AllTherm.jsp";
+<%
+	}
+	else if (allType.getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
 %>
 	pageLinks[<%= tstatCnt %>][1] = "ThermSchedule2.jsp?Item=-1";
 	pageLinks[<%= tstatCnt %>][2] = "Thermostat2.jsp?Item=-1";
+<%
+	}
+	else if (allType.getType() == StarsThermostatTypes.COMMERCIAL_TYPE) {
+%>
+	pageLinks[<%= tstatCnt %>][1] = "ThermSchedule1.jsp?Item=-1";
+	pageLinks[<%= tstatCnt %>][2] = "Thermostat.jsp?Item=-1";
 <%
 	}
 	else {

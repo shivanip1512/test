@@ -440,17 +440,23 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
 	pageLinks[<%= num %>][0] = "Inventory.jsp?InvNo=<%= num %>";
 	pageLinks[<%= num %>][1] = "ConfigHardware.jsp?InvNo=<%= num %>";
 <%
-		StarsThermostatSettings settings = inventories.getStarsInventory(num).getLMHardware().getStarsThermostatSettings();
-		if (settings.getStarsThermostatDynamicData() == null) {
+		StarsThermostatTypes type = inventories.getStarsInventory(num).getLMHardware().getStarsThermostatSettings().getThermostatType();
+		if (type.getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
 %>
-	pageLinks[<%= num %>][2] = "ThermSchedule.jsp?InvNo=<%= num %>";
+	pageLinks[<%= num %>][2] = "ThermSchedule2.jsp?InvNo=<%= num %>";
+	pageLinks[<%= num %>][3] = "Thermostat2.jsp?InvNo=<%= num %>";
+<%
+		}
+		else if (type.getType() == StarsThermostatTypes.COMMERCIAL_TYPE) {
+%>
+	pageLinks[<%= num %>][2] = "ThermSchedule1.jsp?InvNo=<%= num %>";
 	pageLinks[<%= num %>][3] = "Thermostat.jsp?InvNo=<%= num %>";
 <%
 		}
 		else {
 %>
-	pageLinks[<%= num %>][2] = "ThermSchedule2.jsp?InvNo=<%= num %>";
-	pageLinks[<%= num %>][3] = "Thermostat2.jsp?InvNo=<%= num %>";
+	pageLinks[<%= num %>][2] = "ThermSchedule.jsp?InvNo=<%= num %>";
+	pageLinks[<%= num %>][3] = "Thermostat.jsp?InvNo=<%= num %>";
 <%
 		}
 	}

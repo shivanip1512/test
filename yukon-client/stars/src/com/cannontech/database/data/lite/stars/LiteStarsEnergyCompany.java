@@ -964,21 +964,23 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				
 				// Use the hardware type id of the default energy company,
 				// so that we won't have a problem deleting a device type
-				int hwTypeID = SOAPServer.getDefaultEnergyCompany().getYukonListEntry(hwTypeDefID).getEntryID();
-	        	int categoryID = ECUtils.getInventoryCategoryID(hwTypeID, this);
+				YukonListEntry hwType = SOAPServer.getDefaultEnergyCompany().getYukonListEntry(hwTypeDefID);
+	        	int categoryID = ECUtils.getInventoryCategoryID(hwType.getEntryID(), this);
 	        	
 				com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
 						new com.cannontech.database.data.stars.hardware.LMHardwareBase();
 				hardware.setInventoryID( new Integer(dftInvID) );
 				hardware.getInventoryBase().setCategoryID( new Integer(categoryID) );
-				hardware.getInventoryBase().setNotes( "Default Thermostat" );
-				hardware.getLMHardwareBase().setLMHardwareTypeID( new Integer(hwTypeID) );
+				hardware.getInventoryBase().setNotes( "Default " + hwType.getEntryText() );
+				hardware.getLMHardwareBase().setLMHardwareTypeID( new Integer(hwType.getEntryID()) );
 				hardware.getLMHardwareBase().setManufacturerSerialNumber( "0" );
 				hardware.setEnergyCompanyID( getEnergyCompanyID() );
 				hardware.setDbConnection( conn );
 				hardware.add();
 				
-				if (hwTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_THERMOSTAT) {
+				if (hwTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT ||
+					hwTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT)
+				{
 					com.cannontech.database.data.stars.event.LMThermostatManualEvent event =
 							new com.cannontech.database.data.stars.event.LMThermostatManualEvent();
 					event.getLMCustomerEventBase().setEventTypeID( new Integer(
@@ -2363,27 +2365,36 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public void updateStarsDefaultThermostatSettings() {
 		boolean hasBasic = false;
 		boolean hasEpro = false;
+		boolean hasComm = false;
 		
 		YukonSelectionList devTypeList = getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, false);
 		for (int i = 0; i < devTypeList.getYukonListEntries().size(); i++) {
 			YukonListEntry entry = (YukonListEntry) devTypeList.getYukonListEntries().get(i);
-			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_THERMOSTAT)
+			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT)
 				hasBasic = true;
 			else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO)
 				hasEpro = true;
+			else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT)
+				hasComm = true;
 		}
 		
 		ArrayList thermSettingsList = new ArrayList();
 		if (hasBasic) {
 			StarsDefaultThermostatSettings starsThermSettings = new StarsDefaultThermostatSettings();
 			StarsLiteFactory.setStarsThermostatSettings(
-					starsThermSettings, getDefaultLMHardware(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_THERMOSTAT), this );
+					starsThermSettings, getDefaultLMHardware(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT), this );
 			thermSettingsList.add( starsThermSettings );
 		}
 		if (hasEpro) {
 			StarsDefaultThermostatSettings starsThermSettings = new StarsDefaultThermostatSettings();
 			StarsLiteFactory.setStarsThermostatSettings(
 					starsThermSettings, getDefaultLMHardware(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO), this );
+			thermSettingsList.add( starsThermSettings );
+		}
+		if (hasComm) {
+			StarsDefaultThermostatSettings starsThermSettings = new StarsDefaultThermostatSettings();
+			StarsLiteFactory.setStarsThermostatSettings(
+					starsThermSettings, getDefaultLMHardware(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT), this );
 			thermSettingsList.add( starsThermSettings );
 		}
 		

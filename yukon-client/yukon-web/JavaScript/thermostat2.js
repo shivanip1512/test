@@ -13,30 +13,46 @@ var lowerLimit = 45;
 var upperLimit = 88;
 
 var thermostats = ['', 'MovingLayer1', 'MovingLayer2', 'MovingLayer3', 'MovingLayer4'];
+var tempCArrows = ['', 'div1C', 'div2C', 'div3C', 'div4C'];
+var tempHArrows = ['', 'div1H', 'div2H', 'div3H', 'div4H'];
 var timeFields = ['', 'time1', 'time2', 'time3', 'time4'];
+var tempFields = ['', 'temp1', 'temp2', 'temp3', 'temp4'];
 var checkboxes = ['', 'WakeEnabled', 'LeaveEnabled', 'ReturnEnabled', 'SleepEnabled'];
 
 
-function showTimeWake(){
+function showTimeWake() {
   var s = document.getElementById('MovingLayer1');
   var txt = document.getElementById('time1');
   showTime(s,txt,1);
 }
 
-function showTimeLeave(){
+function showTimeLeave() {
   var s = document.getElementById('MovingLayer2');
   var txt = document.getElementById('time2');
   showTime(s,txt,2);
 }
-function showTimeReturn(){
+
+function showTimeReturn() {
   var s = document.getElementById('MovingLayer3');
   var txt = document.getElementById('time3');
   showTime(s,txt,3);
 }
 
-function showTimeSleep(){
+function showTimeSleep() {
   var s = document.getElementById('MovingLayer4');
   var txt = document.getElementById('time4');
+  showTime(s,txt,4);
+}
+
+function showTimeOccupied() {
+  var s = document.getElementById('MovingLayer1');
+  var txt = document.getElementById('time4');
+  showTime(s,txt,1);
+}
+
+function showTimeUnoccupied() {
+  var s = document.getElementById('MovingLayer4');
+  var txt = document.getElementById('time1');
   showTime(s,txt,4);
 }
 
@@ -45,29 +61,10 @@ function showTime(s, txt, idx) {
   txt.value = timeValToStr(Math.floor((curPos + (idx - 1) * layerHorDist - layerLeftBnd) / tenMinEqlLen) * 10);
 }
 
-
-function showTemp1() {
-var a = document.getElementById('div1' + thermMode);
-var div = document.getElementById('temp1');
-showTempIE(a, div);
-}
-
-function showTemp2() {
-var a = document.getElementById('div2' + thermMode);
-var div = document.getElementById('temp2');
-showTempIE(a, div);
-}
-
-function showTemp3() {
-var a = document.getElementById('div3' + thermMode);
-var div = document.getElementById('temp3');
-showTempIE(a, div);
-}
-
-function showTemp4() {
-var a = document.getElementById('div4' + thermMode);
-var div = document.getElementById('temp4');
-showTempIE(a, div);
+function showTemp(idx) {
+  var a = document.getElementById((thermMode == 'C')? tempCArrows[idx] : tempHArrows[idx]);
+  var div = document.getElementById(tempFields[idx]);
+  showTempIE(a, div);
 }
 
 function showTempIE(a, div)
@@ -84,12 +81,16 @@ var pos = Math.floor((lowerLimit - newTemp) / (upperLimit - lowerLimit) * thermo
 arrow.style.top = pos;
 }
 
+function moveTempArrows(idx, tempC, tempH) {
+  if (tempC) moveTempArrow(tempCArrows[idx], tempC);
+  if (tempH) moveTempArrow(tempHArrows[idx], tempH);
+}
 
-function moveLayer(divId, hour, minute) {
-var divNo = parseInt( divId.substr(divId.length-1, 1), 10 );
+
+function moveLayer(idx, hour, minute) {
+var layer = document.getElementById(thermostats[idx]);
 var offset = (hour * 6 + Math.floor(minute / 10)) * tenMinEqlLen;
-var layer = document.getElementById(divId);
-layer.style.left = layerLeftBnd + offset - (divNo-1) * layerHorDist;
+layer.style.left = layerLeftBnd + offset - (idx-1) * layerHorDist;
 }
 
 
@@ -244,5 +245,5 @@ function timeChange(t, idx) {
   
   var hour = Math.floor(val / 60);
   var minute = val % 60;
-  moveLayer('MovingLayer' + idx, hour, minute);
+  moveLayer(idx, hour, minute);
 }
