@@ -124,7 +124,7 @@ public class LGAccountingReport extends YukonReportBase
 		header.addElement(tfactory.createElement());
 		header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new Line2D.Float(0, 20, 0, 20)));
 
-		for (int i = 1; i < getModel().getColumnNames().length; i++)
+		for (int i = 1; i <= LoadGroupModel.SEASONAL_CONTROL_COLUMN; i++)
 		{
 			factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
 			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 30));	//lower this row of "headings"
@@ -133,6 +133,15 @@ public class LGAccountingReport extends YukonReportBase
 		collGrpGroup.setHeader(header);
 
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();
+
+		factory = ReportFactory.createGroupLabelElementDefault(getModel(), LoadGroupModel.ANNUAL_CONTROL_COLUMN);
+		factory.setText(factory.getText() + ":");
+		footer.addElement(factory.createElement());
+
+		tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), LoadGroupModel.ANNUAL_CONTROL_COLUMN);
+		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(100, 1));	//override
+		footer.addElement(tfactory.createElement());
+		
 		collGrpGroup.setFooter(footer);
 
 		return collGrpGroup;
@@ -170,13 +179,13 @@ public class LGAccountingReport extends YukonReportBase
 					new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
 		}	
 
+		TextFieldElementFactory factory;
 		//Start at 1, we don't want to include the Load Group column, our group by column.
-		for (int i = 1; i < getModel().getColumnNames().length; i++)
+		for (int i = 1; i <= LoadGroupModel.SEASONAL_CONTROL_COLUMN; i++)
 		{
-			TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
+			factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
 			items.addElement(factory.createElement());
 		}
-
 		return items;
 	}
 }
