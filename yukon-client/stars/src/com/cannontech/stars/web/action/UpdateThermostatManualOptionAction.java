@@ -141,10 +141,11 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 				
 				if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
 					String errorMsg = null;
-					if (ECUtils.isOperator(user))
+					if (ECUtils.isOperator(user)) {
 						errorMsg = (invIDs.length == 1)?
 								"The thermostat is currently out of service. Manual option is not sent." :
-								"One of the thermostats is currently out of service. Manual option is not sent.";
+								"The thermostat '" + liteHw.getManufacturerSerialNumber() + "' is currently out of service. Manual option is not sent.";
+					}
 					else
 						errorMsg = "Cannot send manual option to the thermostat. Please contact your utility company to report this problem.";
 					
@@ -155,7 +156,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
     			
 				if (liteHw.getManufacturerSerialNumber().trim().length() == 0) {
 					String errorMsg = ECUtils.isOperator(user) ?
-							"The serial # of the thermostat cannot be empty." :
+							"The serial # of the thermostat cannot be empty. Manual option is not sent" :
 							"Cannot send manual option to the thermostat. Please contact your utility company to report this problem.";
 					
 					respOper.setStarsFailure( StarsFactory.newStarsFailure(

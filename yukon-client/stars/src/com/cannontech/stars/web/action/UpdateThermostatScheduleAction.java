@@ -138,36 +138,27 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invIDs[i], true );
 				
 				if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
-					String errorMsg = (invIDs.length == 1)?
-							"The thermostat is currently out of service. Schedule is not sent." :
-							"One of the thermostats is currently out of service. Schedule is not sent.";
-					
+					String errorMsg = null;
 					if (ECUtils.isOperator( user )) {
-						respOper.setStarsFailure( StarsFactory.newStarsFailure(
-								StarsConstants.FAILURE_CODE_OPERATION_FAILED, errorMsg) );
+						errorMsg = (invIDs.length == 1)?
+								"The thermostat is currently out of service. Schedule is not sent." :
+								"The thermostat '" + liteHw.getManufacturerSerialNumber() + "' is currently out of service. Schedule is not sent.";
 					}
-					else {
-						respOper.setStarsFailure( StarsFactory.newStarsFailure(
-								StarsConstants.FAILURE_CODE_OPERATION_FAILED, errorMsg + " Please refer to the \"Contact us\" page if you want to get more information.") );
-					}
+					else
+						errorMsg = "Cannot send schedule to the thermostat. Please contact your utility company to report this problem.";
 					
+					respOper.setStarsFailure( StarsFactory.newStarsFailure(
+							StarsConstants.FAILURE_CODE_OPERATION_FAILED, errorMsg) );
 					return SOAPUtil.buildSOAPMessage( respOper );
 				}
     			
 				if (liteHw.getManufacturerSerialNumber().trim().length() == 0) {
-					if (ECUtils.isOperator( user )) {
-						String errorMsg = (invIDs.length == 1)?
-								"The serial # of the thermostat cannot be empty. Schedule is not sent." :
-								"The serial # of one of the thermostats is empty. Schedule is not sent.";
-						
-						respOper.setStarsFailure( StarsFactory.newStarsFailure(
-								StarsConstants.FAILURE_CODE_OPERATION_FAILED, errorMsg) );
-					}
-					else {
-						respOper.setStarsFailure( StarsFactory.newStarsFailure(
-								StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot send schedule to the thermostat. To get more information please contact your utility company.") );
-					}
+					String errorMsg = ECUtils.isOperator( user )?
+							"The serial # of the thermostat cannot be empty. Schedule is not sent." :
+							"Cannot send schedule to the thermostat. Please contact your utility company to report this problem.";
 					
+					respOper.setStarsFailure( StarsFactory.newStarsFailure(
+							StarsConstants.FAILURE_CODE_OPERATION_FAILED, errorMsg) );
 					return SOAPUtil.buildSOAPMessage( respOper );
 				}
 				
