@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/04/01 21:50:02 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/04/20 20:33:25 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -784,6 +784,9 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         }
         else
         {
+            //  default multiplier for voltage
+            Value *= 0.1;
+
             resultString = getName() + " / Voltage = " + CtiNumStr(Value) + "  --  POINT UNDEFINED IN DB";
             ReturnMsg->setResultString(ReturnMsg->ResultString() + "\n" + resultString);
         }
