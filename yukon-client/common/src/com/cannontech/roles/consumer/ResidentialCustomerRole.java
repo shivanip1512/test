@@ -32,7 +32,6 @@ public interface ResidentialCustomerRole {
 	
 	public static final int WEB_LINK_FAQ = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 100;
 	public static final int WEB_LINK_UTIL_EMAIL = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 101;
-	public static final int WEB_LINK_LOG_OFF = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 102;
 	public static final int WEB_TEXT_CONTROL = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 110;
 	public static final int WEB_TEXT_CONTROLLED = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 111;
 	public static final int WEB_TEXT_CONTROLLING = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 112;
