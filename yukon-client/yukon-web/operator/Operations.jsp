@@ -43,9 +43,16 @@ function confirmDelete() {
           <td id="Header" background="../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>" height="77" >&nbsp;</td>
         </tr>
         <tr>
-         	<td>
-               <div align="right"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
-            </td>
+          <td align="right">
+<%
+	if (session.getAttribute(com.cannontech.common.constants.LoginController.SAVED_YUKON_USERS) == null
+		|| liteEC.getParent() == null) {
+%>
+            <span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a></span>
+<% } else { %>
+			<span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Back to <%= liteEC.getParent().getName() %></a></span>
+<% } %>
+          &nbsp;&nbsp;&nbsp;</td>
         </tr>
       </table>
     </td>
