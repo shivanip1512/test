@@ -1,17 +1,16 @@
 package com.cannontech.tdc.roweditor;
 
+import com.cannontech.tdc.alarms.gui.AlarmingRow;
+
 /**
  * Insert the type's description here.
  * Creation date: (11/14/2001 2:38:51 PM)
  * @author: 
  */
-import com.cannontech.message.dispatch.message.Signal;
-
 public abstract class ManualEntryJPanel extends javax.swing.JPanel
 {
-	// a Signal() is only present when we are alarming
-	private Signal signal = null;
-	private boolean isRowAlarmed = false;
+	// an alarmRow is only present when we are alarming
+	private AlarmingRow alarmRow = null;
 	private java.util.Observable observingData = null;
 	private Object startingValue = null;
 	private EditorDialogData editorData = null;
@@ -26,12 +25,11 @@ protected ManualEntryJPanel() {
 /**
  * EditDataPanel constructor comment.
  */
-public ManualEntryJPanel( EditorDialogData data, java.util.Observable obsValue, Object currentValue, Signal signalData ) 
+public ManualEntryJPanel( EditorDialogData data, java.util.Observable obsValue, Object currentValue, AlarmingRow alarmRow_ ) 
 {
 	super();
 
-	isRowAlarmed = true;
-	signal = signalData;
+	alarmRow = alarmRow_;
 	editorData = data;
 	observingData = obsValue;
 	startingValue = currentValue;
@@ -42,9 +40,8 @@ public ManualEntryJPanel( EditorDialogData data, java.util.Observable obsValue, 
 public ManualEntryJPanel( EditorDialogData data, java.util.Observable obsValue, Object currentValue ) 
 {
 	this( data, obsValue, currentValue, null );
-
-	isRowAlarmed = false;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (11/14/2001 2:55:54 PM)
@@ -73,8 +70,8 @@ public abstract String getPanelTitle();
  * Creation date: (11/14/2001 2:55:54 PM)
  * @return com.cannontech.message.dispatch.message.Signal
  */
-protected com.cannontech.message.dispatch.message.Signal getSignal() {
-	return signal;
+protected AlarmingRow getAlarmRow() {
+	return alarmRow;
 }
 /**
  * Insert the method's description here.
@@ -90,7 +87,7 @@ protected java.lang.Object getStartingValue() {
  * @return boolean
  */
 protected boolean isRowAlarmed() {
-	return isRowAlarmed;
+	return getAlarmRow() != null;
 }
 
 

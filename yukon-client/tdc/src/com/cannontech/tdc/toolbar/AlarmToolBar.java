@@ -883,18 +883,25 @@ public void setJComponentEnabled( int buttonPosition, boolean enabled )
 		throw new IllegalArgumentException("JComponent Enablement for toolbar button["+buttonPosition+"] is not valid");
 }
 
-public void setSelectedDate( Date newDate_ )
+/**
+ * Allows the date to be set programmticaly for a historical display.
+ * @return boolean, if the date was successfully set or not
+ */
+public boolean setSelectedDate( Date newDate_ )
 {
-	for( int i = 0; i < getCurrentComponents().length; i++ )
+	if( getDateJComboBox().isEnabled() )
 	{
-		if( getCurrentComponents()[i] == getDateJComboBox() )
+		for( int i = 0; i < getCurrentComponents().length; i++ )
 		{
-			if( getDateJComboBox().isEnabled() )
+			if( getCurrentComponents()[i] == getDateJComboBox() )
+			{
 				getDateJComboBox().setSelectedDate( newDate_ );
-				
-			break;
+				return true;
+			}
 		}
 	}
+		
+	return false;
 }
 
 /**

@@ -1,5 +1,11 @@
 package com.cannontech.tdc;
 
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.tdc.data.Display;
+
 /**
  * Insert the type's description here
  * Creation date: (1/20/00 2:25:13 PM)
@@ -8,17 +14,18 @@ package com.cannontech.tdc;
 public class Clock implements Runnable 
 {
 	private Thread timer = null;
-	private TDCMainPanel caller = null;
+	private TDCMainFrame mainFrame = null;
+	private GregorianCalendar gc = new GregorianCalendar();
 
 ;
 	
 /**
  * yet another constructor comment.
  */
-public Clock( TDCMainPanel origin ) {
+public Clock( TDCMainFrame origin ) {
 	super();
 
-	caller = origin;
+	mainFrame = origin;
 	
 	timer = new Thread( this, "TDCClock" );
 	timer.setDaemon( true );
@@ -44,7 +51,6 @@ public void run()
    final java.text.SimpleDateFormat timeformatter
 	   = new java.text.SimpleDateFormat ("HH:mm:ss");
 	
-
 	while ( true )
 	{
 
@@ -52,10 +58,23 @@ public void run()
 		{
 			public void run()
 			{
-				java.util.Date date = new java.util.Date();
+				Date date = new Date();
+				gc.setTime( date );
+
 				
-				caller.getJLabelDate().setText(dateformatter.format(date));
-				caller.getJLabelTime().setText(timeformatter.format(date));
+				mainFrame.getMainPanel().getJLabelDate().setText(dateformatter.format(date));
+				mainFrame.getMainPanel().getJLabelTime().setText(timeformatter.format(date));
+				
+				//if we are looking at todays date AND we are about to flip 
+				if( gc.get(GregorianCalendar.HOUR_OF_DAY) == 23
+				    && gc.get(GregorianCalendar.MINUTE) == 59
+				    && gc.get(GregorianCalendar.SECOND) == 59
+					 && Display.isTodaysDate(
+					 	mainFrame.getMainPanel().getTableDataModel().getCurrentDate()) )
+				{
+					if( mainFrame.getAlarmToolBar().setSelectedDate(new Date()) )
+						CTILogger.info("AUTO-CHANGED: Changed current display to the rolled over new date: " + date );
+				}
 			}
 			
 		});
@@ -69,11 +88,11 @@ public void run()
 		}
 		catch (InterruptedException e) 
 		{
-			//com.cannontech.clientutils.CTILogger.info("com.cannontech.tdc.Clock thread interrupted");
 			break; // we were interrupted, lets skidaddle
 		}
 
 	}	
 	
 }
+
 }

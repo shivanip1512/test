@@ -50,6 +50,7 @@ import com.cannontech.tdc.spawn.TDCMainFrameSpawnListener;
 import com.cannontech.tdc.data.Display;
 
 public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.tdc.spawn.TDCMainFrameSpawnListener, TDCMainPanelListener, com.cannontech.tdc.toolbar.AlarmToolBarListener, java.awt.event.ActionListener, java.awt.event.ItemListener, java.util.Observer {
+	private Clock ticker = null;
 	private transient javax.swing.JDialog textSearchDialog = null;
 	protected transient TDCMainFrameSpawnListener spawnTDCEventMulticaster = null;
 	private javax.swing.ButtonGroup viewTypeButtonGroup = new javax.swing.ButtonGroup();
@@ -457,6 +458,15 @@ public void alarmToolBar_JToolBarJCDateChange_actionPerformed(java.beans.Propert
 
 }
 
+/**
+ * Insert the method's description here.
+ * Creation date: (10/13/00 1:49:44 PM)
+ */
+public void destroyClockThread() 
+{
+	if( ticker != null )
+		ticker.interruptClockThread();
+}
 
 /**
  * Insert the method's description here.
@@ -1128,7 +1138,7 @@ public void destroySpawn()
 	getTdcClient().stop();
 
 	// destroy all other independent threads below
-	getMainPanel().destroyClockThread();
+	destroyClockThread();
 	
 }
 
@@ -1232,7 +1242,7 @@ private SignalAlarmHandler getAlarmHandler()
  * @return com.cannontech.tdc.toolbar.AlarmToolBar
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private com.cannontech.tdc.toolbar.AlarmToolBar getAlarmToolBar() {
+protected com.cannontech.tdc.toolbar.AlarmToolBar getAlarmToolBar() {
 	if (ivjAlarmToolBar == null) {
 		try {
 			ivjAlarmToolBar = new com.cannontech.tdc.toolbar.AlarmToolBar();
@@ -2613,7 +2623,7 @@ private javax.swing.JSeparator getJSeparator6() {
  * @return com.cannontech.tdc.TDCMainPanel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private TDCMainPanel getMainPanel() {
+protected TDCMainPanel getMainPanel() {
 	if (ivjMainPanel == null) {
 		try {
 			ivjMainPanel = new com.cannontech.tdc.TDCMainPanel();
@@ -2907,6 +2917,8 @@ public void initialize() {
 	
 	// connect and register with Dispatch
 	getTdcClient();
+
+	ticker = new Clock( this );	
 
 	// user code end
 }
@@ -4360,11 +4372,6 @@ public void setSelectedViewType(String buttonText)
 		}
 	}
 	
-}
-
-public void setSelectedDate( Date newDate_ )
-{
-	getAlarmToolBar().setSelectedDate( newDate_ );
 }
 
 

@@ -5,9 +5,17 @@ package com.cannontech.tdc.roweditor;
  * Creation date: (3/8/00 11:45:00 AM)
  * @author: 
  */
+import java.util.Observable;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.gui.unchanging.DoubleRangeDocument;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.point.PointQualities;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.tdc.ObservableRow;
 import com.cannontech.tdc.TDCMainFrame;
+import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.commandevents.ControlCommand;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 
@@ -31,16 +39,16 @@ private AnalogPanel() {
 /**
  * EditDataPanel constructor comment.
  */
-public AnalogPanel( EditorDialogData data, com.cannontech.tdc.ObservableRow obsRow, Object currentValue, Signal signalData )
+public AnalogPanel( EditorDialogData data, ObservableRow obsRow, Object currentValue, AlarmingRow alarmRow_ )
 {
-	super( data, obsRow, currentValue, signalData );
+	super( data, obsRow, currentValue, alarmRow_ );
 		
 	initialize();
 }
 /**
  * EditDataPanel constructor comment.
  */
-public AnalogPanel(com.cannontech.tdc.roweditor.EditorDialogData data, java.util.Observable obsValue, java.lang.Object currentValue) 
+public AnalogPanel(EditorDialogData data, Observable obsValue, Object currentValue) 
 {
 	super(data, obsValue, currentValue);
 	initialize();
@@ -104,6 +112,7 @@ private javax.swing.JLabel getJLabelPointDeviceName() {
 		try {
 			ivjJLabelPointDeviceName = new javax.swing.JLabel();
 			ivjJLabelPointDeviceName.setName("JLabelPointDeviceName");
+			ivjJLabelPointDeviceName.setFont(new java.awt.Font("Arial", 1, 12));
 			ivjJLabelPointDeviceName.setText("POINT/DEVICE NAME");
 			// user code begin {1}
 			// user code end
@@ -126,7 +135,7 @@ private javax.swing.JLabel getJLabelPtName() {
 			ivjJLabelPtName = new javax.swing.JLabel();
 			ivjJLabelPtName.setName("JLabelPtName");
 			ivjJLabelPtName.setFont(new java.awt.Font("dialog", 0, 12));
-			ivjJLabelPtName.setText("Point");
+			ivjJLabelPtName.setText("Point:");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -171,8 +180,7 @@ private javax.swing.JTextField getJTextFieldValue() {
 			ivjJTextFieldValue.setName("JTextFieldValue");
 			// user code begin {1}
 			
-			ivjJTextFieldValue.setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument
-						( MIN_INPUT_VALUE, MAX_INPUT_VALUE ) );
+			ivjJTextFieldValue.setDocument( new DoubleRangeDocument(MIN_INPUT_VALUE, MAX_INPUT_VALUE) );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -192,7 +200,7 @@ public String getPanelTitle()
 {
 	if( getEditorData() != null )
 	{
-		return com.cannontech.database.data.point.PointTypes.getType(getEditorData().getPointType()) + " Point Change";
+		return PointTypes.getType(getEditorData().getPointType()) + " Point Change";
 	}
 	else
 		return "Point Manual Entry";
@@ -204,8 +212,8 @@ public String getPanelTitle()
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION AnalogPanel() ---------");
-	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	CTILogger.info("--------- UNCAUGHT EXCEPTION AnalogPanel() ---------");
+	CTILogger.error( exception.getMessage(), exception );;
 
 	TDCMainFrame.messageLog.addMessage(exception.toString() + " in : " + this.getClass(), MessageBoxFrame.ERROR_MSG );
 }
@@ -295,14 +303,7 @@ private void initReadOnlyData()
 
 	synchronized( getAlarmPanel() )
 	{
-		if( !isRowAlarmed() )
-		{
-			getAlarmPanel().setVisible( false );
-		}
-		else
-		{
-			getAlarmPanel().setSignal( getSignal() );
-		}
+		getAlarmPanel().setVisible( isRowAlarmed() );
 	}
 }
 /**
@@ -357,9 +358,9 @@ public void JButtonSendAction_actionPerformed(java.util.EventObject newEvent)
 			pt.setTime( new java.util.Date() );
 			pt.setType( getEditorData().getPointType() );
 			pt.setValue( Double.parseDouble( getJTextFieldValue().getText() ) );
-			pt.setQuality( com.cannontech.database.data.point.PointQualities.MANUAL_QUALITY );		
-			pt.setStr("Manual change occured from " + com.cannontech.common.util.CtiUtilities.getUserName() + " using TDC");
-			pt.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
+			pt.setQuality( PointQualities.MANUAL_QUALITY );		
+			pt.setStr("Manual change occured from " + CtiUtilities.getUserName() + " using TDC");
+			pt.setUserName( CtiUtilities.getUserName() );
 
 			// now send the point data	
 			SendData.getInstance().sendPointData( pt );
@@ -393,7 +394,7 @@ public void update( java.util.Observable originator, Object newValue )
 		{
 			getJTextFieldValue().setText( value.getValue() );
 			
-			getAlarmPanel().setVisible( value.isAlarming() );
+			//getAlarmPanel().setVisible( value.isAlarming() );
 
 			this.revalidate();
 			this.repaint();

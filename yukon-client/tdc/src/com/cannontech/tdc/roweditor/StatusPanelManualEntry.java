@@ -5,9 +5,10 @@ package com.cannontech.tdc.roweditor;
  * Creation date: (3/8/00 11:45:00 AM)
  * @author: 
  */
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.tdc.TDCMainFrame;
+import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 
 public class StatusPanelManualEntry extends ManualEntryJPanel implements RowEditorDialogListener, java.util.Observer 
@@ -28,9 +29,9 @@ private StatusPanelManualEntry() {
 /**
  * EditDataPanel constructor comment.
  */
-public StatusPanelManualEntry( EditorDialogData data, com.cannontech.tdc.ObservableRow obsValue, Object currentValue, Signal signalData ) 
+public StatusPanelManualEntry( EditorDialogData data, com.cannontech.tdc.ObservableRow obsValue, Object currentValue, AlarmingRow alarmRow_ ) 
 {
-	super( data, obsValue, currentValue, signalData );
+	super( data, obsValue, currentValue, alarmRow_ );
 
 	if( data.getPointType() != com.cannontech.database.data.point.PointTypes.STATUS_POINT )
 		throw new IllegalArgumentException(
@@ -207,8 +208,8 @@ public String getPanelTitle()
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION StatusPanel() ---------");
-	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	CTILogger.info("--------- UNCAUGHT EXCEPTION StatusPanel() ---------");
+	CTILogger.error( exception.getMessage(), exception );;
 
 	TDCMainFrame.messageLog.addMessage(exception.toString() + " in : " + this.getClass(), MessageBoxFrame.ERROR_MSG );
 }
@@ -218,19 +219,11 @@ private void handleException(java.lang.Throwable exception) {
  */
 private void initData() 
 {
-
 	getJLabelPointDeviceName().setText( getEditorData().getDeviceName().toString() + " / " + getEditorData().getPointName() );
 
 	synchronized( getAlarmPanel() )
-	{
-		if( !isRowAlarmed() )
-		{
-			getAlarmPanel().setVisible( false );
-		}
-		else
-		{
-			getAlarmPanel().setSignal( getSignal() );
-		}
+	{		
+		getAlarmPanel().setVisible( isRowAlarmed() );
 	}
 
 	
@@ -362,7 +355,7 @@ public void update( java.util.Observable originator, Object newValue )
 		{
 			getJComboBoxValues().setSelectedItem( value.getValue() );
 
-			getAlarmPanel().setVisible( value.isAlarming() );
+			//getAlarmPanel().setVisible( value.isAlarming() );
 
 			this.revalidate();
 			this.repaint();

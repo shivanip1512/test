@@ -1531,7 +1531,8 @@ private void handleAlarm(Signal signal)
 			else if( !Display.isHistoryDisplay(getCurrentDisplay().getDisplayNumber()) )
 			{
 				int rNum = getRowNumber(signal.getPointID());
-				getPointValue(rNum).updateSignal( signal );
+				if( rNum >= 0 )
+					getPointValue(rNum).updateSignal( signal );
 				
 				setRowAlarmed( signal );
 			}
@@ -2622,9 +2623,13 @@ private int setRowUnalarmed( Signal signal_, Integer rowNum_ )
 		
 		rowNum_ = new Integer(rNum);
 	}
-	
-	getPointValue( rowNum_.intValue() ).removeSignal( signal_ );
 
+	//strange, we are unable to find the row at this time
+	if( rowNum_.intValue() < 0 )
+		return rowNum_.intValue();
+
+	getPointValue( rowNum_.intValue() ).removeSignal( signal_ );
+	
 	synchronized ( getAlarmingRowVector() )
 	{
 		if( getAlarmingRowVector().contains(rowNum_) )

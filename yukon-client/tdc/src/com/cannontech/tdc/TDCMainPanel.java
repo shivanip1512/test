@@ -28,6 +28,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.graph.Graph;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendModelType;
@@ -80,7 +81,6 @@ public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.t
 	
 	private javax.swing.JOptionPane closeBox = null;
 	private Display2WayDataAdapter dbAdaptor = null;
-	private Clock ticker = null;
 	public boolean connectedToDB = false;
 	private javax.swing.JComboBox ivjJComboCurrentDisplay = null;
 	private javax.swing.JLabel ivjJLabelDate = null;
@@ -540,10 +540,10 @@ private ManualEntryJPanel createManualEditorPanel(int selectedRow, Object source
 		EditorDialogData data = new EditorDialogData( pt, pt.getAllText() );
 
 			
-		if( com.cannontech.database.data.point.PointTypes.getType(ptType) == com.cannontech.database.data.point.PointTypes.ANALOG_POINT ||
-			 com.cannontech.database.data.point.PointTypes.getType(ptType) == com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT ||
-			 com.cannontech.database.data.point.PointTypes.getType(ptType) == com.cannontech.database.data.point.PointTypes.DEMAND_ACCUMULATOR_POINT ||
-			 com.cannontech.database.data.point.PointTypes.getType(ptType) == com.cannontech.database.data.point.PointTypes.CALCULATED_POINT )
+		if( PointTypes.getType(ptType) == PointTypes.ANALOG_POINT ||
+			 PointTypes.getType(ptType) == PointTypes.PULSE_ACCUMULATOR_POINT ||
+			 PointTypes.getType(ptType) == PointTypes.DEMAND_ACCUMULATOR_POINT ||
+			 PointTypes.getType(ptType) == PointTypes.CALCULATED_POINT )
 		{
 			tableModel.setObservedRow( tableModel.getRowNumber( new Long(pt.getPointID()).longValue() ) );
 
@@ -551,14 +551,13 @@ private ManualEntryJPanel createManualEditorPanel(int selectedRow, Object source
 //				return new AnalogPanel( data, 
 //										tableModel.getObservedRow(), 
 //										currentValue, 
-//										tableModel.getAlarmingRowVector().getAlarmingRow(selectedRow).getSignal() );
+//										tableModel.getAlarmingRowVector().getAlarmingRow(selectedRow) );
 //			else
 				return new AnalogPanel( data, 
 										tableModel.getObservedRow(), 
 										currentValue);
-
 		}
-		else if( com.cannontech.database.data.point.PointTypes.getType(ptType) == com.cannontech.database.data.point.PointTypes.STATUS_POINT
+		else if( PointTypes.getType(ptType) == PointTypes.STATUS_POINT
 					&& ( TagUtils.isControllablePoint(data.getTags()) && TagUtils.isControlEnabled(data.getTags()) )
 					&& source != getJMenuItemPopUpManualEntry() )
 		{			
@@ -568,7 +567,7 @@ private ManualEntryJPanel createManualEditorPanel(int selectedRow, Object source
 									tableModel.getObservedRow(), 
 									currentValue);
 		}
-		else if( com.cannontech.database.data.point.PointTypes.getType(ptType) == com.cannontech.database.data.point.PointTypes.STATUS_POINT )
+		else if( PointTypes.getType(ptType) == PointTypes.STATUS_POINT )
 		{			
 			tableModel.setObservedRow( tableModel.getRowNumber( new Long(pt.getPointID()).longValue() ) );
 
@@ -576,7 +575,7 @@ private ManualEntryJPanel createManualEditorPanel(int selectedRow, Object source
 //				return new StatusPanelManualEntry( data, 
 //										tableModel.getObservedRow(), 
 //										currentValue, 
-//										tableModel.getAlarmingRowVector().getAlarmingRow(selectedRow).getSignal() );
+//										tableModel.getAlarmingRowVector().getAlarmingRow(selectedRow) );
 //			else
 				return new StatusPanelManualEntry( data, 
 										tableModel.getObservedRow(), 
@@ -595,37 +594,6 @@ private ManualEntryJPanel createManualEditorPanel(int selectedRow, Object source
 }
 /**
  * Insert the method's description here.
- * Creation date: (5/4/00 1:31:46 PM)
- * Version: <version>
- * @return java.lang.String
- */
-private String createRawPointHistoryQuery( Date date ) 
-{
-	GregorianCalendar calendar = new GregorianCalendar();
-	calendar.setTime( date );
-
-	int day = calendar.get( calendar.DAY_OF_MONTH );	
-	String month = CommonUtils.format3CharMonth( calendar.get( calendar.MONTH ) );
-	int year = calendar.get( calendar.YEAR );
-	
-	String rowQuery = "select r.timestamp, y.PAOName, p.pointname, r.value, r.quality, r.pointid, " +
-					  " r.pointid " +  // this extra pointid column needs to be here
-					  " from rawpointhistory r, YukonPAObject y, point p " +
-					  " where r.pointid=p.pointid and y.PAObjectID=p.PAObjectID " +
-					  " and r.timestamp >= TO_DATE('00:00:00 " + month +
-					  "-" + day + 
-					  "-" + year + "', 'HH24:MI:SS MM-DD-YYYY')" +
-					  " and r.timestamp < TO_DATE('23:59:59 " + month +
-					  "-" + day + 
-					  "-" + year + "', 'HH24:MI:SS MM-DD-YYYY')" +
-		 			  " order by r.changeid desc";
-
-//	currentRowQuery = rowQuery;
-	
-	return rowQuery;
-}
-/**
- * Insert the method's description here.
  * Creation date: (2/10/00 1:49:00 PM)
  * @param currentDisplayNumber int
  */
@@ -640,14 +608,6 @@ private void deleteBlankColumnsFromDB(int currentDisplayNumber)
 	objs[0] = new Long(currentDisplayNumber);
 	objs[1] = new Long(TDCDefines.ROW_BREAK_ID);
 	DataBaseInteraction.updateDataBase( query, objs );
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/13/00 1:49:44 PM)
- */
-public void destroyClockThread() 
-{
-	ticker.interruptClockThread();
 }
 /**
  * Comment
@@ -694,7 +654,7 @@ public void executeDateChange( Date newDate )
 
 	try
 	{
-		if( Display.isTodaysDisplay(newDate) )
+		if( Display.isTodaysDate(newDate) )
 			 //&& !Display.isAlarmDisplay(getCurrentDisplay().getDisplayNumber()) )
 		{
 			//we are looking at today
@@ -2221,9 +2181,6 @@ private void initialize() {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
-	
-	ticker = new Clock( this );	
-
 	// user code end
 }
 /**
@@ -2327,7 +2284,7 @@ protected void initCoreDisplays()
 	// add in todays data
 	Date newDate = getPreviousDate();
 
-	if( Display.isTodaysDisplay(newDate) )
+	if( Display.isTodaysDate(newDate) )
 	{
 		//we are looking at today
 		setDisplayTitle( getCurrentDisplay().getName(), null );
@@ -3726,7 +3683,7 @@ public void setUpTable()
 		
 		try
 		{
-			setMiddlePanelVisible( true );			
+			setMiddlePanelVisible( true );
 
 			resetMainPanel();
 			

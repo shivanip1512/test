@@ -72,7 +72,7 @@ public static synchronized boolean isReadOnlyDisplay( long displayNum )
 		|| displayNum == Display.RAW_POINT_HISTORY_VIEWER_DISPLAY_NUMBER;
 }
 
-public static synchronized boolean isTodaysDisplay( Date date_ )
+public static synchronized boolean isTodaysDate( Date date_ )
 {
 	GregorianCalendar newCal = new GregorianCalendar();
 	GregorianCalendar todayCal = new GregorianCalendar();
