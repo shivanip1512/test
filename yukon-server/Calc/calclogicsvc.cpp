@@ -88,85 +88,93 @@ void CtiCalcLogicService::DeInit( )
 
 void CtiCalcLogicService::Init( )
 {
-    //defaults
-    RWCString logFile = RWCString("calc");
-    _dispatchMachine = RWCString("127.0.0.1");
-    _dispatchPort = VANGOGHNEXUS;
-    _CALC_DEBUG = FALSE;
-    //defaults
-
-    RWCString str;
-    char var[128];
-
-    dout.start();     // fire up the logger thread
-    dout.setOutputPath(gLogDirectory.data());
-    dout.setToStdOut(true);
-    dout.setWriteInterval(1);
-
-    strcpy(var, "CALC_LOGIC_LOG_FILE");
-    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    try
     {
-        dout.setOutputFile(str.data());
-        if( _CALC_DEBUG )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - " << var << ":  " << str << endl;
-        }
-    }
-    else
-    {
-        dout.setOutputFile(logFile.data());
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-    }
+        //defaults
+        RWCString logFile = RWCString("calc");
+        _dispatchMachine = RWCString("127.0.0.1");
+        _dispatchPort = VANGOGHNEXUS;
+        _CALC_DEBUG = FALSE;
+        //defaults
     
-    strcpy(var, "DISPATCH_MACHINE");
-    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
-    {
-        _dispatchMachine = str;
-        if( _CALC_DEBUG )
+        RWCString str;
+        char var[128];
+    
+        dout.start();     // fire up the logger thread
+        dout.setOutputPath(gLogDirectory.data());
+        dout.setToStdOut(true);
+        dout.setWriteInterval(1);
+    
+        strcpy(var, "CALC_LOGIC_LOG_FILE");
+        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+        {
+            dout.setOutputFile(str.data());
+            if( _CALC_DEBUG )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            dout.setOutputFile(logFile.data());
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+        
+        strcpy(var, "DISPATCH_MACHINE");
+        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+        {
+            _dispatchMachine = str;
+            if( _CALC_DEBUG )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - " << var << ":  " << str << endl;
+            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-    }
-
-    strcpy(var, "DISPATCH_PORT");
-    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
-    {
-        _dispatchPort = atoi(str);
-        if( _CALC_DEBUG )
+    
+        strcpy(var, "DISPATCH_PORT");
+        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+        {
+            _dispatchPort = atoi(str);
+            if( _CALC_DEBUG )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - " << var << ":  " << str << endl;
+            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-    }
-
-    strcpy(var, "CALC_LOGIC_DEBUG");
-    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
-    {
-        str.toLower();
-        _CALC_DEBUG = (str=="true"?TRUE:FALSE);
-        if( _CALC_DEBUG )
+    
+        strcpy(var, "CALC_LOGIC_DEBUG");
+        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+        {
+            str.toLower();
+            _CALC_DEBUG = (str=="true"?TRUE:FALSE);
+            if( _CALC_DEBUG )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - " << var << ":  " << str << endl;
+            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
     }
-    else
+    catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     /*char temp[180];
@@ -427,6 +435,11 @@ void CtiCalcLogicService::Run( )
         dout << "Exception in Calc and Logic: ";
         dout << msg.why() << endl;
     }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 
    // stop dout thread
    dout.interrupt(CtiThread::SHUTDOWN);
@@ -475,169 +488,185 @@ void CtiCalcLogicService::_outputThread( void )
 
 void CtiCalcLogicService::_inputThread( void )
 {
-    RWRunnableSelf  _pSelf = rwRunnable( );
-    RWCollectable   *incomingMsg;
-//    time_t          time_start, time_finish;
-    BOOL            interrupted = FALSE;
-    //int             numPDataVals;
-
-    while( !interrupted )
+    try
     {
-        //  while i'm not getting anything
-        while( NULL == (incomingMsg = _conxion->ReadConnQue( 200 )) && !interrupted )
+        RWRunnableSelf  _pSelf = rwRunnable( );
+        RWCollectable   *incomingMsg;
+    //    time_t          time_start, time_finish;
+        BOOL            interrupted = FALSE;
+        //int             numPDataVals;
+    
+        while( !interrupted )
         {
-            if( _pSelf.serviceInterrupt( ) )
-                interrupted = TRUE;
-            else
-                _pSelf.sleep( 200 );
+            //  while i'm not getting anything
+            while( NULL == (incomingMsg = _conxion->ReadConnQue( 200 )) && !interrupted )
+            {
+                if( _pSelf.serviceInterrupt( ) )
+                    interrupted = TRUE;
+                else
+                    _pSelf.sleep( 200 );
+            }
+    
+            //  dump out if we're being called
+            if( !interrupted )
+            {
+                /*{
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime( ) << " - message received - " << endl;
+                }*/
+    
+                //time_start = clock( );
+    
+                //  common variable, but this is the only place that writes to it, so i think it's okay.
+                parseMessage( incomingMsg, calcThread );
+                    //_dbChange = TRUE;
+    
+                //time_finish = clock( );
+    
+                //{
+                //    RWMutexLock::LockGuard coutGuard(coutMux);
+                //    cout << endl;
+                //    cout << "took " << (time_finish - time_start) << " ms to post " << numPDataVals << " messages" << endl;
+                //}
+    
+                delete incomingMsg;   //  Make sure to delete this - its on the heap
+            }
         }
-
-        //  dump out if we're being called
-        if( !interrupted )
-        {
-            /*{
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime( ) << " - message received - " << endl;
-            }*/
-
-            //time_start = clock( );
-
-            //  common variable, but this is the only place that writes to it, so i think it's okay.
-            parseMessage( incomingMsg, calcThread );
-                //_dbChange = TRUE;
-
-            //time_finish = clock( );
-
-            //{
-            //    RWMutexLock::LockGuard coutGuard(coutMux);
-            //    cout << endl;
-            //    cout << "took " << (time_finish - time_start) << " ms to post " << numPDataVals << " messages" << endl;
-            //}
-
-            delete incomingMsg;   //  Make sure to delete this - its on the heap
-        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
 // return is not used at this time
 BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThread *calcThread )
 {
-    CtiMultiMsg *msgMulti;
-    CtiPointDataMsg *pData;
-    int x;
-    
     BOOL retval = TRUE;
 
-    switch( message->isA( ) )
+    try
     {
-        case MSG_DBCHANGE:
-            // only reload on if a database change was made to a point
-            if ( ((CtiDBChangeMsg*)message)->getDatabase() == ChangePointDb)
-            {
-                //((CtiDBChangeMsg*)message)->getId()
-                if ( ((CtiDBChangeMsg*)message)->getTypeOfChange() != ChangeTypeAdd)
+        CtiMultiMsg *msgMulti;
+        CtiPointDataMsg *pData;
+        int x;
+        
+        switch( message->isA( ) )
+        {
+            case MSG_DBCHANGE:
+                // only reload on if a database change was made to a point
+                if ( ((CtiDBChangeMsg*)message)->getDatabase() == ChangePointDb)
                 {
-
+                    //((CtiDBChangeMsg*)message)->getId()
+                    if ( ((CtiDBChangeMsg*)message)->getTypeOfChange() != ChangeTypeAdd)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime()  << " - Looking update DBChange PointID in Calc List..." << endl;
-                    }
-
-                    // Must have been a delete or update
-                    if (calcThread->isACalcPointID(((CtiDBChangeMsg*)message)->getId()) == TRUE)
-                    {
-                        _dbChange = TRUE;
-
+    
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime()  << " - Database change on loaded calc.  Setting reload flag." << endl;
+                            dout << RWTime()  << " - Looking update DBChange PointID in Calc List..." << endl;
                         }
-
+    
+                        // Must have been a delete or update
+                        if (calcThread->isACalcPointID(((CtiDBChangeMsg*)message)->getId()) == TRUE)
+                        {
+                            _dbChange = TRUE;
+    
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime()  << " - Database change on loaded calc.  Setting reload flag." << endl;
+                            }
+    
+                        }
+                    }
+                    else
+                    {
+                        // always load when a point is added
+                        _dbChange = TRUE;
+    
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime()  << " - Database change- Point Added.  Setting reload flag." << endl;
+                        }
                     }
                 }
-                else
+    
+                break;
+    
+            case MSG_COMMAND:
+                // we will handle some messages
+                switch( ((CtiCommandMsg*)message)->getOperation())
                 {
-                    // always load when a point is added
-                    _dbChange = TRUE;
-
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime()  << " - Database change- Point Added.  Setting reload flag." << endl;
-                    }
+                    case (CtiCommandMsg::Shutdown):
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " CalcLogic received a shutdown message from somewhere- Ignoring!!" << endl;
+                        }
+                        break;
+    
+                    case (CtiCommandMsg::AreYouThere):
+                        // echo back the same message - we are here
+                        _conxion->WriteConnQue( new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15) );
+    
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " CalcLogic has been pinged" << endl;
+                        }
+                        break;
+    
+                    default:
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " CalcLogic received a unknown/don't care Command message- " << endl;
+                        }
+                        break;
+    
                 }
-            }
-
-            break;
-
-        case MSG_COMMAND:
-            // we will handle some messages
-            switch( ((CtiCommandMsg*)message)->getOperation())
-            {
-                case (CtiCommandMsg::Shutdown):
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " CalcLogic received a shutdown message from somewhere- Ignoring!!" << endl;
-                    }
-                    break;
-
-                case (CtiCommandMsg::AreYouThere):
-                    // echo back the same message - we are here
-                    _conxion->WriteConnQue( new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15) );
-
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " CalcLogic has been pinged" << endl;
-                    }
-                    break;
-
-                default:
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " CalcLogic received a unknown/don't care Command message- " << endl;
-                    }
-                    break;
-
-            }
-            break;
-
-        case MSG_POINTDATA:
-            {
-                pData = (CtiPointDataMsg *)message;
-                calcThread->pointChange( pData->getId(), pData->getValue(), pData->getTime(), pData->getQuality(), pData->getTags() );
-            }
-            break;
-
-        case MSG_MULTI:
-            // pull all of the messages out
-            msgMulti = (CtiMultiMsg *)message;
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime()  << "  Processing Multi Message with: " << msgMulti->getData( ).entries( ) << " messages -  " << endl;
-            }
-
-            for( x = 0; x < msgMulti->getData( ).entries( ); x++ )
-            {
-                // recursive call to parse this message
-                parseMessage( msgMulti->getData( )[x], calcThread );
-            }
-            break;
-
-        case MSG_SIGNAL:
-            // not an error
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime( ) << " - Signal Message received for point id: " << ((CtiSignalMsg*)message)->getId() << endl;
-            }
-            break;
-
-        default:
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime( ) << " - " << __FILE__ << " (" << __LINE__ << ") Calc_Logic does not know how to handle messages of type \"" << message->stringID( ) << "\";  skipping" << endl;
-            }
+                break;
+    
+            case MSG_POINTDATA:
+                {
+                    pData = (CtiPointDataMsg *)message;
+                    calcThread->pointChange( pData->getId(), pData->getValue(), pData->getTime(), pData->getQuality(), pData->getTags() );
+                }
+                break;
+    
+            case MSG_MULTI:
+                // pull all of the messages out
+                msgMulti = (CtiMultiMsg *)message;
+    
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime()  << "  Processing Multi Message with: " << msgMulti->getData( ).entries( ) << " messages -  " << endl;
+                }
+    
+                for( x = 0; x < msgMulti->getData( ).entries( ); x++ )
+                {
+                    // recursive call to parse this message
+                    parseMessage( msgMulti->getData( )[x], calcThread );
+                }
+                break;
+    
+            case MSG_SIGNAL:
+                // not an error
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime( ) << " - Signal Message received for point id: " << ((CtiSignalMsg*)message)->getId() << endl;
+                }
+                break;
+    
+            default:
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime( ) << " - " << __FILE__ << " (" << __LINE__ << ") Calc_Logic does not know how to handle messages of type \"" << message->stringID( ) << "\";  skipping" << endl;
+                }
+        }
     }
-
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+    
     return retval;
 }
 
@@ -759,6 +788,11 @@ void CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Exception while reading calc points from database: " << msg.why( ) << endl;
         exit( -1 );
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
