@@ -11,6 +11,10 @@
 			appNo = Integer.parseInt(appNoStr);
 		}
 		catch (NumberFormatException e) {}
+	if (appNo == -1)	// Show the latest created/updated appliance
+		Integer latestAppNo = (Integer) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "LATEST_APP_NO");
+		if (latestAppNo != null) appNo = latestAppNo.intValue();
+	}
 	if (appNo < 0 || appNo >= appliances.getStarsApplianceCount())
 		appNo = 0;
 		
@@ -188,7 +192,7 @@
 					  <input type="hidden" name="action" value="GetLMCtrlHist">
 					  <input type="hidden" name="Group" value="<%= program.getGroupID() %>">
 					  <input type="hidden" name="REDIRECT" value="/OperatorDemos/Consumer/ContHist.jsp?prog=<%= progNo %>">
-					  <input type="hidden" name="REFERRER" value="Appliance.jsp?AppNo=<%= appNoStr %>">
+					  <input type="hidden" name="REFERRER" value="Appliance.jsp?AppNo=<%= appNo %>">
                       <table width="250" border="1" cellspacing="0" cellpadding="3" align="center">
                         <tr> 
                           <td width="109" class="HeaderCell"> 

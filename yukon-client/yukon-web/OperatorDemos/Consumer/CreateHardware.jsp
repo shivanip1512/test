@@ -88,12 +88,6 @@
                                   <div align="right">Serial #: </div>
                                 </td>
                                 <td width="200"> 
-                                  <!--
-                                <select name="select">
-                                  <option>12345</option>
-                                  <option>67890</option>
-                                </select>
--->
                                   <input type="text" name="SerialNo" maxlength="30" size="24" value="">
                                 </td>
                               </tr>

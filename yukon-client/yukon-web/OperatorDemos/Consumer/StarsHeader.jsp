@@ -32,6 +32,7 @@
 	StarsAppliances appliances = null;
 	StarsInventories inventories = null;
 	StarsLMPrograms programs = null;
+	StarsServiceCompanies companies = null;
 	StarsCallReportHistory callHist = null;
 	StarsServiceRequestHistory serviceHist = null;
 	StarsGetEnrollmentProgramsResponse categories = null;
@@ -47,6 +48,7 @@
 		appliances = accountInfo.getStarsAppliances();
 		inventories = accountInfo.getStarsInventories();
 		programs = accountInfo.getStarsLMPrograms();
+		companies = accountInfo.getStarsServiceCompanies();
 		callHist = accountInfo.getStarsCallReportHistory();
 		serviceHist = accountInfo.getStarsServiceRequestHistory();
 		categories = (StarsGetEnrollmentProgramsResponse) operator.getAttribute( "ENROLLMENT_PROGRAMS" );

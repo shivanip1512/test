@@ -11,11 +11,16 @@
 			invNo = Integer.parseInt(invNoStr);
 		}
 		catch (NumberFormatException e) {}
+	if (invNo == -1) {	// Show the latest created/updated hardware
+		Integer latestInvNo = (Integer) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "LATEST_INV_NO");
+		if (latestInvNo != null) invNo = latestInvNo.intValue();
+	}
 	if (invNo < 0 || invNo >= inventories.getStarsLMHardwareCount())
 		invNo = 0;
 
 	StarsLMHardware hardware = inventories.getStarsLMHardware(invNo);
 	ArrayList appList = new ArrayList();
+	StarsServiceCompany company = null;
 	
 	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
 		StarsAppliance app = appliances.getStarsAppliance(i);
@@ -25,6 +30,14 @@
 	
 	StarsAppliance[] starsApps = new StarsAppliance[ appList.size() ];
 	appList.toArray( starsApps );
+	
+	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
+		StarsServiceCompany comp = companies.getStarsServiceCompany(i);
+		if (comp.getCompanyID() == hardware.getInstallationCompany().getEntryID()) {
+			company = comp;
+			break;
+		}
+	}
 %>
 
 <html>
@@ -89,93 +102,96 @@ function sendCommand(cmd) {
           </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center"><% String header = "HARDWARE"; %><%@ include file="InfoSearchBar.jsp" %>
-             </div>
-            <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
-              <tr> 
-                <td width="300" valign="top" bgcolor="#FFFFFF"> 
-                  <table width="300" border="0" cellspacing="0" cellpadding="0">
-                    <tr> 
-                      <form name="form1" method="get" action="">
-                        <td valign="top"><span class="MainHeader"><b>DEVICE</b></span> 
-                          <hr>
-                          <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                            <tr> 
-                              <td width="100" class="TableCell"> 
-                                <div align="right">Type: </div>
-                              </td>
-                              <td width="200"> 
-                                <input type="text" name="DeviceType" size="24" maxlength="30" value="<%= hardware.getLMDeviceType().getContent() %>">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="100" class="TableCell"> 
-                                <div align="right">Serial #: </div>
-                              </td>
-                              <td width="200"> 
-                                <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= hardware.getManufactureSerialNumber() %>">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="100" class="TableCell"> 
-                                <div align="right">Alt Tracking #: </div>
-                              </td>
-                              <td width="200"> 
-                                <input type="text" name="AltTrackNo" maxlength="30" size="24" value="<%= hardware.getAltTrackingNumber() %>">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="100" class="TableCell"> 
-                                <div align="right">Receive Date: </div>
-                              </td>
-                              <td width="200"> 
-                                <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= ServletUtils.getDateFormat(hardware.getReceiveDate(), datePart) %>">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="100" class="TableCell"> 
-                                <div align="right">Remove Date: </div>
-                              </td>
-                              <td width="200"> 
-                                <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= ServletUtils.getDateFormat(hardware.getRemoveDate(), datePart) %>">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="100" class="TableCell"> 
-                                <div align="right">Voltage: </div>
-                              </td>
-                              <td width="200"> 
-                                <input type="text" name="Voltage" maxlength="30" size="24" value="<%= hardware.getVoltage().getContent() %>">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="100" class="TableCell"> 
-                                <div align="right">Status: </div>
-                              </td>
-                              <td width="200"> 
-                                <select name="Status">
-                              <%
+            <div align="center">
+              <% String header = "HARDWARE"; %>
+              <%@ include file="InfoSearchBar.jsp" %>
+			  <form name="invForm" method="POST" action="/servlet/SOAPClient">
+                <input type="hidden" name="action" value="UpdateLMHardware">
+                <input type="hidden" name="InvID" value="<%= hardware.getInventoryID() %>">
+                <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
+                <tr> 
+                  <td width="300" valign="top" bgcolor="#FFFFFF" height="319"> 
+                    <table width="300" border="0" cellspacing="0" cellpadding="0">
+                      <tr> 
+                          <td valign="top"><span class="MainHeader"><b>DEVICE</b></span> 
+                            <hr>
+                            <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
+                              <tr> 
+                                <td width="100" class="TableCell"> 
+                                  <div align="right">Type: </div>
+                                </td>
+                                <td width="200"> 
+                                  <input type="text" name="DeviceType" size="24" maxlength="30" value="<%= hardware.getLMDeviceType().getContent() %>">
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="100" class="TableCell"> 
+                                  <div align="right">Serial #: </div>
+                                </td>
+                                <td width="200"> 
+                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= hardware.getManufactureSerialNumber() %>">
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="100" class="TableCell"> 
+                                  <div align="right">Alt Tracking #: </div>
+                                </td>
+                                <td width="200"> 
+                                  <input type="text" name="AltTrackNo" maxlength="30" size="24" value="<%= hardware.getAltTrackingNumber() %>">
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="100" class="TableCell"> 
+                                  <div align="right">Receive Date: </div>
+                                </td>
+                                <td width="200"> 
+                                  <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= ServletUtils.getDateFormat(hardware.getReceiveDate(), datePart) %>">
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="100" class="TableCell"> 
+                                  <div align="right">Remove Date: </div>
+                                </td>
+                                <td width="200"> 
+                                  <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= ServletUtils.getDateFormat(hardware.getRemoveDate(), datePart) %>">
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="100" class="TableCell"> 
+                                  <div align="right">Voltage: </div>
+                                </td>
+                                <td width="200"> 
+                                  <input type="text" name="Voltage" maxlength="30" size="24" value="<%= hardware.getVoltage().getContent() %>">
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="100" class="TableCell"> 
+                                  <div align="right">Status: </div>
+                                </td>
+                                <td width="200"> 
+                                  <select name="Status">
+                                    <%
 	StarsCustSelectionList statusList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS );
 	for (int i = 0; i < statusList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = statusList.getStarsSelectionListEntry(i);
 		String selectedStr = (entry.getEntryID() == hardware.getDeviceStatus().getEntryID()) ? "selected" : "";
 %>
-                              		<option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
-                              <%
+                                    <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
+                                    <%
 	}
 %>
-                                </select>
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="100" class="TableCell"> 
-                                <div align="right">Notes: </div>
-                              </td>
-                              <td width="200"> 
-                                <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= hardware.getNotes() %></textarea>
-                              </td>
-                            </tr>
-<!--
+                                  </select>
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="100" class="TableCell"> 
+                                  <div align="right">Notes: </div>
+                                </td>
+                                <td width="200"> 
+                                  <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= hardware.getNotes() %></textarea>
+                                </td>
+                              </tr>
+                              <!--
                             <tr>
                               <td width="100" class="TableCell">&nbsp;</td>
                               <td width="200">
@@ -183,19 +199,102 @@ function sendCommand(cmd) {
                               </td>
                             </tr>
 -->
-                          </table>
-                        </td>
-                      </form>
-                    </tr>
-                  </table><br>
-                  <table width="305" border="0" cellspacing="0" cellpadding="0" height="114">
+                            </table>
+                          </td>
+                      </tr>
+                    </table>
+                    
+                  </td>
+                  <td width="300" valign="top" bgcolor="#FFFFFF" height="319"> 
+                    <div align="center"> 
+                      <table width="300" border="0" cellspacing="0" cellpadding="0">
+                        <tr> 
+                            <td valign="top"><span class="MainHeader"><b>INSTALL</b></span> 
+                              <hr>
+                              <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
+                                <tr> 
+                                  <td width="100" class="TableCell"> 
+                                    <div align="right">Date Installed: </div>
+                                  </td>
+                                  <td width="200"> 
+                                    <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= ServletUtils.getDateFormat(hardware.getInstallDate(), datePart) %>">
+                                  </td>
+                                </tr>
+                                <tr> 
+                                  <td width="100" class="TableCell"> 
+                                    <div align="right">Service Company: </div>
+                                  </td>
+                                  <td width="200"> 
+                                    <select name="ServiceCompany">
+                              <%
+	StarsCustSelectionList serviceCompanyList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY );
+	for (int i = 0; i < serviceCompanyList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = serviceCompanyList.getStarsSelectionListEntry(i);
+		String selectedStr = (entry.getEntryID() == hardware.getInstallationCompany().getEntryID())? "selected" : "";
+%>
+                              		  <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
+                              <%
+	}
+%>
+                                    </select>
+                                  </td>
+                                </tr>
+                                <tr> 
+                                  <td width="100" class="TableCell"> 
+                                    <div align="right">Location: </div>
+                                  </td>
+                                  <td width="200"> 
+                                    <select name="Location">
+                                      <option>Outside North</option>
+                                    </select>
+                                  </td>
+                                </tr>
+                                <tr> 
+                                  <td width="100" class="TableCell"> 
+                                    <div align="right">Notes: </div>
+                                  </td>
+                                  <td width="200"> 
+                                    <textarea name="InstallNotes" rows="3 wrap="soft" cols="28" class = "TableCell"><%= hardware.getInstallationNotes() %></textarea>
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                        </tr>
+                      </table>
+                      <br>
+                      <table width="100%" border="0" height="68" >
+                        <tr > 
+                          <td class = "TableCell" align = "center">Service Company<br>
+                            <table width="250" border="1" height="86" cellpadding="10" cellspacing = "0">
+                              <tr> 
+                                <td valign = "top" align = "center" class = "TableCell"> 
+                                  <b><%= company.getCompanyName() %><br>
+                                  <%= company.getCompanyAddress().getStreetAddr1() %><br>
+								  <% if (company.getCompanyAddress().getStreetAddr2().length() > 0) out.write(company.getCompanyAddress().getStreetAddr2() + "<br>"); %>
+                                  <%= company.getCompanyAddress().getCity() %>, <%= company.getCompanyAddress().getState() %> <%= company.getCompanyAddress().getZip() %><br>
+                                  <%= company.getMainPhoneNumber() %></b> </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                      
+                    </div>
+                  </td>
+                </tr>
+              </table>
+			</form>
+            <table width="610" border="0" cellspacing="0" cellpadding="10" align="center" height="66">
+              <tr> 
+                <td width="300" valign="top" bgcolor="#FFFFFF" height="65"> 
+                  <table width="300" border="0" cellspacing="0" cellpadding="0" height="65">
                     <tr> 
                       <form name="ctrlForm" method="POST" action="/servlet/SOAPClient">
 					    <input type="hidden" name="action" value="">
-						<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() + "?InvNo=" + invNoStr %>">
-						<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() + "?InvNo=" + invNoStr %>">
+						<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() + "?InvNo=" + invNo %>">
+						<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() + "?InvNo=" + invNo %>">
 						<input type="hidden" name="InvID" value="<%= hardware.getInventoryID() %>">
-                        <td valign="top" align = "center"> 
+                        <td valign="top" align = "center" height="33"> 
                           <table width="46%" border="0" height="26" cellpadding = "3" cellspacing = "0">
                             <tr>
                               <td>
@@ -215,81 +314,16 @@ function sendCommand(cmd) {
                               </td>
                             </tr>
                           </table>
-                          <br>
-                          <p>&nbsp;</p>
-                          <p>&nbsp;</p>
+                          
                         </td>
                       </form>
                     </tr>
                   </table>
-                  <br>
+                  
                 </td>
-                <td width="300" valign="top" bgcolor="#FFFFFF"> 
+                <td width="300" valign="top" bgcolor="#FFFFFF" height="65"> 
                   <div align="center">
-                    <table width="300" border="0" cellspacing="0" cellpadding="0">
-                      <tr> 
-                        <form name="form3" method="get" action="">
-                          <td valign="top"><span class="MainHeader"><b>INSTALL</b></span> 
-                            <hr>
-                            <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                              <tr> 
-                                <td width="100" class="TableCell"> 
-                                  <div align="right">Date Installed: </div>
-                                </td>
-                                <td width="200"> 
-                                  <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= ServletUtils.getDateFormat(hardware.getInstallDate(), datePart) %>">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="100" class="TableCell"> 
-                                  <div align="right">Service Company: </div>
-                                </td>
-                                <td width="200"> 
-                                  <select name="ServiceCompany">
-                                    <option><%= hardware.getInstallationCompany().getContent() %></option>
-                                  </select>
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="100" class="TableCell"> 
-                                  <div align="right">Location: </div>
-                                </td>
-                                <td width="200"> 
-                                  <select name="Location">
-                                    <option>Outside North</option>
-                                  </select>
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="100" class="TableCell"> 
-                                  <div align="right">Notes: </div>
-                                </td>
-                                <td width="200"> 
-                                  <textarea name="InstallNotes" rows="3 wrap="soft" cols="28" class = "TableCell"><%= hardware.getInstallationNotes() %></textarea>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </form>
-                      </tr>
-                    </table><br>
-                    <table width="100%" border="0" height="68" >
-                      <tr > 
-                        <td class = "TableCell" align = "center">Service Company<br>
-                          <table width="250" border="1" height="86" cellpadding="10" cellspacing = "0">
-                            <tr>
-                              <td valign = "top" align = "center" class = "TableCell">
-                                <b>XYZ Company<br>12345 W Main Street<br>
-                                Golden Valley, MN 55427<br>	1-800-000-0000</b>
-							</td>
-                            </tr>
-                          </table>
-                        </td>
-                      </tr>
-                    </table>
-                    <br>
-                    
-                    <table width="305" border="0" cellspacing="0" cellpadding="0">
+<table width="305" border="0" cellspacing="0" cellpadding="0">
                       <tr> 
                         <form name="form3" method="get" action="">
                           <td valign="top" align = "center" class = "TableCell"> 
@@ -321,25 +355,22 @@ function sendCommand(cmd) {
                 </td>
               </tr>
             </table>
+            </div>
             <table width="400" border="0" cellspacing="0" cellpadding="3" align="center" bgcolor="#FFFFFF">
               <tr> 
-                <form name="form1" type="get" action="LCR5000.jsp">
                   <td width="42%"> 
                     <div align="right"> 
-                      <input type="submit" name="Submit2" value="Submit">
+                      <input type="button" name="Submit2" value="Submit" onclick="document.invForm.submit()">
                     </div>
                   </td>
                   <td width="15%" align = "center"> 
-                    <input type="reset" name="Cancel2" value="Cancel">
+                    <input type="button" name="Cancel2" value="Cancel" onclick="document.invForm.reset()">
                   </td>
-                </form>
-                <form name="form1">
                   <td width="43%"> 
                     <div align="left">
                       <input type="button" name="Submit" value="Delete" onclick = "Javascript:confirm('Are you sure you would like to delete this hardware?');">
                     </div>
                   </td>
-                </form>
               </tr>
             </table>
             <hr>
