@@ -1219,9 +1219,12 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
         switch( type )
         {
         case ProtocolVersacomType:              // For putconfig, we may not know who we are talking to.  Decode for both.
-        case ProtocolExpresscomType:
             {
                 doParsePutConfigVersacom(CmdStr);
+                break;
+            }
+        case ProtocolExpresscomType:
+            {
                 doParsePutConfigExpresscom(CmdStr);
                 break;
             }
