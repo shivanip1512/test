@@ -824,8 +824,19 @@ private void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObjec
 {
 	//only save the column data IF we have not done so already. Will happen when coming from
 	// fireBookMarkSelected()
+	CTILogger.info(" 		S1=" +
+	getCurrentDisplay().getDisplayData().getDisplayNumber()+" : " + 
+	getCurrentDisplay().getDisplayData().getProp0() );
+	
 	if( needColDataUpdate )
+	{
+		CTILogger.info(" 		   INIT");
 		updateDisplayColumnData();
+	}
+
+	CTILogger.info(" 		S2=" + 
+	getCurrentDisplay().getDisplayData().getDisplayNumber()+" : " + 
+	getCurrentDisplay().getDisplayData().getProp0() );
 
 	// only let events go through that are not special client related
 	if( getCurrentSpecailChild() != null )
@@ -848,6 +859,11 @@ private void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObjec
 				// set the current display to the one selected
 				if( getDisplayIndexByName(selectedDisplayName) >= 0 )
 					setCurrentDisplay( getAllDisplays()[ getDisplayIndexByName(selectedDisplayName) ] );
+
+CTILogger.info(" 		Sa=" + 
+getCurrentDisplay().getDisplayData().getDisplayNumber()+" : " + 
+getCurrentDisplay().getDisplayData().getProp0() );
+
 				
 				// set our last display to the last one we were looking at
 				if( getCurrentDisplay() != null )
@@ -864,7 +880,7 @@ private void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObjec
 				{  	
 					// we must have a CORE or a USER CREATED display
 					setUpTable();
-	
+
 					if( this.isDisplayable() )
 						checkForMissingPoints();
 						
@@ -882,10 +898,9 @@ private void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObjec
 		}
 	}
 	
-
 	//set our display with the last format
 	formatDisplayColumns();
-	
+
 	// tell the MAIN FRAME we just changed displays
 	if( !(newEvent.getSource() instanceof TDCMainFrame)
 		 && fieldTDCMainPanelListenerEventMulticaster != null)
@@ -1936,6 +1951,7 @@ public boolean initComboCurrentDisplay()
 {
 	writeAllDisplayColumnData();
 
+
 	// clear all the displays from memory
 	allDisplays = null;
 
@@ -2173,8 +2189,9 @@ private void initializeParameters()
 		if( Boolean.valueOf(pf.getParameterValue("Mute", "false")).booleanValue() )
 			parentFrame.alarmToolBar_JToolBarButtonMuteAlarmsAction_actionPerformed( null );
 
-		setStartUpDisplay( pf, parentFrame );
 
+		setStartUpDisplay( pf, parentFrame );
+		
 		//TDCMainFrame.messageLog.addMessage("Parameters file found and parsed successfully", MessageBoxFrame.INFORMATION_MSG );
 	}
 	catch( Exception e ) 
@@ -3540,8 +3557,6 @@ private void setStartUpDisplay( ParametersFile pf, TDCMainFrame parentFrame )
 {
 	if( getJComboCurrentDisplay().getItemCount() > 0 )
 	{
-		// this doesnt fire the event listener if the selectedIndex of the
-		// combo box is 0??  -- Taken care of below
 		if( parentFrame.startingDisplayName != null )
 		{
 			if( parentFrame.startingViewType != null )
@@ -3559,14 +3574,17 @@ private void setStartUpDisplay( ParametersFile pf, TDCMainFrame parentFrame )
 			for( int i = 0; i < getJComboCurrentDisplay().getItemCount(); i++ )
 				if( dispName.equalsIgnoreCase(getJComboCurrentDisplay().getItemAt(i).toString()) )
 				{
-					getJComboCurrentDisplay().setSelectedIndex(i);
+					//be sure we do NOT update the column data!!!
+					needColDataUpdate = false;
+					getJComboCurrentDisplay().setSelectedIndex(i);					
+					needColDataUpdate = true;
 					break;
 				}
 		}
 
-		// manually fire the event
-		if( getJComboCurrentDisplay().getSelectedIndex() == 0 )
-			fireJComboCurrentDisplayAction_actionPerformed( new java.util.EventObject( this ) );
+		// manually fire the event (no longer needed in JRE 1.4)
+//		if( getJComboCurrentDisplay().getSelectedIndex() == 0 )
+//			fireJComboCurrentDisplayAction_actionPerformed( new java.util.EventObject( this ) );
 
 		getParent().invalidate();
 		getParent().repaint();
