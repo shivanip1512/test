@@ -9,6 +9,7 @@
 		<project>common</project>
 		<project>loadcontrol</project>
 		<project>macs</project>
+		<project>report</project>
 		<project>tdc</project>
 		<project>trending</project>
 	</projects>
