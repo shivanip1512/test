@@ -5,6 +5,7 @@
 <jsp:useBean id="selectInvBean" class="com.cannontech.stars.web.InventoryBean" scope="session">
 	<%-- this body is executed only if the bean is created --%>
 	<jsp:setProperty name="selectInvBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
+	<jsp:setProperty name="inventoryBean" property="pageName" value="SelectInv.jsp"/>
 	<jsp:setProperty name="selectInvBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>"/>
 	<jsp:setProperty name="selectInvBean" property="htmlStyle" value="<%= InventoryBean.HTML_STYLE_SELECT_INVENTORY %>"/>
 </jsp:useBean>
@@ -17,10 +18,13 @@
 	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
 %>
 	
-<%-- intialize bean properties --%>
-<jsp:setProperty name="selectInvBean" property="filterBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION %>"/>
-<jsp:setProperty name="selectInvBean" property="location" value="<%= InventoryBean.INV_LOCATION_WAREHOUSE %>"/>
-<jsp:setProperty name="selectInvBean" property="page" value="1"/>
+<% if (request.getParameter("page") == null) { %>
+	<%-- intialize bean properties --%>
+	<jsp:setProperty name="selectInvBean" property="filterBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION %>"/>
+	<jsp:setProperty name="selectInvBean" property="location" value="<%= InventoryBean.INV_LOCATION_WAREHOUSE %>"/>
+	<jsp:setProperty name="selectInvBean" property="page" value="1"/>
+	<jsp:setProperty name="selectInvBean" property="referer" value="<%= referer %>"/>
+<% } %>
 
 <%-- Grab the search criteria --%>
 <jsp:setProperty name="selectInvBean" property="filterBy" param="FilterBy"/>
@@ -116,15 +120,8 @@ function submitIt(filterBy) {
                     </tr>
                 </table>
               </form>
-              <table width="80%" border="0" cellspacing="0" cellpadding="0">
-                <tr>
-                  <td>
-                    <hr>
-                  </td>
-                </tr>
-              </table>
               <%= selectInvBean.getHTML(request) %> 
-<!--              <form name='form1' method='post' action='<%= request.getContextPath() %>/servlet/InventoryManager'>
+              <!--              <form name='form1' method='post' action='<%= request.getContextPath() %>/servlet/InventoryManager'>
 			    <input type='hidden' name='action' value='SelectInventory'>
                 <table width='80%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>
                   <tr> 
@@ -147,7 +144,7 @@ function submitIt(filterBy) {
                           <td class='TableCell' width='17%'>LCR-5000</td>
                           <td class='TableCell' width='17%'>08/24/2003</td>
                           <td class='TableCell' width='49%'><a href='' onclick='selectAccount(7); return false;'>Acct 
-						    # 12345</a> (8301 Golden Valley Rd, Suite 300...)</td>
+						    # 12345</a> Robert Livingston, 8301 Golden Valley Rd, Suite 300...</td>
                         </tr>
                       </table>
                     </td>
