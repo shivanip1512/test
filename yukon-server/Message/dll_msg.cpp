@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:18 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/10/02 19:29:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,7 +31,6 @@
 #include "connection.h"
 
 #include "dllbase.h"
-#include "dll_msg.h"
 #include "utility.h"
 
 
