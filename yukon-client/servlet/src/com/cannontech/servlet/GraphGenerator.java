@@ -40,7 +40,10 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 
 		com.cannontech.graph.GraphBean localBean = (com.cannontech.graph.GraphBean)session.getAttribute("graphBean");
 		if(localBean == null)
+		{
 			System.out.println("!!! BEAN IS NULL !!! ");
+			session.setAttribute("graphBean", new com.cannontech.graph.GraphBean());
+		}
 			
 		localBean.updateCurrentPane();
 		javax.servlet.ServletOutputStream out = null;
@@ -58,7 +61,6 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 	}
 	catch( Throwable t )
 	{
-		
 		CTILogger.error("An exception was throw in GraphGenerator:  ", t);
 		t.printStackTrace();
 	}
