@@ -53,7 +53,8 @@ GroupID              numeric              not null,
 RouteID              numeric              not null,
 OperationalAddress   varchar(8)           not null,
 NominalTimeout       numeric              not null,
-VirtualTimeout       numeric              null
+MarkIndex            numeric              not null,
+SpaceIndex           numeric              not null
 );
 go
 alter table LMGroupSASimple
@@ -417,6 +418,9 @@ alter table LMProgramDirect drop column CanceledMsg;
 go
 alter table LMProgramDirect drop column StoppedEarlyMsg;
 go
+
+
+
 
 
 

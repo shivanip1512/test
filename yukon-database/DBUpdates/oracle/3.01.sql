@@ -46,7 +46,8 @@ create table LMGroupSASimple  (
    RouteID              NUMBER                           not null,
    OperationalAddress   VARCHAR2(8)                      not null,
    NominalTimeout       NUMBER                           not null,
-   VirtualTimeout       NUMBER
+   MarkIndex            NUMBER                           not null,
+   SpaceIndex           NUMBER                           not null
 );
 alter table LMGroupSASimple
    add constraint PK_LMGROUPSASIMPLE primary key (GroupID);

@@ -3970,7 +3970,8 @@ GroupID              numeric              not null,
 RouteID              numeric              not null,
 OperationalAddress   varchar(8)           not null,
 NominalTimeout       numeric              not null,
-VirtualTimeout       numeric              null
+MarkIndex            numeric              not null,
+SpaceIndex           numeric              not null
 )
 go
 
