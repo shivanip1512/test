@@ -8,8 +8,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/05/28 21:12:34 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/06/04 15:15:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1324,10 +1324,12 @@ _scanData(NULL)
 
     LockGuard guard(monitor());
 
+    #ifdef CTIOLDSTATS
     for(i = 0; i < StatTypeInvalid; i++)
     {
         _statistics[i] = NULL;
     }
+    #endif
 
     for(i = 0; i < ScanRateInvalid; i++)
     {
@@ -1347,10 +1349,12 @@ _scanData(NULL)
 
     LockGuard guard(monitor());
 
+    #ifdef CTIOLDSTATS
     for(i = 0; i < StatTypeInvalid; i++)
     {
         _statistics[i] = NULL;
     }
+    #endif
 
     for(i = 0; i < ScanRateInvalid; i++)
     {
@@ -1367,6 +1371,7 @@ CtiDeviceSingle::~CtiDeviceSingle()
 
     LockGuard guard(monitor());
 
+    #ifdef CTIOLDSTATS
     for(i = 0; i < StatTypeInvalid; i++)
     {
         if(_statistics[i] != NULL)
@@ -1375,6 +1380,7 @@ CtiDeviceSingle::~CtiDeviceSingle()
             _statistics[i] = NULL;
         }
     }
+    #endif
 
     for(i = 0; i < ScanRateInvalid; i++)
     {
@@ -1407,6 +1413,7 @@ CtiDeviceSingle::~CtiDeviceSingle()
 
 CtiDeviceSingle& CtiDeviceSingle::operator=(const CtiDeviceSingle& aRef)
 {
+    int i;
     if(this != &aRef)
     {
         Inherited::operator=(aRef);
@@ -1414,7 +1421,8 @@ CtiDeviceSingle& CtiDeviceSingle::operator=(const CtiDeviceSingle& aRef)
 
         _twoWay = aRef.getTwoWay();
 
-        for(int i = 0; i < StatTypeInvalid; i++)
+#ifdef CTIOLDSTATS
+        for(i = 0; i < StatTypeInvalid; i++)
         {
             if(aRef.isStatValid(i))
             {
@@ -1425,6 +1433,7 @@ CtiDeviceSingle& CtiDeviceSingle::operator=(const CtiDeviceSingle& aRef)
                     *_statistics[i] = aRef.getStatistics(i);
             }
         }
+#endif
         for(i = 0; i < ScanRateInvalid; i++)
         {
             if(aRef.isRateValid(i))
@@ -1468,6 +1477,7 @@ CtiDeviceSingle& CtiDeviceSingle::setTwoWay( const CtiTableDevice2Way & aTwoWay 
     return *this;
 }
 
+#ifdef CTIOLDSTATS
 BOOL CtiDeviceSingle::isStatValid(const INT stat) const
 {
     BOOL status = FALSE;
@@ -1502,6 +1512,7 @@ CtiDeviceSingle&  CtiDeviceSingle::setStatistics(const INT i, CtiTableDeviceStat
 
     return *this;
 }
+#endif
 
 BOOL CtiDeviceSingle::isRateValid(const INT i) const
 {
@@ -1763,6 +1774,8 @@ void CtiDeviceSingle::DecodeDatabaseReader(RWDBReader &rdr)
     _twoWay.DecodeDatabaseReader(rdr);
 }
 
+#ifdef CTIOLDSTATS
+
 void CtiDeviceSingle::DecodeStatisticsDatabaseReader(RWDBReader &rdr)
 {
     LockGuard guard(monitor());
@@ -1789,6 +1802,7 @@ void CtiDeviceSingle::DecodeStatisticsDatabaseReader(RWDBReader &rdr)
             _statistics[i]->DecodeDatabaseReader(rdr);
     }
 }
+#endif
 
 void CtiDeviceSingle::DecodeScanRateDatabaseReader(RWDBReader &rdr)
 {
@@ -1850,11 +1864,13 @@ void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(RWDBReader &rdr)
 
 void CtiDeviceSingle::DumpData()
 {
+    int i;
     Inherited::DumpData();
 
     LockGuard guard(monitor());
 
-    for(int i = 0; i < StatTypeInvalid; i++)
+    #ifdef CTIOLDSTATS
+    for(i = 0; i < StatTypeInvalid; i++)
     {
         if(_statistics[i])    // Make sure we got some.
         {
@@ -1865,6 +1881,8 @@ void CtiDeviceSingle::DumpData()
             _statistics[i]->DumpData();
         }
     }
+    #endif
+
     for(i = 0; i < ScanRateInvalid; i++)
     {
         if(_scanRateTbl[i])

@@ -373,6 +373,7 @@ void CtiPort::DecodeDatabaseReader(RWDBReader &rdr)
 
 CtiPort::~CtiPort()
 {
+#ifdef CTIOLDSTATS
     for(int i = 0; i < StatTypeInvalid; i++)
     {
         if( _portStatistics[i] != NULL )
@@ -381,6 +382,7 @@ CtiPort::~CtiPort()
             _portStatistics[i] = NULL;
         }
     }
+#endif
 
     if(_portQueue != NULL)
     {
@@ -424,10 +426,12 @@ _connectedDevice(0L),
 _lastBaudRate(0),
 _tapPort(FALSE)
 {
+#ifdef CTIOLDSTATS
     for(int i = 0; i < StatTypeInvalid; i++)
     {
         _portStatistics[i] = NULL;
     }
+#endif
 }
 
 CtiPort::CtiPort(const CtiPort& aRef)
@@ -450,10 +454,7 @@ CtiPort& CtiPort::operator=(const CtiPort& aRef)
             dout << " FINISH THIS " << endl;
         }
 
-        //CtiTablePortBase::operator=(aRef);
-        //CtiTablePortSettings::operator=(aRef);
-        //CtiTablePortTimings::operator=(aRef);
-
+#ifdef CTIOLDSTATS
         for(int i = 0; i < StatTypeInvalid; i++)
         {
             if(_portStatistics[i] == NULL)
@@ -462,6 +463,7 @@ CtiPort& CtiPort::operator=(const CtiPort& aRef)
             if(_portStatistics[i] != NULL)    // Make sure we got some.
                 *_portStatistics[i] = aRef.getPortStatistics(i);
         }
+#endif
     }
     return *this;
 }
@@ -504,6 +506,7 @@ CtiPort& CtiPort::setTAP(BOOL b)
     return *this;
 }
 
+#ifdef CTIOLDSTATS
 CtiTablePortStatistics  CtiPort::getPortStatistics(INT i) const      { return *_portStatistics[i];}
 CtiTablePortStatistics& CtiPort::getPortStatistics(INT i)            { return *_portStatistics[i];}
 
@@ -517,6 +520,7 @@ CtiPort& CtiPort::setPortStatistics(const CtiTablePortStatistics& ps, INT i)
 
     return *this;
 }
+#endif
 
 INT CtiPort::connectToDevice(CtiDevice *Device, INT trace)
 {
@@ -568,6 +572,7 @@ void CtiPort::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selec
     CtiTablePortTimings::getSQL(db, keyTable, selector);
 }
 
+#ifdef CTIOLDSTATS
 void CtiPort::DecodeStatisticsDatabaseReader(RWDBReader &rdr)
 {
     RWCString rwsTemp;
@@ -587,6 +592,7 @@ void CtiPort::DecodeStatisticsDatabaseReader(RWDBReader &rdr)
             _portStatistics[i]->DecodeDatabaseReader(rdr);
     }
 }
+#endif
 
 
 HCTIQUEUE&  CtiPort::getPortQueueHandle()

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:47:18 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/06/04 15:15:55 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,9 +31,13 @@ using namespace std;
 #include "logger.h"
 #include "tbl_port_base.h"
 #include "tbl_port_settings.h"
-#include "tbl_port_statistics.h"
 #include "tbl_port_timing.h"
 #include "xfer.h"
+
+#ifdef CTIOLDSTATS
+  #include "tbl_port_statistics.h"
+#endif
+
 
 class CtiTraceMsg;
 
@@ -46,7 +50,9 @@ protected:
     CtiTablePortSettings _tblPortSettings;
     CtiTablePortTimings _tblPortTimings;
 
+    #ifdef CTIOLDSTATS
     CtiTablePortStatistics* _portStatistics[ StatTypeInvalid ];
+    #endif
 
     RWThreadFunction  _portThread;
     HCTIQUEUE         _portQueue;
@@ -86,10 +92,11 @@ public:
     BOOL                    isTAP() const;
     CtiPort&                setTAP(BOOL b = TRUE);
 
+#ifdef CTIOLDSTATS
     CtiTablePortStatistics  getPortStatistics(INT i) const;
     CtiTablePortStatistics& getPortStatistics(INT i);
-
     CtiPort&                setPortStatistics(const CtiTablePortStatistics& ps, INT i);
+#endif
 
     virtual INT init() = 0;
 
@@ -148,7 +155,9 @@ public:
 
     void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    #ifdef CTIOLDSTATS
     virtual void DecodeStatisticsDatabaseReader(RWDBReader &rdr);
+    #endif
 
     virtual void Dump() const;
 

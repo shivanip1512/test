@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/05/02 17:02:23 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/06/04 15:15:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -798,6 +798,7 @@ void CtiDeviceManager::RefreshDeviceWindows()
     }
 }
 
+#ifdef CTIOLDSTATS
 void CtiDeviceManager::RefreshStatistics()
 {
     LONG        lTemp = 0;
@@ -853,6 +854,7 @@ void CtiDeviceManager::RefreshStatistics()
         }
     }
 }
+#endif
 
 void CtiDeviceManager::RefreshRoutes()
 {

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/05/28 18:21:37 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/06/04 15:15:55 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,7 +48,11 @@ class IM_EX_DEVDB CtiDeviceSingle : public CtiDeviceBase
 protected:
 
     CtiTableDevice2Way           _twoWay;
+
+    #ifdef CTIOLDSTATS
     CtiTableDeviceStatistics     *_statistics[StatTypeInvalid];
+    #endif
+
     CtiTableDeviceScanRate       *_scanRateTbl[ScanRateInvalid];    // Multiple Scan Rates
 
     vector<CtiTableDeviceWindow> _windowVector;
@@ -84,11 +88,12 @@ public:
 
     BOOL isStatValid(const INT stat) const;
 
+    #ifdef CTIOLDSTATS
     CtiTableDeviceStatistics getStatistics(const INT i) const;
-
     CtiTableDeviceStatistics&  getStatistics(const INT i);
-
     CtiDeviceSingle&  setStatistics(const INT i, CtiTableDeviceStatistics *aStatistics );
+    virtual void DecodeStatisticsDatabaseReader(RWDBReader &rdr);
+    #endif
 
     BOOL isRateValid(const INT i) const;
 
@@ -105,9 +110,6 @@ public:
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
-
-    virtual void DecodeStatisticsDatabaseReader(RWDBReader &rdr);
-
     virtual void DecodeScanRateDatabaseReader(RWDBReader &rdr);
     virtual void DecodeDeviceWindowDatabaseReader(RWDBReader &rdr);
     void applySignaledRateChange(LONG aOpen, LONG aDuration);

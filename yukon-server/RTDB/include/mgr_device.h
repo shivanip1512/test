@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_device.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:52:16 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/06/04 15:15:55 $
 *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -45,20 +45,19 @@ private:
    void RefreshDevices(RWDBReader& rdr, CtiDeviceBase* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiDeviceBase*,void*), void *arg);
 
 public:
-   CtiDeviceManager();// {}
-   virtual ~CtiDeviceManager();// {}
+   CtiDeviceManager();
+   virtual ~CtiDeviceManager();
 
 
    void RefreshList(LONG paoID);
    void RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &) = DeviceFactory, BOOL (*fn)(CtiDeviceBase*,void*) = isADevice, void *d = NULL);
 
-   void RefreshStatistics();
    void RefreshRoutes();
    void RefreshScanRates();
    void RefreshDeviceWindows();
 
    void DumpList(void);
-   void DeleteList(void);//   { Map.clearAndDestroy(); }
+   void DeleteList(void);
 
 
    CtiDeviceBase* getEqual(LONG Remote);
