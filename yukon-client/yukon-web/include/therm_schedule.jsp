@@ -519,7 +519,7 @@ function init() {
                   </td>
                 </tr>
               </table><br>
-              <table width="80%" border="0">
+              <table width="80%" border="0" cellpadding="5">
                 <tr>
                   <td width="35%" align = "right" class = "TableCell"> 
                     <input type="submit" name="Submit" value="Submit">
