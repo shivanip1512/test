@@ -119,7 +119,7 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	{
 		super.add();
 		
-		getCiCustomerBase().setCustomerID( getCustomerID() );
+		setCustomerID( getCustomerID() );
 
 		getAddress().add();
 		
