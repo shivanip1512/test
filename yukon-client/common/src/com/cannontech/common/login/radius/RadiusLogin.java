@@ -129,12 +129,12 @@ public class RadiusLogin
 			RadiusPacket accessResponse = rc.authenticate(accessRequest);
 			switch(accessResponse.getPacketType()){
 				case RadiusPacket.ACCESS_ACCEPT:
-					System.out.println("User " + userName + " authenticated");
+					CTILogger.info("User " + userName + " authenticated");
 					printAttributes(accessResponse);
 					basicAccount(rc,userName);
 					return true;
 				case RadiusPacket.ACCESS_REJECT:
-					System.out.println("User " + userName + " NOT authenticated");
+					CTILogger.info("User " + userName + " NOT authenticated");
 					printAttributes(accessResponse);
 					return false;
 //				case RadiusPacket.ACCESS_CHALLENGE:
