@@ -378,6 +378,7 @@ void CtiLoadManager::controlLoop()
                     delete multiPilMsg;
                     multiPilMsg = new CtiMultiMsg();*/
                     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+                    multiPilMsg->setMessagePriority(13);
                     getPILConnection()->WriteConnQue(multiPilMsg);
                     multiPilMsg = new CtiMultiMsg();
                 }
