@@ -309,13 +309,14 @@ public class ECActivityDetailReport extends YukonReportBase
 		final TextFieldElementFactory tfactory = new TextFieldElementFactory();
 		tfactory.setName(ActivityDetailModel.ACTION_STRING + " Group Element");
 		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(ActivityDetailModel.DATE_COLUMN).getPositionX(), 10));
-		tfactory.setMinimumSize(new FloatDimension(500, 50));
+		tfactory.setMinimumSize(new FloatDimension(500, 10));
+		tfactory.setDynamicHeight(Boolean.TRUE);
 		tfactory.setHorizontalAlignment(ElementAlignment.LEFT);
 		tfactory.setVerticalAlignment(ElementAlignment.TOP);
 		tfactory.setNullString("<null>");
 		tfactory.setFieldname(ActivityDetailModel.ACTION_STRING + " String");
 		footer.addElement(tfactory.createElement());
-
+		
 		tsGroup.setFooter(footer);
 		return tsGroup;
 	}
