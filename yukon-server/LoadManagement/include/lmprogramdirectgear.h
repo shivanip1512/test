@@ -109,8 +109,10 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     static const RWCString RestoreStopType;
     static const RWCString TimeInStopType;
     static const RWCString StopCycleStopType;
-    static const RWCString RampOutStopType;
-    static const RWCString RampOutRestoreStopType;
+    static const RWCString RampOutRandomStopType;
+    static const RWCString RampOutFIFOStopType;
+    static const RWCString RampOutRandomRestoreStopType;
+    static const RWCString RampOutFIFORestoreStopType;
     
     //Possible gear change condition types
     static const RWCString NoneChangeCondition;

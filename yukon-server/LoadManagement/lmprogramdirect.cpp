@@ -1623,8 +1623,71 @@ CtiLMGroupBase* CtiLMProgramDirect::findGroupToTake(CtiLMProgramDirectGear* curr
     return returnGroup;
 }
 
+CtiLMGroupBase* CtiLMProgramDirect::findGroupToRampOut(CtiLMProgramDirectGear* lm_gear)
+{
+    CtiLMGroupBase* lm_group = 0;
+    if(lm_gear->getMethodStopType() == CtiLMProgramDirectGear::RampOutFIFOStopType ||
+       lm_gear->getMethodStopType() == CtiLMProgramDirectGear::RampOutFIFORestoreStopType)
+    {
+        //Find the group that started controlling first and isn't ramping out
+        CtiLMGroupBase* temp_lm_group = 0;
+        RWDBDateTime first_control_time;
+        for(int i = 0; i < _lmprogramdirectgroups.entries(); i++)
+        {
+            temp_lm_group = (CtiLMGroupBase*) _lmprogramdirectgroups[i];
+            if(temp_lm_group->getIsRampingOut() &&
+               (lm_group == 0 ||
+               temp_lm_group->getControlStartTime().seconds() < lm_group->getControlStartTime().seconds()))
+            {
+                lm_group = temp_lm_group;
+            }
+        }
+    }
+    else if(lm_gear->getMethodStopType() == CtiLMProgramDirectGear::RampOutRandomStopType ||
+            lm_gear->getMethodStopType() == CtiLMProgramDirectGear::RampOutRandomRestoreStopType)
+    {
+        CtiLMGroupBase* temp_lm_group;
+        int num_groups = _lmprogramdirectgroups.entries();
+        int j = rand() % num_groups;
+        int k = 0;
+        do { //Look for a group that is not ramping out starting at a random index
+            temp_lm_group = (CtiLMGroupBase*) _lmprogramdirectgroups[(j+k)%num_groups];
+        } while(!temp_lm_group->getIsRampingOut() && k++ <= num_groups);
+
+        if(k > num_groups)
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << RWTime() << " LMProgram: " << getPAOName() << " Couldn't find a group to ramp out, all the program's groups are already ramped out." << endl;
+        }
+        else
+        {
+            lm_group = temp_lm_group;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " **Checkpoint** " <<  "LMProgram: " << getPAOName() << " has an invalid StopOrderType, it is: " << lm_gear->getMethodStopType() << __FILE__ << "(" << __LINE__ << ")" << endl;
+    }
+
+    if(lm_group != 0)
+    {
+        lm_group->setIsRampingOut(false);
+        if( _LM_DEBUG & LM_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << RWTime() << " LM Group: " << lm_group->getPAOName() << " has ramped out" << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " **Checkpoint** " <<  " LMProgram: " << getPAOName() << " couldn't find a group to ramp out" << __FILE__ << "(" << __LINE__ << ")" << endl;
+    }
+    return lm_group;
+}
 /*---------------------------------------------------------------------------
-    hasGearChanged
+    Hasgearchanged
 
     Returns a boolean that represents if the current gear for the program
     has changed because of duration, priority, or trigger offset.
@@ -3471,8 +3534,10 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                         }
                         currentLMGroup->setControlCompleteTime(timeToTimeIn);
                    }
-                   else if( !tempMethodStopType.compareTo(CtiLMProgramDirectGear::RampOutStopType,RWCString::ignoreCase) ||
-                            !tempMethodStopType.compareTo(CtiLMProgramDirectGear::RampOutRestoreStopType,RWCString::ignoreCase))
+                   else if( !tempMethodStopType.compareTo(CtiLMProgramDirectGear::RampOutRandomStopType,RWCString::ignoreCase) ||
+                            !tempMethodStopType.compareTo(CtiLMProgramDirectGear::RampOutFIFOStopType,RWCString::ignoreCase) ||
+                            !tempMethodStopType.compareTo(CtiLMProgramDirectGear::RampOutRandomRestoreStopType,RWCString::ignoreCase) ||
+                            !tempMethodStopType.compareTo(CtiLMProgramDirectGear::RampOutFIFORestoreStopType,RWCString::ignoreCase))
                    {
                        currentLMGroup->setIsRampingIn(false);
                        currentLMGroup->setIsRampingOut(true);
@@ -3649,31 +3714,15 @@ bool CtiLMProgramDirect::updateGroupsRampingOut(CtiMultiMsg* multiPilMsg, CtiMul
 
     for(int i = 0; i < num_to_ramp_out; i++)
     {
-        int j = rand() % num_groups;
-        int k=0;
-        
-        CtiLMGroupBase* lm_group = 0;
-        do { //look for a group that is not ramping out, that is, has not already ramped out
-            lm_group = (CtiLMGroupBase*) _lmprogramdirectgroups[(j+k)%num_groups];
-        } while(!lm_group->getIsRampingOut() && k++ <= num_groups);
-
-        if(k > num_groups)
+        CtiLMGroupBase* lm_group = findGroupToRampOut(getCurrentGearObject());
+        if(lm_group != 0)
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << RWTime() << " LMProgram: " << getPAOName() << " Tried to ramp out " << num_to_ramp_out << ", but all the program's groups are already ramped out." << endl;
-        }
-        
-        lm_group->setIsRampingOut(false);
-        ret_val = true;
-        
-        if( _LM_DEBUG & LM_DEBUG_STANDARD )
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << RWTime() << " LM Group: " << lm_group->getPAOName() << " has ramped out" << endl;
+            ret_val = true;
         }
                 
         // Possibly restore the group now that it has ramped out
-        if(lm_gear->getMethodStopType() == CtiLMProgramDirectGear::RampOutRestoreStopType)
+        if(lm_gear->getMethodStopType() == CtiLMProgramDirectGear::RampOutRandomRestoreStopType ||
+           lm_gear->getMethodStopType() == CtiLMProgramDirectGear::RampOutFIFORestoreStopType)
         {
             int priority = 11;
             string ctrl_str = "control restore";
@@ -3903,14 +3952,14 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
 
     bool ret_val = false;
     bool was_ramping_out = getIsRampingOut();
+    bool timed_active = (getProgramState() == CtiLMProgramBase::TimedActiveState);
     
-    if(was_ramping_out)
+    if(was_ramping_out && timed_active) // only do this if we are active, another program might be ramping out our groups!!!
     {
         ret_val = updateGroupsRampingOut(multiPilMsg, multiDispatchMsg, secondsFrom1901); // consider if any groups have ramped out
     }
     
     bool in_control_window = (getControlWindow(secondsFromBeginningOfDay) != NULL);
-    bool timed_active = (getProgramState() == CtiLMProgramBase::TimedActiveState);
     bool inactive = (getProgramState() == CtiLMProgramBase::InactiveState);
     bool disabled = getDisableFlag();
     bool is_ramping_out = getIsRampingOut();

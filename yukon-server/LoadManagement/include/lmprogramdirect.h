@@ -88,6 +88,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 
     CtiLMGroupBase* findGroupToTake(CtiLMProgramDirectGear* currentGearObject);
+    CtiLMGroupBase* findGroupToRampOut(CtiLMProgramDirectGear* currentGearObject);
     
     BOOL maintainProgramControl(LONG currentPriority, RWOrdered& controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, BOOL isPastMinResponseTime, BOOL isTriggerCheckNeeded);
     BOOL hasGearChanged(LONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFrom1901, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded);

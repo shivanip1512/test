@@ -753,8 +753,11 @@ const RWCString CtiLMProgramDirectGear::NoControlMethod = "NoControl";
 const RWCString CtiLMProgramDirectGear::RestoreStopType = "Restore";
 const RWCString CtiLMProgramDirectGear::TimeInStopType = "TimeIn";
 const RWCString CtiLMProgramDirectGear::StopCycleStopType = "StopCycle";
-const RWCString CtiLMProgramDirectGear::RampOutStopType = "RampOut";
-const RWCString CtiLMProgramDirectGear::RampOutRestoreStopType = "RampOutRestore";
+const RWCString CtiLMProgramDirectGear::RampOutRandomStopType = "RampOutRandom";
+const RWCString CtiLMProgramDirectGear::RampOutFIFOStopType = "RampOutFIFO";
+const RWCString CtiLMProgramDirectGear::RampOutRandomRestoreStopType = "RampOutRandomRest";
+const RWCString CtiLMProgramDirectGear::RampOutFIFORestoreStopType = "RampOutFIFORestore";
+
 
 //Possible gear change condition types
 const RWCString CtiLMProgramDirectGear::NoneChangeCondition = "None";
