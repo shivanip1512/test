@@ -119,7 +119,7 @@ public static void setValidFormatIDs(int[] formatIDs)
 {
 	validFormatIds = formatIDs;
 }
-public static void setValiedFormatTypes (String[] formatTypes)
+public static void setValidFormatTypes (String[] formatTypes)
 {
 	validFormatTypes = formatTypes;
 }
