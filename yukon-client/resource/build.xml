@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<project name="global resource files" default="all">
+
+   <property file="../build/build.properties"/>
+
+   <target name="all" depends="clean,build">
+    </target>
+   
+   <target name="build">
+       <copy todir="${yukon.lib}">
+           <fileset dir=".">
+               <include name="**/*.properties"/>
+           </fileset>
+       </copy>
+   </target>
+
+   <target name="clean">       
+    </target>
+   
+</project>
