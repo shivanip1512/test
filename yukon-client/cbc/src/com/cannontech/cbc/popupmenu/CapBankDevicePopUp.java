@@ -10,6 +10,7 @@ import com.cannontech.cbc.data.CapBankDevice;
 import com.cannontech.cbc.data.Feeder;
 import com.cannontech.cbc.messages.CBCCommand;
 import com.cannontech.clientutils.tags.TagUtils;
+import com.cannontech.message.dispatch.message.Command;
 
 /**
  * Insert the type's description here.
@@ -395,12 +396,17 @@ public void jMenuItemAckAlarm_ActionPerformed(java.awt.event.ActionEvent actionE
 {
 	java.util.Vector data = new java.util.Vector( 2 );  // we are only sending 1 ack event and the token
 	data.addElement( new Integer(-1) );  // this is the ClientRegistrationToken
+	
+	//add the pointID
 	data.addElement( getCapBankDevice().getStatusPointID() );
+	//add the ACK_ALL reserved value instead of the AlarmCondition
+	data.addElement( new Integer(Command.ACK_ALL_TOKEN) );
+
 		
 	// Sends a vangogh command message to capcontrol, which then forwards the exact
 	//   message onto dispatch(vangogh)
-	com.cannontech.message.dispatch.message.Command cmd = new com.cannontech.message.dispatch.message.Command();
-	cmd.setOperation( com.cannontech.message.dispatch.message.Command.ACKNOWLEGDE_ALARM );
+	Command cmd = new Command();
+	cmd.setOperation( Command.ACKNOWLEGDE_ALARM );
 	cmd.setOpArgList( data );
 	cmd.setTimeStamp( new java.util.Date() );
 
