@@ -22,6 +22,11 @@ public CheckLoginTag() {
  */
 public int doStartTag() throws javax.servlet.jsp.JspException {
 	
+	//Force this boolean to false.  Found out the hard way that the skip value is held onto 
+	//for each individual jsp page.  This 'seems' to fix a bug where changing logins would 
+	//somehow get the user to recieve a blank screen and you could never view the page again.
+	skip = false;
+	
 	try {
 		javax.servlet.http.HttpSession session;
 		
