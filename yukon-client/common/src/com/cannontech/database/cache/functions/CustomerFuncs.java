@@ -21,86 +21,37 @@ private CustomerFuncs() {
 	super();
 }
 /**
- * Insert the method's description here.
- * Creation date: (3/26/2001 9:41:59 AM)
- * @return boolean
- * @param contactID int
- */
-public static boolean contactExists(int contactID) 
-{
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized( cache )
-	{
-		java.util.List contacts = cache.getAllContacts();
-		java.util.Collections.sort( contacts, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
-		
-		for( int j = 0; j < contacts.size(); j++ )
-		{
-			if( contactID == ((LiteContact)contacts.get(j)).getContactID() )
-				return true;
-		}
-
-		return false;
-	}
-
-}
-
-/**
  * Finds the customer contact for this user id
  * @param userID
- * @return LiteCustomerContact
+ * @return List LiteContact
  */
-public static LiteContact getCustomerContact(int userID) 
+public static List getAllContacts(int customerID_) 
 {
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache) 
 	{
-		Iterator iter = cache.getAllContacts().iterator();
-		while(iter.hasNext()) {
-			LiteContact contact = (LiteContact) iter.next();
-			if(contact.getLoginID() == userID) {
-				return contact;
-			}
-		}		
-	}
-	
-	return null;
-}
-
-/**
- * Finds a LiteCICustomer representing the contacts owner CICustomer.
- * @param contactID_
- * @return LiteCICustomer
- * 
- * MAY Replace the return type with LiteCustomer when LiteCustomer exists!!
- */
-public static LiteCICustomer getOwnerCICustomer( int contactID_ ) 
-{
-	com.cannontech.database.cache.DefaultDatabaseCache cache = 
-			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-
-	synchronized(cache)	 
-	{
 		Iterator iter = cache.getAllCICustomers().iterator();
-		while( iter.hasNext() ) 
+		java.util.Vector allContacts = new java.util.Vector(5);	//guess capacity
+		while(iter.hasNext())
 		{
-			LiteCICustomer cst = (LiteCICustomer) iter.next();
-			
-			for( int i = 0; i < cst.getAdditionalContacts().size(); i++ )
+			LiteCICustomer ciCustomer = (LiteCICustomer) iter.next();
+			if(ciCustomer.getCustomerID() == customerID_)
 			{
-				if( ((LiteContact)cst.getAdditionalContacts().get(i)).getContactID() 
-					 == contactID_ )
+				int primCntctID = ciCustomer.getPrimaryContactID();
+				LiteContact liteContact = ContactFuncs.getContact(primCntctID);
+				if( liteContact != null)
+					allContacts.addElement(liteContact);
+				
+				for (int i = 0; i < ciCustomer.getAdditionalContacts().size(); i++)
 				{
-					return cst;
+					allContacts.addElement(ciCustomer.getAdditionalContacts().get(i));
 				}
+				return allContacts;
 			}
 		}		
 	}
-		
-	//no owner CICustomer...strange
 	return null;
 }
-
 
 /**
  * Finds all LiteContact instances not used by a CICustomer
