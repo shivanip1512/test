@@ -6,8 +6,8 @@ package com.cannontech.dbeditor.wizard.billing;
  * @author: 
  */
 
-public class BillingFileGenerationPanel extends com.cannontech.common.gui.util.DataInputPanel {
-	private com.cannontech.billing.mainprograms.BillingFileFormatPanel generatedBillingFileFormatPanel;
+public class BillingFileGenerationPanel extends com.cannontech.common.gui.util.DataInputPanel
+{
 	private com.cannontech.billing.mainprograms.BillingFileFormatPanel ivjBillingFileFormatPanel1 = null;
 	public BillingFileGenerationPanel() {
 	super();
@@ -32,20 +32,6 @@ private com.cannontech.billing.mainprograms.BillingFileFormatPanel getBillingFil
 		}
 	}
 	return ivjBillingFileFormatPanel1;
-}
-/**
- * Insert the method's description here.
- * Creation date: (6/4/2002 5:07:05 PM)
- * @return com.cannontech.billing.mainprograms.BillingFile
- */
-protected com.cannontech.billing.mainprograms.BillingFileFormatPanel getGeneratedBillingFileFormatPanel() 
-{
-	if(generatedBillingFileFormatPanel == null)
-	{
-		generatedBillingFileFormatPanel = new com.cannontech.billing.mainprograms.BillingFileFormatPanel();
-	}
-	
-	return generatedBillingFileFormatPanel;
 }
 /**
  * This method was created in VisualAge.
