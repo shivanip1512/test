@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/10/22 16:38:33 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/10/25 16:24:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -211,6 +211,8 @@ public:
         PutConfig_OnOffPeak,
 
         PutConfig_ARMC,
+        PutConfig_ARML,  //  these used to be "Control_ARML," etc - I wanted to make them consistent...
+        PutConfig_ARMS,
 
         // Control Commands
         Control_Shed,     //  for MCT Group Addressing
@@ -219,9 +221,6 @@ public:
         Control_Open,
         Control_Conn,
         Control_Disc,
-
-        Control_ARML,
-        Control_ARMS,
 
         Command_Loop,
 
