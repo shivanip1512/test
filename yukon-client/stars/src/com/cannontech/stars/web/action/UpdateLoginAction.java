@@ -16,6 +16,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -28,6 +29,7 @@ import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.serialize.StarsUpdateLogin;
 import com.cannontech.stars.xml.serialize.StarsUser;
+import com.cannontech.stars.xml.serialize.types.StarsLoginStatus;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -49,6 +51,10 @@ public class UpdateLoginAction implements ActionBase {
             StarsUpdateLogin updateLogin = new StarsUpdateLogin();
             updateLogin.setUsername( req.getParameter("Username") );
             updateLogin.setPassword( req.getParameter("Password") );
+			if (req.getParameter("Status") != null)
+				updateLogin.setStatus( StarsLoginStatus.valueOf(req.getParameter("Status")) );
+			else
+				updateLogin.setStatus( StarsLoginStatus.DISABLED );
             if (req.getParameter("CustomerGroup") != null && req.getParameter("CustomerGroup").length() > 0)
             	updateLogin.setGroupID( Integer.parseInt(req.getParameter("CustomerGroup")) );
             
@@ -148,6 +154,8 @@ public class UpdateLoginAction implements ActionBase {
 			
 			starsUser.setUsername( updateLogin.getUsername() );
 			starsUser.setPassword( updateLogin.getPassword() );
+			if (updateLogin.getStatus() != null)
+				starsUser.setStatus( updateLogin.getStatus() );
 			if (updateLogin.hasGroupID())
 				starsUser.setGroupID( updateLogin.getGroupID() );
 			
@@ -185,13 +193,18 @@ public class UpdateLoginAction implements ActionBase {
         com.cannontech.database.data.user.YukonUser dataUser = new com.cannontech.database.data.user.YukonUser();
         com.cannontech.database.db.user.YukonUser dbUser = dataUser.getYukonUser();
         
-        com.cannontech.database.db.user.YukonGroup dbGroup = new com.cannontech.database.db.user.YukonGroup();
-        dbGroup.setGroupID( new Integer(login.getGroupID()) );
-        dataUser.getYukonGroups().addElement( dbGroup );
+        if (login.hasGroupID()) {
+			com.cannontech.database.db.user.YukonGroup dbGroup = new com.cannontech.database.db.user.YukonGroup();
+			dbGroup.setGroupID( new Integer(login.getGroupID()) );
+			dataUser.getYukonGroups().addElement( dbGroup );
+        }
         
     	dbUser.setUsername( login.getUsername() );
     	dbUser.setPassword( login.getPassword() );
-    	dbUser.setStatus( com.cannontech.user.UserUtils.STATUS_ENABLED );
+    	if (login.getStatus() != null)
+    		dbUser.setStatus( ECUtils.getUserStatus(login.getStatus()) );
+    	else
+    		dbUser.setStatus( com.cannontech.user.UserUtils.STATUS_ENABLED );
         
     	dataUser = (com.cannontech.database.data.user.YukonUser)
         		Transaction.createTransaction( Transaction.INSERT, dataUser ).execute();
@@ -272,10 +285,13 @@ public class UpdateLoginAction implements ActionBase {
 					StarsLiteFactory.createDBPersistent( liteUser );
 			dbUser.setUsername( username );
 			dbUser.setPassword( password );
-			dbUser.setStatus( liteUser.getStatus() );
+			if (updateLogin.getStatus() != null)
+				dbUser.setStatus( ECUtils.getUserStatus(updateLogin.getStatus()) );
+			else
+				dbUser.setStatus( liteUser.getStatus() );
+			
 			dbUser = (com.cannontech.database.db.user.YukonUser)
 					Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
-	        
 			ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
 		}
 	}
