@@ -12,8 +12,8 @@
 
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/thread.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:18 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/22 19:51:21 $
 *
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2000
@@ -23,7 +23,8 @@ using namespace std;
 
 #include "thread.h"
 
-CtiThread::CtiThread()
+CtiThread::CtiThread() :
+_thrhandle(INVALID_HANDLE_VALUE)
 {
    set(STARTING, false);
    set(SHUTDOWN, false);
@@ -33,8 +34,8 @@ CtiThread::CtiThread()
 
 CtiThread::~CtiThread()
 {
-   CloseHandle(hInterrupt);
-   CloseHandle(_thrhandle);
+   if(hInterrupt != INVALID_HANDLE_VALUE) CloseHandle(hInterrupt);
+   if(_thrhandle != INVALID_HANDLE_VALUE) CloseHandle(_thrhandle);
 }
 
 /*-----------------------------------------------------------------------------
