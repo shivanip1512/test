@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/03/10 21:07:11 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/03/17 05:20:08 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -98,8 +98,8 @@ protected:
 
     bool isControlPending( void );
     bool processControl( const datalink_packet &packet );
-    void generateControl( CtiXfer &xfer );
-    void decodeControl  ( CtiXfer &xfer, int status );
+    int  generateControl( CtiXfer &xfer );
+    int  decodeControl  ( CtiXfer &xfer, int status );
 
     void constructPrimaryControlPacket  ( datalink_packet &packet, PrimaryControlFunction   function, bool fcv, bool fcb );
     void constructSecondaryControlPacket( datalink_packet &packet, SecondaryControlFunction function, bool dfc );
