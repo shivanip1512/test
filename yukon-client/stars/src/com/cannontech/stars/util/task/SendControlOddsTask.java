@@ -32,7 +32,8 @@ public class SendControlOddsTask implements Runnable {
 			"Program Enrollment                      Odds for Control\r\n" +
 			"============================================================\r\n";
 	private static final String blanks = "                                        ";
-	private static final String footer = "";
+	private static final String footer = "To unsubscribe from the notification list, " +
+			"contact the program administrator at 388-2926 or email ACProgram@idahopower.com";
 	
 	private int energyCompanyID = 0;
 	
@@ -111,7 +112,7 @@ public class SendControlOddsTask implements Runnable {
 						text.append( ctrlOdds );
 						text.append( "\r\n" );
 					}
-					text.append( "\r\n\r\n" ).append( footer );
+					text.append( "\r\n\r\n\r\n" ).append( footer );
 					
 					try {
 						ServerUtils.sendEmailMsg( from, to, null, subject, text.toString() );
