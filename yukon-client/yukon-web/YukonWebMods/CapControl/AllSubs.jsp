@@ -72,9 +72,9 @@
 						<form name="AreaForm" method="POST" >
                     <select name="area" onchange="this.form.submit()" >
 	                  <%
-	                  	for( int i = 0; i < cbcServlet.getAreaNames().size(); i++ )
+	                  	for( int i = 0; i < CapControlWebAnnex.getAreaNames().size(); i++ )
 	                  	{
-	                  		String area = cbcServlet.getAreaNames().get(i).toString();
+	                  		String area = CapControlWebAnnex.getAreaNames().get(i).toString();
 	                  		
 	                  		String s = ( area.equalsIgnoreCase(cbcSession.getLastArea()) 
 	                  						? " selected" : "" ) ;
@@ -158,7 +158,7 @@
 
                         <td width="44" class="TableCell">
                         	<a href= "capcontrols.jsp?rowID=<%= i %>&controlType=<%= CapControlWebAnnex.CMD_SUB %>" >
-	                    		<font color="<%= cbcServlet.convertColor(subBusMdl.getCellForegroundColor( i, SubBusTableModel.CURRENT_STATE_COLUMN ) ) %>">
+	                    		<font color="<%= CapControlWebAnnex.convertColor(subBusMdl.getCellForegroundColor( i, SubBusTableModel.CURRENT_STATE_COLUMN ) ) %>">
 	                    		<%= subBusMdl.getValueAt(i, SubBusTableModel.CURRENT_STATE_COLUMN) %> 
 	                    		</font></a>
                         </td>
