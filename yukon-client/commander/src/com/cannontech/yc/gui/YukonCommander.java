@@ -9,6 +9,7 @@ import java.awt.print.Book;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.util.Observable;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -28,7 +29,6 @@ import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.model.EditableLCRSerialModel;
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.roles.application.CommanderRole;
@@ -37,7 +37,7 @@ import com.cannontech.yc.gui.menu.YCFileMenu;
 import com.cannontech.yc.gui.menu.YCHelpMenu;
 import com.cannontech.yc.gui.menu.YCViewMenu;
 
-public class YukonCommander extends javax.swing.JFrame implements com.cannontech.database.cache.DBChangeListener, java.awt.event.ActionListener, java.awt.event.FocusListener, java.awt.event.KeyListener, Runnable, javax.swing.event.TreeSelectionListener, java.awt.event.MouseListener {
+public class YukonCommander extends javax.swing.JFrame implements com.cannontech.database.cache.DBChangeListener, java.awt.event.ActionListener, java.awt.event.FocusListener, java.awt.event.KeyListener, javax.swing.event.TreeSelectionListener, java.awt.event.MouseListener, java.util.Observer {
 	private static  YC ycClass;
 	private static final int treeModels[] =
 	{
@@ -56,7 +56,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	private static final String YC_TITLE = "Commander";
 	public static final String HELP_FILE = CtiUtilities.getHelpDirPath() + "Yukon Commander Help.chm";
 
-	private Thread inThread;	//the Runnable Thread.
 	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
 	private javax.swing.JPanel ivjJFrameContentPane = null;
 	private javax.swing.JPanel ivjOutputPanel = null;
@@ -94,6 +93,48 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	private final String VALID_TEXT = "Valid Text";
 	private final String INVALID_TEXT = "Invalid Text";
 	private final String DISPLAY_TEXT = "Display Text";
+	
+	
+	class WriteOutput implements java.lang.Runnable
+	{
+		private String output = null;
+		private java.awt.Color textColor = java.awt.Color.black;
+		private javax.swing.JTextPane textPane = null;
+		private boolean isUnderline = false;
+		public WriteOutput(javax.swing.JTextPane textPane, String out)
+		{
+			output = out;
+			this.textPane = textPane;
+		}
+			
+		public WriteOutput(javax.swing.JTextPane textPane, String out, java.awt.Color textColor)
+		{
+			this(textPane, out, textColor, false);
+		}
+		public WriteOutput(javax.swing.JTextPane textPane, String out, java.awt.Color textColor, boolean isUnderline)
+		{
+			output = out;
+			this.textColor = textColor;
+			this.textPane = textPane;
+			this.isUnderline = isUnderline;
+		}
+		public void run()
+		{
+			try
+			{
+				javax.swing.text.Document doc = textPane.getDocument();
+				javax.swing.text.SimpleAttributeSet attset = new javax.swing.text.SimpleAttributeSet();
+				attset.addAttribute(javax.swing.text.StyleConstants.Foreground, textColor);
+				attset.addAttribute(javax.swing.text.StyleConstants.Underline, new Boolean(isUnderline));
+//				attset.addAttribute(javax.swing.text.StyleConstants.FontFamily, "rastor fonts");
+				doc.insertString(doc.getLength(), output, attset);
+			}
+			catch (javax.swing.text.BadLocationException ble)
+			{
+				ble.printStackTrace();
+			}
+		}
+	}	
 	
 	/**
 	 * Constructor
@@ -1233,11 +1274,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		// user code begin {2}
 	
-		//Start this Runnable Thread.
-		inThread = new Thread(this);
-		inThread.start();
-	
-	
 		//--------Setup treeViewPanel and tree models-------------	
 		//This model is created in a weird way.  We can do the model creation similar for all
 		// the models except for the Device model.  In order to use a different constructor
@@ -1277,6 +1313,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 					exit();
 			};
 		});
+		ycClass.addObserver(this);
 		// user code end
 	}
 	
@@ -1522,233 +1559,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			CTILogger.info("WARNING:  nothing reselected in the tree, dbChangeMessageListener is missing an instanceof");
 		}
 		// ** Add else if... here to include other objects that may be in the treeViewPanel
-	}
-	/**
-	 * Run simply waits for Return messages to appear on our connection and
-	 * This should be done without using a separate thread but its not.  rev 2 baby
-	 * adds them to the output pane.
-	 */
-	public void run()
-	{
-		class WriteOutput implements java.lang.Runnable
-		{
-			private String output = null;
-			private java.awt.Color textColor = java.awt.Color.black;
-			private javax.swing.JTextPane textPane = null;
-			private boolean isUnderline = false;
-			public WriteOutput(javax.swing.JTextPane textPane, String out)
-			{
-				output = out;
-				this.textPane = textPane;
-			}
-			
-			public WriteOutput(javax.swing.JTextPane textPane, String out, java.awt.Color textColor)
-			{
-				output = out;
-				this.textColor = textColor;
-				this.textPane = textPane;
-			}
-			public WriteOutput(javax.swing.JTextPane textPane, String out, java.awt.Color textColor, boolean isUnderline)
-			{
-				output = out;
-				this.textColor = textColor;
-				this.textPane = textPane;
-				this.isUnderline = isUnderline;
-			}
-			public void run()
-			{
-				try
-				{
-					javax.swing.text.Document doc = textPane.getDocument();
-					javax.swing.text.SimpleAttributeSet attset = new javax.swing.text.SimpleAttributeSet();
-					attset.addAttribute(javax.swing.text.StyleConstants.Foreground, textColor);
-					attset.addAttribute(javax.swing.text.StyleConstants.Underline, new Boolean(isUnderline));
-	//				attset.addAttribute(javax.swing.text.StyleConstants.FontFamily, "rastor fonts");
-					doc.insertString(doc.getLength(), output, attset);
-				}
-				catch (javax.swing.text.BadLocationException ble)
-				{
-					ble.printStackTrace();
-				}
-			}
-		}	
-	
-		try
-		{
-			java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM d HH:mm:ss a z");
-			long prevUserID = -1;
-			String displayOutput = "";
-			String debugOutput = "";
-			String routeName = null;
-			boolean firstTime = true;
-			for (;;)
-			{
-				java.awt.Color textColor = ycClass.getYCDefaults().getDisplayTextColor();
-				Object in;
-				debugOutput = "";
-				displayOutput = "";
-				if (getConnToPorter() != null && getConnToPorter().isValid())
-				{
-					if ((in = getConnToPorter().read()) != null)
-					{
-						if (in instanceof com.cannontech.message.porter.message.Return)
-						{
-							com.cannontech.message.porter.message.Return ret = (com.cannontech.message.porter.message.Return) in;
-	
-							if( prevUserID != ret.getUserMessageID())
-							{
-//								getCommandPanel().getRoundButton().setBackground(java.awt.Color.red);
-	//							textColor = java.awt.Color.black;
-								debugOutput = "\n["+ format.format(ret.getTimeStamp()) + "]-{" + ret.getUserMessageID() +"} Return from \'" + ret.getCommandString() + "\'\n";
-								javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDebugOutputTextPane(), debugOutput, textColor) );
-								debugOutput = "";
-								prevUserID = ret.getUserMessageID();
-								
-								if( firstTime && ycClass.getLoopType() != YC.NOLOOP)
-								{
-									displayOutput = "\n\nROUTE\t\t\tVALID\t\tERROR";
-									javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDisplayOutputTextPane(), displayOutput, textColor, true) );
-									displayOutput = "";
-									firstTime = false;
-								}
-							}
-							
-
-//							if( ret.getVector().size() > 0)
-//							{
-//								displayOutput = "\n\nMETER\t\t\tPOINT\tVALUE";
-//								javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDisplayOutputTextPane(), displayOutput, textColor, true) );
-//								displayOutput = "";
-//							}
-															
-							for (int i = 0; i < ret.getVector().size(); i++)
-							{
-								Object o = ret.getVector().elementAt(i);
-								if (o instanceof com.cannontech.message.dispatch.message.PointData)
-								{
-									com.cannontech.message.dispatch.message.PointData pd = (com.cannontech.message.dispatch.message.PointData) o;
-									if ( pd.getStr().length() > 0 )
-									{
-//										displayOutput += "\n" + com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(ret.getDeviceID());
-										int tabCount = (60 - displayOutput.length())/ 24;
-										for (int x = 0; x <= tabCount; x++)
-										{
-											displayOutput += "\t";
-										}
-//										displayOutput += com.cannontech.database.cache.functions.PointFuncs.getPointName(pd.getId());
-//										displayOutput += "\t" + pd.getValue();
-//										javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDisplayOutputTextPane(), displayOutput, java.awt.Color.blue) );
-//										displayOutput = "";
-										
-										debugOutput += pd.getStr() + "\n";
-									}
-								}
-							}
-	
-							if (ret.getRouteOffset() > 0)
-							{
-								routeName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(ret.getRouteOffset());																				
-							}
-	
-							if( ret.getExpectMore() == 0)
-							{
-								if( routeName == null)
-								{
-									routeName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(ret.getDeviceID());
-								}
-	
-								displayOutput = "\n" + routeName;
-								int tabCount = (60 - displayOutput.length())/ 24;
-								for (int i = 0; i <= tabCount; i++)
-								{
-									displayOutput += "\t";
-								}
-	
-								if( ret.getStatus() != 0)
-								{
-									textColor = ycClass.getYCDefaults().getInvalidTextColor();
-									if( ret.getExpectMore() == 0)
-										displayOutput += "N\t\t" + ret.getStatus();
-								}
-								else	//status == 0 == successfull
-								{
-									textColor = ycClass.getYCDefaults().getValidTextColor();
-									if( ret.getExpectMore() == 0)
-										displayOutput += "Y\t\t---";
-								}
-			
-								if( ycClass.getLoopType() != YC.NOLOOP)
-								{
-									javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDisplayOutputTextPane(), displayOutput, textColor) );							
-								}
-							}
-							if(ret.getResultString().length() > 0)
-							{
-								debugOutput += ret.getResultString() + "\n";
-							}
-								
-//							if( textColor.equals(ycClass.getYCDefaults().getValidTextColor()))
-//								javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDisplayOutputTextPane(), debugOutput, textColor) );
-							
-							javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDebugOutputTextPane(), debugOutput, textColor) );
-							synchronized ( YukonCommander.class )
-							{
-								if( ret.getExpectMore() == 0)	//Only send next message when ret expects nothing more
-								{
-									routeName = null;									
-									//Break out of this outer loop.
-									doneSendMore:
-									if( ycClass.sendMore == 0)
-									{
-//										if( ret.getUserMessageID() == ycClass.getCurrentUserMessageID() - 1)	//trying to guess the last command coming through
-//											getCommandPanel().getRoundButton().setBackground(java.awt.Color.green);
-										// command finished
-									}
-									else if ( ycClass.sendMore > 0)
-									{
-										ycClass.sendMore--;	//decrement the number of messages to send
-										if (ycClass.getLoopType() == YC.LOOPLOCATE)
-										{
-									 		if( ycClass.getAllRoutes()[ycClass.sendMore] instanceof LiteYukonPAObject)
-											{
-												LiteYukonPAObject rt = (LiteYukonPAObject) ycClass.getAllRoutes()[ycClass.sendMore];
-												while( rt.getType() == PAOGroups.ROUTE_MACRO
-													&& ycClass.sendMore > 0)
-												{
-													ycClass.sendMore--;
-													rt = (LiteYukonPAObject) ycClass.getAllRoutes()[ycClass.sendMore];
-												}
-												// Have to check again because last one may be route_ macro
-												if(rt.getType() == PAOGroups.ROUTE_MACRO)
-													break doneSendMore;
-	
-												ycClass.getPorterRequest().setRouteID(rt.getYukonID());
-											}
-										}
-										getConnToPorter().write( ycClass.getPorterRequest());	//do the saved loop request
-									}
-									else
-									{
-										debugOutput = "Command cancelled\n";
-										textColor = ycClass.getYCDefaults().getInvalidTextColor();
-										javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDebugOutputTextPane(), debugOutput, textColor));
-										getCommandPanel().getRoundButton().setBackground(java.awt.Color.green);
-									}
-								}
-							}
-						}
-					}
-				}
-				else
-				{
-					Thread.sleep(1000);
-				}
-			}
-		}
-		catch (InterruptedException e)
-		{
-			e.printStackTrace();
-		}
 	}
 	/**
 	 * Saves the textPane.getText() to a file.
@@ -2165,6 +1975,20 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			}
 		}
 		*/
+	}
+	/* (non-Javadoc)
+	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
+	 */
+	public void update(Observable o, Object arg)
+	{
+		if( o instanceof YC && arg instanceof YC.OutputMessage)
+		{
+			YC.OutputMessage outMessage = (YC.OutputMessage)arg;
+			if( outMessage.type == YC.OutputMessage.DEBUG_MESSAGE)
+				javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDebugOutputTextPane(), outMessage.text, outMessage.color, outMessage.isUnderline) );
+			else if( outMessage.type == YC.OutputMessage.DISPLAY_MESSAGE)
+				javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDisplayOutputTextPane(), outMessage.text, outMessage.color, outMessage.isUnderline) );
+		}
 	}
 	
 }
