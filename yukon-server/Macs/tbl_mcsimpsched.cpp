@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/tbl_mcsimpsched.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/08 22:15:45 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/03/25 21:13:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -137,7 +137,10 @@ bool CtiTableMCSimpleSchedule::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["scheduleid"]       >> _schedule_id;
 
     rdr["targetselect"]     >> temp;
-    _target_select = temp;
+    if(temp != " ")
+	_target_select = temp;
+    else
+	_target_select = "";
 
     rdr["startcommand"]     >> temp;
     _start_command = temp;
