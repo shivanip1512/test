@@ -28,7 +28,7 @@ public class MACSConnectionServlet extends javax.servlet.http.HttpServlet /*impl
  * Creation date: (8/8/00 1:54:34 PM)
  * @return com.cannontech.macs.ClientConnection
  */
-protected IMACSConnection getIMACSConnection() 
+public IMACSConnection getIMACSConnection() 
 {
 	return ResourceFactory.getIYukon().getMACSConnection();
 }
