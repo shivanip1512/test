@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2004/12/14 22:29:07 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/01/17 16:29:54 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -79,24 +79,10 @@ INT CtiDeviceLMI::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
             {
                 case ScanRateStatus:
                 case ScanRateGeneral:
-                {
-                    _lmi.setCommand(CtiProtocolLMI::Command_ScanException);
-                    found = true;
-
-                    break;
-                }
-
                 case ScanRateAccum:
-                {
-                    _lmi.setCommand(CtiProtocolLMI::Command_ScanAccumulator);
-                    found = true;
-
-                    break;
-                }
-
                 case ScanRateIntegrity:
                 {
-                    _lmi.setCommand(CtiProtocolLMI::Command_ScanIntegrity);    //  all of these need to change, yo
+                    _lmi.setCommand(CtiProtocolLMI::Command_ScanAccumulator);    //  all scanrates map to an accumulator scan at the moment
                     found = true;
 
                     break;
@@ -284,6 +270,8 @@ INT CtiDeviceLMI::ResultDecode( INMESS *InMessage, RWTime &Now, RWTPtrSlist< Cti
 
     if( !ErrReturn && !_lmi.recvCommResult(InMessage, outList) )
     {
+        resetScanFlags();
+
         if( _lmi.hasInboundData() )
         {
             _lmi.getInboundData(points, info);
