@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrrccs.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2002/08/09 15:21:28 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2002/08/16 19:57:51 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrrccs.cpp,v $
+      Revision 1.6  2002/08/16 19:57:51  dsutton
+      debug output using strings without NULL terminators, may be causing problems
+
       Revision 1.5  2002/08/09 15:21:28  dsutton
       Updated a printout that was causing a periodic exception to occur in the
       buildmsgforforeign system function
@@ -281,6 +284,7 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
     CHAR *ptr=NULL;
     int  index =0,connectionIndex=-1;
     CHAR *foreignSys=NULL;
+    CHAR tempStr[21];
 
     // now loop thru the many possible destinations for the point
     for (int x=0; x < aPoint.getDestinationList().size(); x++)
@@ -352,10 +356,9 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
                         strncpy (ptr->msgUnion.value.PointName, &aPoint.getDestinationList()[x].getTranslation().data()[20],20);
 
                         // intercept the batch marker point name here if it exists
-                        CHAR tempName[21];
-                        memset (tempName,'\0',21);
-                        memcpy (tempName,ptr->msgUnion.value.PointName,20);
-                        RWCString point_name (tempName);
+                        memset (tempStr,'\0',21);
+                        memcpy (tempStr,ptr->msgUnion.value.PointName,20);
+                        RWCString point_name (tempStr);
                         point_name.resize(20);
                         RWCString small_point (point_name.strip());
                         if (small_point == iBatchMarkerName)
@@ -388,9 +391,17 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
                         * required (memory is consumed no matter what if we get this far)
                         ***************************
                         */
-                        RWCString clientName(ptr->SourceName);
-                        RWCString deviceName(ptr->msgUnion.value.DeviceName);
-                        RWCString pointName(ptr->msgUnion.value.PointName);
+                        memset (tempStr,'\0',21);
+                        memcpy (tempStr,ptr->SourceName,INETDESTSIZE);
+                        RWCString clientName(tempStr);
+
+                        memset (tempStr,'\0',21);
+                        memcpy (tempStr,ptr->msgUnion.value.DeviceName,20);
+                        RWCString deviceName(tempStr);
+
+                        memset (tempStr,'\0',21);
+                        memcpy (tempStr,ptr->msgUnion.value.PointName,20);
+                        RWCString pointName(tempStr);
 
                         // memory is consumed no matter what
                         if (!getConnectionList()[connectionIndex]->write (foreignSys))
