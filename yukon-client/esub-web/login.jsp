@@ -179,7 +179,7 @@
       <P><CENTER><FONT COLOR="#000000" SIZE="-1" FACE="Times New Roman, Helvetica"><BR
       CLEAR="ALL">
       </FONT><FONT COLOR="#ffffff" SIZE="-1" FACE="Times New Roman, Helvetica">&copy; 
-      2002 Cannon Technologies, Inc. All rights reserved.<BR
+      2003 Cannon Technologies, Inc. All rights reserved.<BR
       CLEAR="ALL">
       </FONT>
 </CENTER></BLOCKQUOTE>
