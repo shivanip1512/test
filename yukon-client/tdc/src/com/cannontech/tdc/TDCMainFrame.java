@@ -3270,12 +3270,15 @@ public void jMenuItemFont_ActionPerformed(java.awt.event.ActionEvent actionEvent
 		display.setLocationRelativeTo( this );
 		display.show();
 
-		if( getMainPanel().isClientDisplay() )
-			getMainPanel().getCurrentSpecailChild().setTableFont( display.getSelectedFont() );
-			
-		if( display.isDisplayable() )
+		if( display.isDisplayable() ) //was OK pressed?
+		{
 			getMainPanel().setTableFont( display.getSelectedFont() );
 
+			if( getMainPanel().isClientDisplay() )
+				getMainPanel().getCurrentSpecailChild().setTableFont( display.getSelectedFont() );
+		}
+		
+		
 		display.dispose();
 	}
 	finally
