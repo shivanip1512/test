@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dlcbase.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/01/26 21:53:00 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/12/07 17:56:01 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,26 +35,28 @@ class CtiDLCCommandStore
 {
 public:
 
-   UINT _cmd;  // Command
-   UINT _io;   // Function read/write ?
+    UINT _cmd;  // Command
+    UINT _io;   // Function read/write ?
 
-   pair< UINT, UINT > _funcLen;  // Function and Length.
+    pair< UINT, UINT > _funcLen;  // Function and Length.
 
 
-   CtiDLCCommandStore() :
-       _cmd(0),    // == DLCCmd_Invalid
-       _io(0)
-       { }
+    CtiDLCCommandStore() :
+    _cmd(0),    // == DLCCmd_Invalid
+    _io(0)
+    {
+    }
 
-   explicit CtiDLCCommandStore( const UINT &cmd ) :
-       _cmd(cmd),
-       _io(0)
-       { }
+    explicit CtiDLCCommandStore( const UINT &cmd ) :
+    _cmd(cmd),
+    _io(0)
+    {
+    }
 
-   bool operator<( const CtiDLCCommandStore &rhs ) const
-   {
-      return( _cmd < rhs._cmd );
-   }
+    bool operator<( const CtiDLCCommandStore &rhs ) const
+    {
+        return( _cmd < rhs._cmd );
+    }
 };
 
 class IM_EX_DEVDB CtiDeviceDLCBase : public CtiDeviceSingle
@@ -121,7 +123,7 @@ public:
     virtual LONG getAddress() const;
     virtual LONG getRouteID() const;
 
-    INT retMsgHandler( RWCString commandStr, int status, CtiReturnMsg *retMsg, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList );
+    INT retMsgHandler( RWCString commandStr, int status, CtiReturnMsg *retMsg, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, bool expectMore = false );
     INT decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 
     virtual bool processAdditionalRoutes( INMESS *InMessage ) const;

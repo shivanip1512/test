@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2004/10/25 16:18:32 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2004/12/07 17:56:01 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -122,7 +122,7 @@ LONG CtiDeviceDLCBase::getAddress() const   {   return CarrierSettings.getAddres
 LONG CtiDeviceDLCBase::getRouteID() const   {   return DeviceRoutes.getRouteID();       }   //  From CtiTableDeviceRoute
 
 
-INT CtiDeviceDLCBase::retMsgHandler( RWCString commandStr, int status, CtiReturnMsg *retMsg, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList )
+INT CtiDeviceDLCBase::retMsgHandler( RWCString commandStr, int status, CtiReturnMsg *retMsg, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, bool expectMore )
 {
     CtiReturnMsg *tmpVGRetMsg = NULL;
     RWOrdered subMsgs;
@@ -203,6 +203,11 @@ INT CtiDeviceDLCBase::retMsgHandler( RWCString commandStr, int status, CtiReturn
             }
 
             retMsg->setStatus(status);
+
+            if( expectMore )
+            {
+                retMsg->setExpectMore();
+            }
 
             retList.append( retMsg );
 
