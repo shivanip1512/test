@@ -339,4 +339,29 @@ public class AuthFuncs {
         //  given IDs, they are not permitted to see this given paoID
         return false;
     }
+    
+    /**
+     * Return true if the use has access to the given PAOid, else return false.
+     * 
+     * @param LiteYukonUser, int
+     * @return boolean
+     */
+    public static boolean hasExlusiveAccess( LiteYukonUser user, int paoID )
+    {
+        DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();            
+        synchronized (cache) 
+        {
+            // Notice: The paoIDs array must be sorted for the BinarySearch to work
+            int[] paoIDs = (int[])cache.getYukonUserPaoOwners().get( user );
+
+            if( paoIDs != null )
+            {
+                int res = Arrays.binarySearch( paoIDs, paoID );                
+                if( res >= 0 )
+                    return true;
+            }
+        }
+
+        return false;
+    }    
 }
