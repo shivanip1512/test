@@ -1,3 +1,4 @@
+<%@ include file="StarsHeader.jsp" %>
 <%
 	String appNoStr = request.getParameter("AppNo");
 	int appNo = -1;
@@ -11,6 +12,27 @@
 	if (appNoStr != null)
 		backURL += "?AppNo=" + appNoStr;
 	
+	StarsAppliance appliance = appliances.getStarsAppliance(appNo);
+	
+	StarsLMProgram program = null;
+	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
+		StarsLMProgram starsProg = programs.getStarsLMProgram(i);
+		if (starsProg.getProgramID() == appliance.getLmProgramID()) {
+			program = starsProg;
+			break;
+		}
+	}
+	
+	StarsApplianceCategory category = null;
+	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
+		StarsApplianceCategory appCat = categories.getStarsApplianceCategory(i);
+		if (appCat.getApplianceCategoryID() == appliance.getApplianceCategoryID()) {
+			category = appCat;
+			break;
+		}
+	}
+	
+	StarsLMControlHistory ctrlHist = (StarsLMControlHistory) user.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "LM_CONTROL_HISTORY");
 %>
 <html>
 <head>
@@ -60,22 +82,6 @@
           <td  valign="top" width="101">
 		  <% String pageName = "ProgramHist.jsp"; %>
           <%@ include file="Nav.jsp" %>
-<%
-	// Header files have already been included in Nav.jsp
-	StarsAppliance appliance = appliances.getStarsAppliance(appNo);
-	
-	StarsLMProgram program = null;
-	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
-		StarsLMProgram starsProg = (StarsLMProgram) programs.getStarsLMProgram(i);
-		if (starsProg.getProgramID() == appliance.getLmProgramID()) {
-			program = starsProg;
-			break;
-		}
-	}
-	
-	StarsOperation operation = (StarsOperation) session.getAttribute("RESPONSE_OPERATION");
-	StarsLMControlHistory ctrlHist = operation.getStarsLMControlHistory();
-%>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
@@ -119,7 +125,7 @@
                     <tr> 
                       <td width="107" valign="top"> 
                         <div align="center">
-						  <img src="../<%= Mappings.getApplianceImage(appliance.getStarsApplianceCategory().getCategory()) %>" width="60" height="59"><br>
+						  <img src="../<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>
                           <span class="TableCell"><%= program.getProgramName() %></span><br>
                         </div>
                       </td>

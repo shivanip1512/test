@@ -62,6 +62,7 @@
               <br>
               </span>
 			  <form method="post" action="Wizard3.jsp">
+			    <input type="hidden" name="AcctNo" value="<%= request.getParameter("AcctNo") %>">
                 <table class = "TableCell" width="75%" border="1" cellpadding = "3" cellspacing = "0" height="87">
                   <tr> 
                     <td width="60%">Do you own your own home?</td>
@@ -112,7 +113,7 @@
 					
                   <td> 
                     
-                      <input type = "button" value="Cancel" name = "cancel" onclick = "goBack()">
+                      <input type = "button" value="Cancel" name = "cancel" onclick = "history.back()">
                     
                   </td>
 					

@@ -66,15 +66,17 @@
                           If you are currently enrolled in a program, enter your 
                           account number and password.</div>
                         <form name="form1" method="post" action="/servlet/SOAPClient">
-                          <input type="hidden" name="action" value="ConsumerStatLogin">
-                          <input type="hidden" name="SearchBy" value="AccountNumber">
+                          <input type="hidden" name="action" value="StarsLogin">
+                          <input type="hidden" name="homeURL" value="/stat/ProgramHist.jsp">
+						  
+						  <input type="hidden" name="DATABASEALIAS" value="yukon">
                           <table width="200" border="0" cellspacing="0" cellpadding="3" align="center">
                             <tr> 
                               <td width="83" class = "Main"> 
-                                <div align="right"> Acct #:</div>
+                                <div align="right">Username:</div>
                               </td>
                               <td width="117" valign="bottom"> 
-                                <input type="text" name="SearchValue">
+                                <input type="text" name="USERNAME">
                               </td>
                             </tr>
                             <tr> 
@@ -82,7 +84,7 @@
                                 <div align="right">Password:</div>
                               </td>
                               <td width="117"> 
-                                <input type="password" name="textfield22">
+                                <input type="password" name="PASSWORD">
                               </td>
                             </tr>
                             <tr> 

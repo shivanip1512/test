@@ -32,7 +32,7 @@
 		}
 	}
 	
-	StarsLMControlHistory ctrlHist = (StarsLMControlHistory) operator.getAttribute("$$LM_CONTROL_HISTORY");
+	StarsLMControlHistory ctrlHist = (StarsLMControlHistory) operator.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "LM_CONTROL_HISTORY");
 %>
 <html>
 <head>

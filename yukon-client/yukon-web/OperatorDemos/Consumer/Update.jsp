@@ -150,7 +150,7 @@ function copyAddress(form) {
                                 <div align="right">Substation Name: </div>
                               </td>
                               <td width="210"> 
-                                <input type="text" name="Substation" maxlength="30" size="24" value="<%= siteInfo.getSubstationName() %>">
+                                <input type="text" name="Substation" maxlength="30" size="24" value="<%= siteInfo.getSubstation().getContent() %>">
                               </td>
                             </tr>
                             <tr> 

@@ -1,8 +1,26 @@
+<%@ include file="StarsHeader.jsp" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
+<script language="JavaScript">
+function copyAddress(form) {
+	form.BAddr1.value = form.SAddr1.value;
+	form.BAddr2.value = form.SAddr2.value;
+	form.BCity.value = form.SCity.value;
+	form.BState.value = form.SState.value;
+	form.BZip.value = form.SZip.value;
+}
+
+function checkPassword(form) {
+	if (form.Password.value != form.Password2.value) {
+		alert("Passwords don't match, please make sure you input the same password twice.");
+		return false;
+	}
+	return true;
+}
+</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -61,10 +79,11 @@
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" bgcolor="#FFFFFF" valign = "top" align = "center"> 
            <% String header = "NEW SIGNUP"; %><%@ include file="SearchBar.jsp" %>
+		   <form name="form1" method="POST" action="/servlet/SOAPClient" onSubmit="return checkPassword(this)">
+			<input type="hidden" name="action" value="NewCustAccount">
             
             <table width="600" border="0" cellspacing="0" cellpadding="10" align="center">
               <tr> 
-                <form name="form6" method="get" action="Contacts.jsp">
                   <td width="300" valign="top"><span class="MainHeader"><b>CUSTOMER 
                     CONTACT</b></span> 
                     <hr>
@@ -77,10 +96,10 @@
                           <table width="191" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
                               <td width="95"> 
-                                <input type="text" name="textfield242" maxlength="40" size="14">
+                                <input type="text" name="AcctNo" maxlength="40" size="14">
                               </td>
                               <td valign="top" class="TableCell" width="95" align="center">&nbsp;&nbsp;Commercial: 
-                                <input type="checkbox" name="checkbox" value="checkbox">
+                                <input type="checkbox" name="Commercial" value="true">
                               </td>
                             </tr>
                           </table>
@@ -91,7 +110,7 @@
                           <div align="right">Company: </div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield" maxlength="30" size="24">
+                          <input type="text" name="Company" maxlength="30" size="24">
                         </td>
                       </tr>
                       <tr> 
@@ -99,7 +118,7 @@
                           <div align="right">Last Name:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield3" maxlength="30" size="24">
+                          <input type="text" name="LastName" maxlength="30" size="24">
                         </td>
                       </tr>
                       <tr> 
@@ -107,7 +126,7 @@
                           <div align="right">First Name:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield2" maxlength="30" size="24">
+                          <input type="text" name="FirstName" maxlength="30" size="24">
                         </td>
                       </tr>
                       <tr> 
@@ -115,7 +134,7 @@
                           <div align="right">Home #:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield24" maxlength="14" size="14">
+                          <input type="text" name="HomePhone" maxlength="14" size="14">
                         </td>
                       </tr>
                       <tr> 
@@ -123,7 +142,7 @@
                           <div align="right">Work #:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield25" maxlength="14" size="14">
+                          <input type="text" name="WorkPhone" maxlength="14" size="14">
                         </td>
                       </tr>
                       <tr> 
@@ -131,7 +150,7 @@
                           <div align="right">Notes:</div>
                         </td>
                         <td width="210"> 
-                          <textarea name="notes" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
+                          <textarea name="AcctNotes" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
                         </td>
                       </tr>
                       <tr> 
@@ -139,7 +158,7 @@
                           <div align="right">Last Name (2):</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield3" maxlength="30" size="24">
+                          <input type="text" name="LastName2" maxlength="30" size="24">
                         </td>
                       </tr>
                       <tr> 
@@ -147,7 +166,7 @@
                           <div align="right">First Name (2):</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield2" maxlength="30" size="24">
+                          <input type="text" name="FirstName2" maxlength="30" size="24">
                         </td>
                       </tr>
                       <tr> 
@@ -155,7 +174,7 @@
                           <div align="right">Home # (2):</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield24" maxlength="14" size="14">
+                          <input type="text" name="HomePhone2" maxlength="14" size="14">
                         </td>
                       </tr>
                       <tr> 
@@ -163,7 +182,7 @@
                           <div align="right">Work # (2):</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield25" maxlength="14" size="14">
+                          <input type="text" name="WorkPhone2" maxlength="14" size="14">
                         </td>
                       </tr>
                       <tr> 
@@ -171,7 +190,7 @@
                           <div align="right">Last Name (3):</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield3" maxlength="30" size="24">
+                          <input type="text" name="LastName3" maxlength="30" size="24">
                         </td>
                       </tr>
                       <tr> 
@@ -179,7 +198,7 @@
                           <div align="right">First Name (3):</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield2" maxlength="30" size="24">
+                          <input type="text" name="FirstName3" maxlength="30" size="24">
                         </td>
                       </tr>
                       <tr> 
@@ -187,7 +206,7 @@
                           <div align="right">Home # (3):</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield24" maxlength="14" size="14">
+                          <input type="text" name="HomePhone3" maxlength="14" size="14">
                         </td>
                       </tr>
                       <tr> 
@@ -195,7 +214,7 @@
                           <div align="right">Work # (3):</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield25" maxlength="14" size="14">
+                          <input type="text" name="WorkPhone3" maxlength="14" size="14">
                         </td>
                       </tr>
                       <tr> 
@@ -203,7 +222,7 @@
                           <div align="right">Last Name (4):</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield3" maxlength="30" size="24">
+                          <input type="text" name="LastName4" maxlength="30" size="24">
                         </td>
                       </tr>
                       <tr> 
@@ -211,7 +230,7 @@
                           <div align="right">First Name (4):</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield2" maxlength="30" size="24">
+                          <input type="text" name="FirstName4" maxlength="30" size="24">
                         </td>
                       </tr>
                       <tr> 
@@ -219,7 +238,7 @@
                           <div align="right">Home # (4):</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield24" maxlength="14" size="14">
+                          <input type="text" name="HomePhone4" maxlength="14" size="14">
                         </td>
                       </tr>
                       <tr> 
@@ -227,13 +246,11 @@
                           <div align="right">Work # (4):</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield25" maxlength="14" size="14">
+                          <input type="text" name="WorkPhone4" maxlength="14" size="14">
                         </td>
                       </tr>
                     </table>
                   </td>
-                </form>
-                <form name="form7" method="post" action="">
                   <td width="300" valign="top"><span class="MainHeader"><b>SERVICE 
                     ADDRESS </b>&nbsp;&nbsp;</span> 
                     <hr>
@@ -243,7 +260,7 @@
                           <div align="right">Address 1:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield4" maxlength="30" size="24">
+                          <input type="text" name="SAddr1" maxlength="30" size="24">
                         </td>
                       </tr>
                       <tr> 
@@ -251,7 +268,7 @@
                           <div align="right">Address 2:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield5" maxlength="30" size="24">
+                          <input type="text" name="SAddr2" maxlength="30" size="24">
                         </td>
                       </tr>
                       <tr> 
@@ -259,7 +276,7 @@
                           <div align="right">City:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield6" maxlength="30" size="24">
+                          <input type="text" name="SCity" maxlength="30" size="24">
                         </td>
                       </tr>
 					  <tr> 
@@ -267,7 +284,7 @@
                           <div align="right">County:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield6" maxlength="30" size="24">
+                          <input type="text" name="SCounty" maxlength="30" size="24">
                         </td>
                       </tr>
                       <tr> 
@@ -275,7 +292,7 @@
                           <div align="right">State:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield223" maxlength="2" size="14">
+                          <input type="text" name="SState" maxlength="2" size="14">
                         </td>
                       </tr>
                       <tr> 
@@ -283,7 +300,7 @@
                           <div align="right">Zip:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield224" maxlength="12" size="14">
+                          <input type="text" name="SZip" maxlength="12" size="14">
                         </td>
                       </tr>
                       <tr> 
@@ -291,7 +308,7 @@
                           <div align="right">Map #:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield2242" maxlength="12" size="14">
+                          <input type="text" name="PropNo" maxlength="12" size="14">
                         </td>
                       </tr>
                       <tr> 
@@ -299,7 +316,7 @@
                           <div align="right">Notes:</div>
                         </td>
                         <td width="210"> 
-                          <textarea name="textarea" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
+                          <textarea name="PropNotes" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
                         </td>
                       </tr>
                     </table>
@@ -310,7 +327,7 @@
                       <tr> 
                         <td width="90" class="TableCell">&nbsp;</td>
                         <td width="210"> 
-                          <input type="submit" name="Same" value="Same as Above">
+                          <input type="submit" name="Same" value="Same as Above" onclick="copyAddress(this.form)">
                         </td>
                       </tr>
                       <tr> 
@@ -318,7 +335,7 @@
                           <div align="right">Address 1:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield7" maxlength="30" size="24">
+                          <input type="text" name="BAddr1" maxlength="30" size="24">
                         </td>
                       </tr>
                       <tr> 
@@ -326,7 +343,7 @@
                           <div align="right">Address 2:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield8" maxlength="30" size="24">
+                          <input type="text" name="BAddr2" maxlength="30" size="24">
                         </td>
                       </tr>
                       <tr> 
@@ -334,7 +351,7 @@
                           <div align="right">City:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield9" maxlength="30" size="24">
+                          <input type="text" name="BCity" maxlength="30" size="24">
                         </td>
                       </tr>
                       <tr> 
@@ -342,7 +359,7 @@
                           <div align="right">State:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield2232" maxlength="2" size="14">
+                          <input type="text" name="BState" maxlength="2" size="14">
                         </td>
                       </tr>
                       <tr> 
@@ -350,7 +367,7 @@
                           <div align="right">Zip:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield2243" maxlength="12" size="14">
+                          <input type="text" name="BZip" maxlength="12" size="14">
                         </td>
                       </tr>
                     </table>
@@ -363,7 +380,18 @@
                           <div align="right">Substation Name: </div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield10" maxlength="30" size="24">
+                          <select name="Substation">
+<%
+	Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+	StarsCustSelectionList substationList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION );
+	for (int i = 0; i < substationList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = substationList.getStarsSelectionListEntry(i);
+%>
+							<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+<%
+	}
+%>
+						  </select>
                         </td>
                       </tr>
                       <tr> 
@@ -371,7 +399,7 @@
                           <div align="right">Feeder: </div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield232" maxlength="20" size="20">
+                          <input type="text" name="Feeder" maxlength="20" size="20">
                         </td>
                       </tr>
                       <tr> 
@@ -379,7 +407,7 @@
                           <div align="right">Pole: </div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield2422" maxlength="20" size="20">
+                          <input type="text" name="Pole" maxlength="20" size="20">
                         </td>
                       </tr>
                       <tr> 
@@ -387,7 +415,7 @@
                           <div align="right">Transformer Size: </div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield2522" maxlength="20" size="20">
+                          <input type="text" name="TranSize" maxlength="20" size="20">
                         </td>
                       </tr>
                       <tr> 
@@ -395,22 +423,21 @@
                           <div align="right">Service Voltage: </div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="textfield24222" maxlength="20" size="20">
+                          <input type="text" name="ServVolt" maxlength="20" size="20">
                         </td>
                       </tr>
                     </table>
                     <br>
                   </td>
-                </form>
               </tr>
             </table>
+<!--
             <table width="600" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
                 <td class="MainHeader"><b>PROGRAMS</b> 
                   <hr>
                   <table width="610" border="1" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                     <tr valign="top"> 
-                      <form name="form6" method="get" action="">
                         <td> 
                           <table width="95" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
@@ -439,8 +466,6 @@
                             </tr>
                           </table>
                         </td>
-                      </form>
-                      <form name="form6" method="get" action="">
                         <td> 
                           <table width="95" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
@@ -477,8 +502,6 @@
                             </tr>
                           </table>
                         </td>
-                      </form>
-                      <form name="form6" method="get" action="">
                         <td> 
                           <table width="95" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
@@ -507,8 +530,6 @@
                             </tr>
                           </table>
                         </td>
-                      </form>
-                      <form name="form6" method="get" action="">
                         <td> 
                           <table width="95" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
@@ -520,8 +541,6 @@
                             </tr>
                           </table>
                         </td>
-                      </form>
-                      <form name="form6" method="get" action="">
                         <td> 
                           <table width="95" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
@@ -532,8 +551,6 @@
                             </tr>
                           </table>
                         </td>
-                      </form>
-                      <form name="form6" method="get" action="">
                         <td> 
                           <table width="95" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
@@ -544,30 +561,27 @@
                             </tr>
                           </table>
                         </td>
-                      </form>
                     </tr>
                   </table>
                 </td>
               </tr>
             </table>
-            <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
+-->
+              <table width="400" border="0" cellspacing="0" cellpadding="5" align="center">
               <tr> 
-                <form name="form3" method="get" action="New.jsp">
                   <td width="191"> 
                     <div align="right"> 
                       <input type="submit" name="Save" value="Save">
                     </div>
                   </td>
-                </form>
-                <form name="form4" method="" action="">
                   <td width="189"> 
                     <div align="left"> 
-                      <input type="reset" name="Cancel" value="Cancel">
+                      <input type="button" name="Cancel" value="Cancel" onclick="location='../Operations.jsp'">
                     </div>
                   </td>
-                </form>
               </tr>
             </table>
+		   </form>
             <p>&nbsp;</p>
           </td>
         <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>

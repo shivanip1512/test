@@ -1,3 +1,4 @@
+<%@ include file="StarsHeader.jsp" %>
 <html>
 <head>
 <title>Consumer Energy Services</title>
@@ -119,15 +120,25 @@
                 </tr>
 <%
 	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
-		StarsLMProgram program = (StarsLMProgram) programs.getStarsLMProgram(i);
+		StarsLMProgram program = programs.getStarsLMProgram(i);
 		
 		StarsAppliance appliance = null;
 		int appNo = -1;
+		StarsApplianceCategory category = null;
+		
 		for (int j = 0; j < appliances.getStarsApplianceCount(); j++) {
-			StarsAppliance starsApp = (StarsAppliance) appliances.getStarsAppliance(j);
+			StarsAppliance starsApp = appliances.getStarsAppliance(j);
 			if (starsApp.getLmProgramID() == program.getProgramID()) {
 				appliance = starsApp;
 				appNo = j;
+				
+				for (int k = 0; k < categories.getStarsApplianceCategoryCount(); k++) {
+					StarsApplianceCategory appCat = categories.getStarsApplianceCategory(k);
+					if (appCat.getApplianceCategoryID() == appliance.getApplianceCategoryID()) {
+						category = appCat;
+						break;
+					}
+				}
 				break;
 			}
 		}
@@ -135,7 +146,7 @@
                 <tr bgcolor="#FFFFFF"> 
                   <td width="162"> 
                     <div align="center">
-					  <img src="../<%= Mappings.getApplianceImage(appliance.getStarsApplianceCategory().getCategory()) %>" width="60" height="59"><br>
+					  <img src="../<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>
 					  <span class="TableCell"><%= program.getProgramName() %></span>
 					</div>
                   </td>
@@ -212,12 +223,10 @@
                   </td>
                   <td width="332"> 
 					<form method="POST" action="/servlet/SOAPClient">
-					<input type="hidden" name="action" value="ConsumerSwitchGetLMCtrlHist">
-					<%-- Group ID is used for finding control history --%>
+					<input type="hidden" name="action" value="GetLMCtrlHist">
 					<input type="hidden" name="Group" value="<%= program.getGroupID() %>">
-					<%-- AppNo will be transferred to the destination page to identify the program --%>
 					<input type="hidden" name="AppNo" value="<%= appNo %>">
-					<%-- BackURL will be transferred to the destination page to indicate the referrer --%>
+					<input type="hidden" name="DestURL" value="/UserDemos/ConsumerSwitch/switch/ContHist.jsp">
 					<input type="hidden" name="BackURL" value="ProgramHist.jsp">
                     <table width="100" border="0" cellspacing="0" cellpadding="3" align="center">
                       <tr> 

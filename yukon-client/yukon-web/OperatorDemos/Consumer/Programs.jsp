@@ -100,7 +100,7 @@ function MM_popupMsg(msg) { //v1.0
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
-<div id = "tool" class = "tooltip"></div>
+<div id = "tool" class = "tooltip" style="width: 1003px; height: 20px"></div>
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -157,6 +157,7 @@ function MM_popupMsg(msg) { //v1.0
                 like to be enrolled in. </span><br>
                 <br>
               </div>
+			  <form name="form1" method="post" action="ChangeForm.jsp">
               <table border="1" cellspacing="0" cellpadding="3" width="366" height="321">
                 <tr>
                   <td width="83" class="HeaderCell" align = "center">Description</td>
@@ -340,7 +341,6 @@ function MM_popupMsg(msg) { //v1.0
                 </tr>
               </table>
              
-              <form name="form1" method="post" action="ChangeForm.jsp">
                 <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                   <tr> 
                     <td width="186"> 
@@ -355,6 +355,8 @@ function MM_popupMsg(msg) { //v1.0
                     </td>
                   </tr>
                 </table>
+              </form>
+			  
                 <p align="center" class="MainHeader"><b>Program History </b> 
                 <table width="300" border="1" cellspacing="0" align="center" cellpadding="3">
                   <tr> 
@@ -362,29 +364,6 @@ function MM_popupMsg(msg) { //v1.0
                     <td class="HeaderCell" width="100" >Type - Duration</td>
                     <td class="HeaderCell" width="100" >Program</td>
                   </tr>
-                  <tr> 
-                    <td class="TableCell" width="100" >07/15/02</td>
-                    <td class="TableCell" width="100" >Temp Opt Out - 3 Days</td>
-                    <td class="TableCell" width="100" >Cycle AC<br>
-                      Water Heater </td>
-                  </tr>
-                  <tr> 
-                    <td class="TableCell" width="100" >12/25/01</td>
-                    <td class="TableCell" width="100" >Temp Opt Out - 1 Day</td>
-                    <td class="TableCell" width="100" >Cycle AC<br>
-                      Water Heater </td>
-                  </tr>
-                  <tr> 
-                    <td class="TableCell" width="100" >08/20/01</td>
-                    <td class="TableCell" width="100" >Signup</td>
-                    <td class="TableCell" width="100" >Cycle AC</td>
-                  </tr>
-                  <tr> 
-                    <td class="TableCell" width="100" >02/12/01</td>
-                    <td class="TableCell" width="100" >Signup</td>
-                    <td class="TableCell" width="100" >Water Heater</td>
-                  </tr>
-<!--
 <%
 	boolean optOut = false;
 	Calendar startCal = Calendar.getInstance();
@@ -408,10 +387,20 @@ function MM_popupMsg(msg) { //v1.0
 			else
 				durStr += " Day";
 %>
-                <tr> 
-                  <td class="TableCell"><%= dateFormat.format(event.getEventDateTime()) %></td>
-                  <td class="TableCell"><%= durStr %></td>
-                </tr>
+                  <tr> 
+                    <td class="TableCell" width="100" ><%= dateFormat.format(event.getEventDateTime()) %></td>
+                    <td class="TableCell" width="100" ><%= event.getEventAction() %> - <%= durStr %></td>
+                    <td class="TableCell" width="100" >
+<%
+			for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
+				StarsLMProgram program = programs.getStarsLMProgram(j);
+%>
+					<%= program.getProgramName() %><br>
+<%
+			}
+%>
+					</td>
+                  </tr>
 <%
 		}
 		else {
@@ -419,10 +408,8 @@ function MM_popupMsg(msg) { //v1.0
 		}
 	}
 %>
--->
                 </table>
                 <br>
-              </form>
              
              </div>
             </td>

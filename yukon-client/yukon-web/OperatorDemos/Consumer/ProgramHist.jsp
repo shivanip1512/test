@@ -178,11 +178,9 @@
                   <td width="332"> 
 					<form method="POST" action="/servlet/SOAPClient">
 					<input type="hidden" name="action" value="GetLMCtrlHist">
-					<%-- Group ID is used for finding control history --%>
 					<input type="hidden" name="Group" value="<%= program.getGroupID() %>">
-					<%-- AppNo will be transferred to the destination page to identify the program --%>
 					<input type="hidden" name="AppNo" value="<%= appNo %>">
-					<%-- BackURL will be transferred to the destination page to indicate the referrer --%>
+					<input type="hidden" name="DestURL" value="/OperatorDemos/Consumer/ContHist.jsp">
 					<input type="hidden" name="BackURL" value="ProgramHist.jsp">
                     <table width="100" border="0" cellspacing="0" cellpadding="3" align="center">
                       <tr> 

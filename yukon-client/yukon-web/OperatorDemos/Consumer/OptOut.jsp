@@ -117,29 +117,6 @@ function confirmSubmit(form) { //v1.0
                   <td class="HeaderCell">Type - Duration</td>
                   <td class="HeaderCell">Program</td>
                 </tr>
-                <tr> 
-                  <td class="TableCell" width="100" >07/15/02</td>
-                  <td class="TableCell" width="100" >Temp Opt Out - 3 Days</td>
-                  <td class="TableCell" width="100" >Cycle AC<br>
-                    Water Heater </td>
-                </tr>
-                <tr> 
-                  <td class="TableCell" width="100" >12/25/01</td>
-                  <td class="TableCell" width="100" >Temp Opt Out - 1 Day</td>
-                  <td class="TableCell" width="100" >Cycle AC<br>
-                    Water Heater </td>
-                </tr>
-                <tr> 
-                  <td class="TableCell" width="100" >08/20/01</td>
-                  <td class="TableCell" width="100" >Signup</td>
-                  <td class="TableCell" width="100" >Cycle AC</td>
-                </tr>
-                <tr>
-                  <td class="TableCell" width="100" >02/12/01</td>
-                  <td class="TableCell" width="100" >Signup</td>
-                  <td class="TableCell" width="100" >Water Heater</td>
-                </tr>
-<!--
 <%
 	boolean optOut = false;
 	Calendar startCal = Calendar.getInstance();
@@ -162,10 +139,20 @@ function confirmSubmit(form) { //v1.0
 			else
 				durStr += " Day";
 %>
-                <tr> 
-                  <td class="TableCell"><%= dateFormat.format(event.getEventDateTime()) %></td>
-                  <td class="TableCell"><%= durStr %></td>
-                </tr>
+                  <tr> 
+                    <td class="TableCell" width="100" ><%= dateFormat.format(event.getEventDateTime()) %></td>
+                    <td class="TableCell" width="100" ><%= event.getEventAction() %> - <%= durStr %></td>
+                    <td class="TableCell" width="100" >
+<%
+			for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
+				StarsLMProgram program = programs.getStarsLMProgram(j);
+%>
+					<%= program.getProgramName() %><br>
+<%
+			}
+%>
+					</td>
+                  </tr>
 <%
 		}
 		else {
@@ -173,7 +160,6 @@ function confirmSubmit(form) { //v1.0
 		}
 	}
 %>
--->
               </table>
               <br>
               <table width="150" border="0" cellspacing="0" cellpadding="3" align="center">

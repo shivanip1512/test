@@ -68,16 +68,17 @@
                           If you are currently enrolled in a program, enter your 
                           account number and password.</div>
                         <form name="form1" method="post" action="/servlet/SOAPClient">
-                     	<input type="hidden" name="action" value="ConsumerSwitchLogin">
-				  		<input type="hidden" name="SearchBy" value="AccountNumber">
-
+                     	<input type="hidden" name="action" value="UserLogin">
+						<input type="hidden" name="DATABASEALIAS" value="yukon">
+				  		<input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerSwitch/switch/ProgramHist.jsp">
+				  		<input type="hidden" name="REFERRER" value="/UserDemos/ConsumerSwitch/login.jsp">
                           <table width="200" border="0" cellspacing="0" cellpadding="3" align="center">
                             <tr> 
                               <td width="83" class = "Main"> 
-                                <div align="right">Acct #:</div>
+                                <div align="right">Username:</div>
                               </td>
                               <td width="117" valign="bottom"> 
-                                <input type="text" name="SearchValue">
+                                <input type="text" name="USERNAME">
                               </td>
                             </tr>
                             <tr> 
@@ -85,7 +86,7 @@
                                 <div align="right">Password:</div>
                               </td>
                               <td width="117"> 
-                                <input type="password" name="textfield22">
+                                <input type="password" name="PASSWORD">
                               </td>
                             </tr>
                             <tr> 
@@ -100,11 +101,17 @@
                         </form>
                       </td>
                       <td width="555" valign = "bottom" bgcolor="#FFFFFF"class = "TableCell" height="25" align = "center"><img src="../ConsumerStat/YourLogo.gif" width="202" height="58"></td>
-                      <form method="get" action="../ConsumerStat/Consumer/Update.jsp">
-                      </form>
                     </tr>
                     <tr>
-                      <td width="555" bgcolor="#FFFFFF" class = "TableCell3"><form action = "ProgramsNew.jsp">
+                      <td width="555" bgcolor="#FFFFFF" class = "TableCell3">
+					  <form method="get" action="ProgramsNew.jsp">
+<!--
+					  <form method="post" action="/servlet/SOAPClient">
+					    <input type="hidden" name="action" value="GetEnrollmentPrograms">
+						<input type="hidden" name="CompanyID" value="1">
+						<input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerSwitch/ProgramsNew.jsp">
+						<input type="hidden" name="REFERRER" value="/UserDemos/ConsumerSwitch/login.jsp">
+-->
                         <table width="154" border="0" cellspacing="0" cellpadding="10" align="center" class = "Main" height="97">
                           <tr> 
                             <td> 

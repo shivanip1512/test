@@ -1,25 +1,3 @@
-<%@ page import="java.util.Hashtable" %>
-<%@ page import="com.cannontech.stars.xml.serialize.*" %>
-<%@ page import="com.cannontech.stars.web.util.Mappings" %>
-<%@ page import="com.cannontech.stars.web.util.CommonUtils" %>
-
-<%
-	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
-	
-	StarsCustomerAccountInformation accountInfo = (StarsCustomerAccountInformation) session.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
-	if (accountInfo == null) response.sendRedirect("/UserDemos/ConsumerSwitch/login.jsp");
-	
-	StarsCustomerAccount account = accountInfo.getStarsCustomerAccount();
-    StreetAddress propAddr = account.getStreetAddress();
-    StarsSiteInformation siteInfo = account.getStarsSiteInformation();
-    BillingAddress billAddr = account.getBillingAddress();
-    PrimaryContact primContact = account.getPrimaryContact();
-	
-	StarsAppliances appliances = accountInfo.getStarsAppliances();
-	StarsInventories inventories = accountInfo.getStarsInventories();
-	StarsLMPrograms programs = accountInfo.getStarsLMPrograms();
-%>
-
 <%
 	// Map of page name / link text
 	String linkMap[][] = {{"TOU.jsp", "Usage"},
