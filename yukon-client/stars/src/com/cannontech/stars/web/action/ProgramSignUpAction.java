@@ -361,7 +361,7 @@ public class ProgramSignUpAction implements ActionBase {
 							(liteApp.getProgramID() == program.getProgramID() || liteApp.getApplianceCategoryID() == program.getApplianceCategoryID()))
 						{
 							if (!program.hasInventoryID()) {
-								if (!program.hasAddressingGroupID())
+								if (!program.hasAddressingGroupID() && liteApp.getProgramID() == program.getProgramID())
 									program.setAddressingGroupID( liteApp.getAddressingGroupID() );
 								program.setInventoryID( liteApp.getInventoryID() );
 								program.setLoadNumber( liteApp.getLoadNumber() );
@@ -462,8 +462,18 @@ public class ProgramSignUpAction implements ActionBase {
 				
 				// Add the program to the new program list
 				LiteStarsLMProgram liteStarsProg = getLMProgram( liteAcctInfo, program.getProgramID() );
-				if (liteStarsProg == null)
-					liteStarsProg = new LiteStarsLMProgram( liteProg );
+				if (liteStarsProg == null) {
+					for (int j = 0; j < newProgList.size(); j++) {
+						LiteStarsLMProgram prog = (LiteStarsLMProgram) newProgList.get(j);
+						if (prog.getProgramID() == program.getProgramID()) {
+							liteStarsProg = prog;
+							break;
+						}
+					}
+					
+					if (liteStarsProg == null)
+						liteStarsProg = new LiteStarsLMProgram( liteProg );
+				}
 				if (!newProgList.contains( liteStarsProg ))
 					newProgList.add( liteStarsProg );
 			    
