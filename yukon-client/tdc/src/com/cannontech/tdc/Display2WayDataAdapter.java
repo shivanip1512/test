@@ -1299,22 +1299,13 @@ protected void insertAlarmDisplayAlarmedRow( Signal signal )
 
 					if( rowLoc < 0 )  // if the point does not already exist on the table
 					{
-						//always keep our main list in order by the Date column
-//						int indx = java.util.Collections.binarySearch( 
-//								getRows(),
-//								newBus, 
-//								SUB_AREA_COMPARATOR );
-//
-//						if( indx < 0 )
-//							getAllSubBuses().add( newBus );
-//						else
-//							getAllSubBuses().add( indx, newBus );
-						
 						int addedRows = addColumnDefinedRow(signal);
 						incrementAlarmedRowsPosition( addedRows );
-						fireTableRowsInserted( getRowCount()-addedRows, getRowCount()-1 );												
+						fireTableRowsInserted( getRowCount()-addedRows, getRowCount()-1 );
 					}
 
+					int rNum = getRowNumber(signal.getPointID());
+					getPointValue(rNum).updateSignal( signal );
 					setRowAlarmed( signal );
 				}
 			}
