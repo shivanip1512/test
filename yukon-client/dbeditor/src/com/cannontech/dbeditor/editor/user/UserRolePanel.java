@@ -429,6 +429,8 @@ private javax.swing.JTree getJTreeRoles() {
 						ClientSession session = ClientSession.getInstance();
 						if(session.getUser().getUserID() == com.cannontech.user.UserUtils.USER_ADMIN_ID)
 							lbNode.setIsSystemReserved(false);
+						else
+							lbNode.setIsSystemReserved(true);
 					}
 					//set this to tell the GUI if this node is editable or not		
 					else

@@ -26,6 +26,7 @@ public final class UserUtils
 
 	/* Precanned role categories for users in the system */
 	public static final String CAT_YUKON = "Yukon";
+	public static final String CAT_RADIUS = "Radius Login";
 
 	
 	public static final String[] ALL_CATEGORIES =
