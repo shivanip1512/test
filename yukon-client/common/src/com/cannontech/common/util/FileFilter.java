@@ -1,4 +1,4 @@
-package com.cannontech.esub.util;
+package com.cannontech.common.util;
 
 /*
  * @(#)ExampleFileFilter.java	1.9 99/04/23

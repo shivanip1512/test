@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Logger;
 
+import com.cannontech.common.util.*;
 import com.cannontech.esub.editor.Drawing;
 
 /**
@@ -40,20 +41,7 @@ public static synchronized javax.swing.JFileChooser getDrawingJFileChooser()
 
     return drawingFileChooser;
 }
-    /*
-     * Get the extension of a file.
-     */
-    public static String getExtension(java.io.File f) {
-        String ext = null;
-        String s = f.getName();
-        int i = s.lastIndexOf('.');
-
-        if (i > 0 &&  i < s.length() - 1) {
-            ext = s.substring(i+1).toLowerCase();
-        }
-        return ext;
-    }
-public static synchronized javax.swing.JColorChooser getJColorChooser()
+    public static synchronized javax.swing.JColorChooser getJColorChooser()
 {
     if (colorChooser == null) {
         colorChooser = new javax.swing.JColorChooser();

@@ -3,6 +3,11 @@ package com.cannontech.common.util;
  * This type was created in VisualAge.
  */
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.logging.Logger;
+
 import javax.swing.JComboBox;
 
 public final class CtiUtilities 
@@ -23,6 +28,13 @@ public final class CtiUtilities
 	public static final Character falseChar = new Character('N');
 	private static java.util.GregorianCalendar gc1990 = null;
 
+	// image extensions
+	public final static String jpeg = "jpeg";
+    public final static String jpg = "jpg";
+    public final static String gif = "gif";
+    public final static String tiff = "tiff";
+    public final static String tif = "tif";
+    		
 	private static String temp;
 
 	static
@@ -965,4 +977,20 @@ public static final String toDatabaseString(java.util.Date date)
 
 	return format.format(date).toUpperCase();
 }
+
+/*
+ * Get the extension of a file.
+ */
+public static String getExtension(java.io.File f) {
+	String ext = null;
+    String s = f.getName();
+    
+    int i = s.lastIndexOf('.');
+
+    if (i > 0 &&  i < s.length() - 1) {
+    	ext = s.substring(i+1).toLowerCase();
+    }
+    return ext;
+ }
+
 }

@@ -1,8 +1,8 @@
-package com.cannontech.esub.util;
+package com.cannontech.common.util;
 
 import java.io.File;
 
-import com.cannontech.esub.util.Util;
+import com.cannontech.common.util.*;
 
 public class ImageFilter extends FileFilter {
     
@@ -12,13 +12,13 @@ public class ImageFilter extends FileFilter {
             return true;
         }
 
-        String extension = Util.getExtension(f);
+        String extension = CtiUtilities.getExtension(f);
 	if (extension != null) {
-            if (extension.equals(Util.tiff) ||
-                extension.equals(Util.tif) ||
-                extension.equals(Util.gif) ||
-                extension.equals(Util.jpeg) ||
-                extension.equals(Util.jpg)) {
+            if (extension.equals(CtiUtilities.tiff) ||
+                extension.equals(CtiUtilities.tif) ||
+                extension.equals(CtiUtilities.gif) ||
+                extension.equals(CtiUtilities.jpeg) ||
+                extension.equals(CtiUtilities.jpg)) {
                     return true;
             } else {
                 return false;

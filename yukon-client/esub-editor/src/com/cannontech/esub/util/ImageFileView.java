@@ -4,7 +4,7 @@ import java.io.File;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 
-import com.cannontech.esub.util.Util;
+import com.cannontech.common.util.CtiUtilities;
 
 public class ImageFileView extends FileView {
     ImageIcon jpgIcon = new ImageIcon("images/jpgIcon.gif");
@@ -15,7 +15,7 @@ public class ImageFileView extends FileView {
         return null; // let the L&F FileView figure this out
     }
     public Icon getIcon(File f) {
-        String extension = Util.getExtension(f);
+        String extension = CtiUtilities.getExtension(f);
         Icon icon = null;
 
         if (extension != null) {
@@ -35,7 +35,7 @@ public class ImageFileView extends FileView {
         return null; // let the L&F FileView figure this out
     }
     public String getTypeDescription(File f) {
-        String extension = Util.getExtension(f);
+        String extension = CtiUtilities.getExtension(f);
         String type = null;
 
         if (extension != null) {
