@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_route.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/09/03 14:33:50 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/09/09 21:49:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -468,12 +468,7 @@ void CtiRouteManager::apply(void (*applyFun)(const long, ptr_type, void*), void*
     try
     {
         LockGuard gaurd(_mux);
-        spiterator itr;
-
-        for(itr = begin(); itr != end(); itr++)
-        {
-            applyFun( itr->first, itr->second, d);
-        }
+        _smartMap.apply(applyFun,d);
     }
     catch(...)
     {
