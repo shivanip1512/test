@@ -59,6 +59,10 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 	
 		return graphVector;
 	}
+	
+	public void setCustomer( com.cannontech.database.db.customer.Customer customer_ ) {
+		customer = customer_;
+	}
 
 	public com.cannontech.database.db.customer.Customer getCustomer()
 	{
