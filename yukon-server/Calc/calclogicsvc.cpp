@@ -414,14 +414,6 @@ void CtiCalcLogicService::Run( )
 
             CtiPointDataMsg     *msgPtData = NULL;
 
-/* 12/09/2004 CGP.  Moving to a new location
-
-            RWThreadFunction _inputFunc  = rwMakeThreadFunction( *this, &CtiCalcLogicService::_inputThread );
-            RWThreadFunction _outputFunc = rwMakeThreadFunction( *this, &CtiCalcLogicService::_outputThread );
-            _inputFunc.start( );
-            _outputFunc.start( );
-*/
-
             // get time now
 //            time(&nextCheckTime);
             ::std::time(&nextCheckTime);  //ecs 1/4/2005

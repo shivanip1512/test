@@ -42,7 +42,7 @@ void CtiCalculateThread::pointChange( long changedID, double newValue, RWTime &n
 
             for( ; (*dependentIterator)( ); )
             {
-                        _auAffectedPoints.append( dependentIterator->key( ).dependentID );
+                _auAffectedPoints.append( dependentIterator->key( ).dependentID );
             }
 
             delete dependentIterator;
@@ -247,108 +247,185 @@ void CtiCalculateThread::onUpdateLoop( void )
             //  get the mutex while we're accessing the _auAffectedPoints collection
             //  (it's accessed by pointChange as well)
             {
-                RWMutexLock::LockGuard msgLock(_pointDataMutex);
-                while( _auAffectedPoints.entries( ) )
+                try
                 {
-                    recalcPointID = _auAffectedPoints.removeFirst( );
-                    CtiHashKey recalcKey(recalcPointID);
-                    calcPoint = (CtiCalc *)(_onUpdatePoints[&recalcKey]);
-
-                    //  if not ready
-                    if( calcPoint==NULL || !calcPoint->ready( ) )
-                        continue;  // All the components are not ready.
-
-                    CtiPointStore* pointStore = CtiPointStore::getInstance();
-                    CtiHashKey pointHashKey(calcPoint->getPointId());
-                    CtiPointStoreElement* pointPtr = (CtiPointStoreElement*)((*pointStore)[&pointHashKey]);
-
-                    recalcValue = calcPoint->calculate( calcQuality, calcTime );
-                    calcPoint->setNextInterval(calcPoint->getUpdateInterval());     // This only matters for periodicPlusUpdatePoints.
-
-                    // Make sure we do not try to move backwards in time.
-                    if( pointPtr->getPointTime() > calcTime )
+                    RWMutexLock::LockGuard msgLock(_pointDataMutex);
+                    while( _auAffectedPoints.entries( ) )
                     {
-                        if( _CALC_DEBUG & CALC_DEBUG_POINTDATA_QUALITY )
+                        recalcPointID = _auAffectedPoints.removeFirst( );
+                        CtiHashKey recalcKey(recalcPointID);
+                        calcPoint = (CtiCalc *)(_onUpdatePoints[&recalcKey]);
+
+                        //  if not ready
+                        if( calcPoint==NULL || !calcPoint->ready( ) )
+                            continue;  // All the components are not ready.
+
+                        CtiPointStore* pointStore = CtiPointStore::getInstance();
+                        CtiHashKey pointHashKey(calcPoint->getPointId());
+                        CtiPointStoreElement* pointPtr = (CtiPointStoreElement*)((*pointStore)[&pointHashKey]);
+
+                        recalcValue = calcPoint->calculate( calcQuality, calcTime );
+                        calcPoint->setNextInterval(calcPoint->getUpdateInterval());     // This only matters for periodicPlusUpdatePoints.
+
+                        // Make sure we do not try to move backwards in time.
+                        if( pointPtr->getPointTime() > calcTime )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Calc point " << calcPoint->getPointId() << " calculation result is attempting to move backward in time." << endl;
-                            dout << RWTime() << "   Update type may be inappropriate for the component device/points." << endl;
-                        }
-                        calcTime = RWTime().now();
-                    }
-
-                    CtiPointDataMsg *pData = NULL;
-
-                    if( calcPoint->getPointCalcWindowEndTime().seconds() > RWTime(RWDate(1,1,1991)).seconds() )
-                    {// demand average point madness
-                        CtiHashKey componentPointHashKey(calcPoint->findDemandAvgComponentPointId());
-                        CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentPointHashKey]);
-
-                        /*{
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " - Calc Point Id: " << recalcPointID
-                                 << " New Demand Avg Value: " << recalcValue
-                                 << " Point Calc Window End Time: " << calcPoint->getPointCalcWindowEndTime() << endl;
-                        }*/
-                        if( RWTime::now().seconds() >= calcPoint->getPointCalcWindowEndTime().seconds() &&
-                            RWTime::now().seconds() < calcPoint->getPointCalcWindowEndTime().seconds() + componentPointPtr->getSecondsSincePreviousPointTime() )
-                        {
-                            if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
+                            if( _CALC_DEBUG & CALC_DEBUG_POINTDATA_QUALITY )
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " - New Point Data message for Calc Point Id: " << recalcPointID
-                                     << " New Demand Avg Value: " << recalcValue << endl;
+                                dout << RWTime() << " Calc point " << calcPoint->getPointId() << " calculation result is attempting to move backward in time." << endl;
+                                dout << RWTime() << "   Update type may be inappropriate for the component device/points." << endl;
                             }
-                            /*{
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << __FILE__ << " (" << __LINE__ << ") RWTime() >= calcPoint->getPointCalcWindowEndTime()" << endl;
-                            }*/
-                            pData = new CtiPointDataMsg(recalcPointID, recalcValue, calcQuality, InvalidPointType);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
-                            pData->setTime(calcPoint->getPointCalcWindowEndTime());
+                            calcTime = RWTime().now();
                         }
 
-                        pointPtr->setPointValue( recalcValue, RWTime(), NormalQuality, 0 );
-                    }
-                    else
-                    {//normal calc point
-                        pData = new CtiPointDataMsg(recalcPointID, recalcValue, calcQuality, InvalidPointType);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
-                        pData->setTime(calcTime);
-                    }
+                        CtiPointDataMsg *pData = NULL;
 
-                    if( pData != NULL )
+
+                        try
+                        {
+                            if( calcPoint->getPointCalcWindowEndTime().seconds() > RWTime(RWDate(1,1,1991)).seconds() )
+                            {// demand average point madness
+
+                                try
+                                {
+                                    CtiHashKey componentPointHashKey(calcPoint->findDemandAvgComponentPointId());
+                                    CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentPointHashKey]);
+
+                                    if(componentPointPtr)
+                                    {
+                                        try
+                                        {
+                                            RWTime now;
+                                            RWTime etplus = (calcPoint->getPointCalcWindowEndTime() + componentPointPtr->getSecondsSincePreviousPointTime());
+
+                                            if( now >= calcPoint->getPointCalcWindowEndTime() &&
+                                                now < etplus )
+                                            {
+                                                if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << RWTime() << " - New Point Data message for Calc Point Id: " << recalcPointID
+                                                         << " New Demand Avg Value: " << recalcValue << endl;
+                                                }
+                                                pData = new CtiPointDataMsg(recalcPointID, recalcValue, calcQuality, InvalidPointType);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
+                                                pData->setTime(calcPoint->getPointCalcWindowEndTime());
+                                            }
+                                        }
+                                        catch(...)
+                                        {
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                            }
+                                        }
+
+                                        try
+                                        {
+                                            pointPtr->setPointValue( recalcValue, RWTime(), NormalQuality, 0 );
+                                        }
+                                        catch(...)
+                                        {
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << RWTime() << " **** Error Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Calc Point " << calcPoint->getPointId() << endl;
+                                        }
+                                    }
+                                }
+                                catch(...)
+                                {
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    }
+                                }
+                            }
+                            else
+                            {//normal calc point
+
+                                try
+                                {
+                                    pData = new CtiPointDataMsg(recalcPointID, recalcValue, calcQuality, InvalidPointType);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
+                                    pData->setTime(calcTime);
+                                }
+                                catch(...)
+                                {
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    }
+                                }
+                            }
+                        }
+                        catch(...)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
+
+
+                        if( pData != NULL )
+                        {
+                            pointsInMulti = TRUE;
+                            sprintf( pointDescription, "calc point %l update", recalcPointID );
+                            pData->setString(pointDescription);
+                            pChg->getData( ).insert( pData );
+                        }
+
+                        if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " onUpdateLoop setting Calc Point ID: " << recalcPointID << " to New Value: " << recalcValue << endl;
+                        }
+                    }
+                }
+                catch(...)
+                {
                     {
-                        pointsInMulti = TRUE;
-                        sprintf( pointDescription, "calc point %l update", recalcPointID );
-                        pData->setString(pointDescription);
-                        pChg->getData( ).insert( pData );
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+            }
+
+            try
+            {
+                if( pointsInMulti )
+                {
+                    {
+                        RWMutexLock::LockGuard outboxGuard(outboxMux);
+                        _outbox.append( pChg );
                     }
 
+                    //  i kinda want to keep away from having a hold on both of the mutexes, as a little programming error
+                    //    earlier earned me a touch of the deadlock.
                     if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " onUpdateLoop setting Calc Point ID: " << recalcPointID << " to New Value: " << recalcValue << endl;
+                        dout << RWTime( ) << "  onUpdateLoop posting a message" << endl;
                     }
                 }
-            }
-
-            if( pointsInMulti )
-            {
+                else
                 {
-                    RWMutexLock::LockGuard outboxGuard(outboxMux);
-                    _outbox.append( pChg );
+                    delete pChg;
                 }
-
-                //  i kinda want to keep away from having a hold on both of the mutexes, as a little programming error
-                //    earlier earned me a touch of the deadlock.
-                if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
+            }
+            catch(...)
+            {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime( ) << "  onUpdateLoop posting a message" << endl;
+                    dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
-            }
-            else
-            {
-                delete pChg;
             }
         }
 

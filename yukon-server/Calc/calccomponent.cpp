@@ -1,3 +1,5 @@
+#include "yukon.h"
+
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 #include <math.h>
@@ -237,7 +239,7 @@ double CtiCalcComponent::calculate( double input, int &component_quality, RWTime
                     {
                         if(_calcpoint != NULL)
                         {
-                        _lastUseUpdateNum = componentPointPtr->getNumUpdates( );
+                            _lastUseUpdateNum = componentPointPtr->getNumUpdates( );
                             _calcpoint->push( componentPointPtr->getPointValue() );
                         }
                     }
@@ -274,7 +276,7 @@ double CtiCalcComponent::calculate( double input, int &component_quality, RWTime
         if( _CALC_DEBUG & CALC_DEBUG_COMPONENT_POSTCALC_VALUE )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "CtiCalcComponent::calculate(); constant operation; input:" << orignal << ",   constant:" << _constantValue << ",   return:" << input << endl;
+            dout << RWTime() << " CtiCalcComponent::calculate(); constant operation; input:" << orignal << ",   constant:" << _constantValue << ",   return: " << input << endl;
         }
     }
     else if( _componentType == function )
@@ -284,7 +286,7 @@ double CtiCalcComponent::calculate( double input, int &component_quality, RWTime
         if( _CALC_DEBUG & CALC_DEBUG_COMPONENT_POSTCALC_VALUE )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "CtiCalcComponent::calculate(); function return:" << input << endl;
+            dout << RWTime() << " CtiCalcComponent::calculate(); function return: " << input << endl;
         }
     }
 
@@ -452,6 +454,14 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
             HotSpotTemp = OilTemp + TempRise * pow( (Load / Rating), (2 * Mfactor) );
 
             retVal = HotSpotTemp;
+        }
+        else if( !functionName.compareTo("DemandAvg1",RWCString::ignoreCase) )
+        {
+            retVal = _figureDemandAvg(60);// seconds in avg
+        }
+        else if( !functionName.compareTo("DemandAvg5",RWCString::ignoreCase) )
+        {
+            retVal = _figureDemandAvg(300);// seconds in avg
         }
         else if( !functionName.compareTo("DemandAvg15",RWCString::ignoreCase) )
         {
@@ -648,9 +658,9 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
             DOUBLE p = _calcpoint->pop();
             if(q != 0)
             {
-            DOUBLE temp = p/q;
-            retVal = cos(temp);
-        }
+                DOUBLE temp = p/q;
+                retVal = cos(temp);
+            }
             else
             {
                 {
@@ -726,78 +736,78 @@ double CtiCalcComponent::_figureDemandAvg(long secondsInAvg)
 
     try
     {
-    if( _updatesInCurrentAvg <= 1 )
-    {
+        if( _updatesInCurrentAvg <= 1 )
+        {
             RWTime currenttime;
             _calcpoint->setPointCalcWindowEndTime(nextScheduledTimeAlignedOnRate(currenttime, secondsInAvg));
         }
 
-    CtiPointStore* pointStore = CtiPointStore::getInstance();
+        CtiPointStore* pointStore = CtiPointStore::getInstance();
 
-    CtiHashKey componentHashKey(_componentPointId);
-    CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
+        CtiHashKey componentHashKey(_componentPointId);
+        CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
         CtiHashKey parentHashKey(_calcpoint->getPointId());
-    CtiPointStoreElement* parentPointPtr = (CtiPointStoreElement*)((*pointStore)[&parentHashKey]);
+        CtiPointStoreElement* parentPointPtr = (CtiPointStoreElement*)((*pointStore)[&parentHashKey]);
 
         if( componentPointPtr->getPointTime().seconds() >= (_calcpoint->getPointCalcWindowEndTime().seconds() + componentPointPtr->getSecondsSincePreviousPointTime() - secondsInAvg) &&
             componentPointPtr->getPointTime().seconds() < (_calcpoint->getPointCalcWindowEndTime().seconds() + componentPointPtr->getSecondsSincePreviousPointTime()) )
-    {//is the last point data received in the average or not
-        if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Current Component Point Time: " << componentPointPtr->getPointTime().asString() << endl;
-                dout << "Current Point Calc Window End Time: " << _calcpoint->getPointCalcWindowEndTime().asString() << endl;
-            //dout << "Seconds Since Previous Point Time: " << componentPointPtr->getSecondsSincePreviousPointTime() << endl;
-        }
-        double componentPointValue = componentPointPtr->getPointValue();
-        double currentCalcPointValue = parentPointPtr->getPointValue();
-
-        double currentTotal = currentCalcPointValue * _updatesInCurrentAvg;
-        _updatesInCurrentAvg++;
-        retVal = (currentTotal + componentPointValue) / _updatesInCurrentAvg;
-
-        if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Current Calc Point Value: " << currentCalcPointValue << endl;
-            //dout << "Current Total: " << currentTotal << endl;
-            dout << "Updates In Current Avg: " << _updatesInCurrentAvg << endl;
-            dout << "Component Point Value: " << componentPointValue << endl;
-            dout << "New Calc Point Value: " << retVal << endl;
-                dout << "Will Send point change at: " << _calcpoint->getPointCalcWindowEndTime() << endl;
-            }
-        }
-    else
-    {
-        if( _updatesInCurrentAvg > 0 )
-        {
-            retVal = componentPointPtr->getPointValue();
-            _updatesInCurrentAvg = 1;
+        {//is the last point data received in the average or not
             if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << "***********NEW DEMAND AVERAGE BEGUN**************: " << endl;
-                //dout << "Current Component Point Time: " << componentPointPtr->getPointTime().asString() << endl;
-                    dout << "Current Point Calc Window End Time: " << _calcpoint->getPointCalcWindowEndTime().asString() << endl;
+                dout << "Current Component Point Time: " << componentPointPtr->getPointTime().asString() << endl;
+                dout << "Current Point Calc Window End Time: " << _calcpoint->getPointCalcWindowEndTime().asString() << endl;
                 //dout << "Seconds Since Previous Point Time: " << componentPointPtr->getSecondsSincePreviousPointTime() << endl;
-                dout << "New Initial Demand Avg: " << retVal << endl;
+            }
+            double componentPointValue = componentPointPtr->getPointValue();
+            double currentCalcPointValue = parentPointPtr->getPointValue();
+
+            double currentTotal = currentCalcPointValue * _updatesInCurrentAvg;
+            _updatesInCurrentAvg++;
+            retVal = (currentTotal + componentPointValue) / _updatesInCurrentAvg;
+
+            if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Current Calc Point Value: " << currentCalcPointValue << endl;
+                //dout << "Current Total: " << currentTotal << endl;
                 dout << "Updates In Current Avg: " << _updatesInCurrentAvg << endl;
+                dout << "Component Point Value: " << componentPointValue << endl;
+                dout << "New Calc Point Value: " << retVal << endl;
+                dout << "Will Send point change at: " << _calcpoint->getPointCalcWindowEndTime() << endl;
+            }
+        }
+        else
+        {
+            if( _updatesInCurrentAvg > 0 )
+            {
+                retVal = componentPointPtr->getPointValue();
+                _updatesInCurrentAvg = 1;
+                if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << "***********NEW DEMAND AVERAGE BEGUN**************: " << endl;
+                    //dout << "Current Component Point Time: " << componentPointPtr->getPointTime().asString() << endl;
+                    dout << "Current Point Calc Window End Time: " << _calcpoint->getPointCalcWindowEndTime().asString() << endl;
+                    //dout << "Seconds Since Previous Point Time: " << componentPointPtr->getSecondsSincePreviousPointTime() << endl;
+                    dout << "New Initial Demand Avg: " << retVal << endl;
+                    dout << "Updates In Current Avg: " << _updatesInCurrentAvg << endl;
                     dout << "Previous demand average has a timestamp of: " << _calcpoint->getPointCalcWindowEndTime() << endl;
                     dout << "Next demand average will have timestamp of: " << RWTime(_calcpoint->getPointCalcWindowEndTime().seconds()+secondsInAvg) << endl;
                 }
             }
-        else
-        {
-            retVal = componentPointPtr->getPointValue();
-            _updatesInCurrentAvg = 1;
-            if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
+            else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                retVal = componentPointPtr->getPointValue();
+                _updatesInCurrentAvg = 1;
+                if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " - Calc Point Id: " << _calcpoint->getPointId()
-                << " Demand Avg Reset!" << endl;
+                    << " Demand Avg Reset!" << endl;
+                }
             }
         }
-    }
     }
     catch(...)
     {

@@ -324,7 +324,9 @@ long CtiCalc::findDemandAvgComponentPointId()
     {
         CtiCalcComponent* tmpComponent = (CtiCalcComponent*)iter.key();
         const RWCString& functionName = tmpComponent->getFunctionName();
-        if( !functionName.compareTo("DemandAvg15",RWCString::ignoreCase) ||
+        if( !functionName.compareTo("DemandAvg1",RWCString::ignoreCase)  ||
+            !functionName.compareTo("DemandAvg5",RWCString::ignoreCase)  ||
+            !functionName.compareTo("DemandAvg15",RWCString::ignoreCase) ||
             !functionName.compareTo("DemandAvg30",RWCString::ignoreCase) ||
             !functionName.compareTo("DemandAvg60",RWCString::ignoreCase) )
         {
