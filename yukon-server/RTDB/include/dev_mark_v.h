@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/12/18 15:02:11 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/12/18 15:57:18 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -74,8 +74,6 @@ private:
    CtiTransdataData           *_converted;
    CtiProtocolTransdata::llp  _llp;
    
-//   CtiMultiMsg             *_scannerMulti;
-
 protected:
 
 public:
@@ -142,7 +140,7 @@ public:
                                int timeID,
                                int dateID );
 
-//   void DecodeDatabaseReader( RWDBReader &rdr );
+   void DecodeDatabaseReader( RWDBReader &rdr );
 
 };
 

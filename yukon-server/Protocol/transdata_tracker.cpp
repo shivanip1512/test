@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/12/18 15:02:11 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/12/18 15:57:18 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -146,7 +146,7 @@ void CtiTransdataTracker::reinitalize( void )
    _meterData        = new BYTE[Meter_size];
    _lastCommandSent  = new BYTE[Command_size];
    
-   _password         = "22222222\r\n";       //silly hard-codedness for now
+//   _password         = "22222222\r\n";       //silly hard-codedness for now
 }
 
 //=====================================================================================================================
@@ -176,14 +176,8 @@ bool CtiTransdataTracker::decodeYModem( CtiXfer &xfer, int status )
             if( _goodCRC )
             {
                _ymodem.retreiveData( _meterData, &_meterBytes );
-               ////
                processData( _meterData, _meterBytes );
                setNextState();
-               ///
-               //
-               //if( processData( _meterData, _meterBytes ) )
-               //    setNextState();
-               //
                _ymodemsTurn = false;
             }
          }
@@ -218,14 +212,7 @@ bool CtiTransdataTracker::decodeLink( CtiXfer &xfer, int status )
       memset( _storage, '\0', Storage_size );
 
       _datalink.retreiveData( _storage, &_bytesReceived );
-/*
-      if( bytes != 0 )
-      {
-         memcpy( _storage + _bytesReceived, temp, bytes );
-         _bytesReceived += bytes;
-*/
-         processComms( _storage, _bytesReceived );
-//      }
+      processComms( _storage, _bytesReceived );
    }
    
    if( _datalink.getError() == failed )
@@ -417,12 +404,6 @@ bool CtiTransdataTracker::grabTime( BYTE *data, int bytes )
    }
 
    RWTime t( RWDate( timeBits[3], timeBits[4], timeBits[5] + 2000 ), timeBits[2], timeBits[1], timeBits[0] );
-   /*
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " tracker got time " << t << endl;
-   }
-   */
    _lp->meterTime = t.seconds();
 
    return( true );
@@ -469,7 +450,6 @@ bool CtiTransdataTracker::processComms( BYTE *data, int bytes )
    char  *ptr = NULL;
    char  fluff[400];
 
-   /*else*/
    if( gotRetry( data, bytes ) )
    {
       reset();
@@ -556,7 +536,8 @@ bool CtiTransdataTracker::logOn( CtiXfer &xfer )
       {
          case doPassword:
          {
-            setXfer( xfer, "22222222\r\n", strlen( _good_return ), false, 1 );
+//            setXfer( xfer, "22222222\r\n", strlen( _good_return ), false, 1 );
+            setXfer( xfer, _password, strlen( _good_return ), false, 1 );
             _datalink.buildMsg( xfer );
             _first = true;
          }
@@ -856,7 +837,8 @@ int CtiTransdataTracker::getError( void )
 
 void CtiTransdataTracker::injectData( RWCString str )
 {
-//   _password = str;//we'll come back to this when we figure out the db stuff
+   _password = str;
+   _password.append( "\r\n" );
 }
 
 //=====================================================================================================================

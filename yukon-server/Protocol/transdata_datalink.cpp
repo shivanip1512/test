@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/12/16 17:23:04 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/12/18 15:57:18 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -109,7 +109,6 @@ bool CtiTransdataDatalink::readMsg( CtiXfer &xfer, int status )
 
    if( xfer.getInCountActual() )
    {
-//      memcpy( ( _storage + _bytesReceived ), xfer.getInBuffer(), xfer.getInCountActual() );
       memcpy( _storage, xfer.getInBuffer(), xfer.getInCountActual() );
       _bytesReceived += xfer.getInCountActual();
    }
