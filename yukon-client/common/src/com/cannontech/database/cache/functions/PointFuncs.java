@@ -7,6 +7,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.point.PointTypes;
 
 /**
  * Insert the type's description here.
@@ -171,4 +172,21 @@ public static LitePoint[] getLitePointsByUOMID(int[] uomIDs)
 		
 		return null;
 	}
+	/**
+	 * Returns a pointID (int), where deviceID is used to gain a collection of LitePoints.
+	 * PointOffset and PointType is used to select one of the LitePoints.
+	 */
+	public static int getPointIDByDeviceID_Offset_PointType(int deviceID, int pointOffset, int pointType)
+	{
+		LitePoint [] litePoints = PAOFuncs.getLitePointsForPAObject(deviceID);
+		for (int i = 0; i < litePoints.length; i++)
+		{
+			LitePoint lp = litePoints[i];
+			if( lp.getPointOffset() == pointOffset && pointType == lp.getPointType())
+				return lp.getPointID();
+		}
+	
+		return PointTypes.SYS_PID_SYSTEM; //not found
+	}
+	
 }
