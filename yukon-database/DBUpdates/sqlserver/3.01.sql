@@ -833,7 +833,7 @@ alter table DeviceVerification
       references DEVICE (DEVICEID);
 go
 alter table DeviceVerification
-   add constraint FK_DevV_Dev1 foreign key (TransmitterID)
+   add constraint FK_DevV_Dev2 foreign key (TransmitterID)
       references DEVICE (DEVICEID);
 go
 
@@ -843,18 +843,21 @@ TimeArrival          datetime             not null,
 ReceiverID           numeric              not null,
 TransmitterID        numeric              not null,
 Command              varchar(256)         not null,
-Received             char(1)              not null,
+Code                 varchar(128)         not null,
 CodeSequence         numeric              not null,
-CodeStatus           varchar(32)          not null,
-constraint PK_DYNAMICVERIFICATION primary key  (ReceiverID, TransmitterID)
+Received             char(1)              not null,
+CodeStatus           varchar(32)          not null
 );
 go
 alter table DynamicVerification
-   add constraint FK_DYNAMICV_REF_DYNV__DEVICE foreign key (ReceiverID)
-      references DEVICE (DEVICEID);
+   add constraint PK_DYNAMICVERIFICATION primary key  (LogID);
 go
 alter table DynamicVerification
    add constraint FK_DynV_Dev2 foreign key (TransmitterID)
+      references DEVICE (DEVICEID);
+go
+alter table DynamicVerification
+   add constraint FK_DynV_Dev1 foreign key (ReceiverID)
       references DEVICE (DEVICEID);
 go
 

@@ -724,7 +724,7 @@ alter table DeviceVerification
    add constraint FK_DevV_Dev1 foreign key (ReceiverID)
       references DEVICE (DEVICEID);
 alter table DeviceVerification
-   add constraint FK_DevV_Dev1 foreign key (TransmitterID)
+   add constraint FK_DevV_Dev2 foreign key (TransmitterID)
       references DEVICE (DEVICEID);
 
 create table DynamicVerification  (
@@ -733,19 +733,19 @@ create table DynamicVerification  (
    ReceiverID           NUMBER                           not null,
    TransmitterID        NUMBER                           not null,
    Command              VARCHAR2(256)                    not null,
-   Received             CHAR(1)                          not null,
+   Code                 VARCHAR2(128)                    not null,
    CodeSequence         NUMBER                           not null,
+   Received             CHAR(1)                          not null,
    CodeStatus           VARCHAR2(32)                     not null
 );
 alter table DynamicVerification
-   add constraint PK_DYNAMICVERIFICATION primary key (ReceiverID, TransmitterID);
-alter table DynamicVerification
-   add constraint FK_DYN_REF__DEV foreign key (ReceiverID)
-      references DEVICE (DEVICEID);
+   add constraint PK_DYNAMICVERIFICATION primary key (LogID);
 alter table DynamicVerification
    add constraint FK_DynV_Dev2 foreign key (TransmitterID)
       references DEVICE (DEVICEID);
-
+alter table DynamicVerification
+   add constraint FK_DynV_Dev1 foreign key (ReceiverID)
+      references DEVICE (DEVICEID);
 
 
 
