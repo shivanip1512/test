@@ -65,7 +65,7 @@
                         <div align="center"><b>SIGN IN</b><br>
                           If you are currently enrolled in a program, enter your 
                           account number and password.</div>
-                        <form name="form1" method="post" action="/scripts/jrun.dll/servlet/SOAPClient">
+                        <form name="form1" method="post" action="/servlet/SOAPClient">
                           <input type="hidden" name="action" value="ConsumerStatLogin">
                           <input type="hidden" name="SearchBy" value="AccountNumber">
                           <table width="200" border="0" cellspacing="0" cellpadding="3" align="center">

@@ -47,15 +47,15 @@ var userFriendlyName = new MakeArray("Select Format",
 							//"Microsoft Excel(.xls)");
 
 //var url = new MakeArray("",
-//						"/scripts/jrun.dll/servlet/Download?",
-//						"/scripts/jrun.dll/servlet/Download?",
-//                        "/scripts/jrun.dll/servlet/Download?");
+//						"/servlet/Download?",
+//						"/servlet/Download?",
+//                        "/servlet/Download?");
 
 function jumpPage(form)
 {
         i = form.ext.selectedIndex;
         if (i == 0) return;   
-        form.action="/scripts/jrun.dll/servlet/Download?";
+        form.action="/servlet/Download?";
         form.method="post";
         form.submit();
         form.ext.selectedIndex=siteopt[0];
@@ -248,7 +248,7 @@ document.writeln('</FORM>');
              else // "graph" is default
              {
               %>
-            <img src="/scripts/jrun.dll/servlet/GraphGenerator?<%="db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&width=556&height=433&format=gif&start=" + dateFormat.format(start) + "&end=" + dateFormat.format(stop)+ "&model=" + modelType%>" width="556" height="433"> 
+            <img src="/servlet/GraphGenerator?<%="db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&width=556&height=433&format=gif&start=" + dateFormat.format(start) + "&end=" + dateFormat.format(stop)+ "&model=" + modelType%>" width="556" height="433"> 
             <%
              }
           %>

@@ -41,7 +41,7 @@
           <td width="57">&nbsp;</td>
         </tr>
         <tr> 
-          <form name = "custSearchForm" method="POST" action="/scripts/jrun.dll/servlet/SOAPClient">
+          <form name = "custSearchForm" method="POST" action="/servlet/SOAPClient">
             <input type="hidden" name="action" value="SearchCustAccount">
             <td width="97" class = "Main" > 
               <div align = "center" style = "border:solid 1px #666999;"><a href = "Consumer/New.jsp" class = "Link1" style = "text-decoration:none;">New 

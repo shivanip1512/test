@@ -64,7 +64,7 @@ function copyAddress(form) {
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><% String header = "ACCOUNT - GENERAL"; %><%@ include file="InfoSearchBar.jsp" %>
             </div>
-			<form method="POST" action="/scripts/jrun.dll/servlet/SOAPClient">
+			<form method="POST" action="/servlet/SOAPClient">
 			<input type="hidden" name="action" value="UpdateCustAccount">
             <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
               <tr> 

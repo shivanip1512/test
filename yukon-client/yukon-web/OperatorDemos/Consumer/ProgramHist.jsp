@@ -166,7 +166,7 @@
                     </table>
                   </td>
                   <td width="332"> 
-					<form method="POST" action="/scripts/jrun.dll/servlet/SOAPClient">
+					<form method="POST" action="/servlet/SOAPClient">
 					<input type="hidden" name="action" value="GetLMCtrlHist">
 					<%-- Group ID is used for finding control history --%>
 					<input type="hidden" name="Group" value="<%= program.getGroupID() %>">

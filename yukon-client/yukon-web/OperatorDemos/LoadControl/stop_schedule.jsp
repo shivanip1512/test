@@ -72,7 +72,7 @@
 
 		if (valid)
 		{
-			response.sendRedirect( "/scripts/jrun.dll/servlet/ScheduleController?ID=" + scheduleID + "&ACTION=" + request.getParameter("ACTION") +
+			response.sendRedirect( "/servlet/ScheduleController?ID=" + scheduleID + "&ACTION=" + request.getParameter("ACTION") +
 								   "&STARTAT=" + checker.get("STARTAT") + "&STOPAT=" + checker.get("STOPAT") + "&URL=" + request.getParameter("URL") );
 			checker.clear();
 		}

@@ -130,7 +130,7 @@
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
 <table width="600" border="0" cellspacing="0" cellpadding="0">
-<FORM name="ddmessage" METHOD="POST" ACTION="/scripts/jrun.dll/servlet/SwitchCommand" onSubmit="return validForm(this)">
+<FORM name="ddmessage" METHOD="POST" ACTION="/servlet/SwitchCommand" onSubmit="return validForm(this)">
     <tr> 
       <td width="650" class="Main">
         <center>

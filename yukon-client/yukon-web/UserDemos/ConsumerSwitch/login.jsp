@@ -67,7 +67,7 @@
                         <div align="center"><b>SIGN IN</b><br>
                           If you are currently enrolled in a program, enter your 
                           account number and password.</div>
-                        <form name="form1" method="post" action="/scripts/jrun.dll/servlet/SOAPClient">
+                        <form name="form1" method="post" action="/servlet/SOAPClient">
                      	<input type="hidden" name="action" value="ConsumerSwitchLogin">
 				  		<input type="hidden" name="SearchBy" value="AccountNumber">
 
