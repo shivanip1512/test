@@ -1168,6 +1168,7 @@ public class YC extends Observable implements MessageListener
 	private void loadCustomCommandsFromDatabase()
 	{
 		File f = new File(CtiUtilities.getCommandsDirPath()+"custom/");
+		if (!f.exists()) f.mkdirs();
 		
 		String []fileNames = f.list();
 		{
