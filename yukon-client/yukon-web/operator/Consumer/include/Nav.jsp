@@ -23,6 +23,8 @@
 
 	String bulletImg = "<img src='../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif") + "' width='9' height='9'>";
 	String bulletImgExp = "<img src='../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_EXPAND, "BulletExpand.gif") + "' width='9' height='9'>";
+	String connImgMid = "<img src='../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_CONNECTOR_MIDDLE, "MidConnector.gif") + "' width='10' height='12'>";
+	String connImgBtm = "<img src='../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_CONNECTOR_BOTTOM, "BottomConnector.gif") + "' width='10' height='12'>";
 	
 	// List of String[] (link image, link html)
 	Hashtable links = new Hashtable();
@@ -260,9 +262,10 @@
                 <%
 			for (int i = 0; i < switches.size(); i++) {
 				String[] linkFields = (String[]) switches.get(i);
+				String connImg = (i == switches.size() - 1)? connImgBtm : connImgMid;
 %>
                 <tr onmouseover="hardwareMenuAppear(event, this, 'switchMenu', <%= linkFields[0] %>)"> 
-                  <td width="10" class="Nav">&nbsp;</td>
+                  <td width="12"><%= connImg %></td>
                   <td><%= linkFields[1] %></td>
                   <td width="10" valign="bottom" style="padding-bottom:1"><%= linkFields[2] %></td>
                 </tr>
@@ -279,9 +282,10 @@
                 <%
 			for (int i = 0; i < thermostats.size(); i++) {
 				String[] linkFields = (String[]) thermostats.get(i);
+				String connImg = (i == thermostats.size() - 1)? connImgBtm : connImgMid;
 %>
                 <tr onmouseover="hardwareMenuAppear(event, this, 'thermostatMenu', <%= linkFields[0] %>)"> 
-                  <td width="10" class="Nav">&nbsp;</td>
+                  <td width="12"><%= connImg %></td>
                   <td><%= linkFields[1] %></td>
                   <td width="10" valign="bottom" style="padding-bottom:1"><%= linkFields[2] %></td>
                 </tr>
@@ -298,9 +302,10 @@
                 <%
 			for (int i = 0; i < meters.size(); i++) {
 				String[] linkFields = (String[]) meters.get(i);
+				String connImg = (i == meters.size() - 1)? connImgBtm : connImgMid;
 %>
                 <tr onmouseover="hardwareMenuAppear(event, this, 'meterMenu', <%= linkFields[0] %>)"> 
-                  <td width="10" class="Nav">&nbsp;</td>
+                  <td width="12"><%= connImg %></td>
                   <td><%= linkFields[1] %></td>
                   <td width="10" valign="bottom" style="padding-bottom:1"><%= linkFields[2] %></td>
                 </tr>
