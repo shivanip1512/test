@@ -25,6 +25,7 @@ import javax.swing.border.MatteBorder;
 import com.cannontech.clientutils.CTILogger;
 
 /**
+ * 5
  * Displays an array of images and allows 
  * the user to select one of them.
  * 
