@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/08/28 16:16:47 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/09/30 15:00:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,6 +28,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "collectable.h"
 #include "connection.h"
 #include "message.h"
+#include "numstr.h"
 #include "dlldefs.h"
 #include "yukon.h"
 
@@ -88,7 +89,7 @@ int CtiConnection::WriteConnQue(CtiMessage *QEnt, unsigned timeout, bool cleanif
         status = verify;     // don't want to reset it unless there is a real problem.
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Connection errors, message was NOT able to be queued to " << getName() << "." << endl;
+            dout << RWTime() << " Connection error (" << status << "), message was NOT able to be queued to " << who() << "." << endl;
         }
         delete QEnt;
     }
@@ -102,7 +103,7 @@ int CtiConnection::WriteConnQue(CtiMessage *QEnt, unsigned timeout, bool cleanif
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  Message was NOT able to be queued to " << getName() << " within " << timeout << " millis" << endl;
+                    dout << "  Message was NOT able to be queued to " << who() << " within " << timeout << " millis" << endl;
                 }
 
                 if(cleaniftimedout) delete QEnt;
@@ -142,6 +143,16 @@ int CtiConnection::ThreadInitiate()
 
         inthread_   = rwMakeThreadFunction(*this, &CtiConnection::InThread);
         inthread_.start();
+
+        INT stat = 0;
+
+        if( (stat = verifyConnection()) != NORMAL )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Connection has error status " << stat << endl;
+            }
+        }
     }
     catch(const RWxmsg& x)
     {
@@ -171,13 +182,11 @@ void CtiConnection::InThread()
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         if(_port >= 0)
         {
-            dout << RWTime() << " InThread  : " << who() << " has begun operations " <<
-            " H:P " << _host << ":" << _port << endl;
+            dout << RWTime() << " InThread  : " << who() << " has begun operations " << endl;
         }
         else
         {
-            dout << RWTime() << " InThread  : " << who() << " has begun operations " <<
-            " Server Connection" << endl;
+            dout << RWTime() << " InThread  : " << who() << " has begun operations " << " Server Connection" << endl;
         }
     }
 
@@ -212,7 +221,7 @@ void CtiConnection::InThread()
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Terminating Connection with: " << (getName().isNull() ? getPeer() : getName()) << endl;
+                        dout << RWTime() << " Terminating Connection with: " << who() << endl;
                     }
                     _bQuit = TRUE;
                     continue;
@@ -230,7 +239,7 @@ void CtiConnection::InThread()
                         if(getDebugLevel() & 0x00001000)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Received a null message, shutting down the connection." << endl;
+                            dout << RWTime() << " Received a null message from " << who() <<", shutting down the connection." << endl;
                         }
                         _bQuit = TRUE;
                     }
@@ -250,31 +259,25 @@ void CtiConnection::InThread()
 
                     MsgPtr->setConnectionHandle( (void*)this );   // Pee on this message to mark some teritory...
 
-                    if(inQueue->isFull())
+                    if(inQueue)
                     {
-#if 0
-                        if( !_blockingWrites ) // Lowest sort gets pulled off the Queue
+                        if(inQueue->isFull())
                         {
-                            inQueue->tailPurge();
-
-                            if(getDebugLevel() & 0x00001000)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << NowTime << " InThread  : " << who() << " queue is full.  Will tail and insert " << endl;
-                                dout << NowTime << "   It allows " << (INT)inQueue->entries() << " entries" << endl;
+                                dout << NowTime << " InThread  : " << who() << " queue is full.  Will BLOCK. It allows " << (INT)inQueue->size() << " entries" << endl;
                             }
                         }
-                        else if(getDebugLevel() & 0x00001000)
-#endif
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << NowTime << " InThread  : " << who() << " queue is full.  Will BLOCK. It allows " << (INT)inQueue->size() << " entries" << endl;
-                        }
+
+                        _lastInQueueWrite = _lastInQueueWrite.now();    // Refresh the time...
+
+                        inQueue->putQueue(MsgPtr);
                     }
-
-                    _lastInQueueWrite = _lastInQueueWrite.now();    // Refresh the time...
-
-                    inQueue->putQueue(MsgPtr);
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
                 }
             }
             else if( _dontReconnect || _serverConnection)        // This is really !_valid && _dontReconnect OK Joe...
@@ -301,7 +304,7 @@ void CtiConnection::InThread()
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") " << endl;
-                dout << getName() << endl;
+                dout << who() << endl;
             }
         }
     }
@@ -311,13 +314,11 @@ void CtiConnection::InThread()
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         if(_port >= 0)
         {
-            dout << NowTime << " InThread  : " << who() <<
-            " H:P " << _host << ":" << _port << " is terminating...." << endl;
+            dout << NowTime << " InThread  : " << who() << " is terminating...." << endl;
         }
         else
         {
-            dout << NowTime << " InThread  : " << who() <<
-            " is terminating...." << endl;
+            dout << NowTime << " InThread  : " << who() << " is terminating...." << endl;
         }
     }
 
@@ -340,13 +341,11 @@ void CtiConnection::OutThread()
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         if(_port >= 0)
         {
-            dout << RWTime() << " OutThread : " << who() << " has begun operations " <<
-            " H:P " << _host << ":" << _port << endl;
+            dout << RWTime() << " OutThread : " << who() << " has begun operations " << endl;
         }
         else
         {
-            dout << RWTime() << " OutThread : " << who() << " has begun operations " <<
-            " Server Connection" << endl;
+            dout << RWTime() << " OutThread : " << who() << " has begun operations " << " Server Connection" << endl;
         }
     }
 
@@ -487,7 +486,7 @@ void CtiConnection::OutThread()
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         if( _port >= 0 )
         {
-            dout << RWTime() << " OutThread : " << who() << " H:P " << _host << ":" << _port << " is terminating...." << endl;
+            dout << RWTime() << " OutThread : " << who() << " is terminating...." << endl;
         }
         else
         {
@@ -704,7 +703,7 @@ void CtiConnection::ShutdownConnection()
                 }
             }
 
-            if( inQueue->entries() != 0 )
+            if( inQueue && inQueue->entries() != 0 )
             {
                 inQueue->clearAndDestroy();      // Get rid of the evidence...
             }
@@ -722,17 +721,24 @@ void CtiConnection::ShutdownConnection()
                 }
             }
 
+            try {
             if(getDebugLevel() & 0x00001000)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 if( _port >= 0 )
                 {
-                    dout << RWTime() << " ShutdownConnection() H:P " << _host << ":" << _port << endl;
+                    dout << RWTime() << " ShutdownConnection() " << who() << endl;
                 }
                 else
                 {
-                    dout << RWTime() << " ShutdownConnection() " << endl;
+                    dout << RWTime() << " ShutdownConnection() " << who() << endl;
                 }
+            }
+            }
+            catch(...)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
@@ -771,7 +777,7 @@ INT CtiConnection::verifyConnection()
         if(getDebugLevel() & 0x00001000)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << " InThread has exited with a completion state of " << status << endl;
+            dout << RWTime() << " InThread " << who() << " has exited with a completion state of " << status << endl;
             if(!_serverConnection)
             {
                 dout << " Will attempt a restart" << endl;
@@ -795,8 +801,8 @@ INT CtiConnection::verifyConnection()
         if(getDebugLevel() & 0x00001000)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " OutThread has exited with a completion state of " << status << endl;
+            dout << RWTime() << " OutThread " << who() << " has exited with a completion state of " << status << endl;
+
             if(!_serverConnection)
             {
                 dout << " Will attempt a restart" << endl;
@@ -867,7 +873,7 @@ INT CtiConnection::establishConnection(INT freq)
         if( !(++sleepCount % 60) && (getDebugLevel() & 0x00001000) )      // once per minute....
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " InThread  : " << who() << " connection to " << _host << ":" << _port << " is not valid. " << endl;
+            dout << RWTime() << " InThread  : " << who() << " connection is not valid. " << endl;
         }
 
         checkCancellation();
@@ -899,7 +905,7 @@ INT CtiConnection::waitForConnect()
         if((getDebugLevel() & 0x00001000) && !(++waitCount % 60))
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " OutThread : " << who() << " connection to " << _host << ":" << _port << " is not valid. " << endl;
+            dout << RWTime() << " OutThread : " << who() << " connection is not valid. " << endl;
         }
 
         // Sleep for about 1 second while looking for a cancellation.
@@ -1007,15 +1013,18 @@ void CtiConnection::messagePeek( CtiMessage *MyMsg )
 
 RWCString CtiConnection::who()
 {
-    char temp[80];
+    RWCString connectedto(_name);
 
-    if( _name.isNull() )
+    if(_port == -2 && Ex != NULL)
     {
-        sprintf(temp, " %s / %d ", _host.data(), _port);
-        _name = RWCString(temp);
+        connectedto += (_name.isNull() ? "" : " / " ) + getPeer().id();
+    }
+    else
+    {
+        connectedto += (_name.isNull() ? "" : " / " ) + _host + " / " + CtiNumStr(_port);
     }
 
-    return RWCString( _name );
+    return connectedto;
 }
 
 RWCString   CtiConnection::getName() const
