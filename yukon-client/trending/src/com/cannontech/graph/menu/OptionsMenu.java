@@ -419,8 +419,8 @@ private void initialize() {
 		setMnemonic('o');
 		setText("Options");
 		add(getMultiplierMenuItem());
-		add(getDwellMenuItem());
-		add(getPlotYesterdayMenuItem());
+//		add(getDwellMenuItem());
+//		add(getPlotYesterdayMenuItem());
 		add(getPlotMinMaxValuesMenuItem());
 		add(getLoadDurationMenuItem());
 		add(getJSeparator1());
