@@ -21,6 +21,11 @@ public class CalcComponentTypes
 	
 	
 	/*** START OF CALC FUNCTIONS  ***/
+	public static final String ADDITION_FUNCTION = "Add";
+	public static final String SUBTRACTION_FUNCTION = "Subtract";
+	public static final String MULTIPLICATION_FUNCTION = "Multiply";
+	public static final String DIVISION_FUNCTION = "Divide";
+	
 	public static final String MIN_FUNCTION= "Min";
 	public static final String MAX_FUNCTION = "Max";
 	public static final String BASELINE_FUNCTION = "Baseline";
@@ -47,6 +52,10 @@ public class CalcComponentTypes
 	//our operation function strings
 	public static String[] CALC_FUNCTIONS =
 	{
+		ADDITION_FUNCTION,
+		SUBTRACTION_FUNCTION,
+		MULTIPLICATION_FUNCTION,
+		DIVISION_FUNCTION,
 		MIN_FUNCTION,
 		MAX_FUNCTION,
 		ARCTAN_FUNCTION,
