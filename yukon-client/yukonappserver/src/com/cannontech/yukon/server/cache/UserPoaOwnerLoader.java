@@ -16,8 +16,10 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.user.UserPaoOwner;
 
 /**
- * Builds up maps
- * Map<LiteYukonUser,int[]> and
+ * Builds up a map of:
+ * Map<LiteYukonUser,int[]<paoID>> and
+ * 
+ * Notice: The int[] of PAOIds must always be sorted
  * 
  * If the user is not found in the Map that is created, the user should
  * then be an owner of all PAOs in the system. (backwards compatability)
@@ -57,9 +59,10 @@ public class UserPoaOwnerLoader implements Runnable
             userMap.put(new Integer(u.getUserID()), u);
         }
         
+        //paoIDs returned must always be sorted
    		String sql1 =
    		    "SELECT UserID, PAOid" +
-   		    " FROM " + UserPaoOwner.TABLE_NAME + " order by userid";
+   		    " FROM " + UserPaoOwner.TABLE_NAME + " order by userid, paoid";
    							  
       	Connection conn = null;
       	Statement stmt = null;

@@ -1,6 +1,7 @@
 package com.cannontech.database.cache.functions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -321,20 +322,21 @@ public class AuthFuncs {
         DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();            
         synchronized (cache) 
         {
+            // Notice: The paoIDs array must be sorted for the BinarySearch to work
             int[] paoIDs = (int[])cache.getYukonUserPaoOwners().get( user );
 
             if( paoIDs != null )
             {
-                for( int i = 0; i < paoIDs.length; i++ )
-                    if( paoID == paoIDs[i] )
-                        return true;
+                int res = Arrays.binarySearch( paoIDs, paoID );                
+                if( res >= 0 )
+                    return true;
             }
-            else //if the user is not found, we assume they have access to the PAO
+            else //if the user is not found, we assume they have access to all PAOs
                 return true;
         }
 
         //the user was found, but the ID was not in the set of
-        //  given IDs, they are not permitted to see this
+        //  given IDs, they are not permitted to see this given paoID
         return false;
     }
 }
