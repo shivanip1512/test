@@ -309,7 +309,7 @@ public class SVGGenerator {
 		Element retElement = null;
 		
 		com.cannontech.database.data.graph.GraphDefinition gDef = new com.cannontech.database.data.graph.GraphDefinition();
-		gDef.getGraphDefinition().setGraphDefinitionID(new Integer(611));
+		gDef.getGraphDefinition().setGraphDefinitionID(new Integer(graph.getGraphDefinitionID()));
 	
 		if (gDef != null)
 		{		

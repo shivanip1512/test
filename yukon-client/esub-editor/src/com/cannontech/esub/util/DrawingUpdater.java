@@ -11,6 +11,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.editor.element.DynamicGraphElement;
 import com.cannontech.esub.editor.element.DynamicText;
 import com.cannontech.esub.editor.element.StateImage;
 import com.cannontech.message.dispatch.message.PointData;
@@ -98,6 +99,15 @@ public class DrawingUpdater extends TimerTask {
 								}
 							}
 
+						}
+						
+						if( comp[i] instanceof DynamicGraphElement ) {
+							DynamicGraphElement dge = (DynamicGraphElement) comp[i];
+							if( dge.shouldUpdate() ) {
+								System.out.println("found graph that needs updating");
+								dge.updateGraph();
+								change = true;
+							}							
 						}
 					}
 

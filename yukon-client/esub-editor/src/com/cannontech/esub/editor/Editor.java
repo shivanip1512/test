@@ -26,6 +26,7 @@ import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.editor.PropertyPanelListener;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.esub.editor.element.DrawingElement;
+import com.cannontech.esub.editor.element.DynamicGraphElement;
 import com.cannontech.esub.util.DrawingUpdater;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxElement;
@@ -134,6 +135,9 @@ public class Editor extends JPanel {
 	 */
 	void editElement(final LxComponent elem) {
 
+		//no more updates for a bit
+		drawingUpdateTimer.cancel();
+		
 		if (propertyDialog == null)
 			propertyDialog =
 				new JDialog(
@@ -160,7 +164,7 @@ public class Editor extends JPanel {
 				} else if (e.getID() == PropertyPanelEvent.OK_SELECTION) {
 					editor.getValue(elem);
 				}
-				propertyDialog.setVisible(false);
+				propertyDialog.setVisible(false);								
 			}
 		});
 
@@ -171,22 +175,15 @@ public class Editor extends JPanel {
 		propertyDialog.pack();
 		propertyDialog.setLocationRelativeTo(getDrawing().getLxView());
 		propertyDialog.show();
+		
+		// start the updates again
+		drawingUpdater = new DrawingUpdater();	
+		drawingUpdater.setDrawing( getDrawing() );
+		drawingUpdateTimer = new Timer();
+		drawingUpdateTimer.schedule(drawingUpdater, 0, 15000);
 		}
 	}
-	/**
-	 * Creation date: (12/17/2001 1:59:00 PM)
-	 * @return com.loox.jloox.LxGraph
-	 */
-	/*com.loox.jloox.LxGraph getLxGraph() {
-		return getDrawing().getLxGraph();
-	}
-	/**
-	 * Creation date: (12/17/2001 1:59:00 PM)
-	 * @return com.loox.jloox.LxView
-	 */ /*
-	com.loox.jloox.LxView getLxView() {
-		return getDrawing().getLxView();
-	}*/
+
 	/**
 	 * Creation date: (12/17/2001 2:02:26 PM)
 	 * @return java.lang.String
@@ -231,9 +228,7 @@ public class Editor extends JPanel {
 		drawingUpdater = new DrawingUpdater();	
 		drawingUpdater.setDrawing( getDrawing() );
 		drawingUpdateTimer = new Timer();
-		drawingUpdateTimer.schedule(drawingUpdater, 0, 5000);
-		
-		
+		drawingUpdateTimer.schedule(drawingUpdater, 0, 15000);
 	}
 
 	public void openDrawing() {
@@ -336,6 +331,7 @@ public class Editor extends JPanel {
 	 * @param args java.lang.String[]
 	 */
 	public static void main(String[] args) {
+			
 		try {
 			javax.swing.UIManager.setLookAndFeel(
 				javax.swing.UIManager.getSystemLookAndFeelClassName());
@@ -464,11 +460,17 @@ public class Editor extends JPanel {
 		if (elem instanceof com.cannontech.esub.editor.element.DynamicText
 			|| elem instanceof com.cannontech.esub.editor.element.StateImage
 			|| elem instanceof com.cannontech.esub.editor.element.StaticImage
-			|| elem instanceof com.cannontech.esub.editor.element.StaticText) {				
+			|| elem instanceof com.cannontech.esub.editor.element.StaticText ) {				
 			elem.setUserResizable(false);
 			elem.removeDefaultDoubleClickBehavior();
 			elem.addMouseListener(editElementMouseListener);
 		}
+		
+		if( elem instanceof DynamicGraphElement ) {
+			elem.removeDefaultDoubleClickBehavior();
+			elem.addMouseListener(editElementMouseListener);	
+		}
+		
 	}
 	/**
 	 * Returns the drawing.

@@ -11,7 +11,8 @@ public class ElementEditorFactory {
 		{ DynamicText.class, DynamicTextEditor.class },
 		{ StateImage.class, StateImageEditor.class },
 		{ StaticImage.class, StaticImageEditor.class },
-		{ StaticText.class, StaticTextEditor.class }
+		{ StaticText.class, StaticTextEditor.class },
+		{ DynamicGraphElement.class, DynamicGraphElementEditor.class }
 	};
 		
 	private static ElementEditorFactory instance = null;
