@@ -1,25 +1,18 @@
 package com.cannontech.dbconverter.converter;
 
+import java.util.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
-
-import com.cannontech.database.data.device.MCT210;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.data.device.DeviceFactory;
-import com.cannontech.database.data.device.MCT210;
-import com.cannontech.database.data.device.Series5LMI;
 import com.cannontech.database.data.device.CCU711;
 import com.cannontech.database.db.device.DeviceIDLCRemote;
 import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.data.route.CCURoute;
-import com.cannontech.database.data.device.lm.LMFactory;
-import com.cannontech.database.data.device.lm.LMGroupGolay;
-import com.cannontech.database.data.device.lm.LMProgramBase;
-import com.cannontech.database.data.device.lm.LMProgramDirect;
 import com.cannontech.database.data.device.lm.TimeRefreshGear;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.pao.DeviceTypes;
@@ -36,10 +29,6 @@ import com.cannontech.database.data.port.LocalSharedPort;
 import com.cannontech.database.data.port.PortFactory;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.route.RouteFactory;
-import com.cannontech.database.db.device.lm.LMProgramConstraint;
-import com.cannontech.database.db.device.lm.LMProgramControlWindow;
-import com.cannontech.database.db.device.lm.LMProgramDirectGear;
-import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
 import com.cannontech.database.db.pao.PAOExclusion;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointLimit;
@@ -101,6 +90,8 @@ public class CentMaineDBConverter extends MessageFrameAdaptor
 	private String routeFileName = "routelist without rptr.txt";
 	private String routeMacroFileName = "zonlst.txt";	
 	private String mctFileName = "device by id.txt";
+	
+	private StringTokenizer ts;
 
 
 /**
@@ -339,25 +330,30 @@ public boolean processPortFile()
 	
 	for( int i = 0; i < lines.size(); i++ )
 	{
-		String[] line = lines.get(i).toString().split("|");
-
+		ts = new StringTokenizer(lines.get(i).toString(), "|");
 		//ignore title line
 		if( i <= 2)
 			continue;
-		
+			
+//		System.out.println("line "+i+":  "+line[i]);
+//		while(ts.hasMoreTokens()){
+//			System.out.println("line "+i+":  "+ts.nextToken().trim());
+//		}
 		CTILogger.info("PORT (Local Serial Port) line: " + lines.get(i).toString());
-
+		String portNum = ts.nextToken().trim();
+		
 		Integer portID = new Integer(
-				pInt(line[0].trim().toString()).intValue() 
+				pInt(portNum.toString()).intValue() 
 				+ PORTID_OFFSET );
 
 		//ingore this, we already have it
 		if( portID.intValue() == PORTID_OFFSET || commChannels.contains(portID.intValue()) )
 			continue;
-
+		ts.nextToken();
+		ts.nextToken();
 
 		LocalSharedPort port = (LocalSharedPort)createDirectPort( portID );
-		port.getPortLocalSerial().setPhysicalPort( "Com" + line[4].trim().toString() );
+		port.getPortLocalSerial().setPhysicalPort( "Com" + ts.nextToken().trim().toString() );
 		
 		port.getPortSettings().setLineSettings("8N1");
 		port.getPortSettings().setBaudRate(new Integer(1200));
@@ -400,16 +396,23 @@ public boolean processTransmitterFile()
 		
 	for( int i = 0; i < lines.size(); i++ )
 	{
-		String[] line = lines.get(i).toString().split("|");
-
+		ts = new StringTokenizer(lines.get(i).toString(), "|");
 		//ignore title line
 		if( i <= 2)
 			continue;
 			
 		CTILogger.info("TRANSMITTER line: " + lines.get(i).toString());
-
-		Integer deviceID = new Integer(pInt((line[0].trim()).substring(0,3)).intValue()+CCUID_OFFSET);
-				
+		
+		String idNum = ts.nextToken().trim();
+		System.out.println("idNum:  "+idNum);
+		Integer deviceID = new Integer(pInt((idNum).substring(0,3)).intValue()+CCUID_OFFSET);
+		
+		if(idNum.equalsIgnoreCase("TESTCCU")){
+			deviceID = new Integer(998);
+		}else if(idNum.equalsIgnoreCase("TESTCTT")){
+			deviceID = new Integer(999);
+		}
+		
 		String deviceType = DeviceTypes.STRING_CCU_711[0];
 		CCU711 device = null;
 
@@ -417,13 +420,13 @@ public boolean processTransmitterFile()
 		device.setDeviceID(deviceID);
 		
 		//replace all blanks with a single space
-		String name = line[0].trim();
+		String name = idNum;
 		device.setPAOName(name);
-
+		String address = ts.nextToken().trim();
 		device.getDeviceDirectCommSettings().setPortID( 
-			new Integer(pInt(line[1].substring(0,2)).intValue() + PORTID_OFFSET) );
-
-		device.assignAddress(pInt(line[1].trim().substring(2,2)) );
+			new Integer(pInt(address.substring(0,2)).intValue() + PORTID_OFFSET) );
+		System.out.println("address: "+address.substring(2,4));
+		device.assignAddress(pInt(address.substring(2,4)) );
 		
 		device.getDeviceIDLCRemote().setCcuAmpUseType(DeviceIDLCRemote.AMPUSE_ALTERNATING);
 		
@@ -550,15 +553,14 @@ public boolean processRepeaterFile()
 		
 	for( int i = 0; i < lines.size(); i++ )
 	{
-		String[] line = lines.get(i).toString().split("|");
-
+		ts = new StringTokenizer(lines.get(i).toString(), "|");
 		//ignore title line
 		if( i <= 8)
 			continue;
 			
 		CTILogger.info("REPEATER line: " + lines.get(i).toString());
-		
-		Integer deviceID = new Integer(pInt((line[0].trim()).substring(3,3)).intValue()+RPTID_OFFSET);		
+		String idNum = ts.nextToken().trim();
+		Integer deviceID = new Integer(pInt((idNum).substring(3,6)).intValue()+RPTID_OFFSET);		
 		String deviceType = DeviceTypes.STRING_REPEATER[0];
 		Repeater900 device = null;
 		
@@ -566,7 +568,7 @@ public boolean processRepeaterFile()
 		device.setDeviceID(deviceID);
 		
 		//replace all blanks with a single space
-		String name = line[0].trim();
+		String name = idNum;
 		device.setPAOName(name);
 		// assign address of zero, manually entered later
 		device.assignAddress(new Integer(0));
@@ -602,28 +604,33 @@ public boolean processRouteFile()
 		
 	for( int i = 0; i < lines.size(); i++ )
 	{
-		String[] line = lines.get(i).toString().split("|");
-
+		ts = new StringTokenizer(lines.get(i).toString(), "|");
 		//ignore title line
 		if( i <= 7)
 			continue;
 			
 		CTILogger.info("ROUTE line: " + lines.get(i).toString());
-		
-			
+		String rteName = ts.nextToken().trim();
+		System.out.println("rteName : "+rteName);
+		ts.nextToken();
+		String crtAdd = ts.nextToken().trim();
+		System.out.println("crtAdd : "+ crtAdd);
+		String ccuID = ts.nextToken().trim();
+		System.out.println("CCU ID:  "+ccuID);
 		String routeType = RouteTypes.STRING_CCU;
 		CCURoute route = null;
-		Integer deviceID = new Integer(pInt((line[3].trim()).substring(0,3)).intValue()+CCUID_OFFSET);
+		Integer deviceID = new Integer(pInt((ccuID).substring(0,3)).intValue()+CCUID_OFFSET);
 		route = (CCURoute)com.cannontech.database.data.route.RouteFactory.createRoute( com.cannontech.database.data.pao.PAOGroups.getRouteType( routeType ));
 		route.setDeviceID(deviceID);
 		
 		//replace all blanks with a single space
-		String name = line[0].trim();
+		String name = rteName;
 		route.setRouteName(name);
 		route.setRouteID(new Integer(ROUTE_ID));
 		ROUTE_ID++;
 		Integer busNum = null;
-		if((line[2].trim()).substring(4,2)== "00"){
+		System.out.println("substring "+crtAdd.substring(4,6));
+		if((crtAdd).substring(4,6).equals("00")){
 			busNum = new Integer(0);
 		}else{
 			busNum = new Integer(1);
@@ -666,10 +673,10 @@ public boolean processRouteMacrosFile()
 		
 	for( int i = 0; i < lines.size(); i++ )
 	{
-		String[] line = lines.get(i).toString().split("|");
-
+		ts = new StringTokenizer(lines.get(i).toString(), "|");
 		//ignore title lines and route list lines
-		if( i <= 5 || line[0].trim() == null)
+
+		if( i <= 5 || ts.nextToken() == null)
 			continue;
 			
 		CTILogger.info("ROUTE line: " + lines.get(i).toString());
@@ -679,8 +686,9 @@ public boolean processRouteMacrosFile()
 		com.cannontech.database.data.route.MacroRoute route = (com.cannontech.database.data.route.MacroRoute)com.cannontech.database.data.route.RouteFactory.createRoute(routeType);
 
 		//set our unique own routeID
+		ts = new StringTokenizer(lines.get(i).toString(), "|");
 
-		String name = "@"+line[0].trim();
+		String name = "@"+ts.nextToken().trim();
 		route.setRouteName(name);
 		Integer routeID = new Integer(MACRO_ROUTE_ID);
 		route.setRouteID(routeID);
@@ -696,14 +704,19 @@ public boolean processRouteMacrosFile()
 		// set our list of routes
 		for(int count = 0; count < MAX_DSM2_MACRO_COUNT; count++)
 		{   	
-			String[] line2 = lines.get(i+1+count).toString().split("|");
-			
-			if (line2[6].trim() ==  null)
+			StringTokenizer ts2 = new StringTokenizer(lines.get(i+1+count).toString(),"|");
+
+			ts2.nextToken();
+			ts2.nextToken();
+			ts2.nextToken();
+			ts2.nextToken();
+			String rteID = ts2.nextToken().trim();
+			if (rteID ==  null)
 			{
 				// no more route ids in list
 				break;
 			}
-			Object myRouteID = routeIDsMap.get(line2[6].trim());
+			Object myRouteID = routeIDsMap.get(rteID);
 			com.cannontech.database.db.route.MacroRoute
 				MacroRoute = new com.cannontech.database.db.route.MacroRoute();
 		
@@ -760,20 +773,28 @@ public boolean processMCTFile()
 	{
 		CTILogger.info("MCT line: " + lines.get(i).toString());
 		
-		String[] line = lines.get(i).toString().split("|");
-			
+		ts = new StringTokenizer(lines.get(i).toString(), "|");
 		Integer deviceID = new Integer(MCT_ID);
 		MCT_ID++;
 		String deviceType = null;
-		if(line[1].equalsIgnoreCase("MC210I")){
+		String devID = ts.nextToken().trim();
+		String dType = ts.nextToken().trim();
+		String zone = ts.nextToken().trim();
+		String leadMeter = ts.nextToken().trim();
+		String leadLoad = ts.nextToken().trim();
+		String address = ts.nextToken().trim();
+		ts.nextToken();
+		ts.nextToken();
+		String active = ts.nextToken().trim();
+		if(dType.equalsIgnoreCase("MC210I")){
 			deviceType = DeviceTypes.STRING_MCT_210[0];
-		}else if(line[1].equalsIgnoreCase("MC240I") || line[1].equalsIgnoreCase("MC240P")){
+		}else if(dType.equalsIgnoreCase("MC240I") || dType.equalsIgnoreCase("MC240P")){
 			deviceType = DeviceTypes.STRING_MCT_240[0];
-		}else if(line[1].equalsIgnoreCase("MC250P")){
+		}else if(dType.equalsIgnoreCase("MC250P")){
 			deviceType = DeviceTypes.STRING_MCT_250[0];
-		}else if(line[1].equalsIgnoreCase("MC248P")){
+		}else if(dType.equalsIgnoreCase("MC248P")){
 			deviceType = DeviceTypes.STRING_MCT_248[0];
-		}else if(line[1].equalsIgnoreCase("DCT501")){
+		}else if(dType.equalsIgnoreCase("DCT501")){
 			deviceType = DeviceTypes.STRING_DCT_501[0];
 		}
 		if(deviceType == DeviceTypes.STRING_DCT_501[0]){
@@ -790,24 +811,24 @@ public boolean processMCTFile()
 	
 			device.setDeviceType( deviceType );
 	
-			device.setPAOName(line[0].trim());
+			device.setPAOName(devID);
 			
 			deviceIDsMap.put( device.getPAOName(), device.getPAObjectID());
 			
 			// address,routeid,group1,group2,LsInt
 			// set the MCT address
-			device.getDeviceCarrierSettings().setAddress(new Integer(line[5].trim()));
+			device.getDeviceCarrierSettings().setAddress(new Integer(address));
 	
 			// set this devices route
-			Object myRouteID = macroRouteIDsMap.get("@"+line[2].trim());
+			Object myRouteID = macroRouteIDsMap.get("@"+zone);
 			device.getDeviceRoutes().setRouteID((Integer)myRouteID);
 		    		
 			// set group info
-			device.getDeviceMeterGroup().setCollectionGroup(line[3].trim());
+			device.getDeviceMeterGroup().setCollectionGroup(leadMeter);
 	
-			device.getDeviceMeterGroup().setTestCollectionGroup(line[4].trim());
+			device.getDeviceMeterGroup().setTestCollectionGroup(leadLoad);
 
-			device.getDeviceMeterGroup().setMeterNumber("10"+line[5].trim());
+			device.getDeviceMeterGroup().setMeterNumber("10"+address);
 	
 			//added
 			device.getDeviceMeterGroup().setBillingGroup( device.getDeviceMeterGroup().getBillingGroup() );
@@ -827,7 +848,7 @@ public boolean processMCTFile()
 			
 			// construct demand accumulator point
 			com.cannontech.database.data.point.AccumulatorPoint accumPoint =(com.cannontech.database.data.point.AccumulatorPoint)com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.DEMAND_ACCUMULATOR_POINT);
-			if(line[0].trim().substring((line[0].trim().length())-2,2).equalsIgnoreCase("KQ")){
+			if(devID.substring((devID.length())-2,devID.length()).equalsIgnoreCase("KQ")){
 				accumPoint.getPoint().setPointName("KQ");
 				accumPoint.getPointUnit().setUomID( new Integer( 7 ) );
 			}else{ 
@@ -843,7 +864,7 @@ public boolean processMCTFile()
 			accumPoint.getPoint().setPaoID( deviceID );
 			accumPoint.getPoint().setArchiveType("On Update");
 			accumPoint.getPointAccumulator().setDataOffset(new Double(1));
-			if(String.valueOf(line[1].charAt(5)).equalsIgnoreCase("I")){
+			if(String.valueOf(dType.charAt(5)).equalsIgnoreCase("I")){
 				accumPoint.getPointAccumulator().setMultiplier(new Double(0.01));
 			}else accumPoint.getPointAccumulator().setMultiplier(new Double(1.0));
 			
@@ -860,7 +881,7 @@ public boolean processMCTFile()
 			
 			// contruct pulse accumulator point
 			com.cannontech.database.data.point.AccumulatorPoint pulseAccumPoint = (com.cannontech.database.data.point.AccumulatorPoint)com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT);
-			if(line[0].trim().substring((line[0].trim().length())-2,2).equalsIgnoreCase("KQ")){
+			if(devID.substring((devID.length())-2,devID.length()).equalsIgnoreCase("KQ")){
 				pulseAccumPoint.getPoint().setPointName("KQh");
 				pulseAccumPoint.getPointUnit().setUomID( new Integer( 7 ) );
 			}else{ 
@@ -874,7 +895,7 @@ public boolean processMCTFile()
 			pulseAccumPoint.getPoint().setPaoID( deviceID );
 			pulseAccumPoint.getPoint().setArchiveType("On Update");
 			pulseAccumPoint.getPointAccumulator().setDataOffset(new Double(1));
-			if(String.valueOf(line[1].charAt(5)).equalsIgnoreCase("I")){
+			if(String.valueOf(dType.charAt(5)).equalsIgnoreCase("I")){
 				pulseAccumPoint.getPointAccumulator().setMultiplier(new Double(0.01));
 			}else pulseAccumPoint.getPointAccumulator().setMultiplier(new Double(1.0));
 			
@@ -890,7 +911,7 @@ public boolean processMCTFile()
 			pulseAccumPoint.getPointUnit().setDecimalPlaces(new Integer(2));
 			device.getDeviceLoadProfile().setLastIntervalDemandRate(new Integer(300));
 			device.getDeviceLoadProfile().setLoadProfileDemandRate(new Integer(300));
-			if(line[8].equalsIgnoreCase("T")){
+			if(active.equalsIgnoreCase("T")){
 				device.setDisableFlag(new Character('Y'));
 			}
 			multi.getDBPersistentVector().add(device);
