@@ -62,8 +62,8 @@
                   <td width="50%">
 				  <FORM METHOD="POST" ACTION="<%= request.getContextPath() %>/servlet/LoginController"> 
                     <div align="center"><input type="image" src="demos/CESGraphic.gif" width="152" height="152"></div>
-                  	<input name="USERNAME" value="stacey" type="hidden">
-          			<input name="PASSWORD" value="stacey" type="hidden">
+                  	<input name="USERNAME" value="cust1" type="hidden">
+          			<input name="PASSWORD" value="cust1" type="hidden">
           			<input name="ACTION" value="LOGIN" type="hidden">
                     </form>
 				  </td>
