@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/05/24 17:30:30 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/11/24 17:10:02 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -89,6 +89,16 @@ int CtiTableSASimpleGroup::getFunction(bool control) const
 int CtiTableSASimpleGroup::getNominalTimeout() const
 {
     return _nominalTimeout;
+}
+
+int CtiTableSASimpleGroup::getMarkIndex() const
+{
+    return _markIndex;
+}
+
+int CtiTableSASimpleGroup::getSpaceIndex() const
+{
+    return _spaceIndex;
 }
 
 //=====================================================================================================================
@@ -172,7 +182,9 @@ void CtiTableSASimpleGroup::getSQL( RWDBDatabase &db, RWDBTable &keyTable, RWDBS
         devTbl["groupid"] <<        //are these supposed to be case sensitive? the table scripts are caps!
         devTbl["routeid"] <<
         devTbl["operationaladdress"] <<
-        devTbl["nominaltimeout"];
+        devTbl["nominaltimeout"] <<
+        devTbl["markindex"] <<
+        devTbl["spaceindex"];
 
     selector.from(devTbl);
 
@@ -188,6 +200,8 @@ void CtiTableSASimpleGroup::DecodeDatabaseReader( RWDBReader &rdr )
     rdr["routeid"]              >> _routeId;
     rdr["operationaladdress"]   >> _operationalAddress;
     rdr["nominaltimeout"]       >> _nominalTimeout;
+    rdr["markindex"]            >> _markIndex;
+    rdr["spaceindex"]           >> _spaceIndex;
 }
 
 //=====================================================================================================================

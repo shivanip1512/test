@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/04/29 19:58:51 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/11/24 17:10:02 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -47,6 +47,8 @@ protected:
     int         _nominalTimeout;        // Switch is hardcoded to be off for this duration in seconds!
     int         _virtualTimeout;        // Group is desired to control for this duration in seconds.  If these are not equal multiple control messages must be sent to make it occur (master cycle-like)
     int         _function;
+    int         _markIndex;
+    int         _spaceIndex;
 
 public:
 
@@ -62,6 +64,8 @@ public:
     int getFunction( bool control ) const;
     int getNominalTimeout( void ) const;
     int getVirtualTimeout( void ) const;
+    int getMarkIndex( void ) const;
+    int getSpaceIndex( void ) const;
 
     CtiTableSASimpleGroup& setLmGroupId( LONG newVal );
     CtiTableSASimpleGroup& setRouteId( LONG newVal );
