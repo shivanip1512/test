@@ -27,7 +27,7 @@
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <script language="JavaScript">
 function changeMember(form) {
-	form.attributes["action"].value = "";
+	form.attributes["action"].value = "AddSN.jsp";
 	form.submit();
 }
 </script>
@@ -72,9 +72,7 @@ function changeMember(form) {
                   <tr> 
                     <td> 
                       <table width="100%" border="0" class="TableCell">
-<%
-	if (liteEC.getChildren().size() > 0 && AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) {
-%>
+<% if (liteEC.getChildren().size() > 0 && AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) { %>
                         <tr>
                           <td width="25%" align="right">Member:</td>
                           <td width="75%">
@@ -92,9 +90,7 @@ function changeMember(form) {
                             </select>
                           </td>
                         </tr>
-<%
-	}
-%>
+<% } %>
                         <tr> 
                           <td width="25%"> 
                             <div align="right">Range:</div>

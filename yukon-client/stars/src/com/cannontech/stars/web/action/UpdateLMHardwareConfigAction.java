@@ -194,7 +194,9 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 	/**
 	 * Update the hardware addressing information
 	 */
-	public static void updateLMConfiguration(StarsLMConfiguration starsHwConfig, LiteStarsLMHardware liteHw) throws WebClientException {
+	public static void updateLMConfiguration(StarsLMConfiguration starsHwConfig, LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany)
+		throws WebClientException
+	{
 		com.cannontech.database.data.stars.hardware.LMConfigurationBase config =
 				new com.cannontech.database.data.stars.hardware.LMConfigurationBase();
 		com.cannontech.database.db.stars.hardware.LMConfigurationBase configDB = config.getLMConfigurationBase();
@@ -280,6 +282,10 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 			else {
 				config.setConfigurationID( new Integer(liteHw.getConfigurationID()) );
 				
+				// Get the hardware configuration if it is not retrived yet
+				if (!liteHw.isExtended())
+					StarsLiteFactory.extendLiteInventoryBase( liteHw, energyCompany );
+				
 				// Check to see if the configuration is in both the parent and the child table
 				if (config.getSA205() != null && liteHw.getLMConfiguration().getSA205() == null) {
 					Transaction.createTransaction( Transaction.INSERT, config.getSA205() ).execute();
@@ -302,8 +308,6 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 							Transaction.createTransaction( Transaction.UPDATE, config ).execute();
 				}
 				
-				if (liteHw.getLMConfiguration() == null)
-					liteHw.setLMConfiguration( new LiteLMConfiguration() );
 				StarsLiteFactory.setLiteLMConfiguration( liteHw.getLMConfiguration(), config );
 			}
 		}
@@ -345,7 +349,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 		}
 		
 		if (updateHwConfig.getStarsLMConfiguration() != null) {
-			updateLMConfiguration( updateHwConfig.getStarsLMConfiguration(), liteHw );
+			updateLMConfiguration( updateHwConfig.getStarsLMConfiguration(), liteHw, energyCompany );
 			
 			hwsToConfig = new ArrayList();
 			hwsToConfig.add( liteHw );

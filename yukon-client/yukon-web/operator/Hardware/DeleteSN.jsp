@@ -1,11 +1,23 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.common.constants.YukonListEntry" %>
+<%@ page import="com.cannontech.common.constants.YukonSelectionList" %>
 <%
 	Properties savedReq = null;
-	if (request.getParameter("failed") != null)
+	if (request.getParameter("failed") != null) {
 		savedReq = (Properties) session.getAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
+	}
+	else if (request.getParameter("Member") != null) {
+		ServletUtils.saveRequest(request, session, new String[] {"Member", "From", "To", "DeviceType"});
+		savedReq = (Properties) session.getAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
+	}
 	else
 		session.removeAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
 	if (savedReq == null) savedReq = new Properties();
+	
+	LiteStarsEnergyCompany member = null;
+	if (savedReq.getProperty("Member") != null)
+		member = StarsDatabaseCache.getInstance().getEnergyCompany(Integer.parseInt(savedReq.getProperty("Member")));
+	if (member == null) member = liteEC;
 %>
 <html>
 <head>
@@ -14,6 +26,11 @@
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <script language="JavaScript">
+function changeMember(form) {
+	form.attributes["action"].value = "DeleteSN.jsp";
+	form.submit();
+}
+
 function confirmSubmit(form) {
 	if (form.From.value == "") {
 		alert("The 'From' value cannot be empty");
@@ -64,13 +81,32 @@ function confirmSubmit(form) {
                   <tr> 
                     <td> 
                       <table width="100%" border="0" class="TableCell">
+<% if (liteEC.getChildren().size() > 0 && AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) { %>
+                        <tr>
+                          <td width="25%" align="right">Member:</td>
+                          <td width="75%">
+                            <select name="Member" onChange="changeMember(this.form)">
+                              <%
+	ArrayList descendants = ECUtils.getAllDescendants(liteEC);
+	for (int i = 0; i < descendants.size(); i++) {
+		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+		String selected = company.equals(member)? "selected" : "";
+%>
+                              <option value="<%= company.getLiteID() %>" <%= selected %>><%= company.getName() %></option>
+                              <%
+	}
+%>
+                            </select>
+                          </td>
+                        </tr>
+<% } %>
                         <tr> 
                           <td width="25%"> 
                             <div align="right">Range:</div>
                           </td>
                           <td width="75%"> 
                             <input type="text" name="From" size="10" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("From")) %>">
-                            &nbsp;to&nbsp;
+                            &nbsp;to&nbsp; 
                             <input type="text" name="To" size="10" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("To")) %>">
                           </td>
                         </tr>
@@ -80,19 +116,19 @@ function confirmSubmit(form) {
                           </td>
                           <td width="75%"> 
                             <select name="DeviceType">
-<%
+                              <%
 	int savedDeviceType = 0;
 	if (savedReq.getProperty("DeviceType") != null)
 		savedDeviceType = Integer.parseInt(savedReq.getProperty("DeviceType"));
 	
-	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
-	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
+	YukonSelectionList devTypeList = member.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
+	for (int i = 0; i < devTypeList.getYukonListEntries().size(); i++) {
+		YukonListEntry entry = (YukonListEntry) devTypeList.getYukonListEntries().get(i);
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) continue;
 		String selected = (entry.getEntryID() == savedDeviceType)? "selected" : "";
 %>
-                              <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
-<%
+                              <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getEntryText() %></option>
+                              <%
 	}
 %>
                             </select>

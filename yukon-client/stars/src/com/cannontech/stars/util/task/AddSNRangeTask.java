@@ -9,6 +9,7 @@ package com.cannontech.stars.util.task;
 import java.util.Date;
 import java.util.ArrayList;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
@@ -41,14 +42,14 @@ public class AddSNRangeTask extends TimeConsumingTask {
 	Integer voltageID = null;
 	Integer companyID = null;
 	Integer routeID = null;
-	HttpSession session = null;
+	HttpServletRequest request = null;
 	
 	ArrayList hardwareSet = new ArrayList();
 	ArrayList serialNoSet = new ArrayList();
 	int numSuccess = 0, numFailure = 0;
 	
 	public AddSNRangeTask(LiteStarsEnergyCompany energyCompany, int snFrom, int snTo, Integer devTypeID,
-		Date recvDate, Integer voltageID, Integer companyID, Integer routeID, HttpSession session)
+		Date recvDate, Integer voltageID, Integer companyID, Integer routeID, HttpServletRequest request)
 	{
 		this.energyCompany = energyCompany;
 		this.snFrom = snFrom;
@@ -58,7 +59,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
 		this.voltageID = voltageID;
 		this.companyID = companyID;
 		this.routeID = routeID;
-		this.session = session;
+		this.request = request;
 	}
 
 	/* (non-Javadoc)
@@ -84,7 +85,9 @@ public class AddSNRangeTask extends TimeConsumingTask {
 		
 		status = STATUS_RUNNING;
 		
+		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
+		
 		Integer categoryID = new Integer( ECUtils.getInventoryCategoryID(devTypeID.intValue(), energyCompany) );
 		
 		for (int sn = snFrom; sn <= snTo; sn++) {
@@ -164,7 +167,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
 			session.setAttribute(InventoryManagerUtil.INVENTORY_SET_DESC, resultDesc);
 			if (hardwareSet.size() > 0)
 				session.setAttribute(InventoryManagerUtil.INVENTORY_SET, hardwareSet);
-			session.setAttribute(ServletUtils.ATT_REDIRECT, session.getAttribute(ServletUtils.ATT_REFERRER));
+			session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/Hardware/ResultSet.jsp");
 		}
 	}
 

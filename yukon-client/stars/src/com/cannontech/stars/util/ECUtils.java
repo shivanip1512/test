@@ -521,7 +521,7 @@ public class ECUtils {
 		return ids;
 	}
 	
-	public static ArrayList getLMHardwareInRange(LiteStarsEnergyCompany energyCompany, Integer devTypeID, Integer snFrom, Integer snTo) {
+	public static ArrayList getLMHardwareInRange(LiteStarsEnergyCompany energyCompany, int devTypeDefID, Integer snFrom, Integer snTo) {
 		ArrayList hwList = new ArrayList();
 		
 		ArrayList inventory = energyCompany.loadAllInventory( true );
@@ -530,7 +530,9 @@ public class ECUtils {
 				if (!(inventory.get(i) instanceof LiteStarsLMHardware)) continue;
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) inventory.get(i);
 				
-				if (liteHw.getLmHardwareTypeID() != devTypeID.intValue()) continue;
+				if (YukonListFuncs.getYukonListEntry(liteHw.getLmHardwareTypeID()).getYukonDefID() != devTypeDefID)
+					continue;
+				
 				try {
 					int serialNo = Integer.parseInt( liteHw.getManufacturerSerialNumber() );
 					if (snFrom != null && serialNo < snFrom.intValue()) continue;

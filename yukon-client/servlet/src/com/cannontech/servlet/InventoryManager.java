@@ -668,7 +668,7 @@ public class InventoryManager extends HttpServlet {
 			if (req.getParameter("UseHardwareAddressing") != null) {
 				StarsLMConfiguration starsCfg = new StarsLMConfiguration();
 				InventoryManagerUtil.setStarsLMConfiguration( starsCfg, req );
-				UpdateLMHardwareConfigAction.updateLMConfiguration( starsCfg, (LiteStarsLMHardware)liteInv );
+				UpdateLMHardwareConfigAction.updateLMConfiguration( starsCfg, (LiteStarsLMHardware)liteInv, energyCompany );
 			}
 			
 			if (liteInv.getAccountID() > 0) {
@@ -736,7 +736,7 @@ public class InventoryManager extends HttpServlet {
 			if (req.getParameter("UseHardwareAddressing") != null) {
 				StarsLMConfiguration starsCfg = new StarsLMConfiguration();
 				InventoryManagerUtil.setStarsLMConfiguration( starsCfg, req );
-				UpdateLMHardwareConfigAction.updateLMConfiguration( starsCfg, liteHw );
+				UpdateLMHardwareConfigAction.updateLMConfiguration( starsCfg, liteHw, energyCompany );
 			}
 			
 			if (Boolean.valueOf( req.getParameter("SaveToBatch") ).booleanValue()) {
@@ -775,7 +775,11 @@ public class InventoryManager extends HttpServlet {
 		ServletUtils.saveRequest( req, session,
 				new String[] {"Member", "From", "To", "DeviceType", "ReceiveDate", "Voltage", "ServiceCompany", "Route"} );
 		
-		LiteStarsEnergyCompany member = StarsDatabaseCache.getInstance().getEnergyCompany( Integer.parseInt(req.getParameter("Memeber")) );
+		LiteStarsEnergyCompany member = null;
+		if (req.getParameter("Member") != null)
+			member = StarsDatabaseCache.getInstance().getEnergyCompany( Integer.parseInt(req.getParameter("Member")) );
+		else
+			member = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		int snFrom = 0, snTo = 0;
 		try {
@@ -813,9 +817,9 @@ public class InventoryManager extends HttpServlet {
 			}
 		}
 		
-		// If operation succeed, display the confirmation message on "Message.jsp";
-		// if operation failed, show the error on "ResultSet.jsp" (the REDIRECT parameter
-		// is set within the AddSNRangeTask.run() method)
+		// If operation succeeded or failed, display the confirmation/error message on "Message.jsp";
+		// if operation completed, but not all serial numbers added, show the result on "ResultSet.jsp"
+		// (the REDIRECT parameter is set within the AddSNRangeTask.run() method)
 		session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
 		session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
 		redirect = req.getContextPath() +
@@ -823,7 +827,7 @@ public class InventoryManager extends HttpServlet {
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
-		TimeConsumingTask task = new AddSNRangeTask( member, snFrom, snTo, devTypeID, recvDate, voltageID, companyID, routeID, session );
+		TimeConsumingTask task = new AddSNRangeTask( member, snFrom, snTo, devTypeID, recvDate, voltageID, companyID, routeID, req );
 		long id = ProgressChecker.addTask( task );
 		
 		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
@@ -852,7 +856,7 @@ public class InventoryManager extends HttpServlet {
 		}
 		
 		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
-		session.setAttribute(ServletUtils.ATT_REFERRER, req.getContextPath() + "/operator/Hardware/ResultSet.jsp");
+		session.setAttribute(ServletUtils.ATT_REFERRER, redirect);
 		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 	}
 	
@@ -861,9 +865,13 @@ public class InventoryManager extends HttpServlet {
 	 */
 	private void updateSNRange(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		ServletUtils.saveRequest( req, session,
-				new String[] {"From", "To", "DeviceType", "NewDeviceType", "ReceiveDate", "Voltage", "ServiceCompany", "Route"} );
+				new String[] {"Member", "From", "To", "DeviceType", "NewDeviceType", "ReceiveDate", "Voltage", "ServiceCompany", "Route"} );
 		
-		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany member = null;
+		if (req.getParameter("Member") != null)
+			member = StarsDatabaseCache.getInstance().getEnergyCompany( Integer.parseInt(req.getParameter("Member")) );
+		else
+			member = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
 		
@@ -906,7 +914,7 @@ public class InventoryManager extends HttpServlet {
 		Date recvDate = null;
 		String recvDateStr = req.getParameter("ReceiveDate");
 		if (recvDateStr != null && recvDateStr.length() > 0) {
-			recvDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(recvDateStr, energyCompany.getDefaultTimeZone());
+			recvDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(recvDateStr, member.getDefaultTimeZone());
 			if (recvDate == null) {
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid receive date format");
 				redirect = referer;
@@ -924,7 +932,7 @@ public class InventoryManager extends HttpServlet {
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
-		TimeConsumingTask task = new UpdateSNRangeTask( snFrom, snTo, devTypeID, newDevTypeID, recvDate, voltageID, companyID, routeID, req );
+		TimeConsumingTask task = new UpdateSNRangeTask( member, snFrom, snTo, devTypeID, newDevTypeID, recvDate, voltageID, companyID, routeID, req );
 		long id = ProgressChecker.addTask( task );
 		
 		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
@@ -961,9 +969,13 @@ public class InventoryManager extends HttpServlet {
 	 * Delete hardwares in the given serial # range 
 	 */
 	private void deleteSNRange(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-		ServletUtils.saveRequest( req, session, new String[] {"From", "To", "DeviceType"} );
+		ServletUtils.saveRequest( req, session, new String[] {"Member", "From", "To", "DeviceType"} );
 		
-		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany member = null;
+		if (req.getParameter("Member") != null)
+			member = StarsDatabaseCache.getInstance().getEnergyCompany( Integer.parseInt(req.getParameter("Member")) );
+		else
+			member = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		String fromStr = req.getParameter("From");
 		String toStr = req.getParameter("To");
@@ -998,7 +1010,7 @@ public class InventoryManager extends HttpServlet {
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
-		TimeConsumingTask task = new DeleteSNRangeTask( snFrom, snTo, devTypeID, req );
+		TimeConsumingTask task = new DeleteSNRangeTask( member, snFrom, snTo, devTypeID, req );
 		long id = ProgressChecker.addTask( task );
 		
 		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
@@ -1046,7 +1058,7 @@ public class InventoryManager extends HttpServlet {
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
-		TimeConsumingTask task = new ConfigSNRangeTask( configNow, req );
+		TimeConsumingTask task = new ConfigSNRangeTask( energyCompany, configNow, req );
 		long id = ProgressChecker.addTask( task );
 		
 		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
@@ -1220,7 +1232,7 @@ public class InventoryManager extends HttpServlet {
 			if (req.getParameter("UseHardwareAddressing") != null) {
 				StarsLMConfiguration starsCfg = new StarsLMConfiguration();
 				InventoryManagerUtil.setStarsLMConfiguration( starsCfg, req );
-				UpdateLMHardwareConfigAction.updateLMConfiguration( starsCfg, (LiteStarsLMHardware)liteInv );
+				UpdateLMHardwareConfigAction.updateLMConfiguration( starsCfg, (LiteStarsLMHardware)liteInv, energyCompany );
 			}
 			
 			// Append inventory ID to the redirect URL

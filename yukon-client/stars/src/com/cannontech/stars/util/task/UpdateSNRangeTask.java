@@ -15,7 +15,6 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -37,6 +36,7 @@ import com.cannontech.stars.xml.serialize.StarsInventory;
  */
 public class UpdateSNRangeTask extends TimeConsumingTask {
 	
+	LiteStarsEnergyCompany energyCompany = null;
 	Integer snFrom = null;
 	Integer snTo = null;
 	Integer devTypeID = null;
@@ -51,9 +51,10 @@ public class UpdateSNRangeTask extends TimeConsumingTask {
 	int numSuccess = 0, numFailure = 0;
 	int numToBeUpdated = 0;
 	
-	public UpdateSNRangeTask(Integer snFrom, Integer snTo, Integer devTypeID, Integer newDevTypeID,
+	public UpdateSNRangeTask(LiteStarsEnergyCompany energyCompany, Integer snFrom, Integer snTo, Integer devTypeID, Integer newDevTypeID,
 		Date recvDate, Integer voltageID, Integer companyID, Integer routeID, HttpServletRequest request)
 	{
+		this.energyCompany = energyCompany;
 		this.snFrom = snFrom;
 		this.snTo = snTo;
 		this.devTypeID = devTypeID;
@@ -95,18 +96,18 @@ public class UpdateSNRangeTask extends TimeConsumingTask {
 			return;
 		}
 		
+		status = STATUS_RUNNING;
+		
 		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		
-		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		int categoryID = ECUtils.getInventoryCategoryID( devTypeID.intValue(), energyCompany );
-		
-		status = STATUS_RUNNING;
 		
 		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
 		boolean devTypeChanged = newDevTypeID != null && newDevTypeID.intValue() != devTypeID.intValue();
 		
-		ArrayList hwList = ECUtils.getLMHardwareInRange( energyCompany, devTypeID, snFrom, snTo );
+		int devTypeDefID = YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getYukonDefID();
+		ArrayList hwList = ECUtils.getLMHardwareInRange( energyCompany, devTypeDefID, snFrom, snTo );
 		
 		numToBeUpdated = hwList.size();
 		if (numToBeUpdated == 0) {

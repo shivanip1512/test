@@ -14,8 +14,8 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
-import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
@@ -41,17 +41,19 @@ import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
  */
 public class ConfigSNRangeTask extends TimeConsumingTask {
 	
-	ArrayList invToConfig = null;
-	ArrayList hwsToConfig = null;
+	LiteStarsEnergyCompany energyCompany = null;
 	boolean configNow = false;
 	HttpServletRequest request = null;
 	
+	ArrayList invToConfig = null;
+	ArrayList hwsToConfig = null;
 	ArrayList hardwareSet = new ArrayList();
 	int numSuccess = 0, numFailure = 0;
 	int numToBeConfigured = 0;
 	
-	public ConfigSNRangeTask(boolean configNow, HttpServletRequest request)
+	public ConfigSNRangeTask(LiteStarsEnergyCompany energyCompany, boolean configNow, HttpServletRequest request)
 	{
+		this.energyCompany = energyCompany;
 		this.configNow = configNow;
 		this.request = request;
 	}
@@ -92,7 +94,6 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 	public void run() {
 		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		invToConfig = (ArrayList) session.getAttribute( InventoryManagerUtil.SN_RANGE_TO_CONFIG );
 		if (invToConfig == null) {
@@ -110,9 +111,10 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 		for (int i = 0; i < invToConfig.size(); i++) {
 			if (invToConfig.get(i) instanceof Integer[]) {
 				Integer[] snRange = (Integer[]) invToConfig.get(i);
+				int devTypeDefID = YukonListFuncs.getYukonListEntry(snRange[0].intValue()).getYukonDefID();
 				
 				if (!searchMembers) {
-					ArrayList hwsInRange = ECUtils.getLMHardwareInRange( energyCompany, snRange[0], snRange[1], snRange[2] );
+					ArrayList hwsInRange = ECUtils.getLMHardwareInRange( energyCompany, devTypeDefID, snRange[1], snRange[2] );
 					for (int j = 0; j < hwsInRange.size(); j++) {
 						if (!hwsToConfig.contains( hwsInRange.get(j) ))
 							hwsToConfig.add( hwsInRange.get(j) );
@@ -122,7 +124,7 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 					ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
 					for (int j = 0; j < descendants.size(); j++) {
 						LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(j);
-						ArrayList hwsInRange = ECUtils.getLMHardwareInRange( company, snRange[0], snRange[1], snRange[2] );
+						ArrayList hwsInRange = ECUtils.getLMHardwareInRange( company, devTypeDefID, snRange[1], snRange[2] );
 						for (int k = 0; k < hwsInRange.size(); k++) {
 							if (!isHardwareContained( hwsToConfig, (LiteStarsLMHardware)hwsInRange.get(k) ))
 								hwsToConfig.add( new Pair(hwsInRange.get(k), company) );
@@ -202,7 +204,7 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 			
 			try {
 				if (hwConfig != null)
-					UpdateLMHardwareConfigAction.updateLMConfiguration( hwConfig, liteHw );
+					UpdateLMHardwareConfigAction.updateLMConfiguration( hwConfig, liteHw, company );
 				
 				if (configNow) {
 					YukonSwitchCommandAction.sendConfigCommand(company, liteHw, true, options);
