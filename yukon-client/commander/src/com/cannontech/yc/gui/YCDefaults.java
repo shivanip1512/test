@@ -44,6 +44,18 @@ public class YCDefaults
 	/**
 	 * YCDefaults constructor comment.
 	 */
+	public YCDefaults(int priority, boolean queueCommand, boolean showLog, boolean confirmExecute, String commandFileDir) 
+	{
+		super();
+		setCommandPriority(priority);
+		setQueueExecuteCommand(queueCommand);
+		setShowMessageLog(showLog);
+		setConfirmCommandExecute(confirmExecute);
+		setCommandFileDirectory(commandFileDir);
+	}
+	/**
+	 * YCDefaults constructor comment.
+	 */
 	public YCDefaults(int priority, boolean queueCommand, boolean showLog, boolean confirmExecute, String commandFileDir, int divLoc) 
 	{
 		super();
