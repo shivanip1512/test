@@ -6,38 +6,21 @@ package com.cannontech.database.db.port;
 
  import com.cannontech.database.db.DBPersistent;
  
-public class PortSettings extends DBPersistent {
+public class PortSettings extends DBPersistent 
+{
 	private Integer portID = null;
-	private Integer baudRate = null;
-	private Integer cdWait = null;
-	private String  lineSettings = null;
+	private Integer baudRate = new Integer(1200);
+	private Integer cdWait = new Integer(1000);
+	private String  lineSettings = "8N1";
+
 /**
  * SerialPortSettings constructor comment.
  */
 public PortSettings() {
 	super();
-	initialize( null, null, null, null );
 }
-/**
- * This method was created in VisualAge.
- * @param portNumber java.lang.Integer
- */
-public PortSettings( Integer portNumber ) {
-	super();
-	initialize( portNumber, null, null, null );
-}
-/**
- * This method was created in VisualAge.
- * @param portNumber java.lang.Integer
- * @param physicalPort java.lang.String
- * @param baudRate java.lang.Integer
- * @param cdWait java.lang.Integer
- */
-public PortSettings( Integer portNumber, Integer baudRate, Integer cdWait, String lineSettings ) {
-	super();
 
-	initialize( portNumber, baudRate, cdWait, lineSettings );
-}
+
 /**
  * add method comment.
  */
@@ -82,20 +65,8 @@ public String getLineSettings() {
 public Integer getPortID() {
 	return portID;
 }
-/**
- * This method was created in VisualAge.
- * @param portNumber java.lang.Integer
- * @param physicalPort java.lang.String
- * @param baudRate java.lang.Integer
- * @param cdWait java.lang.Integer
- */
-public void initialize( Integer portID, Integer baudRate, Integer cdWait, String lineSettings ) {
 
-	setPortID( portID );
-	setBaudRate( baudRate);
-	setCdWait( cdWait );
-	setLineSettings( lineSettings );
-}
+
 /**
  * retrieve method comment.
  */

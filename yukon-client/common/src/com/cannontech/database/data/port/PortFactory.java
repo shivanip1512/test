@@ -147,9 +147,6 @@ public static DirectPort createPort( int typeOfPort ) throws java.sql.SQLExcepti
 	port.getCommPort().setSharedPortType( com.cannontech.common.util.CtiUtilities.STRING_NONE );
 	port.getCommPort().setSharedSocketNumber( new Integer(CommPort.DEFAULT_SHARED_SOCKET_NUMBER) );
 
-	port.getPortSettings().setLineSettings("8N1");
-	port.getPortSettings().setCdWait(new Integer(20));
-
 	return port;
 }
 }
