@@ -32,32 +32,6 @@
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <script language="JavaScript">
-var entryTexts = new Array();
-var entryYukDefIDs = new Array();
-var dftListIndices = new Array();
-<%
-	for (int i = 0; i < list.getYukonListEntries().size(); i++) {
-		YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(i);
-		int dftListIdx = -1;
-		for (int j = 0; j < dftList.getYukonListEntries().size(); j++) {
-			YukonListEntry dftEntry = (YukonListEntry) dftList.getYukonListEntries().get(j);
-			if (dftEntry.getYukonDefID() == entry.getYukonDefID()) {
-				if (dftEntry.getEntryText().equals(entry.getEntryText())) {
-					// If both yukonDefID and entryText matches, we find it!
-					dftListIdx = j;
-					break;
-				}
-				// If only yukonDefID matches, and it's not 0,
-				// then we mark this down, and keep searching for a perfect match
-				if (entry.getYukonDefID() != 0) dftListIdx = j;
-			}
-		}
-%>
-	entryTexts[<%= i %>] = "<%= entry.getEntryText() %>";
-	entryYukDefIDs[<%= i %>] = <%= entry.getYukonDefID() %>;
-	dftListIndices[<%= i %>] = <%= dftListIdx %>;
-<%	} %>
-
 var dftEntryTexts = new Array();
 var dftEntryYukDefIDs = new Array();
 <%
@@ -68,33 +42,35 @@ var dftEntryYukDefIDs = new Array();
 	dftEntryYukDefIDs[<%= i %>] = <%= entry.getYukonDefID() %>;
 <%	} %>
 
+var entryTexts = new Array();
+var entryYukDefIDs = new Array();
+var dftListIndices = new Array();
+<%
+	for (int i = 0; i < list.getYukonListEntries().size(); i++) {
+		YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(i);
+%>
+	entryTexts[<%= i %>] = "<%= entry.getEntryText() %>";
+	entryYukDefIDs[<%= i %>] = <%= entry.getYukonDefID() %>;
+	dftListIndices[<%= i %>] = getDefaultListIndex(entryTexts[<%= i %>], entryYukDefIDs[<%= i %>]);
+<%	} %>
+
 var curIdx = entryTexts.length;
 
-function onSetYukonDefID(form, checked) {
-	if (checked) {
-		form.DefaultListEntries.selectedIndex = -1;
-		form.YukonDefID.disabled = false;
-		if (form.YukonDefID.value == "") form.YukonDefID.value = "0";
-		form.YukonDefID.focus();
+function getDefaultListIndex(entryText, yukDefID) {
+	var dftListIdx = -1;
+	for (idx = 0; idx < dftEntryTexts.length; idx++) {
+		if (dftEntryYukDefIDs[idx] == yukDefID) {
+			if (dftEntryTexts[idx] == entryText) {
+				// If both yukonDefID and entryText matches, we find it!
+				dftListIdx = idx;
+				break;
+			}
+			// If only yukonDefID matches, and it's not 0,
+			// then we mark this down, and keep searching for a perfect match
+			if (yukDefID != 0) dftListIdx = idx;
+		}
 	}
-	else {
-		form.YukonDefID.disabled = true;
-	}
-}
-
-function setYukonDefID(form, dftListIndex, yukonDefID) {
-	if (dftListIndex < 0) {
-		form.SetYukonDefID.checked = true;
-		form.YukonDefID.disabled = false;
-		form.YukonDefID.value = yukonDefID;
-		form.DefaultListEntries.selectedIndex = -1;
-	}
-	else {
-		form.SetYukonDefID.checked = false;
-		form.YukonDefID.disabled = true;
-		form.YukonDefID.value = "";
-		form.DefaultListEntries.selectedIndex = dftListIndex;
-	}
+	return dftListIdx;
 }
 
 function showEntry(form) {
@@ -102,13 +78,15 @@ function showEntry(form) {
 	if (entries.selectedIndex < 0 || entries.value == -1) {
 		curIdx = entryTexts.length;
 		form.EntryText.value = "";
-		setYukonDefID(form, -1, 0);
+		form.YukonDefID.value = "";
+		form.DefaultListEntries.selectedIndex = -1;
 		form.Save.value = "Add";
 	}
 	else {
 		curIdx = entries.selectedIndex;
 		form.EntryText.value = entryTexts[curIdx];
-		setYukonDefID(form, dftListIndices[curIdx], entryYukDefIDs[curIdx]);
+		form.YukonDefID.value = entryYukDefIDs[curIdx];
+		form.DefaultListEntries.selectedIndex = dftListIndices[curIdx];
 		form.Save.value = "Save";
 	}
 }
@@ -117,22 +95,15 @@ function showDefaultEntry(form) {
 	var dftEntries = form.DefaultListEntries;
 	var idx = dftEntries.selectedIndex;
 	form.EntryText.value = dftEntryTexts[idx];
-	setYukonDefID(form, idx, 0);
+	form.YukonDefID.value = dftEntryYukDefIDs[idx];
 }
 
 function saveEntry(form) {
 	entryTexts[curIdx] = form.EntryText.value;
-	if (form.SetYukonDefID.checked) {
-		var yukonDefID = parseInt(form.YukonDefID.value, 10);
-		if (isNaN(yukonDefID)) yukonDefID = 0;
-		entryYukDefIDs[curIdx] = yukonDefID;
-		dftListIndices[curIdx] = -1;
-	}
-	else {
-		var idx = form.DefaultListEntries.selectedIndex;
-		entryYukDefIDs[curIdx] = dftEntryYukDefIDs[idx];
-		dftListIndices[curIdx] = idx;
-	}
+	var yukonDefID = parseInt(form.YukonDefID.value, 10);
+	if (isNaN(yukonDefID)) yukonDefID = 0;
+	entryYukDefIDs[curIdx] = yukonDefID;
+	dftListIndices[curIdx] = getDefaultListIndex(entryTexts[curIdx], entryYukDefIDs[curIdx]);
 	
 	var entries = form.ListEntries;
 	if (curIdx == entries.options.length - 1) {
@@ -321,8 +292,8 @@ function init() {
                       <input type="hidden" name="action" value="UpdateSelectionList">
                       <input type="hidden" name="ListName" value="<%= listName %>">
                       <tr> 
-                        <td width="18%" align="right" class="TableCell">List Name:</td>
-                        <td width="82%" class="TableCell">
+                        <td width="15%" align="right" class="TableCell">List Name:</td>
+                        <td width="85%" class="TableCell"> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                             <tr>
                               <td width="30%"><%= listName %></td>
@@ -339,8 +310,8 @@ function init() {
                       </tr>
 <%	if (isOptOutPeriod || isOptOutPeriodCus) { %>
                       <tr> 
-                        <td width="18%" align="right" class="TableCell">&nbsp;</td>
-                        <td width="82%" class="TableCell"> 
+                        <td width="15%" align="right" class="TableCell">&nbsp;</td>
+                        <td width="85%" class="TableCell"> 
                           <% if (isOptOutPeriod) { %>
                           <a href="Admin_SelectionList.jsp?List=OptOutPeriodCustomer">View 
                           Customer Side List</a> 
@@ -352,14 +323,14 @@ function init() {
                       </tr>
 <%	} %>
 					  <tr> 
-                        <td width="18%" align="right" class="TableCell">Description:</td>
-                        <td width="82%" class="TableCell"> 
+                        <td width="15%" align="right" class="TableCell">Description:</td>
+                        <td width="85%" class="TableCell"> 
                           <input type="text" name="WhereIsList" size="50" value="<%= list.getWhereIsList() %>">
                         </td>
                       </tr>
                       <tr> 
-                        <td width="18%" align="right" class="TableCell" height="7">Ordering:</td>
-                        <td width="82%" class="TableCell" valign="middle" height="7"> 
+                        <td width="15%" align="right" class="TableCell" height="7">Ordering:</td>
+                        <td width="85%" class="TableCell" valign="middle" height="7"> 
                           <select name="Ordering">
                             <option value="A" <%= list.getOrdering().equalsIgnoreCase("A")? "selected" : "" %>>Alphabetical</option>
                             <option value="O" <%= list.getOrdering().equalsIgnoreCase("O")? "selected" : "" %>>List 
@@ -368,14 +339,14 @@ function init() {
                         </td>
                       </tr>
                       <tr> 
-                        <td width="18%" align="right" class="TableCell"> Label:</td>
-                        <td width="82%" class="TableCell"> 
+                        <td width="15%" align="right" class="TableCell"> Label:</td>
+                        <td width="85%" class="TableCell"> 
                           <input type="text" name="Label" size="30" value="<%= list.getSelectionLabel() %>">
                         </td>
                       </tr>
                       <tr> 
-                        <td width="18%" align="right" class="TableCell"> Entries:</td>
-                        <td width="82%" class="TableCell"> 
+                        <td width="15%" align="right" class="TableCell"> Entries:</td>
+                        <td width="85%" class="TableCell"> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                             <tr> 
                               <td width="50%">Current List:<br>
@@ -410,35 +381,49 @@ function init() {
                         </td>
                       </tr>
                       <tr> 
-                        <td width="18%" align="right" class="TableCell">Entry 
+                        <td width="15%" align="right" class="TableCell">Entry 
                           Def: </td>
-                        <td width="82%" class="TableCell"> 
+                        <td width="85%" class="TableCell"> 
+                          <p>Enter entry definition, or select an entry from the 
+                            default list: </p>
                           <table width="100%" border="0" cellspacing="0" cellpadding="0">
                             <tr class="TableCell"> 
-                              <td width="50%"> 
-                                <p>Enter entry definition, or select an entry 
-                                  from the default list:<br>
-                                  Text: 
-                                  <input type="text" name="EntryText" size="25">
-                                  <br>
-                                  <input type="checkbox" name="SetYukonDefID" value="true" onclick="onSetYukonDefID(this.form, this.checked)">
-                                  Specify YukonDefID: 
-                                  <input type="text" name="YukonDefID" size="8" disabled>
-                                  <br>
-                                  <input type="button" name="Save" value="Add" onclick="saveEntry(this.form)">
-                                </p>
-                              </td>
-                              <td width="50%"> 
-                                <p> Default List:<br>
-                                  <select name="DefaultListEntries" size="5" style="width:150" onclick="showDefaultEntry(this.form)">
-                                    <%
+                              <td width="40%"> Default List:<br>
+                                <select name="DefaultListEntries" size="5" style="width:150" onClick="showDefaultEntry(this.form)">
+                                  <%
 	for (int i = 0; i < dftList.getYukonListEntries().size(); i++) {
 		YukonListEntry entry = (YukonListEntry) dftList.getYukonListEntries().get(i);
 %>
-                                    <option><%= entry.getEntryText() %></option>
-                                    <%	} %>
-                                  </select>
-                                </p>
+                                  <option><%= entry.getEntryText() %></option>
+                                  <%	} %>
+                                </select>
+                              </td>
+                              <td width="60%"> 
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                  <tr> 
+                                    <td width="75%"> 
+                                      <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
+                                        <tr> 
+                                          <td width="25%" align="right">Text: 
+                                          </td>
+                                          <td width="75%"> 
+                                            <input type="text" name="EntryText" size="25">
+                                          </td>
+                                        </tr>
+                                        <tr> 
+                                          <td width="25%" align="right">YukonDefID: 
+                                          </td>
+                                          <td width="75%"> 
+                                            <input type="text" name="YukonDefID" size="25">
+                                          </td>
+                                        </tr>
+                                      </table>
+                                    </td>
+                                  </tr>
+                                </table>
+                                <div align="center">
+                                  <input type="button" name="Save" value="Add" onClick="saveEntry(this.form)">
+                                </div>
                               </td>
                             </tr>
                           </table>
