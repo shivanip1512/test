@@ -143,8 +143,13 @@ public class ProgramSignUpAction implements ActionBase {
             	respOper.setStarsProgramSignUpResponse( resendNotEnrolled(energyCompany, liteAcctInfo, conn) );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
+            
+			// If there is only one hardware in this account, use it as the default hardware, assign all programs to it
+			Integer dftInvID = null;
+			if (liteAcctInfo.getInventories().size() == 1)
+				dftInvID = (Integer) liteAcctInfo.getInventories().get(0);
 	        
-	        updateProgramEnrollment( progSignUp, liteAcctInfo, energyCompany, conn );
+	        updateProgramEnrollment( progSignUp, liteAcctInfo, dftInvID, energyCompany, conn );
 	        
     		// Go through the list of hardware "to be disabled", and move the fake ones to the "to be configured" list
     		for (int i = 0; i < hwIDsToDisable.size(); i++) {
@@ -330,7 +335,7 @@ public class ProgramSignUpAction implements ActionBase {
 	}
 	
 	public static void updateProgramEnrollment(StarsProgramSignUp progSignUp, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteStarsEnergyCompany energyCompany, java.sql.Connection conn) throws java.sql.SQLException
+		Integer invID, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn) throws java.sql.SQLException
 	{
 		// Get action & event type IDs
 		Integer progEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMPROGRAM).getEntryID() );
@@ -338,11 +343,6 @@ public class ProgramSignUpAction implements ActionBase {
 		Integer termEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID() );
 		Integer dftLocationID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_LOC_UNKNOW).getEntryID() );
 		Integer dftManufacturerID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_MANU_UNKNOWN).getEntryID() );
-        
-		// If there is only one hardware in this account, use it as the default hardware, assign all programs to it
-		Integer dftInvID = null;
-		if (liteAcctInfo.getInventories().size() == 1)
-			dftInvID = (Integer) liteAcctInfo.getInventories().get(0);
         
 		ArrayList progList = liteAcctInfo.getLmPrograms();
 		ArrayList appList = liteAcctInfo.getAppliances();
@@ -402,8 +402,8 @@ public class ProgramSignUpAction implements ActionBase {
 					liteStarsProg.updateProgramStatus( liteAcctInfo.getProgramHistory() );
 					newProgList.add( liteStarsProg );
 		            
-					if (liteApp.getInventoryID() == 0 && dftInvID != null)
-						liteApp.setInventoryID( dftInvID.intValue() );
+					if (liteApp.getInventoryID() == 0 && invID != null)
+						liteApp.setInventoryID( invID.intValue() );
 					if (liteApp.getInventoryID() > 0) {
 						int groupID = program.getAddressingGroupID();
 						if (groupID == 0 && liteProg.getGroupIDs() != null && liteProg.getGroupIDs().length > 0)
@@ -456,8 +456,8 @@ public class ProgramSignUpAction implements ActionBase {
 					liteStarsProg.updateProgramStatus( liteAcctInfo.getProgramHistory() );
 					newProgList.add( liteStarsProg );
 		            
-					if (liteApp.getInventoryID() == 0 && dftInvID != null)
-						liteApp.setInventoryID( dftInvID.intValue() );
+					if (liteApp.getInventoryID() == 0 && invID != null)
+						liteApp.setInventoryID( invID.intValue() );
 					if (liteApp.getInventoryID() > 0) {
 						int groupID = program.getAddressingGroupID();
 						if (groupID == 0 && liteProg.getGroupIDs() != null && liteProg.getGroupIDs().length > 0)
@@ -482,8 +482,8 @@ public class ProgramSignUpAction implements ActionBase {
 					if (liteStarsProg != null)
 						newProgList.add( liteStarsProg );
 		            
-					if (liteApp.getInventoryID() == 0 && dftInvID != null)
-						liteApp.setInventoryID( dftInvID.intValue() );
+					if (liteApp.getInventoryID() == 0 && invID != null)
+						liteApp.setInventoryID( invID.intValue() );
 					if (liteApp.getInventoryID() > 0) {
 						int groupID = program.getAddressingGroupID();
 						if (groupID != 0 && liteStarsProg.getGroupID() != groupID) {
@@ -532,17 +532,17 @@ public class ProgramSignUpAction implements ActionBase {
 				appDB.setLocationID( dftLocationID );
 				appDB.setManufacturerID( dftManufacturerID );
 	        	
-				if (dftInvID != null) {
+				if (invID != null) {
 					if (liteProg.getGroupIDs() != null && liteProg.getGroupIDs().length > 0) {
 						int groupID = liteProg.getGroupIDs()[0];
 						liteStarsProg.setGroupID( groupID );
 		        		
 						LMHardwareConfiguration hwConfig = new LMHardwareConfiguration();
-						hwConfig.setInventoryID( dftInvID );
+						hwConfig.setInventoryID( invID );
 						hwConfig.setAddressingGroupID( new Integer(groupID) );
 						app.setLMHardwareConfig( hwConfig );
 		        		
-						if (!hwIDsToConfig.contains( dftInvID )) hwIDsToConfig.add( dftInvID );
+						if (!hwIDsToConfig.contains( invID )) hwIDsToConfig.add( invID );
 					}
 				}
 	        	
