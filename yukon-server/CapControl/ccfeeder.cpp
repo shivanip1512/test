@@ -1354,11 +1354,11 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, ULONG minC
                 else
                 {
                     char tempchar[80];
-                    currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                    currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
                     text = RWCString("Non Normal Var Quality = ");
                     _ltoa(currentVarPointQuality,tempchar,10);
                     text += tempchar;
-                    text += "%, OpenQuestionable";
+                    text += "%, CloseQuestionable";
                     additional = RWCString("Feeder: ");
                     additional = getPAOName();
                 }
@@ -1557,6 +1557,10 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDat
             << dynamicCCFeederTable["newpointdatareceivedflag"].assign( RWCString((_newpointdatareceivedflag?'Y':'N')) )
             << dynamicCCFeederTable["lastcurrentvarupdatetime"].assign( (RWDBDateTime)_lastcurrentvarpointupdatetime );
 
+            /*{
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << updater.asString().data() << endl;
+            }*/
             updater.execute( conn );
 
             if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
@@ -1586,6 +1590,10 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDat
             << dynamicCCFeederTable["recentlycontrolledflag"].assign( RWCString((_recentlycontrolledflag?'Y':'N')) )
             << dynamicCCFeederTable["lastoperationtime"].assign( (RWDBDateTime)_lastoperationtime );
 
+            /*{
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << updater.asString().data() << endl;
+            }*/
             updater.execute( conn );
 
             if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
@@ -1615,6 +1623,10 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDat
             << dynamicCCFeederTable["busoptimizedvarcategory"].assign( _busoptimizedvarcategory )
             << dynamicCCFeederTable["busoptimizedvaroffset"].assign( _busoptimizedvaroffset );
 
+            /*{
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << updater.asString().data() << endl;
+            }*/
             updater.execute( conn );
 
             if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
@@ -1645,6 +1657,10 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDat
             << dynamicCCFeederTable["estimatedpfvalue"].assign( _estimatedpowerfactorvalue )
             << dynamicCCFeederTable["currentvarpointquality"].assign( _currentvarpointquality );
 
+            /*{
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << updater.asString().data() << endl;
+            }*/
             updater.execute( conn );
 
             if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
@@ -1679,11 +1695,11 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDat
             inserter << _paoid
             << _currentvarloadpointvalue
             << _currentwattloadpointvalue
-            << _newpointdatareceivedflag
+            << RWCString((_newpointdatareceivedflag?'Y':'N'))
             << _lastcurrentvarpointupdatetime
             << _estimatedvarloadpointvalue
             << _currentdailyoperations
-            << _recentlycontrolledflag
+            << RWCString((_recentlycontrolledflag?'Y':'N'))
             << _lastoperationtime
             << _varvaluebeforecontrol
             << _lastcapbankcontrolleddeviceid
