@@ -74,16 +74,16 @@ public boolean needsComboIniting()
  */
 public void destroy() 
 {
-/*	try
+	try
 	{
-		if( connection != null )
-			connection.disconnect();
+		//if( connection != null )
+		getIMACSConnection().disconnect();
 	}
 	catch( java.io.IOException e )
 	{
 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
-*/
+
 	mainPanel = null;
 //	connection = null;
 	buttonsArray = null;

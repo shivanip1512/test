@@ -4,7 +4,10 @@ package com.cannontech.yukon;
  * Base interface for all yukon server connections
  * @author alauinger
  */
-public interface IServerConnection {
+public interface IServerConnection 
+{
+
+	void disconnect() throws java.io.IOException;
 
 /*
 public void connect() throws java.io.IOException;

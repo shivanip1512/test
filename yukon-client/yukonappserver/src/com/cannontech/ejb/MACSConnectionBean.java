@@ -211,4 +211,13 @@ public class MACSConnectionBean /*extends ClientConnection*/ implements SessionB
 		getMACSConnection().sendUpdateSchedule( sched );
 	}
 
+   /**
+    * @ejb:interface-method
+    * tview-type="remote" 
+   **/
+	public void disconnect() throws java.io.IOException
+	{
+		getMACSConnection().disconnect();		
+	}
+
 }
