@@ -1,0 +1,25 @@
+a.menuLink:active {color: #FF9900}
+a.menuLink:visited {color: #FFFFFF}
+a.menuLink:link {color: #FFFFFF}
+a.menuLink:hover {color: #CCCCCC;}
+a.menuLink { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #FFFFFF; background-color: 006699; font-weight: bold; text-decoration: none}
+.menu { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #FFFFFF; background-color: 006699; font-weight: bold}
+.menubackground  {  background-color: 006699}
+
+a.submenuLink:active {color: #006699}
+a.submenuLink:visited {color: #006699}
+a.submenuLink:link {color: #006699}
+a.submenuLink:hover {color: #006699;}
+.submenuLink {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #006699; background-color: EEEEEE}
+.submenu {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #FF9900; background-color: EEEEEE; text-decoration: none}
+.submenubackground  {  background-color: eeeeee}
+
+.crumbs {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FF9900}
+.main {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #000000}
+.tableHeader {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; color: #FFFFFF}
+.columnHeader {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; color: #000000}
+.copyright {  font-family: Arial, Helvetica, sans-serif; font-size: 10px; color: #000000}
+
+.cal_day_header {  background-color: #006699; height: 14px; width: 20px; font-size: 9px; font-weight: bold; color: #FFFFFF; text-align: center; cursor: default; border: 1px #FFFFFF outset; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px}
+.cal_day_mouseover { font-size: 9px; font-weight: bold; color:#FF9900; background-color: buttonface; height: 14px; width: 20px; text-align: center; cursor: default; border: 1px #FFFFFF outset; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px}
+.cal_day_selected {  font-size: 9px; font-weight: bold; background-color: #ff9900; color:#FFFFFF; height: 12px; width: 18px; text-align: center; cursor: default; border: 1px #CCCCCC inset; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px}
