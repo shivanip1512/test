@@ -29,9 +29,9 @@ public:
     
     /* Possible values for status */
     enum {
-	UNINIT = -1,
 	OK,
 	ERR,
+	UNINIT
     };
     
     CtiServerResponseMsg();
