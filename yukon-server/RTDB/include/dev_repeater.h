@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_repeater.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/25 20:10:57 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/20 15:10:17 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,84 +58,22 @@ public:
    static bool initCommandStore( );
    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
 
-   INT ExecuteRequest(CtiRequestMsg                  *pReq,
-                      CtiCommandParser               &parse,
-                      OUTMESS                        *&OutMessage,
-                      RWTPtrSlist< CtiMessage >      &vgList,
-                      RWTPtrSlist< CtiMessage >      &retList,
-                      RWTPtrSlist< OUTMESS >         &outList);
+   INT GeneralScan     (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority);
 
-   INT GeneralScan(CtiRequestMsg              *pReq,
-                   CtiCommandParser           &parse,
-                   OUTMESS                   *&OutMessage,
-                   RWTPtrSlist< CtiMessage >  &vgList,
-                   RWTPtrSlist< CtiMessage >  &retList,
-                   RWTPtrSlist< OUTMESS >     &outList,
-                   INT                         ScanPriority);
+   INT ExecuteRequest  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 
-   INT executeLoopback(CtiRequestMsg                  *pReq,
-                       CtiCommandParser               &parse,
-                       OUTMESS                        *&OutMessage,
-                       RWTPtrSlist< CtiMessage >      &vgList,
-                       RWTPtrSlist< CtiMessage >      &retList,
-                       RWTPtrSlist< OUTMESS >         &outList);
+   INT executeLoopback (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+   INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+   INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+   INT executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+   INT executePutValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 
-   INT executeGetConfig(CtiRequestMsg                  *pReq,
-                        CtiCommandParser               &parse,
-                        OUTMESS                        *&OutMessage,
-                        RWTPtrSlist< CtiMessage >      &vgList,
-                        RWTPtrSlist< CtiMessage >      &retList,
-                        RWTPtrSlist< OUTMESS >         &outList);
+   virtual INT ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 
-   INT executePutConfig(CtiRequestMsg                  *pReq,
-                        CtiCommandParser               &parse,
-                        OUTMESS                        *&OutMessage,
-                        RWTPtrSlist< CtiMessage >      &vgList,
-                        RWTPtrSlist< CtiMessage >      &retList,
-                        RWTPtrSlist< OUTMESS >         &outList);
-
-   INT executeGetValue(CtiRequestMsg                  *pReq,
-                       CtiCommandParser               &parse,
-                       OUTMESS                        *&OutMessage,
-                       RWTPtrSlist< CtiMessage >      &vgList,
-                       RWTPtrSlist< CtiMessage >      &retList,
-                       RWTPtrSlist< OUTMESS >         &outList);
-
-   INT executePutValue(CtiRequestMsg                  *pReq,
-                       CtiCommandParser               &parse,
-                       OUTMESS                        *&OutMessage,
-                       RWTPtrSlist< CtiMessage >      &vgList,
-                       RWTPtrSlist< CtiMessage >      &retList,
-                       RWTPtrSlist< OUTMESS >         &outList);
-
-   virtual INT ResultDecode(INMESS*InMessage,
-                            RWTime &TimeNow,
-                            RWTPtrSlist< CtiMessage > &vgList,
-                            RWTPtrSlist< CtiMessage > &retList,
-                            RWTPtrSlist<OUTMESS> &outList);
-
-   INT decodeLoopback(INMESS *InMessage,
-                      RWTime &TimeNow,
-                      RWTPtrSlist< CtiMessage > &vgList,
-                      RWTPtrSlist< CtiMessage > &retList,
-                      RWTPtrSlist< OUTMESS > &outList);
-
-   INT decodeGetConfigModel(INMESS *InMessage,
-                            RWTime &TimeNow,
-                            RWTPtrSlist< CtiMessage > &vgList,
-                            RWTPtrSlist< CtiMessage > &retList,
-                            RWTPtrSlist< OUTMESS > &outList);
-
-   INT decodeGetConfigRole(INMESS *InMessage,
-                           RWTime &TimeNow,
-                           RWTPtrSlist< CtiMessage > &vgList,
-                           RWTPtrSlist< CtiMessage > &retList,
-                           RWTPtrSlist< OUTMESS > &outList);
-   INT decodePutConfigRole(INMESS *InMessage,
-                           RWTime &TimeNow,
-                           RWTPtrSlist< CtiMessage > &vgList,
-                           RWTPtrSlist< CtiMessage > &retList,
-                           RWTPtrSlist< OUTMESS > &outList);
+   INT decodeLoopback      (INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+   INT decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+   INT decodeGetConfigRole (INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+   INT decodePutConfigRole (INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 
 };
 

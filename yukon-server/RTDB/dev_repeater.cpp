@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/05/16 14:47:35 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/05/20 15:10:16 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,6 +28,25 @@
 #include "numstr.h"
 
 set< CtiDLCCommandStore > CtiDeviceRepeater900::_commandStore;
+
+
+CtiDeviceRepeater900::CtiDeviceRepeater900() { }
+
+CtiDeviceRepeater900::CtiDeviceRepeater900(const CtiDeviceRepeater900& aRef)
+{
+   *this = aRef;
+}
+
+CtiDeviceRepeater900::~CtiDeviceRepeater900() { }
+
+CtiDeviceRepeater900& CtiDeviceRepeater900::operator=(const CtiDeviceRepeater900& aRef)
+{
+   if(this != &aRef)
+   {
+      Inherited::operator=(aRef);
+   }
+   return *this;
+}
 
 
 bool CtiDeviceRepeater900::initCommandStore()
@@ -762,23 +781,5 @@ INT CtiDeviceRepeater900::decodePutConfigRole(INMESS *InMessage, RWTime &TimeNow
 INT CtiDeviceRepeater900::getSSpec() const
 {
    return 0;
-}
-
-CtiDeviceRepeater900::CtiDeviceRepeater900() { }
-
-CtiDeviceRepeater900::CtiDeviceRepeater900(const CtiDeviceRepeater900& aRef)
-{
-   *this = aRef;
-}
-
-CtiDeviceRepeater900::~CtiDeviceRepeater900() { }
-
-CtiDeviceRepeater900& CtiDeviceRepeater900::operator=(const CtiDeviceRepeater900& aRef)
-{
-   if(this != &aRef)
-   {
-      Inherited::operator=(aRef);
-   }
-   return *this;
 }
 
