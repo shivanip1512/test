@@ -1,11 +1,9 @@
-
-
-
 #include <iostream>
 #include <iomanip>
 using namespace std;
 
 #include "port_base.h"
+#include "prot_emetcon.h"
 #include "dsm2err.h"
 #include "color.h"
 #include "porter.h"
@@ -15,6 +13,7 @@ using namespace std;
 #include "numstr.h"
 
 #define SCREEN_WIDTH    80
+
 
 void CtiPort::Dump() const
 {
@@ -232,6 +231,25 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
         }
     }
 #endif
+
+    OUTMESS *OutMessage = (OUTMESS*)Data;
+    if(OutMessage && (DataSize == sizeof(CtiOutMessage)) &&
+       OutMessage->HeadFrame[0] == 0x02 && OutMessage->HeadFrame[1] == 0xe0 &&
+       OutMessage->TailFrame[0] == 0xea && OutMessage->TailFrame[1] == 0x03)
+    {
+        if(OutMessage->Sequence == CtiProtocolEmetcon::Scan_LoadProfile)
+        {
+            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Cleaning Excess LP Entries for TargetID " << OutMessage->TargetID << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            // Remove any other Load Profile Queue Entries for this Queue.
+            CleanQueue( _portQueue, (void*)OutMessage, findLPRequestEntries, cleanupOutMessages );
+        }
+    }
+
 
     if(verifyPortIsRunnable( hQuit ) == NORMAL)
     {

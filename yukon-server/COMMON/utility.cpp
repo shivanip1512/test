@@ -16,6 +16,8 @@ using namespace std;
 
 #pragma warning( disable: 4786 )
 
+#include <rw\re.h>
+
 #include <windows.h>
 #include <string>
 #include <vector>
@@ -2184,7 +2186,48 @@ LONG ResetBreakAlloc()
 }
 
 
+#define LOADPROFILESEQUENCE 4  //  CtiProtocolEmetcon::Scan_LoadProfile
 
+
+bool findLPRequestEntries(void *om, void* d)
+{
+    OUTMESS *NewGuy = (OUTMESS *)om;
+    OUTMESS *OutMessage = (OUTMESS *)d;
+    bool bRet = false;
+
+    if(NewGuy && OutMessage)
+    {
+        bRet = (OutMessage->Sequence == LOADPROFILESEQUENCE) &&  (OutMessage->TargetID == NewGuy->TargetID);
+
+        RWCString oldstr(OutMessage->Request.CommandStr);
+
+        if( oldstr.contains(" channel", RWCString::ignoreCase) )
+        {
+            RWCRExpr re_channel(" channel +[0-9]");
+
+            RWCString newstr(OutMessage->Request.CommandStr);
+
+            if( !(newstr.match(re_channel) == oldstr.match(re_channel)) )
+            {
+                bRet = false;
+            }
+        }
+    }
+
+    return(bRet);
+}
+void cleanupOutMessages(void *unusedptr, void* d)
+{
+    OUTMESS *OutMessage = (OUTMESS *)d;
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Removing Outmessage for TargetID " << OutMessage->TargetID << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    delete OutMessage;
+    return;
+}
 
 
 
