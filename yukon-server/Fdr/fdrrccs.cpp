@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrrccs.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2002/04/16 15:58:36 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2002/05/08 17:24:37 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,10 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrrccs.cpp,v $
+      Revision 1.4  2002/05/08 17:24:37  dsutton
+      printing out the batch marker each time it goes by so we can track whether
+      we're still sending data to RCCS
+
       Revision 1.3  2002/04/16 15:58:36  softwarebuild
       20020416_1031_2_16
 
@@ -122,6 +126,7 @@ const CHAR * CtiFDR_Rccs::KEY_TIMESTAMP_WINDOW = "FDR_RCCS_TIMESTAMP_VALIDITY_WI
 const CHAR * CtiFDR_Rccs::KEY_DB_RELOAD_RATE = "FDR_RCCS_DB_RELOAD_RATE";
 const CHAR * CtiFDR_Rccs::KEY_SOURCE_NAME = "FDR_RCCS_SOURCE_NAME";
 const CHAR * CtiFDR_Rccs::KEY_DEBUG_MODE = "FDR_RCCS_DEBUG_MODE";
+const CHAR * CtiFDR_Rccs::KEY_BATCH_MARKER_NAME = "FDR_RCCS_BATCH_MARKER_NAME";
 
 // Constructors, Destructor, and Operators
 CtiFDR_Rccs::CtiFDR_Rccs()
@@ -341,6 +346,19 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
                         ptr->msgUnion.value.TimeStamp = (timestamp.seconds() - rwEpoch);
                         strncpy (ptr->msgUnion.value.DeviceName, aPoint.getDestinationList()[x].getTranslation(),20);
                         strncpy (ptr->msgUnion.value.PointName, &aPoint.getDestinationList()[x].getTranslation().data()[20],20);
+
+                        // intercept the batch marker point name here if it exists
+                        RWCString point_name (ptr->msgUnion.value.PointName);
+                        point_name.resize(20);
+                        RWCString small_point (point_name.strip());
+                        if (small_point == iBatchMarkerName)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " Batch marker being sent to " << getConnectionList()[connectionIndex]->getName() << endl;
+                            }
+                        }
+
 
                         /***********************
                         * for exchanging with DSM2 systems
@@ -588,6 +606,16 @@ int CtiFDR_Rccs::readConfig( void )
     else
         setInterfaceDebugMode (false);
 
+    tempStr = getCparmValueAsString(KEY_BATCH_MARKER_NAME);
+    if (tempStr.length() > 0)
+    {
+        iBatchMarkerName = (tempStr);
+    }
+    else
+    {
+        iBatchMarkerName = RWCString ("RCCSSTART");
+    }
+
     // default only, data from rccs is all controls so they don't get queued
     setQueueFlushRate (1);
 
@@ -598,6 +626,7 @@ int CtiFDR_Rccs::readConfig( void )
         dout << RWTime() << " RCCS timestamp window " << getTimestampReasonabilityWindow() << endl;
         dout << RWTime() << " RCCS db reload rate " << getReloadRate() << endl;
         dout << RWTime() << " RCCS source name " << getSourceName() << endl;
+        dout << RWTime() << " RCCS batch marker name " << iBatchMarkerName << endl;
 
         if (isInterfaceInDebugMode())
             dout << RWTime() << " RCCS running in debug mode " << endl;
