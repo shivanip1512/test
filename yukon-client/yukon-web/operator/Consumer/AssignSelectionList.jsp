@@ -2,12 +2,12 @@
 <%@ page import="com.cannontech.common.constants.YukonSelectionList" %>
 <%@ page import="com.cannontech.common.constants.YukonListEntry" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
-<%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
+<%@ page import="com.cannontech.stars.web.servlet.ImportManager" %>
 <%
 	String listName = request.getParameter("List");
 	boolean newList = request.getParameter("New") != null;
 	
-	Hashtable preprocessedData = (Hashtable) session.getAttribute(StarsAdmin.PREPROCESSED_STARS_DATA);
+	Hashtable preprocessedData = (Hashtable) session.getAttribute(ImportManager.PREPROCESSED_DATA);
 	TreeMap valueIDMap = (TreeMap) preprocessedData.get(listName);
 	
 	LiteStarsEnergyCompany ec = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());

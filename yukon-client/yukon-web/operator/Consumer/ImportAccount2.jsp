@@ -1,9 +1,9 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionList" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
-<%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
+<%@ page import="com.cannontech.stars.web.servlet.ImportManager" %>
 <%
-	Hashtable unassignedLists = (Hashtable) session.getAttribute(StarsAdmin.UNASSIGNED_LISTS);
+	Hashtable unassignedLists = (Hashtable) session.getAttribute(ImportManager.UNASSIGNED_LISTS);
 	boolean hasUnassigned = false;
 	
 	LiteStarsEnergyCompany ec = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
@@ -82,9 +82,9 @@
 			  <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportAccount.jsp">
               <table width="300" border="0" cellspacing="0" cellpadding="3" align="center" class="MainText">
 <%
-	for (int i = 0; i < StarsAdmin.LIST_NAMES.length; i++) {
-		String listName = StarsAdmin.LIST_NAMES[i][0];
-		String dispName = StarsAdmin.LIST_NAMES[i][1];
+	for (int i = 0; i < ImportManager.LIST_NAMES.length; i++) {
+		String listName = ImportManager.LIST_NAMES[i][0];
+		String dispName = ImportManager.LIST_NAMES[i][1];
 		
 		if (unassignedLists.get(listName) == null) continue;
 		

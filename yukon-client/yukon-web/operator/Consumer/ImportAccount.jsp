@@ -14,43 +14,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
-<script language="JavaScript">
-function changeCategory(checkBox, index) {
-	var programs, catIDs, progIDs, defProgIDs;
-	
-	if (checkBox.checked) {
-		programs = document.getElementsByName("Program" + index);
-		if (programs.length > 0)
-			programs[0].checked = true;
-		catIDs = document.getElementsByName("CatID");
-		progIDs = document.getElementsByName("ProgID");
-		defProgIDs = document.getElementsByName("DefProgID");
-		catIDs[index].value = checkBox.value;
-		progIDs[index].value = defProgIDs[index].value;
-	}
-	else {
-		programs = document.getElementsByName("Program" + index);
-		for (i = 0; i < programs.length; i++)
-			programs[i].checked = false;
-		catIDs = document.getElementsByName("CatID");
-		progIDs = document.getElementsByName("ProgID");
-		catIDs[index].value = "";
-		progIDs[index].value = "";
-	}
-}
-
-function changeProgram(radioBtn, index) {
-	var categories = document.getElementsByName("AppCat");
-	var catIDs = document.getElementsByName("CatID");
-	var progIDs = document.getElementsByName("ProgID");
-	
-	if (progIDs[index].value == radioBtn.value) return;	// Nothing is changed
-	
-	categories[index].checked = true;
-	catIDs[index].value = categories[index].value;
-	progIDs[index].value = radioBtn.value;
-}
-</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -103,94 +66,26 @@ function changeProgram(radioBtn, index) {
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
-			  <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
-                <input type="hidden" name="action" value="<%= (isStars)?"PreprocessStarsData":"ImportCustAccounts" %>">
-                <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/<%= (isStars)?"ImportAccount2.jsp":"ImportAccount.jsp" %>">
+			  <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/ImportManager" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="<%= (isStars)?"PreprocessStarsData":"PreprocessImportData" %>">
+                <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/<%= (isStars)?"ImportAccount2.jsp":"ImportAccount1.jsp" %>">
 <%	if (!isStars) { %>
                 <table width="500" border="0" cellspacing="0" cellpadding="0">
                   <tr> 
                     <td class="MainText"> 
-                      <div align="center">Enter the import file name and select 
-                        the program(s) the imported accounts are to be enrolled 
-                        in.</div>
+                      <div align="center">Enter the import file name, then click 
+                        &quot;Next&quot;. </div>
                     </td>
                   </tr>
                 </table>
                 <br>
-                <table width="400" border="0" cellspacing="0" cellpadding="0" class="TableCell">
+                <table width="400" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                   <tr> 
-                    <td> 
-                      <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
-                        <tr> 
-                          <td width="75%" align="center">Import file name: 
-                            <input type="text" name="ImportFile" maxlength="100" size="40">
-                            <br>
-                            <br>
-                            <table border="1" cellspacing="0" cellpadding="2" width="300" align="center">
-                              <tr> 
-                                <td width="100" class="HeaderCell" align = "center">Description</td>
-                                <td width="186" class="HeaderCell"> 
-                                  <div align="center">Program Enrollment</div>
-                                </td>
-                              </tr>
-                              <%
-	int numProgCat = 0;
-	int numEnrolledProg = 0;
-	
-	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
-		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
-		if (category.getStarsEnrLMProgramCount() == 0) continue;
-%>
-                              <tr> 
-                                <td width="100" align = "center"><img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"><br>
-                                </td>
-                                <td width="186" align = "center"> 
-                                  <table width="110" border="0" cellspacing="0" cellpadding="1" align="center">
-                                    <input type="hidden" name="CatID">
-                                    <input type="hidden" name="ProgID">
-                                    <input type="hidden" name="DefProgID" value="<%= category.getStarsEnrLMProgram(0).getProgramID() %>">
-                                    <tr> 
-                                      <td width="23"> 
-                                        <input type="checkbox" name="AppCat" value="<%= category.getApplianceCategoryID() %>" onClick="changeCategory(this, <%= numProgCat %>)">
-                                      </td>
-                                      <td class="TableCell" nowrap><%= category.getStarsWebConfig().getAlternateDisplayName() %></td>
-                                    </tr>
-                                  </table>
-                                  <%
-		if (category.getStarsEnrLMProgramCount() > 1) {
-			/* If more than one program under this category, show the program list */
-%>
-                                  <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
-                                    <%
-			for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
-				StarsEnrLMProgram prog = category.getStarsEnrLMProgram(j);
-				/* Each row is a program in this category */
-%>
-                                    <tr> 
-                                      <td width="37"> 
-                                        <div align="right"> 
-                                          <input type="radio" name="Program<%= numProgCat %>" value="<%= prog.getProgramID() %>" onClick="changeProgram(this, <%= numProgCat %>)">
-                                        </div>
-                                      </td>
-                                      <td class="TableCell" nowrap><%= ServletUtils.getProgramDisplayNames(prog)[1] %></td>
-                                    </tr>
-                                    <%
-			}	// End of program
-%>
-                                  </table>
-                                  <%
-		}	// End of program list
-%>
-                                </td>
-                              </tr>
-                              <%
-		numProgCat++;
-	}
-%>
-                            </table>
-                          </td>
-                        </tr>
-                      </table>
+                    <td width="150"> 
+                      <div align="right">Import File: </div>
+                    </td>
+                    <td width="250"> 
+                      <input type="file" name="ImportFile" size="35">
                     </td>
                   </tr>
                 </table>
@@ -201,7 +96,7 @@ function changeProgram(radioBtn, index) {
                       <div align="right">Customer File: </div>
                     </td>
                     <td width="250"> 
-                      <input type="text" name="CustFile" size="40">
+                      <input type="file" name="CustFile" size="35">
                     </td>
                   </tr>
                   <tr> 
@@ -209,7 +104,7 @@ function changeProgram(radioBtn, index) {
                       <div align="right">Service Info File: </div>
                     </td>
                     <td width="250"> 
-                      <input type="text" name="ServInfoFile" size="40">
+                      <input type="file" name="ServInfoFile" size="35">
                     </td>
                   </tr>
                   <tr> 
@@ -217,7 +112,7 @@ function changeProgram(radioBtn, index) {
                       <div align="right">Inventory File: </div>
                     </td>
                     <td width="250"> 
-                      <input type="text" name="InvFile" size="40">
+                      <input type="file" name="InvFile" size="35">
                     </td>
                   </tr>
                   <tr> 
@@ -225,7 +120,7 @@ function changeProgram(radioBtn, index) {
                       <div align="right">Receiver File: </div>
                     </td>
                     <td width="250"> 
-                      <input type="text" name="RecvrFile" size="40">
+                      <input type="file" name="RecvrFile" size="35">
                     </td>
                   </tr>
                   <tr> 
@@ -233,7 +128,7 @@ function changeProgram(radioBtn, index) {
                       <div align="right">Meter File: </div>
                     </td>
                     <td width="250"> 
-                      <input type="text" name="MeterFile" size="40">
+                      <input type="file" name="MeterFile" size="35">
                     </td>
                   </tr>
                   <tr> 
@@ -241,7 +136,7 @@ function changeProgram(radioBtn, index) {
                       <div align="right">Load Info File: </div>
                     </td>
                     <td width="250"> 
-                      <input type="text" name="LoadInfoFile" size="40">
+                      <input type="file" name="LoadInfoFile" size="35">
                     </td>
                   </tr>
                   <tr> 
@@ -249,7 +144,7 @@ function changeProgram(radioBtn, index) {
                       <div align="right">AC Info File: </div>
                     </td>
                     <td width="250"> 
-                      <input type="text" name="ACInfoFile" size="40">
+                      <input type="file" name="ACInfoFile" size="35">
                     </td>
                   </tr>
                   <tr> 
@@ -257,7 +152,7 @@ function changeProgram(radioBtn, index) {
                       <div align="right">WH Info File: </div>
                     </td>
                     <td width="250"> 
-                      <input type="text" name="WHInfoFile" size="40">
+                      <input type="file" name="WHInfoFile" size="35">
                     </td>
                   </tr>
                   <tr> 
@@ -265,7 +160,7 @@ function changeProgram(radioBtn, index) {
                       <div align="right">Generator Info File: </div>
                     </td>
                     <td width="250"> 
-                      <input type="text" name="GenInfoFile" size="40">
+                      <input type="file" name="GenInfoFile" size="35">
                     </td>
                   </tr>
                   <tr> 
@@ -273,7 +168,7 @@ function changeProgram(radioBtn, index) {
                       <div align="right">Irrigation Info File: </div>
                     </td>
                     <td width="250"> 
-                      <input type="text" name="IrrInfoFile" size="40">
+                      <input type="file" name="IrrInfoFile" size="35">
                     </td>
                   </tr>
                   <tr> 
@@ -281,7 +176,7 @@ function changeProgram(radioBtn, index) {
                       <div align="right">Grain Dryer Info File: </div>
                     </td>
                     <td width="250"> 
-                      <input type="text" name="GDryInfoFile" size="40">
+                      <input type="file" name="GDryInfoFile" size="35">
                     </td>
                   </tr>
                   <tr> 
@@ -289,7 +184,7 @@ function changeProgram(radioBtn, index) {
                       <div align="right">Heat Pump Info File: </div>
                     </td>
                     <td width="250"> 
-                      <input type="text" name="HPInfoFile" size="40">
+                      <input type="file" name="HPInfoFile" size="35">
                     </td>
                   </tr>
                   <tr> 
@@ -297,7 +192,7 @@ function changeProgram(radioBtn, index) {
                       <div align="right">Storage Heat Info File: </div>
                     </td>
                     <td width="250"> 
-                      <input type="text" name="SHInfoFile" size="40">
+                      <input type="file" name="SHInfoFile" size="35">
                     </td>
                   </tr>
                   <tr> 
@@ -305,7 +200,7 @@ function changeProgram(radioBtn, index) {
                       <div align="right">Dual Fuel Info File: </div>
                     </td>
                     <td width="250"> 
-                      <input type="text" name="DFInfoFile" size="40">
+                      <input type="file" name="DFInfoFile" size="35">
                     </td>
                   </tr>
                   <tr> 
@@ -313,7 +208,7 @@ function changeProgram(radioBtn, index) {
                       <div align="right">General Load Info File: </div>
                     </td>
                     <td width="250"> 
-                      <input type="text" name="GenlInfoFile" size="40">
+                      <input type="file" name="GenlInfoFile" size="35">
                     </td>
                   </tr>
                   <tr> 
@@ -321,7 +216,7 @@ function changeProgram(radioBtn, index) {
                       <div align="right">Work Order File: </div>
                     </td>
                     <td width="250"> 
-                      <input type="text" name="WorkOrderFile" size="40">
+                      <input type="file" name="WorkOrderFile" size="35">
                     </td>
                   </tr>
                   <tr> 
@@ -329,7 +224,7 @@ function changeProgram(radioBtn, index) {
                       <div align="right">Residence Info File: </div>
                     </td>
                     <td width="250"> 
-                      <input type="text" name="ResInfoFile" size="40">
+                      <input type="file" name="ResInfoFile" size="35">
                     </td>
                   </tr>
                 </table>
@@ -338,11 +233,7 @@ function changeProgram(radioBtn, index) {
                 <table width="400" border="0" cellspacing="0" cellpadding="5">
                   <tr> 
                     <td width="50%" align="right"> 
-<%	if (!isStars) { %>
-                      <input type="submit" name="Submit" value="Submit">
-<%	} else { %>
                       <input type="submit" name="Submit" value="Next">
-<%	} %>
                     </td>
                     <td width="50%"> 
                       <input type="reset" name="Cancel" value="Cancel">
