@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/10/31 17:56:36 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/11/14 15:40:43 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -238,7 +238,7 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
 
 RWCString CtiDeviceGroupExpresscom::getPutConfigAssignment(UINT level)
 {
-    RWCString assign = RWCString("assign") +
+    RWCString assign = RWCString("xcom assign") +
         " S" + CtiNumStr(_expresscomGroup.getServiceProvider()) +
         " G" + CtiNumStr(_expresscomGroup.getGeo()) +
         " B" + CtiNumStr(_expresscomGroup.getSubstation()) +
