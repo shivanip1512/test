@@ -32,14 +32,6 @@ function update()
 }
 
 </SCRIPT>
-<jsp:setProperty name="billingBean" property="fileFormat" param="format"/>
-<jsp:setProperty name="billingBean" property="billingGroupType" param="gType"/>
-<jsp:setProperty name="billingBean" property="billingGroup" param="grp"/>
-<jsp:setProperty name="billingBean" property="appendToFile" param="append"/>
-<jsp:setProperty name="billingBean" property="removeMult" param="mult"/>
-<jsp:setProperty name="billingBean" property="demandDaysPrev" param="dDays"/>
-<jsp:setProperty name="billingBean" property="energyDaysPrev" param="eDays"/>
-<jsp:setProperty name="billingBean" property="endDateStr" param="end"/>
 
 <body class="Background" text="#000000" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
@@ -87,6 +79,16 @@ function update()
 					<div align="center"><br><span class="Main"><b>BILLING</b></span></div>
 
 					<form name = "MForm">
+<jsp:setProperty name="billingBean" property="fileFormat" param="format"/>
+<jsp:setProperty name="billingBean" property="billingGroupType" param="gType"/>
+<jsp:setProperty name="billingBean" property="billingGroup" param="grp"/>
+<jsp:setProperty name="billingBean" property="appendToFile" param="append"/>
+<jsp:setProperty name="billingBean" property="removeMult" param="mult"/>
+<jsp:setProperty name="billingBean" property="demandDaysPrev" param="dDays"/>
+<jsp:setProperty name="billingBean" property="energyDaysPrev" param="eDays"/>
+<jsp:setProperty name="billingBean" property="endDateStr" param="end"/>
+								
+					
 						<table width="55%" border="0" cellspacing="0" cellpadding="4" height="209" align = "center">
 							<tr> 
 								<td height="162" colspan = "3"> 
@@ -204,7 +206,7 @@ function update()
 																		String [] groups = billingBean.getValidBillingGroups();	
 																		String selectedGrp = billingBean.getBillingGroup();
 																		%>
-																		<select name = "grp" size="3" width="50%" onChange="update()">
+																		<select name = "grp" size="3" width="50%">
 																			<% /* Fill in the possible file format types*/
 																			for( int i = 0; i < groups.length; i++ )
 																			{
