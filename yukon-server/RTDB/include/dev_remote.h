@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_remote.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/06/05 17:42:02 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/06/10 20:48:40 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,201 +36,209 @@ class IM_EX_DEVDB CtiDeviceRemote : public CtiDeviceSingle
 {
 protected:
 
-   CtiTableDeviceDirectComm   Direct;
-   CtiTableDeviceDialup       *pDialup;
+    CtiTableDeviceDirectComm   Direct;
+    CtiTableDeviceDialup       *pDialup;
 
 public:
 
-   typedef CtiDeviceSingle   Inherited;
+    typedef CtiDeviceSingle   Inherited;
 
-   CtiDeviceRemote() :
-      pDialup(NULL)
-   {}
+    CtiDeviceRemote() :
+    pDialup(NULL)
+    {}
 
-   CtiDeviceRemote(const CtiDeviceRemote& aRef) :
-      pDialup(NULL)
-   {
-      *this = aRef;
-   }
+    CtiDeviceRemote(const CtiDeviceRemote& aRef) :
+    pDialup(NULL)
+    {
+        *this = aRef;
+    }
 
-   virtual ~CtiDeviceRemote()
-   {
-      if(pDialup != NULL)
-      {
-         delete pDialup;
-      }
-   }
+    virtual ~CtiDeviceRemote()
+    {
+        if(pDialup != NULL)
+        {
+            delete pDialup;
+        }
+    }
 
-   CtiDeviceRemote& operator=(const CtiDeviceRemote& aRef)
-   {
-      Inherited::operator=(aRef);
+    CtiDeviceRemote& operator=(const CtiDeviceRemote& aRef)
+    {
+        Inherited::operator=(aRef);
 
-      if(this != &aRef)
-      {
-         LockGuard guard(monitor());
+        if(this != &aRef)
+        {
+            LockGuard guard(monitor());
 
-         Direct = aRef.getDirect();
+            Direct = aRef.getDirect();
 
-         if(isDialup())             // If I was a dialup free up the old stuff
-         {
+            if(isDialup())             // If I was a dialup free up the old stuff
+            {
+                delete pDialup;
+                pDialup = NULL;
+            }
+
+            if(aRef.isDialup())
+            {
+                // Copy the dialup stuff
+                pDialup = new CtiTableDeviceDialup;
+                *pDialup = aRef.getDialup();
+            }
+        }
+        return *this;
+    }
+
+    BOOL  isDialup() const
+    {
+        return((pDialup == NULL ? FALSE : TRUE ));
+    }
+
+    CtiTableDeviceDirectComm  getDirect() const
+    {
+        return Direct;
+    }
+    CtiTableDeviceDirectComm& getDirect()
+    {
+        return Direct;
+    }
+    CtiDeviceRemote& setDirect( const CtiTableDeviceDirectComm & aDirect )
+    {
+        LockGuard guard(monitor());
+        Direct = aDirect;
+        return *this;
+    }
+
+    CtiTableDeviceDialup*  getDialup()
+    {
+        LockGuard guard(monitor());
+        return pDialup;
+    }
+
+    const CtiTableDeviceDialup  getDialup() const
+    {
+        LockGuard guard(monitor());
+        return *pDialup;
+    }
+
+    CtiDeviceRemote& setDialup( CtiTableDeviceDialup *aDialup )
+    {
+        LockGuard guard(monitor());
+        if(pDialup != NULL)
+        {
             delete pDialup;
             pDialup = NULL;
-         }
-
-         if(aRef.isDialup())
-         {
-            // Copy the dialup stuff
-            pDialup = new CtiTableDeviceDialup;
-            *pDialup = aRef.getDialup();
-         }
-      }
-      return *this;
-   }
-
-   BOOL  isDialup() const
-   {
-      return((pDialup == NULL ? FALSE : TRUE ));
-   }
-
-   CtiTableDeviceDirectComm  getDirect() const
-   {
-      return Direct;
-   }
-   CtiTableDeviceDirectComm& getDirect()
-   {
-      return Direct;
-   }
-   CtiDeviceRemote& setDirect( const CtiTableDeviceDirectComm & aDirect )
-   {
-      LockGuard guard(monitor());
-      Direct = aDirect;
-      return *this;
-   }
-
-   CtiTableDeviceDialup*  getDialup()
-   {
-      LockGuard guard(monitor());
-      return pDialup;
-   }
-
-   const CtiTableDeviceDialup  getDialup() const
-   {
-      LockGuard guard(monitor());
-      return *pDialup;
-   }
-
-   CtiDeviceRemote& setDialup( CtiTableDeviceDialup *aDialup )
-   {
-      LockGuard guard(monitor());
-      if(pDialup != NULL)
-      {
-         delete pDialup;
-         pDialup = NULL;
-      }
-
-      pDialup = aDialup;
-      return *this;
-   }
-
-
-   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-   {
-      Inherited::getSQL(db, keyTable, selector);
-      CtiTableDeviceDirectComm::getSQL(db, keyTable, selector);
-      CtiTableDeviceDialup::getSQL(db, keyTable, selector);
-   }
-
-   virtual void DecodeDatabaseReader(RWDBReader &rdr)
-   {
-      INT iTemp;
-      RWDBNullIndicator isNull;
-
-      Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
-
-      if(getDebugLevel() & 0x0800) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-      Direct.DecodeDatabaseReader(rdr);
-
-      /*
-       * Check if we are a dialup
-       * new some memory if we are and call the decoder on it!
-       */
-      rdr["phonenumber"] >> isNull;
-
-      if(!isNull)
-      {
-         // There was a dialup
-        // allocate only if we haven't been here before
-        if (pDialup == NULL)
-        {
-           pDialup = new CtiTableDeviceDialup;
         }
-         pDialup->DecodeDatabaseReader(rdr);
-      }
-   }
 
-   virtual LONG getPortID() const
-   {
-      return getDirect().getPortID();
-   }
+        pDialup = aDialup;
+        return *this;
+    }
 
-   virtual ULONG getUniqueIdentifier() const
-   {
-      ULONG CSum = 0;
 
-      if(pDialup)
-      {
-         RWCString num;
+    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+    {
+        Inherited::getSQL(db, keyTable, selector);
+        CtiTableDeviceDirectComm::getSQL(db, keyTable, selector);
+        CtiTableDeviceDialup::getSQL(db, keyTable, selector);
+    }
 
-         for(int i = 0; i < pDialup->getPhoneNumber().length(); i++ )
-         {
-            CHAR ch = pDialup->getPhoneNumber().data()[(size_t)i];
+    virtual void DecodeDatabaseReader(RWDBReader &rdr)
+    {
+        INT iTemp;
+        RWDBNullIndicator isNull;
 
-            if( isdigit(ch) )
+        Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
+
+        if(getDebugLevel() & 0x0800) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        Direct.DecodeDatabaseReader(rdr);
+
+        /*
+         * Check if we are a dialup
+         * new some memory if we are and call the decoder on it!
+         */
+        rdr["phonenumber"] >> isNull;
+
+        if(!isNull)
+        {
+            // There was a dialup
+            // allocate only if we haven't been here before
+            if(pDialup == NULL)
             {
-               num.append(ch);
+                pDialup = new CtiTableDeviceDialup;
             }
-         }
+            pDialup->DecodeDatabaseReader(rdr);
+        }
+    }
 
-         // Now get a standard CRC
-         CSum = (ULONG)CCITT16CRC( 0, (BYTE*)num.data(), num.length(), FALSE);
-      }
-      else
-      {
-         CSum = Inherited::getUniqueIdentifier();
-      }
+    virtual LONG getPortID() const
+    {
+        return getDirect().getPortID();
+    }
 
-      return CSum;
-   }
+    virtual ULONG getUniqueIdentifier() const
+    {
+        ULONG CSum = 0;
 
-   virtual RWCString getPhoneNumber() const
-   {
-      RWCString   rStr;
-      if(pDialup)    // Throw an exception for this one!
-      {
-         rStr = pDialup->getPhoneNumber();
-      }
-      return rStr;
-   }
+        if(pDialup)
+        {
+            RWCString num;
 
-   virtual LONG getMinConnectTime() const
-   {
-      if(!pDialup)    // Throw an exception for this one!
-      {
-         RWxmsg   err("CtiDeviceRemote has no dialup memory");
-         err.raise();
-      }
-      return pDialup->getMinConnectTime();
-   }
+            for(int i = 0; i < pDialup->getPhoneNumber().length(); i++ )
+            {
+                CHAR ch = pDialup->getPhoneNumber().data()[(size_t)i];
 
-   virtual LONG getMaxConnectTime() const
-   {
-      if(!pDialup)    // Throw an exception for this one!
-      {
-         RWxmsg   err("CtiDeviceRemote has no dialup memory");
-         err.raise();
-      }
-      return pDialup->getMaxConnectTime();
-   }      // From CtiTableDeviceDialup
+                if( isdigit(ch) )
+                {
+                    num.append(ch);
+                }
+            }
+
+            // Now get a standard CRC
+            CSum = (ULONG)CCITT16CRC( 0, (BYTE*)num.data(), num.length(), FALSE);
+        }
+        else
+        {
+            CSum = Inherited::getUniqueIdentifier();
+        }
+
+        return CSum;
+    }
+
+    virtual RWCString getPhoneNumber() const
+    {
+        RWCString   rStr;
+        if(pDialup)
+        {
+            rStr = pDialup->getPhoneNumber();
+        }
+        return rStr;
+    }
+
+    virtual LONG getMinConnectTime() const
+    {
+        LONG mct = 0;
+        if(pDialup)
+        {
+            mct = pDialup->getMinConnectTime();
+        }
+        else
+        {
+            mct = Inherited::getMinConnectTime();
+        }
+        return mct;
+    }
+
+    virtual LONG getMaxConnectTime() const
+    {
+        LONG mct = 0;
+        if(pDialup)
+        {
+            mct = pDialup->getMaxConnectTime();
+        }
+        else
+        {
+            mct = Inherited::getMaxConnectTime();
+        }
+        return mct;
+    }
 
 
 };
