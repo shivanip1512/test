@@ -40,7 +40,7 @@ public StreamableCapObject( Integer ccId_, String ccCategory_, String ccClass_,
 /**
  * This method was created in VisualAge.
  * @return boolean
- * @param obj com.cannontech.database.data.route.RouteBase
+ * @param obj
  */
 public boolean equals(Object obj) {
 
@@ -49,6 +49,19 @@ public boolean equals(Object obj) {
 	else
 		return super.equals(obj);
 }
+
+/**
+ * This method was created in VisualAge.
+ * @return boolean
+ */
+public int hashCode() 
+{
+	if( getCcId() != null )
+		return getCcId().intValue();
+	else
+		return super.hashCode();
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (11/19/2001 4:53:14 PM)
