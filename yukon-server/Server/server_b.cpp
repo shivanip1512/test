@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/08/28 16:11:23 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/10/03 16:02:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -376,11 +376,11 @@ int  CtiServer::clientConfrontEveryone(PULONG pClientCount)
     {
         if( (Now.seconds() - Mgr->getLastReceiptTime().seconds()) > Mgr->getClientExpirationDelay() )
         {
+            Mgr->setClientQuestionable(TRUE);
+
             CtiCommandMsg *Cmd = new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
             Cmd->setOpString("Are You There");
-
             Mgr->WriteConnQue(Cmd);
-            Mgr->setClientQuestionable(TRUE);
         }
 
         if(pClientCount != NULL)
