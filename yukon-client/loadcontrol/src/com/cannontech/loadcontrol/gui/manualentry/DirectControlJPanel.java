@@ -35,6 +35,7 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 	//modes the panel is in
 	public static final int MODE_START_STOP = 0;
 	public static final int MODE_STOP = 1;
+	public static final int MODE_MULTI_SELECT_ONLY = 2;
 	//choices the user may choose
 	public static final int CANCEL_CHOICE = 0;
 	public static final int OK_CHOICE = 1;
@@ -1480,28 +1481,37 @@ private void initialize()
 	{
 		mode = newMode;
 		getJCheckBoxStartStopNow().doClick();
-	
-		if( mode == MODE_STOP )
+		
+		switch( mode )
 		{
-			getJLabelStartTime().setVisible(false);
-			getJTextFieldStartTime().setVisible(false);
-			getJLabelLabelStartHRMN().setVisible(false);
-			getDateComboStart().setVisible(false);
-			getJComboBoxGear().setVisible(false);
-			getJLabelGear().setVisible(false);
-			
-			
-			//getMultiSelectPrgModel().get
-			((DefaultCellEditor)
-				getJPanelMultiSelect().getTableColumn( 
-						MultiSelectPrgModel.COL_GEAR ).getCellEditor()).getComponent().setEnabled( false );
-			
-			((ComboBoxTableRenderer)
-				getJPanelMultiSelect().getTableColumn( 
-						MultiSelectPrgModel.COL_GEAR ).getCellRenderer()).setEnabled( false ) ;
-			
-			getJCheckBoxNeverStop().setVisible(false);
-			getJCheckBoxStartStopNow().setText("Stop Now");
+			case MODE_MULTI_SELECT_ONLY:
+				getJPanelControls().setVisible( false );
+				//no break, let this fall through
+
+			case MODE_STOP:
+				getJLabelStartTime().setVisible(false);
+				getJTextFieldStartTime().setVisible(false);
+				getJLabelLabelStartHRMN().setVisible(false);
+				getDateComboStart().setVisible(false);
+				getJComboBoxGear().setVisible(false);
+				getJLabelGear().setVisible(false);
+				
+				
+				//getMultiSelectPrgModel().get
+				((DefaultCellEditor)
+					getJPanelMultiSelect().getTableColumn( 
+							MultiSelectPrgModel.COL_GEAR ).getCellEditor()).getComponent().setEnabled( false );
+				
+				((ComboBoxTableRenderer)
+					getJPanelMultiSelect().getTableColumn( 
+							MultiSelectPrgModel.COL_GEAR ).getCellRenderer()).setEnabled( false ) ;
+				
+				getJCheckBoxNeverStop().setVisible(false);
+				getJCheckBoxStartStopNow().setText("Stop Now");
+				break;
+				
+			default:  //done for completness
+				break;
 		}
 	
 	}
