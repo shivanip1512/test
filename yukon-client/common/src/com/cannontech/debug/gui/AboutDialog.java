@@ -107,19 +107,26 @@ public void setValue(Object obj)
 	
 		String[] pools = com.cannontech.database.PoolManager.getInstance().getAllPoolsStrings();
 		for( int i = 0; i < pools.length; i++ )
-			data.addElement("("+i+")DB Pool   : " + pools[i] );
+			data.addElement("DB Pool ("+i+")  : " + pools[i] );
 
-      java.util.Enumeration enum = java.sql.DriverManager.getDrivers();
+
 		
-		//better have at least 1 driver here!
-      java.sql.Driver driver = (java.sql.Driver)enum.nextElement();
-      data.addElement("DB Driver    : " + driver.getClass().getName() + " : " +
-         driver.getMajorVersion() + "." +
-         driver.getMinorVersion() );
+		//Strange-- prints out 2 drivers for each one that is loaded??
+/*
+		int k = 0;
+		java.util.Enumeration enum = java.sql.DriverManager.getDrivers();
+		while( enum.hasMoreElements() )
+		{
+	      java.sql.Driver driver = (java.sql.Driver)enum.nextElement();
+	      data.addElement("DB Driver("+(k++)+") : " + driver.getClass().getName() + " : " +
+	         driver.getMajorVersion() + "." +
+	         driver.getMinorVersion() );
+		}
+*/
 
+		
+		
       data.addElement("JRE Version  : " + System.getProperty("java.version") );
-
-
 
 		/* ALWAYS leave this as the last thing */
 		com.cannontech.database.db.version.CTIDatabase db = com.cannontech.common.version.VersionTools.getDatabaseVersion();
