@@ -943,6 +943,11 @@ delete from yukongrouprole where rolepropertyid = -40050;
 delete from yukonuserrole where rolepropertyid = -40050;
 delete from yukonroleproperty where rolepropertyid = -40050;
 
+delete from yukongrouprole where rolepropertyid = -40101;
+delete from yukonuserrole where rolepropertyid = -40101;
+delete from yukonroleproperty where rolepropertyid = -40101;
+
+
 /* Remove unused yukon list entries */
 delete from yukonlistentry where entrytext = 'LCR-1000';
 
