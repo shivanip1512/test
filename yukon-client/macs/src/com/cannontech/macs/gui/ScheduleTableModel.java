@@ -5,9 +5,11 @@ package com.cannontech.macs.gui;
  */
 import java.awt.Color;
 import java.awt.Font;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Vector;
 
+import com.cannontech.macs.events.MACSGenericTableModelEvent;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.macs.message.DeleteSchedule;
 import com.cannontech.message.macs.message.Schedule;
@@ -16,13 +18,12 @@ import com.cannontech.message.util.MessageListener;
 
 public class ScheduleTableModel extends javax.swing.table.AbstractTableModel implements MessageListener, com.cannontech.common.gui.util.SortableTableModel 
 {
-	private java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("MM-dd-yyyy E HH:mm");
+	private SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy E HH:mm");
 	private Font modelFont = new Font("dialog", Font.PLAIN, 12);
 	
 	/* ROW DATA HERE */
 	private Vector allSchedules = null;
 	private List currentSchedules = null;
-	private java.util.Hashtable filterTable = new java.util.Hashtable(10); 
 
   	// the string for filtering all areas
   	public static final String ALL_FILTER = "All Categories";
@@ -86,8 +87,6 @@ public ScheduleTableModel() {
  */
 public void clear() 
 {
-	filterTable.clear();
-
 	getAllSchedules().removeAllElements();
 
 	currentSchedules = getAllSchedules();
@@ -346,6 +345,11 @@ public void setFilter(java.lang.String newFilter)
 {
 	filter = newFilter;
 
+	//ensure our list is prior to any category name grouping
+	java.util.Collections.sort(
+		getAllSchedules(),
+		SCHED_CAT_COMPARATOR );
+
 		
    //need to refresh all of our schedules   
    if( ALL_FILTER.equalsIgnoreCase(getFilter()) )
@@ -354,51 +358,39 @@ public void setFilter(java.lang.String newFilter)
    }
 	else
 	{
-		java.util.List l = (java.util.List)filterTable.get( getFilter() );
-		if( l != null )
+		int start = -1, stop = getAllSchedules().size();
+		for( int i = 0; i < getAllSchedules().size(); i++ )
 		{
-			//we already have a sublist for this filter, use it!
-			currentSchedules = l;
-		}
-		else
-		{
-			int start = -1, stop = getAllSchedules().size();
-			for( int i = 0; i < getAllSchedules().size(); i++ )
+			Schedule realSched = (Schedule)getAllSchedules().get(i);
+			if( start <= -1 && realSched.getCategoryName().equalsIgnoreCase(getFilter()) )
 			{
-				Schedule realSched = (Schedule)getAllSchedules().get(i);
-				if( start <= -1 && realSched.getCategoryName().equalsIgnoreCase(getFilter()) )
-				{
-					start = i;
-				}
-				else if( start >= 0 
-							 && !realSched.getCategoryName().equalsIgnoreCase(getFilter()) )
-				{
-					stop = i;
-					break;
-				}
-
+				start = i;
+			}
+			else if( start >= 0 
+						 && !realSched.getCategoryName().equalsIgnoreCase(getFilter()) )
+			{
+				stop = i;
+				break;
 			}
 
-			
-			if( start < 0 ) //should not occur
-			{
-				currentSchedules = getAllSchedules();
-				com.cannontech.clientutils.CTILogger.info("*** Could not find Schedule with the cateogyr = " 
-						+ getFilter() );
-			}
-			else  //this locks down AllSubBuses and disallows any structural modification to AllSubBuses
-				currentSchedules = getAllSchedules().subList(
-											start, 
-											(stop < 0 || stop > getAllSchedules().size() ? start+1 : stop) );
-						
-			filterTable.put( getFilter(), currentSchedules );
 		}
+
+		
+		if( start < 0 ) //should not occur
+		{
+			currentSchedules = new Vector();
+			com.cannontech.clientutils.CTILogger.info("*** Could not find Schedule with the cateogyr = " 
+					+ getFilter() );
+		}
+		else  //this locks down AllSubBuses and disallows any structural modification to AllSubBuses
+			currentSchedules = getAllSchedules().subList(
+										start, 
+										(stop < 0 || stop > getAllSchedules().size() ? start+1 : stop) );
+					
 	}
 
-
-   fireTableChanged(
-   	new com.cannontech.macs.events.MACSGenericTableModelEvent( this,
-	   com.cannontech.macs.events.MACSGenericTableModelEvent.FILTER_CHANGE) );
+	fireTableChanged( new MACSGenericTableModelEvent(
+		this, MACSGenericTableModelEvent.FILTER_CHANGE) );
 }
 
 /**
@@ -498,9 +490,6 @@ public void messageReceived( MessageEvent e )
 		
 		if( changeSize )
 		{	
-			//since we increased the size of AllSubBuses, we must release all filter sublist
-		  	filterTable.clear();
-	
 		   setFilter( getFilter() );
 		}
 
@@ -544,9 +533,9 @@ public void messageReceived( MessageEvent e )
 	{
 		Object tmp = null;
 
-		tmp = getAllSchedules().get(i);
-		getAllSchedules().set( i, getAllSchedules().get(j) );
-		getAllSchedules().set( j, tmp );
+		tmp = getCurrentSchedules().get(i);
+		getCurrentSchedules().set( i, getCurrentSchedules().get(j) );
+		getCurrentSchedules().set( j, tmp );
 
 	}
 }
