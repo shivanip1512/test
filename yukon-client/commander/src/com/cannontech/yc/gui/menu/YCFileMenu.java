@@ -12,13 +12,22 @@ import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
 import com.cannontech.common.gui.util.CommandableMenuItem;
 
 public class YCFileMenu extends javax.swing.JMenu {
-	public JSeparator separator1;
+	private java.awt.Font f = new java.awt.Font("dialog", 0, 14 );
+
+    public JSeparator separator1;
 	public JSeparator separator2;
 
 	public CommandableMenuItem saveMenuItem;
 	public CommandableMenuItem printMenuItem;
 	public CommandableMenuItem exitMenuItem;
+	public CommandableMenuItem recentItem0;
+	public CommandableMenuItem recentItem1;
+	public CommandableMenuItem recentItem2;
+	public CommandableMenuItem recentItem3;
+	public CommandableMenuItem recentItem4;
+	
 	public CommandableMenuItem commandSpecificControl;	//CHEATER MODE
+	private Object[] recentItems = new Object[]{null, null, null, null, null};
 /**
  * YukonCommanderFileMenu constructor comment.
  */
@@ -30,8 +39,6 @@ public YCFileMenu() {
  * This method was created in VisualAge.
  */
 private void initialize() {
-	java.awt.Font f = new java.awt.Font("dialog", 0, 14 );
-
 	separator1 = new JSeparator();
 	separator2 = new JSeparator();
 
@@ -70,8 +77,13 @@ private void initialize() {
 	setMnemonic('f');
 
 	add( saveMenuItem );
-	add( separator1 );
 	add( printMenuItem );
+	add( separator1 );
+	add( getRecentItem0());
+	add( getRecentItem1());
+	add( getRecentItem2());
+	add( getRecentItem3());
+	add( getRecentItem4());
 	add( separator2 );
 	add( exitMenuItem );
 	add( commandSpecificControl );	//THIS WILL NEVER BE VISIBLE
@@ -113,4 +125,128 @@ private void initialize() {
 			}
 		});	
 	}
+	public void updateRecentList(Object newItem)
+	{
+        int foundIndex = itemExists(newItem);
+        if( foundIndex == 4 || foundIndex < 0)
+        {
+            recentItem4.setText(getRecentItem3().getText());
+            recentItems[4] = recentItems[3];
+            foundIndex = -1;
+        }
+        if( foundIndex == 3 || foundIndex < 0 )
+        {
+		    recentItem3.setText(getRecentItem2().getText());
+		    recentItems[3] = recentItems[2];
+		    foundIndex = -1;
+        }
+        if( foundIndex == 2 || foundIndex < 0)
+        {
+            recentItem2.setText(getRecentItem1().getText());
+            recentItems[2] = recentItems[1];
+            foundIndex = -1;
+        }
+        if( foundIndex == 1 || foundIndex < 0)
+        {
+            recentItem1.setText(getRecentItem0().getText());
+            recentItems[1] = recentItems[0];
+            foundIndex = -1;
+        }        
+        recentItem0.setText(newItem.toString());
+        recentItems[0] = newItem;
+        
+        getRecentItem0().setVisible(getRecentItem0().getText().length() > 0);
+	    getRecentItem1().setVisible(getRecentItem1().getText().length() > 0);
+	    getRecentItem2().setVisible(getRecentItem2().getText().length() > 0);
+	    getRecentItem3().setVisible(getRecentItem3().getText().length() > 0);
+	    getRecentItem4().setVisible(getRecentItem4().getText().length() > 0);
+	}
+	private int itemExists(Object item)
+	{
+	    for (int i = 0; i < recentItems.length; i++)
+	    {
+	        if( recentItems[i] != null && recentItems[i].equals(item))
+	            return i;
+	    }
+	    return -1;
+	}
+    /**
+     * @return Returns the recentItem1.
+     */
+    public CommandableMenuItem getRecentItem0()
+    {
+        if( recentItem0 == null)
+        {
+            recentItem0 = new CommandableMenuItem();
+            recentItem0.setFont(f);
+            recentItem0.setText("");
+            recentItem0.setVisible(false);
+        }
+        return recentItem0;
+    }
+	
+    /**
+     * @return Returns the recentItem1.
+     */
+    public CommandableMenuItem getRecentItem1()
+    {
+        if( recentItem1 == null)
+        {
+            recentItem1 = new CommandableMenuItem();
+            recentItem1.setFont(f);
+            recentItem1.setText("");
+            recentItem1.setVisible(false);
+        }
+        return recentItem1;
+    }
+    /**
+     * @return Returns the recentItem2.
+     */
+    public CommandableMenuItem getRecentItem2()
+    {
+        if( recentItem2 == null)
+        {
+            recentItem2 = new CommandableMenuItem();
+            recentItem2.setFont(f);
+            recentItem2.setText("");
+            recentItem2.setVisible(false);
+        }
+        return recentItem2;
+    }
+    /**
+     * @return Returns the recentItem3.
+     */
+    public CommandableMenuItem getRecentItem3()
+    {
+        if( recentItem3 == null)
+        {
+            recentItem3 = new CommandableMenuItem();
+            recentItem3.setFont(f);
+            recentItem3.setText("");
+            recentItem3.setVisible(false);
+        }
+        return recentItem3;
+
+    }
+    /**
+     * @return Returns the recentItem4.
+     */
+    public CommandableMenuItem getRecentItem4()
+    {
+        if( recentItem4 == null)
+        {
+            recentItem4 = new CommandableMenuItem();
+            recentItem4.setFont(f);
+            recentItem4.setText("");
+            recentItem4.setVisible(false);
+        }
+        return recentItem4;
+    }
+    /**
+     * @return Returns the recentItems.
+     */
+    public Object[] getRecentItems()
+    {
+        return recentItems;
+    }
 }

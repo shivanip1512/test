@@ -4,19 +4,23 @@ package com.cannontech.yc.gui;
  * This type was created in VisualAge.
  */
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.print.PrinterException;
 import java.net.URL;
 import java.util.Observable;
 import java.util.Vector;
 
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
 import javax.swing.event.TreeSelectionEvent;
+import javax.swing.tree.TreePath;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.JTextPanePrintable;
 import com.cannontech.common.gui.util.SplashWindow;
+import com.cannontech.common.gui.util.TreeViewPanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
@@ -31,10 +35,12 @@ import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.command.CommandCategory;
 import com.cannontech.database.model.EditableTextModel;
 import com.cannontech.database.model.ModelFactory;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.CommanderRole;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.yc.gui.menu.YCCommandMenu;
@@ -177,6 +183,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		else if( event.getSource() == getCommandPanel().getExecuteButton() ||
 				event.getSource() == getYCCommandMenu().executeMenuItem )
 		{
+		    getYCFileMenu().updateRecentList(getYC().getTreeItem());
 			String commandString = CommandFuncs.loadPromptValue((String) getCommandPanel().getExecuteCommandComboBoxTextField().getText().trim(), this);
 			if( commandString != null)	//null is a cancel from prompt
 			{
@@ -327,7 +334,26 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 						javax.swing.JOptionPane.INFORMATION_MESSAGE );
 			}
 		}
-
+		else if( event.getSource() == getYCFileMenu().getRecentItem0() )
+		{
+		    selectRecentItem(0);
+		}
+		else if( event.getSource() == getYCFileMenu().getRecentItem1() )
+		{
+		    selectRecentItem(1);
+		}
+		else if( event.getSource() == getYCFileMenu().getRecentItem2() )
+		{
+		    selectRecentItem(2);
+		}
+		else if( event.getSource() == getYCFileMenu().getRecentItem3() )
+		{
+		    selectRecentItem(3);
+		}
+		else if( event.getSource() == getYCFileMenu().getRecentItem4() )
+		{
+		    selectRecentItem(4);
+		}
 		else if( event.getSource() == getYCFileMenu().commandSpecificControl )
 		{
 			if( getYC().getCommandMode() == YC.DEFAULT_MODE)
@@ -385,6 +411,24 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		{
 			print(getDebugOutputTextPane());
 		}
+	}
+	
+	private void selectRecentItem(int index)
+	{
+	    boolean found = false;
+	    
+	    Object obj = getYCFileMenu().getRecentItems()[index];
+	    if( obj instanceof LiteBase)
+	        getTreeViewPanel().selectLiteObject((LiteBase)obj);
+	    else if (obj instanceof String)
+	        getTreeViewPanel().selectByString((String)obj);
+	    
+	    if (getTreeViewPanel().getSelectedNode() == null)
+	    {
+	        getTreeViewPanel().clearSelection();
+	        setTreeItem(getYCFileMenu().getRecentItems()[index]);
+	    }
+
 	}
 
 	/**
@@ -1115,8 +1159,8 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	            ivjYCFileMenu.setName("YCFileMenu");
 	            ivjYCFileMenu.setText("File");
 	            // user code begin {1}
-	            javax.swing.JMenuItem item;
-	
+	            JMenuItem item;
+	        	
 	            for (int i = 0; i < ivjYCFileMenu.getItemCount(); i++) {
 	                item = ivjYCFileMenu.getItem(i);
 	
@@ -1665,7 +1709,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 	
 		setSerialNumber( tempSerialNumber );
-		updateCurrentSelection( getSerialNumber() );
+		updateTreePathSelection( getSerialNumber() );
 	}
 
 	/**
@@ -1807,15 +1851,11 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	 * Updates the current tree selection to the parameter passed in.
 	 * Used for synchronization.
 	 */
-	private void updateCurrentSelection(Object currentSelection)
+	private void updateTreePathSelection(Object currentSelection)
 	{
-		com.cannontech.common.gui.util.TreeViewPanel t =  getTreeViewPanel();
-			
-		javax.swing.tree.TreePath selectedPath = 
-					com.cannontech.common.util.CtiUtilities.getTreePath( t.getTree(), currentSelection);
-		
+		TreeViewPanel t =  getTreeViewPanel();
+		TreePath selectedPath = CtiUtilities.getTreePath( t.getTree(), currentSelection);
 		t.getTree().getSelectionModel().setSelectionPath( selectedPath );
-	
 	}
 	
 	/**
@@ -1826,25 +1866,31 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	 */
 	public void valueChanged(TreeSelectionEvent event)
 	{
-		String savedDevType = getYC().getDeviceType();
-		String displayTitle = YC_TITLE;
+	    //TODO - On change of model, reset the recent devices.
 		int index = getTreeViewPanel().getSortByComboBox().getSelectedIndex();
 		if( index < 0 )
 			return;
 		setModelType( getTreeModels()[index] );
 		Object selectedItem = getTreeViewPanel().getSelectedItem();
-		getYC().setTreeItem( selectedItem);
-	
+		setTreeItem(selectedItem);
+
+		return;
+	}
+	public void setTreeItem(Object selectedItem)
+	{
+	    getYC().setTreeItem( selectedItem);
+	    
+		String savedDevType = getYC().getDeviceType();
+		String displayTitle = YC_TITLE;
+		setTitle(displayTitle);
+
 		if (selectedItem == null)
-		{
-			setTitle(displayTitle);
 			return;
-		}
 	
-		if (getTreeViewPanel().getSelectedNode().getParent() == null)
+		if (getTreeViewPanel().getSelectedNode() != null)
 		{
-			setTitle(displayTitle);
-			return;
+		    if( getTreeViewPanel().getSelectedNode().getParent() == null)
+				return;
 		}
 	
 		getYCCommandMenu().locateRoute.setEnabled(false);	//init to false, will change below if valid state.
@@ -1855,13 +1901,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			DBPersistent dbp = LiteFactory.createDBPersistent( (LiteBase) selectedItem);
 					
 			if (dbp == null)
-			{
-				setTitle(displayTitle);
 				return;
-			}
 	
 			getYC().setDeviceType(dbp);
-	
 			if( selectedItem instanceof LiteYukonPAObject)
 			{
 				LiteYukonPAObject lpao = (LiteYukonPAObject)selectedItem;
@@ -1869,10 +1911,10 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 				{
 					getYCCommandMenu().locateRoute.setEnabled(true);
 				}
+				setTitle(displayTitle + " - " + lpao.getPaoName() + " (" + PAOGroups.getPAOTypeString(lpao.getType()) + ")");
 			}
-
-			displayTitle += " - " + getYC().getDeviceType();
-			setTitle(displayTitle);
+			else
+			    setTitle(displayTitle + " - " + getYC().getDeviceType());
 		}
 		else if ( ModelFactory.isEditableSerial(getModelType()))
 		{
@@ -1898,8 +1940,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 				getYC().setDeviceType(CommandCategory.STRING_CMD_VERSACOM_SERIAL);
 			}
 
-			displayTitle += " - " + getYC().getDeviceType() + " # " + getSerialNumber().toString();
-			setTitle(displayTitle);
+			setTitle(displayTitle + " - " + getYC().getDeviceType() + " # " + getSerialNumber().toString());
 		}
 		else if( getModelType() == ModelFactory.COLLECTIONGROUP ||
 				getModelType() == ModelFactory.TESTCOLLECTIONGROUP )
@@ -1911,7 +1952,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		{
 			CTILogger.error("No DeviceType found, using empty String");
 			getYC().setDeviceType("");
-			setTitle(displayTitle);
 		}
 		
 		if( getYC().getLiteDeviceTypeCommandsVector().isEmpty())
@@ -1927,7 +1967,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		{
 			updateCommandSelection();
 		}
-		return;
 	}
 
 	public void updateCommandSelection()
