@@ -33,6 +33,15 @@ public class YukonFileAppender extends FileAppender {
 	
 	public YukonFileAppender(Layout layout, String baseFilename) throws IOException {
 		_baseFileName = baseFilename;
+
+		{
+			//Test if the directory exists, by default it should, but there's always that chance (especially for programmers).
+			//_baseFilename comes with part of the fileName, we must remove that in order to mkdirs
+			File testFile = new File(_baseFileName.substring(0, _baseFileName.lastIndexOf('\\')));
+			if( !testFile.exists()) 
+				testFile.mkdirs();
+		}
+				
 		setLayout(layout);
 		setAppend(true);
 		setFile(getTodaysFileName());
