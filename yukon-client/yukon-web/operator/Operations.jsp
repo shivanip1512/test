@@ -145,19 +145,13 @@ function confirmDelete() {
           <td >&nbsp;</td>
         </tr>
         <tr> 
-          <form method="post" action="Metering/Billing.jsp">
             <td width="25%" class = "MainText"> 
               <div align = "center" style = "border:solid 1px #666999;"><a href = "Metering/Billing.jsp" class = "Link1" style = "text-decoration:none;">Billing</a></div>
             </td>
             <td width="25%" class = "MainText"> 
               <div align = "center" style = "border:solid 1px #666999;"><a href = "Metering/Metering.jsp" class = "Link1" style = "text-decoration:none;">All Trends</a></div>
             </td>
-          </form>
-          <form method="post" action="Metering/Metering.jsp">
             <td class = "MainText"> </td>
-          </form>
-          <form method="get" action="Metering/Metering.jsp">
-          </form>
         </tr>
       </table>
     </td>
@@ -186,31 +180,35 @@ function confirmDelete() {
           </tr>
         <tr> 
           <!-- Changed direct control pages to use the 3 tier display instead of the 1tier (LoadControl/oper_direct.jsp) display-->
-          <form method="post" action="../loadmgmt/controlareas.jsp">
-            <td width="25%" class = "MainText"> <cti:checkRole roleid="<%= DirectLoadcontrolRole.ROLEID %>"> 
-              <div align = "center" style = "border:solid 1px #666999;"> <a href = "../loadmgmt/controlareas.jsp" class = "Link1" style = "text-decoration:none;">Direct</a></div>
+            <td width="25%" class = "MainText">
+<cti:checkRole roleid="<%= DirectLoadcontrolRole.ROLEID %>">
+              <div align = "center" style = "border:solid 1px #666999;"> <a href = "LoadControl/oper_direct.jsp" class = "Link1" style = "text-decoration:none;">Direct</a></div>
 </cti:checkRole>
             </td>
-          </form>
-          <form method="post" action="LoadControl/oper_mand.jsp">
-            <td width="25%" class = "MainText"> <cti:checkRole roleid="<%= DirectCurtailmentRole.ROLEID %>"> 
+
+            <td width="25%" class = "MainText">
+<cti:checkRole roleid="<%= DirectLoadcontrolRole.ROLEID %>">
+              <div align = "center" style = "border:solid 1px #666999;"> <a href = "../loadmgmt/controlareas.jsp" class = "Link1" style = "text-decoration:none;">3-Tier Direct</a></div>			  
+</cti:checkRole>
+            </td>
+
+            <td width="25%" class = "MainText">
+<cti:checkRole roleid="<%= DirectCurtailmentRole.ROLEID %>"> 
               <div align = "center" style = "border:solid 1px #666999;"> <a href = "LoadControl/oper_mand.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= DirectCurtailmentRole.CURTAILMENT_LABEL%>" defaultvalue="Notification"/></a></div>
 </cti:checkRole>
 			</td>
-          </form>
-          <form method="post" action="LoadControl/oper_ee.jsp">
-            <td width = "25%" class = "MainText"> <cti:checkRole roleid="<%= EnergyBuybackRole.ROLEID %>"> 
+
+            <td width="25%" class = "MainText">
+<cti:checkRole roleid="<%= EnergyBuybackRole.ROLEID %>">
               <div align = "center" style = "border:solid 1px #666999;"> <a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/></a></div>
 </cti:checkRole>
 			</td>
-		  </form>
-          <form method="post" action="Consumer/Odds.jsp">
-            <td width = "25%" class = "MainText"> <cti:checkRole roleid="<%= OddsForControlRole.ROLEID %>"> 
-              <div align = "center" style = "border:solid 1px #666999;"> <a href = "Consumer/Odds.jsp" class = "Link1" style = "text-decoration:none;">Odds 
-                for Control</a></div>
+
+            <td width = "25%" class = "MainText">
+<cti:checkRole roleid="<%= OddsForControlRole.ROLEID %>">
+              <div align = "center" style = "border:solid 1px #666999;"> <a href = "Consumer/Odds.jsp" class = "Link1" style = "text-decoration:none;">Odds for Control</a></div>
 </cti:checkRole>
 			</td>
-		  </form>
           </tr>
         <tr> 
           <td width="25%" class = "MainText">&nbsp;</td>
