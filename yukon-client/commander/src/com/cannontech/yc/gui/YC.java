@@ -144,17 +144,15 @@ public class YC
 		}
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/27/2002 3:38:37 PM)
-	 * @return java.util.Vector
+	 * Returns the allRoutes.
+	 * @return Object[]
 	 */
 	public Object[] getAllRoutes()
 	{
 		return allRoutes;
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/11/2001 12:11:11 PM)
+	 * Returns the command.
 	 * @return java.lang.String
 	 */
 	public String getCommand()
@@ -162,8 +160,7 @@ public class YC
 		return command;
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/11/2001 2:06:03 PM)
+	 * Returns the commandFileName.
 	 * @return java.lang.String
 	 */
 	public String getCommandFileName()
@@ -173,6 +170,7 @@ public class YC
 		
 		return commandFileName;
 	}
+	
 	public String getCommandFileDirectory()
 	{
 		return getYCDefaults().getCommandFileDirectory();
@@ -535,7 +533,7 @@ public class YC
 			com.cannontech.clientutils.CTILogger.debug(" THIS IS REALLY A BAD CATCH ALL HUH");
 		}
 		commandFileName = className + ".txt";
-		com.cannontech.clientutils.CTILogger.info(" COMMAND FILE: " + getCommandFileDirectory()+ getCommandFileName());
+		com.cannontech.clientutils.CTILogger.info(" COMMAND FILE: " + getCommandFileDirectory()+ commandFileName);
 		keysAndValuesFile = new com.cannontech.common.util.KeysAndValuesFile(getCommandFileDirectory(), commandFileName);
 	}
 			

@@ -34,8 +34,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	//-----------------------------------------
 	private static final String YC_TITLE = "Commander";
 	public static final String HELP_FILE = com.cannontech.common.util.CtiUtilities.getHelpDirPath() + "Yukon Commander Help.chm";
+
 //	private com.cannontech.message.porter.ClientConnection connToPorter;
-	private Thread inThread;
+	private Thread inThread;	//the Runnable Thread.
 	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
 	private javax.swing.JPanel ivjJFrameContentPane = null;
 	private javax.swing.JPanel ivjOutputPanel = null;
@@ -78,8 +79,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		initialize();
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/10/2001 3:21:17 PM)
+	 * Displays the about information.
 	 */
 	private void about()
 	{
@@ -89,22 +89,19 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		"This is version " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() + "\nCopyright (C) 1999-2003 Cannon Technologies.",
 		"About Yukon Commander",javax.swing.JOptionPane.INFORMATION_MESSAGE);
 	}
+	
 	/**
-	 * This method was created in VisualAge.
+	 * @see java.awt.event.ActionListener#actionPerformed(ActionEvent)
 	 * @param event java.awt.event.ActionEvent
 	 */
 	public void actionPerformed(ActionEvent event)
 	{
 		if( event.getSource() == getTreeViewPanel().getSortByComboBox())
-			sortByComboBoxAction(); 
+			treeModelChanged(); 
 	
-		/////////////////////////////////////////////////////////////////////////
-		// ** YC View Menu - reloadMenu **//
 		else if (event.getSource() == getYCViewMenu().reloadMenuItem)
 			reloadDevices();
 	
-		/////////////////////////////////////////////////////////////////////////
-		// ** SerialRoutePanel **//
 		else if (event.getSource() == getSerialRoutePanel().getSerialTextField())
 			serialNumberAction();
 	
@@ -114,19 +111,17 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			com.cannontech.clientutils.CTILogger.info(getRoute());
 		}
 	
-		/////////////////////////////////////////////////////////////////////////
-		// ** CommandPanel - execute **//
 		else if( event.getSource() == getCommandPanel().getExecuteButton() ||
 				event.getSource() == getYCCommandMenu().executeMenuItem )
 		{
 			setCommand((String) getCommandPanel().getExecuteCommandComboBoxTextField().getText().trim());
 			if( isValidSetup() )
-				enter();
+			{
+				getCommandPanel().enter(getCommand());
+				ycClass.executeCommand();
+			}
 		}
 		
-		/////////////////////////////////////////////////////////////////////////
-		// ** CommandPanel - stopButton **//
-		// ** YC Command Menu - stopMenu **//
 		else if( event.getSource() == getCommandPanel().getStopButton() ||
 				event.getSource() == getYCCommandMenu().stopMenuItem )
 		{
@@ -139,8 +134,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			getDebugOutputTextPane().setCaretPosition( getDebugOutputTextPane().getDocument().getEndPosition().getOffset() - 1 );
 		}
 	
-		/////////////////////////////////////////////////////////////////////////
-		// ** Command Panel ** //
 		else if( event.getSource() == getCommandPanel().getAvailableCommandsComboBox())
 		{
 			if( getCommandPanel().getAvailableCommandsComboBox().getSelectedIndex() > 0) //0 is default "select"
@@ -150,8 +143,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			}
 			
 		}
-		/////////////////////////////////////////////////////////////////////////
-		// ** YC Command Menu - locateRoute **//
+
 		else if( event.getSource() == getYCCommandMenu().locateRoute )
 		{
 			getLocateRouteDialog().getDeviceNameTextField().setText(getTreeViewPanel().getSelectedItem().toString());		
@@ -163,32 +155,22 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			setCommand("loop locateroute");
 			if( isValidSetup() )
 			{
-				enter();
+				getCommandPanel().enter(getCommand());
+				ycClass.executeCommand();
 			}
-			// Get routeID from comboBox / set it in the request
-			//if( getRoute() != null && getRoute() instanceof com.cannontech.database.data.lite.LiteYukonPAObject)
-			//{
-				//com.cannontech.database.data.lite.LiteYukonPAObject r = (com.cannontech.database.data.lite.LiteYukonPAObject) getRoute();
-				//req.setRouteID(r.getYukonID());
-			//}
 		}
 		else if (event.getSource() == getLocateRouteDialog().getRouteComboBox())
 		{
 			setRoute(getLocateRouteDialog().getRouteComboBox().getSelectedItem());
 		}
-		/////////////////////////////////////////////////////////////////////////
-		// ** YC File Menu - printMenu **//
+
 		else if( event.getSource() == getYCFileMenu().printMenuItem || 
 			event.getSource() == getClearPrintButtons().getPrintButton() )
 			print(getDebugOutputTextPane());
-	
-		/////////////////////////////////////////////////////////////////////////
-		// ** YC File Menu - saveMenu **//
+
 		else if( event.getSource() == getYCFileMenu().saveMenuItem )
-			save();
+			save(getDebugOutputTextPane());
 	
-		/////////////////////////////////////////////////////////////////////////
-		// ** YC File Menu - findMenu **//
 		else if( event.getSource() == getYCViewMenu().findMenuItem )
 		{
 			String value = javax.swing.JOptionPane.showInputDialog(
@@ -206,8 +188,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 						javax.swing.JOptionPane.INFORMATION_MESSAGE );
 			}
 		}
-		/////////////////////////////////////////////////////////////////////////
-		// ** YC File Menu - CGPMode **//
+
 		else if( event.getSource() == getYCFileMenu().commandSpecificControl )
 		{
 			ycClass.setDirectSend( !ycClass.isDirectSend() );
@@ -223,58 +204,30 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			}
 		}
 	
-		/////////////////////////////////////////////////////////////////////////
-		// ** YC View Menu - clearButton **//
 		else if( event.getSource() == getClearPrintButtons().getClearButton() ||
 				event.getSource() == getYCViewMenu().clearMenuItem )
 			getDebugOutputTextPane().setText("");
 	
-		/////////////////////////////////////////////////////////////////////////
-		// ** YC Help Menu - aboutMenu **//
 		else if( event.getSource() == getYCHelpMenu().aboutMenuItem)
 			about();
 	
-		/////////////////////////////////////////////////////////////////////////
-		// ** YC Help Menu - helpTopicMenu **//
 		else if( event.getSource() == getYCHelpMenu().helpTopicMenuItem)
 			com.cannontech.common.util.CtiUtilities.showHelp( HELP_FILE );
 	
-		/////////////////////////////////////////////////////////////////////////
-		// ** YC View Menu - deleteSerialNumberMenu **//
 		else if( event.getSource() == getYCViewMenu().deleteSerialNumberMenuItem)
 			deleteSerialNumber();
 		
-		/////////////////////////////////////////////////////////////////////////
-		// ** YC View Menu - showCommandLogMenu **//
-		//else if( event.getSource() == getYCViewMenu().showCommandLogButton )
-			//getCommandLogPanel().setVisible( getYCViewMenu().showCommandLogButton.isSelected() );
-		/////////////////////////////////////////////////////////////////////////
-		// ** YC Command Menu - advancedOptions  **//
 		else if( event.getSource() == getYCCommandMenu().advancedOptionsMenuItem )
 		{
-			advOptsPanel = null;
-			getAdvOptsPanel().showAdvancedOptions();
-		}
-		else if( advOptsPanel != null && event.getSource() == getAdvOptsPanel().getOkButton())
-		{
-			YCDefaults newDefaults = new YCDefaults(
-				(new Integer((String)getAdvOptsPanel().getCommandPriorityTextField().getText())).intValue(),
-				getAdvOptsPanel().getQueueCommandCheckBox().isSelected(),
-				getAdvOptsPanel().getShowMessageLogCheckBox().isSelected(),
-				getAdvOptsPanel().getConfirmCommandCheckBox().isSelected(),
-				getAdvOptsPanel().getCommandFileDirectoryTextField().getText().toString());
-	
-			ycClass.setYCDefaults(newDefaults);
-			ycClass.getYCDefaults().writeDefaultsFile();
-	
-			getCommandLogPanel().setVisible( ycClass.getYCDefaults().getShowMessageLog() );
-			
-			getAdvOptsPanel().setVisible(false);
-			getAdvOptsPanel().dispose();
+			YCDefaults defaults = getAdvOptsPanel().showAdvancedOptions(this);
+			if (defaults != null)
+			{
+				getCommandLogPanel().setVisible( defaults.getShowMessageLog() );			
+				ycClass.setYCDefaults(defaults);
+			}
 			advOptsPanel = null;
 		}
-		/////////////////////////////////////////////////////////////////////////
-		// ** YC File Menu - exitMenu **//
+
 		else if( event.getSource() == getYCFileMenu().exitMenuItem )
 			exit();
 		
@@ -287,18 +240,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			print(getDisplayOutputTextPane());
 		}
 	}
+
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (10/15/2001 11:03:05 AM)
-	 * @param stringObject java.lang.Object
-	 */
-	//private void appendOutputTextArea(String stringObject)
-	//{
-	//	getDebugOutputTextArea().append( stringObject );
-	//}
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (6/28/2001 9:14:02 AM)
+	 * Returns an integer [YES/NO] indicating the option selected from a yes/no popupFrame.
 	 * @param message java.lang.String
 	 */
 	private int areYouSure(String message, int messageType )
@@ -307,9 +251,10 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		popupFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("CommanderIcon.gif"));
 		return javax.swing.JOptionPane.showConfirmDialog(popupFrame, message, YC_TITLE, javax.swing.JOptionPane.YES_NO_OPTION, messageType);
 	}
+
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/10/2001 3:21:58 PM)
+	 * Delete the selectedNode from getTreeViewPanel().
+	 * Removes the selectedNode (serial number) from getSerialNumberVector().
 	 */
 	private void deleteSerialNumber()
 	{
@@ -320,107 +265,43 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 				
 			else
 			{
-				com.cannontech.common.gui.util.TreeViewPanel t =  getTreeViewPanel();
-				if( t.getSelectedNode().getParent() == null)	// we got the parent!
+				if( getTreeViewPanel().getSelectedNode().getParent() == null)	// can't delete the parent node.
 					return;
 					
-				com.cannontech.database.model.EditableLCRSerialModel.getSerialNumberVector().remove( getTreeItem() );	// enter serial# into the vector
+				com.cannontech.database.model.EditableLCRSerialModel.getSerialNumberVector().remove( getTreeItem() );
 				
-				// refreshing the serial# tree on the treeViewPanel
-				((com.cannontech.database.model.EditableLCRSerialModel) t.getSelectedTreeModel()).update();
+				// Update the selected getTreeViewPanel() model.
+				((com.cannontech.database.model.EditableLCRSerialModel) getTreeViewPanel().getSelectedTreeModel()).update();
 				getSerialRoutePanel().getSerialTextField().setText("");
 			}
 		}	
 	}
+
 	/**
-	 * Creation date: (3/9/2001 1:59:56 PM)
-	 * @author Stacey Nebben	Added in version 1.5 
-	 * @param b boolean
-	 * Enables/Disables (according to b value) the Route and Serial Number Labels
-	 *	and Combo Boxes (upper left side).
+	 * Enables/Disables (value) objects used with serialNumber commands.
+	 * @param value boolean
 	 */
-	private void enableSerialAndRoute(boolean b)
+	private void enableSerialAndRoute(boolean value)
 	{
-		getSerialRoutePanel().setObjectsEnabled(b);
-	
-		getYCViewMenu().deleteSerialNumberMenuItem.setEnabled(b);
+		getSerialRoutePanel().setObjectsEnabled(value);
+		getYCViewMenu().deleteSerialNumberMenuItem.setEnabled(value);
 	}
+
 	/**
-	 * Handles the case when the user wants to submit the text in the text field
-	 * 
-	 * Checks for a connection to port control.
-	 * Uses MoveToTop thread to control storage in the commandComboBox, items appear
-	 *	in it only once and most recently used item is stored at the top of the list.
-	 * Calls substituteCommand to get the command string to be used for the selected command.
-	 * Determines which type of model 'device' is being used and then calls that type's 
-	 * handle[Object] function
-	 */
-	private void enter()
-	{
-		class MoveToTop implements Runnable
-		{
-			javax.swing.JComboBox comboBox;
-			Object item;
-				
-			MoveToTop(javax.swing.JComboBox comboBox, Object item)
-			{
-		   		this.comboBox = comboBox;
-			 	this.item = item;
-			}
-	
-			public void run()
-			{			
-				java.util.Vector toRemove = new java.util.Vector();
-						
-				for( int i = 0; i < this.comboBox.getModel().getSize(); i++ )
-				{
-					if( this.comboBox.getItemAt(i).equals(this.item) )
-					{
-						toRemove.addElement( this.comboBox.getItemAt(i) );
-					}
-		 		}
-			
-				for( int j = 0; j < toRemove.size(); j++ )
-				{
-					this.comboBox.removeItem( toRemove.elementAt(j) );
-				}
-	
-				//Insert the item at the top
-				comboBox.insertItemAt( item, 0 );
-				comboBox.setSelectedIndex(0);
-	
-				//Clear the text field
-				if( comboBox.getEditor().getEditorComponent() instanceof javax.swing.JTextField )
-				{
-					//((javax.swing.JTextField) comboBox.getEditor().getEditorComponent()).setText("");
-				}
-			}
-		};
-		//---------------------------------------------------------------------------------------	
-	
-		MoveToTop runThisLater = new MoveToTop( getCommandPanel().getExecuteCommandComboBox(), getCommand() );
-		javax.swing.SwingUtilities.invokeLater( runThisLater );
-	
-		ycClass.executeCommand();
-	}
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/25/2001 11:12:24 AM)
+	 * Exit application.  Disconnect getConnToDispatch().
 	 */
 	private void exit()
 	{
 		try
 		{
-			if ( getConnToDispatch() != null && getConnToDispatch().isValid() )  // free up Dispatchs resources
+			if ( getClientConnection() != null && getClientConnection().isValid() )  // free up Dispatchs resources
 			{
 				com.cannontech.message.dispatch.message.Command command = new com.cannontech.message.dispatch.message.Command();
 				command.setPriority(15);
-				
 				command.setOperation( com.cannontech.message.dispatch.message.Command.CLIENT_APP_SHUTDOWN );
 	
-				getConnToDispatch().write( command );
-	
-				getConnToDispatch().disconnect();
+				getClientConnection().write( command );
+				getClientConnection().disconnect();
 			}
 		}
 		catch ( java.io.IOException e )
@@ -431,16 +312,15 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		System.exit(0);
 	
 	}
+
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (5/7/2001 3:08:09 PM)
-	 * @param event java.awt.event.FocusListener
+	 * @see java.awt.event.FocusListener#focusGained(FocusEvent)
 	 */
 	public void focusGained(java.awt.event.FocusEvent event) {}
+
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (5/7/2001 3:08:09 PM)
-	 * @param event java.awt.event.FocusListener
+	 * 
+	 * @see java.awt.event.FocusListener#focusLost(FocusEvent)
 	 */
 	public void focusLost(java.awt.event.FocusEvent event)
 	{
@@ -449,16 +329,20 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			serialNumberAction();	
 		}
 	}
-	private AdvancedOptionsPanel getAdvOptsPanel()
+
+	/**
+	 * Returns the advOptsPanel.
+	 * @return AdvancedOptionsPanel
+	 */
+	public AdvancedOptionsPanel getAdvOptsPanel()
 	{
 		if( advOptsPanel == null)
 		{
 			advOptsPanel  = new AdvancedOptionsPanel(ycClass.getYCDefaults());
-			advOptsPanel.getOkButton().addActionListener(this);
-			//advOptsPanel.getCancelButton().addActionListener(this);
 		}
 		return advOptsPanel;
 	}
+	
 	/**
 	 * 
 	 */
@@ -512,8 +396,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		E2F19AAC976A2DA6729BFC8D171C224B377EFB9769FF886BC8052C6CC097617B3C2C4D7F83D0CB8788F7C832C313A1GG68EEGGD0CB818294G94G88G88GE3E017AEF7C832C313A1GG68EEGG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGG4DA1GGGG
 	**end of data**/
 	}
+	
 	/**
-	 * Return the CGPMode property value.
+	 * Returns the ivjCGPMode.
 	 * @return javax.swing.JLabel
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -534,8 +419,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		return ivjCGPMode;
 	}
+	
 	/**
-	 * Return the ClearPrintButtons property value.
+	 * Returns the ivjClearPrintButtons.
 	 * @return com.cannontech.yc.gui.ClearPrintButtonPanel
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -556,8 +442,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		return ivjClearPrintButtons;
 	}
+	
 	/**
-	 * Return the JPanel2 property value.
+	 * Returns the ivjClearPrintPanel.
 	 * @return javax.swing.JPanel
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -580,77 +467,11 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		return ivjClearPrintPanel;
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (12/20/2001 5:14:03 PM)
+	 * Returns the connToDispatch.
 	 * @return com.cannontech.message.util.ClientConnection
+	 * @see com.cannontech.database.cache.DBChangeListener#getClientConnection()
 	 */
-	public com.cannontech.message.util.ClientConnection getClientConnection() {
-		return getConnToDispatch();
-	}
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/11/2001 12:11:11 PM)
-	 * @return java.lang.String
-	 */
-	private String getCommand()
-	{
-		return ycClass.getCommand();
-		
-	}
-	/**
-	 * Return the CommandLogPanel property value.
-	 * @return com.cannontech.yc.gui.CommandLogPanel
-	 */
-	/* WARNING: THIS METHOD WILL BE REGENERATED. */
-	public static CommandLogPanel getCommandLogPanel() {
-		if (ivjCommandLogPanel == null) {
-			try {
-				ivjCommandLogPanel = new com.cannontech.yc.gui.CommandLogPanel();
-				ivjCommandLogPanel.setName("CommandLogPanel");
-				// user code begin {1}
-				ivjCommandLogPanel.setVisible( ycClass.getYCDefaults().getShowMessageLog() );
-				// user code end
-			} catch (java.lang.Throwable ivjExc) {
-				// user code begin {2}
-				// user code end
-				handleException(ivjExc);
-			}
-		}
-		return ivjCommandLogPanel;
-	}
-	/**
-	 * Return the CommandPanel1 property value.
-	 * @return com.cannontech.yc.gui.CommandPanel
-	 */
-	/* WARNING: THIS METHOD WILL BE REGENERATED. */
-	private CommandPanel getCommandPanel() {
-		if (ivjCommandPanel == null) {
-			try {
-				ivjCommandPanel = new com.cannontech.yc.gui.CommandPanel();
-				ivjCommandPanel.setName("CommandPanel");
-				// user code begin {1}
-				ivjCommandPanel.getExecuteButton().addActionListener(this);
-				ivjCommandPanel.getStopButton().addActionListener(this);
-	
-				ivjCommandPanel.getExecuteCommandComboBoxTextField().addKeyListener(this);
-				ivjCommandPanel.getExecuteCommandComboBoxTextField().addActionListener(this);
-				ivjCommandPanel.getAvailableCommandsComboBox().addActionListener(this);
-				// user code end
-			} catch (java.lang.Throwable ivjExc) {
-				// user code begin {2}
-				// user code end
-				handleException(ivjExc);
-			}
-		}
-		return ivjCommandPanel;
-	}
-	/**
-	 * Set up a connection to dispatch, for database changes.
-	 * In the future we could also get point changes and dynamically
-	 * update a graph.
-	 * Creation date: (10/31/00 12:18:31 PM)
-	 */
-	private com.cannontech.message.dispatch.ClientConnection getConnToDispatch() 
+	public com.cannontech.message.util.ClientConnection getClientConnection()
 	{
 		if( connToDispatch == null )
 		{
@@ -694,18 +515,76 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		return connToDispatch;
 	}
+
 	/**
-	 * Set up a connection to dispatch, for database changes.
-	 * In the future we could also get point changes and dynamically
-	 * update a graph.
-	 * Creation date: (10/31/00 12:18:31 PM)
+	 * Returns the ycClass.getCommand().
+	 * @return java.lang.String
+	 */
+	private String getCommand()
+	{
+		return ycClass.getCommand();
+		
+	}
+	
+	/**
+	 * Returns the ivjCommandLogPanel.
+	 * @return com.cannontech.yc.gui.CommandLogPanel
+	 */
+	/* WARNING: THIS METHOD WILL BE REGENERATED. */
+	public static CommandLogPanel getCommandLogPanel() {
+		if (ivjCommandLogPanel == null) {
+			try {
+				ivjCommandLogPanel = new com.cannontech.yc.gui.CommandLogPanel();
+				ivjCommandLogPanel.setName("CommandLogPanel");
+				// user code begin {1}
+				ivjCommandLogPanel.setVisible( ycClass.getYCDefaults().getShowMessageLog() );
+				// user code end
+			} catch (java.lang.Throwable ivjExc) {
+				// user code begin {2}
+				// user code end
+				handleException(ivjExc);
+			}
+		}
+		return ivjCommandLogPanel;
+	}
+	
+	/**
+	 * Returns the ivjCommandPanel.
+	 * @return com.cannontech.yc.gui.CommandPanel
+	 */
+	/* WARNING: THIS METHOD WILL BE REGENERATED. */
+	private CommandPanel getCommandPanel() {
+		if (ivjCommandPanel == null) {
+			try {
+				ivjCommandPanel = new com.cannontech.yc.gui.CommandPanel();
+				ivjCommandPanel.setName("CommandPanel");
+				// user code begin {1}
+				ivjCommandPanel.getExecuteButton().addActionListener(this);
+				ivjCommandPanel.getStopButton().addActionListener(this);
+	
+				ivjCommandPanel.getExecuteCommandComboBoxTextField().addKeyListener(this);
+				ivjCommandPanel.getExecuteCommandComboBoxTextField().addActionListener(this);
+				ivjCommandPanel.getAvailableCommandsComboBox().addActionListener(this);
+				// user code end
+			} catch (java.lang.Throwable ivjExc) {
+				// user code begin {2}
+				// user code end
+				handleException(ivjExc);
+			}
+		}
+		return ivjCommandPanel;
+	}
+
+	/**
+	 * Returns ycClass.getConnToPorter().
+	 * @return ClientConnection
 	 */
 	private com.cannontech.message.porter.ClientConnection getConnToPorter() 
 	{
 		return ycClass.getConnToPorter();
 	}
 	/**
-	 * Return the JScrollPane1 property value.
+	 * Returns the ivjDebugOutputScrollPane.
 	 * @return javax.swing.JScrollPane
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -726,8 +605,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		return ivjDebugOutputScrollPane;
 	}
+	
 	/**
-	 * Return the DebugOutputTextPane property value.
+	 * Returns the ivjDebugOutputTextPane.
 	 * @return javax.swing.JTextPane
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -747,8 +627,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		return ivjDebugOutputTextPane;
 	}
+	
 	/**
-	 * Return the JScrollPane1 property value.
+	 * Returns the ivjDisplayOutputScrollPane.
 	 * @return javax.swing.JScrollPane
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -758,7 +639,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 				ivjDisplayOutputScrollPane = new javax.swing.JScrollPane();
 				ivjDisplayOutputScrollPane.setName("DisplayOutputScrollPane");
 				ivjDisplayOutputScrollPane.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-				getDisplayOutputScrollPane().setViewportView(getDisplayOutputTextPane());
+				ivjDisplayOutputScrollPane.setViewportView(getDisplayOutputTextPane());
 				// user code begin {1}
 				// user code end
 			} catch (java.lang.Throwable ivjExc) {
@@ -769,8 +650,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		return ivjDisplayOutputScrollPane;
 	}
+	
 	/**
-	 * Return the DisplayOutputTextPane property value.
+	 * Returns the ivjDisplayOutputTextPane.
 	 * @return javax.swing.JTextPane
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -792,7 +674,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		return ivjDisplayOutputTextPane;
 	}
 	/**
-	 * Return the JPanel1 property value.
+	 * Returns the ivjExecutionPanel.
 	 * @return javax.swing.JPanel
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -828,8 +710,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		return ivjExecutionPanel;
 	}
+	
 	/**
-	 * Return the JFrameContentPane property value.
+	 * Returns the ivjJFrameContentPane.
 	 * @return javax.swing.JPanel
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -851,36 +734,34 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		return ivjJFrameContentPane;
 	}
+	
+	/**
+	 * Returns the locRouteDialog.
+	 * @return LocateRouteDialog
+	 */
 	private LocateRouteDialog getLocateRouteDialog()
 	{
 		if( locRouteDialog == null)
 		{
 			locRouteDialog = new LocateRouteDialog();
-			if( ycClass.getAllRoutes() != null)
-			{
-				for ( int i = 0; i < ycClass.getAllRoutes().length; i++)
-				{
-					locRouteDialog.getRouteComboBox().addItem(ycClass.getAllRoutes()[i]);
-				}
-				if( locRouteDialog.getRouteComboBox().getItemCount() > 0 )
-					locRouteDialog.getRouteComboBox().setSelectedIndex(0);
-			}
+			locRouteDialog.addItems(ycClass.getAllRoutes());
 			locRouteDialog.getLocateButton().addActionListener(this);
 			locRouteDialog.getRouteComboBox().addActionListener(this);
 		}
 		return locRouteDialog;
 	}
+	
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/26/2002 2:13:06 PM)
-	 * @return int
+	 * Returns ycClass.getModelType().
+	 * @return int com.cannontech.database.model.ModelFactory.
 	 */
 	private int getModelType()
 	{
 		return ycClass.getModelType();
 	}
+	
 	/**
-	 * Return the JPanel1 property value.
+	 * Returns the ivjNavigatorPanel.
 	 * @return javax.swing.JPanel
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -903,7 +784,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		return ivjNavigatorPanel;
 	}
 	/**
-	 * Return the JPanel1 property value.
+	 * Returns the ivjOutputPanel.
 	 * @return javax.swing.JPanel
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -925,8 +806,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		return ivjOutputPanel;
 	}
+	
 	/**
-	 * Return the JSplitPane1 property value.
+	 * Returns the ivjOutputSplitPane.
 	 * @return javax.swing.JSplitPane
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -951,26 +833,27 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		return ivjOutputSplitPane;
 	}
+	
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/26/2002 1:53:53 PM)
+	 * Returns the ycClass.getRoute()
 	 * @return java.lang.Object
 	 */
 	private Object getRoute()
 	{
 		return ycClass.getRoute();
 	}
+	
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/10/2001 4:16:48 PM)
+	 * Returns the ycClass.getSerialNumber().
 	 * @return String
 	 */
 	private String getSerialNumber()
 	{
 		return ycClass.getSerialNumber();
 	}
+	
 	/**
-	 * Return the SerialRoutePanel property value.
+	 * Returns the ivjSerialRoutePanel.
 	 * @return com.cannontech.yc.gui.SerialRoutePanel
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -993,8 +876,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		return ivjSerialRoutePanel;
 	}
+	
 	/**
-	 * Return the JSplitPane1 property value.
+	 * Returns the ivjSplitPane.
 	 * @return javax.swing.JSplitPane
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1016,17 +900,18 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		return ivjSplitPane;
 	}
+
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/10/2001 2:19:40 PM)
+	 * Returns the ycClass.getTreeItem().
 	 * @return java.lang.Object
 	 */
 	private Object getTreeItem()
 	{
 		return ycClass.getTreeItem();
 	}
+
 	/**
-	 * Return the TreeViewPanel property value.
+	 * Returns the ivjTreeViewPanel.
 	 * @return com.cannontech.common.gui.util.TreeViewPanel
 	 */
 	private com.cannontech.common.gui.util.TreeViewPanel getTreeViewPanel() {
@@ -1046,8 +931,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		return ivjTreeViewPanel;
 	}
+	
 	/**
-	 * Return the YCCommandMenu property value.
+	 * Returns the ivjYCCommandMenu.
 	 * @return com.cannontech.yc.gui.menu.YCCommandMenu
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1075,8 +961,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		return ivjYCCommandMenu;
 	}
+	
 	/**
-	 * Return the YCFileMenu property value.
+	 * Returns the ivjYCFileMenu.
 	 * @return com.cannontech.yc.gui.menu.YCFileMenu
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1104,8 +991,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	    }
 	    return ivjYCFileMenu;
 	}
+	
 	/**
-	 * Return the YCHelpMenu property value.
+	 * Returns the ivjYCHelpMenu.
 	 * @return com.cannontech.yc.gui.menu.YCHelpMenu
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1134,8 +1022,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		return ivjYCHelpMenu;
 	}
+	
 	/**
-	 * Return the YCViewMenu property value.
+	 * Returns the ivjYCViewMenu.
 	 * @return com.cannontech.yc.gui.menu.YCViewMenu
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1164,8 +1053,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		return ivjYCViewMenu;
 	}
+	
 	/**
-	 * Return the YukonCommanderJMenuBar property value.
+	 * Returns the ivjYukonCommanderJMenuBar.
 	 * @return javax.swing.JMenuBar
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1174,10 +1064,10 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			try {
 				ivjYukonCommanderJMenuBar = new javax.swing.JMenuBar();
 				ivjYukonCommanderJMenuBar.setName("YukonCommanderJMenuBar");
-				ivjYukonCommanderJMenuBar.add(getYCFileMenu());
-				ivjYukonCommanderJMenuBar.add(getYCViewMenu());
-				ivjYukonCommanderJMenuBar.add(getYCCommandMenu());
-				ivjYukonCommanderJMenuBar.add(getYCHelpMenu());
+				getYukonCommanderJMenuBar().add(getYCFileMenu());
+				getYukonCommanderJMenuBar().add(getYCViewMenu());
+				getYukonCommanderJMenuBar().add(getYCCommandMenu());
+				getYukonCommanderJMenuBar().add(getYCHelpMenu());
 				// user code begin {1}
 				// user code end
 			} catch (java.lang.Throwable ivjExc) {
@@ -1188,26 +1078,18 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		return ivjYukonCommanderJMenuBar;
 	}
+	
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (12/20/2001 5:12:47 PM)
-	 * @param msg com.cannontech.message.dispatch.message.DBChangeMsg
+	 * @see com.cannontech.database.cache.DBChangeListener#handleDBChangeMsg(DBChangeMsg, LiteBase)
 	 */
 	public void handleDBChangeMsg(com.cannontech.message.dispatch.message.DBChangeMsg msg, com.cannontech.database.data.lite.LiteBase object)
 	{
-		//com.cannontech.database.cache.DefaultDatabaseCache.getInstance().handleDBChangeMessage((com.cannontech.message.dispatch.message.DBChangeMsg)msg);
-		
-		java.awt.Frame frame = null;
 		java.awt.Cursor savedCursor = null;
-	
 		try
 		{
-			// Cursor set to WAIT during the route combo box update.
-			frame = com.cannontech.common.util.CtiUtilities.getParentFrame( getRootPane().getContentPane());
 			savedCursor = getRootPane().getCursor();
 			getRootPane().setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
-			// Refresh the device tree and the route combo box on database changes.
-			restoreCurrentTree();
+			restoreCurrentTree();	// Refresh the device tree and the route combo box.
 		}
 		catch( Exception e )
 		{
@@ -1217,8 +1099,8 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		{
 			getRootPane().setCursor( savedCursor);
 		}
-	
 	}
+	
 	/**
 	 * Called whenever the part throws an exception.
 	 * @param exception java.lang.Throwable
@@ -1229,6 +1111,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 		exception.printStackTrace(System.out);
 	}
+
 	/**
 	 * Initialize the class.
 	 */
@@ -1247,8 +1130,10 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		// user code begin {2}
 	
+		//Start this Runnable Thread.
 		inThread = new Thread(this);
 		inThread.start();
+	
 	
 		//--------Setup treeViewPanel and tree models-------------	
 		//This model is created in a weird way.  We can do the model creation similar for all
@@ -1276,16 +1161,13 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		if (treeModels[0] != ModelFactory.EDITABLELCRSERIAL)
 			enableSerialAndRoute(false);
 	
-		//add listeners to treeViewPanel Objects
 		getTreeViewPanel().setTreeModels(models);
 			
 		setRouteModel(); //fill route combo box
-	
+
 		com.cannontech.database.model.EditableLCRSerialModel.setSerialNumberVector( new Vector());
 		
 		com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeListener(this);
-		//DBChangeMessageListener dbChangeMessageListener = new DBChangeMessageListener();
-		//dbChangeMessageListener.start();
 	
 		addWindowListener(new java.awt.event.WindowAdapter(){
 			public void windowClosing(java.awt.event.WindowEvent e){ 
@@ -1294,20 +1176,18 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		});
 		// user code end
 	}
+	
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/10/2001 3:13:16 PM)
+	 * Returns true when setup is fully complete, all connections exist/valid.
+	 * @return boolean
 	 */
 	private boolean isValidSetup()
 	{
-		//setCommand((String) getCommandPanel().getExecuteCommandComboBoxTextField().getText().trim());
 		if( getConnToPorter().isValid() )
 		{
-			if( ycClass.isDirectSend() )
+			if( ycClass.isDirectSend() )	//CGPMode - User determines validity, not code.
 			{
-				//bypassing all of these checks, the user MUST Know what they are doing I guess!.
 				getCommandPanel().getExecuteCommandComboBoxTextField().requestFocus();
-				//enter();
 				return true;	
 			}
 			else if( getTreeItem() == null )
@@ -1324,7 +1204,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			}
 			else
 			{
-				//confirm command execution if needed
 				if( ycClass.getYCDefaults().getConfirmCommandExecute())
 				{
 					String message = "Execute '"+ getCommand() +"' -- Are You Sure?";
@@ -1337,7 +1216,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 				}
 				else
 				{
-					//enter();
 					getCommandPanel().getExecuteCommandComboBoxTextField().requestFocus();
 					return true;
 				}
@@ -1349,9 +1227,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		return false;
 	}
+	
 	/**
-	 * This method was created in VisualAge.
-	 * @param event java.awt.event.KeyEvent
+	 * @see java.awt.event.KeyListener#keyPressed(KeyEvent)
 	 */
 	public void keyPressed(KeyEvent event) {
 		
@@ -1360,7 +1238,8 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			setCommand((String) getCommandPanel().getExecuteCommandComboBoxTextField().getText().trim());		
 			if( isValidSetup())
 			{
-				enter();
+				getCommandPanel().enter(getCommand());
+				ycClass.executeCommand();
 			}
 		}
 		
@@ -1368,28 +1247,18 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		{
 			serialNumberAction();
 		}
-		//else if (event.getKeyCode() == KeyEvent.VK_ESCAPE)
-		//{
-			//getAdvOptsPanel().setVisible(false);
-			//getAdvOptsPanel().dispose();
-			//getLocateRouteDialog().dispose();
-			//getLocateRouteDialog().setVisible(false);
-		//}
-		
-		
 	}
 	/**
-	 * This method was created in VisualAge.
-	 * @param event java.awt.event.KeyEvent
+	 * @see java.awt.event.KeyListener#keyReleased(KeyEvent)
 	 */
 	public void keyReleased(KeyEvent event) {
 	}
 	/**
-	 * This method was created in VisualAge.
-	 * @param event java.awt.event.KeyEvent
+	 * @see java.awt.event.KeyListener#keyTyped(KeyEvent)
 	 */
 	public void keyTyped(KeyEvent event) {
 	}
+	
 	/**
 	 * main entrypoint - starts the part when it is run as an application
 	 * @param args java.lang.String[]
@@ -1436,7 +1305,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			}
 	
 			ycClient.initialize();
-			ycClient.getConnToDispatch();
+			ycClient.getClientConnection();
 	
 			//set the app to start as close to the center as you can....
 			//  only works with small gui interfaces.
@@ -1451,9 +1320,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			exception.printStackTrace(System.out);
 		}
 	}
+	
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/10/2001 3:17:39 PM)
+	 * Print the graphics from printTextPane.
 	 */
 	private void print(javax.swing.JTextPane printTextPane)
 	{
@@ -1465,7 +1334,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		pj.end();
 	}
 	/**
-	 * Insert the method's description here.
+	 * Forces a reload of databaseCache.
 	 * Creation date: (9/10/2001 3:10:42 PM)
 	 */
 	private void reloadDevices()
@@ -1494,9 +1363,8 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 	}
 	/**
-	 * Insert the method's description here.
 	 * Reselects the selected item in the tree, should the tree be refreshed from cache.
-	 * Creation date: (9/12/2001 8:59:15 AM)
+	 * Not necessarily needed for new devices, but mainly when the current selection is a deleted device.
 	 */
 	private void restoreCurrentTree()
 	{
@@ -1557,8 +1425,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			}
 			public void run()
 			{
-				
-	//			appendOutputTextArea(output);
 				try
 				{
 					javax.swing.text.Document doc = textPane.getDocument();
@@ -1572,7 +1438,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 				{
 					ble.printStackTrace();
 				}
-				//YukonCommander.this.scrollRectToVisible(  new java.awt.Rectangle(0,getOutputTextArea().getHeight()-1,1,1));
 			}
 		}	
 	
@@ -1750,10 +1615,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/10/2001 3:19:50 PM)
+	 * Saves the textPane.getText() to a file.
 	 */
-	private void save()
+	private void save(javax.swing.JTextPane textPane)
 	{
 		//This will need to be updated someday for a new version of swing
 		java.awt.Frame parent = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
@@ -1767,7 +1631,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 				fWriter = new java.io.FileWriter( fileChooser.getSelectedFile().getPath(), true );
 				java.io.PrintWriter pWriter = new java.io.PrintWriter( fWriter );
 	
-				pWriter.print( getDebugOutputTextPane().getText() );
+				pWriter.print( textPane.getText() );
 				fWriter.close();
 			}
 			catch( java.io.IOException e )
@@ -1790,22 +1654,21 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}	 	
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/10/2001 3:12:12 PM)
+	 * Enter serial number string into tree.
+	 * If the entered serial value is invalid (null or 0 length), no tree items are entered or selected.
+	 * If the entered serial value does not already exist in the tree it is added to the tree's model.
 	 */
 	private void serialNumberAction()
 	{
 		com.cannontech.common.gui.util.TreeViewPanel t =  getTreeViewPanel();
 		String tempSerialNumber = (String) getSerialRoutePanel().getSerialTextField().getText().trim();
 	
-		// If invalid serialNumber entered ( null or length 0), set selected tree item to null.
-		if(	tempSerialNumber == null || tempSerialNumber.length() == 0 )
+		if( tempSerialNumber == null || tempSerialNumber.length() == 0 )
 		{	
 			setSerialNumber(null);
 			t.getTree().getSelectionModel().setSelectionPath( null );
 			return;
 		}
-		// Else if not already in serial vector, add it to the serialVector.
 		else if(!com.cannontech.database.model.EditableLCRSerialModel.getSerialNumberVector().contains(tempSerialNumber) )
 		{	
 			com.cannontech.database.model.EditableLCRSerialModel.getSerialNumberVector().add(tempSerialNumber);
@@ -1820,40 +1683,39 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 	
 		setSerialNumber( tempSerialNumber );
-	
 		updateCurrentSelection( getSerialNumber() );
 	}
+
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/11/2001 12:07:43 PM)
+	 * Sets the ycClass.command.
 	 * @param newCommand java.lang.String
 	 */
 	private void setCommand(String newCommand)
 	{
 		ycClass.setCommand(newCommand);
 	}
+	
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/26/2002 2:12:46 PM)
+	 * Sets the ycClass.modelType
+	 * Valid types located in - com.cannontech.database.model.ModelFactory.DEVICE, DEVICE_METERNUMBER, 
+	 * MCTBROADCAST, LMGROUPS, CAPBANKCONTROLLER, CICUSTOMER, COLLECTIONGROUP, TESTCOLLECTIONGROUP, EDITABLELCRSERIAL
 	 * @param typeSelected int
 	 */
 	private void setModelType(int typeSelected)
 	{
 		ycClass.setModelType( typeSelected);
 	}
+	
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/26/2002 4:36:23 PM)
+	 * Sets the ycClass.route.
 	 * @param newRoute java.lang.Object
 	 */
 	private void setRoute(Object newRoute)
 	{
 		ycClass.setRoute(newRoute);
 	}
+
 	/**
-	 * Creation date: (3/9/2001 4:30:36 PM)
-	 * @author Stacey Nebben	Added for version 1.5
-	 * -----------------------------------------------------------------------------------------
 	 * Fills the routeComboBox with all of the created routes.
 	 * Retrieves the routes from cache memory and then sorts them (alphabetically).
 	 * Removes all items in the combo box (applicable when new routes exist)
@@ -1902,32 +1764,30 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		getSerialRoutePanel().getRouteComboBox().setSelectedIndex( index );
 			
 	}
+	
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/10/2001 4:17:54 PM)
+	 * Sets the ycClass.serialNumber.
 	 * @param newSerialNumber java.lang.String
 	 */
 	private void setSerialNumber(String newSerialNumber)
 	{
 		ycClass.setSerialNumber(newSerialNumber);
 	}
+
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/10/2001 2:21:41 PM)
+	 * Sets the ycClass.treeItem.
 	 * @param selectedTreeItem java.lang.Object
 	 */
 	private void setTreeItem(Object newSelectedItem)
 	{
 		ycClass.setTreeItem(newSelectedItem);
 	}
+
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/10/2001 3:08:57 PM)
+	 * Updates visibilty of objects when model changes.
 	 */
-	private void sortByComboBoxAction()
+	private void treeModelChanged()
 	{
-		////////////////////////////////////////////////////////////////////////////////////////////
-		// Serial Number/Route -- enable/disable (with Versacom Serial tree)
 		setModelType( treeModels[getTreeViewPanel().getSortByComboBox().getSelectedIndex()] );
 		
 		if (getModelType() == ModelFactory.EDITABLELCRSERIAL)
@@ -1939,8 +1799,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		{
 			enableSerialAndRoute(false);
 		}
-		////////////////////////////////////////////////////////////////////////////////////////////
-		// Locate Route Menu Item -- enable
+
 		getYCCommandMenu().locateRoute.setEnabled(false);	//init to false, will change below if valid state.
 		if (getModelType() == ModelFactory.DEVICE)
 		{
@@ -1954,18 +1813,14 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 				}
 			}
 		}
-		////////////////////////////////////////////////////////////////////////////////////////////	
 		if (getTreeItem() == null )
 		{
 			getCommandPanel().getAvailableCommandsComboBox().removeAllItems();
 			getCommandPanel().getExecuteCommandComboBoxTextField().setText("");
 		}
-	
 	}
+
 	/**
-	 * Creation date: (3/15/2001 2:28:56 PM)
-	 * @author Stacey Nebben	Added for version 1.5
-	 * -----------------------------------------------------------------------------------------
 	 * Updates the current tree selection to the parameter passed in.
 	 * Used for synchronization.
 	 */
@@ -1979,10 +1834,8 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		t.getTree().getSelectionModel().setSelectionPath( selectedPath );
 	
 	}
+	
 	/**
-	 * -----------------------------------------------------------------------------------------
-	 * Method for treeSelectionEvents.
-	 * If nothing is selected in the tree, we return (do nothing).
 	 * Gets the appropriate configFile for the object type selected in the treeViewPanel tree.
 	 * Parses the keys and Values in the configFile and fills the CommandComboBox accordingly.
 	 * Only updates the command boxes when the selected tree item differs in object type from
@@ -1999,11 +1852,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		if (getTreeItem() == null)
 			return;
 	
-		// If the parent value of the tree is invalid, return.
 		if (getTreeViewPanel().getSelectedNode().getParent() == null)
 			return;
 	
-		// If serial number, use the serial number file string constant.
 		if ( getModelType() == ModelFactory.EDITABLELCRSERIAL)
 		{
 			setSerialNumber( (String) getTreeItem());
@@ -2021,7 +1872,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		{
 			ycClass.setCommandFileName(ycClass.COLLECTION_GROUP_FILENAME);
 		}
-		// Else if a lite object, using the device type selected. 
 		else if ( getTreeItem() instanceof com.cannontech.database.data.lite.LiteBase)
 		{
 			com.cannontech.database.db.DBPersistent dbp = com.cannontech.database.data.lite.LiteFactory.createDBPersistent( (com.cannontech.database.data.lite.LiteBase) getTreeItem());
@@ -2031,8 +1881,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	
 			ycClass.setCommandFileName(dbp);
 	
-			////////////////////////////////////////////////////////////////////////////////////////////
-			// Locate Route Menu Item -- enable
 			getYCCommandMenu().locateRoute.setEnabled(false);	//init to false, will change below if valid state.
 			if( getTreeItem() instanceof com.cannontech.database.data.lite.LiteYukonPAObject)
 			{
@@ -2045,7 +1893,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			}
 		
 		}
-		else //use the "default" filename
+		else
 		{
 			ycClass.setCommandFileName(ycClass.DEFAULT_FILENAME);
 		}
@@ -2107,4 +1955,5 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		
 	}
+	
 }
