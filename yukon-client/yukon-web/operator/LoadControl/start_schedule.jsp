@@ -17,7 +17,8 @@
    If the cancel button is clicked the user is directed back to ScheduleSummary.jsp
 */
    java.text.SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("HH:mm");
-
+   timeFormat.setTimeZone(tz);
+   
    Schedule schedule = null;  
    java.util.Date now = new java.util.Date();
       
@@ -82,9 +83,9 @@
 			if ( ((String)checker.get("STARTAT")).equals("0") )
 				startTime = new java.util.Date();
 			else
-				startTime = com.cannontech.validate.PageBean.parseTime( checker.get("STARTAT") );
+				startTime = ServletUtil.parseDateStringLiberally(checker.get("STARTAT"), tz);
 
-			stopTime = com.cannontech.validate.PageBean.parseTime( checker.get("STOPAT") );
+			stopTime = ServletUtil.parseDateStringLiberally(checker.get("STOPAT"), tz);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -106,8 +107,10 @@
 
 		if (valid)
 		{
+			// The server expects time to be in his format, don't set this timezone to the users
+			java.text.SimpleDateFormat serverTimeFormat = new java.text.SimpleDateFormat("HH:mm");
 			response.sendRedirect( "/servlet/ScheduleController?ID=" + scheduleID + "&ACTION=" + request.getParameter("ACTION") +
-								   "&STARTAT=" + checker.get("STARTAT") + "&STOPAT=" + checker.get("STOPAT") + "&URL=" + request.getParameter("URL") );
+								   "&STARTAT=" + serverTimeFormat.format(startTime) + "&STOPAT=" + serverTimeFormat.format(stopTime) + "&URL=" + request.getParameter("URL") );
 			checker.clear();
 		}
 	}
@@ -234,9 +237,11 @@
                             <tr> 
                               <td width="16%"> <span class="TableCell"><struts:radio property="STARTRADIO" value="time"/> 
                                 </span></td>
-                              <td width="25%" class="TableCell"> Time:</td>
-                              <td width="59%"> <span class="TableCell"><struts:text property="STARTTIME" size="10" pattern="@time"/> 
+                              <td class="TableCell"> Time:</td>
+                              <td> <span class="TableCell"><struts:text property="STARTTIME" size="10" pattern="@time"/> 
                                 </span></td>
+                              <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
+                              </td>
                             </tr>
                             <tr> <cti:errormsg colSpan="3"> <span class = "TableCell"><%= checker.getError("STARTTIME") %></span>
                               </cti:errormsg> </tr>
@@ -257,9 +262,11 @@
                             <tr> 
                               <td width="16%"> <span class="TableCell"><struts:radio property="STOPRADIO" value="now"/> 
                                 </span></td>
-                              <td width="25%" class="TableCell"> Time:</td>
-                              <td width="59%"> <span class="TableCell"><struts:text property="STOPTIME" size="10" pattern="@time"/> 
+                              <td class="TableCell"> Time:</td>
+                              <td> <span class="TableCell"><struts:text property="STOPTIME" size="10" pattern="@time"/> 
                                 </span></td>
+                              <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
+                              </td>
                             </tr>
                             <tr> <cti:errormsg colSpan="3"> <span class = "TableCell"><%= checker.getError("STOPTIME") %></span> 
                               </cti:errormsg> </tr>

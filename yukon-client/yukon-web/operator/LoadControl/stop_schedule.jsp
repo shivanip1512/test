@@ -17,7 +17,8 @@
    If the cancel button is clicked the user is directed back to ScheduleSummary.jsp
 */
    java.text.SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("HH:mm");
-
+   timeFormat.setTimeZone(tz);
+   
    Schedule schedule = null;  
    java.util.Date now = new java.util.Date();
       
@@ -67,16 +68,26 @@
 		}
 
 		boolean valid = true;
-
+ 
 		if (!checker.validate()) {
 			valid = false;
 			response.sendRedirect( "stop_schedule.jsp?id=" + scheduleID + "&error=true" );
 		}
-
+		java.util.Date stop;
+		
+		if ( ((String)checker.get("STOPAT")).equals("0") ) {
+			stop = new java.util.Date();
+		}
+		else {
+			stop = ServletUtil.parseDateStringLiberally(checker.get("STOPAT"), tz);
+		}
+		
 		if (valid)
 		{
+			// The server expects time to be in his format, don't set this timezone to the users
+			java.text.SimpleDateFormat serverTimeFormat = new java.text.SimpleDateFormat("HH:mm");
 			response.sendRedirect( "/servlet/ScheduleController?ID=" + scheduleID + "&ACTION=" + request.getParameter("ACTION") +
-								   "&STARTAT=" + checker.get("STARTAT") + "&STOPAT=" + checker.get("STOPAT") + "&URL=" + request.getParameter("URL") );
+								   "&STARTAT=" + checker.get("STARTAT") + "&STOPAT=" + serverTimeFormat.format(stop) + "&URL=" + request.getParameter("URL") );
 			checker.clear();
 		}
 	}
@@ -199,9 +210,11 @@
                             <tr> 
                               <td width="16%"> <span class="TableCell"><struts:radio property="STOPRADIO" value="time"/> 
                                 </span></td>
-                              <td width="25%"> <span class="TableCell"> Time:</span></td>
-                              <td width="59%"> <span class="TableCell"><struts:text property="STOPTIME" size="10" pattern="@time"/> 
+                              <td> <span class="TableCell"> Time:</span></td>
+                              <td> <span class="TableCell"><struts:text property="STOPTIME" size="10" pattern="@time"/> 
                                 </span></td>
+                              <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
+                              </td>
                             </tr>
                             <tr> <cti:errormsg colSpan="3"><span class = "TableCell"> <%= checker.getError("STOPTIME") %></span> 
                               </cti:errormsg> </tr>

@@ -6,10 +6,10 @@
 
 <%@ page import="java.util.TreeMap" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.ArrayList" %> 
 <%@ page import="java.util.Vector" %> 
 <%@ page import="java.util.Iterator" %>
-
+ 
 <cti:checkRole roleid="<%=DirectLoadcontrolRole.ROLEID%>">
 <%
    String pending = request.getParameter("pending");
@@ -20,9 +20,10 @@
       out.println("<META HTTP-EQUIV=\"refresh\" CONTENT=\"60\">");
 
     java.text.SimpleDateFormat dlcDateFormat = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm");
-    
+    dlcDateFormat.setTimeZone(tz);
+     
     session = request.getSession(false);
-                           
+                            
     // list to put this customers programs in, contains LMProgramDirect objects
     ArrayList ourPrograms = new ArrayList();
 
@@ -229,12 +230,12 @@
                       </td>
                       <td width="150" class="TableCell"> 
                         <center>
-                          <%= dlcDateFormat.format(sched.getNextRunTime()) %> 
+                          <%= dlcDateFormat.format(sched.getNextRunTime()) + " " + tz.getDisplayName(tz.inDaylightTime(sched.getNextRunTime()), TimeZone.SHORT) %> 
                         </center>
                       </td>
                       <td width="150" class="TableCell"> 
                         <center>
-                          <%= dlcDateFormat.format(sched.getNextStopTime()) %> 
+                          <%= dlcDateFormat.format(sched.getNextStopTime()) + " " + tz.getDisplayName(tz.inDaylightTime(sched.getNextRunTime()), TimeZone.SHORT)%> 
                         </center>
                       </td>
                     </tr>
@@ -253,10 +254,10 @@
 
 
                 if( p.getStartTime().getTime().getTime() > com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
-                    startStr = datePart.format( p.getStartTime().getTime() ) + " " + timePart.format( p.getStartTime().getTime() );
+                    startStr = dlcDateFormat.format(p.getStartTime().getTime()) + " " + tz.getDisplayName(tz.inDaylightTime(p.getStartTime().getTime()), TimeZone.SHORT);
 
                 if( p.getStopTime().getTime().getTime() > com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
-                    stopStr =  datePart.format( p.getStopTime().getTime()) + " " + timePart.format( p.getStopTime().getTime() );
+                    stopStr =  dlcDateFormat.format(p.getStopTime().getTime()) + " " + tz.getDisplayName(tz.inDaylightTime(p.getStopTime().getTime()), TimeZone.SHORT);
 
                 if( pending != null )
                     actionURI = "oper_direct.jsp";
