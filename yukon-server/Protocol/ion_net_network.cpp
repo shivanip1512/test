@@ -212,9 +212,11 @@ int CtiIONNetworkLayer::decode( CtiXfer &xfer, int status )
             {
                 if( _datalinkLayer.isTransactionComplete() )
                 {
-                    unsigned char *tmpData;
+                    int tmpSrc, tmpDst, tmpMsgID;
 
                     freeInPacketMemory();
+
+                    unsigned char *tmpData;
 
                     tmpData = CTIDBG_new unsigned char[_datalinkLayer.getPayloadLength()];
 
@@ -224,13 +226,51 @@ int CtiIONNetworkLayer::decode( CtiXfer &xfer, int status )
 
                     memcpy(&(_netIn.header), tmpData, headerLen);
 
-                    _netIn.data = CTIDBG_new unsigned char[_datalinkLayer.getPayloadLength() - headerLen];
+                    tmpSrc   = _netIn.header.src.byte0   | (_netIn.header.src.byte1 << 8);
+                    tmpDst   = _netIn.header.dst.byte0   | (_netIn.header.dst.byte1 << 8);
+                    tmpMsgID = _netIn.header.msgid.byte0 | (_netIn.header.msgid.byte1 << 8);
 
-                    memcpy(_netIn.data, tmpData + headerLen, _datalinkLayer.getPayloadLength() - headerLen);
+                    if( tmpSrc == _slaveAddress && tmpDst == _masterAddress )
+                    {
+                        if( tmpMsgID == _msgCount )
+                        {
+                            _netIn.data = CTIDBG_new unsigned char[_datalinkLayer.getPayloadLength() - headerLen];
 
-                    _ioState = Complete;
+                            memcpy(_netIn.data, tmpData + headerLen, _datalinkLayer.getPayloadLength() - headerLen);
 
-                    delete tmpData;
+                            _ioState = Complete;
+                        }
+                        else if( tmpMsgID < _msgCount )
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint - tmpMsgID(" << tmpMsgID << ") < _msgCount(" << _msgCount << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+
+                            //  try to read/catch up until we get the one we expected
+                            _ioState = Input;
+                        }
+                        else
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint - tmpMsgID(" << tmpMsgID << ") > _msgCount(" << _msgCount << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;}
+
+                            _ioState = Failed;
+                        }
+                    }
+                    else
+                    {
+                        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint -- network layer packet contains incorrect address **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        _ioState = Failed;
+                    }
+
+                    delete [] tmpData;
                 }
 
                 break;
