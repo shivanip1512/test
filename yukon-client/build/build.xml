@@ -15,7 +15,7 @@
         <echo message=" clean      - clean the slate"/>
         <echo message=" all        - do a clean then a build"/>
         <echo message=" install    - installs a build to your YUKON_HOME directory"/>
-        <echo message=" uninstall  - clean the install at YUKON_HOME"/>
+        <echo message=" uninstall  - remove the install at YUKON_HOME"/>
         <echo message=" [jar name] - builds only the specified jar"/>
     </target>
             
@@ -95,6 +95,7 @@
     </target>
 
     <target name="dbeditor">
+    	<antcall target="billing"/>
     	<antcall target="singlebuild" inheritAll="true">
     		<param name="dotarget" value="build"/>
     		<param name="filename" value="${dbeditor}"/>
@@ -116,9 +117,26 @@
     </target>
 
     <target name="cbc">
+    	<antcall target="tdc"/>
     	<antcall target="singlebuild" inheritAll="true">
     		<param name="dotarget" value="build"/>
     		<param name="filename" value="${cbc}"/>
+    	</antcall>
+    </target>
+
+    <target name="macs">
+    	<antcall target="tdc"/>
+    	<antcall target="singlebuild" inheritAll="true">
+    		<param name="dotarget" value="build"/>
+    		<param name="filename" value="${macs}"/>
+    	</antcall>
+    </target>
+
+    <target name="loadcontrol">
+    	<antcall target="tdc"/>
+    	<antcall target="singlebuild" inheritAll="true">
+    		<param name="dotarget" value="build"/>
+    		<param name="filename" value="${loadcontrol}"/>
     	</antcall>
     </target>
 
