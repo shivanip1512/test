@@ -144,7 +144,8 @@ private javax.swing.JComboBox getJComboBoxControllerType() {
 			ivjJComboBoxControllerType.addItem( com.cannontech.common.util.CtiUtilities.STRING_NONE );
 			ivjJComboBoxControllerType.addItem( CapBank.CONTROL_TYPE_DLC );
 			ivjJComboBoxControllerType.addItem( CapBank.CONTROL_TYPE_PAGING );
-			ivjJComboBoxControllerType.addItem( CapBank.CONTROL_TYPE_TELEMETRIC );
+			ivjJComboBoxControllerType.addItem( CapBank.CONTROL_TYPE_FM );
+         ivjJComboBoxControllerType.addItem( CapBank.CONTROL_TYPE_FP_PAGING );
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -199,6 +200,7 @@ private javax.swing.JComboBox getJComboBoxTypeSwitch() {
 			
 			ivjJComboBoxTypeSwitch.addItem( com.cannontech.common.util.CtiUtilities.STRING_NONE );
 			ivjJComboBoxTypeSwitch.addItem( CapBank.SWITCHTYPE_OIL );
+         ivjJComboBoxTypeSwitch.addItem( CapBank.SWITCHTYPE_VACUUM );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -553,9 +555,16 @@ public void setValue(Object val )
 	if( val != null )
 	{
 		CapBank capBank = (CapBank)val;			
-		getJComboBoxSwitchManufacture().setSelectedItem( capBank.getCapBank().getSwitchManufacture() );
-		getJComboBoxTypeSwitch().setSelectedItem( capBank.getCapBank().getTypeOfSwitch() );
-		getJComboBoxControllerType().setSelectedItem( capBank.getCapBank().getControllerType().toString() );
+
+      com.cannontech.common.util.CtiUtilities.setJComboBoxSelection( 
+         getJComboBoxSwitchManufacture(), capBank.getCapBank().getSwitchManufacture() );
+      
+
+      com.cannontech.common.util.CtiUtilities.setJComboBoxSelection( 
+         getJComboBoxTypeSwitch(), capBank.getCapBank().getTypeOfSwitch() );
+
+      com.cannontech.common.util.CtiUtilities.setJComboBoxSelection( 
+         getJComboBoxControllerType(), capBank.getCapBank().getControllerType().toString() );
 
 		//set our map location id values
 		originalMapLocID = capBank.getCapBank().getMapLocationID();

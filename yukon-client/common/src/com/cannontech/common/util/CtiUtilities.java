@@ -189,6 +189,32 @@ public final static Integer dateToSeconds(java.util.Date inDate) {
 }
 
 
+
+public final static void setJComboBoxSelection( JComboBox box, Object value )
+{
+   if( box == null || value == null )
+      return; //blah, fool!
+      
+   //look for the value, if not found add it and set it selected
+   boolean found = false;
+   for( int i = 0; i < box.getItemCount(); i++ )
+   {
+      if( box.getItemAt(i).equals(value) )
+      {
+         found = true;
+         box.setSelectedItem( value );
+         break;
+      }
+   }
+   
+   if( !found )
+   {
+      box.addItem( value );
+      box.setSelectedItem( value );
+   }
+   
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/9/2001 3:09:53 PM)

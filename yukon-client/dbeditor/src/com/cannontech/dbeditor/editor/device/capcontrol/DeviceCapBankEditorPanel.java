@@ -1044,25 +1044,10 @@ public void setValue(Object val)
    
    //this code was never here until 7-18-2002!!!
    getJComboBoxBankOperation().setSelectedItem( capBank.getCapBank().getOperationalState() );   
-   
-   //look for the bank size, if not found add it and set it selected
-   boolean found = false;
-   Integer bankSize = capBank.getCapBank().getBankSize();
-   for( int i = 0; i < getJComboBankSize().getItemCount(); i++ )
-   {
-      if( getJComboBankSize().getItemAt(i).equals(bankSize) )
-      {
-         found = true;
-         getJComboBankSize().setSelectedItem( capBank.getCapBank().getBankSize() );
-         break;
-      }
-   }
-   
-   if( !found )
-   {
-      getJComboBankSize().addItem( bankSize );
-      getJComboBankSize().setSelectedItem( capBank.getCapBank().getBankSize() );
-   }
+
+   //if the bank is not in the list, add it and select it   
+   com.cannontech.common.util.CtiUtilities.setJComboBoxSelection( 
+      getJComboBankSize(), capBank.getCapBank().getBankSize() );
 
 
 	Integer controlPointID = capBank.getCapBank().getControlPointID();

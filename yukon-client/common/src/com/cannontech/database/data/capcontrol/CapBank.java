@@ -13,6 +13,8 @@ public class CapBank extends CapControlDeviceBase
 	public final static String CONTROL_TYPE_DLC = "CTI DLC";
 	public final static String CONTROL_TYPE_PAGING = "CTI Paging";
 	public final static String CONTROL_TYPE_TELEMETRIC = "Telemetric";
+   public final static String CONTROL_TYPE_FM = "CTI FM";
+   public final static String CONTROL_TYPE_FP_PAGING = "FP Paging";
 
 	//all manufactures of switches
 	public final static String SWITCHMAN_WESTING = "Westinghouse";

@@ -292,8 +292,10 @@ private javax.swing.JComboBox getJComboBoxControllerType() {
 			// user code begin {1}
 
 			ivjJComboBoxControllerType.addItem( com.cannontech.common.util.CtiUtilities.STRING_NONE );
-			ivjJComboBoxControllerType.addItem( com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0] );
-			ivjJComboBoxControllerType.addItem( com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0] );
+         ivjJComboBoxControllerType.addItem( CapBank.CONTROL_TYPE_DLC );
+         ivjJComboBoxControllerType.addItem( CapBank.CONTROL_TYPE_PAGING );
+         ivjJComboBoxControllerType.addItem( CapBank.CONTROL_TYPE_FM );
+         ivjJComboBoxControllerType.addItem( CapBank.CONTROL_TYPE_FP_PAGING );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
