@@ -834,7 +834,7 @@ public class StarsLiteFactory {
 			starsSeason.setStartDate( new org.exolab.castor.types.Date(startCal.getTime()) );
 */			
 			StarsWebConfig starsConfig = energyCompany.getStarsWebConfig( liteSeason.getWebConfigurationID() );
-			if (starsConfig.getAlternateDisplayName().equalsIgnoreCase("Summer"))
+			if (starsConfig.getURL().equalsIgnoreCase("Cool"))	// Temporarily use URL field to define cool/heat mode
 				starsSeason.setMode( StarsThermoModeSettings.COOL );
 			else
 				starsSeason.setMode( StarsThermoModeSettings.HEAT );
