@@ -8,17 +8,21 @@ package com.cannontech.graph.model;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-import com.cannontech.database.db.graph.GraphDataSeries;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.jfree.data.AbstractDataset;
 import org.jfree.data.DefaultCategoryDataset;
-import org.jfree.data.time.Millisecond;
 import org.jfree.data.SeriesException;
-import org.jfree.data.time.TimePeriod;
+import org.jfree.data.XYSeries;
+import org.jfree.data.XYSeriesCollection;
+import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
-import org.jfree.data.XYSeries;
-import org.jfree.data.XYSeriesCollection;
+
+import com.cannontech.database.db.graph.GDSTypesFuncs;
+import com.cannontech.database.db.graph.GraphRenderers;
 /**
  * A quick and dirty implementation.
  */
@@ -30,25 +34,25 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 	{
 		options = options_;
 		
-		if( type_ == TrendModelType.LINE_VIEW|| type_ == TrendModelType.SHAPES_LINE_VIEW || type_ == TrendModelType.STEP_VIEW)
+		if( type_ == GraphRenderers.LINE|| type_ == GraphRenderers.SHAPES_LINE || type_ == GraphRenderers.STEP)
 		{
-			if( (options_ & TrendModelType.LOAD_DURATION_MASK) == TrendModelType.LOAD_DURATION_MASK)
+			if( (options_ & GraphRenderers.LOAD_DURATION_MASK) == GraphRenderers.LOAD_DURATION_MASK)
 				return YukonDataSetFactory.createLoadDurationDataSet(trendSeries);
 			else
 				return YukonDataSetFactory.createBasicDataSet(trendSeries);
 			
 		}/*
-		else if( type_ == TrendModelType.BAR_VIEW )
+		else if( type_ == GraphRenderers.BAR_VIEW )
 		{
-			if( (options_ & TrendModelType.LOAD_DURATION_MASK) == TrendModelType.LOAD_DURATION_MASK)			
+			if( (options_ & GraphRenderers.LOAD_DURATION_MASK) == GraphRenderers.LOAD_DURATION_MASK)			
 				return YukonDataSetFactory.createLoadDurationDataSet(trendSeries);
 			else
 				return YukonDataSetFactory.createBasicDataSet(trendSeries);
 		}*/
 		
-		else if( type_ == TrendModelType.BAR_VIEW || type_ == TrendModelType.BAR_3D_VIEW)
+		else if( type_ == GraphRenderers.BAR || type_ == GraphRenderers.BAR_3D)
 		{
-			if( (options_ & TrendModelType.LOAD_DURATION_MASK) == TrendModelType.LOAD_DURATION_MASK)			
+			if( (options_ & GraphRenderers.LOAD_DURATION_MASK) == GraphRenderers.LOAD_DURATION_MASK)			
 				return YukonDataSetFactory.createVerticalCategoryDataSet_LD(trendSeries);
 			else
 				return YukonDataSetFactory.createVerticalCategoryDataSet(trendSeries);
@@ -59,9 +63,9 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
     private static String updateSeriesNames(TrendSerie serie)
     {
 		String stat = "";					
-		if(GraphDataSeries.isGraphType(serie.getTypeMask()))
+		if(GDSTypesFuncs.isGraphType(serie.getTypeMask()))
 		{
-			if ((options & TrendModelType.LEGEND_LOAD_FACTOR_MASK) == TrendModelType.LEGEND_LOAD_FACTOR_MASK)
+			if ((options & GraphRenderers.LEGEND_LOAD_FACTOR_MASK) == GraphRenderers.LEGEND_LOAD_FACTOR_MASK)
 			{
 				double lf = serie.getLoadFactor();
 				if( lf < 0)
@@ -70,7 +74,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 					stat += "     LF: " + LF_FORMAT.format(lf);
 			}
 
-			if( (options & TrendModelType.LEGEND_MIN_MAX_MASK) == TrendModelType.LEGEND_MIN_MAX_MASK)
+			if( (options & GraphRenderers.LEGEND_MIN_MAX_MASK) == GraphRenderers.LEGEND_MIN_MAX_MASK)
 			{
 				if( serie.getAxis().equals(new Character('L')))
 				{					
@@ -113,11 +117,11 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 		for( int i = 0; i < tSeries.length; i++ )
 		{
 			TrendSerie serie = tSeries[i];			
-			if(GraphDataSeries.isGraphType( serie.getTypeMask()))
+			if(GDSTypesFuncs.isGraphType( serie.getTypeMask()))
 			{
 				if( serie.getAxis().equals(axisChars[datasetIndex]))
 				{
-					if( serie.getDataItemArray() != null)
+					if( serie.getDataItemsMap() != null)
 					{
 				 		long[] timeStamp = serie.getPeriodsArray();
 				 		double[] values = serie.getValuesArray();
@@ -159,51 +163,54 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 				TrendSerie serie = tSeries[i];
 				if( serie != null)
 				{
-					if(GraphDataSeries.isGraphType( serie.getTypeMask()))
+					if(GDSTypesFuncs.isGraphType( serie.getTypeMask()))
 					{
 						if( serie.getAxis().equals(axisChars[datasetIndex]))
 						{	
-							TimeSeries series = new TimeSeries(serie.getLabel(), Millisecond.class);
+							TimeSeries timeSeries = new TimeSeries(serie.getLabel(), Second.class);
 
-							if( serie.getDataItemArray() != null)
+							if( serie.getDataItemsMap() != null)
 							{
-								for (int j = 0; j < serie.getDataItemArray().length; j++)
+
+								Iterator iter = serie.getDataItemsMap().entrySet().iterator();
+								while( iter.hasNext())
 								{
-									TimeSeriesDataItem dp = (TimeSeriesDataItem)serie.getDataItemArray(j);
+									Map.Entry entry = (Map.Entry)iter.next();
+									TimeSeriesDataItem dataItem = (TimeSeriesDataItem)entry.getValue();
 									try
 									{
-										if( GraphDataSeries.isUsageType(serie.getTypeMask()))
+										if( GDSTypesFuncs.isUsageType(serie.getTypeMask()))
 										{
 											if( prevValue == null)
 											{
-												prevValue = (Double)dp.getValue();
+												prevValue = (Double)dataItem.getValue();
 											}
 											else
 											{
-												Double currentValue = (Double)dp.getValue();
+												Double currentValue = (Double)dataItem.getValue();
 												if( currentValue != null && prevValue != null)
 												{
-													TimeSeriesDataItem tempDP = new TimeSeriesDataItem(dp.getPeriod(), new Double(currentValue.doubleValue() - prevValue.doubleValue()));
+													TimeSeriesDataItem tempDP = new TimeSeriesDataItem(dataItem.getPeriod(), new Double(currentValue.doubleValue() - prevValue.doubleValue()));
 													prevValue = currentValue;
-													series.add(tempDP);
+													timeSeries.add(tempDP);
 												}
 											}
 										}
 										else
 										{
-											series.add(dp);
+											timeSeries.add(dataItem);
 										}
 									}
 									catch(SeriesException se)
 									{
-										com.cannontech.clientutils.CTILogger.info("Series ["+i+"] Exception:  PERIOD = " + dp.getPeriod().getStart() + " VALUE = " + dp.getValue().doubleValue());
+										com.cannontech.clientutils.CTILogger.info("Serie ["+serie.getLabel()+"] Exception:  PERIOD = " + dataItem.getPeriod().getStart() + " VALUE = " + dataItem.getValue().doubleValue());
 									}
-								}
+								}								
 							}
 							//Update the serie's name for legend display.
 							//FIND A BETTER WAY TO UPDATE THE NAME!!! (FOR LEGEND PURPOSES)
-							series.setName(series.getName() + updateSeriesNames(serie));
-							dSet[datasetIndex].addSeries(series);
+							timeSeries.setName(timeSeries.getName() + updateSeriesNames(serie));
+							dSet[datasetIndex].addSeries(timeSeries);
 						}
 					}
 				}
@@ -238,11 +245,11 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 			int count = 0;
 			for( int i = 0; i < tSeries.length; i++)
 			{
-				if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
+				if(GDSTypesFuncs.isGraphType(tSeries[i].getTypeMask()))
 				{
 					if( tSeries[i].getAxis().equals(axisChars[datasetIndex]))
 					{
-						if( GraphDataSeries.isPrimaryType(tSeries[i].getTypeMask()))
+						if( GDSTypesFuncs.isPrimaryType(tSeries[i].getTypeMask()))
 						{	//find the primary gds, if it exists!
 							primaryIndex = count;
 							primaryDset = datasetIndex;
@@ -277,7 +284,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 			for (int i = 0; i < tSeries.length; i++)
 			{
 				TrendSerie serie = tSeries[i];
-				if(GraphDataSeries.isGraphType(serie.getTypeMask()))
+				if(GDSTypesFuncs.isGraphType(serie.getTypeMask()))
 				{
 					if( serie.getAxis().equals(axisChars[datasetIndex]))
 					{
@@ -285,12 +292,12 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 
 						Double value = null;
 						Double prevValue = null;				
-						if( serie.getDataItemArray() != null)
+						if( serie.getDataItemsMap() != null)
 						{
 							for (int j = 0; j < keyArray.length; j++)
 							{
 								Double[] values = (Double[])tree.get(keyArray[j]);
-								if( GraphDataSeries.isUsageType(serie.getTypeMask()))
+								if( GDSTypesFuncs.isUsageType(serie.getTypeMask()))
 								{
 									if( prevValue == null)
 									{
@@ -318,7 +325,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 						}
 						else
 						{
-							if( GraphDataSeries.isPrimaryType(serie.getTypeMask()))
+							if( GDSTypesFuncs.isPrimaryType(serie.getTypeMask()))
 							{
 								// We take away the fact there is a primary gds so that when we sort
 								//  the values, we are able to still show load duration.
@@ -364,7 +371,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 			int count = 0;				
 			for( int i = 0; i < tSeries.length; i++)
 			{
-				if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
+				if(GDSTypesFuncs.isGraphType(tSeries[i].getTypeMask()))
 				{
 					if( tSeries[i].getAxis().equals(axisChars[datasetIndex]))
 					{
@@ -401,19 +408,20 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 				Double prevValue = null;
 				Double value = null;
 				
-				TimePeriod prevTimePeriod = null;
-				if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
+				TimeSeriesDataItem prevTimePeriod = null;
+				if(GDSTypesFuncs.isGraphType(tSeries[i].getTypeMask()))
 				{
 //					String serieKey = tSeries[i].getLabel().toString();
 					String serieKey = tSeries[i].getLabel().toString() + updateSeriesNames(tSeries[i]);
 					//UNCOMMENT WITH MULTIPLE AXIS SUPPORT					
 					if( tSeries[i].getAxis().equals(axisChars[datasetIndex]))
 					{
-						if( tSeries[i].getDataItemArray() != null)
+						if( tSeries[i].getDataItemsMap() != null)
 						{
+
 							for (int j = 0; j < keyArray.length; j++)
 							{
-								if( GraphDataSeries.isUsageType(tSeries[i].getTypeMask()))
+								if( GDSTypesFuncs.isUsageType(tSeries[i].getTypeMask()))
 								{
 									Double[] values = (Double[])tree.get(keyArray[j]);							
 									if( prevValue == null)
@@ -475,11 +483,11 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 			
 			for( int i = 0; i < tSeries.length; i++)
 			{
-				if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
+				if(GDSTypesFuncs.isGraphType(tSeries[i].getTypeMask()))
 				{
 					if( tSeries[i].getAxis().equals(axisChars[datasetIndex]))
 					{				
-						if( GraphDataSeries.isPrimaryType(tSeries[i].getTypeMask()))
+						if( GDSTypesFuncs.isPrimaryType(tSeries[i].getTypeMask()))
 						{	//find the primary gds, if it exists!
 							primaryIndex = count;
 							primaryDset = datasetIndex;
@@ -513,17 +521,18 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 				Double prevValue = null;
 				Double value = null;
 			
-				TimePeriod prevTimePeriod = null;
-				if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
+				TimeSeriesDataItem prevTimePeriod = null;
+				if(GDSTypesFuncs.isGraphType(tSeries[i].getTypeMask()))
 				{
 					String serieKey = tSeries[i].getLabel().toString() + updateSeriesNames(tSeries[i]);
 					if( tSeries[i].getAxis().equals(axisChars[datasetIndex]))
 					{
-						if( tSeries[i].getDataItemArray() != null)
+						if( tSeries[i].getDataItemsMap() != null)
 						{
+
 							for (int j = 0; j < keyArray.length; j++)
 							{
-								if( GraphDataSeries.isUsageType(tSeries[i].getTypeMask()))
+								if( GDSTypesFuncs.isUsageType(tSeries[i].getTypeMask()))
 								{
 									Double[] values = (Double[])tree.get(keyArray[j]);							
 									if( prevValue == null)
@@ -553,7 +562,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 						}
 						else
 						{
-							if( GraphDataSeries.isPrimaryType(tSeries[i].getTypeMask()))
+							if( GDSTypesFuncs.isPrimaryType(tSeries[i].getTypeMask()))
 							{
 								// We take away the fact there is a primary gds so that when we sort
 								//  the values, we are able to still show load duration.
