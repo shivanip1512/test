@@ -363,11 +363,11 @@
 				<xs:element ref="stars-YukonSwitchCommandResponse" minOccurs="0"/>
 				<xs:element ref="stars-GetLMControlHistory" minOccurs="0"/>
 				<xs:element ref="stars-GetLMControlHistoryResponse" minOccurs="0"/>
-				<xs:element ref="stars-GetNextCallNumber" minOccurs="0"/>
-				<xs:element ref="stars-GetNextCallNumberResponse" minOccurs="0"/>
 				<xs:element ref="stars-CreateCallReport" minOccurs="0"/>
 				<xs:element ref="stars-CreateCallReportResponse" minOccurs="0"/>
 				<xs:element ref="stars-UpdateCallReport" minOccurs="0"/>
+				<xs:element ref="stars-UpdateCallReportResponse" minOccurs="0"/>
+				<xs:element ref="stars-DeleteCallReport" minOccurs="0"/>
 				<xs:element ref="stars-CreateServiceRequest" minOccurs="0"/>
 				<xs:element ref="stars-CreateServiceRequestResponse" minOccurs="0"/>
 				<xs:element ref="stars-UpdateServiceRequest" minOccurs="0"/>
@@ -675,20 +675,6 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="stars-GetNextCallNumber">
-		<xs:complexType>
-			<xs:simpleContent>
-				<xs:extension base="xs:string"/>
-			</xs:simpleContent>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="stars-GetNextCallNumberResponse">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="CallNumber" type="xs:string"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
 	<xs:element name="stars-CreateCallReport" type="stars-CallRprt"/>
 	<xs:element name="stars-CallReport" type="stars-CallRprt"/>
 	<xs:element name="stars-CreateCallReportResponse">
@@ -698,11 +684,17 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="stars-UpdateCallReport">
+	<xs:element name="stars-UpdateCallReport" type="stars-CallRprt"/>
+	<xs:element name="stars-UpdateCallReportResponse">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="stars-CallReport" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="stars-CallReport"/>
 			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stars-DeleteCallReport">
+		<xs:complexType>
+			<xs:attribute name="callID" type="xs:int"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-CallReportHistory">

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id$
+ * $Id: StarsUpdateCallReportResponse.java,v 1.1 2003/12/18 16:43:32 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,29 +11,52 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
+import org.exolab.castor.xml.*;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.ContentHandler;
 
 /**
  * 
  * 
- * @version $Revision$ $Date$
+ * @version $Revision: 1.1 $ $Date: 2003/12/18 16:43:32 $
 **/
-public class LoginType implements java.io.Serializable {
+public class StarsUpdateCallReportResponse implements java.io.Serializable {
+
+
+      //--------------------------/
+     //- Class/Member Variables -/
+    //--------------------------/
+
+    private StarsCallReport _starsCallReport;
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public LoginType() {
+    public StarsUpdateCallReportResponse() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.LoginType()
+    } //-- com.cannontech.stars.xml.serialize.StarsUpdateCallReportResponse()
 
 
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'starsCallReport'.
+     * 
+     * @return the value of field 'starsCallReport'.
+    **/
+    public StarsCallReport getStarsCallReport()
+    {
+        return this._starsCallReport;
+    } //-- StarsCallReport getStarsCallReport() 
 
     /**
     **/
@@ -73,15 +96,25 @@ public class LoginType implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'starsCallReport'.
+     * 
+     * @param starsCallReport the value of field 'starsCallReport'.
+    **/
+    public void setStarsCallReport(StarsCallReport starsCallReport)
+    {
+        this._starsCallReport = starsCallReport;
+    } //-- void setStarsCallReport(StarsCallReport) 
+
+    /**
      * 
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.LoginType unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.StarsUpdateCallReportResponse unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.LoginType) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.LoginType.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.LoginType unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.StarsUpdateCallReportResponse) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsUpdateCallReportResponse.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsUpdateCallReportResponse unmarshal(java.io.Reader) 
 
     /**
     **/

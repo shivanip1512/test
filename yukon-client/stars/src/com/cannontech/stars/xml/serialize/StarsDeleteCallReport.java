@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id$
+ * $Id: StarsDeleteCallReport.java,v 1.1 2003/12/18 16:43:34 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,29 +23,30 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision$ $Date$
+ * @version $Revision: 1.1 $ $Date: 2003/12/18 16:43:34 $
 **/
-public class StarsGetNextCallNumber implements java.io.Serializable {
+public class StarsDeleteCallReport implements java.io.Serializable {
 
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
 
+    private int _callID;
+
     /**
-     * internal content storage
+     * keeps track of state for field: _callID
     **/
-    private java.lang.String _content = "";
+    private boolean _has_callID;
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public StarsGetNextCallNumber() {
+    public StarsDeleteCallReport() {
         super();
-        setContent("");
-    } //-- com.cannontech.stars.xml.serialize.StarsGetNextCallNumber()
+    } //-- com.cannontech.stars.xml.serialize.StarsDeleteCallReport()
 
 
       //-----------/
@@ -53,15 +54,28 @@ public class StarsGetNextCallNumber implements java.io.Serializable {
     //-----------/
 
     /**
-     * Returns the value of field 'content'. The field 'content'
-     * has the following description: internal content storage
-     * 
-     * @return the value of field 'content'.
     **/
-    public java.lang.String getContent()
+    public void deleteCallID()
     {
-        return this._content;
-    } //-- java.lang.String getContent() 
+        this._has_callID= false;
+    } //-- void deleteCallID() 
+
+    /**
+     * Returns the value of field 'callID'.
+     * 
+     * @return the value of field 'callID'.
+    **/
+    public int getCallID()
+    {
+        return this._callID;
+    } //-- int getCallID() 
+
+    /**
+    **/
+    public boolean hasCallID()
+    {
+        return this._has_callID;
+    } //-- boolean hasCallID() 
 
     /**
     **/
@@ -101,26 +115,26 @@ public class StarsGetNextCallNumber implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'content'. The field 'content' has
-     * the following description: internal content storage
+     * Sets the value of field 'callID'.
      * 
-     * @param content the value of field 'content'.
+     * @param callID the value of field 'callID'.
     **/
-    public void setContent(java.lang.String content)
+    public void setCallID(int callID)
     {
-        this._content = content;
-    } //-- void setContent(java.lang.String) 
+        this._callID = callID;
+        this._has_callID = true;
+    } //-- void setCallID(int) 
 
     /**
      * 
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsGetNextCallNumber unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.StarsDeleteCallReport unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsGetNextCallNumber) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsGetNextCallNumber.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsGetNextCallNumber unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.StarsDeleteCallReport) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsDeleteCallReport.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsDeleteCallReport unmarshal(java.io.Reader) 
 
     /**
     **/

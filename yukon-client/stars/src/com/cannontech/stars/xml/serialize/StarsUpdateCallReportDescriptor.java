@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsUpdateCallReportDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsUpdateCallReportDescriptor extends StarsCallRprtDescriptor {
 
 
       //--------------------------/
@@ -49,49 +49,14 @@ public class StarsUpdateCallReportDescriptor extends org.exolab.castor.xml.util.
 
     public StarsUpdateCallReportDescriptor() {
         super();
+        setExtendsWithoutFlatten(new StarsCallRprtDescriptor());
         xmlName = "stars-UpdateCallReport";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        
-        //-- set grouping compositor
-        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
-        
-        //-- _starsCallReportList
-        desc = new XMLFieldDescriptorImpl(StarsCallReport.class, "_starsCallReportList", "stars-CallReport", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsUpdateCallReport target = (StarsUpdateCallReport) object;
-                return target.getStarsCallReport();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsUpdateCallReport target = (StarsUpdateCallReport) object;
-                    target.addStarsCallReport( (StarsCallReport) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsCallReport();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(true);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsCallReportList
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(0);
-        desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsUpdateCallReportDescriptor()
 
@@ -111,13 +76,15 @@ public class StarsUpdateCallReportDescriptor extends org.exolab.castor.xml.util.
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return null;
+        return super.getExtends();
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
+        if (identity == null)
+            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 

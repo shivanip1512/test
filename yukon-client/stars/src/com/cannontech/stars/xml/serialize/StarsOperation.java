@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.58 2003/12/02 18:02:16 zyao Exp $
+ * $Id: StarsOperation.java,v 1.59 2003/12/18 16:43:33 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.58 $ $Date: 2003/12/02 18:02:16 $
+ * @version $Revision: 1.59 $ $Date: 2003/12/18 16:43:33 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -96,15 +96,15 @@ public class StarsOperation implements java.io.Serializable {
 
     private StarsGetLMControlHistoryResponse _starsGetLMControlHistoryResponse;
 
-    private StarsGetNextCallNumber _starsGetNextCallNumber;
-
-    private StarsGetNextCallNumberResponse _starsGetNextCallNumberResponse;
-
     private StarsCreateCallReport _starsCreateCallReport;
 
     private StarsCreateCallReportResponse _starsCreateCallReportResponse;
 
     private StarsUpdateCallReport _starsUpdateCallReport;
+
+    private StarsUpdateCallReportResponse _starsUpdateCallReportResponse;
+
+    private StarsDeleteCallReport _starsDeleteCallReport;
 
     private StarsCreateServiceRequest _starsCreateServiceRequest;
 
@@ -283,6 +283,16 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsDeleteAppliance getStarsDeleteAppliance() 
 
     /**
+     * Returns the value of field 'starsDeleteCallReport'.
+     * 
+     * @return the value of field 'starsDeleteCallReport'.
+    **/
+    public StarsDeleteCallReport getStarsDeleteCallReport()
+    {
+        return this._starsDeleteCallReport;
+    } //-- StarsDeleteCallReport getStarsDeleteCallReport() 
+
+    /**
      * Returns the value of field 'starsDeleteCustomerAccount'.
      * 
      * @return the value of field 'starsDeleteCustomerAccount'.
@@ -411,26 +421,6 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsGetLMControlHistoryResponse;
     } //-- StarsGetLMControlHistoryResponse getStarsGetLMControlHistoryResponse() 
-
-    /**
-     * Returns the value of field 'starsGetNextCallNumber'.
-     * 
-     * @return the value of field 'starsGetNextCallNumber'.
-    **/
-    public StarsGetNextCallNumber getStarsGetNextCallNumber()
-    {
-        return this._starsGetNextCallNumber;
-    } //-- StarsGetNextCallNumber getStarsGetNextCallNumber() 
-
-    /**
-     * Returns the value of field 'starsGetNextCallNumberResponse'.
-     * 
-     * @return the value of field 'starsGetNextCallNumberResponse'.
-    **/
-    public StarsGetNextCallNumberResponse getStarsGetNextCallNumberResponse()
-    {
-        return this._starsGetNextCallNumberResponse;
-    } //-- StarsGetNextCallNumberResponse getStarsGetNextCallNumberResponse() 
 
     /**
      * Returns the value of field 'starsLogin'.
@@ -617,6 +607,16 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsUpdateCallReport;
     } //-- StarsUpdateCallReport getStarsUpdateCallReport() 
+
+    /**
+     * Returns the value of field 'starsUpdateCallReportResponse'.
+     * 
+     * @return the value of field 'starsUpdateCallReportResponse'.
+    **/
+    public StarsUpdateCallReportResponse getStarsUpdateCallReportResponse()
+    {
+        return this._starsUpdateCallReportResponse;
+    } //-- StarsUpdateCallReportResponse getStarsUpdateCallReportResponse() 
 
     /**
      * Returns the value of field 'starsUpdateContacts'.
@@ -970,6 +970,17 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsDeleteAppliance(StarsDeleteAppliance) 
 
     /**
+     * Sets the value of field 'starsDeleteCallReport'.
+     * 
+     * @param starsDeleteCallReport the value of field
+     * 'starsDeleteCallReport'.
+    **/
+    public void setStarsDeleteCallReport(StarsDeleteCallReport starsDeleteCallReport)
+    {
+        this._starsDeleteCallReport = starsDeleteCallReport;
+    } //-- void setStarsDeleteCallReport(StarsDeleteCallReport) 
+
+    /**
      * Sets the value of field 'starsDeleteCustomerAccount'.
      * 
      * @param starsDeleteCustomerAccount the value of field
@@ -1103,28 +1114,6 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsGetLMControlHistoryResponse = starsGetLMControlHistoryResponse;
     } //-- void setStarsGetLMControlHistoryResponse(StarsGetLMControlHistoryResponse) 
-
-    /**
-     * Sets the value of field 'starsGetNextCallNumber'.
-     * 
-     * @param starsGetNextCallNumber the value of field
-     * 'starsGetNextCallNumber'.
-    **/
-    public void setStarsGetNextCallNumber(StarsGetNextCallNumber starsGetNextCallNumber)
-    {
-        this._starsGetNextCallNumber = starsGetNextCallNumber;
-    } //-- void setStarsGetNextCallNumber(StarsGetNextCallNumber) 
-
-    /**
-     * Sets the value of field 'starsGetNextCallNumberResponse'.
-     * 
-     * @param starsGetNextCallNumberResponse the value of field
-     * 'starsGetNextCallNumberResponse'.
-    **/
-    public void setStarsGetNextCallNumberResponse(StarsGetNextCallNumberResponse starsGetNextCallNumberResponse)
-    {
-        this._starsGetNextCallNumberResponse = starsGetNextCallNumberResponse;
-    } //-- void setStarsGetNextCallNumberResponse(StarsGetNextCallNumberResponse) 
 
     /**
      * Sets the value of field 'starsLogin'.
@@ -1324,6 +1313,17 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsUpdateCallReport = starsUpdateCallReport;
     } //-- void setStarsUpdateCallReport(StarsUpdateCallReport) 
+
+    /**
+     * Sets the value of field 'starsUpdateCallReportResponse'.
+     * 
+     * @param starsUpdateCallReportResponse the value of field
+     * 'starsUpdateCallReportResponse'.
+    **/
+    public void setStarsUpdateCallReportResponse(StarsUpdateCallReportResponse starsUpdateCallReportResponse)
+    {
+        this._starsUpdateCallReportResponse = starsUpdateCallReportResponse;
+    } //-- void setStarsUpdateCallReportResponse(StarsUpdateCallReportResponse) 
 
     /**
      * Sets the value of field 'starsUpdateContacts'.

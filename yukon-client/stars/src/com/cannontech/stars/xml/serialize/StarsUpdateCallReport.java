@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
-import java.util.Enumeration;
-import java.util.Vector;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -27,14 +25,9 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsUpdateCallReport implements java.io.Serializable {
-
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    private java.util.Vector _starsCallReportList;
+public class StarsUpdateCallReport extends StarsCallRprt 
+implements java.io.Serializable
+{
 
 
       //----------------/
@@ -43,78 +36,12 @@ public class StarsUpdateCallReport implements java.io.Serializable {
 
     public StarsUpdateCallReport() {
         super();
-        _starsCallReportList = new Vector();
     } //-- com.cannontech.stars.xml.serialize.StarsUpdateCallReport()
 
 
       //-----------/
      //- Methods -/
     //-----------/
-
-    /**
-     * 
-     * 
-     * @param vStarsCallReport
-    **/
-    public void addStarsCallReport(StarsCallReport vStarsCallReport)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _starsCallReportList.addElement(vStarsCallReport);
-    } //-- void addStarsCallReport(StarsCallReport) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsCallReport
-    **/
-    public void addStarsCallReport(int index, StarsCallReport vStarsCallReport)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _starsCallReportList.insertElementAt(vStarsCallReport, index);
-    } //-- void addStarsCallReport(int, StarsCallReport) 
-
-    /**
-    **/
-    public java.util.Enumeration enumerateStarsCallReport()
-    {
-        return _starsCallReportList.elements();
-    } //-- java.util.Enumeration enumerateStarsCallReport() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public StarsCallReport getStarsCallReport(int index)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        //-- check bounds for index
-        if ((index < 0) || (index > _starsCallReportList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        
-        return (StarsCallReport) _starsCallReportList.elementAt(index);
-    } //-- StarsCallReport getStarsCallReport(int) 
-
-    /**
-    **/
-    public StarsCallReport[] getStarsCallReport()
-    {
-        int size = _starsCallReportList.size();
-        StarsCallReport[] mArray = new StarsCallReport[size];
-        for (int index = 0; index < size; index++) {
-            mArray[index] = (StarsCallReport) _starsCallReportList.elementAt(index);
-        }
-        return mArray;
-    } //-- StarsCallReport[] getStarsCallReport() 
-
-    /**
-    **/
-    public int getStarsCallReportCount()
-    {
-        return _starsCallReportList.size();
-    } //-- int getStarsCallReportCount() 
 
     /**
     **/
@@ -152,55 +79,6 @@ public class StarsUpdateCallReport implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
-
-    /**
-    **/
-    public void removeAllStarsCallReport()
-    {
-        _starsCallReportList.removeAllElements();
-    } //-- void removeAllStarsCallReport() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public StarsCallReport removeStarsCallReport(int index)
-    {
-        java.lang.Object obj = _starsCallReportList.elementAt(index);
-        _starsCallReportList.removeElementAt(index);
-        return (StarsCallReport) obj;
-    } //-- StarsCallReport removeStarsCallReport(int) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsCallReport
-    **/
-    public void setStarsCallReport(int index, StarsCallReport vStarsCallReport)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        //-- check bounds for index
-        if ((index < 0) || (index > _starsCallReportList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        _starsCallReportList.setElementAt(vStarsCallReport, index);
-    } //-- void setStarsCallReport(int, StarsCallReport) 
-
-    /**
-     * 
-     * 
-     * @param starsCallReportArray
-    **/
-    public void setStarsCallReport(StarsCallReport[] starsCallReportArray)
-    {
-        //-- copy array
-        _starsCallReportList.removeAllElements();
-        for (int i = 0; i < starsCallReportArray.length; i++) {
-            _starsCallReportList.addElement(starsCallReportArray[i]);
-        }
-    } //-- void setStarsCallReport(StarsCallReport) 
 
     /**
      * 

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id$
+ * $Id: StarsDeleteCallReportDescriptor.java,v 1.1 2003/12/18 16:43:34 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision$ $Date$
+ * @version $Revision: 1.1 $ $Date: 2003/12/18 16:43:34 $
 **/
-public class StarsGetNextCallNumberDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsDeleteCallReportDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,28 +47,36 @@ public class StarsGetNextCallNumberDescriptor extends org.exolab.castor.xml.util
      //- Constructors -/
     //----------------/
 
-    public StarsGetNextCallNumberDescriptor() {
+    public StarsDeleteCallReportDescriptor() {
         super();
-        xmlName = "stars-GetNextCallNumber";
+        xmlName = "stars-DeleteCallReport";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        //-- _content
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_content", "PCDATA", NodeType.Text);
-        desc.setImmutable(true);
+        //-- initialize attribute descriptors
+        
+        //-- _callID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_callID", "callID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsGetNextCallNumber target = (StarsGetNextCallNumber) object;
-                return target.getContent();
+                StarsDeleteCallReport target = (StarsDeleteCallReport) object;
+                if(!target.hasCallID())
+                    return null;
+                return new Integer(target.getCallID());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsGetNextCallNumber target = (StarsGetNextCallNumber) object;
-                    target.setContent( (java.lang.String) value);
+                    StarsDeleteCallReport target = (StarsDeleteCallReport) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteCallID();
+                        return;
+                    }
+                    target.setCallID( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -81,20 +89,17 @@ public class StarsGetNextCallNumberDescriptor extends org.exolab.castor.xml.util
         desc.setHandler(handler);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _content
+        //-- validation code for: _callID
         fieldValidator = new FieldValidator();
         { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
         }
         desc.setValidator(fieldValidator);
         
-        //-- initialize attribute descriptors
-        
         //-- initialize element descriptors
         
-    } //-- com.cannontech.stars.xml.serialize.StarsGetNextCallNumberDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.StarsDeleteCallReportDescriptor()
 
 
       //-----------/
@@ -126,7 +131,7 @@ public class StarsGetNextCallNumberDescriptor extends org.exolab.castor.xml.util
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsGetNextCallNumber.class;
+        return com.cannontech.stars.xml.serialize.StarsDeleteCallReport.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

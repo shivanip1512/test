@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id$
+ * $Id: StarsUpdateCallReportResponseDescriptor.java,v 1.1 2003/12/18 16:43:33 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision$ $Date$
+ * @version $Revision: 1.1 $ $Date: 2003/12/18 16:43:33 $
 **/
-public class StarsGetNextCallNumberResponseDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsUpdateCallReportResponseDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,9 +47,9 @@ public class StarsGetNextCallNumberResponseDescriptor extends org.exolab.castor.
      //- Constructors -/
     //----------------/
 
-    public StarsGetNextCallNumberResponseDescriptor() {
+    public StarsUpdateCallReportResponseDescriptor() {
         super();
-        xmlName = "stars-GetNextCallNumberResponse";
+        xmlName = "stars-UpdateCallReportResponse";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -60,29 +60,28 @@ public class StarsGetNextCallNumberResponseDescriptor extends org.exolab.castor.
         
         //-- initialize element descriptors
         
-        //-- _callNumber
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_callNumber", "CallNumber", NodeType.Element);
-        desc.setImmutable(true);
+        //-- _starsCallReport
+        desc = new XMLFieldDescriptorImpl(StarsCallReport.class, "_starsCallReport", "stars-CallReport", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsGetNextCallNumberResponse target = (StarsGetNextCallNumberResponse) object;
-                return target.getCallNumber();
+                StarsUpdateCallReportResponse target = (StarsUpdateCallReportResponse) object;
+                return target.getStarsCallReport();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsGetNextCallNumberResponse target = (StarsGetNextCallNumberResponse) object;
-                    target.setCallNumber( (java.lang.String) value);
+                    StarsUpdateCallReportResponse target = (StarsUpdateCallReportResponse) object;
+                    target.setStarsCallReport( (StarsCallReport) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
+                return new StarsCallReport();
             }
         } );
         desc.setHandler(handler);
@@ -90,17 +89,12 @@ public class StarsGetNextCallNumberResponseDescriptor extends org.exolab.castor.
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _callNumber
+        //-- validation code for: _starsCallReport
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
         desc.setValidator(fieldValidator);
         
-    } //-- com.cannontech.stars.xml.serialize.StarsGetNextCallNumberResponseDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.StarsUpdateCallReportResponseDescriptor()
 
 
       //-----------/
@@ -132,7 +126,7 @@ public class StarsGetNextCallNumberResponseDescriptor extends org.exolab.castor.
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsGetNextCallNumberResponse.class;
+        return com.cannontech.stars.xml.serialize.StarsUpdateCallReportResponse.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**
