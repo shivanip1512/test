@@ -30,6 +30,8 @@ class CtiLMProgramBase : public RWCollectable
 
 public:
 
+    static ULONG numberOfReferences;
+
     CtiLMProgramBase();
     CtiLMProgramBase(RWDBReader& rdr);
     CtiLMProgramBase(const CtiLMProgramBase& lmprog);

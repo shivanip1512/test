@@ -198,11 +198,10 @@ void CtiLMService::OnStop()
 
     //Time to quit - send a shutdown message through the system
     CtiLMExecutorFactory f;
-    RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
 
     CtiLMShutdown* msg = new CtiLMShutdown();
     CtiLMExecutor* executor = f.createExecutor(msg);
-    executor->Execute(queue);
+    executor->Execute();
 
     SetStatus(SERVICE_STOP_PENDING, 50, 5000 );
 

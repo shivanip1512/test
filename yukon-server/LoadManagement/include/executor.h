@@ -27,7 +27,7 @@ class CtiLMExecutor
 public:
     virtual ~CtiLMExecutor() {};
 
-    virtual void Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results) {};
+    virtual void Execute() {};
 
 protected:
     CtiLMExecutor() {};
@@ -40,19 +40,19 @@ public:
     CtiLMCommandExecutor(CtiLMCommand* command) : _command(command) {};
     virtual ~CtiLMCommandExecutor() { delete _command;};
 
-    virtual void Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    virtual void Execute();
 
 private:
-    void ChangeThreshold(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void ChangeRestoreOffset(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void ChangeCurrentOperationalState(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void EnableControlArea(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void DisableControlArea(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void EnableProgram(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void DisableProgram(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void SendAllControlAreas(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void ChangeDailyStartTime(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void ChangeDailyStopTime(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    void ChangeThreshold();
+    void ChangeRestoreOffset();
+    void ChangeCurrentOperationalState();
+    void EnableControlArea();
+    void DisableControlArea();
+    void EnableProgram();
+    void DisableProgram();
+    void SendAllControlAreas();
+    void ChangeDailyStartTime();
+    void ChangeDailyStopTime();
 
     CtiLMCommand* _command;
     RWRecursiveLock<RWMutexLock> _mutex;
@@ -65,13 +65,13 @@ public:
     CtiLMManualControlMsgExecutor(CtiLMManualControlMsg* controlMsg) : _controlMsg(controlMsg) {};
     virtual ~CtiLMManualControlMsgExecutor() { delete _controlMsg;};
 
-    virtual void Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    virtual void Execute();
 
 private:
-    void ScheduledStart(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void ScheduledStop(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void StartNow(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void StopNow(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    void ScheduledStart();
+    void ScheduledStop();
+    void StartNow();
+    void StopNow();
 
     CtiLMManualControlMsg* _controlMsg;
     RWRecursiveLock<RWMutexLock> _mutex;
@@ -84,14 +84,14 @@ public:
     CtiLMEnergyExchangeControlMsgExecutor(CtiLMEnergyExchangeControlMsg* energyExchangeMsg) : _energyExchangeMsg(energyExchangeMsg) {};
     virtual ~CtiLMEnergyExchangeControlMsgExecutor() { delete _energyExchangeMsg;};
 
-    virtual void Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    virtual void Execute();
 
 private:
-    void NewOffer(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void OfferUpdate(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void OfferRevision(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void CloseOffer(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void CancelOffer(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    void NewOffer();
+    void OfferUpdate();
+    void OfferRevision();
+    void CloseOffer();
+    void CancelOffer();
 
     CtiLMEnergyExchangeControlMsg* _energyExchangeMsg;
     RWRecursiveLock<RWMutexLock> _mutex;
@@ -102,9 +102,9 @@ class CtiLMControlAreaMsgExecutor : public CtiLMExecutor
 {
 public:
     CtiLMControlAreaMsgExecutor(CtiLMControlAreaMsg* contAreaMsg) : _controlAreaMsg(contAreaMsg){};
-    virtual ~CtiLMControlAreaMsgExecutor(){delete _controlAreaMsg;};
+    virtual ~CtiLMControlAreaMsgExecutor(){};
 
-    virtual void Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    virtual void Execute();
 
 private:
     CtiLMControlAreaMsg* _controlAreaMsg;
@@ -118,13 +118,13 @@ public:
     CtiLMCurtailmentAcknowledgeMsgExecutor(CtiLMCurtailmentAcknowledgeMsg* curtailAckMsg) : _curtailAckMsg(curtailAckMsg) {};
     virtual ~CtiLMCurtailmentAcknowledgeMsgExecutor() { delete _curtailAckMsg;};
 
-    virtual void Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    virtual void Execute();
 
 private:
-    /*void DirectStart(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void DirectStop(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void CurtailmentStart(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void CurtailmentStop(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);*/
+    /*void DirectStart();
+    void DirectStop();
+    void CurtailmentStart();
+    void CurtailmentStop();*/
 
     CtiLMCurtailmentAcknowledgeMsg* _curtailAckMsg;
     RWRecursiveLock<RWMutexLock> _mutex;
@@ -137,13 +137,13 @@ public:
     CtiLMEnergyExchangeAcceptMsgExecutor(CtiLMEnergyExchangeAcceptMsg* energyExchangeAcceptMsg) : _energyExchangeAcceptMsg(energyExchangeAcceptMsg) {};
     virtual ~CtiLMEnergyExchangeAcceptMsgExecutor() { delete _energyExchangeAcceptMsg;};
 
-    virtual void Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    virtual void Execute();
 
 private:
-    /*void DirectStart(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void DirectStop(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void CurtailmentStart(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
-    void CurtailmentStop(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);*/
+    /*void DirectStart();
+    void DirectStop();
+    void CurtailmentStart();
+    void CurtailmentStop();*/
 
     CtiLMEnergyExchangeAcceptMsg* _energyExchangeAcceptMsg;
     RWRecursiveLock<RWMutexLock> _mutex;
@@ -156,7 +156,7 @@ public:
     CtiLMForwardMsgToDispatchExecutor(CtiMessage* ctiMsg) : _ctiMessage(ctiMsg) {};
     virtual ~CtiLMForwardMsgToDispatchExecutor() { delete _ctiMessage;};
 
-    virtual void Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    virtual void Execute();
 
 private:
     CtiMessage* _ctiMessage;
@@ -170,7 +170,7 @@ public:
     CtiLMMultiMsgExecutor(CtiMultiMsg* multiMsg) : _multiMsg(multiMsg) {};
     virtual ~CtiLMMultiMsgExecutor() { delete _multiMsg;};
 
-    virtual void Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    virtual void Execute();
 
 private:
     CtiMultiMsg* _multiMsg;
@@ -184,7 +184,7 @@ public:
     CtiLMShutdownExecutor() {};
     virtual ~CtiLMShutdownExecutor() {};
 
-    virtual void Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results);
+    virtual void Execute();
 };
 
 

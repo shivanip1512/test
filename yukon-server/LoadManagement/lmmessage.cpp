@@ -766,30 +766,41 @@ CtiLMEnergyExchangeAcceptMsg& CtiLMEnergyExchangeAcceptMsg::operator=(const CtiL
 
 RWDEFINE_COLLECTABLE( CtiLMControlAreaMsg, CTILMCONTROLAREA_MSG_ID )
 
-
+ULONG CtiLMControlAreaMsg::numberOfReferences = 0;
 /*---------------------------------------------------------------------------
     Constuctors
 ---------------------------------------------------------------------------*/
-CtiLMControlAreaMsg::CtiLMControlAreaMsg(RWOrdered& contAreas) : CtiLMMessage("ControlArea")
+CtiLMControlAreaMsg::CtiLMControlAreaMsg(RWOrdered& contAreas) : CtiLMMessage("ControlArea"), _controlAreas(NULL)
 {
-    _controlAreas.clearAndDestroy();
-    for(UINT i=0;i<contAreas.entries();i++)
+    _controlAreas = new RWOrdered(contAreas.entries());
+    for(int i=0;i<contAreas.entries();i++)
     {
-        _controlAreas.insert(((CtiLMControlArea*)contAreas[i])->replicate());
+        _controlAreas->insert(((CtiLMControlArea*)contAreas[i])->replicate());
     }
+    /*numberOfReferences++;
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << "Number of CtiLMControlAreaMsg increased to: " << numberOfReferences << endl;
+    }*/
 }
 
-CtiLMControlAreaMsg::CtiLMControlAreaMsg(const CtiLMControlAreaMsg& contAreaMsg) : CtiLMMessage("ControlArea")
+/*CtiLMControlAreaMsg::CtiLMControlAreaMsg(const CtiLMControlAreaMsg& contAreaMsg) : CtiLMMessage("ControlArea")
 {
     operator=( contAreaMsg );
-}
+}*/
 
 /*---------------------------------------------------------------------------
     Destructor
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaMsg::~CtiLMControlAreaMsg()
 {
-    _controlAreas.clearAndDestroy();
+    _controlAreas->clearAndDestroy();
+    delete _controlAreas;
+    /*numberOfReferences--;
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << "Number of CtiLMControlAreaMsg decreased to: " << numberOfReferences << endl;
+    }*/
 }
 
 /*---------------------------------------------------------------------------
@@ -797,7 +808,10 @@ CtiLMControlAreaMsg::~CtiLMControlAreaMsg()
 ---------------------------------------------------------------------------*/
 CtiMessage* CtiLMControlAreaMsg::replicateMessage() const
 {
-    return new CtiLMControlAreaMsg(*this);
+    //return new CtiLMControlAreaMsg(*this);
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+    dout << RWTime() << " - Do not call me!!! " << __FILE__ << __LINE__ << endl;
+    return NULL;
 }
 
 /*---------------------------------------------------------------------------
@@ -807,10 +821,16 @@ CtiLMControlAreaMsg& CtiLMControlAreaMsg::operator=(const CtiLMControlAreaMsg& r
 {
     if( this != &right )
     {
-        _controlAreas.clearAndDestroy();
-        for(UINT i=0;i<right._controlAreas.entries();i++)
+        if( _controlAreas != NULL &&
+            _controlAreas->entries() > 0 )
         {
-            _controlAreas.insert(((CtiLMControlArea*)right._controlAreas[i])->replicate());
+            _controlAreas->clearAndDestroy();
+            delete _controlAreas;
+        }
+        _controlAreas = new RWOrdered((right.getControlAreas())->entries());
+        for(int i=0;i<(right.getControlAreas())->entries();i++)
+        {
+            _controlAreas->insert(((CtiLMControlArea*)(*right.getControlAreas())[i]));
         }
     }
 

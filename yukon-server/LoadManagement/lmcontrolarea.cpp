@@ -37,16 +37,31 @@ RWDEFINE_COLLECTABLE( CtiLMControlArea, CTILMCONTROLAREA_ID )
 ---------------------------------------------------------------------------*/
 CtiLMControlArea::CtiLMControlArea()
 {
+    /*numberOfReferences++;
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << "Default Constructor, Number of CtiLMControlArea increased to: " << numberOfReferences << endl;
+    }*/
 }
 
 CtiLMControlArea::CtiLMControlArea(RWDBReader& rdr)
 {
     restore(rdr);
+    /*numberOfReferences++;
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << "Restore Constructor, Number of CtiLMControlArea increased to: " << numberOfReferences << endl;
+    }*/
 }
 
 CtiLMControlArea::CtiLMControlArea(const CtiLMControlArea& controlarea)
 {
     operator=(controlarea);
+    /*numberOfReferences++;
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << "Copy Constructor, Number of CtiLMControlArea increased to: " << numberOfReferences << endl;
+    }*/
 }
 
 /*---------------------------------------------------------------------------
@@ -57,6 +72,11 @@ CtiLMControlArea::~CtiLMControlArea()
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     _lmcontrolareatriggers.clearAndDestroy();
     _lmprograms.clearAndDestroy();
+    /*numberOfReferences--;
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << "Destructor, Number of CtiLMControlArea decreased to: " << numberOfReferences << endl;
+    }*/
 }
 
 /*---------------------------------------------------------------------------

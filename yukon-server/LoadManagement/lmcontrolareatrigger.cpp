@@ -49,6 +49,7 @@ CtiLMControlAreaTrigger::CtiLMControlAreaTrigger(const CtiLMControlAreaTrigger& 
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger::~CtiLMControlAreaTrigger()
 {
+    _projectionpointentriesqueue.clear();
 }
 
 /*---------------------------------------------------------------------------

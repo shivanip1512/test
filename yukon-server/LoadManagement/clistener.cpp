@@ -132,12 +132,11 @@ void CtiLMClientListener::_listen()
                         _connections.insert(conn);
                     }
                     CtiLMExecutorFactory f;
-                    RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
                     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-                    CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(*(store->getControlAreas(RWDBDateTime().seconds()))));
+                    CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(*store->getControlAreas(RWDBDateTime().seconds())));
                     try
                     {
-                        executor->Execute(queue);
+                        executor->Execute();
                     }
                     catch(...)
                     {

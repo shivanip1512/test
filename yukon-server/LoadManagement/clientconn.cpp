@@ -131,7 +131,7 @@ void CtiLMConnection::update(CtiObservable& observable)
 {
     CtiMessage* ctiMessage = ((CtiLMServer&)observable).BroadcastMessage();
 
-    _queue->write( (RWCollectable*) ctiMessage->replicateMessage() );
+    _queue->write( (RWCollectable*)ctiMessage );
 }
 
 /*---------------------------------------------------------------------------
@@ -160,7 +160,6 @@ void CtiLMConnection::_sendthr()
             {
                 *oStream << c;
                 oStream->vflush();
-                delete c;
             }
         }
         while ( isValid() && oStream->good() );
@@ -202,9 +201,8 @@ void CtiLMConnection::_recvthr()
     RWRunnable runnable;
 
     RWCollectable* current = NULL;
-    CtiLMExecutor* saved = NULL;
 
-    CtiLMExecutorFactory factory;
+    CtiLMExecutorFactory f;
 
     try
     {
@@ -219,62 +217,22 @@ void CtiLMConnection::_recvthr()
 
             if ( current != NULL )
             {
-
+                CtiLMExecutor* executor = f.createExecutor( (CtiMessage*) current );
                 try
                 {
-                    if ( saved != NULL )
-                    {
-                        runnable.requestCancellation();
-                        delete saved;
-                        saved = NULL;
-                    }
-                }
-                catch ( RWxmsg& msg )
-                {
-                    /*{    
-                        RWMutexLock::LockGuard guard(coutMux);
-                        cout << "CtiLMConnection::_recvthr - " << msg.why() << endl;
-                    }*/
+                    executor->Execute();
                 }
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
-
-                try
-                {
-                    CtiLMExecutor* executor = factory.createExecutor( (CtiMessage*) current );
-    
-                    RWThreadFunction thr_func  = rwMakeThreadFunction( *executor, &CtiLMExecutor::Execute, _queue );
-    
-                    runnable = thr_func;
-    
-                    thr_func.start();
-    
-                    saved = executor;
-                }
-                catch(...)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                }
+                delete executor;
             }
             else
             {
-                /*{    
-                    RWMutexLock::LockGuard guard(coutMux);
-                    cout << RWTime()  << "waiting for thread and then exiting in_thr" << endl;
-                }*/
-
-                if ( saved != NULL )
-                {
-                    if( runnable.isValid() )
-                        runnable.requestCancellation();
-
-                    delete saved;
-                    saved = NULL;
-                }
+                /*CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - Why did I get here? in: " << __FILE__ << " at:" << __LINE__ << endl;*/
 
                 _valid = FALSE;
             }

@@ -27,20 +27,36 @@
 
 extern BOOL _LM_DEBUG;
 
+ULONG CtiLMProgramBase::numberOfReferences = 0;
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase::CtiLMProgramBase()
 {
+    /*numberOfReferences++;
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << "Default Constructor, Number of CtiLMProgramBase increased to: " << numberOfReferences << endl;
+    }*/
 }
 
 CtiLMProgramBase::CtiLMProgramBase(RWDBReader& rdr)
 {
+    /*numberOfReferences++;
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << "Restore Constructor, Number of CtiLMProgramBase increased to: " << numberOfReferences << endl;
+    }*/
     restore(rdr);
 }
 
 CtiLMProgramBase::CtiLMProgramBase(const CtiLMProgramBase& lmprog)
 {
+    /*numberOfReferences++;
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << "Copy Constructor, Number of CtiLMProgramBase increased to: " << numberOfReferences << endl;
+    }*/
     operator=(lmprog);
 }
 
@@ -51,6 +67,11 @@ CtiLMProgramBase::~CtiLMProgramBase()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     _lmprogramcontrolwindows.clearAndDestroy();
+    /*numberOfReferences--;
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << "Destructor, Number of CtiLMProgramBase decreased to: " << numberOfReferences << endl;
+    }*/
 }
 
 /*---------------------------------------------------------------------------

@@ -52,7 +52,7 @@ CtiLoadManager* CtiLoadManager::_instance = NULL;
 ---------------------------------------------------------------------------*/
 CtiLoadManager* CtiLoadManager::getInstance()
 {
-    if ( _instance == 0 )
+    if ( _instance == NULL )
         _instance = new CtiLoadManager();
 
     return _instance;
@@ -155,9 +155,9 @@ void CtiLoadManager::controlLoop()
         store->setReregisterForPoints(false);
 
         RWDBDateTime currentDateTime;
+        RWOrdered controlAreaChanges;
         CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
         CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
-        CtiLMControlAreaMsg* controlAreaMsg = new CtiLMControlAreaMsg();
         while(TRUE)
         {
             currentDateTime.now();
@@ -166,7 +166,7 @@ void CtiLoadManager::controlLoop()
 
             if(_LM_DEBUG)
             {
-                if( (RWDBDateTime().seconds()%1800) == 0 )
+                if( (secondsFrom1901%1800) == 0 )
                 {//every five minutes tell the user if the manager thread is still alive
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Load Manager thread pulse" << endl;
@@ -202,7 +202,6 @@ void CtiLoadManager::controlLoop()
                 dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
 
-            RWOrdered& controlAreaChanges = controlAreaMsg->getControlAreas();
             BOOL examinedControlAreaForControlNeededFlag = FALSE;
             if( controlAreas.entries() > 0 )
             {
@@ -312,7 +311,7 @@ void CtiLoadManager::controlLoop()
                     {
                         if( currentControlArea->getUpdatedFlag() )
                         {
-                            controlAreaChanges.insert(currentControlArea->replicate());
+                            controlAreaChanges.insert(currentControlArea);
                             currentControlArea->setUpdatedFlag(FALSE);
                         }
                     }
@@ -347,18 +346,6 @@ void CtiLoadManager::controlLoop()
             {
                 if( multiPilMsg->getCount() > 0 )
                 {
-                    /*if( _LM_DEBUG )
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Sending multi message to Pil." << endl;
-                    }
-                    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-                    for(ULONG i=0;i<multiPilMsg->getCount();i++)
-                    {
-                        getPILConnection()->WriteConnQue(((CtiMessage*)((*multiPilMsg)[i]))->replicateMessage());
-                    }
-                    delete multiPilMsg;
-                    multiPilMsg = new CtiMultiMsg();*/
                     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
                     multiPilMsg->setMessagePriority(13);
                     getPILConnection()->WriteConnQue(multiPilMsg);
@@ -377,11 +364,11 @@ void CtiLoadManager::controlLoop()
                 {
                     store->dumpAllDynamicData();
                     CtiLMExecutorFactory f;
-                    RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
-                    CtiLMExecutor* executor = f.createExecutor(controlAreaMsg);
+                    CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(controlAreaChanges));
+
                     try
                     {
-                        executor->Execute(queue);
+                        executor->Execute();
                     }
                     catch(...)
                     {
@@ -390,7 +377,7 @@ void CtiLoadManager::controlLoop()
                     }
                     delete executor;
 
-                    controlAreaMsg = new CtiLMControlAreaMsg();
+                    controlAreaChanges.clear();
                 }
             }
             catch(...)
@@ -842,7 +829,6 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
 
     RWOrdered& controlAreas = (*store->getControlAreas(secondsFrom1901));
-    CtiPointRegistrationMsg* regMsg = new CtiPointRegistrationMsg();
     for(UINT i=0;i<controlAreas.entries();i++)
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];

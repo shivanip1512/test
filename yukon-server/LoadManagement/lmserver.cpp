@@ -19,7 +19,7 @@
 extern BOOL _LM_DEBUG;
 
 //The singleton instance of the server                                       
-CtiLMServer* CtiLMServer::_instance = 0;                                                                          
+CtiLMServer* CtiLMServer::_instance = NULL;                                                                          
 
 //The default port where the server will listen for client connections
 int CtiLMServer::_defaultport = 1920;
@@ -31,7 +31,7 @@ int CtiLMServer::_defaultport = 1920;
 ---------------------------------------------------------------------------*/
 CtiLMServer* CtiLMServer::getInstance()
 {
-    if ( _instance == 0 )
+    if ( _instance == NULL )
         _instance = new CtiLMServer();
 
     return _instance;
@@ -147,6 +147,11 @@ void CtiLMServer::Broadcast(CtiMessage* message)
     //Only allow one broadcast at a time!
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_broadcastmutex);
 
+    if( _currentmessage != NULL )
+    {
+        delete _currentmessage;
+        _currentmessage = NULL;
+    }
     _currentmessage = message;
 
     /*if( _LM_DEBUG )
@@ -157,7 +162,6 @@ void CtiLMServer::Broadcast(CtiMessage* message)
 
     setChanged();
     notifyObservers();
-    delete message;
 }
 
 /*---------------------------------------------------------------------------
@@ -167,6 +171,8 @@ void CtiLMServer::Broadcast(CtiMessage* message)
 ---------------------------------------------------------------------------*/
 CtiMessage* CtiLMServer::BroadcastMessage()
 {
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_broadcastmutex);
+
     return _currentmessage;
 }
 

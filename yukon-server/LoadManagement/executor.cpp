@@ -44,50 +44,50 @@ extern BOOL _LM_DEBUG;
     Executes the command and places any resulting messages on the result
     queue.
 ---------------------------------------------------------------------------*/
-void CtiLMCommandExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMCommandExecutor::Execute()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
     switch ( _command->getCommand() )
     {
         case CtiLMCommand::CHANGE_THRESHOLD:
-            ChangeThreshold(results);
+            ChangeThreshold();
             break;
     
         case CtiLMCommand::CHANGE_RESTORE_OFFSET:
-            ChangeRestoreOffset(results);
+            ChangeRestoreOffset();
             break;
 
         case CtiLMCommand::CHANGE_CURRENT_START_TIME:
-            ChangeDailyStartTime(results);
+            ChangeDailyStartTime();
             break;
 
         case CtiLMCommand::CHANGE_CURRENT_STOP_TIME:
-            ChangeDailyStopTime(results);
+            ChangeDailyStopTime();
             break;
 
         case CtiLMCommand::CHANGE_CURRENT_OPERATIONAL_STATE:
-            ChangeCurrentOperationalState(results);
+            ChangeCurrentOperationalState();
             break;
 
         case CtiLMCommand::ENABLE_CONTROL_AREA:
-            EnableControlArea(results);
+            EnableControlArea();
             break;
 
         case CtiLMCommand::DISABLE_CONTROL_AREA:
-            DisableControlArea(results);
+            DisableControlArea();
             break;
 
         case CtiLMCommand::ENABLE_PROGRAM:
-            EnableProgram(results);
+            EnableProgram();
             break;
 
         case CtiLMCommand::DISABLE_PROGRAM:
-            DisableProgram(results);
+            DisableProgram();
             break;
 
         case CtiLMCommand::REQUEST_ALL_CONTROL_AREAS:
-            SendAllControlAreas(results);
+            SendAllControlAreas();
             break;
 
         default:
@@ -101,7 +101,7 @@ void CtiLMCommandExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWColl
 /*---------------------------------------------------------------------------
     ChangeThreshold
 ---------------------------------------------------------------------------*/    
-void CtiLMCommandExecutor::ChangeThreshold(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMCommandExecutor::ChangeThreshold()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -151,7 +151,7 @@ void CtiLMCommandExecutor::ChangeThreshold(RWCountedPointer< CtiCountedPCPtrQueu
 /*---------------------------------------------------------------------------
     ChangeRestoreOffset
 ---------------------------------------------------------------------------*/    
-void CtiLMCommandExecutor::ChangeRestoreOffset(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMCommandExecutor::ChangeRestoreOffset()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -201,7 +201,7 @@ void CtiLMCommandExecutor::ChangeRestoreOffset(RWCountedPointer< CtiCountedPCPtr
 /*---------------------------------------------------------------------------
     ChangeCurrentOperationalState
 ---------------------------------------------------------------------------*/    
-void CtiLMCommandExecutor::ChangeCurrentOperationalState(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMCommandExecutor::ChangeCurrentOperationalState()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 }
@@ -209,7 +209,7 @@ void CtiLMCommandExecutor::ChangeCurrentOperationalState(RWCountedPointer< CtiCo
 /*---------------------------------------------------------------------------
     EnableControlArea
 ---------------------------------------------------------------------------*/    
-void CtiLMCommandExecutor::EnableControlArea(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMCommandExecutor::EnableControlArea()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -238,7 +238,7 @@ void CtiLMCommandExecutor::EnableControlArea(RWCountedPointer< CtiCountedPCPtrQu
 /*---------------------------------------------------------------------------
     DisableControlArea
 ---------------------------------------------------------------------------*/    
-void CtiLMCommandExecutor::DisableControlArea(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMCommandExecutor::DisableControlArea()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -283,7 +283,7 @@ void CtiLMCommandExecutor::DisableControlArea(RWCountedPointer< CtiCountedPCPtrQ
 /*---------------------------------------------------------------------------
     EnableProgram
 ---------------------------------------------------------------------------*/    
-void CtiLMCommandExecutor::EnableProgram(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMCommandExecutor::EnableProgram()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -321,7 +321,7 @@ void CtiLMCommandExecutor::EnableProgram(RWCountedPointer< CtiCountedPCPtrQueue<
 /*---------------------------------------------------------------------------
     DisableProgram
 ---------------------------------------------------------------------------*/    
-void CtiLMCommandExecutor::DisableProgram(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMCommandExecutor::DisableProgram()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -370,22 +370,29 @@ void CtiLMCommandExecutor::DisableProgram(RWCountedPointer< CtiCountedPCPtrQueue
 /*---------------------------------------------------------------------------
     SendAllControlAreas
 ---------------------------------------------------------------------------*/    
-void CtiLMCommandExecutor::SendAllControlAreas(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMCommandExecutor::SendAllControlAreas()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
     CtiLMExecutorFactory f;
-    RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(*(store->getControlAreas(RWDBDateTime().seconds()))));
-    executor->Execute(queue);
-    delete executor;
+    CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(*store->getControlAreas(RWDBDateTime().seconds())));
+    try
+    {
+        executor->Execute();
+        delete executor;
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 }
 
 /*---------------------------------------------------------------------------
     ChangeDailyStartTime
 ---------------------------------------------------------------------------*/    
-void CtiLMCommandExecutor::ChangeDailyStartTime(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMCommandExecutor::ChangeDailyStartTime()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -427,7 +434,7 @@ void CtiLMCommandExecutor::ChangeDailyStartTime(RWCountedPointer< CtiCountedPCPt
 /*---------------------------------------------------------------------------
     ChangeDailyStopTime
 ---------------------------------------------------------------------------*/    
-void CtiLMCommandExecutor::ChangeDailyStopTime(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMCommandExecutor::ChangeDailyStopTime()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -473,26 +480,26 @@ void CtiLMCommandExecutor::ChangeDailyStopTime(RWCountedPointer< CtiCountedPCPtr
     Executes the command and places any resulting messages on the result
     queue.
 ---------------------------------------------------------------------------*/
-void CtiLMManualControlMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMManualControlMsgExecutor::Execute()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
     switch ( _controlMsg->getCommand() )
     {
     case CtiLMManualControlMsg::SCHEDULED_START:
-        ScheduledStart(results);
+        ScheduledStart();
         break;
 
     case CtiLMManualControlMsg::SCHEDULED_STOP:
-        ScheduledStop(results);
+        ScheduledStop();
         break;
 
     case CtiLMManualControlMsg::START_NOW:
-        StartNow(results);
+        StartNow();
         break;
 
     case CtiLMManualControlMsg::STOP_NOW:
-        StopNow(results);
+        StopNow();
         break;
 
     default:
@@ -507,7 +514,7 @@ void CtiLMManualControlMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQue
 /*---------------------------------------------------------------------------
     ScheduledStart
 ---------------------------------------------------------------------------*/    
-void CtiLMManualControlMsgExecutor::ScheduledStart(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMManualControlMsgExecutor::ScheduledStart()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -634,7 +641,7 @@ void CtiLMManualControlMsgExecutor::ScheduledStart(RWCountedPointer< CtiCountedP
 /*---------------------------------------------------------------------------
     ScheduledStop
 ---------------------------------------------------------------------------*/    
-void CtiLMManualControlMsgExecutor::ScheduledStop(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMManualControlMsgExecutor::ScheduledStop()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -753,7 +760,7 @@ void CtiLMManualControlMsgExecutor::ScheduledStop(RWCountedPointer< CtiCountedPC
 /*---------------------------------------------------------------------------
     StartNow
 ---------------------------------------------------------------------------*/    
-void CtiLMManualControlMsgExecutor::StartNow(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMManualControlMsgExecutor::StartNow()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -878,7 +885,7 @@ void CtiLMManualControlMsgExecutor::StartNow(RWCountedPointer< CtiCountedPCPtrQu
 /*---------------------------------------------------------------------------
     StopNow
 ---------------------------------------------------------------------------*/    
-void CtiLMManualControlMsgExecutor::StopNow(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMManualControlMsgExecutor::StopNow()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -1000,30 +1007,30 @@ void CtiLMManualControlMsgExecutor::StopNow(RWCountedPointer< CtiCountedPCPtrQue
     Executes the command and places any resulting messages on the result
     queue.
 ---------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeControlMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMEnergyExchangeControlMsgExecutor::Execute()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
     switch ( _energyExchangeMsg->getCommand() )
     {
     case CtiLMEnergyExchangeControlMsg::NEW_OFFER:
-        NewOffer(results);
+        NewOffer();
         break;
 
     case CtiLMEnergyExchangeControlMsg::OFFER_UPDATE:
-        OfferUpdate(results);
+        OfferUpdate();
         break;
 
     case CtiLMEnergyExchangeControlMsg::OFFER_REVISION:
-        OfferRevision(results);
+        OfferRevision();
         break;
 
     case CtiLMEnergyExchangeControlMsg::CLOSE_OFFER:
-        CloseOffer(results);
+        CloseOffer();
         break;
 
     case CtiLMEnergyExchangeControlMsg::CANCEL_OFFER:
-        CancelOffer(results);
+        CancelOffer();
         break;
 
     default:
@@ -1038,7 +1045,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::Execute(RWCountedPointer< CtiCounted
 /*---------------------------------------------------------------------------
     NewOffer
 ---------------------------------------------------------------------------*/    
-void CtiLMEnergyExchangeControlMsgExecutor::NewOffer(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMEnergyExchangeControlMsgExecutor::NewOffer()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -1143,7 +1150,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::NewOffer(RWCountedPointer< CtiCounte
 /*---------------------------------------------------------------------------
     OfferUpdate
 ---------------------------------------------------------------------------*/    
-void CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -1260,7 +1267,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate(RWCountedPointer< CtiCou
 /*---------------------------------------------------------------------------
     OfferRevision
 ---------------------------------------------------------------------------*/    
-void CtiLMEnergyExchangeControlMsgExecutor::OfferRevision(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMEnergyExchangeControlMsgExecutor::OfferRevision()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -1388,7 +1395,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferRevision(RWCountedPointer< CtiC
 /*---------------------------------------------------------------------------
     CloseOffer
 ---------------------------------------------------------------------------*/    
-void CtiLMEnergyExchangeControlMsgExecutor::CloseOffer(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMEnergyExchangeControlMsgExecutor::CloseOffer()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -1492,7 +1499,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::CloseOffer(RWCountedPointer< CtiCoun
 /*---------------------------------------------------------------------------
     CancelOffer
 ---------------------------------------------------------------------------*/    
-void CtiLMEnergyExchangeControlMsgExecutor::CancelOffer(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMEnergyExchangeControlMsgExecutor::CancelOffer()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -1603,11 +1610,11 @@ void CtiLMEnergyExchangeControlMsgExecutor::CancelOffer(RWCountedPointer< CtiCou
 /*---------------------------------------------------------------------------
     Execute
 ---------------------------------------------------------------------------*/    
-void CtiLMControlAreaMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMControlAreaMsgExecutor::Execute()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
-    CtiLMServer::getInstance()->Broadcast(((CtiMessage*)_controlAreaMsg)->replicateMessage());
+    CtiLMServer::getInstance()->Broadcast(((CtiMessage*)_controlAreaMsg));
 }
 
 
@@ -1617,7 +1624,7 @@ void CtiLMControlAreaMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue
 /*---------------------------------------------------------------------------
     Execute
 ---------------------------------------------------------------------------*/    
-void CtiLMCurtailmentAcknowledgeMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMCurtailmentAcknowledgeMsgExecutor::Execute()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -1720,7 +1727,7 @@ void CtiLMCurtailmentAcknowledgeMsgExecutor::Execute(RWCountedPointer< CtiCounte
 /*---------------------------------------------------------------------------
     Execute
 ---------------------------------------------------------------------------*/    
-void CtiLMEnergyExchangeAcceptMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -1871,7 +1878,7 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute(RWCountedPointer< CtiCountedP
 /*---------------------------------------------------------------------------
     Execute
 ---------------------------------------------------------------------------*/    
-void CtiLMMultiMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMMultiMsgExecutor::Execute()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -1879,12 +1886,11 @@ void CtiLMMultiMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCol
     RWOrdered& messages = _multiMsg->getData();
     while(messages.entries( )>0)
     {
-        RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
         CtiMessage* message = (CtiMessage*)(messages.pop());
         if( message != NULL )
         {
             CtiLMExecutor* executor = f.createExecutor(message);
-            executor->Execute(queue);
+            executor->Execute();
             delete executor;
         }
         else
@@ -1901,7 +1907,7 @@ void CtiLMMultiMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCol
 /*---------------------------------------------------------------------------
     Execute
 ---------------------------------------------------------------------------*/    
-void CtiLMForwardMsgToDispatchExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results)
+void CtiLMForwardMsgToDispatchExecutor::Execute()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     CtiLoadManager::getInstance()->sendMessageToDispatch(_ctiMessage->replicateMessage());
@@ -1917,7 +1923,7 @@ void CtiLMForwardMsgToDispatchExecutor::Execute(RWCountedPointer< CtiCountedPCPt
     
     Executes a shutdown on the server
 ---------------------------------------------------------------------------*/
-void CtiLMShutdownExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results )
+void CtiLMShutdownExecutor::Execute()
 {
     try
     {

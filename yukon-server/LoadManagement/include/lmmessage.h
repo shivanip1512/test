@@ -234,15 +234,15 @@ class CtiLMControlAreaMsg : public CtiLMMessage
 RWDECLARE_COLLECTABLE( CtiLMControlAreaMsg )
 
 public:
-    CtiLMControlAreaMsg() : CtiLMMessage("ControlAreas"){};
+    static ULONG numberOfReferences;
+
     CtiLMControlAreaMsg(RWOrdered& contAreas);
-    CtiLMControlAreaMsg(const CtiLMControlAreaMsg& contAreaMsg);
+    //CtiLMControlAreaMsg(const CtiLMControlAreaMsg& contAreaMsg);
 
     virtual ~CtiLMControlAreaMsg();
 
-    const RWOrdered& getControlAreas() const     { return _controlAreas; }
-    RWOrdered& getControlAreas()                 { return _controlAreas; }
-    CtiLMControlAreaMsg& setControlAreas(const RWOrdered& contAreas);
+    RWOrdered* getControlAreas() const { return _controlAreas; };
+    //CtiLMControlAreaMsg& setControlAreas(RWOrdered* contAreas);
     virtual CtiMessage* replicateMessage() const;
 
     void restoreGuts( RWvistream& );
@@ -250,8 +250,9 @@ public:
 
     CtiLMControlAreaMsg& operator=(const CtiLMControlAreaMsg& right);
 private:
+    CtiLMControlAreaMsg() : CtiLMMessage("ControlAreas"), _controlAreas(NULL){/*numberOfReferences++;*/};
     
-    RWOrdered _controlAreas;
+    RWOrdered* _controlAreas;
 };
 
 

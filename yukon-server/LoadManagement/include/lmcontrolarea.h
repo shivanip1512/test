@@ -35,6 +35,8 @@ public:
 
 RWDECLARE_COLLECTABLE( CtiLMControlArea )
 
+    static ULONG numberOfReferences;
+
     CtiLMControlArea();
     CtiLMControlArea(RWDBReader& rdr);
     CtiLMControlArea(const CtiLMControlArea& controlarea);

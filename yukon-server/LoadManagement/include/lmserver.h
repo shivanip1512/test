@@ -37,7 +37,7 @@ public:
     static CtiLMServer* getInstance();
 
 private:
-    CtiLMServer() : _listener(NULL), _running(FALSE), _dostop(FALSE) { };
+    CtiLMServer() : _listener(NULL), _running(FALSE), _dostop(FALSE), _currentmessage(NULL) { };
     virtual ~CtiLMServer() { };
 
     CtiLMClientListener* _listener;

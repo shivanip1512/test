@@ -64,20 +64,20 @@ CtiLMControlAreaStore::CtiLMControlAreaStore() : _isvalid(false), _reregisterfor
 CtiLMControlAreaStore::~CtiLMControlAreaStore()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    {
+    /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - CtiLMControlAreaStore destructor called..." << endl;
-    }
+    }*/
     if( _resetthr.isValid() )
     {
         _resetthr.requestCancellation();
     }
 
     shutdown();
-    {
+    /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - CtiLMControlAreaStore destructor done!!!" << endl;
-    }
+    }*/
 }
 
 /*---------------------------------------------------------------------------
@@ -1144,9 +1144,8 @@ void CtiLMControlAreaStore::reset()
             dumpAllDynamicData();
         }
         CtiLMExecutorFactory f;
-        RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
         CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(*_controlAreas));
-        executor->Execute(queue);
+        executor->Execute();
         delete executor;
     }
     catch(...)
