@@ -9,6 +9,8 @@ public class CheckBoxTableRenderer extends javax.swing.JCheckBox implements java
 {
 	private java.awt.Color foreGroundColor = null;
 	private java.awt.Color backGroundColor = null;
+	private java.awt.Color borderColor = null;
+
 	private java.awt.Font font = null;
 
 	/**
@@ -42,21 +44,27 @@ public class CheckBoxTableRenderer extends javax.swing.JCheckBox implements java
 	{
 		java.awt.Color cellForeground = foreGroundColor != null ? foreGroundColor : table.getForeground();
 		java.awt.Color cellBackground = backGroundColor != null ? backGroundColor : table.getBackground();	
-		setFont(font != null ? font : table.getFont() )	;
+		setFont(font != null ? font : table.getFont() );
 	
+		if( isSelected && hasBorder() )
+		{				
+			if( column == 0 )
+				setBorder( javax.swing.BorderFactory.createMatteBorder( 2, 2, 2, 0, borderColor) );
+			else if( column == (table.getModel().getColumnCount()-1) )
+				setBorder( javax.swing.BorderFactory.createMatteBorder( 2, 0, 2, 2, borderColor) );
+			else
+				setBorder( javax.swing.BorderFactory.createMatteBorder( 2, 0, 2, 0, borderColor) );
 	
-		if (isSelected) 
-		{
-		   super.setForeground(table.getSelectionForeground());
-		   super.setBackground(table.getSelectionBackground());
 		}
 		else
-		{
+		{	
+			if( hasBorder() )
+				setBorder( javax.swing.BorderFactory.createEmptyBorder() );
+
 			super.setForeground(cellForeground);
-			super.setBackground(cellBackground);
+			super.setBackground(cellBackground);	
 		}
-	
-	
+
 		//customize the components appearance
 		setValue(value);
 	
@@ -89,6 +97,13 @@ public class CheckBoxTableRenderer extends javax.swing.JCheckBox implements java
 		foreGroundColor = newForeGroundColor;
 		super.setForeground(newForeGroundColor);
 	}
+
+	public void setBorderColor( java.awt.Color newColor )
+	{
+		borderColor = newColor;
+		setBorderPainted( hasBorder() );
+	}
+	
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (11/9/00 5:43:55 PM)
@@ -100,5 +115,10 @@ public class CheckBoxTableRenderer extends javax.swing.JCheckBox implements java
 		{
 			setSelected( ((Boolean)value).booleanValue() );
 		}
+	}
+	
+	private boolean hasBorder()
+	{
+		return borderColor != null;
 	}
 }

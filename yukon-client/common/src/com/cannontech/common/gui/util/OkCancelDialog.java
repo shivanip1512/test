@@ -6,14 +6,14 @@ import com.cannontech.common.editor.PropertyPanelEvent;
  * Insert the type's description here.
  * Creation date: (2/6/2002 11:16:48 AM)
  * @author: 
- */
-/* This dialog is meant to be used a container for a single panel
-/*  that needs the Ok and Cancel options. After Ok or Cancel is pressed,
-/*  this dialog is set invisible so the values can be retrieved from the original
-/*  display panel the user set. 
-/***
-	NOTE: ITS UP TO THE USER TO DISPOSE OF THIS DIALOG!!!!!
-/***/
+ *
+ * This dialog is meant to be used a container for a single panel
+ *  that needs the Ok and Cancel options. After Ok or Cancel is pressed,
+ *  this dialog is set invisible so the values can be retrieved from the original
+ *  display panel the user set. 
+ *
+ * NOTE: ITS UP TO THE USER TO DISPOSE OF THIS DIALOG!!!!!
+ **/
 public class OkCancelDialog extends javax.swing.JDialog implements DataInputPanelListener, java.awt.event.ActionListener {
 	public static final int OK_PRESSED = 0;
 	public static final int CANCEL_PRESSED = 1;
@@ -23,61 +23,20 @@ public class OkCancelDialog extends javax.swing.JDialog implements DataInputPane
 	private javax.swing.JPanel ivjJDialogContentPane = null;
 	private javax.swing.JPanel ivjJPanel1 = null;
 	private javax.swing.JPanel ivjJPanelSlot = null;
-/**
- * OkCancelDialog constructor comment.
- */
-public OkCancelDialog() {
-	super();
-	initialize();
-}
 
-/**
- * OkCancelDialog constructor comment.
- * @param owner java.awt.Dialog
- * @param title java.lang.String
- * @param modal boolean
- */
-public OkCancelDialog(String title, boolean modal, com.cannontech.common.gui.util.DataInputPanel displayPanel )
+private OkCancelDialog()
 {
 	super();
-	setModal( modal );
-
 	initialize();
-
-	setTitle( title );
-	setDisplayPanel( displayPanel );
-
-	if( displayPanel == null )
-		throw new IllegalArgumentException("*** Can not have a null panel in the constructor of : " + this.getClass().getName() );
-
 }
 
-/**
- * OkCancelDialog constructor comment.
- * @param owner java.awt.Dialog
- * @param title java.lang.String
- * @param modal boolean
- */
-public OkCancelDialog(java.awt.Dialog owner, String title, boolean modal, com.cannontech.common.gui.util.DataInputPanel displayPanel )
-{
-	super(owner, modal);
-
-	initialize();
-
-	setTitle( title );
-	setDisplayPanel( displayPanel );
-
-	if( displayPanel == null )
-		throw new IllegalArgumentException("*** Can not have a null panel in the constructor of : " + this.getClass().getName() );
-
-}
 /**
  * OkCancelDialog constructor comment.
  * @param owner java.awt.Frame
  * @param title java.lang.String
  * @param modal boolean
  */
-public OkCancelDialog(java.awt.Frame owner, String title, boolean modal, com.cannontech.common.gui.util.DataInputPanel displayPanel )
+public OkCancelDialog(java.awt.Frame owner, String title, boolean modal, DataInputPanel displayPanel )
 {
 	super(owner, modal);
 
@@ -85,9 +44,6 @@ public OkCancelDialog(java.awt.Frame owner, String title, boolean modal, com.can
 	
 	setTitle( title );
 	setDisplayPanel( displayPanel );
-
-	if( displayPanel == null )
-		throw new IllegalArgumentException("*** Can not have a null panel in the constructor of : " + this.getClass().getName() );
 }
 /**
  * Method to handle events for the ActionListener interface.
@@ -354,50 +310,31 @@ public void jButtonOk_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 	setVisible(false);
 	return;
 }
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		OkCancelDialog aOkCancelDialog;
-		aOkCancelDialog = new OkCancelDialog();
-		aOkCancelDialog.setModal(true);
-		aOkCancelDialog.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		aOkCancelDialog.show();
-		java.awt.Insets insets = aOkCancelDialog.getInsets();
-		aOkCancelDialog.setSize(aOkCancelDialog.getWidth() + insets.left + insets.right, aOkCancelDialog.getHeight() + insets.top + insets.bottom);
-		aOkCancelDialog.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of javax.swing.JDialog");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (2/6/2002 11:46:11 AM)
  * @param newPanel javax.swing.JPanel
  */
-private void setDisplayPanel(javax.swing.JPanel displayPanel) 
+public void setDisplayPanel( DataInputPanel displayPanel) 
 {
+	if( displayPanel == null )
+		throw new IllegalArgumentException("*** Can not have a null panel in the constructor of : " + this.getClass().getName() );
+
 	java.awt.GridBagConstraints g = null;		
 	if( getContentPane().getLayout() instanceof java.awt.GridBagLayout )
 		g = ((java.awt.GridBagLayout)getContentPane().getLayout()).getConstraints(ivjJPanelSlot);
-	else
-		throw new IllegalArgumentException( "***" + this.getClass().getName() + " does not have a GridBagLayout!!!");
+
 			
 	//just use the SpecificPanel object as a place and GridBagConstraint holder
-	getContentPane().remove( ivjJPanelSlot );
-	ivjJPanelSlot = displayPanel;
+	if( ivjJPanelSlot != null )
+		getContentPane().remove( ivjJPanelSlot );
+	
+	ivjJPanelSlot = displayPanel;	
 	getContentPane().add( ivjJPanelSlot, g );
 
-	((DataInputPanel)getJPanelSlot()).addDataInputPanelListener(this);
-
-	((DataInputPanel)getJPanelSlot()).fireInputUpdate();
+	displayPanel.addDataInputPanelListener(this);
+	displayPanel.fireInputUpdate();
 }
 
 /**
@@ -418,6 +355,16 @@ public void setOKButtonVisible( boolean visible )
 public void setCancelButtonVisible( boolean visible ) 
 {
 	getJButtonCancel().setVisible( visible );
+}
+
+public void setOkButtonToolTip( String tip ) 
+{
+	getJButtonOk().setToolTipText( tip );
+}
+
+public void setOkButtonText( String text ) 
+{
+	getJButtonOk().setText( text );
 }
 
 
