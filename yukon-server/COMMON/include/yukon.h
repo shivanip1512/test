@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2004/06/30 19:09:26 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2004/07/27 15:49:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -441,10 +441,10 @@ typedef enum
 
 typedef enum
 {
-    MSGFLG_APPLY_EXCLUSION_LOGIC = 0x00000001,
-    MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL = 0x00000002,
+    MSGFLG_APPLY_EXCLUSION_LOGIC          = 0x00000001,
+    MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL       = 0x00000002,
     MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD = 0x00000004,
-    MSGFLG_QUEUED_TO_DEVICE = 0x00000008
+    MSGFLG_QUEUED_TO_DEVICE               = 0x00000008
 
 } CtiOutMessageFlags_t;
 
