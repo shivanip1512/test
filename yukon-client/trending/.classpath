@@ -2,9 +2,12 @@
 <classpath>
     <classpathentry kind="src" path="src"/>
     <classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
-    <classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
     <classpathentry kind="lib" path="/third-party/jcommon.jar"/>
+    <classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
+    <classpathentry kind="lib" path="/third-party/jfreereport.jar"/>
+    <classpathentry kind="lib" path="/third-party/jfreereport-ext-servletonly.jar"/>
     <classpathentry kind="src" path="/common"/>
+    <classpathentry kind="src" path="/yukonappserver"/>
     <classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
     <classpathentry kind="lib" path="/third-party/acme.jar"/>
     <classpathentry kind="lib" path="/third-party/classes12.jar"/>
@@ -18,7 +21,6 @@
     <classpathentry kind="lib" path="/third-party/junit.jar"/>
     <classpathentry kind="lib" path="/third-party/batik.jar"/>
     <classpathentry kind="lib" path="/third-party/jloox30.jar"/>
-    <classpathentry kind="lib" path="/third-party/jfreereport.jar" sourcepath="/jfreereport-java/org/jfree/report/function"/>
     <classpathentry kind="lib" path="/third-party/poi.jar"/>
     <classpathentry kind="lib" path="/third-party/itext.jar"/>
     <classpathentry kind="lib" path="/third-party/jtds.jar"/>
