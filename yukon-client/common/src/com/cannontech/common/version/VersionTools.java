@@ -66,6 +66,14 @@ public final static com.cannontech.database.db.version.CTIDatabase getDatabaseVe
 	return db;
 }
 
+/**
+ * Check to see if a common STARS table is in the DB
+ * @return boolean
+ */
+public static boolean starsExists()
+{
+	return VersionTools.tableExists("CustomerAccount");
+}
 
 /**
  * Insert the method's description here.
