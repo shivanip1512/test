@@ -190,20 +190,20 @@ bool CtiLMConstraintChecker::checkMaxHoursDaily(const CtiLMProgramDirect& lm_pro
     }
     
     bool violated = false;
-    unsigned int estimated_control_time = ((CtiLMProgramDirect&)lm_program).estimateOffTime(proposed_gear, proposed_start_from_1901,proposed_stop_from_1901)/60;//convert to minutes
+    unsigned int estimated_control_time = ((CtiLMProgramDirect&)lm_program).estimateOffTime(proposed_gear, proposed_start_from_1901,proposed_stop_from_1901)/60.0;//convert to minutes
 
     CtiLMGroupVec groups  = ((CtiLMProgramDirect&)lm_program).getLMProgramDirectGroups(); //cast away const, oooh
     for(CtiLMGroupIter i = groups.begin(); i != groups.end(); i++)
     {
         CtiLMGroupPtr lm_group  = *i;
-        int diff_minutes = estimated_control_time + lm_group->getCurrentHoursDaily()/60 - lm_program.getMaxHoursDaily()*60;
+        int diff_minutes = (estimated_control_time + (double) lm_group->getCurrentHoursDaily()/60.0) - ((double) lm_program.getMaxHoursDaily()/60.0);
         if( diff_minutes > 0)
         {
             if(results != 0)
             {
                 string result = "load group, '" + lm_group->getPAOName() + "' would exceed its maximum daily control hours by an estimated " + CtiNumStr((double)diff_minutes/60.0) + " hours";
                 results->push_back(result);
-                result = "load group, '" + lm_group->getPAOName() + "' maximum daily control hours: " + CtiNumStr(lm_program.getMaxHoursDaily());
+                result = "load group, '" + lm_group->getPAOName() + "' maximum daily control hours: " + CtiNumStr(lm_program.getMaxHoursDaily()/60.0/60.0);
                 results->push_back(result);
                 result = "load group, '" + lm_group->getPAOName() + "' current daily control hours: " + CtiNumStr((double)lm_group->getCurrentHoursDaily()/60.0/60.0);
                 results->push_back(result);
@@ -222,20 +222,20 @@ bool CtiLMConstraintChecker::checkMaxHoursMonthly(const CtiLMProgramDirect& lm_p
     }
     
     bool violated = false;
-    unsigned int estimated_control_time = ((CtiLMProgramDirect&)lm_program).estimateOffTime(proposed_gear, proposed_start_from_1901,proposed_stop_from_1901)/60; //convert to minutes
+    unsigned int estimated_control_time = ((CtiLMProgramDirect&)lm_program).estimateOffTime(proposed_gear, proposed_start_from_1901,proposed_stop_from_1901)/60.0; //convert to minutes
 
     CtiLMGroupVec groups  = ((CtiLMProgramDirect&)lm_program).getLMProgramDirectGroups(); //cast away const, oooh
     for(CtiLMGroupIter i = groups.begin(); i != groups.end(); i++)
     {
         CtiLMGroupPtr lm_group  = *i;
-        int diff_minutes = estimated_control_time + lm_group->getCurrentHoursMonthly()/60 - lm_program.getMaxHoursMonthly()*60;
+        int diff_minutes = estimated_control_time + lm_group->getCurrentHoursMonthly()/60.0 - lm_program.getMaxHoursMonthly()/60.0;
         if( diff_minutes > 0)
         {
             if(results != 0)
             {
                 string result = "load group, '" + lm_group->getPAOName() + "' would exceed its maximum monthly control hours by an estimated " + CtiNumStr((double)diff_minutes/60.0) + " hours";
                 results->push_back(result);
-                result = "load group, '" + lm_group->getPAOName() + "' maximum monthly control hours: " + CtiNumStr(lm_program.getMaxHoursMonthly());
+                result = "load group, '" + lm_group->getPAOName() + "' maximum monthly control hours: " + CtiNumStr(lm_program.getMaxHoursMonthly()/60.0/60.0);
                 results->push_back(result);
                 result = "load group, '" + lm_group->getPAOName() + "' current monthly control hours: " + CtiNumStr((double)lm_group->getCurrentHoursMonthly()/60.0/60.0);
                 results->push_back(result);
@@ -253,20 +253,20 @@ bool CtiLMConstraintChecker::checkMaxHoursSeasonal(const CtiLMProgramDirect& lm_
     }
     
     bool violated = false;
-    unsigned int estimated_control_time = ((CtiLMProgramDirect&)lm_program).estimateOffTime(proposed_gear, proposed_start_from_1901,proposed_stop_from_1901)/60;//convert to minutes
+    unsigned int estimated_control_time = ((CtiLMProgramDirect&)lm_program).estimateOffTime(proposed_gear, proposed_start_from_1901,proposed_stop_from_1901)/60.0;//convert to minutes
 
     CtiLMGroupVec groups  = ((CtiLMProgramDirect&)lm_program).getLMProgramDirectGroups(); //cast away const, oooh
     for(CtiLMGroupIter i = groups.begin(); i != groups.end(); i++)
     {
         CtiLMGroupPtr lm_group  = *i;
-        int diff_minutes = estimated_control_time + lm_group->getCurrentHoursSeasonal()/60 - lm_program.getMaxHoursSeasonal()*60;
+        int diff_minutes = estimated_control_time + lm_group->getCurrentHoursSeasonal()/60.0 - lm_program.getMaxHoursSeasonal()/60.0;
         if( diff_minutes > 0)
         {
             if(results != 0)
             {
                 string result = "load group, '" + lm_group->getPAOName() + "' would exceed its maximum seasonal control hours by an estimated " + CtiNumStr((double)diff_minutes/60.0) + " hours";
                 results->push_back(result);
-                result = "load group, '" + lm_group->getPAOName() + "' maximum seasonal control hours: " + CtiNumStr(lm_program.getMaxHoursSeasonal());
+                result = "load group, '" + lm_group->getPAOName() + "' maximum seasonal control hours: " + CtiNumStr(lm_program.getMaxHoursSeasonal()/60.0/60.0);
                 results->push_back(result);
                 result = "load group, '" + lm_group->getPAOName() + "' current seasonal control hours: " + CtiNumStr((double)lm_group->getCurrentHoursSeasonal()/60.0/60.0);
                 results->push_back(result);
@@ -284,13 +284,13 @@ bool CtiLMConstraintChecker::checkMaxHoursAnnually(const CtiLMProgramDirect& lm_
     }
     
     bool violated = false;
-    unsigned int estimated_control_time = ((CtiLMProgramDirect&)lm_program).estimateOffTime(proposed_gear, proposed_start_from_1901,proposed_stop_from_1901)/60;//convert to minutes
+    unsigned int estimated_control_time = ((CtiLMProgramDirect&)lm_program).estimateOffTime(proposed_gear, proposed_start_from_1901,proposed_stop_from_1901)/60.0;//convert to minutes
 
         CtiLMGroupVec groups  = ((CtiLMProgramDirect&)lm_program).getLMProgramDirectGroups(); //cast away const, oooh
     for(CtiLMGroupIter i = groups.begin(); i != groups.end(); i++)
     {
         CtiLMGroupPtr lm_group  = *i;
-        int diff_minutes = estimated_control_time + lm_group->getCurrentHoursAnnually()/60 - lm_program.getMaxHoursAnnually()*60;
+        int diff_minutes = estimated_control_time + lm_group->getCurrentHoursAnnually()/60.0 - lm_program.getMaxHoursAnnually()/60.0;
         if( diff_minutes > 0)
         {
             string result = "load group, '" + lm_group->getPAOName() + "' would exceed its maximum annual control hours by an estimated " + CtiNumStr((double)diff_minutes/60.0) + " hours";
@@ -298,7 +298,7 @@ bool CtiLMConstraintChecker::checkMaxHoursAnnually(const CtiLMProgramDirect& lm_
             {
                 results->push_back(result);
             }
-            result = "load group, '" + lm_group->getPAOName() + "' maximum annual control hours: " + CtiNumStr(lm_program.getMaxHoursAnnually());
+            result = "load group, '" + lm_group->getPAOName() + "' maximum annual control hours: " + CtiNumStr(lm_program.getMaxHoursAnnually()/60.0/60.0);
             results->push_back(result);
             result = "load group, '" + lm_group->getPAOName() + "' current annual control hours: " + CtiNumStr((double)lm_group->getCurrentHoursAnnually()/60.0/60.0);
             if(results != 0)
