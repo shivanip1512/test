@@ -214,16 +214,17 @@ public class SVGGenerator {
 	}
 
 	private Element createRectangle(SVGDocument doc, LxRectangle rect) {
-		LxAbstractStyle style = rect.getStyle();
+		/*LxAbstractStyle style = rect.getStyle();
 		Color strokeColor = style.getLineColor();
 		Color fillColor = (Color) style.getPaint();
 		
 		Rectangle2D r = rect.getStrokedBounds2D();
+		rect.getSh
 		int x = (int) r.getMinX() + 5; // fudge factor !
 		int y = (int) r.getMinY() + 5;
 		
-		int width = (int) r.getMaxX() - x - 5;
-		int height = (int) r.getMaxY() - y - 5;
+		int width = (int) r.getMaxX() - x - 4;
+		int height = (int) r.getMaxY() - y - 4;
 			
 		String fillStr = "none";
 		if( fillColor != null ) {
@@ -237,6 +238,18 @@ public class SVGGenerator {
 		rectElem.setAttributeNS(null, "width", Integer.toString(width));
 		rectElem.setAttributeNS(null, "height", Integer.toString(height));
 		rectElem.setAttributeNS(null, "style", "fill:" + fillStr + ";stroke:rgb(" + strokeColor.getRed() + "," + strokeColor.getGreen() + "," + strokeColor.getBlue() + "); stroke-width:1.0");
+		*/
+		Color c = rect.getStyle().getLineColor();
+		Shape[] s = rect.getShape();
+		float opacity = rect.getStyle().getTransparency();
+		
+		String pathStr = getPathString(s, rect.getCenterX(), rect.getCenterY());
+		float width = rect.getStyle().getLineThickness();
+		
+		Element rectElem = doc.createElementNS(svgNS, "path");
+		rectElem.setAttributeNS(null, "id", rect.getName());
+		rectElem.setAttributeNS(null, "style", "fill:none;opacity:" + opacity + ";stroke:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + "); stroke-width:" + width);
+		rectElem.setAttributeNS(null, "d", pathStr);
 		
 		return rectElem;
 	}
