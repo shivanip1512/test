@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2003/06/30 22:37:33 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2003/08/11 20:12:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -188,7 +188,7 @@ RWCString CtiDeviceMCT::getDescription(const CtiCommandParser &parse) const
 
 LONG CtiDeviceMCT::getDemandInterval() const
 {
-    LONG retval = MCT_DEMANDINTERVAL_DEFAULT;
+    LONG retval = MCT_DemandIntervalDefault;
 
     if( getLastIntervalDemandRate() )
         retval = getLastIntervalDemandRate();
@@ -1422,7 +1422,7 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
                     else if( parse.getFlags() & CMD_FLAG_GV_KVAH  )  OutMessage->Buffer.BSt.Function -= 1;
                 }
 
-                if( (parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVARH) &&
+                if( (parse.getFlags() & CMD_FLAG_GV_KVAH || parse.getFlags() & CMD_FLAG_GV_KVARH) &&
                     (parse.getFlags() & CMD_FLAG_GV_RATED) )
                 {
                     //  memory map don't allow no KVA/KVAR rate D gettin' 'round here  (apologies to Thacher Hurd)
@@ -1584,36 +1584,56 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
         //  currently only know how to reset IEDs
         if(parse.getFlags() & CMD_FLAG_PV_RESET)
         {
+            int iedtype = ((CtiDeviceMCT31X *)this)->getIEDPort().getIEDType();
+
             function = CtiProtocolEmetcon::PutValue_IEDReset;
 
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-
-            if( getType() == TYPEMCT360 ||
-                getType() == TYPEMCT370 )
+            if( getType() == TYPEMCT360 || getType() == TYPEMCT370 )
             {
-                switch( ((CtiDeviceMCT31X *)this)->getIEDPort().getIEDType() )
+                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+                switch( iedtype )
                 {
                     case CtiTableDeviceMCTIEDPort::AlphaPowerPlus:
+                    {
                         OutMessage->Buffer.BSt.Function   = CtiDeviceMCT31X::MCT360_AlphaResetPos;
                         OutMessage->Buffer.BSt.Length     = CtiDeviceMCT31X::MCT360_AlphaResetLen;
                         OutMessage->Buffer.BSt.Message[0] = 60;  //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
                         OutMessage->Buffer.BSt.Message[1] = 1;   //  Demand Reset  function code for the Alpha
                         break;
+                    }
 
                     case CtiTableDeviceMCTIEDPort::LandisGyrS4:
+                    {
                         OutMessage->Buffer.BSt.Function   = CtiDeviceMCT31X::MCT360_LGS4ResetPos;
                         OutMessage->Buffer.BSt.Length     = CtiDeviceMCT31X::MCT360_LGS4ResetLen;
-                        OutMessage->Buffer.BSt.Message[0] = 3;     //  MCT's LG command identifier
+                        OutMessage->Buffer.BSt.Message[0] = CtiDeviceMCT31X::MCT360_LGS4ResetID;
                         OutMessage->Buffer.BSt.Message[1] = 60;    //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
                         OutMessage->Buffer.BSt.Message[2] = 0x2B;  //  Demand Reset function code for the LG S4
                         break;
+                    }
+
+                    case CtiTableDeviceMCTIEDPort::GeneralElectricKV:
+                    {
+                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT31X::MCT360_GEKVResetPos;
+                        OutMessage->Buffer.BSt.Length     = CtiDeviceMCT31X::MCT360_GEKVResetLen;
+                        OutMessage->Buffer.BSt.Message[0] = CtiDeviceMCT31X::MCT360_GEKVResetID;
+                        OutMessage->Buffer.BSt.Message[1] = 60;    //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
+                        OutMessage->Buffer.BSt.Message[2] = 0x00;  //  sequence, standard proc, and uppoer bits of proc are 0
+                        OutMessage->Buffer.BSt.Message[3] = 0x09;  //  procedure 9
+                        OutMessage->Buffer.BSt.Message[4] = 0x01;  //  parameter length 1
+                        OutMessage->Buffer.BSt.Message[5] = 0x01;  //  demand reset bit set
+                        break;
+                    }
 
                     default:
+                    {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << RWTime() << " **** Invalid IED type " << iedtype << " on device \'" << getName() << "\' **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                         break;
+                    }
                 }
             }
         }
@@ -2146,6 +2166,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
         else if( parse.isKeyValid("class") )
         {
             int classnum, classoffset;
+            int iedtype = ((CtiDeviceMCT31X *)this)->getIEDPort().getIEDType();
 
             function = CtiProtocolEmetcon::PutConfig_IEDClass;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
@@ -2163,24 +2184,65 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
             }
              */
 
-            if( classnum > 255 )
-                classnum = 0;
-            if( classoffset > 65535 ) //  fix?
-                classoffset = 0;
-
-            if( ((CtiDeviceMCT31X *)this)->getIEDPort().getIEDType() == CtiTableDeviceMCTIEDPort::AlphaPowerPlus )
+            switch( iedtype )
             {
-                if( classnum == 0 )
-                    classnum = 72;  //  default to class 72 for an Alpha
+                case CtiTableDeviceMCTIEDPort::AlphaPowerPlus:
+                case CtiTableDeviceMCTIEDPort::LandisGyrS4:
+                {
+                    if( classnum > 0xff )  //  fix?
+                        classnum = 0;
 
-                if( classnum == 72 && classoffset == 0 )  //  do not allow 72 to have a 0 offset
-                    classoffset = 2;
+                    if( classoffset > 0xffff )
+                        classoffset = 0;
+
+                    if( iedtype == CtiTableDeviceMCTIEDPort::AlphaPowerPlus )
+                    {
+                        if( classnum == 0 )
+                            classnum = 72;  //  default to class 72 for an Alpha
+
+                        if( classnum == 72 && classoffset == 0 )  //  do not allow 72 to have a 0 offset
+                            classoffset = 2;
+                    }
+
+                    OutMessage->Buffer.BSt.Message[0] = 0;  //  128 len in MCT
+                    OutMessage->Buffer.BSt.Message[1] = (classoffset >> 8) & 0xff;
+                    OutMessage->Buffer.BSt.Message[2] =  classoffset       & 0xff;
+                    OutMessage->Buffer.BSt.Message[3] =  classnum;
+
+                    break;
+                }
+
+                case CtiTableDeviceMCTIEDPort::GeneralElectricKV:
+                {
+                    //  note that this is different from the above
+                    OutMessage->Buffer.BSt.Length = 6;
+
+                    if( classoffset > 0xffffff )  //  fix?
+                        classoffset = 0;
+
+                    if( classnum > 0xffff )
+                        classnum = 0;
+
+                    OutMessage->Buffer.BSt.Message[0] = 0;  //  128 len in MCT
+                    OutMessage->Buffer.BSt.Message[1] = (classoffset & 0xff0000) >> 16;
+                    OutMessage->Buffer.BSt.Message[2] = (classoffset & 0x00ff00) >>  8;
+                    OutMessage->Buffer.BSt.Message[3] = (classoffset & 0x0000ff);
+                    OutMessage->Buffer.BSt.Message[4] = (classnum & 0xff00) >> 8 ;
+                    OutMessage->Buffer.BSt.Message[5] = (classnum & 0x00ff);
+
+                    break;
+                }
+
+                default:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Unknown IED type " << iedtype << " for device \'" << getName() << "\', aborting command **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    found = false;
+                }
             }
-
-            OutMessage->Buffer.BSt.Message[0] = 0;  //  128 len in MCT
-            OutMessage->Buffer.BSt.Message[1] = (classoffset >> 8) & 0xff;
-            OutMessage->Buffer.BSt.Message[2] =  classoffset       & 0xff;
-            OutMessage->Buffer.BSt.Message[3] = classnum;
         }
     }
     else if(parse.isKeyValid("interval"))
