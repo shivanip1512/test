@@ -1316,13 +1316,18 @@ public class StarsLiteFactory {
 	}
 	
 	public static StarsLMProgram createStarsLMProgram(LiteStarsLMProgram liteProg, LiteStarsAppliance liteApp, int energyCompanyID) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+		
 		StarsLMProgram starsProg = new StarsLMProgram();
 		starsProg.setProgramID( liteProg.getLmProgram().getProgramID() );
 		starsProg.setGroupID( liteProg.getGroupID() );
 		starsProg.setProgramName( forceNotNull(liteProg.getLmProgram().getProgramName()) );
 		starsProg.setApplianceCategoryID( liteApp.getApplianceCategoryID() );
 
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+		// Temporarily use the "URL" field in YukonWebConfiguration table for program alias
+		StarsWebConfig starsConfig = energyCompany.getStarsWebConfig( liteProg.getLmProgram().getWebSettingsID() );
+		if (starsConfig.getURL().length() > 0)
+			starsProg.setProgramName( starsConfig.getURL() );
 		
 		LiteStarsLMControlHistory liteCtrlHist = energyCompany.getLMControlHistory( liteProg.getGroupID() );
 		if (liteCtrlHist != null)
