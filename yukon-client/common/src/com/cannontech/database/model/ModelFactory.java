@@ -72,6 +72,8 @@ public final class ModelFactory
 	public static final int ENERGYCOMPANY_CHECKBOX=52;
 	public static final int SYSTEMLOG_TYPES_CHECKBOX=53;
 	
+	public static final int LMGROUPMACRO = 54;
+	
 	//The above is an enumeration of indices into
 	//the following array
 	private static Class[] typeToClassMap =
@@ -129,7 +131,8 @@ public final class ModelFactory
 		LMGroupSADigitalModel.class,
 		LMGroupGolayModel.class,
 		EnergyCompanyCheckBoxTreeModel.class,
-/* 53*/	SystemLogTypeCheckBoxTreeModel.class
+/* 53*/	SystemLogTypeCheckBoxTreeModel.class,
+		LMGroupMacroModel.class
 	};
 
 /**

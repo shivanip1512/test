@@ -125,6 +125,7 @@ public class DatabaseEditor
 			new Integer(ModelFactory.GOLAY),
 			new Integer(ModelFactory.LMGROUPS),
 			new Integer(ModelFactory.LMPROGRAM),
+			new Integer(ModelFactory.LMGROUPMACRO),
 			new Integer(ModelFactory.LMGROUPSA305),
 			new Integer(ModelFactory.LMGROUPSA205),
 			new Integer(ModelFactory.LMGROUPSADIGITAL),
