@@ -864,7 +864,7 @@
 	<xs:element name="stars-DeleteLMHardware">
 		<xs:complexType>
 			<xs:attribute name="inventoryID" type="xs:int"/>
-		</xs:complexType>
+		<xs:attribute name="deleteFromInventory" type="xs:boolean"/></xs:complexType>
 	</xs:element>
 	<xs:element name="stars-ThermostatSchedule">
 		<xs:complexType>
