@@ -97,7 +97,7 @@ public class ServletUtil {
 		new java.text.SimpleDateFormat("MM.dd.yy"),
 		new java.text.SimpleDateFormat("MM/dd/yyyy"),
 		new java.text.SimpleDateFormat("MM-dd-yyyy"),
-		new java.text.SimpleDateFormat("MM.dd-yyyy"),
+		new java.text.SimpleDateFormat("MM.dd.yyyy"),
 		new java.text.SimpleDateFormat("HH:mm:ss"),
 		new java.text.SimpleDateFormat("HH:mm")		
 	};
