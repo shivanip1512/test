@@ -72,11 +72,11 @@ public class ImageInserter {
 				
 				long len = f.length();
 				
-				InputStream in = new FileInputStream(f);
+				InputStream in = new FileInputStream(yukName);
 				
 				pstmt.setInt(1, id);
             	pstmt.setString(2, fDir.getName());
-            	pstmt.setString(3, f.getName());
+            	pstmt.setString(3, yukName);
 				pstmt.setBinaryStream(4, in, (int) len);
 				pstmt.execute();
             
