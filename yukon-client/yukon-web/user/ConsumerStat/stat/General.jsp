@@ -77,20 +77,13 @@
                               <td valign="top">
 								<p class="Main"><%= ecWebSettings.getDescription() %></p></td>
                               <td valign="top"> 
+                                <div align="center" class="MainHeader"><b>Your 
+                                  Control Programs</b> </div>
                                 <table width="200" border="0" cellspacing="0" cellpadding="3" align="center">
-                                  <tr class="Main"> 
-                                    <td width="64"> <div align="center"> 
-                                        <p class="TableCell">Your Enrolled Programs
-                                      </div></td>
-									  <td width="8" background="dot.gif">
-									  </td>
-                                    <td width="128"> <div align="center" class="TableCell"><cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROL %>" format="capitalized"/> 
-                                        Since Midnight</div></td>
+                                  <tr> 
+                                    <td colspan="3" background="dot.gif" height="8"></td>
                                   </tr>
-								  <tr>
-								  <td colspan="3" background="dot.gif" height="8"></td>
-								  </tr>
-<%
+                                  <%
 	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
 		StarsLMProgram program = programs.getStarsLMProgram(i);
 		StarsApplianceCategory category = null;
@@ -105,22 +98,21 @@
 		}
 %>
                                   <tr> 
-                                    <td width="64"> <div align="center"> <span class="TableCell"> 
+                                    <td width="64"> 
+                                      <div align="center"> <span class="TableCell"> 
                                         <img src="../<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>
                                         <%= program.getProgramName() %></span> 
-                                        
-                                      </div></td>
-									  <td width="8" background="dot.gif">
-									  </td>
+                                      </div>
+                                    </td>
+                                    <td width="8" background="dot.gif"> </td>
                                     <td width="128" class="Main"> 
-                                      <table width="128" border="0" cellspacing="0" cellpadding="0" class="TableCell">
-                                          <tr> 
-                                            
-                                          <td> 
+                                      <table width="128" border="0" cellspacing="0" cellpadding="0" class="TableCell" height="80">
+                                        <tr> 
+                                          <td> <div align="center">
                                             <%
 		if (program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) {
 %>
-                                            <div align="center">Out of Service 
+                                            Out of Service 
                                               <%
 		}
 		else if (todayCtrlHist.getBeingControlled()) {
@@ -132,35 +124,36 @@
 		else if (todayCtrlHist.getControlHistoryCount() > 0) {
 %>
                                               You have<br>
-                                              been <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLED %>"/> 
+                                              been <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLED %>"/> since midnight
                                               <%
 		}
 		else {
 %>
                                               You have not<br>
-                                              been <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLED %>"/> 
+                                              been <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLED %>"/> since midnight
                                               <%
 		}
 %>
                                             </div>
                                           </td>
-                                          </tr>
-                                          <tr> 
-                                            <td>
+                                        </tr>
+                                        <tr> 
+                                          <td> 
                                             <div align="center">Control today 
                                               is likely </div>
                                           </td>
-                                          </tr>
-                                        </table>
-                                       </td>
-                                </tr>
-								<tr>
-								  <td colspan="3" background="dot.gif" height="8"></td>
-								  </tr>
-<%
+                                        </tr>
+                                      </table>
+                                    </td>
+                                  </tr>
+                                  <tr> 
+                                    <td colspan="3" background="dot.gif" height="8"></td>
+                                  </tr>
+                                  <%
 	}
 %>
-							</table></td>
+                                </table>
+                              </td>
                             </tr>
                           </table></td>
                       </tr>
