@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2003/07/31 15:44:42 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2003/08/19 22:05:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1349,14 +1349,29 @@ RWCString   resolveDBChanged(INT dbnum)
             rStr = RWCString(" Energy Company DB");
             break;
         }
-    case ChangeStateImageDb:
-        {
-            rStr = RWCString(" State Image DB");
-            break;
-        }
     case ChangeYukonUserDb:
         {
             rStr = RWCString(" Yukon User DB");
+            break;
+        }
+    case ChangeCustomerDb:
+        {
+            rStr = RWCString(" Yukon Customer DB");
+            break;
+        }
+    case ChangeCustomerAccountDb:
+        {
+            rStr = RWCString(" Yukon Customer Account DB");
+            break;
+        }
+    case ChangeYukonImageDb:
+        {
+            rStr = RWCString(" Yukon Image DB");
+            break;
+        }
+    case ChangeBaselineDb:
+        {
+            rStr = RWCString(" Yukon Baseline DB");
             break;
         }
     default:
@@ -1368,8 +1383,6 @@ RWCString   resolveDBChanged(INT dbnum)
 
     return rStr;
 }
-
-
 
 INT resolveSlaveAddress(const INT DeviceType, RWCString str)
 {
