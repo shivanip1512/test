@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/05/19 15:58:09 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/06/02 18:21:41 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,6 +32,7 @@
 #include "msg_pcrequest.h"
 #include "msg_pcreturn.h"
 #include "msg_pdata.h"
+#include "msg_lmcontrolhistory.h"
 #include "cmdparse.h"
 #include "dev_dnp.h"
 #include "device.h"
@@ -125,8 +126,8 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         case ControlRequest:
         {
             int offset, on_time, off_time;
-            CtiPointBase   *point;
-            CtiPointStatus *control;
+            CtiPointBase   *point   = NULL;
+            CtiPointStatus *control = NULL;
             CtiDNPBinaryOutputControl::ControlCode controltype;
             CtiDNPBinaryOutputControl::TripClose   trip_close;
 
@@ -149,6 +150,13 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
             if( control != NULL && (control->getPointStatus().getControlType() == NormalControlType) )
             {
+                //  ACH FIX BLAH BLAH BLAH - NOTE - the control duration is completely arbitrary here.  Fix sometime if necessary
+                //                                    (i.e. customer doing sheds/restores that need to be accurately LMHist'd)
+                CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg(getID(), control->getPointID(), 1, RWTime(), 86400, 100);
+
+                hist->setMessagePriority(hist->getMessagePriority() + 1);
+                vgList.insert(hist);
+
                 if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
                 {
                     controltype = CtiDNPBinaryOutputControl::PulseOn;
@@ -286,9 +294,10 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         }
     }
 
-    OutMessage->Port = getPortID();
+    OutMessage->Port     = getPortID();
     OutMessage->DeviceID = getID();
     OutMessage->TargetID = getID();
+    OutMessage->Retry    = 2;
 
     if( nRet == NoError )
     {
@@ -309,15 +318,62 @@ INT CtiDeviceDNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     RWTPtrSlist<CtiPointDataMsg> dnpPoints;
 
-    _dnp.recvCommResult(InMessage, outList);
-
     resetScanPending();
 
-    if( _dnp.hasInboundPoints() )
+    if( !ErrReturn && !_dnp.recvCommResult(InMessage, outList) )
     {
-        _dnp.getInboundPoints(dnpPoints);
+        if( _dnp.hasInboundPoints() )
+        {
+            _dnp.getInboundPoints(dnpPoints);
 
-        processInboundPoints(InMessage, TimeNow, vgList, retList, outList, dnpPoints);
+            processInboundPoints(InMessage, TimeNow, vgList, retList, outList, dnpPoints);
+        }
+
+        switch( _dnp.getCommand() )
+        {
+            case CtiProtocolDNP::DNP_SetDigitalOut:
+            {
+                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
+                                                                 "scan integrity",
+                                                                 InMessage->Return.UserID,
+                                                                 InMessage->Return.TrxID,
+                                                                 InMessage->Return.RouteID,
+                                                                 InMessage->Return.MacroOffset,
+                                                                 InMessage->Return.Attempt);
+
+                newReq->setMessagePriority(15);
+
+                newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+
+                CtiCommandParser parse(newReq->CommandString());
+
+                CtiDeviceBase::ExecuteRequest(newReq, parse, vgList, retList, outList);
+
+                delete newReq;
+
+                break;
+            }
+        }
+    }
+    else
+    {
+        CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
+                                                       RWCString(InMessage->Return.CommandStr),
+                                                       getName() + " / operation failed",
+                                                       InMessage->EventCode & 0x7fff,
+                                                       InMessage->Return.RouteID,
+                                                       InMessage->Return.MacroOffset,
+                                                       InMessage->Return.Attempt,
+                                                       InMessage->Return.TrxID,
+                                                       InMessage->Return.UserID);
+
+        retList.append(retMsg);
     }
 
     return ErrReturn;
