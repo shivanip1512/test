@@ -4,7 +4,7 @@ package com.cannontech.dbeditor.wizard.device.lmgroup;
  */
 
 public class LMGroupWizardPanel extends com.cannontech.common.wizard.WizardPanel 
-{
+{ 
 	private GroupTypePanel groupTypePanel;
 	private SwitchTypePanel switchTypePanel;
 	
@@ -20,6 +20,10 @@ public class LMGroupWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	private LMGroupMCTEditorPanel lmGroupMCTEditorPanel = null;
 
 	private DCUEditorPanel dcuEditorPanel = null;
+	private GolayEditorPanel golayEditorPanel = null;
+	private SA305EditorPanel aSA305EditorPanel = null;
+	private SA205EditorPanel aSA205EditorPanel = null;
+	private SADigitalEditorPanel aSADigitalEditorPanel = null;
 
 /**
  * LMDeviceWizardPanel constructor comment.
@@ -54,7 +58,37 @@ public DCUEditorPanel getDCUEditorPanel()
 	return dcuEditorPanel;
 }
 
+public GolayEditorPanel getGolayEditorPanel() 
+{
+	if( golayEditorPanel == null )
+		golayEditorPanel = new GolayEditorPanel();
+	
+	return golayEditorPanel;
+}
 
+public SA305EditorPanel getSA305EditorPanel() 
+{
+	if( aSA305EditorPanel == null )
+		aSA305EditorPanel = new SA305EditorPanel();
+	
+	return aSA305EditorPanel;
+}
+
+public SA205EditorPanel getSA205EditorPanel() 
+{
+	if( aSA205EditorPanel == null )
+		aSA205EditorPanel = new SA205EditorPanel();
+	
+	return aSA205EditorPanel;
+}
+
+public SADigitalEditorPanel getSADigitalEditorPanel() 
+{
+	if( aSADigitalEditorPanel == null )
+		aSADigitalEditorPanel = new SADigitalEditorPanel();
+	
+	return aSADigitalEditorPanel;
+}
 /**
  * Insert the method's description here.
  * Creation date: (7/23/2001 4:56:10 PM)
@@ -66,7 +100,6 @@ public GroupMacroLoadGroupsPanel getGroupMacroLoadGroupsPanel()
 		groupMacroLoadGroupsPanel = new GroupMacroLoadGroupsPanel();
 	return groupMacroLoadGroupsPanel;
 }
-
 
 /**
  * Insert the method's description here.
@@ -252,28 +285,24 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	//Start LMGroupMCT specific
 	//This is currently just demo GUI
 	else if ( currentInputPanel == getLMGroupBasePanel()
-				 && getSwitchTypePanel().getTypeOfSwitchSelected() == 999999 )
+				 && getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_SA305 )
 	{
-		getDCUEditorPanel().setDCUType("SA-305");
-		return getDCUEditorPanel();
+		return getSA305EditorPanel();
 	}
 	else if ( currentInputPanel == getLMGroupBasePanel()
-				 && getSwitchTypePanel().getTypeOfSwitchSelected() == 999998 )
+				 && getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_SA205 )
 	{
-		getDCUEditorPanel().setDCUType("SA-205");
-		return getDCUEditorPanel();
+		return getSA205EditorPanel();
 	}
 	else if ( currentInputPanel == getLMGroupBasePanel()
-				 && getSwitchTypePanel().getTypeOfSwitchSelected() == 999997 )
+				 && getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_SADIGITAL )
 	{
-		getDCUEditorPanel().setDCUType("SA Digital");
-		return getDCUEditorPanel();
+		return getSADigitalEditorPanel();
 	}
 	else if ( currentInputPanel == getLMGroupBasePanel()
-				 && getSwitchTypePanel().getTypeOfSwitchSelected() == 999996 )
+				 && getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_GOLAY )
 	{
-		getDCUEditorPanel().setDCUType("Golay");
-		return getDCUEditorPanel();
+		return getGolayEditorPanel();
 	}	
 	
 	System.err.println(getClass() + "::getNextInputPanel() - currentInputPanel was not recognized.");
@@ -319,10 +348,13 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
 	return( currentPanel == lmGroupEmetconPanel
 		 	  || currentPanel == lmGroupVersacomEditorPanel
 		 	  || currentPanel == rippleMessageShedPanel
-		     || currentPanel == groupMacroLoadGroupsPanel
-		     || currentPanel == lmGroupExpressComEditorPanel
-		     || currentPanel == lmGroupPointEditorPanel
-		     || currentPanel == dcuEditorPanel
+		      || currentPanel == groupMacroLoadGroupsPanel
+		      || currentPanel == lmGroupExpressComEditorPanel
+		      || currentPanel == lmGroupPointEditorPanel
+		      || currentPanel == aSA305EditorPanel
+			  || currentPanel == aSA205EditorPanel
+			  || currentPanel == aSADigitalEditorPanel
+			  || currentPanel == golayEditorPanel
 			  || currentPanel == lmGroupMCTEditorPanel );
 }
 }

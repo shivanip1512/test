@@ -618,7 +618,50 @@ public final static Integer getIntervalSecondsValue(String selectedString)
 	return retVal;
 }
 
+public final static Integer getIntervalSecondsValueFromDecimal(String selectedString) 
+{
+	Double retVal = null;
+	double multiplier = 1;
 
+	if( selectedString == null )
+	{
+		retVal = new Double(0);  //we have no idea, just use zero
+	}
+	else if( selectedString.toLowerCase().indexOf("second") != -1 )
+	{
+		multiplier = 1;
+	}
+	else if( selectedString.toLowerCase().indexOf("minute") != -1 )
+	{
+		multiplier = 60;
+	}
+	else if( selectedString.toLowerCase().indexOf("hour") != -1 )
+	{
+		multiplier = 3600;
+	}
+	else if( selectedString.toLowerCase().indexOf("day") != -1 )
+	{
+		multiplier = 86400;
+	}
+	else
+		multiplier = 0;  //we have no idea, just use zero
+		
+	try
+	{
+		int loc = selectedString.toLowerCase().indexOf(" ");
+	
+		retVal = new Double( 
+			multiplier * Double.parseDouble(
+						  selectedString.toLowerCase().substring( 0, loc ) ));
+	}
+	catch( Exception e )
+	{
+		CTILogger.error( "Unable to parse combo box text string into seconds, using ZERO", e );
+		retVal = new Double(0);
+	}
+
+	return new Integer(retVal.intValue());
+}
 /**
  * This method will return the java.awt.Frame associated with a component
  * If no parent frame is found null will be returned
@@ -1214,6 +1257,12 @@ public static String getExtension(java.io.File f) {
     
 		return default_;
 	}
+
+/**
+ * Insert the type's description here.
+ * Creation date: (1/12/2004 12:54:55 PM)
+ * @author: jdayton
+ */
 
 public static Vector NestedDBPersistentComparator(Vector oldList, Vector newList)
 {

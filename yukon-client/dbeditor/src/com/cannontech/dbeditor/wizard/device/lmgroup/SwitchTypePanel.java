@@ -23,10 +23,10 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 			"LCR 2000       (VERSACOM)",
 			"LCR 1000       (Ripple)",
 			"LMT 100 Series (EMETCON)",
-			/*"DCU-S3000      (SA-305)",
+			"DCU-S3000      (SA-305)",
 			"DCU-S2000      (SA-205)",
 			"DCU-S1170      (SA Digital)",
-			"DCU-S1180      (Golay)",*/	
+			"DCU-S1180      (Golay)",	
 			"Point Group",
 			"MCT Group"
 	};
@@ -45,10 +45,10 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RIPPLE,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EMETCON,
-			/*999999,
-			999998,
-			999997,
-			999996,*/
+			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_SA305,
+			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_SA205,
+			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_SADIGITAL,
+			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_GOLAY,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_MCT,
 	};
@@ -244,17 +244,8 @@ public int getTypeOfSwitchSelected() {
  */
 public String getTypeOfSwitchSelectedString() 
 {
-	if( SwitchTypePanel.VALUE_LIST[getSwitchList().getSelectedIndex()] == 999999 )
-		return "SA-305";
-	else if(SwitchTypePanel.VALUE_LIST[getSwitchList().getSelectedIndex()] == 999998 )
-		return "SA-205";
-	else if(SwitchTypePanel.VALUE_LIST[getSwitchList().getSelectedIndex()] == 999997 )
-			return "SA Digital";
-	else if(SwitchTypePanel.VALUE_LIST[getSwitchList().getSelectedIndex()] == 999996 )
-			return "Golay";
-	else
-		return com.cannontech.database.data.pao.PAOGroups.getPAOTypeString(
-				SwitchTypePanel.VALUE_LIST[getSwitchList().getSelectedIndex()]);
+	return com.cannontech.database.data.pao.PAOGroups.getPAOTypeString(
+		SwitchTypePanel.VALUE_LIST[getSwitchList().getSelectedIndex()]);
 }
 
 

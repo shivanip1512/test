@@ -76,6 +76,11 @@ public interface DeviceTypes extends TypeBase
 	
 	public final static int MCT410_KWH_ONLY 			= DEVICE_OFFSET + 65;
 	public final static int TRANSDATA_MARKV   		= DEVICE_OFFSET + 66;
+	
+	public final static int LM_GROUP_SA305			= DEVICE_OFFSET + 67;
+	public final static int LM_GROUP_SA205			= DEVICE_OFFSET + 68;
+	public final static int LM_GROUP_SADIGITAL		= DEVICE_OFFSET + 69;
+	public final static int LM_GROUP_GOLAY			= DEVICE_OFFSET + 70;
 
 
 	//all the possible text representation of each device type.
@@ -146,4 +151,9 @@ public interface DeviceTypes extends TypeBase
    public static final String[] STRING_ION_8300 = {"ION-8300", "ION 8300" };
    public static final String[] STRING_ION_7330 = {"ION-7330", "ION 7330" };
 	public static final String[] STRING_MCT_GROUP = {"MCT GROUP", "MCT-GROUP"};
+	public static final String[] STRING_SA305_GROUP = {"SA-305 Group"};
+	public static final String[] STRING_SA205_GROUP = {"SA-205 Group"};
+	public static final String[] STRING_SADIGITAL_GROUP = {"SA-Digital Group"};
+	public static final String[] STRING_GOLAY_GROUP = {"Golay Group"};
+	
 }

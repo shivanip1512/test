@@ -199,6 +199,14 @@ public final static int getDeviceType(String typeString)
 	  return WCTP_TERMINAL;
    else if (isStringDevice(compareString, STRING_EMETCON_GROUP))
 	  return LM_GROUP_EMETCON;
+   else if (isStringDevice(compareString, STRING_SA305_GROUP))
+   	  return LM_GROUP_SA305;
+   else if (isStringDevice(compareString, STRING_SA205_GROUP))
+	  return LM_GROUP_SA205;
+   else if (isStringDevice(compareString, STRING_SADIGITAL_GROUP))
+	  return LM_GROUP_SADIGITAL;
+   else if (isStringDevice(compareString, STRING_GOLAY_GROUP))
+	  return LM_GROUP_GOLAY;
    else if (isStringDevice(compareString, STRING_VERSACOM_GROUP))
 	  return LM_GROUP_VERSACOM;
 	else if (isStringDevice(compareString, STRING_MCT_GROUP))
@@ -396,6 +404,14 @@ public final static String getPAOTypeString(int type)
 		  return STRING_VERSACOM_GROUP[0];
 	  case LM_GROUP_EXPRESSCOMM:
 		  return STRING_EXPRESSCOMM_GROUP[0];
+	  case LM_GROUP_SA305:
+	  	  return STRING_SA305_GROUP[0];
+	  case LM_GROUP_SA205:
+		  return STRING_SA205_GROUP[0];
+	  case LM_GROUP_SADIGITAL:
+		  return STRING_SADIGITAL_GROUP[0];
+	  case LM_GROUP_GOLAY:
+		  return STRING_GOLAY_GROUP[0];	  
 	  case LM_GROUP_POINT:
 		  return STRING_POINT_GROUP[0];
 	  case MACRO_GROUP:
