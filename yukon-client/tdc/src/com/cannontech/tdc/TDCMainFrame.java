@@ -1768,7 +1768,7 @@ private javax.swing.JMenu getJMenuGridLines() {
 		try {
 			ivjJMenuGridLines = new javax.swing.JMenu();
 			ivjJMenuGridLines.setName("JMenuGridLines");
-			ivjJMenuGridLines.setText("Gride Lines");
+			ivjJMenuGridLines.setText("Grid Lines");
 			ivjJMenuGridLines.setBackground(java.awt.SystemColor.control);
 			ivjJMenuGridLines.setForeground(java.awt.SystemColor.controlText);
 			ivjJMenuGridLines.add(getJCheckBoxMenuItemHGridLines());
