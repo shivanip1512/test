@@ -93,13 +93,6 @@
            </fileset>
         </copy>
 
-<!--
-        <copy todir="build/WEB-INF/classes">
-           <fileset dir="${yukon.lib}" >
-              <include name="*.properties"/>
-           </fileset>
-        </copy>
--->		
 	    <war destfile="${yukon.lib}/yukon-web.war" basedir="build"
 	        webxml="WEB-INF/web.xml" duplicate="preserve">
 	    </war>
