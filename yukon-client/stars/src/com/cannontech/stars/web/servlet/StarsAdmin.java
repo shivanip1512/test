@@ -2025,8 +2025,7 @@ public class StarsAdmin extends HttpServlet {
 				
 				groupRole.setRoleID( new Integer(AdministratorRole.ROLEID) );
 				groupRole.setRolePropertyID( new Integer(roleProps[i].getRolePropertyID()) );
-				if (roleProps[i].getRolePropertyID() == AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY ||
-					roleProps[i].getRolePropertyID() == AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY)
+				if (roleProps[i].getRolePropertyID() == AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
 					groupRole.setValue( CtiUtilities.TRUE_STRING );
 				else
 					groupRole.setValue( CtiUtilities.STRING_NONE );
