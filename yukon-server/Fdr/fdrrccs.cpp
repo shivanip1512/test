@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrrccs.cpp-arc  $
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2002/05/08 17:24:37 $
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2002/08/09 15:21:28 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,10 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrrccs.cpp,v $
+      Revision 1.5  2002/08/09 15:21:28  dsutton
+      Updated a printout that was causing a periodic exception to occur in the
+      buildmsgforforeign system function
+
       Revision 1.4  2002/05/08 17:24:37  dsutton
       printing out the batch marker each time it goes by so we can track whether
       we're still sending data to RCCS
@@ -275,7 +279,7 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
     CtiFDRPoint         point;
     bool retVal = false;
     CHAR *ptr=NULL;
-    int  index =0,connectionIndex;;
+    int  index =0,connectionIndex=-1;
     CHAR *foreignSys=NULL;
 
     // now loop thru the many possible destinations for the point
@@ -286,7 +290,7 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
         * we must find the correct connection(s) before doing our write
         **************************
         */
-        int rccsPair; 
+        int rccsPair=-1; 
         RWCString destinationName;
         bool foundFlag = true;
 
@@ -348,7 +352,10 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
                         strncpy (ptr->msgUnion.value.PointName, &aPoint.getDestinationList()[x].getTranslation().data()[20],20);
 
                         // intercept the batch marker point name here if it exists
-                        RWCString point_name (ptr->msgUnion.value.PointName);
+                        CHAR tempName[21];
+                        memset (tempName,'\0',21);
+                        memcpy (tempName,ptr->msgUnion.value.PointName,20);
+                        RWCString point_name (tempName);
                         point_name.resize(20);
                         RWCString small_point (point_name.strip());
                         if (small_point == iBatchMarkerName)
