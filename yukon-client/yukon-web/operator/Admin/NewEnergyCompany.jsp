@@ -116,6 +116,14 @@ function addCustomerGroup(form) {
                                 <input type="text" name="CompanyName" size="30">
                                 <span class="ErrorMsg">*</span> </td>
                             </tr>
+<% if (!com.cannontech.stars.util.ECUtils.isDefaultEnergyCompany(liteEC)) { %>
+                            <tr>
+                              <td width="25%" align="right">&nbsp;</td>
+                              <td width="75%">
+                                <input type="checkbox" name="AddMember" value="true">
+                                Add as a member of the current energy company</td>
+                            </tr>
+<% } %>
                             <tr> 
                               <td width="25%" align="right">Email:</td>
                               <td width="75%"> 
