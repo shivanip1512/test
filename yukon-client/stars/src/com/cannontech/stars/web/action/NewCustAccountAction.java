@@ -307,9 +307,10 @@ public class NewCustAccountAction implements ActionBase {
     		
 			// Check to see if the login is valid
 			if (updateLogin != null) {
-				if (updateLogin.getUsername().trim().length() == 0 || updateLogin.getPassword().trim().length() == 0)
-					throw new WebClientException( "Username and password cannot be empty" );
-	    		
+				if (updateLogin.getUsername().trim().length() == 0)
+					throw new WebClientException( "Username cannot be empty" );
+				if (updateLogin.getPassword().trim().length() == 0)
+					throw new WebClientException( "Password cannot be empty" );
 				if (YukonUserFuncs.getLiteYukonUser( updateLogin.getUsername() ) != null)
 					throw new WebClientException( "Username already exists" );
 			}
