@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2004/07/27 15:48:20 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2004/11/24 17:09:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -807,6 +807,9 @@ typedef struct
     BYTE _delayToTx;                    // Time in seconds before transmitting codes.
     BYTE _maxTxTime;                    // Maximum Time in seconds to transmit codes.
 
+    BYTE _mark;                         // SA Digital mark
+    BYTE _space;                        // SA Digital space
+
     int _transmitterAddress;            // The address of the RTC, or RTU.
     int _groupType;                     // This must be one of the supported DCU types in the lib.. ie. SA205, GOLAY...
 
@@ -817,6 +820,7 @@ typedef struct
     int _code205;                       // This is the code to transmit iff this is an SA205 DCU type group.
     CHAR _codeSimple[7];                // This is the code to transmit iff this is NOT an SA205 DCU type group.
     CHAR _serial205[33];                // This is a 205 serial number.
+    CHAR _code305[128];                 // This is a 305 message.
 
     // The parameters below are assigned typically by the parse object
     int _swTimeout;                     // Switch OFF time in seconds.
