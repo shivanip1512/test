@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/05/20 22:44:26 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/05/24 13:47:40 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.4  2004/05/24 13:47:40  cplender
+* Added opcode to the 105/205 protocol asString call.
+*
 * Revision 1.3  2004/05/20 22:44:26  cplender
 * Support for repeating 205 messages after n minutes.
 *
@@ -884,12 +887,12 @@ RWCString CtiProtocolSA3rdParty::asString() const
     {
     case SA105:
         {
-            rstr += "SA 105 - " + strategyAsString();
+            rstr += "SA 105 - code " + RWCString(_sa._codeSimple) + " - " + strategyAsString();
             break;
         }
     case SA205:
         {
-            rstr += "SA 205 - " + strategyAsString();
+            rstr += "SA 205 - code " + CtiNumStr(_sa._code205) + " - " + strategyAsString();
             break;
         }
     case GOLAY:
