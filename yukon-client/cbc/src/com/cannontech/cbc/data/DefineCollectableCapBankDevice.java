@@ -60,8 +60,10 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	capBank.setControlPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	capBank.setBankSize( new Integer( (int)vstr.extractUnsignedInt() ) );
 	capBank.setTypeOfSwitch( (String) vstr.restoreObject( SimpleMappings.CString ) );
-	capBank.setSwitchManufacture( (String) vstr.restoreObject( SimpleMappings.CString ) );
+	capBank.setSwitchManufacture( (String) vstr.restoreObject( SimpleMappings.CString ) );	
 	capBank.setMapLocationID( new Integer( (int)vstr.extractUnsignedInt() ) );
+	capBank.setRecloseDelay( new Integer( (int)vstr.extractUnsignedInt() ) );
+	
 	capBank.setControlOrder( new Integer( (int)vstr.extractUnsignedInt() ) );
 	
 	capBank.setStatusPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
@@ -70,7 +72,6 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	capBank.setCurrentDailyOperations( new Integer( (int)vstr.extractUnsignedInt() ) );	
 	capBank.setLastStatusChangeTime( (java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );	
 	capBank.setTagControlStatus( new Integer( (int)vstr.extractUnsignedInt() ) );
-	capBank.setRecloseDelay( new Integer( (int)vstr.extractUnsignedInt() ) );
 
 	capBank.setOrigFeederID( (int)vstr.extractUnsignedInt() );
 }
@@ -93,15 +94,15 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.saveObject( capBank.getTypeOfSwitch(), SimpleMappings.CString );
 	vstr.saveObject( capBank.getSwitchManufacture(), SimpleMappings.CString );
 	vstr.insertUnsignedInt( capBank.getMapLocationID().intValue() );
-	vstr.insertUnsignedInt( capBank.getControlOrder().intValue() );
+	vstr.insertUnsignedInt( capBank.getRecloseDelay().intValue() );
 	
+	vstr.insertUnsignedInt( capBank.getControlOrder().intValue() );	
 	vstr.insertUnsignedInt( capBank.getStatusPointID().intValue() );
 	vstr.insertUnsignedInt( capBank.getControlStatus().intValue() );
 	vstr.insertUnsignedInt( capBank.getOperationAnalogPointID().intValue() );
 	vstr.insertUnsignedInt( capBank.getCurrentDailyOperations().intValue() );
 	vstr.saveObject( capBank.getLastStatusChangeTime(), SimpleMappings.Time );
 	vstr.insertUnsignedInt( capBank.getTagControlStatus().intValue() );
-	vstr.insertUnsignedInt( capBank.getRecloseDelay().intValue() );
 
 	vstr.insertUnsignedInt( capBank.getOrigFeederID() );	
 }
