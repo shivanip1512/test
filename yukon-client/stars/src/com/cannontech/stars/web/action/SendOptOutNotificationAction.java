@@ -123,7 +123,8 @@ public class SendOptOutNotificationAction implements ActionBase {
 			energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
 			String notifMsg = getOptOutNotifMessage( energyCompany, liteAcctInfo, reqOper );
-			sendNotification( notifMsg, energyCompany );
+			if (notifMsg != null)
+				sendNotification( notifMsg, energyCompany );
             
 			StarsSuccess success = new StarsSuccess();
 			success.setDescription( ServletUtil.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " notification has been sent successfully" );

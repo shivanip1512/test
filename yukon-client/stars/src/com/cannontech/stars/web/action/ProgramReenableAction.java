@@ -12,7 +12,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.activity.ActivityLogActions;
-import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -126,7 +125,7 @@ public class ProgramReenableAction implements ActionBase {
 					queue.removeEvent( events[i] );
 				
 				resp.setStarsLMProgramHistory( StarsLiteFactory.createStarsLMProgramHistory(liteAcctInfo, energyCompany) );
-				resp.setDescription( "The scheduled " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " event(s) has been canceled" );
+				resp.setDescription( "The scheduled " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " event has been canceled" );
 				
 				ActivityLogger.logEvent(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(),
 						liteAcctInfo.getCustomer().getCustomerID(), ActivityLogActions.PROGRAM_CANCEL_SCHEDULED_ACTION, "" );
@@ -139,7 +138,7 @@ public class ProgramReenableAction implements ActionBase {
 					hardwares.add( energyCompany.getInventory(reenable.getInventoryID(), true) );
 				}
 				else {
-					hardwares = getAffectedHardwares( liteAcctInfo, energyCompany );
+					hardwares = ProgramOptOutAction.getAffectedHardwares( liteAcctInfo, energyCompany );
 					if (hardwares.size() == 0) {
 						respOper.setStarsFailure( StarsFactory.newStarsFailure(
 								StarsConstants.FAILURE_CODE_OPERATION_FAILED, "There is no hardware to be reenabled") );
@@ -168,7 +167,7 @@ public class ProgramReenableAction implements ActionBase {
 				}
 				
 				resp.setStarsLMProgramHistory( StarsLiteFactory.createStarsLMProgramHistory(liteAcctInfo, energyCompany) );
-				resp.setDescription( ServletUtil.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE)) + " command sent out successfully." );
+				resp.setDescription( ServletUtil.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE)) + " command has been sent out successfully." );
 				
 				String logMsg = "Serial #:" + ((LiteStarsLMHardware) hardwares.get(0)).getManufacturerSerialNumber();
 				for (int i = 1; i < hardwares.size(); i++)
@@ -349,21 +348,6 @@ public class ProgramReenableAction implements ActionBase {
 		}
 	}
 	
-	public static ArrayList getAffectedHardwares(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany) {
-		ArrayList hardwares = new ArrayList();
-		
-		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
-			LiteInventoryBase liteInv = energyCompany.getInventory(
-					((Integer)liteAcctInfo.getInventories().get(i)).intValue(), true );
-			if (liteInv instanceof LiteStarsLMHardware) {
-				if (((LiteStarsLMHardware)liteInv).getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL)
-					hardwares.add( liteInv );
-			}
-		}
-		
-		return hardwares;
-	}
-	
 	public static String getReenableCommand(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany)
 		throws WebClientException
 	{
@@ -381,7 +365,7 @@ public class ProgramReenableAction implements ActionBase {
 		if (event.getInventoryID() != 0)
 			hardwares.add( energyCompany.getInventory(event.getInventoryID(), true) );
 		else
-			hardwares = getAffectedHardwares( liteAcctInfo, energyCompany );
+			hardwares = ProgramOptOutAction.getAffectedHardwares( liteAcctInfo, energyCompany );
 		
 		StarsProgramReenableResponse resp = new StarsProgramReenableResponse();
 		

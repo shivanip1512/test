@@ -14,6 +14,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.stars.util.ECUtils;
 
 /**
  * @author yao
@@ -245,17 +246,24 @@ public class LiteInventoryBase extends LiteBase {
 	public void updateDeviceStatus() {
 		ArrayList invHist = getInventoryHistory();
 		
+		boolean isSA = false;
+		if (this instanceof LiteStarsLMHardware) {
+			int devTypeID = ((LiteStarsLMHardware)this).getLmHardwareTypeID();
+			isSA = ECUtils.isSA205(devTypeID) || ECUtils.isSA305(devTypeID);
+		}
+		
 		for (int i = invHist.size() - 1; i >= 0; i--) {
 			LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) invHist.get(i);
 			YukonListEntry entry = YukonListFuncs.getYukonListEntry( liteEvent.getActionID() );
 			
-			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED)
+			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED
+				|| isSA && entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG)
 			{
 				deviceStatus = YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL;
 				return;
 			}
-			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION ||
-				entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION)
+			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION
+				|| entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION)
 			{
 				deviceStatus = YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL;
 				return;

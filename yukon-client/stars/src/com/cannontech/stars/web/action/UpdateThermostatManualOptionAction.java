@@ -140,11 +140,13 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invIDs[i], true );
 				
 				if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
-					String errorMsg = ECUtils.isOperator(user) ?
-							((invIDs.length == 1)?
-								"The thermostat is currently out of service" :
-								"The thermostat '" + liteHw.getManufacturerSerialNumber() + "' is currently out of service") :
-							"Cannot send manual option to the thermostat. Please contact your utility company to report this problem.";
+					String errorMsg = null;
+					if (ECUtils.isOperator(user))
+						errorMsg = (invIDs.length == 1)?
+								"The thermostat is currently out of service. Manual option is not sent." :
+								"One of the thermostats is currently out of service. Manual option is not sent.";
+					else
+						errorMsg = "Cannot send manual option to the thermostat. Please contact your utility company to report this problem.";
 					
 					respOper.setStarsFailure( StarsFactory.newStarsFailure(
 							StarsConstants.FAILURE_CODE_OPERATION_FAILED, errorMsg) );
@@ -257,7 +259,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
             
             try {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot update thermostat manual option") );
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to update thermostat manual option.") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             catch (Exception e2) {

@@ -139,8 +139,8 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				
 				if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
 					String errorMsg = (invIDs.length == 1)?
-							"The thermostat is currently out of service, schedule is not sent." :
-							"The thermostat \"" + liteHw.getDeviceLabel() + "\" is currently out of service, schedule is not sent.";
+							"The thermostat is currently out of service. Schedule is not sent." :
+							"One of the thermostats is currently out of service. Schedule is not sent.";
 					
 					if (ECUtils.isOperator( user )) {
 						respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -157,15 +157,15 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				if (liteHw.getManufacturerSerialNumber().trim().length() == 0) {
 					if (ECUtils.isOperator( user )) {
 						String errorMsg = (invIDs.length == 1)?
-								"The serial # of the thermostat cannot be empty, schedule is not sent." :
-								"The serial # of thermostat \"" + liteHw.getDeviceLabel() + "\" is empty, schedule is not sent.";
+								"The serial # of the thermostat cannot be empty. Schedule is not sent." :
+								"The serial # of one of the thermostats is empty. Schedule is not sent.";
 						
 						respOper.setStarsFailure( StarsFactory.newStarsFailure(
 								StarsConstants.FAILURE_CODE_OPERATION_FAILED, errorMsg) );
 					}
 					else {
 						respOper.setStarsFailure( StarsFactory.newStarsFailure(
-								StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot send schedule to the thermostat. Please refer to the \"Contact us\" page if you want to get more information.") );
+								StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot send schedule to the thermostat. To get more information please contact your utility company.") );
 					}
 					
 					return SOAPUtil.buildSOAPMessage( respOper );
@@ -395,7 +395,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
             
 			try {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
-						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot update thermostat schedules") );
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to update thermostat schedules") );
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
 			catch (Exception e2) {
@@ -457,7 +457,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			}
             
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE,
-					"The new schedule has been sent. It may take a few minutes before the thermostat receives it.");
+					"The schedule has been sent. It may take a few minutes before the thermostat receives it.");
 			return 0;
 		}
 		catch (Exception e) {

@@ -198,7 +198,7 @@ public class ProgramOptOutAction implements ActionBase {
 				hardwares = getAffectedHardwares( liteAcctInfo, energyCompany );
 				if (hardwares.size() == 0) {
 					respOper.setStarsFailure( StarsFactory.newStarsFailure(
-							StarsConstants.FAILURE_CODE_OPERATION_FAILED, "There is no hardware assigned to any program") );
+							StarsConstants.FAILURE_CODE_OPERATION_FAILED, "There is no hardware assigned to any program.") );
 					return SOAPUtil.buildSOAPMessage( respOper );
 				}
             }
@@ -214,7 +214,7 @@ public class ProgramOptOutAction implements ActionBase {
 				energyCompany.getOptOutEventQueue().addEvent( event );
 				
             	resp.setStarsLMProgramHistory( StarsLiteFactory.createStarsLMProgramHistory(liteAcctInfo, energyCompany) );
-            	resp.setDescription( "The " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " event has been scheduled" );
+            	resp.setDescription( "The " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " event has been scheduled." );
             	
 				logMsg = "Start Date/Time:" + ServerUtils.formatDate(optOut.getStartDateTime(), tz) +
             			", Duration:" + ServletUtils.getDurationFromHours( optOut.getPeriod() );
@@ -248,7 +248,12 @@ public class ProgramOptOutAction implements ActionBase {
 						ServerUtils.sendSerialCommand( cmd, routeID );
 					}
 					
-					resp.setDescription( "The last " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " command has been resent" );
+					resp.setDescription( "The last " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " command has been resent." );
+				}
+				else {
+					respOper.setStarsFailure( StarsFactory.newStarsFailure(
+							StarsConstants.FAILURE_CODE_OPERATION_FAILED, "There is no active " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " event.") );
+					return SOAPUtil.buildSOAPMessage( respOper );
 				}
 			}
             else {
@@ -280,9 +285,9 @@ public class ProgramOptOutAction implements ActionBase {
             	resp.setStarsLMProgramHistory( progHist );
             	
 		        if (ECUtils.isOperator( user ))
-			        resp.setDescription( ServletUtil.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " command has been sent out successfully" );
+			        resp.setDescription( ServletUtil.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " command has been sent out successfully." );
 			    else
-			        resp.setDescription( "Your programs have been " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_PAST) );
+			        resp.setDescription( "Your programs have been " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_PAST) + "." );
 			    
 				logMsg = "Start Date/Time:(Immediately), Duration:" + ServletUtils.getDurationFromHours( optOut.getPeriod() );
 				logMsg += ", Serial #:" + ((LiteStarsLMHardware) hardwares.get(0)).getManufacturerSerialNumber();
@@ -304,7 +309,7 @@ public class ProgramOptOutAction implements ActionBase {
             
             try {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_VERB) + " the programs") );
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_VERB) + " the programs.") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             catch (Exception e2) {
@@ -776,8 +781,16 @@ public class ProgramOptOutAction implements ActionBase {
 		if (liteHw.getManufacturerSerialNumber().trim().length() == 0)
 			throw new WebClientException( "The serial # of the hardware cannot be empty" );
         
-		String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() +
-					" service out temp offhours " + String.valueOf(offHours);
+		String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber();
+		if (ECUtils.isSA205( liteHw.getLmHardwareTypeID() ) || ECUtils.isSA305( liteHw.getLmHardwareTypeID() ))
+		{
+			cmd += " override " + String.valueOf( offHours );
+		}
+		else if (ECUtils.isVersaCom( liteHw.getLmHardwareTypeID() ) || ECUtils.isExpressCom( liteHw.getLmHardwareTypeID() ))
+		{
+			cmd += " service out temp offhours " + String.valueOf(offHours);
+		}
+		
 		return cmd;
 	}
 	

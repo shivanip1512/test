@@ -22,12 +22,14 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.SA205;
 import com.cannontech.stars.xml.serialize.StarsConfig;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDisableService;
@@ -35,6 +37,7 @@ import com.cannontech.stars.xml.serialize.StarsEnableService;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsInventory;
+import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsYukonSwitchCommand;
 import com.cannontech.stars.xml.serialize.StarsYukonSwitchCommandResponse;
@@ -205,11 +208,11 @@ public class YukonSwitchCommandAction implements ActionBase {
 			
 			StarsYukonSwitchCommand command = SOAPUtil.parseSOAPMsgForOperation( reqMsg ).getStarsYukonSwitchCommand();
 			if (command.getStarsEnableService() != null)
-				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Enable command sent out successfully" );
+				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Enable command has been sent out successfully." );
 			else if (command.getStarsDisableService() != null)
-				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Disable command sent out successfully" );
+				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Disable command has been sent out successfully." );
 			else if (command.getStarsConfig() != null)
-				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration sent out successfully" );
+				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Configuration command has been sent out successfully." );
 			
 			return 0;
 		}
@@ -228,11 +231,33 @@ public class YukonSwitchCommandAction implements ActionBase {
 		Integer termEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID() );
 		java.util.Date now = new java.util.Date();
 		
-		String cmd = "putconfig service out serial " + liteHw.getManufacturerSerialNumber();
+		String cmd = null;
+		if (ECUtils.isVersaCom( liteHw.getLmHardwareTypeID() ) || ECUtils.isExpressCom( liteHw.getLmHardwareTypeID() ))
+		{
+			cmd = "putconfig service out serial " + liteHw.getManufacturerSerialNumber();
+		}
+		else if (ECUtils.isSA205( liteHw.getLmHardwareTypeID() )) {
+			// To disable a SA205 switch, reconfig all slots to the unused address
+			StarsLMConfiguration starsCfg = new StarsLMConfiguration();
+			starsCfg.setSA205( new SA205() );
+			starsCfg.getSA205().setSlot1( ECUtils.SA205_UNUSED_ADDR );
+			starsCfg.getSA205().setSlot2( ECUtils.SA205_UNUSED_ADDR );
+			starsCfg.getSA205().setSlot3( ECUtils.SA205_UNUSED_ADDR );
+			starsCfg.getSA205().setSlot4( ECUtils.SA205_UNUSED_ADDR );
+			starsCfg.getSA205().setSlot5( ECUtils.SA205_UNUSED_ADDR );
+			starsCfg.getSA205().setSlot6( ECUtils.SA205_UNUSED_ADDR );
+			
+			UpdateLMHardwareConfigAction.updateLMConfiguration( starsCfg, liteHw );
+			cmd = getConfigCommands( liteHw, energyCompany, true )[0];
+		}
+		else if (ECUtils.isSA305( liteHw.getLmHardwareTypeID() )) {
+			// TODO: reconfig a SA305 switch to disable it
+		}
+		
+		if (cmd == null) return;
 		
 		int routeID = liteHw.getRouteID();
 		if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
-        
         ServerUtils.sendSerialCommand( cmd, routeID );
 		
 		// Add "Termination" to hardware events
@@ -260,6 +285,10 @@ public class YukonSwitchCommandAction implements ActionBase {
 	}
     
 	public static void sendEnableCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw) throws WebClientException {
+		// SA205 and SA305 switches don't have an "in service" command
+		if (!ECUtils.isSA205( liteHw.getLmHardwareTypeID() ) && !ECUtils.isSA305( liteHw.getLmHardwareTypeID() ))
+			return;
+		
 		if (liteHw.getManufacturerSerialNumber().length() == 0)
 			throw new WebClientException( "The manufacturer serial # of the hardware cannot be empty" );
         
@@ -271,7 +300,6 @@ public class YukonSwitchCommandAction implements ActionBase {
 		
 		int routeID = liteHw.getRouteID();
 		if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
-		
 		ServerUtils.sendSerialCommand( cmd, routeID );
 		
 		// Add "Activation Completed" to hardware events
@@ -313,35 +341,16 @@ public class YukonSwitchCommandAction implements ActionBase {
         final int routeID = (liteHw.getRouteID() > 0)?
         		liteHw.getRouteID() : energyCompany.getDefaultRouteID();
         
-		if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL || forceInService) {
+		String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
+		boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
+		
+		if ((liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL || forceInService)
+			&& (ECUtils.isVersaCom( liteHw.getLmHardwareTypeID() ) || ECUtils.isExpressCom( liteHw.getLmHardwareTypeID() )))
+		{
 			// Send an in service command first
-			String cmd = "putconfig service in serial " + liteHw.getManufacturerSerialNumber();
-			ServerUtils.sendSerialCommand( cmd, routeID );
+			sendEnableCommand( energyCompany, liteHw );
 			
-			// Add "Activation Completed" to hardware events
-			try {
-				com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-				com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
-				com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
-				
-				eventDB.setInventoryID( invID );
-				eventBase.setEventTypeID( hwEventEntryID );
-				eventBase.setActionID( actCompEntryID );
-				eventBase.setEventDateTime( now );
-				event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-				
-				event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
-						Transaction.createTransaction( Transaction.INSERT, event ).execute();
-				
-				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-				liteHw.getInventoryHistory().add( liteEvent );
-				liteHw.updateDeviceStatus();
-			}
-			catch (TransactionException e) {
-				CTILogger.error( e.getMessage(), e );
-			}
-			
-			final String[] cfgCmds = getConfigCommands( liteHw, energyCompany );
+			final String[] cfgCmds = getConfigCommands( liteHw, energyCompany, useHardwareAddressing );
 			if (cfgCmds == null) return;
 			
 			// Send the config command a while later
@@ -358,7 +367,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 		}
 		else {
 			// Only send the config command
-			String[] cfgCmds = getConfigCommands( liteHw, energyCompany );
+			String[] cfgCmds = getConfigCommands( liteHw, energyCompany, useHardwareAddressing );
 			if (cfgCmds == null) return;
 			
 			for (int i = 0; i < cfgCmds.length; i++)
@@ -388,10 +397,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 		}
 	}
 	
-	private static String[] getConfigCommands(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
-		String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
-		boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
-		
+	private static String[] getConfigCommands(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany, boolean useHardwareAddressing) {
 		ArrayList commands = new ArrayList();
 		
 		if (useHardwareAddressing) {
@@ -430,22 +436,22 @@ public class YukonSwitchCommandAction implements ActionBase {
 				}
 				
 				String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " xcom assign" +
-						" S" + liteHw.getLMConfiguration().getExpressCom().getServiceProvider() +
-						" G" + liteHw.getLMConfiguration().getExpressCom().getGEO() +
-						" B" + liteHw.getLMConfiguration().getExpressCom().getSubstation() +
-						" F" + liteHw.getLMConfiguration().getExpressCom().getFeeder() +
-						" Z" + liteHw.getLMConfiguration().getExpressCom().getZip() +
-						" U" + liteHw.getLMConfiguration().getExpressCom().getUserAddress();
+						" S " + liteHw.getLMConfiguration().getExpressCom().getServiceProvider() +
+						" G " + liteHw.getLMConfiguration().getExpressCom().getGEO() +
+						" B " + liteHw.getLMConfiguration().getExpressCom().getSubstation() +
+						" F " + liteHw.getLMConfiguration().getExpressCom().getFeeder() +
+						" Z " + liteHw.getLMConfiguration().getExpressCom().getZip() +
+						" U " + liteHw.getLMConfiguration().getExpressCom().getUserAddress();
 				if (load != null)
-					cmd += " P" + program + " R" + splinter + " Load " + load;
+					cmd += " P " + program + " R " + splinter + " Load " + load;
 				commands.add( cmd );
 			}
 			else if (liteHw.getLMConfiguration().getVersaCom() != null) {
 				String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " vcom assign" +
-						" U" + liteHw.getLMConfiguration().getVersaCom().getUtilityID() +
-						" S" + liteHw.getLMConfiguration().getVersaCom().getSection() +
-						" C0x" + Integer.toHexString( liteHw.getLMConfiguration().getVersaCom().getClassAddress() ) +
-						" D0x" + Integer.toHexString( liteHw.getLMConfiguration().getVersaCom().getDivisionAddress() );
+						" U " + liteHw.getLMConfiguration().getVersaCom().getUtilityID() +
+						" S " + liteHw.getLMConfiguration().getVersaCom().getSection() +
+						" C 0x" + Integer.toHexString( liteHw.getLMConfiguration().getVersaCom().getClassAddress() ) +
+						" D 0x" + Integer.toHexString( liteHw.getLMConfiguration().getVersaCom().getDivisionAddress() );
 				commands.add( cmd );
 			}
 			else if (liteHw.getLMConfiguration().getSA205() != null) {
@@ -459,7 +465,15 @@ public class YukonSwitchCommandAction implements ActionBase {
 				commands.add( cmd );
 			}
 			else if (liteHw.getLMConfiguration().getSA305() != null) {
-				//TODO: command to be defined yet
+				String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " sa305 assign" +
+						" U " + liteHw.getLMConfiguration().getSA305().getUtility() +
+						" G " + liteHw.getLMConfiguration().getSA305().getGroup() +
+						" D " + liteHw.getLMConfiguration().getSA305().getDivision() +
+						" S " + liteHw.getLMConfiguration().getSA305().getSubstation() +
+						" F " + liteHw.getLMConfiguration().getSA305().getRateFamily() +
+						" M " + liteHw.getLMConfiguration().getSA305().getRateMember();
+						// Why RateHierarchy not included?
+				commands.add( cmd );
 			}
 			else {
 				return null;

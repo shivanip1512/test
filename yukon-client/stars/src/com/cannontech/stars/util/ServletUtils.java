@@ -46,7 +46,7 @@ public class ServletUtils {
 	
 	public static final String ATT_ERROR_MESSAGE = ServletUtil.ATT_ERROR_MESSAGE;
 	public static final String ATT_CONFIRM_MESSAGE = ServletUtil.ATT_CONFIRM_MESSAGE;
-	public static final String ATT_PASSWORD_VERIFIED = "PASSWORD_VERIFIED";
+	public static final String ATT_PROMPT_MESSAGE = "PROMPT_MESSAGE";
 	public static final String ATT_REDIRECT = ServletUtil.ATT_REDIRECT;
 	public static final String ATT_REDIRECT2 = ServletUtil.ATT_REDIRECT2;
 	public static final String ATT_REFERRER = ServletUtil.ATT_REFERRER;

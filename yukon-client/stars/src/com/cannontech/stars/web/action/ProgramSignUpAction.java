@@ -155,14 +155,14 @@ public class ProgramSignUpAction implements ActionBase {
 				else
 					progEnrBefore += ", " + progName;
 			}
+			
+			String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
+			boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
 	        
 			StarsInventories starsInvs = new StarsInventories();
 			
 			try {
 				ArrayList hwsToConfig = updateProgramEnrollment( progSignUp, liteAcctInfo, null, energyCompany );
-				
-				String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
-				boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
 				
 				// Send out the config/disable command
 				for (int i = 0; i < hwsToConfig.size(); i++) {
@@ -220,7 +220,11 @@ public class ProgramSignUpAction implements ActionBase {
 			resp.setStarsInventories( starsInvs );
 			resp.setStarsLMPrograms( StarsLiteFactory.createStarsLMPrograms(liteAcctInfo, energyCompany) );
 			resp.setStarsAppliances( StarsLiteFactory.createStarsAppliances(liteAcctInfo.getAppliances(), energyCompany) );
-			resp.setDescription( "Program enrollment updated successfully" );
+			
+			String desc = "Program enrollment updated successfully.";
+			if (useHardwareAddressing)
+				desc += " Please go to the hardware configuration page and update the addressing information.";
+			resp.setDescription( desc );
 			
 			respOper.setStarsProgramSignUpResponse( resp );
 			return SOAPUtil.buildSOAPMessage( respOper );
@@ -230,7 +234,7 @@ public class ProgramSignUpAction implements ActionBase {
             
 			try {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
-						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to update the program enrollment") );
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to update the program enrollment.") );
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
 			catch (Exception e2) {

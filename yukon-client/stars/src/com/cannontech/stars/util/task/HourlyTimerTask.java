@@ -91,7 +91,7 @@ public class HourlyTimerTask extends StarsTimerTask {
 						if (dueEvents[j].getInventoryID() != 0)
 							hardwares.add( company.getInventory(dueEvents[j].getInventoryID(), true) );
 						else
-							hardwares = ProgramReenableAction.getAffectedHardwares( liteAcctInfo, company );
+							hardwares = ProgramOptOutAction.getAffectedHardwares( liteAcctInfo, company );
 						
 						for (int k = 0; k < hardwares.size(); k++) {
 							LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(k);

@@ -18,6 +18,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
@@ -172,7 +173,14 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 					session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 			
 			parseResponse( accountInfo, operation.getStarsUpdateLMHardwareConfigResponse() );
-			session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration updated successfully" );
+			
+			StarsUpdateLMHardwareConfig updateCfg = SOAPUtil.parseSOAPMsgForOperation( reqMsg ).getStarsUpdateLMHardwareConfig();
+			if (updateCfg.getSaveConfigOnly())
+				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration updated successfully." );
+			else if (updateCfg.getSaveToBatch())
+				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Configuration command saved to batch successfully." );
+			else
+				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Configuration command has been sent out successfully." );
 			
 			return 0;
 		}
@@ -191,14 +199,18 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 				new com.cannontech.database.data.stars.hardware.LMConfigurationBase();
 		com.cannontech.database.db.stars.hardware.LMConfigurationBase configDB = config.getLMConfigurationBase();
 		
-		if (starsHwConfig.getColdLoadPickup().length() > 0)
-			configDB.setColdLoadPickup( starsHwConfig.getColdLoadPickup() );
-		else
-			configDB.setColdLoadPickup( CtiUtilities.STRING_NONE );
-		if (starsHwConfig.getTamperDetect().length() > 0)
-			configDB.setTamperDetect( starsHwConfig.getTamperDetect() );
-		else
-			configDB.setTamperDetect( CtiUtilities.STRING_NONE );
+		if (starsHwConfig.getColdLoadPickup() != null) {
+			if (starsHwConfig.getColdLoadPickup().length() > 0)
+				configDB.setColdLoadPickup( starsHwConfig.getColdLoadPickup() );
+			else
+				configDB.setColdLoadPickup( CtiUtilities.STRING_NONE );
+		}
+		if (starsHwConfig.getTamperDetect() != null) {
+			if (starsHwConfig.getTamperDetect().length() > 0)
+				configDB.setTamperDetect( starsHwConfig.getTamperDetect() );
+			else
+				configDB.setTamperDetect( CtiUtilities.STRING_NONE );
+		}
 		
 		if (starsHwConfig.getSA205() != null) {
 			com.cannontech.database.db.stars.hardware.LMConfigurationSA205 sa205 =
@@ -342,11 +354,16 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 		StarsInventories starsInvs = new StarsInventories();
 		boolean disabled = false;
 		
+		String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
+		boolean useHardwareAddressing = Boolean.valueOf( trackHwAddr ).booleanValue();
+		
 		for (int i = 0; i < hwsToConfig.size(); i++) {
 			LiteStarsLMHardware lHw = (LiteStarsLMHardware) hwsToConfig.get(i);
 			
 			if (!updateHwConfig.getSaveConfigOnly()) {
-				boolean toConfig = (liteAcctInfo != null)? isToConfig(lHw, liteAcctInfo) : true;
+				boolean toConfig = true;
+				if (liteAcctInfo != null && !useHardwareAddressing)
+					toConfig = isToConfig(lHw, liteAcctInfo);
 				if (lHw.equals( liteHw )) disabled = !toConfig;
 				
 				if (updateHwConfig.getSaveToBatch()) {

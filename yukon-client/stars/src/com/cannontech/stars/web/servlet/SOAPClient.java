@@ -262,6 +262,12 @@ public class SOAPClient extends HttpServlet {
 					resp.sendRedirect( req.getContextPath() + "/operator/Consumer/Programs2.jsp" );
 					return;
 				}
+				else {
+					session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
+					session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
+					int lastSlashPos = destURL.lastIndexOf('/');
+					destURL = errorURL = destURL.substring(0, lastSlashPos) + "/Message.jsp";
+				}
 			}
 		}
 		else if (action.equalsIgnoreCase("SetAddtEnrollInfo")) {
@@ -283,13 +289,20 @@ public class SOAPClient extends HttpServlet {
 				return;
 			}
 			
+			clientAction = actions;
+			
 			if (req.getParameter("Wizard") != null) {
 				destURL = errorURL = req.getContextPath() + "/operator/Consumer/NewFinal.jsp?Wizard=true";
 				session.setAttribute( ServletUtils.ATT_REDIRECT, destURL );
 			}
-			else
+			else {
 				session.removeAttribute( ServletUtils.ATT_MULTI_ACTIONS );
-			clientAction = actions;
+				
+				session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
+				session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
+				int lastSlashPos = destURL.lastIndexOf('/');
+				destURL = errorURL = destURL.substring(0, lastSlashPos) + "/Message.jsp";
+			}
 		}
 		else if (action.equalsIgnoreCase("SearchCustAccount")) {
 			clientAction = new SearchCustAccountAction();
@@ -358,6 +371,11 @@ public class SOAPClient extends HttpServlet {
 				
 				actions.addAction( action2, msg2 );
 				clientAction = actions;
+				
+				session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
+				session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
+				int lastSlashPos = destURL.lastIndexOf('/');
+				destURL = errorURL = destURL.substring(0, lastSlashPos) + "/Message.jsp";
 			}
 		}
 		else if (action.equalsIgnoreCase("SendOptOutNotification")) {
@@ -373,17 +391,37 @@ public class SOAPClient extends HttpServlet {
 			session.removeAttribute( ServletUtils.ATT_MULTI_ACTIONS );
         	
 			clientAction = actions;
+			
+			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
+			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
+			int lastSlashPos = destURL.lastIndexOf('/');
+			destURL = errorURL = destURL.substring(0, lastSlashPos) + "/Message.jsp";
 		}
 		else if (action.equalsIgnoreCase("ReenableProgram") || action.equalsIgnoreCase("CancelScheduledOptOut")) {
 			clientAction = new ProgramReenableAction();
 			if (action.equalsIgnoreCase("CancelScheduledOptOut"))
 				destURL = errorURL = referer;
+			
+			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
+			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
+			int lastSlashPos = destURL.lastIndexOf('/');
+			destURL = errorURL = destURL.substring(0, lastSlashPos) + "/Message.jsp";
 		}
 		else if (action.equalsIgnoreCase("DisableLMHardware") || action.equalsIgnoreCase("EnableLMHardware")) {
 			clientAction = new YukonSwitchCommandAction();
+			
+			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
+			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
+			int lastSlashPos = destURL.lastIndexOf('/');
+			destURL = errorURL = destURL.substring(0, lastSlashPos) + "/Message.jsp";
 		}
 		else if (action.equalsIgnoreCase("UpdateLMHardwareConfig")) {
 			clientAction = new UpdateLMHardwareConfigAction();
+			
+			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
+			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
+			int lastSlashPos = destURL.lastIndexOf('/');
+			destURL = errorURL = destURL.substring(0, lastSlashPos) + "/Message.jsp";
 		}
 		else if (action.equalsIgnoreCase("GetLMCtrlHist")) {
 			clientAction = new GetLMCtrlHistAction();
@@ -468,9 +506,19 @@ public class SOAPClient extends HttpServlet {
 		}
 		else if (action.equalsIgnoreCase("UpdateThermostatSchedule")) {
 			clientAction = new UpdateThermostatScheduleAction();
+			
+			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
+			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
+			int lastSlashPos = destURL.lastIndexOf('/');
+			destURL = errorURL = destURL.substring(0, lastSlashPos) + "/Message.jsp";
 		}
 		else if (action.equalsIgnoreCase("UpdateThermostatOption")) {
 			clientAction = new UpdateThermostatManualOptionAction();
+			
+			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
+			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
+			int lastSlashPos = destURL.lastIndexOf('/');
+			destURL = errorURL = destURL.substring(0, lastSlashPos) + "/Message.jsp";
 		}
 		else if (action.equalsIgnoreCase("SaveThermostatSchedule")) {
 			clientAction = new SaveThermostatScheduleAction();
