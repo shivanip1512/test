@@ -730,7 +730,7 @@ void CtiLMControlAreaTrigger::restore(RWDBReader& rdr)
     rdr["minrestoreoffset"] >> _minrestoreoffset;
     rdr["peakpointid"] >> _peakpointid;
 
-    setProjectedPointValue(-10000000.0);
+    setProjectedPointValue(0.0);
     rdr["pointvalue"] >> isNull;
     if( !isNull )
     {
