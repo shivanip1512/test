@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2003/03/06 18:07:46 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2003/03/14 03:08:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -186,6 +186,7 @@ int CtiConnection::ThreadInitiate()
     }
     catch(const RWxmsg& x)
     {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Exception: " << __FILE__ << " (" << __LINE__ << ") " << x.why() << endl;
     }
 
@@ -622,6 +623,7 @@ INT CtiConnection::ConnectPortal()
 
                 if(!psck.socket().valid())
                 {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << "Socket Error " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     nRet = -1;
                 }
@@ -701,11 +703,15 @@ void CtiConnection::ShutdownConnection()
             {
                 if( outthread_.requestCancellation(2000)  == RW_THR_TIMEOUT )
                 {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << "OutThread refuses to cancel after 2 seconds." << who() << endl;
                 }
                 if(outthread_.join(2000) == RW_THR_TIMEOUT)
                 {
-                    dout << "OutThread refuses to join   after 2 seconds." << who() << endl;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "OutThread refuses to join   after 2 seconds." << who() << endl;
+                    }
                     outthread_.terminate();
                 }
             }
@@ -719,11 +725,15 @@ void CtiConnection::ShutdownConnection()
             {
                 if( inthread_.requestCancellation(2000)  == RW_THR_TIMEOUT )
                 {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << "InThread refuses to close after 2 seconds. " << who() << endl;
                 }
                 if(inthread_.join(2000) == RW_THR_TIMEOUT)
                 {
-                    dout << "InThread refuses to join  after 2 seconds. " << who() << endl;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "InThread refuses to join  after 2 seconds. " << who() << endl;
+                    }
                     inthread_.terminate();
                 }
             }
@@ -733,10 +743,12 @@ void CtiConnection::ShutdownConnection()
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 if( _port >= 0 )
                 {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " ShutdownConnection() " << who() << endl;
                 }
                 else
                 {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " ShutdownConnection() " << who() << endl;
                 }
             }
