@@ -7,15 +7,15 @@
 *
 * File:   tbl_lmg_sa_simple
 *
-* Class:  
+* Class:
 * Date:   3/9/2004
 *
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/05 19:50:26 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/04/29 19:58:51 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -59,7 +59,7 @@ public:
     LONG getLmGroupId( void ) const;
     LONG getRouteId( void ) const;
     RWCString getOperationalAddress( void ) const;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
-    int getFunction( void ) const;
+    int getFunction( bool control ) const;
     int getNominalTimeout( void ) const;
     int getVirtualTimeout( void ) const;
 

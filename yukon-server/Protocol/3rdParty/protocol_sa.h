@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/03/19 15:53:24 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/04/29 19:58:50 $
 *
 *
 * Notes:
@@ -45,7 +45,23 @@ typedef struct schedCode
    USHORT cycleTime;    /* cycle time  in minutes */
    SHORT repeats;       /* number repeats to effect virtual timeout */
                         /* or number cycleTimes in control period (205)*/
-}SCODE;
+}SA_CODE;
+
+/*--------------------------------------------------------------------------*/
+/* The X205CMD (xmit 205 command) structure describes a particular 205 setup*/
+/* command.								    */
+/*--------------------------------------------------------------------------*/
+
+typedef struct xmit205Cmd	/* 48 bytes per cmd */
+{
+   char serialNum[33];
+   USHORT type;
+   char code[7];
+   USHORT function;
+   USHORT data;
+   USHORT padding;
+}
+X205CMD;
 
 /* This is the current DCU types in OASyS LM */
 #define SA205 0
@@ -72,9 +88,27 @@ typedef struct schedCode
 #define SHED 1
 #define REST 0
 
+/* TMS command type */
+#define TMS_ONE 0
+#define TMS_ALL 1
+#define TMS_INIT 2
+#define TMS_ACK 3
+
+/* Message type from TMS */
+#define TMS_EMPTY 0
+#define TMS_SADIG 4
+#define TMS_SA105 6
+#define TMS_GOLAY 7
+#define TMS_205CMD 12
+#define TMS_CODE  20
+#define TMS_UNKNOWN  21
+#define TMS_LRC_ERROR 22
+
+/* define code buffer sizes */
 #define CODESZ 6
 #define CONTROL_CODESZ 7
 #define CONFIG_CODESZ 12
+#define TMS_BUFFER_SIZE 8
 
 // Success and non-fatal errors.
 #define PROTSA_SUCCESS                          0
@@ -130,7 +164,7 @@ INT controlSADigital( BYTE *buf, INT *buflen,  CHAR code[],
  *              On successful exit, buflen indicates the length of the completed
  *              message stored in buf.
  *
- * scode     - Input: SA105/205 operational information as defined in the SCODE structure
+ * scode     - Input: SA105/205 operational information as defined in the SA_CODE structure
  *
  * xmitter_addr - Input: Transmitter address
  *
@@ -167,7 +201,7 @@ INT controlSADigital( BYTE *buf, INT *buflen,  CHAR code[],
  *          - A valid return code from above.
  *
  *----------------------------------------------------------------------------*/
-INT control105_205( BYTE *buf, INT *buflen, SCODE *scode, USHORT xmitter_addr);
+INT control105_205( BYTE *buf, INT *buflen, SA_CODE *scode, USHORT xmitter_addr);
 
 /*----------------------------------------------------------------------------*
  * Function: controlGolay
@@ -311,6 +345,52 @@ INT tamperDetect205(BYTE *codeBuf, INT *codeIndex, CHAR serialNum[],
  *----------------------------------------------------------------------------*/
 INT coldLoadPickup205(BYTE *codeBuf, INT *codeIndex, CHAR serialNum[], 
                       USHORT relay, INT clpCount, USHORT xmitter_addr);
+
+/*----------------------------------------------------------------------------*
+ * Function:formatTMScmd
+ *
+ * abuf      - output buffer. A fully formed TMS command in ASCII is built and placed
+ *              in this buffer on successful completion of the function.
+ *
+ * buflen   - input/output.  On entry buflen indicates the allowed size of buf.
+ *              On successful exit, buflen indicates the length of the completed
+ *              message stored in buf.
+ *
+ * TMS_cmd_type - Input: TMS command type as defined above.
+ *
+ * xmitter  - input: transmitter address
+ *
+ * Returns:
+ *          - A valid return code.
+ *----------------------------------------------------------------------------*/
+INT formatTMScmd (UCHAR *abuf, INT *buflen, USHORT TMS_cmd_type, USHORT xmitter);
+
+/*----------------------------------------------------------------------------*
+ * Function:TMSlen
+ *
+ * abuf  - input: first 8 bytes of TMS response in ASCII.
+ *
+ * len   - output:  additional bytes to receive
+ *
+ * Returns:
+ *          - A valid return code.
+ *----------------------------------------------------------------------------*/
+INT TMSlen (UCHAR *abuf, INT *len);
+
+/*----------------------------------------------------------------------------*
+ * Function:procTMSmsg
+ *
+ * abuf     - input ASCII buffer received from TMS.
+ * len      - input: reference length when convert ASCII to binary
+ * scode    - output if buf contains control code.
+ * x205cmd  - output if buf contains SA205 config command.
+ * Returns:
+ *          - TMS_EMPTY,
+ *            TMS_205CMD if abuf contains SA205 config command,
+ *            TMS_CODE abuf contains control code,
+ *            TMS_UNKNOWN.
+ *----------------------------------------------------------------------------*/
+INT procTMSmsg(UCHAR *abuf, INT len, SA_CODE *scode, X205CMD *x205cmd);
 
 /*----------------------------------------------------------------------------*
  * Function: lastSAError

@@ -11,12 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/05 19:50:26 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/04/29 19:58:50 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
+#include "logger.h"
 #include "tbl_lmg_sa205105.h"
 
 //=============================================================================================================
@@ -70,17 +71,50 @@ RWCString CtiTableSA205105Group::getOperationalAddress() const
 
 LONG CtiTableSA205105Group::getRouteId( void ) const
 {
-	return _routeId;
+    return _routeId;
 }
 
 //=============================================================================================================
 //=============================================================================================================
-/*
-int CtiTableSA205105Group::getAddressUsage()
+int CtiTableSA205105Group::getFunction(bool shed) const
 {
-    return;
+    int function = 2;       // default to test off to prevent any bad errors.
+
+    if(!getLoadNumber().compareTo("load 1", RWCString::ignoreCase))
+    {
+        function = shed ? 8 : 9;
+    }
+    else if(!getLoadNumber().compareTo("load 2", RWCString::ignoreCase))
+    {
+        function = shed ? 10 : 11;
+    }
+    else if(!getLoadNumber().compareTo("load 3", RWCString::ignoreCase))
+    {
+        function = shed ? 1 : 6;        // Restores to 1,2,3
+    }
+    else if(!getLoadNumber().compareTo("load 4", RWCString::ignoreCase))
+    {
+        function = shed ? 3 : 4;
+    }
+    else if(!getLoadNumber().compareTo("load 1,2", RWCString::ignoreCase))
+    {
+        function = shed ? 14 : 15;
+    }
+    else if(!getLoadNumber().compareTo("load 1,2,3", RWCString::ignoreCase))
+    {
+        function = shed ? 5 : 6;
+    }
+    else if(!getLoadNumber().compareTo("load 1,2,3,4", RWCString::ignoreCase))
+    {
+        function = shed ? 12 : 13;
+    }
+    else if(!getLoadNumber().compareTo("test", RWCString::ignoreCase))
+    {
+        function = shed ? 7 : 2;                // shed ? TEST_ON : TEST_OFF;
+    }
+
+    return function;
 }
-*/
 //=============================================================================================================
 //=============================================================================================================
 
@@ -128,11 +162,6 @@ CtiTableSA205105Group& CtiTableSA205105Group::setOperationalAddress( RWCString n
 //=============================================================================================================
 //=============================================================================================================
 
-CtiTableSA205105Group& CtiTableSA205105Group::setFunction( int newVal )
-{
-    _function = newVal;
-    return *this;
-}
 
 //=============================================================================================================
 //=============================================================================================================
@@ -165,7 +194,7 @@ void CtiTableSA205105Group::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSe
 
     selector.from(devTbl);
 
-    selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );
+    selector.where( keyTable["paobjectid"] == devTbl["groupid"] && selector.where() );
 }
 
 //=============================================================================================================
@@ -175,7 +204,7 @@ void CtiTableSA205105Group::DecodeDatabaseReader(RWDBReader &rdr)
 {
     rdr["groupid"] >> _lmGroupId;
     rdr["routeid"] >> _routeId;
-    rdr["opeationaladdress"] >> _operationalAddress;
+    rdr["operationaladdress"] >> _operationalAddress;
     rdr["loadnumber"] >> _loadNumber;
 }
 

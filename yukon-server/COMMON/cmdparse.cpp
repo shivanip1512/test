@@ -829,9 +829,9 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
         /*
          *  Try to find out if a relay has been specified for the control operation!
          */
-        if(!(token = CmdStr.match("(relay)|(load)")).isNull())
+        if(!(token = CmdStr.match("( relay)|( load)")).isNull())
         {
-            if(!(token = CmdStr.match("((relay)|(load)) +[0-9]+( *, *[0-9]+)*")).isNull())
+            if(!(token = CmdStr.match("(( relay)|( load)) +[0-9]+( *, *[0-9]+)*")).isNull())
             {
                 INT i;
                 INT mask = 0;
@@ -912,6 +912,8 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
                 doParseControlExpresscom(CmdStr);
                 break;
             }
+        case ProtocolSADigitalType:
+        case ProtocolGolayType:
         case ProtocolSA105Type:
         case ProtocolSA205Type:
         case ProtocolSA305Type:
@@ -1055,6 +1057,8 @@ void  CtiCommandParser::doParsePutStatus(const RWCString &CmdStr)
                 doParsePutStatusEmetcon(CmdStr);
                 break;
             }
+            case ProtocolSADigitalType:
+            case ProtocolGolayType:
             case ProtocolSA105Type:
             case ProtocolSA205Type:
             case ProtocolSA305Type:
@@ -1315,6 +1319,8 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
                 doParsePutConfigSA(CmdStr);
                 break;
             }
+        case ProtocolSADigitalType:
+        case ProtocolGolayType:
         case ProtocolFisherPierceType:
             {
                 {
@@ -2838,6 +2844,14 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
             {
                 _cmd["type"] = CtiParseValue( "fp",  ProtocolFisherPierceType );
             }
+            else if(CmdStr.contains("golay"))       // Sourcing from CmdStr, which is the entire command string.
+            {
+                _cmd["type"] = CtiParseValue( "golay", ProtocolGolayType );
+            }
+            else if(CmdStr.contains("sadig"))       // Sourcing from CmdStr, which is the entire command string.
+            {
+                _cmd["type"] = CtiParseValue( "sadig", ProtocolSADigitalType );
+            }
             else if(CmdStr.contains("sa105"))       // Sourcing from CmdStr, which is the entire command string.
             {
                 _cmd["type"] = CtiParseValue( "sa105", ProtocolSA105Type );
@@ -3001,6 +3015,14 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
             else if(CmdStr.contains("xcom") || CmdStr.contains("expresscom"))
             {
                 _cmd["type"] = CtiParseValue( "expresscom", ProtocolExpresscomType );
+            }
+            else if(CmdStr.contains("golay"))       // Sourcing from CmdStr, which is the entire command string.
+            {
+                _cmd["type"] = CtiParseValue( "golay", ProtocolGolayType );
+            }
+            else if(CmdStr.contains("sadig"))       // Sourcing from CmdStr, which is the entire command string.
+            {
+                _cmd["type"] = CtiParseValue( "sadig", ProtocolSADigitalType );
             }
             else if(CmdStr.contains("sa105"))       // Sourcing from CmdStr, which is the entire command string.
             {
@@ -4070,40 +4092,21 @@ void CtiCommandParser::doParseControlSA(const RWCString &CmdStr)
         }
     }
 
-
-    if(CmdStr.contains(" function") )
+    if(CmdStr.contains(" function"))
     {
-        if(!(temp = CmdStr.match(" function +[01][01][01][01]")).isNull())
+        if(!(temp = CmdStr.match(" function +[0-9]+")).isNull())
+        {
+            if(!(valStr = temp.match("[0-9]+")).isNull())
+            {
+                iValue = atoi(valStr.data());
+                _cmd["sa_function"] = CtiParseValue(iValue);
+            }
+        }
+        else if(!(temp = CmdStr.match(" function +[01][01][01][01]")).isNull())
         {
             if(!(valStr = temp.match("[01][01][01][01]")).isNull())
             {
                 iValue = binaryStringToInt(valStr.data(), valStr.length());
-                _cmd["sa_function"] = CtiParseValue(iValue);
-            }
-        }
-        else if(!(temp = CmdStr.match(" function +[1-4]([ ,]+[1-4])?([ ,]+[1-4])?([ ,]+[1-4])?")).isNull())
-        {
-            if(!(valStr = temp.match("[1-4]([ ,]+[1-4])?([ ,]+[1-4])?([ ,]+[1-4])?")).isNull())
-            {
-                iValue = 0;
-
-                if(valStr.contains("4"))
-                {
-                    iValue |= 0x08;
-                }
-                if(valStr.contains("3"))
-                {
-                    iValue |= 0x04;
-                }
-                if(valStr.contains("2"))
-                {
-                    iValue |= 0x02;
-                }
-                if(valStr.contains("1"))
-                {
-                    iValue |= 0x01;
-                }
-
                 _cmd["sa_function"] = CtiParseValue(iValue);
             }
         }

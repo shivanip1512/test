@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2004/03/18 19:46:17 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2004/04/29 19:59:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -445,7 +445,7 @@ RWCString desolveDeviceType( INT aType )
    }
    else if(aType == TYPE_LMGROUP_SADIGITAL)
    {
-      Ret = "sadigital group";
+      Ret = "sa-digital group";
    }
    else if(aType == TYPE_LMGROUP_SA105)
    {
@@ -458,6 +458,10 @@ RWCString desolveDeviceType( INT aType )
    else if(aType == TYPE_LMGROUP_SA305)
    {
       Ret = "sa-305 group";
+   }
+   else if(aType == TYPE_RTC)
+   {
+      Ret = "rtc";
    }
    else
    {
@@ -584,6 +588,10 @@ RWCString Ret;
     else if(aType == WCTPRouteType)
     {
         Ret = "wctp paging";
+    }
+    else if(aType == RTCRouteType)
+    {
+        Ret = "rtc";
     }
     else
     {

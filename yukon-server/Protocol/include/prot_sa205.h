@@ -7,15 +7,15 @@
 *
 * File:   prot_sa205
 *
-* Class:  
+* Class:
 * Date:   4/5/2004
 *
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/05 19:50:26 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/04/29 19:58:50 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -28,13 +28,14 @@
 #include "pointtypes.h"
 #include "prot_base.h"
 
+
 class IM_EX_PROT CtiProtocolSA205 : public CtiProtocolBase
 {
 public:
 
-	CtiProtocolSA205();
-	CtiProtocolSA205( const CtiProtocolSA205& aRef );
-	virtual ~CtiProtocolSA205();
+    CtiProtocolSA205();
+    CtiProtocolSA205( const CtiProtocolSA205& aRef );
+    virtual ~CtiProtocolSA205();
 
 private:
 protected:

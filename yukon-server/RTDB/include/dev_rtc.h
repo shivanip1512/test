@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/03/19 15:56:16 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/04/29 19:59:10 $
 * HISTORY      :
 * $Log: dev_rtc.h,v $
+* Revision 1.3  2004/04/29 19:59:10  cplender
+* Initial sa protocol/load group support
+*
 * Revision 1.2  2004/03/19 15:56:16  cplender
 * Adding the RTC and non-305 SA protocols.
 *
@@ -49,8 +52,9 @@ public:
 
     CtiDeviceRTC& operator=(const CtiDeviceRTC& aRef);
 
+    const CtiTableDeviceRTC& getRTCTable() const;
 
-
+    virtual LONG getAddress() const;
     virtual RWCString getDescription(const CtiCommandParser & parse) const;
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);

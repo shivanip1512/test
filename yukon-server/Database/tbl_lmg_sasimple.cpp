@@ -11,13 +11,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/05 19:50:26 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/04/29 19:58:50 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 
+#include "logger.h"
 #include "tbl_lmg_sasimple.h"
 
 //=====================================================================================================================
@@ -77,7 +78,7 @@ RWCString CtiTableSASimpleGroup::getOperationalAddress() const
 //=====================================================================================================================
 //=====================================================================================================================
 
-int CtiTableSASimpleGroup::getFunction() const
+int CtiTableSASimpleGroup::getFunction(bool control) const
 {
     return _function;
 }
@@ -100,9 +101,9 @@ int CtiTableSASimpleGroup::getVirtualTimeout() const
 
 //=====================================================================================================================
 //=====================================================================================================================
-                                                                    
+
 CtiTableSASimpleGroup& CtiTableSASimpleGroup::setLmGroupId( LONG newVal )
-{                                                                   
+{
     _lmGroupId = newVal;
     return *this;
 }
@@ -176,7 +177,7 @@ void CtiTableSASimpleGroup::getSQL( RWDBDatabase &db, RWDBTable &keyTable, RWDBS
 
     selector.from(devTbl);
 
-    selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );
+    selector.where( keyTable["paobjectid"] == devTbl["groupid"] && selector.where() );
 }
 
 //=====================================================================================================================
@@ -187,9 +188,8 @@ void CtiTableSASimpleGroup::DecodeDatabaseReader( RWDBReader &rdr )
     rdr["groupid"]              >> _lmGroupId;
     rdr["routeid"]              >> _routeId;
     rdr["operationaladdress"]   >> _operationalAddress;
-    rdr["nominalTimeout"]       >> _nominalTimeout;
-    rdr["virtualTimeout"]       >> _virtualTimeout;
-    rdr["function"]             >> _function;
+    rdr["nominaltimeout"]       >> _nominalTimeout;
+    rdr["virtualtimeout"]       >> _virtualTimeout;
 }
 
 //=====================================================================================================================

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2004/04/14 17:08:47 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2004/04/29 19:59:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,9 +40,13 @@
 #include "dev_grp_emetcon.h"
 #include "dev_grp_expresscom.h"
 #include "dev_grp_energypro.h"
+#include "dev_grp_golay.h"
 #include "dev_grp_mct.h"
 #include "dev_grp_ripple.h"
+#include "dev_grp_sa105.h"
+#include "dev_grp_sa205.h"
 #include "dev_grp_sa305.h"
+#include "dev_grp_sadigital.h"
 #include "dev_grp_versacom.h"
 #include "dev_davis.h"
 #include "dev_dlcbase.h"
@@ -65,6 +69,7 @@
 #include "dev_mark_v.h"
 #include "dev_repeater800.h"
 #include "dev_repeater.h"
+#include "dev_rtc.h"
 #include "dev_sixnet.h"
 #include "rte_macro.h"
 #include "rte_ccu.h"
@@ -346,6 +351,31 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
             Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCTBroadcast;
             break;
         }
+    case TYPE_RTC:
+        {
+            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceRTC;
+            break;
+        }
+    case TYPE_LMGROUP_GOLAY:
+        {
+            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupGolay;
+            break;
+        }
+    case TYPE_LMGROUP_SADIGITAL:
+        {
+            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupSADigital;
+            break;
+        }
+    case TYPE_LMGROUP_SA105:
+        {
+            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupSA105;
+            break;
+        }
+    case TYPE_LMGROUP_SA205:
+        {
+            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupSA205;
+            break;
+        }
     case TYPE_LMGROUP_SA305:
         {
             Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupSA305;
@@ -398,6 +428,7 @@ DLLEXPORT CtiRouteBase* RouteFactory(RWDBReader &rdr)
         case TCURouteType:
         case TapRouteType:
         case WCTPRouteType:
+        case RTCRouteType:
             {
                 Route = (CtiRouteBase*) CTIDBG_new CtiRouteXCU;
                 break;

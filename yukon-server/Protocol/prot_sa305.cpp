@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/03/18 19:46:43 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/04/29 19:58:49 $
 *
 * HISTORY      :
 * $Log: prot_sa305.cpp,v $
+* Revision 1.2  2004/04/29 19:58:49  cplender
+* Initial sa protocol/load group support
+*
 * Revision 1.1  2004/03/18 19:46:43  cplender
 * Added code to support the SA305 protocol and load group
 *
@@ -22,6 +25,7 @@
 
 #pragma warning( disable : 4786)
 
+#include "cparms.h"
 #include "logger.h"
 #include "numstr.h"
 #include "prot_sa305.h"
@@ -370,12 +374,13 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
         }
     }
 
-
+    if(gConfigParms.getValueAsInt("SA305_DEBUGLEVEL",0) & DEBUGLEVEL_LUDICROUS)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << " period        : " << _period << endl;
         dout << " % off         : " << _percentageOff << endl;
+        dout << " repetitions   : " << _repetitions << endl;
         dout << " strategy      : " << strategy << endl;
         dout << " flags         : " << _flags << endl;
     }
@@ -561,7 +566,7 @@ INT CtiProtocolSA305::assembleControl(CtiCommandParser &parse, CtiOutMessage &Ou
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Unsupported expresscom command.  Command = " << parse.getCommand() << endl;
+        dout << RWTime() << " Unsupported sa305 command.  Command = " << parse.getCommand() << endl;
     }
 
     return status;

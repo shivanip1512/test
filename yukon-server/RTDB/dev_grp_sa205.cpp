@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/05 19:50:26 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/04/29 19:58:49 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -148,50 +148,18 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     RWCString resultString;
 
     CtiRouteSPtr Route;
-    /*
-     *  This method should only be called by the dev_base method
-     *   ExecuteRequest(CtiReturnMsg*) (NOTE THE DIFFERENCE IN ARGS)
-     *   That method prepares an outmessage for submission to the internals..
-     */
+
     parse.setValue("type", ProtocolSA205Type);
+    parse.parse();
 
-    int serial = 0;
-    int group = 0;
-    int div = 0;
-    int sub = 0;
-/*
-    serial = (int)(getLoadGroup().getIndividual());
+    bool control = (parse.getFlags() & (CMD_FLAG_CTL_SHED | CMD_FLAG_CTL_CYCLE));
 
-    //  These elements are mandatory for any communicatino 
-    parse.setValue("sa_utility", getLoadGroup().getUtility());
-    parse.setValue("sa_ratefamily", getLoadGroup().getRateFamily());
-    parse.setValue("sa_ratemember", getLoadGroup().getRateMember());
-    parse.setValue("sa_hierarchy", getLoadGroup().getHierarchy());
-    parse.setValue("serial", serial);
-
-    RWCString au = getLoadGroup().getAddressUsage();
-
-    if(au.contains("R", RWCString::ignoreCase))     // This is a group addressed command
-    {
-        parse.setValue("sa_addressusage", TRUE);
-    }
-
-    if(au.contains("G", RWCString::ignoreCase))          group = (int)(getLoadGroup().getGroup());
-    if(au.contains("D", RWCString::ignoreCase))          div = (int)(getLoadGroup().getDivision());
-    if(au.contains("S", RWCString::ignoreCase))          sub = (int)(getLoadGroup().getSubstation());
-
-    // These elements are gravy
-    parse.setValue("sa_group", group);
-    parse.setValue("sa_division", div);
-    parse.setValue("sa_substation", sub);
-
-    parse.setValue("sa_function", getLoadGroup().getFunction());
+    parse.setValue("sa_opaddress", atoi(_loadGroup.getOperationalAddress().data()));
+    parse.setValue("sa_function", _loadGroup.getFunction(control));
 
     if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
     {
         OutMessage->TargetID = getID();
-
-        int serial = (int)(getLoadGroup().getIndividual());
 
         //
         // OK, these are the items we are about to set out to perform..  Any additional signals will
@@ -254,7 +222,7 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
             dout << RWTime() << resultString << endl;
         }
     }
-*/
+
     return nRet;
 }
 
@@ -270,7 +238,7 @@ RWCString CtiDeviceGroupSA205::getPutConfigAssignment( UINT level )
                        " S" + CtiNumStr(_loadGroup.getSubstation()) +
                        " F" + CtiNumStr(_loadGroup.getRateFamily()) +
                        " M" + CtiNumStr(_loadGroup.getRateMember());
-																	*/
+                                                                    */
     return  assign;
 }
 

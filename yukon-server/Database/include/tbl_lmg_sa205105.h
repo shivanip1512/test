@@ -7,15 +7,15 @@
 *
 * File:   tbl_lmg_sa_205105
 *
-* Class:  
+* Class:
 * Date:   3/9/2004
 *
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/05 19:50:26 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/04/29 19:58:51 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -45,12 +45,10 @@ protected:
 
     RWCString   _operationalAddress;
     RWCString   _loadNumber;
-    int         _function;
 
 private:
 
-    public:
-
+public:
     CtiTableSA205105Group();
     CtiTableSA205105Group( const CtiTableSA205105Group& aRef );
 
@@ -62,12 +60,11 @@ private:
     LONG getRouteId( void ) const;
     RWCString getOperationalAddress( void ) const;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
     RWCString getLoadNumber( void ) const;
-    int getFunction( void ) const;
+    int getFunction( bool shed ) const;
 
     CtiTableSA205105Group& setLmGroupId( LONG newVal );
     CtiTableSA205105Group& setRouteId( LONG newVal );
     CtiTableSA205105Group& setOperationalAddress( RWCString newVal );
-    CtiTableSA205105Group& setFunction( int newVal );          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
     CtiTableSA205105Group& setLoadNumber( RWCString newVal );
     static RWCString getTableName( void );
 

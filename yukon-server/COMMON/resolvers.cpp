@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2004/04/22 21:19:00 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2004/04/29 19:59:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,6 +64,10 @@ INT resolveRouteType(RWCString rwsTemp)
     else if(rwsTemp == "wctp terminal")
     {
         Ret = WCTPRouteType;
+    }
+    else if(rwsTemp == "rtc")
+    {
+        Ret = RTCRouteType;
     }
     else
     {
@@ -565,7 +569,7 @@ INT resolveDeviceType(RWCString rwsTemp)
     {
         nRet = TYPE_LMGROUP_GOLAY;
     }
-    else if(rwsTemp == "sadigital group")
+    else if(rwsTemp == "sa-digital group")
     {
         nRet = TYPE_LMGROUP_SADIGITAL;
     }
@@ -580,6 +584,10 @@ INT resolveDeviceType(RWCString rwsTemp)
     else if(rwsTemp == "sa-305 group")
     {
         nRet = TYPE_LMGROUP_SA305;
+    }
+    else if(rwsTemp == "rtc")
+    {
+        nRet = TYPE_RTC;
     }
     else
     {
@@ -1037,6 +1045,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
     case TYPEMCT410:
     case TYPELMT2:
     case TYPECBC6510:
+    case TYPE_RTC:
         {
             bRet = true;
             break;

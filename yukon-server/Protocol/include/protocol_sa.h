@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/03/19 15:53:38 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/04/29 19:58:50 $
 *
 *
 * Notes:
@@ -18,16 +18,18 @@
 *
 * Copyright (c) 2003
 *-----------------------------------------------------------------------------*/
-#include <iostream.h>
-#include <stdlib.h> 
-#include <stdio.h>
-#include <math.h>
-#include <memory.h>
-#include <string.h>
 
 #pragma warning( disable : 4786)
 #ifndef __PROTOCOL_SA_H__
 #define __PROTOCOL_SA_H__
+
+/*
+#include <iostream.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+#include <memory.h>
+#include <string.h>
 
 typedef char CHAR;
 typedef unsigned char BYTE;
@@ -35,17 +37,34 @@ typedef int INT;
 typedef unsigned int UINT;
 typedef short int SHORT;
 typedef unsigned short int USHORT;
+*/
 
 typedef struct schedCode
-{  
+{
    CHAR code[7];
-   SHORT function;	/* The DCU function to be activated */
-   USHORT type;		/* Type of DCU defined below */
+   SHORT function;  /* The DCU function to be activated */
+   USHORT type;     /* Type of DCU defined below */
    USHORT swTime;       /* desired (virtual) switch timeout in minutes */
    USHORT cycleTime;    /* cycle time  in minutes */
    SHORT repeats;       /* number repeats to effect virtual timeout */
                         /* or number cycleTimes in control period (205)*/
-}SCODE;
+}SA_CODE;
+
+/*--------------------------------------------------------------------------*/
+/* The X205CMD (xmit 205 command) structure describes a particular 205 setup*/
+/* command.                                 */
+/*--------------------------------------------------------------------------*/
+
+typedef struct xmit205Cmd   /* 48 bytes per cmd */
+{
+   char serialNum[33];
+   USHORT type;
+   char code[7];
+   USHORT function;
+   USHORT data;
+   USHORT padding;
+}
+X205CMD;
 
 /* This is the current DCU types in OASyS LM */
 #define SA205 0
@@ -67,14 +86,32 @@ typedef struct schedCode
 #define CLPU_ACT_FUNC 12
 
 /* MAX databuffer len */
-#define MAX_XBUF	32
+#define MAX_XBUF    32
 
 #define SHED 1
 #define REST 0
 
+/* TMS command type */
+#define TMS_ONE 0
+#define TMS_ALL 1
+#define TMS_INIT 2
+#define TMS_ACK 3
+
+/* Message type from TMS */
+#define TMS_EMPTY 0
+#define TMS_SADIG 4
+#define TMS_SA105 6
+#define TMS_GOLAY 7
+#define TMS_205CMD 12
+#define TMS_CODE  20
+#define TMS_UNKNOWN  21
+#define TMS_LRC_ERROR 22
+
+/* define code buffer sizes */
 #define CODESZ 6
 #define CONTROL_CODESZ 7
 #define CONFIG_CODESZ 12
+#define TMS_BUFFER_SIZE 8
 
 // Success and non-fatal errors.
 #define PROTSA_SUCCESS                          0
@@ -101,12 +138,12 @@ typedef struct schedCode
  *              message stored in buf.
  *
  * code -  Input: valid input format is "xyz" or "xy-z".
-	where x,y,z could be the same digit. "xy-z" will be converted to an 
-	integer value = 8*xy+z.
+    where x,y,z could be the same digit. "xy-z" will be converted to an
+    integer value = 8*xy+z.
         In both cases, the maximum integer value of the code is 255.
  *
  * xmitter_addr - Input: Transmitter address
- * 
+ *
  * markIndex - Input: Mark Index
  *
  * spareIndex - Input: Spare Index
@@ -115,7 +152,7 @@ typedef struct schedCode
  *          - A valid return code from above.
  *
  *----------------------------------------------------------------------------*/
-INT controlSADigital( BYTE *buf, INT *buflen,  CHAR code[], 
+INT controlSADigital( BYTE *buf, INT *buflen,  CHAR code[],
                       USHORT xmitter_addr,USHORT markIndex,
                       USHORT spareIndex );
 
@@ -130,44 +167,44 @@ INT controlSADigital( BYTE *buf, INT *buflen,  CHAR code[],
  *              On successful exit, buflen indicates the length of the completed
  *              message stored in buf.
  *
- * scode     - Input: SA105/205 operational information as defined in the SCODE structure
+ * scode     - Input: SA105/205 operational information as defined in the SA_CODE structure
  *
  * xmitter_addr - Input: Transmitter address
  *
  * Notes:
- *	If invalid swTime/cycleTime is passed in by scode, error 
- *	PROTSA_FAIL_INVALID_SW_CYCLE_TIME will be returned.
- *	
- *	Valid swTime/cycleTime for SA105/205 are listed below(column = 1 SA205 only):
+ *  If invalid swTime/cycleTime is passed in by scode, error
+ *  PROTSA_FAIL_INVALID_SW_CYCLE_TIME will be returned.
+ *  
+ *  Valid swTime/cycleTime for SA105/205 are listed below (column = 1 SA205 only):
  *
- *		{ 900,  900, 0}
- *       	{1800, 1800, 0}
- *       	{3600, 3600, 0}
- *       	{ 450,  450, 1}
- *       	{ 450, 1800, 0}
- *       	{ 600, 1800, 0}
- *       	{ 450,  900, 0}
- *       	{ 600,  900, 0}
- *       	{ 660,  900, 0}
- *       	{ 720,  900, 0}
- *       	{ 900, 1800, 1}
- *       	{1350, 1800, 1}
- *       	{ 750, 1800, 1}
- *       	{ 450, 3600, 0}
- *       	{ 900, 3600, 0}
- *       	{1350, 3600, 0}
- *       	{1800, 3600, 0}
- *       	{2250, 3600, 0}
- *       	{2700, 3600, 0}
- *       	{3150, 3600, 0}
- *       	{1200, 3600, 1}
- *       	{2400, 3600, 1}
+ *          { 900,  900, 0}
+ *          {1800, 1800, 0}
+ *          {3600, 3600, 0}
+ *          { 450,  450, 1}
+ *          { 450, 1800, 0}
+ *          { 600, 1800, 0}
+ *          { 450,  900, 0}
+ *          { 600,  900, 0}
+ *          { 660,  900, 0}
+ *          { 720,  900, 0}
+ *          { 900, 1800, 1}
+ *          {1350, 1800, 1}
+ *          { 750, 1800, 1}
+ *          { 450, 3600, 0}
+ *          { 900, 3600, 0}
+ *          {1350, 3600, 0}
+ *          {1800, 3600, 0}
+ *          {2250, 3600, 0}
+ *          {2700, 3600, 0}
+ *          {3150, 3600, 0}
+ *          {1200, 3600, 1}
+ *          {2400, 3600, 1}
  *
  * Returns:
  *          - A valid return code from above.
  *
  *----------------------------------------------------------------------------*/
-INT control105_205( BYTE *buf, INT *buflen, SCODE *scode, USHORT xmitter_addr);
+INT control105_205( BYTE *buf, INT *buflen, SA_CODE *scode, USHORT xmitter_addr);
 
 /*----------------------------------------------------------------------------*
  * Function: controlGolay
@@ -180,7 +217,7 @@ INT control105_205( BYTE *buf, INT *buflen, SCODE *scode, USHORT xmitter_addr);
  *              message stored in buf.
  *
  * code     - 6-digit operational code.
- * 
+ *
  * function - DCU function.
  *
  * xmitter_addr - Transmitter address
@@ -219,7 +256,7 @@ INT controlGolay( BYTE *buf, INT *buflen, CHAR code[], SHORT function, USHORT xm
  *
  *----------------------------------------------------------------------------*/
 INT config205( BYTE *buf, INT *buflen, CHAR serialNum[],
-	       USHORT address_slot, CHAR new_code[], USHORT xmitter_addr);
+           USHORT address_slot, CHAR new_code[], USHORT xmitter_addr);
 
 /*----------------------------------------------------------------------------*
  * Function: tempOutOfService205
@@ -249,7 +286,7 @@ INT config205( BYTE *buf, INT *buflen, CHAR serialNum[],
 INT tempOutOfService205( BYTE *buf, INT *buflen, CHAR serialNum[], INT hours_out, USHORT xmitter_addr );
 
 /*----------------------------------------------------------------------------*
- * Function:tamperDetect205 
+ * Function:tamperDetect205
  *
  * buf      - output buffer. A fully formed control command is built and placed
  *              in this buffer on successful completion of the function.
@@ -269,20 +306,20 @@ INT tempOutOfService205( BYTE *buf, INT *buflen, CHAR serialNum[], INT hours_out
  *
  *
  * Notes:
- *      If tdCount > 255, 255 will be used and PROTSA_SUCCESS_MODIFIED_PARAM 
+ *      If tdCount > 255, 255 will be used and PROTSA_SUCCESS_MODIFIED_PARAM
  *      returned.
- *      If tdCount < 0, 0 will be used and PROTSA_SUCCESS_MODIFIED_PARAM 
+ *      If tdCount < 0, 0 will be used and PROTSA_SUCCESS_MODIFIED_PARAM
  *      returned.
  *
  * Returns:
  *          - A valid return code from above.
  *
  *----------------------------------------------------------------------------*/
-INT tamperDetect205(BYTE *codeBuf, INT *codeIndex, CHAR serialNum[], 
+INT tamperDetect205(BYTE *codeBuf, INT *codeIndex, CHAR serialNum[],
                       USHORT relay, INT tdCount, USHORT xmitter_addr);
 
 /*----------------------------------------------------------------------------*
- * Function:coldLoadPickup205 
+ * Function:coldLoadPickup205
  *
  * buf      - output buffer. A fully formed control command is built and placed
  *              in this buffer on successful completion of the function.
@@ -293,8 +330,8 @@ INT tamperDetect205(BYTE *codeBuf, INT *codeIndex, CHAR serialNum[],
  *
  * serialNum  - Input: SA205 DCU serial number.
  *
- * relay - Input: valid entries are 1, 2, 3 or 4 only. Invalid input will 
- *	      result in returning PROTSAERROR_BAD_PARAMETER.
+ * relay - Input: valid entries are 1, 2, 3 or 4 only. Invalid input will
+ *        result in returning PROTSAERROR_BAD_PARAMETER.
  *
  * clpCount - Input:Cold Load Pickup Count, 0-255, 1 count = 14.0616seconds
  *
@@ -302,15 +339,61 @@ INT tamperDetect205(BYTE *codeBuf, INT *codeIndex, CHAR serialNum[],
  *
  *
  * Notes:
- *      If clpCount > 255, 255 will be used and PROTSA_SUCCESS_MODIFIED_PARAM 
+ *      If clpCount > 255, 255 will be used and PROTSA_SUCCESS_MODIFIED_PARAM
  *      returned.
  *
  * Returns:
  *          - A valid return code from above.
  *
  *----------------------------------------------------------------------------*/
-INT coldLoadPickup205(BYTE *codeBuf, INT *codeIndex, CHAR serialNum[], 
+INT coldLoadPickup205(BYTE *codeBuf, INT *codeIndex, CHAR serialNum[],
                       USHORT relay, INT clpCount, USHORT xmitter_addr);
+
+/*----------------------------------------------------------------------------*
+ * Function:formatTMScmd
+ *
+ * abuf      - output buffer. A fully formed TMS command in ASCII is built and placed
+ *              in this buffer on successful completion of the function.
+ *
+ * buflen   - input/output.  On entry buflen indicates the allowed size of buf.
+ *              On successful exit, buflen indicates the length of the completed
+ *              message stored in buf.
+ *
+ * TMS_cmd_type - Input: TMS command type as defined above.
+ *
+ * xmitter  - input: transmitter address
+ *
+ * Returns:
+ *          - A valid return code.
+ *----------------------------------------------------------------------------*/
+INT formatTMScmd (UCHAR *abuf, INT *buflen, USHORT TMS_cmd_type, USHORT xmitter);
+
+/*----------------------------------------------------------------------------*
+ * Function:TMSlen
+ *
+ * abuf  - input: first 8 bytes of TMS response in ASCII.
+ *
+ * len   - output:  additional bytes to receive
+ *
+ * Returns:
+ *          - A valid return code.
+ *----------------------------------------------------------------------------*/
+INT TMSlen (UCHAR *abuf, INT *len);
+
+/*----------------------------------------------------------------------------*
+ * Function:procTMSmsg
+ *
+ * abuf     - input ASCII buffer received from TMS.
+ * len      - input: reference length when convert ASCII to binary
+ * scode    - output if buf contains control code.
+ * x205cmd  - output if buf contains SA205 config command.
+ * Returns:
+ *          - TMS_EMPTY,
+ *            TMS_205CMD if abuf contains SA205 config command,
+ *            TMS_CODE abuf contains control code,
+ *            TMS_UNKNOWN.
+ *----------------------------------------------------------------------------*/
+INT procTMSmsg(UCHAR *abuf, INT len, SA_CODE *scode, X205CMD *x205cmd);
 
 /*----------------------------------------------------------------------------*
  * Function: lastSAError

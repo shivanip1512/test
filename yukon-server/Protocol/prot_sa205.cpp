@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/05 19:50:26 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/04/29 19:58:49 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,7 +31,7 @@ CtiProtocolSA205::CtiProtocolSA205()
 
 CtiProtocolSA205::CtiProtocolSA205( const CtiProtocolSA205& aRef )
 {
-	*this = aRef;
+    *this = aRef;
 }
 
 //===================================================================================================================
