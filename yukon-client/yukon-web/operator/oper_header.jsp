@@ -1,8 +1,7 @@
 <%@ page language="java" %>
+<%@ page import="java.util.*" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.database.data.lite.LiteEnergyCompany" %>
-<%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
-<%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 <%@ page import="com.cannontech.graph.model.TrendModelType" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
 <%@ taglib uri="/WEB-INF/jruntags.jar" prefix="jrun" %>
@@ -11,14 +10,21 @@
 <cti:checklogin/>
 
 <%
-    String content;
-    Operator operator = 
-        (Operator) request.getSession(false).getValue("OPERATOR");
+	LiteYukonUser liteYukonUser = null;
+	try
+	{
+		liteYukonUser = (LiteYukonUser) session.getAttribute("YUKON_USER");
+	}
+	catch (IllegalStateException ise)
+	{
+	}
+	if (liteYukonUser == null)
+	{
+		response.sendRedirect("/login.jsp"); return;
+	}
 
-    long energyCompanyID = operator.getEnergyCompanyID();
-
-    LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
-    LoadcontrolCache cache = cs.getCache();
+    int liteYukonUserId = liteYukonUser.getLiteID();
+    
     java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
     java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
     java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
