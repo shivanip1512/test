@@ -16,8 +16,6 @@ public final class TDCDefines
 			com.cannontech.common.util.CtiUtilities.getConfigDirPath() + "alarm.au";
 
 	public static String DBALIAS = "yukon";
-	public static final String VERSION = 
-				com.cannontech.common.version.VersionTools.getYUKON_VERSION() + ".2.14";
 
 	public static final String OUTPUT_FILE_NAME = com.cannontech.common.util.CtiUtilities.getConfigDirPath() + "TDCOut.DAT";
 	public static final String DISPLAY_OUT_FILE_NAME = com.cannontech.common.util.CtiUtilities.getConfigDirPath() + "TDCDisplaySettings.DAT";

@@ -438,13 +438,17 @@ public void setValue(Object val) {
 				pointBase = (com.cannontech.database.data.point.PointBase)com.cannontech.database.data.lite.LiteFactory.createDBPersistent(litePoint);
 				try
 				{
-					com.cannontech.database.Transaction t = com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, pointBase);
-					t.execute();
+					com.cannontech.database.Transaction t = com.cannontech.database.Transaction.createTransaction(
+                        com.cannontech.database.Transaction.RETRIEVE, 
+                        pointBase);
+
+					pointBase = (com.cannontech.database.data.point.PointBase)t.execute();
 				}
 				catch(com.cannontech.database.TransactionException e)
 				{
 					com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 				}
+
 				devicePoints.addElement(pointBase);
 			}
 			usedPointNumbers.add( new Integer(litePoint.getPointID()) );

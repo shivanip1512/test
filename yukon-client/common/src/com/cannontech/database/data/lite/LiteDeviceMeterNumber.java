@@ -52,40 +52,24 @@ public String getMeterNumber() {
 public void retrieve(String databaseAlias) 
 {
 	
- 	String sqlString = "SELECT METERNUMBER FROM DEVICEMETERGROUP WHERE DEVICEID = " + getDeviceID();
+   com.cannontech.database.SqlStatement s = 
+      new com.cannontech.database.SqlStatement(
+         "SELECT METERNUMBER FROM DEVICEMETERGROUP WHERE DEVICEID = " + getDeviceID(),
+         com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
-	java.sql.Connection conn = null;
-	java.sql.Statement stmt = null;
-	java.sql.ResultSet rset = null;
 	try 
 	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection( databaseAlias );
-		stmt = conn.createStatement();
-		rset = stmt.executeQuery(sqlString);
+      s.execute();
 
-		while (rset.next())
-		{
-			setMeterNumber( rset.getString(1) );
-		}
+      if( s.getRowCount() <= 0 )
+         throw new IllegalStateException("Unable to find DeviceMeterGroup with deviceID = " + getLiteID() );
+
+
+      setMeterNumber( s.getRow(0)[0].toString() );
 	}
-	catch( java.sql.SQLException e )
+	catch( Exception e )
 	{
 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		try
-		{
-			if( stmt != null )
-				stmt.close();
-			if( conn != null )
-				conn.close();
-		}
-		catch( java.sql.SQLException e )
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-
 	}
 
 }

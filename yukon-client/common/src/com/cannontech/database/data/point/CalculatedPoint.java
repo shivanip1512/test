@@ -58,7 +58,7 @@ public void addPartial() throws java.sql.SQLException {
  */
 public void delete() throws java.sql.SQLException 
 {
-	CalcComponent.deleteCalcComponents(getPoint().getPointID());
+	CalcComponent.deleteCalcComponents( getPoint().getPointID(), getDbConnection() );
 	
 	//a dynamic table used by the CalcHistorical application
 	delete(DynamicCalcHistorical.TABLE_NAME, "PointID", getPoint().getPointID());
@@ -167,7 +167,8 @@ public void update() throws java.sql.SQLException {
 
 	getCalcBase().update();
 
-	CalcComponent.deleteCalcComponents(getPoint().getPointID());
+	CalcComponent.deleteCalcComponents( getPoint().getPointID(), getDbConnection() );
+
 	for( int i = 0; i < getCalcComponentVector().size(); i++ )
 		((CalcComponent) getCalcComponentVector().elementAt(i)).add();
 }

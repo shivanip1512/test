@@ -62,23 +62,19 @@ public void delete() throws java.sql.SQLException
 
 	delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 }
-/**
- * This method was deletes any rows from the MacroRoute table where RouteID = macroRouteID
- * @param macroRouteID java.lang.Integer
- */
-public final static boolean deleteAllMacroRoutes(Integer macroRouteID) throws SQLException {
 
-	return deleteAllMacroRoutes( macroRouteID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-}
+
 /**
  * This method was deletes any rows from the MacroRoute table where RouteID = macroRouteID
  * @param macroRouteID java.lang.Integer
  */
-public final static boolean deleteAllMacroRoutes(Integer macroRouteID, String databaseAlias) throws SQLException {
+public final static boolean deleteAllMacroRoutes(Integer macroRouteID, java.sql.Connection conn) throws SQLException {
 
 	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("DELETE FROM MacroRoute WHERE RouteID=" + macroRouteID,
-												 databaseAlias );												 
+		new com.cannontech.database.SqlStatement(
+            "DELETE FROM MacroRoute WHERE RouteID=" + macroRouteID,
+				conn );
+
 	try
 	{
 		stmt.execute();

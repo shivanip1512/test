@@ -158,7 +158,9 @@ public Object getValue(Object val)
 			DirectPort port = (DirectPort)com.cannontech.database.data.lite.LiteFactory.createDBPersistent( (com.cannontech.database.data.lite.LiteBase)getPortComboBox().getSelectedItem() );			
 			com.cannontech.database.Transaction t = com.cannontech.database.Transaction.createTransaction(
 						com.cannontech.database.Transaction.RETRIEVE, port );
-			t.execute();
+
+			port = (DirectPort)t.execute();
+
 			((RemoteBase) val).getDeviceDialupSettings().setBaudRate( port.getPortSettings().getBaudRate() );
 		}
 		catch( Exception e )

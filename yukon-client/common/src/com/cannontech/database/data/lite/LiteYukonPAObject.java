@@ -130,51 +130,38 @@ public int getYukonID() {
  */
 public void retrieve(String dbalias)
 {
-	java.sql.Connection conn = null;
-	java.sql.PreparedStatement stat = null;
-	java.sql.ResultSet rs = null;
 
 	try
 	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbalias);
-		stat = conn.prepareStatement(
-			 "select Category, PAOName, Type, PAOClass " +
-			 "from YukonPAObject where PAObjectID = ?" );
-		
-		stat.setInt( 1, getLiteID() );
-		rs = stat.executeQuery();
+      com.cannontech.database.SqlStatement stat = 
+            new com.cannontech.database.SqlStatement(
+             "select Category, PAOName, Type, PAOClass " +
+             "from YukonPAObject where PAObjectID = " + getLiteID(),
+             dbalias );
 
-		while( rs.next() )
-		{
-			String category = rs.getString("Category");
-			
-			setCategory( com.cannontech.database.data.pao.PAOGroups.getCategory(category) );
-			setPaoName( rs.getString("PAOName") );
-			setType( com.cannontech.database.data.pao.PAOGroups.getPAOType(category, rs.getString("Type")) );
-			setPaoClass( com.cannontech.database.data.pao.PAOGroups.getPAOClass(category, rs.getString("PAOClass")) );
-		}		
+		stat.execute();
+
+      if( stat.getRowCount() <= 0 )
+         throw new IllegalStateException("Unable to find the PAObject with PAOid = " + getLiteID() );
+
+      Object[] objs = stat.getRow(0);
+      String category = objs[0].toString();
+      
+		setCategory( com.cannontech.database.data.pao.PAOGroups.getCategory(category) );
+		setPaoName( objs[1].toString() );
+
+		setType( 
+         com.cannontech.database.data.pao.PAOGroups.getPAOType(
+         category, objs[2].toString()) );
+
+		setPaoClass( 
+         com.cannontech.database.data.pao.PAOGroups.getPAOClass(
+               category, objs[3].toString()) );
 	}
 	catch( Exception e )
 	{
 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
-	finally
-	{
-		try
-		{
-			if( rs != null )
-				rs.close();
-			if( stat != null )
-				stat.close();
-			if( conn != null )
-				conn.close();
-		}
-		catch(java.sql.SQLException e )
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-	}
-
 
 	
 	try
@@ -182,7 +169,8 @@ public void retrieve(String dbalias)
 		com.cannontech.database.db.device.DeviceDirectCommSettings d = new com.cannontech.database.db.device.DeviceDirectCommSettings( new Integer(getLiteID()) );
 		com.cannontech.database.Transaction t = com.cannontech.database.Transaction.createTransaction(
 							com.cannontech.database.Transaction.RETRIEVE, d);
-		t.execute();
+
+		d = (com.cannontech.database.db.device.DeviceDirectCommSettings)t.execute();
 
 		if( d.getPortID() != null )
 			setPortID( d.getPortID().intValue() );

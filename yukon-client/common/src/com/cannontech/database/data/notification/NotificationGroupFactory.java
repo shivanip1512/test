@@ -47,13 +47,12 @@ public final static GroupNotification[] getAllGroupNotifications() throws java.s
  */
 public final static GroupNotification getGroupNotification(Integer notificationGroupID)
 {
-	GroupNotification returnGroupNotif = null; 
-
-	returnGroupNotif = createGroupNotification( notificationGroupID );
+	GroupNotification returnGroupNotif = 
+         createGroupNotification( notificationGroupID );
 	try
 	{
 		com.cannontech.database.Transaction t = com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, returnGroupNotif);
-		t.execute();
+		returnGroupNotif = (GroupNotification)t.execute();
 	}
 	catch (Exception e)
 	{

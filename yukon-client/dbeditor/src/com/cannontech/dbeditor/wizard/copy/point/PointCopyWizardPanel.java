@@ -221,7 +221,7 @@ public void setCopyObject(com.cannontech.database.db.DBPersistent newObject)
 				com.cannontech.database.Transaction.createTransaction(
 					com.cannontech.database.Transaction.RETRIEVE, copyObject);
 
-		t.execute();
+		copyObject = t.execute();
  	}
  	catch (com.cannontech.database.TransactionException e) 
  	{

@@ -55,25 +55,18 @@ public void delete() throws java.sql.SQLException {
 	
 	delete( this.tableName, constraintColumns, constraintValues  );
 }
+
 /**
  * This method was created by Cannon Technologies Inc.
  * @return boolean
  * @param deviceID java.lang.Integer
  */
-public static boolean deleteDeviceScanRates(Integer deviceID) {
-
-	return deleteDeviceScanRates(deviceID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-}
-/**
- * This method was created by Cannon Technologies Inc.
- * @return boolean
- * @param deviceID java.lang.Integer
- */
-public static boolean deleteDeviceScanRates(Integer deviceID, String databaseAlias) {
-
+public static boolean deleteDeviceScanRates(Integer deviceID, java.sql.Connection conn )
+{
 	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("DELETE FROM " + tableName + " WHERE DeviceID=" + deviceID,
-												 databaseAlias );												 
+		new com.cannontech.database.SqlStatement(
+               "DELETE FROM " + tableName + " WHERE DeviceID=" + deviceID,
+					conn );
 	try
 	{
 		stmt.execute();
@@ -101,25 +94,19 @@ public java.lang.Integer getAlternateRate() {
 public Integer getDeviceID() {
 	return deviceID;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.database.db.device.DeviceScanRate[]
  * @param deviceID java.lang.Integer
  */
-public static DeviceScanRate[] getDeviceScanRates(Integer deviceID) throws java.sql.SQLException{
-
-	return getDeviceScanRates( deviceID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-}
-/**
- * This method was created in VisualAge.
- * @return com.cannontech.database.db.device.DeviceScanRate[]
- * @param deviceID java.lang.Integer
- */
-public static DeviceScanRate[] getDeviceScanRates(Integer deviceID, String databaseAlias) throws java.sql.SQLException{
-
+public static DeviceScanRate[] getDeviceScanRates(Integer deviceID, java.sql.Connection conn ) throws java.sql.SQLException
+{
 	com.cannontech.database.SqlStatement stmt = 
-		new com.cannontech.database.SqlStatement("SELECT IntervalRate, ScanType, ScanGroup, AlternateRate FROM " + tableName + " WHERE DeviceID=" + deviceID,
-													databaseAlias );
+		new com.cannontech.database.SqlStatement(
+            "SELECT IntervalRate, ScanType, ScanGroup, AlternateRate FROM " + tableName + " WHERE DeviceID=" + deviceID,
+				conn );
 													
 	try
 	{

@@ -260,7 +260,9 @@ public class DefaultRoutes
 					rt = LiteFactory.createDBPersistent((LiteBase) routes.get(i));
 					if (!(rt instanceof MacroRoute))
 					{
-						com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, rt).execute();
+						rt = com.cannontech.database.Transaction.createTransaction(
+                              com.cannontech.database.Transaction.RETRIEVE, rt).execute();
+
 						defaultedRoutes.add(rt);
 					}
 				}
@@ -327,7 +329,10 @@ public class DefaultRoutes
 		{
 			for (int i = 0; i < routes.size(); i++)
 			{
-				com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.UPDATE, ((DBPersistent) routes.get(i))).execute();
+            routes.set(i,
+   				com.cannontech.database.Transaction.createTransaction(
+                  com.cannontech.database.Transaction.UPDATE, 
+                  (DBPersistent)routes.get(i) ).execute() );
 			}
 		}
 		catch (com.cannontech.database.TransactionException t)

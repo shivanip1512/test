@@ -2047,7 +2047,11 @@ private boolean writeToSQLDatabase(com.cannontech.database.data.multi.MultiDBPer
 	//write all the collected data to the SQL database
 	try
 	{
-		com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, multi).execute();
+      multi = (com.cannontech.database.data.multi.MultiDBPersistent)
+   		com.cannontech.database.Transaction.createTransaction(
+               com.cannontech.database.Transaction.INSERT, 
+               multi).execute();
+
 		return true;
 	}
 	catch( com.cannontech.database.TransactionException t )

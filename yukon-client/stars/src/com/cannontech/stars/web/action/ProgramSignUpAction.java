@@ -182,7 +182,8 @@ public class ProgramSignUpAction implements ActionBase {
 	        		multiDB.getDBPersistentVector().addElement( event );
 	        	}
 	            
-	            Transaction.createTransaction( Transaction.INSERT, multiDB ).execute();
+               multiDB = (com.cannontech.database.data.multi.MultiDBPersistent)
+	                 Transaction.createTransaction( Transaction.INSERT, multiDB ).execute();
             }
             
             StarsLogin starsLogin = progSignUp.getStarsLogin();
@@ -191,14 +192,17 @@ public class ProgramSignUpAction implements ActionBase {
             login.setUserPassword( starsLogin.getPassword() );
             login.setLoginType( "STARS" );
             
-            Transaction.createTransaction( Transaction.INSERT, login ).execute();
+            login = (com.cannontech.database.db.customer.CustomerLogin)
+                  Transaction.createTransaction( Transaction.INSERT, login ).execute();
             
             com.cannontech.database.db.customer.CustomerContact primContact = account.getCustomerBase().getPrimaryContact();
             primContact.setLogInID( login.getLoginID() );
             
             com.cannontech.database.db.stars.CustomerContact contact = new com.cannontech.database.db.stars.CustomerContact();
             contact.setCustomerContact( primContact );
-            Transaction.createTransaction( Transaction.UPDATE, contact ).execute();
+            
+            contact = (com.cannontech.database.db.stars.CustomerContact)
+                  Transaction.createTransaction( Transaction.UPDATE, contact ).execute();
             
             StarsSuccess success = new StarsSuccess();
             respOper.setStarsSuccess( success );

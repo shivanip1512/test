@@ -48,7 +48,7 @@ public class RegenerateRoute
 					rt = com.cannontech.database.data.lite.LiteFactory.createDBPersistent((com.cannontech.database.data.lite.LiteBase) routes.get(i));
 					if (rt instanceof CCURoute)
 					{
-						com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, rt).execute();
+						rt = com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, rt).execute();
 						if (((CCURoute) rt).getRepeaterVector().size() > 0)
 							realRoutes.add(rt);
 					}
@@ -292,7 +292,10 @@ public class RegenerateRoute
 		{
 			for (int i = 0; i < routes.size(); i++)
 			{
-				com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.UPDATE, ((DBPersistent) routes.get(i))).execute();
+            routes.set( i, 
+				com.cannontech.database.Transaction.createTransaction(
+                  com.cannontech.database.Transaction.UPDATE, 
+                  ((DBPersistent) routes.get(i)) ).execute() );
 			}
 		}
 		catch (com.cannontech.database.TransactionException t)

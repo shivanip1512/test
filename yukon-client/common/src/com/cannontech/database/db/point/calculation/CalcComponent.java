@@ -62,24 +62,18 @@ public void add() throws java.sql.SQLException {
 public void delete() throws java.sql.SQLException {
 	delete( TABLENAME, COLUMNS[0], getPointID() );
 }
-/**
- * This method was created by Cannon Technologies Inc.
- * @return boolean
- * @param pointID java.lang.Integer
- */
-public static boolean deleteCalcComponents(Integer pointID) {
-	return deleteCalcComponents(pointID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-}
-/**
- * This method was created by Cannon Technologies Inc.
- * @return boolean
- * @param pointID java.lang.Integer
- */
-public static boolean deleteCalcComponents(Integer pointID, String databaseAlias) {
 
+/**
+ * This method was created by Cannon Technologies Inc.
+ * @return boolean
+ * @param pointID java.lang.Integer
+ */
+public static boolean deleteCalcComponents(Integer pointID, java.sql.Connection conn )
+{
 	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("DELETE FROM " + TABLENAME + " WHERE " + COLUMNS[0] + "=" + pointID,
-												 databaseAlias );												 
+		new com.cannontech.database.SqlStatement(
+            "DELETE FROM " + TABLENAME + " WHERE " + COLUMNS[0] + "=" + pointID,
+				conn );
 	try
 	{
 		stmt.execute();

@@ -40,9 +40,8 @@ public void add() throws java.sql.SQLException {
 public void delete() throws java.sql.SQLException 
 {
 	// remove all the destantions for this group
-	com.cannontech.database.db.notification.NotificationDestination.deleteAllDestinations( getNotificationGroup().getNotificationGroupID() );
-
-
+	com.cannontech.database.db.notification.NotificationDestination.deleteAllDestinations( 
+            getNotificationGroup().getNotificationGroupID(), getDbConnection() );
 	
 	getNotificationGroup().delete();
 }
@@ -225,7 +224,9 @@ public String toString()
 public void update() throws java.sql.SQLException 
 {	
 	getNotificationGroup().update();
-	com.cannontech.database.db.notification.NotificationDestination.deleteAllDestinations( getNotificationGroup().getNotificationGroupID() );
+	com.cannontech.database.db.notification.NotificationDestination.deleteAllDestinations( 
+         getNotificationGroup().getNotificationGroupID(),
+         getDbConnection() );
 	
 	if( getDestinationVector() != null )
 		for( int i = 0; i < getDestinationVector().size(); i++ )

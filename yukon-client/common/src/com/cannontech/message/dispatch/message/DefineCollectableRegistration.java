@@ -60,7 +60,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	Registration reg = (Registration) obj;
 
 	vstr.saveObject( reg.getAppName(), SimpleMappings.CString );
-	vstr.insertLong( 0L );
+	vstr.insertInt( (int)reg.getRegID() );
 	vstr.insertInt( reg.getAppIsUnique() );
 	vstr.insertInt( reg.getAppKnownPort() );
 	vstr.insertInt( reg.getAppExpirationDelay() );

@@ -169,7 +169,7 @@ public void update() throws java.sql.SQLException {
 
 	getPointUnit().update();
 
-	PointLimit.deletePointLimits(getPoint().getPointID());
+	PointLimit.deletePointLimits( getPoint().getPointID(), getDbConnection() );
 	for( int i = 0 ; i < getPointLimitsVector().size(); i++ )
 		((PointLimit) getPointLimitsVector().elementAt(i)).add();
 }

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
     <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
-    <classpathentry kind="var" path="TOMCAT_HOME/common/lib/servlet.jar"/>
-    <classpathentry kind="var" path="TOMCAT_HOME/lib/jasper-runtime.jar"/>
     <classpathentry kind="src" path="WEB-INF/src"/>
     <classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
     <classpathentry kind="lib" path="/third-party/acme.jar"/>
@@ -23,5 +21,6 @@
     <classpathentry kind="lib" path="/third-party/jcommon-0.6.4.jar"/>
     <classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
     <classpathentry kind="lib" path="/third-party/junit.jar"/>
+    <classpathentry kind="lib" path="D:/jboss-3.0.0RC1_tomcat-4.0.3/catalina/lib/jasper-runtime.jar"/>
     <classpathentry kind="output" path="WEB-INF\classes"/>
 </classpath>

@@ -57,7 +57,7 @@ public final static GroupState getGroupState(Integer stateGroupID)
 	try
 	{
 		com.cannontech.database.Transaction t = com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, returnGroupState);
-		t.execute();
+		returnGroupState = (GroupState)t.execute();
 	}
 	catch (Exception e)
 	{

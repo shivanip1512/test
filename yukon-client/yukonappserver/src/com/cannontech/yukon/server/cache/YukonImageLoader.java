@@ -1,4 +1,4 @@
-package com.cannontech.database.cache;
+package com.cannontech.yukon.server.cache;
 
 /**
  * @author rneuharth

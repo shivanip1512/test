@@ -73,23 +73,17 @@ public void delete() throws java.sql.SQLException {
 public Character getAlarmInhibit() {
 	return alarmInhibit;
 }
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Integer[]
  */
-public static Integer[] getAllPortNumbers() throws SQLException{
-
-	return getAllPortNumbers(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-}
-/**
- * This method was created in VisualAge.
- * @return java.lang.Integer[]
- */
-public static Integer[] getAllPortNumbers(String databaseAlias) throws SQLException{
-
+public static Integer[] getAllPortNumbers( java.sql.Connection conn ) throws SQLException
+{
 	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("SELECT PortID FROM CommPort",
-													databaseAlias );
+		new com.cannontech.database.SqlStatement(
+            "SELECT PortID FROM CommPort",
+				conn );
 
 	Integer[] retVal = null;
 	try

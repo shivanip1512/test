@@ -56,43 +56,27 @@ public java.lang.String getName() {
  */
 public void retrieve(String databaseAlias) 
 {
-	String sqlString = "SELECT GraphDefinitionID,Name "  + 
-		"FROM GraphDefinition where GraphDefinitionID = " + getGraphDefinitionID() +
-		" ORDER BY Name";
+   com.cannontech.database.SqlStatement s = 
+      new com.cannontech.database.SqlStatement(
+         "SELECT GraphDefinitionID,Name "  + 
+         "FROM GraphDefinition where GraphDefinitionID = " + getGraphDefinitionID() +
+         " ORDER BY Name",
+         com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
-	java.sql.Connection conn = null;
-	java.sql.Statement stmt = null;
-	java.sql.ResultSet rset = null;
-	try 
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection( databaseAlias );
-		stmt = conn.createStatement();
-		rset = stmt.executeQuery(sqlString);
+   try 
+   {
+      s.execute();
 
-		while (rset.next())
-		{
-			setGraphDefinitionID( rset.getInt(1) );
-			setName( rset.getString(2) );
-		}
+      if( s.getRowCount() <= 0 )
+         throw new IllegalStateException("Unable to find DeviceMeterGroup with deviceID = " + getLiteID() );
+
+
+      setGraphDefinitionID( new Integer(s.getRow(0)[0].toString()).intValue() );
+      setName( s.getRow(0)[1].toString() );
 	}
-	catch( java.sql.SQLException e )
+	catch( Exception e )
 	{
 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		try
-		{
-			if( stmt != null )
-				stmt.close();
-			if( conn != null )
-				conn.close();
-		}
-		catch( java.sql.SQLException e )
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-
 	}
 
 }

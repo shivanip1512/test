@@ -68,24 +68,18 @@ public void delete() throws java.sql.SQLException {
 
 	delete( this.tableName, "DEVICEID", getDeviceID() );
 }
-/**
- * This method was created by Cannon Technologies Inc.
- * @return boolean
- * @param changeID java.lang.Integer
- */
-public static boolean deleteDynamicDeviceScanData(Integer deviceID) {
-	return deleteDynamicDeviceScanData(deviceID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-}
+
 /**
  * This method was created by Cannon Technologies Inc.
  * @return boolean
  * @param pointID java.lang.Integer
  */
-public static boolean deleteDynamicDeviceScanData(Integer deviceID, String databaseAlias) {
-
+public static boolean deleteDynamicDeviceScanData(Integer deviceID, java.sql.Connection conn )
+{
 	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("DELETE FROM " + tableName + " WHERE deviceID=" + deviceID,
-												 databaseAlias );
+		new com.cannontech.database.SqlStatement(
+               "DELETE FROM " + tableName + " WHERE deviceID=" + deviceID,
+					conn );
 	try
 	{
 		stmt.execute();

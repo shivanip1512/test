@@ -1,19 +1,19 @@
-package com.cannontech.database.cache;
+package com.cannontech.yukon.server.cache;
 
 /**
  * Insert the type's description here.
  * Creation date: (3/15/00 3:57:58 PM)
  * @author: 
  */
-class PointLoader implements Runnable {
-	private java.util.ArrayList allPoints = null;
+class PointUnitLoader implements Runnable {
+	private java.util.ArrayList allPointsUnits = null;
 	private String databaseAlias = null;
 /**
  * DeviceLoader constructor comment.
  */
-public PointLoader(java.util.ArrayList pointArray, String alias) {
+public PointUnitLoader(java.util.ArrayList pointArray, String alias) {
 	super();
-	this.allPoints = pointArray;
+	this.allPointsUnits = pointArray;
 	this.databaseAlias = alias;
 }
 /**
@@ -28,8 +28,8 @@ java.util.Date timerStop = null;
 //temp code
 timerStart = new java.util.Date();
 //temp code
-	String sqlString = "SELECT POINTID,POINTNAME,POINTTYPE,PAObjectID, " +
-		"POINTOFFSET,STATEGROUPID FROM POINT WHERE POINTID > 0 ORDER BY PAObjectID, POINTOFFSET";
+	String sqlString = "SELECT POINTID,UOMID,DECIMALPLACES " +
+		"FROM POINTUNIT WHERE POINTID > 0 ORDER BY POINTID";
 
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
@@ -43,17 +43,13 @@ timerStart = new java.util.Date();
 		while (rset.next())
 		{
 			int pointID = rset.getInt(1);
-			String pointName = rset.getString(2).trim();
-			String pointType = rset.getString(3).trim();
-			int paobjectID = rset.getInt(4);
-			int pointOffset = rset.getInt(5);
-			int stateGroupID = rset.getInt(6);
-			
-			com.cannontech.database.data.lite.LitePoint lp =
-				new com.cannontech.database.data.lite.LitePoint( pointID, pointName, com.cannontech.database.data.point.PointTypes.getType(pointType),
-																						paobjectID, pointOffset, stateGroupID );
+			int uomID = rset.getInt(2);
+			int decimalPlaces = rset.getInt(3);
 
-			allPoints.add(lp);
+			com.cannontech.database.data.lite.LitePointUnit lpu =
+				new com.cannontech.database.data.lite.LitePointUnit( pointID, uomID, decimalPlaces);
+
+			allPointsUnits.add(lpu);
 		}
 	}
 	catch( java.sql.SQLException e )

@@ -62,46 +62,29 @@ public String getHolidayScheduleName() {
  */
 public void retrieve(String databaseAlias) 
 {
-	String sqlString = "SELECT HolidayScheduleID,HolidayScheduleName "  + 
-		"FROM " + com.cannontech.database.db.holiday.HolidaySchedule.TABLE_NAME +
-		" where HolidayScheduleID = " + getHolidayScheduleID();
+   com.cannontech.database.SqlStatement s = 
+      new com.cannontech.database.SqlStatement(
+         "SELECT HolidayScheduleID,HolidayScheduleName "  + 
+            "FROM " + com.cannontech.database.db.holiday.HolidaySchedule.TABLE_NAME +
+            " where HolidayScheduleID = " + getHolidayScheduleID(),
+         com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
-	java.sql.Connection conn = null;
-	java.sql.Statement stmt = null;
-	java.sql.ResultSet rset = null;
+   try 
+   {
+      s.execute();
 
-	try 
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection( databaseAlias );
-		stmt = conn.createStatement();
-		rset = stmt.executeQuery(sqlString);
+      if( s.getRowCount() <= 0 )
+         throw new IllegalStateException("Unable to find DeviceMeterGroup with deviceID = " + getLiteID() );
 
-		while (rset.next())
-		{
-			setHolidayScheduleID( rset.getInt(1) );
-			setHolidayScheduleName( rset.getString(2) );
-		}
-	}
-	catch( java.sql.SQLException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		try
-		{
-			if( stmt != null )
-				stmt.close();
-			if( conn != null )
-				conn.close();
-		}
-		catch( java.sql.SQLException e )
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
 
-	}
-
+      setHolidayScheduleID( new Integer(s.getRow(0)[0].toString()).intValue() );
+      setHolidayScheduleName( s.getRow(0)[1].toString() );
+   }
+   catch( Exception e )
+   {
+      com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+   }
+      
 }
 /**
  * Insert the method's description here.

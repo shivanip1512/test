@@ -53,26 +53,20 @@ public void delete() throws java.sql.SQLException {
 	
 	delete( TABLE_NAME, constraintColumns, constraintValues );
 }
-/**
- * This method deletes all the rows in RepeaterRoute associated with the route identified
- * by routeID
- * @param routeID java.lang.Integer
- */
-public final static boolean deleteRepeaterRoutes(Integer routeID) throws java.sql.SQLException  {
 
-	return deleteRepeaterRoutes( routeID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-}
+
 /**
  * This method deletes all the rows in RepeaterRoute associated with the route identified
  * by routeID
  * @param routeID java.lang.Integer
  */
-public final static boolean deleteRepeaterRoutes(Integer routeID, String databaseAlias) throws java.sql.SQLException  {
+public final static boolean deleteRepeaterRoutes(Integer routeID, java.sql.Connection conn ) throws java.sql.SQLException 
+{
 
 	com.cannontech.database.SqlStatement stmt =
 		new com.cannontech.database.SqlStatement(
             "DELETE FROM " + TABLE_NAME + " WHERE RouteID=" + routeID,
-            databaseAlias );												 
+            conn );												 
 	try
 	{
 		stmt.execute();

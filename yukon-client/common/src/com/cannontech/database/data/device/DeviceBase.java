@@ -51,7 +51,8 @@ public boolean allowRebroadcast() {
  */
 public void delete() throws java.sql.SQLException 
 {
-	DynamicDeviceScanData.deleteDynamicDeviceScanData(getDevice().getDeviceID());
+	DynamicDeviceScanData.deleteDynamicDeviceScanData( 
+         getDevice().getDeviceID(), getDbConnection() );
 
 	if (!isPartialDelete)
 	{

@@ -62,7 +62,7 @@ public void delete() throws java.sql.SQLException {
 	if (!isPartialDelete)
 	{
 		//DeviceStatistics.deleteDeviceStatistics(getDevice().getDeviceID());
-		DeviceScanRate.deleteDeviceScanRates(getDevice().getDeviceID());
+		DeviceScanRate.deleteDeviceScanRates( getDevice().getDeviceID(), getDbConnection() );
 
 		getDeviceWindow().delete();
 	}
@@ -140,7 +140,10 @@ public void retrieve() throws java.sql.SQLException{
 	deviceScanRateVector = new java.util.Vector();
 	try
 	{
-		com.cannontech.database.db.device.DeviceScanRate rArray[] = com.cannontech.database.db.device.DeviceScanRate.getDeviceScanRates( getDevice().getDeviceID() );
+		com.cannontech.database.db.device.DeviceScanRate rArray[] = 
+            com.cannontech.database.db.device.DeviceScanRate.getDeviceScanRates( 
+                  getDevice().getDeviceID(), getDbConnection() );
+
 		for( int i = 0; i < rArray.length; i++ )
 		{
 			rArray[i].setDbConnection(getDbConnection());
@@ -262,7 +265,8 @@ public void update() throws java.sql.SQLException
 			((DBPersistent) getDeviceStatisticsVector().elementAt(i)).update();
 */
 
-	DeviceScanRate.deleteDeviceScanRates(getDevice().getDeviceID());
+	DeviceScanRate.deleteDeviceScanRates( getDevice().getDeviceID(), getDbConnection() );
+
 	if( getDeviceScanRateVector() != null )
 		for( int i = 0; i < getDeviceScanRateVector().size(); i++ )
 			((DBPersistent) getDeviceScanRateVector().elementAt(i)).add();

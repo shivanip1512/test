@@ -3,7 +3,7 @@ package com.cannontech.database.db;
 /**
  * This type was created in VisualAge.
  */
- import java.sql.Connection;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,13 +11,16 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.GregorianCalendar;
 import java.util.Vector;
+import com.cannontech.yukon.concrete.ResourceFactory;
  
 public abstract class DBPersistent implements java.io.Serializable 
 {
-	public static boolean printSQL = false;
-	public static String SQLFileName = com.cannontech.common.util.CtiUtilities.getLogDirPath() + "DBeditorSQL.sql";
-	
-	private transient Connection dbConnection = null;
+   public static boolean printSQL = false;
+   public static String SQLFileName = com.cannontech.common.util.CtiUtilities.getLogDirPath() + "DBeditorSQL.sql";
+   
+   private com.cannontech.yukon.IDBPersistent db = null;
+   
+// private transient Connection dbConnection = null;
    
    
          
@@ -38,122 +41,9 @@ public abstract void add() throws java.sql.SQLException;
  * @param tableName java.lang.String
  * @param values java.lang.Object[]
  */
-protected void add( String tableName, Object values[] ) throws SQLException {
-	
-	for( int i = 0; i < values.length; i++ )
-		values[i] = substituteObject(values[i]);
-
-	StringBuffer pSql = new StringBuffer("INSERT INTO ");
-	pSql.append(tableName);
-	pSql.append(" VALUES( ?");
-	
-	for( int j = 1; j < values.length; j++ )
-		pSql.append(",?");
-
-	pSql.append(")");
-	
-	PreparedStatement pstmt = null;
-
-	try
-	{
-		pstmt = getDbConnection().prepareStatement(pSql.toString());
-
-/* ************************************************************************************
- * This commented out block would be nice to add to all DBPersistence objects.
- * By adding this code, each DBPersistence object could query the DB for 
- * the table metadata. With this meatadata, we could allow the insertion of nulls.
- * Also, since the metadata is the table structure, we could remove most metatdata
- * about the DBPersitence object (such as COLUMN_NAMES, TABLE_NAME, etc).
- * Every DBPersistence object would need to do this metatdata query.  The data could
- * be static so the query is only done once.  --RWN 7-30-2002
- * ************************************************************************************
-/*    j(1) = ryan
-      j(2) = dbo
-      j(3) = StateImage
-      j(4) = ImageID
-      j(5) = 2
-      j(6) = numeric
-      j(7) = 18
-      j(8) = 20
-      j(9) = 0
-      j(10) = 10
-      j(11) = 0
-      j(12) = null
-      j(13) = null
-      j(14) = 2
-      j(15) = null
-      j(16) = null
-      j(17) = 1
-      j(18) = NO      
-*/
-/*      ResultSet rs = getDbConnection().getMetaData().getColumns(
-                  null, 
-                  null, 
-                  tableName.toUpperCase(), 
-                  "%" );
-
-      int[] sh = new int[values.length];
-      int i = 0;
-      while( rs.next() ) 
-      {           
-         for( int j = 1; j <= 18; j++ )
-            System.out.println("j("+j+") = " + rs.getString(j) );
-            
-         sh[i++] = rs.getInt(5);
-      }
-
-      
-		for( int k = 0; k < values.length; k++ )
-		{
-   	   pstmt.setObject(
-            k+1, 
-            values[k],
-            sh[k] );
-		}
-*/
-      for( int k = 0; k < values.length; k++ )
-      {
-         /* The Oracle driver does not set the correct object for byte[]
-          *  when calling the pstmt.setObject() method. If we do a call like
-          *  pstmt.setObject(byte[]) an SQLException is thrown if the byte[]
-          *  length > 4k.  */
-         if( values[k] instanceof byte[] )
-         {
-            java.io.ByteArrayInputStream bs = new java.io.ByteArrayInputStream( 
-                     (byte[])values[k] );
-
-            pstmt.setBinaryStream(
-               k+1, 
-               bs,
-               ((byte[])values[k]).length );
-         }
-         else
-            pstmt.setObject(
-               k+1, 
-               values[k] );         
-      }
-
-   	pstmt.executeUpdate();
-
-		//everything went well, print the SQL to a file if desired
-		if( isPrintSQL() )
-			printSQLToFile( pSql.toString(), values, null );
-	}
-	catch( SQLException e )
-	{
-		//something bad happened, print the SQL with the Exception to a file if desired
-		if( isPrintSQL() )
-			printSQLToFile( pSql.toString(), values, e );
-		
-		throw e;
-	}
-	finally
-	{
-		pstmt.close();
-	}
-	//add( tableName, strValues );
-	
-
+protected void add( String tableName, Object values[] ) throws SQLException 
+{
+   getDB().add( tableName, values );
 }
 /**
  * Insert the method's description here.
@@ -195,35 +85,11 @@ protected void delete( String tableName, String columnNames[], Object columnValu
  * @param columnName java.lang.String
  * @param columnValue java.lang.String
  */
-protected void delete( String tableName, String columnNames[], String columnValues[] ) throws SQLException{
-
-	String deleteString = "DELETE FROM " + tableName + " WHERE ";
-
-	if( columnNames.length < 1 )
-	 	return;
-
-	 deleteString += columnNames[0] + "=" + columnValues[0];
-
-	 for( int i = 1; i < columnNames.length; i++ )
-	 	deleteString += " AND " + columnNames[i] + "=" + columnValues[i];
-
-	 Statement stmt = null;
-	 
-	 try
-	 {
-	 	stmt = getDbConnection().createStatement();
-	 	stmt.executeUpdate(deleteString);
-	 }
-	 catch( SQLException e )
-	 {
-	 	throw e;
-	 }
-	 finally
-	 {
-	 	if( stmt != null )
-	 		stmt.close();
-	 }
+protected void delete( String tableName, String columnNames[], String columnValues[] ) throws SQLException
+{
+   getDB().delete( tableName, columnNames, columnValues );
 }
+
 /**
  * This method was created in VisualAge.
  * @param tableName java.lang.String
@@ -242,26 +108,11 @@ protected void delete( String tableName, String columnName, Object columnValue )
  * @param columnName java.lang.String
  * @param columnValue java.lang.String
  */
-private void delete( String tableName, String columnName, String columnValue ) throws SQLException{
-	String deleteString = "DELETE FROM " + tableName + " WHERE " + columnName + "=" + columnValue;
-
-	Statement stmt = null;
-
-	try
-	{
-		stmt = getDbConnection().createStatement();
-		stmt.executeUpdate(deleteString);
-	}
-	catch( SQLException e )
-	{
-		throw e;
-	}
-	finally
-	{
-		if( stmt != null )
-			stmt.close();
-	}
+private void delete( String tableName, String columnName, String columnValue ) throws SQLException
+{
+   getDB().delete( tableName, columnName, columnValue );
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (6/14/2001 10:57:30 AM)
@@ -280,15 +131,17 @@ public void deletePartial() throws java.sql.SQLException {
  * This method was created in VisualAge.
  * @return java.sql.Connection
  */
-public Connection getDbConnection() throws SQLException {
-	return dbConnection;
+public Connection getDbConnection() throws SQLException 
+{
+	return getDB().getDbConnection();
 }
 /**
  * Insert the method's description here.
  * Creation date: (5/21/2001 11:45:41 AM)
  * @return java.lang.String
  */
-public static java.lang.String getSQLFileName() {
+public static java.lang.String getSQLFileName() 
+{
 	return SQLFileName;
 }
 /**
@@ -395,6 +248,15 @@ private void printSQLToFile(String line, Object[] columnValues, SQLException exc
 	}
 
 }
+
+private com.cannontech.yukon.IDBPersistent getDB()
+{
+   if( db == null )
+      db = (com.cannontech.yukon.IDBPersistent)ResourceFactory.getIYukon().createIDBPersistent();
+      
+   return db;
+}
+
 /**
  * This method was created by a SmartGuide.
  */
@@ -443,107 +305,11 @@ protected Object[][] retrieve(String[] selectColumns, String tableName, String[]
  */
 private Object[] retrieve(String selectColumnNames[], String tableName, String keyColumnNames[], String keyColumnValues[]) throws SQLException
 {
-	String selectString = "SELECT ";
-	if (selectColumnNames.length > 0)
-	{
-		selectString += selectColumnNames[0];
-		for (int i = 1; i < selectColumnNames.length; i++)
-			selectString += "," + selectColumnNames[i];
-	}
-	selectString += " FROM " + tableName;
-	if (keyColumnNames.length > 0)
-	{
-		selectString += " WHERE " + keyColumnNames[0] + "=" + keyColumnValues[0];
-		for (int j = 1; j < keyColumnNames.length; j++)
-			selectString += " AND " + keyColumnNames[j] + "=" + keyColumnValues[j];
-	}
-	Statement stmt = null;
-	ResultSet rset = null;
-	Object returnObjects[] = null;
-
-	try
-	{
-		stmt = getDbConnection().createStatement();
-		rset = stmt.executeQuery(selectString);
-		java.util.Vector v = new java.util.Vector();
-		int columns = rset.getMetaData().getColumnCount();
-		if (rset.next())
-			for (int k = 0; k < columns; k++)
-			{
-				//			if( rset.getObject(k+1) != null )
-				v.addElement(rset.getObject(k + 1));
-			}
-		
-		returnObjects = new Object[v.size()];
-
-
-		/* WARNING - The code below converts primitives into objects
-		   ALL numeric columns seem to come back as java.math.BigDecimal
-		   This is the case using oracle's type 4(thin) jdbc driver!
-		   This _should probably_ just return the objects associated with
-		   numeric columns as BigDecimals
-		   and allow sub-classes to figure out what they really need.
-		   As it stands (12/98) there are a lot of sub-classes that rely on
-		   receiving Integer objects rather than java.math.BigDecimal objects.
-		   
-		   Well, how do we determine whether a java.math.BigDecimal was intended
-		   to be an Integer or Float or a Double or whatever?
-		
-		   An easy hack (FOR THE CURRENT SETUP! 12/98) is to test the precision
-		   of the column using the java.sql.ResultSetMetaData interface.
-		   And this is what I did.  
-		   It so happens that an oracle 'INTEGER' type has a precision of 38,
-		   while an oracle 'FLOAT' type has a precision of 126. I know this can
-		   be manipulated using oracle specific stuff, BUT can it be manipulated
-		   in a cross platform way...? 
-		   Cheers, ACL 
-		   >:)
-		   */
-
-
-		for (int n = 0; n < returnObjects.length; n++)
-		{
-			Object temp = v.elementAt(n);
-			if (temp instanceof java.math.BigDecimal)
-			{
-				// >>>>>>>>>> Watch this - synchronize with above!
-				if (rset.getMetaData().getPrecision(n + 1) == 126)
-					temp = new Double(((java.math.BigDecimal) v.elementAt(n)).doubleValue());
-				else
-					temp = new Integer(((java.math.BigDecimal) v.elementAt(n)).intValue());
-			}
-/* Cant remember why this is here??? 7-29-2002 */
-/*			else
-				if (temp instanceof byte[])
-				{
-					if (((byte[]) temp).length == 1)
-						temp = new Byte(((byte[]) temp)[0]);
-					else
-					{
-						Byte newTemp[] = new Byte[ ((byte[]) temp).length];
-						for (int i = 0; i < ((byte[]) temp).length; i++)
-							newTemp[i] = new Byte(((byte[]) temp)[i]);
-						temp = newTemp;
-					}
-				}
-*/
-			returnObjects[n] = temp;
-		}
-	}
-	catch (SQLException e)
-	{
-		throw e;
-	}
-	finally
-	{
-		if (rset != null)
-			rset.close();
-
-		if (stmt != null)
-			stmt.close();
-	}
-
-	return returnObjects;
+   return getDB().retrieve( 
+               selectColumnNames, 
+               tableName, 
+               keyColumnNames, 
+               keyColumnValues );
 }
 /**
  * This method was created in VisualAge.
@@ -556,69 +322,21 @@ private Object[] retrieve(String selectColumnNames[], String tableName, String k
  */
 private Object[][] retrieve(String[] selectColumns, String tableName, String[] constraintColumns, String[] constraintValues, boolean multipleReturn) throws SQLException
 {
-	String selectString = "SELECT ";
-	if (selectColumns.length > 0)
-	{
-		selectString += selectColumns[0];
-		for (int i = 1; i < selectColumns.length; i++)
-			selectString += "," + selectColumns[i];
-	}
-	selectString += " FROM " + tableName;
-	if (constraintColumns.length > 0)
-	{
-		selectString += " WHERE " + constraintColumns[0] + "=" + constraintValues[0];
-		for (int j = 1; j < constraintColumns.length; j++)
-			selectString += " AND " + constraintColumns[j] + "=" + constraintValues[j];
-	}
-	Statement stmt = null;
-	ResultSet rset = null;
-	Object returnObjects[][] = null;
-	try
-	{
-		stmt = getDbConnection().createStatement();
-		rset = stmt.executeQuery(selectString);
-
-		//Get all the rows
-		java.util.Vector rows = new java.util.Vector();
-		while (rset.next())
-		{
-			Vector columns = new java.util.Vector();
-			for (int i = 1; i <= rset.getMetaData().getColumnCount(); i++)
-					columns.addElement( rset.getObject(i) );
-			
-			rows.addElement(columns);
-		}
-		returnObjects = new Object[rows.size()][rset.getMetaData().getColumnCount()];
-		for (int i = 0; i < rows.size(); i++)
-			for (int j = 0; j < rset.getMetaData().getColumnCount(); j++)
-			{
-				Object temp = ((java.util.Vector) rows.elementAt(i)).elementAt(j);
-				if (temp instanceof java.math.BigDecimal)
-					temp = new Integer(((java.math.BigDecimal) temp).intValue());
-					
-				returnObjects[i][j] = temp;
-			}
-	}
-	catch (SQLException e)
-	{
-		throw e;
-	}
-	finally
-	{
-		if( rset != null )
-			rset.close();
-
-		if( stmt != null )
-			stmt.close();
-	}
-	return returnObjects;
+   return getDB().retrieve( 
+               selectColumns, 
+               tableName,
+               constraintColumns,
+               constraintValues, 
+               multipleReturn );
 }
+
 /**
  * This method was created in VisualAge.
  * @param newValue java.sql.Connection
  */
-public void setDbConnection(Connection newValue) {
-	this.dbConnection = newValue;
+public void setDbConnection(Connection newValue) 
+{
+   getDB().setDbConnection( newValue );
 }
 /**
  * Insert the method's description here.
@@ -689,78 +407,14 @@ public abstract void update() throws java.sql.SQLException;
  * @param constraintColumnNameValue java.lang.String[]
  */
 protected void update( String tableName, String setColumnName[], Object setColumnValue[], 
-											String constraintColumnName[], Object constraintColumnValue[]) throws SQLException{
-												
-	for( int i = 0; i < setColumnValue.length; i++ )
-		setColumnValue[i] = substituteObject( setColumnValue[i] );
-
-	for( int i = 0; i < constraintColumnValue.length; i++ )
-		constraintColumnValue[i] = substituteObject( constraintColumnValue[i] );
-
-	StringBuffer pSql = new StringBuffer("UPDATE ");
-	pSql.append(tableName);
-	pSql.append(" SET ");
-	pSql.append(setColumnName[0]);
-	pSql.append("=?");
-
-	for( int i = 1; i < setColumnName.length; i++ )
-	{
-		pSql.append(",");
-		pSql.append(setColumnName[i]);
-		pSql.append("=?");
-	}
-
-	if( constraintColumnName.length > 0 )
-	{
-		pSql.append(" WHERE ");
-		pSql.append(constraintColumnName[0]);
-		pSql.append("=?");
-
-		for( int i = 1; i < constraintColumnName.length; i++ )
-		{
-			pSql.append(" AND ");
-			pSql.append(constraintColumnName[i]);
-			pSql.append("=?");
-		}
-	}
-	
-	PreparedStatement pstmt = null;
-	
-	try
-	{
-		pstmt = getDbConnection().prepareStatement(pSql.toString());
-		for( int i = 0; i < setColumnValue.length; i++ )
-      {
-         /* The Oracle driver does not set the correct object for byte[]
-          *  when calling the pstmt.setObject() method. If we do a call like
-          *  pstmt.setObject(byte[]) an SQLException is thrown if the byte[]
-          *  length > 4k.  */
-         if( setColumnValue[i] instanceof byte[] )
-         {
-            java.io.ByteArrayInputStream bs = new java.io.ByteArrayInputStream( 
-                     (byte[])setColumnValue[i] );
-
-            pstmt.setBinaryStream(
-               i+1, 
-               bs,
-               ((byte[])setColumnValue[i]).length );
-         }
-         else
-			   pstmt.setObject(i+1, setColumnValue[i]);
-      }
-      	
-		for( int i = 0; i < constraintColumnValue.length; i++ )
-			pstmt.setObject(i+setColumnValue.length+1, constraintColumnValue[i]);
-			
-		pstmt.executeUpdate();	
-	}
-	catch( SQLException e )
-	{
-		throw e;
-	}
-	finally
-	{
-		if( pstmt != null ) pstmt.close();
-	}	
+											String constraintColumnName[], Object constraintColumnValue[]) throws SQLException
+{
+   getDB().update( 
+               tableName, 
+               setColumnName, 
+               setColumnValue,
+               constraintColumnName,
+               constraintColumnValue );
 }
+
 }

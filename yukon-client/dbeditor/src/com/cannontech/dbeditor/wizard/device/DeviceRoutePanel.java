@@ -130,16 +130,20 @@ public class DeviceRoutePanel
 	 * @return java.lang.Object
 	 * @param val java.lang.Object
 	 */
-	public Object getValue(Object val) {
+	public Object getValue(Object val) 
+   {
 		((CarrierBase) val).getDeviceRoutes().setRouteID(new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonID()));
 		DBPersistent chosenRoute = LiteFactory.createDBPersistent((LiteBase) getRouteComboBox().getSelectedItem());
 
-		try {
-			com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE,chosenRoute).execute();
+		try 
+      {
+         chosenRoute = com.cannontech.database.Transaction.createTransaction(
+                           com.cannontech.database.Transaction.RETRIEVE,
+                           chosenRoute).execute();
 
-		} catch (com.cannontech.database.TransactionException t) {
+		} catch (com.cannontech.database.TransactionException t) 
+      {
 			com.cannontech.clientutils.CTILogger.error(t.getMessage(), t);
-
 		}
 
 		Integer deviceID = ((RouteBase) chosenRoute).getDeviceID();
@@ -223,8 +227,11 @@ public class DeviceRoutePanel
 							}
 						}
 
-						try {
-							com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE,chosenRoute).execute();
+						try 
+                  {
+                     chosenRoute = com.cannontech.database.Transaction.createTransaction(
+                                       com.cannontech.database.Transaction.RETRIEVE,
+                                       chosenRoute).execute();
 
 						} catch (
 							com.cannontech.database.TransactionException t) {

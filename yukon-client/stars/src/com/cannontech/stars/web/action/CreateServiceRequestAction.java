@@ -99,7 +99,7 @@ public class CreateServiceRequestAction implements ActionBase {
             workOrder.setWorkOrderBase( workOrderDB );
             
             Transaction transaction = Transaction.createTransaction( Transaction.INSERT, workOrder );
-            transaction.execute();
+            workOrder = (com.cannontech.database.data.stars.report.WorkOrderBase)transaction.execute();
             
             StarsSuccess success = new StarsSuccess();
             respOper.setStarsSuccess( success );

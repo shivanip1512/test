@@ -97,7 +97,7 @@ public void setValue(Object o)
 	try
 	{
 		data.addElement("Copyright (C)1999-2002 Cannon Technologies");
-		data.addElement("Version      : " + com.cannontech.dbeditor.defines.CommonDefines.VERSION );
+		data.addElement("Version      : " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() );
 		//data.addElement("Dev ID    : " + pointValue.getDeviceID());
 
 	

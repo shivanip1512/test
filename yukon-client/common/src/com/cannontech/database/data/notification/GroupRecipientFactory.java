@@ -54,7 +54,7 @@ public final static NotificationRecipient getNotificationRecipient(Integer locat
 	try
 	{
 		com.cannontech.database.Transaction t = com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, returnRecipient);
-		t.execute();
+		returnRecipient = (NotificationRecipient)t.execute();
 	}
 	catch (Exception e)
 	{

@@ -361,7 +361,7 @@ public Object getValue(Object val)
 					com.cannontech.database.Transaction.DELETE_PARTIAL,
 					((com.cannontech.database.db.DBPersistent) val));
 
-			t.execute();
+			val = t.execute();
 		}
 		catch (com.cannontech.database.TransactionException e)
 		{
@@ -434,7 +434,8 @@ public Object getValue(Object val)
 				com.cannontech.database.Transaction.createTransaction(
 					com.cannontech.database.Transaction.ADD_PARTIAL,
 					((com.cannontech.database.db.DBPersistent) val));
-			t2.execute();
+
+			val = t2.execute();
 
 		}
 		catch (com.cannontech.database.TransactionException e)

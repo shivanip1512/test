@@ -65,25 +65,18 @@ public void delete() throws java.sql.SQLException
 
 	delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 }
+
 /**
  * This method was created by Cannon Technologies Inc.
  * @return boolean
  * @param deviceID java.lang.Integer
  */
-public static boolean deleteAllRecipients(int locationID )
-{
-	return deleteAllRecipients(locationID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-}
-/**
- * This method was created by Cannon Technologies Inc.
- * @return boolean
- * @param deviceID java.lang.Integer
- */
-public static boolean deleteAllRecipients(int locationID, String databaseAlias)
+public static boolean deleteAllRecipients(int locationID, java.sql.Connection conn )
 {
 	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("DELETE FROM " + TABLE_NAME + " WHERE locationID=" + locationID,
-												 databaseAlias );												 
+		new com.cannontech.database.SqlStatement(
+            "DELETE FROM " + TABLE_NAME + " WHERE locationID=" + locationID,
+				conn );
 	try
 	{
 		stmt.execute();

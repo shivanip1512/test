@@ -99,7 +99,7 @@ public class CreateCallAction implements ActionBase {
             callReport.setCallReportBase( callReportDB );
             
             Transaction transaction = Transaction.createTransaction( Transaction.INSERT, callReport );
-            transaction.execute();
+            callReport = (com.cannontech.database.data.stars.report.CallReportBase)transaction.execute();
             
             StarsSuccess success = new StarsSuccess();
             respOper.setStarsSuccess( success );

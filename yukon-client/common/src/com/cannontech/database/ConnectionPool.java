@@ -61,7 +61,7 @@ public class ConnectionPool
 
 	  //The below line lets you find any connections that are not
 	  //   releasing the connection to the DB!!  (Creates a lot of output!!)
-	  CTILogger.debug("   " + com.cannontech.common.util.CtiUtilities.getSTACK_TRACE() );
+	  //CTILogger.debug("   " + com.cannontech.common.util.CtiUtilities.getSTACK_TRACE() );
 
 	  try
 	  {

@@ -53,44 +53,26 @@ public int getNotificationGroupID() {
 public void retrieve(String databaseAlias) 
 {
 
-	String sqlString = "SELECT CategoryName, NotificationGroupID " +
-		"FROM " + com.cannontech.database.db.notification.AlarmCategory.TABLE_NAME +
-		" WHERE AlarmCategoryID = " + getAlarmStateID();
+	com.cannontech.database.SqlStatement s = 
+      new com.cannontech.database.SqlStatement(
+         "SELECT CategoryName, NotificationGroupID " +
+   		"FROM " + com.cannontech.database.db.notification.AlarmCategory.TABLE_NAME +
+   		" WHERE AlarmCategoryID = " + getAlarmStateID(),
+         com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
-	java.sql.Connection conn = null;
-	java.sql.Statement stmt = null;
-	java.sql.ResultSet rset = null;
 	try 
 	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection( databaseAlias );
-		stmt = conn.createStatement();
-		rset = stmt.executeQuery(sqlString);
+      s.execute();
 
-		while (rset.next())
-		{
-			setCategoryName( rset.getString(1) );
-			setNotificationGroupID( rset.getInt(2) );
-		}
+      if( s.getRowCount() <= 0 )
+         throw new IllegalStateException("Unable to find AlarmCategory with stateID = " + getLiteID() );
 
+		setCategoryName( s.getRow(0)[0].toString() );
+		setNotificationGroupID( new Integer(s.getRow(0)[1].toString()).intValue() );
 	}
-	catch( java.sql.SQLException e )
+	catch( Exception e )
 	{
 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		try
-		{
-			if( stmt != null )
-				stmt.close();
-			if( conn != null )
-				conn.close();
-		}
-		catch( java.sql.SQLException e )
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-
 	}
 
 }

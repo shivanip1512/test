@@ -652,7 +652,7 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 	try
 	{
 		Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, (com.cannontech.database.db.DBPersistent) selectedObject);
-		t.execute();
+		selectedObject = t.execute();
 	}
 	catch (Exception e)
 	{
@@ -719,7 +719,7 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 		{
 
 			Transaction t1 = Transaction.createTransaction(Transaction.UPDATE, selectedObject);
-			t1.execute();
+			selectedObject = t1.execute();
 
 			generateDBChangeMsg( selectedObject, DBChangeMsg.CHANGE_TYPE_UPDATE );
 
@@ -775,7 +775,7 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
 	  try
 	  {
 		 Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, userObject);
-		 t.execute();
+		 userObject = t.execute();
 	  }
 	  catch (Exception e)
 	  {
@@ -1113,7 +1113,7 @@ private void executeDeleteButton_ActionPerformed(ActionEvent event)
 
 		try
 		{
-			t.execute();
+			toDelete = t.execute();
 
 			//fire DBChange messages out to Dispatch
 			generateDBChangeMsg( toDelete, DBChangeMsg.CHANGE_TYPE_DELETE );
@@ -1187,7 +1187,7 @@ private void executeEditButton_ActionPerformed(ActionEvent event)
 	         try
 	         {
 	            Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, userObject);
-	            t.execute();	
+	            userObject = t.execute();	
 	         }
 	         catch (Exception e)
 	         {
@@ -1416,7 +1416,7 @@ private void generateDBChangeMsg( com.cannontech.database.db.DBPersistent object
 			//handle the DBChangeMsg locally
 			com.cannontech.database.data.lite.LiteBase lBase = 
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
-	
+
 			//tell our tree we may need to change the display
 			updateTreePanel( lBase, dbChange[i].getTypeOfChange() );
          
@@ -1514,12 +1514,12 @@ private com.cannontech.message.dispatch.ClientConnection getConnToDispatch()
 		connToDispatch.setAutoReconnect(true);
 		connToDispatch.setRegistrationMsg(reg);
 		
-		try
-		{
+		try 
+      {
 			connToDispatch.connectWithoutWait();
 		}
-		catch( Exception e )
-		{
+		catch( Exception e ) 
+      {
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 
@@ -1527,6 +1527,7 @@ private com.cannontech.message.dispatch.ClientConnection getConnToDispatch()
 
 	return connToDispatch;
 }
+
 /**
  * This method was created in VisualAge.
  * @return java.awt.Container
@@ -2595,7 +2596,7 @@ public void selectionPerformed(WizardPanelEvent event)
 				
 				//insert the newly created item into the DB
 				Transaction t = Transaction.createTransaction(Transaction.INSERT, newItem);
-				t.execute();
+				newItem = t.execute();
 
 				successfullInsertion = true;
 				String messageString = newItem + " inserted successfully into the database.";
@@ -2789,7 +2790,7 @@ private void showCopyWizardPanel(WizardPanel wizard) {
 	try
 	{
 		Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, userObject);
-		t.execute();
+		userObject = t.execute();
 	}
 	catch( Exception e )
 	{
@@ -2923,8 +2924,7 @@ private boolean updateObject(com.cannontech.database.db.DBPersistent object)
 	try
 	{
 		Transaction t = Transaction.createTransaction( Transaction.UPDATE, object );
-
-		t.execute();
+		object = t.execute();
 
 		//write the DBChangeMessage out to Dispatch since it was a Successfull UPDATE
 		generateDBChangeMsg( object, DBChangeMsg.CHANGE_TYPE_UPDATE );

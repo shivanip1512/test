@@ -356,7 +356,7 @@ private void setListData(java.util.Vector newListData) {
 private void setTDCInfo() 
 {
 	getListData().addElement("             Copyright Cannon Technologies 1999-2002");
-	getListData().addElement("Version    : " + TDCDefines.VERSION);
+	getListData().addElement("Version    : " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() );
 	getListData().addElement("DB Alias   : " + TDCDefines.DBALIAS);
 	getListData().addElement("Max Rows   : " + TDCDefines.MAX_ROWS);
 	getListData().addElement("Sound File : " + TDCDefines.ALARM_SOUND_FILE);

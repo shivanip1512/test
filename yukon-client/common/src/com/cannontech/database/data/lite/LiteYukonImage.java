@@ -45,47 +45,30 @@ public class LiteYukonImage extends LiteBase
     */
    public void retrieve(String databaseAlias)
    {
-      //get all the customer contacts that are assigned to a customer
-      String sqlString = "SELECT ImageCategory,ImageName,ImageValue from " +
-                  com.cannontech.database.db.state.YukonImage.TABLE_NAME +
-                  " where ImageID = " + getImageID() ;
+      com.cannontech.database.SqlStatement s = 
+         new com.cannontech.database.SqlStatement(
+            "SELECT ImageCategory,ImageName,ImageValue from " +
+               com.cannontech.database.db.state.YukonImage.TABLE_NAME +
+               " where ImageID = " + getImageID(),
+            com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
    
-      java.sql.Connection conn = null;
-      java.sql.Statement stmt = null;
-      java.sql.ResultSet rset = null;
-      try
+      try 
       {
-         conn = com.cannontech.database.PoolManager.getInstance().getConnection( databaseAlias );
-         stmt = conn.createStatement();
-         rset = stmt.executeQuery(sqlString);
+         s.execute();
    
-         while (rset.next())
-         {
-            setImageCategory( rset.getString(1).trim() );
-            setImageName( rset.getString(2).trim() );
-            setImageValue( (byte[])rset.getObject(3) );
-         }
-
+         if( s.getRowCount() <= 0 )
+            throw new IllegalStateException("Unable to find DeviceMeterGroup with deviceID = " + getLiteID() );
+   
+   
+         setImageCategory( s.getRow(0)[0].toString() );
+         setImageName( s.getRow(0)[1].toString() );
+         setImageValue( (byte[])s.getRow(0)[2] );
       }
-      catch( java.sql.SQLException e )
+      catch( Exception e )
       {
          com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-      }
-      finally
-      {
-         try
-         {
-            if( stmt != null )
-               stmt.close();
-            if( conn != null )
-               conn.close();
-         }
-         catch( java.sql.SQLException e )
-         {
-            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-         }
-      }
-   
+      }      
+      
    }   
    
 	/**

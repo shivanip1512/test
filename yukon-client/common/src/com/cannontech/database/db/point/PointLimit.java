@@ -53,24 +53,18 @@ public void delete() throws java.sql.SQLException
 	
 	delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 }
-/**
- * This method was created by Cannon Technologies Inc.
- * @return boolean
- * @param pointID java.lang.Integer
- */
-public static boolean deletePointLimits(Integer pointID) {
-	return deletePointLimits(pointID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-}
-/**
- * This method was created by Cannon Technologies Inc.
- * @return boolean
- * @param pointID java.lang.Integer
- */
-public static boolean deletePointLimits(Integer pointID, String databaseAlias) {
 
+/**
+ * This method was created by Cannon Technologies Inc.
+ * @return boolean
+ * @param pointID java.lang.Integer
+ */
+public static boolean deletePointLimits(Integer pointID, java.sql.Connection conn )
+{
 	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("DELETE FROM " + TABLE_NAME + " WHERE PointID=" + pointID,
-												 databaseAlias );												 
+		new com.cannontech.database.SqlStatement(
+            "DELETE FROM " + TABLE_NAME + " WHERE PointID=" + pointID,
+				conn );
 	try
 	{
 		stmt.execute();

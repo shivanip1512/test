@@ -1,19 +1,21 @@
-package com.cannontech.database.cache;
+package com.cannontech.yukon.server.cache;
 
 /**
  * Insert the type's description here.
  * Creation date: (3/15/00 3:57:58 PM)
  * @author: 
  */
-class PointUnitLoader implements Runnable {
-	private java.util.ArrayList allPointsUnits = null;
+class NotificationRecipientLoader implements Runnable 
+{
+	private java.util.ArrayList allLocations = null;
+	
 	private String databaseAlias = null;
 /**
- * DeviceLoader constructor comment.
+ * StateGroupLoader constructor comment.
  */
-public PointUnitLoader(java.util.ArrayList pointArray, String alias) {
+public NotificationRecipientLoader(java.util.ArrayList allLocationsArray, String alias) {
 	super();
-	this.allPointsUnits = pointArray;
+	this.allLocations = allLocationsArray;
 	this.databaseAlias = alias;
 }
 /**
@@ -28,8 +30,8 @@ java.util.Date timerStop = null;
 //temp code
 timerStart = new java.util.Date();
 //temp code
-	String sqlString = "SELECT POINTID,UOMID,DECIMALPLACES " +
-		"FROM POINTUNIT WHERE POINTID > 0 ORDER BY POINTID";
+	String sqlString = "SELECT RecipientID, RecipientName,EMAILADDRESS, EmailSendType, PAGERNUMBER " +
+		"FROM NotificationRecipient WHERE RecipientID >= 0 ORDER BY EMAILADDRESS";
 
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
@@ -42,15 +44,19 @@ timerStart = new java.util.Date();
 
 		while (rset.next())
 		{
-			int pointID = rset.getInt(1);
-			int uomID = rset.getInt(2);
-			int decimalPlaces = rset.getInt(3);
+			int locID = rset.getInt(1);
+			String locName = rset.getString(2).trim();
+			String emailAddress = rset.getString(3).trim();
+			int sendType = rset.getInt(4);
+			String pagerNumber = rset.getString(5).trim();
 
-			com.cannontech.database.data.lite.LitePointUnit lpu =
-				new com.cannontech.database.data.lite.LitePointUnit( pointID, uomID, decimalPlaces);
-
-			allPointsUnits.add(lpu);
+			com.cannontech.database.data.lite.LiteNotificationRecipient gl =
+					new com.cannontech.database.data.lite.LiteNotificationRecipient(locID, locName, 
+						emailAddress, sendType, pagerNumber);
+				
+			allLocations.add(gl);
 		}
+		
 	}
 	catch( java.sql.SQLException e )
 	{
@@ -72,7 +78,7 @@ timerStart = new java.util.Date();
 //temp code
 timerStop = new java.util.Date();
 com.cannontech.clientutils.CTILogger.info( 
-    (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for PointLoader" );
+    (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for NotificationGroupRecipientLoader" );
 //temp code
 	}
 }

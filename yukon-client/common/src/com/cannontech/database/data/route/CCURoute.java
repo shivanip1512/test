@@ -156,7 +156,7 @@ public void update() throws java.sql.SQLException {
 	super.update();
 	getCarrierRoute().update();
 
-	RepeaterRoute.deleteRepeaterRoutes( getRouteID() );
+	RepeaterRoute.deleteRepeaterRoutes( getRouteID(), getDbConnection() );
 	 	
 	for( int i = 0; i < getRepeaterVector().size(); i++ )
 		((DBPersistent) getRepeaterVector().elementAt(i)).add();

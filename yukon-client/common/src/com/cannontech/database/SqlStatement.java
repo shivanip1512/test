@@ -57,7 +57,7 @@ public class SqlStatement extends com.cannontech.common.util.Command {
 
 	   try
 	   {
-	    stmt = getDbConnection().createStatement();
+         stmt = getDbConnection().createStatement();
 
 	    if( !results )
 	    {
@@ -133,6 +133,8 @@ public class SqlStatement extends com.cannontech.common.util.Command {
 	private String sql;
 	private InnerSqlStatement innerSql;
 	private String databaseAlias;	
+   private java.sql.Connection dbConn = null;
+
 /**
  * SqlStatement constructor comment.
  */
@@ -143,6 +145,20 @@ public SqlStatement(String sql, String databaseAlias) {
 	this.sql = sql;
 	this.databaseAlias = databaseAlias;
 }
+
+/**
+ * SqlStatement constructor comment.
+ */
+public SqlStatement(String sql, java.sql.Connection conn ) 
+{
+   super();
+   
+   this.innerSql = new InnerSqlStatement(sql);
+   this.sql = sql;
+   this.databaseAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
+   dbConn = conn;
+}
+
 /**
  * execute method comment.
  */
@@ -178,9 +194,16 @@ public void execute() throws com.cannontech.common.util.CommandExecutionExceptio
 		}		
 	}
 
-	Transaction t = Transaction.createTransaction( operation, this.innerSql, this.databaseAlias );
+   if( dbConn != null )
+      this.innerSql.setDbConnection( dbConn );
 
-	t.execute();
+   try {
+   com.cannontech.clientutils.CTILogger.debug( 
+      "   DB: SQLStatement execute: " + this.innerSql.sql );
+   } catch( Throwable t ) {}
+
+	Transaction t = Transaction.createTransaction( operation, this.innerSql, this.databaseAlias );
+	this.innerSql = (InnerSqlStatement)t.execute();
 }
 /**
  * This method was created in VisualAge.

@@ -10,8 +10,6 @@ public class CommonDefines
 	public static final String HELP_FILE = com.cannontech.common.util.CtiUtilities.getHelpDirPath()
 			+ "Yukon Database Editor Help.chm";
 
-	public static final String VERSION = 
-			com.cannontech.common.version.VersionTools.getYUKON_VERSION() + ".2.15";
 /**
  * CommonUtils constructor comment.
  */

@@ -26,7 +26,8 @@ public void add() throws java.sql.SQLException {
  */
 public void delete() throws java.sql.SQLException{
 
-	com.cannontech.database.db.route.MacroRoute.deleteAllMacroRoutes( getRouteID() );
+	com.cannontech.database.db.route.MacroRoute.deleteAllMacroRoutes( 
+         getRouteID(), getDbConnection() );
 
 	super.delete();
 }
@@ -114,7 +115,8 @@ public void setRouteID(Integer routeID) {
 public void update() throws java.sql.SQLException{
 	super.update();
 
-	com.cannontech.database.db.route.MacroRoute.deleteAllMacroRoutes( getRouteID() );
+	com.cannontech.database.db.route.MacroRoute.deleteAllMacroRoutes( 
+         getRouteID(), getDbConnection() );
 	
 	for( int i = 0; i < getMacroRouteVector().size(); i++ )
 		((com.cannontech.database.db.route.MacroRoute) getMacroRouteVector().elementAt(i)).add();

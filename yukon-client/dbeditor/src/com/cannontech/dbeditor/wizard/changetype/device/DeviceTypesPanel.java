@@ -314,7 +314,7 @@ public Object getValue(Object val)
 					com.cannontech.database.Transaction.DELETE_PARTIAL,
 					((DBPersistent) val));
 
-			t.execute();
+			val = t.execute();
 		}
 		catch (com.cannontech.database.TransactionException e)
 		{
@@ -323,7 +323,11 @@ public Object getValue(Object val)
 		}
 		try
 		{
-			scanRates = DeviceScanRate.getDeviceScanRates(((DeviceBase) val).getDevice().getDeviceID());
+			scanRates = DeviceScanRate.getDeviceScanRates(
+               ((DeviceBase) val).getDevice().getDeviceID(),
+               com.cannontech.database.PoolManager.getInstance().getConnection(
+                  com.cannontech.common.util.CtiUtilities.getDatabaseAlias()) );
+
 			//deviceStatistics = DeviceStatistics.getDeviceStatistics(((DeviceBase) val).getDevice().getDeviceID());
 		}
 		catch (java.sql.SQLException e)
@@ -358,7 +362,8 @@ public Object getValue(Object val)
 				com.cannontech.database.Transaction.createTransaction(
 					com.cannontech.database.Transaction.ADD_PARTIAL,
 					((DBPersistent) val));
-			t2.execute();
+
+			val = t2.execute();
 
 		}
 		catch (com.cannontech.database.TransactionException e)

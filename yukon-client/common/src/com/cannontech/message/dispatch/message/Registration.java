@@ -3,17 +3,27 @@ package com.cannontech.message.dispatch.message;
 /**
  * This type was created in VisualAge.
  */
-public class Registration extends com.cannontech.message.util.Message {
+public class Registration extends com.cannontech.message.util.Message 
+{
 	private String appName;
 	private int appIsUnique;
 	private int appKnownPort;
 	private int appExpirationDelay;
+   
+   private long regID = new java.util.Date().getTime();
+   
 /**
  * Registration constructor comment.
  */
 public Registration() {
 	super();
 } 
+
+protected long getRegID()
+{
+   return regID;
+}
+
 /**
  * This method was created in VisualAge.
  * @return int

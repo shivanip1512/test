@@ -344,7 +344,8 @@ private void initComboBoxes()
 			            com.cannontech.database.Transaction t = 
 			            	com.cannontech.database.Transaction.createTransaction(
 				            	com.cannontech.database.Transaction.RETRIEVE, dbPoint);
-			            t.execute();
+
+			            dbPoint = (com.cannontech.database.data.point.StatusPoint)t.execute();
 
 				         //only add status points that have control
 				         if( com.cannontech.database.data.point.PointTypes.hasControl(dbPoint.getPointStatus().getControlType()) )

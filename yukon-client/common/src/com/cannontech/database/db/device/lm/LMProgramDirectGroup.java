@@ -42,25 +42,17 @@ public void delete() throws java.sql.SQLException
 {
 	delete( TABLE_NAME, "DeviceID", getDeviceID() );
 }
+
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.database.db.point.State[]
  * @param stateGroup java.lang.Integer
  */
-public static final void deleteAllDirectGroups( Integer deviceID ) throws java.sql.SQLException
-{
-	deleteAllDirectGroups( deviceID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-}
-/**
- * This method was created in VisualAge.
- * @return com.cannontech.database.db.point.State[]
- * @param stateGroup java.lang.Integer
- */
-public static final void deleteAllDirectGroups(Integer deviceID, String databaseAlias) throws java.sql.SQLException
+public static final void deleteAllDirectGroups(Integer deviceID, java.sql.Connection conn ) throws java.sql.SQLException
 {
 	com.cannontech.database.SqlStatement sql = 
 		new com.cannontech.database.SqlStatement("DELETE FROM " +TABLE_NAME +
-			" WHERE deviceID=" + deviceID, databaseAlias );
+			" WHERE deviceID=" + deviceID, conn );
 		
 	try
 	{

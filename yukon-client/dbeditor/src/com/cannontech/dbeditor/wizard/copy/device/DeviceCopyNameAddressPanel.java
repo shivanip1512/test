@@ -334,7 +334,8 @@ public Object getValue(Object val)
 				{
 					com.cannontech.database.Transaction t =
 						com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, oldRoute);
-					t.execute();
+
+					oldRoute = (com.cannontech.database.data.route.RouteBase)t.execute();
 				}
 				catch (Exception e)
 				{
@@ -399,7 +400,8 @@ public Object getValue(Object val)
 					{
 						com.cannontech.database.Transaction t =
 							com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, pointBase);
-						t.execute();
+						pointBase = (com.cannontech.database.data.point.PointBase)t.execute();
+                  
 						devicePoints.addElement(pointBase);
 					}
 					catch (com.cannontech.database.TransactionException e)

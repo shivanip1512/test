@@ -252,7 +252,7 @@ public class SearchCustAccountAction implements ActionBase {
 							com.cannontech.database.data.device.lm.LMProgramBase prog = new com.cannontech.database.data.device.lm.LMProgramDirect();
 							prog.setPAObjectID( progID );
 							Transaction transaction = Transaction.createTransaction( Transaction.RETRIEVE, prog );
-							transaction.execute();
+							prog = (com.cannontech.database.data.device.lm.LMProgramBase)transaction.execute();
 							
 							program = new StarsLMProgram();
 							program.setProgramID( progID.intValue() );

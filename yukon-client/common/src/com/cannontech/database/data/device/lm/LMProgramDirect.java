@@ -51,7 +51,9 @@ public void add() throws java.sql.SQLException
 public void delete() throws java.sql.SQLException
 {
 	LMProgramDirectGear.deleteAllDirectGears( getPAObjectID(), getDbConnection() );
-	com.cannontech.database.db.device.lm.LMProgramDirectGroup.deleteAllDirectGroups( getPAObjectID() );
+   
+	com.cannontech.database.db.device.lm.LMProgramDirectGroup.deleteAllDirectGroups( 
+         getPAObjectID(), getDbConnection() );
 		
 	deleteFromDynamicTables();
 	
@@ -184,7 +186,9 @@ public void update() throws java.sql.SQLException
 
 
 	//delete all the current associated groups from the DB
-	com.cannontech.database.db.device.lm.LMProgramDirectGroup.deleteAllDirectGroups( getPAObjectID() );
+	com.cannontech.database.db.device.lm.LMProgramDirectGroup.deleteAllDirectGroups( 
+         getPAObjectID(), getDbConnection() );
+
 
 	//add the groups
 	for( int i = 0; i < getLmProgramStorageVector().size(); i++ )

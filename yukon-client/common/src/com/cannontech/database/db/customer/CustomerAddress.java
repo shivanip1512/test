@@ -39,7 +39,7 @@ public CustomerAddress() {
 public void add() throws java.sql.SQLException 
 {
 	if( getAddressID() == null )
-		setAddressID( getNextAddressID() );
+		setAddressID( getNextAddressID( getDbConnection() ) );
 
 	Object addValues[] = { getAddressID(), getLocationAddress1(), getLocationAddress2(),
 					getCityName(), getStateCode(), getZipCode() };
@@ -92,11 +92,12 @@ public java.lang.String getLocationAddress2() {
  * Creation date: (12/14/99 10:31:33 AM)
  * @return java.lang.Integer
  */
-public static synchronized Integer getNextAddressID()
+public static synchronized Integer getNextAddressID( java.sql.Connection conn )
 {
 	com.cannontech.database.SqlStatement stmt =
- 		new com.cannontech.database.SqlStatement("SELECT AddressID FROM CustomerAddress order by AddressID",
- 													com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+ 		new com.cannontech.database.SqlStatement(
+            "SELECT AddressID FROM CustomerAddress order by AddressID",
+ 				conn );
 
 	Integer returnVal = null;
 	int value = 0;
