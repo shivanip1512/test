@@ -34,9 +34,14 @@ class LoginPanel extends JPanel implements CaretListener, ActionListener {
 	private final JLabel messageLabel = new JLabel("Enter your Yukon username and password:");
 	//private final JLabel messageLabel2 = new JLabel("")
 	private final JLabel hostLabel = new JLabel("Yukon server:");
+	private final JLabel portLabel = new JLabel("Port:");
 	private final JLabel usernameLabel = new JLabel("User name:");
 	private final JLabel passwordLabel = new JLabel("Password:");
 	private final JComboBox hostComboBox = new JComboBox();
+	private final JTextField portField = new JTextField();
+	{
+		portField.setColumns(5);
+	}
 	private final JTextField usernameField = new JTextField();
 	private final JPasswordField passwordField = new JPasswordField();
 	private final JCheckBox rememberCheckBox = new JCheckBox("Remember my password");
@@ -61,13 +66,14 @@ class LoginPanel extends JPanel implements CaretListener, ActionListener {
 		this(
 			LoginPrefs.getInstance().getCurrentYukonHost(),
 			LoginPrefs.getInstance().getAvailableYukonHosts(),
+			LoginPrefs.getInstance().getDefaultYukonPort(),
 			LoginPrefs.getInstance().getDefaultUsername(), 
 			LoginPrefs.getInstance().getDefaultPassword(), 
 			LoginPrefs.getInstance().getDefaultRememberPassword(),
 			true);
 	}
 	
-	public LoginPanel(String host, String[] hosts, String username, String password, boolean rememberPassword, boolean localLogin) {
+	public LoginPanel(String host, String[] hosts, int port, String username, String password, boolean rememberPassword, boolean localLogin) {
 				
 		setLayout(new GridBagLayout());
 		
@@ -75,29 +81,34 @@ class LoginPanel extends JPanel implements CaretListener, ActionListener {
 			new GridBagConstraints(0,0,3,1,1.0,0.0,GridBagConstraints.WEST,GridBagConstraints.HORIZONTAL,new Insets(8,4,8,52),0,0);
 			
 		GridBagConstraints hostLabelCons = 
-			new GridBagConstraints(0,1,1,1,1.0,0.0,GridBagConstraints.WEST,GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0);
-			
-			
+			new GridBagConstraints(0,1,1,1,1.0,0.0,GridBagConstraints.WEST,GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0);	
+ 	
 		GridBagConstraints usernameLabelCons = 
 			new GridBagConstraints(0,2,1,1,1.0,0.0,GridBagConstraints.WEST,GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0);
 		GridBagConstraints passwordLabelCons = 
 			new GridBagConstraints(0,3,1,1,1.0,0.0,GridBagConstraints.WEST,GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0);
 			
 		GridBagConstraints hostComboCons = 
-					new GridBagConstraints(1,1,2,1,1.0,0.0,GridBagConstraints.EAST,GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0);
+					new GridBagConstraints(1,1,1,1,1.0,0.0,GridBagConstraints.EAST,GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0);
 					
 		GridBagConstraints usernameFieldCons = 
-			new GridBagConstraints(1,2,2,1,1.0,0.0,GridBagConstraints.EAST,GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0);
+			new GridBagConstraints(1,2,3,1,1.0,0.0,GridBagConstraints.EAST,GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0);
 		GridBagConstraints passwordFieldCons = 
-			new GridBagConstraints(1,3,2,1,1.0,0.0,GridBagConstraints.EAST,GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0);
+			new GridBagConstraints(1,3,3,1,1.0,0.0,GridBagConstraints.EAST,GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0);
 		GridBagConstraints rememberCheckBoxCons =
-			new GridBagConstraints(1,4,2,1,1.0,0.0,GridBagConstraints.WEST,GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0);
+			new GridBagConstraints(1,4,3,1,1.0,0.0,GridBagConstraints.WEST,GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0);
 		//GridBagConstraints loginButtonCons = 
 		//	new GridBagConstraints(1,5,1,1,1.0,0.0,GridBagConstraints.EAST,GridBagConstraints.NONE,new Insets(4,4,4,4),0,0);
 		//GridBagConstraints cancelButtonCons = 
 		//	new GridBagConstraints(2,5,1,1,1.0,0.0,GridBagConstraints.WEST,GridBagConstraints.NONE,new Insets(4,4,4,4),0,0);
 		
-		
+	
+		GridBagConstraints portLabelCons = 
+			new GridBagConstraints(2,1,1,1,1.0,0.0,GridBagConstraints.WEST,GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0);
+				
+		GridBagConstraints portFieldCons = 					
+			new GridBagConstraints(3,1,1,1,1.0,0.0,GridBagConstraints.WEST,GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0);
+										
 	//	add(messageLabel, messageLabelCons);
 		if(!localLogin)
 			add(hostLabel, hostLabelCons);
@@ -105,9 +116,16 @@ class LoginPanel extends JPanel implements CaretListener, ActionListener {
 		add(passwordLabel, passwordLabelCons);
 		add(usernameField, usernameFieldCons);
 		add(passwordField, passwordFieldCons);
+		
 		if(!localLogin)
 			add(hostComboBox, hostComboCons);
 		add(rememberCheckBox, rememberCheckBoxCons);
+		
+		if(!localLogin) {
+			add(portLabel, portLabelCons);
+			add(portField, portFieldCons);
+		}
+			
 		//add(loginButton, loginButtonCons);			
 		//add(cancelButton, cancelButtonCons);
 		
@@ -126,6 +144,7 @@ class LoginPanel extends JPanel implements CaretListener, ActionListener {
 			hostComboBox.addItem(hosts[i]);
 		}
 		hostComboBox.setSelectedItem(host);
+		setPort(port);
 		setUsername(username);
 		setPassword(password);
 		setRememberPassword(rememberPassword);	
@@ -136,7 +155,7 @@ class LoginPanel extends JPanel implements CaretListener, ActionListener {
 	}
 	
 	public int getYukonPort() {
-		return 80;
+		return Integer.parseInt(portField.getText().trim());
 	}
 	
 	public String getUsername() {
@@ -149,6 +168,10 @@ class LoginPanel extends JPanel implements CaretListener, ActionListener {
 	
 	public boolean isRememberPassword() {
 		return rememberCheckBox.isSelected();
+	}
+	
+	public void setPort(int port) {
+		portField.setText(Integer.toString(port));
 	}
 	
 	public void setUsername(String username) {
@@ -213,7 +236,7 @@ class LoginPanel extends JPanel implements CaretListener, ActionListener {
 					
 					public Object construct() {
 						try {	
-							sessionID = LoginSupport.getSessionID(lp.getYukonHost(), 80, lp.getUsername(), lp.getPassword());				
+							sessionID = LoginSupport.getSessionID(lp.getYukonHost(), lp.getYukonPort(), lp.getUsername(), lp.getPassword());				
 //							user = AuthFuncs.login(lp.getUsername(), lp.getPassword());
 						}
 						catch(RuntimeException re) {

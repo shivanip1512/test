@@ -218,7 +218,8 @@ public class ClientSession {
 				sessionID = LoginSupport.getSessionID(lp.getYukonHost(), lp.getYukonPort(), lp.getUsername(), lp.getPassword());
 			}
 			catch(RuntimeException re) {
-				displayMessage(p, re.getMessage(), "Yukon Login");
+				displayMessage(p, re.getMessage(), "Yukon Login"); //blew up, try again?
+				continue;
 			}
 			
 			Properties dbProps = LoginSupport.getDBProperties(sessionID, lp.getYukonHost(), lp.getYukonPort());
@@ -261,6 +262,7 @@ public class ClientSession {
 		LoginPrefs prefs = LoginPrefs.getInstance();
 		return  new LoginPanel(	prefs.getCurrentYukonHost(),
 								prefs.getAvailableYukonHosts(),
+								prefs.getDefaultYukonPort(),
 								prefs.getDefaultUsername(),
 								prefs.getDefaultPassword(),
 								prefs.getDefaultRememberPassword(), true);
@@ -270,6 +272,7 @@ public class ClientSession {
 			LoginPrefs prefs = LoginPrefs.getInstance();
 			return  new LoginPanel(	prefs.getCurrentYukonHost(),
 									prefs.getAvailableYukonHosts(),
+									prefs.getDefaultYukonPort(),
 									prefs.getDefaultUsername(),
 									prefs.getDefaultPassword(),
 									prefs.getDefaultRememberPassword(), false);

@@ -35,7 +35,11 @@ class LoginPrefs extends CtiPreferences {
 	}
 	
 	public int getCurrentYukonPort() {
-		return getInt(CURRENT_YUKON_PORT, 80);
+		return getInt(CURRENT_YUKON_PORT, getDefaultYukonPort());
+	}
+	
+	public int getDefaultYukonPort() {
+		return getInt(DEFAULT_YUKON_PORT, 8080);
 	}
 	
 	public String getDefaultUsername(){
@@ -88,6 +92,10 @@ class LoginPrefs extends CtiPreferences {
 		put(DEFAULT_USERNAME, username);
 	}
 	
+	public void setDefaultYukonPort(int port) {
+		put(DEFAULT_YUKON_PORT, port);
+	}
+	
 	public void setDefaultPassword(String password) {
 		put(DEFAULT_PASSWORD, password);
 	}
@@ -97,13 +105,14 @@ class LoginPrefs extends CtiPreferences {
 	}
 
 	private static String AVAILABLE_YUKON_HOSTS = "Available Yukon Hosts";
-		
+	
 	private static String CURRENT_SESSION_ID = "Current Session ID";
 	private static String CURRENT_USER_ID = "Current User ID";
 	
 	private static String CURRENT_YUKON_HOST = "Current Yukon Host";
 	private static String CURRENT_YUKON_PORT = "Current Yukon Port";
 	
+	private static String DEFAULT_YUKON_PORT = "Default Port";
 	private static String DEFAULT_USERNAME = "Default Username";
 	private static String DEFAULT_PASSWORD = "Default Password";
 	private static String DEFAULT_REMEMBER_PASSWORD = "Default Remember Password";
