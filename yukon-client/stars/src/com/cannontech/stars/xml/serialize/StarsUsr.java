@@ -39,6 +39,13 @@ public abstract class StarsUsr implements java.io.Serializable {
     **/
     private boolean _has_userID;
 
+    private int _groupID;
+
+    /**
+     * keeps track of state for field: _groupID
+    **/
+    private boolean _has_groupID;
+
     private java.lang.String _username;
 
     private java.lang.String _password;
@@ -59,10 +66,27 @@ public abstract class StarsUsr implements java.io.Serializable {
 
     /**
     **/
+    public void deleteGroupID()
+    {
+        this._has_groupID= false;
+    } //-- void deleteGroupID() 
+
+    /**
+    **/
     public void deleteUserID()
     {
         this._has_userID= false;
     } //-- void deleteUserID() 
+
+    /**
+     * Returns the value of field 'groupID'.
+     * 
+     * @return the value of field 'groupID'.
+    **/
+    public int getGroupID()
+    {
+        return this._groupID;
+    } //-- int getGroupID() 
 
     /**
      * Returns the value of field 'password'.
@@ -93,6 +117,13 @@ public abstract class StarsUsr implements java.io.Serializable {
     {
         return this._username;
     } //-- java.lang.String getUsername() 
+
+    /**
+    **/
+    public boolean hasGroupID()
+    {
+        return this._has_groupID;
+    } //-- boolean hasGroupID() 
 
     /**
     **/
@@ -129,6 +160,17 @@ public abstract class StarsUsr implements java.io.Serializable {
     **/
     public abstract void marshal(org.xml.sax.ContentHandler handler)
         throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+
+    /**
+     * Sets the value of field 'groupID'.
+     * 
+     * @param groupID the value of field 'groupID'.
+    **/
+    public void setGroupID(int groupID)
+    {
+        this._groupID = groupID;
+        this._has_groupID = true;
+    } //-- void setGroupID(int) 
 
     /**
      * Sets the value of field 'password'.

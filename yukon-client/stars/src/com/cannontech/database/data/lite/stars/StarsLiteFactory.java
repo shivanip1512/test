@@ -23,6 +23,7 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
@@ -1304,7 +1305,7 @@ public class StarsLiteFactory {
         	liteContact.getLoginID() != com.cannontech.user.UserUtils.USER_YUKON_ID)
         {
 	        LiteYukonUser liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( liteContact.getLoginID() );
-			starsAcctInfo.setStarsUser( createStarsUser(liteUser) );
+			starsAcctInfo.setStarsUser( createStarsUser(liteUser, energyCompany) );
         }
 		
 		if (isOperator) {
@@ -1813,10 +1814,24 @@ public class StarsLiteFactory {
 		return starsAppCat;
 	}
 	
-	public static StarsUser createStarsUser(com.cannontech.database.data.lite.LiteYukonUser liteUser) {
+	public static StarsUser createStarsUser(LiteYukonUser liteUser, LiteStarsEnergyCompany energyCompany) {
 		StarsUser starsUser = new StarsUser();
 		starsUser.setUsername( ServerUtils.forceNotNull(liteUser.getUsername()) );
 		starsUser.setPassword( ServerUtils.forceNotNull(liteUser.getPassword()) );
+		
+		LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();
+		com.cannontech.database.cache.DefaultDatabaseCache cache =
+				com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		
+		synchronized (cache) {
+			java.util.List userGroups = (java.util.List) cache.getYukonUserGroupMap().get( liteUser );
+			for (int i = 0; i < custGroups.length; i++) {
+				if (userGroups.contains( custGroups[i] )) {
+					starsUser.setGroupID( custGroups[i].getGroupID() );
+					break;
+				}
+			}
+		}
 		
 		return starsUser;
 	}
