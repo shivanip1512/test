@@ -13,6 +13,7 @@ public class GDSTableModel extends javax.swing.table.AbstractTableModel
 	public final static int COLOR_NAME_COLUMN = 3;
 	public final static int AXIS_NAME_COLUMN = 4;
 	public final static int TYPE_NAME_COLUMN = 5;
+	public final static int MULT_NAME_COLUMN = 6;
 	
 
 	public static String includeType = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES;
@@ -24,7 +25,8 @@ public class GDSTableModel extends javax.swing.table.AbstractTableModel
 		"Label",
 		"Color",
 		"Axis",
-		"Type"
+		"Type",
+		"Multiplier"
 	};
 
 	public static Class[] columnTypes =
@@ -34,7 +36,8 @@ public class GDSTableModel extends javax.swing.table.AbstractTableModel
 		String.class,
 		java.awt.Color.class,
 		String.class,
-		javax.swing.JCheckBox.class
+		javax.swing.JCheckBox.class,
+		Double.class
 	};	
 	
 	// rows contains GraphDataSeries
@@ -196,9 +199,10 @@ public Object getGDSAttribute(int index, com.cannontech.database.db.graph.GraphD
 
 		case TYPE_NAME_COLUMN:
 			return gds.getType();
-			
-	}
 
+		case MULT_NAME_COLUMN:
+			return gds.getMultiplier();
+	}
 	return null;
 }
 /**
@@ -261,7 +265,8 @@ public boolean isCellEditable(int row, int column)
 	return ( column == LABEL_NAME_COLUMN ||
 			 column == COLOR_NAME_COLUMN || 
 			 column == AXIS_NAME_COLUMN ||
-			 column == TYPE_NAME_COLUMN);
+			 column == TYPE_NAME_COLUMN ||
+			 column == MULT_NAME_COLUMN);
 }
 /**
  * Insert the method's description here.
@@ -336,6 +341,10 @@ public void setValueAt(Object value, int row, int col)
 		
 		case TYPE_NAME_COLUMN:
 			gds.setType( new String(value.toString()));
+		break;
+		
+		case MULT_NAME_COLUMN:
+			gds.setMultiplier( Double.valueOf(value.toString()));
 		break;
 	}
 
