@@ -11,6 +11,7 @@ import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.CustomerFuncs;
 import com.cannontech.database.cache.functions.NotificationGroupFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.lm.LMProgramBase;
 import com.cannontech.database.data.device.lm.LMProgramCurtailCustomerList;
@@ -27,6 +28,8 @@ import com.cannontech.database.db.device.lm.LMDirectNotificationGroupList;
 import com.cannontech.database.db.device.lm.LMEnergyExchangeCustomerList;
 import com.cannontech.message.util.Message;
 import com.cannontech.notif.message.NotifVoiceMsg;
+import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.roles.yukon.VoiceServerRole;
 import com.roguewave.tools.v2_0.Queue;
 import com.vocomo.vxml.tools.MakeCall;
 
@@ -45,11 +48,11 @@ class VoiceHandler implements INotifHandler, Runnable
     private static Queue _messageQueue = new Queue();
     
     //for each contact, we add 4 minutes for timeout (wild guess here!)
-    private static final long PER_CONTACT_TIMEOUT = 240 * 1000;
+    //private static final long PER_CONTACT_TIMEOUT = 240 * 1000;
     
-    private static final int CALL_TIMEOUT = 30;  //seconds
-    private static final String VOICE_HOST = "10.100.2.100";
-    private static final String VOICE_APP = "login";
+    //private static final int CALL_TIMEOUT = 30;  //seconds
+    //private static final String VOICE_HOST = "10.100.2.100";
+    //private static final String VOICE_APP = "login";
 
 
     VoiceHandler( NotifVoiceMsg msg )
@@ -215,35 +218,41 @@ class VoiceHandler implements INotifHandler, Runnable
      */
     private int makeCalls( String phoneNumber ) throws IOException
     {
-        MakeCall mc = new MakeCall( VOICE_HOST );
-        int rInt = mc.makeCall(phoneNumber, VOICE_APP, CALL_TIMEOUT);        
+        MakeCall mc = new MakeCall(
+                RoleFuncs.getGlobalPropertyValue(SystemRole.VOICE_HOST) );        
         
+        int rInt = mc.makeCall(
+                    phoneNumber,
+                    RoleFuncs.getGlobalPropertyValue(VoiceServerRole.VOICE_APP),
+                    Integer.parseInt(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_TIMEOUT)) );
+
         switch( rInt )
         {
             case MakeCall.CONNECTED:
-                System.out.println("The call was connected (Phone #: " + phoneNumber + ")");
+                CTILogger.debug("Call connected (Phone #: " + phoneNumber + ")");
                 break;
             case MakeCall.BUSY:
-                System.out.println("The destination was busy (Phone #: " + phoneNumber + ")");
+                CTILogger.debug("The destination was busy (Phone #: " + phoneNumber + ")");
                 break;
             case MakeCall.NO_ANSWER:
-                System.out.println("The callee rejected the call (Phone #: " + phoneNumber + ")");
+                CTILogger.debug("The callee rejected the call (Phone #: " + phoneNumber + ")");
                 break;
             case MakeCall.NO_RINGBACK:
-                System.out.println("There's no ringback from network (Phone #: " + phoneNumber + ")");
+                CTILogger.debug("There's no ringback from network (Phone #: " + phoneNumber + ")");
                 break;
             case MakeCall.NO_CHANNEL:
-                System.out.println("There's not enough resource to make a call (Phone #: " + phoneNumber + ")");
+                CTILogger.debug("There's not enough resource to make a call (Phone #: " + phoneNumber + ")");
                 break;
             case MakeCall.TIMEOUT:
-                System.out.println("The callee did not answer the call in " +
-                        CALL_TIMEOUT + " seconds (Phone #: " + phoneNumber + ")");
+                CTILogger.debug("The callee did not answer the call in " +
+                        RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_TIMEOUT) +
+                        " seconds (Phone #: " + phoneNumber + ")");
                 break;
-            case MakeCall.ERROR:
-                System.out.println("An Unknown ERROR occured (Phone #: " + phoneNumber + ")");
-                break;
-        }
 
+            default:
+                CTILogger.debug("An ERROR occured (Phone #: " + phoneNumber + "), errocode= " + rInt);
+                break;
+        }                    
 
         return rInt;
     }
@@ -313,7 +322,10 @@ class VoiceHandler implements INotifHandler, Runnable
         contactList.addAll( Arrays.asList(contacts) );
 
         long start = System.currentTimeMillis();
-        long stop = PER_CONTACT_TIMEOUT * contactList.size();
+        long stop =
+            (Long.parseLong(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_RESPONSE_TIMEOUT)) * 1000) *
+            contactList.size();
+        
         int i = contactList.size()-1;
 
         while( contactList.size() > 0
@@ -327,28 +339,45 @@ class VoiceHandler implements INotifHandler, Runnable
             String currNumber = null;
             try
             {
-                for( int j = 0; j < phoneNumbers.length; j++ )
+                boolean brk = false;
+                for( int j = 0; j < phoneNumbers.length && !brk; j++ )
                 {
                     if( phoneNumbers[j].isDisabled() )
                         continue;
 
                     currNumber = phoneNumbers[j].getNotification();
                     
-                    //this thread blocks here
+                    //this thread blocks here until connection 
                     int retCode = makeCalls( currNumber );
 
+                    switch( retCode )
+                    {
+                        case MakeCall.CONNECTED:
+                            CTILogger.info(" Outbound call CONNECTED to: " + contact.toString() );
+                            CTILogger.info("   Phone #: " + currNumber );
+                            contactList.remove( contact );
+                            brk = true;
+                            break;
 
-                    //success on one of the numbers, we can get
-                    // out of the loop
-                    if( retCode == MakeCall.CONNECTED )
-                    {   
-                        CTILogger.info(" Outbound call CONNECTED to: " + contact.toString() );
-                        CTILogger.info("   Phone #: " + currNumber );
-                        contactList.remove( contact );
-                        
-                        break;
-                    }
-                    
+                        //non-fatal errors
+                        case MakeCall.NO_ANSWER:                            
+                        case MakeCall.NO_CHANNEL:
+                        case MakeCall.BUSY:
+                            break;
+                            
+                        //fatal errors, just remove this contact 
+                        case MakeCall.TIMEOUT:                         
+                        case MakeCall.NO_RINGBACK:
+                        case MakeCall.ERROR:
+                        default:
+                            CTILogger.info(
+                                "A fatal ERROR occured (errorCode = " + retCode +
+                                ") during an outbound call to: " + contact.toString() );
+                            CTILogger.info("   Phone #: " + currNumber );
+                            contactList.remove( contact );
+                            brk = true;
+                            break;
+                    }                    
                 }
             }
             catch( IOException ioe )
@@ -375,7 +404,7 @@ class VoiceHandler implements INotifHandler, Runnable
         try
         {
             NotifVoiceMsg vMsg = new NotifVoiceMsg();
-            vMsg.setNotifProgramID( 14 );
+            vMsg.setNotifProgramID( 59 );
             final VoiceHandler v1 = new VoiceHandler( vMsg );
             
             v1.start();

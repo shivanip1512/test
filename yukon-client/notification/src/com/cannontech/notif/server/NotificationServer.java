@@ -9,6 +9,8 @@ import java.net.UnknownHostException;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.GenericDBCacheHandler;
+import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.roles.yukon.SystemRole;
 
 /**
  * @author rneuharth
@@ -47,7 +49,11 @@ public class NotificationServer implements Runnable
 	public NotificationServer()
 	{
 		super();
-		setBindAddress( "ryan" );		
+		setBindAddress(
+                RoleFuncs.getGlobalPropertyValue(SystemRole.NOTIFICATION_HOST) );
+        
+        setPort( Integer.parseInt(
+                RoleFuncs.getGlobalPropertyValue(SystemRole.NOTIFICATION_PORT) ) );        
 	}
 
 	/**

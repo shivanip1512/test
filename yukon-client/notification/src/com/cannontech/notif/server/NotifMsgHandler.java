@@ -6,7 +6,6 @@ import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.notif.handler.NotifHandler;
 import com.cannontech.notif.message.NotifEmailMsg;
-import com.cannontech.notif.message.NotifResultMsg;
 import com.cannontech.notif.message.NotifVoiceMsg;
 
 /**
@@ -30,7 +29,7 @@ public class NotifMsgHandler implements MessageListener
 	}
 
 
-	private NotifResultMsg handleMessage( Object msg_ )
+	private void handleMessage( Object msg_ )
 	{
 		if( msg_ instanceof Multi )
 		{
@@ -39,7 +38,6 @@ public class NotifMsgHandler implements MessageListener
 				handleMessage( ((Multi)msg_).getVector().get(i) );
 			}
 			
-			return new NotifResultMsg("SUCCESS: Multi message handled", NotifResultMsg.RESULT_SUCCESS);
 		}
 		else if( msg_ instanceof NotifEmailMsg )
 		{
@@ -47,7 +45,6 @@ public class NotifMsgHandler implements MessageListener
 				" Notification server got an email message from: " + ((NotifEmailMsg)msg_).getSource() );
 
             NotifHandler.findHandler( (NotifEmailMsg)msg_ ).start();
-            return null;
 		}
         else if( msg_ instanceof NotifVoiceMsg )
         {
@@ -57,16 +54,15 @@ public class NotifMsgHandler implements MessageListener
 
             
             NotifHandler.findHandler( (NotifVoiceMsg)msg_ ).start();
-            return null;
         }
+/*
 		else
 		{
 			CTILogger.debug(
 				" ERROR message received that is of an unknown type: " + msg_.getClass().getName() );
 
-			return new NotifResultMsg(
-				"ERROR: The message was an invalid notification mesage", NotifResultMsg.RESULT_FAILED);
 		}
+*/
 
 	}
 

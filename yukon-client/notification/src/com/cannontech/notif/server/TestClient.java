@@ -65,7 +65,7 @@ public class TestClient
 			msg.setTo( "ryan@cannontech.com" );
 			msg.setNotifGroupID( 3 );
 			
-			File f = new File("d:/dbupdates/freezeIt.bat");
+			File f = new File("d:/park.txt");
 			FileReader fr = new FileReader(f);
 			char[] allBytes = new char[ (int)f.length() ];
 			fr.read( allBytes );
@@ -73,7 +73,7 @@ public class TestClient
 					"Something.xpx", allBytes) );
 
 
-			File f1 = new File("d:/message.log");
+			File f1 = new File("d:/t.sql");
 			FileReader fr1 = new FileReader(f1);
 			allBytes = new char[ (int)f1.length() ];
 			fr1.read( allBytes );
@@ -87,13 +87,12 @@ public class TestClient
 			msg1.setSubject( "This is subject (NO GROUP)" );
 			msg1.setTo( "ryan@cannontech.com" );
 			
-			File f2 = new File("d:/dbupdates/freezeIt.bat");
+			File f2 = new File("d:/park.txt");
 			FileReader fr2 = new FileReader(f2);
 			char[] allBytes2 = new char[ (int)f2.length() ];
 			fr2.read( allBytes2 );
 			msg1.getAttachments().add( new NotifEmailAttchMsg(
 					"New.xpx", allBytes2) );
-
 
 
 
