@@ -5,14 +5,12 @@ package com.cannontech.yc.gui;
  */
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.print.Book;
-import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
 import java.util.Observable;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
+import javax.swing.JTextPane;
 import javax.swing.event.TreeSelectionEvent;
 
 import com.cannontech.clientutils.CTILogger;
@@ -85,8 +83,8 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	private javax.swing.JPanel ivjNavigatorPanel = null;
 	private javax.swing.JSplitPane ivjOutputSplitPane = null;
 	
-	private JTextPanePrintable ivjDebugOutputTextPane = null;
-	private JTextPanePrintable ivjDisplayOutputTextPane = null;
+	private JTextPane ivjDebugOutputTextPane = null;
+	private JTextPane ivjDisplayOutputTextPane = null;
 
 	private String popupCommand = null;
 	private final String CLEAR_OUTPUT_DISPLAY = "Clear Display";
@@ -770,10 +768,10 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	 * @return javax.swing.JTextPane
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
-	private JTextPanePrintable getDebugOutputTextPane() {		
+	private JTextPane getDebugOutputTextPane() {
 		if (ivjDebugOutputTextPane == null) {
 			try {
-				ivjDebugOutputTextPane = new JTextPanePrintable();
+				ivjDebugOutputTextPane = new JTextPane();
 				ivjDebugOutputTextPane.setName("DebugOutputTextPane");
 				ivjDebugOutputTextPane.setBounds(0, 0, 11, 6);
 				// user code begin {1}
@@ -816,10 +814,10 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	 * @return javax.swing.JTextPane
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
-	private JTextPanePrintable getDisplayOutputTextPane() {
+	private JTextPane getDisplayOutputTextPane() {
 		if (ivjDisplayOutputTextPane == null) {
 			try {
-				ivjDisplayOutputTextPane = new JTextPanePrintable();
+				ivjDisplayOutputTextPane = new JTextPane();
 				ivjDisplayOutputTextPane.setName("DisplayOutputTextPane");
 				ivjDisplayOutputTextPane.setBounds(0, 0, 11, 6);
 				// user code begin {1}
@@ -1497,7 +1495,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	/**
 	 * Print the graphics from printTextPane.
 	 */
-	private void print(JTextPanePrintable printTextPane)
+	private void print(JTextPane printTextPane)
 	{
 		
 		java.awt.print.PrinterJob pj = java.awt.print.PrinterJob.getPrinterJob();
@@ -1506,19 +1504,22 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			java.awt.print.PageFormat pf = new java.awt.print.PageFormat();
 			try
 			{
+				JTextPanePrintable tpp = new JTextPanePrintable(printTextPane);
 				java.awt.print.Paper paper = new java.awt.print.Paper();
+				paper.setImageableArea(30, 40, 552, 712);	//8.5 x 11 -> 612w 792h
 				pf.setOrientation(java.awt.print.PageFormat.PORTRAIT);
-//				paper.setImageableArea(30, 40, 552, 712);
 				pf.setPaper(paper);
-//				printTextPane.setPageFormat(pf);
-				pj.setPrintable(printTextPane, pf);
+				pj.setPrintable(tpp, pf);
 				pj.print();
 			}
 			catch(PrinterException ex)
 			{
 				ex.printStackTrace();
 			}
-		}		
+		}
+		// FIX to keep the YC frame on top after calling the printDialog.
+		// JDK1.4 should have fixed the issue but I(SN) have still seen inconsistencies with focus.
+		CtiUtilities.getParentFrame(this).toFront();//keeps the main frame in front focus
 	}
 	/**
 	 * Print the graphics from printTextPane.
