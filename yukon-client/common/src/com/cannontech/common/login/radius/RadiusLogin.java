@@ -1,9 +1,3 @@
-/*
- * Created on May 7, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package com.cannontech.common.login.radius;
 
 import java.util.Iterator;
@@ -25,8 +19,8 @@ import com.cannontech.roles.yukon.AuthenticationRole;
 /**
  * @author snebben
  *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
+ * Handles Radius login and authentication
+ *
  */
 public class RadiusLogin
 {
@@ -37,11 +31,9 @@ public class RadiusLogin
 	 */
 	public static LiteYukonUser login(String username, String password)
 	{
-		//	TODO We need to decide if checking for role existance (checkRole) defines a YukonGroup
+		// We need to decide if checking for role existance (checkRole) defines a YukonGroup
 		// having Radius logins, or whether we should check the role property RADIUS_SERVER_ADDRESS 
 		// has some value other than '(none)'. SN / Jon
-//		LiteYukonUser yukUser = YukonUserFuncs.getLiteYukonUser(UserUtils.USER_YUKON_ID);
-//		if( AuthFuncs.getcheckRole(yukUser, RadiusRole.ROLEID) != null)
 		RadiusClient rc;
 		try
 		{
@@ -49,7 +41,7 @@ public class RadiusLogin
 			int authPort = Integer.valueOf(RoleFuncs.getGlobalPropertyValue(AuthenticationRole.AUTH_PORT)).intValue();
 			int acctPort = Integer.valueOf(RoleFuncs.getGlobalPropertyValue(AuthenticationRole.ACCT_PORT)).intValue();
 			String secret = RoleFuncs.getGlobalPropertyValue(AuthenticationRole.SECRET_KEY);
-			//TODO any other radius attributes we don't know about yet.
+			//any other radius attributes we don't know about yet.
 		
 			rc = new RadiusClient(radiusAddr, authPort, acctPort, secret);
 			if( basicAuthenticate(rc, username, password))
@@ -70,13 +62,13 @@ public class RadiusLogin
 		}
 		catch (RadiusException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//Auto-generated catch block
+			CTILogger.error( e.getMessage(), e );
 		}
 		catch (InvalidParameterException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//Auto-generated catch block
+			CTILogger.error( e.getMessage(), e );
 		}
 		return null;
 	}
@@ -92,19 +84,19 @@ public class RadiusLogin
 		RadiusClient rc;
 		try
 		{
-			//TODO any other radius attributes we don't know about yet.
+			//any other radius attributes we don't know about yet.
 			rc = new RadiusClient(radiusAddr, authPort, acctPort, secret);
 			return basicAuthenticate(rc, username, password);
 		}
 		catch (RadiusException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//Auto-generated catch block
+			CTILogger.error( e.getMessage(), e );
 		}
 		catch (InvalidParameterException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//Auto-generated catch block
+			CTILogger.error( e.getMessage(), e );
 		}
 		return false;
 	}
@@ -130,28 +122,31 @@ public class RadiusLogin
 			switch(accessResponse.getPacketType()){
 				case RadiusPacket.ACCESS_ACCEPT:
 					CTILogger.info("User " + userName + " authenticated");
-//					printAttributes(accessResponse);
-					basicAccount(rc,userName);
+					//printAttributes(accessResponse);
+					//basicAccount(rc,userName);
 					return true;
 				case RadiusPacket.ACCESS_REJECT:
 					CTILogger.info("User " + userName + " NOT authenticated");
-//					printAttributes(accessResponse);
+					//printAttributes(accessResponse);
 					return false;
-//				case RadiusPacket.ACCESS_CHALLENGE:
-//					String reply = new String(accessResponse.getAttribute(RadiusAttributeValues.REPLY_MESSAGE).getValue());
-//					System.out.println("User " + userName + " Challenged with " + reply);
-//					break;
-//				default:
-//					System.out.println("Whoa, what kind of RadiusPacket is this " + accessResponse.getPacketType());
-//					break;
+				case RadiusPacket.ACCESS_CHALLENGE:
+					String reply = new String(accessResponse.getAttribute(RadiusAttributeValues.REPLY_MESSAGE).getValue());
+					System.out.println("User " + userName + " Challenged with " + reply);
+					break;
+				default:
+					System.out.println("Received an unknown RadiusPacket with the following type: " + accessResponse.getPacketType());
+					break;
 			}
-		}catch(InvalidParameterException ivpex)
-		{
-			System.out.println(ivpex.getMessage());
-		}catch(RadiusException rex)
-		{
-			System.out.println(rex.getMessage());
 		}
+		catch(InvalidParameterException ivpex)
+		{
+			CTILogger.error( ivpex.getMessage(), ivpex );
+		}
+		catch(RadiusException rex)
+		{
+			CTILogger.error( rex.getMessage(), rex );
+		}
+
 		return false;
 	}	
 	/**
@@ -171,6 +166,9 @@ public class RadiusLogin
 	}
 
 	/**
+	 * Opens the Radius accounting port to send/log Radius accounting events to
+	 * the server. This is optional on most systems.
+	 * 
 	 * @param rc
 	 * @param userName
 	 * @throws InvalidParameterException
@@ -181,7 +179,8 @@ public class RadiusLogin
 		RadiusPacket accountRequest = new RadiusPacket(RadiusPacket.ACCOUNTING_REQUEST);
 		accountRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.USER_NAME,userName.getBytes()));
 		accountRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.ACCT_STATUS_TYPE,new byte[]{0, 0, 0, 1}));
-		//TODO What exactly is the ACCT_SESSION_ID??? using username until we learn more!  SN
+
+		//What exactly is the ACCT_SESSION_ID??? using username until we learn more!  SN
 		accountRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.ACCT_SESSION_ID,(userName).getBytes()));
 		accountRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.SERVICE_TYPE,new byte[]{0, 0, 0, 1}));
 		RadiusPacket accountResponse = rc.account(accountRequest);
