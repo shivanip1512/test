@@ -361,7 +361,7 @@ System.out.println("&&&&&&&&&&&&&&&& sending confirm message");
 			Double[] amount = new Double[24];
 			for( int i = 0; i < 24; i++ )
 			{
-				amount[i] = new Double( amountStrs[i] );
+				amount[i] = new Double( numberFormat.parse(amountStrs[i]).doubleValue());
 			}
 
 			msg.setAmountCommitted(amount);
