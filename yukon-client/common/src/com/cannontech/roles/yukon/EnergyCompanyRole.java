@@ -13,6 +13,7 @@ import com.cannontech.roles.*;
 public interface EnergyCompanyRole {
 	public static final int ROLEID = YukonRoleDefs.ENERGY_COMPANY_ROLEID;
 	
+	public static final int ADMIN_EMAIL_ADDRESS = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE;
 	public static final int OPTOUT_NOTIFICATION_RECIPIENTS = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 1;
 	public static final int DEFAULT_TIME_ZONE = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 2;
 	public static final int CUSTOMER_GROUP_IDS = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 5;
