@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/3/2005 5:29:55 PM                          */
+/* Created on:     2/11/2005 11:47:37 AM                        */
 /*==============================================================*/
 
 
@@ -215,6 +215,8 @@ drop table DynamicCCSubstationBus cascade constraints;
 
 drop table DynamicCalcHistorical cascade constraints;
 
+drop table DynamicImportStatus cascade constraints;
+
 drop table DynamicLMControlArea cascade constraints;
 
 drop table DynamicLMControlAreaTrigger cascade constraints;
@@ -258,6 +260,10 @@ drop table GenericMacro cascade constraints;
 drop table GraphCustomerList cascade constraints;
 
 drop table HolidaySchedule cascade constraints;
+
+drop table ImportData cascade constraints;
+
+drop table ImportFail cascade constraints;
 
 drop table LMCONTROLAREAPROGRAM cascade constraints;
 
@@ -2147,6 +2153,22 @@ alter table DynamicCalcHistorical
    add constraint PK_DYNAMICCALCHISTORICAL primary key (PointID);
 
 /*==============================================================*/
+/* Table: DynamicImportStatus                                   */
+/*==============================================================*/
+create table DynamicImportStatus  (
+   Entry                VARCHAR2(64)                    not null,
+   LastImportTime       VARCHAR2(64)                    not null,
+   NextImportTime       VARCHAR2(64)                    not null,
+   TotalSuccess         VARCHAR2(32)                    not null,
+   TotalAttempts        VARCHAR2(32)                    not null,
+   ForceImport          CHAR(1)                         not null
+);
+
+insert into DynamicImportStatus values('SYSTEMVALUE', '------', '------', '--', '--', 'N');
+alter table DynamicImportStatus
+   add constraint PK_DYNAMICIMPORTSTATUS primary key (Entry);
+
+/*==============================================================*/
 /* Table: DynamicLMControlArea                                  */
 /*==============================================================*/
 create table DynamicLMControlArea  (
@@ -2605,6 +2627,40 @@ alter table HolidaySchedule
 create unique index Indx_HolSchName on HolidaySchedule (
    HolidayScheduleName ASC
 );
+
+/*==============================================================*/
+/* Table: ImportData                                            */
+/*==============================================================*/
+create table ImportData  (
+   Address              VARCHAR2(64)                    not null,
+   Name                 VARCHAR2(64)                    not null,
+   RouteName            VARCHAR2(64)                    not null,
+   MeterNumber          VARCHAR2(64)                    not null,
+   CollectionGrp        VARCHAR2(64)                    not null,
+   AltGrp               VARCHAR2(64)                    not null,
+   TemplateName         VARCHAR2(64)                    not null
+);
+
+alter table ImportData
+   add constraint PK_IMPORTDATA primary key (Address);
+
+/*==============================================================*/
+/* Table: ImportFail                                            */
+/*==============================================================*/
+create table ImportFail  (
+   Address              VARCHAR2(64)                    not null,
+   Name                 VARCHAR2(64)                    not null,
+   RouteName            VARCHAR2(64)                    not null,
+   MeterNumber          VARCHAR2(64)                    not null,
+   CollectionGrp        VARCHAR2(64)                    not null,
+   AltGrp               VARCHAR2(64)                    not null,
+   TemplateName         VARCHAR2(64)                    not null,
+   ErrorMsg             VARCHAR2(1024),
+   DateTime             DATE
+);
+
+alter table ImportFail
+   add constraint PK_IMPORTFAIL primary key (Address);
 
 /*==============================================================*/
 /* Table: LMCONTROLAREAPROGRAM                                  */
@@ -5764,6 +5820,7 @@ insert into YukonServices values( 1, 'Notification_Server', 'com.cannontech.jmx.
 /* insert into YukonServices values( 2, 'WebGraph', 'com.cannontech.jmx.services.DynamicWebGraph', '(none)', '(none)' ); */
 /* insert into YukonServices values( 3, 'Calc_Historical', 'com.cannontech.jmx.services.DynamicCalcHist', '(none)', '(none)' ); */
 /* insert into YukonServices values( 4, 'CBC_OneLine_Gen', 'com.cannontech.jmx.services.DynamicCBCOneLine', '(none)', '(none)'); */
+insert into YukonServices values( -5, 'MCT410_BulkImporter', 'com.cannontech.jmx.services.DynamicImp', '(none)', '(none)' );
 alter table YukonServices
    add constraint PK_YUKSER primary key (ServiceID);
 
