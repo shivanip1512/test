@@ -34,7 +34,7 @@ Required variables:
         <tr class="TitleHeader" valign="top" align="center"> 
           <td width="30" class="HeaderCell">Relay</td>
           <td width="65" class="HeaderCell">Cold Load 
-            Pickup</td>
+            Pickup (seconds)</td>
 <% if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205 || hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305) { %>
           <td width="65" class="HeaderCell">Tamper 
             Detect</td>
