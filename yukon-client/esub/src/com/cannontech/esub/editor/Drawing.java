@@ -228,6 +228,9 @@ public class Drawing implements Serializable {
 	 * @param fileName The fileName to set
 	 */
 	public void setFileName(String fileName) {
+		if(!fileName.endsWith(".jlx")) {
+			fileName += ".jlx";
+		}
 		this.fileName = fileName;
 	}
 
