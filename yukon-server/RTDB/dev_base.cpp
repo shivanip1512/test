@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2002/11/15 14:08:09 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2002/12/19 20:29:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -747,5 +747,19 @@ INT CtiDeviceBase::checkForInhibitedDevice(RWTPtrSlist< CtiMessage > &retList, c
     }
 
     return status;
+}
+
+bool CtiDeviceBase::isTAP() const
+{
+    bool bret = false;
+
+    if(getType() == TYPE_TAPTERM ||
+       getType() == TYPE_TAPTERM_EMAIL ||
+       getType() == TYPE_TAPTERM_TESCOM)
+    {
+        bret = true;
+    }
+
+    return bret;
 }
 

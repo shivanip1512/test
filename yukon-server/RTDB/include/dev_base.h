@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2002/12/11 21:53:14 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2002/12/19 20:27:26 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -217,10 +217,19 @@ public:
     MutexType& getMux()  { return mutex(); }
 
     virtual ULONG selectInitialMacroRouteOffset(LONG routeid) const;
+
+    bool isTAP() const;
+    virtual bool isDialup() const;
+    virtual INT getBaudRate() const;
+    virtual INT getBits() const;
+    virtual INT getStopBits() const;
+    virtual INT getParity() const;
+
 };
 
 typedef CtiDeviceBase CtiDevice;
 
+inline bool CtiDeviceBase::isDialup() const { return false; }
 inline RWCString CtiDeviceBase::getDescription(const CtiCommandParser & parse) const    { return getName();}
 inline bool CtiDeviceBase::isMeter() const               { return false;}
 inline LONG CtiDeviceBase::getPortID() const             { return -1;}
@@ -251,5 +260,9 @@ inline bool CtiDeviceBase::isSingle() const              { LockGuard guard(monit
 inline int CtiDeviceBase::getCurrentTrxID() const        { LockGuard gd(monitor()); return(_currTrxID);}
 inline int CtiDeviceBase::getResponsesOnTrxID() const    { LockGuard gd(monitor()); return(_responsesOnTrxID);}
 inline ULONG CtiDeviceBase::selectInitialMacroRouteOffset(LONG routeid = 0) const   { return 0; }
+inline INT CtiDeviceBase::getBaudRate() const { return 0; }
+inline INT CtiDeviceBase::getBits() const { return 8; }
+inline INT CtiDeviceBase::getStopBits() const { return ONESTOPBIT; }
+inline INT CtiDeviceBase::getParity() const { return NOPARITY; }
 
 #endif // #ifndef __DEV_BASE_H__

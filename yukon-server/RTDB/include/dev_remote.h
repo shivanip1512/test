@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_remote.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/12/11 21:53:14 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/12/19 20:28:06 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -86,11 +86,6 @@ public:
         return *this;
     }
 
-    BOOL  isDialup() const
-    {
-        return((pDialup == NULL ? FALSE : TRUE ));
-    }
-
     CtiTableDeviceDirectComm  getDirect() const
     {
         return Direct;
@@ -129,6 +124,58 @@ public:
 
         pDialup = aDialup;
         return *this;
+    }
+
+    virtual bool isDialup() const
+    {
+        return (pDialup != NULL);
+    }
+
+    virtual INT getBaudRate() const
+    {
+        INT baud = 0;
+
+        if(isDialup())
+        {
+            baud = pDialup->getBaudRate();
+        }
+
+        return baud;
+    }
+
+    virtual INT getBits() const
+    {
+        INT val = 8;
+
+        if(isDialup())
+        {
+            val = pDialup->getBits();
+        }
+
+        return val;
+    }
+
+    virtual INT getStopBits() const
+    {
+        INT val = ONESTOPBIT;
+
+        if(isDialup())
+        {
+            val = pDialup->getStopBits();
+        }
+
+        return val;
+    }
+    virtual INT getParity() const
+    {
+        INT val = NOPARITY;
+
+        if(isDialup())
+        {
+            val = pDialup->getParity();
+        }
+
+        return val;
     }
 
 
@@ -243,7 +290,6 @@ public:
         }
         return mct;
     }
-
 
 };
 #endif // #ifndef __DEV_REMOTE_H__
