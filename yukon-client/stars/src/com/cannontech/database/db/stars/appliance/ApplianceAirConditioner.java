@@ -20,7 +20,7 @@ public class ApplianceAirConditioner extends DBPersistent {
     private Integer typeID = new Integer( CtiUtilities.NONE_ID );
 
     public static final String[] SETTER_COLUMNS = {
-        "TonageID", "TypeID"
+        "TonnageID", "TypeID"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "ApplianceID" };

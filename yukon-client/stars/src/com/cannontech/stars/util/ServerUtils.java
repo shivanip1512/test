@@ -34,8 +34,10 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteAddress;
+import com.cannontech.database.data.lite.stars.LiteCustomerContact;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
-import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
@@ -193,6 +195,22 @@ public class ServerUtils {
 		return dateFormat.format( date );
 	}
 	
+	public static StarsThermoModeSettings getThermSeasonMode(int configID) {
+		if (configID == SOAPServer.YUK_WEB_CONFIG_ID_COOL)
+			return StarsThermoModeSettings.COOL;
+		else if (configID == SOAPServer.YUK_WEB_CONFIG_ID_HEAT)
+			return StarsThermoModeSettings.HEAT;
+		return null;
+	}
+	
+	public static int getThermSeasonWebConfigID(StarsThermoModeSettings mode) {
+		if (mode.getType() == StarsThermoModeSettings.COOL_TYPE)
+			return SOAPServer.YUK_WEB_CONFIG_ID_COOL;
+		else if (mode.getType() == StarsThermoModeSettings.HEAT_TYPE)
+			return SOAPServer.YUK_WEB_CONFIG_ID_HEAT;
+		return 0;
+	}
+	
 	public static StarsThermoDaySettings getThermDaySetting(int towID) {
 		YukonListEntry entry = YukonListFuncs.getYukonListEntry( towID );
 		
@@ -200,27 +218,47 @@ public class ServerUtils {
 			return StarsThermoDaySettings.WEEKDAY;
 		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKEND)
 			return StarsThermoDaySettings.WEEKEND;
+		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_TOW_MONDAY)
+			return StarsThermoDaySettings.MONDAY;
+		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_TOW_TUESDAY)
+			return StarsThermoDaySettings.TUESDAY;
+		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_TOW_WEDNESDAY)
+			return StarsThermoDaySettings.WEDNESDAY;
+		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_TOW_THURSDAY)
+			return StarsThermoDaySettings.THURSDAY;
+		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_TOW_FRIDAY)
+			return StarsThermoDaySettings.FRIDAY;
 		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_TOW_SATURDAY)
 			return StarsThermoDaySettings.SATURDAY;
 		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_TOW_SUNDAY)
 			return StarsThermoDaySettings.SUNDAY;
-		else
-			return null;
+		
+		return null;
 	}
 	
-	public static Integer getThermSeasonEntryTOWID(StarsThermoDaySettings setting, int energyCompanyID) {
+	public static int getThermSeasonEntryTOWID(StarsThermoDaySettings setting, int energyCompanyID) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany(energyCompanyID);
 		
 		if (setting.getType() == StarsThermoDaySettings.WEEKDAY_TYPE)
-			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY).getEntryID() );
+			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY).getEntryID();
 		else if (setting.getType() == StarsThermoDaySettings.WEEKEND_TYPE)
-			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKEND).getEntryID() );
+			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKEND).getEntryID();
+		else if (setting.getType() == StarsThermoDaySettings.MONDAY_TYPE)
+			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_MONDAY).getEntryID();
+		else if (setting.getType() == StarsThermoDaySettings.TUESDAY_TYPE)
+			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_TUESDAY).getEntryID();
+		else if (setting.getType() == StarsThermoDaySettings.WEDNESDAY_TYPE)
+			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_WEDNESDAY).getEntryID();
+		else if (setting.getType() == StarsThermoDaySettings.THURSDAY_TYPE)
+			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_THURSDAY).getEntryID();
+		else if (setting.getType() == StarsThermoDaySettings.FRIDAY_TYPE)
+			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_FRIDAY).getEntryID();
 		else if (setting.getType() == StarsThermoDaySettings.SATURDAY_TYPE)
-			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_SATURDAY).getEntryID() );
+			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_SATURDAY).getEntryID();
 		else if (setting.getType() == StarsThermoDaySettings.SUNDAY_TYPE)
-			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_SUNDAY).getEntryID() );
-		else
-			return null;
+			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_SUNDAY).getEntryID();
+			
+		return 0;
 	}
 	
 	public static StarsThermoModeSettings getThermModeSetting(int opStateID) {
@@ -238,23 +276,23 @@ public class ServerUtils {
 			return StarsThermoModeSettings.AUTO;
 		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_EMERGENCY_HEAT)
 			return StarsThermoModeSettings.EMGHEAT;
-		else
-			return null;
+		
+		return null;
 	}
 	
-	public static Integer getThermOptionOpStateID(StarsThermoModeSettings setting, int energyCompanyID) {
+	public static int getThermOptionOpStateID(StarsThermoModeSettings setting, int energyCompanyID) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany(energyCompanyID);
 		
 		if (setting == null)
-			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_DEFAULT).getEntryID() );
+			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_DEFAULT).getEntryID();
 		if (setting.getType() == StarsThermoModeSettings.COOL_TYPE)
-			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL).getEntryID() );
+			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL).getEntryID();
 		else if (setting.getType() == StarsThermoModeSettings.HEAT_TYPE)
-			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT).getEntryID() );
+			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT).getEntryID();
 		else if (setting.getType() == StarsThermoModeSettings.OFF_TYPE)
-			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_OFF).getEntryID() );
-		else
-			return null;
+			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_OFF).getEntryID();
+		
+		return 0;
 	}
 	
 	public static StarsThermoFanSettings getThermFanSetting(int fanOpID) {
@@ -367,7 +405,7 @@ public class ServerUtils {
 		return (str1.equalsIgnoreCase("(none)")) ? "" : str1;
 	}
 	
-	public static boolean isOneWayThermostat(LiteLMHardwareBase liteHw, LiteStarsEnergyCompany energyCompany) {
+	public static boolean isOneWayThermostat(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
 		if (liteHw.getInventoryID() < 0) return true;	// Default hardware is always "a thermostat"
 		
 		int oneWayRecID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC ).getEntryID();
@@ -379,7 +417,7 @@ public class ServerUtils {
 		return false;
 	}
 	
-	public static boolean isTwoWayThermostat(LiteLMHardwareBase liteHw, LiteStarsEnergyCompany energyCompany) {
+	public static boolean isTwoWayThermostat(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
 		int gwyEndDevID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC ).getEntryID();
 		int eproTypeID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO ).getEntryID();
 		
@@ -392,11 +430,59 @@ public class ServerUtils {
 	public static boolean hasTwoWayThermostat(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany) {
 		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
 			int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
-			LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID, true );
+			LiteStarsLMHardware liteHw = energyCompany.getLMHardware( invID, true );
 			if (isTwoWayThermostat(liteHw, energyCompany))
 				return true;
 		}
 		return false;
+	}
+	
+	public static String getFormattedName(LiteCustomerContact liteContact) {
+		StringBuffer name = new StringBuffer();
+		
+		String firstName = forceNotNone( liteContact.getFirstName() ).trim();
+		if (firstName.length() > 0)
+			name.append( firstName );
+		
+		String lastName = forceNotNone( liteContact.getLastName() ).trim();
+		if (lastName.length() > 0)
+			name.append(" ").append( lastName );
+			
+		if (name.length() == 0) name.append("(none)");
+		return name.toString();
+	}
+	
+	public static String getOneLineAddress(LiteAddress liteAddr) {
+		StringBuffer addr = new StringBuffer();
+		
+		String locationAddr1 = forceNotNone( liteAddr.getLocationAddress1() ).trim();
+		if (locationAddr1.length() > 0)
+			addr.append( locationAddr1 );
+			
+		String locationAddr2 = forceNotNone( liteAddr.getLocationAddress2() ).trim();
+		if (locationAddr2.length() > 0) {
+			if (addr.length() > 0) addr.append(", ");
+			addr.append( locationAddr2 );
+		}
+		
+		String cityName = forceNotNone( liteAddr.getCityName() ).trim();
+		if (cityName.length() > 0) {
+			if (addr.length() > 0) addr.append(", ");
+			addr.append( cityName );
+		}
+		
+		String stateCode = forceNotNone( liteAddr.getStateCode() ).trim();
+		if (stateCode.length() > 0) {
+			if (addr.length() > 0) addr.append(", ");
+			addr.append( stateCode );
+			
+			String zipCode = forceNotNone( liteAddr.getZipCode() ).trim();
+			if (zipCode.length() > 0)
+				addr.append(" ").append( zipCode );
+		}
+		
+		if (addr.length() == 0) addr.append("Address N/A");
+		return addr.toString();
 	}
 
 }

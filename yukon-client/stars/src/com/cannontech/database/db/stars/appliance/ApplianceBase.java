@@ -45,40 +45,18 @@ public class ApplianceBase extends DBPersistent {
         super();
     }
 
-    public static ApplianceBase[] getAllAppliances(Integer accountID) {
-        String sql = "SELECT ApplianceID, AccountID, ApplianceCategoryID, LMProgramID, YearManufactured, ManufacturerID, LocationID, KWCapacity, EfficiencyRating, Notes, ModelNumber "
-        		   + "FROM " + TABLE_NAME + " WHERE AccountID = " + accountID.toString();
-
-		try {
-			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement( sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-			stmt.execute();
-
-	        ApplianceBase[] apps = new ApplianceBase[ stmt.getRowCount() ];
-            for (int i = 0; i < stmt.getRowCount(); i++) {
-            	Object[] row = stmt.getRow(i);
-                apps[i] = new ApplianceBase();
-
-                apps[i].setApplianceID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
-                apps[i].setAccountID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
-                apps[i].setApplianceCategoryID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
-                apps[i].setLMProgramID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
-                apps[i].setYearManufactured( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
-                apps[i].setManufacturerID( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
-                apps[i].setLocationID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
-                apps[i].setKWCapacity( new Integer(((java.math.BigDecimal) row[7]).intValue()) );
-                apps[i].setEfficiencyRating( new Integer(((java.math.BigDecimal) row[8]).intValue()) );
-                apps[i].setNotes( (String) row[9] );
-                apps[i].setModelNumber( (String) row[10] );
-            }
-            
-            return apps;
-        }
-        catch( Exception e )
-        {
-            e.printStackTrace();
-        }
-
-        return null;
+    public static java.util.Vector getApplianceIDs(Integer accountID, java.sql.Connection conn)
+    throws java.sql.SQLException {
+        String sql = "SELECT ApplianceID FROM " + TABLE_NAME + " WHERE AccountID = ?";
+        
+        java.sql.PreparedStatement stmt = conn.prepareStatement( sql );
+        stmt.setInt( 1, accountID.intValue() );
+        java.sql.ResultSet rset = stmt.executeQuery();
+        
+        java.util.Vector appIDVct = new java.util.Vector();
+        while (rset.next())
+        	appIDVct.add( new Integer(rset.getInt(1)) );
+        return appIDVct;
     }
 
     public void delete() throws java.sql.SQLException {

@@ -78,6 +78,56 @@ public class StarsThermoDaySettings implements java.io.Serializable {
     **/
     public static final StarsThermoDaySettings ALL = new StarsThermoDaySettings(ALL_TYPE, "All");
 
+    /**
+     * The Monday type
+    **/
+    public static final int MONDAY_TYPE = 5;
+
+    /**
+     * The instance of the Monday type
+    **/
+    public static final StarsThermoDaySettings MONDAY = new StarsThermoDaySettings(MONDAY_TYPE, "Monday");
+
+    /**
+     * The Tuesday type
+    **/
+    public static final int TUESDAY_TYPE = 6;
+
+    /**
+     * The instance of the Tuesday type
+    **/
+    public static final StarsThermoDaySettings TUESDAY = new StarsThermoDaySettings(TUESDAY_TYPE, "Tuesday");
+
+    /**
+     * The Wednesday type
+    **/
+    public static final int WEDNESDAY_TYPE = 7;
+
+    /**
+     * The instance of the Wednesday type
+    **/
+    public static final StarsThermoDaySettings WEDNESDAY = new StarsThermoDaySettings(WEDNESDAY_TYPE, "Wednesday");
+
+    /**
+     * The Thursday type
+    **/
+    public static final int THURSDAY_TYPE = 8;
+
+    /**
+     * The instance of the Thursday type
+    **/
+    public static final StarsThermoDaySettings THURSDAY = new StarsThermoDaySettings(THURSDAY_TYPE, "Thursday");
+
+    /**
+     * The Friday type
+    **/
+    public static final int FRIDAY_TYPE = 9;
+
+    /**
+     * The instance of the Friday type
+    **/
+    public static final StarsThermoDaySettings FRIDAY = new StarsThermoDaySettings(FRIDAY_TYPE, "Friday");
+
     private static java.util.Hashtable _memberTable = init();
 
     private int type = -1;
@@ -127,6 +177,11 @@ public class StarsThermoDaySettings implements java.io.Serializable {
         members.put("Saturday", SATURDAY);
         members.put("Sunday", SUNDAY);
         members.put("All", ALL);
+        members.put("Monday", MONDAY);
+        members.put("Tuesday", TUESDAY);
+        members.put("Wednesday", WEDNESDAY);
+        members.put("Thursday", THURSDAY);
+        members.put("Friday", FRIDAY);
         return members;
     } //-- java.util.Hashtable init() 
 

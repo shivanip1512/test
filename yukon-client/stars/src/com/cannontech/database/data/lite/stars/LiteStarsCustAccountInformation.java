@@ -28,6 +28,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	//private LiteStarsThermostatSettings thermostatSettings = null;
 	
 	private long lastLoginTime = 0;
+	private boolean extended = false;
 	
 	public LiteStarsCustAccountInformation() {
 		super();
@@ -242,6 +243,22 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 */
 	public void setLastLoginTime(long lastLoginTime) {
 		this.lastLoginTime = lastLoginTime;
+	}
+
+	/**
+	 * Returns the extended.
+	 * @return boolean
+	 */
+	public boolean isExtended() {
+		return extended;
+	}
+
+	/**
+	 * Sets the extended.
+	 * @param extended The extended to set
+	 */
+	public void setExtended(boolean extended) {
+		this.extended = extended;
 	}
 
 }

@@ -39,9 +39,8 @@ public class CustomerAccount extends DBPersistent {
         super();
     }
 
-    public static CustomerAccount[] searchByAccountNumber(Integer energyCompanyID, String accountNumber) {
-        String sql = "SELECT acct.AccountID, acct.AccountSiteID, acct.AccountNumber, acct.CustomerID, acct.BillingAddressID, acct.AccountNotes, acct.LoginID "
-        		   + "FROM ECToAccountMapping map, " + TABLE_NAME + " acct "
+    public static int[] searchByAccountNumber(Integer energyCompanyID, String accountNumber) {
+        String sql = "SELECT acct.AccountID FROM ECToAccountMapping map, " + TABLE_NAME + " acct "
                    + "WHERE map.EnergyCompanyID = " + energyCompanyID.toString()
                    + " AND UPPER(acct.AccountNumber) LIKE UPPER('" + accountNumber + "') AND map.AccountID = acct.AccountID";
         com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
@@ -50,22 +49,11 @@ public class CustomerAccount extends DBPersistent {
         try
         {
 			stmt.execute();
-    		CustomerAccount[] accounts = new CustomerAccount[ stmt.getRowCount() ];
-    		
-    		for (int i = 0; i < accounts.length; i++) {
-				Object[] row = stmt.getRow(i);
-				accounts[i] = new CustomerAccount();
-
-                accounts[i].setAccountID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
-                accounts[i].setAccountSiteID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
-                accounts[i].setAccountNumber( (String) row[2] );
-                accounts[i].setCustomerID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
-                accounts[i].setBillingAddressID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
-                accounts[i].setAccountNotes( (String) row[5] );
-                accounts[i].setLoginID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
-            }
-    		
-    		return accounts;
+			int[] accountIDs = new int[ stmt.getRowCount() ];
+			for (int i = 0; i < stmt.getRowCount(); i++)
+				accountIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+			
+			return accountIDs;
         }
         catch( Exception e )
         {
@@ -75,11 +63,10 @@ public class CustomerAccount extends DBPersistent {
         return null;
     }
     
-    private static CustomerAccount[] searchByPrimaryContactIDs(Integer energyCompanyID, int[] contactIDs) {
+    private static int[] searchByPrimaryContactIDs(Integer energyCompanyID, int[] contactIDs) {
     	if (contactIDs == null || contactIDs.length == 0) return null;
     	
-        String sql = "SELECT DISTINCT acct.AccountID, acct.AccountSiteID, acct.AccountNumber, acct.CustomerID, acct.BillingAddressID, acct.AccountNotes, acct.LoginID "
-    			   + "FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + com.cannontech.database.db.customer.Customer.TABLE_NAME + " cust "
+        String sql = "SELECT DISTINCT acct.AccountID FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + com.cannontech.database.db.customer.Customer.TABLE_NAME + " cust "
     			   + "WHERE map.EnergyCompanyID = " + energyCompanyID.toString() + " AND map.AccountID = acct.AccountID "
     			   + "AND acct.CustomerID = cust.CustomerID AND (cust.PrimaryContactID = " + String.valueOf(contactIDs[0]);
     	for (int i = 1; i < contactIDs.length; i++)
@@ -91,22 +78,11 @@ public class CustomerAccount extends DBPersistent {
     	
     	try {
     		stmt.execute();
-    		CustomerAccount[] accounts = new CustomerAccount[ stmt.getRowCount() ];
-    		
-    		for (int i = 0; i < accounts.length; i++) {
-				Object[] row = stmt.getRow(i);
-				accounts[i] = new CustomerAccount();
-
-                accounts[i].setAccountID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
-                accounts[i].setAccountSiteID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
-                accounts[i].setAccountNumber( (String) row[2] );
-                accounts[i].setCustomerID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
-                accounts[i].setBillingAddressID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
-                accounts[i].setAccountNotes( (String) row[5] );
-                accounts[i].setLoginID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
-    		}
-    		
-    		return accounts;
+			int[] accountIDs = new int[ stmt.getRowCount() ];
+			for (int i = 0; i < stmt.getRowCount(); i++)
+				accountIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+			
+			return accountIDs;
     	}
     	catch (Exception e) {
     		e.printStackTrace();
@@ -115,7 +91,7 @@ public class CustomerAccount extends DBPersistent {
     	return null;
     }
     
-    public static CustomerAccount[] searchByPhoneNumber(Integer energyCompanyID, String phoneNumber) {
+    public static int[] searchByPhoneNumber(Integer energyCompanyID, String phoneNumber) {
 		String sql = "SELECT DISTINCT ContactID FROM " + com.cannontech.database.db.contact.ContactNotification.TABLE_NAME
 				   + " WHERE Notification = '" + phoneNumber + "' AND ("
 				   + "NotificationCategoryID = " + com.cannontech.stars.web.servlet.SOAPServer.YUK_LIST_ENTRY_ID_HOME_PHONE
@@ -125,7 +101,8 @@ public class CustomerAccount extends DBPersistent {
 		
 		try {
 			stmt.execute();
-			if (stmt.getRowCount() == 0) return new CustomerAccount[0];
+			if (stmt.getRowCount() == 0)
+				return new int[0];
 			
 			int[] contactIDs = new int[ stmt.getRowCount() ];
 			for (int i = 0; i < contactIDs.length; i++)
@@ -140,7 +117,7 @@ public class CustomerAccount extends DBPersistent {
         return null;
     }
     
-    public static CustomerAccount[] searchByLastName(Integer energyCompanyID, String lastName) {
+    public static int[] searchByLastName(Integer energyCompanyID, String lastName) {
 		String sql = "SELECT ContactID FROM " + com.cannontech.database.db.contact.Contact.TABLE_NAME
 				   + " WHERE UPPER(ContLastName) = UPPER('" + lastName + "')";
 		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
@@ -148,7 +125,8 @@ public class CustomerAccount extends DBPersistent {
 		
 		try {
 			stmt.execute();
-			if (stmt.getRowCount() == 0) return new CustomerAccount[0];
+			if (stmt.getRowCount() == 0)
+				return new int[0];
 			
 			int[] contactIDs = new int[ stmt.getRowCount() ];
 			for (int i = 0; i < contactIDs.length; i++)
@@ -163,13 +141,14 @@ public class CustomerAccount extends DBPersistent {
 		return null;
     }
     
-    public static CustomerAccount[] searchBySerialNumber(Integer energyCompanyID, String serialNo) {
+    public static int[] searchBySerialNumber(Integer energyCompanyID, String serialNo) {
     	int[] invIDs = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySerialNumber( serialNo );
-    	if (invIDs == null) return null;
-    	if (invIDs.length == 0) return new CustomerAccount[0];
+    	if (invIDs == null)
+    		return null;
+    	if (invIDs.length == 0)
+    		return new int[0];
     	
-        String sql = "SELECT DISTINCT acct.AccountID, acct.AccountSiteID, acct.AccountNumber, acct.CustomerID, acct.BillingAddressID, acct.AccountNotes, acct.LoginID "
-    			   + "FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + com.cannontech.database.db.stars.hardware.InventoryBase.TABLE_NAME + " inv "
+        String sql = "SELECT DISTINCT acct.AccountID FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + com.cannontech.database.db.stars.hardware.InventoryBase.TABLE_NAME + " inv "
     			   + "WHERE map.EnergyCompanyID = " + energyCompanyID.toString() + " AND map.AccountID = acct.AccountID AND acct.AccountID = inv.AccountID AND (inv.InventoryID = " + String.valueOf(invIDs[0]);
     	for (int i = 1; i < invIDs.length; i++)
     		sql += " OR inv.InventoryID = " + String.valueOf(invIDs[i]);
@@ -178,28 +157,15 @@ public class CustomerAccount extends DBPersistent {
         com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
         		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
-        try
-        {
+        try {
     		stmt.execute();
-    		CustomerAccount[] accounts = new CustomerAccount[ stmt.getRowCount() ];
-    		
-    		for (int i = 0; i < accounts.length; i++) {
-				Object[] row = stmt.getRow(i);
-				accounts[i] = new CustomerAccount();
-
-                accounts[i].setAccountID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
-                accounts[i].setAccountSiteID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
-                accounts[i].setAccountNumber( (String) row[2] );
-                accounts[i].setCustomerID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
-                accounts[i].setBillingAddressID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
-                accounts[i].setAccountNotes( (String) row[5] );
-                accounts[i].setLoginID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
-    		}
-    		
-    		return accounts;
+			int[] accountIDs = new int[ stmt.getRowCount() ];
+			for (int i = 0; i < stmt.getRowCount(); i++)
+				accountIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+			
+			return accountIDs;
         }
-        catch( Exception e )
-        {
+        catch( Exception e ) {
             e.printStackTrace();
         }
 
@@ -237,6 +203,34 @@ public class CustomerAccount extends DBPersistent {
         }
 
         return null;
+    }
+    
+    /**
+     * Search by LocationAddress1, must be an exact match (case-insensitive)
+     */
+    public static int[] searchByAddress(Integer energyCompanyID, String addr1) {
+		String sql = "SELECT Contact.ContactID FROM Contact, Address "
+				+ "WHERE UPPER(Address.LocationAddress1) LIKE '%" + addr1.toUpperCase() + "%' "
+				+ "AND Contact.AddressID = Address.AddressID";
+		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+		
+		try {
+			stmt.execute();
+			if (stmt.getRowCount() == 0)
+				return new int[0];
+			
+			int[] contactIDs = new int[ stmt.getRowCount() ];
+			for (int i = 0; i < contactIDs.length; i++)
+				contactIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+			
+	        return searchByPrimaryContactIDs( energyCompanyID, contactIDs );
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
     }
 
     public void delete() throws java.sql.SQLException {

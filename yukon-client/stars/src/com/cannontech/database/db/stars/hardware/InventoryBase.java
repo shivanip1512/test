@@ -26,10 +26,11 @@ public class InventoryBase extends DBPersistent {
     private Integer voltageID = new Integer( CtiUtilities.NONE_ID );
     private String notes = "";
     private Integer deviceID = new Integer( CtiUtilities.NONE_ID );
+    private String deviceLabel = "";
 
     public static final String[] SETTER_COLUMNS = {
         "AccountID", "InstallationCompanyID", "CategoryID", "ReceiveDate", "InstallDate",
-        "RemoveDate", "AlternateTrackingNumber", "VoltageID", "Notes", "DeviceID"
+        "RemoveDate", "AlternateTrackingNumber", "VoltageID", "Notes", "DeviceID", "DeviceLabel"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "InventoryID" };
@@ -43,68 +44,18 @@ public class InventoryBase extends DBPersistent {
         super();
     }
 
-    public static InventoryBase[] getAllInventories(Integer accountID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE AccountID = ?";
+    public static java.util.Vector getInventoryIDs(Integer accountID, java.sql.Connection conn)
+    throws java.sql.SQLException {
+        String sql = "SELECT InventoryID FROM " + TABLE_NAME + " WHERE AccountID = ?";
 
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-        java.util.ArrayList hwList = new java.util.ArrayList();
-
-        try
-        {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
-            }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, accountID.intValue() );
-                rset = pstmt.executeQuery();
-
-                while (rset.next()) {
-                    InventoryBase hw = new InventoryBase();
-
-                    hw.setDbConnection(conn);
-                    hw.setInventoryID( new Integer(rset.getInt("InventoryID")) );
-                    hw.setAccountID( new Integer(rset.getInt("AccountID")) );
-                    hw.setInstallationCompanyID( new Integer(rset.getInt("InstallationCompanyID")) );
-                    hw.setCategoryID( new Integer(rset.getInt("CategoryID")) );
-                    java.util.Date date = new java.util.Date(rset.getTimestamp("ReceiveDate").getTime());
-                    if (date.getTime() > 0) hw.setReceiveDate(date);
-                    date = new java.util.Date(rset.getTimestamp("InstallDate").getTime());
-                    if (date.getTime() > 0) hw.setInstallDate(date);
-                    date = new java.util.Date(rset.getTimestamp("RemoveDate").getTime());
-                    if (date.getTime() > 0) hw.setRemoveDate(date);
-                    hw.setAlternateTrackingNumber( rset.getString("AlternateTrackingNumber") );
-                    hw.setVoltageID( new Integer(rset.getInt("VoltageID")) );
-                    hw.setNotes( rset.getString("Notes") );
-                    hw.setDeviceID( new Integer(rset.getInt("DeviceID")) );
-
-                    hwList.add(hw);
-                }
-            }
-        }
-        catch( java.sql.SQLException e )
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
-                if (rset != null) rset.close();
-                if( pstmt != null ) pstmt.close();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
-        }
-
-        InventoryBase[] hws = new InventoryBase[ hwList.size() ];
-        hwList.toArray( hws );
-        return hws;
+        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        pstmt.setInt( 1, accountID.intValue() );
+        java.sql.ResultSet rset = pstmt.executeQuery();
+        
+        java.util.Vector hwIDVct = new java.util.Vector();
+        while (rset.next())
+        	hwIDVct.add( new Integer(rset.getInt(1)) );
+        return hwIDVct;
     }
 
     public void delete() throws java.sql.SQLException {
@@ -118,9 +69,9 @@ public class InventoryBase extends DBPersistent {
     		setInventoryID( getNextInventoryID() );
     		
         Object[] addValues = {
-            getInventoryID(), getAccountID(), getInstallationCompanyID(),
-            getCategoryID(), getReceiveDate(), getInstallDate(), getRemoveDate(),
-            getAlternateTrackingNumber(), getVoltageID(), getNotes(), getDeviceID()
+            getInventoryID(), getAccountID(), getInstallationCompanyID(), getCategoryID(),
+            getReceiveDate(), getInstallDate(), getRemoveDate(), getAlternateTrackingNumber(),
+            getVoltageID(), getNotes(), getDeviceID(), getDeviceLabel()
         };
 
         add( TABLE_NAME, addValues );
@@ -129,8 +80,8 @@ public class InventoryBase extends DBPersistent {
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
             getAccountID(), getInstallationCompanyID(), getCategoryID(),
-            getReceiveDate(), getInstallDate(), getRemoveDate(),
-            getAlternateTrackingNumber(), getVoltageID(), getNotes(), getDeviceID()
+            getReceiveDate(), getInstallDate(), getRemoveDate(), getAlternateTrackingNumber(),
+            getVoltageID(), getNotes(), getDeviceID(), getDeviceLabel()
         };
 
         Object[] constraintValues = { getInventoryID() };
@@ -154,6 +105,7 @@ public class InventoryBase extends DBPersistent {
             setVoltageID( (Integer) results[7] );
             setNotes( (String) results[8] );
             setDeviceID( (Integer) results[9] );
+            setDeviceLabel( (String) results[10] );
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -297,6 +249,22 @@ public class InventoryBase extends DBPersistent {
 	 */
 	public void setVoltageID(Integer voltageID) {
 		this.voltageID = voltageID;
+	}
+
+	/**
+	 * Returns the deviceLabel.
+	 * @return String
+	 */
+	public String getDeviceLabel() {
+		return deviceLabel;
+	}
+
+	/**
+	 * Sets the deviceLabel.
+	 * @param deviceLabel The deviceLabel to set
+	 */
+	public void setDeviceLabel(String deviceLabel) {
+		this.deviceLabel = deviceLabel;
 	}
 
 }

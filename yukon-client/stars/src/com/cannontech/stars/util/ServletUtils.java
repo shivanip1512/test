@@ -18,6 +18,7 @@ import com.cannontech.stars.xml.serialize.ControlHistory;
 import com.cannontech.stars.xml.serialize.StarsCustListEntry;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
+import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.stars.xml.serialize.StarsLMProgram;
 import com.cannontech.stars.xml.serialize.StarsLMProgramEvent;
@@ -25,6 +26,7 @@ import com.cannontech.stars.xml.serialize.StarsLMProgramHistory;
 import com.cannontech.stars.xml.serialize.StarsLMPrograms;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
+import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
 
 /**
  * <p>Title: </p>
@@ -84,6 +86,7 @@ public class ServletUtils {
 	public static final String ATT_LM_PROGRAM_HISTORY = "LM_PROGRAM_HISTORY";
 	public static final String ATT_CHANGED_THERMOSTAT_SETTINGS = "CHANGED_THERMOSTAT_SETTINGS";
 	public static final String ATT_APPLY_TO_WEEKEND = "APPLY_TO_WEEKEND";
+	public static final String ATT_APPLY_TO_WEEKDAYS = "APPLY_TO_WEEKDAYS";
 	public static final String ATT_ACCOUNT_SEARCH_RESULTS = "ACCOUNT_SEARCH_RESULTS";
 	public static final String ATT_CALL_TRACKING_NUMBER = "CALL_TRACKING_NUMBER";
 	public static final String ATT_ORDER_TRACKING_NUMBER = "ORDER_TRACKING_NUMBER";
@@ -94,8 +97,12 @@ public class ServletUtils {
 	public static final String IN_SERVICE = "In Service";
 	public static final String OUT_OF_SERVICE = "Out of Service";
 	
-	public static final String IMAGE_NAME_SEPARATOR = ",";
 	public static final int MAX_NUM_IMAGES = 5;
+	
+	public static final String UTIL_COMPANY_ADDRESS = "<<COMPANY_ADDRESS>>";
+	public static final String UTIL_PHONE_NUMBER = "<<PHONE_NUMBER>>";
+	public static final String UTIL_FAX_NUMBER = "<<FAX_NUMBER>>";
+	public static final String UTIL_EMAIL = "<<EMAIL>>";
 
     private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
     
@@ -338,28 +345,37 @@ public class ServletUtils {
         }
     }
     
+    // Return image names: large icon, small icon, saving icon, control icon, environment icon
     public static String[] getImageNames(String imageStr) {
-    	StringTokenizer st = new StringTokenizer(imageStr, IMAGE_NAME_SEPARATOR, true);
-    	ArrayList imgNameList = new ArrayList();
-    	while (st.hasMoreTokens()) {
-    		String tk = st.nextToken();
-    		if (!tk.equals( IMAGE_NAME_SEPARATOR )) {
-    			imgNameList.add( tk );
-    			if (st.hasMoreTokens()) st.nextToken();
-    		}
-    		else
-	    		imgNameList.add( "" );
-    	}
-    		
+    	String[] names = imageStr.split(",");
     	String[] imgNames = new String[ MAX_NUM_IMAGES ];
     	for (int i = 0; i < MAX_NUM_IMAGES; i++) {
-    		if (i < imgNameList.size())
-    			imgNames[i] = (String) imgNameList.get(i);
+    		if (i < names.length)
+    			imgNames[i] = names[i].trim();
     		else
     			imgNames[i] = "";
     	}
     	
     	return imgNames;
+    }
+    
+    // Return program display names: display name, short name (used in enrollment page)
+    public static String[] getProgramDisplayNames(StarsEnrLMProgram starsProg) {
+    	String[] names = starsProg.getStarsWebConfig().getAlternateDisplayName().split(",");
+    	String[] dispNames = new String[2];
+    	for (int i = 0; i < 2; i++) {
+    		if (i < names.length)
+    			dispNames[i] = names[i].trim();
+    		else
+    			dispNames[i] = "";
+    	}
+    	
+    	// If not provided, default display name to program name, and short name to display name
+    	if (dispNames[0].length() == 0)
+    		dispNames[0] = starsProg.getProgramName();
+    	if (dispNames[1].length() == 0)
+    		dispNames[1] = dispNames[0];
+    	return dispNames;
     }
     
     public static String getFormattedAddress(StarsCustomerAddress starsAddr) {
@@ -438,6 +454,15 @@ public class ServletUtils {
 		}
 		
 		return null;
+	}
+	
+	public static boolean isWeekday(StarsThermoDaySettings day) {
+		return (day.getType() == StarsThermoDaySettings.WEEKDAY_TYPE ||
+				day.getType() == StarsThermoDaySettings.MONDAY_TYPE ||
+				day.getType() == StarsThermoDaySettings.TUESDAY_TYPE ||
+				day.getType() == StarsThermoDaySettings.WEDNESDAY_TYPE ||
+				day.getType() == StarsThermoDaySettings.THURSDAY_TYPE ||
+				day.getType() == StarsThermoDaySettings.FRIDAY_TYPE);
 	}
 
 }

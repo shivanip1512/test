@@ -27,6 +27,7 @@ public class LiteStarsAppliance extends LiteBase {
 	
 	private int inventoryID = CtiUtilities.NONE_ID;
 	private int addressingGroupID = 0;
+	private boolean extended = false;
 	
 	public LiteStarsAppliance() {
 		super();
@@ -237,6 +238,22 @@ public class LiteStarsAppliance extends LiteBase {
 	 */
 	public void setKWCapacity(int kwCapacity) {
 		this.kwCapacity = kwCapacity;
+	}
+
+	/**
+	 * Returns the extended.
+	 * @return boolean
+	 */
+	public boolean isExtended() {
+		return extended;
+	}
+
+	/**
+	 * Sets the extended.
+	 * @param extended The extended to set
+	 */
+	public void setExtended(boolean extended) {
+		this.extended = extended;
 	}
 
 }
