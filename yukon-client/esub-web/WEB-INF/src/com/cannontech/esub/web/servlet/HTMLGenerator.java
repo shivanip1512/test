@@ -21,11 +21,17 @@ import com.cannontech.esub.editor.Drawing;
 public class HTMLGenerator extends HttpServlet {
 
 	/**
-	 * @see javax.servlet.http.HttpServlet#doGet(HttpServletRequest, HttpServletResponse)
+	 * @see javax.servlet.Servlet#init(ServletConfig)
 	 */
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+	public void init(ServletConfig arg0) throws ServletException {
+		super.init(arg0);		
+	}
+
+	/**
+	 * @see javax.servlet.http.HttpServlet#service(HttpServletRequest, HttpServletResponse)
+	 */
+	protected void service(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException, IOException {
-		//super.doGet(req, resp);
 		
 		resp.setContentType("text/html");
 		
@@ -38,8 +44,7 @@ public class HTMLGenerator extends HttpServlet {
 		
 		//Assume this ends with .html
 		jlxPath = jlxPath.substring(0, jlxPath.length()-5) + ".jlx";
-		
-		
+				
 		BufferedReader rdr;
 		Writer w = resp.getWriter();
 		
@@ -47,30 +52,13 @@ public class HTMLGenerator extends HttpServlet {
 
 			Drawing d = new Drawing();
 			d.load(jlxPath);
-			
-			//DrawingUpdater du = new DrawingUpdater(d);
-			//du.run();
-			/*LxGraph g = new LxGraph();
-			g.read(jlxPath);
-			*/
-			//com.cannontech.esub.util.SVGGenerator gen = new com.cannontech.esub.util.SVGGenerator();
-			//gen.generate(w, d);	
-			
+						
 			com.cannontech.esub.util.HTMLGenerator gen = new com.cannontech.esub.util.HTMLGenerator();
 			gen.generate(w, d);
 		}
 		catch(Exception e ) {
-			e.printStackTrace(new PrintWriter(w));
-			//log(e.getMessage());
+			e.printStackTrace(new PrintWriter(w));			
 		}
-
-	}
-
-	/**
-	 * @see javax.servlet.Servlet#init(ServletConfig)
-	 */
-	public void init(ServletConfig arg0) throws ServletException {
-		super.init(arg0);		
 	}
 
 }
