@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/09/21 16:50:32 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/09/22 19:02:35 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -62,7 +62,7 @@ private:
     void verificationThread(void);
     void loadAssociations(void);
     void processWorkQueue(bool purge=false);
-    void writeWorkRecord(const CtiVerificationWork &work);
+    void writeWorkRecord(const CtiVerificationWork &work, RWDBConnection &conn, RWDBStatus &dbstat);
     void writeUnknown(const CtiVerificationReport &report);
     void pruneEntries(const ptime::time_duration_type &earliest);
 
