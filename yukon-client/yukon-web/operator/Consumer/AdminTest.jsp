@@ -158,6 +158,10 @@ function confirmDeleteAllCompanies() {
                 </tr>
               </table>
             </form>
+<%
+	String importID = ServerUtils.forceNotNone(AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.IMPORT_CUSTOMER_ACCOUNT));
+	if (importID.length() > 0) {
+%>
             <form name="form2" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
               <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
                 <tr> 
@@ -246,6 +250,9 @@ function confirmDeleteAllCompanies() {
                 </tr>
               </table>
             </form>
+<%
+	}
+%>
             <br>
             <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
               <tr> 
