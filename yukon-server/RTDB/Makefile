@@ -8,6 +8,7 @@ all:
             @$(MAKE) -nologo -f makeprtdb.mak
             @$(MAKE) -nologo -f maketcpsup.mak
             @$(MAKE) -nologo -f makeholiday.mak
+            @$(MAKE) -nologo -f makeseason.mak
             @$(MAKE) -nologo -f makeexe.mak
 
 copy:
@@ -16,6 +17,7 @@ copy:
             @$(MAKE) -nologo -f makeprtdb.mak $@
             @$(MAKE) -nologo -f maketcpsup.mak $@
             @$(MAKE) -nologo -f makeholiday.mak
+            @$(MAKE) -nologo -f makeseason.mak
             @$(MAKE) -nologo -f makeexe.mak $@
 
 deps:
@@ -24,6 +26,7 @@ deps:
             @$(MAKE) -nologo -f makeprtdb.mak $@
             @$(MAKE) -nologo -f maketcpsup.mak $@
             @$(MAKE) -nologo -f makeholiday.mak
+            @$(MAKE) -nologo -f makeseason.mak
             @$(MAKE) -nologo -f makeexe.mak $@
 
 

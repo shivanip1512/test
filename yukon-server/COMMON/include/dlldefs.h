@@ -174,6 +174,14 @@
    #define IM_EX_HOLIDAYDB   __declspec(dllimport)
 #endif
 
+#ifdef _DLL_SEASONDB                // The ctiseason.dll
+   #define IM_EX_SEASONDB   __declspec(dllexport)
+#elif defined( STI_UNDERSTAND )
+   #define IM_EX_SEASONDB
+#else
+   #define IM_EX_SEASONDB   __declspec(dllimport)
+#endif
+
 #ifdef _DLL_DBMGR
    #define IM_EX_DLL_DBMGR     __declspec(dllexport)
 #elif defined( STI_UNDERSTAND )
@@ -188,6 +196,14 @@
     #define IM_EX_DLL_HOLIDAYMGR
 #else
     #define IM_EX_DLL_HOLIDAYMGR __declspec(dllimport)
+#endif    
+
+#ifdef _DLL_SEASONMGR
+    #define IM_EX_DLL_SEASONMGR __declspec(dllexport)
+#elif defined( STI_UNDERSTAND )
+    #define IM_EX_DLL_SEASONMGR
+#else
+    #define IM_EX_DLL_SEASONMGR __declspec(dllimport)
 #endif    
 
 #ifdef ROUTEDB                // The ctibase.dll
