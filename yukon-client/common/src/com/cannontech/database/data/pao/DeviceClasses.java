@@ -1,0 +1,137 @@
+package com.cannontech.database.data.pao;
+
+/**
+ * This type was created in VisualAge.
+ */
+public final class DeviceClasses 
+{
+   public final static int TRANSMITTER = 0;
+   public final static int RTU = 1;
+   public final static int IED = 2;
+   public final static int METER = 3;
+   public final static int CARRIER = 4;
+   public final static int GROUP = 5;
+   public final static int CAPCONTROL = 6;
+   public final static int VIRTUAL = 7;
+   public final static int LOADMANAGEMENT = 8;
+   public final static int SYSTEM = 9;
+   public final static int INVALID = 10;
+   
+   public static final String STRING_CLASS_RTU = "RTU";
+   public static final String STRING_CLASS_TRANSMITTER = "TRANSMITTER";
+   public static final String STRING_CLASS_METER = "METER";
+   public static final String STRING_CLASS_CARRIER = "CARRIER";
+   public static final String STRING_CLASS_IED = "IED";
+   public static final String STRING_CLASS_GROUP = "GROUP";
+   public static final String STRING_CLASS_SYSTEM = "SYSTEM";
+   public static final String STRING_CLASS_CAPCONTROL = "CAPCONTROL";
+   public static final String STRING_CLASS_VIRTUAL = "VIRTUAL";
+   public static final String STRING_CLASS_LOADMANAGER = "LOADMANAGEMENT";
+   
+   public static final int[] IN_DEVICEDIRECTCOMMSETTINGS_TABLE = 
+   {
+	  //DeviceDirectCommSettings
+	  RTU, TRANSMITTER, METER, IED, 
+   };
+
+   public static final int[] CORE_DEVICE_CLASSES = 
+   {
+		CARRIER, IED, METER,
+		RTU, TRANSMITTER, VIRTUAL
+   };
+ 
+/**
+ * This method was created in VisualAge.
+ * @return int
+ * @param classString java.lang.String
+ */
+public final static int getClass(String classString) {
+
+	String compareString = classString.toUpperCase().trim();
+
+	if( compareString.equals(STRING_CLASS_RTU) )
+		return RTU;
+	else
+	if( compareString.equals(STRING_CLASS_TRANSMITTER) )
+		return TRANSMITTER;
+	else
+	if( compareString.equals(STRING_CLASS_METER) )
+		return METER;
+	else
+	if( compareString.equals(STRING_CLASS_CARRIER) )
+		return CARRIER;
+	else
+	if( compareString.equals(STRING_CLASS_IED) )
+		return IED;
+	else
+	if( compareString.equals(STRING_CLASS_GROUP) )
+		return GROUP;
+	else
+	if( compareString.equals(STRING_CLASS_SYSTEM) )
+		return SYSTEM;	
+	else
+	if( compareString.equals(STRING_CLASS_CAPCONTROL) )
+		return CAPCONTROL;
+	else
+	if( compareString.equals(STRING_CLASS_VIRTUAL) )
+		return VIRTUAL;			
+	else
+	if( compareString.equals(STRING_CLASS_LOADMANAGER) )
+		return LOADMANAGEMENT;
+	else
+		return INVALID;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (1/10/2001 5:08:54 PM)
+ * @return boolean
+ */
+public final static boolean hasDeviceDirectCommSettings(int classNumber)
+{
+	for( int i = 0; i < IN_DEVICEDIRECTCOMMSETTINGS_TABLE.length; i++ )
+	{
+		if( IN_DEVICEDIRECTCOMMSETTINGS_TABLE[i] == classNumber )
+			return true;
+	}
+
+	return false;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (1/10/2001 5:08:54 PM)
+ * @return boolean
+ */
+public final static boolean isCoreDeviceClass(int classNumber)
+{
+	for( int i = 0; i < CORE_DEVICE_CLASSES.length; i++ )
+	{
+		if( CORE_DEVICE_CLASSES[i] == classNumber )
+			return true;
+	}
+
+	return false;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (1/15/2001 1:46:22 PM)
+ * @return boolean
+ * @param deviceType int
+ */
+public final static boolean isMeterClass(int deviceClass) 
+{
+	switch(deviceClass)
+	{
+		case LOADMANAGEMENT:
+		case CARRIER:
+		case IED:
+		case METER:
+		case RTU:
+		case TRANSMITTER:
+		case VIRTUAL:
+			return true;
+
+		default:
+			return false;
+	}
+}
+}

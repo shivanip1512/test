@@ -1,0 +1,91 @@
+package com.cannontech.message.dispatch.test;
+
+/**
+ * This type was created in VisualAge.
+ */
+import com.cannontech.message.dispatch.*;
+
+public class TestMessages {
+/**
+ * This method was created in VisualAge.
+ * @param args java.lang.String[]
+ */
+public static void main(String[] args) {
+
+	ClientConnection conn = new ClientConnection();
+
+	conn.setHost("10.100.9.230");
+	conn.setPort(1510);
+
+	com.cannontech.message.dispatch.message.Multi multiReg = new com.cannontech.message.dispatch.message.Multi();
+	
+	//First do a registration
+	System.out.println("Registering client with vangogh");
+	com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
+	reg.setAppName("Van Gogh Test Client - Java");
+	reg.setAppIsUnique(0);
+	reg.setAppKnownPort(0);
+	reg.setAppExpirationDelay( 1000000 );
+	multiReg.getVector().addElement(reg);
+	
+	//Register for DBChangeMsg	
+	System.out.println("Registering for database changes");
+	//com.cannontech.message.dispatch.message.DBChangeMsg dbChange = new com.cannontech.message.dispatch.message.DBChangeMsg();
+	//dbChange.setDatabase(com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_ALL_DB);
+	//dbChange.setDBType(com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD);
+	//multiReg.getVector().addElement(dbChange);
+
+	// Register for point changes
+	System.out.println("Registering for all point changes");
+	com.cannontech.message.dispatch.message.PointRegistration pReg = new com.cannontech.message.dispatch.message.PointRegistration();
+	pReg.setRegFlags( com.cannontech.message.dispatch.message.PointRegistration.REG_ALL_PTS_MASK | com.cannontech.message.dispatch.message.PointRegistration.REG_ALARMS | com.cannontech.message.dispatch.message.PointRegistration.REG_EVENTS );
+	multiReg.getVector().addElement(pReg);
+
+	conn.setRegistrationMsg(multiReg);
+	
+	try
+	{
+		conn.connect();
+	}
+	catch( java.io.IOException e )
+	{
+		e.printStackTrace();
+		System.exit(0);
+	}	
+
+	//Do a loopback
+	System.out.println("Attempting a loopback command");
+	com.cannontech.message.dispatch.message.Command cmd = new com.cannontech.message.dispatch.message.Command();
+	cmd.setOperation( com.cannontech.message.dispatch.message.Command.NO_OP );
+	conn.write( cmd );
+
+	//Expect the message back
+	Object response = conn.read();
+	System.out.println("Received loopback:  " + response );
+	
+	
+	//Wait for point change messages - single or multi
+	System.out.println("Waiting for incoming messages....");
+	for( ; ; )
+	{
+		Object in = null;
+		try
+		{
+			in = conn.read();
+
+			if( in == null )
+			{
+				Thread.sleep(200);
+				continue;
+			}
+		}
+		catch( InterruptedException e )
+		{
+			e.printStackTrace();
+		}
+		
+		
+			System.out.println( in.toString() );		
+	}
+}
+}

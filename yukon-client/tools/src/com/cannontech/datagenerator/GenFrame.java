@@ -1,0 +1,534 @@
+package com.cannontech.datagenerator;
+
+/**
+ * Insert the type's description here.
+ * Creation date: (6/2/00 1:10:44 PM)
+ * @author: 
+ * @Version: <version>
+ */
+public class GenFrame extends javax.swing.JFrame implements java.util.Observer 
+{
+	private javax.swing.ButtonGroup buttonGroup = null;
+	private javax.swing.JPanel ivjJFrameContentPane = null;
+	private javax.swing.JLabel ivjJLabel1 = null;
+	private javax.swing.JLabel ivjJLabel2 = null;
+	private javax.swing.JTextField ivjJTextFieldTime = null;
+	private javax.swing.JRadioButton ivjJRadioButonPointData = null;
+	private javax.swing.JRadioButton ivjJRadioButtonDBChange = null;
+	private javax.swing.JRadioButton ivjJRadioButtonMulti = null;
+	private javax.swing.JRadioButton ivjJRadioButtonSignal = null;
+	private javax.swing.JLabel ivjJLabel3 = null;
+	private javax.swing.JLabel ivjJLabel4 = null;
+	private javax.swing.JLabel ivjJLabel5 = null;
+	private javax.swing.JTextField ivjJTextField1 = null;
+	private javax.swing.JTextField ivjJTextFieldPtIDs = null;
+	private javax.swing.JPanel ivjJPanel1 = null;
+	private javax.swing.JLabel ivjJLabel6 = null;
+	private javax.swing.JTextField ivjJTextFieldPort = null;
+/**
+ * GenFrame constructor comment.
+ */
+public GenFrame() {
+	super();
+	initialize();
+}
+/**
+ * GenFrame constructor comment.
+ * @param title java.lang.String
+ */
+public GenFrame(String title) {
+	super(title);
+}
+/**
+ * Return the JFrameContentPane property value.
+ * @return javax.swing.JPanel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JPanel getJFrameContentPane() {
+	if (ivjJFrameContentPane == null) {
+		try {
+			ivjJFrameContentPane = new javax.swing.JPanel();
+			ivjJFrameContentPane.setName("JFrameContentPane");
+			ivjJFrameContentPane.setLayout(null);
+			getJFrameContentPane().add(getJRadioButtonSignal(), getJRadioButtonSignal().getName());
+			getJFrameContentPane().add(getJRadioButonPointData(), getJRadioButonPointData().getName());
+			getJFrameContentPane().add(getJRadioButtonMulti(), getJRadioButtonMulti().getName());
+			getJFrameContentPane().add(getJRadioButtonDBChange(), getJRadioButtonDBChange().getName());
+			getJFrameContentPane().add(getJPanel1(), getJPanel1().getName());
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJFrameContentPane;
+}
+/**
+ * Return the JLabel1 property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getJLabel1() {
+	if (ivjJLabel1 == null) {
+		try {
+			ivjJLabel1 = new javax.swing.JLabel();
+			ivjJLabel1.setName("JLabel1");
+			ivjJLabel1.setText("Frequency of Generation");
+			ivjJLabel1.setBounds(9, 86, 140, 17);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabel1;
+}
+/**
+ * Return the JLabel2 property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getJLabel2() {
+	if (ivjJLabel2 == null) {
+		try {
+			ivjJLabel2 = new javax.swing.JLabel();
+			ivjJLabel2.setName("JLabel2");
+			ivjJLabel2.setText("(milliseconds)");
+			ivjJLabel2.setBounds(286, 86, 84, 17);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabel2;
+}
+/**
+ * Return the JLabel3 property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getJLabel3() {
+	if (ivjJLabel3 == null) {
+		try {
+			ivjJLabel3 = new javax.swing.JLabel();
+			ivjJLabel3.setName("JLabel3");
+			ivjJLabel3.setText("Point ID(s)");
+			ivjJLabel3.setBounds(9, 55, 62, 17);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabel3;
+}
+/**
+ * Return the JLabel4 property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getJLabel4() {
+	if (ivjJLabel4 == null) {
+		try {
+			ivjJLabel4 = new javax.swing.JLabel();
+			ivjJLabel4.setName("JLabel4");
+			ivjJLabel4.setText("(seperate by space if more than 1)");
+			ivjJLabel4.setBounds(290, 55, 199, 17);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabel4;
+}
+/**
+ * Return the JLabel5 property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getJLabel5() {
+	if (ivjJLabel5 == null) {
+		try {
+			ivjJLabel5 = new javax.swing.JLabel();
+			ivjJLabel5.setName("JLabel5");
+			ivjJLabel5.setText("Dispatch Location");
+			ivjJLabel5.setBounds(9, 21, 104, 17);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabel5;
+}
+/**
+ * Return the JLabel6 property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getJLabel6() {
+	if (ivjJLabel6 == null) {
+		try {
+			ivjJLabel6 = new javax.swing.JLabel();
+			ivjJLabel6.setName("JLabel6");
+			ivjJLabel6.setText("Port");
+			ivjJLabel6.setBounds(290, 21, 31, 17);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabel6;
+}
+/**
+ * Return the JPanel1 property value.
+ * @return javax.swing.JPanel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JPanel getJPanel1() {
+	if (ivjJPanel1 == null) {
+		try {
+			com.cannontech.common.gui.util.TitleBorder ivjLocalBorder;
+			ivjLocalBorder = new com.cannontech.common.gui.util.TitleBorder();
+			ivjLocalBorder.setTitle("Global Settings");
+			ivjJPanel1 = new javax.swing.JPanel();
+			ivjJPanel1.setName("JPanel1");
+			ivjJPanel1.setBorder(ivjLocalBorder);
+			ivjJPanel1.setLayout(null);
+			ivjJPanel1.setBounds(4, 213, 662, 134);
+			getJPanel1().add(getJLabel5(), getJLabel5().getName());
+			getJPanel1().add(getJTextField1(), getJTextField1().getName());
+			getJPanel1().add(getJLabel3(), getJLabel3().getName());
+			getJPanel1().add(getJTextFieldPtIDs(), getJTextFieldPtIDs().getName());
+			getJPanel1().add(getJLabel4(), getJLabel4().getName());
+			getJPanel1().add(getJLabel1(), getJLabel1().getName());
+			getJPanel1().add(getJTextFieldTime(), getJTextFieldTime().getName());
+			getJPanel1().add(getJLabel2(), getJLabel2().getName());
+			getJPanel1().add(getJLabel6(), getJLabel6().getName());
+			getJPanel1().add(getJTextFieldPort(), getJTextFieldPort().getName());
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJPanel1;
+}
+/**
+ * Return the JRadioButonPointData property value.
+ * @return javax.swing.JRadioButton
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JRadioButton getJRadioButonPointData() {
+	if (ivjJRadioButonPointData == null) {
+		try {
+			ivjJRadioButonPointData = new javax.swing.JRadioButton();
+			ivjJRadioButonPointData.setName("JRadioButonPointData");
+			ivjJRadioButonPointData.setText("PointData");
+			ivjJRadioButonPointData.setBounds(84, 12, 80, 25);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJRadioButonPointData;
+}
+/**
+ * Return the JRadioButtonDBChange property value.
+ * @return javax.swing.JRadioButton
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JRadioButton getJRadioButtonDBChange() {
+	if (ivjJRadioButtonDBChange == null) {
+		try {
+			ivjJRadioButtonDBChange = new javax.swing.JRadioButton();
+			ivjJRadioButtonDBChange.setName("JRadioButtonDBChange");
+			ivjJRadioButtonDBChange.setText("DBChange");
+			ivjJRadioButtonDBChange.setBounds(240, 12, 108, 25);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJRadioButtonDBChange;
+}
+/**
+ * Return the JRadioButtonMulti property value.
+ * @return javax.swing.JRadioButton
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JRadioButton getJRadioButtonMulti() {
+	if (ivjJRadioButtonMulti == null) {
+		try {
+			ivjJRadioButtonMulti = new javax.swing.JRadioButton();
+			ivjJRadioButtonMulti.setName("JRadioButtonMulti");
+			ivjJRadioButtonMulti.setText("Multi");
+			ivjJRadioButtonMulti.setBounds(173, 12, 51, 25);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJRadioButtonMulti;
+}
+/**
+ * Return the JRadioButtonSignal property value.
+ * @return javax.swing.JRadioButton
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JRadioButton getJRadioButtonSignal() {
+	if (ivjJRadioButtonSignal == null) {
+		try {
+			ivjJRadioButtonSignal = new javax.swing.JRadioButton();
+			ivjJRadioButtonSignal.setName("JRadioButtonSignal");
+			ivjJRadioButtonSignal.setText("Signal");
+			ivjJRadioButtonSignal.setBounds(20, 12, 54, 25);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJRadioButtonSignal;
+}
+/**
+ * Return the JTextField1 property value.
+ * @return javax.swing.JTextField
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTextField getJTextField1() {
+	if (ivjJTextField1 == null) {
+		try {
+			ivjJTextField1 = new javax.swing.JTextField();
+			ivjJTextField1.setName("JTextField1");
+			ivjJTextField1.setText("127.0.0.1");
+			ivjJTextField1.setBounds(118, 17, 156, 21);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJTextField1;
+}
+/**
+ * Return the JTextFieldPort property value.
+ * @return javax.swing.JTextField
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTextField getJTextFieldPort() {
+	if (ivjJTextFieldPort == null) {
+		try {
+			ivjJTextFieldPort = new javax.swing.JTextField();
+			ivjJTextFieldPort.setName("JTextFieldPort");
+			ivjJTextFieldPort.setText("1521");
+			ivjJTextFieldPort.setBounds(323, 17, 67, 21);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJTextFieldPort;
+}
+/**
+ * Return the JTextFieldPtIDs property value.
+ * @return javax.swing.JTextField
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTextField getJTextFieldPtIDs() {
+	if (ivjJTextFieldPtIDs == null) {
+		try {
+			ivjJTextFieldPtIDs = new javax.swing.JTextField();
+			ivjJTextFieldPtIDs.setName("JTextFieldPtIDs");
+			ivjJTextFieldPtIDs.setBounds(76, 51, 199, 21);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJTextFieldPtIDs;
+}
+/**
+ * Return the JTextFieldTime property value.
+ * @return javax.swing.JTextField
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTextField getJTextFieldTime() {
+	if (ivjJTextFieldTime == null) {
+		try {
+			ivjJTextFieldTime = new javax.swing.JTextField();
+			ivjJTextFieldTime.setName("JTextFieldTime");
+			ivjJTextFieldTime.setBounds(152, 82, 121, 21);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJTextFieldTime;
+}
+/**
+ * Called whenever the part throws an exception.
+ * @param exception java.lang.Throwable
+ */
+private void handleException(java.lang.Throwable exception) {
+
+	/* Uncomment the following lines to print uncaught exceptions to stdout */
+	// System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	// exception.printStackTrace(System.out);
+}
+/**
+ * Initialize the class.
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void initialize() {
+	try {
+		// user code begin {1}
+		// user code end
+		setName("GenFrame");
+		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+		setSize(669, 352);
+		setTitle("Data Generator");
+		setContentPane(getJFrameContentPane());
+	} catch (java.lang.Throwable ivjExc) {
+		handleException(ivjExc);
+	}
+	// user code begin {2}
+
+	if( buttonGroup == null )
+	{
+		buttonGroup = new javax.swing.ButtonGroup();
+		buttonGroup.add( ivjJRadioButonPointData );
+		buttonGroup.add( ivjJRadioButtonDBChange);
+		buttonGroup.add( ivjJRadioButtonMulti );
+		buttonGroup.add( ivjJRadioButtonSignal );
+	}
+	
+	// user code end
+}
+/**
+ * main entrypoint - starts the part when it is run as an application
+ * @param args java.lang.String[]
+ */
+public static void main(java.lang.String[] args) {
+	try {
+		GenFrame aGenFrame;
+		aGenFrame = new GenFrame();
+		aGenFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+			public void windowClosing(java.awt.event.WindowEvent e) {
+				System.exit(0);
+			};
+		});
+		aGenFrame.setVisible(true);
+	} catch (Throwable exception) {
+		System.err.println("Exception occurred in main() of javax.swing.JFrame");
+		exception.printStackTrace(System.out);
+	}
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (5/25/00 12:26:42 PM)
+ * Version: <version>
+ * @param observ java.util.Observable
+ * @param obj java.lang.Object
+ */
+public void update(java.util.Observable observ, Object obj) 
+{
+	//Should be an instance of com.cannontech.message.dispatch.ClientConnection
+	//notifying us of a change in the connections state
+	com.cannontech.message.dispatch.ClientConnection conn = (com.cannontech.message.dispatch.ClientConnection) obj;
+
+	boolean validConn = conn.isValid();
+		
+	if (this != null)
+	{
+		String title = "Data Generator";
+		
+		if (validConn)
+		{
+			title += "   [Connected to Dispatch@" + conn.getHost() + ":" + conn.getPort() + "]";
+		}
+		else
+		{
+			title += "   [Not Connected to VanGogh]";
+		}
+		this.setTitle(title);
+	}	
+}
+/**
+ * 
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private static void getBuilderData() {
+/*V1.1
+**start of data**
+	D0CB838494G88G88G75F854ACGGGGGGGGGGGG8CGGGE2F5E9ECE4E5F2A0E4E1F4E13DDB8DD494D716E6948DC9C8C214A4EAC80251E4496A6CB0A73A63E4BDBB04A1BB4E46F38693B36BEE18045DF8E6CC16CC5C8DC9CC6259ADC091639FC6420FC1ED79D140963A8DA2B42050B40A06980E92E5A74EEAC39750D05D5569AE900CA6FBDF3D3A2F2B0B6A4618496A79CED55D1F77EE5DF75FFD6F3EAE383CFD319BB3B273B8AEE3A3277CBB1641F1A94D9CF7F7CED7AD52427844ECCE75EFBFE0
+	A7F7403A812ED1408BFFB4B1BB17FB4914834F7361B9E6EEE2F6815C6F62DEB125B542CD10FE1200977E45EB43217B494F47FEB6494FD3723742F5BBA08EE8641A4E137E676497AA74658A9D111149F10B7A094C627CE205D68F4FDD0088C0CC3FDFFE335C73B4CB3D72FC695ED8AE7D9F8FE6EEA36D285AC42CD7F48D834A157BC9463281599F321DC427871E23G6465333837AA8F413529EBF860F81F682A6E333B5D22DB627B862B9DF649BE403BF92FDD923D964BA95EFD52EBF7711CED1034F720A0C75667
+	382D701CAC53DEBDC97A08007BD84092G353F79E013E2DF4F57BF61567F13BBEBC7907B731C546EA6275F7E681177B695493E3ED0C0FCBA863C98C0BCE0A5A09D10B714187D31BC46FF4E2F02EBEB2F54A63ADC223B5563318A8E6FE7220397605EE2810EC2BB477709DE874751F1DC1DEF5431A794285EFFFEE7BD6A1338CFF0CC971EFB1CCBF972534CCDBABEC909B3E59A0728AFECC3FE1F503E8F95846B5BB19498F301FDDF6454FD27CD9733B66A743D68054A4CB1251DC8D55FCB0748D87F7994996B05F0
+	1F214481258F48F4EE58CF277177069C9B64B997F852B046C64FF63425F3439CAE575C296B07D9092D192B06298DEB077D36503838DCC466D1311018DD8F68828C82A2G7381CB840C0D4773EBEEB2B63A6CDE49BA62949C3C17233A178B72614A0FC9DE7BE937CF323B7B788BF62F535EAB70BECE1199ACA0367786683964186D03BECE513964945D50BACCA409777A284CE841CEA26365E5EE375345C387AE8F076DFED3308B2E025DA7FD6101D9497BA5A8FFFA817165287D8234888D40BD75CB64EE6273D570
+	7EEB811C8B7D10D1C85A7B14773AF941E26994456191CFB7F9932E4BC5464AAA4F6DBC38B782E8DB919F93DAB4BCAFE46D5497FE28EA47666CA3665B3D63B8B77ACE11DC196042317EE38F0E35ED5BE31C7105B33AE3CD3052C547B84D250DF9175CA6310BBE3FF532C751C9F069477C77816DE37BA96CA36BAF5C7EF6B6D6EF9713314AF3A7E61BGDDEE74312F50C0E356EA777198251FFBA140F8075F63D456D9C472AABF4A3BA59B6F615D8E3871A9B162A95A6C0F5FFE11455628CC77C03C37C10079987DFA
+	9109C93BA4F91D3DA392FF1E17A427FB404F8F177B720D74FA7CD3857B3A3308649371AA44BB130FAA7AD01E87EEB7AF9B4DD4947E8CB9D6F901F70151ED6208DB2274D93B49F88F73634ADC09591DAD473AB0C2669DDD43626DDB48BBF81DAEF085193A5C92B709637FA940B518E090E8E4AD0E04EB2C9BE372EAA946E4593539DC426572CC3DDCB86BB1DBA6A752784A937DB1C9ED3A6BE3FD5BE74AF3C6217B282D5F5A888D97D3BA76B5FB09FEAD345B8138A262586FA8AED24DAFE5505BC4C120AEE43EDDDF
+	1CCB46027FEA040734C4A672274CDFD9FBBE5470AEA83E237CADFB086F84D58E20F63E3B1B78CE5E978C59C76DE3553E2BB07E964B9959EE3A8778251CA7489C9993F18FF0D89E47F8F8DE86C895514FAB36619EA0FAB816CB1D37BB689EE61D625FE20F5F4F06293887985FC77A3C84BC4103FE1A3EC71D4FDAFDBE314FA927D2659D0F6ED50F8325D976FEG57FE2757A71D0609B2067EE859CB6CA539D6A1ABB9E0193C5606F974F3CC34069E874FF4BD7CF29F7147D20FF61D744874659E6DBA7949EEDCA7D3
+	00577295665F3FB51071188F4F8900D5003500DCAF648BAF7AE1595ECF38C95637533037733A6D427900090B6B4C3EACBA571467A97BB662DC03ABDD9BDE16473C937A74GA82D2E10504261B90651969791DA82BC2F74E22E967611391C4A1EC765E74E074F8D3BFB3850391268FE3FDCFEEE52BE3ECF0E27FE7B05A1F89E7E8703FE9EDEEE504F434F99F6D2BA34215E15A07FDF8C2173743F997472F4164CFB3B60A338BA78FE7B08G5D0ABE7EF30F32C5A1F34CC746F127BC36A48E4AFCD8B37C74AA49997D
+	1088202B739E3E0F2B15086CE70518EFE3C1F691E0A5A09D1087FC5A67F2F9ED101C12C0E26A3AC4EA2C44031C6277DDDC559972BEB44B3411CA043C361B48521C7ED77B54B9BDC122FB1455F0DD477A28A8A4F3D515362AAFBA5D8E71AA34C7F6EE122F5AF67AFC5767675BAFFFFE76F2DBA75C509C95FBD5DDE755FFF0CCF7ADA0489D21F1D826DC175ED62A54C5BE59DFC467927022C7886D3F8B73B47175B4540055F025FCF3111ACF5E3F1CD3737B82784456460DEA7EFD81FCE273C70ABEFD2FE74BB1772E
+	FFB60E9396B7844D3DA94A7BF023745AF52114AB3B637DCD341D5FFC2976CF6E1C7D1999C15A29D774ED237E9CCEE3674D4AA06B8A99E5017A7065FD98F3E323382ED416486B8ABCAF83240EE2DE34D69259F5701CF7957360268AD253DE308FA999305D610492D6CE01C06C720A906552B8254A2B21129BFEDBF8EB355C531B503F0B1EFA14DBB27D5D0CADC17CD2FB157A23DB392E69AED56D8197D6915F0483AF961084C8812C85640C613B1D2DA0B6C2A6A76637CA123DEFD0DE55B041DFF072D77DE4B2B9E9
+	5B3FA1AED1F2C2F4C5F9B07FC08BE7E0D8BE6F9D02BDC637FD00E37571BE2DEF0A477C3958B4B6B1AF53F56EA1F95CECE3F41D5B42688BE43AC3C5276BDF0DCCA74F6140DB435E7BD4A5E91365B9BAEC4A7B1C2DA4716FF4BBA527DDF0DE139358F990F48F50F7CFB192FE67B8540500C8C0ACE051B8367DDCE58975290EBF5B9D83BC668D6CEFF1D5707C3E34EA72BA7119AA32776895A5C9F41176117EEC957135A4FAE4A225A5D7119873BA8786A5AA2A50FFDBC562DE607BE5B2DDF35F1767CDB23C576AF1DC
+	075F590FEBF34EB5DCE7671590FF98613993A0GA2818B997F27B2BF811ED3815C57095986C04B5748BFDA92EA8D453636EB7A78EE6B745910FDECD6E2847369C6C56F3B2D532B0D4147715F0D130FE33AD15ED7027F3B47BDBC253DEBA47509585F6F63D93C7C17B11751CE7B3AC41F13C4A8DD2BBEB490F941BEAE0E007C322F65DCE740B54E814F573F263E0B07AB59AB65DEA7B25BCB8AC33C9FED7B5CB63277BFF34E6EF00A569108B677F967GEC7E109FF9A3CF4D975DDD2293DCE1176C147FD271CE0D7E
+	E730D1F03276FFFDBECF4337D95B866D6E811E72636DE4CCE8E6B7F333E43BFFDF22DE2BFA2E53F78A07AB652FA8536327B27E5E8ABDFEBA63EF2C5263675CC84C267B0734C35A7D836197835F8420B9E853FEBCAB6DGDA588D5C778C14103C494ECA1D3D2E6A11D1D7353DD72A66A105DAACE7C78421D399CA0E2EDBB6392DA550C6B2E04D8D2C07468E601A317071B9DCE758273AEBF2EA7711CC6E9BE52F710DFFAD0D9BF9CFD9130706311D62858F4A3CE0EB7B95C5BFDC558E6E973238FC6BDECEF7DDD60D
+	AE276CF17614627A1C748D3E4F0D136A7AEE690EA31941564075CA7F455F7A6DB0427B5036F34A316DCB402734AFAA10964DE8CDD5C8DB4EE8E5C62CC7B704613EE13609783F891E3B81C2986630ED7BEF6D3C77636F2CC7573BA5F29C04075175AE03511F1669D1AABA0D41B3AC86E300477D8877BB39B5A4FE9D709C8618850887A48352FE046B594C43A6EE12BA30DB74F4C26293D4A585EDFF48C45A6726401CG34GFAG82A0FC8A367F3B43244E8C363FBAA70A72161D6C5E6DCEB76F1517CFAF5CCA0A8F
+	CBCA75FCB8EB8A0D0705D3A62E95543615E6F9DD82FE8AA09D30F5AA6C7F2722DD155513563F6DE33A752F929365FAF6F5CE2576DC19BA51AE2A77278ABDBDC9110F882A57DA25279723484787552BB42A7512C0EE15CAB6CDC70F46DA2BD9BE1B8F2731769123F74B74DA951D4660A3725CA14F03404B1B06F3676F49CFE10AAD3FD25DF76D1F2C367EBE20FDB8FF50BEE89C9555845F9798EA746B7783B57A753B31A6F4FDDEDB937C9C3531E662B92A4F945C36EB264977ACD3CD7AFB4F5BCD93771EF71B7477
+	1E512609FB4F86F9CDC80098C91E06FB4F07CBF16F19B28D67E80AB9387D2F1875FD7B2AD95F37EF18C31F0D3CE38E66FBEADFD9B95A4CCDC71B2715234DDB996D2B8A14B3B15AF395A85744E8BDD5A8F70551FEDE05F2822335486BD494BC4FE73472EA5C3BAFE3347E9A54CD1B0EF36F1439822E3937A5E617811AGDDG8190860886448312G2BEEC31DBF49BA69701C971118DD8B6886C800E840A240CAC0BAA06FF654F94C942B199B241FE073A6DA69AF98BFCC45EB8AA1A767BD051F2B3C97524BD477C9
+	4ABD35B5F9022D1BC334CF626F23907CED2A7B49EA0A1D4A156CF73728689BD5773BD4B23B382ED2F266A9C1105333AFA7D932147333452538B72D05F168G8C82A2GF1GAABF3756AF9FD30E724B001F82D88FA83E8362628E14CFBA6A17FF358265AF815F83088244831219FCFA1DDFBE398A655782FF431D90F3G9B40F1A71E35DD146B1DDE51ABCFBCDA3F380D28978EF2B1001500B5F7529A124A1C2DC699AE52DF6394C6D2995A7F0D9A14B1815D86F0G428173A3317F029639466834777242D145477F
+	7199990BB35D606413CEDEF018957ACBE77C321FA8348599BB82E43B2453B6BC9F0DA9714B57AAB4F7151F066D1E393EBD208D727BAC0E77DA0FDF7E08C2DB3D4BCF2BD3E82F96863651A5FA210820B5CD34D9DD53A4A9BEDA9309B5CFEB1D1A3FDE61175D057C3AFABD7DFA46BFE851536FE47C1FB56A69DFE17C38E6BD3E447833CF68359F41787BDA7574E398BF37CD0F9F4F786F58745ACF3A8B6B0297CB71CCF655DDF8A63B39CCFBA6CBA6E2B507E72A0DE55AB35922G3E2BCCFBA66B8A60BFD226BD132D
+	D478542644F234A977EE34E9EDF9E81BCA8E0436297B00562639817C3403DA1B1E8830E9C7A55A5441ECEA2E8CED13D8995A263915DA1B8682784FD7EAED7AB2C3ED535BD5E8D39833296CD0E81BAE9C8AEDD344A12DCD7F9C40FF6A105626FFD5EC227B627B0D789B5D9230E96D5DF8BE7007BDE40C753E259A98F1D60FC8CE41E269A63FFCD815F4293C63CBC67C162A629E2CDB3D07C99FD760F98C90F58F1ECD0CD6E3DD988734D4A67F24CCAF0C02BD8A20A38AE3FFDE8D7A6FCA947AEFC50D56FF5BB2546F
+	1FE5527AEFC1G7F28C96B3F43813FC78C18347E5B2C78D7798D20BF48EFGF2C624F6BFEB467AFED6947A373C22D8DF0FE5CD2ABBD6073A494C8F2EFA24655C0B347F35205FDB986D0F0D6C3787C6FB3999E9710C16FC82F557B05A05D614B34CC05A29B62475B0DAF5BB5222E660FEABD537A68E85257E522DD9A7574B2B3CB53D77F5EB564975E20C1369AD1B9138AF24FAFFBD295EDE5D7EDE19D4CF0D55B370777A5F4B73EE5D8C6DB94D9BB2FD43CC6DB94D58E11C0F394013E662F8DE2F3EB5BF5D711D75
+	28FD87EB64EF3DE6EA6DB6497455936C7EB94BA3EB01579D0DF647555C1A5D49E6BD3DA551F4CC17C787BB4B38D12727172A4827875573566B69655C271CAD5E97CC2F4F926A7DCCC1755EEC545333A972BDC175D6B76B69890AFCD8D03D97CE0432B3BA285E172DFAFAF10A7C5220FA1DEDFAFA490A7C6A20FA1F346B692DD364375EBFD1EF8FC772E642AED2E7B95D02131C944ADFC7F2D8173FA72F0786502D3D9F63B26DB0477AFCCBF57F4D619F7E4C69017F07BE8E57785F29CEF57F0B6A9F3E6FD5BFE89F
+	F4CC7FE0463311167B71FC2363881EEFF4B2DA343CF6FB60B90C515E2DC339C8C63B3D9E5B0BE734576AD1EEA923DD33A0AD1551BEE8C25D8D8FA0ED388965F2996D7DE6142BE534CB47D12E055152CEA04D41E85ED6540DE03467DBD1AE1A517A5AD0EE8923A53521DC92231DE9C73F2CE134856DA8177EG5643BB8FCF7C3E2609FC36215CDFEEA077343E3EFC846B6B42D90959C6C0A7C0GC44E42769654851ED75CE5716B679EC37D05A01FGC885F03393338D3371BC6119C63FFCC6834A37G3F9BA08122
+	810BE6E34DFF2F85E5D682ED8DA0E7CEE2F68520E38E36B95C6CEFF3CA934A8F92BEA0863094104264679F774B7B0E237CFA6067BE887BE5C0974073A05A105502B2D1C01B8FC8822C86EC0841B6FFF5425F66EB2DA8DF867CFAC08FE08CB00B493F566217FF318D6517GFFB9A08D3075A1980307D0FE1B55AF1F580E721D403F8288834482929E42BD6534A3384FCFFD887779CF9E516E73CBB975BEFD41D16DBE7FD0G7FF7C7357B7C95817C9DF55AFD7EAECEDD3B559D43FDEE6143E8137B18562640BEE30F
+	E9ED8A347939E3DA1B9A82EA138D75DA1BDE8F3069E0835A5445EC3A5C905ACF77B6E8ED9283783FEC505AF4A3007FD6C3E8BF7D4C02B6C5B01B5E300476537EC62DCD01F57579C62DCD778478E9DA2356265981B645B521CD894C26542650FE7A30B9341FEC4D21ED9AED565A541E2936E976F134E99D33E9457150B6E51D505A7463G7E5193DA1B0A82EC9AB891FA6CAADBF05E199EC11BAE36049E3B5BDB34B6BD96407F3B962DCDEF8670DFEF515AE48EB8B34935221F8619CD9D5650FE3AE68D6D2705D62D
+	CDCF8470DF32EAEDEA8E983B8C9B7AA91659D4E38BED135D96BABF4D34E9EDBA9140FF4696BA1E563433F3C1E6D37E4950E357F1B2F4FE3AF6D2EB53ED01FEBC293569B645A6257EBBF2EB75D763B135DEEEECE2F6D9EC685FD9281E31C12DD78FBA1DB72537B4200E3A82BA52CD697D38C92D9781BAB1B7257770F135DEBC68A45D14DEF54B2D7973A32BDAEF957415F6D37DE55BEE2D3F57F56B28D020FB40F3729A4B4DCD4CA66BA025DD14E905C0BB44645A9AD06E8623F5B420DCA923BDEFC139FBD8FB2BAC
+	935BCBEA1AA8776B26096DADBE0EF2C5CC6E296393650CD614FB02514CD6359CBD83349FA067964A371E971D8EE910520B473679699DBC794D9A1E695F7D7ECD4B0BF0DD78BA37D16236134F5B8C27706FDAA5AE1BFE93A7F11B5957EF9237D17E50CD62F27003B6095BF1CA90FB6D0281FFC516381DB6274FE3177A868D1DE21F7C51A9B4E2BEF22C5A847F4D9237C5EE50F05AD6612B1438128A9FAFFFDD4F9BFA478D2058479B1C7D861768658D9274E1B003D041C9AF7DCB1DF10358EF707F45A058DD61F28A
+	0253477709EE87E9EF83790588AE6623C74C4AF748155F2A3F4FDEB72DB068776B4B9E25311C722876EFA9774835C761BC588B4F435F6CDDD6D2F0877BDE783C4BAE8812DD98EEF5BB48374356F109777FC6DF52C65A77210C42D43E57E9A3F68F29F47E8FD0CB8788F3D6C5AD0B94GG84BEGGD0CB818294G94G88G88G75F854ACF3D6C5AD0B94GG84BEGG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGG4594GGGG
+**end of data**/
+}
+}

@@ -1,0 +1,61 @@
+package com.cannontech.web.history;
+
+/**
+ * Insert the type's description here.
+ * Creation date: (7/11/2001 3:34:59 PM)
+ * @author: 
+ */
+public class BaseHistory {
+	protected java.sql.Connection conn = null;
+	protected java.sql.Statement stmt = null;
+/**
+ * EnergyExchangeHistory constructor comment.
+ */
+public BaseHistory() {
+	super();
+}
+/**
+ * EnergyExchangeHistory constructor comment.
+ */
+public BaseHistory(String dbAlias) {
+	super();
+	getConnection(dbAlias);
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (7/11/2001 3:46:45 PM)
+ */
+public void gc() {
+	try {
+		if (conn != null) conn.close();
+		if (stmt != null) stmt.close();
+
+		System.out.println("Connection closed");
+	}
+	catch (java.sql.SQLException se) {
+		se.printStackTrace();
+	}
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (7/11/2001 3:39:28 PM)
+ */
+public void getConnection(String dbAlias) {
+	try {
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
+		stmt = conn.createStatement();
+
+		System.out.println("Connected with the datebase");
+	}
+	catch (java.sql.SQLException se) {
+		se.printStackTrace();
+		try {
+			if (conn != null) conn.close();
+			if (stmt != null) stmt.close();
+		}
+		catch (java.sql.SQLException se2) {
+			se2.printStackTrace();
+		}
+	}
+}
+}

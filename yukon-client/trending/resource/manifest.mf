@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: com.cannontech.graph.GraphClient
+Class-Path: ./ common.jar rwav.jar acme.jar jcfield401K.jar jcpagelayout450k.jar jcchart401k.jar batik111.jar SqlServer.jar classes12.zip ../config/ ../log/ ../export/
+

@@ -1,0 +1,427 @@
+package com.cannontech.tdc.exportdata;
+
+/**
+ * Insert the type's description here.
+ * Creation date: (2/29/00 10:17:23 AM)
+ * @author: 
+ */
+import com.cannontech.tdc.TDCMainFrame;
+import com.cannontech.tdc.logbox.MessageBoxFrame;
+
+public class ExportOptionDialog extends javax.swing.JDialog 
+{
+	private String fileName = null;
+	private String[] data = null;
+	private String date = null;
+	private String time = null;
+	private int columnCount = -1;
+	// indexes into fileExt
+	private static final int TYPE_CSV_DELIMITED = 0;
+	private static final int TYPE_HTML = 1;
+	private final String[] fileExt =
+			{	".CSV", ".HTML" };
+	private javax.swing.JComboBox ivjJComboBoxFormat = null;
+	private javax.swing.JPanel ivjJDialogContentPane = null;
+	private javax.swing.JLabel ivjJLabel1 = null;
+	private javax.swing.JButton ivjJButtonCancel = null;
+	private javax.swing.JButton ivjJButtonOk = null;
+	IvjEventHandler ivjEventHandler = new IvjEventHandler();
+
+class IvjEventHandler implements java.awt.event.ActionListener {
+		public void actionPerformed(java.awt.event.ActionEvent e) {
+			if (e.getSource() == ExportOptionDialog.this.getJButtonOk()) 
+				connEtoC1(e);
+			if (e.getSource() == ExportOptionDialog.this.getJButtonCancel()) 
+				connEtoC2(e);
+		};
+	};
+/**
+ * Constructor
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+public ExportOptionDialog() {
+	super();
+	initialize();
+}
+/**
+ * ExportOptionDialog constructor comment.
+ * @param owner java.awt.Frame
+ */
+public ExportOptionDialog(java.awt.Frame owner, int colCount, String name, String newDate, String newTime, String[] stringData )
+{
+	super(owner);
+
+	columnCount = colCount;
+	fileName = name;
+	data = stringData;
+	date = newDate;
+	time = newTime;	
+	initialize();
+}
+/**
+ * ExportOptionDialog constructor comment.
+ * @param owner java.awt.Frame
+ */
+public ExportOptionDialog(java.awt.Frame owner, String name, String[] stringData ) 
+{
+	super(owner);
+
+	fileName = name;
+	data = stringData;
+	initialize();
+}
+/**
+ * connEtoC1:  (JButtonOk.action.actionPerformed(java.awt.event.ActionEvent) --> ExportOptionDialog.jButtonOk_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC1(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.jButtonOk_ActionPerformed(arg1);
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC2:  (JButtonCancel.action.actionPerformed(java.awt.event.ActionEvent) --> ExportOptionDialog.jButtonCancel_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC2(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.jButtonCancel_ActionPerformed(arg1);
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * Return the JButton2 property value.
+ * @return javax.swing.JButton
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JButton getJButtonCancel() {
+	if (ivjJButtonCancel == null) {
+		try {
+			ivjJButtonCancel = new javax.swing.JButton();
+			ivjJButtonCancel.setName("JButtonCancel");
+			ivjJButtonCancel.setMnemonic('C');
+			ivjJButtonCancel.setText("Cancel");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJButtonCancel;
+}
+/**
+ * Return the JButton1 property value.
+ * @return javax.swing.JButton
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JButton getJButtonOk() {
+	if (ivjJButtonOk == null) {
+		try {
+			ivjJButtonOk = new javax.swing.JButton();
+			ivjJButtonOk.setName("JButtonOk");
+			ivjJButtonOk.setMnemonic('O');
+			ivjJButtonOk.setText("Ok");
+			ivjJButtonOk.setMaximumSize(new java.awt.Dimension(73, 27));
+			ivjJButtonOk.setPreferredSize(new java.awt.Dimension(73, 27));
+			ivjJButtonOk.setMinimumSize(new java.awt.Dimension(73, 27));
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJButtonOk;
+}
+/**
+ * Return the JComboBoxFormat property value.
+ * @return javax.swing.JComboBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JComboBox getJComboBoxFormat() {
+	if (ivjJComboBoxFormat == null) {
+		try {
+			ivjJComboBoxFormat = new javax.swing.JComboBox();
+			ivjJComboBoxFormat.setName("JComboBoxFormat");
+			ivjJComboBoxFormat.setBackground(java.awt.Color.white);
+			// user code begin {1}
+
+			ivjJComboBoxFormat.addItem("Comma Delimited (.CSV)");
+			ivjJComboBoxFormat.addItem("HTML 4.0 Page (.HTML)");
+			
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJComboBoxFormat;
+}
+/**
+ * Return the JDialogContentPane property value.
+ * @return javax.swing.JPanel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JPanel getJDialogContentPane() {
+	if (ivjJDialogContentPane == null) {
+		try {
+			ivjJDialogContentPane = new javax.swing.JPanel();
+			ivjJDialogContentPane.setName("JDialogContentPane");
+			ivjJDialogContentPane.setLayout(new java.awt.GridBagLayout());
+
+			java.awt.GridBagConstraints constraintsJLabel1 = new java.awt.GridBagConstraints();
+			constraintsJLabel1.gridx = 1; constraintsJLabel1.gridy = 1;
+			constraintsJLabel1.ipadx = 5;
+			constraintsJLabel1.insets = new java.awt.Insets(17, 12, 16, 1);
+			getJDialogContentPane().add(getJLabel1(), constraintsJLabel1);
+
+			java.awt.GridBagConstraints constraintsJComboBoxFormat = new java.awt.GridBagConstraints();
+			constraintsJComboBoxFormat.gridx = 2; constraintsJComboBoxFormat.gridy = 1;
+			constraintsJComboBoxFormat.gridwidth = 2;
+			constraintsJComboBoxFormat.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJComboBoxFormat.weightx = 1.0;
+			constraintsJComboBoxFormat.insets = new java.awt.Insets(16, 1, 13, 19);
+			getJDialogContentPane().add(getJComboBoxFormat(), constraintsJComboBoxFormat);
+
+			java.awt.GridBagConstraints constraintsJButtonOk = new java.awt.GridBagConstraints();
+			constraintsJButtonOk.gridx = 2; constraintsJButtonOk.gridy = 2;
+			constraintsJButtonOk.anchor = java.awt.GridBagConstraints.SOUTHEAST;
+			constraintsJButtonOk.insets = new java.awt.Insets(13, 30, 29, 8);
+			getJDialogContentPane().add(getJButtonOk(), constraintsJButtonOk);
+
+			java.awt.GridBagConstraints constraintsJButtonCancel = new java.awt.GridBagConstraints();
+			constraintsJButtonCancel.gridx = 3; constraintsJButtonCancel.gridy = 2;
+			constraintsJButtonCancel.anchor = java.awt.GridBagConstraints.SOUTHEAST;
+			constraintsJButtonCancel.insets = new java.awt.Insets(13, 8, 29, 16);
+			getJDialogContentPane().add(getJButtonCancel(), constraintsJButtonCancel);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJDialogContentPane;
+}
+/**
+ * Return the JLabel1 property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getJLabel1() {
+	if (ivjJLabel1 == null) {
+		try {
+			ivjJLabel1 = new javax.swing.JLabel();
+			ivjJLabel1.setName("JLabel1");
+			ivjJLabel1.setText("Format");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabel1;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (2/29/00 12:33:04 PM)
+ */
+private String[] getTextFromFormat() 
+{
+	switch( getJComboBoxFormat().getSelectedIndex() )
+	{
+		case TYPE_HTML:
+			HTMLformat html = new HTMLformat( );//columnCount, fileName, date, time, data );
+			html.setDateTimeTitle( date, time, fileName );
+			html.formatNewData( data, columnCount );
+			return html.getHTMLData();		
+
+		/* ALL NEW FORMAT TYPES GO HERE */
+		
+		case TYPE_CSV_DELIMITED:		
+		default:
+			return CommaDeleimitedFormat.createLines( data, columnCount );
+	}
+
+}
+/**
+ * Called whenever the part throws an exception.
+ * @param exception java.lang.Throwable
+ */
+private void handleException(java.lang.Throwable exception) {
+
+	/* Uncomment the following lines to print uncaught exceptions to stdout */
+	System.out.println("--------- UNCAUGHT EXCEPTION ExportOptionDialog() ---------");
+	exception.printStackTrace(System.out);
+
+	TDCMainFrame.messageLog.addMessage(exception.toString() + " in : " + this.getClass(), MessageBoxFrame.ERROR_MSG );
+}
+/**
+ * Initializes connections
+ * @exception java.lang.Exception The exception description.
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void initConnections() throws java.lang.Exception {
+	// user code begin {1}
+	// user code end
+	getJButtonOk().addActionListener(ivjEventHandler);
+	getJButtonCancel().addActionListener(ivjEventHandler);
+}
+/**
+ * Initialize the class.
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void initialize() {
+	try {
+		// user code begin {1}
+		// user code end
+		setName("ExportOptionDialog");
+		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+		setResizable(false);
+		setSize(272, 144);
+		setTitle("Export Data");
+		setContentPane(getJDialogContentPane());
+		initConnections();
+	} catch (java.lang.Throwable ivjExc) {
+		handleException(ivjExc);
+	}
+	// user code begin {2}
+	// user code end
+}
+/**
+ * Comment
+ */
+public void jButtonCancel_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+	this.dispose();
+	return;
+}
+/**
+ * Comment
+ */
+public void jButtonOk_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+	javax.swing.JFileChooser chooser = new javax.swing.JFileChooser( 
+			com.cannontech.common.util.CtiUtilities.getExportDirPath() );
+	
+	chooser.setDialogTitle("Save In");
+//	chooser.setFileFilter( new DirectoryOnlyFilter() );
+	chooser.setSelectedFile( new java.io.File( fileName + fileExt[ getJComboBoxFormat().getSelectedIndex() ] ) );
+
+	int status = chooser.showSaveDialog( this );
+
+	if( status == chooser.APPROVE_OPTION )
+	{
+		writeFile( chooser.getSelectedFile().toString() );
+		TDCMainFrame.messageLog.addMessage("File exportation to " + fileName + fileExt[ getJComboBoxFormat().getSelectedIndex() ] + " was successful", MessageBoxFrame.INFORMATION_MSG );
+
+		this.dispose();
+		//this.setVisible( false );
+	}
+	
+
+	return;
+}
+/**
+ * main entrypoint - starts the part when it is run as an application
+ * @param args java.lang.String[]
+ */
+public static void main(java.lang.String[] args) {
+	try {
+		ExportOptionDialog aExportOptionDialog;
+		aExportOptionDialog = new ExportOptionDialog(new java.awt.Frame(), new java.lang.String(), null);
+		aExportOptionDialog.setModal(true);
+		aExportOptionDialog.addWindowListener(new java.awt.event.WindowAdapter() {
+			public void windowClosing(java.awt.event.WindowEvent e) {
+				System.exit(0);
+			};
+		});
+		aExportOptionDialog.setVisible(true);
+	} catch (Throwable exception) {
+		System.err.println("Exception occurred in main() of javax.swing.JDialog");
+		exception.printStackTrace(System.out);
+	}
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (2/29/00 11:12:28 AM)
+ * @param destination java.lang.String
+ */
+private void writeFile(String destination) 
+{
+	String[] text = getTextFromFormat();
+	
+	try
+	{
+		java.io.FileWriter writer = new java.io.FileWriter( destination );
+
+		for( int i = 0; i < text.length; i++ )
+			writer.write( text[ i ] );
+				
+		writer.close();
+	}
+	catch ( java.io.IOException e )
+	{
+		handleException( e );
+	}
+	
+	return;	
+}
+/**
+ * 
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private static void getBuilderData() {
+/*V1.1
+**start of data**
+	D0CB838494G88G88G7BF854ACGGGGGGGGGGGG8CGGGE2F5E9ECE4E5F2A0E4E1F4E135DA8DD09C4715C69692C8A783E71314CED1A5B816DD240E0A39045C69F22A1CC3B9A9C55615E5071C1D0BFD27A42A321278E22ACEC9A90E4A57AC7F62C7487A617FC77C58521D0275D71102A0A7E0E5013489840840314E5230BB40406E4EEAF616FF21FB2FFFE607E596EC1F32D52FE67AF5776B572F5FFB7DF54F122335895999362304E4E4937E3B18C1C84A2F8839FC6731A9410B10D3F30869F782
+	68B0795E9F32609987F5379EC94DA9A16F5B73203C854A2E38541CD2F8BFC2BE34277C973C0499E78354CD7D5373D94B0FD3C644B839347CFAD5A1BC0B019201074FFDB20E1FDBDD4679BBB9DFD0060D1017C630CDFDF59567DD02F2AFD0BCD06288EB7FB4BC736948EBDAAE71F6377EB2016C5B710E2D886518E48A2A9BE5FD6D7CD9C71E4AF8ED94473AD1DD487B4CC3B98588A71FC93E7D612F61595ABBB17ADB276AE9F6CADE2F6A55E567D8336EF2B64B53BED553DD12AE3534DC256FBDBEDDD13DF6C5F22B
+	23040C0D216CC72B7328ACC24EC0F99F65554F62F8C9707E8C504B867FC714FFC90179820DA9E20EED6F3472B98C4DBDC58E3C684DBC94E60E918A1BDB22921CE3FC600D5CF23A9EC399E877BDD017B71E1AD385F485688ED084D0A575035B845D20FDD86FD4BD9E555B6E73F538DD5A6FD4176C0677169628613CBE5929EAAEC258DA7F217A3405BE4B916BF77BE377E3B6C9BCAF56BD296FC9727217EF58F2ADEC72F262995B46F1E60B647120CD58589B430E3DEBFC31DFAE9EFB101847FEED2D1A19EDB1F64A
+	F7CE5976F0B97BCDE31F1C40357EB4DD6BB2F84F607E417889146FB671190F1E24FCAC4FC35D6E89619BC345C297C756A6D2F256E1E9070D296DB63B1B69F04B9D2A4B7F4E216CE8B79BB35B50E50C72B71B78CC175729AED8CE063A231E549C66DFD2A6466CB414630112001E815A83C43C504EABFCAC113C7B91FD2CD752740E0062F6499AE1FD250C63701427F5CD6A767AF5496B14EFCA1AA28D3BE5BF61ED46697A8EAF6A27D25FF7429857E42F2CC99829A0DD72483A2C79D91B690C4358C613E96D006211
+	E1G0F0F88399199C7F0EDA43F7EC79F443D9CEC416A23B3F0CDA6251BA0918440BB33CBCC965A6B824C5F81F44B30C3268D655D10B52F6CEEE9F1286AC440B700B3A1C9DE3473D3B4F77860BD5AABEC3CBE9BF969D04ED3051C965BDBA6B9F645096ACB5A0C08314D3318172BD461B3BF9D92BEE3AFFA021C7E4EF5CB1FC1EAD5192F8C28213173A41509FA31F2736C50470C636528CADD9CFFEC0CEB8FF40C4C10B2336F7E9CDC2BF998FFA350D6434681DB9D73598E49AF8BAF6D514041E4D75062CCCF67DC9E
+	37E726213B1772F6013C7D2A30594F68FCB2ACF4F9904446A81E9B6272337F8CE3B05BCC507DC81E143D3ADD7649DE973C78F91D1609BE4763F5C4B57ACCD33E8F623B93824AEF7097B2B186A5DD57146100AE774B3A2EF8C70375EB69D87E4030AF189A44D88F53BC2CCEC1FC9B6D9F494458F02ADE2FCC974968426B63E9EC4AEE5983CAF72A812F4E781B32503FA764991E9BBE1B0500E7D2F287B04FB0FC10AC95609CB44583CB0F290A68BE0C5B678DFCC3E386F808F33A60F94BA7E2F02AC144E0636CE364
+	695BCDB62BBDE46393F65BB69F0B05DD3EE08CB21DE2332DF57F944D911C6FE73A3ED004F63042A94C6F4F66212CF498A36BAEE0033B426F8F533CA3F28BF778CE556DE666B46C7CA64C9B56C53E9B10A1A5E3923BE158AEBB772D103A1B5C0E2C3EA8976D68B6653F743BF4AF1C93987082149DC06E3B4C16C9F719ADD8BB573CE8572A25668CG699AEB172231F64C86FDF7F1AE944F0DCB1352F433FF8AFC2B25653AB08547EC17EB50FE38CE87B4014D526BE88E77039EC0AE3FD847670B84B60B1FC8A03B9F
+	2F880BBF677DCC1784FFF09D6BD68BECB6170FE36E063AF43F30FDF42EF9FFE8777BD527C237A6EE370BF966F5E63C563C03709CD1B43F5E8D01B8ADEC5C11077A625E4559FCAF7F561C584B3374541CD620B49D790303C7CD3A6B405B8C74B4D0A615F7E67E9C46A9F502E67668153591D573482E13E85DE6E9CAEF26B921391DD6DF4577D3E2AD7659517F47BB823A2EFAFBA6EE370708F00417F17954CDE67B4F9F3942755B7945CD24757E911B95AE0EBED4ED2B8AF06C9F885AFE7ECBB9192FFD784BDCE607
+	0767059D62204D760030432B2DD6F6A013428E7B7E1FF698D7DA03F668C4B8637E1836E0F97ECA8DE2592320574949255835B504570B6DA846F31D40F93BA6C3F12817727549D09C7A73BA01C3A321EE6F2440A5878BB067B926605C8294813491E8AB50CBD3421FF7641DA7AB603EEEB8DFE9DE495D3FA8418B7C151F49F2B2AFC766E70B1CCC44FE775CDCA8265FB735F86EA553D6586215A57DEAC24A97C27A3175BB549FA6273095C59B52BD61099366BD41B14DB01D8F1E11C0AC6F448CE2BCE37E58BCAD72
+	4B3D774C79E55B21F33602B079054CF05F1E897A78E9636C17D208B9728E544D834583A583258125839D1D95EBD4FC30ED25B5220EB720F6822F8BF2F6E7685EEA58745179CF36960FAD6937E4ADE69777E3762BE94B63B29CD04FB074A04D6511D0CEB4F8DF243CEDD0CE8B362BC55EDEA813B9411B2EC3DEA314AF4D894CB6FE82F1015DA86B340CB901158F54BDC80CDA4C47DAEC1FE3A79E7498E67C497C60C8C1F8CCD7D1E00D696A8A2CB15D5B8507999FE418CFF4223E39E0F94C776B82AB4CD7CD757E56
+	71C3D4365FAF7B29E35AA5DD62F52F6A470885767BBD9C7A781C0F101C79FC5E662A2EF61EA5A22E7F6394462BC5DC77CA309B733B1D7ABC5E5EB5A7F0421DC6FAE606F28A50CE43CF9E9D8CDD33BDD0371F2FED613C75FDC31D857F82703AC278AC46AF9763DEF58B6A260162009201364F0B585ED930E27E3DBA3DCC7E7DDAE1F81F78C62135CFBCDB08794C2F86B4279C3A6EAF941699F541AC522D4B9EDCA25666FB343FAEE92372923F79816D4F6A42757FC9E1B85FE26B3FE3517A1FB3E22C21ADB4876D85
+	BB9E60F6AF3937F4DD18BCEF8D7A1CCB9E1182EE888355AF777878F5832E4DBD7411F5B542EF9A6F899C710D9A54C3137D4AACC540226DABB562AC19F0CF5CCB7E4D946E81A31A640129747BE4A769DA20FBF62D58E3D2206DF6203DC0F9D0F7F2C10C93DB07B2F4C527E344AD60BD6E3B28B2577FEFB3902BF3C45C09571D9833DED958E5E3FD28DD52960236583B3054AE8CCF245138B8304070C43E417FBE65175D8F72994E9821FCACDF003A0D77C5CE7E8A5DA38FC039A4C2705E243CC6A8DFB0F8370710F7
+	854AC3862F3E84F9EEA8C79B3C1D57C45E5FEC702A3310779A1433D6095869AC8E6F7B570B2DFD3F3758BA9F5EACDEBE9FFED89C4EE719FEADED4286E52B044E8BED4286278D5E3F350939DDDAA556BF0162C4D3CAEB9ED43CAEF58A169AEF53F4FF333D3B3F37277F6A6D1E5F5F6EF4408B43A189D366FB76CB87AFDA1ED71122D7B19F584C1F5B229A38EF7555E21F91496DC75FE3B9B43ED678F79A34AFFC88F92935E64C0DFDCFC003E6F8327AFD0B6A51D61D44DC7FF61D399E75BFE1B3578FAD2AC71DBC3C
+	BF1B6B33CD82F39DF8B611383F721B30E73A0107589C27793377E683E9DC7F4BDCA667398F4CB6AB59F4421691C6CEB26F3F6D21A0F663F700F40FC987FE56EA312E4D0DE2DDCF2E967B4B3FB462795B8165BBC073C071C65D2B34AE994A3BD633F3B41E11D91D3B518ACB208C2B7DE81E739DE16A854573FAB6469A4BB1425DC7651A56FD39B172CD6DE0EF23B9406315E1E3D31CACF77E1072BE0776DBAD7CFFCD9362B59D0215653EB378790B4B189C423C6A112695CF40532F4C4ABC874750DCC2A241BFA305
+	1C5F1420CF78B4F9C456B459C5DB0B1C5DC7734CA5E8EB870A0B243ADC33AFB317ECA2F087A39F74C12A667E92994972E306216B05AC2A2B628D5155C1F357CB50FE8F9063B9E99E0882AAD9837A50F97763D6C118EEBFEFDBCE375C95F42BDB93540D6190D20E631D86FE579A11BF75E37F8D4F1B52B8C79DD7DD0A2EEA94F6G33D7D3E11754E798175E8EF15F792B5ACF76FD686B39A206D33E7AF932F56DAFB2421D1B4656B0DF0D664F3D838DA6CCB5DE01065A8AF5E9C07B01CA562666B482352E95F37B07
+	E328A322A7D03FDD57A567983D1191206A26A2CF855938E1B359DBF1CB61B93F70F8D3B87B00046B102FFB064781608CC823068FFC339E6FA45D520C9A50A1F72C25F821DEE000DEA80F814581EDD94B6EAD3222304D5546B28BBBAC46B1FFD2517E579D52306CBE4BF9476F23425781BD8E2B9D6A74FB2A6611F4DE6718C53BDF9777B9061C345122A01F5DEFC0195D2DD4B6197330A30A69680B92F7AFEE55DC9F496B1322C48C3EB1084FF7FA5E61B846F3B8984B25A5F8E6744AD3F5466509DD817363071913
+	974F1F2EBBF7711440BFF1EF857BFD7D5AC769D7CB5B92C273827FB1D947D0E56E035FAF94BED875571FA17697FF11519046871F0E6238B2BA187F770E9F48E5B263CD78ECC76BC7510F351DED2376699476793B63C1FF4BAE47F18C0C41C2CE78E2B9CE82D20B8EA89070A80257FEE8689DE5FE9BD50A75DD202B8BA89AE8B3D0F23408073872FA968F9631F055B5AA8B2CA14673D70447D63395ABFF6FDBDD01F71E43AA381887658B7E3A8A74E1DD75D1A66345D4D01C2D0C0E692C29788ED0C13121BCC2598C
+	03E6B7087F856C0439E52D93787B6C9D3CCBB14E063888ADAD57B44555A10DBAE8B4B2EC733B8601EDDA570973619C1529C3F9835016F5621EE77AED61ABC9CFEEA20E089B1618E37740B95B36F54CC7F62F8B7ACAE2608D0EB946A74CBE07F56130CB55FA567F4A7A209C31974179F7A44C7917E684B63F3EA6F10E09D8AFECB36A2E346EA7328647FD0F2B226F5675628EF1369C7721F4A8977EC5EA4E9920AE20DBC0BAD0B450E620E4206DC03B01768165EDC84D2982BA8DF485E8E0037043BF9D05D0883B67
+	7085234E28C98A3AA377055852707E786952157D71F32574DE9E7CE8E046474F21DBCAB1D72BA3A3FE59707BAF1416983CEEFF2F6AD7B052583ED75070497ECFD17E897B75FD6CFE6C7C76BA7567318DC18C40787B191F1B78AC26D699B19581F5FBB60835BFDE097E5675B0649420F920F8209420DD8F0B757CED599932427D45006AF3404239CD47AAA65FD7C57F7B8232C88C6C5FC02DC03DC0E3B146771632734B78CB1F2A5213B09E0A41DDE44D64B94C0603CDD6B61C0FE17195973394B333FE09EAB85BEF
+	01BEDBAD7A71DCD69E5ECFBFD53E321FFE365CBAEFEEA9DF1AB73FD0EE1DB71FAAB767CD46CBA947389E05789AB25A7D3D41FB5F60FD0D4AC45E206252478C7EB3D4AF64F749B820606F20FACDD15E9067BDE7623D4FF9E96598EBB065B1D593FD3FDB0E38FFC4F13BD979955AC671C2689976788155D171C9A63DDFB5F86F9B6B75B35C46797B1B2677280687FDAF3B54D7927E2CE330B957D606772B37AB2D6FBACED7DA5FF51C2BDC7EEE3725B27C777C764A255F73E72A426B96D135324F2F2B327679582A25
+	BE9FDFE56D731B2A4CBE4F4E645EA6F17F32B3C61C533F5DA44E69AF993CFF247B5E49D8582BE2856FF1C5349B08956733DA04F97CFC766326654EE719A1A44EE7889AB14FEE8119626C43F061BF2B548612F3E2D4D383DE17B8377E146A168C6D37450AF36BD715154E2D1926674B31413111179E9B4C7FECDE9D3544F85F0EFF9B65BAFDC6C1CCE9E05ACE552DEA4DD3E30AAEAF455A697F437A7F84E1A6E17FDF2D6D7DB18C12746FA4DBA7856CEF8EF578A9C0A7361E891D64302307DFA3EFAD454D6DB15FFD
+	B169367D280D583AC94E984DA55DA4FB8A135234787BD7377FAED9204A3212C68E99123AE99A59BDF93EA573070FE75AC89608E1AE56CD3250CFC01A4624E6020BD119F8FC2E6153AA8A110D259C5E866B91A69441A458094B28C63658CD8F03C2450B4D1771C4696A125873819B49FB0F640CC8EE5F18840A506F258ED2B0CCB542ED4C2D13927A0D79DD687BAE6DFB59C1ECCE3FCEAA03FCA772D9ED3FCFF24A50A45FA5E993D4822AD47481499F51C60769GE0778F5E7BG0625A52CBE64A08775B13AFDC208
+	6A24B4A83A97B7D1DEF119DA077CA77CFC74E7CCD7G59A3EC6A8C6F1E3AEF3EE35B3F26AC6C3DE442A3EC9FCDF9A408F799B6F8210F5E31813F70D101856A7BFEC5421F477BBD125B2DCB6E09F62F8B4F669DB33A9C4CE9AF7621FC3FE843ABD95D3F7665F3BF97FD7E8FD0CB8788A187CA96F191GG5CADGGD0CB818294G94G88G88G7BF854ACA187CA96F191GG5CADGG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGG2B91G
+	GGG
+**end of data**/
+}
+}

@@ -1,0 +1,526 @@
+package com.cannontech.tdc.calendar;
+
+/**
+ * Insert the type's description here.
+ * Creation date: (3/23/00 4:21:14 PM)
+ * @author: 
+ */
+
+import com.klg.jclass.field.JCPopupField;
+import com.klg.jclass.field.validate.JCDateValidator;
+import com.klg.jclass.util.value.DateValueModel;
+import java.util.Calendar;
+import com.cannontech.tdc.utils.DataBaseInteraction;
+import java.util.Date;
+import com.cannontech.tdc.TDCMainFrame;
+import com.cannontech.tdc.utils.TDCDefines;
+import com.cannontech.tdc.data.Display;
+
+public class CalendarDialog extends javax.swing.JDialog 
+{
+	private long displayNumber = Display.HISTORY_EVENT_VIEWER_DISPLAY_NUMBER;  // default setting
+	private Date beginningDate = null;
+	private Date endingDate = null;
+	private javax.swing.JPanel ivjJDialogContentPane = null;
+	private javax.swing.JLabel ivjJLabelDate = null;
+	IvjEventHandler ivjEventHandler = new IvjEventHandler();
+	private javax.swing.JButton ivjJButtonOk = null;
+	private com.klg.jclass.field.JCPopupField ivjJCPopupFieldDate = null;
+	private javax.swing.JLabel ivjJLabelBeginning = null;
+	private javax.swing.JLabel ivjJLabelEnding = null;
+	private javax.swing.JPanel ivjJPanel1 = null;
+	private javax.swing.JTextField ivjJTextFieldBeginning = null;
+	private javax.swing.JTextField ivjJTextFieldEnding = null;
+
+class IvjEventHandler implements java.awt.event.ActionListener {
+		public void actionPerformed(java.awt.event.ActionEvent e) {
+			if (e.getSource() == CalendarDialog.this.getJButtonOk()) 
+				connEtoC1(e);
+		};
+	};
+/**
+ * CalendarDialog constructor comment.
+ */
+public CalendarDialog() 
+{
+	super();
+	initialize();
+}
+/**
+ * CalendarDialog constructor comment.
+ * @param owner java.awt.Dialog
+ */
+public CalendarDialog(java.awt.Dialog owner) {
+	super(owner);
+}
+/**
+ * CalendarDialog constructor comment.
+ * @param owner java.awt.Dialog
+ * @param modal boolean
+ */
+public CalendarDialog(java.awt.Dialog owner, boolean modal) {
+	super(owner, modal);
+}
+/**
+ * CalendarDialog constructor comment.
+ * @param owner java.awt.Frame
+ */
+public CalendarDialog(java.awt.Frame owner, long displayNumber ) 
+{
+	super(owner);
+
+	this.displayNumber = displayNumber;
+	initialize();
+
+	owner.setCursor( java.awt.Cursor.getDefaultCursor() );
+}
+/**
+ * connEtoC1:  (JButtonOk.action.actionPerformed(java.awt.event.ActionEvent) --> CalendarDialog.jButtonOk_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC1(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.jButtonOk_ActionPerformed(arg1);
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * Return the JButtonOk property value.
+ * @return javax.swing.JButton
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JButton getJButtonOk() {
+	if (ivjJButtonOk == null) {
+		try {
+			ivjJButtonOk = new javax.swing.JButton();
+			ivjJButtonOk.setName("JButtonOk");
+			ivjJButtonOk.setMnemonic('k');
+			ivjJButtonOk.setText("Ok");
+			ivjJButtonOk.setBounds(197, 229, 85, 27);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJButtonOk;
+}
+/**
+ * Return the JCPopupField1 property value.
+ * @return com.klg.jclass.field.JCPopupField
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private com.klg.jclass.field.JCPopupField getJCPopupFieldDate() {
+	if (ivjJCPopupFieldDate == null) {
+		try {
+			ivjJCPopupFieldDate = new com.klg.jclass.field.JCPopupField();
+			ivjJCPopupFieldDate.setName("JCPopupFieldDate");
+			ivjJCPopupFieldDate.setBackground(java.awt.Color.white);
+			ivjJCPopupFieldDate.setBounds(39, 9, 243, 25);
+			// user code begin {1}
+
+			// create the validator and set the validator properties
+/*			JCDateValidator dv = new JCDateValidator();
+			dv.setAllowNull(false);
+			dv.setDefaultDetail(JCDateValidator.LONG);
+			dv.setCasePolicy(JCDateValidator.UPPERCASE);
+			
+			// set the value model and validator
+			ivjJCPopupFieldDate.setValueModel( new DateValueModel( new Date()) );
+			ivjJCPopupFieldDate.setValidator(dv);
+*/			
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJCPopupFieldDate;
+}
+/**
+ * Return the JDialogContentPane property value.
+ * @return javax.swing.JPanel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JPanel getJDialogContentPane() {
+	if (ivjJDialogContentPane == null) {
+		try {
+			ivjJDialogContentPane = new javax.swing.JPanel();
+			ivjJDialogContentPane.setName("JDialogContentPane");
+			ivjJDialogContentPane.setLayout(null);
+			getJDialogContentPane().add(getJCPopupFieldDate(), getJCPopupFieldDate().getName());
+			getJDialogContentPane().add(getJLabelDate(), getJLabelDate().getName());
+			getJDialogContentPane().add(getJButtonOk(), getJButtonOk().getName());
+			getJDialogContentPane().add(getJPanel1(), getJPanel1().getName());
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJDialogContentPane;
+}
+/**
+ * Return the JLabelBeginning property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getJLabelBeginning() {
+	if (ivjJLabelBeginning == null) {
+		try {
+			ivjJLabelBeginning = new javax.swing.JLabel();
+			ivjJLabelBeginning.setName("JLabelBeginning");
+			ivjJLabelBeginning.setText("Beginning");
+			ivjJLabelBeginning.setBounds(16, 36, 59, 17);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabelBeginning;
+}
+/**
+ * Return the JLabelDate property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getJLabelDate() {
+	if (ivjJLabelDate == null) {
+		try {
+			ivjJLabelDate = new javax.swing.JLabel();
+			ivjJLabelDate.setName("JLabelDate");
+			ivjJLabelDate.setText("Date");
+			ivjJLabelDate.setBounds(7, 13, 29, 17);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabelDate;
+}
+/**
+ * Return the JLabelEnding property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getJLabelEnding() {
+	if (ivjJLabelEnding == null) {
+		try {
+			ivjJLabelEnding = new javax.swing.JLabel();
+			ivjJLabelEnding.setName("JLabelEnding");
+			ivjJLabelEnding.setText("Ending");
+			ivjJLabelEnding.setBounds(16, 72, 57, 17);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabelEnding;
+}
+/**
+ * Return the JPanel1 property value.
+ * @return javax.swing.JPanel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JPanel getJPanel1() {
+	if (ivjJPanel1 == null) {
+		try {
+			com.cannontech.common.gui.util.TitleBorder ivjLocalBorder;
+			ivjLocalBorder = new com.cannontech.common.gui.util.TitleBorder();
+			ivjLocalBorder.setTitleFont(new java.awt.Font("dialog.bold", 1, 14));
+			ivjLocalBorder.setTitle("Date Range");
+			ivjJPanel1 = new javax.swing.JPanel();
+			ivjJPanel1.setName("JPanel1");
+			ivjJPanel1.setBorder(ivjLocalBorder);
+			ivjJPanel1.setLayout(null);
+			ivjJPanel1.setBounds(7, 63, 275, 120);
+			getJPanel1().add(getJLabelBeginning(), getJLabelBeginning().getName());
+			getJPanel1().add(getJLabelEnding(), getJLabelEnding().getName());
+			getJPanel1().add(getJTextFieldBeginning(), getJTextFieldBeginning().getName());
+			getJPanel1().add(getJTextFieldEnding(), getJTextFieldEnding().getName());
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJPanel1;
+}
+/**
+ * Return the JTextFieldBeginning property value.
+ * @return javax.swing.JTextField
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTextField getJTextFieldBeginning() {
+	if (ivjJTextFieldBeginning == null) {
+		try {
+			ivjJTextFieldBeginning = new javax.swing.JTextField();
+			ivjJTextFieldBeginning.setName("JTextFieldBeginning");
+			ivjJTextFieldBeginning.setBounds(77, 36, 171, 21);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJTextFieldBeginning;
+}
+/**
+ * Return the JTextFieldEnding property value.
+ * @return javax.swing.JTextField
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTextField getJTextFieldEnding() {
+	if (ivjJTextFieldEnding == null) {
+		try {
+			ivjJTextFieldEnding = new javax.swing.JTextField();
+			ivjJTextFieldEnding.setName("JTextFieldEnding");
+			ivjJTextFieldEnding.setBounds(77, 70, 171, 21);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJTextFieldEnding;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (3/23/00 5:06:49 PM)
+ * @return java.util.Date
+ */
+public java.util.Date getSelectedDate() 
+{
+	try
+	{
+		long time = java.text.DateFormat.getInstance().parse( getJCPopupFieldDate().getModel().getSelectedItem().toString() ).getTime();
+
+		// current date selected + 23 hours 59 minutes 59 seconds (in milliseconds)!!!
+		return new java.util.Date( time + 86399999 );
+	}
+	catch( java.text.ParseException pe )
+	{
+		return null;
+	}
+
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (5/4/00 2:33:08 PM)
+ * Version: <version>
+ * @return java.lang.String
+ */
+private String getTableQuery() 
+{
+	if( displayNumber == Display.RAW_POINT_HISTORY_VIEWER_DISPLAY_NUMBER )
+		return "select MIN(timestamp), MAX(timestamp) from rawpointhistory";
+	else
+		return "select MIN(datetime), MAX(datetime) from systemlog";
+}
+/**
+ * Called whenever the part throws an exception.
+ * @param exception java.lang.Throwable
+ */
+private void handleException(java.lang.Throwable exception) {
+
+	/* Uncomment the following lines to print uncaught exceptions to stdout */
+	System.out.println("--------- UNCAUGHT EXCEPTION CalendarDialog() ---------");
+	exception.printStackTrace(System.out);
+}
+/**
+ * Initializes connections
+ * @exception java.lang.Exception The exception description.
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void initConnections() throws java.lang.Exception {
+	// user code begin {1}
+	// user code end
+	getJButtonOk().addActionListener(ivjEventHandler);
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (3/23/00 4:22:19 PM)
+ */
+private void initialize() {
+	try {
+		// user code begin {1}
+		setVisible( false );
+		// user code end
+		setName("CalendarDialog");
+		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+		setResizable(false);
+		setSize(293, 294);
+		setTitle("Choose Date");
+		setContentPane(getJDialogContentPane());
+		initConnections();
+	} catch (java.lang.Throwable ivjExc) {
+		handleException(ivjExc);
+	}
+	// user code begin {2}
+	initValidDates();
+
+	setUpPopUpBox();
+		
+	// user code end
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (3/24/00 10:46:07 AM)
+ */
+private void initValidDates() 
+{
+	// Init our Display Name Combo Box
+	String query = new String( getTableQuery() );
+	Object[][] dates = DataBaseInteraction.queryResults( query, null );
+	
+	try
+	{	
+		if( dates.length > 0 && dates[0][0] != "" && dates[0][1] != "" )
+		{
+			beginningDate = new Date( ((java.sql.Timestamp)dates[0][0]).getTime() );
+			endingDate = new Date( ((java.sql.Timestamp)dates[0][1]).getTime() );
+			
+			java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("MMMMMMMM dd, yyyy  HH:mm:ss");			
+			getJTextFieldBeginning().setText( df.format( beginningDate ) );
+			getJTextFieldEnding().setText( df.format( endingDate ) );
+		}
+		else
+		{
+			getJTextFieldBeginning().setText( "NO EVENTS FOUND" );
+			getJTextFieldEnding().setText( "NO EVENTS FOUND" );
+		}
+	}
+	catch ( Throwable t )
+	{
+		handleException( t );		
+	}
+		
+
+	getJTextFieldBeginning().setEnabled( false );
+	getJTextFieldEnding().setEnabled( false );
+}
+/**
+ * Comment
+ */
+public void jButtonOk_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+	this.setVisible( false );
+	
+	return;
+}
+/**
+ * main entrypoint - starts the part when it is run as an application
+ * @param args java.lang.String[]
+ */
+public static void main(java.lang.String[] args) {
+	try {
+		CalendarDialog aCalendarDialog;
+		aCalendarDialog = new CalendarDialog();
+		aCalendarDialog.setModal(true);
+		aCalendarDialog.addWindowListener(new java.awt.event.WindowAdapter() {
+			public void windowClosing(java.awt.event.WindowEvent e) {
+				System.exit(0);
+			};
+		});
+		aCalendarDialog.setVisible(true);
+	} catch (Throwable exception) {
+		System.err.println("Exception occurred in main() of javax.swing.JDialog");
+		exception.printStackTrace(System.out);
+	}
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (3/24/00 1:08:02 PM)
+ */
+private void setUpPopUpBox() 
+{
+	JCDateValidator dv = new JCDateValidator();
+	dv.setAllowNull(false);
+	dv.setDefaultDetail(JCDateValidator.LONG);
+	dv.setCasePolicy(JCDateValidator.UPPERCASE);
+
+	// create the invalidinfo and set its properties
+	getJCPopupFieldDate().getInvalidInfo().setInvalidPolicy(com.klg.jclass.field.JCInvalidInfo.RESTORE_PREVIOUS);
+	
+	
+	if( beginningDate != null )
+	{					
+		dv.setRange( beginningDate, endingDate );
+		getJCPopupFieldDate().setValueModel( new DateValueModel( endingDate ) );
+	}
+	else
+	{
+		getJCPopupFieldDate().setEnabled( false );
+		dv.setRange( new Date(), new Date() );	
+		getJCPopupFieldDate().setValueModel( new DateValueModel( new Date() ) );
+	}
+		
+	getJCPopupFieldDate().setValidator( dv );
+	
+}
+/**
+ * 
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private static void getBuilderData() {
+/*V1.1
+**start of data**
+	D0CB838494G88G88G8DF954ACGGGGGGGGGGGG8CGGGE2F5E9ECE4E5F2A0E4E1F4E13DBB8BF494D516C142C7C589929411516820E699D49C6391F799CF4C60AEA8F3B6332B2B33031AF3069D58DD1CE5D6F616D1E66665C31384C2BAA4CAD09C234290D6268908C78CF1A4A4A00188B169FC94B429CED7FF126A2E6E6A6A2403E0765E776AD5D7D73A9BC11D9C2FD56F5EF75F3B6F3E7B6E27DEC32ADE4FD81FDFD0C5C87EFA227D3D17CFC8767B04BC38E1FD8E472508B996E278FB832002F4
+	369741B38DE81E1BF3ACD6F23C31985AF3205DB6AB4732955EAB49470D998760A541BC9120B91E7E715C6473FCE46773EC206DBBBE59844F4DG190043679A9167FF6813EA8D3FD443F348AFA0A45705FDFE7649F68DF7905AEDGD3GB2DC2C7F82F8165019A7549F547A1D1D16C156BC3A2B208C47B10C49215A4DF89B34E78D39A7FF399B67AAE85F247128501E87000BAFA45BC66B30FF5B207BAF7D324F56AF787D32DF957BBDB655598FCDC974BB85253E3EC9FBEB768A126C6E736018A75A0B69980454C2
+	FB95459506F01EB9703E9060F19D7FA84557F9F3AC47817A3CFCED9F6CEA50E46F79729E326EC9FFE1F90235C53CECCD995E685A5243AFEC58C677E1D2A76AFB995048C00E258A60A0C08FC08460D53A7F575A7F8F1E0D8E35C97679E4FFE3A0F0C4F2AA9F4BCED102777AFA20E838F631DFD61C0430BDAEEE5F93C71EE44078DE3EE4BE26134CF778FE4FEB3F03AC3B6FE44106B8BAD916D9D710B640F411B99055891B7BF44239978F445AE36C5C5D44B8772A09F2617AB8F3E7BD313BE019B64EEA435CB50338
+	5743F42F2D701E2F5987430F23F827814FEC330462312D826D29C1EE9BBD1B39AC2DC53308F5DFEBDCBD4C4CE9ACE810188CF649AC4BDFD49CBBC5B24BF21C6253A433AC393AAC99C0AB7265D818FD25F563D975C0BB95E0B6C0964063G2B810A7C5C461E346F7D1AB656A6A86A1130D7F20A8AE13CE91DAF43D30C280A50628F29023FDF6C92942F60104490517A5C5809BAF044705DCCED3F9F6678C8740B0A20FAE5BF0CAE78C4D5D4C22C4F1D1D9558C791A9556E7509B001AFC0783877F4D642D392C2EAE7
+	40A928E2348723BF5009FBB2A4F44108B0G3CB33D7C2887753583565FG502A6BE1FF970EF7D2D47C22D4DF5FAA4B0361009DD7C2E67BD14FAE6ABB7A60BD6267BAFE70D34465C1FB2DBE0E37EB0BE11CE6EFBF0AAFA8A37C0CDD8821BF5EA4F31B79D58F371966325B491EA7CE44359904DA19594AE159FCF6A651B1D1AE56AE8F75E8F3DC4AD93EB4DFD1CB67A87C8E465F2C6F552EB338D79ED8C7AA409C196BF8CED78D3359A3C2C864D6FADA8183931DD10DB3B91B55A2CD1F2CFD0A36974ADCD77FC25791
+	CF5F5F1E2E7E6BBB559553492CEE0CC3621068D71B45G04BEF889E934DB3B515634F36A12F51EBBA9BEG673A898ED2C8475F550DE7CFD0D5456B882BE207282ADE3FBBCA3F1F4E958ABB82D1174067DA580D7ED79E06F32D77FF389B4FC43F6C770BF4F3F4960D7EE3FAA6C5C9740150CDF2582FB27C129E5C2BC1F1C47389BF694184E7C8104268DFD8BEB0DF5808EBD03CBE58F2F4D164E0G4F6B0576EA030E1643FEE3DE3389E8B581FE76065F62E7EF4739DBC9F66F4E02F831E3666D4D85A981F6165283
+	513347E4FA68537832AF223EC14307182C4F3810B7B6B361365EF7964749027197836485382D9F7E8C695C1FE8C65EA4CB92D3252E63BF1F31621E08413088EE989D57C9DDEF874EECB1513AB49DB2FA43995421E470F9D9C15461284A733D3528D3405585199E83C12687362E76A04AC8F33281E1C80858C243E0AF7575A77892894B3FD6D09FCAF52F70BCEBF6A72E7BA0345BGBC8A5F1B1F1671BCABFDB00364FD7F1504B9E40A42E4192398E269F81EE74D7D9C67DC8E34B58A576983E70C3E3EB194127B3D
+	B44CE87AF01DB56E9D438D1EAD05274B2B045496B8DC912E3B60D914976310065662F2A60D57281F62D00E65B040D3A1447F7D66AA036C9140E5GAC82A824631507776359231BEBE30FB6D1F1490ACFF45622F6ED4230EA23675C56C849C771FDB75F0BB54DE85383C7422AAA7BCF8F76B61A06E8CDBC46215DDDCC7737D59E5664DBFA77AC52B0DAD990AF471DDC7EDAC10D4AF4FEDC0D6A7E7C8FAD052B3EF8F18373FD2BE8DE178E74CCF5ECBCDAE84265C21B65BB56AE545FF2551C873DC271EBD4F39EF4DB
+	A74F030A42E0C7E19E235F6FC5BF30945AAB8148D00E259A60A0C04F9037075F1EFD07DCA487EA019AC3718BD2C70C5363394867054CCFE96D7BBEDF4F7D9461B160EE551C5F2AC331EBCFB335995F42B1FCFFB43533CCFC4C8E4ABB921CC9E699F866281F7C244B68A7178E317CE6B5BC0B06216E21E774F71B0BB5F9368F7373F9611871FCAEAC5FDF30B14179348FB3795461280D6C516B20DF74210F4982DAAE40CA0022C80E25962099409361FB7441979FDCEC0F28915B65A6409D87DF56E40EB7404FF239
+	428EDC4FE498FB9EG43FDC6F15950FECA47955A91378A5AC5A39C372393F13550EE9861B9444BDD98270E6B6D9A5A46F34D5A191DBDF17472CDG670A3513073F75B90C798A5B03A33D09F30C165E78B946695E78B9C6E7EF85434398464A0253BF6FCD1E03083D71F21057285CCBDEAE27E307C2E2089AC533208A9AED057A9209130B1C0262C3DBF3A579B735C46BF3D4151B7669E76A795D55714FD41BG11041D158F3B0B357E1E919E637E1966B79950DEG102B5BC9C13979EC2F845ABAEDEF2D67467ACB
+	F6E6869C98C3F6G7DB0C08FC0GA06D9CBFABAF76DE541F9D0DA471E74F75A55E67B5FD71777905BE0C4FA1B92C740B663D4C972AF5DA74D43628228F554E7A148A482F8A0ADB9CE38B95141F5192713FA2A4329736272FF4603EBBC517901640946510F8BA20151E2877F338CF6FF6703D1BFF0E4763E0872ED791C35EF3B4B362FD2F24FD515F6D7912FF1B3AF798FD208B8AD9183AA3A07613473F24B14B4EFD6CE1E85B81D400F4002CAF79BC07BAF18C552B52B9361F47EFF9DFF809AE7F69AA4C61340C2A
+	89BFF96139710B7C7CB7F71BED296FFC54FE5473E3ED0945533DAE344D4967D9BCAD51718D94BF4700E7F176E75416311D8D349D9738DF5CD6CEFDAA36F51C036266C3BBDB477DC3B97729CBAFF0FBD59C096DED44915F5EC69D717D4A84C7F23FF20DA3391D34F6209E8D475B566D75BB65E1D0B9FE61D0C33666160E36539DC7FBCF1F6AEDEA0597968FB3060D5FBC8F163E973716C0D8FD016DC551D76C39F052DB5A5C3F6FC09E17A005508618BFB9EC67F656G7D552F9067379BF3C8647D3800909B6EB325
+	E74450F13D109E9A687F94C3C779CF467097F59A69A853079ABFDB6BE3BBF96CDF77D8A6116EFFBFE1EE3ED0DBE31E76EC6BFA0B6C386A458DEC1CFFBCE35419F5569B85798946299EE57CBBC623B9843327B3545F76GDE9A65B6F6EB8F373134D16EEB5FF5E1FD14856DDC0015GA405530ED0DA95348F2430BA472E531E6DC996D7F10C987F2D4917BB1A7C5BCB16C6E7F364094966A8B135B79876656B44EFE6DBF5745C797CA28484EFBF73E19FD15C13G11946E07C64AB1F7D16140B19FE49F44E5B2BF76
+	CCB977E313217FEC0005G4BG562570FCBBDF42B1370F039CFB9CBF5F5F773E8D4FAEE1C00BC4C71DDED5D6E8A882E41BA203A7D6C79816D6261ADE0E5AAF6FFB74439B38FDE67D6DEDE441445F66A74ACDFB4631FD08E84F1576378CF1F650076B4D845AA20015G640A9CCB95401EAB785A7E430BB2E2C485719BD5D56877502A11875AAE2FB89CC5E3D0E0E3DF0BE1C773C9F583BB936987C6B8813E6834E3G021EDDF06B7B29F4633790C9981143AA7869ABE8CC6A56638C34FB2EE0EB1AF2852BB1D751BE
+	8BFA2A636841E8B31564798F71BC1CE8EA13836140B12FA8B9A10192996DF7B62C03CF348A8ED1C2AC673194226ECF703AD39FEB592B3817ACC35AC7D88DBC64B27A17836319FC1E713CC68EEFB4524FEB748CF8321A65852B39E6C1FA9650970F67F67CC5B9BEF78D6E527CE811157B513C715C0F6E371A7D68FB4468871DD6339FFDAC5FC83F5EEA7623BF0861DFECB57B512BB5FE366F968971FAACE2262F514AA464757A3DAAC4FC48BDB0D169000EFEB7331F1BE424D727024F82688110GD2D239DDCE135E
+	E4F69947A60FBA5DA20FE7FCBE5517B886FF693B78F77ED49F5A05C3066D7761789CFF158F77DF15839449F0D3FDB427723ABDAA6B2A61E778F00FA451C551AC5F38371B5F834E0635BD1E4AF3AD771BF8E674FBC02F43E78B8F79EC02C33509F0FC6A6BCF05A529D5BB9E0465613F22E3ED1AGF98BC04384DE4BC67E447D453CBBE611561413F163D91EFDFF01FD0266AFA6C463D0A65432EC1C01C1BE4E769F5CC4E90962E216467F14E19CEEA30544AB6EB22EEDD0F25B867AB14B313970B0C241E1B81A1AFD
+	5F656239EB75C42E2367DD896A95FAFA995F3C0D1C2FEDA22F7777D770FAFF72C4DE434C71206E32217D94406A09BCBE16D8AF55C7EBB1C1CEECEFF3650B5B5BFDB27DC687F6E29F89E8B5408299FD226CF205C45D2EFFA4DBF5DCCB28CD8EF971A4B1599F9813B3DF8C985FA3174C47F2EA874D1D0BA7311CBADF478FD2FC15814FECFF0DEE7BB5C0CB1D44E36C78A06E6BCAE897CD4E31EC87B8GE08788CC66673FBDD0C7AED2835A65C0ABEC00E4C8135978CFABB8FEAA0C15813088E09940EA0062AB797833
+	83D8E3A60A696D32CC2B93ACD4842FDFD4283BD160D555F478C3D7A29DEE07B96A2E9C1BBFB13EFBB74663EB567A77A464FB2F4248A7C13F94C35F74B8FCECEF1E9944BD483C52DC9F7DA745AF3A52DC9F4D75707AA88FE84DD771F3624194CF13A5E8F8FF217B5B7EEEB3F66D15C9F358EF8A4C9E2684931F67694178B55C0D4178B55CAD41645FFE6E8CA63EFF3ABBB8767E6917CAE2591ED3AE6EEBFE23440FED6B143131ADBF94BF36ED8899E39B2BD316D01F1D89B612FD952FDD0E14725A65F19D37187A68
+	3550AE3E1A63261771FED5BA6E94755B87215D2A635E26F384201D2A6302EE4E1BF9B5374F650368A717C2FBA5G1912E3291942E93F263486E81F85B88FB0DB274D7718ED8B79AE470E0CF3475A6F12B1F318EB222F8B18632DA7519A0A63AAC91E0B6E3150BF68D664305F493F732C257ADB88B2AD86E0F5502725BC7FDC8938F5G5B2F01FC82606CB5BC7FFCF6E3EC9DB504E908D6C74DAD637C6721FF9A40FC00DC0055BA3FD8E121B627500F97AC3FBFDF41792C5766D8EA817AG54EBD93D4A780E384656
+	851F3AB85F14EB23F5419C0D0F49B4594D7BAC84FCAE40EAG6BD47045D379582F3F016708E58FC7C437576F07E329696FB7B51BF45AD13F93888CBFE1906F5ACE58C191B4DDB173BD3D559AC3E73C2C8E58A9196BG1437EDAA2F932C7EF8F427CE7FDFB9662EEDAA23E768748B41F874ACF832BD7B77A1225BC7FDA97655AF4F1AE4C9D6EC439E2FAA321CE9341457970B27727A622ED2F3FD01B153C6F8FD70EC29393E280C21D7ECB45797ABE26A0F260D667A6234464FE44AAD63B211B4AE536F4B4CB23D95
+	B3E75DE633CC2F46509D1B4DB29D0A2127EFB64BD42E51D9FC1CD3416F698E02CC01B41E2B2EF88D3FD1457BDD1FBB6C3505D52FD4DFEF472F23C734A3212DF1D5854FDFB353F82E9A91F10EBCE82F8530CE4B3130394739F8BED58B383EE93C7FC394BF935A738196CF63F9705DEE3DE61C4675374CED565F2FE3563F59E3565FE88C7D30472C3FDDB15F5E94CFA27DB1194ECAFA1EFF9D1773A33F1E43DF47753933F6BB091B7B6BA70D715A827CB71113757132029C17FD9D777329251717ABBFD1F6F9FCF3AB
+	AE4637763AF877258BAE4AE73EBF55E29C652B1A7E75E2D76DF4FECF3D0A5ADA43F4F3CE7FBF94FFFC3AB9277FCA64B6E8875A0269DC3F139266434975B463127918FC7B5DA84776F4335C07A83EB65DAC77A27D6C9CG5A4CF4AE77FD6E4B13DB1062712DCB576E3EE6A44A63DB7D7178F6E87D8FA664FBA710CC4E5604FC8F861371754561E3770C5915D87BFB7D12972BA07ACBC7426F1F0B376079D201F74A8C1E139191F199504E1A41F57B5F18BEEAF23CE8F8CFCD7A3D781B821B63FBFF05B98E3A23EBEA
+	B43CBF6A7A6E677E45F7BA875B5388755559301F397ABEBFAD715CFB190E6B7773FE64FA0EDB64677DB6693893810E2B53F139C10E33DF2F67E9DBB02E503B44E3B2FE6253F25977285DC520DF2A5EF72BB8765EF1937E0CC94BFB26CA31F96C519124311CF10D44F34685B05ED200D5G1BEE48316C390167D01EF3517EBF77737E2DC06F83C88148G483E016721C2007749835C9A002A19B91683G76193C4F0AA06F2382EEB2C0A640E20015B3793C7438706F59CE7C1E669707EB747C8D75D27B26135E265A
+	9C3264FCF3CF4DBE786F40EEAD4E3E6263313F78C69E7B0F7B1267CE67FC66585F92C31F67B3477E61987AB3BEF36CFF0398E3FF3E4CE5BA2C4B34D7CEAE13A01BE51A96C31FAE1BE58A45509F11134BB4A940E50A68B25D9FB04B74F64C18AB82497534ADE81629BBA66FBD99B44BF4D30CCCE58A17E93EAE53A1A539CCBE45AC53B5B174DB1464B27DD4C9A49373B72F7BAEAFCEDA644B631B12B45EA5665B22DCAA9F7B37CA95ED1B40D14CFB0E2CD74946A60FAC07449A3C9FD2C94169C1159461FBC8A11BE3
+	AB287C5B370E37CEFDA7DCC00A0F910BCB10829E21052C27BF1DEBA59B9D74BB8AFEBD14D4E225BFDD5C8B3CFBA96F21D6D2509FD2492BD1FCBF629935A3A0740B502544A9A803F404A0790A941DA1A5AE456D209300E8E70E1D01E9E98B4916D6D22AFA68D7CBF0F8AA599A9D3A8D3FDDEA04C3917CF788648F709720FFAAA9457555348BFEB78CDB229739AA3130029616DE9663FC9E39755DDFAEFD26ABD4C8ACADE41B8BB09D22C22FFAC43CED637FEE6198A98948B0F38760DBC8D108BE560754918974D365
+	EA475F7406D4515948BF1601C2DEE2D2E34D34773890722878B18BD4D16447FFE1C136B03284326EE5B7CAECBD790DFD38AA3A2779A0EFA51597C7316923D47EDD794EB7CEACDFD0C88A0E11D2C9961C4704FED5D6DAC8096AD1441087BCE9A47061E1BAD071B09EC33CFAAD0261DE55170F0B35E199228BBD98795E143215E54720920AA8E4AF6D090A3669BD1CCD9EC10129C425C5451F6D484A8E1DB66E0F6A1FFE7251563385A4DFDBA46E656688EC8B18144FAB0D408B7B61CC88A9DB20B9AC22E501D865F4
+	B2D4066D982CC77D5767165C767306552BE030E31AA102C856E82FD3E11FC3D4A64E1B715A46743C2BD162GAE170FDC22AA02BF04BF360541EBCCEB66A4DDF45B74A5F5B37E66054F2868D1D6153C9E35BC37A87B76B63ADC10C86A83400E41702F6943E39F1B294F16483417CEBC718787D8D8B3A9745555517F6F237F5F0F7F5FC7B17BA8E65FFE583655A4691F199E61EB26E6C99B5B5006A27876F2045D096D9EB57E46E36D046A043F0B19F7B34B2533EF0E5E09317B08D67ADB2BF5002F3EC53FFFE87FB3
+	C9FCE75E6193A4C9952441C63F936F4F0F0C28E2747B71A79DB8FE087751080C56C3FF6FB5E06079FFD0CB8788ED13A2499795GG68B9GGD0CB818294G94G88G88G8DF954ACED13A2499795GG68B9GG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGGD195GGGG
+**end of data**/
+}
+}

@@ -1,0 +1,165 @@
+package com.cannontech.loadcontrol.datamodels;
+
+/**
+ * Insert the type's description here.
+ * Creation date: (7/25/2001 11:52:00 AM)
+ * @author: 
+ */
+import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
+
+public class ControlAreaRowData 
+{
+	private LMControlAreaTrigger trigger = null;
+	private com.cannontech.database.data.lite.LitePoint litePoint = null;
+	private String currentValue = null;
+	private String triggerValue = null;
+/**
+ * ControlAreaRowData constructor comment.
+ */
+public ControlAreaRowData() {
+	super();
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (7/25/2001 12:13:55 PM)
+ * @return java.lang.String
+ */
+public java.lang.String getCurrentValue() 
+{
+	if( currentValue == null )
+	{
+		//Returns the current value of the point
+		if( getLitePoint().getPointType() == com.cannontech.database.data.point.PointTypes.STATUS_POINT )
+		{
+			currentValue = com.cannontech.database.cache.functions.StateFuncs.getLiteState(
+					 			getLitePoint().getStateGroupID(), getTrigger().getPointValue().intValue() ).getStateText();
+		}
+		else
+		{
+			currentValue = String.valueOf(getTrigger().getPointValue().doubleValue());
+		}
+
+	}
+	
+	return currentValue;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (7/26/2001 1:55:47 PM)
+ * @return com.cannontech.database.data.lite.LitePoint
+ */
+public com.cannontech.database.data.lite.LitePoint getLitePoint() {
+	return litePoint;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (7/25/2001 12:08:09 PM)
+ * @return com.cannontech.loadcontrol.data.LMControlAreaTrigger
+ */
+public com.cannontech.loadcontrol.data.LMControlAreaTrigger getTrigger() {
+	return trigger;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (7/25/2001 12:13:55 PM)
+ * @return java.lang.String
+ */
+public java.lang.String getTriggerValue() 
+{
+	if( triggerValue == null )
+	{
+		//Returns the value of the trigger
+		if( getTrigger().getTriggerType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMControlAreaTrigger.TYPE_STATUS) )
+		{
+			triggerValue = com.cannontech.database.cache.functions.StateFuncs.getLiteState( getLitePoint().getStateGroupID(), 
+					getTrigger().getNormalState().intValue()).getStateText();
+		}
+		else if( getTrigger().getTriggerType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMControlAreaTrigger.TYPE_THRESHOLD) )
+		{
+			triggerValue = getTrigger().getThreshold().toString();
+		}
+		else
+			triggerValue = "  ---";
+
+	}
+
+	return triggerValue;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (7/25/2001 12:11:54 PM)
+ * @return boolean
+ */
+public boolean isFiring() 
+{
+	if( isValidTrigger() )
+	{
+		if( getTrigger().getTriggerType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMControlAreaTrigger.TYPE_STATUS) )
+		{
+			return getCurrentValue().equalsIgnoreCase(getTriggerValue());
+		}
+		else
+			return getTrigger().getPointValue().doubleValue() > getTrigger().getThreshold().doubleValue();
+	}
+	else
+		return false;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (7/26/2001 2:15:24 PM)
+ * @return boolean
+ */
+private boolean isValidTrigger() 
+{
+	//we only can have a true TRIGGER if we have a trigger object
+	//  and a litepoint object
+	return (getLitePoint() != null && getTrigger() != null);
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (7/26/2001 1:55:47 PM)
+ * @param newLitePoint com.cannontech.database.data.lite.LitePoint
+ */
+public void setLitePoint(com.cannontech.database.data.lite.LitePoint newLitePoint) 
+{
+	//Any time the litepoint changes, we must re-evaluate our other values
+	currentValue = null;
+	triggerValue = null;
+
+	litePoint = newLitePoint;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (7/25/2001 12:08:09 PM)
+ * @param newTrigger com.cannontech.loadcontrol.data.LMControlAreaTrigger
+ */
+public void setTrigger(com.cannontech.loadcontrol.data.LMControlAreaTrigger newTrigger) 
+{
+	//Any time the trigger changes, we must re-evaluate our other values
+	currentValue = null;
+	triggerValue = null;
+
+	
+	trigger = newTrigger;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (7/25/2001 11:53:54 AM)
+ * @return java.lang.String
+ */
+public String toString() 
+{
+	if( !isValidTrigger() )
+		return "(null)";
+	else if( getTrigger().getTriggerType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMControlAreaTrigger.TYPE_STATUS) )
+	{
+		return getLitePoint().getPointName().toUpperCase() + " : " + getCurrentValue() + " [Normal = " + getTriggerValue() + "]";
+	}
+	else if( getTrigger().getTriggerType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMControlAreaTrigger.TYPE_THRESHOLD) )
+	{
+		return getLitePoint().getPointName().toUpperCase() + " : " + getCurrentValue() + " [Threshold = " + getTriggerValue() + "]";
+	}
+	else
+		return getLitePoint().getPointName().toUpperCase() + " : " + getCurrentValue() + " [" + getTriggerValue() + "]";
+}
+}

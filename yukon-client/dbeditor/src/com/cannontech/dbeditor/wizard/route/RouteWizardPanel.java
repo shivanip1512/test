@@ -1,0 +1,179 @@
+package com.cannontech.dbeditor.wizard.route;
+
+/**
+ * This type was created in VisualAge.
+ */
+public class RouteWizardPanel extends com.cannontech.common.wizard.WizardPanel {
+	private RepeaterSelectPanel repeaterSelectPanel;
+	private RouteMacroCommunicationRoutesPanel routeMacroCommunicationRoutesPanel;
+	private RouteMacroNamePanel routeMacroNamePanel;
+	private RouteRepeaterQuestionPanel routeRepeaterQuestionPanel;
+	private RouteType2Panel routeType2Panel;
+	private RouteTypePanel routeTypePanel;
+/**
+ * RouteWizardPanel constructor comment.
+ */
+public RouteWizardPanel() {
+	super();
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (5/4/2001 11:11:28 AM)
+ * @return java.awt.Dimension
+ */
+public java.awt.Dimension getActualSize() 
+{
+	setPreferredSize( new java.awt.Dimension(410, 480) );
+
+	return getPreferredSize();
+}
+/**
+ * This method was created in VisualAge.
+ * @return java.lang.String
+ */
+protected String getHeaderText() {
+	return "Route Setup";
+}
+/**
+ * getNextInputPanel method comment.
+ */
+protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.cannontech.common.gui.util.DataInputPanel currentInputPanel) {
+
+	if( currentInputPanel == null )
+	{
+		return getRouteTypePanel();
+	}
+	else
+	if( currentInputPanel == getRouteTypePanel() )
+	{
+		if( ((RouteTypePanel) currentInputPanel).isRouteMacro() )
+		{
+			return getRouteMacroNamePanel();
+		}
+		else
+		{
+			getRouteType2Panel().setValue(null);
+			return getRouteType2Panel();
+		}
+	}
+	else
+	if( currentInputPanel == getRouteType2Panel() )
+	{
+		return getRouteRepeaterQuestionPanel();
+	}
+	else
+	if( currentInputPanel == getRouteRepeaterQuestionPanel() )
+	{
+		getRepeaterSelectPanel().setValue(null);
+		return getRepeaterSelectPanel();
+	}
+	else
+	if( currentInputPanel == getRouteMacroNamePanel() )
+	{
+		return getRouteMacroCommunicationRoutesPanel();
+	}
+	else
+		throw new Error(getClass() + "::getNextInputPanel - Unable to determine next DataInputPanel");
+		
+}
+/**
+ * This method was created in VisualAge.
+ * @return com.cannontech.dbeditor.wizard.route.RepeaterSelectPanel
+ */
+protected RepeaterSelectPanel getRepeaterSelectPanel() {
+	
+	if( repeaterSelectPanel == null )
+		repeaterSelectPanel = new RepeaterSelectPanel();
+		
+	return repeaterSelectPanel;
+}
+/**
+ * This method was created in VisualAge.
+ * @return com.cannontech.dbeditor.wizard.route.RouteMacroCommunicationRoutesPanel
+ */
+protected RouteMacroCommunicationRoutesPanel getRouteMacroCommunicationRoutesPanel() {
+	
+	if( routeMacroCommunicationRoutesPanel == null )
+		routeMacroCommunicationRoutesPanel = new RouteMacroCommunicationRoutesPanel();
+		
+	return routeMacroCommunicationRoutesPanel;
+}
+/**
+ * This method was created in VisualAge.
+ * @return com.cannontech.dbeditor.wizard.route.RouteMacroNamePanel
+ */
+protected RouteMacroNamePanel getRouteMacroNamePanel() {
+
+	if( routeMacroNamePanel == null )
+		routeMacroNamePanel = new RouteMacroNamePanel();
+		
+	return routeMacroNamePanel;
+}
+/**
+ * This method was created in VisualAge.
+ * @return com.cannontech.dbeditor.wizard.route.RouteRepeaterQuestionPanel
+ */
+protected RouteRepeaterQuestionPanel getRouteRepeaterQuestionPanel() {
+	
+	if( routeRepeaterQuestionPanel == null )
+		routeRepeaterQuestionPanel = new RouteRepeaterQuestionPanel();
+		
+	return routeRepeaterQuestionPanel;
+}
+/**
+ * This method was created in VisualAge.
+ * @return com.cannontech.dbeditor.wizard.route.RouteType2Panel
+ */
+protected RouteType2Panel getRouteType2Panel() {
+	
+	if( routeType2Panel == null )
+		routeType2Panel = new RouteType2Panel();
+		
+	return routeType2Panel;
+}
+/**
+ * This method was created in VisualAge.
+ * @return com.cannontech.dbeditor.wizard.route.RouteTypePanel
+ */
+protected RouteTypePanel getRouteTypePanel() {
+	
+	if( routeTypePanel == null )
+		routeTypePanel = new RouteTypePanel();
+		
+	return routeTypePanel;
+}
+/**
+ * isLastInputPanel method comment.
+ */
+protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel) {
+
+	return (	( currentPanel == getRouteType2Panel() && !(((RouteType2Panel) currentPanel).allowRebroadcast()) ) ||
+						( currentPanel == getRouteRepeaterQuestionPanel() && !((RouteRepeaterQuestionPanel) currentPanel).isYesSelected() ) ||
+						( currentPanel == getRepeaterSelectPanel() ) ||
+						( currentPanel == getRouteMacroCommunicationRoutesPanel() ) ||
+						( currentPanel == getRouteType2Panel() && getRouteType2Panel().noRepeaters() )		);
+}
+/**
+ * This method was created in VisualAge.
+ * @param args java.lang.String[]
+ */
+public static void main(String args[]) {
+	try
+{
+	javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
+	RouteWizardPanel p = new RouteWizardPanel();
+
+	javax.swing.JFrame f= new javax.swing.JFrame();
+
+	f.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("dbEditorIcon.gif"));
+	f.getContentPane().add( p );
+	f.pack();
+
+	f.show();
+}
+catch( Throwable t)
+{
+	t.printStackTrace();
+}
+}
+}

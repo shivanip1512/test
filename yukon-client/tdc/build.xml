@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<project name="tabular display console(tdc)" default="all">
+
+   <property file="../build/build.properties"/>
+
+   <target name="all" depends="clean,build">
+    </target>
+   
+   <target name="build">
+       <mkdir dir="build"/>
+       
+       <javac srcdir="src" destdir="build">                               
+          <classpath>                        
+             <fileset dir="${yukon.lib}">
+                <include name="**/*.jar"/>
+             </fileset>
+	      </classpath> 
+     	</javac>
+
+       <jar jarfile="${yukon.lib}/tdc.jar"
+            basedir="build/" 
+            manifest="resource/manifest.mf" />       
+   </target>
+
+   <target name="clean">
+       <delete dir="build"/>        
+
+    </target>
+   
+</project>

@@ -1,0 +1,2631 @@
+package com.cannontech.dbeditor.wizard.device.lmgroup;
+
+/**
+ * This type was created in VisualAge.
+ */
+import com.cannontech.common.gui.util.LineLabel;
+
+public class LMGroupExpressComEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener 
+{
+	public static final String STRING_NEW = "(new)";
+	
+	private javax.swing.JLabel ivjJLabelFeedAddress = null;
+	private javax.swing.JLabel ivjJLabelGEOAddress = null;
+	private javax.swing.JLabel ivjJLabelPROGAddress = null;
+	private javax.swing.JLabel ivjJLabelSPID = null;
+	private javax.swing.JLabel ivjJLabelSplinter = null;
+	private javax.swing.JLabel ivjJLabelSubAddress = null;
+	private javax.swing.JLabel ivjJLabelUserAddress = null;
+	private javax.swing.JLabel ivjJLabelZipAddress = null;
+	private javax.swing.JPanel ivjJPanelAddress = null;
+	private com.cannontech.common.gui.util.TitleBorder ivjJPanelAddressTitleBorder = null;
+	private javax.swing.JTextField ivjJTextFieldFeedAddress = null;
+	private javax.swing.JTextField ivjJTextFieldGeoAddress = null;
+	private javax.swing.JTextField ivjJTextFieldProgAddress = null;
+	private javax.swing.JTextField ivjJTextFieldSPIDAddress = null;
+	private javax.swing.JTextField ivjJTextFieldSplinter = null;
+	private javax.swing.JTextField ivjJTextFieldSubAddress = null;
+	private javax.swing.JTextField ivjJTextFieldUserAddress = null;
+	private javax.swing.JTextField ivjJTextFieldZipAddress = null;
+	private javax.swing.JComboBox ivjJComboBoxFEED = null;
+	private javax.swing.JComboBox ivjJComboBoxGEO = null;
+	private javax.swing.JComboBox ivjJComboBoxPROG = null;
+	private javax.swing.JComboBox ivjJComboBoxSPID = null;
+	private javax.swing.JComboBox ivjJComboBoxSUB = null;
+	private javax.swing.JCheckBox ivjJCheckBoxFEED = null;
+	private javax.swing.JCheckBox ivjJCheckBoxGEO = null;
+	private javax.swing.JCheckBox ivjJCheckBoxPROG = null;
+	private javax.swing.JCheckBox ivjJCheckBoxRelay1 = null;
+	private javax.swing.JCheckBox ivjJCheckBoxRelay2 = null;
+	private javax.swing.JCheckBox ivjJCheckBoxRelay3 = null;
+	private javax.swing.JCheckBox ivjJCheckBoxRelay4 = null;
+	private javax.swing.JCheckBox ivjJCheckBoxRelay5 = null;
+	private javax.swing.JCheckBox ivjJCheckBoxRelay6 = null;
+	private javax.swing.JCheckBox ivjJCheckBoxRelay7 = null;
+	private javax.swing.JCheckBox ivjJCheckBoxRelay8 = null;
+	private javax.swing.JCheckBox ivjJCheckBoxSPID = null;
+	private javax.swing.JCheckBox ivjJCheckBoxSPLINTER = null;
+	private javax.swing.JCheckBox ivjJCheckBoxSUB = null;
+	private javax.swing.JCheckBox ivjJCheckBoxUSER = null;
+	private javax.swing.JCheckBox ivjJCheckBoxZIP = null;
+	private javax.swing.JPanel ivjJPanelAddressUsage = null;
+	private com.cannontech.common.gui.util.TitleBorder ivjJPanelAddressUsageTitleBorder = null;
+	private javax.swing.JPanel ivjJPanelRelayUsage = null;
+	private com.cannontech.common.gui.util.TitleBorder ivjJPanelRelayUsageTitleBorder = null;
+	private javax.swing.JCheckBox ivjJCheckBoxSerial = null;
+	private javax.swing.JTextField ivjJTextFieldSerialAddress = null;
+/**
+ * Constructor
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+public LMGroupExpressComEditorPanel() {
+	super();
+	initialize();
+}
+/**
+ * Method to handle events for the ActionListener interface.
+ */
+public void actionPerformed(java.awt.event.ActionEvent e) {
+	// user code begin {1}
+	// user code end
+	if (e.getSource() == getJComboBoxSPID()) 
+		connEtoC2(e);
+	if (e.getSource() == getJComboBoxGEO()) 
+		connEtoC3(e);
+	if (e.getSource() == getJComboBoxSUB()) 
+		connEtoC4(e);
+	if (e.getSource() == getJComboBoxFEED()) 
+		connEtoC5(e);
+	if (e.getSource() == getJComboBoxPROG()) 
+		connEtoC6(e);
+	if (e.getSource() == getJCheckBoxSerial()) 
+		connEtoC12(e);
+	if (e.getSource() == getJCheckBoxRelay5()) 
+		connEtoC13(e);
+	if (e.getSource() == getJCheckBoxRelay6()) 
+		connEtoC14(e);
+	if (e.getSource() == getJCheckBoxRelay7()) 
+		connEtoC15(e);
+	if (e.getSource() == getJCheckBoxRelay8()) 
+		connEtoC16(e);
+	if (e.getSource() == getJCheckBoxRelay4()) 
+		connEtoC17(e);
+	if (e.getSource() == getJCheckBoxRelay3()) 
+		connEtoC18(e);
+	if (e.getSource() == getJCheckBoxRelay2()) 
+		connEtoC19(e);
+	if (e.getSource() == getJCheckBoxRelay1()) 
+		connEtoC20(e);
+	if (e.getSource() == getJCheckBoxSPLINTER()) 
+		connEtoC21(e);
+	if (e.getSource() == getJCheckBoxPROG()) 
+		connEtoC22(e);
+	if (e.getSource() == getJCheckBoxUSER()) 
+		connEtoC23(e);
+	if (e.getSource() == getJCheckBoxZIP()) 
+		connEtoC24(e);
+	if (e.getSource() == getJCheckBoxFEED()) 
+		connEtoC25(e);
+	if (e.getSource() == getJCheckBoxSUB()) 
+		connEtoC26(e);
+	if (e.getSource() == getJCheckBoxGEO()) 
+		connEtoC27(e);
+	// user code begin {2}
+
+	// user code end
+}
+/**
+ * Method to handle events for the CaretListener interface.
+ * @param e javax.swing.event.CaretEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+public void caretUpdate(javax.swing.event.CaretEvent e) {
+	// user code begin {1}
+	// user code end
+	if (e.getSource() == getJTextFieldZipAddress()) 
+		connEtoC10(e);
+	if (e.getSource() == getJTextFieldSPIDAddress()) 
+		connEtoC1(e);
+	if (e.getSource() == getJTextFieldGeoAddress()) 
+		connEtoC7(e);
+	if (e.getSource() == getJTextFieldFeedAddress()) 
+		connEtoC8(e);
+	if (e.getSource() == getJTextFieldProgAddress()) 
+		connEtoC9(e);
+	if (e.getSource() == getJTextFieldSerialAddress()) 
+		connEtoC11(e);
+	// user code begin {2}
+	// user code end
+}
+/**
+ * connEtoC1:  (JTextFieldSPIDAddress.caret.caretUpdate(javax.swing.event.CaretEvent) --> LMGroupExpressComEditorPanel.fireInputUpdate()V)
+ * @param arg1 javax.swing.event.CaretEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC1(javax.swing.event.CaretEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC10:  (JTextFieldZipAddress.caret.caretUpdate(javax.swing.event.CaretEvent) --> LMGroupExpressComEditorPanel.fireInputUpdate()V)
+ * @param arg1 javax.swing.event.CaretEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC10(javax.swing.event.CaretEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC11:  (JTextFieldSerialAddress.caret.caretUpdate(javax.swing.event.CaretEvent) --> LMGroupExpressComEditorPanel.fireInputUpdate()V)
+ * @param arg1 javax.swing.event.CaretEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC11(javax.swing.event.CaretEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC12:  (JCheckBoxSerial.action.actionPerformed(java.awt.event.ActionEvent) --> LMGroupExpressComEditorPanel.jCheckBoxSerial_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC12(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.jCheckBoxSerial_ActionPerformed(arg1);
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC13:  (JCheckBoxRelay5.action.actionPerformed(java.awt.event.ActionEvent) --> LMGroupExpressComEditorPanel.fireInputUpdate()V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC13(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC14:  (JCheckBoxRelay6.action.actionPerformed(java.awt.event.ActionEvent) --> LMGroupExpressComEditorPanel.fireInputUpdate()V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC14(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC15:  (JCheckBoxRelay7.action.actionPerformed(java.awt.event.ActionEvent) --> LMGroupExpressComEditorPanel.fireInputUpdate()V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC15(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC16:  (JCheckBoxRelay8.action.actionPerformed(java.awt.event.ActionEvent) --> LMGroupExpressComEditorPanel.fireInputUpdate()V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC16(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC17:  (JCheckBoxRelay4.action.actionPerformed(java.awt.event.ActionEvent) --> LMGroupExpressComEditorPanel.fireInputUpdate()V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC17(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC18:  (JCheckBoxRelay3.action.actionPerformed(java.awt.event.ActionEvent) --> LMGroupExpressComEditorPanel.fireInputUpdate()V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC18(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC19:  (JCheckBoxRelay2.action.actionPerformed(java.awt.event.ActionEvent) --> LMGroupExpressComEditorPanel.fireInputUpdate()V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC19(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC2:  (JComboBoxSPID.action.actionPerformed(java.awt.event.ActionEvent) --> LMGroupExpressComEditorPanel.jComboBoxSPID_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC2(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.jComboBoxSPID_ActionPerformed(arg1);
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC20:  (JCheckBoxRelay1.action.actionPerformed(java.awt.event.ActionEvent) --> LMGroupExpressComEditorPanel.fireInputUpdate()V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC20(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC21:  (JCheckBoxSPLINTER.action.actionPerformed(java.awt.event.ActionEvent) --> LMGroupExpressComEditorPanel.fireInputUpdate()V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC21(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC22:  (JCheckBoxPROG.action.actionPerformed(java.awt.event.ActionEvent) --> LMGroupExpressComEditorPanel.fireInputUpdate()V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC22(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC23:  (JCheckBoxUSER.action.actionPerformed(java.awt.event.ActionEvent) --> LMGroupExpressComEditorPanel.fireInputUpdate()V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC23(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC24:  (JCheckBoxZIP.action.actionPerformed(java.awt.event.ActionEvent) --> LMGroupExpressComEditorPanel.fireInputUpdate()V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC24(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC25:  (JCheckBoxFEED.action.actionPerformed(java.awt.event.ActionEvent) --> LMGroupExpressComEditorPanel.fireInputUpdate()V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC25(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC26:  (JCheckBoxSUB.action.actionPerformed(java.awt.event.ActionEvent) --> LMGroupExpressComEditorPanel.fireInputUpdate()V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC26(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC27:  (JCheckBoxGEO.action.actionPerformed(java.awt.event.ActionEvent) --> LMGroupExpressComEditorPanel.fireInputUpdate()V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC27(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC3:  (JComboBoxGEO.action.actionPerformed(java.awt.event.ActionEvent) --> LMGroupExpressComEditorPanel.jComboBoxGEO_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC3(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.jComboBoxGEO_ActionPerformed(arg1);
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC4:  (JComboBoxSUB.action.actionPerformed(java.awt.event.ActionEvent) --> LMGroupExpressComEditorPanel.jComboBoxSUB_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC4(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.jComboBoxSUB_ActionPerformed(arg1);
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC5:  (JComboBoxFEED.action.actionPerformed(java.awt.event.ActionEvent) --> LMGroupExpressComEditorPanel.jComboBoxFEED_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC5(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.jComboBoxFEED_ActionPerformed(arg1);
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC6:  (JComboBoxPROG.action.actionPerformed(java.awt.event.ActionEvent) --> LMGroupExpressComEditorPanel.jComboBoxPROG_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC6(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.jComboBoxPROG_ActionPerformed(arg1);
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC7:  (JTextFieldGeoAddress.caret.caretUpdate(javax.swing.event.CaretEvent) --> LMGroupExpressComEditorPanel.fireInputUpdate()V)
+ * @param arg1 javax.swing.event.CaretEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC7(javax.swing.event.CaretEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC8:  (JTextFieldFeedAddress.caret.caretUpdate(javax.swing.event.CaretEvent) --> LMGroupExpressComEditorPanel.fireInputUpdate()V)
+ * @param arg1 javax.swing.event.CaretEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC8(javax.swing.event.CaretEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC9:  (JTextFieldProgAddress.caret.caretUpdate(javax.swing.event.CaretEvent) --> LMGroupExpressComEditorPanel.fireInputUpdate()V)
+ * @param arg1 javax.swing.event.CaretEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC9(javax.swing.event.CaretEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (6/5/2002 10:46:06 AM)
+ * @return com.cannontech.database.db.device.lm.LMGroupExpressCommAddress
+ * @param combo javax.swing.JComboBox
+ * @param textField javax.swing.JTextField
+ * @param type java.lang.String
+ */
+private com.cannontech.database.db.device.lm.LMGroupExpressCommAddress createAddress(javax.swing.JComboBox combo, javax.swing.JTextField textField, String type) 
+{
+		
+	if( textField.getText() == null || textField.getText().length() <= 0 )
+	{
+		return com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.NONE_ADDRESS;
+	}
+	else
+	{
+		Object item = combo.getSelectedItem();
+		
+		if( item != null )
+		{
+			com.cannontech.database.db.device.lm.LMGroupExpressCommAddress address = null;
+			
+			if( item instanceof com.cannontech.database.db.device.lm.LMGroupExpressCommAddress )
+			{
+				address = (com.cannontech.database.db.device.lm.LMGroupExpressCommAddress)item;
+			}
+			else   //a new address is created				
+				address = new com.cannontech.database.db.device.lm.LMGroupExpressCommAddress(type);
+			
+			Integer addValue = new Integer(textField.getText());
+			
+			if( address.equals(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.NONE_ADDRESS)
+				 || addValue.equals(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.NONE_ADDRESS.getAddress()) )				
+			{
+				
+
+				if( !addValue.equals(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.NONE_ADDRESS.getAddress()) )
+				{
+					//we have a none address selected but have a non zero id typed
+					com.cannontech.database.db.device.lm.LMGroupExpressCommAddress 
+							addressTemp = new com.cannontech.database.db.device.lm.LMGroupExpressCommAddress(type);
+							
+					addressTemp.setAddress( new Integer(textField.getText()) );
+					addressTemp.setAddressName( textField.getText() ); //just use the address as the name
+					
+					return addressTemp;
+				}
+				else
+					return com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.NONE_ADDRESS;				
+				
+			}
+			else
+			{
+				address.setAddress( new Integer(textField.getText()) );
+
+				address.setAddressName( 
+						(item.toString().length() <= 0 || item.toString().equalsIgnoreCase(STRING_NEW) 
+							? address.getAddress().toString() 
+							: item.toString()) );
+				
+				return address;
+			}
+			
+		}
+		else
+		{		
+			com.cannontech.database.db.device.lm.LMGroupExpressCommAddress addressTemp = new com.cannontech.database.db.device.lm.LMGroupExpressCommAddress(type);
+			addressTemp.setAddress( new Integer(textField.getText()) );
+			addressTemp.setAddressName( textField.getText() ); //just use the address as the name
+
+			return addressTemp;
+		}
+
+	}
+
+}
+/**
+ * 
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private static void getBuilderData() {
+/*V1.1
+**start of data**
+	D0CB838494G88G88G62D54AACGGGGGGGGGGGG8CGGGE2F5E9ECE4E5F2A0E4E1F4E16DDD8FD8D5D5363FCDD8CEB98D9595D3CE23E645B426D654D0D959C4732C2C2C2124624DD021B92FBF4F1918F9CEB15381D190C1D0B0D15170CF090A880A0808068A8806C90ACAC64515FB052B976E6D5E0B623FFCEB6FFD56BAFF6E39404551D75F77783E45B97B3776DA6B377759E71FFD4E597BDCA96B23C153629332A4A9FE1AA47FED0C1724427112749F4B0EECC52CA64F14A2297E16004C165E34
+	A7423691F4037EE5CA4910B2B7A6C35A8E6960B7CCA973E0BFD3FAEAED6EA33063A34E1407A5E95143AD8FF59FE7CFAA46C96269701529301D856284AC88A4BA0F450FDA19AD63E1101EA56FB309CF102401ABD91E38BD59AAFC79CA114F895BG1020D5AC4F7F2C4C1175B10045015483EED9A5721E016D8C4E2EDFD9291C2F696AC1D26C139FA62431D8AA7FA8D1322D34DAECF3251BF9C5CC152EEC2800EDF97D31562DAD0E760296F3C7072343E3EDE9AB30DAEC9E072B40E2BDEEEB3196585B4B4A6AF66FF4
+	B9BA1D872CAE3799B2D7718C75668E2B5D391A71DEDA1F4CFDCAD2A92463B8F6E3BD2B2BD0589F8B92339A39BF17D6AEF38BBAB6C80A3EE506CF6E95790233A5DF611E3A7A45142CB54CFF6E2AD459EEA86823C0C439E6FD3153C739CE58CE19DD9625DC2D2CCCD4382AAE274B6AF66F5094CF9265EBDB0565EBDC0365DBD2466287C2BA84E4B46113B89E896949A04985D86EADAB305C0D27C7C8D38EEFCAC877D16E5C82D15E1A82255C26C5AF264C67ED7015B4560E82C09782B28AA49AC4DAEBCA4985D9485B
+	7E75292BE03B6D3087CA536E685866F4EE37DBDC3B9D962B9D764B4AC0A3E3FB2DAD8E17C512C47BDED11FEF408725F42D36EDB391E5BBA8E1FB9C3677B64963D91BB04D20EC21AFE4A75449BE1A57AAE54BADE475F659DED6EFA640195DE7CC4771D00EDB8A95DC9C7FC13CFD31F4E211A925F9BD56F363AC64D217F82314D134B9A14900CB706F8A93C6ED909CA2B6A8DCC49D5F1B4E6AD8AAB12564009403540158C18614E09DC7272E6F290EEB215D39BA4C76FD1D071DE617E7FB274DEE313A643A7EE4D5F7
+	F5EDA4422E58EFBBD1AFA16B5547A86A1EB243FA098A79A8A124C45447689225DEC46CF61F3123CB3C5B46ACBA065771F3A236C49C4329047F0A63099B95DC9C5B959C67E950F501087CCD658C0F1273EFA4BFA60EB714AA3870738E774352E3C1573F4CA41FC37BE633FE36329C5A8DC897C8A048C81031A05165F80CD7272D6D65F9D42FBA3E42B6A66DC358DA3BBCAEF3ED075BE36EE8319EB03BEC6643F62BDB12733C1D466A7530466E2F7C7CEE0198BB2D9DD61759E3F3F400F7F33B959A13DB64F9BFEDB6
+	4B6332F2ED032D5D8A815A1D927A1DBAAB9336F6335B335FE9B1FB2CCA8E211FB90B350963E65621038358AF5C426AEBAB6F47A5584F5902F5E51A43B08F2487EC41FA39EC569CF66EC163365A4B4AAAEDAD0C0659F5925B68003DC1309D84797336C23D0214FF8AFD95C8F985ECC1AA36C11F359DFC02546CB025CC8199DA89573BAA402B418624F427A9A59C242E46149289E22905BE95E468AED3CA7EE72614D01072BA4883D2375B1492815274B9DCEBC01CFB40A708295E14127885448149580BFD44BB0DF8
+	AED4265DAA653F304970DC6057283D22DD8F5B2BBF979E60E50CGBC96A4EB9F7493A08DA09E10A010D0108810D8102C865003B400F8C002C0C2C1A2C0E2C13276039E248144839284928A9281928B12F5G74A08DA09E10A010D0108810D8102C032087E9B808E3155B6A6B933A6F97D8BD61BE2BA3D61F18E6474E1FBEC6AD6CD833634476D91D33E34E0EB3BB0E6AFC6CF875640B35935CE76D0435255EF0E0473E47BCBBC4FB41F41E4EB7EB1F38EF29D576D99B6D49B7EB43FA0C35E756DE55D83E2A4E43D5
+	BA561EC79A78C0F16A4A97292ADBF61E3176CEFEF70AF30B1DB76C5C6B6BF1E56712E8DBDB3E6829EDFD2A5AE76331752A7454BE46E7424E5FB572BE3B76333163DC10953AFC1BFB61EB36EA1F5DB3A47512430EDE64E1FD6796D5FA1ACE1F295ADF2D5ADF548B5F9F99E04BC0B66830A2557EC6557EA6C95C5F78723FCD17DE295A1F89D22BCAFFAC09EB8E3BCE261F47F12D126BEC3674CEA63BE6FB209F8B8499F9902FB90F4E4A157835F83B59ED452B6F9E97DCB82D96658AA472BE1C4E38D80FDBBBBC15D6
+	27354382BBEE795A77F8BAEBC372F57908C342EB66D39CE763349DF061F4937EDC7AEC01038F75D59E75AFF13D5963F1598EF7FA2C7B2C9E0F2D23D531FF15F3F1EB0600EE392C1333D8D947C09923C1A6D3D90FE63076015757BA0763D82733010D9C646BF4G3F9FC9EC046BF4A31E13B71531FB558ACA5F4A530AFECDD9E3B7754F6C7AFA6C180898555D46B81F73DE09F1385CAE7B1AA6E3B364F6496AACCDEE076C1830BE01758D736436456A161DDF6C7CE16DFF195CFEB74BED1C1D07EB64364C4E9D56E7
+	ED2038177138EDD0CF01A0E1A051A049DF1AD28AC19AC1CCA0A1A063C02600649E02318D0893A498E4B448A4100C2FE0EC83528C529FE4A4C8A408548463A510FA102EA6BCEE31E5A363157A5317D9DD5E4CDE16F7C58F6575278F7DFF692E2D36EC6E6E58290FDBDAAF0F5B5CEE0E1B3A0FD777597FAF7E0968033F1E6D7B9AE219EDFC8DB9BA5B789A621C5D7DB522EB3651B5C2684E4DE66D46F122C3F54D89184D6E3FDA9C9D9DD6FE61A393C9BC83FB2701154356E1739C34D9DA2D1EFD36D3D6384EB431EB
+	47FEFE0FB78876C31B70FE6844B23C9FDAFEEA30B47A5BAC4367B741372ECFC87DDA3E8F7ADA399F921C7A4DE157B22B5D5A8E9535435159619178157C7ED1465DD3B9F675C7E718ED5EBEC1FF1B45429F3D35D9DB0EEDF7F4655BBC56768276EF1F87EEDEF73419BBDA2D163C23666366827389CF81BFA68535202FE2FBABF3572C591A6B7B91E57E911B4BDA5B616C14EF0673D69ED8D9A4F854FCFA0A7360C76B6233D8A77A05CCE9C979D94E2352F65C667EBF29107592F219F15A43396C355A4DA70BAEA205
+	E2917F64F4D57CF597B17E86917F5AD2D57C7597B1FE0908FFF9F327923F78E21E932554862ABF391BF358056177D9DDB633DDEE1679E6FE569608CD3D55F54461EA77A6330D2BFBC76728E120EF3769A254798E3199CA309179171C9067532E8668232BEDD63BC5DB0096984DFB8A78FF397C4CF1D7017B84F44B326F9DCC5B674AD46A32B1E93836AEEBBBACF01ADBBA4D76732CC843B796CAD5AAF17C2D47C2641E12B1C4666EE8BF6CE007273E36728231D6C57017EF9172FDBFFE10166F4E2ABD9716AE8470
+	176DBA4175C62B0E6B3E7D5BAFF0556E5F6EAF5775026B87B53AF6D0DDD5F5015B810B60AF5BE2EC87354BF4FC6B776E59F9E17932887E725D00FCD76CBC236B2F8E591C7F064E4A1833C1F735C970F86814D73F89276345A4D2C27D6604537ABA59E9F5DCCCAA9B850FADC97ABA2936DAAD971308F2AD79435A6FF5DC6ADD0E560B4925E893F2097418AE54B53677EC8A85177FDCFB3B51F86542DEDFC58C3F2FD5C5F27D8DBFF1DA4B198F78B6DC904EC6D537CE6631F219910F120B46E33D4C63D806910F0D97
+	0DC7B10E57669971A83DE8BCB648BCDEEDB762D1FC51F81448BC7EA49971D8FF51F8EC14F99CC9B662316E2271A815F944269A71A83AD8BC56ED12F934341C5575F975F5351FB7D46D3DE8CC8A693A744F6FCFEA39DC307116910FA262D1DF216331FF5FC52C0FF54463236F3A34BC8E5556DFB49A72187D25DCDDDDDC30B13B9109E22A0BBFE5686A62C25D679851101F6934E769B8DC287BC2A38EA562DD5F328F5973510A2FCDA98DA0762F71DDDFD2A653633BBE7905668E075DAE1E0D02AE66EB765CB6FDDF
+	166AD9EC4057E27E69B8588AFD2021BE7F9B544FEEB052D7107E9AC3FD8369B3779B695BC89FE428BFC37A39870C7401243F5ED0BF1474738E9A6943C89FEC289FCB7A790DC67AE8525FE8280FA57D42AF0D74495F22FE2021BE07740B8E99698BC9FF33213E12742B3EB2524F2276F120877DCFFA508F6FC17F32213E1178FD55E4243713BE4AD02F78CF7E3AFBFDF18F7A3F56F72FDF7CC5777ADDBD680F77209F52037E199E746F75207FE4EF777A3DBD683F6FC1FFC78F7A97FD6AC5BF961B1981DB37753BCE
+	EBC70B15CDD6784CFA9267ABE64E51698E186D1D4ABC4829D96CFD28DDB54FC160FF4FB2FE2794174566B69CA37F525C69921B4FA8FC0AF7E0A34D4C2753E5EBB73BCE32099B72BC7C1BD62967611B20FD32B97BE1309D8BA22E9763F63079215D7574C31B192F674AE93EBE58460164B48BFFCD4D22EEC43E6B36E03E4910CEB6AB79724C6AFC35DBB11F93707E2AFCA11AFC7F24FC1381CFBE2C72F7D81D6F2ECF499F607DD579C2B4792C95648F7064967053A272D9DA54797236E13EG40877A4C97C579C681
+	9E61B3DF60F64C978BF82A45D73E4A9D18AF9F72D47A4CB70572D9A04F991F7906D5E23E0110A794A442A272E5D955791CD5182F9970AE2B12CF6BEFF9B5668B06BCA3FD660B24FC63A04FA41F79866C44FC49C7CCA939C7FC652B2841FC95102751E73ED84A5785F982FD668B2945FCA3A14F981F791AF6E13EC910C7EA7515AF63B34C178BF9CAFD668B27FC0D104769B3DFD79D668B04BCA1BE73656F46FCE3A0CF344FFC5114CFEAB325E437794A9774B966AB05BC75BE73556C21738D7274B7489752467259
+	E93D4CDA42AE65588C68480EA5621C7D5D996AF5BE96F73E61FBF9A6EF35496BFCEC7A358C0D73185FDC408BEDB866BCB5D7BD3FEC1B5B6DE831712964F23F3B72C375BBFB0195FC4896C841G576D296D30D83B306FAE7E10F1E5F34DE5D86EFFFF331A4DFF544F1D97DDA8CE5F5BF1028F2C9B9CBB9C96EB8DF47FBBE8CA43811B75842BC73E2626FA9F56D7258D67AC1C2DD62FA39A153EA4E1260F3AB9A35749C0D55DE4AFFAB1C5787E8F729D85FA0155B4A016F59431A7882BA3EC57FE448288FB0A30D104
+	559DC0AC163027894BBF0658678791339076ACE183892BEFC4AC02306788CB35A33677CB2AB7427EC05899429A8EA196CAD8B4E1EF91B63B8931656D08DDC3D8D3BB2E41CA7A162D93B1DA03555AE9AB687458582A8133474CEF15D46B48262DCE165BCFD0BB2E27FAF8AD9B830C05F48C43C0445A0E77781A8F16B72B4314D257C1634C231AF18A6043C046F560355D3C055D277BFF73076DFA5F92566E4E67FD25E83FC3B2ABE40EE3075FA8151FCBB0DC8F56BFBDB5A126C3345BD40752FEE37F55FFEA7E3E71
+	F2DDBC3C856B22917284BA30AE425A0C6AE20C830FD329E5333AAC7E3F4C1457593836E27CA8701D6544786106716B1C987F571D1A787E3F201463FF72A946EF865F41947F18E17CF194FF56F71AE35907F70EA27E4B94BF86FC67FC07711B8C63B7FC07716F4D56446F43BBC4917F2A8A0C5F863E87D17CF9C96A78115F0978128B4F053FD5306B0F1FEFEA6473A0FC659CF1BD50BD704035D7DFEC23739362553910539FE799F18AF061F9BDEDBB5A8583B60E6CD61EB632CBF6235D7DE41783D8039B6DA6ACB7
+	329BC0F66DBB50EE90E011E4D71EE6E41761C13BA515E8379C30A68F5ADD3B5548AE086CDEA03B904022496E63E3EA3B6CCEE1D75109472A3C6A7C7A2DFB3F584A5B5A793C3D42E37B0BAAACC383709B5009E5F8402B8C61A013BA316C3B2B51AE8E306263E8B7600C111D7DB85A456FC4BB93E0E1E4B7224148EEB2595DCBF609A7CCA965A7504E15E3E467B901F6369A346B8F58E832EBCAB1321BC2F60BEA51AE358B6ED33A50EE3F43486ECC975ABDC7F601000DA13BED69C6F652C9346B370B4EB1406ACE22
+	DD114748AE006CB6FDC66798E063486E05C5FA3B64D326147CD3E877B659D5G56F58A6DE6D69B590DA43B41F5E8978ED89C5959730C6C0ACF235D7E5DE8D7831869B45A5D305948AE0C6CE6FC0EF6E381CBBC03F6DB979B59151FC13B07482E9E307EE437375148EEB459FD37876DA2GCBBD0BF62D670C6CAA4F62987660BA7578FEF4F42E4F71FD63D9F16D371F550F6F4B6733B1D3FF40871E45717D088F59FCE39C5F6F059135392355EE15E8EE73BC56279C331E145366F9ACAEFFFEA2615C754F7679334E
+	F864D9DCAFFAF281ABF3B82423C12600E4FC8F779E5FA337C973FADCB7DD55554D3A6931FE712A7F9E57D16CEE70474EC2F64F78E557C5F6FB767BE3B7006C4679E5B7086C3EB8600FDDA859BD6F175D98325BF7509F3BA8320B704BEEB2596DEF7447AE719C5A3D6817DDB6599D7C529F3BFC320B744B2E026C3EBC640FDD8359CD704B2E0D6CBEEC72476E8C595D6017DDA059252C565B8DBD272CB98BD36D2308357D6B8A797D5FB93136BF09702D9C0FD16122AF8E67770BAC9D873AE6934617366863071B34
+	B123F5E9E1B74B4BEE313E2DDD223593632DD6BB6B6F78BD30EAB8DDD6C6F392656751A78A554F23F3AE91EB7AAAE05BF0895EE3E79ECB167958AF41FE7659056CD953D0C80F8609840985497E89DCBFC19AFF027D6D46EC2367B05A7E5657C398E52D237C7D1BBE566173BD56E157CF34F6225C7F5D06658E7C899E472E2DFD63F019171D1E4398C38E6F9307E862107FE95FB814F95969B9E4DFEA44E188F1A83C94B9C4771143BBBDF2E8B364F0ADF1B09107200A3EF19862E5D720CB07DDEAF4CEFD1C475A3C
+	41B9C5F3906567E8C9789CE99CF1BD382DEFDC2DDEF6FA2E4981C675B5B79D6BABB7GB94C5C5EB78E733D6C749C9A8DB9B41F46FAF09207C77A4861699EB90498F2487998B90CA68E6E9DFD63F009171D1E4394C38E6EB46410518FB92C286C9B078DDEF6FA8EB57D0CB8BC3915BF5F87E9A68E2F7411431F3D6C7467F0F0BF2373E76B81DF57A47929004C35092EB7A3096B2F2A7A4675CEAFBBFDFDCD52F1955745DFD599DD97254B601E6BB23CAE7E05F866DFC663526A3E71B4FB5969F9DAAEB3BA2E0F1DC1
+	8EE708C3524E3EF1186BE5276790EA48E1E283F298CB9C9E6CA307A7FA6410F8399107DF67E07B4E399CB9B8EA7A46612C171D1EC303A107EBD310031DB8AC2B6D9B07A2AFBBBD0721069C86B870D80CA28E637B48E1C20F9CE28DB9F45135A735BFF238F2D75FB87C424BCE4F21323F9107B68FF2E8A28E1FFE56B78E3B3D6C749C027A9B75A165EDC6FD48B048BB3ABF76A1F3D6A24FC86279EE9FF946577544B36327C6F5353D9AB9647D94B95C6E652BF79C6E6D11C333A107DB7210C397F178EAF75FB8583C
+	6C749CC69AF2F8E6B3F298C39C52BF6F9B07C5DEF6FA8E5295C69CBA97A3076CAB1043E3FD6470DC0F9C6A8DB97C3491B934910793FB7A46211F171D1E43A0C38EB71FC38EE1D760BDE77AA206CD0634F4A55EDF86E533EFD7603346FA072D032D1F963AED73593CAC074B56EA6BC02C1AE3AD8E977F2001781E4DE17E8EBE83FC66135FCB96787E7EC27F85465FDF38EA017177970296F47F8D1F018BFCFD1FC170FB1D78D500884C5200D883E19388EBA36C48FE444E907686E10104359DC0ECA8E1FFA6AC0C30
+	2387919BCB581B04C593E6EFC4AC16303789CB9E00D84717086590765F04959266BC04D8A5E1F104B592362689B1BBE14389B39136043F6B8F02F488E1D796B0ECAC24E386E03BAF654FF912FFE6CAD98ED279B344ABB94E5F811E926FB7847E645A6E3EC104427C98619847171D0871FA2FE2787A1E98FE8B46175DA21E67098F53F91BF53B2DEE7E0006CD1810F5EFF866CA865F7F785C5CEE15F05E7D46ADB364BCD59E470EF5925E833C4B3FD5ECF08F201A07B122904F7D661F61BC0CB5E92C3E03A1BD92E4
+	8C9D076CE36A7EA5DAD7F73110CE3ECA0B495F4DDA687B7C0EDEE8FCFECFDC487A9A37235355E2551F43EFAF4CA61D72840BFD9101D50BBC1F145BFB4C2ED62BD79F70CFEEAFF43E6C2767786AA76475671ABADFCF6DA536CDDDC7B93A7AA804F4258E937EC6ECD57BABA6FF12CD6D2FD1E7EB07344950DF4B27EAFF4A372DEE57708B525906C0FA14213FF995EAFFA564AFD863EF1C4EB68652D38C7DBDD5112272D7D4087E76A5297D257EDCEB1B7BF36F73D5783BEA1B1ADF9171DB102E76D7AC5B57485BA61F
+	7E36EFD77B5BC87E2C27557E1CBA7BG1F7E7E2E71D7CA7E16FC2C76972C339F66535F9DBB547EB6113F2EB4353F51BA7B881F7E3E29549C0FA274772C66D96AA41DFD9C24B382219F8DD4F061EFCE15465FBA3A775674A12532DD1D3CED8E74456FC52D3F75B8F699DF057D17A7907B2F3DEEFE3D00F4B8C8D4A076DFFFBF269F9F4502AE79EA91B367EADF312F285644AE46320CB92377D788BEAAE5BF0DBE7DED5D297137817D3D69757E518EBECC321FA01F7E7E2A75D7027E0667687D05000FD1321FF172B6
+	66EA7D313B2DC663EFA31D6BA9FAFFD340B6759A79BD353CAD3EC66F6FD02D46DFA97A3B5A2177D78336CD323D739ADF651D35CB63EF93BDCBC8577B8BG9F41321FE1BE7D7DCE63EF9D75C56D9E3D3F5160A3C276B349273F631FE97C95E1DB7550F37538EB302DBA0E3136DAFC2DA9258E44F2AD3655F9AB75314F00AE70DA91F368353EE22F2A53442673EE2757B32FB070B1D676936D535F9F357E56233F10BC2FF389FCA4874967D210AFFF576C567823F3698F1B3D4EA570D1A97BE974692F7AF30DBFBA17
+	CEAD76BA174007C9769364535FFBDAFFF4AEDD6575EEB984FC0C127D0C7369EF789E0DBFBA17EEB927779783BE2648FED22F7376A746A5D90B58BB50AECAE773B4DB7FA946FC56EDAC2F985BD4F5D8641BB4B16F7CA43F37F9A8D1FC6FD1E06FF16C58B4712DD8011D6677B66C66CD4162B8368830CB89BB4B6FED9682769CE17F5A0F790A6291BB476FED6E0438FB92901378FD4CF31067AFD3913B04E303270AEF8A8BAC015F472C815BDF103FCBB9766CD471ADD901A5727B18D7G7BB9E17DB87646D4B53F69
+	7CBEE6BCE08B495F659CCB079887894B7C0AE1D7C33E4104D572FB1B97G7B9B1563F10EED815B4E84BC66252B59FD2F5DFC525189F5BF60BA16EF4FEAFCBE158B69D210E6900FFC1C45313B6B841B57FE44E5EE072166BE2735C5EA3B1E3F93ACC05B8848BF89A49970BC101A6BF14E6072AAB65E95A3FB793B9C54868F9E1B23576DF71BDB2D283FE7F186697992F72E956DB434D05DCEC7C23C706B153699F93DF7BB956F6C3F1B457A35372E976F6C5792FEB5479BEED0F071AEFFBD3F67E069D120AB7D855E
+	A72E654F7DC3EF0438B7A2F65DA23CF70CA46CEB5E37665DE4CAA93F893119B60655C33A193055B9E86BA14C46ED43A19DC958BCEE7B962463883310ED46C044B238EDB324BD04BD4C317E108EA62C1EEC0791964F7345C1BA6317080D6058F2C89793B613ECEB88FB3515E141109EC658D17EAEF4B4244791766E77F41FCDD8D1BA66AB3E9931BBD7B02C86520D044D49C3DB8BE1E7CE23EDA8E1D2A2669BC3D8694718AF7BD708FDF59A7365937673B44CF7063099D918AF103009DBB1DFB4E187B2B0DFACE126
+	238C2B9C8465980458139C33C35AC4D857B17497C458233C8EC2A09DC658A7D4876103705A9C25F94F15B5984E45414AF9D0BE5857B9719A9F17568F96EDFFB6616FF27C0C8A9767C4A347D9BA84F445C310D31A1DF307F484E1DFF0EC92242790F61F9D39A75E02581F4E20ED83E14B4E22ED9BE181E769BCA1ACE1BF5A0693D63D9FEDA3893BFDBF35B9429E4FC15B6221F41C79F9DC8369C642BA685C3690F67BA65E87C0FA9CE1A3D250DF94E16FF2ECB22425DB91EB1C097ED2892B60473E8952DD0405B850
+	DFGE1EFF1AC9852A1046DF6223FD042025251B671B644A25351B61B30CD54DE17939660C1DB8FE1CFFB5036BFE1851DE89BF49B3643131AFB6F9840275C26343D545BFD35438F7818B377F6FDBB4C30B33C6EF6FDBB6CBC066D308BF409A144093FCF890474D042CEF0AC8C52E3880BDA095CA3887B269AED177F9A31A19CAB05F48DE1C9BB51360130C772A8AEE1D3D722ED98E1960A9BCE58FF71778ED9F740B9FB8715231CE165102EA36C5AF234EDA46C6A45E89BC2588B0B71D80DA2EC5BC7549F92F6EBA3
+	5AE67F061E79B622EDBEE13B3EC45BD2429EB807367D897B57B9349DC85837925A067C8667AB1FD84D0E9DBB1ED3D83EE1389E2528D9B33F062D83A8AB5B6932D9361BDB6B7848C55C33FC33A6D936EF9B0677AC8356B01F03A09D86B2EE984EF16E7A8457698D3B6DC6294ED4E678FBDF518DCB92A68D134739F74A770E524D71C134CEEFCC81462C813D69CE067D3DC0BD3F1A0DDB86A708779BC21F37D62DE7ED15FD97DB519F5268995F27B47683B47AE9AAFBD13627BE463245BD95A2596F4D7379DBE6E364
+	B23DA5EF1D4FAE10A2AF99AF9F2327787356654361788E4763D6D2447BA3C8BB893BE59D1D6F43693D502CA6F61EC3BAF904A9A597249C2489248BA498A48CA48AE48AC876C808815284F286A498A48CA48AC43A4B141283D28AD28F528692F0974D7B64F1581A6FC1000D3ECB2C6B0E062DF4B7443DDB2C5F2E38DB2C9FEF062D89E49048E810683B453A6DB372FAEB36D6BED9DE631EAC2FCD97F1B625B9633D6BCFADDDF21998D7168E384B77737AA639ECEA0C55812BA7FEDD1637D3C6E873549B78E4F5DC5A
+	CDAC9ECF65A7F9046F3CE1A3FD6BA4B9C6DB8F31FAAB6C58174A471B2503D53103E50E72331C9E6BBECDBE0FD64869355D64E577224BF4187AF7D6E6485B393ABC2B8DFC31F33B27EF5A4FD46DF777FE253B5FBE79D85E2E69A1D6EF052D33E66FCE71F7DD543F5D023F17A2BF33E04B3E25A30E8ECF79BD6CDC97F330A458CF8589655830C5155D441AA17BC2B101CD9048B239BEC26E916FF163A926F87644FE6F11FDF4C3443D12E3CC9FF78F5EC7AE35E93915727B2054D068CFC2115B761C1E38CD6B06DBCD
+	281E1B49005B8D442DA19439956838D5F2EE9650BB095B699E39A5F543ED10973795865C369237E1446D05B6AD37B7F91ED1209FC35CDAFB64B6239BEED33C38E59BF0DBCB5C926FC5EE3F57F10B62F932C01FFBAFF2DB5AA33774EE38555F2B67B625551BDBBAF1EBA2EEB569DAEE5772FBD8BB683B08DB4A396E383178B3D5EDAE64DEAD37D1109E815B8F60CF4478060F4D47G9EC1BC42D7B09E9EEB17A771BE767B300716C3D29271D7667594FF2AEADBF31FB6FE53FD7A7837727B60B640BD77E19967A576
+	94E31AAA46D0DD0CB02F98E6FE7F9D8E78B80A61BA5DD38C7539AB7DD69BA36B377A98E17C5EBD97707C5FE20C5C2C1EE2242BE2B469E2B83DE224FF4AE21C813CBF45E84F68AEC612A47AE20C91260BB196526D71A206B876B79CE5B6568E56D2AD1208BB7CA80EC1A3FF0BED6455235EEDFA4AD1EC53EFC1BE018D667DF99C24134350B6D2573E2E79D8E9DFDB3AEDDFD3F56589D21DFB0CDFA944E05730FFC0F9647BE07ECE2C927046B09CCF16AD60758869C042C297523DEC980E49A639F3E11BF8BF748DA0
+	65A00DA09E10C010E1A0E36E473C7F60F959B7E146485F1AE15F2569123F0B433EF9433EE7A372FE63B641F6186C0B79D017B1D0CE174BF1FBF33DCD6CA1DF2301DE1EDB4E3930F6B8D392E39CF51EB4D55E6E46967AE3541DFE068F1BCC69A6FE2F5F5EE1EDF7F458DAC47BA9614FED0E01445C0F6D274D2EEDBF77FE22341F276D3D691FD0746DA796E27C8F349D36AF62A773E7BF6DAC4083F03F4F633D3DC209F753595E74D53E62E5BC200F371ABFAFE2F3BFF2A85E2215CA3C07777794AF291BF879DE715E
+	614F223E83A9FDG6BB7F71136FEABD6A9717BF5BB9643FE53D77C9AD5FC916B61CD2C0D09057DEC29163943425AB30F5B1F8D09E51E117CF9168D2401F8264C54727CCD3E4253B13327FE24BB1E96AF1E870F7966797A9A0567F37CB9D9AB0813F86EEA57721C3ED661E9F17644333B63E972BA1E8F716BB91B8FB5005A4F2705CA3C7AEE2F976AEB37D13C01DE716E6667EC8BC88845BBDC24442B6A6CA9DEF767E318AA1E6827835B30BF8FFFG7B6E4716E0FFBE09305D4B68D96703586FCE336742368952DD
+	A001A0A1A061A0D1A0F1A05923E81DA84FDBBCCAFC4F2ADE7ECED6347CBDAF277C9DAE117774B193EC19ADAB937307650BFBD05B6F06BC683B1F8EB450F549D814012EC90789AEB7F3AE580F2B6F8D753FD3E9548F2BFD991D5B6AEBC2F7FD3EE877D5AB3D7B73A60E3D8152B08A4F0F2BD6EA4F0FA757A96D675D1567535FD8A0467B1A76FAB9FF2E7AAA0813625FDF2D0D7F76FAA57E621D67535F1A3C62CF624FEB5F8499B08A4F17059B14F827FBACEF3767A7787CC053EF4537FB9F03CC7EBC77EF2CBDD29D
+	D415EB6BE0EB0942690E72733926060DD26E07C47C8778F36227C142298EEE5D2844EB7C68FC7A6E08D162392E926F19C6ECF35194EFCC29924F7C657974411341E71AA65E6B7CF97433A0F1946F4DCDCA3C6352797441298FA9716439BEDEEB4CFB92F9EDCC9F6DDA5678EBA75E29FCD3401E15E7BFA45E2944935E4A7165AADCBC2F3FE68DBE2FAF84DD50C3B89F7F19B2B687E08A24339E067BAD10CA908B0869E11CC77F4BC56C22576D7A6F8607334EFA5CEAD7CD0D1757FC9678DBBE71DC7C51A4FCAE9E7A
+	4090A96C32C9713E3E4D977430683BC365ED72B38BB8AE4AE7AEE7650B811D7408A9E5B9C8B9C8BDC85BA3D83E890B72C57958278537F9BC6616B67E55C2AC9C7B10208233899462BCFF2D104D47B86CF071C940E2BEC6DCA94E29B8837E03C04602C4BFA23E45A46CF697F94F633094215D14C744BC0E0C5140F734DCB6F12E2F6B4D759F5BFBB958560F96ED1D25AD307F8B684F5E277B53A11F336726063F54A3517C4D39EC1E512EBA73E12B1D69917F7D768C42F7D66D114D04EE503AAC0DDF65D7F7045E1D
+	2E586E6BBC2C514597EBED757AC7DD3349D675ABBA44B7F82636CCC6F9EE1B2D44D7FEA5C9687E34D29BDF2FDF1220445F6F363A743EDF1D2F0DEF14E7C21E6203FD30CD2F2F1DB5CB299F275D5661E16DCB68EE1DBFC7DBBFBA7DAE07B63E6A57FD487F1C36F9DA9F6ADF5D1173CC7C020DF1F43F06A36B7E76AD1F93247EFEA179FE004FADD07FFA1A407FFEC8036F5B3FDD3E7F5C2371453E1FC73E0E9D5468D8D5C978ADE90B66FBCA4E5172B752C663F713BEA8B45207107E3ACCA37DA852EF58E1748D36F1
+	243F235348BE0674CFCDB752CFA17DBF920D74290F227EF2436F6E65123EF81A11FDB1694F269969EBC87F2A6137691A9E45EB6C136CA75C65637053C5CBE15BE1BD11CB1FF62BF6F4F87216DA20CDB8DA17666796666796952E443EFB508975B729CAD3BE7179CDAA6723727BB7F99BA5AD646FB758F3A97E6E027FCD7E549B437B45629DECDF44FDB5952F99B93F39C92A9CBFA99E2F737A382364F8293FD35E93C71EFAD96E1F0770675A9ED727D544F8E327D2979F657436AE04EDCA2DE2BBDC67375FE70A2E
+	51CF3FA1F50A6DFE1D5F43FB94DD253FFC3FD0EC2BF5FE0F6CD3F49FAC744F6FCF9B945BCFF4FEA79CD0F4EFFC5FDB3FC66DC478CBEED45A07651062FB708A7F5A7133DF295BF1460D9989B826523727CA399D552B5A13EFFEE33FD2787DB1DD6197BB757C4B9EBFDB717DF52662FB4F697377ED4AD2FCC7FD28787EE766797B7EE01E627B5C8245772E0C7377BDE421626F71232CAFBAE2363B15F5EE6947346DB1E531127F5E95CB0C63EFE397C488DFA40717392F79C8313D3D4DFBFC18D30D633C005F097161
+	C0580E7C1DD8FFA80F8F16F80F8FDB96205D185F0971E1B4ECE3E5BBB1BEFCEA21BF773B290F417564B1E5FCD88C7BEF4358704FB4BEBCF5C0B386903FD2A517AD2353DB073F8717196C2D435FE8DB324EDB073F1B36A94FDB073FE516F256DB073FAF36B455DB073F79756BD55EBA7C9D2E5DF636DD31E105FC6C6AF315E37751D92EABC11DFB09225B3E1F6BB6226E7A250AEE5AA22EABC5DD78B2C5775F7C782EA8C65DDB9FAB3AC98E2EDB0F3A74950AAEA21D6B5621EEDD1E22FB4243F5C5285B4F1FEF0BB6
+	73B0FD3B2062B151569AE1EBFFCC2CF7156FD716D0FBFCCC342B01309DA967111F2BAE73679EFB8C58C6295A55E439DD3DC96D2AA9B7CDFDCCB4634785F529EA9D0D9FC3F7EAF09ABF7EF9214617E67C786CE90D4D215AFA01B7FFB1DB9BDF7C6A99597D65FB0DCFF95CA9F47FF3C623E33F8EA6611874F33B5137BA639E43735A3D129FABB79E2B2ED54AF13C391A6B1C28634BB371DA1B47F51D283BE10D22DBD54EF527D077C00122FBEEB1579DC15DFF2ED5F4939A35DC24A2C5775EB92EEBC55DB27E8CD15C
+	4FDB8A147DF655FE701A5E2CE76E2B0898F7DD509862D94078B25FEB0A7FD8E63C26B8264C781B817FD566EB2D2F507F1547F2EBBED10A317ED1464EA947897E098379D9463B7C3EBAA35C14128FD28FE281698A47679817EFE69D513643C64FB02AAC2DECCD335BE3E66BF6C47E23653E4B7ADD7907CAD919D50B750099AEF9076D4AEF6E1CAAE78D67304363E1BFEC4356FD885CD44E57CDBA1C9C94D83FF2D6C7AEDBEB1BC7E41571AB7973D33B75880765EF21EF42E7D5C1D0363161B837748D7E722E7B5F84
+	E830F96C566D72A5D7DE9F37340C45605FF0FE9C671AF671357F6510EEG31BF0E73DA8794E16CG40C6BD0E5FF809A84277763164A3E19D4B1B7FFBD3CAA5C893C86F6EDDF0DCF299DB0E0DEB6A0F78D8D34F1F82888EB771E72F2C9EBD3FC7DEE20EA7430691B6B6933198426CBB308EF27E8331D7BBB1DF83E189FC1E8C6B638690D6B80DE16C795BE4429E266F63650DC16C9865EBA6ACB48D7D859316BD8BED634660F348759B98D67C84346BA730BD27EFE7AFAD8F180FFA7F72870075AE07536A721C94A8
+	7FB5A879BCF11430EB00937C8CG9989B286A48AA496A479C9D3CA8EC8A1C88DC8B3088724BF48C010E1A023C1A21EC49EA7F72C6C0607BC39191FDCAE3378F609607182FF8EAFFC049C7A58178FB8BBF741A15FF37828354553E0E66FBBC5DB2C2C4636B8893864BE0575B7209A6B2F71A9EC0B174FE7F983A19D82B27AA9EC4FD7AEC09F1100E50C255F70D8C0F32147220F7805AC2F895241A0A3477A5B1EB7706772A26E44B60CBB867CC8CFE35C829BF2AFFD9A63E6ACE1F91D106E8FB268E9643EFCA97A88
+	83ECB27930AFC56EF94F200F9BF95EE6C8F70184BE63AF7746B2097A0BFEF6EC47A14FE09BF8FF1D6F3EB2E1FD4FFD654C75E20ECF2B356124D37E96C446FA7EED1BA3C75CD66A13672E4FA02C56DD6FF05B58DBF2F17D0B5E5437F78C6F7451EEC599330BFE26F773E6E2A11FF8877116785E4A337AF793FF63F856337AF7935F9762F14E85DD403378AE781A223E719E54C73B177C369365BA4E2F83133C4AFB0E6331DE65CDDE0765154641B5FC9C16F710E6AD7018F172B3B1F9BB9936094F993D275E2C611D
+	AD674917379530EDB034FBAED3ED57A667B9A3EF83E1BB54506EBB4DB7B443F4F946BE67EBFE5444CE4DF7DE64FC3172B679F968171FB70A1714E4B46EAB54652DFC5EBBEE238E33C35A84922442C50C8D53545CC2E47DA8F9BB8E36B1A0D33C6C9E53FED7648F3A6F0A7C41D7DDB8B5710A65FCB572368936CE1000BF68635D1FE6D497413AB8438C620E56E191101E84926795E351ACB5370C882D5D7288EF5F226FAA5D4076E93CABAE49326E538DEC6CEA6B006E4CEC371D62BF95368FB2F6348A7D25A53E7B
+	57ABCAFA6EDF2FADB19E0B7E2244FBACFAF30971D8F4E809FAACAA30DF1730EBD5ABDC639BA95FF0423EA46C9E6E13E187ED96CF9B6177F3DE8C2F31320008BF42F91D60D8230C052B30AFE56C0992F60D00A237B9DCE87BCC891F5BEC335BC57AF91E475681178C2A0F711C234DE9D6710EA26CCBBA563B3C3E5F503B3E32310FF6D7F33BD203B6E4A4F591F8CDF91F0FEF1AA374FDECA29F5F58A374FD6C4F66E39F5B853A28886CE32FDE50B75E3F6A23DD245FF622DC1DFCACD671023E3C5FF33C6E85FDF913
+	96E2F99BC1B76A85AC6FDBEDFD637DDE9F6D5673879739AF766E78963F0847B7000F81EBDE541777E79CEFF8D1DF5E8F17E0F91BC1977EA216F755523E71AE6D235DF7FE5B09F24DDA4678670D5717F79E470B476B4BBB08464295209BBA9E4BFB051D45CF0ED46ABB87768B65F4A5EC9BA33547C24C695B4A6F096D208B08247576FC8DE1B02407C5227F3F72790EE27FFD55FEC06105FF5E734B0B90630C6A59D6BF557E2CF597BE760A8B9AC39C535F72E7866CFB84E1F41C13449AD0C8C791E627F52113889B
+	4A5BC369CB26143A17905BDB047E1A897B185F53F9A09DC05895B67497C858B32798968D69D842A6E5223F6417691B83F398168369FC426E1BC36B1789FBF9BB437AC3FAA0E17DF7203F1104BD1ACD6B35897BE7A7664BFA85317BF9F973A0DDCA5862A2342DA46C0A658C8B02F488E1AB797310D1109ECB58D59C0B04F49CE12F5337B4B222681B1553B046F242EC53F91DC23ABFE1F7F3ECA024C791D6B78D7D0DA36C36F80645C0BA1630198998C37ACF44DE627E6AA1EDA1ECA967578569E042DEA64E43882B
+	BF077EC693F6B9F14978A3E28F72384BA1DDCCD86ED4342DA06C8B9EA39052C315FCE948A50C30D7B8B69652D104D54C42FA1EC45800D948A50E306B691B8D99FFC2ECB377578CE98FE181E9D84F7D89ABA6FF83899B17047EC69296421F4DC85126146CE84492796FEB65C33AA29A7B557885CADF13225A3FF67E056FF706DD04982797AAE58AD06D27AD3C7031BF3920B1646FA9707E2D8E0E27050EF3F0AEEF2F109EC047790AA52AE32B5A4FD9F2616BE143C5081135CCA953A2557EEDCBAFFC6CC7AEE88CF1
+	CC8773E70141F0BC0751F17EAF0E316FE60CA6ECBD1F9B4E3E1B91213407F66C9F22891B497B4D42D761FA72AA3E975C4F5F9FF9581B8BB637C042394F6DFC0C568879AC14F7DE61B44CAB611C03536C33EB32CDB43F5E87C17EC1E433F81DF6BE7A4DEC1A14BC277452DE4DA975B5FFFA9C44E04FD3F18EF92674E021771A47678BF1ADE3542B381671B43F2E3E8569A944335C26657968960567E05B794C734EFB4D14B2D743F342A9EF1EF12710E771EB48F3B67FE6D4A5246BDF23B5F3F334BCE336AABC1F1E
+	F3DEEB10DE936FC3941EFF596E4DB3F987729CC0BC6F6258C0C8073C066F6DA333FB335E826BAD72B56DFA5637DE532F197D64B80BB18570445731AE4695EA6BA229C2290B8DC56733762078F5B1B7DF290B414B3D6BA2ECB956C585F12AC852F2DA251A4BF8EB92FB165466F059CE4129E63633C93078149D4F2151C978FE217EF52C5F54E40619A0BD60F52C5FA153FAAA5F4CEE4AB76AF5312F144FB45D3BFCB7CC47720D2172BDB1BDD3D306EDF6DBEB87FB5B0BEBA62663BB16C8625F4947E609B1309F03FE
+	9E0A5756536E6D4A31DB1A50D359523AA9DB85441829A95BE40332A5A5E1596A085326246E4B360F5EBBB645E0592672E3539F52C1B174CD049E577627295AFEF80C366DC746685B7EC8DEFFB100CFA62E4FA7E86B4F39C3293F0DD3FB2ABF75F78F747517BBC10C9F147AEBCB722E3FF3D4FF799330AEEA69F72A4AA7A04F3F26E9F9DE4B2849BEEC33302D37110FFBB9968C69219330BE6F6CF18D686CEE4A9381FEB6E94A33B74D3BBC36B4ACCFB4F139134AB319302FB93F1C0926143C09486F0D241E0E77EC
+	5571EE1C28BD5E76094A71967C9E29B63EA60F67637BAE489FB0916BF761FC6FEB72FD6C9322F2D94DB6E3DFA77998B2947C0CA6DFA3F23DFD3DD42D788A63E38F3755EEED71D8AD424F33F62C374993310E3279586389E678864E690E5B29344F916D67F35D4FF8C334CFE5ED5C52F35E47F353B9ECDBB94421F117D21658353D18DBD92C4C2D8CD54DF9FE3F483FF91963F7AB36FFAE544E775CDA2F68665B7C73EBD64D174EBC2D757B74D70A2EEA0EFFFEA7B7A9369F6D507ABD782D223BB77B7C67471EEA16
+	A86E109645771D057EF1FE5C2258BE3B9CB90B7478A466CBB53525E09F7B0FD3125C85BB2A64B9F8425737ED0A2FF3537C6371931BE2BBFC3A1647FB53BF6A1EC7DDD5F5834E4DBE267839B15EBF8E716D0A6D62A4AD0723C93D677035C371D3F96E7C0F7515CE65D83F61D2FC0FC8702FFCA99E45B6A7CDDB3E66345E14CF9E734C722FDD5CF1DC09FB45CC7FB8BFFDC231B569B807770A333C66641462A7BC697C0F4941534AB139672C62FBCA36FF7DA3DFCAA05B8E486D2D2D48BF512E2D0F356DFC8E280566
+	9C47AB3E6B4F2967504F63581B56B898D88FFBDB1A6611620BBCD212D8B1D686FBFC4EF56E865AAB213D0D34D7CAFB455D6E2D273DF534875112F18E2FC7CAE453F5E143E666FA242907EA6BA1412685C3E25F7E6D70FFE7559E37CBCA53544B6303B7CC9C7B47836E295274DAE9BE7BEC1460EFBBE53530DF4DB9E0F539618E21DA1A61E4DFBE5F87F82D1468661BE9EE4FC93B35CE4ABA32577ADD27558D5765ED788E5C6D11665631C8EB59744435B5E6F79B7F484F66BAA931435CEE75C8F3045AEE6EE8DDAB
+	DE08EF6EE267E87C36DCFEB8596BE38978E6F23E4CCB81F949FCB07D63A53BE24226CA8955D20A5DE136D41BDBBC8ED72DB4435366323A5B9CF6CB1773538A6EA879844EEA1A8A6E96D271D9E18B58ED9011BE56754B81E913522A93E020631256721CEC74D8C0B9ACBB5A4CAE88E5F5550218A164F252DD3258734953BB67B5A5C871F2A13F133E1766F6B9BD2242A0F8BAF7490ADCD08D2CBDAF3F7D4410D74AA73F85A655523463EC5EG844ED0F2FD5E59FE586A3AEC58F50BE686C5DF49F8B9D97538196779
+	9EE97A91F33B4DFE92F6AA79D907788C0F4B5C61BE62F035C350DCDD09D1C5448B2EFD22703ADF3FF70893D7CCBD52C7629001695AD62B23FD6D36A3C7EC9DD6F2G478B5CAFA277ACCF01AE4F1C2E2B676EFA610343503EAA25296D05057CFF917F3F0E7DAF62C891C70A5641C11BACF57B2757F7F531B2AF6D225AE5CCEA79140068636B4B263EFE4B5484A931D61AAE26C8C063E5739C207172E9903552D40F43A95A1DFC1AAF608D05B94D74EA0D8C1D675D2C983C10AB97316CECA7170E89CBAD634A0F797F
+	3C3E15F0ED9737DE25E31A7043E3DAE24CB47E0747F44B0F06E9650F0669E7DA2648768748F42FB1539F60397F25B1539F60395F7C23B97A2DBF9A269D8A5394D9617B5C0F7741B431DB26B41E90F370C4B666625FD404CEED91E64A4AF8C2599FFECBEA2AA1AAE98E17B7BACD05A6E8D076FCA6D903462BD0C9932DFBD4E1461084D62DDEF9993A50CFD46B973F77224D5BDBB4C1AEB51B9919C8A84BB7C7C693B4A8BEA1CC70C8A97217B0E0A86E1152586A44DC99013B19D438FBD0A76116C215CCE3B79AEAB5
+	5CFE28556C26C41DE677AA2A748C3C0D017D196266067FE48E6414B3E1BA1151D2357CE6DE8D3324DE367CE623F374B87B5775EFEA6A3F6C7AB71E177FF6F637A8A7A23E2661BD5F8F19739D461C0D2FFEBF904EF799F37E81DEDD427C398E7EC0EA7791FFEA7787427977BFC24ECFAB1C93FA647CFF5A0AA394261274A3E9452F7C88DB44EBBF1A9671671EDBC4B3577C00468E133BFE486C7E2E2DD19ABB08EF862DBC277EE65014FEC9BE3FFD9573AF79F7E37E25FCB3C82C9BFE0D3F3BAD7E4014D27F812EBF
+	DD574EBE7A60EB7D703EF6335D6EB15B0FED6B303035445BCFFA2C4AF7865EE8E77E5D18C7D68A5DBB6D0C77D1154D7F82D0CB87886EAEC33B37B6GGD857GGD0CB818294G94G88G88G62D54AAC6EAEC33B37B6GGD857GG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGG71B6GGGG
+**end of data**/
+}
+/**
+ * Return the JCheckBoxFEED property value.
+ * @return javax.swing.JCheckBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JCheckBox getJCheckBoxFEED() {
+	if (ivjJCheckBoxFEED == null) {
+		try {
+			ivjJCheckBoxFEED = new javax.swing.JCheckBox();
+			ivjJCheckBoxFEED.setName("JCheckBoxFEED");
+			ivjJCheckBoxFEED.setMnemonic('f');
+			ivjJCheckBoxFEED.setText("FEED");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJCheckBoxFEED;
+}
+/**
+ * Return the JCheckBoxGEO property value.
+ * @return javax.swing.JCheckBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JCheckBox getJCheckBoxGEO() {
+	if (ivjJCheckBoxGEO == null) {
+		try {
+			ivjJCheckBoxGEO = new javax.swing.JCheckBox();
+			ivjJCheckBoxGEO.setName("JCheckBoxGEO");
+			ivjJCheckBoxGEO.setMnemonic('g');
+			ivjJCheckBoxGEO.setText("GEO");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJCheckBoxGEO;
+}
+/**
+ * Return the JCheckBoxPROG property value.
+ * @return javax.swing.JCheckBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JCheckBox getJCheckBoxPROG() {
+	if (ivjJCheckBoxPROG == null) {
+		try {
+			ivjJCheckBoxPROG = new javax.swing.JCheckBox();
+			ivjJCheckBoxPROG.setName("JCheckBoxPROG");
+			ivjJCheckBoxPROG.setMnemonic('p');
+			ivjJCheckBoxPROG.setText("PROG");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJCheckBoxPROG;
+}
+/**
+ * Return the JCheckBoxRelay1 property value.
+ * @return javax.swing.JCheckBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JCheckBox getJCheckBoxRelay1() {
+	if (ivjJCheckBoxRelay1 == null) {
+		try {
+			ivjJCheckBoxRelay1 = new javax.swing.JCheckBox();
+			ivjJCheckBoxRelay1.setName("JCheckBoxRelay1");
+			ivjJCheckBoxRelay1.setMnemonic('1');
+			ivjJCheckBoxRelay1.setText("Relay 1");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJCheckBoxRelay1;
+}
+/**
+ * Return the JCheckBoxRelay2 property value.
+ * @return javax.swing.JCheckBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JCheckBox getJCheckBoxRelay2() {
+	if (ivjJCheckBoxRelay2 == null) {
+		try {
+			ivjJCheckBoxRelay2 = new javax.swing.JCheckBox();
+			ivjJCheckBoxRelay2.setName("JCheckBoxRelay2");
+			ivjJCheckBoxRelay2.setMnemonic('2');
+			ivjJCheckBoxRelay2.setText("Relay 2");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJCheckBoxRelay2;
+}
+/**
+ * Return the JCheckBoxRelay3 property value.
+ * @return javax.swing.JCheckBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JCheckBox getJCheckBoxRelay3() {
+	if (ivjJCheckBoxRelay3 == null) {
+		try {
+			ivjJCheckBoxRelay3 = new javax.swing.JCheckBox();
+			ivjJCheckBoxRelay3.setName("JCheckBoxRelay3");
+			ivjJCheckBoxRelay3.setMnemonic('3');
+			ivjJCheckBoxRelay3.setText("Relay 3");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJCheckBoxRelay3;
+}
+/**
+ * Return the JCheckBoxRelay4 property value.
+ * @return javax.swing.JCheckBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JCheckBox getJCheckBoxRelay4() {
+	if (ivjJCheckBoxRelay4 == null) {
+		try {
+			ivjJCheckBoxRelay4 = new javax.swing.JCheckBox();
+			ivjJCheckBoxRelay4.setName("JCheckBoxRelay4");
+			ivjJCheckBoxRelay4.setMnemonic('4');
+			ivjJCheckBoxRelay4.setText("Relay 4");
+			ivjJCheckBoxRelay4.setActionCommand("Relay 4");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJCheckBoxRelay4;
+}
+/**
+ * Return the JCheckBoxRelay5 property value.
+ * @return javax.swing.JCheckBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JCheckBox getJCheckBoxRelay5() {
+	if (ivjJCheckBoxRelay5 == null) {
+		try {
+			ivjJCheckBoxRelay5 = new javax.swing.JCheckBox();
+			ivjJCheckBoxRelay5.setName("JCheckBoxRelay5");
+			ivjJCheckBoxRelay5.setMnemonic('5');
+			ivjJCheckBoxRelay5.setText("Relay 5");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJCheckBoxRelay5;
+}
+/**
+ * Return the JCheckBoxRelay6 property value.
+ * @return javax.swing.JCheckBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JCheckBox getJCheckBoxRelay6() {
+	if (ivjJCheckBoxRelay6 == null) {
+		try {
+			ivjJCheckBoxRelay6 = new javax.swing.JCheckBox();
+			ivjJCheckBoxRelay6.setName("JCheckBoxRelay6");
+			ivjJCheckBoxRelay6.setMnemonic('6');
+			ivjJCheckBoxRelay6.setText("Relay 6");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJCheckBoxRelay6;
+}
+/**
+ * Return the JCheckBoxRelay7 property value.
+ * @return javax.swing.JCheckBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JCheckBox getJCheckBoxRelay7() {
+	if (ivjJCheckBoxRelay7 == null) {
+		try {
+			ivjJCheckBoxRelay7 = new javax.swing.JCheckBox();
+			ivjJCheckBoxRelay7.setName("JCheckBoxRelay7");
+			ivjJCheckBoxRelay7.setMnemonic('7');
+			ivjJCheckBoxRelay7.setText("Relay 7");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJCheckBoxRelay7;
+}
+/**
+ * Return the JCheckBoxRelay8 property value.
+ * @return javax.swing.JCheckBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JCheckBox getJCheckBoxRelay8() {
+	if (ivjJCheckBoxRelay8 == null) {
+		try {
+			ivjJCheckBoxRelay8 = new javax.swing.JCheckBox();
+			ivjJCheckBoxRelay8.setName("JCheckBoxRelay8");
+			ivjJCheckBoxRelay8.setMnemonic('8');
+			ivjJCheckBoxRelay8.setText("Relay 8");
+			ivjJCheckBoxRelay8.setActionCommand("Relay 4");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJCheckBoxRelay8;
+}
+/**
+ * Return the JCheckBoxIndividual property value.
+ * @return javax.swing.JCheckBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JCheckBox getJCheckBoxSerial() {
+	if (ivjJCheckBoxSerial == null) {
+		try {
+			ivjJCheckBoxSerial = new javax.swing.JCheckBox();
+			ivjJCheckBoxSerial.setName("JCheckBoxSerial");
+			ivjJCheckBoxSerial.setFont(new java.awt.Font("Arial", 1, 10));
+			ivjJCheckBoxSerial.setText("Serial:");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJCheckBoxSerial;
+}
+/**
+ * Return the JCheckBoxSPID property value.
+ * @return javax.swing.JCheckBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JCheckBox getJCheckBoxSPID() {
+	if (ivjJCheckBoxSPID == null) {
+		try {
+			ivjJCheckBoxSPID = new javax.swing.JCheckBox();
+			ivjJCheckBoxSPID.setName("JCheckBoxSPID");
+			ivjJCheckBoxSPID.setSelected(true);
+			ivjJCheckBoxSPID.setMnemonic('d');
+			ivjJCheckBoxSPID.setText("SPID");
+			ivjJCheckBoxSPID.setEnabled(false);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJCheckBoxSPID;
+}
+/**
+ * Return the JCheckBoxSPLINTER property value.
+ * @return javax.swing.JCheckBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JCheckBox getJCheckBoxSPLINTER() {
+	if (ivjJCheckBoxSPLINTER == null) {
+		try {
+			ivjJCheckBoxSPLINTER = new javax.swing.JCheckBox();
+			ivjJCheckBoxSPLINTER.setName("JCheckBoxSPLINTER");
+			ivjJCheckBoxSPLINTER.setMnemonic('s');
+			ivjJCheckBoxSPLINTER.setText("SPLINTER");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJCheckBoxSPLINTER;
+}
+/**
+ * Return the JCheckBoxSUB property value.
+ * @return javax.swing.JCheckBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JCheckBox getJCheckBoxSUB() {
+	if (ivjJCheckBoxSUB == null) {
+		try {
+			ivjJCheckBoxSUB = new javax.swing.JCheckBox();
+			ivjJCheckBoxSUB.setName("JCheckBoxSUB");
+			ivjJCheckBoxSUB.setMnemonic('s');
+			ivjJCheckBoxSUB.setText("SUB");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJCheckBoxSUB;
+}
+/**
+ * Return the JCheckBoxUSER property value.
+ * @return javax.swing.JCheckBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JCheckBox getJCheckBoxUSER() {
+	if (ivjJCheckBoxUSER == null) {
+		try {
+			ivjJCheckBoxUSER = new javax.swing.JCheckBox();
+			ivjJCheckBoxUSER.setName("JCheckBoxUSER");
+			ivjJCheckBoxUSER.setMnemonic('u');
+			ivjJCheckBoxUSER.setText("USER");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJCheckBoxUSER;
+}
+/**
+ * Return the JCheckBoxZIP property value.
+ * @return javax.swing.JCheckBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JCheckBox getJCheckBoxZIP() {
+	if (ivjJCheckBoxZIP == null) {
+		try {
+			ivjJCheckBoxZIP = new javax.swing.JCheckBox();
+			ivjJCheckBoxZIP.setName("JCheckBoxZIP");
+			ivjJCheckBoxZIP.setMnemonic('z');
+			ivjJCheckBoxZIP.setText("ZIP");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJCheckBoxZIP;
+}
+/**
+ * Return the JComboBoxFEED property value.
+ * @return javax.swing.JComboBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JComboBox getJComboBoxFEED() {
+	if (ivjJComboBoxFEED == null) {
+		try {
+			ivjJComboBoxFEED = new javax.swing.JComboBox();
+			ivjJComboBoxFEED.setName("JComboBoxFEED");
+			ivjJComboBoxFEED.setFont(new java.awt.Font("dialog", 0, 10));
+			ivjJComboBoxFEED.setEditable(true);
+			// user code begin {1}
+
+			ivjJComboBoxFEED.addItem( STRING_NEW );
+			ivjJComboBoxFEED.addItem( com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.NONE_ADDRESS );
+
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJComboBoxFEED;
+}
+/**
+ * Return the JComboBoxGEO property value.
+ * @return javax.swing.JComboBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JComboBox getJComboBoxGEO() {
+	if (ivjJComboBoxGEO == null) {
+		try {
+			ivjJComboBoxGEO = new javax.swing.JComboBox();
+			ivjJComboBoxGEO.setName("JComboBoxGEO");
+			ivjJComboBoxGEO.setFont(new java.awt.Font("dialog", 0, 10));
+			ivjJComboBoxGEO.setEditable(true);
+			// user code begin {1}
+
+			ivjJComboBoxGEO.addItem( STRING_NEW );
+			ivjJComboBoxGEO.addItem( com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.NONE_ADDRESS );
+			
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJComboBoxGEO;
+}
+/**
+ * Return the JComboBoxPROG property value.
+ * @return javax.swing.JComboBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JComboBox getJComboBoxPROG() {
+	if (ivjJComboBoxPROG == null) {
+		try {
+			ivjJComboBoxPROG = new javax.swing.JComboBox();
+			ivjJComboBoxPROG.setName("JComboBoxPROG");
+			ivjJComboBoxPROG.setFont(new java.awt.Font("dialog", 0, 10));
+			ivjJComboBoxPROG.setEditable(true);
+			// user code begin {1}
+
+			ivjJComboBoxPROG.addItem( STRING_NEW );
+			ivjJComboBoxPROG.addItem( com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.NONE_ADDRESS );
+			
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJComboBoxPROG;
+}
+/**
+ * Return the JComboBoxSPID property value.
+ * @return javax.swing.JComboBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JComboBox getJComboBoxSPID() {
+	if (ivjJComboBoxSPID == null) {
+		try {
+			ivjJComboBoxSPID = new javax.swing.JComboBox();
+			ivjJComboBoxSPID.setName("JComboBoxSPID");
+			ivjJComboBoxSPID.setFont(new java.awt.Font("dialog", 0, 10));
+			ivjJComboBoxSPID.setEditable(true);
+			// user code begin {1}
+
+			ivjJComboBoxSPID.addItem( STRING_NEW );
+			//ivjJComboBoxSPID.addItem( com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.NONE_ADDRESS );
+			
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJComboBoxSPID;
+}
+/**
+ * Return the JComboBoxSUB property value.
+ * @return javax.swing.JComboBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JComboBox getJComboBoxSUB() {
+	if (ivjJComboBoxSUB == null) {
+		try {
+			ivjJComboBoxSUB = new javax.swing.JComboBox();
+			ivjJComboBoxSUB.setName("JComboBoxSUB");
+			ivjJComboBoxSUB.setFont(new java.awt.Font("dialog", 0, 10));
+			ivjJComboBoxSUB.setEditable(true);
+			// user code begin {1}
+
+			ivjJComboBoxSUB.addItem( STRING_NEW );
+			ivjJComboBoxSUB.addItem( com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.NONE_ADDRESS );
+			
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJComboBoxSUB;
+}
+/**
+ * Return the JLabelFeedAddress property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getJLabelFeedAddress() {
+	if (ivjJLabelFeedAddress == null) {
+		try {
+			ivjJLabelFeedAddress = new javax.swing.JLabel();
+			ivjJLabelFeedAddress.setName("JLabelFeedAddress");
+			ivjJLabelFeedAddress.setFont(new java.awt.Font("Arial", 1, 10));
+			ivjJLabelFeedAddress.setText("FEED Address:");
+			ivjJLabelFeedAddress.setEnabled(true);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabelFeedAddress;
+}
+/**
+ * Return the JLabelGEOAddress property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getJLabelGEOAddress() {
+	if (ivjJLabelGEOAddress == null) {
+		try {
+			ivjJLabelGEOAddress = new javax.swing.JLabel();
+			ivjJLabelGEOAddress.setName("JLabelGEOAddress");
+			ivjJLabelGEOAddress.setFont(new java.awt.Font("Arial", 1, 10));
+			ivjJLabelGEOAddress.setText("GEO Address:");
+			ivjJLabelGEOAddress.setEnabled(true);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabelGEOAddress;
+}
+/**
+ * Return the JLabelPROGAddress property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getJLabelPROGAddress() {
+	if (ivjJLabelPROGAddress == null) {
+		try {
+			ivjJLabelPROGAddress = new javax.swing.JLabel();
+			ivjJLabelPROGAddress.setName("JLabelPROGAddress");
+			ivjJLabelPROGAddress.setFont(new java.awt.Font("Arial", 1, 10));
+			ivjJLabelPROGAddress.setText("PROG Address:");
+			ivjJLabelPROGAddress.setEnabled(true);
+			ivjJLabelPROGAddress.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabelPROGAddress;
+}
+/**
+ * Return the JLabelSPID property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getJLabelSPID() {
+	if (ivjJLabelSPID == null) {
+		try {
+			ivjJLabelSPID = new javax.swing.JLabel();
+			ivjJLabelSPID.setName("JLabelSPID");
+			ivjJLabelSPID.setFont(new java.awt.Font("Arial", 1, 10));
+			ivjJLabelSPID.setText("SPID Address:");
+			ivjJLabelSPID.setEnabled(true);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabelSPID;
+}
+/**
+ * Return the JLabelSplinter property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getJLabelSplinter() {
+	if (ivjJLabelSplinter == null) {
+		try {
+			ivjJLabelSplinter = new javax.swing.JLabel();
+			ivjJLabelSplinter.setName("JLabelSplinter");
+			ivjJLabelSplinter.setText("SPLINTER:");
+			ivjJLabelSplinter.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+			ivjJLabelSplinter.setFont(new java.awt.Font("Arial", 1, 10));
+			ivjJLabelSplinter.setEnabled(true);
+			ivjJLabelSplinter.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabelSplinter;
+}
+/**
+ * Return the JLabelSubAddress property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getJLabelSubAddress() {
+	if (ivjJLabelSubAddress == null) {
+		try {
+			ivjJLabelSubAddress = new javax.swing.JLabel();
+			ivjJLabelSubAddress.setName("JLabelSubAddress");
+			ivjJLabelSubAddress.setFont(new java.awt.Font("Arial", 1, 10));
+			ivjJLabelSubAddress.setText("SUB Address:");
+			ivjJLabelSubAddress.setEnabled(true);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabelSubAddress;
+}
+/**
+ * Return the JLabelUserAddress property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getJLabelUserAddress() {
+	if (ivjJLabelUserAddress == null) {
+		try {
+			ivjJLabelUserAddress = new javax.swing.JLabel();
+			ivjJLabelUserAddress.setName("JLabelUserAddress");
+			ivjJLabelUserAddress.setFont(new java.awt.Font("Arial", 1, 10));
+			ivjJLabelUserAddress.setText("USER Address:");
+			ivjJLabelUserAddress.setEnabled(true);
+			ivjJLabelUserAddress.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabelUserAddress;
+}
+/**
+ * Return the JLabelZipAddress property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getJLabelZipAddress() {
+	if (ivjJLabelZipAddress == null) {
+		try {
+			ivjJLabelZipAddress = new javax.swing.JLabel();
+			ivjJLabelZipAddress.setName("JLabelZipAddress");
+			ivjJLabelZipAddress.setText("ZIP Address:");
+			ivjJLabelZipAddress.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+			ivjJLabelZipAddress.setFont(new java.awt.Font("Arial", 1, 10));
+			ivjJLabelZipAddress.setEnabled(true);
+			ivjJLabelZipAddress.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabelZipAddress;
+}
+/**
+ * Return the JPanel1 property value.
+ * @return javax.swing.JPanel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JPanel getJPanelAddress() {
+	if (ivjJPanelAddress == null) {
+		try {
+			ivjJPanelAddress = new javax.swing.JPanel();
+			ivjJPanelAddress.setName("JPanelAddress");
+			ivjJPanelAddress.setBorder(getJPanelAddressTitleBorder());
+			ivjJPanelAddress.setLayout(new java.awt.GridBagLayout());
+
+			java.awt.GridBagConstraints constraintsJTextFieldSPIDAddress = new java.awt.GridBagConstraints();
+			constraintsJTextFieldSPIDAddress.gridx = 2; constraintsJTextFieldSPIDAddress.gridy = 1;
+			constraintsJTextFieldSPIDAddress.gridwidth = 2;
+			constraintsJTextFieldSPIDAddress.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJTextFieldSPIDAddress.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJTextFieldSPIDAddress.weightx = 1.0;
+			constraintsJTextFieldSPIDAddress.ipadx = 87;
+			constraintsJTextFieldSPIDAddress.ipady = -1;
+			constraintsJTextFieldSPIDAddress.insets = new java.awt.Insets(3, 1, 1, 3);
+			getJPanelAddress().add(getJTextFieldSPIDAddress(), constraintsJTextFieldSPIDAddress);
+
+			java.awt.GridBagConstraints constraintsJLabelSPID = new java.awt.GridBagConstraints();
+			constraintsJLabelSPID.gridx = 1; constraintsJLabelSPID.gridy = 1;
+			constraintsJLabelSPID.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJLabelSPID.ipadx = 9;
+			constraintsJLabelSPID.ipady = 4;
+			constraintsJLabelSPID.insets = new java.awt.Insets(3, 11, 3, 1);
+			getJPanelAddress().add(getJLabelSPID(), constraintsJLabelSPID);
+
+			java.awt.GridBagConstraints constraintsJLabelGEOAddress = new java.awt.GridBagConstraints();
+			constraintsJLabelGEOAddress.gridx = 1; constraintsJLabelGEOAddress.gridy = 2;
+			constraintsJLabelGEOAddress.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJLabelGEOAddress.ipadx = 10;
+			constraintsJLabelGEOAddress.ipady = 4;
+			constraintsJLabelGEOAddress.insets = new java.awt.Insets(2, 11, 3, 1);
+			getJPanelAddress().add(getJLabelGEOAddress(), constraintsJLabelGEOAddress);
+
+			java.awt.GridBagConstraints constraintsJTextFieldGeoAddress = new java.awt.GridBagConstraints();
+			constraintsJTextFieldGeoAddress.gridx = 2; constraintsJTextFieldGeoAddress.gridy = 2;
+			constraintsJTextFieldGeoAddress.gridwidth = 2;
+			constraintsJTextFieldGeoAddress.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJTextFieldGeoAddress.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJTextFieldGeoAddress.weightx = 1.0;
+			constraintsJTextFieldGeoAddress.ipadx = 87;
+			constraintsJTextFieldGeoAddress.ipady = -1;
+			constraintsJTextFieldGeoAddress.insets = new java.awt.Insets(2, 1, 1, 3);
+			getJPanelAddress().add(getJTextFieldGeoAddress(), constraintsJTextFieldGeoAddress);
+
+			java.awt.GridBagConstraints constraintsJLabelSubAddress = new java.awt.GridBagConstraints();
+			constraintsJLabelSubAddress.gridx = 1; constraintsJLabelSubAddress.gridy = 3;
+			constraintsJLabelSubAddress.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJLabelSubAddress.ipadx = 12;
+			constraintsJLabelSubAddress.ipady = 4;
+			constraintsJLabelSubAddress.insets = new java.awt.Insets(1, 11, 3, 1);
+			getJPanelAddress().add(getJLabelSubAddress(), constraintsJLabelSubAddress);
+
+			java.awt.GridBagConstraints constraintsJTextFieldSubAddress = new java.awt.GridBagConstraints();
+			constraintsJTextFieldSubAddress.gridx = 2; constraintsJTextFieldSubAddress.gridy = 3;
+			constraintsJTextFieldSubAddress.gridwidth = 2;
+			constraintsJTextFieldSubAddress.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJTextFieldSubAddress.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJTextFieldSubAddress.weightx = 1.0;
+			constraintsJTextFieldSubAddress.ipadx = 87;
+			constraintsJTextFieldSubAddress.ipady = -1;
+			constraintsJTextFieldSubAddress.insets = new java.awt.Insets(1, 1, 1, 3);
+			getJPanelAddress().add(getJTextFieldSubAddress(), constraintsJTextFieldSubAddress);
+
+			java.awt.GridBagConstraints constraintsJLabelFeedAddress = new java.awt.GridBagConstraints();
+			constraintsJLabelFeedAddress.gridx = 1; constraintsJLabelFeedAddress.gridy = 4;
+			constraintsJLabelFeedAddress.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJLabelFeedAddress.ipadx = 6;
+			constraintsJLabelFeedAddress.ipady = 4;
+			constraintsJLabelFeedAddress.insets = new java.awt.Insets(1, 11, 3, 1);
+			getJPanelAddress().add(getJLabelFeedAddress(), constraintsJLabelFeedAddress);
+
+			java.awt.GridBagConstraints constraintsJTextFieldFeedAddress = new java.awt.GridBagConstraints();
+			constraintsJTextFieldFeedAddress.gridx = 2; constraintsJTextFieldFeedAddress.gridy = 4;
+			constraintsJTextFieldFeedAddress.gridwidth = 2;
+			constraintsJTextFieldFeedAddress.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJTextFieldFeedAddress.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJTextFieldFeedAddress.weightx = 1.0;
+			constraintsJTextFieldFeedAddress.ipadx = 87;
+			constraintsJTextFieldFeedAddress.ipady = -1;
+			constraintsJTextFieldFeedAddress.insets = new java.awt.Insets(1, 1, 1, 3);
+			getJPanelAddress().add(getJTextFieldFeedAddress(), constraintsJTextFieldFeedAddress);
+
+			java.awt.GridBagConstraints constraintsJLabelZipAddress = new java.awt.GridBagConstraints();
+			constraintsJLabelZipAddress.gridx = 1; constraintsJLabelZipAddress.gridy = 5;
+			constraintsJLabelZipAddress.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJLabelZipAddress.ipadx = 17;
+			constraintsJLabelZipAddress.ipady = 4;
+			constraintsJLabelZipAddress.insets = new java.awt.Insets(1, 11, 3, 1);
+			getJPanelAddress().add(getJLabelZipAddress(), constraintsJLabelZipAddress);
+
+			java.awt.GridBagConstraints constraintsJTextFieldZipAddress = new java.awt.GridBagConstraints();
+			constraintsJTextFieldZipAddress.gridx = 2; constraintsJTextFieldZipAddress.gridy = 5;
+			constraintsJTextFieldZipAddress.gridwidth = 2;
+			constraintsJTextFieldZipAddress.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJTextFieldZipAddress.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJTextFieldZipAddress.weightx = 1.0;
+			constraintsJTextFieldZipAddress.ipadx = 87;
+			constraintsJTextFieldZipAddress.ipady = -1;
+			constraintsJTextFieldZipAddress.insets = new java.awt.Insets(1, 1, 1, 3);
+			getJPanelAddress().add(getJTextFieldZipAddress(), constraintsJTextFieldZipAddress);
+
+			java.awt.GridBagConstraints constraintsJLabelUserAddress = new java.awt.GridBagConstraints();
+			constraintsJLabelUserAddress.gridx = 1; constraintsJLabelUserAddress.gridy = 6;
+			constraintsJLabelUserAddress.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJLabelUserAddress.ipadx = 5;
+			constraintsJLabelUserAddress.ipady = 4;
+			constraintsJLabelUserAddress.insets = new java.awt.Insets(1, 11, 2, 1);
+			getJPanelAddress().add(getJLabelUserAddress(), constraintsJLabelUserAddress);
+
+			java.awt.GridBagConstraints constraintsJTextFieldUserAddress = new java.awt.GridBagConstraints();
+			constraintsJTextFieldUserAddress.gridx = 2; constraintsJTextFieldUserAddress.gridy = 6;
+			constraintsJTextFieldUserAddress.gridwidth = 2;
+			constraintsJTextFieldUserAddress.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJTextFieldUserAddress.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJTextFieldUserAddress.weightx = 1.0;
+			constraintsJTextFieldUserAddress.ipadx = 87;
+			constraintsJTextFieldUserAddress.ipady = -1;
+			constraintsJTextFieldUserAddress.insets = new java.awt.Insets(1, 1, 0, 3);
+			getJPanelAddress().add(getJTextFieldUserAddress(), constraintsJTextFieldUserAddress);
+
+			java.awt.GridBagConstraints constraintsJLabelPROGAddress = new java.awt.GridBagConstraints();
+			constraintsJLabelPROGAddress.gridx = 1; constraintsJLabelPROGAddress.gridy = 7;
+			constraintsJLabelPROGAddress.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJLabelPROGAddress.ipadx = 3;
+			constraintsJLabelPROGAddress.ipady = 4;
+			constraintsJLabelPROGAddress.insets = new java.awt.Insets(1, 11, 3, 1);
+			getJPanelAddress().add(getJLabelPROGAddress(), constraintsJLabelPROGAddress);
+
+			java.awt.GridBagConstraints constraintsJLabelSplinter = new java.awt.GridBagConstraints();
+			constraintsJLabelSplinter.gridx = 1; constraintsJLabelSplinter.gridy = 8;
+			constraintsJLabelSplinter.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJLabelSplinter.ipadx = 28;
+			constraintsJLabelSplinter.ipady = 4;
+			constraintsJLabelSplinter.insets = new java.awt.Insets(1, 11, 2, 1);
+			getJPanelAddress().add(getJLabelSplinter(), constraintsJLabelSplinter);
+
+			java.awt.GridBagConstraints constraintsJTextFieldSplinter = new java.awt.GridBagConstraints();
+			constraintsJTextFieldSplinter.gridx = 2; constraintsJTextFieldSplinter.gridy = 8;
+			constraintsJTextFieldSplinter.gridwidth = 2;
+			constraintsJTextFieldSplinter.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJTextFieldSplinter.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJTextFieldSplinter.weightx = 1.0;
+			constraintsJTextFieldSplinter.ipadx = 87;
+			constraintsJTextFieldSplinter.ipady = -1;
+			constraintsJTextFieldSplinter.insets = new java.awt.Insets(1, 1, 0, 3);
+			getJPanelAddress().add(getJTextFieldSplinter(), constraintsJTextFieldSplinter);
+
+			java.awt.GridBagConstraints constraintsJTextFieldProgAddress = new java.awt.GridBagConstraints();
+			constraintsJTextFieldProgAddress.gridx = 2; constraintsJTextFieldProgAddress.gridy = 7;
+			constraintsJTextFieldProgAddress.gridwidth = 2;
+			constraintsJTextFieldProgAddress.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJTextFieldProgAddress.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJTextFieldProgAddress.weightx = 1.0;
+			constraintsJTextFieldProgAddress.ipadx = 87;
+			constraintsJTextFieldProgAddress.ipady = -1;
+			constraintsJTextFieldProgAddress.insets = new java.awt.Insets(1, 1, 1, 3);
+			getJPanelAddress().add(getJTextFieldProgAddress(), constraintsJTextFieldProgAddress);
+
+			java.awt.GridBagConstraints constraintsJTextFieldSerialAddress = new java.awt.GridBagConstraints();
+			constraintsJTextFieldSerialAddress.gridx = 3; constraintsJTextFieldSerialAddress.gridy = 9;
+			constraintsJTextFieldSerialAddress.gridwidth = 2;
+			constraintsJTextFieldSerialAddress.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJTextFieldSerialAddress.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJTextFieldSerialAddress.weightx = 1.0;
+			constraintsJTextFieldSerialAddress.ipadx = 182;
+			constraintsJTextFieldSerialAddress.ipady = -1;
+			constraintsJTextFieldSerialAddress.insets = new java.awt.Insets(1, 0, 10, 26);
+			getJPanelAddress().add(getJTextFieldSerialAddress(), constraintsJTextFieldSerialAddress);
+
+			java.awt.GridBagConstraints constraintsJCheckBoxSerial = new java.awt.GridBagConstraints();
+			constraintsJCheckBoxSerial.gridx = 1; constraintsJCheckBoxSerial.gridy = 9;
+			constraintsJCheckBoxSerial.gridwidth = 2;
+			constraintsJCheckBoxSerial.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJCheckBoxSerial.ipadx = 22;
+			constraintsJCheckBoxSerial.ipady = -4;
+			constraintsJCheckBoxSerial.insets = new java.awt.Insets(1, 11, 10, 0);
+			getJPanelAddress().add(getJCheckBoxSerial(), constraintsJCheckBoxSerial);
+
+			java.awt.GridBagConstraints constraintsJComboBoxSPID = new java.awt.GridBagConstraints();
+			constraintsJComboBoxSPID.gridx = 4; constraintsJComboBoxSPID.gridy = 1;
+			constraintsJComboBoxSPID.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJComboBoxSPID.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJComboBoxSPID.weightx = 1.0;
+			constraintsJComboBoxSPID.ipadx = 12;
+			constraintsJComboBoxSPID.insets = new java.awt.Insets(3, 3, 1, 26);
+			getJPanelAddress().add(getJComboBoxSPID(), constraintsJComboBoxSPID);
+
+			java.awt.GridBagConstraints constraintsJComboBoxGEO = new java.awt.GridBagConstraints();
+			constraintsJComboBoxGEO.gridx = 4; constraintsJComboBoxGEO.gridy = 2;
+			constraintsJComboBoxGEO.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJComboBoxGEO.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJComboBoxGEO.weightx = 1.0;
+			constraintsJComboBoxGEO.ipadx = 12;
+			constraintsJComboBoxGEO.insets = new java.awt.Insets(2, 3, 1, 26);
+			getJPanelAddress().add(getJComboBoxGEO(), constraintsJComboBoxGEO);
+
+			java.awt.GridBagConstraints constraintsJComboBoxSUB = new java.awt.GridBagConstraints();
+			constraintsJComboBoxSUB.gridx = 4; constraintsJComboBoxSUB.gridy = 3;
+			constraintsJComboBoxSUB.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJComboBoxSUB.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJComboBoxSUB.weightx = 1.0;
+			constraintsJComboBoxSUB.ipadx = 12;
+			constraintsJComboBoxSUB.insets = new java.awt.Insets(1, 3, 1, 26);
+			getJPanelAddress().add(getJComboBoxSUB(), constraintsJComboBoxSUB);
+
+			java.awt.GridBagConstraints constraintsJComboBoxFEED = new java.awt.GridBagConstraints();
+			constraintsJComboBoxFEED.gridx = 4; constraintsJComboBoxFEED.gridy = 4;
+			constraintsJComboBoxFEED.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJComboBoxFEED.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJComboBoxFEED.weightx = 1.0;
+			constraintsJComboBoxFEED.ipadx = 12;
+			constraintsJComboBoxFEED.insets = new java.awt.Insets(1, 3, 1, 26);
+			getJPanelAddress().add(getJComboBoxFEED(), constraintsJComboBoxFEED);
+
+			java.awt.GridBagConstraints constraintsJComboBoxPROG = new java.awt.GridBagConstraints();
+			constraintsJComboBoxPROG.gridx = 4; constraintsJComboBoxPROG.gridy = 7;
+			constraintsJComboBoxPROG.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJComboBoxPROG.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJComboBoxPROG.weightx = 1.0;
+			constraintsJComboBoxPROG.ipadx = 12;
+			constraintsJComboBoxPROG.insets = new java.awt.Insets(1, 3, 1, 26);
+			getJPanelAddress().add(getJComboBoxPROG(), constraintsJComboBoxPROG);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJPanelAddress;
+}
+/**
+ * Return the JPanelAddressTitleBorder property value.
+ * @return com.cannontech.common.gui.util.TitleBorder
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private com.cannontech.common.gui.util.TitleBorder getJPanelAddressTitleBorder() {
+	com.cannontech.common.gui.util.TitleBorder ivjJPanelAddressTitleBorder = null;
+	try {
+		/* Create part */
+		ivjJPanelAddressTitleBorder = new com.cannontech.common.gui.util.TitleBorder();
+		ivjJPanelAddressTitleBorder.setTitleFont(new java.awt.Font("Arial", 1, 14));
+		ivjJPanelAddressTitleBorder.setTitle("Addressing");
+	} catch (java.lang.Throwable ivjExc) {
+		handleException(ivjExc);
+	};
+	return ivjJPanelAddressTitleBorder;
+}
+/**
+ * Return the JPanelAddressUsage property value.
+ * @return javax.swing.JPanel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JPanel getJPanelAddressUsage() {
+	if (ivjJPanelAddressUsage == null) {
+		try {
+			ivjJPanelAddressUsage = new javax.swing.JPanel();
+			ivjJPanelAddressUsage.setName("JPanelAddressUsage");
+			ivjJPanelAddressUsage.setBorder(getJPanelAddressUsageTitleBorder());
+			ivjJPanelAddressUsage.setLayout(new java.awt.GridBagLayout());
+
+			java.awt.GridBagConstraints constraintsJCheckBoxSPID = new java.awt.GridBagConstraints();
+			constraintsJCheckBoxSPID.gridx = 1; constraintsJCheckBoxSPID.gridy = 1;
+			constraintsJCheckBoxSPID.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJCheckBoxSPID.ipadx = 3;
+			constraintsJCheckBoxSPID.insets = new java.awt.Insets(3, 11, 0, 1);
+			getJPanelAddressUsage().add(getJCheckBoxSPID(), constraintsJCheckBoxSPID);
+
+			java.awt.GridBagConstraints constraintsJCheckBoxGEO = new java.awt.GridBagConstraints();
+			constraintsJCheckBoxGEO.gridx = 1; constraintsJCheckBoxGEO.gridy = 2;
+			constraintsJCheckBoxGEO.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJCheckBoxGEO.ipadx = 6;
+			constraintsJCheckBoxGEO.insets = new java.awt.Insets(0, 11, 0, 1);
+			getJPanelAddressUsage().add(getJCheckBoxGEO(), constraintsJCheckBoxGEO);
+
+			java.awt.GridBagConstraints constraintsJCheckBoxSUB = new java.awt.GridBagConstraints();
+			constraintsJCheckBoxSUB.gridx = 1; constraintsJCheckBoxSUB.gridy = 3;
+			constraintsJCheckBoxSUB.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJCheckBoxSUB.ipadx = 6;
+			constraintsJCheckBoxSUB.insets = new java.awt.Insets(0, 11, 0, 1);
+			getJPanelAddressUsage().add(getJCheckBoxSUB(), constraintsJCheckBoxSUB);
+
+			java.awt.GridBagConstraints constraintsJCheckBoxFEED = new java.awt.GridBagConstraints();
+			constraintsJCheckBoxFEED.gridx = 1; constraintsJCheckBoxFEED.gridy = 4;
+			constraintsJCheckBoxFEED.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJCheckBoxFEED.ipadx = 2;
+			constraintsJCheckBoxFEED.insets = new java.awt.Insets(0, 11, 7, 1);
+			getJPanelAddressUsage().add(getJCheckBoxFEED(), constraintsJCheckBoxFEED);
+
+			java.awt.GridBagConstraints constraintsJCheckBoxZIP = new java.awt.GridBagConstraints();
+			constraintsJCheckBoxZIP.gridx = 2; constraintsJCheckBoxZIP.gridy = 1;
+			constraintsJCheckBoxZIP.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJCheckBoxZIP.ipadx = 12;
+			constraintsJCheckBoxZIP.insets = new java.awt.Insets(3, 2, 0, 27);
+			getJPanelAddressUsage().add(getJCheckBoxZIP(), constraintsJCheckBoxZIP);
+
+			java.awt.GridBagConstraints constraintsJCheckBoxSPLINTER = new java.awt.GridBagConstraints();
+			constraintsJCheckBoxSPLINTER.gridx = 2; constraintsJCheckBoxSPLINTER.gridy = 4;
+			constraintsJCheckBoxSPLINTER.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJCheckBoxSPLINTER.ipadx = -3;
+			constraintsJCheckBoxSPLINTER.insets = new java.awt.Insets(0, 2, 7, 4);
+			getJPanelAddressUsage().add(getJCheckBoxSPLINTER(), constraintsJCheckBoxSPLINTER);
+
+			java.awt.GridBagConstraints constraintsJCheckBoxPROG = new java.awt.GridBagConstraints();
+			constraintsJCheckBoxPROG.gridx = 2; constraintsJCheckBoxPROG.gridy = 3;
+			constraintsJCheckBoxPROG.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJCheckBoxPROG.ipadx = -3;
+			constraintsJCheckBoxPROG.insets = new java.awt.Insets(0, 2, 0, 27);
+			getJPanelAddressUsage().add(getJCheckBoxPROG(), constraintsJCheckBoxPROG);
+
+			java.awt.GridBagConstraints constraintsJCheckBoxUSER = new java.awt.GridBagConstraints();
+			constraintsJCheckBoxUSER.gridx = 2; constraintsJCheckBoxUSER.gridy = 2;
+			constraintsJCheckBoxUSER.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJCheckBoxUSER.ipadx = -1;
+			constraintsJCheckBoxUSER.insets = new java.awt.Insets(0, 2, 0, 27);
+			getJPanelAddressUsage().add(getJCheckBoxUSER(), constraintsJCheckBoxUSER);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJPanelAddressUsage;
+}
+/**
+ * Return the JPanelAddressUsageTitleBorder property value.
+ * @return com.cannontech.common.gui.util.TitleBorder
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private com.cannontech.common.gui.util.TitleBorder getJPanelAddressUsageTitleBorder() {
+	com.cannontech.common.gui.util.TitleBorder ivjJPanelAddressUsageTitleBorder = null;
+	try {
+		/* Create part */
+		ivjJPanelAddressUsageTitleBorder = new com.cannontech.common.gui.util.TitleBorder();
+		ivjJPanelAddressUsageTitleBorder.setTitleFont(new java.awt.Font("Arial", 1, 14));
+		ivjJPanelAddressUsageTitleBorder.setTitle("Address Usage");
+	} catch (java.lang.Throwable ivjExc) {
+		handleException(ivjExc);
+	};
+	return ivjJPanelAddressUsageTitleBorder;
+}
+/**
+ * Return the JPanelRelayUsage property value.
+ * @return javax.swing.JPanel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JPanel getJPanelRelayUsage() {
+	if (ivjJPanelRelayUsage == null) {
+		try {
+			ivjJPanelRelayUsage = new javax.swing.JPanel();
+			ivjJPanelRelayUsage.setName("JPanelRelayUsage");
+			ivjJPanelRelayUsage.setBorder(getJPanelRelayUsageTitleBorder());
+			ivjJPanelRelayUsage.setLayout(new java.awt.GridBagLayout());
+
+			java.awt.GridBagConstraints constraintsJCheckBoxRelay1 = new java.awt.GridBagConstraints();
+			constraintsJCheckBoxRelay1.gridx = 1; constraintsJCheckBoxRelay1.gridy = 1;
+			constraintsJCheckBoxRelay1.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJCheckBoxRelay1.ipadx = -5;
+			constraintsJCheckBoxRelay1.insets = new java.awt.Insets(3, 7, 0, 8);
+			getJPanelRelayUsage().add(getJCheckBoxRelay1(), constraintsJCheckBoxRelay1);
+
+			java.awt.GridBagConstraints constraintsJCheckBoxRelay2 = new java.awt.GridBagConstraints();
+			constraintsJCheckBoxRelay2.gridx = 1; constraintsJCheckBoxRelay2.gridy = 2;
+			constraintsJCheckBoxRelay2.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJCheckBoxRelay2.ipadx = -5;
+			constraintsJCheckBoxRelay2.insets = new java.awt.Insets(0, 7, 0, 8);
+			getJPanelRelayUsage().add(getJCheckBoxRelay2(), constraintsJCheckBoxRelay2);
+
+			java.awt.GridBagConstraints constraintsJCheckBoxRelay3 = new java.awt.GridBagConstraints();
+			constraintsJCheckBoxRelay3.gridx = 1; constraintsJCheckBoxRelay3.gridy = 3;
+			constraintsJCheckBoxRelay3.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJCheckBoxRelay3.ipadx = -5;
+			constraintsJCheckBoxRelay3.insets = new java.awt.Insets(0, 7, 1, 8);
+			getJPanelRelayUsage().add(getJCheckBoxRelay3(), constraintsJCheckBoxRelay3);
+
+			java.awt.GridBagConstraints constraintsJCheckBoxRelay4 = new java.awt.GridBagConstraints();
+			constraintsJCheckBoxRelay4.gridx = 1; constraintsJCheckBoxRelay4.gridy = 4;
+			constraintsJCheckBoxRelay4.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJCheckBoxRelay4.ipadx = -5;
+			constraintsJCheckBoxRelay4.insets = new java.awt.Insets(2, 7, 5, 8);
+			getJPanelRelayUsage().add(getJCheckBoxRelay4(), constraintsJCheckBoxRelay4);
+
+			java.awt.GridBagConstraints constraintsJCheckBoxRelay5 = new java.awt.GridBagConstraints();
+			constraintsJCheckBoxRelay5.gridx = 2; constraintsJCheckBoxRelay5.gridy = 1;
+			constraintsJCheckBoxRelay5.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJCheckBoxRelay5.ipadx = -5;
+			constraintsJCheckBoxRelay5.insets = new java.awt.Insets(3, 9, 0, 14);
+			getJPanelRelayUsage().add(getJCheckBoxRelay5(), constraintsJCheckBoxRelay5);
+
+			java.awt.GridBagConstraints constraintsJCheckBoxRelay6 = new java.awt.GridBagConstraints();
+			constraintsJCheckBoxRelay6.gridx = 2; constraintsJCheckBoxRelay6.gridy = 2;
+			constraintsJCheckBoxRelay6.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJCheckBoxRelay6.ipadx = -5;
+			constraintsJCheckBoxRelay6.insets = new java.awt.Insets(0, 9, 0, 14);
+			getJPanelRelayUsage().add(getJCheckBoxRelay6(), constraintsJCheckBoxRelay6);
+
+			java.awt.GridBagConstraints constraintsJCheckBoxRelay7 = new java.awt.GridBagConstraints();
+			constraintsJCheckBoxRelay7.gridx = 2; constraintsJCheckBoxRelay7.gridy = 3;
+			constraintsJCheckBoxRelay7.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJCheckBoxRelay7.ipadx = -5;
+			constraintsJCheckBoxRelay7.insets = new java.awt.Insets(0, 9, 1, 14);
+			getJPanelRelayUsage().add(getJCheckBoxRelay7(), constraintsJCheckBoxRelay7);
+
+			java.awt.GridBagConstraints constraintsJCheckBoxRelay8 = new java.awt.GridBagConstraints();
+			constraintsJCheckBoxRelay8.gridx = 2; constraintsJCheckBoxRelay8.gridy = 4;
+			constraintsJCheckBoxRelay8.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJCheckBoxRelay8.ipadx = -5;
+			constraintsJCheckBoxRelay8.insets = new java.awt.Insets(2, 9, 5, 14);
+			getJPanelRelayUsage().add(getJCheckBoxRelay8(), constraintsJCheckBoxRelay8);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJPanelRelayUsage;
+}
+/**
+ * Return the JPanelRelayUsageTitleBorder property value.
+ * @return com.cannontech.common.gui.util.TitleBorder
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private com.cannontech.common.gui.util.TitleBorder getJPanelRelayUsageTitleBorder() {
+	com.cannontech.common.gui.util.TitleBorder ivjJPanelRelayUsageTitleBorder = null;
+	try {
+		/* Create part */
+		ivjJPanelRelayUsageTitleBorder = new com.cannontech.common.gui.util.TitleBorder();
+		ivjJPanelRelayUsageTitleBorder.setTitleFont(new java.awt.Font("Arial", 1, 14));
+		ivjJPanelRelayUsageTitleBorder.setTitle("Relay Usage");
+	} catch (java.lang.Throwable ivjExc) {
+		handleException(ivjExc);
+	};
+	return ivjJPanelRelayUsageTitleBorder;
+}
+/**
+ * Return the JTextFieldFeedAddress property value.
+ * @return javax.swing.JTextField
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTextField getJTextFieldFeedAddress() {
+	if (ivjJTextFieldFeedAddress == null) {
+		try {
+			ivjJTextFieldFeedAddress = new javax.swing.JTextField();
+			ivjJTextFieldFeedAddress.setName("JTextFieldFeedAddress");
+			ivjJTextFieldFeedAddress.setFont(new java.awt.Font("dialog", 0, 10));
+			// user code begin {1}
+
+			ivjJTextFieldFeedAddress.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(0, 65534) );
+			
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJTextFieldFeedAddress;
+}
+/**
+ * Return the JTextFieldGeoAddress property value.
+ * @return javax.swing.JTextField
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTextField getJTextFieldGeoAddress() {
+	if (ivjJTextFieldGeoAddress == null) {
+		try {
+			ivjJTextFieldGeoAddress = new javax.swing.JTextField();
+			ivjJTextFieldGeoAddress.setName("JTextFieldGeoAddress");
+			ivjJTextFieldGeoAddress.setFont(new java.awt.Font("dialog", 0, 10));
+			// user code begin {1}
+
+			ivjJTextFieldGeoAddress.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(0, 65534) );
+
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJTextFieldGeoAddress;
+}
+/**
+ * Return the JTextFieldProgAddress property value.
+ * @return javax.swing.JTextField
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTextField getJTextFieldProgAddress() {
+	if (ivjJTextFieldProgAddress == null) {
+		try {
+			ivjJTextFieldProgAddress = new javax.swing.JTextField();
+			ivjJTextFieldProgAddress.setName("JTextFieldProgAddress");
+			ivjJTextFieldProgAddress.setFont(new java.awt.Font("dialog", 0, 10));
+			// user code begin {1}
+
+			ivjJTextFieldProgAddress.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(0, 254) );
+			
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJTextFieldProgAddress;
+}
+/**
+ * Return the JTextFieldSPID511 property value.
+ * @return javax.swing.JTextField
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTextField getJTextFieldSerialAddress() {
+	if (ivjJTextFieldSerialAddress == null) {
+		try {
+			ivjJTextFieldSerialAddress = new javax.swing.JTextField();
+			ivjJTextFieldSerialAddress.setName("JTextFieldSerialAddress");
+			ivjJTextFieldSerialAddress.setFont(new java.awt.Font("dialog", 0, 10));
+			ivjJTextFieldSerialAddress.setEnabled(false);
+			ivjJTextFieldSerialAddress.setEditable(true);
+			// user code begin {1}
+
+			ivjJTextFieldSerialAddress.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(0, 999999999) );
+			
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJTextFieldSerialAddress;
+}
+/**
+ * Return the JTextFieldSPIDAddress property value.
+ * @return javax.swing.JTextField
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTextField getJTextFieldSPIDAddress() {
+	if (ivjJTextFieldSPIDAddress == null) {
+		try {
+			ivjJTextFieldSPIDAddress = new javax.swing.JTextField();
+			ivjJTextFieldSPIDAddress.setName("JTextFieldSPIDAddress");
+			ivjJTextFieldSPIDAddress.setFont(new java.awt.Font("dialog", 0, 10));
+			ivjJTextFieldSPIDAddress.setText("1");
+			// user code begin {1}
+
+			ivjJTextFieldSPIDAddress.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(1, 65534) );
+			ivjJTextFieldSPIDAddress.setText("1");
+			
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJTextFieldSPIDAddress;
+}
+/**
+ * Return the JTextFieldSplinter property value.
+ * @return javax.swing.JTextField
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTextField getJTextFieldSplinter() {
+	if (ivjJTextFieldSplinter == null) {
+		try {
+			ivjJTextFieldSplinter = new javax.swing.JTextField();
+			ivjJTextFieldSplinter.setName("JTextFieldSplinter");
+			ivjJTextFieldSplinter.setFont(new java.awt.Font("dialog", 0, 10));
+			// user code begin {1}
+
+			ivjJTextFieldSplinter.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(0, 254) );
+			
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJTextFieldSplinter;
+}
+/**
+ * Return the JTextFieldSubAddress property value.
+ * @return javax.swing.JTextField
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTextField getJTextFieldSubAddress() {
+	if (ivjJTextFieldSubAddress == null) {
+		try {
+			ivjJTextFieldSubAddress = new javax.swing.JTextField();
+			ivjJTextFieldSubAddress.setName("JTextFieldSubAddress");
+			ivjJTextFieldSubAddress.setFont(new java.awt.Font("dialog", 0, 10));
+			// user code begin {1}
+
+			ivjJTextFieldSubAddress.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(0, 65534) );
+			
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJTextFieldSubAddress;
+}
+/**
+ * Return the JTextFieldUserAddress property value.
+ * @return javax.swing.JTextField
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTextField getJTextFieldUserAddress() {
+	if (ivjJTextFieldUserAddress == null) {
+		try {
+			ivjJTextFieldUserAddress = new javax.swing.JTextField();
+			ivjJTextFieldUserAddress.setName("JTextFieldUserAddress");
+			ivjJTextFieldUserAddress.setFont(new java.awt.Font("dialog", 0, 10));
+			// user code begin {1}
+
+			ivjJTextFieldUserAddress.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(0, 65534) );
+			
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJTextFieldUserAddress;
+}
+/**
+ * Return the JTextFieldZipAddress property value.
+ * @return javax.swing.JTextField
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTextField getJTextFieldZipAddress() {
+	if (ivjJTextFieldZipAddress == null) {
+		try {
+			ivjJTextFieldZipAddress = new javax.swing.JTextField();
+			ivjJTextFieldZipAddress.setName("JTextFieldZipAddress");
+			ivjJTextFieldZipAddress.setFont(new java.awt.Font("dialog", 0, 10));
+			// user code begin {1}
+
+			ivjJTextFieldZipAddress.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(0, 16777214) );
+			
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJTextFieldZipAddress;
+}
+/**
+ * getValue method comment.
+ */
+public Object getValue(Object o) 
+{
+	com.cannontech.database.data.device.lm.LMGroupExpressComm group = null;
+	
+	if( o instanceof com.cannontech.database.data.multi.MultiDBPersistent )
+	{
+		group = (com.cannontech.database.data.device.lm.LMGroupExpressComm)
+					com.cannontech.database.data.multi.MultiDBPersistent.getFirstObjectOfType(
+								com.cannontech.database.data.device.lm.LMGroupExpressComm.class,
+								(com.cannontech.database.data.multi.MultiDBPersistent)o );
+	}
+	else if( o instanceof com.cannontech.database.data.multi.SmartMultiDBPersistent )
+		group = (com.cannontech.database.data.device.lm.LMGroupExpressComm)
+					((com.cannontech.database.data.multi.SmartMultiDBPersistent)o).getOwnerDBPersistent();
+	
+	
+	if( o instanceof com.cannontech.database.data.device.lm.LMGroupExpressComm || group != null )
+	{
+		if( group == null )
+			group = (com.cannontech.database.data.device.lm.LMGroupExpressComm) o;
+
+		group.setServiceProviderAddress( createAddress(
+				getJComboBoxSPID(), 
+				getJTextFieldSPIDAddress(), 
+				com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.TYPE_SERVICE) );
+
+		group.setFeederAddress( createAddress(
+				getJComboBoxFEED(), 
+				getJTextFieldFeedAddress(), 
+				com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.TYPE_FEEDER) );
+		
+		group.setSubstationAddress( createAddress(
+				getJComboBoxSUB(), 
+				getJTextFieldSubAddress(), 
+				com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.TYPE_SUBSTATION) );
+
+		group.setGeoAddress( createAddress(
+				getJComboBoxGEO(), 
+				getJTextFieldGeoAddress(), 
+				com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.TYPE_GEO) );
+
+		group.setProgramAddress( createAddress(
+				getJComboBoxPROG(), 
+				getJTextFieldProgAddress(), 
+				com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.TYPE_PROGRAM) );
+
+
+		if( getJTextFieldSplinter().getText() != null && getJTextFieldSplinter().getText().length() > 0 )
+			group.getLMGroupExpressComm().setSplinterAddress( new Integer(getJTextFieldSplinter().getText()) );
+
+		if( getJTextFieldUserAddress().getText() != null && getJTextFieldUserAddress().getText().length() > 0 )			
+			group.getLMGroupExpressComm().setUdAddress( new Integer(getJTextFieldUserAddress().getText()) );
+
+		if( getJTextFieldZipAddress().getText() != null && getJTextFieldZipAddress().getText().length() > 0 )		
+			group.getLMGroupExpressComm().setZipCodeAddress( new Integer(getJTextFieldZipAddress().getText()) );
+
+		if( getJCheckBoxSerial().isSelected() 
+			 && getJTextFieldSerialAddress().getText() != null 
+			 && getJTextFieldSerialAddress().getText().length() > 0 )
+		{
+			group.getLMGroupExpressComm().setSerialNumber( getJTextFieldSerialAddress().getText() );
+		}
+
+		StringBuffer addressUsage = new StringBuffer("        ");  //8 possible locations
+		StringBuffer relayUsage = new StringBuffer("        ");  //8 for now
+
+		//get our address usage
+		addressUsage.setCharAt( 0, (getJCheckBoxSPID().isSelected() ? 'S' : ' ') );		
+		addressUsage.setCharAt( 1, (getJCheckBoxGEO().isSelected()  ? 'G' : ' ') );
+		addressUsage.setCharAt( 2, (getJCheckBoxSUB().isSelected()  ? 'B' : ' ') );
+		addressUsage.setCharAt( 3, (getJCheckBoxFEED().isSelected() ? 'F' : ' ') );
+		addressUsage.setCharAt( 4, (getJCheckBoxZIP().isSelected()  ? 'Z' : ' ') );
+		addressUsage.setCharAt( 5, (getJCheckBoxUSER().isSelected() ? 'U' : ' ') );
+		addressUsage.setCharAt( 6, (getJCheckBoxPROG().isSelected() ? 'P' : ' ') );
+		addressUsage.setCharAt( 7, (getJCheckBoxSPLINTER().isSelected() ? 'R' : ' ') );
+
+
+		//get our relay usage
+		relayUsage.setCharAt( 0, (getJCheckBoxRelay1().isSelected() ? '1' : ' ') );		
+		relayUsage.setCharAt( 1, (getJCheckBoxRelay2().isSelected() ? '2' : ' ') );
+		relayUsage.setCharAt( 2, (getJCheckBoxRelay3().isSelected() ? '3' : ' ') );
+		relayUsage.setCharAt( 3, (getJCheckBoxRelay4().isSelected() ? '4' : ' ') );
+		relayUsage.setCharAt( 4, (getJCheckBoxRelay5().isSelected() ? '5' : ' ') );
+		relayUsage.setCharAt( 5, (getJCheckBoxRelay6().isSelected() ? '6' : ' ') );
+		relayUsage.setCharAt( 6, (getJCheckBoxRelay7().isSelected() ? '7' : ' ') );
+		relayUsage.setCharAt( 7, (getJCheckBoxRelay8().isSelected() ? '8' : ' ') );
+
+		group.getLMGroupExpressComm().setAddressUsage( addressUsage.toString() );
+		group.getLMGroupExpressComm().setRelayUsage( relayUsage.toString() );
+	}
+
+	
+	return o;
+}
+/**
+ * Called whenever the part throws an exception.
+ * @param exception java.lang.Throwable
+ */
+private void handleException(Throwable exception) {
+
+	/* Uncomment the following lines to print uncaught exceptions to stdout */
+	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	exception.printStackTrace(System.out);
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (6/5/2002 11:40:07 AM)
+ */
+private void initAddressJComboBoxes() 
+{
+	//init SPIDS
+	com.cannontech.database.db.device.lm.LMGroupExpressCommAddress[] addresses = 
+		com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.getAllExpressCommAddressWithNames();
+
+	for( int i = 0; i < addresses.length; i++ )
+		if( addresses[i].getAddressType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.TYPE_SERVICE) )
+			getJComboBoxSPID().addItem( addresses[i] );
+		else if( addresses[i].getAddressType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.TYPE_GEO) )
+			getJComboBoxGEO().addItem( addresses[i] );
+		else if( addresses[i].getAddressType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.TYPE_SUBSTATION) )
+			getJComboBoxSUB().addItem( addresses[i] );
+		else if( addresses[i].getAddressType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.TYPE_FEEDER) )
+			getJComboBoxFEED().addItem( addresses[i] );
+		else if( addresses[i].getAddressType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress.TYPE_PROGRAM) )
+			getJComboBoxPROG().addItem( addresses[i] );
+		else
+		{
+			System.out.println("********************************");
+
+			System.out.println("*** Found an ExpressCommAddress that is not recognized '" 
+						+ addresses[i].getAddressType() + "' in " + this.getClass().getName() );
+			
+			System.out.println("********************************");
+		}
+
+}
+/**
+ * Initializes connections
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void initConnections() throws java.lang.Exception {
+	// user code begin {1}
+
+	// user code end
+	getJComboBoxSPID().addActionListener(this);
+	getJComboBoxGEO().addActionListener(this);
+	getJComboBoxSUB().addActionListener(this);
+	getJComboBoxFEED().addActionListener(this);
+	getJComboBoxPROG().addActionListener(this);
+	getJTextFieldZipAddress().addCaretListener(this);
+	getJTextFieldSPIDAddress().addCaretListener(this);
+	getJTextFieldGeoAddress().addCaretListener(this);
+	getJTextFieldFeedAddress().addCaretListener(this);
+	getJTextFieldProgAddress().addCaretListener(this);
+	getJTextFieldSerialAddress().addCaretListener(this);
+	getJCheckBoxSerial().addActionListener(this);
+	getJCheckBoxRelay5().addActionListener(this);
+	getJCheckBoxRelay6().addActionListener(this);
+	getJCheckBoxRelay7().addActionListener(this);
+	getJCheckBoxRelay8().addActionListener(this);
+	getJCheckBoxRelay4().addActionListener(this);
+	getJCheckBoxRelay3().addActionListener(this);
+	getJCheckBoxRelay2().addActionListener(this);
+	getJCheckBoxRelay1().addActionListener(this);
+	getJCheckBoxSPLINTER().addActionListener(this);
+	getJCheckBoxPROG().addActionListener(this);
+	getJCheckBoxUSER().addActionListener(this);
+	getJCheckBoxZIP().addActionListener(this);
+	getJCheckBoxFEED().addActionListener(this);
+	getJCheckBoxSUB().addActionListener(this);
+	getJCheckBoxGEO().addActionListener(this);
+}
+/**
+ * Initialize the class.
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void initialize() {
+	try {
+		// user code begin {1}
+		// user code end
+		setName("LMGroupExpressComEditorPanel");
+		setLayout(new java.awt.GridBagLayout());
+		setSize(357, 336);
+
+		java.awt.GridBagConstraints constraintsJPanelAddress = new java.awt.GridBagConstraints();
+		constraintsJPanelAddress.gridx = 1; constraintsJPanelAddress.gridy = 1;
+		constraintsJPanelAddress.gridwidth = 2;
+		constraintsJPanelAddress.fill = java.awt.GridBagConstraints.BOTH;
+		constraintsJPanelAddress.anchor = java.awt.GridBagConstraints.WEST;
+		constraintsJPanelAddress.weightx = 1.0;
+		constraintsJPanelAddress.weighty = 1.0;
+		constraintsJPanelAddress.ipadx = -52;
+		constraintsJPanelAddress.ipady = -3;
+		constraintsJPanelAddress.insets = new java.awt.Insets(4, 5, 2, 6);
+		add(getJPanelAddress(), constraintsJPanelAddress);
+
+		java.awt.GridBagConstraints constraintsJPanelAddressUsage = new java.awt.GridBagConstraints();
+		constraintsJPanelAddressUsage.gridx = 1; constraintsJPanelAddressUsage.gridy = 2;
+		constraintsJPanelAddressUsage.fill = java.awt.GridBagConstraints.BOTH;
+		constraintsJPanelAddressUsage.anchor = java.awt.GridBagConstraints.WEST;
+		constraintsJPanelAddressUsage.weightx = 1.0;
+		constraintsJPanelAddressUsage.weighty = 1.0;
+		constraintsJPanelAddressUsage.ipadx = -10;
+		constraintsJPanelAddressUsage.ipady = -11;
+		constraintsJPanelAddressUsage.insets = new java.awt.Insets(2, 5, 11, 17);
+		add(getJPanelAddressUsage(), constraintsJPanelAddressUsage);
+
+		java.awt.GridBagConstraints constraintsJPanelRelayUsage = new java.awt.GridBagConstraints();
+		constraintsJPanelRelayUsage.gridx = 2; constraintsJPanelRelayUsage.gridy = 2;
+		constraintsJPanelRelayUsage.fill = java.awt.GridBagConstraints.BOTH;
+		constraintsJPanelRelayUsage.anchor = java.awt.GridBagConstraints.WEST;
+		constraintsJPanelRelayUsage.weightx = 1.0;
+		constraintsJPanelRelayUsage.weighty = 1.0;
+		constraintsJPanelRelayUsage.ipadx = -10;
+		constraintsJPanelRelayUsage.ipady = -12;
+		constraintsJPanelRelayUsage.insets = new java.awt.Insets(2, 18, 11, 6);
+		add(getJPanelRelayUsage(), constraintsJPanelRelayUsage);
+		initConnections();
+	} catch (java.lang.Throwable ivjExc) {
+		handleException(ivjExc);
+	}
+	// user code begin {2}
+
+	initAddressJComboBoxes();
+	
+	// user code end
+}
+/**
+ * This method must be implemented if a notion of data validity needs to be supported.
+ * @return boolean
+ */
+public boolean isInputValid() 
+{
+	if( getJTextFieldSPIDAddress().getText() == null 
+		 || getJTextFieldSPIDAddress().getText().length() <= 0
+		 || Integer.parseInt(getJTextFieldSPIDAddress().getText()) <= 0 )
+	{
+		setErrorString("The SPID address must be 1 or greater");
+		return false;
+	}
+
+	return true;
+}
+/**
+ * Comment
+ */
+public void jCheckBoxSerial_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+
+	for( int i = 0; i < getJPanelAddress().getComponentCount(); i++ )
+	{
+		java.awt.Component c = getJPanelAddress().getComponent(i);
+
+		if( c.equals( getJTextFieldSerialAddress() ) )
+		{
+			c.setEnabled( getJCheckBoxSerial().isSelected() );
+		}
+		else if ( c.equals( getJCheckBoxSerial() ) )
+		{
+			//do nothing
+		}
+		else
+			c.setEnabled( !(getJCheckBoxSerial().isSelected()) );
+	}
+
+	fireInputUpdate();
+
+	return;
+}
+/**
+ * Comment
+ */
+public void jComboBoxFEED_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+
+	if( getJComboBoxFEED().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressCommAddress )
+	{
+		com.cannontech.database.db.device.lm.LMGroupExpressCommAddress selected =
+				(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress)getJComboBoxFEED().getSelectedItem();
+
+		getJTextFieldFeedAddress().setText( selected.getAddress().toString() );
+
+		getJComboBoxFEED().setEditable(false);
+	}
+	else
+	{
+		getJComboBoxFEED().setEditable(true);
+		getJComboBoxFEED().getEditor().selectAll();
+	}
+
+	fireInputUpdate();
+
+	return;
+}
+/**
+ * Comment
+ */
+public void jComboBoxGEO_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+
+	if( getJComboBoxGEO().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressCommAddress )
+	{
+		com.cannontech.database.db.device.lm.LMGroupExpressCommAddress selected =
+				(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress)getJComboBoxGEO().getSelectedItem();
+
+		getJTextFieldGeoAddress().setText( selected.getAddress().toString() );
+		
+		getJComboBoxGEO().setEditable(false);
+	}
+	else
+	{
+		getJComboBoxGEO().setEditable(true);
+		getJComboBoxGEO().getEditor().selectAll();
+	}
+
+	fireInputUpdate();
+
+	return;
+}
+/**
+ * Comment
+ */
+public void jComboBoxPROG_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+
+	if( getJComboBoxPROG().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressCommAddress )
+	{
+		com.cannontech.database.db.device.lm.LMGroupExpressCommAddress selected =
+				(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress)getJComboBoxPROG().getSelectedItem();
+
+		getJTextFieldProgAddress().setText( selected.getAddress().toString() );
+
+		getJComboBoxPROG().setEditable(false);
+	}
+	else
+	{
+		getJComboBoxPROG().setEditable(true);
+		getJComboBoxPROG().getEditor().selectAll();
+	}
+
+	fireInputUpdate();
+
+	return;
+}
+/**
+ * Comment
+ */
+public void jComboBoxSPID_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+
+	if( getJComboBoxSPID().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressCommAddress )
+	{
+		com.cannontech.database.db.device.lm.LMGroupExpressCommAddress selected =
+				(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress)getJComboBoxSPID().getSelectedItem();
+
+		getJTextFieldSPIDAddress().setText( selected.getAddress().toString() );
+		
+		getJComboBoxSPID().setEditable(false);
+	}
+	else
+	{
+		getJComboBoxSPID().setEditable(true);
+		getJComboBoxSPID().getEditor().selectAll();
+	}
+
+	fireInputUpdate();
+
+	return;
+}
+/**
+ * Comment
+ */
+public void jComboBoxSUB_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+
+	if( getJComboBoxSUB().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressCommAddress )
+	{
+		com.cannontech.database.db.device.lm.LMGroupExpressCommAddress selected =
+				(com.cannontech.database.db.device.lm.LMGroupExpressCommAddress)getJComboBoxSUB().getSelectedItem();
+
+		getJTextFieldSubAddress().setText( selected.getAddress().toString() );
+
+		getJComboBoxSUB().setEditable(false);
+	}
+	else
+	{
+		getJComboBoxSUB().setEditable(true);
+		getJComboBoxSUB().getEditor().selectAll();
+	}
+
+	fireInputUpdate();
+
+	return;
+}
+/**
+ * main entrypoint - starts the part when it is run as an application
+ * @param args java.lang.String[]
+ */
+public static void main(java.lang.String[] args) {
+	try {
+		java.awt.Frame frame = new java.awt.Frame();
+		LMGroupExpressComEditorPanel aGroupTypePanel;
+		aGroupTypePanel = new LMGroupExpressComEditorPanel();
+		frame.add("Center", aGroupTypePanel);
+		frame.setSize(aGroupTypePanel.getSize());
+		frame.addWindowListener(new java.awt.event.WindowAdapter() {
+			public void windowClosing(java.awt.event.WindowEvent e) {
+				System.exit(0);
+			};
+		});
+		frame.setVisible(true);
+	} catch (Throwable exception) {
+		System.err.println("Exception occurred in main()");
+		exception.printStackTrace(System.out);
+	}
+}
+/**
+ * setValue method comment.
+ */
+public void setValue(Object o) 
+{
+	if( o instanceof com.cannontech.database.data.device.lm.LMGroupExpressComm )
+	{
+		com.cannontech.database.data.device.lm.LMGroupExpressComm group = (com.cannontech.database.data.device.lm.LMGroupExpressComm) o;
+
+		getJComboBoxSPID().setSelectedItem( group.getServiceProviderAddress() );
+		getJTextFieldSPIDAddress().setText( group.getServiceProviderAddress().getAddress().toString() );
+
+		getJComboBoxGEO().setSelectedItem( group.getGeoAddress() );
+		getJTextFieldGeoAddress().setText( group.getGeoAddress().getAddress().toString() );
+
+		getJComboBoxFEED().setSelectedItem( group.getFeederAddress() );
+		getJTextFieldFeedAddress().setText( group.getFeederAddress().getAddress().toString() );
+
+		getJComboBoxSUB().setSelectedItem( group.getSubstationAddress() );
+		getJTextFieldSubAddress().setText( group.getSubstationAddress().getAddress().toString() );
+
+		getJComboBoxPROG().setSelectedItem( group.getProgramAddress() );
+		getJTextFieldProgAddress().setText( group.getProgramAddress().getAddress().toString() );
+
+
+		getJTextFieldZipAddress().setText( group.getLMGroupExpressComm().getZipCodeAddress().toString() );
+
+		getJTextFieldUserAddress().setText( group.getLMGroupExpressComm().getUdAddress().toString() );
+
+		getJTextFieldSplinter().setText( group.getLMGroupExpressComm().getSplinterAddress().toString() );
+
+		
+		Integer serial = new Integer(group.getLMGroupExpressComm().getSerialNumber());
+		if( serial.intValue() > 0 )
+		{
+			getJCheckBoxSerial().doClick();
+			getJTextFieldSerialAddress().setText( serial.toString() );
+		}
+
+		//set our address usage
+		String addUsage = group.getLMGroupExpressComm().getAddressUsage();
+		getJCheckBoxSPID().setSelected( addUsage.indexOf("S") >= 0 );
+		getJCheckBoxGEO().setSelected( addUsage.indexOf("G") >= 0 );
+		getJCheckBoxSUB().setSelected( addUsage.indexOf("B") >= 0 );
+		getJCheckBoxFEED().setSelected( addUsage.indexOf("F") >= 0 );
+		getJCheckBoxZIP().setSelected( addUsage.indexOf("Z") >= 0 );
+		getJCheckBoxUSER().setSelected( addUsage.indexOf("U") >= 0 );
+		getJCheckBoxPROG().setSelected( addUsage.indexOf("P") >= 0 );
+		getJCheckBoxSPLINTER().setSelected( addUsage.indexOf("R") >= 0 );
+
+
+		//set our relay usage
+		String relayUsage = group.getLMGroupExpressComm().getRelayUsage();
+		getJCheckBoxRelay1().setSelected( relayUsage.indexOf("1") >= 0 );
+		getJCheckBoxRelay2().setSelected( relayUsage.indexOf("2") >= 0 );
+		getJCheckBoxRelay3().setSelected( relayUsage.indexOf("3") >= 0 );
+		getJCheckBoxRelay4().setSelected( relayUsage.indexOf("4") >= 0 );
+		getJCheckBoxRelay5().setSelected( relayUsage.indexOf("5") >= 0 );
+		getJCheckBoxRelay6().setSelected( relayUsage.indexOf("6") >= 0 );
+		getJCheckBoxRelay7().setSelected( relayUsage.indexOf("7") >= 0 );
+		getJCheckBoxRelay8().setSelected( relayUsage.indexOf("8") >= 0 );
+	}
+
+
+}
+}

@@ -1,0 +1,78 @@
+<?xml version="1.0" ?> 
+<project name="Yukon Clients" default="targets" basedir=".">
+
+     <!-- Define new tasks -->
+	 <taskdef name="XSDCompiler" classname="org.exolab.castor.tools.XSDCompiler"/>
+	 	 	 
+     <property file="build.properties"/>
+	 	      	     	     
+     <property name="third-party"   value="${yukon.base}/third-party" />
+     <property name="common"        value="${yukon.base}/common" />
+     <property name="billing"          value="${yukon.base}/billing" />
+     <property name="tdc"           value="${yukon.base}/tdc" />
+     <property name="cbc"           value="${yukon.base}/cbc" />
+     <property name="loadcontrol"   value="${yukon.base}/loadcontrol" />
+     <property name="macs"           value="${yukon.base}/macs" />
+     <property name="commander"     value="${yukon.base}/commander" />
+     <property name="trending"     value="${yukon.base}/trending" />
+     <property name="dbeditor"     value="${yukon.base}/dbeditor" />
+     <!-- <property name="web"          value="${yukon.base}/web" /> -->
+     <property name="calchist"     value="${yukon.base}/calchist" />
+     <property name="logger"     value="${yukon.base}/logger" />
+
+     <property name="esub-editor"   value="${yukon.base}/esub-editor" />
+     <property name="esub-web"      value="${yukon.base}/esub-web" />
+     <property name="servlet"      value="${yukon.base}/servlet" />
+     <property name="palm"      value="${yukon.base}/palm" />
+     <property name="tools"      value="${yukon.base}/tools" />
+     
+     <target name="targets">         
+         <echo message="The following targets are available"/>
+         <echo message=" build - perform incremental build"/>
+         <echo message=" clean - clean the slate"/>        
+         <echo message=" all - do a clean then a build"/>               
+     </target>
+            
+     <target name="all">         
+         <antcall target="callall">
+             <param name="dotarget" value="all"/>
+         </antcall>
+     </target>
+          
+     <target name="clean">
+          <delete>
+               <fileset dir="../lib" includes="*"/>
+          </delete>
+         <antcall target="callall" inheritAll="true" >
+             <param name="dotarget" value="clean"/>
+         </antcall>        
+     </target>
+
+     <target name="build">         
+         <antcall target="callall" inheritAll="true">
+             <param name="dotarget" value="build"/>
+         </antcall>        
+     </target>
+
+     <target name="callall">
+        <ant dir="${third-party}" target="${dotarget}" />
+        <ant dir="${common}" target="${dotarget}" />
+        <ant dir="${billing}" target="${dotarget}" />
+        <ant dir="${tdc}" target="${dotarget}" /> 
+        <ant dir="${cbc}" target="${dotarget}" />
+        <ant dir="${loadcontrol}" target="${dotarget}" />
+        <ant dir="${macs}" target="${dotarget}" />
+        <ant dir="${commander}" target="${dotarget}" />
+        <ant dir="${trending}" target="${dotarget}" />
+        <ant dir="${dbeditor}" target="${dotarget}" />
+        <ant dir="${calchist}" target="${dotarget}" />
+        <ant dir="${logger}" target="${dotarget}"/>
+        <ant dir="${palm}" target="${dotarget}" />
+        <ant dir="${tools}" target="${dotarget}" />
+        <ant dir="${servlet}" target="${dotarget}"/>
+     <!--   <ant dir="${esub-editor}" target="${dotarget}" />        
+        <ant dir="${esub-web}" target="${dotarget}"/>        
+                         -->
+     </target>
+             
+</project>

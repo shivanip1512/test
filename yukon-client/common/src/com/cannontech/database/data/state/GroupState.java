@@ -1,0 +1,206 @@
+package com.cannontech.database.data.state;
+
+/**
+ * This type was created in VisualAge.
+ */
+
+public class GroupState extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange, com.cannontech.common.editor.EditorPanel
+{
+	private com.cannontech.database.db.state.StateGroup stateGroup = null;
+	private java.util.Vector statesVector = null;
+/**
+ * StatusPoint constructor comment.
+ */
+public GroupState() {
+	super();
+}
+/**
+ * StatusPoint constructor comment.
+ */
+public GroupState(Integer stateGroupID) {
+	super();
+	getStateGroup().setStateGroupID(stateGroupID);
+}
+/**
+ * This method was created in VisualAge.
+ * @exception java.sql.SQLException The exception description.
+ */
+public void add() throws java.sql.SQLException {
+	
+	getStateGroup().add();
+
+	if( getStatesVector() != null )
+		for( int i = 0; i < getStatesVector().size(); i++ )
+			((com.cannontech.database.db.DBPersistent) getStatesVector().elementAt(i)).add();
+}
+/**
+ * This method was created in VisualAge.
+ * @exception java.sql.SQLException The exception description.
+ */
+public void delete() throws java.sql.SQLException 
+{
+	com.cannontech.database.db.state.State.deleteAllStates( getStateGroup().getStateGroupID(), getDbConnection() );
+	
+	getStateGroup().delete();
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (12/19/2001 1:45:25 PM)
+ * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
+ */
+public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
+{
+	com.cannontech.message.dispatch.message.DBChangeMsg[] msgs =
+	{
+		new com.cannontech.message.dispatch.message.DBChangeMsg(
+					getStateGroup().getStateGroupID().intValue(),
+					com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_STATE_GROUP_DB,
+					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_STATEGROUP,
+					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_STATEGROUP,
+					typeOfChange)
+	};
+
+
+	return msgs;
+}
+/**
+ * This method was created in VisualAge.
+ * @return com.cannontech.database.db.point.PointControl
+ */
+public com.cannontech.database.db.state.StateGroup getStateGroup() {
+	if( stateGroup == null )
+		stateGroup = new com.cannontech.database.db.state.StateGroup();
+		
+	return stateGroup;
+}
+/**
+ * This method was created in VisualAge.
+ * @return com.cannontech.database.db.point.PointControl
+ */
+public java.util.Vector getStatesVector() {
+	if( statesVector == null )
+		statesVector = new java.util.Vector();
+		
+	return statesVector;
+}
+/**
+ * This method was created in VisualAge.
+ * @param pointID java.lang.Integer
+ */
+public final static boolean hasPoint(Integer sGroupID) throws java.sql.SQLException 
+{	
+	return hasPoint(sGroupID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+}
+/**
+ * This method was created in VisualAge.
+ * @param pointID java.lang.Integer
+ */
+public final static boolean hasPoint(Integer sGroupID, String databaseAlias) throws java.sql.SQLException 
+{
+	com.cannontech.database.SqlStatement stmt =
+		new com.cannontech.database.SqlStatement("SELECT StateGroupID FROM " + com.cannontech.database.db.point.Point.TABLE_NAME + " WHERE StateGroupID=" + sGroupID,
+													databaseAlias );
+
+	try
+	{
+		stmt.execute();
+		return (stmt.getRowCount() > 0 );
+	}
+	catch( Exception e )
+	{
+		return false;
+	}
+}
+/**
+ * This method was created in VisualAge.
+ * @exception java.sql.SQLException The exception description.
+ */
+public void retrieve() throws java.sql.SQLException {
+
+	getStateGroup().retrieve();
+	statesVector = new java.util.Vector();
+	
+	try
+	{
+		com.cannontech.database.db.state.State rArray[] = com.cannontech.database.db.state.State.getStates( getStateGroup().getStateGroupID() );
+
+		for( int i = 0; i < rArray.length; i++ )
+		{
+			rArray[i].setDbConnection(getDbConnection());
+			statesVector.addElement( rArray[i] );
+		}
+	}
+	catch(java.sql.SQLException e )
+	{
+		//not necessarily an error
+	}
+
+	for( int i = 0; i < getStatesVector().size(); i++ )
+		((com.cannontech.database.db.DBPersistent) getStatesVector().elementAt(i)).retrieve();
+
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (1/4/00 3:32:03 PM)
+ * @param conn java.sql.Connection
+ */
+public void setDbConnection(java.sql.Connection conn) 
+{
+	super.setDbConnection(conn);
+
+	getStateGroup().setDbConnection(conn);
+	
+	java.util.Vector v = getStatesVector();
+
+	if( v != null )
+	{
+		for( int i = 0; i < v.size(); i++ )
+			((com.cannontech.database.db.DBPersistent) v.elementAt(i)).setDbConnection(conn);
+	}
+}
+/**
+ * This method was created in VisualAge.
+ * @param newValue com.cannontech.database.db.device.Device
+ */
+public void setStateGroup(com.cannontech.database.db.state.StateGroup newValue) {
+	this.stateGroup = newValue;
+}
+/**
+ * This method was created in VisualAge.
+ */
+public void setStateGroupID(Integer stateGroupID) {
+	getStateGroup().setStateGroupID(stateGroupID);
+}
+/**
+ * This method was created in VisualAge.
+ * @param newValue com.cannontech.database.db.device.Device
+ */
+public void setStatesVector(java.util.Vector newValue) {
+	this.statesVector = newValue;
+}
+/**
+ * This method was created in VisualAge.
+ * @return java.lang.String
+ */
+public String toString() {
+
+	if( getStateGroup() != null )
+		return getStateGroup().getName();
+	else
+		return null;
+}
+/**
+ * This method was created in VisualAge.
+ * @exception java.sql.SQLException The exception description.
+ */
+public void update() throws java.sql.SQLException {
+	
+	getStateGroup().update();
+
+	com.cannontech.database.db.state.State.deleteAllStates( getStateGroup().getStateGroupID(), getDbConnection() );
+
+	if( getStatesVector() != null )
+		for( int i = 0; i < getStatesVector().size(); i++ )
+			((com.cannontech.database.db.DBPersistent) getStatesVector().elementAt(i)).add();
+}
+}

@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: com.cannontech.calchist.CalcHistorical
+Class-Path: ./ common.jar message.jar database.jar rwav.jar SqlServer.jar classes12.zip ../config/ ../log/ ../export/
+
