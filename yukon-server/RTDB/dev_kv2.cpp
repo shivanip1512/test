@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/11/15 14:08:13 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/11/15 20:42:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,21 +38,15 @@ CtiDeviceKV2::~CtiDeviceKV2()
 }
 
 //=========================================================================================================================================
-//scanner has decided that it's time to talk to a kv2 device and has called up on Us to carry out this mission - let us be brave
+//scanner has decided that it's time to talk to an ansi-talking device and has called up on Us to carry out this mission - let us be brave
 //
 //we get handed a bunch of junk we don't care about, build a header about the command (GeneralScan) and , then pop down
 //to the ansi protocol object to get info about the tables we know we need for a GeneralScan
 //=========================================================================================================================================
 
-INT CtiDeviceKV2::GeneralScan(CtiRequestMsg *pReq,
-                              CtiCommandParser &parse,
-                              OUTMESS *&OutMessage,
-                              RWTPtrSlist< CtiMessage > &vgList,
-                              RWTPtrSlist< CtiMessage > &retList,
-                              RWTPtrSlist< OUTMESS > &outList,
-                              INT ScanPriority)
+INT CtiDeviceKV2::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList,
+                               RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority )
 {
-//      getProtocol().getGeneralScanTables( ptr + adjustment );
 
    ULONG BytesWritten;
    int   adjustment = 0;
@@ -76,9 +70,11 @@ INT CtiDeviceKV2::GeneralScan(CtiRequestMsg *pReq,
       BYTE *ptr = OutMessage->Buffer.OutMessage;
 
       //why don't we use the getProtocol() to get the header???
-      adjustment = makeMessageHeader( ptr, 5 );       /* command zero means general scan */
+      adjustment = makeMessageHeader( ptr, 5 );
 
-      getProtocol().getTables( ptr + adjustment );
+//      getProtocol().getGeneralScanTables( ptr + adjustment );
+
+      getProtocol().getBillingTables( ptr + adjustment );
 
       outList.insert( OutMessage );
 //      OutMessage = NULL;
@@ -93,24 +89,23 @@ INT CtiDeviceKV2::GeneralScan(CtiRequestMsg *pReq,
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-INT CtiDeviceKV2::ResultDecode( INMESS                    *InMessage,
-                                RWTime                    &TimeNow,
-                                RWTPtrSlist< CtiMessage > &vgList,
-                                RWTPtrSlist< CtiMessage > &retList,
+INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist < CtiMessage >&retList,
                                 RWTPtrSlist< OUTMESS >    &outList)
 {
+
+
+   CtiLockGuard< CtiLogger > doubt_guard( dout );
+   dout << RWTime::now() << " The KV2 responded with data" << endl;
    return( 1 ); //just a val
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-INT CtiDeviceKV2::ErrorDecode(   INMESS                     *InMessage,
-                                 RWTime                     &TimeNow,
-                                 RWTPtrSlist< CtiMessage >  &vgList,
-                                 RWTPtrSlist< CtiMessage >  &retList,
-                                 RWTPtrSlist< OUTMESS >     &outList)
+INT CtiDeviceKV2::ErrorDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist < CtiMessage >&vgList, RWTPtrSlist< CtiMessage > &retList,
+                               RWTPtrSlist< OUTMESS > &outList)
 {
+
    return( 1 ); //just a val
 }
 
@@ -145,7 +140,7 @@ int CtiDeviceKV2::makeMessageHeader( BYTE *ptr, int cmd )
    case( 5 ):
       {
          header->lastLoadProfileTime = getLastLPTime().seconds();
-         header->numTablesRequested = 3;
+         header->numTablesRequested = 12;
          header->command = cmd;
       }
       break;
@@ -169,9 +164,11 @@ int CtiDeviceKV2::makeMessageHeader( BYTE *ptr, int cmd )
 //
 //=========================================================================================================================================
 
-CtiProtocolANSI &CtiDeviceKV2::getProtocol( void )
+CtiProtocolANSI & CtiDeviceKV2::getProtocol( void )
 {
    return _ansiProtocol;
 }
+
+
 
 

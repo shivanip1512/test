@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/11/15 14:08:03 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/11/15 20:37:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,7 +42,7 @@ CtiANSIDatalink::CtiANSIDatalink()
    _ready = false;
    _bytes = 0;
    setFailed( false );
-
+   _allDone = false;
 
    _PRETENDER =0;
 }
@@ -53,6 +53,10 @@ CtiANSIDatalink::CtiANSIDatalink()
 CtiANSIDatalink::~CtiANSIDatalink()
 {
    delete _tempMsgStorage;
+   delete _ptrFromAppLayer;
+   delete _whatsRequested;
+   delete _tables;
+   delete _header;
 }
 
 //=========================================================================================================================================
@@ -74,48 +78,130 @@ bool CtiANSIDatalink::generate( CtiXfer &xfer )
             case identified:
                {
                   identify( xfer );
+                  {
+                     dout << endl;
+                     CtiLockGuard< CtiLogger > doubt_guard( dout );
+                     dout << RWTime::now() << " **Identify**" << endl;
+                     dout << endl;
+                  }
+
                }
                break;
 
             case negotiated:
                {
                   negotiate( xfer );
+                  {
+                     dout << endl;
+                     CtiLockGuard< CtiLogger > doubt_guard( dout );
+                     dout << RWTime::now() << " **Negotiate**" << endl;
+                     dout << endl;
+                  }
+
                }
                break;
 
             case timingSet:
                {
                   timing( xfer );
+                  {
+                     dout << endl;
+                     CtiLockGuard< CtiLogger > doubt_guard( dout );
+                     dout << RWTime::now() << " **Timing**" << endl;
+                     dout << endl;
+                  }
+
                }
                break;
 
             case loggedOn:
                {
                   logOn( xfer );
+                  {
+                     dout << endl;
+                     CtiLockGuard< CtiLogger > doubt_guard( dout );
+                     dout << RWTime::now() << " **Log On**" << endl;
+                     dout << endl;
+                  }
+
                }
                break;
 
             case secured:
                {
                   secure( xfer );
+                  {
+                     dout << endl;
+                     CtiLockGuard< CtiLogger > doubt_guard( dout );
+                     dout << RWTime::now() << " **Secure**" << endl;
+                     dout << endl;
+                  }
+
                }
                break;
 
             case authenticated:
                {
                   authenticate( xfer );
+                  {
+                     dout << endl;
+                     CtiLockGuard< CtiLogger > doubt_guard( dout );
+                     dout << RWTime::now() << " **Authenticate**" << endl;
+                     dout << endl;
+                  }
+
                }
                break;
 
             case request:
                {
                   sendRequest( xfer );
+                  {
+                     dout << endl;
+                     CtiLockGuard< CtiLogger > doubt_guard( dout );
+                     dout << RWTime::now() << " **Request**" << endl;
+                     dout << endl;
+                  }
+
                }
                break;
 
             case loggedOff:
                {
                   logOff( xfer );
+                  {
+                     dout << endl;
+                     CtiLockGuard< CtiLogger > doubt_guard( dout );
+                     dout << RWTime::now() << " **Log Off**" << endl;
+                     dout << endl;
+                  }
+
+               }
+               break;
+
+            case terminated:
+               {
+                  terminate( xfer );
+                  {
+                     dout << endl;
+                     CtiLockGuard< CtiLogger > doubt_guard( dout );
+                     dout << RWTime::now() << " **Terminate**" << endl;
+                     dout << endl;
+                  }
+
+               }
+               break;
+
+            case disconnected:
+               {
+                  disconnect( xfer );
+                  {
+                     dout << endl;
+                     CtiLockGuard< CtiLogger > doubt_guard( dout );
+                     dout << RWTime::now() << " **Disconnect**" << endl;
+                     dout << endl;
+                  }
+
                }
                break;
             }
@@ -269,7 +355,7 @@ bool CtiANSIDatalink::disassemblePacket( BYTE *packet, ULONG &retrieve, ULONG &s
             setFailed( false );
             _tempMsgLength = arrived;
 
-            if( _tempMsgStorage != NULL )
+            if(( _tempMsgStorage != NULL ) && ( _tempMsgLength < 511 ))
             {
                memcpy( _tempMsgStorage, packet, _tempMsgLength );
             }
@@ -293,8 +379,11 @@ bool CtiANSIDatalink::disassemblePacket( BYTE *packet, ULONG &retrieve, ULONG &s
 
    case data:
       {
-         memcpy( &_tempMsgStorage[_tempMsgLength], packet, arrived );
-         _tempMsgLength += arrived;
+         if(( _tempMsgStorage != NULL ) && ( _tempMsgLength < 511 ))
+         {
+            memcpy( &_tempMsgStorage[_tempMsgLength], packet, arrived );
+            _tempMsgLength += arrived;
+         }
 
          if( checkCRC() != false )
          {
@@ -472,9 +561,21 @@ void CtiANSIDatalink::logOn( CtiXfer &xfer )
    BYTE        data[13];
    BYTEUSHORT  flip;
 
+   memset( &data[3], 0x00, 13 );
+
    //this is just for TESTING
    data[0] = logon;
-   memset( &data[1], 0x00, 12 );
+
+   data[1] = 0x00;
+   data[2] = 0x32;   //userID?
+
+   data[8] = 0x41;   //Admin
+   data[9] = 0x64;
+   data[10] = 0x6d;
+   data[11] = 0x69;
+   data[12] = 0x6e;
+
+//   memset( &data[3], 0x00, 12 );
 
    memset( xfer.getOutBuffer(), NULL, 100 );
    assemblePacket( xfer.getOutBuffer(), data, 13, 0 );
@@ -497,15 +598,11 @@ void CtiANSIDatalink::secure( CtiXfer &xfer )
 {
    BYTE        data[21];
    BYTEUSHORT  flip;
-//   BYTE        password[] = { 0x41, 0x42, 0x43, 0x01, 0x41, 0x42, 0x43, 0x02, 0x41, 0x42, 0x43, 0x03, 0x41, 0x42, 0x43, 0x04, 0x41, 0x42, 0x43, 0x05 };
-//   BYTE        password[] = { 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41 };
-   BYTE        password[] = { 0x41, 0x06, 0x41, 0x06, 0x41, 0x06, 0x41, 0x06, 0x41, 0x06, 0x41, 0x06, 0x41, 0x06, 0x41, 0x06, 0x41, 0x06, 0x41, 0x06 };
+   BYTE        password[] = { 0xab, 0xc1, 0xab, 0xc2, 0xab, 0xc3, 0xab, 0xc4, 0xab, 0xc5, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 };
 
-   //   char        password[] = { 'A', 'B', 'C', '1', 'A', 'B', 'C', '2', 'A', 'B', 'C', '3', 'A', 'B', 'C', '4', 'A', 'B', 'C', '5' };
-
+   memset( data, NULL, 21 );
    data[0] = security;
-//   memset( &data[1], password, 21 );
-   memcpy( &data[1], password, 21 );
+   memcpy( &data[1], password, 20 );
 
    memset( xfer.getOutBuffer(), NULL, 100 );
    assemblePacket( xfer.getOutBuffer(), data, 21, 0 );
@@ -559,20 +656,26 @@ void CtiANSIDatalink::sendRequest( CtiXfer &xfer )
 
    if( _ready != false )
    {
-      data[0] = full_read;
+      //zero out data portion of the request out
+      memset( data, 0x00, 10 );
+
+//      data[0] = full_read;                                      //NOTE: we can't seem to win doing full reads on the KV2 (may be different for other meters)
+      data[0] = pread_offset;
 
       id.sh = _tables[_tableIndex].tableID;
+
       data[1] = id.ch[1];
       data[2] = id.ch[0];
+      data[7] = 0xaa;
 
       memset( xfer.getOutBuffer(), NULL, 100 );
-      assemblePacket( xfer.getOutBuffer(), data, 3, 0 );
+      assemblePacket( xfer.getOutBuffer(), data, 8, 0 );
 
-      flip.sh = crc( 3 + HEADER_LEN, xfer.getOutBuffer() ); ///FIXME: this is stolen
-      xfer.getOutBuffer()[3 + HEADER_LEN] = flip.ch[1];
-      xfer.getOutBuffer()[3 + HEADER_LEN + 1] = flip.ch[0];
+      flip.sh = crc( 8 + HEADER_LEN, xfer.getOutBuffer() ); ///FIXME: this is stolen
+      xfer.getOutBuffer()[8 + HEADER_LEN] = flip.ch[1];
+      xfer.getOutBuffer()[8 + HEADER_LEN + 1] = flip.ch[0];
 
-      xfer.setOutCount( 3 + HEADER_LEN + sizeof( USHORT ) );
+      xfer.setOutCount( 8 + HEADER_LEN + sizeof( USHORT ) );
 
       //we're just going to look for one byte first (the <ack>) then we'll know what's sitting out on the port for us...
       xfer.setInCountExpected( 1 );
@@ -589,7 +692,7 @@ void CtiANSIDatalink::logOff( CtiXfer &xfer )
    BYTE        data;
    BYTEUSHORT  flip;
 
-   data = loggedOff;
+   data = logoff;
 
    assemblePacket( xfer.getOutBuffer(), &data, 1, 0 );
 
@@ -604,6 +707,52 @@ void CtiANSIDatalink::logOff( CtiXfer &xfer )
    setExpectedBytes( 1 );
 }
 
+//=========================================================================================================================================
+//=========================================================================================================================================
+
+void CtiANSIDatalink::terminate( CtiXfer &xfer )
+{
+   BYTE        data;
+   BYTEUSHORT  flip;
+
+   data = term;
+
+   assemblePacket( xfer.getOutBuffer(), &data, 1, 0 );
+
+   flip.sh = crc( 1 + HEADER_LEN, xfer.getOutBuffer() );
+   xfer.getOutBuffer()[7] = flip.ch[1];
+   xfer.getOutBuffer()[8] = flip.ch[0];
+
+   xfer.setOutCount( 1 + HEADER_LEN + sizeof( USHORT ) );
+
+   //we're just going to look for one byte first (the <ack>) then we'll know what's sitting out on the port for us...
+   xfer.setInCountExpected( 1 );
+   setExpectedBytes( 1 );
+
+}
+
+//=========================================================================================================================================
+//=========================================================================================================================================
+
+void CtiANSIDatalink::disconnect( CtiXfer &xfer )
+{
+   BYTE        data;
+   BYTEUSHORT  flip;
+
+   data = discon;
+
+   assemblePacket( xfer.getOutBuffer(), &data, 1, 0 );
+
+   flip.sh = crc( 1 + HEADER_LEN, xfer.getOutBuffer() );
+   xfer.getOutBuffer()[7] = flip.ch[1];
+   xfer.getOutBuffer()[8] = flip.ch[0];
+
+   xfer.setOutCount( 1 + HEADER_LEN + sizeof( USHORT ) );
+
+   //we're just going to look for one byte first (the <ack>) then we'll know what's sitting out on the port for us...
+   xfer.setInCountExpected( 1 );
+   setExpectedBytes( 1 );
+}
 
 //=========================================================================================================================================
 //here we start to chew the meat of the message
@@ -644,6 +793,14 @@ void CtiANSIDatalink::decodeData( BYTE *packet, ULONG numBytesGot )
    case loggedOff:
       logOffData( packet );
       break;
+
+   case terminated:
+      terminateData( packet );
+      break;
+
+   case disconnected:
+      disconnectData( packet );
+      break;
    }
 }
 
@@ -655,7 +812,13 @@ void CtiANSIDatalink::identificationData( BYTE *packet )
 {
    if( decipherResponse( packet ) != false )
    {
-//      if( packet[1] == ANSI_C12_21 )
+/*
+      if( packet[1] == ANSI_C12_21 )
+
+      if( packet[1] == ANSI_C12_18 )
+*/
+      _prot_version = packet[1];
+
       {
          //get info about features
          if( packet[4] == 0x00 )                //no authentication will be used
@@ -838,6 +1001,44 @@ void CtiANSIDatalink::logOffData( BYTE *packet )
 }
 
 //=========================================================================================================================================
+//=========================================================================================================================================
+
+void CtiANSIDatalink::terminateData( BYTE *packet )
+{
+   if( decipherResponse( packet ) != false )
+   {
+      packet++;                                                //increment past the <ok>
+
+      if( _prot_version == ANSI_C12_18 )
+         setDone( true );
+   }
+   else
+   {
+      CtiLockGuard< CtiLogger > doubt_guard( dout );
+      dout << RWTime::now() << " Terminate Request" << endl;
+      dout << endl;
+   }
+}
+
+//=========================================================================================================================================
+//=========================================================================================================================================
+
+void CtiANSIDatalink::disconnectData( BYTE *packet )
+{
+   if( decipherResponse( packet ) != false )
+   {
+      packet++;                                                //increment past the <ok>
+      setDone( true );
+   }
+   else
+   {
+      CtiLockGuard< CtiLogger > doubt_guard( dout );
+      dout << RWTime::now() << " Disconnect Request" << endl;
+      dout << endl;
+   }
+}
+
+//=========================================================================================================================================
 //FIXME:
 //we should post an error to a buffer someplace where someone who cares can look and do something with it... yeah.
 //=========================================================================================================================================
@@ -971,7 +1172,8 @@ void CtiANSIDatalink::doAck( CtiXfer &xfer )
 
    data = ANSI_ACK;
 
-   memcpy( xfer.getOutBuffer(), &data, sizeof( data ) );
+   if( sizeof( data ) < sizeof( xfer.getOutBuffer() ))
+      memcpy( xfer.getOutBuffer(), &data, sizeof( data ) );
 
    xfer.setOutCount( sizeof( data ) );
 
@@ -1004,8 +1206,10 @@ void CtiANSIDatalink::passRequest( BYTE *request, int len )
    _whatsRequested = CTIDBG_new BYTE[256];
 
    //refill our structs
-   _header = CTIDBG_new WANTS_HEADER;
-   memcpy( _whatsRequested, request, len );
+   _header = new WANTS_HEADER;
+
+   if(( _whatsRequested != NULL ) && ( len < 255 ))
+      memcpy( _whatsRequested, request, len );
 
    if( _header != NULL )
    {
@@ -1124,6 +1328,22 @@ bool CtiANSIDatalink::getFailed( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
+void CtiANSIDatalink::setDone( bool weDone )
+{
+   _allDone = weDone;
+}
+
+//=========================================================================================================================================
+//=========================================================================================================================================
+
+bool CtiANSIDatalink::getDone( void )
+{
+   return _allDone;
+}
+
+//=========================================================================================================================================
+//=========================================================================================================================================
+
 void CtiANSIDatalink::setRetries( int trysLeft )
 {
    _retries = trysLeft;
@@ -1184,7 +1404,24 @@ int CtiANSIDatalink::getNextState( States current )
       break;
 
    case request:
+      next = loggedOff;
       break;
+
+   case loggedOff:
+      next = terminated;
+      break;
+
+   case terminated:
+      {
+         if( _prot_version == ANSI_C12_21 )
+            next = disconnected;
+      }
+      break;
+
+   case disconnected:
+//      next = identified;
+      break;
+
    }
    return( next );
 }

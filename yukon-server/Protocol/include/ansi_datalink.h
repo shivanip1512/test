@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/09/03 17:27:50 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/11/15 20:41:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,7 @@
 #define ANsI_RESERVED      0x00
 #define ANSI_COUNT         0
 #define ANSI_MSG           1
+#define ANSI_C12_18        0x00
 #define ANSI_C12_21        0x02
 #define MAX_RETRIES        30
 #define HEADER_LEN         6
@@ -58,7 +59,8 @@ class IM_EX_PROT CtiANSIDatalink
       typedef enum
       {
          ident         = 0x20,
-         terminate,
+         term,
+         discon,
          full_read      = 0x30,
          pread_index1,
          pread_index2,
@@ -111,8 +113,9 @@ class IM_EX_PROT CtiANSIDatalink
          secured,
          authenticated,
          request,
-         loggedOff
-
+         loggedOff,
+         terminated,
+         disconnected
       };
 
       enum DecodePos
@@ -120,7 +123,6 @@ class IM_EX_PROT CtiANSIDatalink
          ack = 0,
          header,
          data
-
       };
 
       //duplication of what's on the scanner side FIXME
@@ -157,6 +159,8 @@ class IM_EX_PROT CtiANSIDatalink
       void authenticate( CtiXfer &xfer );
       void sendRequest( CtiXfer &xfer );
       void logOff( CtiXfer &xfer );
+      void terminate( CtiXfer &xfer );
+      void disconnect( CtiXfer &xfer );
 
       void doAck( CtiXfer &xfer );
       void read( BYTE *ptr );
@@ -172,6 +176,9 @@ class IM_EX_PROT CtiANSIDatalink
 
       bool getPacketFirst( void );
       void setPacketFirst( bool isFirst );
+
+      bool getDone( void );
+      void setDone( bool weDone );
 
       int getSequence( void );
       void setSequence( int seq );
@@ -201,6 +208,8 @@ class IM_EX_PROT CtiANSIDatalink
       void processData( BYTE *packet, ULONG bytes );
       void logOffData( BYTE *packet );
       void secureData( BYTE *packet );
+      void terminateData( BYTE *packet );
+      void disconnectData( BYTE *packet );
 
       bool checkCRC( void );
 
@@ -225,6 +234,7 @@ class IM_EX_PROT CtiANSIDatalink
       int         _tempMsgLength;
       int         _retries;
       int         _tableIndex;
+      int         _prot_version;
       USHORT      _lengthOfData;
       BYTE        *_tempMsgStorage;
       BYTE        _authenticationType;
@@ -239,7 +249,7 @@ class IM_EX_PROT CtiANSIDatalink
       bool        _sendAck;
       bool        _connected;
       bool        _ready;
-
+      bool        _allDone;
 
       //tester
       BYTE        *_ptrFromAppLayer;

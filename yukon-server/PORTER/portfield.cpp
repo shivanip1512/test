@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2002/11/15 14:08:00 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2002/11/15 20:44:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1162,6 +1162,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         status = Port->outInMess( trx, Device, traceList );
 
+                        if( status != NORMAL )
+                        {
+                           CtiLockGuard<CtiLogger> doubt_guard(dout);
+                           dout << RWTime() << " KV2 loop is A-B-N-O-R-M-A-L " << endl;
+                        }
+
                         ansi.decode( trx, status );
 
                         // Prepare for tracing
@@ -1172,9 +1178,16 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         DisplayTraceList( Port, traceList, true );
                      }
+
+                     {
+                         CtiLockGuard<CtiLogger> doubt_guard(dout);
+                         dout << RWTime() << " KV2 loop exited ******************************************************************" << endl;
+                     }
                   }
 
-                  //ansi.sendInbound( InMessage );
+                  ansi.sendInbound( InMessage );
+                  ansi.setTransactionComplete(false);
+                  //ansi.reinitialize();
                   break;
                }
 

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/10/02 19:20:04 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/11/15 20:43:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,7 +57,7 @@ public:
                            RWTPtrSlist< CtiMessage >  &retList,
                            RWTPtrSlist< OUTMESS >     &outList);
 
-   CtiProtocolANSI &getProtocol( void );
+   CtiProtocolANSI & getProtocol( void );
    int makeMessageHeader( BYTE *ptr, int command );
 
 private:

@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/09/03 17:27:49 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/11/15 20:41:33 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,7 +32,9 @@ class IM_EX_PROT CtiANSIApplication
 
       bool decode( CtiXfer &xfer );
 
-      void pullData( BYTE *table );
+      bool getDone( void );
+
+      int pullData( BYTE *table );
       CtiANSIDatalink &getDatalinkLayer( void );
 
    protected:

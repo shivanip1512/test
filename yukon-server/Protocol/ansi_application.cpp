@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/11/15 14:08:03 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/11/15 20:37:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,6 +38,7 @@ CtiANSIApplication::CtiANSIApplication()
 
 CtiANSIApplication::~CtiANSIApplication()
 {
+   delete _storage;
 }
 
 //=========================================================================================================================================
@@ -70,7 +71,7 @@ bool CtiANSIApplication::decode( CtiXfer &xfer )
 
    done = getDatalinkLayer().decode( xfer, _realLiveTableData, received );
 
-   if( ( _storage != NULL ) && ( received != 0 ) )
+   if(( _storage != NULL ) && ( received < 1023) &&( received != 0 ))
    {
       _totalBytesRec += received;
       memcpy( _storage, _realLiveTableData, received );
@@ -83,12 +84,18 @@ bool CtiANSIApplication::decode( CtiXfer &xfer )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-void CtiANSIApplication::pullData( BYTE *table )
+int CtiANSIApplication::pullData( BYTE *table )
 {
-   memcpy( table, _storage, _totalBytesRec );
+   int temp = 0;
+
+   if( table != NULL )
+      memcpy( table, _storage, _totalBytesRec );
 
    memset( _storage, NULL, sizeof( _storage ) );
+   temp = _totalBytesRec;
    _totalBytesRec = 0;
+
+   return( temp );
 }
 
 //=========================================================================================================================================
@@ -97,4 +104,12 @@ void CtiANSIApplication::pullData( BYTE *table )
 CtiANSIDatalink &CtiANSIApplication::getDatalinkLayer( void )
 {
    return _datalinkLayer;
+}
+
+//=========================================================================================================================================
+//=========================================================================================================================================
+
+bool CtiANSIApplication::getDone( void )
+{
+   return getDatalinkLayer().getDone();
 }
