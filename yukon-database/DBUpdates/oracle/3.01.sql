@@ -313,13 +313,6 @@ insert into yukongrouprole values (-887,-301,-201,-20887,'(none)');
 insert into yukongrouprole values (-888,-301,-201,-20888,'(none)');
 insert into yukongrouprole values (-889,-301,-201,-20889,'(none)');
 
-/* Hardware addressing role property */
-insert into YukonRoleProperty values(-1107,-2,'track_hardware_addressing','false','Controls whether to track the hardware addressing information.');
-
-/* Inventory create hardware role property */
-insert into YukonRoleProperty values(-20905,-209,'Create Hardware','true','Controls whether to allow creating new hardware');
-insert into yukongrouprole values (-796,-301,-209,-20905,'(none)');
-
 /* Authentication (safeword) Role/Properties */
 insert into YukonRole values(-4,'Authentication','Yukon','Settings for using an authentication server to login instead of standard yukon login.');
 
@@ -388,7 +381,6 @@ insert into yukongrouprole values (-2081,-303,-209,-20901,'(none)');
 insert into yukongrouprole values (-2082,-303,-209,-20902,'(none)');
 insert into yukongrouprole values (-2083,-303,-209,-20903,'(none)');
 insert into yukongrouprole values (-2084,-303,-209,-20904,'(none)');
-insert into yukongrouprole values (-2085,-303,-209,-20905,'(none)');
 
 insert into yukongrouprole values (-2100,-303,-201,-20800,'(none)');
 insert into yukongrouprole values (-2101,-303,-201,-20801,'(none)');
@@ -763,8 +755,26 @@ update dateofseason set seasonstartmonth = seasonstartmonth + 1;
 update dateofseason set seasonendmonth = seasonendmonth + 1;
 update dateofholiday set holidaymonth = holidaymonth + 1;
 update dateofholiday set holidayyear = 0 where holidayyear = -1;
- 
- 
+
+/* Energy company role properties */
+insert into YukonRoleProperty values(-1107,-2,'track_hardware_addressing','false','Controls whether to track the hardware addressing information.');
+insert into YukonRoleProperty values(-1108,-2,'single_energy_company','true','Indicates whether this is a single energy company system.');
+
+/* Description on the opt out page */
+update YukonRoleProperty set DefaultValue='If you would like to temporarily opt out of all programs, select the time frame below, then click Submit.' where RolePropertyId=-20870;
+update YukonRoleProperty set DefaultValue='If you would like to temporarily opt out of all programs, select the time frame below, then click Submit.' where RolePropertyId=-40171;
+
+/* Inventory role properties */
+insert into YukonRoleProperty values(-20905,-209,'Create Hardware','true','Controls whether to allow creating new hardware');
+insert into yukongrouprole values (-796,-301,-209,-20905,'(none)');
+insert into yukongrouprole values (-2085,-303,-209,-20905,'(none)');
+
+insert into YukonRoleProperty values(-20906,-209,'Create MCT','true','Controls whether to allow creating MCT devices');
+insert into yukongrouprole values (-797,-301,-209,-20906,'(none)');
+insert into yukongrouprole values (-2086,-303,-209,-20906,'(none)');
+
+
+
 
 
 
