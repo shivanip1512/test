@@ -2043,7 +2043,7 @@ public class ImportManager extends HttpServlet {
 		
 		if (liteInv != null) {
 			if (liteInv.getAccountID() > 0)
-				throw new ImportProblem("The hardware is already assigned to account id = " + liteInv.getAccountID());
+				throw new ImportProblem( ImportProblem.DUPLICATE_HARDWARE );
 			
 			createHw = new StarsCreateLMHardware();
 			StarsLiteFactory.setStarsInv( createHw, liteInv, energyCompany );

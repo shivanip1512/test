@@ -14,6 +14,7 @@ package com.cannontech.stars.util;
  */
 public class ImportProblem extends Exception {
 	
+	public static final String DUPLICATE_HARDWARE = "Hardware already exists and assigned to an account";
 	public static final String NO_DEVICE_NAME = "No device name";
 	public static final String DEVICE_NAME_NOT_FOUND = "Device name not found in Yukon";
 	

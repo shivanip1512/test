@@ -80,6 +80,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 	
 	int numNoDeviceName = 0;
 	int numDeviceNameNotFound = 0;
+	int numDuplicateHardware = 0;
 	int numNoLoadDescription = 0;
 	
 	long startTime = 0;
@@ -296,9 +297,10 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					liteInv = ImportManager.insertLMHardware(fields, liteAcctInfo, energyCompany, conn, first);
 				}
 				catch (ImportProblem ipe) {
-					if (ipe.getMessage().equals( ImportProblem.NO_DEVICE_NAME )) {
+					if (ipe.getMessage().equals( ImportProblem.DUPLICATE_HARDWARE ))
+						numDuplicateHardware++;
+					else if (ipe.getMessage().equals( ImportProblem.NO_DEVICE_NAME ))
 						numNoDeviceName++;
-					}
 					else if (ipe.getMessage().equals( ImportProblem.DEVICE_NAME_NOT_FOUND )) {
 						numDeviceNameNotFound++;
 						
@@ -314,13 +316,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 								logMsg.add("Meter (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",import_acct_id=" + fields[ImportManager.IDX_ACCOUNT_ID] + ",dev_name=" + fields[ImportManager.IDX_DEVICE_NAME] + ",serial_no=" + fields[ImportManager.IDX_SERIAL_NO] + ") "
 										+ "matches Yukon device (dev_id=" + deviceID + ",dev_name=" + litePao.getPaoName() + ") by serial number");
 							}
-							else {
-								logMsg.add("Meter (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",import_acct_id=" + fields[ImportManager.IDX_ACCOUNT_ID] + ",dev_name=" + fields[ImportManager.IDX_DEVICE_NAME] + ",serial_no=" + fields[ImportManager.IDX_SERIAL_NO] + ") doesn't match any device in Yukon");
-							}
 						}
-					}
-					else {
-						logMsg.add("Error at " + position + ": " + ipe.getMessage());
 					}
 					
 					continue;
@@ -636,10 +632,12 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			msg += " (" + numRecvrAdded + " receivers, " + numMeterAdded + " meters)";
 			logMsg.add(idx++, msg);
 			
+			if (numDuplicateHardware > 0)
+				logMsg.add(idx++, numDuplicateHardware + " hardwares ignored because they already exist and assigned to customer accounts");
 			if (numNoDeviceName > 0)
 				logMsg.add(idx++, numNoDeviceName + " hardwares ignored because device name is empty");
 			if (numDeviceNameNotFound > 0)
-				logMsg.add(idx++, numDeviceNameNotFound + " hardwares ignored because no matching device name found in Yukon");
+				logMsg.add(idx++, numDeviceNameNotFound + " hardwares ignored because device name not found in Yukon");
 		}
 		if (appFieldsCnt > 0) {
 			String msg = null;
