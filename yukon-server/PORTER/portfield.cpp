@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.133 $
-* DATE         :  $Date: 2005/02/17 23:29:15 $
+* REVISION     :  $Revision: 1.134 $
+* DATE         :  $Date: 2005/02/20 04:00:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -130,9 +130,9 @@ extern void applyPortInitFail(const long unusedid, CtiPortSPtr ptPort, void *unu
 extern void applyPortQueuePurge(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr);
 extern void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, bool consume);
 extern HCTIQUEUE* QueueHandle(LONG pid);
+extern void commFail(CtiDeviceSPtr &Device, INT state);
 
 bool deviceCanSurviveThisStatus(INT status);
-void commFail(CtiDeviceSPtr &Device, INT state);
 BOOL isTAPTermPort(LONG PortNumber);
 INT RequeueReportError(INT status, OUTMESS *OutMessage);
 INT PostCommQueuePeek(CtiPortSPtr Port, CtiDeviceSPtr &Device);
@@ -171,7 +171,6 @@ static INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMess
 
 CtiOutMessage *GetLGRippleGroupAreaBitMatch(CtiPortSPtr Port, CtiOutMessage *&OutMessage);
 BOOL searchFuncForRippleOutMessage(void *firstOM, void* om);
-
 
 /* Threads that handle each port for communications */
 VOID PortThread(void *pid)
@@ -3439,32 +3438,6 @@ INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, RWTPtrSlist<
 
     return status;
 }
-
-void commFail(CtiDeviceSPtr &Device, INT state)
-{
-    extern CtiConnection VanGoghConnection;
-
-    CtiPoint * pPoint = NULL;
-    char temp[80];
-
-    if( NULL != (pPoint = Device->getDevicePointOffsetTypeEqual(COMM_FAIL_OFFSET, StatusPointType)) )
-    {
-        sprintf(temp, "Communication status %s", (state == OPENED) ? "GOOD" : "FAILED");
-
-        CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), (double)state, NormalQuality, StatusPointType, temp, TAG_POINT_MAY_BE_EXEMPTED);
-
-        if(pData != NULL)
-        {
-            VanGoghConnection.WriteConnQue(pData);
-        }
-    }
-    else if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && Device && state == CLOSED)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " " << Device->getName() << " would be COMM FAILED if it had offset " << COMM_FAIL_OFFSET << " defined" << endl;
-    }
-}
-
 
 bool deviceCanSurviveThisStatus(INT status)
 {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.68 $
-* DATE         :  $Date: 2005/02/17 23:27:41 $
+* REVISION     :  $Revision: 1.69 $
+* DATE         :  $Date: 2005/02/20 04:00:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -204,7 +204,7 @@ extern void QueueThread (void *);
 extern void KickerThread (void *);
 extern void DispatchMsgHandlerThread(VOID *Arg);
 extern HCTIQUEUE* QueueHandle(LONG pid);
-extern void commFail(CtiDeviceSPtr &Device, INT state);
+void commFail(CtiDeviceSPtr &Device, INT state);
 
 DLLIMPORT extern BOOL PorterQuit;
 
@@ -232,6 +232,10 @@ RWThreadFunction _kickerCCU711Thread;
 
 CtiPorterVerification PorterVerificationThread;
 
+static void LoadCommFailPoints();
+static LONG GetCommFailPointID(LONG devid);
+typedef map< LONG, LONG > CtiCommFailPoints_t;              // pair< LONG deviceid, LONG pointid >
+static CtiCommFailPoints_t commFailDeviceIDToPointIDMap;
 
 static RWWinSockInfo  winsock;
 
@@ -1344,6 +1348,7 @@ INT RefreshPorterRTDB(void *ptr)
     // Reload the globals used by the porter app too.
     InitYukonBaseGlobals();
     LoadPorterGlobals();
+    LoadCommFailPoints();
     ResetBreakAlloc();          // Make certain the debug library does not break us.
 
     if( !PorterQuit && (pChg == NULL || (pChg->getDatabase() == ChangeStateGroupDb)) )
@@ -2234,3 +2239,79 @@ static int MyAllocHook(int nAllocType, void *pvData,
         pfnOldCrtAllocHook(nAllocType, pvData, nSize, nBlockUse, lRequest, szFileName, nLine);
     return TRUE; // allow the memory operation to proceed
 }
+
+void commFail(CtiDeviceSPtr &Device, INT state)
+{
+    extern CtiConnection VanGoghConnection;
+
+    CtiPoint * pPoint = NULL;
+    char temp[80];
+    LONG pointid;
+
+    //if( NULL != (pPoint = Device->getDevicePointOffsetTypeEqual(COMM_FAIL_OFFSET, StatusPointType)) )
+    if( 0 != (pointid = GetCommFailPointID(Device->getID())) )
+    {
+        sprintf(temp, "Communication status %s", (state == OPENED) ? "GOOD" : "FAILED");
+
+        // pointid = pPoint->getPointID();
+
+        CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pointid, (double)state, NormalQuality, StatusPointType, temp, TAG_POINT_MAY_BE_EXEMPTED);
+
+        if(pData != NULL)
+        {
+            VanGoghConnection.WriteConnQue(pData);
+        }
+    }
+    else if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && Device && state == CLOSED)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " " << Device->getName() << " would be COMM FAILED if it had offset " << COMM_FAIL_OFFSET << " defined" << endl;
+    }
+}
+
+void LoadCommFailPoints()
+{
+    commFailDeviceIDToPointIDMap.clear();       // No more map.
+
+    LONG did, pid;
+    RWCString sql = RWCString("select paobjectid, pointid from point where pointoffset = ") + CtiNumStr(COMM_FAIL_OFFSET);
+
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWDBReader  rdr = ExecuteQuery( conn, sql );
+
+    while(rdr() && rdr.isValid())
+    {
+        rdr["paobjectid"] >> did;
+        rdr["pointid"] >> pid;
+
+
+        pair< CtiCommFailPoints_t::iterator, bool > resultpair = commFailDeviceIDToPointIDMap.insert( make_pair(did, pid) );
+
+        if(resultpair.second == false)           // Insert was unsuccessful (should never be this way!).
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** LoadCommFailPoints Error **** " << __FILE__ << " (" << __LINE__ << ") Pao " << did << " has multiple pids at offset 2000? " << endl;
+            }
+        }
+    }
+
+    return;
+}
+
+LONG GetCommFailPointID(LONG devid)
+{
+    LONG pid = 0;
+
+    CtiCommFailPoints_t::iterator itr = commFailDeviceIDToPointIDMap.find( devid );
+
+    if( itr != commFailDeviceIDToPointIDMap.end() )
+    {
+        pid = (*itr).second;
+    }
+
+    return pid;
+}
+
