@@ -259,15 +259,14 @@ function decline_form()
           </tr>
         </table>
                   </struts:form> 
-                  <form method="get" action="">
-                    <div align="center"><span class="Main">If you would like to 
-                      review the terms of your energy contract, click</span> <br>
+<!--                  <form method="get" action="">-->
+                    <div align="center"><span class="Main">
+<!--                    If you would like to review the terms of your energy contract, click</span> <br>
                       <input type="submit" name="Input" value="Here">
-                      <br>
-                      If you have questions or problems, call <cti:getProperty propertyid="<%=EnergyBuybackRole.SUPPORT_PHONE_NUMBER%>"/></div>
-                  </form>
-                    <div align = "center"><a href = "user_ee.jsp" class = "Link1"><br>
-                      Back</a><br>
+                      <br>-->
+                      If you have questions or problems, call <cti:getProperty propertyid="<%=EnergyBuybackRole.SUPPORT_PHONE_NUMBER%>"/></span></div>
+<!--                  </form>-->
+                    <div align = "center"><a href = "user_ee.jsp" class = "Link1"><br>Back</a><br><br>
                     </div>
           </center>
 
