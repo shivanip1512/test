@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2003/07/15 15:34:19 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2003/07/16 21:08:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -386,6 +386,10 @@ int Mccmd_Disconnect()
 int Mccmd_Init(Tcl_Interp* interp)
 {
     /* Register MACS commands with the interpreter */
+    Tcl_CreateCommand( interp, "Command", Command, NULL, NULL );
+    Tcl_CreateCommand( interp, "command", Command, NULL, NULL );
+    Tcl_CreateCommand( interp, "COMMAND", Command, NULL, NULL );
+
     Tcl_CreateCommand( interp, "GetValue", GetValue, NULL, NULL );
     Tcl_CreateCommand( interp, "getvalue", GetValue, NULL, NULL );
     Tcl_CreateCommand( interp, "GETVALUE", GetValue, NULL, NULL );
@@ -557,6 +561,14 @@ int Exit(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 
 }
 
+int Command(ClientData clientdata, Tcl_Interp* interp, int argc, char* argv[])
+{
+    RWCString cmd;
+    AppendToString(cmd, argc, argv);
+
+    return DoTwoWayRequest(interp, cmd);
+}
+    
 int GetValue(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
     RWCString cmd;

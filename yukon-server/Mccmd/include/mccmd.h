@@ -70,6 +70,7 @@ int Mccmd_Connect();
 int Mccmd_Disconnect();
 
 //These need some descriptions?
+static int Command(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
 static int GetValue(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
 static int PutValue(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
 static int GetStatus(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
