@@ -38,7 +38,6 @@ import com.cannontech.database.db.version.CTIDatabase;
  * 4) All meta data tags (the @ sign) should be nested in a comment
  * 5)
  */
-//  src=d:/eclipse/head/yukon-database/DBUpdates/oracle
 public class DBUpdater
 {
 	//local class to execute update functions
