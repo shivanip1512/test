@@ -1,4 +1,5 @@
 
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   port_dialout
@@ -8,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/04/29 13:43:46 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/09/12 02:43:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +22,8 @@
 #include "port_dialout.h"
 
 CtiPortDialout::CtiPortDialout()
-{}
+{
+}
 
 CtiPortDialout::CtiPortDialout(const CtiPortDialout& aRef)
 {
@@ -137,8 +139,29 @@ INT CtiPortDialout::disconnect(CtiDevice *Device, INT trace)
 
 INT CtiPortDialout::reset(INT trace)
 {
-    setDialedUpNumber(RWCString());
-    return modemReset(_superPort->getPortID(), trace);
+    INT status = NORMAL;
+
+    try
+    {
+        setDialedUpNumber(RWCString());
+
+        if(_superPort)
+        {
+            status = modemReset(_superPort->getPortID(), trace);
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return status;
 }
 
 INT CtiPortDialout::setup(INT trace)
@@ -747,4 +770,3 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
 
     return status;
 }
-

@@ -884,12 +884,23 @@ bool CtiPortDirect::isViable() const
 
 INT CtiPortDirect::reset(INT trace)
 {
-    if(_dialable)
+    INT status = NORMAL;
+
+    try
     {
-        _dialable->reset(trace);
+        if(_dialable)
+        {
+            status = _dialable->reset(trace);
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    return NORMAL;
+
+    return status;
 }
 
 INT CtiPortDirect::setup(INT trace)
