@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_idlcremote.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/05/23 22:13:25 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/07/14 18:24:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,8 +37,6 @@ CtiTableDeviceIDLC::~CtiTableDeviceIDLC()
 
 CtiTableDeviceIDLC& CtiTableDeviceIDLC::operator=(const CtiTableDeviceIDLC& aRef)
 {
-
-
     if(this != &aRef)
     {
         _deviceID      = aRef.getDeviceID();
@@ -51,77 +49,70 @@ CtiTableDeviceIDLC& CtiTableDeviceIDLC::operator=(const CtiTableDeviceIDLC& aRef
 
 LONG CtiTableDeviceIDLC::getDeviceID() const
 {
-
     return _deviceID;
 }
 
 CtiTableDeviceIDLC& CtiTableDeviceIDLC::setDeviceID( const LONG deviceID )
 {
-
     _deviceID = deviceID;
     return *this;
 }
 
 LONG CtiTableDeviceIDLC::getAddress() const
 {
-
     return _address;
 }
 
 void CtiTableDeviceIDLC::setAddress(LONG a)
 {
-
     _address = a;
 }
 
 INT CtiTableDeviceIDLC::getCCUAmpUseType() const
 {
-
-
     return _ccuAmpUseType;
 }
 
 CtiTableDeviceIDLC& CtiTableDeviceIDLC::setCCUAmpUseType( const INT aAmpUseType )
 {
-
-
     _ccuAmpUseType = aAmpUseType;
+
     return *this;
 }
 
 INT  CtiTableDeviceIDLC::getPostDelay() const
 {
-
     return _postdelay;
 }
 
 void CtiTableDeviceIDLC::setPostDelay(int d)
 {
-
     _postdelay = d;
 }
 
 INT CtiTableDeviceIDLC::getAmp() const
 {
-
-
     INT amp;
 
     switch(_ccuAmpUseType)
     {
-    case RouteAmpUndefined:
-    case RouteAmp2:
-    case RouteAmpDefault2Fail1:
+        case RouteAmpUndefined:
+        case RouteAmp2:
+        case RouteAmpDefault2Fail1:
         {
             amp = 1;
             break;
         }
 
-    case RouteAmpAlternating:
-    case RouteAmpAltFail:
-    case RouteAmp1:
-    case RouteAmpDefault1Fail2:
-    default:
+        default:
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        case RouteAmpAlternating:
+        case RouteAmpAltFail:
+        case RouteAmp1:
+        case RouteAmpDefault1Fail2:
         {
             amp = 0;
             break;
@@ -148,10 +139,7 @@ void CtiTableDeviceIDLC::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSele
 
 void CtiTableDeviceIDLC::DecodeDatabaseReader(RWDBReader &rdr)
 {
-
-
     RWCString rwsTemp;
-
 
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -173,7 +161,6 @@ RWCString CtiTableDeviceIDLC::getTableName()
 
 RWDBStatus CtiTableDeviceIDLC::Restore()
 {
-
     char temp[32];
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -206,8 +193,6 @@ RWDBStatus CtiTableDeviceIDLC::Restore()
 
 RWDBStatus CtiTableDeviceIDLC::Insert()
 {
-
-
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
@@ -232,8 +217,6 @@ RWDBStatus CtiTableDeviceIDLC::Update()
 {
     char temp[32];
 
-
-
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
@@ -257,8 +240,6 @@ RWDBStatus CtiTableDeviceIDLC::Update()
 
 RWDBStatus CtiTableDeviceIDLC::Delete()
 {
-
-
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
