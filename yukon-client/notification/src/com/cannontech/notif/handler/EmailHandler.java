@@ -32,7 +32,7 @@ class EmailHandler implements INotifHandler
      */
     public void start()
     {
-        if( isValid(_emailMsg) )
+        if( !isValid(_emailMsg) )
         {
             CTILogger.error("Invalid message found in " + this.getClass().getName() + ", ,message= " + _emailMsg );
             return;
