@@ -6,7 +6,6 @@ package com.cannontech.message.util;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.dispatch.message.Multi;
-import com.cannontech.message.porter.message.Return;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.VirtualInputStream;
 
@@ -59,7 +58,7 @@ public void run() {
 
 public void processMsg( Object o )
 {
-	System.out.println(o);
+	//System.out.println(o);
 
 	if( o instanceof Multi )
 	{           
