@@ -552,6 +552,19 @@ update templatecolumns set title='State' where title='Tags';
 
 update YukonRoleProperty set keyname='cap_control_interface' where rolepropertyid=-10105;
 
+create table ActivityLog  (
+   ActivityLogID        NUMBER                           not null,
+   TimeStamp            DATE                             not null,
+   UserID               NUMBER,
+   AccountID            NUMBER,
+   EnergyCompanyID      NUMBER,
+   CustomerID           NUMBER,
+   PaoID                NUMBER,
+   Action               VARCHAR2(80)                     not null,
+   Description          VARCHAR2(120)                    not null
+);
+alter table ActivityLog
+   add constraint PK_ACTIVITYLOG primary key (ActivityLogID);
 
 
 
@@ -583,4 +596,4 @@ update YukonUserRole set userroleid=userroleid * -1;
 /******************************************************************************/
 /* VERSION INFO                                                               */
 /******************************************************************************/
-insert into CTIDatabase values('3.00', 'Ryan', '11-JAN-2004', 'Many changes to a major version jump');
+insert into CTIDatabase values('3.00', 'Ryan', '17-FEB-2004', 'Many changes to a major version jump');
