@@ -42,14 +42,27 @@ public class BillingFile extends java.util.Observable implements Runnable
 	{
 		try
 		{
+			char argDel = '=';
 			BillingFile billingFile = new BillingFile();
+			
 			for ( int i = 0; i < args.length; i++)
 			{
+				if( i == 0)	//first loop through, verify the char '=' is our delimiter, else try ':'
+				{
+					if( args[i].toLowerCase().indexOf(argDel) < 0)
+						argDel = ':';
+				}
+
 				String argLowerCase = (String)args[i].toLowerCase();
-		
+				
+				// Check the delimiter of '=', if not found check ':'
+				int startIndex = argLowerCase.indexOf('=');
+				if( startIndex < 0)
+					startIndex = argLowerCase.indexOf(':');
+				startIndex += 1;
+				
 				if( argLowerCase.startsWith("format") || argLowerCase.startsWith("type"))
 				{//BillingFileDefaults.formatID
-					int startIndex = argLowerCase.indexOf("=") + 1;
 					String subString = argLowerCase.substring(startIndex);
 					if( subString.length() > 2 )	//we accept int values of 0 - 12ish...so far.  Anything longer must be the string value.
 						billingFile.getBillingDefaults().setFormatID(FileFormatTypes.getFormatID(subString));
@@ -58,13 +71,11 @@ public class BillingFile extends java.util.Observable implements Runnable
 				}
 				else if( argLowerCase.startsWith("dem"))
 				{//BillingFileDefaults.demandDaysPrevious
-					int startIndex = argLowerCase.indexOf("=") + 1;
 					String subString = argLowerCase.substring(startIndex);
 					billingFile.getBillingDefaults().setDemandDaysPrev(Integer.valueOf(subString).intValue());
 				}
 				else if( argLowerCase.startsWith("ener"))
 				{//BillingFileDefaults.energyDaysPrevious
-					int startIndex = argLowerCase.indexOf("=") + 1;
 					String subString = argLowerCase.substring(startIndex);
 					billingFile.getBillingDefaults().setEnergyDaysPrev(Integer.valueOf(subString).intValue());
 				}
@@ -72,7 +83,6 @@ public class BillingFile extends java.util.Observable implements Runnable
 				{//BillingFileDefaults.billGroupTypeString=COLLECTIONGROUP
 				 //BillingFileDefaults.billGroup
 					billingFile.getBillingDefaults().setBillGroupType(BillingFileDefaults.COLLECTION_GROUP);
-					int startIndex = argLowerCase.indexOf("=") + 1;
 					String subString = args[i].substring(startIndex);
 					billingFile.getBillingDefaults().setBillGroup(subString);
 				}
@@ -80,7 +90,6 @@ public class BillingFile extends java.util.Observable implements Runnable
 				{//BillingFileDefaults.billGroupTypeString=TESTCOLLECTIONGROUP
 				 //BillingFileDefaults.billGroup
 					billingFile.getBillingDefaults().setBillGroupType(BillingFileDefaults.TEST_COLLECTION_GROUP);
-					int startIndex = argLowerCase.indexOf("=") + 1;
 					String subString = args[i].substring(startIndex);
 					billingFile.getBillingDefaults().setBillGroup(subString);
 				}
@@ -88,20 +97,17 @@ public class BillingFile extends java.util.Observable implements Runnable
 				{//BillingFileDefaults.billGroupTypeString.BILLINGGROUP
 				 //BillingFileDefaults.billGroup
 					billingFile.getBillingDefaults().setBillGroupType(BillingFileDefaults.BILLING_GROUP);
-					int startIndex = argLowerCase.indexOf("=") + 1;
 					String subString = args[i].substring(startIndex);
 					billingFile.getBillingDefaults().setBillGroup(subString);
 				}
 				else if( argLowerCase.startsWith("end"))
 				{//BillingFileDefaults.endDate
-					int startIndex = argLowerCase.indexOf("=") + 1;
 					String subString = argLowerCase.substring(startIndex);
 					com.cannontech.util.ServletUtil.parseDateStringLiberally(subString);
 					billingFile.getBillingDefaults().setEndDate(com.cannontech.util.ServletUtil.parseDateStringLiberally(subString));
 				}
 				else if( argLowerCase.startsWith("file") || argLowerCase.startsWith("dir"))
 				{//BillingFileDefaults.outputFileDir
-					int startIndex = argLowerCase.indexOf("=") + 1;
 					String subString = argLowerCase.substring(startIndex);
 					if( subString.indexOf(':') > 0)	//they remembered the whole directory
 						billingFile.getBillingDefaults().setOutputFileDir(subString);
@@ -110,7 +116,6 @@ public class BillingFile extends java.util.Observable implements Runnable
 				}
 				else if( argLowerCase.startsWith("mult"))
 				{//BillingFileDefuaults.removeMultiplier
-					int startIndex = argLowerCase.indexOf("=") + 1;
 					String subString = argLowerCase.substring(startIndex);
 					if( subString.startsWith("t"))
 						billingFile.getBillingDefaults().setRemoveMultiplier(true);
@@ -119,7 +124,6 @@ public class BillingFile extends java.util.Observable implements Runnable
 				}
 				else if( argLowerCase.startsWith("app"))
 				{
-					int startIndex = argLowerCase.indexOf("=") + 1;
 					String subString = argLowerCase.substring(startIndex);
 					if( subString.startsWith("t"))
 						billingFile.getBillingDefaults().setAppendToFile(true);
