@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/10/17 18:42:39 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/10/24 17:26:43 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -171,7 +171,10 @@ CtiPointDataMsg *CtiDNPBinaryInput::getPoint( void )
     double val;
     int quality;
 
-    switch(getVariation())
+    val = _bi.flags.state;
+
+    //  this has to be rethought in terms of being called by inherited classes with ENTIRELY DIFFERENT VARIATIONS
+    /*switch(getVariation())
     {
         case WithStatus:
         {
@@ -179,7 +182,6 @@ CtiPointDataMsg *CtiDNPBinaryInput::getPoint( void )
         }
         case SingleBitPacked:
         {
-            val = _bi.flags.state;
             break;
         }
 
@@ -192,7 +194,7 @@ CtiPointDataMsg *CtiDNPBinaryInput::getPoint( void )
 
             break;
         }
-    }
+    }*/
 
 /*    UnintializedQuality = 0,
     InitDefaultQuality,
@@ -382,7 +384,7 @@ CtiPointDataMsg *CtiDNPBinaryInputChange::getPoint( void )
     {
         case WithTime:
         {
-            tmpMsg->setTime(_time.getSeconds());
+            //tmpMsg->setTime(_time.getSeconds());
 
             break;
         }
