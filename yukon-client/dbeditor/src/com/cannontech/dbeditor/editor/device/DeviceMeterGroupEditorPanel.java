@@ -35,6 +35,7 @@ public class DeviceMeterGroupEditorPanel extends com.cannontech.common.gui.util.
 	private javax.swing.JComboBox ivjJComboBoxlVoltRate = null;
 	private javax.swing.JLabel ivjJLabelVoltDmdRate = null;
 	private javax.swing.JLabel ivjJLabelVoltIntervalDmdRate = null;
+	private boolean is410 = false;
 
 /**
  * Constructor
@@ -1430,6 +1431,12 @@ public boolean isInputValid()
       return false;
    }
 */
+	if(is410 && getMeterNumberTextField().getText().length() < 7)
+	{
+	   setErrorString("An MCT410 requires a meter number with seven digits");
+	   return false;
+	}
+
    return true;
 }
 
@@ -1542,7 +1549,6 @@ public void setValue(Object val)
 	getJLabelVoltDmdRate().setVisible( DeviceTypesFuncs.isLoadProfileVoltage(deviceType) );
 	getJLabelVoltIntervalDmdRate().setVisible( DeviceTypesFuncs.isLoadProfileVoltage(deviceType) );
 
-
 	//The default object is either a MCT or a IEDmeter
 	if( val instanceof MCTBase )
 	{
@@ -1586,6 +1592,7 @@ public void setValue(Object val)
 			getJComboBoxlVoltRate().addItem("30 minute");
 			getJComboBoxlVoltRate().addItem("1 hour");
 			
+			is410 = true;
 		}
 		
       CtiUtilities.setIntervalComboBoxSelectedItem(
