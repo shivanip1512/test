@@ -7,7 +7,7 @@
 	StarsLMConfiguration configuration = inventory.getLMHardware().getStarsLMConfiguration();
 	
 	ArrayList attachedApps = new ArrayList();
-	ArrayList attachedProgs = new ArrayList();
+	ArrayList attachedProgIDs = new ArrayList();
 	
 	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
 		StarsAppliance app = appliances.getStarsAppliance(i);
@@ -19,20 +19,11 @@
 			}
 			attachedApps.add(idx, app);
 			
-			for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
-				StarsLMProgram program = programs.getStarsLMProgram(j);
-				if (program.getProgramID() == app.getProgramID()) {
-					if (!attachedProgs.contains(program)) attachedProgs.add(program);
-					break;
-				}
+			if (app.getProgramID() > 0) {
+				Integer progID = new Integer(app.getProgramID());
+				if (!attachedProgIDs.contains(progID)) attachedProgIDs.add(progID);
 			}
 		}
-	}
-	
-	ArrayList unattachedProgs = new ArrayList();
-	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
-		StarsLMProgram program = programs.getStarsLMProgram(i);
-		if (!attachedProgs.contains(program)) unattachedProgs.add(program);
 	}
 	
 	String trackHwAddr = liteEC.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
@@ -123,78 +114,37 @@ function changeProgSelection(chkBox) {
                     <td width="25%" class="HeaderCell">Relay</td>
                   </tr>
 <%
-	for (int i = 0; i < attachedProgs.size(); i++) {
-		StarsLMProgram program = (StarsLMProgram) attachedProgs.get(i);
-		StarsEnrLMProgram enrProg = ServletUtils.getEnrollmentProgram(categories, program.getProgramID());
-		
-		int loadNo = 0;
-		for (int j = 0; j < appliances.getStarsApplianceCount(); j++) {
-			StarsAppliance app = appliances.getStarsAppliance(j);
-			if (app.getInventoryID() == inventory.getInventoryID() && app.getProgramID() == program.getProgramID()) {
-				loadNo = app.getLoadNumber();
-				break;
+	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
+		for (int j = 0; j < categories.getStarsApplianceCategory(i).getStarsEnrLMProgramCount(); j++) {
+			StarsEnrLMProgram program = categories.getStarsApplianceCategory(i).getStarsEnrLMProgram(j);
+			boolean assigned = attachedProgIDs.contains(new Integer(program.getProgramID()));
+			
+			int loadNo = 0;
+			for (int k = 0; k < appliances.getStarsApplianceCount(); k++) {
+				StarsAppliance app = appliances.getStarsAppliance(k);
+				if (app.getInventoryID() == inventory.getInventoryID() && app.getProgramID() == program.getProgramID()) {
+					loadNo = app.getLoadNumber();
+					break;
+				}
 			}
-		}
 %>
                   <tr> 
                     <td width="5%" height="2"> 
-                      <input type="checkbox" name="ProgID" value="<%= program.getProgramID() %>" checked onclick="changeProgSelection(this);setContentChanged(true);">
+                      <input type="checkbox" name="ProgID" value="<%= program.getProgramID() %>" onclick="changeProgSelection(this);setContentChanged(true);"
+                      <% if (assigned) out.print("checked"); %>>
                     </td>
-                    <td width="35%" class="TableCell" height="2"><%= program.getProgramName() %></td>
+                    <td width="35%" class="TableCell" height="2"><%= ServletUtils.getProgramDisplayNames(program)[0] %></td>
 <% if (!useHardwareAddressing) { %>
                     <td width="35%" height="2"> 
-                      <select id="Group_Prog<%= program.getProgramID() %>" name="GroupID" onchange="setContentChanged(true)">
+                      <select id="Group_Prog<%= program.getProgramID() %>" name="GroupID" onchange="setContentChanged(true)"
+                      <% if (!assigned) out.print("disabled"); %>>
 <%
-		for (int j = 0; j < enrProg.getAddressingGroupCount(); j++) {
-			AddressingGroup group = enrProg.getAddressingGroup(j);
-			String selected = (group.getEntryID() == program.getGroupID()) ? "selected" : "";
-%>
-                        <option value="<%= group.getEntryID() %>" <%= selected %>><%= group.getContent() %></option>
-<%
-		}
-%>
-                      </select>
-                    </td>
-<% } else { %>
-                    <input type="hidden" name="GroupID" value="0">
-<% } %>
-                    <td width="25%" height="2">
-                      <select id="Load_Prog<%= program.getProgramID() %>" name="LoadNo" onchange="setContentChanged(true)">
-                        <option value="0">(none)</option>
-<%
-		int numRelays = (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM)? 8 : 4;
-		for (int ln = 1; ln <= numRelays; ln++) {
-			String selected = (ln == loadNo)? "selected" : "";
-%>
-                        <option value="<%= ln %>" <%= selected %>><%= ln %></option>
-<%
-		}
-%>
-                      </select>
-                    </td>
-                  </tr>
-<%
-	}
-	
-	for (int i = 0; i < unattachedProgs.size(); i++) {
-		StarsLMProgram program = (StarsLMProgram) unattachedProgs.get(i);
-		StarsEnrLMProgram enrProg = ServletUtils.getEnrollmentProgram(categories, program.getProgramID());
-%>
-                  <tr> 
-                    <td width="5%" height="2"> 
-                      <input type="checkbox" name="ProgID" value="<%= program.getProgramID() %>" onclick="changeProgSelection(this);setContentChanged(true);">
-                    </td>
-                    <td width="35%" class="TableCell" height="2"><%= program.getProgramName() %></td>
-<% if (!useHardwareAddressing) { %>
-                    <td width="35%" height="2"> 
-                      <select id="Group_Prog<%= program.getProgramID() %>" name="GroupID" disabled onchange="setContentChanged(true)">
-<%
-			for (int j = 0; j < enrProg.getAddressingGroupCount(); j++) {
-				AddressingGroup group = enrProg.getAddressingGroup(j);
+			for (int k = 0; k < program.getAddressingGroupCount(); k++) {
+				AddressingGroup group = program.getAddressingGroup(k);
 %>
                         <option value="<%= group.getEntryID() %>"><%= group.getContent() %></option>
 <%
-		}
+			}
 %>
                       </select>
                     </td>
@@ -202,20 +152,23 @@ function changeProgSelection(chkBox) {
                     <input type="hidden" name="GroupID" value="0">
 <% } %>
                     <td width="25%" height="2">
-                      <select id="Load_Prog<%= program.getProgramID() %>" name="LoadNo" disabled onchange="setContentChanged(true)">
+                      <select id="Load_Prog<%= program.getProgramID() %>" name="LoadNo" onchange="setContentChanged(true)"
+                      <% if (!assigned) out.print("disabled"); %>>
                         <option value="0">(none)</option>
 <%
-		int numRelays = (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM)? 8 : 4;
-		for (int ln = 1; ln <= numRelays; ln++) {
+			int numRelays = (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM)? 8 : 4;
+			for (int ln = 1; ln <= numRelays; ln++) {
+				String selected = (ln == loadNo)? "selected" : "";
 %>
-                        <option value="<%= ln %>"><%= ln %></option>
+                        <option value="<%= ln %>" <%= selected %>><%= ln %></option>
 <%
-		}
+			}
 %>
                       </select>
                     </td>
                   </tr>
 <%
+		}
 	}
 %>
                 </table>
@@ -259,7 +212,7 @@ function changeProgSelection(chkBox) {
               <table width="60%" border="1" cellspacing="0" cellpadding="3">
                 <tr bgcolor="#FFFFFF"> 
                   <td width="25%" class="HeaderCell"> Appliance Type</td>
-                  <td width="15%" class="HeaderCell">Load #</td>
+                  <td width="15%" class="HeaderCell"> Relay</td>
                   <td width="15%" class="HeaderCell"> Status</td>
                   <td width="45%" class="HeaderCell"> Enrolled Programs</td>
                 </tr>
