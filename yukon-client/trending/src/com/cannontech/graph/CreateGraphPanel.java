@@ -1370,7 +1370,10 @@ public com.cannontech.database.data.graph.GraphDefinition showCreateGraphPanelDi
 			{
 				if ( ivjGraphGDSTable.getCellEditor() !=  null)
 					ivjGraphGDSTable.getCellEditor().stopCellEditing();
-	
+
+				if( !validData())
+					return;
+
 				setButtonPushed(OK);
 			}
 			else if( event.getSource() == getCancelButton() )
@@ -1399,4 +1402,43 @@ public com.cannontech.database.data.graph.GraphDefinition showCreateGraphPanelDi
 	else
 		return null;
 }
+	/**
+	 * 
+	 */
+	private boolean validData()
+	{
+		if (!getAxisPanel().getLeftAutoScalingCheckBox().isSelected())
+		{
+			double min = new Double(getAxisPanel().getLeftMinTextField().getText()).doubleValue();
+			double max = new Double(getAxisPanel().getLeftMaxTextField().getText()).doubleValue();
+			if (min > max)
+			{
+				showPopupMessage("Left Axis Min value must be less than Max value.", javax.swing.JOptionPane.WARNING_MESSAGE);
+				return false;			
+			}
+		}
+
+		if (!getAxisPanel().getRightAutoScalingCheckBox().isSelected())
+		{
+			double min = new Double(getAxisPanel().getRightMinTextField().getText()).doubleValue();
+			double max = new Double(getAxisPanel().getRightMaxTextField().getText()).doubleValue();
+			if (min > max)
+			{
+				showPopupMessage("Right Axis Min value must be less than Max value.", javax.swing.JOptionPane.WARNING_MESSAGE);
+				return false;			
+			}
+		}
+		
+	return true;
+	}
+	
+	public void showPopupMessage(String message, int messageType )
+	{
+		javax.swing.JFrame popupFrame = new javax.swing.JFrame();
+		popupFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("GraphIcon.gif"));
+		javax.swing.JOptionPane.showMessageDialog(popupFrame,
+		message, "Yukon Trending", messageType);
+		return;
+	}
+	
 }
