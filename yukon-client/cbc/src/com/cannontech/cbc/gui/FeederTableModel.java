@@ -288,7 +288,7 @@ public Object getValueAt(int row, int col)
             else
             
                return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces(
-                     feeder.getPowerFactorValue().doubleValue(), 1 ) + "%"; //get percent
+                     feeder.getPowerFactorValue().doubleValue() * 100, 1 ) + "%"; //get percent
          }
          
 			case DAILY_OPERATIONS_COLUMN:
