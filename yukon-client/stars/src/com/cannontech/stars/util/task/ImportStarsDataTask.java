@@ -21,6 +21,7 @@ import com.cannontech.database.data.lite.stars.LiteLMProgram;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -224,13 +225,17 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			
 			File custMapFile = new File(path, "customer.map");
 			fw = new java.io.PrintWriter(new java.io.FileWriter(custMapFile, true), true);	// Append to file and auto flush
+			boolean first = true;
 			
 			Iterator it = acctFieldsList.listIterator();
 			while (it.hasNext()) {
 				String[] fields = (String[]) it.next();
 				lineNo = fields[ImportManager.IDX_LINE_NUM];
 				
-				LiteStarsCustAccountInformation liteAcctInfo = ImportManager.newCustomerAccount( fields, user, energyCompany );
+				// To save database lookup time, only check for constraint for
+				// the first import entry, then assume there won't be any problem
+				LiteStarsCustAccountInformation liteAcctInfo = ImportManager.newCustomerAccount(fields, user, energyCompany, first);
+				first = false;
 				
 				acctIDMap.put( Integer.valueOf(fields[ImportManager.IDX_ACCOUNT_ID]), liteAcctInfo );
 				fw.println(fields[ImportManager.IDX_ACCOUNT_ID] + "," + liteAcctInfo.getAccountID());
@@ -250,6 +255,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			
 			File hwConfigMapFile = new File(path, "hwconfig.map");
 			fw = new java.io.PrintWriter(new java.io.FileWriter(hwConfigMapFile, true), true);
+			first = true;
 			
 			it = invFieldsList.listIterator();
 			while (it.hasNext()) {
@@ -277,7 +283,8 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 						throw new WebClientException("Cannot find customer account with id=" + acctID.intValue());
 				}
 				
-				LiteInventoryBase liteInv = ImportManager.insertLMHardware( fields, liteAcctInfo, energyCompany, conn );
+				LiteInventoryBase liteInv = ImportManager.insertLMHardware(fields, liteAcctInfo, energyCompany, conn, first);
+				first = false;
 				
 				if (liteInv.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL)
 					logMsg.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") is out of service");
@@ -290,6 +297,9 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					else if (fields[ImportManager.IDX_R1_STATUS + i].equals("2"))
 						logMsg.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") relay " + (i+1) + " was out before switch placed out");
 				}
+				
+				if (ECUtils.isMCT( liteInv.getCategoryID() ) && liteInv.getDeviceID() == 0)
+					logMsg.add("Meter (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ",dev_name=" + fields[ImportManager.IDX_DEVICE_NAME] + ") doesn't match any MCT device in Yukon");
 				
 				if (liteAcctInfo != null) {
 					// If load groups for relays are specified, automatically add appliances through program enrollment
@@ -440,6 +450,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			}
 			
 			lineNo = null;
+			first = true;
 			
 			it = orderFieldsList.listIterator();
 			while (it.hasNext()) {
@@ -465,7 +476,8 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 						throw new WebClientException("Cannot find customer account with id=" + acctID.intValue());
 				}
 				
-				ImportManager.newServiceRequest( fields, liteAcctInfo, energyCompany );
+				ImportManager.newServiceRequest(fields, liteAcctInfo, energyCompany, first);
+				first = false;
 				
 				numOrderAdded++;
 				it.remove();
