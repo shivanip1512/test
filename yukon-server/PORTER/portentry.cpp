@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/08/28 14:54:07 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2002/09/03 20:57:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -112,6 +112,7 @@ INT GenerateCompleteRequest(RWTPtrSlist< OUTMESS > &outList, OUTMESS *&OutTempla
 
 INT ValidateOutMessage(OUTMESS *&OutMessage);
 VOID ConnectionThread (VOID *Arg);
+INT realignNexus(OUTMESS *&OutMessage);
 
 /* Threads to field incoming messages from the pipes */
 VOID PorterConnectionThread (VOID *Arg)
@@ -749,12 +750,11 @@ INT ValidateOutMessage(OUTMESS *&OutMessage)
                 dout << " Tail bytes " << hex << (int)OutMessage->TailFrame[0] << " " << hex << (int)OutMessage->TailFrame[1] << dec << endl;
             }
 
-            delete(OutMessage);
-            OutMessage = NULL;
-
-            nRet = CtiInvalidRequest;
+            realignNexus(OutMessage);
         }
-        else if((OutMessage->DeviceID <= 0 && OutMessage->TargetID <= 0) || OutMessage->Remote > MAXIDLC)
+
+
+        if((OutMessage->DeviceID <= 0 && OutMessage->TargetID <= 0) || OutMessage->Remote > MAXIDLC)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
 
@@ -1558,6 +1558,57 @@ INT GenerateCompleteRequest(RWTPtrSlist< OUTMESS > &outList, OUTMESS *&OutMessag
     else
     {
         status = MEMORY;
+    }
+
+    return status;
+}
+
+
+INT realignNexus(OUTMESS *&OutMessage)
+{
+    INT i;
+    INT loops = sizeof(OUTMESS);
+    INT status = NORMAL;
+
+    BYTE nextByte;
+    ULONG BytesRead = 1;
+    CTINEXUS *MyNexus = OutMessage->ReturnNexus;
+
+    // OutMessage->ReturnNexus
+    for(loops = sizeof(OUTMESS); loops > 0 && BytesRead > 0; loops--)
+    {
+        MyNexus->CTINexusRead(&nextByte, 1, &BytesRead, 60);
+
+        if(BytesRead == 1 && nextByte == 0x02)
+        {
+            MyNexus->CTINexusRead(&nextByte, 1, &BytesRead, 60);
+
+            if(BytesRead == 1 && nextByte == 0xe0)
+            {
+                MyNexus->CTINexusRead (OutMessage + 2, sizeof(OUTMESS) - 2, &BytesRead, 60);
+
+                if(BytesRead == (sizeof(OUTMESS) - 2) && (OutMessage->TailFrame[0] != 0xea && OutMessage->TailFrame[1] == 0x03))
+                {
+                    OutMessage->HeadFrame[0] = 0x02;
+                    OutMessage->HeadFrame[1] = 0xe0;
+                    OutMessage->ReturnNexus = MyNexus;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Inbound Nexus has been successfully realigned " << endl;
+                    }
+
+                    break;
+                }
+            }
+        }
+    }
+
+    if(loops <= 0)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Unable to realign inbound Nexus " << endl;
+        }
     }
 
     return status;
