@@ -258,17 +258,17 @@ insert into YukonRoleProperty values(-10801,-108,'client_log_level','INFO','Sets
 /* Operator Administrator Role Properties */
 /* Operator Consumer Info Role Properties */
 /* Operator Commercial Metering Role Properties*/
-insert into YukonRoleProperty values(-20300,-203,'Trending Disclaimer',' ','The disclaimer that appears with trends');
+insert into YukonRoleProperty values(-20200,-202,'Trending Disclaimer',' ','The disclaimer that appears with trends');
 
 /* Operator Direct Loadcontrol Role Properties */
-insert into YukonRoleProperty values(-20400,-204,'Direct Loadcontrol Label','Direct Control','The operator specific name for direct loadcontrol');
-insert into YukonRoleProperty values(-20401,-204,'Individual Switch','true','Controls access to operator individual switch control');
+insert into YukonRoleProperty values(-20300,-203,'Direct Loadcontrol Label','Direct Control','The operator specific name for direct loadcontrol');
+insert into YukonRoleProperty values(-20301,-203,'Individual Switch','true','Controls access to operator individual switch control');
 
 /* Operator Direct Curtailment Role Properties */
-insert into YukonRoleProperty values(-20500,-205,'Direct Curtailment Label','Notification','The operator specific name for direct curtailment');
+insert into YukonRoleProperty values(-20400,-204,'Direct Curtailment Label','Notification','The operator specific name for direct curtailment');
 
 /* Operator Energy Exchange Role Properties */
-insert into YukonRoleProperty values(-20501,-205,'Energy Buyback Label','Energy Buyback','The operator specific name for Energy Buyback');
+insert into YukonRoleProperty values(-20500,-205,'Energy Buyback Label','Energy Buyback','The operator specific name for Energy Buyback');
 
 /* Operator Hardware Inventory Role Properties */
 
