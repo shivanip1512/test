@@ -6,6 +6,12 @@
 			<xs:pattern value="[0-9]{3}-[0-9]{3}-[0-9]{4}"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="stars-LoginType">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="OperatorLogin"/>
+			<xs:enumeration value="ConsumerLogin"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="stars-SearchByType">
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="AccountNumber"/>
@@ -90,7 +96,8 @@
 			<xs:element name="BillingAddress" type="stars-CustomerAddress"/>
 			<xs:element name="PrimaryContact" type="stars-CustomerContact"/>
 			<xs:element name="AdditionalContact" type="stars-CustomerContact" minOccurs="0" maxOccurs="unbounded"/>
-		<xs:element name="TimeZone" type="xs:string"/></xs:sequence>
+			<xs:element name="TimeZone" type="xs:string"/>
+		</xs:sequence>
 		<xs:attribute name="accountID" type="xs:int"/>
 		<xs:attribute name="customerID" type="xs:int"/>
 	</xs:complexType>
@@ -254,7 +261,7 @@
 				<xs:element minOccurs="0" ref="stars-GetDefaultThermostatSettings"/>
 				<xs:element minOccurs="0" ref="stars-GetDefaultThermostatSettingsResponse"/>
 				<xs:element ref="stars-UpdateThermostatSettings" minOccurs="0"/>
-				
+
 				<xs:element ref="stars-GetExitInterviewQuestions" minOccurs="0"/>
 				<xs:element ref="stars-GetExitInterviewQuestionsResponse" minOccurs="0"/>
 				<xs:element ref="stars-SendExitInterviewAnswers" minOccurs="0"/>
@@ -354,7 +361,7 @@
 				<xs:element ref="stars-ServiceRequestHistory" minOccurs="0"/>
 				<xs:element ref="stars-ThermostatSettings" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="stars-DefaultThermostatSettings" minOccurs="0"/>
-				
+
 				<xs:element ref="stars-User" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
@@ -414,7 +421,17 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-User" type="stars-Usr"/>
-	<xs:element name="stars-Login" type="stars-Usr"/>
+	<xs:element name="stars-Login">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="stars-Usr">
+					<xs:sequence>
+						<xs:element name="LoginType" type="stars-LoginType"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="stars-LoginResponse">
 		<xs:complexType>
 			<xs:sequence>
