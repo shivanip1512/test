@@ -13,6 +13,9 @@ package com.cannontech.servlet;
  * Parameters
  * 
  * gdefid	- GraphDefinition ID
+ * pointid	- A pointID for an AD-HOC trend.
+ * **NOTE**	  ONLY gdefid or pointid should be set, if both are...then by default we choose gdefid to work with!!!
+ 
  * start	- Start date string, see dtFormat optional parameter for formatting
  * period	- See com.cannontech.util.ServletUtil for valid period strings
  * view		- See com.cannontech.graph.model.TrendModelType for valid view strings
@@ -64,6 +67,10 @@ public synchronized void service(HttpServletRequest req, HttpServletResponse res
 		
 		String param;
 		String param2;
+
+		param = req.getParameter("pointid");
+		if( param != null)
+			localBean.setPointid(Integer.parseInt( param));
 		
 		param = req.getParameter("gdefid");
 		if( param != null)
