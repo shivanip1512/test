@@ -104,13 +104,13 @@ public class CTILogger
          createLogger( STANDARD_LOGGER );
         
         // Don't create all the fancy loggers if we just want to use the standard one. 
-		if(!alwaysUseStandardLogger)
-		{
-		
-			//create the extra loggers to keep our web folks sane
-			for( int i = 0; i < ALL_NAMES.length; i++ )
-				createLogger( ALL_NAMES[i][0].toString() );				
-		}
+			if(!alwaysUseStandardLogger)
+			{
+			
+				//create the extra loggers to keep our web folks sane
+				for( int i = 0; i < ALL_NAMES.length; i++ )
+					createLogger( ALL_NAMES[i][0].toString() );				
+			}
 			isCreated = true;
 			
 			//initLoggers();
@@ -122,18 +122,25 @@ public class CTILogger
 	  // Check if we should even look for a fancy logger
 	  if(!alwaysUseStandardLogger)
 	  {
-		t.fillInStackTrace();
-	
-		if( t.getStackTrace().length >= 2 )
-		{
-			Logger l = LogManager.exists(
-				t.getStackTrace()[1].getClassName().substring(
-					0,
-					t.getStackTrace()[1].getClassName().lastIndexOf(".") ) );
+			t.fillInStackTrace();
 			
-			if( l != null )
-				log = l;
-      	}
+			//if( t.getStackTrace().length >= 2 )
+			for( int i = 0; i < t.getStackTrace().length; i++ )
+			{
+				if( t.getStackTrace()[i].getClassName().startsWith(CTILogger.class.getName()) )
+					continue;
+			
+				Logger l = LogManager.exists(
+						t.getStackTrace()[i].getClassName().substring(
+						0,
+						t.getStackTrace()[i].getClassName().lastIndexOf(".") ) );
+				
+				if( l != null )
+					log = l;
+					
+				break;
+			}
+	  
 	  }
 
 	  return log;

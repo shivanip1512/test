@@ -15,6 +15,8 @@ import java.util.StringTokenizer;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.RoleFuncs;
+
 
 public class PoolManager
 {
@@ -39,7 +41,6 @@ public class PoolManager
 	public static final String HOST = "db.host";
 	public static final String PORT = "db.port";
 	public static final String SERVICE = "db.servicename"; //oracle only
-
 
 
 	public static final String[] ALL_DRIVERS =
@@ -151,7 +152,7 @@ public class PoolManager
 		}
 		catch( Exception e )
 		{
-			CTILogger.getStandardLog().error( "Invalid format of the database URL string", e );
+			error( "Invalid format of the database URL string", e );
 			Error err = new Error( "Unrecognized database URL, URL = " + url_ );
 			err.initCause( e );
 			throw err;
@@ -174,7 +175,7 @@ public class PoolManager
 			String url = props.getProperty(poolName + URL);
 			if (url == null)
 			{                 
-	          CTILogger.getStandardLog().error( "No URL specified for " + poolName );
+	          error( "No URL specified for " + poolName );
 			    continue;			
 			}
 			
@@ -195,7 +196,7 @@ public class PoolManager
 			}
 			catch (NumberFormatException e)
 			{
-            	CTILogger.getStandardLog().error("Invalid maxconns value " + maxConns + " for " + poolName);
+            	error("Invalid maxconns value " + maxConns + " for " + poolName);
 			   	max = 0;
 			}
    
@@ -208,7 +209,7 @@ public class PoolManager
 			}
 			catch (NumberFormatException e)
 			{                      
-            	CTILogger.getStandardLog().error( "Invalid initconns value " + initConns + " for " + poolName );
+            	error( "Invalid initconns value " + initConns + " for " + poolName );
 			   	init = 0;
 			}
    
@@ -221,7 +222,7 @@ public class PoolManager
 			}
 			catch (NumberFormatException e)
 			{
-            	CTILogger.getStandardLog().info("Invalid logintimeout value " + loginTimeOut + " for " 
+            	info("Invalid logintimeout value " + loginTimeOut + " for " 
                   				+ poolName + ", defaulting to 5" );                  
 			   	timeOut = 5;
 			}
@@ -272,7 +273,7 @@ public String[] getAllPoolsStrings()
 		 }
 		 catch (SQLException e)
 		 {
-         CTILogger.getStandardLog().error("Exception getting connection from " + name, e );
+         error("Exception getting connection from " + name, e );
 		 }
 	  }
 
@@ -295,7 +296,7 @@ public String[] getAllPoolsStrings()
    	}
    	catch( Exception ex )
    	{
-   		CTILogger.error("Something went wrong with the URL of a file", ex );
+			CTILogger.getStandardLog().error("Something went wrong with the URL of a file", ex );
    		return null;
    	}
    	
@@ -337,10 +338,12 @@ public String[] getAllPoolsStrings()
 			File f = new File( DB_BASE + DB_PROPERTIES_FILE);
 			is = new FileInputStream( DB_BASE + DB_PROPERTIES_FILE );
 			
-			CTILogger.info( " Searching for db.properties in : " + f.getAbsolutePath() );
-			CTILogger.info( "   catalina.base = " + DB_BASE );
-//				CTILogger.info( " Con = " + f.getCanonicalPath() );
-//				CTILogger.info( " ppp = " + f.getPath() );				
+			CTILogger.getStandardLog().info( " Searching for db.properties in : " + f.getAbsolutePath() );
+			CTILogger.getStandardLog().info( "   catalina.base = " + DB_BASE );
+		}
+		else
+		{
+			CTILogger.info( " Using db.properties found in CLASSPATH" );
 		}
 			
 		return is;
@@ -379,11 +382,11 @@ public String[] getAllPoolsStrings()
 			Driver driver = (Driver)Class.forName(ALL_DRIVERS[i]).newInstance();
 			DriverManager.registerDriver(driver);
 
-         CTILogger.getStandardLog().info("Registered JDBC driver " + ALL_DRIVERS[i] );
+         info("Registered JDBC driver " + ALL_DRIVERS[i] );
 		 }
 		 catch (Exception e)
 		 {
-         CTILogger.getStandardLog().error("Can't register JDBC driver: " +
+         error("Can't register JDBC driver: " +
                   ALL_DRIVERS[i], e );        
 		 }
 	  }
@@ -419,4 +422,37 @@ public String[] getAllPoolsStrings()
 	  }
 
    }
+
+	private void debug( String msg )
+	{
+		if( RoleFuncs.hasLoadedGlobals() )
+			CTILogger.debug( msg );
+		else
+			CTILogger.getStandardLog().debug( msg );
+	}
+
+	private void error( String msg, Throwable t )
+	{
+		if( RoleFuncs.hasLoadedGlobals() )
+			CTILogger.error( msg, t );
+		else
+			CTILogger.getStandardLog().error( msg, t );
+	}
+
+	private void error( String msg )
+	{
+		if( RoleFuncs.hasLoadedGlobals() )
+			CTILogger.error( msg );
+		else
+			CTILogger.getStandardLog().error( msg );
+	}
+
+	private void info( String msg )
+	{
+		if( RoleFuncs.hasLoadedGlobals() )
+			CTILogger.info( msg );
+		else
+			CTILogger.getStandardLog().info( msg );
+	}
+
 }

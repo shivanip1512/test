@@ -129,6 +129,15 @@ public class RoleFuncs
 	}
 
 	/**
+	 * We can only use the properties if the global Yukon Group is loaded
+	 * @return
+	 */
+	public static boolean hasLoadedGlobals()
+	{
+		return AuthFuncs.getGroup(YukonGroupRoleDefs.GRP_YUKON) != null;
+	}
+
+	/**
 	 * Dont let anyone instantiate me
 	 * @see java.lang.Object#Object()
 	 */
