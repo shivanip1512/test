@@ -100,16 +100,19 @@ public class CustomerWizardPanel extends com.cannontech.common.wizard.WizardPane
 	 */
 	protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.cannontech.common.gui.util.DataInputPanel currentInputPanel) 
 	{
+		//until we add more customer types to the wizard, knock out the customer type panel
+		//force customertype to Commercial/Industrial
 		if( currentInputPanel == null )
 		{
-			return getCustomerTypePanel();
+			getCustomerBasePanel().setCustomerType( com.cannontech.database.data.customer.CustomerTypes.CUSTOMER_CI );
+			return getCustomerBasePanel();
 		}
-		else if( currentInputPanel == getCustomerTypePanel() )
+		/*else if( currentInputPanel == getCustomerTypePanel() )
 		{
 			//set the type of customer first
 			getCustomerBasePanel().setCustomerType( getCustomerTypePanel().getSelectedCustomerType() );
 			return getCustomerBasePanel();
-		}
+		}*/
 		else if( currentInputPanel == getCustomerBasePanel() )
 		{
 			return getCustomerAddressPanel();
