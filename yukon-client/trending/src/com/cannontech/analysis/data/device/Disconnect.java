@@ -6,6 +6,8 @@
  */
 package com.cannontech.analysis.data.device;
 
+
+
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.Reportable;
 
@@ -23,8 +25,8 @@ public class Disconnect implements Reportable
 	public String collGroup = null;
 	public String deviceName = null;
 	public String pointName = null;
-		public java.util.Date timeStamp = null;
-	public Float value = null;
+	public java.util.Date timeStamp = null;
+	public String valueString = null;
 
 	
 	/** Enum values for column representation */
@@ -49,6 +51,8 @@ public class Disconnect implements Reportable
 	private static Class[] columnTypes = null;
 	/** A string for the title of the data */
 	private static String title = "Disconnect Status By Collection Group";
+	
+
 
 
 	/**
@@ -67,13 +71,13 @@ public class Disconnect implements Reportable
 	 * @param timestamp_
 	 * @param value_
 	 */
-	public Disconnect(String collGroup_, String deviceName_, String pointName_, java.util.Date timeStamp_, Float value_)
+	public Disconnect(String collGroup_, String deviceName_, String pointName_, java.util.Date timeStamp_, String value_)
 	{
 		collGroup = collGroup_;
 		deviceName = deviceName_;
 		pointName = pointName_;
 		timeStamp = timeStamp_;
-		value = value_;			
+		valueString = value_;			
 	}
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
@@ -98,7 +102,7 @@ public class Disconnect implements Reportable
 					return meter.timeStamp;
 					
 				case DISCONNECT_STATUS_COLUMN:
-					return meter.value;
+					return meter.valueString;
 			}
 		}
 		return null;
@@ -133,7 +137,7 @@ public class Disconnect implements Reportable
 				String.class,
 				String.class,
 				java.util.Date.class,
-				Integer.class
+				String.class
 			};
 		}
 		return columnTypes;
@@ -165,4 +169,6 @@ public class Disconnect implements Reportable
 	{
 		return title;
 	}
+	
+
 }
