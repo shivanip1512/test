@@ -30,7 +30,7 @@ public class LMGroupExpressCommAddress extends com.cannontech.database.db.DBPers
 	
 	public static final String CONSTRAINT_COLUMNS[] = { "AddressID" };
 
-	public static final String TABLE_NAME = "LMGroupExpressCommAddress";
+	public static final String TABLE_NAME = "LMGroupExpressComAddress";
 /**
  * LMGroupVersacom constructor comment.
  */

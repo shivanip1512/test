@@ -28,7 +28,7 @@ public class LMGroupExpressComm extends com.cannontech.database.db.DBPersistent
 
 	public static final String CONSTRAINT_COLUMNS[] = { "LMGroupID" };
 
-	public static final String TABLE_NAME = "LMGroupExpressComm";
+	public static final String TABLE_NAME = "LMGroupExpressCom";
 /**
  * LMGroupVersacom constructor comment.
  */
