@@ -98,7 +98,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
 
     bool refreshRampOutProgramControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
-    bool updateGroupsRampingOut(ULONG secondsFrom1901);
+    bool updateGroupsRampingOut(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901);
 
     BOOL notifyGroupsOfStart(CtiMultiMsg* multiDispatchMsg);
 

@@ -2411,13 +2411,13 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
             for(LONG i=0;i<_lmprogramdirectgroups.entries();i++)
             {
                 CtiLMGroupBase* lm_group = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
-                if( lm_gear->getPercentReduction() > 0.0 )
+                if( currentGearObject->getPercentReduction() > 0.0 )
                 {
-                    expectedLoadReduced  += (currentGearObject->getPercentReduction() / 100.0) * currentGearObject->getKWCapacity();
+                    expectedLoadReduced  += (currentGearObject->getPercentReduction() / 100.0) * lm_group->getKWCapacity();
                 }
                 else
                 {
-                    expectedLoadReduced += currentGearObject->getKWCapacity() * (currentGearObject->getMethodRate() / 100.0);
+                    expectedLoadReduced += lm_group->getKWCapacity() * (currentGearObject->getMethodRate() / 100.0);
                 }
             }
 	    if( getProgramState() != CtiLMProgramBase::ManualActiveState )
@@ -3503,7 +3503,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
 		CtiLMGroupBase* lm_group = (CtiLMGroupBase*) _lmprogramdirectgroups[i];
 
 		// For special group types we might need to give it a boost to achieve the correct control time
-                if( currentLMGroup->doesMasterCycleNeedToBeUpdated(secondsFrom1901, currentLMGroup->getControlCompleteTime().seconds(), currentLMGroup->getControlCompleteTime().seconds() - currentLMGroup->getLastControlSent().seconds()) )                    
+                if( lm_group->doesMasterCycleNeedToBeUpdated(secondsFrom1901, lm_group->getControlCompleteTime().seconds(), lm_group->getControlCompleteTime().seconds() - lm_group->getLastControlSent().seconds()) )                    
 //                    if(lm_group->doesMasterCycleNeedToBeUpdated(secondsFrom1901, (lm_group->getLastControlSent().seconds()+off_time), off_time))
 		{
 		    //if it is a emetcon switch 450 (7.5 min) is correct
@@ -3528,7 +3528,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
 
                         RWDBDateTime now;
                         lm_group->setLastControlSent(now);
-			lm_group->setControlCompleteTime(now.addSeconds(offTime));
+			lm_group->setControlCompleteTime(now.addSeconds(off_time));
                         
 			if( getProgramState() != CtiLMProgramBase::ManualActiveState &&
 			    getProgramState() != CtiLMProgramBase::TimedActiveState )
@@ -4228,7 +4228,7 @@ bool CtiLMProgramDirect::refreshRampOutProgramControl(ULONG secondsFrom1901, Cti
   any groups should be done ramping out and sets them to not be ramping out.
   Returns true if there are any groups still rampingout, false otherwise.
 ----------------------------------------------------------------------------*/  
-bool CtiLMProgramDirect::updateGroupsRampingOut(ULONG secondsFrom1901)
+bool CtiLMProgramDirect::updateGroupsRampingOut(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901)
 {
     
     int num_groups = _lmprogramdirectgroups.entries();
@@ -4279,12 +4279,38 @@ bool CtiLMProgramDirect::updateGroupsRampingOut(ULONG secondsFrom1901)
 	}
 	lm_group->setIsRampingOut(false);
 
-	if( _LM_DEBUG & LM_DEBUG_STANDARD )
+        if( _LM_DEBUG & LM_DEBUG_STANDARD )
 	{
 	    CtiLockGuard<CtiLogger> dout_guard(dout);
 	    dout << RWTime() << " LM Group: " << lm_group->getPAOName() << " has ramped out" << endl;
 	}
-
+                
+        // Possibly restore the group now that it has ramped out
+        if(lm_gear->getMethodStopType() == CtiLMProgramDirectGear::RestoreStopType)
+        {
+            int priority = 11;
+            string ctrl_str = "control restore";
+            if( _LM_DEBUG & LM_DEBUG_STANDARD )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - Sending restore command, LM Group: " << lm_group->getPAOName() << ", string: " << ctrl_str << ", priority: " << priority << endl;
+            }
+            CtiRequestMsg* requestMsg = new CtiRequestMsg(lm_group->getPAOId(), ctrl_str.data(),0,0,0,0,0,0,priority);
+            lm_group->setLastControlString(requestMsg->CommandString());
+            multiPilMsg->insert( requestMsg );
+            setLastControlSent(RWDBDateTime());
+            lm_group->setLastControlSent(RWDBDateTime());
+            RWDBDateTime nowPlusRandom = RWDBDateTime();
+            if( lm_group->getPAOType() == TYPE_LMGROUP_EMETCON )
+            {
+                nowPlusRandom.addMinutes(2);
+            }
+            else
+            {
+                nowPlusRandom.addMinutes(1);
+            }
+            lm_group->setControlCompleteTime(nowPlusRandom);
+        }
     }
 
     return getIsRampingOut();
@@ -4379,7 +4405,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
             {
                 returnBoolean = TRUE;
             }
-	    if( getIsRampingOut() && !updateGroupsRampingOut(secondsFrom1901) )
+	    if( getIsRampingOut() && !updateGroupsRampingOut(multiPilMsg, multiDispatchMsg, secondsFrom1901) )
 	    {
                 RWCString text = RWCString("Finshed Ramping Out, LM Program: ");
                 text += getPAOName();
@@ -4551,7 +4577,7 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
 	
 	if(isReady)
 	{
-	    if(getIsRampingOut() && !updateGroupsRampingOut(secondsFrom1901))
+	    if(getIsRampingOut() && !updateGroupsRampingOut(multiPilMsg, multiDispatchMsg, secondsFrom1901))
 	    {
 		string text = "Finisehd ramping out, LM Program: ";
 		text += getPAOName();
