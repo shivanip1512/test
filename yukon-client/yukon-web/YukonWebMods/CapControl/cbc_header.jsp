@@ -21,9 +21,9 @@
 />
 
 
+<cti:checklogin/>
 
 <%  
-//<cti:checklogin/>
 	SubBusTableModel subBusMdl = cbcServlet.getSubTableModel(); 
 	FeederTableModel feederMdl = cbcServlet.getFeederTableModel(); 
 	CapBankTableModel capBankMdl = cbcServlet.getCapBankTableModel(); 
