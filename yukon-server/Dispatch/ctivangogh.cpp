@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2002/08/08 23:22:11 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2002/08/16 13:08:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -5364,7 +5364,12 @@ void CtiVanGogh::writeMessageToPIL(CtiMessage *&pReq)
         {
             if(PilCM->getClientName() == PIL_REGISTRATION_NAME)
             {
-                PilCM->WriteConnQue( pReq->replicateMessage(), 5000 );
+                if( PilCM->WriteConnQue( pReq->replicateMessage(), 5000 ) )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Message to PIL was unable to be queued" << endl;
+                }
+
                 if(bDone)
                 {
                     {
@@ -5423,7 +5428,11 @@ void CtiVanGogh::writeMessageToScanner(const CtiCommandMsg *Cmd)
     if(scannerCM != NULL)
     {
         // pass the message through
-        scannerCM->WriteConnQue(Cmd->replicateMessage(), 5000);
+        if(scannerCM->WriteConnQue(Cmd->replicateMessage(), 5000))
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 }
 
