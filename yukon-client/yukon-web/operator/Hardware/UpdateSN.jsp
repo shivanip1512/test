@@ -13,6 +13,7 @@ function updateField(f, checked) {
 
 function init() {
 	var form = document.form1;
+	form.NewDeviceType.disabled = !form.UpdateDeviceType.checked;
 	form.ReceiveDate.disabled = !form.UpdateRecvDate.checked;
 	form.Voltage.disabled = !form.UpdateVoltage.checked;
 	form.ServiceCompany.disabled = !form.UpdateSrvCompany.checked;
@@ -65,7 +66,9 @@ function init() {
                             <div align="left">Range:</div>
                           </td>
                           <td width="70%"> 
-                            <input type="text" name="From" size="10">&nbsp;to&nbsp;<input type="text" name="To" size="10">
+                            <input type="text" name="From" size="10">
+                            &nbsp;to&nbsp;
+                            <input type="text" name="To" size="10">
                           </td>
                         </tr>
                         <tr> 
@@ -74,7 +77,7 @@ function init() {
                             <div align="left">Device Type: </div>
                           </td>
                           <td width="70%"> 
-                            <select name="DeviceType">
+                            <select name="DeviceType" onchange="this.form.NewDeviceType.value = this.value">
                               <%
 	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
@@ -88,7 +91,27 @@ function init() {
                           </td>
                         </tr>
                         <tr> 
-                          <td width="5%">
+                          <td width="5%"> 
+                            <input type="checkbox" name="UpdateDeviceType" value="true" onClick="updateField(this.form.NewDeviceType, this.checked)">
+                          </td>
+                          <td width="25%"> 
+                            <div align="left">New Device Type:</div>
+                          </td>
+                          <td width="70%"> 
+                            <select name="NewDeviceType">
+                              <%
+	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
+%>
+                              <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                              <%
+	}
+%>
+                            </select>
+                          </td>
+                        </tr>
+                        <tr> 
+                          <td width="5%"> 
                             <input type="checkbox" name="UpdateRecvDate" value="true" onclick="updateField(this.form.ReceiveDate, this.checked)">
                           </td>
                           <td width="25%"> 
@@ -99,7 +122,7 @@ function init() {
                           </td>
                         </tr>
                         <tr> 
-                          <td width="5%">
+                          <td width="5%"> 
                             <input type="checkbox" name="UpdateVoltage" value="true" onclick="updateField(this.form.Voltage, this.checked)">
                           </td>
                           <td width="25%"> 
@@ -120,7 +143,7 @@ function init() {
                           </td>
                         </tr>
                         <tr> 
-                          <td width="5%">
+                          <td width="5%"> 
                             <input type="checkbox" name="UpdateSrvCompany" value="true" onclick="updateField(this.form.ServiceCompany, this.checked)">
                           </td>
                           <td width="25%"> 
