@@ -234,3 +234,19 @@ go
 
 alter table EnergyCompany add WebConfigID numeric not null DEFAULT 0
 go
+
+
+create table YukonWebConfiguration (
+ConfigurationID      numeric              not null,
+LogoLocation         varchar(100)         null,
+Description          varchar(500)         null,
+AlternateDisplayName varchar(50)          null,
+URL                  varchar(100)         null,
+constraint PK_YUKONWEBCONFIGURATION primary key  (ConfigurationID)
+)
+go
+insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
+create unique  index YukWbCfg_PK on YukonWebConfiguration (
+ConfigurationID
+)
+go

@@ -254,3 +254,17 @@ where type like '%ION%';
 alter table EnergyCompany ADD WebConfigID NUMBER;
 UPDATE EnergyCompany SET WebConfigID = 0;
 alter TABLE EnergyCompany MODIFY WebConfigID NOT NULL;
+
+
+create table YukonWebConfiguration  (
+   ConfigurationID      NUMBER                           not null,
+   LogoLocation         VARCHAR2(100),
+   Description          VARCHAR2(500),
+   AlternateDisplayName VARCHAR2(50),
+   URL                  VARCHAR2(100),
+   constraint PK_YUKONWEBCONFIGURATION primary key (ConfigurationID)
+);
+insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
+create unique index YukWbCfg_PK on YukonWebConfiguration (
+   ConfigurationID ASC
+);
