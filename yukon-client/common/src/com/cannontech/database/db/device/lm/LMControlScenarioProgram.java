@@ -193,6 +193,7 @@ public class LMControlScenarioProgram extends com.cannontech.database.db.NestedD
 					prog.setStartDelay( new Integer(rset.getInt(3)) );
 					prog.setStopOffset( new Integer(rset.getInt(4)) );
 					prog.setStartGear( new Integer(rset.getInt(5)) );
+					prog.setDbConnection(conn);
 
 					progList.add(prog);
 				}
