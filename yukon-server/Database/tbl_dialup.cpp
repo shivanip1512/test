@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dialup.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/09/06 19:03:44 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/12/19 20:21:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -264,5 +264,64 @@ RWDBStatus CtiTableDeviceDialup::Delete()
     deleter.where( table["deviceid"] == getDeviceID() );
     deleter.execute( conn );
     return deleter.status();
+}
+
+
+INT CtiTableDeviceDialup::getBits() const
+{
+   char temp[8];
+   memset(temp, '\0', 8);
+   temp[0] = getLineSettings().data()[0];
+
+   return atoi(temp);
+}
+
+INT CtiTableDeviceDialup::getParity() const
+{
+   char paritychar = getLineSettings().data()[1];
+   int  parity = NOPARITY;
+
+   switch(paritychar)
+   {
+   case 'N':
+      {
+         parity = NOPARITY;
+         break;
+      }
+   case 'E':
+      {
+         parity = EVENPARITY;
+         break;
+      }
+   case 'O':
+      {
+         parity = ODDPARITY;
+         break;
+      }
+   }
+
+   return parity;
+}
+
+INT CtiTableDeviceDialup::getStopBits() const
+{
+   char stopchar = getLineSettings().data()[2];
+   int  stop = ONESTOPBIT;
+
+   switch(stopchar)
+   {
+   case '1':
+      {
+         stop = ONESTOPBIT;
+         break;
+      }
+   case '2':
+      {
+         stop = TWOSTOPBITS;
+         break;
+      }
+   }
+
+   return stop;
 }
 
