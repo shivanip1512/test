@@ -20,6 +20,7 @@ import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageListener;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
 
@@ -119,6 +120,10 @@ public void addMessageEventListener(MessageEventListener listener) {
 
 		messageEventListeners.addElement(listener);
 	}
+}
+public void addMessageListener(MessageListener listener) {
+
+	connection.addMessageListener(listener); 
 }
 /**
  * Insert the method's description here.
