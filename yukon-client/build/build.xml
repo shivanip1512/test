@@ -90,7 +90,7 @@
         <ant dir="${resource}" target="${dotarget}"/>
         <ant dir="${yukonappserver}" target="${dotarget}"/>
         <ant dir="${yukonappclient}" target="${dotarget}"/>
-<!--        <ant dir="${yukon-web}" target="${dotarget}"/>  -->
+        <ant dir="${yukon-web}" target="${dotarget}"/> 
     </target>
 
 	
