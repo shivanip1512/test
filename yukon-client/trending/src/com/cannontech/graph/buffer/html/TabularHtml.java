@@ -26,15 +26,15 @@ public StringBuffer getHtml(StringBuffer buf)
 //	com.cannontech.clientutils.CTILogger.info("Tabular HTML getHtml()");
 //	long timer = System.currentTimeMillis();
 
-	long tabStDt = model.getStartDate().getTime()/1000;
-	long tabEndDt = model.getStopDate().getTime()/1000;
+	long tabStDt = model.getStartDate().getTime();
+	long tabEndDt = model.getStopDate().getTime();
 	
 	java.util.Date headerDateDisplay = model.getStartDate();
 		
 	if( getTabularStartDate() != null && getTabularEndDate() != null)
 	{
-		tabStDt = getTabularStartDate().getTime()/1000;
-		tabEndDt = getTabularEndDate().getTime()/1000;
+		tabStDt = getTabularStartDate().getTime();
+		tabEndDt = getTabularEndDate().getTime();
 		headerDateDisplay = getTabularStartDate();
 	}
 //	buf.append("<link rel=\"stylesheet\" href=\"c:/yukon/client/bin/CannonStyle.css\" type=\"text/css\">");
@@ -96,7 +96,7 @@ public StringBuffer getHtml(StringBuffer buf)
 
 	 		for( int j = 0; timeStamp != null && values != null &&  j < timeStamp.length; j++ )
  			{
-				Long d = new Long(timeStamp[j]/1000);
+				Long d = new Long(timeStamp[j]);
  				Double[] objectValues = (Double[]) tree.get(new Double(d.doubleValue()));
 		 		if( objectValues == null )
  				{
@@ -129,7 +129,7 @@ public StringBuffer getHtml(StringBuffer buf)
 	for( int x = 0; x < keyArray.length; x++ )
 	{
 		Double ts1 = keyArray[x];
-		buf.append(timeFormat.format(new java.util.Date(ts1.longValue() *1000)));
+		buf.append(timeFormat.format(new java.util.Date(ts1.longValue())));
 		buf.append("<BR>\n");
 	}
 //	com.cannontech.clientutils.CTILogger.info(" $$ Collecting timestamps; constructing html for timestamps $$" );

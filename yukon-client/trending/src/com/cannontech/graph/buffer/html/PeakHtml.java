@@ -95,14 +95,12 @@ public StringBuffer getHtml(StringBuffer buf)
 		for( int i = 0; i < model.getTrendSeries().length; i++ )
 		{
 			com.cannontech.graph.model.TrendSerie serie = model.getTrendSeries()[i];
-			System.out.println(" SERIE Name = " + serie.getLabel());
 			
 			if((serie.getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK) == serie.getTypeMask())
 			{
 				if( !(serie.getPointId().intValue() == model.getTrendSeries()[(int)peakPointIndex].getPointId().intValue() &&
 					((serie.getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.GRAPH_MASK)== com.cannontech.database.db.graph.GraphDataSeries.GRAPH_MASK)))
 				{
-					System.out.println(" Added serie= " + serie.getLabel() + "  " + serie.getType());
 					buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#999966\" class=\"HeaderCell\"><CENTER><B><FONT SIZE=\"-1\" FACE=\"Arial\">");
 					buf.append(serie.getLabel());
 					buf.append("</FONT></B></CENTER></TD>\r\n");
