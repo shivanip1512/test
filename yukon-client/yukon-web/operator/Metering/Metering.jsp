@@ -10,11 +10,11 @@
 </head>
 <%
 	graphBean.setGdefid( 
-		(request.getParameter("gdefid") == null 
+		(request.getParameter("gdefid") == null)
 		 ? -1 : Integer.parseInt(request.getParameter("gdefid")));
 
 	graphBean.setPage( 
-		(request.getParameter("page") == null 
+		(request.getParameter("page") == null)
 		 ? 1 : Integer.parseInt(request.getParameter("page")));
 %>
 <body class="Background" text="#000000" leftmargin="0" topmargin="0" onload = "init()">
