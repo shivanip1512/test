@@ -2,8 +2,8 @@
 #                                                         #
 #       Makefile Template for CTI Apps                    #
 #                                                         #
-#       $Revision: 1.8 $                               #
-#       $Date: 2003/09/05 18:46:57 $                  #
+#       $Revision: 1.9 $                               #
+#       $Date: 2004/05/17 21:23:47 $                  #
 #                                                         #
 # Definitions                                             #
 ###########################################################
@@ -79,13 +79,14 @@ R_SERVICE        = $(REFPATH)\Service
 R_SIGNAL         = $(REFPATH)\dbsignal
 R_RTDB           = $(REFPATH)\rtdb
 
+
 #
 # Working directories.
 #
 
 LOADMANAGEMENT  = $(COMPILEBASE)\loadmanagement
 FDR             = $(COMPILEBASE)\fdr
-BOOST           = $(COMPILEBASE)\boost_1_28_0
+BOOST           = $(COMPILEBASE)\boost_1_31_0
 CALC            = $(COMPILEBASE)\calc
 CAPCONTROL      = $(COMPILEBASE)\capcontrol
 COMMON          = $(COMPILEBASE)\common
@@ -108,6 +109,7 @@ INTERP          = $(COMPILEBASE)\interp
 TCLINC          = $(COMPILEBASE)\tcl\include
 XERCESINC       = $(COMPILEBASE)\xerces\include
 
+BOOSTLIBS = $(BOOST)\stage\lib\libboost_date_time-vc6-mt-gd-1_31.lib
 
 !IFDEF DEBUG
 CFLAGS  = /nologo /EHsc- /Zi /Yd /Od /MDd /Zm200 /FD
