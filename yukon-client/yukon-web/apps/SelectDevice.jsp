@@ -22,7 +22,6 @@ function changeFilter(filterBy) {
 	document.getElementById("DivLocation").style.display = (filterBy == <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION %>)? "" : "none";
 	document.getElementById("DivAddressingGroup").style.display = (filterBy == <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG %>)? "" : "none";
 	document.getElementById("DivDeviceStatus").style.display = (filterBy == <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS %>)? "" : "none";
-	document.getElementById("DivEnergyCompany").style.display = (filterBy == <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_ENERGY_COMPANY %>)? "" : "none";
 }
 
 function init() {
