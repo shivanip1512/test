@@ -1,4 +1,7 @@
 package com.cannontech.common.gui.panel;
+
+import java.util.Date;
+
 /**
  * Insert the type's description here.
  * Creation date: (3/12/2001 9:57:47 AM)
@@ -9,6 +12,9 @@ public class ManualChangeJPanel extends javax.swing.JPanel implements java.awt.e
 	//modes the panel is in
 	public static final int MODE_START_STOP = 0;
 	public static final int MODE_STOP = 1;
+	public static final int MODE_DATE_ONLY = 2;
+
+
 	//choices the user may choose
 	public static final int CANCEL_CHOICE = 0;
 	public static final int OK_CHOICE = 1;
@@ -504,7 +510,7 @@ private com.cannontech.common.gui.util.JTextFieldTimeEntry getJTextFieldStartTim
 			ivjJTextFieldStartTime.setName("JTextFieldStartTime");
 			// user code begin {1}
 
-			ivjJTextFieldStartTime.setTimeText( new java.util.Date() );
+			ivjJTextFieldStartTime.setTimeText( new Date() );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -530,11 +536,11 @@ private com.cannontech.common.gui.util.JTextFieldTimeEntry getJTextFieldStopTime
 			// user code begin {1}
 
 			if( getMode() == MODE_STOP )
-				ivjJTextFieldStopTime.setTimeText( new java.util.Date() );
+				ivjJTextFieldStopTime.setTimeText( new Date() );
 			else
 			{
 				java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-				cal.setTime( new java.util.Date() );
+				cal.setTime( new Date() );
 
 				StringBuffer hour = new StringBuffer( String.valueOf(cal.get( java.util.GregorianCalendar.HOUR_OF_DAY)+4) );
 				if( hour.length() < 2 )
@@ -576,12 +582,12 @@ public int getMode() {
  * Creation date: (3/12/2001 2:56:28 PM)
  * @return java.util.Date
  */
-public java.util.Date getStartTime()
+public Date getStartTime()
 {
 	if( getJTextFieldStartTime().getText() == null
 		 || getJTextFieldStartTime().getText().length() <= 0 )
 	{
-		return new java.util.Date(com.cannontech.message.macs.message.Schedule.INVALID_DATE);
+		return new Date(com.cannontech.message.macs.message.Schedule.INVALID_DATE);
 	}
 	else
 	{
@@ -600,7 +606,7 @@ public java.util.Date getStartTime()
 		catch( Exception e )
 		{
 			com.cannontech.clientutils.CTILogger.info("*** Received a bad value in getStartTime() of " + this.getClass().getName() + " : " + e.getMessage() );
-			return new java.util.Date(com.cannontech.message.macs.message.Schedule.INVALID_DATE);
+			return new Date(com.cannontech.message.macs.message.Schedule.INVALID_DATE);
 		}
 		
 	}
@@ -613,7 +619,7 @@ public java.util.Date getStartTime()
  * Creation date: (3/12/2001 2:56:28 PM)
  * @return java.util.Date
  */
-public java.util.Date getStopTime()
+public Date getStopTime()
 {
 	if( !getJTextFieldStopTime().isEnabled() )
 	{
@@ -622,7 +628,7 @@ public java.util.Date getStopTime()
 	else if(	 getJTextFieldStopTime().getText() == null
 				 || getJTextFieldStopTime().getText().length() <= 0 )
 	{
-		return new java.util.Date(com.cannontech.message.macs.message.Schedule.INVALID_DATE);
+		return new Date(com.cannontech.message.macs.message.Schedule.INVALID_DATE);
 	}
 	else
 	{
@@ -642,7 +648,7 @@ public java.util.Date getStopTime()
 		catch( Exception e )
 		{
 			com.cannontech.clientutils.CTILogger.info("*** Received a bad value in getStopTime() of " + this.getClass().getName() + " : " + e.getMessage() );
-			return new java.util.Date(com.cannontech.message.macs.message.Schedule.INVALID_DATE);
+			return new Date(com.cannontech.message.macs.message.Schedule.INVALID_DATE);
 		}
 		
 	}
@@ -798,10 +804,15 @@ private void initialize() {
 		getJCheckBoxNeverStop().setVisible(false);
 		getJCheckBoxStartStopNow().setText("Stop Now");
 	}
+	else if( mode == MODE_DATE_ONLY )
+	{
+		getJCheckBoxNeverStop().setVisible(false);
+		getJCheckBoxStartStopNow().setVisible(false);
+	}
 
 	getJCheckBoxStartStopNow().doClick();
 	getJButtonOk().requestFocus();
-
+	
 	// user code end
 }
 
@@ -838,6 +849,25 @@ public void jButtonCancel_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	return;
 }
 
+public void setInitialDates( Date starting_, Date stopping_ ) {
+	
+	getDateComboStart().setSelectedDate( starting_ );
+	getDateComboStop().setSelectedDate( stopping_ );
+	
+	getJTextFieldStartTime().setTimeText( starting_ );
+	getJTextFieldStopTime().setTimeText( stopping_ );
+	
+}
+
+public void setStartLabel( String start_ ) {
+	
+	getJLabelStartTime().setText(start_);
+}
+
+public void setStopLabel( String stop_ ) {
+	
+	getJLabelStopTime().setText(stop_);
+}
 
 /**
  * Comment
