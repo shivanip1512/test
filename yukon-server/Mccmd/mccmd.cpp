@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2002/09/24 18:18:37 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2002/09/24 18:43:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1261,7 +1261,9 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
     if( req_set.entries() == 0 )
         return TCL_OK;
    
-    //write out all of the requests
+    //build up a multi and write out all of the requests
+    CtiMultiMsg* multi_req = new CtiMultiMsg();
+    
     RWSetIterator iter(req_set);
     for( ; iter(); )
     {
@@ -1273,8 +1275,10 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
         else
             WriteOutput( (char*) req->CommandString().data() );
 
-        PILConnection->WriteConnQue(req);
+        multi_req->getData().insert(req);        
     }
+
+    PILConnection->WriteConnQue(multi_req);
     
     if( timeout == 0 ) // Not waiting for responses so we're done
         return TCL_OK;
