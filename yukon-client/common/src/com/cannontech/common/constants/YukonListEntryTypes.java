@@ -48,7 +48,6 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL		= 1703;
 	public static final int YUK_DEF_ID_MANU_UNKNOWN				= 1801;
 	public static final int YUK_DEF_ID_LOC_UNKNOW				= 1901;
-	public static final int YUK_DEF_ID_COC_NOT_AVAIL				= 2001;
 	public static final int YUK_DEF_ID_TOW_WEEKDAY				= 2101;
 	public static final int YUK_DEF_ID_TOW_WEEKEND				= 2102;
 	public static final int YUK_DEF_ID_TOW_SATURDAY				= 2103;
